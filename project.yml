@@ -1,0 +1,60 @@
+name: TruchieEmu
+options:
+  bundleIdPrefix: com.truchiemu
+  deploymentTarget:
+    macOS: "13.0"
+  createIntermediateGroups: true
+  xcodeVersion: "15"
+
+targets:
+  TruchieEmu:
+    type: application
+    platform: macOS
+    deploymentTarget: "13.0"
+
+    info:
+      path: TruchieEmu/Resources/Info.plist
+      properties:
+        CFBundleName: TruchieEmu
+        CFBundleDisplayName: TruchieEmu
+        CFBundleIdentifier: com.truchiemu.app
+        CFBundleVersion: "1"
+        CFBundleShortVersionString: "1.0.0"
+        NSHumanReadableCopyright: "© 2026 TruchieEmu"
+        NSPrincipalClass: NSApplication
+        NSHighResolutionCapable: true
+        NSSupportsAutomaticGraphicsSwitching: true
+        NSAppTransportSecurity:
+          NSAllowsArbitraryLoads: true
+
+    entitlements:
+      path: TruchieEmu/Resources/TruchieEmu.entitlements
+
+    settings:
+      base:
+        PRODUCT_NAME: TruchieEmu
+        PRODUCT_BUNDLE_IDENTIFIER: com.truchiemu.app
+        SWIFT_OBJC_BRIDGING_HEADER: TruchieEmu/Engine/TruchieEmu-Bridging-Header.h
+        CLANG_ENABLE_OBJC_ARC: YES
+        GCC_C_LANGUAGE_STANDARD: gnu17
+        CLANG_CXX_LANGUAGE_STANDARD: gnu++17
+        CLANG_CXX_LIBRARY: libc++
+        MACOSX_DEPLOYMENT_TARGET: "13.0"
+        ARCHS: "$(ARCHS_STANDARD)"
+        CODE_SIGN_ENTITLEMENTS: TruchieEmu/Resources/TruchieEmu.entitlements
+        CODE_SIGN_STYLE: Automatic
+        ENABLE_HARDENED_RUNTIME: YES
+        SWIFT_VERSION: "5.9"
+        OTHER_LDFLAGS: "-framework Metal -framework MetalKit -framework GameController -framework AVFoundation -framework WebKit"
+
+    sources:
+      - path: TruchieEmu/App
+        excludes:
+          - "*.DS_Store"
+      - path: TruchieEmu/Models
+      - path: TruchieEmu/Services
+      - path: TruchieEmu/Engine
+      - path: TruchieEmu/Shaders
+      - path: TruchieEmu/Views
+
+    preBuildScripts: []

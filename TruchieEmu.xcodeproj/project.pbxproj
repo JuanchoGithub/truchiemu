@@ -1,0 +1,491 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 77;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		11210EDC6C1D31FA4E541116 /* LibretroBridge.mm in Sources */ = {isa = PBXBuildFile; fileRef = B7D46AC62DC8C09CBAA53763 /* LibretroBridge.mm */; };
+		1A364756DE475BC985F79341 /* EmulatorView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1DD9E5B55884D34FCDA03196 /* EmulatorView.swift */; };
+		2B95ADBBD965C8784E0F14C1 /* SettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5F2F3523E6BDCD5E1618ED1F /* SettingsView.swift */; };
+		2BC6C72C9075C6652E2F1398 /* BoxArtPickerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 00BCE112C7493BEA7436F109 /* BoxArtPickerView.swift */; };
+		3C8A90F76B0E04A65E48EBED /* GameDetailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = EA462E15A1500FD878B5160A /* GameDetailView.swift */; };
+		3D30F9BC2F7FBA0BEA44693B /* BoxArtService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6DDE7FC6FAA1F8677EB963A1 /* BoxArtService.swift */; };
+		469CB718F4F3CEB1456E1454 /* LibretroBridgeSwift.swift in Sources */ = {isa = PBXBuildFile; fileRef = BB93840EA89D1346651C53BE /* LibretroBridgeSwift.swift */; };
+		4CFD764CC4B9F8C057BC0E10 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = DAD4BAC83053A0F149602D6D /* ContentView.swift */; };
+		5412DF664DF0F1052D430F56 /* SystemInfo.swift in Sources */ = {isa = PBXBuildFile; fileRef = ACC34ADA0917BCC91FAA1989 /* SystemInfo.swift */; };
+		55F19268FAB68DFC6D19F209 /* CRTFilter.metal in Sources */ = {isa = PBXBuildFile; fileRef = 2F02B2718F34118A171C7103 /* CRTFilter.metal */; };
+		6F744ECC857F8807BD5BF1AA /* OnboardingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = BB27DEA4536CF36FCD8394F2 /* OnboardingView.swift */; };
+		8406C90890303236B45F5FE2 /* SystemSidebarView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F0ECEE62736D1B11B66E5CED /* SystemSidebarView.swift */; };
+		8D69C38D2C52B6392EC9C0AA /* CoreManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = C9D4F3329E4574FD30094324 /* CoreManager.swift */; };
+		9CBCACA409FDC46E119C5F02 /* CoreDownloadSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = E86D4B032CD724A2520F4EF5 /* CoreDownloadSheet.swift */; };
+		C99B75B6B31091E08C1F162A /* ROM.swift in Sources */ = {isa = PBXBuildFile; fileRef = FA471582BD64CAFD5D7353DA /* ROM.swift */; };
+		C9B9D094E83252DCCF416DA4 /* ControllerService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 93D8EB529663CB9A8702FAD3 /* ControllerService.swift */; };
+		D0C382CCE62AD453784ED800 /* ROMScanner.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7A96B3453958E60812D9DA1D /* ROMScanner.swift */; };
+		EE160B3D7565B6301E7474B3 /* LibretroCore.swift in Sources */ = {isa = PBXBuildFile; fileRef = E35518FB34DEB243BF979DE0 /* LibretroCore.swift */; };
+		F3C6A31B44657B3FF9B89A4F /* ROMLibrary.swift in Sources */ = {isa = PBXBuildFile; fileRef = 35A5B2396F8000C8435A2E45 /* ROMLibrary.swift */; };
+		F59885E8417267AF6A34F97C /* TruchieEmuApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2A348F996E22D8E72782CE2B /* TruchieEmuApp.swift */; };
+		F78B007ED4F76DEFC5324B2F /* LibraryGridView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3356A4F200DFBFEEEE0F91A7 /* LibraryGridView.swift */; };
+		FC67BB50EE78744FF7A11536 /* EmptyDetailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = BCB346F2AEB7FDB0705ADC7C /* EmptyDetailView.swift */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXFileReference section */
+		00BCE112C7493BEA7436F109 /* BoxArtPickerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BoxArtPickerView.swift; sourceTree = "<group>"; };
+		1DD9E5B55884D34FCDA03196 /* EmulatorView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EmulatorView.swift; sourceTree = "<group>"; };
+		29AA23F97722816919BB9A98 /* libretro.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = libretro.h; sourceTree = "<group>"; };
+		2A348F996E22D8E72782CE2B /* TruchieEmuApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TruchieEmuApp.swift; sourceTree = "<group>"; };
+		2F02B2718F34118A171C7103 /* CRTFilter.metal */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.metal; path = CRTFilter.metal; sourceTree = "<group>"; };
+		3356A4F200DFBFEEEE0F91A7 /* LibraryGridView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LibraryGridView.swift; sourceTree = "<group>"; };
+		35A5B2396F8000C8435A2E45 /* ROMLibrary.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ROMLibrary.swift; sourceTree = "<group>"; };
+		5F2F3523E6BDCD5E1618ED1F /* SettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsView.swift; sourceTree = "<group>"; };
+		676A433C26413EA5440A49A6 /* TruchieEmu-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "TruchieEmu-Bridging-Header.h"; sourceTree = "<group>"; };
+		6DDE7FC6FAA1F8677EB963A1 /* BoxArtService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BoxArtService.swift; sourceTree = "<group>"; };
+		7A96B3453958E60812D9DA1D /* ROMScanner.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ROMScanner.swift; sourceTree = "<group>"; };
+		93D8EB529663CB9A8702FAD3 /* ControllerService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ControllerService.swift; sourceTree = "<group>"; };
+		ACC34ADA0917BCC91FAA1989 /* SystemInfo.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SystemInfo.swift; sourceTree = "<group>"; };
+		ACEC10EE62F062AF5FAEE9BB /* TruchieEmu.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = TruchieEmu.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		B7D46AC62DC8C09CBAA53763 /* LibretroBridge.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; path = LibretroBridge.mm; sourceTree = "<group>"; };
+		BB27DEA4536CF36FCD8394F2 /* OnboardingView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OnboardingView.swift; sourceTree = "<group>"; };
+		BB93840EA89D1346651C53BE /* LibretroBridgeSwift.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LibretroBridgeSwift.swift; sourceTree = "<group>"; };
+		BCB346F2AEB7FDB0705ADC7C /* EmptyDetailView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EmptyDetailView.swift; sourceTree = "<group>"; };
+		C9D4F3329E4574FD30094324 /* CoreManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CoreManager.swift; sourceTree = "<group>"; };
+		DAD4BAC83053A0F149602D6D /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
+		E35518FB34DEB243BF979DE0 /* LibretroCore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LibretroCore.swift; sourceTree = "<group>"; };
+		E86D4B032CD724A2520F4EF5 /* CoreDownloadSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CoreDownloadSheet.swift; sourceTree = "<group>"; };
+		EA462E15A1500FD878B5160A /* GameDetailView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GameDetailView.swift; sourceTree = "<group>"; };
+		F0ECEE62736D1B11B66E5CED /* SystemSidebarView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SystemSidebarView.swift; sourceTree = "<group>"; };
+		FA471582BD64CAFD5D7353DA /* ROM.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ROM.swift; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXGroup section */
+		0DAE1ECDADDA76B1C01813C4 /* Shaders */ = {
+			isa = PBXGroup;
+			children = (
+				2F02B2718F34118A171C7103 /* CRTFilter.metal */,
+			);
+			path = Shaders;
+			sourceTree = "<group>";
+		};
+		1877F5A2D47F3BEBD4C9F107 /* TruchieEmu */ = {
+			isa = PBXGroup;
+			children = (
+				325C2DF7BFBE06CDBE6EF3A5 /* App */,
+				83304F5BB3B25877F8337BF8 /* Engine */,
+				58DECDD14D2EF32E5076893B /* Models */,
+				22252D163B158EFEB49A0DAF /* Services */,
+				0DAE1ECDADDA76B1C01813C4 /* Shaders */,
+				BD0AC71C3B8CE60EEEDFAAEC /* Views */,
+			);
+			path = TruchieEmu;
+			sourceTree = "<group>";
+		};
+		22252D163B158EFEB49A0DAF /* Services */ = {
+			isa = PBXGroup;
+			children = (
+				6DDE7FC6FAA1F8677EB963A1 /* BoxArtService.swift */,
+				93D8EB529663CB9A8702FAD3 /* ControllerService.swift */,
+				C9D4F3329E4574FD30094324 /* CoreManager.swift */,
+				35A5B2396F8000C8435A2E45 /* ROMLibrary.swift */,
+				7A96B3453958E60812D9DA1D /* ROMScanner.swift */,
+			);
+			path = Services;
+			sourceTree = "<group>";
+		};
+		2C503F1AC4270AE1CC303595 /* Library */ = {
+			isa = PBXGroup;
+			children = (
+				3356A4F200DFBFEEEE0F91A7 /* LibraryGridView.swift */,
+				BB27DEA4536CF36FCD8394F2 /* OnboardingView.swift */,
+				F0ECEE62736D1B11B66E5CED /* SystemSidebarView.swift */,
+			);
+			path = Library;
+			sourceTree = "<group>";
+		};
+		325C2DF7BFBE06CDBE6EF3A5 /* App */ = {
+			isa = PBXGroup;
+			children = (
+				DAD4BAC83053A0F149602D6D /* ContentView.swift */,
+				2A348F996E22D8E72782CE2B /* TruchieEmuApp.swift */,
+			);
+			path = App;
+			sourceTree = "<group>";
+		};
+		47CBF2ADC9FFD0C267CB6239 /* Player */ = {
+			isa = PBXGroup;
+			children = (
+				1DD9E5B55884D34FCDA03196 /* EmulatorView.swift */,
+			);
+			path = Player;
+			sourceTree = "<group>";
+		};
+		49F1461080903BC32A7BB44B /* Settings */ = {
+			isa = PBXGroup;
+			children = (
+				5F2F3523E6BDCD5E1618ED1F /* SettingsView.swift */,
+			);
+			path = Settings;
+			sourceTree = "<group>";
+		};
+		4F07E586C17BC93480F71E29 /* CoreDownload */ = {
+			isa = PBXGroup;
+			children = (
+				E86D4B032CD724A2520F4EF5 /* CoreDownloadSheet.swift */,
+			);
+			path = CoreDownload;
+			sourceTree = "<group>";
+		};
+		51DCF45034CBD3ABFA194491 = {
+			isa = PBXGroup;
+			children = (
+				1877F5A2D47F3BEBD4C9F107 /* TruchieEmu */,
+				898E3BAF8FE5EB5068391AB1 /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+		58DECDD14D2EF32E5076893B /* Models */ = {
+			isa = PBXGroup;
+			children = (
+				E35518FB34DEB243BF979DE0 /* LibretroCore.swift */,
+				FA471582BD64CAFD5D7353DA /* ROM.swift */,
+				ACC34ADA0917BCC91FAA1989 /* SystemInfo.swift */,
+			);
+			path = Models;
+			sourceTree = "<group>";
+		};
+		778AF2550C9A43CD6CD9D601 /* BoxArt */ = {
+			isa = PBXGroup;
+			children = (
+				00BCE112C7493BEA7436F109 /* BoxArtPickerView.swift */,
+			);
+			path = BoxArt;
+			sourceTree = "<group>";
+		};
+		83304F5BB3B25877F8337BF8 /* Engine */ = {
+			isa = PBXGroup;
+			children = (
+				29AA23F97722816919BB9A98 /* libretro.h */,
+				B7D46AC62DC8C09CBAA53763 /* LibretroBridge.mm */,
+				BB93840EA89D1346651C53BE /* LibretroBridgeSwift.swift */,
+				676A433C26413EA5440A49A6 /* TruchieEmu-Bridging-Header.h */,
+			);
+			path = Engine;
+			sourceTree = "<group>";
+		};
+		898E3BAF8FE5EB5068391AB1 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				ACEC10EE62F062AF5FAEE9BB /* TruchieEmu.app */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		A655ADE29C2FB2E6D809951D /* Detail */ = {
+			isa = PBXGroup;
+			children = (
+				BCB346F2AEB7FDB0705ADC7C /* EmptyDetailView.swift */,
+				EA462E15A1500FD878B5160A /* GameDetailView.swift */,
+			);
+			path = Detail;
+			sourceTree = "<group>";
+		};
+		BD0AC71C3B8CE60EEEDFAAEC /* Views */ = {
+			isa = PBXGroup;
+			children = (
+				778AF2550C9A43CD6CD9D601 /* BoxArt */,
+				4F07E586C17BC93480F71E29 /* CoreDownload */,
+				A655ADE29C2FB2E6D809951D /* Detail */,
+				2C503F1AC4270AE1CC303595 /* Library */,
+				47CBF2ADC9FFD0C267CB6239 /* Player */,
+				49F1461080903BC32A7BB44B /* Settings */,
+			);
+			path = Views;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		CB3BA833402929B57F3054AB /* TruchieEmu */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = FC61AF2BB3ABF32D52509631 /* Build configuration list for PBXNativeTarget "TruchieEmu" */;
+			buildPhases = (
+				16A55D322B3BC741416F8011 /* Sources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = TruchieEmu;
+			packageProductDependencies = (
+			);
+			productName = TruchieEmu;
+			productReference = ACEC10EE62F062AF5FAEE9BB /* TruchieEmu.app */;
+			productType = "com.apple.product-type.application";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		164C875B02C4E1D8FFD04C9B /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				BuildIndependentTargetsInParallel = YES;
+				LastUpgradeCheck = 1500;
+				TargetAttributes = {
+					CB3BA833402929B57F3054AB = {
+						ProvisioningStyle = Automatic;
+					};
+				};
+			};
+			buildConfigurationList = E0C01427B5CD045D4AC754BE /* Build configuration list for PBXProject "TruchieEmu" */;
+			developmentRegion = en;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				Base,
+				en,
+			);
+			mainGroup = 51DCF45034CBD3ABFA194491;
+			minimizedProjectReferenceProxies = 1;
+			preferredProjectObjectVersion = 77;
+			productRefGroup = 898E3BAF8FE5EB5068391AB1 /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				CB3BA833402929B57F3054AB /* TruchieEmu */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXSourcesBuildPhase section */
+		16A55D322B3BC741416F8011 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				2BC6C72C9075C6652E2F1398 /* BoxArtPickerView.swift in Sources */,
+				3D30F9BC2F7FBA0BEA44693B /* BoxArtService.swift in Sources */,
+				55F19268FAB68DFC6D19F209 /* CRTFilter.metal in Sources */,
+				4CFD764CC4B9F8C057BC0E10 /* ContentView.swift in Sources */,
+				C9B9D094E83252DCCF416DA4 /* ControllerService.swift in Sources */,
+				9CBCACA409FDC46E119C5F02 /* CoreDownloadSheet.swift in Sources */,
+				8D69C38D2C52B6392EC9C0AA /* CoreManager.swift in Sources */,
+				FC67BB50EE78744FF7A11536 /* EmptyDetailView.swift in Sources */,
+				1A364756DE475BC985F79341 /* EmulatorView.swift in Sources */,
+				3C8A90F76B0E04A65E48EBED /* GameDetailView.swift in Sources */,
+				F78B007ED4F76DEFC5324B2F /* LibraryGridView.swift in Sources */,
+				11210EDC6C1D31FA4E541116 /* LibretroBridge.mm in Sources */,
+				469CB718F4F3CEB1456E1454 /* LibretroBridgeSwift.swift in Sources */,
+				EE160B3D7565B6301E7474B3 /* LibretroCore.swift in Sources */,
+				6F744ECC857F8807BD5BF1AA /* OnboardingView.swift in Sources */,
+				C99B75B6B31091E08C1F162A /* ROM.swift in Sources */,
+				F3C6A31B44657B3FF9B89A4F /* ROMLibrary.swift in Sources */,
+				D0C382CCE62AD453784ED800 /* ROMScanner.swift in Sources */,
+				2B95ADBBD965C8784E0F14C1 /* SettingsView.swift in Sources */,
+				5412DF664DF0F1052D430F56 /* SystemInfo.swift in Sources */,
+				8406C90890303236B45F5FE2 /* SystemSidebarView.swift in Sources */,
+				F59885E8417267AF6A34F97C /* TruchieEmuApp.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin XCBuildConfiguration section */
+		0B9F0BC16E2A5DEADF60344E /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"$(inherited)",
+					"DEBUG=1",
+				);
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				MACOSX_DEPLOYMENT_TARGET = 13.0;
+				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
+				MTL_FAST_MATH = YES;
+				ONLY_ACTIVE_ARCH = YES;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = macosx;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+				SWIFT_VERSION = 5.0;
+			};
+			name = Debug;
+		};
+		228AC44E49273CD406C60476 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ARCHS = "$(ARCHS_STANDARD)";
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++17";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CODE_SIGN_ENTITLEMENTS = TruchieEmu/Resources/TruchieEmu.entitlements;
+				CODE_SIGN_STYLE = Automatic;
+				COMBINE_HIDPI_IMAGES = YES;
+				ENABLE_HARDENED_RUNTIME = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu17;
+				INFOPLIST_FILE = TruchieEmu/Resources/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+				);
+				MACOSX_DEPLOYMENT_TARGET = 13.0;
+				OTHER_LDFLAGS = "-framework Metal -framework MetalKit -framework GameController -framework AVFoundation -framework WebKit";
+				PRODUCT_BUNDLE_IDENTIFIER = com.truchiemu.app;
+				PRODUCT_NAME = TruchieEmu;
+				SDKROOT = macosx;
+				SWIFT_OBJC_BRIDGING_HEADER = "TruchieEmu/Engine/TruchieEmu-Bridging-Header.h";
+				SWIFT_VERSION = 5.9;
+			};
+			name = Release;
+		};
+		2E03526C1E1FCAB55A558D7D /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				MACOSX_DEPLOYMENT_TARGET = 13.0;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				MTL_FAST_MATH = YES;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = macosx;
+				SWIFT_COMPILATION_MODE = wholemodule;
+				SWIFT_OPTIMIZATION_LEVEL = "-O";
+				SWIFT_VERSION = 5.0;
+			};
+			name = Release;
+		};
+		CFCDDDC495B6418772AF4305 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ARCHS = "$(ARCHS_STANDARD)";
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++17";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CODE_SIGN_ENTITLEMENTS = TruchieEmu/Resources/TruchieEmu.entitlements;
+				CODE_SIGN_STYLE = Automatic;
+				COMBINE_HIDPI_IMAGES = YES;
+				ENABLE_HARDENED_RUNTIME = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu17;
+				INFOPLIST_FILE = TruchieEmu/Resources/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+				);
+				MACOSX_DEPLOYMENT_TARGET = 13.0;
+				OTHER_LDFLAGS = "-framework Metal -framework MetalKit -framework GameController -framework AVFoundation -framework WebKit";
+				PRODUCT_BUNDLE_IDENTIFIER = com.truchiemu.app;
+				PRODUCT_NAME = TruchieEmu;
+				SDKROOT = macosx;
+				SWIFT_OBJC_BRIDGING_HEADER = "TruchieEmu/Engine/TruchieEmu-Bridging-Header.h";
+				SWIFT_VERSION = 5.9;
+			};
+			name = Debug;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		E0C01427B5CD045D4AC754BE /* Build configuration list for PBXProject "TruchieEmu" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				0B9F0BC16E2A5DEADF60344E /* Debug */,
+				2E03526C1E1FCAB55A558D7D /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
+		FC61AF2BB3ABF32D52509631 /* Build configuration list for PBXNativeTarget "TruchieEmu" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				CFCDDDC495B6418772AF4305 /* Debug */,
+				228AC44E49273CD406C60476 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = 164C875B02C4E1D8FFD04C9B /* Project object */;
+}
