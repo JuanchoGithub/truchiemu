@@ -2,7 +2,7 @@ import SwiftUI
 
 struct SystemSidebarView: View {
     @EnvironmentObject var library: ROMLibrary
-    @Binding var selectedSystem: SystemInfo?
+    @Binding var selectedFilter: LibraryFilter
 
     private var systemsWithROMs: [SystemInfo] {
         let ids = Set(library.roms.compactMap { $0.systemID })
@@ -11,28 +11,34 @@ struct SystemSidebarView: View {
             .sorted { $0.sortOrder < $1.sortOrder }
     }
 
-    private var romCount: (String?) -> Int {
-        { systemID in
-            library.roms.filter { $0.systemID == systemID }.count
+    private var romCount: (SystemInfo?) -> Int {
+        { system in
+            if let system = system {
+                return library.roms.filter { $0.systemID == system.id }.count
+            } else {
+                return library.roms.count
+            }
         }
     }
 
     var body: some View {
-        List(selection: $selectedSystem) {
+        List(selection: $selectedFilter) {
             // All games
-            sidebarRow(icon: "square.grid.2x2", label: "All Games", count: library.roms.count, system: nil)
-                .tag(Optional<SystemInfo>.none)
+            sidebarRow(icon: "square.grid.2x2", label: "All Games", count: romCount(nil))
+                .tag(LibraryFilter.all)
 
             // Favorites
             let favCount = library.roms.filter { $0.isFavorite }.count
             if favCount > 0 {
-                sidebarRow(icon: "heart.fill", label: "Favorites", count: favCount, system: nil, tint: .pink)
+                sidebarRow(icon: "heart.fill", label: "Favorites", count: favCount, tint: .pink)
+                    .tag(LibraryFilter.favorites)
             }
 
             // Recently played
             let recentCount = library.roms.filter { $0.lastPlayed != nil }.count
             if recentCount > 0 {
-                sidebarRow(icon: "clock.fill", label: "Recent", count: recentCount, system: nil, tint: .orange)
+                sidebarRow(icon: "clock.fill", label: "Recent", count: recentCount, tint: .orange)
+                    .tag(LibraryFilter.recent)
             }
 
             if !systemsWithROMs.isEmpty {
@@ -41,10 +47,9 @@ struct SystemSidebarView: View {
                         sidebarRow(
                             icon: system.iconName,
                             label: system.name,
-                            count: romCount(system.id),
-                            system: system
+                            count: romCount(system)
                         )
-                        .tag(Optional<SystemInfo>.some(system))
+                        .tag(LibraryFilter.system(system))
                     }
                 }
             }
@@ -66,7 +71,7 @@ struct SystemSidebarView: View {
     }
 
     @ViewBuilder
-    private func sidebarRow(icon: String, label: String, count: Int, system: SystemInfo?, tint: Color = .accentColor) -> some View {
+    private func sidebarRow(icon: String, label: String, count: Int, tint: Color = .accentColor) -> some View {
         HStack {
             Image(systemName: icon)
                 .foregroundColor(tint)
@@ -90,6 +95,24 @@ struct SystemSidebarView: View {
         panel.canChooseFiles = false
         if panel.runModal() == .OK, let url = panel.url {
             Task { await library.scanROMs(in: url) }
+        }
+    }
+}
+
+// MARK: - Library Filter
+
+enum LibraryFilter: Hashable, Identifiable {
+    case all
+    case favorites
+    case recent
+    case system(SystemInfo)
+    
+    var id: String {
+        switch self {
+        case .all: return "all"
+        case .favorites: return "favorites"
+        case .recent: return "recent"
+        case .system(let system): return "system-\(system.id)"
         }
     }
 }

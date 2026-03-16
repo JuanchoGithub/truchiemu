@@ -11,24 +11,24 @@ struct EmulatorView: View {
     @StateObject private var runner = EmulatorRunner()
     @State private var showHUD = false
     @State private var showFilterPanel = false
-    @AppStorage("crt_enabled") private var crtEnabled = false
-    @AppStorage("scanlines_enabled") private var scanlinesEnabled = true
-    @AppStorage("scanline_intensity") private var scanlineIntensity = 0.35
-    @AppStorage("bezel_style") private var bezelStyle: BezelStyle = .none
+    @EnvironmentObject private var library: ROMLibrary
     @EnvironmentObject private var coreManager: CoreManager
+    
+    // Per-game settings state
+    @State private var settings = ROMSettings()
 
     var body: some View {
         ZStack {
             Color.black.ignoresSafeArea()
 
             // Bezel background
-            if bezelStyle != .none {
-                BezelView(style: bezelStyle)
+            if settings.bezelStyle != "none", let style = BezelStyle(rawValue: settings.bezelStyle) {
+                BezelView(style: style)
                     .ignoresSafeArea()
             }
 
             // Metal game surface
-            MetalGameView(runner: runner, crtEnabled: crtEnabled, scanlinesEnabled: scanlinesEnabled, scanlineIntensity: scanlineIntensity)
+            MetalGameView(runner: runner)
                 .frame(maxWidth: .infinity, maxHeight: .infinity)
                 .ignoresSafeArea()
 
@@ -53,6 +53,7 @@ struct EmulatorView: View {
             }
         }
         .onAppear {
+            self.settings = rom.settings
             Task {
                 // Ensure core is valid (signed/no quarantine) before launch in background
                 if let corePath = runner.findCoreLib(coreID: coreID) {
@@ -60,7 +61,7 @@ struct EmulatorView: View {
                 }
                 // Delay launch slightly to avoid layout conflicts during sheet presentation transition
                 DispatchQueue.main.async {
-                    runner.launch(romURL: rom.path, coreID: coreID)
+                    runner.launch(rom: rom, coreID: coreID)
                 }
             }
         }
@@ -120,26 +121,40 @@ struct EmulatorView: View {
     }
 
     private var filterPanel: some View {
-        HStack(spacing: 24) {
-            Toggle("CRT Filter", isOn: $crtEnabled)
-            Toggle("Scanlines", isOn: $scanlinesEnabled)
-            if scanlinesEnabled {
-                VStack(alignment: .leading, spacing: 4) {
-                    Text("Intensity").font(.caption).foregroundColor(.secondary)
-                    Slider(value: $scanlineIntensity, in: 0.1...0.8)
-                        .frame(width: 100)
+        VStack(spacing: 16) {
+            HStack(spacing: 24) {
+                Toggle("CRT", isOn: $settings.crtEnabled)
+                Toggle("Scanlines", isOn: $settings.scanlinesEnabled)
+                Toggle("Curvature", isOn: $settings.barrelEnabled)
+            }
+            
+            HStack(spacing: 24) {
+                VStack(alignment: .leading) {
+                    Text("Scanline Intensity").font(.caption2)
+                    Slider(value: $settings.scanlineIntensity, in: 0.1...0.8)
+                }
+                
+                VStack(alignment: .leading) {
+                    Text("Curve Amount").font(.caption2)
+                    Slider(value: $settings.barrelAmount, in: 0.0...0.4)
+                }
+                
+                Picker("Bezel", selection: $settings.bezelStyle) {
+                    Text("None").tag("none")
+                    Text("TV").tag("tv")
+                    Text("Arcade").tag("arcade")
                 }
             }
-            Divider()
-            Text("Bezel").font(.caption).foregroundColor(.secondary)
-            Picker("Bezel", selection: $bezelStyle) {
-                ForEach(BezelStyle.allCases, id: \.self) { s in
-                    Text(s.displayName).tag(s)
-                }
-            }.pickerStyle(.menu)
         }
         .padding(16)
         .background(.ultraThinMaterial)
+        .cornerRadius(12)
+        .onChange(of: settings) { newSettings in
+            var updated = rom
+            updated.settings = newSettings
+            library.updateROM(updated)
+            runner.rom = updated
+        }
     }
 }
 
@@ -193,9 +208,6 @@ struct LibretroKeymap {
 @MainActor
 struct MetalGameView: NSViewRepresentable {
     let runner: EmulatorRunner
-    let crtEnabled: Bool
-    let scanlinesEnabled: Bool
-    let scanlineIntensity: Double
 
     func makeNSView(context: Context) -> MTKView {
         let view = FocusableMTKView()
@@ -222,11 +234,7 @@ struct MetalGameView: NSViewRepresentable {
         return view
     }
 
-    func updateNSView(_ nsView: MTKView, context: Context) {
-        context.coordinator.crtEnabled = crtEnabled
-        context.coordinator.scanlinesEnabled = scanlinesEnabled
-        context.coordinator.scanlineIntensity = Float(scanlineIntensity)
-    }
+    func updateNSView(_ nsView: MTKView, context: Context) {}
 
     func makeCoordinator() -> MetalCoordinator {
         MetalCoordinator(runner: runner)
@@ -235,9 +243,6 @@ struct MetalGameView: NSViewRepresentable {
     @MainActor
     class MetalCoordinator: NSObject, MTKViewDelegate {
         let runner: EmulatorRunner
-        var crtEnabled = false
-        var scanlinesEnabled = true
-        var scanlineIntensity: Float = 0.35
         private var commandQueue: MTLCommandQueue?
         private var pipelineState: MTLRenderPipelineState?
         private var device: MTLDevice?
@@ -274,10 +279,13 @@ struct MetalGameView: NSViewRepresentable {
                let enc = cmdBuffer.makeRenderCommandEncoder(descriptor: descriptor) {
                 
                 if let frameTex = runner.currentFrameTexture {
+                    let settings = runner.rom?.settings ?? ROMSettings()
                     var uniforms = ShaderUniforms(
-                        crtEnabled: crtEnabled ? 1 : 0,
-                        scanlinesEnabled: scanlinesEnabled ? 1 : 0,
-                        scanlineIntensity: scanlineIntensity,
+                        crtEnabled: settings.crtEnabled ? 1 : 0,
+                        scanlinesEnabled: settings.scanlinesEnabled ? 1 : 0,
+                        barrelEnabled: settings.barrelEnabled ? 1 : 0,
+                        scanlineIntensity: settings.scanlineIntensity,
+                        barrelAmount: settings.barrelAmount,
                         time: Float(CACurrentMediaTime().truncatingRemainder(dividingBy: 100))
                     )
 
@@ -338,19 +346,21 @@ class EmulatorRunner: ObservableObject {
     private var runnerFrameCount = 0
     private var textureCache: MTLTexture? = nil
     private let textureLock = NSLock()
+    var rom: ROM?
     var romPath: String = ""
 
-    func launch(romURL: URL, coreID: String) {
+    func launch(rom: ROM, coreID: String) {
         guard let core = findCoreLib(coreID: coreID) else {
             print("[Runner] Core dylib not found: \(coreID)")
             return
         }
         
+        self.rom = rom
+        self.romPath = rom.path.path
         isRunning = true
-        self.romPath = romURL.path
-        let romPath = romURL.path
+        
         emulationQueue.async {
-            LibretroBridge.launch(withDylibPath: core, romPath: romPath,
+            LibretroBridge.launch(withDylibPath: core, romPath: rom.path.path,
                                   videoCallback: { [weak self] data, width, height, pitch in
                 self?.updateFrame(data: data, width: Int(width), height: Int(height), pitch: Int(pitch))
             })
@@ -429,7 +439,9 @@ class EmulatorRunner: ObservableObject {
 struct ShaderUniforms {
     var crtEnabled: Int32
     var scanlinesEnabled: Int32
+    var barrelEnabled: Int32
     var scanlineIntensity: Float
+    var barrelAmount: Float
     var time: Float
 }
 
@@ -624,10 +636,13 @@ class StandaloneGameWindowController: NSWindowController, NSWindowDelegate {
                                                znear: 0.0, zfar: 1.0)
                     enc.setViewport(viewport)
                     
+                    let settings = runner.rom?.settings ?? ROMSettings()
                     var uniforms = ShaderUniforms(
-                        crtEnabled: 0,
-                        scanlinesEnabled: 1,
-                        scanlineIntensity: 0.3,
+                        crtEnabled: settings.crtEnabled ? 1 : 0,
+                        scanlinesEnabled: settings.scanlinesEnabled ? 1 : 0,
+                        barrelEnabled: settings.barrelEnabled ? 1 : 0,
+                        scanlineIntensity: settings.scanlineIntensity,
+                        barrelAmount: settings.barrelAmount,
                         time: Float(CACurrentMediaTime().truncatingRemainder(dividingBy: 100))
                     )
 

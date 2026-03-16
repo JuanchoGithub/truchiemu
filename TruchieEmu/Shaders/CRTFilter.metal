@@ -5,7 +5,9 @@ using namespace metal;
 struct Uniforms {
     int   crtEnabled;
     int   scanlinesEnabled;
+    int   barrelEnabled;
     float scanlineIntensity;
+    float barrelAmount;
     float time;
 };
 
@@ -33,22 +35,25 @@ fragment float4 fragmentCRT(VertexOut in [[stage_in]],
     float2 uv = in.texCoord;
 
     // --- CRT barrel distortion ---
-    if (u.crtEnabled) {
+    if (u.barrelEnabled) {
         float2 centered = uv * 2.0 - 1.0;
         float2 offset   = centered * centered;
-        float  strength = 0.12;
-        centered += centered * (offset.yx * strength);
+        centered += centered * (offset.yx * u.barrelAmount);
         uv = centered * 0.5 + 0.5;
 
-        // Vignette
-        float vig = 1.0 - dot(centered * 0.4, centered * 0.4);
-        vig = clamp(pow(vig, 1.5), 0.0, 1.0);
         if (uv.x < 0.0 || uv.x > 1.0 || uv.y < 0.0 || uv.y > 1.0) {
             return float4(0, 0, 0, 1);
         }
+    }
 
-        float4 color = tex.sample(s, uv);
+    float4 color = tex.sample(s, uv);
 
+    if (u.crtEnabled) {
+        float2 centered = uv * 2.0 - 1.0;
+        // Vignette
+        float vig = 1.0 - dot(centered * 0.4, centered * 0.4);
+        vig = clamp(pow(vig, 1.5), 0.0, 1.0);
+        
         // RGB channel fringing
         float shift = 0.002;
         float r = tex.sample(s, uv + float2(shift, 0)).r;
@@ -61,25 +66,13 @@ fragment float4 fragmentCRT(VertexOut in [[stage_in]],
         color.rgb += glow * 0.08;
 
         color.rgb *= vig;
-
-        // Scanlines on top of CRT
-        if (u.scanlinesEnabled) {
-            float scanLine = sin(uv.y * 800.0) * 0.5 + 0.5;
-            color.rgb *= 1.0 - u.scanlineIntensity * scanLine;
-        }
-        
-        color.a = 1.0;
-        return color;
     }
 
-    // --- Scanlines only ---
-    
-    float4 color = tex.sample(s, uv);
-    
     if (u.scanlinesEnabled) {
         float scanLine = sin(uv.y * 800.0) * 0.5 + 0.5;
         color.rgb *= 1.0 - u.scanlineIntensity * scanLine;
     }
+    
     color.a = 1.0;
     return color;
 }

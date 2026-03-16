@@ -332,7 +332,7 @@ struct GameDetailView: View {
         controller.window?.makeKeyAndOrderFront(nil)
         NSApp.activate(ignoringOtherApps: true)
         
-        runner.launch(romURL: rom.path, coreID: coreID)
+        runner.launch(rom: rom, coreID: coreID)
     }
 }
 

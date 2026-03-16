@@ -3,7 +3,7 @@ import SwiftUI
 struct ContentView: View {
     @EnvironmentObject var library: ROMLibrary
     @EnvironmentObject var coreManager: CoreManager
-    @State private var selectedSystem: SystemInfo? = nil
+    @State private var selectedFilter: LibraryFilter = .all
     @State private var selectedROM: ROM? = nil
     @State private var showOnboarding = false
     @State private var searchText = ""
@@ -25,15 +25,15 @@ struct ContentView: View {
 
     private var mainInterface: some View {
         NavigationSplitView {
-            SystemSidebarView(selectedSystem: $selectedSystem)
+            SystemSidebarView(selectedFilter: $selectedFilter)
         } content: {
             LibraryGridView(
-                system: selectedSystem,
+                filter: selectedFilter,
                 selectedROM: $selectedROM,
                 searchText: searchText
             )
             .searchable(text: $searchText, prompt: "Search games…")
-            .navigationTitle(selectedSystem?.name ?? "All Games")
+            .navigationTitle(navigationTitle)
         } detail: {
             if let rom = selectedROM {
                 GameDetailView(rom: rom)
@@ -42,5 +42,14 @@ struct ContentView: View {
             }
         }
         .navigationSplitViewStyle(.balanced)
+    }
+
+    private var navigationTitle: String {
+        switch selectedFilter {
+        case .all: return "All Games"
+        case .favorites: return "Favorites"
+        case .recent: return "Recent"
+        case .system(let sys): return sys.name
+        }
     }
 }

@@ -57,6 +57,15 @@ class ROMLibrary: ObservableObject {
     func updateROM(_ rom: ROM) {
         if let idx = roms.firstIndex(where: { $0.id == rom.id }) {
             roms[idx] = rom
+            
+            // Per user request: save rom info to <romname_info>.json in rom folder
+            let encoder = JSONEncoder()
+            encoder.outputFormatting = .prettyPrinted
+            if let meta = rom.metadata,
+               let data = try? encoder.encode(meta) {
+                try? data.write(to: rom.infoLocalPath)
+            }
+            
             saveROMsToDisk()
         }
     }

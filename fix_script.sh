@@ -1,0 +1,2 @@
+sed -i '' 's/NSData \*romData = \[NSData dataWithContentsOfFile:romPath\];/_retainedRomPath = \[romPath copy\];\n    _retainedRomData = \[\[NSData alloc\] initWithContentsOfFile:_retainedRomPath\];/g' /Users/jayjay/gitrepos/truchiemu/TruchieEmu/Engine/LibretroBridge.mm
+sed -i '' 's/struct retro_game_info gi = {romPath.UTF8String, romData.bytes, romData.length, NULL};/struct retro_game_info gi = {_retainedRomPath.UTF8String, _retainedRomData.bytes, _retainedRomData.length, NULL};/g' /Users/jayjay/gitrepos/truchiemu/TruchieEmu/Engine/LibretroBridge.mm

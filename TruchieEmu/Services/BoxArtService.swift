@@ -99,14 +99,15 @@ class BoxArtService: ObservableObject {
     }
 
     func downloadAndCache(artURL: URL, for rom: ROM) async -> URL? {
-        let systemID = rom.systemID ?? "unknown"
-        let cacheDir = cacheBase.appendingPathComponent(systemID, isDirectory: true)
-        try? FileManager.default.createDirectory(at: cacheDir, withIntermediateDirectories: true)
+        let localURL = rom.boxArtLocalPath
+        let folder = localURL.deletingLastPathComponent()
+        
+        try? FileManager.default.createDirectory(at: folder, withIntermediateDirectories: true)
 
-        let fileName = "\(rom.id.uuidString).jpg"
-        let localURL = cacheDir.appendingPathComponent(fileName)
-
-        if FileManager.default.fileExists(atPath: localURL.path) { return localURL }
+        // If it exists, we can still overwrite it to update
+        if FileManager.default.fileExists(atPath: localURL.path) {
+            try? FileManager.default.removeItem(at: localURL)
+        }
 
         guard let (tmpURL, _) = try? await URLSession.shared.download(from: artURL) else { return nil }
         try? FileManager.default.moveItem(at: tmpURL, to: localURL)

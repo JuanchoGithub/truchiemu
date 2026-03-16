@@ -3,7 +3,7 @@ import SwiftUI
 struct LibraryGridView: View {
     @EnvironmentObject var library: ROMLibrary
     @EnvironmentObject var coreManager: CoreManager
-    var system: SystemInfo?
+    var filter: LibraryFilter
     @Binding var selectedROM: ROM?
     var searchText: String
 
@@ -14,10 +14,16 @@ struct LibraryGridView: View {
 
     private var filteredROMs: [ROM] {
         let base: [ROM]
-        if let system {
-            base = library.roms.filter { $0.systemID == system.id }
-        } else {
+        switch filter {
+        case .all:
             base = library.roms
+        case .favorites:
+            base = library.roms.filter { $0.isFavorite }
+        case .recent:
+            base = library.roms.filter { $0.lastPlayed != nil }
+                .sorted { ($0.lastPlayed ?? Date.distantPast) > ($1.lastPlayed ?? Date.distantPast) }
+        case .system(let system):
+            base = library.roms.filter { $0.systemID == system.id }
         }
 
         if searchText.isEmpty { return base }

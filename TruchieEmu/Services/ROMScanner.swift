@@ -54,13 +54,27 @@ actor ROMScanner {
             if skip.contains(ext) { continue }
 
             let system = identifySystem(url: url, extension: ext)
+            let name = url.deletingPathExtension().lastPathComponent
 
-            let rom = ROM(
+            var rom = ROM(
                 id: UUID(),
-                name: url.deletingPathExtension().lastPathComponent,
+                name: name,
                 path: url,
                 systemID: system?.id
             )
+
+            // Load local metadata if exists
+            if let data = try? Data(contentsOf: rom.infoLocalPath) {
+                if let meta = try? JSONDecoder().decode(ROMMetadata.self, from: data) {
+                    rom.metadata = meta
+                }
+            }
+            
+            // Check for local boxart
+            if fm.fileExists(atPath: rom.boxArtLocalPath.path) {
+                rom.boxArtPath = rom.boxArtLocalPath
+            }
+
             found.append(rom)
         }
 
@@ -156,6 +170,7 @@ actor ROMScanner {
         var found: [ROM] = []
         let total = Double(urls.count)
         var processed = 0
+        let fm = FileManager.default
 
         // Throttle progress updates (every 50ms)
         var lastProgressUpdate = DispatchTime.now()
@@ -181,13 +196,27 @@ actor ROMScanner {
             if skip.contains(ext) { continue }
 
             let system = identifySystem(url: url, extension: ext)
+            let name = url.deletingPathExtension().lastPathComponent
 
-            let rom = ROM(
+            var rom = ROM(
                 id: UUID(),
-                name: url.deletingPathExtension().lastPathComponent,
+                name: name,
                 path: url,
                 systemID: system?.id
             )
+
+            // Load local metadata if exists
+            if let data = try? Data(contentsOf: rom.infoLocalPath) {
+                if let meta = try? JSONDecoder().decode(ROMMetadata.self, from: data) {
+                    rom.metadata = meta
+                }
+            }
+            
+            // Check for local boxart
+            if fm.fileExists(atPath: rom.boxArtLocalPath.path) {
+                rom.boxArtPath = rom.boxArtLocalPath
+            }
+
             found.append(rom)
         }
 
