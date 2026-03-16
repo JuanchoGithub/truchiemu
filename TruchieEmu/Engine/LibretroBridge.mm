@@ -35,6 +35,7 @@ typedef void (^VideoFrameCallback)(const void *data, int width, int height, int 
 - (void)stop;
 - (void)saveState;
 - (void)handleVideoData:(const void *)data width:(int)w height:(int)h pitch:(int)pitch;
+- (void)setKeyState:(int)retroID pressed:(BOOL)pressed;
 @end
 
 static LibretroBridgeImpl *g_instance = nil;
@@ -86,50 +87,53 @@ static bool bridge_environment(unsigned cmd, void *data) {
             if (data) {
                 enum retro_pixel_format fmt = *(const enum retro_pixel_format *)data;
                 NSLog(@"[LibretroBridge] Core requested pixel format: %d", fmt);
-                // 0 = 0RGB1555, 1 = XRGB8888, 2 = RGB565
-                // We'll handle conversion in the shader or update the texture format.
+                // We'll support whatever it wants and handle in shader/texture
                 return true; 
             }
             return false;
         }
 
-        case RETRO_ENVIRONMENT_SET_ROTATION:
-            return true; // Acknowledge rotation
+        case RETRO_ENVIRONMENT_GET_VARIABLE: {
+            if (data) {
+                struct retro_variable *var = (struct retro_variable *)data;
+                var->value = NULL;
+            }
+            return false; // Return false so core knows the variable isn't set
+        }
 
-        case RETRO_ENVIRONMENT_SET_INPUT_DESCRIPTORS:
-            return true; // Acknowledge but ignore for now
-
-        case RETRO_ENVIRONMENT_SET_SUBSYSTEM_INFO:
-            return false;
-
-        case RETRO_ENVIRONMENT_SET_SUPPORT_NO_GAME:
-            if (data) *(bool*)data = false;
+        case RETRO_ENVIRONMENT_SET_GEOMETRY: {
+            if (data) {
+                struct retro_game_geometry *geom = (struct retro_game_geometry *)data;
+                NSLog(@"[LibretroBridge] New geometry: %ux%u (Aspect: %f)", geom->base_width, geom->base_height, geom->aspect_ratio);
+            }
             return true;
+        }
 
-        case RETRO_ENVIRONMENT_GET_LIBRETRO_PATH:
-            return false;
-
-        case RETRO_ENVIRONMENT_SET_FRAME_TIME_CALLBACK:
-            return false;
-
-        case RETRO_ENVIRONMENT_SET_AUDIO_CALLBACK:
-            return false;
+        case RETRO_ENVIRONMENT_SET_ROTATION:
+        case RETRO_ENVIRONMENT_SET_INPUT_DESCRIPTORS:
+            return true;
 
         case RETRO_ENVIRONMENT_GET_CORE_OPTIONS_VERSION:
             if (data) *(unsigned*)data = 1;
             return true;
 
-        case RETRO_ENVIRONMENT_GET_VARIABLE:
-            return false; // No variables configured yet
+        case RETRO_ENVIRONMENT_GET_LANGUAGE:
+            if (data) *(unsigned*)data = RETRO_LANGUAGE_ENGLISH;
+            return true;
 
         default:
-            // NSLog(@"[LibretroBridge] Unhandled env cmd: %u", cmd);
             return false;
     }
 }
 
+static int16_t g_input_state[16];
+
 static void bridge_video_refresh(const void *data, unsigned width, unsigned height, size_t pitch) {
     if (g_instance && data) {
+        static int frameCount = 0;
+        if (++frameCount % 120 == 0) {
+            NSLog(@"[LibretroBridge] Periodic check: core is producing frames (%d)", frameCount);
+        }
         [g_instance handleVideoData:data width:(int)width height:(int)height pitch:(int)pitch];
     }
 }
@@ -137,7 +141,12 @@ static void bridge_video_refresh(const void *data, unsigned width, unsigned heig
 static void bridge_audio_sample(int16_t left, int16_t right) {}
 static size_t bridge_audio_sample_batch(const int16_t *data, size_t frames) { return frames; }
 static void bridge_input_poll(void) {}
-static int16_t bridge_input_state(unsigned port, unsigned device, unsigned index, unsigned id) { return 0; }
+static int16_t bridge_input_state(unsigned port, unsigned device, unsigned index, unsigned id) {
+    if (port == 0 && device == RETRO_DEVICE_JOYPAD) {
+        return (g_input_state[id & 0xF]) ? 32767 : 0;
+    }
+    return 0;
+}
 
 @implementation LibretroBridgeImpl
 
@@ -176,15 +185,15 @@ static int16_t bridge_input_state(unsigned port, unsigned device, unsigned index
     _videoCallback = cb;
 
     NSLog(@"[LibretroBridge] Initializing core callbacks...");
-    _retro_set_environment(bridge_environment);
-    _retro_set_video_refresh(bridge_video_refresh);
-    _retro_set_audio_sample(bridge_audio_sample);
-    _retro_set_audio_sample_batch(bridge_audio_sample_batch);
-    _retro_set_input_poll(bridge_input_poll);
-    _retro_set_input_state(bridge_input_state);
+    if (_retro_set_environment) _retro_set_environment(bridge_environment);
+    if (_retro_set_video_refresh) _retro_set_video_refresh(bridge_video_refresh);
+    if (_retro_set_audio_sample) _retro_set_audio_sample(bridge_audio_sample);
+    if (_retro_set_audio_sample_batch) _retro_set_audio_sample_batch(bridge_audio_sample_batch);
+    if (_retro_set_input_poll) _retro_set_input_poll(bridge_input_poll);
+    if (_retro_set_input_state) _retro_set_input_state(bridge_input_state);
     
     NSLog(@"[LibretroBridge] Calling retro_init...");
-    _retro_init();
+    if (_retro_init) _retro_init();
 
     NSLog(@"[LibretroBridge] Loading ROM from: %@", romPath);
     NSData *romData = [NSData dataWithContentsOfFile:romPath];
@@ -199,6 +208,11 @@ static int16_t bridge_input_state(unsigned port, unsigned device, unsigned index
     gi.data = romData.bytes;
     gi.size = romData.length;
     gi.meta = NULL;
+
+    if (!_retro_load_game) {
+        NSLog(@"[LibretroBridge] ERROR: retro_load_game symbol is NULL");
+        return NO;
+    }
 
     if (!_retro_load_game(&gi)) {
         NSLog(@"[LibretroBridge] retro_load_game failed for: %@", romPath);
@@ -217,13 +231,19 @@ static int16_t bridge_input_state(unsigned port, unsigned device, unsigned index
 
     // Run loop at ~60fps (the emulation queue calls this)
     while (_running) {
-        _retro_run();
+        if (_retro_run) _retro_run();
         // Yield ~16ms
         [NSThread sleepForTimeInterval:1.0/60.0];
     }
 
-    _retro_unload_game();
-    _retro_deinit();
+    if (_retro_unload_game) _retro_unload_game();
+    if (_retro_deinit) _retro_deinit();
+    
+    _running = NO;
+    
+    // Explicitly nullify callbacks to stop any pending handles
+    _videoCallback = nil;
+    
     return YES;
 }
 
@@ -250,29 +270,49 @@ static int16_t bridge_input_state(unsigned port, unsigned device, unsigned index
     }
 }
 
-- (void)dealloc {
-    if (_dlHandle) { dlclose(_dlHandle); }
+- (void)setKeyState:(int)retroID pressed:(BOOL)pressed {
+    if (retroID >= 0 && retroID < 16) {
+        g_input_state[retroID] = pressed ? 1 : 0;
+    }
 }
 
+- (void)dealloc {
+    if (_dlHandle) { dlclose(_dlHandle); }
+    // No [super dealloc] needed for ARC
+}
 @end
 
 @implementation LibretroBridge
 
 + (void)launchWithDylibPath:(NSString *)dylibPath romPath:(NSString *)romPath videoCallback:(void(^)(const void*, int, int, int))cb {
-    g_instance = [[LibretroBridgeImpl alloc] init];
-    if ([(LibretroBridgeImpl *)g_instance loadDylib:dylibPath]) {
-        // Runs synchronously on the caller's queue (call from emulationQueue)
-        [(LibretroBridgeImpl *)g_instance launchROM:romPath videoCallback:cb];
+    if (g_instance) {
+        [(LibretroBridgeImpl *)g_instance stop];
+        [NSThread sleepForTimeInterval:0.1]; // Brief grace period
+    }
+    
+    LibretroBridgeImpl *newInst = [[LibretroBridgeImpl alloc] init];
+    g_instance = newInst;
+    
+    if ([newInst loadDylib:dylibPath]) {
+        [newInst launchROM:romPath videoCallback:cb];
     }
 }
 
 + (void)stop {
-    [(LibretroBridgeImpl *)g_instance stop];
-    g_instance = nil;
+    if (g_instance) {
+        [(LibretroBridgeImpl *)g_instance stop];
+        g_instance = nil;
+    }
 }
 
 + (void)saveState {
     [(LibretroBridgeImpl *)g_instance saveState];
+}
+
++ (void)setKeyState:(int)retroID pressed:(BOOL)pressed {
+    if (g_instance) {
+        [(LibretroBridgeImpl *)g_instance setKeyState:retroID pressed:pressed];
+    }
 }
 
 @end

@@ -4,24 +4,58 @@
 #include <stddef.h>
 #include <stdarg.h>
 
-// Minimal libretro.h subset for our bridge
 #define RETRO_API_VERSION 1
 
-#define RETRO_ENVIRONMENT_SET_ROTATION 1
-#define RETRO_ENVIRONMENT_GET_CAN_DUPE 3
+#define RETRO_ENVIRONMENT_SET_ROTATION  1
+#define RETRO_ENVIRONMENT_GET_CAN_DUPE  3
 #define RETRO_ENVIRONMENT_GET_SYSTEM_DIRECTORY 9
 #define RETRO_ENVIRONMENT_SET_PIXEL_FORMAT 10
 #define RETRO_ENVIRONMENT_SET_INPUT_DESCRIPTORS 11
+#define RETRO_ENVIRONMENT_SET_KEYBOARD_CALLBACK 12
+#define RETRO_ENVIRONMENT_SET_DISK_CONTROL_INTERFACE 13
+#define RETRO_ENVIRONMENT_SET_HW_RENDER 14
 #define RETRO_ENVIRONMENT_GET_VARIABLE 15
+#define RETRO_ENVIRONMENT_SET_VARIABLES 16
 #define RETRO_ENVIRONMENT_GET_VARIABLE_UPDATE 17
+#define RETRO_ENVIRONMENT_SET_SUPPORT_NO_GAME 18
 #define RETRO_ENVIRONMENT_GET_LOG_INTERFACE 27
 #define RETRO_ENVIRONMENT_GET_SAVE_DIRECTORY 31
-#define RETRO_ENVIRONMENT_SET_SUBSYSTEM_INFO 34
-#define RETRO_ENVIRONMENT_SET_SUPPORT_NO_GAME 36
-#define RETRO_ENVIRONMENT_GET_LIBRETRO_PATH 37
-#define RETRO_ENVIRONMENT_SET_FRAME_TIME_CALLBACK 38
-#define RETRO_ENVIRONMENT_SET_AUDIO_CALLBACK 39
+#define RETRO_ENVIRONMENT_SET_SYSTEM_AV_INFO 32
+#define RETRO_ENVIRONMENT_SET_GEOMETRY 37
+#define RETRO_ENVIRONMENT_GET_LANGUAGE 39
 #define RETRO_ENVIRONMENT_GET_CORE_OPTIONS_VERSION 45
+
+#define RETRO_DEVICE_JOYPAD 1
+#define RETRO_DEVICE_ID_JOYPAD_B        0
+#define RETRO_DEVICE_ID_JOYPAD_Y        1
+#define RETRO_DEVICE_ID_JOYPAD_SELECT   2
+#define RETRO_DEVICE_ID_JOYPAD_START    3
+#define RETRO_DEVICE_ID_JOYPAD_UP       4
+#define RETRO_DEVICE_ID_JOYPAD_DOWN     5
+#define RETRO_DEVICE_ID_JOYPAD_LEFT     6
+#define RETRO_DEVICE_ID_JOYPAD_RIGHT    7
+#define RETRO_DEVICE_ID_JOYPAD_A        8
+#define RETRO_DEVICE_ID_JOYPAD_X        9
+
+struct retro_variable {
+    const char *key;
+    const char *value;
+};
+
+struct retro_game_geometry {
+   unsigned base_width;
+   unsigned base_height;
+   unsigned max_width;
+   unsigned max_height;
+   float    aspect_ratio;
+};
+
+enum retro_language {
+    RETRO_LANGUAGE_ENGLISH = 0,
+    RETRO_LANGUAGE_JAPANESE = 1,
+    RETRO_LANGUAGE_FRENCH = 2,
+    RETRO_LANGUAGE_GERMAN = 3
+};
 
 enum retro_pixel_format {
     RETRO_PIXEL_FORMAT_0RGB1555 = 0,
@@ -44,7 +78,6 @@ struct retro_game_info {
     const char *meta;
 };
 
-// Logging interface
 enum retro_log_level {
     RETRO_LOG_DEBUG = 0,
     RETRO_LOG_INFO,
@@ -60,11 +93,10 @@ struct retro_log_interface {
 };
 
 struct retro_system_av_info {
-    struct { unsigned base_width, base_height, max_width, max_height; double aspect_ratio; } geometry;
+    struct retro_game_geometry geometry;
     struct { double fps, sample_rate; } timing;
 };
 
-// Function pointer typedefs for core symbols
 typedef void (*fn_retro_init)(void);
 typedef void (*fn_retro_deinit)(void);
 typedef unsigned (*fn_retro_api_version)(void);

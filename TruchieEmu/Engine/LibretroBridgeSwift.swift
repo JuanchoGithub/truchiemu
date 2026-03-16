@@ -14,6 +14,10 @@ class LibretroBridgeSwift {
         }
     }
 
+    static func setKeyState(retroID: Int, pressed: Bool) {
+        LibretroBridge.setKeyState(Int32(retroID), pressed: pressed)
+    }
+
     static func stop() {
         LibretroBridge.stop()
     }

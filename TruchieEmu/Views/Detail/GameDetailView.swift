@@ -9,9 +9,9 @@ struct GameDetailView: View {
     @State private var showCoreDownloadSheet = false
     @State private var showBoxArtPicker = false
     @State private var boxArtImage: NSImage? = nil
-    @State private var showEmulator = false
     @State private var selectedCoreID: String? = nil
     @State private var selectedSystem: SystemInfo? = nil
+    @State private var gameWindowController: StandaloneGameWindowController? = nil
 
     private var system: SystemInfo? {
         SystemDatabase.system(forID: rom.systemID ?? "")
@@ -46,8 +46,8 @@ struct GameDetailView: View {
         }
     }
 
-    private var effectiveCoreID: String? {
-        rom.selectedCoreID ?? system?.defaultCoreID
+    var effectiveCoreID: String? {
+        selectedCoreID ?? system?.defaultCoreID
     }
 
     private var installedCoreForSystem: [LibretroCore] {
@@ -80,10 +80,6 @@ struct GameDetailView: View {
         }
 #if os(iOS)
         .fullScreenCover(isPresented: $showEmulator) {
-            EmulatorView(rom: rom, coreID: effectiveCoreID ?? "")
-        }
-#elseif os(macOS)
-        .sheet(isPresented: $showEmulator) {
             EmulatorView(rom: rom, coreID: effectiveCoreID ?? "")
         }
 #endif
@@ -260,7 +256,7 @@ struct GameDetailView: View {
                     }
                 } else {
                     library.markPlayed(rom)
-                    showEmulator = true
+                    launchStandaloneGame()
                 }
             } label: {
                 let isInstalled = !installedCoreForSystem.filter({ $0.isInstalled }).isEmpty
@@ -322,6 +318,21 @@ struct GameDetailView: View {
     private func loadBoxArt() {
         guard let path = rom.boxArtPath else { return }
         boxArtImage = NSImage(contentsOf: path)
+    }
+
+    private func launchStandaloneGame() {
+        guard let coreID = effectiveCoreID else { return }
+        let runner = EmulatorRunner()
+        
+        let controller = StandaloneGameWindowController(runner: runner)
+        self.gameWindowController = controller
+        controller.showWindow(nil)
+        
+        // Ensure it comes to front
+        controller.window?.makeKeyAndOrderFront(nil)
+        NSApp.activate(ignoringOtherApps: true)
+        
+        runner.launch(romURL: rom.path, coreID: coreID)
     }
 }
 

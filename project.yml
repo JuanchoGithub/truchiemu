@@ -43,7 +43,7 @@ targets:
         ARCHS: "$(ARCHS_STANDARD)"
         CODE_SIGN_ENTITLEMENTS: TruchieEmu/Resources/TruchieEmu.entitlements
         CODE_SIGN_STYLE: Automatic
-        ENABLE_HARDENED_RUNTIME: YES
+        ENABLE_HARDENED_RUNTIME: NO
         SWIFT_VERSION: "5.9"
         OTHER_LDFLAGS: "-framework Metal -framework MetalKit -framework GameController -framework AVFoundation -framework WebKit"
 

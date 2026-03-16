@@ -8,5 +8,6 @@
 
 + (void)stop;
 + (void)saveState;
++ (void)setKeyState:(int)retroID pressed:(BOOL)pressed;
 
 @end

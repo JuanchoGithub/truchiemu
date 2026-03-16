@@ -73,7 +73,9 @@ fragment float4 fragmentCRT(VertexOut in [[stage_in]],
     }
 
     // --- Scanlines only ---
+    
     float4 color = tex.sample(s, uv);
+    
     if (u.scanlinesEnabled) {
         float scanLine = sin(uv.y * 800.0) * 0.5 + 0.5;
         color.rgb *= 1.0 - u.scanlineIntensity * scanLine;
