@@ -9,6 +9,7 @@ struct LibraryGridView: View {
 
     @State private var viewMode: ViewMode = .grid
     @AppStorage("gridColumns") private var columnCount: Int = 4
+    @ObservedObject var prefs = SystemPreferences.shared
 
     private enum ViewMode: String { case grid, list }
 
@@ -44,6 +45,22 @@ struct LibraryGridView: View {
         }
         .toolbar {
             ToolbarItemGroup {
+                if case .system(let system) = filter {
+                    Menu {
+                        Picker("Box Type", selection: Binding(
+                            get: { prefs.boxType(for: system.id) },
+                            set: { prefs.setBoxType($0, for: system.id) }
+                        )) {
+                            ForEach(BoxType.allCases) { type in
+                                Label(type.rawValue, systemImage: type.iconName).tag(type)
+                            }
+                        }
+                    } label: {
+                        Image(systemName: prefs.boxType(for: system.id).iconName)
+                    }
+                    .opacity(viewMode == .grid ? 1 : 0)
+                }
+
                 Slider(value: Binding(
                     get: { Double(columnCount) },
                     set: { columnCount = Int($0) }
@@ -128,6 +145,11 @@ struct GameCardView: View {
     let rom: ROM
     let isSelected: Bool
     @State private var isHovered = false
+    @ObservedObject var prefs = SystemPreferences.shared
+
+    private var boxType: BoxType {
+        prefs.boxType(for: rom.systemID ?? "")
+    }
 
     var body: some View {
         VStack(alignment: .leading, spacing: 8) {
@@ -135,6 +157,8 @@ struct GameCardView: View {
             Text(rom.displayName)
                 .font(.caption.weight(.medium))
                 .lineLimit(2)
+                .multilineTextAlignment(.leading)
+                .frame(height: 32, alignment: .topLeading)
                 .foregroundColor(.primary)
         }
         .padding(8)
@@ -152,7 +176,7 @@ struct GameCardView: View {
     }
 
     private var artworkView: some View {
-        Group {
+        ZStack {
             if let artPath = rom.boxArtPath,
                let nsImage = NSImage(contentsOf: artPath) {
                 Image(nsImage: nsImage)
@@ -163,7 +187,7 @@ struct GameCardView: View {
             }
         }
         .frame(maxWidth: .infinity)
-        .aspectRatio(3/4, contentMode: .fit)
+        .aspectRatio(boxType.aspectRatio, contentMode: .fit)
         .clipShape(RoundedRectangle(cornerRadius: 8))
         .shadow(color: .black.opacity(0.3), radius: 6, x: 0, y: 3)
     }

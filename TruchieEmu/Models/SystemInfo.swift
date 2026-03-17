@@ -51,3 +51,46 @@ enum SystemDatabase {
         systems.first { $0.id == id }
     }
 }
+
+// MARK: - Views and Layout preferences
+import SwiftUI
+import Combine
+
+enum BoxType: String, CaseIterable, Identifiable {
+    case vertical = "Vertical"
+    case box = "Box"
+    case landscape = "Landscape"
+    
+    var id: String { self.rawValue }
+
+    var aspectRatio: CGFloat {
+        switch self {
+        case .vertical: return 3.0 / 4.0
+        case .box: return 1.0
+        case .landscape: return 4.0 / 3.0
+        }
+    }
+    
+    var iconName: String {
+        switch self {
+        case .vertical: return "rectangle.portrait"
+        case .box: return "square"
+        case .landscape: return "rectangle"
+        }
+    }
+}
+
+class SystemPreferences: ObservableObject {
+    static let shared = SystemPreferences()
+    @Published var updateTrigger: Int = 0
+    
+    func boxType(for systemID: String) -> BoxType {
+        let rawValue = UserDefaults.standard.string(forKey: "boxType_\(systemID)") ?? BoxType.vertical.rawValue
+        return BoxType(rawValue: rawValue) ?? .vertical
+    }
+    
+    func setBoxType(_ type: BoxType, for systemID: String) {
+        UserDefaults.standard.set(type.rawValue, forKey: "boxType_\(systemID)")
+        updateTrigger += 1
+    }
+}
