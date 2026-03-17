@@ -10,6 +10,8 @@ struct LibraryGridView: View {
     @State private var viewMode: ViewMode = .grid
     @AppStorage("gridColumns") private var columnCount: Int = 4
     @ObservedObject var prefs = SystemPreferences.shared
+    @ObservedObject var boxArtService = BoxArtService.shared
+    @State private var manualBoxArtSearchROM: ROM?
 
     private enum ViewMode: String { case grid, list }
 
@@ -32,7 +34,7 @@ struct LibraryGridView: View {
     }
 
     var body: some View {
-        Group {
+        ZStack {
             if library.isScanning {
                 scanningOverlay
             } else if filteredROMs.isEmpty {
@@ -41,6 +43,14 @@ struct LibraryGridView: View {
                 gridView
             } else {
                 listView
+            }
+            
+            if boxArtService.isDownloadingBatch {
+                VStack {
+                    Spacer()
+                    downloadingArtOverlay
+                        .padding(.bottom, 20)
+                }
             }
         }
         .toolbar {
@@ -75,6 +85,9 @@ struct LibraryGridView: View {
                 .pickerStyle(.segmented)
                 .frame(width: 70)
             }
+        }
+        .sheet(item: $manualBoxArtSearchROM) { rom in
+            AutoBoxArtPickerView(rom: rom)
         }
     }
 
@@ -112,6 +125,23 @@ struct LibraryGridView: View {
         .frame(maxWidth: .infinity, maxHeight: .infinity)
     }
 
+    private var downloadingArtOverlay: some View {
+        HStack(spacing: 12) {
+            ProgressView()
+                .controlSize(.small)
+            Text("Downloading Box Art… \(boxArtService.downloadedCount) / \(boxArtService.downloadQueueCount)")
+                .font(.caption)
+                .foregroundColor(.secondary)
+        }
+        .padding(.horizontal, 16)
+        .padding(.vertical, 10)
+        .background(
+            Capsule()
+                .fill(.regularMaterial)
+                .shadow(color: .black.opacity(0.15), radius: 8, y: 4)
+        )
+    }
+
     private var emptyState: some View {
         VStack(spacing: 16) {
             Image(systemName: "tray")
@@ -133,6 +163,9 @@ struct LibraryGridView: View {
             library.updateROM(updated)
         }
         Divider()
+        Button("Get Box Art") {
+            manualBoxArtSearchROM = rom
+        }
         Button("Reveal in Finder") {
             NSWorkspace.shared.selectFile(rom.path.path, inFileViewerRootedAtPath: "")
         }
@@ -266,5 +299,77 @@ struct GameListRowView: View {
         }
         .frame(width: 36, height: 36)
         .clipShape(RoundedRectangle(cornerRadius: 6))
+    }
+}
+
+// MARK: - Manual Box Art Picker
+
+struct AutoBoxArtPickerView: View {
+    let rom: ROM
+    @State private var candidates: [URL]? = nil
+    @Environment(\.dismiss) var dismiss
+    @EnvironmentObject var library: ROMLibrary
+    
+    var body: some View {
+        VStack {
+            Text("Select Box Art for \(rom.displayName)")
+                .font(.headline)
+                .padding()
+            
+            if let candidates = candidates {
+                if candidates.isEmpty {
+                    Text("No box art found.")
+                        .foregroundColor(.secondary)
+                        .padding()
+                } else {
+                    ScrollView {
+                        LazyVGrid(columns: [GridItem(.adaptive(minimum: 150), spacing: 16)], spacing: 16) {
+                            ForEach(candidates, id: \.self) { url in
+                                AsyncImage(url: url) { phase in
+                                    if let img = phase.image {
+                                        img.resizable().scaledToFit()
+                                    } else if phase.error != nil {
+                                        Color.red.overlay(Text("Failed to load").foregroundColor(.white).font(.caption))
+                                    } else {
+                                        ProgressView()
+                                    }
+                                }
+                                .frame(height: 200)
+                                .clipShape(RoundedRectangle(cornerRadius: 8))
+                                .shadow(radius: 4)
+                                .onTapGesture {
+                                    Task {
+                                        if let stored = await BoxArtService.shared.downloadAndCache(artURL: url, for: rom) {
+                                            var updated = rom
+                                            updated.boxArtPath = stored
+                                            await MainActor.run { library.updateROM(updated) }
+                                        }
+                                        dismiss()
+                                    }
+                                }
+                            }
+                        }
+                        .padding()
+                    }
+                }
+            } else {
+                VStack(spacing: 16) {
+                    ProgressView()
+                    Text("Searching Google Images and DuckDuckGo...")
+                        .foregroundColor(.secondary)
+                }
+                .padding(40)
+            }
+            
+            Button("Cancel") {
+                dismiss()
+            }
+            .keyboardShortcut(.cancelAction)
+            .padding()
+        }
+        .frame(minWidth: 500, minHeight: 400)
+        .task {
+            candidates = await BoxArtService.shared.fetchBoxArtCandidates(for: rom)
+        }
     }
 }

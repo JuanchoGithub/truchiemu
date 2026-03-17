@@ -52,6 +52,7 @@ class ROMLibrary: ObservableObject {
         roms = existing.values.sorted { $0.displayName < $1.displayName }
         isScanning = false
         saveROMsToDisk()
+        Task { await BoxArtService.shared.batchDownloadBoxArtGoogle(for: self.roms, library: self) }
     }
 
     func updateROM(_ rom: ROM) {
@@ -175,5 +176,7 @@ class ROMLibrary: ObservableObject {
         saveROMsToDisk()
 
         isScanning = false
+        
+        Task { await BoxArtService.shared.batchDownloadBoxArtGoogle(for: self.roms, library: self) }
     }
 }

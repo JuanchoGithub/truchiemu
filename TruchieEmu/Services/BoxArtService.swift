@@ -114,6 +114,163 @@ class BoxArtService: ObservableObject {
         return localURL
     }
 
+    // MARK: - Google Image Search Fallback
+    
+    @Published var isDownloadingBatch = false
+    @Published var downloadedCount = 0
+    @Published var downloadQueueCount = 0
+    
+    func batchDownloadBoxArtGoogle(for roms: [ROM], library: ROMLibrary) async {
+        let missingRoms = roms.filter { $0.boxArtPath == nil }
+        guard !missingRoms.isEmpty else { return }
+        
+        await MainActor.run {
+            self.downloadQueueCount = missingRoms.count
+            self.downloadedCount = 0
+            self.isDownloadingBatch = true
+        }
+        
+        let maxConcurrent = 20
+        await withTaskGroup(of: (ROM, URL?).self) { group in
+            var activeTasks = 0
+            var iterator = missingRoms.makeIterator()
+            var results: [(ROM, URL?)] = []
+            
+            while activeTasks < maxConcurrent, let rom = iterator.next() {
+                group.addTask {
+                    let url = await self.fetchBoxArtGoogle(for: rom)
+                    return (rom, url)
+                }
+                activeTasks += 1
+            }
+            
+            for await result in group {
+                activeTasks -= 1
+                var (completedRom, url) = result
+                
+                if let savedURL = url {
+                    completedRom.boxArtPath = savedURL
+                    // Force an update to the reference type in the library to trigger redraw.
+                    await MainActor.run { library.updateROM(completedRom) }
+                }
+                await MainActor.run { self.downloadedCount += 1 }
+                
+                if let nextRom = iterator.next() {
+                    group.addTask {
+                        let url = await self.fetchBoxArtGoogle(for: nextRom)
+                        return (nextRom, url)
+                    }
+                    activeTasks += 1
+                }
+            }
+        }
+        
+        await MainActor.run { self.isDownloadingBatch = false }
+    }
+    
+    func fetchBoxArtGoogle(for rom: ROM) async -> URL? {
+        let systemIdentifier = rom.systemID?.uppercased() ?? ""
+        let query = "\(rom.displayName) \(systemIdentifier) box art"
+        guard let encodedQuery = query.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed),
+              let url = URL(string: "https://www.google.com/search?q=\(encodedQuery)&num=1&udm=2&source=lnt&tbs=isz:m") else {
+            return nil
+        }
+        
+        var request = URLRequest(url: url)
+        request.setValue("Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.0 Safari/605.1.15", forHTTPHeaderField: "User-Agent")
+        request.setValue("text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8", forHTTPHeaderField: "Accept")
+        request.setValue("en-US,en;q=0.9", forHTTPHeaderField: "Accept-Language")
+        
+        var attempts = 0
+        let maxAttempts = 3
+        var html: String? = nil
+        
+        while attempts < maxAttempts {
+            if let (data, response) = try? await URLSession.shared.data(for: request),
+               let httpResponse = response as? HTTPURLResponse,
+               httpResponse.statusCode == 200,
+               let decodedHtml = String(data: data, encoding: .utf8) {
+                html = decodedHtml
+                break
+            }
+            attempts += 1
+            if attempts < maxAttempts {
+                let delay = UInt64(pow(2.0, Double(attempts)) * 1_000_000_000)
+                try? await Task.sleep(nanoseconds: delay)
+            }
+        }
+        
+        guard let html = html else { return nil }
+        
+        // Find first image URL "https://encrypted-tbn0.gstatic.com/images..."
+        let pattern = "https://encrypted-tbn0\\.gstatic\\.com/images[^\"]+"
+        guard let regex = try? NSRegularExpression(pattern: pattern, options: []),
+              let match = regex.firstMatch(in: html, options: [], range: NSRange(location: 0, length: html.utf16.count)),
+              let range = Range(match.range, in: html) else {
+            return nil
+        }
+        
+        var imageUrlString = String(html[range])
+        imageUrlString = imageUrlString.replacingOccurrences(of: "\\u003d", with: "=")
+        imageUrlString = imageUrlString.replacingOccurrences(of: "\\u0026", with: "&")
+        
+        guard let artURL = URL(string: imageUrlString) else { return nil }
+        
+        return await downloadAndCache(artURL: artURL, for: rom)
+    }
+    
+    func fetchBoxArtCandidates(for rom: ROM) async -> [URL] {
+        var candidates: [URL] = []
+        let systemIdentifier = rom.systemID?.uppercased() ?? ""
+        let query = "\(rom.displayName) \(systemIdentifier) box art"
+        guard let encodedQuery = query.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed) else { return [] }
+
+        // Fetch Google (2 images)
+        if let gUrl = URL(string: "https://www.google.com/search?q=\(encodedQuery)&num=5&udm=2&source=lnt&tbs=isz:m") {
+            var request = URLRequest(url: gUrl)
+            request.setValue("Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15", forHTTPHeaderField: "User-Agent")
+            if let (data, _) = try? await URLSession.shared.data(for: request),
+               let html = String(data: data, encoding: .utf8),
+               let regex = try? NSRegularExpression(pattern: "https://encrypted-tbn0\\.gstatic\\.com/images[^\"]+", options: []) {
+                let matches = regex.matches(in: html, options: [], range: NSRange(location: 0, length: html.utf16.count))
+                for match in matches.prefix(2) {
+                    if let range = Range(match.range, in: html) {
+                        var imgStr = String(html[range]).replacingOccurrences(of: "\\u003d", with: "=").replacingOccurrences(of: "\\u0026", with: "&")
+                        if let u = URL(string: imgStr) { candidates.append(u) }
+                    }
+                }
+            }
+        }
+        
+        // Fetch DDG (2 images)
+        if let ddgReqUrl = URL(string: "https://duckduckgo.com/?q=\(encodedQuery)") {
+            var req = URLRequest(url: ddgReqUrl)
+            req.setValue("Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7)", forHTTPHeaderField: "User-Agent")
+            if let (data, _) = try? await URLSession.shared.data(for: req),
+               let html = String(data: data, encoding: .utf8),
+               let regex = try? NSRegularExpression(pattern: "vqd=([a-zA-Z0-9-]+)", options: []),
+               let match = regex.firstMatch(in: html, options: [], range: NSRange(location: 0, length: html.utf16.count)),
+               let range = Range(match.range(at: 1), in: html) {
+                let vqd = String(html[range])
+                if let api = URL(string: "https://duckduckgo.com/i.js?l=us-en&o=json&q=\(encodedQuery)&vqd=\(vqd)") {
+                    var apiReq = URLRequest(url: api)
+                    apiReq.setValue("Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7)", forHTTPHeaderField: "User-Agent")
+                    if let (apiData, _) = try? await URLSession.shared.data(for: apiReq),
+                       let json = try? JSONSerialization.jsonObject(with: apiData) as? [String: Any],
+                       let results = json["results"] as? [[String: Any]] {
+                        for item in results.prefix(2) {
+                            if let img = item["image"] as? String, let u = URL(string: img) {
+                                candidates.append(u)
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        
+        return candidates
+    }
+
     // MARK: - ScreenScraper System ID mapping
 
     private func screenScraperSystemID(for id: String) -> Int {
