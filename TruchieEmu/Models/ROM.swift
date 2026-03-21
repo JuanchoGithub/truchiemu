@@ -9,6 +9,7 @@ struct ROM: Identifiable, Codable, Hashable {
     var isFavorite: Bool = false
     var lastPlayed: Date?
     var selectedCoreID: String?
+    var useCustomCore: Bool = false
     var metadata: ROMMetadata?
     var settings: ROMSettings = ROMSettings()
 
@@ -35,6 +36,9 @@ struct ROMSettings: Codable, Hashable {
     var scanlineIntensity: Float = 0.35
     var barrelEnabled: Bool = false
     var barrelAmount: Float = 0.12
+    var phosphorEnabled: Bool = false
+    var scanlineSmooth: Bool = false
+    var colorBoost: Float = 1.0
     var bezelStyle: String = "none"
 }
 

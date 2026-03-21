@@ -8,9 +8,9 @@ import Foundation
 
 class LibretroBridgeSwift {
     static func launch(dylibPath: String, romPath: String,
-                       videoCallback: @escaping (UnsafeRawPointer?, Int, Int, Int) -> Void) {
-        LibretroBridge.launch(withDylibPath: dylibPath, romPath: romPath) { data, w, h, pitch in
-            videoCallback(data, Int(w), Int(h), Int(pitch))
+                       videoCallback: @escaping (UnsafeRawPointer?, Int, Int, Int, Int) -> Void) {
+        LibretroBridge.launch(withDylibPath: dylibPath, romPath: romPath) { data, w, h, pitch, format in
+            videoCallback(data, Int(w), Int(h), Int(pitch), Int(format))
         }
     }
 

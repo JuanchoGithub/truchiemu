@@ -96,6 +96,13 @@ struct CoreSettingsView: View {
 
             if tab == .installed {
                 installedSection
+            } else if coreManager.isFetchingCoreList {
+                VStack(spacing: 20) {
+                    ProgressView()
+                    Text("Fetching core list from buildbot...")
+                        .foregroundColor(.secondary)
+                }
+                .frame(maxWidth: .infinity, maxHeight: .infinity)
             } else {
                 catalogSection
             }
@@ -351,18 +358,29 @@ struct ControllerMappingDetail: View {
     }
 }
 
-// MARK: - Keyboard
 struct KeyboardSettingsView: View {
     @EnvironmentObject var controllerService: ControllerService
     @State private var listeningFor: RetroButton? = nil
+    @State private var selectedSystemID: String = "nes"
 
     var body: some View {
         VStack(alignment: .leading, spacing: 0) {
-            HStack {
+            HStack(spacing: 20) {
                 Text("Keyboard Mapping").font(.title3.weight(.semibold))
+                
+                Picker("System", selection: $selectedSystemID) {
+                    Text("Global / Default").tag("default")
+                    Divider()
+                    ForEach(SystemDatabase.systems) { sys in
+                        Text(sys.name).tag(sys.id)
+                    }
+                }
+                .frame(width: 250)
+                
                 Spacer()
+                
                 Button("Reset to Defaults") {
-                    controllerService.updateKeyboardMapping(.defaults)
+                    controllerService.updateKeyboardMapping(KeyboardMapping.defaults(for: selectedSystemID), for: selectedSystemID)
                 }
                 .buttonStyle(.bordered)
             }
@@ -371,18 +389,21 @@ struct KeyboardSettingsView: View {
             Divider()
 
             ScrollView {
+                // Show relevant buttons for the selected system
+                let buttons = relevantButtons(for: selectedSystemID)
+                
                 LazyVGrid(columns: [GridItem(.flexible()), GridItem(.flexible())], spacing: 12) {
-                    ForEach(RetroButton.allCases, id: \.self) { btn in
+                    ForEach(buttons, id: \.self) { btn in
                         HStack {
-                            Text(btn.displayName).frame(width: 100, alignment: .leading)
+                            Text(btn.displayName).frame(width: 120, alignment: .leading)
                             Spacer()
                             KeyCaptureButton(
-                                keyCode: controllerService.keyboardMapping.buttons[btn],
+                                keyCode: controllerService.keyboardMapping(for: selectedSystemID).buttons[btn],
                                 isListening: listeningFor == btn
                             ) { code in
-                                var m = controllerService.keyboardMapping
+                                var m = controllerService.keyboardMapping(for: selectedSystemID)
                                 m.buttons[btn] = code
-                                controllerService.updateKeyboardMapping(m)
+                                controllerService.updateKeyboardMapping(m, for: selectedSystemID)
                                 listeningFor = nil
                             } onStartListening: {
                                 listeningFor = btn
@@ -392,6 +413,16 @@ struct KeyboardSettingsView: View {
                 }
                 .padding()
             }
+        }
+    }
+    
+    private func relevantButtons(for systemID: String) -> [RetroButton] {
+        switch systemID {
+        case "nes":      return [.up, .down, .left, .right, .a, .b, .start, .select]
+        case "snes":     return [.up, .down, .left, .right, .a, .b, .x, .y, .l1, .r1, .start, .select]
+        case "genesis":  return [.up, .down, .left, .right, .a, .b, .c, .x, .y, .z, .start, .select]
+        case "mame", "fba", "arcade": return [.up, .down, .left, .right, .a, .b, .x, .y, .l1, .r1, .coin1, .start1]
+        default:         return RetroButton.allCases
         }
     }
 }

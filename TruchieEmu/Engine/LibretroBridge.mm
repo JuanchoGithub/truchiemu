@@ -1,9 +1,12 @@
+#define GL_SILENCE_DEPRECATION
 #import <Foundation/Foundation.h>
 #import "LibretroBridge.h"
 #import <dlfcn.h>
 #import <AVFoundation/AVFoundation.h>
 #import "libretro.h"
 #include <atomic>
+#include <OpenGL/OpenGL.h>
+#include <OpenGL/gl.h>
 
 // MARK: - Simple Ring Buffer for Audio
 class AudioRingBuffer {
@@ -56,9 +59,10 @@ private:
     std::atomic<size_t> _fillCount;
 };
 
-typedef void (^VideoFrameCallback)(const void *data, int width, int height, int pitch);
+typedef void (^VideoFrameCallback)(const void *data, int width, int height, int pitch, int format);
 
 @interface LibretroBridgeImpl : NSObject {
+@public
     void *_dlHandle;
     fn_retro_init _retro_init;
     fn_retro_deinit _retro_deinit;
@@ -81,22 +85,54 @@ typedef void (^VideoFrameCallback)(const void *data, int width, int height, int 
     AVAudioSourceNode *_audioSourceNode;
     AudioRingBuffer *_audioBuffer;
     
+    CGLContextObj _glContext;
+    struct retro_hw_render_callback _hw_callback;
+    
+    int _pixelFormat;
     NSString *_saveStatePath;
     
     // Retain explicit resources so they outlive the emulation loop
     NSData *_retainedRomData;
     NSString *_retainedRomPath;
+    
+    void *_hwReadbackBuffer;
+    size_t _hwReadbackBufferSize;
+    BOOL _hwRenderEnabled;
 }
 - (BOOL)loadDylib:(NSString *)path;
 - (BOOL)launchROM:(NSString *)romPath videoCallback:(VideoFrameCallback)cb;
 - (void)stop;
 - (void)saveState;
-- (void)handleVideoData:(const void *)data width:(int)w height:(int)h pitch:(int)pitch;
+- (void)handleVideoData:(const void *)data width:(int)w height:(int)h pitch:(int)pitch format:(int)format;
 - (void)handleAudioSamples:(const int16_t *)data count:(size_t)count;
 - (void)setKeyState:(int)retroID pressed:(BOOL)pressed;
+- (void)setPixelFormat:(int)format;
+- (int)pixelFormat;
+- (void)setupHWRender:(struct retro_hw_render_callback *)cb;
+- (const void *)readHWRenderedPixels:(int)w height:(int)h;
 @end
 
+static uintptr_t bridge_get_current_framebuffer() {
+    return 0;
+}
+
 static LibretroBridgeImpl *g_instance = nil;
+
+static dispatch_queue_t g_bridgeQueue = nil;
+static dispatch_semaphore_t g_bridgeFinishedSemaphore = nil;
+
+static uintptr_t bridge_get_proc_address(const char *sym) {
+    if (!sym) return 0;
+    static void *glHandle = NULL;
+    if (!glHandle) glHandle = dlopen("/System/Library/Frameworks/OpenGL.framework/Versions/Current/OpenGL", RTLD_LAZY);
+    uintptr_t res = (uintptr_t)dlsym(glHandle ? glHandle : RTLD_DEFAULT, sym);
+    if (!res && sym[0] != '_') {
+        char buf[256];
+        snprintf(buf, sizeof(buf), "_%s", sym);
+        res = (uintptr_t)dlsym(glHandle ? glHandle : RTLD_DEFAULT, buf);
+    }
+    return res;
+}
 
 // MARK: - C Callbacks
 static void bridge_log_printf(enum retro_log_level level, const char *fmt, ...) {
@@ -105,18 +141,23 @@ static void bridge_log_printf(enum retro_log_level level, const char *fmt, ...) 
     NSString *format = [[NSString alloc] initWithUTF8String:fmt];
     if (format) {
         NSString *message = [[NSString alloc] initWithFormat:format arguments:args];
-        NSLog(@"[Core] %@", message);
+        if (level >= RETRO_LOG_ERROR) NSLog(@"[Core-ERR] %@", message);
+        else if (level == RETRO_LOG_WARN) NSLog(@"[Core-WRN] %@", message);
+        else NSLog(@"[Core] %@", message);
     }
     va_end(args);
 }
 
 static bool bridge_environment(unsigned cmd, void *data) {
+    if (!g_instance) return false;
+    NSLog(@"[Bridge-Env] Cmd: %u", cmd);
+    
     switch (cmd) {
         case RETRO_ENVIRONMENT_GET_LOG_INTERFACE:
             if (data) ((struct retro_log_interface *)data)->log = bridge_log_printf;
             return true;
         case RETRO_ENVIRONMENT_GET_CAN_DUPE:
-            if (data) *(bool*)data = true;
+            if (data) *(unsigned char *)data = 1;
             return true;
         case RETRO_ENVIRONMENT_GET_SYSTEM_DIRECTORY:
         case RETRO_ENVIRONMENT_GET_SAVE_DIRECTORY: {
@@ -129,13 +170,53 @@ static bool bridge_environment(unsigned cmd, void *data) {
             if (data) *(const char **)data = s_sysPath;
             return true;
         }
-        case RETRO_ENVIRONMENT_SET_PIXEL_FORMAT: return true;
+        case RETRO_ENVIRONMENT_SET_PIXEL_FORMAT:
+            if (data) {
+                enum retro_pixel_format fmt = *(enum retro_pixel_format *)data;
+                if (g_instance) {
+                    [g_instance setPixelFormat:(int)fmt];
+                }
+            }
+            return true;
+        case RETRO_ENVIRONMENT_GET_CORE_OPTIONS_VERSION:
+            if (data) *(unsigned *)data = 1;
+            return true;
+        case RETRO_ENVIRONMENT_GET_LANGUAGE:
+            if (data) *(unsigned *)data = RETRO_LANGUAGE_ENGLISH;
+            return true;
+        case RETRO_ENVIRONMENT_GET_VARIABLE: {
+            struct retro_variable *var = (struct retro_variable *)data;
+            if (var && var->key) {
+                if (strcmp(var->key, "mupen64plus-next-cpucore") == 0) { var->value = "pure_interpreter"; return true; }
+                if (strcmp(var->key, "mupen64plus-next-aspect") == 0) { var->value = "4:3"; return true; }
+                var->value = NULL;
+            }
+            return false;
+        }
+        case RETRO_ENVIRONMENT_SET_GEOMETRY:
+            return true;
+        case RETRO_ENVIRONMENT_SET_HW_RENDER: {
+            struct retro_hw_render_callback *cb = (struct retro_hw_render_callback *)data;
+            if (g_instance) {
+                [g_instance setupHWRender:cb];
+                return true;
+            }
+            return false;
+        }
         default: return false;
     }
 }
 
 static void bridge_video_refresh(const void *data, unsigned width, unsigned height, size_t pitch) {
-    if (g_instance) [g_instance handleVideoData:data width:width height:height pitch:(int)pitch];
+    if (g_instance) {
+        if (g_instance->_hwRenderEnabled && g_instance->_glContext) CGLSetCurrentContext(g_instance->_glContext);
+        const void *finalData = data;
+        if (data == RETRO_HW_FRAME_BUFFER_VALID) {
+            finalData = [g_instance readHWRenderedPixels:width height:height];
+            pitch = width * 4; // Assuming RGBA8888 for GL readback
+        }
+        [g_instance handleVideoData:finalData width:width height:height pitch:(int)pitch format:[g_instance pixelFormat]];
+    }
 }
 
 static void bridge_audio_sample(int16_t left, int16_t right) {
@@ -161,6 +242,7 @@ static int16_t bridge_input_state(unsigned port, unsigned device, unsigned index
     if (self = [super init]) {
         _audioBuffer = new AudioRingBuffer(44100 * 2 * 2); // 2 seconds buffer
         [self setupAudio];
+        memset(g_input_state, 0, sizeof(g_input_state));
     }
     return self;
 }
@@ -202,9 +284,15 @@ static int16_t bridge_input_state(unsigned port, unsigned device, unsigned index
 
 - (BOOL)loadDylib:(NSString *)path {
     _dlHandle = dlopen(path.UTF8String, RTLD_LAZY);
-    if (!_dlHandle) return NO;
+    if (!_dlHandle) {
+        NSLog(@"[Bridge-ERR] Could not dlopen core at %@: %s", path, dlerror());
+        return NO;
+    }
     
-#define LOAD_SYM(name) _##name = (fn_##name)dlsym(_dlHandle, #name);
+#define LOAD_SYM(name) \
+    _##name = (fn_##name)dlsym(_dlHandle, #name); \
+    if (!_##name) NSLog(@"[Bridge-WRN] Could not find symbol %s", #name);
+    
     LOAD_SYM(retro_init)
     LOAD_SYM(retro_deinit)
     LOAD_SYM(retro_set_environment)
@@ -237,7 +325,19 @@ static int16_t bridge_input_state(unsigned port, unsigned device, unsigned index
     
     _retainedRomPath = [romPath copy];
     _retainedRomData = [[NSData alloc] initWithContentsOfFile:_retainedRomPath];
-    struct retro_game_info gi = {_retainedRomPath.UTF8String, _retainedRomData.bytes, _retainedRomData.length, NULL};
+    NSLog(@"[Bridge] Loading ROM: %@ (Size: %lu bytes)", _retainedRomPath, (unsigned long)_retainedRomData.length);
+    
+    struct retro_game_info gi = {0};
+    gi.path = _retainedRomPath.UTF8String;
+    gi.data = _retainedRomData.bytes;
+    gi.size = _retainedRomData.length;
+    gi.meta = NULL;
+    
+    if (!_retro_load_game) {
+        NSLog(@"[Bridge-ERR] retro_load_game is NULL!");
+        return NO;
+    }
+    
     if (!_retro_load_game(&gi)) return NO;
     
     NSError *err;
@@ -247,6 +347,7 @@ static int16_t bridge_input_state(unsigned port, unsigned device, unsigned index
     
     _running = YES;
     while (_running) {
+        if (_hwRenderEnabled && _glContext) CGLSetCurrentContext(_glContext);
         _retro_run();
         [NSThread sleepForTimeInterval:1.0/60.0];
     }
@@ -271,8 +372,8 @@ static int16_t bridge_input_state(unsigned port, unsigned device, unsigned index
     }
 }
 
-- (void)handleVideoData:(const void *)data width:(int)w height:(int)h pitch:(int)pitch {
-    if (_videoCallback) _videoCallback(data, w, h, pitch);
+- (void)handleVideoData:(const void *)data width:(int)w height:(int)h pitch:(int)pitch format:(int)format {
+    if (_videoCallback) _videoCallback(data, w, h, pitch, format);
 }
 
 - (void)handleAudioSamples:(const int16_t *)data count:(size_t)count {
@@ -283,30 +384,123 @@ static int16_t bridge_input_state(unsigned port, unsigned device, unsigned index
     if (idx >= 0 && idx < 16) g_input_state[idx] = p ? 1 : 0;
 }
 
+- (void)setPixelFormat:(int)format { _pixelFormat = format; }
+- (int)pixelFormat { return _pixelFormat; }
+
+- (void)setupHWRender:(struct retro_hw_render_callback *)cb {
+    _hwRenderEnabled = YES;
+    memset(&_hw_callback, 0, sizeof(_hw_callback));
+    memcpy(&_hw_callback, cb, sizeof(_hw_callback));
+    _hw_callback.get_proc_address = bridge_get_proc_address;
+    _hw_callback.get_current_framebuffer = bridge_get_current_framebuffer;
+    
+    CGLPixelFormatAttribute profile = (CGLPixelFormatAttribute)kCGLOGLPVersion_Legacy;
+    if (_hw_callback.context_type == RETRO_HW_CONTEXT_OPENGL_CORE) {
+        profile = (CGLPixelFormatAttribute)kCGLOGLPVersion_3_2_Core;
+    }
+    
+    NSLog(@"[Bridge] Creating OpenGL context type %d (Profile: %d, Depth: %d, Stencil: %d)", 
+          _hw_callback.context_type, (int)profile, _hw_callback.depth, _hw_callback.stencil);
+
+    CGLPixelFormatAttribute attrs[16];
+    int i = 0;
+    attrs[i++] = kCGLPFAOpenGLProfile; attrs[i++] = profile;
+    attrs[i++] = kCGLPFAAccelerated;
+    attrs[i++] = kCGLPFADoubleBuffer;
+    if (_hw_callback.depth) {
+        attrs[i++] = kCGLPFADepthSize; attrs[i++] = (CGLPixelFormatAttribute)24;
+    }
+    if (_hw_callback.stencil) {
+        attrs[i++] = kCGLPFAStencilSize; attrs[i++] = (CGLPixelFormatAttribute)8;
+    }
+    attrs[i++] = (CGLPixelFormatAttribute)0;
+    
+    CGLPixelFormatObj pix;
+    GLint num;
+    if (CGLChoosePixelFormat(attrs, &pix, &num) != kCGLNoError) {
+        NSLog(@"[Bridge] ERROR: Could not choose Pixel Format for GL");
+        return;
+    }
+    CGLCreateContext(pix, NULL, &_glContext);
+    CGLDestroyPixelFormat(pix);
+    
+    if (!_glContext) {
+        NSLog(@"[Bridge] ERROR: Could not create GL Context");
+        return;
+    }
+    
+    CGLSetCurrentContext(_glContext);
+    
+    if (_hw_callback.context_reset) {
+        NSLog(@"[Bridge] Calling Core's context_reset()");
+        _hw_callback.context_reset();
+    }
+}
+
+- (const void *)readHWRenderedPixels:(int)w height:(int)h {
+    size_t needed = w * h * 4;
+    if (needed > _hwReadbackBufferSize) {
+        _hwReadbackBuffer = realloc(_hwReadbackBuffer, needed);
+        _hwReadbackBufferSize = needed;
+    }
+    
+    CGLSetCurrentContext(_glContext);
+    // Bind the front buffer for reading if double buffered
+    glReadBuffer(GL_BACK);
+    glReadPixels(0, 0, w, h, GL_BGRA, GL_UNSIGNED_INT_8_8_8_8_REV, _hwReadbackBuffer);
+    
+    return _hwReadbackBuffer;
+}
+
 - (void)dealloc {
+    if (g_instance == self) g_instance = nil;
+    if (_glContext) {
+        if (_hw_callback.context_destroy) _hw_callback.context_destroy();
+        CGLReleaseContext(_glContext);
+        _glContext = nil;
+    }
+    if (_hwReadbackBuffer) free(_hwReadbackBuffer);
     delete _audioBuffer;
     _audioBuffer = nil;
     if (_dlHandle) dlclose(_dlHandle);
+#if !__has_feature(objc_arc)
+    [super dealloc];
+#endif
 }
 
 @end
 
 @implementation LibretroBridge
-+ (void)launchWithDylibPath:(NSString *)dylib romPath:(NSString *)rom videoCallback:(void(^)(const void*, int, int, int))cb {
-    if (g_instance) [g_instance stop];
-    
-    LibretroBridgeImpl *newInst = [[LibretroBridgeImpl alloc] init];
-    g_instance = newInst;
-    
-    if ([newInst loadDylib:dylib]) {
-        [newInst launchROM:rom videoCallback:cb];
-    }
-    
-    // Once launchROM unblocks (after game ends), we can safely release.
-    if (g_instance == newInst) {
-        g_instance = nil;
-    }
-    
++ (void)launchWithDylibPath:(NSString *)dylib romPath:(NSString *)rom videoCallback:(void(^)(const void*, int, int, int, int))cb {
+    static dispatch_once_t onceToken;
+    dispatch_once(&onceToken, ^{
+        g_bridgeQueue = dispatch_queue_create("com.truchiemu.bridge", DISPATCH_QUEUE_SERIAL);
+    });
+
+    dispatch_async(g_bridgeQueue, ^{
+        if (g_instance) {
+            NSLog(@"[Bridge] Signalling previous instance to stop...");
+            [g_instance stop];
+            // Wait for it to finish its loop. We can use a small delay or a more robust signal.
+            // Since this is a serial queue, and we are on the background, we can sleep-wait briefly
+            // but the previous block on this queue would have finished if it was also async.
+            // WAIT - the previous launch was also async on this queue! 
+            // So if we use a serial queue, this block won't start until the previous one finishes.
+        }
+        
+        LibretroBridgeImpl *newInst = [[LibretroBridgeImpl alloc] init];
+        g_instance = newInst;
+        
+        NSLog(@"[Bridge] Starting new core session: %@", dylib.lastPathComponent);
+        if ([newInst loadDylib:dylib]) {
+            [newInst launchROM:rom videoCallback:cb];
+        }
+        
+        if (g_instance == newInst) {
+            g_instance = nil;
+        }
+        NSLog(@"[Bridge] Core session finished.");
+    });
 }
 
 + (void)stop { 

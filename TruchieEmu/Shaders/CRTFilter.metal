@@ -6,8 +6,10 @@ struct Uniforms {
     int   crtEnabled;
     int   scanlinesEnabled;
     int   barrelEnabled;
+    int   phosphorEnabled;
     float scanlineIntensity;
     float barrelAmount;
+    float colorBoost;
     float time;
 };
 
@@ -47,6 +49,7 @@ fragment float4 fragmentCRT(VertexOut in [[stage_in]],
     }
 
     float4 color = tex.sample(s, uv);
+    color.rgb *= u.colorBoost;
 
     if (u.crtEnabled) {
         float2 centered = uv * 2.0 - 1.0;
@@ -66,6 +69,16 @@ fragment float4 fragmentCRT(VertexOut in [[stage_in]],
         color.rgb += glow * 0.08;
 
         color.rgb *= vig;
+    }
+
+    if (u.phosphorEnabled) {
+        // Use screen-space pixel coordinates for a perfectly aligned phosphor mask
+        float3 mask = float3(1.0);
+        int m = int(in.position.x) % 3;
+        if (m == 0)      mask = float3(1.0, 0.75, 0.75);
+        else if (m == 1) mask = float3(0.75, 1.0, 0.75);
+        else             mask = float3(0.75, 0.75, 1.0);
+        color.rgb *= mask;
     }
 
     if (u.scanlinesEnabled) {

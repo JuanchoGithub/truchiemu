@@ -5,7 +5,10 @@ struct LibraryGridView: View {
     @EnvironmentObject var coreManager: CoreManager
     var filter: LibraryFilter
     @Binding var selectedROM: ROM?
-    var searchText: String
+    @Binding var searchText: String
+
+    @State private var showingInfoROM: ROM? = nil
+    @State private var gameWindowController: StandaloneGameWindowController? = nil
 
     @State private var viewMode: ViewMode = .grid
     @AppStorage("gridColumns") private var columnCount: Int = 4
@@ -32,26 +35,34 @@ struct LibraryGridView: View {
         if searchText.isEmpty { return base }
         return base.filter { $0.displayName.localizedCaseInsensitiveContains(searchText) }
     }
-
     var body: some View {
-        ZStack {
-            if library.isScanning {
-                scanningOverlay
-            } else if filteredROMs.isEmpty {
-                emptyState
-            } else if viewMode == .grid {
-                gridView
-            } else {
-                listView
-            }
+        VStack(spacing: 0) {
+            searchField
             
-            if boxArtService.isDownloadingBatch {
-                VStack {
-                    Spacer()
-                    downloadingArtOverlay
-                        .padding(.bottom, 20)
+            ZStack {
+                if library.isScanning {
+                    scanningOverlay
+                } else if filteredROMs.isEmpty {
+                    emptyState
+                } else if viewMode == .grid {
+                    gridView
+                } else {
+                    listView
+                }
+                
+                if boxArtService.isDownloadingBatch {
+                    VStack {
+                        Spacer()
+                        downloadingArtOverlay
+                            .padding(.bottom, 20)
+                    }
                 }
             }
+        }
+        .frame(maxWidth: .infinity, maxHeight: .infinity)
+        .sheet(item: $showingInfoROM) { rom in
+            GameDetailView(rom: rom)
+                .frame(minWidth: 500, minHeight: 600)
         }
         .toolbar {
             ToolbarItemGroup {
@@ -98,7 +109,10 @@ struct LibraryGridView: View {
                 ForEach(filteredROMs) { rom in
                     GameCardView(rom: rom, isSelected: selectedROM?.id == rom.id)
                         .onTapGesture { selectedROM = rom }
-                        .onTapGesture(count: 2) { selectedROM = rom }
+                        .onTapGesture(count: 2) { 
+                            selectedROM = rom
+                            launchGame(rom)
+                        }
                         .contextMenu { contextMenu(for: rom) }
                 }
             }
@@ -110,6 +124,9 @@ struct LibraryGridView: View {
         List(filteredROMs, selection: $selectedROM) { rom in
             GameListRowView(rom: rom)
                 .tag(rom)
+                .onTapGesture(count: 2) {
+                    launchGame(rom)
+                }
                 .contextMenu { contextMenu(for: rom) }
         }
         .listStyle(.inset(alternatesRowBackgrounds: true))
@@ -156,7 +173,19 @@ struct LibraryGridView: View {
 
     @ViewBuilder
     private func contextMenu(for rom: ROM) -> some View {
-        Button("Get Info") { selectedROM = rom }
+        Button {
+            showingInfoROM = rom
+        } label: {
+            Label("See Game Info", systemImage: "info.circle")
+        }
+        
+        Button {
+            launchGame(rom)
+        } label: {
+            Label("Launch Game", systemImage: "play.fill")
+        }
+
+        Divider()
         Button(rom.isFavorite ? "Remove from Favorites" : "Add to Favorites") {
             var updated = rom
             updated.isFavorite.toggle()
@@ -169,6 +198,52 @@ struct LibraryGridView: View {
         Button("Reveal in Finder") {
             NSWorkspace.shared.selectFile(rom.path.path, inFileViewerRootedAtPath: "")
         }
+    }
+
+    private var searchField: some View {
+        HStack {
+            Image(systemName: "magnifyingglass")
+                .foregroundColor(.secondary)
+            TextField("Search games…", text: $searchText)
+                .textFieldStyle(.plain)
+            if !searchText.isEmpty {
+                Button { searchText = "" } label: {
+                    Image(systemName: "xmark.circle.fill")
+                        .foregroundColor(.secondary)
+                }
+                .buttonStyle(.plain)
+            }
+        }
+        .padding(8)
+        .background(Color.secondary.opacity(0.1))
+        .cornerRadius(10)
+        .padding([.horizontal, .top], 16)
+        .padding(.bottom, 8)
+    }
+
+    private func launchGame(_ rom: ROM) {
+        // Find system and core
+        guard let sysID = rom.systemID,
+              let system = SystemDatabase.system(forID: sysID) else { return }
+        
+        // Check if preferred core is installed
+        let sysPrefs = SystemPreferences.shared
+        let coreID = rom.useCustomCore ? (rom.selectedCoreID ?? sysPrefs.preferredCoreID(for: sysID) ?? system.defaultCoreID) : (sysPrefs.preferredCoreID(for: sysID) ?? system.defaultCoreID)
+        
+        guard let cid = coreID else { return }
+        
+        // Log game played
+        library.markPlayed(rom)
+        
+        // Launch in standalone window
+        let runner = EmulatorRunner.forSystem(sysID)
+        let controller = StandaloneGameWindowController(runner: runner)
+        self.gameWindowController = controller
+        controller.showWindow(nil)
+        controller.window?.makeKeyAndOrderFront(nil)
+        NSApp.activate(ignoringOtherApps: true)
+        
+        runner.launch(rom: rom, coreID: cid)
     }
 }
 
@@ -369,7 +444,7 @@ struct AutoBoxArtPickerView: View {
         }
         .frame(minWidth: 500, minHeight: 400)
         .task {
-            candidates = await BoxArtService.shared.fetchBoxArtCandidates(for: rom)
+            candidates = await BoxArtService.shared.fetchBoxArtCandidates(query: rom.displayName, systemID: rom.systemID ?? "")
         }
     }
 }

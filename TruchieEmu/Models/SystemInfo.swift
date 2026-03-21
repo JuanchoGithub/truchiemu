@@ -93,4 +93,13 @@ class SystemPreferences: ObservableObject {
         UserDefaults.standard.set(type.rawValue, forKey: "boxType_\(systemID)")
         updateTrigger += 1
     }
+
+    func preferredCoreID(for systemID: String) -> String? {
+        UserDefaults.standard.string(forKey: "preferredCore_\(systemID)")
+    }
+
+    func setPreferredCoreID(_ coreID: String?, for systemID: String) {
+        UserDefaults.standard.set(coreID, forKey: "preferredCore_\(systemID)")
+        updateTrigger += 1
+    }
 }

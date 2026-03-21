@@ -4,8 +4,9 @@ import Combine
 
 @MainActor
 class ControllerService: ObservableObject {
+    static let shared = ControllerService()
+    
     @Published var connectedControllers: [PlayerController] = []
-    @Published var keyboardMapping: KeyboardMapping = KeyboardMapping.defaults
 
     private let defaults = UserDefaults.standard
     private let mappingKey = "controller_mappings_v1"
@@ -56,9 +57,11 @@ class ControllerService: ObservableObject {
         saveMappings()
     }
 
-    func updateKeyboardMapping(_ mapping: KeyboardMapping) {
-        keyboardMapping = mapping
-        if let data = try? JSONEncoder().encode(mapping) {
+    func updateKeyboardMapping(_ mapping: KeyboardMapping, for systemID: String) {
+        var all = keyboardMappings
+        all[systemID] = mapping
+        keyboardMappings = all
+        if let data = try? JSONEncoder().encode(all) {
             defaults.set(data, forKey: kbMappingKey)
         }
     }
@@ -75,9 +78,15 @@ class ControllerService: ObservableObject {
             savedMappings = saved
         }
         if let data = defaults.data(forKey: kbMappingKey),
-           let saved = try? JSONDecoder().decode(KeyboardMapping.self, from: data) {
-            keyboardMapping = saved
+           let saved = try? JSONDecoder().decode([String: KeyboardMapping].self, from: data) {
+            keyboardMappings = saved
         }
+    }
+    
+    @Published var keyboardMappings: [String: KeyboardMapping] = [:]
+    
+    func keyboardMapping(for systemID: String) -> KeyboardMapping {
+        keyboardMappings[systemID] ?? KeyboardMapping.defaults(for: systemID)
     }
 }
 
@@ -110,49 +119,101 @@ struct GCButtonMapping: Codable {
 struct KeyboardMapping: Codable {
     var buttons: [RetroButton: UInt16]  // RetroButton -> macOS keyCode
 
-    static var defaults: KeyboardMapping {
-        KeyboardMapping(buttons: [
+    static func defaults(for systemID: String) -> KeyboardMapping {
+        var base: [RetroButton: UInt16] = [
             .up:     126,  // arrow up
             .down:   125,  // arrow down
             .left:   123,  // arrow left
             .right:  124,  // arrow right
             .a:      6,    // z
             .b:      7,    // x
-            .x:      8,    // c
-            .y:      9,    // v
             .start:  36,   // return
-            .select: 53,   // esc
-            .l1:     12,   // q
-            .r1:     14,   // r
-        ])
+            .select: 48,   // tab
+        ]
+        
+        switch systemID {
+        case "snes":
+            base[.x] = 8 // c
+            base[.y] = 9 // v
+            base[.l1] = 12 // q
+            base[.r1] = 14 // r
+        case "genesis":
+            base[.c] = 8 // c
+            base[.x] = 12 // q
+            base[.y] = 13 // w
+            base[.z] = 14 // e
+        case "mame", "fba", "arcade":
+            base[.coin1] = 18 // 1
+            base[.start1] = 19 // 2
+        default:
+            base[.x] = 8
+            base[.y] = 9
+        }
+        
+        return KeyboardMapping(buttons: base)
     }
 }
 
 enum RetroButton: String, Codable, CaseIterable {
     case up, down, left, right
-    case a, b, x, y
+    case a, b, c, x, y, z
     case start, select
     case l1, l2, l3
     case r1, r2, r3
+    case coin1, coin2, start1, start2
+    case pause, reset
 
     var displayName: String {
         switch self {
-        case .up:    return "D-Pad Up"
-        case .down:  return "D-Pad Down"
-        case .left:  return "D-Pad Left"
-        case .right: return "D-Pad Right"
+        case .up:    return "Up"
+        case .down:  return "Down"
+        case .left:  return "Left"
+        case .right: return "Right"
         case .a:     return "A"
         case .b:     return "B"
+        case .c:     return "C"
         case .x:     return "X"
         case .y:     return "Y"
+        case .z:     return "Z"
         case .start: return "Start"
-        case .select:return "Select"
+        case .select:return "Select / Mode"
         case .l1:    return "L1"
         case .l2:    return "L2"
-        case .l3:    return "L3 (Click)"
+        case .l3:    return "L3"
         case .r1:    return "R1"
         case .r2:    return "R2"
-        case .r3:    return "R3 (Click)"
+        case .r3:    return "R3"
+        case .coin1: return "Insert Coin 1"
+        case .coin2: return "Insert Coin 2"
+        case .start1:return "1P Start"
+        case .start2:return "2P Start"
+        case .pause: return "Pause"
+        case .reset: return "Reset"
+        }
+    }
+    
+    var retroID: Int32 {
+        switch self {
+        case .b: return 0
+        case .y: return 1
+        case .select: return 2
+        case .start: return 3
+        case .up: return 4
+        case .down: return 5
+        case .left: return 6
+        case .right: return 7
+        case .a: return 8
+        case .x: return 9
+        case .l1: return 10
+        case .r1: return 11
+        case .l2: return 12
+        case .r2: return 13
+        case .l3: return 14
+        case .r3: return 15
+        // Arcade specific often map to these or are handled by core-specific mappings
+        case .coin1: return 2 // Usually Select
+        case .start1: return 3 // Usually Start
+        default: return 0
         }
     }
 }

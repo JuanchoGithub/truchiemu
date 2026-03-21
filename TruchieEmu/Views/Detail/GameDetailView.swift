@@ -3,336 +3,234 @@ import SwiftUI
 struct GameDetailView: View {
     @EnvironmentObject var library: ROMLibrary
     @EnvironmentObject var coreManager: CoreManager
+    @EnvironmentObject var controllerService: ControllerService
+    @ObservedObject var sysPrefs = SystemPreferences.shared
     var rom: ROM
 
-    @State private var isLaunching = false
-    @State private var showCoreDownloadSheet = false
     @State private var showBoxArtPicker = false
+    @State private var showControlsPicker = false
     @State private var boxArtImage: NSImage? = nil
-    @State private var selectedCoreID: String? = nil
-    @State private var selectedSystem: SystemInfo? = nil
-    @State private var gameWindowController: StandaloneGameWindowController? = nil
+
+    private var currentROM: ROM {
+        library.roms.first { $0.id == rom.id } ?? rom
+    }
 
     private var system: SystemInfo? {
-        SystemDatabase.system(forID: rom.systemID ?? "")
+        SystemDatabase.system(forID: currentROM.systemID ?? "")
     }
 
-    private func findCoreLib(coreID: String) -> String? {
-        let base = FileManager.default.urls(for: .applicationSupportDirectory, in: .userDomainMask)
-            .first!.appendingPathComponent("TruchieEmu/Cores/\(coreID)")
-        
-        print("[Runner] Searching for core in: \(base.path)")
-        
-        guard let versionDirs = try? FileManager.default.contentsOfDirectory(at: base, includingPropertiesForKeys: nil) else {
-            print("[Runner] No version directories found at \(base.path)")
-            return nil
-        }
-        
-        guard let latest = versionDirs.sorted(by: { $0.lastPathComponent > $1.lastPathComponent }).first else {
-            print("[Runner] No versions available for \(coreID)")
-            return nil
-        }
-        
-        // Try both coreID.dylib and potentially other names if we ever change them
-        let dylibName = "\(coreID).dylib"
-        let path = latest.appendingPathComponent(dylibName).path
-        
-        if FileManager.default.fileExists(atPath: path) {
-            print("[Runner] Found core at: \(path)")
-            return path
-        } else {
-            print("[Runner] Dylib not found at expected path: \(path)")
-            return nil
-        }
-    }
+    @State private var useCustomCore: Bool = false
+    @State private var selectedCoreID: String? = nil
 
-    var effectiveCoreID: String? {
-        selectedCoreID ?? system?.defaultCoreID
-    }
-
-    private var installedCoreForSystem: [LibretroCore] {
-        guard let sysID = rom.systemID else { return [] }
+    private var installedCores: [LibretroCore] {
+        guard let sysID = currentROM.systemID else { return [] }
         return coreManager.installedCores.filter { $0.systemIDs.contains(sysID) }
     }
 
     var body: some View {
         ScrollView {
             VStack(alignment: .leading, spacing: 0) {
-                heroSection
-                    .frame(height: 280)
-
+                headerSection
+                
                 VStack(alignment: .leading, spacing: 24) {
                     metadataSection
+                    displaySection
                     coreSection
-                    displayOptionsSection
-                    actionsSection
                 }
                 .padding(24)
             }
         }
-        .background(.ultraThinMaterial)
-        .onAppear { loadBoxArt(); selectedCoreID = rom.selectedCoreID ?? system?.defaultCoreID }
+        .background(Color(NSColor.windowBackgroundColor))
+        .onAppear {
+            loadBoxArt()
+            useCustomCore = currentROM.useCustomCore
+            selectedCoreID = currentROM.selectedCoreID ?? sysPrefs.preferredCoreID(for: currentROM.systemID ?? "") ?? system?.defaultCoreID
+        }
+        .onChange(of: currentROM.boxArtPath) { _ in loadBoxArt() }
         .sheet(isPresented: $showBoxArtPicker) {
-            BoxArtPickerView(rom: rom)
+            BoxArtPickerView(rom: currentROM)
         }
-        .sheet(item: $coreManager.pendingDownload) { pending in
-            CoreDownloadSheet(pending: pending)
-        }
-#if os(iOS)
-        .fullScreenCover(isPresented: $showEmulator) {
-            EmulatorView(rom: rom, coreID: effectiveCoreID ?? "")
-        }
-#endif
     }
 
-    // MARK: - Hero
+    // MARK: - Sections
 
-    private var heroSection: some View {
-        ZStack(alignment: .bottom) {
-            // Blurred art background
-            if let img = boxArtImage {
-                Image(nsImage: img)
-                    .resizable()
-                    .aspectRatio(contentMode: .fill)
-                    .blur(radius: 30)
-                    .overlay(Color.black.opacity(0.55))
-            } else {
-                systemGradient
+    private var headerSection: some View {
+        HStack(alignment: .top, spacing: 20) {
+            ZStack {
+                if let img = boxArtImage {
+                    Image(nsImage: img)
+                        .resizable()
+                        .aspectRatio(contentMode: .fit)
+                } else {
+                    placeholderArt
+                }
             }
+            .frame(width: 140, height: 180)
+            .clipShape(RoundedRectangle(cornerRadius: 12))
+            .shadow(radius: 8)
+            .onTapGesture { showBoxArtPicker = true }
 
-            HStack(alignment: .bottom, spacing: 20) {
-                // Box art
-                Group {
-                    if let img = boxArtImage {
-                        Image(nsImage: img).resizable().aspectRatio(contentMode: .fit)
-                    } else {
-                        placeholderThumb
-                    }
+            VStack(alignment: .leading, spacing: 8) {
+                Text(currentROM.displayName)
+                    .font(.system(size: 24, weight: .bold))
+                
+                if let sys = system {
+                    Text(sys.name)
+                        .font(.headline)
+                        .foregroundColor(.secondary)
                 }
-                .frame(width: 120, height: 150)
-                .clipShape(RoundedRectangle(cornerRadius: 10))
-                .shadow(color: .black.opacity(0.5), radius: 12, x: 0, y: 6)
-                .onTapGesture { showBoxArtPicker = true }
-
-                VStack(alignment: .leading, spacing: 6) {
-                    if let sys = system {
-                        Text(sys.name.uppercased())
-                            .font(.caption2.weight(.semibold))
-                            .tracking(1.5)
-                            .foregroundColor(.white.opacity(0.7))
-                    }
-                    Text(rom.displayName)
-                        .font(.title2.weight(.bold))
-                        .foregroundColor(.white)
-                        .lineLimit(3)
-
-                    if let played = rom.lastPlayed {
-                        Label(played.formatted(.relative(presentation: .named)), systemImage: "clock")
-                            .font(.caption)
-                            .foregroundColor(.white.opacity(0.6))
-                    }
-                }
+                
                 Spacer()
+                
+                launchButton
             }
-            .padding(20)
+            .padding(.vertical, 4)
+            
+            Spacer()
         }
-        .clipped()
+        .padding(24)
+        .background(Color.secondary.opacity(0.05))
     }
-
-    // MARK: - Metadata
 
     private var metadataSection: some View {
         VStack(alignment: .leading, spacing: 12) {
-            if let meta = rom.metadata {
-                HStack(spacing: 16) {
+            Label("Information", systemImage: "info.circle")
+                .font(.headline)
+            
+            if let meta = currentROM.metadata {
+                Grid(alignment: .leading, horizontalSpacing: 20, verticalSpacing: 8) {
                     if let year = meta.year {
-                        metaBadge(icon: "calendar", text: year)
+                        GridRow { Text("Year"); Text(year).foregroundColor(.secondary) }
                     }
                     if let dev = meta.developer {
-                        metaBadge(icon: "person.2", text: dev)
+                        GridRow { Text("Developer"); Text(dev).foregroundColor(.secondary) }
                     }
                     if let genre = meta.genre {
-                        metaBadge(icon: "tag", text: genre)
-                    }
-                    if let players = meta.players {
-                        metaBadge(icon: "person.3", text: "\(players) Players")
+                        GridRow { Text("Genre"); Text(genre).foregroundColor(.secondary) }
                     }
                 }
+                
                 if let desc = meta.description {
                     Text(desc)
                         .font(.body)
                         .foregroundColor(.secondary)
-                        .lineLimit(4)
+                        .padding(.top, 4)
                 }
             } else {
-                HStack {
-                    metaBadge(icon: "doc", text: rom.fileExtension.uppercased())
-                    if let sys = system {
-                        metaBadge(icon: "cpu", text: sys.manufacturer)
-                    }
-                }
+                Text("No metadata available for this game.")
+                    .font(.caption)
+                    .foregroundColor(.secondary)
             }
         }
     }
 
-    // MARK: - Core Selection
+    private var displaySection: some View {
+        VStack(alignment: .leading, spacing: 12) {
+            Label("Display Filters", systemImage: "tv")
+                .font(.headline)
+            
+            VStack(alignment: .leading, spacing: 16) {
+                HStack(spacing: 20) {
+                    Toggle("Scanlines", isOn: Binding(
+                        get: { currentROM.settings.scanlinesEnabled },
+                        set: { newVal in updateSettings { $0.scanlinesEnabled = newVal } }
+                    ))
+                    Toggle("Curvature", isOn: Binding(
+                        get: { currentROM.settings.barrelEnabled },
+                        set: { newVal in updateSettings { $0.barrelEnabled = newVal } }
+                    ))
+                    Toggle("Phosphor", isOn: Binding(
+                        get: { currentROM.settings.phosphorEnabled },
+                        set: { newVal in updateSettings { $0.phosphorEnabled = newVal } }
+                    ))
+                }
+                
+                VStack(alignment: .leading) {
+                    Text("Color Intensity").font(.caption)
+                    Slider(value: Binding(
+                        get: { currentROM.settings.colorBoost },
+                        set: { newVal in updateSettings { $0.colorBoost = newVal } }
+                    ), in: 1.0...2.0)
+                }
+            }
+            .padding()
+            .background(Color.secondary.opacity(0.05))
+            .cornerRadius(10)
+        }
+    }
 
     private var coreSection: some View {
-        VStack(alignment: .leading, spacing: 10) {
+        VStack(alignment: .leading, spacing: 12) {
             Label("Core", systemImage: "cpu")
                 .font(.headline)
-
-            if installedCoreForSystem.filter({ $0.isInstalled }).isEmpty {
-                HStack {
-                    Image(systemName: "exclamationmark.triangle")
-                        .foregroundColor(.orange)
-                    Text(installedCoreForSystem.isEmpty ? "No core installed for this system." : "Core is downloading...")
-                        .foregroundColor(.secondary)
-                    Spacer()
-                    if installedCoreForSystem.isEmpty {
-                        Button("Download Core") {
-                            if let coreID = system?.defaultCoreID {
-                                coreManager.requestCoreDownload(for: coreID, systemID: rom.systemID)
-                            }
-                        }
-                        .buttonStyle(.borderedProminent)
-                        .tint(.orange)
-                    } else {
-                        ProgressView()
-                            .controlSize(.small)
-                    }
-                }
-                .padding(12)
-                .background(Color.orange.opacity(0.1))
-                .cornerRadius(10)
-            } else {
-                Picker("Core", selection: $selectedCoreID) {
-                    if selectedCoreID == nil {
-                        Text("Select Core...").tag(nil as String?)
-                    }
-                    ForEach(installedCoreForSystem) { core in
+            
+            HStack {
+                Picker("Selected Core", selection: $selectedCoreID) {
+                    if selectedCoreID == nil { Text("Select Core...").tag(nil as String?) }
+                    ForEach(installedCores) { core in
                         Text(core.displayName).tag(core.id as String?)
                     }
                 }
-                .pickerStyle(.menu)
-                .onChange(of: selectedCoreID) { newVal in
-                    var updated = rom
-                    updated.selectedCoreID = newVal
-                    library.updateROM(updated)
-                }
-
-                // Version picker for selected core
-                if let coreID = selectedCoreID,
-                   let core = coreManager.installedCores.first(where: { $0.id == coreID }),
-                   core.installedVersions.count > 1 {
-                    CoreVersionPickerView(core: core)
-                }
+                .labelsHidden()
+                
+                Spacer()
+                
+                Toggle("Custom", isOn: $useCustomCore)
+                    .labelsHidden()
             }
         }
     }
 
-    // MARK: - Display Options
-
-    private var displayOptionsSection: some View {
-        VStack(alignment: .leading, spacing: 10) {
-            Label("Display", systemImage: "tv")
-                .font(.headline)
-            Text("CRT filters and bezel options are available in the in-game overlay (press ⌘F).")
-                .font(.caption)
-                .foregroundColor(.secondary)
+    private var launchButton: some View {
+        Button {
+            launchGame()
+        } label: {
+            Label("Launch Game", systemImage: "play.fill")
+                .frame(width: 200)
         }
-    }
-
-    // MARK: - Actions
-
-    private var actionsSection: some View {
-        HStack(spacing: 12) {
-            Button {
-                if installedCoreForSystem.filter({ $0.isInstalled }).isEmpty {
-                    if installedCoreForSystem.isEmpty {
-                        if let coreID = system?.defaultCoreID {
-                            coreManager.requestCoreDownload(for: coreID, systemID: rom.systemID)
-                        }
-                    }
-                } else {
-                    library.markPlayed(rom)
-                    launchStandaloneGame()
-                }
-            } label: {
-                let isInstalled = !installedCoreForSystem.filter({ $0.isInstalled }).isEmpty
-                Label(isInstalled ? "Launch" : "Install Core First",
-                      systemImage: isInstalled ? "play.fill" : "arrow.down.circle")
-                    .frame(maxWidth: .infinity)
-            }
-            .buttonStyle(PrimaryButtonStyle(color: installedCoreForSystem.isEmpty ? .orange : .purple))
-
-            Button {
-                showBoxArtPicker = true
-            } label: {
-                Label("Box Art", systemImage: "photo")
-            }
-            .buttonStyle(.bordered)
-
-            Button {
-                var updated = rom
-                updated.isFavorite.toggle()
-                library.updateROM(updated)
-            } label: {
-                Image(systemName: rom.isFavorite ? "heart.fill" : "heart")
-                    .foregroundColor(rom.isFavorite ? .pink : .secondary)
-            }
-            .buttonStyle(.bordered)
-        }
+        .buttonStyle(.borderedProminent)
     }
 
     // MARK: - Helpers
 
-    private func metaBadge(icon: String, text: String) -> some View {
-        HStack(spacing: 4) {
-            Image(systemName: icon).font(.caption2)
-            Text(text).font(.caption)
-        }
-        .foregroundColor(.secondary)
-        .padding(.horizontal, 8)
-        .padding(.vertical, 4)
-        .background(Color.secondary.opacity(0.1))
-        .cornerRadius(6)
-    }
-
-    private var placeholderThumb: some View {
+    private var placeholderArt: some View {
         ZStack {
-            systemGradient
+            Color.secondary.opacity(0.2)
             Image(systemName: system?.iconName ?? "gamecontroller")
                 .font(.system(size: 40))
-                .foregroundColor(.white.opacity(0.7))
+                .foregroundColor(.secondary)
         }
-    }
-
-    private var systemGradient: some View {
-        LinearGradient(
-            colors: [.purple.opacity(0.7), .indigo.opacity(0.5)],
-            startPoint: .topLeading, endPoint: .bottomTrailing
-        )
     }
 
     private func loadBoxArt() {
-        guard let path = rom.boxArtPath else { return }
-        boxArtImage = NSImage(contentsOf: path)
+        if let path = currentROM.boxArtPath {
+            boxArtImage = NSImage(contentsOf: path)
+        } else {
+            boxArtImage = nil
+        }
     }
 
-    private func launchStandaloneGame() {
-        guard let coreID = effectiveCoreID else { return }
-        let runner = EmulatorRunner()
+    private func updateSettings(_ action: (inout ROMSettings) -> Void) {
+        var updated = currentROM
+        action(&updated.settings)
+        library.updateROM(updated)
+    }
+
+    private func launchGame() {
+        // Find system and core
+        guard let sysID = currentROM.systemID else { return }
+        let coreID = useCustomCore ? selectedCoreID : (sysPrefs.preferredCoreID(for: sysID) ?? system?.defaultCoreID)
+        guard let cid = coreID else { return }
         
+        library.markPlayed(currentROM)
+        
+        let runner = EmulatorRunner.forSystem(sysID)
         let controller = StandaloneGameWindowController(runner: runner)
-        self.gameWindowController = controller
         controller.showWindow(nil)
-        
-        // Ensure it comes to front
         controller.window?.makeKeyAndOrderFront(nil)
         NSApp.activate(ignoringOtherApps: true)
         
-        runner.launch(rom: rom, coreID: coreID)
+        runner.launch(rom: currentROM, coreID: cid)
     }
 }
 

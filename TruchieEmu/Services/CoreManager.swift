@@ -66,9 +66,9 @@ class CoreManager: ObservableObject {
                 .map { $0.capitalized }
                 .joined(separator: " ")
 
-            let systemIDs = SystemDatabase.systems
-                .filter { $0.defaultCoreID == coreID }
-                .map { $0.id }
+            var systemIDs = CoreManager.supportedSystems(for: coreID)
+            
+            systemIDs = Array(Set(systemIDs)) // deduplicate
 
             cores.append(RemoteCoreInfo(
                 coreID: coreID,
@@ -186,8 +186,29 @@ class CoreManager: ObservableObject {
 
     private func loadInstalledCores() {
         guard let data = defaults.data(forKey: coresKey),
-              let saved = try? decoder.decode([LibretroCore].self, from: data) else { return }
+              var saved = try? decoder.decode([LibretroCore].self, from: data) else { return }
+        
+        // Migrate/Refresh systemIDs for installed cores
+        for i in 0..<saved.count {
+            saved[i].systemIDs = CoreManager.supportedSystems(for: saved[i].id)
+        }
+        
         installedCores = saved
+    }
+
+    static func supportedSystems(for coreID: String) -> [String] {
+        var ids = SystemDatabase.systems.filter { $0.defaultCoreID == coreID }.map { $0.id }
+        
+        // Hardcoded capabilities for common multi-system cores
+        if coreID.contains("mgba") { ids += ["gba", "gb", "gbc"] }
+        if coreID.contains("mesen") { ids += ["nes", "snes", "gb"] }
+        if coreID.contains("genesis_plus_gx") { ids += ["genesis", "sms", "gamegear"] }
+        if coreID.contains("snes9x") { ids += ["snes"] }
+        if coreID.contains("mupen64plus") || coreID.contains("parallel_n64") { ids += ["n64"] }
+        if coreID.contains("picodrive") { ids += ["genesis", "sms", "gamegear", "32x"] }
+        if coreID.contains("mednafen_psx") { ids += ["psx"] }
+        
+        return Array(Set(ids))
     }
 
     // MARK: - Minimal ZIP extraction

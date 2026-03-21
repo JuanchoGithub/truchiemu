@@ -113,3 +113,36 @@ typedef void (*fn_retro_get_system_av_info)(struct retro_system_av_info *info);
 typedef size_t (*fn_retro_serialize_size)(void);
 typedef bool (*fn_retro_serialize)(void *data, size_t size);
 typedef bool (*fn_retro_unserialize)(const void *data, size_t size);
+
+enum retro_hw_context_type {
+   RETRO_HW_CONTEXT_NONE             = 0,
+   RETRO_HW_CONTEXT_OPENGL           = 1,
+   RETRO_HW_CONTEXT_OPENGLES2        = 2,
+   RETRO_HW_CONTEXT_OPENGL_CORE      = 3,
+   RETRO_HW_CONTEXT_OPENGLES3        = 4,
+   RETRO_HW_CONTEXT_OPENGLES_ANY     = 5,
+   RETRO_HW_CONTEXT_VULKAN           = 6,
+   RETRO_HW_CONTEXT_DIRECT3D11       = 7,
+   RETRO_HW_CONTEXT_DUMMY            = 255
+};
+
+typedef void (*retro_hw_context_reset_t)(void);
+typedef uintptr_t (*retro_hw_get_proc_address_t)(const char *sym);
+typedef uintptr_t (*retro_hw_get_current_framebuffer_t)(void);
+
+struct retro_hw_render_callback {
+   enum retro_hw_context_type context_type;
+   retro_hw_context_reset_t context_reset;
+   retro_hw_get_current_framebuffer_t get_current_framebuffer;
+   retro_hw_get_proc_address_t get_proc_address;
+   bool depth;
+   bool stencil;
+   bool bottom_left_origin;
+   unsigned version_major;
+   unsigned version_minor;
+   bool cache_context;
+   retro_hw_context_reset_t context_destroy;
+   bool debug_context;
+};
+
+#define RETRO_HW_FRAME_BUFFER_VALID ((void*)-1)

@@ -7,12 +7,16 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		02BCE4E07716E5E5E5D94A21 /* SystemControlsMappingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 99510C445D5B9B6435F169A6 /* SystemControlsMappingView.swift */; };
 		11210EDC6C1D31FA4E541116 /* LibretroBridge.mm in Sources */ = {isa = PBXBuildFile; fileRef = B7D46AC62DC8C09CBAA53763 /* LibretroBridge.mm */; };
+		1A35E4BC913F2B92D6C21A1D /* BaseRunner.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2039A7902CA4B44A7D4CA878 /* BaseRunner.swift */; };
 		1A364756DE475BC985F79341 /* EmulatorView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1DD9E5B55884D34FCDA03196 /* EmulatorView.swift */; };
+		236EFB0A130B6F76AC8713A5 /* N64Runner.swift in Sources */ = {isa = PBXBuildFile; fileRef = D4BD45E407C6A4D3059F2996 /* N64Runner.swift */; };
 		2B95ADBBD965C8784E0F14C1 /* SettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5F2F3523E6BDCD5E1618ED1F /* SettingsView.swift */; };
 		2BC6C72C9075C6652E2F1398 /* BoxArtPickerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 00BCE112C7493BEA7436F109 /* BoxArtPickerView.swift */; };
 		3C8A90F76B0E04A65E48EBED /* GameDetailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = EA462E15A1500FD878B5160A /* GameDetailView.swift */; };
 		3D30F9BC2F7FBA0BEA44693B /* BoxArtService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6DDE7FC6FAA1F8677EB963A1 /* BoxArtService.swift */; };
+		455AB80D7490B0717CBE94AD /* NESRunner.swift in Sources */ = {isa = PBXBuildFile; fileRef = 81440507D3F6155A9AC60E31 /* NESRunner.swift */; };
 		469CB718F4F3CEB1456E1454 /* LibretroBridgeSwift.swift in Sources */ = {isa = PBXBuildFile; fileRef = BB93840EA89D1346651C53BE /* LibretroBridgeSwift.swift */; };
 		4CFD764CC4B9F8C057BC0E10 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = DAD4BAC83053A0F149602D6D /* ContentView.swift */; };
 		5412DF664DF0F1052D430F56 /* SystemInfo.swift in Sources */ = {isa = PBXBuildFile; fileRef = ACC34ADA0917BCC91FAA1989 /* SystemInfo.swift */; };
@@ -24,6 +28,7 @@
 		C99B75B6B31091E08C1F162A /* ROM.swift in Sources */ = {isa = PBXBuildFile; fileRef = FA471582BD64CAFD5D7353DA /* ROM.swift */; };
 		C9B9D094E83252DCCF416DA4 /* ControllerService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 93D8EB529663CB9A8702FAD3 /* ControllerService.swift */; };
 		D0C382CCE62AD453784ED800 /* ROMScanner.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7A96B3453958E60812D9DA1D /* ROMScanner.swift */; };
+		EACA95E35BCDF368B91F18EC /* SNESRunner.swift in Sources */ = {isa = PBXBuildFile; fileRef = 514B30B47B86FD0161D5DD71 /* SNESRunner.swift */; };
 		EE160B3D7565B6301E7474B3 /* LibretroCore.swift in Sources */ = {isa = PBXBuildFile; fileRef = E35518FB34DEB243BF979DE0 /* LibretroCore.swift */; };
 		F3C6A31B44657B3FF9B89A4F /* ROMLibrary.swift in Sources */ = {isa = PBXBuildFile; fileRef = 35A5B2396F8000C8435A2E45 /* ROMLibrary.swift */; };
 		F59885E8417267AF6A34F97C /* TruchieEmuApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2A348F996E22D8E72782CE2B /* TruchieEmuApp.swift */; };
@@ -34,16 +39,20 @@
 /* Begin PBXFileReference section */
 		00BCE112C7493BEA7436F109 /* BoxArtPickerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BoxArtPickerView.swift; sourceTree = "<group>"; };
 		1DD9E5B55884D34FCDA03196 /* EmulatorView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EmulatorView.swift; sourceTree = "<group>"; };
+		2039A7902CA4B44A7D4CA878 /* BaseRunner.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BaseRunner.swift; sourceTree = "<group>"; };
 		29AA23F97722816919BB9A98 /* libretro.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = libretro.h; sourceTree = "<group>"; };
 		2A348F996E22D8E72782CE2B /* TruchieEmuApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TruchieEmuApp.swift; sourceTree = "<group>"; };
 		2F02B2718F34118A171C7103 /* CRTFilter.metal */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.metal; path = CRTFilter.metal; sourceTree = "<group>"; };
 		3356A4F200DFBFEEEE0F91A7 /* LibraryGridView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LibraryGridView.swift; sourceTree = "<group>"; };
 		35A5B2396F8000C8435A2E45 /* ROMLibrary.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ROMLibrary.swift; sourceTree = "<group>"; };
+		514B30B47B86FD0161D5DD71 /* SNESRunner.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SNESRunner.swift; sourceTree = "<group>"; };
 		5F2F3523E6BDCD5E1618ED1F /* SettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsView.swift; sourceTree = "<group>"; };
 		676A433C26413EA5440A49A6 /* TruchieEmu-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "TruchieEmu-Bridging-Header.h"; sourceTree = "<group>"; };
 		6DDE7FC6FAA1F8677EB963A1 /* BoxArtService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BoxArtService.swift; sourceTree = "<group>"; };
 		7A96B3453958E60812D9DA1D /* ROMScanner.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ROMScanner.swift; sourceTree = "<group>"; };
+		81440507D3F6155A9AC60E31 /* NESRunner.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NESRunner.swift; sourceTree = "<group>"; };
 		93D8EB529663CB9A8702FAD3 /* ControllerService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ControllerService.swift; sourceTree = "<group>"; };
+		99510C445D5B9B6435F169A6 /* SystemControlsMappingView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SystemControlsMappingView.swift; sourceTree = "<group>"; };
 		ACC34ADA0917BCC91FAA1989 /* SystemInfo.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SystemInfo.swift; sourceTree = "<group>"; };
 		ACEC10EE62F062AF5FAEE9BB /* TruchieEmu.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = TruchieEmu.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		B7D46AC62DC8C09CBAA53763 /* LibretroBridge.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; path = LibretroBridge.mm; sourceTree = "<group>"; };
@@ -51,6 +60,8 @@
 		BB93840EA89D1346651C53BE /* LibretroBridgeSwift.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LibretroBridgeSwift.swift; sourceTree = "<group>"; };
 		BCB346F2AEB7FDB0705ADC7C /* EmptyDetailView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EmptyDetailView.swift; sourceTree = "<group>"; };
 		C9D4F3329E4574FD30094324 /* CoreManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CoreManager.swift; sourceTree = "<group>"; };
+		D4BD45E407C6A4D3059F2996 /* N64Runner.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = N64Runner.swift; sourceTree = "<group>"; };
+		D57E42574E494390B161B243 /* LibretroBridge.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = LibretroBridge.h; sourceTree = "<group>"; };
 		DAD4BAC83053A0F149602D6D /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
 		E35518FB34DEB243BF979DE0 /* LibretroCore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LibretroCore.swift; sourceTree = "<group>"; };
 		E86D4B032CD724A2520F4EF5 /* CoreDownloadSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CoreDownloadSheet.swift; sourceTree = "<group>"; };
@@ -60,6 +71,17 @@
 /* End PBXFileReference section */
 
 /* Begin PBXGroup section */
+		08B5EA96A25B525034BE2F07 /* Runners */ = {
+			isa = PBXGroup;
+			children = (
+				2039A7902CA4B44A7D4CA878 /* BaseRunner.swift */,
+				D4BD45E407C6A4D3059F2996 /* N64Runner.swift */,
+				81440507D3F6155A9AC60E31 /* NESRunner.swift */,
+				514B30B47B86FD0161D5DD71 /* SNESRunner.swift */,
+			);
+			path = Runners;
+			sourceTree = "<group>";
+		};
 		0DAE1ECDADDA76B1C01813C4 /* Shaders */ = {
 			isa = PBXGroup;
 			children = (
@@ -98,6 +120,7 @@
 			children = (
 				3356A4F200DFBFEEEE0F91A7 /* LibraryGridView.swift */,
 				BB27DEA4536CF36FCD8394F2 /* OnboardingView.swift */,
+				99510C445D5B9B6435F169A6 /* SystemControlsMappingView.swift */,
 				F0ECEE62736D1B11B66E5CED /* SystemSidebarView.swift */,
 			);
 			path = Library;
@@ -166,9 +189,11 @@
 			isa = PBXGroup;
 			children = (
 				29AA23F97722816919BB9A98 /* libretro.h */,
+				D57E42574E494390B161B243 /* LibretroBridge.h */,
 				B7D46AC62DC8C09CBAA53763 /* LibretroBridge.mm */,
 				BB93840EA89D1346651C53BE /* LibretroBridgeSwift.swift */,
 				676A433C26413EA5440A49A6 /* TruchieEmu-Bridging-Header.h */,
+				08B5EA96A25B525034BE2F07 /* Runners */,
 			);
 			path = Engine;
 			sourceTree = "<group>";
@@ -261,6 +286,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				1A35E4BC913F2B92D6C21A1D /* BaseRunner.swift in Sources */,
 				2BC6C72C9075C6652E2F1398 /* BoxArtPickerView.swift in Sources */,
 				3D30F9BC2F7FBA0BEA44693B /* BoxArtService.swift in Sources */,
 				55F19268FAB68DFC6D19F209 /* CRTFilter.metal in Sources */,
@@ -275,11 +301,15 @@
 				11210EDC6C1D31FA4E541116 /* LibretroBridge.mm in Sources */,
 				469CB718F4F3CEB1456E1454 /* LibretroBridgeSwift.swift in Sources */,
 				EE160B3D7565B6301E7474B3 /* LibretroCore.swift in Sources */,
+				236EFB0A130B6F76AC8713A5 /* N64Runner.swift in Sources */,
+				455AB80D7490B0717CBE94AD /* NESRunner.swift in Sources */,
 				6F744ECC857F8807BD5BF1AA /* OnboardingView.swift in Sources */,
 				C99B75B6B31091E08C1F162A /* ROM.swift in Sources */,
 				F3C6A31B44657B3FF9B89A4F /* ROMLibrary.swift in Sources */,
 				D0C382CCE62AD453784ED800 /* ROMScanner.swift in Sources */,
+				EACA95E35BCDF368B91F18EC /* SNESRunner.swift in Sources */,
 				2B95ADBBD965C8784E0F14C1 /* SettingsView.swift in Sources */,
+				02BCE4E07716E5E5E5D94A21 /* SystemControlsMappingView.swift in Sources */,
 				5412DF664DF0F1052D430F56 /* SystemInfo.swift in Sources */,
 				8406C90890303236B45F5FE2 /* SystemSidebarView.swift in Sources */,
 				F59885E8417267AF6A34F97C /* TruchieEmuApp.swift in Sources */,
@@ -363,7 +393,7 @@
 				CODE_SIGN_ENTITLEMENTS = TruchieEmu/Resources/TruchieEmu.entitlements;
 				CODE_SIGN_STYLE = Automatic;
 				COMBINE_HIDPI_IMAGES = YES;
-				ENABLE_HARDENED_RUNTIME = YES;
+				ENABLE_HARDENED_RUNTIME = NO;
 				GCC_C_LANGUAGE_STANDARD = gnu17;
 				INFOPLIST_FILE = TruchieEmu/Resources/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = (
@@ -371,7 +401,7 @@
 					"@executable_path/../Frameworks",
 				);
 				MACOSX_DEPLOYMENT_TARGET = 13.0;
-				OTHER_LDFLAGS = "-framework Metal -framework MetalKit -framework GameController -framework AVFoundation -framework WebKit";
+				OTHER_LDFLAGS = "-framework Metal -framework MetalKit -framework GameController -framework AVFoundation -framework WebKit -framework OpenGL";
 				PRODUCT_BUNDLE_IDENTIFIER = com.truchiemu.app;
 				PRODUCT_NAME = TruchieEmu;
 				SDKROOT = macosx;
@@ -447,7 +477,7 @@
 				CODE_SIGN_ENTITLEMENTS = TruchieEmu/Resources/TruchieEmu.entitlements;
 				CODE_SIGN_STYLE = Automatic;
 				COMBINE_HIDPI_IMAGES = YES;
-				ENABLE_HARDENED_RUNTIME = YES;
+				ENABLE_HARDENED_RUNTIME = NO;
 				GCC_C_LANGUAGE_STANDARD = gnu17;
 				INFOPLIST_FILE = TruchieEmu/Resources/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = (
@@ -455,7 +485,7 @@
 					"@executable_path/../Frameworks",
 				);
 				MACOSX_DEPLOYMENT_TARGET = 13.0;
-				OTHER_LDFLAGS = "-framework Metal -framework MetalKit -framework GameController -framework AVFoundation -framework WebKit";
+				OTHER_LDFLAGS = "-framework Metal -framework MetalKit -framework GameController -framework AVFoundation -framework WebKit -framework OpenGL";
 				PRODUCT_BUNDLE_IDENTIFIER = com.truchiemu.app;
 				PRODUCT_NAME = TruchieEmu;
 				SDKROOT = macosx;

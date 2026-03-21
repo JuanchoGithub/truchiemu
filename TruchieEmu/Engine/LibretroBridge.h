@@ -4,7 +4,7 @@
 
 + (void)launchWithDylibPath:(NSString *)dylibPath
                     romPath:(NSString *)romPath
-              videoCallback:(void(^)(const void *data, int width, int height, int pitch))cb;
+              videoCallback:(void(^)(const void *data, int width, int height, int pitch, int format))cb;
 
 + (void)stop;
 + (void)saveState;

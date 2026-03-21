@@ -7,17 +7,14 @@ struct BoxArtPickerView: View {
     @Environment(\.dismiss) private var dismiss
 
     @State private var searchText: String = ""
-    @State private var candidates: [BoxArtCandidate] = []
+    @State private var candidates: [URL] = []
     @State private var isSearching = false
-    @State private var selectedCandidate: BoxArtCandidate? = nil
-    @State private var showWebSearch = false
     @State private var tab: Tab = .search
 
     private enum Tab { case search, web }
 
     var body: some View {
         VStack(spacing: 0) {
-            // Toolbar
             HStack {
                 Text("Box Art for \(rom.displayName)")
                     .font(.title3.weight(.semibold))
@@ -29,30 +26,34 @@ struct BoxArtPickerView: View {
             Divider()
 
             Picker("Source", selection: $tab) {
-                Text("ScreenScraper").tag(Tab.search)
-                Text("Web Search").tag(Tab.web)
+                Text("Image Search").tag(Tab.search)
+                Text("Browse Web").tag(Tab.web)
             }
             .pickerStyle(.segmented)
             .padding(.horizontal)
             .padding(.top, 12)
 
             if tab == .search {
-                scraperTab
+                imageSearchTab
             } else {
                 webSearchTab
             }
         }
         .frame(width: 640, height: 520)
-        .onAppear { searchText = rom.displayName }
+        .onAppear {
+            searchText = rom.displayName
+            search()
+        }
     }
 
-    // MARK: - ScreenScraper Tab
+    // MARK: - Image Search Tab
 
-    private var scraperTab: some View {
+    private var imageSearchTab: some View {
         VStack(spacing: 0) {
             HStack {
-                TextField("Search…", text: $searchText, onCommit: { search() })
+                TextField("Search…", text: $searchText)
                     .textFieldStyle(.roundedBorder)
+                    .onSubmit { search() }
                 Button("Search", action: search)
                     .buttonStyle(.borderedProminent)
                     .tint(.purple)
@@ -60,17 +61,28 @@ struct BoxArtPickerView: View {
             .padding()
 
             if isSearching {
-                ProgressView()
-                    .frame(maxWidth: .infinity, maxHeight: .infinity)
+                VStack(spacing: 12) {
+                    ProgressView()
+                    Text("Searching for box art…")
+                        .font(.caption)
+                        .foregroundColor(.secondary)
+                }
+                .frame(maxWidth: .infinity, maxHeight: .infinity)
             } else if candidates.isEmpty {
-                Text("No results. Try a different title.")
-                    .foregroundColor(.secondary)
-                    .frame(maxWidth: .infinity, maxHeight: .infinity)
+                VStack(spacing: 12) {
+                    Image(systemName: "photo.slash")
+                        .font(.system(size: 40))
+                        .foregroundColor(.secondary)
+                    Text("No images found. Try a different title or use Browse Web.")
+                        .foregroundColor(.secondary)
+                        .multilineTextAlignment(.center)
+                }
+                .frame(maxWidth: .infinity, maxHeight: .infinity)
             } else {
                 ScrollView {
                     LazyVGrid(columns: Array(repeating: GridItem(.flexible()), count: 4), spacing: 12) {
-                        ForEach(candidates) { candidate in
-                            candidateCell(candidate)
+                        ForEach(candidates, id: \.absoluteString) { url in
+                            candidateCell(url)
                         }
                     }
                     .padding()
@@ -79,26 +91,24 @@ struct BoxArtPickerView: View {
         }
     }
 
-    private func candidateCell(_ candidate: BoxArtCandidate) -> some View {
-        VStack(spacing: 6) {
-            AsyncImage(url: candidate.thumbnailURL) { img in
+    private func candidateCell(_ url: URL) -> some View {
+        AsyncImage(url: url) { phase in
+            switch phase {
+            case .success(let img):
                 img.resizable().aspectRatio(contentMode: .fit)
-            } placeholder: {
-                ProgressView().frame(height: 120)
-            }
-            .frame(height: 120)
-            .clipShape(RoundedRectangle(cornerRadius: 8))
-            .overlay(
+                    .clipShape(RoundedRectangle(cornerRadius: 8))
+                    .onTapGesture { applyURL(url) }
+            case .failure:
                 RoundedRectangle(cornerRadius: 8)
-                    .stroke(selectedCandidate?.id == candidate.id ? Color.purple : Color.clear, lineWidth: 3)
-            )
-            .onTapGesture { selectedCandidate = candidate; applyCandidate(candidate) }
-
-            Text(candidate.title)
-                .font(.caption2)
-                .lineLimit(2)
-                .foregroundColor(.secondary)
+                    .fill(Color.secondary.opacity(0.1))
+                    .overlay(Image(systemName: "exclamationmark.triangle").foregroundColor(.secondary))
+            default:
+                RoundedRectangle(cornerRadius: 8)
+                    .fill(Color.secondary.opacity(0.1))
+                    .overlay(ProgressView())
+            }
         }
+        .frame(height: 140)
     }
 
     @ViewBuilder
@@ -118,15 +128,16 @@ struct BoxArtPickerView: View {
     private func search() {
         guard !searchText.isEmpty else { return }
         isSearching = true
+        candidates = []
         Task {
-            candidates = await BoxArtService.shared.searchBoxArt(query: searchText, systemID: rom.systemID ?? "")
+            candidates = await BoxArtService.shared.fetchBoxArtCandidates(query: searchText, systemID: rom.systemID ?? "")
             isSearching = false
         }
     }
 
-    private func applyCandidate(_ candidate: BoxArtCandidate) {
+    private func applyURL(_ url: URL) {
         Task {
-            if let localURL = await BoxArtService.shared.downloadAndCache(artURL: candidate.thumbnailURL, for: rom) {
+            if let localURL = await BoxArtService.shared.downloadAndCache(artURL: url, for: rom) {
                 var updated = rom
                 updated.boxArtPath = localURL
                 library.updateROM(updated)

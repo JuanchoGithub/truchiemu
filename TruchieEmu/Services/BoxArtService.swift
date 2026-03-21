@@ -134,7 +134,6 @@ class BoxArtService: ObservableObject {
         await withTaskGroup(of: (ROM, URL?).self) { group in
             var activeTasks = 0
             var iterator = missingRoms.makeIterator()
-            var results: [(ROM, URL?)] = []
             
             while activeTasks < maxConcurrent, let rom = iterator.next() {
                 group.addTask {
@@ -202,28 +201,39 @@ class BoxArtService: ObservableObject {
         
         guard let html = html else { return nil }
         
-        // Find first image URL "https://encrypted-tbn0.gstatic.com/images..."
-        let pattern = "https://encrypted-tbn0\\.gstatic\\.com/images[^\"]+"
-        guard let regex = try? NSRegularExpression(pattern: pattern, options: []),
-              let match = regex.firstMatch(in: html, options: [], range: NSRange(location: 0, length: html.utf16.count)),
-              let range = Range(match.range, in: html) else {
-            return nil
+        // Find first image URL - try multiple patterns
+        let patterns = [
+            "https://encrypted-tbn0\\.gstatic\\.com/images[^\"]+",
+            "https://www\\.google\\.com/imgres\\?imgurl=([^&]+)",
+            "\"(https://[^\"]+\\.(jpg|png|jpeg))\""
+        ]
+        
+        var imageUrlString: String? = nil
+        
+        for p in patterns {
+            if let regex = try? NSRegularExpression(pattern: p, options: [.caseInsensitive]),
+               let match = regex.firstMatch(in: html, options: [], range: NSRange(location: 0, length: html.utf16.count)),
+               let range = Range(match.range(at: match.numberOfRanges > 1 ? 1 : 0), in: html) {
+                imageUrlString = String(html[range])
+                break
+            }
         }
         
-        var imageUrlString = String(html[range])
-        imageUrlString = imageUrlString.replacingOccurrences(of: "\\u003d", with: "=")
-        imageUrlString = imageUrlString.replacingOccurrences(of: "\\u0026", with: "&")
+        guard var finalUrl = imageUrlString else { return nil }
+        finalUrl = finalUrl.replacingOccurrences(of: "\\u003d", with: "=")
+        finalUrl = finalUrl.replacingOccurrences(of: "\\u0026", with: "&")
+        finalUrl = finalUrl.removingPercentEncoding ?? finalUrl
         
-        guard let artURL = URL(string: imageUrlString) else { return nil }
+        guard let artURL = URL(string: finalUrl) else { return nil }
         
         return await downloadAndCache(artURL: artURL, for: rom)
     }
     
-    func fetchBoxArtCandidates(for rom: ROM) async -> [URL] {
+    func fetchBoxArtCandidates(query: String, systemID: String) async -> [URL] {
         var candidates: [URL] = []
-        let systemIdentifier = rom.systemID?.uppercased() ?? ""
-        let query = "\(rom.displayName) \(systemIdentifier) box art"
-        guard let encodedQuery = query.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed) else { return [] }
+        let systemIdentifier = systemID.uppercased()
+        let fullQuery = "\(query) \(systemIdentifier) box art"
+        guard let encodedQuery = fullQuery.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed) else { return [] }
 
         // Fetch Google (2 images)
         if let gUrl = URL(string: "https://www.google.com/search?q=\(encodedQuery)&num=5&udm=2&source=lnt&tbs=isz:m") {
@@ -235,7 +245,7 @@ class BoxArtService: ObservableObject {
                 let matches = regex.matches(in: html, options: [], range: NSRange(location: 0, length: html.utf16.count))
                 for match in matches.prefix(2) {
                     if let range = Range(match.range, in: html) {
-                        var imgStr = String(html[range]).replacingOccurrences(of: "\\u003d", with: "=").replacingOccurrences(of: "\\u0026", with: "&")
+                        let imgStr = String(html[range]).replacingOccurrences(of: "\\u003d", with: "=").replacingOccurrences(of: "\\u0026", with: "&")
                         if let u = URL(string: imgStr) { candidates.append(u) }
                     }
                 }

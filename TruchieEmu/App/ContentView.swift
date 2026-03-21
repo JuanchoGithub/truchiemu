@@ -30,16 +30,11 @@ struct ContentView: View {
             LibraryGridView(
                 filter: selectedFilter,
                 selectedROM: $selectedROM,
-                searchText: searchText
+                searchText: $searchText
             )
-            .searchable(text: $searchText, prompt: "Search games…")
             .navigationTitle(navigationTitle)
         } detail: {
-            if let rom = selectedROM {
-                GameDetailView(rom: rom)
-            } else {
-                EmptyDetailView()
-            }
+            EmptyDetailView()
         }
         .navigationSplitViewStyle(.balanced)
     }

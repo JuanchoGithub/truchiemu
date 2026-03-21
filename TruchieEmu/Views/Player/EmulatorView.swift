@@ -8,7 +8,7 @@ struct EmulatorView: View {
     let coreID: String
     @Environment(\.dismiss) private var dismiss
 
-    @StateObject private var runner = EmulatorRunner()
+    @StateObject private var runner: EmulatorRunner
     @State private var showHUD = false
     @State private var showFilterPanel = false
     @EnvironmentObject private var library: ROMLibrary
@@ -16,6 +16,14 @@ struct EmulatorView: View {
     
     // Per-game settings state
     @State private var settings = ROMSettings()
+
+    init(rom: ROM, coreID: String) {
+        self.rom = rom
+        self.coreID = coreID
+        
+        // System-specific runner factory
+        _runner = StateObject(wrappedValue: EmulatorRunner.forSystem(rom.systemID))
+    }
 
     var body: some View {
         ZStack {
@@ -55,13 +63,19 @@ struct EmulatorView: View {
         .onAppear {
             self.settings = rom.settings
             Task {
-                // Ensure core is valid (signed/no quarantine) before launch in background
                 if let corePath = runner.findCoreLib(coreID: coreID) {
                     await coreManager.prepareCore(at: corePath)
                 }
-                // Delay launch slightly to avoid layout conflicts during sheet presentation transition
-                DispatchQueue.main.async {
-                    runner.launch(rom: rom, coreID: coreID)
+                runner.launch(rom: rom, coreID: coreID)
+                
+                // Allow some time for view to attach to window
+                for _ in 1...5 {
+                    try? await Task.sleep(nanoseconds: 100_000_000) // 100ms
+                    await MainActor.run {
+                        if let mv = runner.metalView {
+                            mv.window?.makeFirstResponder(mv)
+                        }
+                    }
                 }
             }
         }
@@ -126,6 +140,7 @@ struct EmulatorView: View {
                 Toggle("CRT", isOn: $settings.crtEnabled)
                 Toggle("Scanlines", isOn: $settings.scanlinesEnabled)
                 Toggle("Curvature", isOn: $settings.barrelEnabled)
+                Toggle("Phosphor", isOn: $settings.phosphorEnabled)
             }
             
             HStack(spacing: 24) {
@@ -135,9 +150,15 @@ struct EmulatorView: View {
                 }
                 
                 VStack(alignment: .leading) {
+                    Text("Color Boost").font(.caption2)
+                    Slider(value: $settings.colorBoost, in: 1.0...2.0)
+                }
+                
+                VStack(alignment: .leading) {
                     Text("Curve Amount").font(.caption2)
                     Slider(value: $settings.barrelAmount, in: 0.0...0.4)
                 }
+            }
                 
                 Picker("Bezel", selection: $settings.bezelStyle) {
                     Text("None").tag("none")
@@ -145,18 +166,17 @@ struct EmulatorView: View {
                     Text("Arcade").tag("arcade")
                 }
             }
-        }
-        .padding(16)
-        .background(.ultraThinMaterial)
-        .cornerRadius(12)
-        .onChange(of: settings) { newSettings in
-            var updated = rom
-            updated.settings = newSettings
-            library.updateROM(updated)
-            runner.rom = updated
+            .padding(16)
+            .background(.ultraThinMaterial)
+            .cornerRadius(12)
+            .onChange(of: settings) { newSettings in
+                var updated = rom
+                updated.settings = newSettings
+                library.updateROM(updated)
+                runner.rom = updated
+            }
         }
     }
-}
 
 // MARK: - Focusable MTKView for macOS keyboard input
 class FocusableMTKView: MTKView {
@@ -167,41 +187,26 @@ class FocusableMTKView: MTKView {
         super.mouseDown(with: event)
     }
     
-    // Pass keys to super so Esc/System keys still work
+    // Keys now handled by the runner instance
     override func keyDown(with event: NSEvent) {
         if event.keyCode == 53 { // Escape
             super.keyDown(with: event)
             return
         }
-        if let rid = LibretroKeymap.map(event.keyCode) {
-            LibretroBridge.setKeyState(Int32(rid), pressed: true)
+        if let rid = runner?.mapKey(event.keyCode) {
+            runner?.setKeyState(retroID: rid, pressed: true)
         }
     }
     
     override func keyUp(with event: NSEvent) {
-        if let rid = LibretroKeymap.map(event.keyCode) {
-            LibretroBridge.setKeyState(Int32(rid), pressed: false)
+        if let rid = runner?.mapKey(event.keyCode) {
+            runner?.setKeyState(retroID: rid, pressed: false)
         }
         super.keyUp(with: event)
     }
-}
-
-struct LibretroKeymap {
-    static func map(_ keyCode: UInt16) -> Int? {
-        switch keyCode {
-        case 126: return 4 // Up
-        case 125: return 5 // Down
-        case 123: return 6 // Left
-        case 124: return 7 // Right
-        case 36:  return 3 // Start (Enter)
-        case 49:  return 2 // Select (Space)
-        case 11:  return 8 // A (B key on keyboard)
-        case 45:  return 0 // B (N key on keyboard)
-        case 6:   return 1 // Y (Z key on keyboard)
-        case 7:   return 9 // X (X key on keyboard)
-        default: return nil
-        }
-    }
+    
+    // Allow runner to be weak so we don't leak
+    weak var runner: EmulatorRunner?
 }
 
 // MARK: - Metal View Wrapper
@@ -224,6 +229,8 @@ struct MetalGameView: NSViewRepresentable {
             layer.isOpaque = true
             layer.pixelFormat = .bgra8Unorm
         }
+        
+        view.runner = runner 
         
         DispatchQueue.main.async {
             runner.metalView = view
@@ -279,13 +286,36 @@ struct MetalGameView: NSViewRepresentable {
                let enc = cmdBuffer.makeRenderCommandEncoder(descriptor: descriptor) {
                 
                 if let frameTex = runner.currentFrameTexture {
+                    // ASPECT RATIO STRETCHING (4:3)
+                    let viewWidth = view.drawableSize.width
+                    let viewHeight = view.drawableSize.height
+                    
+                    let targetAspect: CGFloat = 4.0 / 3.0
+                    var drawWidth = viewWidth
+                    var drawHeight = viewWidth / targetAspect
+                    
+                    if drawHeight > viewHeight {
+                        drawHeight = viewHeight
+                        drawWidth = viewHeight * targetAspect
+                    }
+                    
+                    let x = (viewWidth - drawWidth) / 2.0
+                    let y = (viewHeight - drawHeight) / 2.0
+                    
+                    let viewport = MTLViewport(originX: Double(x), originY: Double(y), 
+                                               width: Double(drawWidth), height: Double(drawHeight), 
+                                               znear: 0.0, zfar: 1.0)
+                    enc.setViewport(viewport)
+                    
                     let settings = runner.rom?.settings ?? ROMSettings()
                     var uniforms = ShaderUniforms(
                         crtEnabled: settings.crtEnabled ? 1 : 0,
                         scanlinesEnabled: settings.scanlinesEnabled ? 1 : 0,
                         barrelEnabled: settings.barrelEnabled ? 1 : 0,
+                        phosphorEnabled: settings.phosphorEnabled ? 1 : 0,
                         scanlineIntensity: settings.scanlineIntensity,
                         barrelAmount: settings.barrelAmount,
+                        colorBoost: settings.colorBoost,
                         time: Float(CACurrentMediaTime().truncatingRemainder(dividingBy: 100))
                     )
 
@@ -295,9 +325,6 @@ struct MetalGameView: NSViewRepresentable {
                     enc.drawPrimitives(type: .triangleStrip, vertexStart: 0, vertexCount: 4)
                     
                     innerDrawCount += 1
-                    if innerDrawCount % 120 == 0 {
-                        print("[Metal] draw(in:) check - Texture: \(frameTex.width)x\(frameTex.height), Drawable size: \(view.drawableSize)")
-                    }
                 }
                 enc.endEncoding()
             }
@@ -335,113 +362,17 @@ struct MetalGameView: NSViewRepresentable {
 
 // MARK: - Emulator Runner
 
-class EmulatorRunner: ObservableObject {
-    @MainActor weak var metalView: MTKView?
-    @MainActor @Published var currentFrameTexture: MTLTexture? = nil
-    
-    private var device: MTLDevice? = MTLCreateSystemDefaultDevice()
-    private var emulationQueue = DispatchQueue(label: "truchiemu.emulation", qos: .userInteractive)
-    private var isRunning = false
-    private var hasLoggedFrame = false
-    private var runnerFrameCount = 0
-    private var textureCache: MTLTexture? = nil
-    private let textureLock = NSLock()
-    var rom: ROM?
-    var romPath: String = ""
-
-    func launch(rom: ROM, coreID: String) {
-        guard let core = findCoreLib(coreID: coreID) else {
-            print("[Runner] Core dylib not found: \(coreID)")
-            return
-        }
-        
-        self.rom = rom
-        self.romPath = rom.path.path
-        isRunning = true
-        
-        emulationQueue.async {
-            LibretroBridge.launch(withDylibPath: core, romPath: rom.path.path,
-                                  videoCallback: { [weak self] data, width, height, pitch in
-                self?.updateFrame(data: data, width: Int(width), height: Int(height), pitch: Int(pitch))
-            })
-        }
-    }
-
-    func stop() {
-        print("[Runner] Stopping emulation thread...")
-        isRunning = false
-        LibretroBridge.stop()
-    }
-
-    func saveState() {
-        LibretroBridge.saveState()
-    }
-
-    func findCoreLib(coreID: String) -> String? {
-        let base = FileManager.default.urls(for: .applicationSupportDirectory, in: .userDomainMask)
-            .first!.appendingPathComponent("TruchieEmu/Cores/\(coreID)")
-        guard let versionDirs = try? FileManager.default.contentsOfDirectory(at: base, includingPropertiesForKeys: nil),
-              let latest = versionDirs.sorted(by: { $0.lastPathComponent > $1.lastPathComponent }).first else { return nil }
-        let dylibName = "\(coreID).dylib"
-        let path = latest.appendingPathComponent(dylibName).path
-        return FileManager.default.fileExists(atPath: path) ? path : nil
-    }
-
-    private func updateFrame(data: UnsafeRawPointer?, width: Int, height: Int, pitch: Int) {
-        guard let data = data, width > 0, height > 0 else { return }
-        
-        // This callback is on the emulation thread. 
-        // We MUST copy the data SYNC because the 'data' pointer becomes invalid immediately after this returns.
-        
-        textureLock.lock()
-        defer { textureLock.unlock() }
-
-        guard let device = self.device else { return }
-
-        let tex: MTLTexture
-        if let existing = textureCache, existing.width == width, existing.height == height {
-            tex = existing
-        } else {
-            let desc = MTLTextureDescriptor.texture2DDescriptor(pixelFormat: .bgra8Unorm,
-                                                                 width: width, height: height, mipmapped: false)
-            desc.usage = [.shaderRead]
-            desc.storageMode = .shared // Universal, works on Intel/AMD/Apple
-            guard let newTex = device.makeTexture(descriptor: desc) else { return }
-            tex = newTex
-            textureCache = tex
-        }
-        
-        tex.replace(region: MTLRegionMake2D(0, 0, width, height),
-                    mipmapLevel: 0,
-                    withBytes: data,
-                    bytesPerRow: pitch)
-        
-        // Trigger redrawing on main thread
-        DispatchQueue.main.async { [weak self] in
-            guard let self = self else { return }
-            self.currentFrameTexture = tex
-            self.metalView?.needsDisplay = true
-            
-            if !self.hasLoggedFrame {
-                print("[Runner] UI ACTIVATED with first frame (\(width)x\(height))")
-                self.hasLoggedFrame = true
-            }
-
-            self.runnerFrameCount += 1
-            if self.runnerFrameCount % 120 == 0 {
-                print("[Runner] Frame pulse \(self.runnerFrameCount)")
-            }
-        }
-    }
-}
+// EmulatorRunner and its former methods are now in separate files in Engine/Runners/
 
 // MARK: - Shader Uniforms (matches CRTFilter.metal)
 struct ShaderUniforms {
     var crtEnabled: Int32
     var scanlinesEnabled: Int32
     var barrelEnabled: Int32
+    var phosphorEnabled: Int32
     var scanlineIntensity: Float
     var barrelAmount: Float
+    var colorBoost: Float
     var time: Float
 }
 
@@ -572,6 +503,7 @@ class StandaloneGameWindowController: NSWindowController, NSWindowDelegate {
         self.metalView = mtkView
         
         window?.contentView = mtkView
+        mtkView.runner = runner
         runner.metalView = mtkView
     }
     
@@ -617,17 +549,20 @@ class StandaloneGameWindowController: NSWindowController, NSWindowDelegate {
                 
                 if let frameTex = runner.currentFrameTexture {
                     // INTEGER SCALING CALCULATION
+                    // ASPECT RATIO STRETCHING (4:3)
                     let viewWidth = view.drawableSize.width
                     let viewHeight = view.drawableSize.height
-                    let texWidth = CGFloat(frameTex.width)
-                    let texHeight = CGFloat(frameTex.height)
                     
-                    let scaleW = floor(viewWidth / texWidth)
-                    let scaleH = floor(viewHeight / texHeight)
-                    let scale = max(1.0, min(scaleW, scaleH))
+                    // Fixed 4:3 aspect ratio display
+                    let targetAspect: CGFloat = 4.0 / 3.0
+                    var drawWidth = viewWidth
+                    var drawHeight = viewWidth / targetAspect
                     
-                    let drawWidth = texWidth * scale
-                    let drawHeight = texHeight * scale
+                    if drawHeight > viewHeight {
+                        drawHeight = viewHeight
+                        drawWidth = viewHeight * targetAspect
+                    }
+                    
                     let x = (viewWidth - drawWidth) / 2.0
                     let y = (viewHeight - drawHeight) / 2.0
                     
@@ -641,8 +576,10 @@ class StandaloneGameWindowController: NSWindowController, NSWindowDelegate {
                         crtEnabled: settings.crtEnabled ? 1 : 0,
                         scanlinesEnabled: settings.scanlinesEnabled ? 1 : 0,
                         barrelEnabled: settings.barrelEnabled ? 1 : 0,
+                        phosphorEnabled: settings.phosphorEnabled ? 1 : 0,
                         scanlineIntensity: settings.scanlineIntensity,
                         barrelAmount: settings.barrelAmount,
+                        colorBoost: settings.colorBoost,
                         time: Float(CACurrentMediaTime().truncatingRemainder(dividingBy: 100))
                     )
 
