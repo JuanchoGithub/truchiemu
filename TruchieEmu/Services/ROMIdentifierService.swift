@@ -108,7 +108,7 @@ class ROMIdentifierService {
         let appSupport = FileManager.default.urls(for: .applicationSupportDirectory, in: .userDomainMask).first!
         let datsDir = appSupport.appendingPathComponent("TruchieEmu").appendingPathComponent("Dats")
         
-        var searchPaths = [datsDir]
+        let searchPaths = [datsDir]
         
         // If we have a ROM folder, check there too
         // (This service doesn't know about ROMLibrary's folder easily without being passed it)

@@ -2,7 +2,9 @@ import Foundation
 import MetalKit
 import SwiftUI
 
-class SNESRunner: EmulatorRunner {
+// Restate inherited @unchecked Sendable from EmulatorRunner to satisfy Swift 6 concurrency checks.
+// Marked final to avoid subclassing which simplifies Sendable reasoning.
+final class SNESRunner: EmulatorRunner, @unchecked Sendable {
     // SNES specific overrides
     override func mapPixelFormat(_ format: Int) -> MTLPixelFormat {
         // SNES cores often use 16-bit 0RGB1555 (format 0 in libretro) or 565 (format 2).
@@ -17,3 +19,4 @@ class SNESRunner: EmulatorRunner {
     // SNES might need handling for specific V-resolutions (Axelay High-Res)
     // The base runner handles this by re-creating texture if width/height changed.
 }
+
