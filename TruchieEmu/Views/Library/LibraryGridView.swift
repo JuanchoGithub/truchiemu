@@ -98,7 +98,7 @@ struct LibraryGridView: View {
             }
         }
         .sheet(item: $manualBoxArtSearchROM) { rom in
-            AutoBoxArtPickerView(rom: rom)
+            BoxArtPickerView(rom: rom)
         }
     }
 
@@ -377,74 +377,3 @@ struct GameListRowView: View {
     }
 }
 
-// MARK: - Manual Box Art Picker
-
-struct AutoBoxArtPickerView: View {
-    let rom: ROM
-    @State private var candidates: [URL]? = nil
-    @Environment(\.dismiss) var dismiss
-    @EnvironmentObject var library: ROMLibrary
-    
-    var body: some View {
-        VStack {
-            Text("Select Box Art for \(rom.displayName)")
-                .font(.headline)
-                .padding()
-            
-            if let candidates = candidates {
-                if candidates.isEmpty {
-                    Text("No box art found.")
-                        .foregroundColor(.secondary)
-                        .padding()
-                } else {
-                    ScrollView {
-                        LazyVGrid(columns: [GridItem(.adaptive(minimum: 150), spacing: 16)], spacing: 16) {
-                            ForEach(candidates, id: \.self) { url in
-                                AsyncImage(url: url) { phase in
-                                    if let img = phase.image {
-                                        img.resizable().scaledToFit()
-                                    } else if phase.error != nil {
-                                        Color.red.overlay(Text("Failed to load").foregroundColor(.white).font(.caption))
-                                    } else {
-                                        ProgressView()
-                                    }
-                                }
-                                .frame(height: 200)
-                                .clipShape(RoundedRectangle(cornerRadius: 8))
-                                .shadow(radius: 4)
-                                .onTapGesture {
-                                    Task {
-                                        if let stored = await BoxArtService.shared.downloadAndCache(artURL: url, for: rom) {
-                                            var updated = rom
-                                            updated.boxArtPath = stored
-                                            await MainActor.run { library.updateROM(updated) }
-                                        }
-                                        dismiss()
-                                    }
-                                }
-                            }
-                        }
-                        .padding()
-                    }
-                }
-            } else {
-                VStack(spacing: 16) {
-                    ProgressView()
-                    Text("Searching Google Images and DuckDuckGo...")
-                        .foregroundColor(.secondary)
-                }
-                .padding(40)
-            }
-            
-            Button("Cancel") {
-                dismiss()
-            }
-            .keyboardShortcut(.cancelAction)
-            .padding()
-        }
-        .frame(minWidth: 500, minHeight: 400)
-        .task {
-            candidates = await BoxArtService.shared.fetchBoxArtCandidates(query: rom.displayName, systemID: rom.systemID ?? "")
-        }
-    }
-}

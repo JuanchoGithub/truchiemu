@@ -47,6 +47,8 @@ class BoxArtService: ObservableObject {
         let systemID = rom.systemID ?? ""
         let ssSystemID = screenScraperSystemID(for: systemID)
 
+        print("Searching ScreenScraper for \(rom.name)...")
+
         let query = rom.displayName.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed) ?? ""
         var urlStr = "https://www.screenscraper.fr/api2/jeuRecherche.php"
         urlStr += "?devid=truchiemu&devpassword=truchiemu_dev"
@@ -57,15 +59,26 @@ class BoxArtService: ObservableObject {
         guard let url = URL(string: urlStr),
               let (data, _) = try? await URLSession.shared.data(from: url),
               let json = try? JSONSerialization.jsonObject(with: data) as? [String: Any],
-              let response = json["response"] as? [String: Any],
-              let jeu = response["jeu"] as? [String: Any],
-              let medias = jeu["medias"] as? [[String: Any]] else { return nil }
+              let response = json["response"] as? [String: Any] else {
+            print("ScreenScraper API request failed for \(rom.name)")
+            return nil
+        }
+
+        guard let jeu = response["jeu"] as? [String: Any],
+              let medias = jeu["medias"] as? [[String: Any]] else {
+            print("No results found on ScreenScraper for \(rom.name)")
+            return nil
+        }
 
         // Find box-2D image
         let box = medias.first(where: { ($0["type"] as? String) == "box-2D" })
         guard let urlString = box?["url"] as? String,
-              let artURL = URL(string: urlString) else { return nil }
+              let artURL = URL(string: urlString) else {
+            print("No box-2D art found on ScreenScraper for \(rom.name)")
+            return nil
+        }
 
+        print("Found ScreenScraper boxart URL for \(rom.name): \(urlString)")
         return await downloadAndCache(artURL: artURL, for: rom)
     }
 
@@ -104,14 +117,19 @@ class BoxArtService: ObservableObject {
         
         try? FileManager.default.createDirectory(at: folder, withIntermediateDirectories: true)
 
-        // If it exists, we can still overwrite it to update
         if FileManager.default.fileExists(atPath: localURL.path) {
             try? FileManager.default.removeItem(at: localURL)
         }
 
-        guard let (tmpURL, _) = try? await URLSession.shared.download(from: artURL) else { return nil }
-        try? FileManager.default.moveItem(at: tmpURL, to: localURL)
-        return localURL
+        do {
+            let (tmpURL, _) = try await URLSession.shared.download(from: artURL)
+            try FileManager.default.moveItem(at: tmpURL, to: localURL)
+            print("Successfully cached boxart for \(rom.name) at \(localURL.lastPathComponent)")
+            return localURL
+        } catch {
+            print("Error downloading boxart for \(rom.name): \(error.localizedDescription)")
+            return nil
+        }
     }
 
     // MARK: - Google Image Search Fallback
@@ -122,7 +140,12 @@ class BoxArtService: ObservableObject {
     
     func batchDownloadBoxArtGoogle(for roms: [ROM], library: ROMLibrary) async {
         let missingRoms = roms.filter { $0.boxArtPath == nil }
-        guard !missingRoms.isEmpty else { return }
+        guard !missingRoms.isEmpty else { 
+            print("No ROMs missing boxart, skipping batch download.")
+            return 
+        }
+        
+        print("Starting batch boxart download for \(missingRoms.count) ROMs...")
         
         await MainActor.run {
             self.downloadQueueCount = missingRoms.count
@@ -169,9 +192,13 @@ class BoxArtService: ObservableObject {
     
     func fetchBoxArtGoogle(for rom: ROM) async -> URL? {
         let systemIdentifier = rom.systemID?.uppercased() ?? ""
-        let query = "\(rom.displayName) \(systemIdentifier) box art"
+        let cleanName = rom.name.replacingOccurrences(of: "_", with: " ")
+        let query = "\(cleanName) \(systemIdentifier) BoxArt"
+        print("Searching Google for \(rom.name): \"\(query)\"")
+        
         guard let encodedQuery = query.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed),
               let url = URL(string: "https://www.google.com/search?q=\(encodedQuery)&num=1&udm=2&source=lnt&tbs=isz:m") else {
+            print("Failed to encode query for \(rom.name)")
             return nil
         }
         
@@ -195,11 +222,15 @@ class BoxArtService: ObservableObject {
             attempts += 1
             if attempts < maxAttempts {
                 let delay = UInt64(pow(2.0, Double(attempts)) * 1_000_000_000)
+                print("Google search throttled or failed for \(rom.name), retrying in \(Int(pow(2.0, Double(attempts))))s...")
                 try? await Task.sleep(nanoseconds: delay)
             }
         }
         
-        guard let html = html else { return nil }
+        guard let html = html else { 
+            print("Failed to fetch Google Search results for \(rom.name) after \(maxAttempts) attempts.")
+            return nil 
+        }
         
         // Find first image URL - try multiple patterns
         let patterns = [
@@ -219,12 +250,21 @@ class BoxArtService: ObservableObject {
             }
         }
         
-        guard var finalUrl = imageUrlString else { return nil }
+        guard var finalUrl = imageUrlString else { 
+            print("No boxart image URL found in Google results for \(rom.name)")
+            return nil 
+        }
+        
         finalUrl = finalUrl.replacingOccurrences(of: "\\u003d", with: "=")
         finalUrl = finalUrl.replacingOccurrences(of: "\\u0026", with: "&")
         finalUrl = finalUrl.removingPercentEncoding ?? finalUrl
         
-        guard let artURL = URL(string: finalUrl) else { return nil }
+        print("Found image URL for \(rom.name): \(finalUrl)")
+        
+        guard let artURL = URL(string: finalUrl) else { 
+            print("Malformed image URL for \(rom.name): \(finalUrl)")
+            return nil 
+        }
         
         return await downloadAndCache(artURL: artURL, for: rom)
     }
@@ -232,7 +272,8 @@ class BoxArtService: ObservableObject {
     func fetchBoxArtCandidates(query: String, systemID: String) async -> [URL] {
         var candidates: [URL] = []
         let systemIdentifier = systemID.uppercased()
-        let fullQuery = "\(query) \(systemIdentifier) box art"
+        let cleanQuery = query.replacingOccurrences(of: "_", with: " ")
+        let fullQuery = "\(cleanQuery) \(systemIdentifier) BoxArt"
         guard let encodedQuery = fullQuery.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed) else { return [] }
 
         // Fetch Google (2 images)

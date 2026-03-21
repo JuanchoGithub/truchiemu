@@ -41,6 +41,7 @@ class ROMLibrary: ObservableObject {
         isScanning = true
         scanProgress = 0
         let scanner = ROMScanner()
+        await scanner.registerDats(in: folder)
         let found = await scanner.scan(folder: folder) { progress in
             Task { @MainActor in self.scanProgress = progress }
         }
@@ -67,8 +68,80 @@ class ROMLibrary: ObservableObject {
                 try? data.write(to: rom.infoLocalPath)
             }
             
+            updateGamesXML(for: rom)
             saveROMsToDisk()
         }
+    }
+
+    func identifyROM(_ rom: ROM) async {
+        let identifier = ROMIdentifierService.shared
+        if let info = identifier.identify(rom: rom) {
+            var updated = rom
+            if updated.metadata == nil { updated.metadata = ROMMetadata() }
+            updated.metadata?.title = info.name
+            updated.metadata?.year = info.year
+            updated.metadata?.publisher = info.publisher
+            
+            updateROM(updated)
+        }
+    }
+
+    private func updateGamesXML(for rom: ROM) {
+        let folder = rom.path.deletingLastPathComponent()
+        let xmlPath = folder.appendingPathComponent("games.xml")
+        
+        let fm = FileManager.default
+        let xml: XMLDocument
+        let root: XMLElement
+        
+        if fm.fileExists(atPath: xmlPath.path),
+           let doc = try? XMLDocument(contentsOf: xmlPath, options: []) {
+            xml = doc
+            if let existingRoot = doc.rootElement() {
+                root = existingRoot
+            } else {
+                root = XMLElement(name: "gameList")
+                xml.setRootElement(root)
+            }
+        } else {
+            root = XMLElement(name: "gameList")
+            xml = XMLDocument(rootElement: root)
+            xml.version = "1.0"
+            xml.characterEncoding = "UTF-8"
+        }
+        
+        // Find existing game entry with relative path
+        let filename = rom.path.lastPathComponent
+        let relPath = "./\(filename)"
+        
+        var gameNode: XMLElement?
+        if let children = root.children as? [XMLElement] {
+            gameNode = children.first { node in
+                node.name == "game" && 
+                node.elements(forName: "path").first?.stringValue == relPath
+            }
+        }
+        
+        if let existing = gameNode {
+            existing.setChildren(nil)
+        } else {
+            let newGame = XMLElement(name: "game")
+            root.addChild(newGame)
+            gameNode = newGame
+        }
+        
+        guard let node = gameNode else { return }
+        
+        node.addChild(XMLElement(name: "path", stringValue: relPath))
+        if let title = rom.metadata?.title { node.addChild(XMLElement(name: "name", stringValue: title)) }
+        if let year = rom.metadata?.year { node.addChild(XMLElement(name: "year", stringValue: year)) }
+        if let publisher = rom.metadata?.publisher { node.addChild(XMLElement(name: "publisher", stringValue: publisher)) }
+        if let developer = rom.metadata?.developer { node.addChild(XMLElement(name: "developer", stringValue: developer)) }
+        if let genre = rom.metadata?.genre { node.addChild(XMLElement(name: "genre", stringValue: genre)) }
+        if let desc = rom.metadata?.description { node.addChild(XMLElement(name: "desc", stringValue: desc)) }
+        
+        let data = xml.xmlData(options: .nodePrettyPrint)
+        try? data.write(to: xmlPath)
     }
 
     func markPlayed(_ rom: ROM) {
@@ -128,6 +201,9 @@ class ROMLibrary: ObservableObject {
 
         // Enumerate current files
         let fm = FileManager.default
+        let scanner = ROMScanner()
+        await scanner.registerDats(in: url)
+        
         guard let enumerator = fm.enumerator(at: url,
                                              includingPropertiesForKeys: [.isRegularFileKey, .fileSizeKey, .contentModificationDateKey],
                                              options: [.skipsHiddenFiles]) else { isScanning = false; return }
@@ -160,7 +236,6 @@ class ROMLibrary: ObservableObject {
         }
 
         // Scan only changed/new files
-        let scanner = ROMScanner()
         let imported = await scanner.scan(urls: changed) { p in
             Task { @MainActor in self.scanProgress = p }
         }

@@ -70,6 +70,11 @@ actor ROMScanner {
                 }
             }
             
+            // Try games.xml if no individual JSON found
+            if rom.metadata == nil {
+                rom.metadata = loadFromGamesXML(at: url)
+            }
+            
             // Check for local boxart
             if fm.fileExists(atPath: rom.boxArtLocalPath.path) {
                 rom.boxArtPath = rom.boxArtLocalPath
@@ -81,6 +86,24 @@ actor ROMScanner {
         // Final progress update
         progress(1.0)
         return found
+    }
+
+    // New: Look for .dat files in the folder and its subfolders to register them
+    func registerDats(in folderURL: URL) {
+        let fm = FileManager.default
+        guard let enumerator = fm.enumerator(at: folderURL, includingPropertiesForKeys: nil, options: [.skipsHiddenFiles]) else { return }
+        
+        for case let url as URL in enumerator {
+            if url.pathExtension.lowercased() == "dat" {
+                // Try to infer system from filename
+                let filename = url.lastPathComponent.lowercased()
+                for system in SystemDatabase.systems {
+                    if filename.contains(system.id.lowercased()) || filename.contains(system.name.lowercased()) {
+                        ROMIdentifierService.shared.loadDatFile(url: url, forSystem: system.id)
+                    }
+                }
+            }
+        }
     }
 
     // MARK: - System Identification
@@ -212,6 +235,11 @@ actor ROMScanner {
                 }
             }
             
+            // Try games.xml if no individual JSON found
+            if rom.metadata == nil {
+                rom.metadata = loadFromGamesXML(at: url)
+            }
+            
             // Check for local boxart
             if fm.fileExists(atPath: rom.boxArtLocalPath.path) {
                 rom.boxArtPath = rom.boxArtLocalPath
@@ -223,5 +251,29 @@ actor ROMScanner {
         // Final progress update
         progress(1.0)
         return found
+    }
+
+    private func loadFromGamesXML(at romURL: URL) -> ROMMetadata? {
+        let folder = romURL.deletingLastPathComponent()
+        let xmlPath = folder.appendingPathComponent("games.xml")
+        guard let doc = try? XMLDocument(contentsOf: xmlPath, options: []),
+              let root = doc.rootElement(),
+              let games = root.children as? [XMLElement] else { return nil }
+        
+        let relPath = "./\(romURL.lastPathComponent)"
+        
+        guard let gameNode = games.first(where: { node in
+            node.name == "game" && node.elements(forName: "path").first?.stringValue == relPath
+        }) else { return nil }
+        
+        var meta = ROMMetadata()
+        meta.title = gameNode.elements(forName: "name").first?.stringValue
+        meta.year = gameNode.elements(forName: "year").first?.stringValue
+        meta.publisher = gameNode.elements(forName: "publisher").first?.stringValue
+        meta.developer = gameNode.elements(forName: "developer").first?.stringValue
+        meta.genre = gameNode.elements(forName: "genre").first?.stringValue
+        meta.description = gameNode.elements(forName: "desc").first?.stringValue
+        
+        return meta
     }
 }

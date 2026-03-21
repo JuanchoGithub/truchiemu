@@ -28,6 +28,7 @@
 		C99B75B6B31091E08C1F162A /* ROM.swift in Sources */ = {isa = PBXBuildFile; fileRef = FA471582BD64CAFD5D7353DA /* ROM.swift */; };
 		C9B9D094E83252DCCF416DA4 /* ControllerService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 93D8EB529663CB9A8702FAD3 /* ControllerService.swift */; };
 		D0C382CCE62AD453784ED800 /* ROMScanner.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7A96B3453958E60812D9DA1D /* ROMScanner.swift */; };
+		D7A2504994F1DE09E699F30F /* ROMIdentifierService.swift in Sources */ = {isa = PBXBuildFile; fileRef = FC2BC1B2F22591954A0E02B5 /* ROMIdentifierService.swift */; };
 		EACA95E35BCDF368B91F18EC /* SNESRunner.swift in Sources */ = {isa = PBXBuildFile; fileRef = 514B30B47B86FD0161D5DD71 /* SNESRunner.swift */; };
 		EE160B3D7565B6301E7474B3 /* LibretroCore.swift in Sources */ = {isa = PBXBuildFile; fileRef = E35518FB34DEB243BF979DE0 /* LibretroCore.swift */; };
 		F3C6A31B44657B3FF9B89A4F /* ROMLibrary.swift in Sources */ = {isa = PBXBuildFile; fileRef = 35A5B2396F8000C8435A2E45 /* ROMLibrary.swift */; };
@@ -68,6 +69,7 @@
 		EA462E15A1500FD878B5160A /* GameDetailView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GameDetailView.swift; sourceTree = "<group>"; };
 		F0ECEE62736D1B11B66E5CED /* SystemSidebarView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SystemSidebarView.swift; sourceTree = "<group>"; };
 		FA471582BD64CAFD5D7353DA /* ROM.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ROM.swift; sourceTree = "<group>"; };
+		FC2BC1B2F22591954A0E02B5 /* ROMIdentifierService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ROMIdentifierService.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXGroup section */
@@ -109,6 +111,7 @@
 				6DDE7FC6FAA1F8677EB963A1 /* BoxArtService.swift */,
 				93D8EB529663CB9A8702FAD3 /* ControllerService.swift */,
 				C9D4F3329E4574FD30094324 /* CoreManager.swift */,
+				FC2BC1B2F22591954A0E02B5 /* ROMIdentifierService.swift */,
 				35A5B2396F8000C8435A2E45 /* ROMLibrary.swift */,
 				7A96B3453958E60812D9DA1D /* ROMScanner.swift */,
 			);
@@ -305,6 +308,7 @@
 				455AB80D7490B0717CBE94AD /* NESRunner.swift in Sources */,
 				6F744ECC857F8807BD5BF1AA /* OnboardingView.swift in Sources */,
 				C99B75B6B31091E08C1F162A /* ROM.swift in Sources */,
+				D7A2504994F1DE09E699F30F /* ROMIdentifierService.swift in Sources */,
 				F3C6A31B44657B3FF9B89A4F /* ROMLibrary.swift in Sources */,
 				D0C382CCE62AD453784ED800 /* ROMScanner.swift in Sources */,
 				EACA95E35BCDF368B91F18EC /* SNESRunner.swift in Sources */,

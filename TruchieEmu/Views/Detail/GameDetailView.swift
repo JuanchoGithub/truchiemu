@@ -94,8 +94,18 @@ struct GameDetailView: View {
 
     private var metadataSection: some View {
         VStack(alignment: .leading, spacing: 12) {
-            Label("Information", systemImage: "info.circle")
-                .font(.headline)
+            HStack {
+                Label("Information", systemImage: "info.circle")
+                    .font(.headline)
+                Spacer()
+                Button {
+                    Task { await library.identifyROM(currentROM) }
+                } label: {
+                    Label("Identify Game", systemImage: "qrcode.viewfinder")
+                }
+                .buttonStyle(.borderless)
+                .help("Identify game using checksum and .dat files")
+            }
             
             if let meta = currentROM.metadata {
                 Grid(alignment: .leading, horizontalSpacing: 20, verticalSpacing: 8) {

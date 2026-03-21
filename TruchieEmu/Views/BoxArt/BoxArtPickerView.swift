@@ -7,132 +7,70 @@ struct BoxArtPickerView: View {
     @Environment(\.dismiss) private var dismiss
 
     @State private var searchText: String = ""
-    @State private var candidates: [URL] = []
-    @State private var isSearching = false
-    @State private var tab: Tab = .search
+    @State private var searchEngine: SearchEngine = .google
 
-    private enum Tab { case search, web }
+    enum SearchEngine: String, CaseIterable {
+        case google = "Google"
+        case duckduckgo = "DuckDuckGo"
+    }
 
     var body: some View {
         VStack(spacing: 0) {
-            HStack {
-                Text("Box Art for \(rom.displayName)")
-                    .font(.title3.weight(.semibold))
-                Spacer()
-                Button("Done") { dismiss() }
-            }
-            .padding()
+            header
 
             Divider()
 
-            Picker("Source", selection: $tab) {
-                Text("Image Search").tag(Tab.search)
-                Text("Browse Web").tag(Tab.web)
-            }
-            .pickerStyle(.segmented)
-            .padding(.horizontal)
-            .padding(.top, 12)
+            VStack(spacing: 12) {
+                HStack {
+                    TextField("Search query...", text: $searchText)
+                        .textFieldStyle(.roundedBorder)
+                        .onSubmit { updateSearch() }
 
-            if tab == .search {
-                imageSearchTab
-            } else {
-                webSearchTab
-            }
-        }
-        .frame(width: 640, height: 520)
-        .onAppear {
-            searchText = rom.displayName
-            search()
-        }
-    }
+                    Picker("Engine", selection: $searchEngine) {
+                        ForEach(SearchEngine.allCases, id: \.self) { engine in
+                            Text(engine.rawValue).tag(engine)
+                        }
+                    }
+                    .pickerStyle(.segmented)
+                    .frame(width: 200)
+                }
 
-    // MARK: - Image Search Tab
-
-    private var imageSearchTab: some View {
-        VStack(spacing: 0) {
-            HStack {
-                TextField("Search…", text: $searchText)
-                    .textFieldStyle(.roundedBorder)
-                    .onSubmit { search() }
-                Button("Search", action: search)
-                    .buttonStyle(.borderedProminent)
-                    .tint(.purple)
+                Text("Right-click an image to select it as box art")
+                    .font(.caption)
+                    .foregroundColor(.secondary)
             }
             .padding()
 
-            if isSearching {
-                VStack(spacing: 12) {
-                    ProgressView()
-                    Text("Searching for box art…")
-                        .font(.caption)
-                        .foregroundColor(.secondary)
-                }
-                .frame(maxWidth: .infinity, maxHeight: .infinity)
-            } else if candidates.isEmpty {
-                VStack(spacing: 12) {
-                    Image(systemName: "photo.slash")
-                        .font(.system(size: 40))
-                        .foregroundColor(.secondary)
-                    Text("No images found. Try a different title or use Browse Web.")
-                        .foregroundColor(.secondary)
-                        .multilineTextAlignment(.center)
-                }
-                .frame(maxWidth: .infinity, maxHeight: .infinity)
-            } else {
-                ScrollView {
-                    LazyVGrid(columns: Array(repeating: GridItem(.flexible()), count: 4), spacing: 12) {
-                        ForEach(candidates, id: \.absoluteString) { url in
-                            candidateCell(url)
-                        }
-                    }
-                    .padding()
-                }
-            }
+            WebSearchView(query: searchText, engine: searchEngine, onImagePicked: applyURL)
+        }
+        .frame(width: 800, height: 600)
+        .onAppear {
+            let cleanName = rom.name.replacingOccurrences(of: "_", with: " ")
+            let systemID = rom.systemID?.uppercased() ?? ""
+            searchText = "\(cleanName) \(systemID) BoxArt"
         }
     }
 
-    private func candidateCell(_ url: URL) -> some View {
-        AsyncImage(url: url) { phase in
-            switch phase {
-            case .success(let img):
-                img.resizable().aspectRatio(contentMode: .fit)
-                    .clipShape(RoundedRectangle(cornerRadius: 8))
-                    .onTapGesture { applyURL(url) }
-            case .failure:
-                RoundedRectangle(cornerRadius: 8)
-                    .fill(Color.secondary.opacity(0.1))
-                    .overlay(Image(systemName: "exclamationmark.triangle").foregroundColor(.secondary))
-            default:
-                RoundedRectangle(cornerRadius: 8)
-                    .fill(Color.secondary.opacity(0.1))
-                    .overlay(ProgressView())
+    private var header: some View {
+        HStack {
+            VStack(alignment: .leading, spacing: 2) {
+                Text("Box Art Picker")
+                    .font(.headline)
+                Text(rom.displayName)
+                    .font(.subheadline)
+                    .foregroundColor(.secondary)
             }
+            Spacer()
+            Button("Cancel") { dismiss() }
+                .buttonStyle(.bordered)
+            Button("Done") { dismiss() }
+                .buttonStyle(.borderedProminent)
         }
-        .frame(height: 140)
+        .padding()
     }
 
-    @ViewBuilder
-    private var webSearchTab: some View {
-        WebSearchView(initialQuery: "\(rom.displayName) box art", onImagePicked: { url in
-            Task {
-                if let localURL = await BoxArtService.shared.downloadAndCache(artURL: url, for: rom) {
-                    var updated = rom
-                    updated.boxArtPath = localURL
-                    library.updateROM(updated)
-                    dismiss()
-                }
-            }
-        })
-    }
-
-    private func search() {
-        guard !searchText.isEmpty else { return }
-        isSearching = true
-        candidates = []
-        Task {
-            candidates = await BoxArtService.shared.fetchBoxArtCandidates(query: searchText, systemID: rom.systemID ?? "")
-            isSearching = false
-        }
+    private func updateSearch() {
+        // This will trigger updateNSView in WebSearchView
     }
 
     private func applyURL(_ url: URL) {
@@ -150,7 +88,8 @@ struct BoxArtPickerView: View {
 // MARK: - Web Search (WKWebView)
 
 struct WebSearchView: NSViewRepresentable {
-    let initialQuery: String
+    let query: String
+    let engine: BoxArtPickerView.SearchEngine
     let onImagePicked: (URL) -> Void
 
     func makeNSView(context: Context) -> WKWebView {
@@ -159,8 +98,12 @@ struct WebSearchView: NSViewRepresentable {
 
         let js = """
         document.addEventListener('contextmenu', function(e) {
-            if (e.target.tagName === 'IMG' && e.target.src) {
-                window.webkit.messageHandlers.imagePicker.postMessage(e.target.src);
+            let target = e.target;
+            while (target && target.tagName !== 'IMG') {
+                target = target.parentElement;
+            }
+            if (target && target.src) {
+                window.webkit.messageHandlers.imagePicker.postMessage(target.src);
                 e.preventDefault();
             }
         });
@@ -170,14 +113,35 @@ struct WebSearchView: NSViewRepresentable {
 
         let webView = WKWebView(frame: .zero, configuration: config)
         webView.navigationDelegate = context.coordinator
-
-        let query = initialQuery.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed) ?? ""
-        let url = URL(string: "https://www.google.com/search?tbm=isch&q=\(query)")!
-        webView.load(URLRequest(url: url))
+        
+        loadSearch(in: webView)
         return webView
     }
 
-    func updateNSView(_ nsView: WKWebView, context: Context) {}
+    func updateNSView(_ nsView: WKWebView, context: Context) {
+        // Check if query or engine changed (simplified for now by just checking URL)
+        let currentURL = nsView.url?.absoluteString ?? ""
+        let targetURL = targetURLString
+        if !currentURL.contains(targetURL) {
+             loadSearch(in: nsView)
+        }
+    }
+
+    private var targetURLString: String {
+        let encodedQuery = query.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed) ?? ""
+        switch engine {
+        case .google:
+            return "https://www.google.com/search?tbm=isch&q=\(encodedQuery)"
+        case .duckduckgo:
+            return "https://duckduckgo.com/?q=\(encodedQuery)&iax=images&ia=images"
+        }
+    }
+
+    private func loadSearch(in webView: WKWebView) {
+        if let url = URL(string: targetURLString) {
+            webView.load(URLRequest(url: url))
+        }
+    }
 
     func makeCoordinator() -> Coordinator {
         Coordinator(onImagePicked: onImagePicked)
