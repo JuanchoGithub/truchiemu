@@ -153,20 +153,25 @@ class EmulatorRunner: ObservableObject, @unchecked Sendable {
         guard let player = ControllerService.shared.connectedControllers.first(where: { $0.playerIndex == activeIdx }),
               let controller = player.gcController else { return }
         
-        print("[Runner] Hooking gamepad: \(controller.vendorName ?? "Unknown")")
+        let sysID = rom?.systemID ?? "default"
+        let mapping = ControllerService.shared.mapping(for: controller.vendorName ?? "Unknown", systemID: sysID)
+        
+        print("[Runner] Hooking gamepad: \(controller.vendorName ?? "Unknown") for system: \(sysID)")
         self.hookedController = controller
         
-        controller.extendedGamepad?.valueChangedHandler = { [weak self] pad, element in
+        controller.extendedGamepad?.valueChangedHandler = { [weak self] _, element in
             guard let self = self else { return }
             
             // If it's a DPad or Stick, we want to handle its 4 directions
             if let dpad = element as? GCControllerDirectionPad {
-                self.updateGamepadButton(dpad.up, in: player.mapping)
-                self.updateGamepadButton(dpad.down, in: player.mapping)
-                self.updateGamepadButton(dpad.left, in: player.mapping)
-                self.updateGamepadButton(dpad.right, in: player.mapping)
+                self.updateGamepadButton(dpad.up, in: mapping)
+                self.updateGamepadButton(dpad.down, in: mapping)
+                self.updateGamepadButton(dpad.left, in: mapping)
+                self.updateGamepadButton(dpad.right, in: mapping)
+                // Also update the pad itself for analog stick support
+                self.updateGamepadButton(dpad, in: mapping)
             } else {
-                self.updateGamepadButton(element, in: player.mapping)
+                self.updateGamepadButton(element, in: mapping)
             }
         }
     }
@@ -175,11 +180,26 @@ class EmulatorRunner: ObservableObject, @unchecked Sendable {
         let name = element.localizedName ?? ""
         for (btn, btnMapping) in mapping.buttons {
             if btnMapping.gcElementName == name {
-                let retroID = btn.retroID
-                if let btnElement = element as? GCControllerButtonInput {
-                    self.setKeyState(retroID: Int(retroID), pressed: btnElement.isPressed)
-                } else if let axisElement = element as? GCControllerAxisInput {
-                    self.setKeyState(retroID: Int(retroID), pressed: abs(axisElement.value) > 0.5)
+                if let info = btn.analogInfo {
+                    // Handle Analog/Pseudo-Analog
+                    var val: Int32 = 0
+                    if let stick = element as? GCControllerDirectionPad {
+                        let axisVal = (info.id == 0) ? stick.xAxis.value : stick.yAxis.value
+                        val = Int32(axisVal * info.sign * 32767)
+                    } else if let btnElement = element as? GCControllerButtonInput {
+                        val = btnElement.isPressed ? Int32(info.sign * 32767) : 0
+                    } else if let axisElement = element as? GCControllerAxisInput {
+                        val = Int32(axisElement.value * info.sign * 32767)
+                    }
+                    LibretroBridge.setAnalogState(info.index, id: info.id, value: val)
+                } else {
+                    // Handle Digital
+                    let retroID = btn.retroID
+                    if let btnElement = element as? GCControllerButtonInput {
+                        self.setKeyState(retroID: Int(retroID), pressed: btnElement.isPressed)
+                    } else if let axisElement = element as? GCControllerAxisInput {
+                        self.setKeyState(retroID: Int(retroID), pressed: abs(axisElement.value) > 0.5)
+                    }
                 }
             }
         }

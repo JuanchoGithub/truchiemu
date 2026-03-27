@@ -9,5 +9,5 @@
 + (void)stop;
 + (void)saveState;
 + (void)setKeyState:(int)retroID pressed:(BOOL)pressed;
-
++ (void)setAnalogState:(int)index id:(int)id value:(int)value;
 @end

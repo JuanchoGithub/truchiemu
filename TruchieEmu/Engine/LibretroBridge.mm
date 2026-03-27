@@ -314,9 +314,13 @@ static size_t bridge_audio_sample_batch(const int16_t *data, size_t frames) {
 }
 
 static void bridge_input_poll(void) {}
-static int16_t g_input_state[16];
+static int16_t g_input_state[32];
+static int16_t g_analog_state[2][2]; // index, id
 static int16_t bridge_input_state(unsigned port, unsigned device, unsigned index, unsigned id) {
-    if (port == 0 && device == RETRO_DEVICE_JOYPAD) return g_input_state[id & 0xF] ? 32767 : 0;
+    if (port == 0) {
+        if (device == RETRO_DEVICE_JOYPAD) return g_input_state[id & 0x1F] ? 32767 : 0;
+        if (device == RETRO_DEVICE_ANALOG && index < 2 && id < 2) return g_analog_state[index][id];
+    }
     return 0;
 }
 
@@ -521,7 +525,11 @@ static int16_t bridge_input_state(unsigned port, unsigned device, unsigned index
 }
 
 - (void)setKeyState:(int)idx pressed:(BOOL)p {
-    if (idx >= 0 && idx < 16) g_input_state[idx] = p ? 1 : 0;
+    if (idx >= 0 && idx < 32) g_input_state[idx] = p ? 1 : 0;
+}
+
+- (void)setAnalogState:(int)idx id:(int)id value:(int)v {
+    if (idx >= 0 && idx < 2 && id >= 0 && id < 2) g_analog_state[idx][id] = (int16_t)v;
 }
 
 - (void)setPixelFormat:(int)format { _pixelFormat = format; }
@@ -711,4 +719,5 @@ static int16_t bridge_input_state(unsigned port, unsigned device, unsigned index
 
 + (void)saveState { if (g_instance) [g_instance saveState]; }
 + (void)setKeyState:(int)rid pressed:(BOOL)p { if (g_instance) [g_instance setKeyState:rid pressed:p]; }
++ (void)setAnalogState:(int)idx id:(int)id value:(int)v { if (g_instance) [g_instance setAnalogState:idx id:id value:v]; }
 @end

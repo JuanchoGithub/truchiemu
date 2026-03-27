@@ -265,29 +265,43 @@ struct CoreRowView: View {
 struct ControllerSettingsView: View {
     @EnvironmentObject var controllerService: ControllerService
     @State private var selectedPlayer: Int = 0
+    @State private var selectedSystemID: String = "default"
 
     var body: some View {
         VStack(alignment: .leading, spacing: 16) {
-            // Player tabs
-            HStack(spacing: 8) {
-                ForEach(1...4, id: \.self) { i in
-                    let connected = controllerService.connectedControllers.first(where: { $0.playerIndex == i })?.isConnected ?? false
-                    Button("P\(i)") { selectedPlayer = i }
-                        .buttonStyle(.bordered)
-                        .tint(selectedPlayer == i ? .purple : .secondary)
-                        .overlay(
-                            connected ? Circle().fill(.green).frame(width: 6, height: 6).offset(x: 10, y: -10) : nil,
-                            alignment: .topTrailing
-                        )
+            HStack {
+                // Player tabs
+                HStack(spacing: 8) {
+                    ForEach(1...4, id: \.self) { i in
+                        let connected = controllerService.connectedControllers.first(where: { $0.playerIndex == i })?.isConnected ?? false
+                        Button("P\(i)") { selectedPlayer = i }
+                            .buttonStyle(.bordered)
+                            .tint(selectedPlayer == i ? .purple : .secondary)
+                            .overlay(
+                                connected ? Circle().fill(.green).frame(width: 6, height: 6).offset(x: 10, y: -10) : nil,
+                                alignment: .topTrailing
+                            )
+                    }
                 }
+                
                 Spacer()
+                
+                Picker("Mapping for System", selection: $selectedSystemID) {
+                    Text("Global / Default").tag("default")
+                    Divider()
+                    ForEach(SystemDatabase.systems) { sys in
+                        Text(sys.name).tag(sys.id)
+                    }
+                }
+                .frame(width: 250)
             }
             .padding([.horizontal, .top])
 
             Divider()
 
             if let player = controllerService.connectedControllers.first(where: { $0.playerIndex == selectedPlayer }) {
-                ControllerMappingDetail(player: player)
+                ControllerMappingDetail(player: player, systemID: selectedSystemID)
+                    .id("\(selectedPlayer)-\(selectedSystemID)") // Reset view when system/player changes
             } else {
                 VStack(spacing: 12) {
                     Image(systemName: "gamecontroller")
@@ -306,12 +320,14 @@ struct ControllerSettingsView: View {
 struct ControllerMappingDetail: View {
     @EnvironmentObject var controllerService: ControllerService
     let player: PlayerController
+    let systemID: String
     @State private var listeningFor: RetroButton? = nil
     @State private var mapping: ControllerMapping
 
-    init(player: PlayerController) {
+    init(player: PlayerController, systemID: String) {
         self.player = player
-        _mapping = State(initialValue: player.mapping)
+        self.systemID = systemID
+        _mapping = State(initialValue: ControllerService.shared.mapping(for: player.gcController?.vendorName ?? "Unknown", systemID: systemID))
     }
 
     var body: some View {
@@ -323,7 +339,7 @@ struct ControllerMappingDetail: View {
                     .font(.headline)
                 Spacer()
                 Button("Reset to Defaults") {
-                    mapping = ControllerMapping.defaults(for: player.mapping.vendorName)
+                    mapping = ControllerMapping.defaults(for: player.mapping.vendorName, systemID: systemID)
                     save()
                 }
                 .buttonStyle(.bordered)
@@ -334,7 +350,8 @@ struct ControllerMappingDetail: View {
 
             ScrollView {
                 LazyVGrid(columns: [GridItem(.flexible()), GridItem(.flexible())], spacing: 12) {
-                    ForEach(RetroButton.allCases, id: \.self) { btn in
+                    let buttons = RetroButton.relevantButtons(for: systemID)
+                    ForEach(buttons, id: \.self) { btn in
                         buttonRow(btn)
                     }
                 }
@@ -385,7 +402,7 @@ struct ControllerMappingDetail: View {
     }
 
     private func save() {
-        controllerService.updateMapping(for: mapping.vendorName, mapping: mapping)
+        controllerService.updateMapping(for: mapping.vendorName, systemID: systemID, mapping: mapping)
     }
 }
 
@@ -448,13 +465,7 @@ struct KeyboardSettingsView: View {
     }
     
     private func relevantButtons(for systemID: String) -> [RetroButton] {
-        switch systemID {
-        case "nes":      return [.up, .down, .left, .right, .a, .b, .start, .select]
-        case "snes":     return [.up, .down, .left, .right, .a, .b, .x, .y, .l1, .r1, .start, .select]
-        case "genesis":  return [.up, .down, .left, .right, .a, .b, .c, .x, .y, .z, .start, .select]
-        case "mame", "fba", "arcade": return [.up, .down, .left, .right, .a, .b, .x, .y, .l1, .r1, .coin1, .start1]
-        default:         return RetroButton.allCases
-        }
+        return RetroButton.relevantButtons(for: systemID)
     }
 }
 
