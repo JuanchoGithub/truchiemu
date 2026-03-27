@@ -132,6 +132,7 @@ typedef void (^VideoFrameCallback)(const void *data, int width, int height, int 
 @end
 
 static LibretroBridgeImpl *g_instance = nil;
+static int g_selectedLanguage = 0; // RETRO_LANGUAGE_ENGLISH
 // Shared with bridge_get_current_framebuffer — updated by setupHWRender
 static GLuint g_hwFBO = 0;
 
@@ -225,11 +226,63 @@ static bool bridge_environment(unsigned cmd, void *data) {
             if (data) *(unsigned *)data = 1;
             return true;
         case RETRO_ENVIRONMENT_GET_LANGUAGE:
-            if (data) *(unsigned *)data = RETRO_LANGUAGE_ENGLISH;
+            if (data) *(unsigned *)data = (unsigned)g_selectedLanguage;
             return true;
         case RETRO_ENVIRONMENT_GET_VARIABLE: {
             struct retro_variable *var = (struct retro_variable *)data;
             if (var && var->key) {
+                // NSLog(@"[Bridge] Core requested variable: %s", var->key);
+
+                // Common language keys for various cores
+                if (strcmp(var->key, "beetle_psx_hw_initial_vram_buffer_size") == 0) {
+                     // This is NOT a language key, but just testing I can intercept. 
+                     // Wait, I should find the real language keys.
+                }
+
+                // Generic language mapping for cores that use a "language" or "system_language" key
+                const char* langStr = "English";
+                const char* langShort = "en";
+                switch (g_selectedLanguage) {
+                    case RETRO_LANGUAGE_JAPANESE: langStr = "Japanese"; langShort = "jp"; break;
+                    case RETRO_LANGUAGE_FRENCH:   langStr = "French";   langShort = "fr"; break;
+                    case RETRO_LANGUAGE_GERMAN:   langStr = "German";   langShort = "de"; break;
+                    case RETRO_LANGUAGE_SPANISH:  langStr = "Spanish";  langShort = "es"; break;
+                    case RETRO_LANGUAGE_ITALIAN:  langStr = "Italian";  langShort = "it"; break;
+                    case RETRO_LANGUAGE_DUTCH:    langStr = "Dutch";    langShort = "nl"; break;
+                    case RETRO_LANGUAGE_PORTUGUESE: langStr = "Portuguese"; langShort = "pt"; break;
+                    case RETRO_LANGUAGE_RUSSIAN:  langStr = "Russian";  langShort = "ru"; break;
+                    case RETRO_LANGUAGE_KOREAN:   langStr = "Korean";   langShort = "ko"; break;
+                    default: langStr = "English"; langShort = "en"; break;
+                }
+
+                if (strstr(var->key, "language") != NULL || strstr(var->key, "Language") != NULL) {
+                    // Some cores might expect lowercase language names
+                    static char s_langLower[32];
+                    strncpy(s_langLower, langStr, sizeof(s_langLower)-1);
+                    for(int i=0; s_langLower[i]; i++) s_langLower[i] = tolower(s_langLower[i]);
+
+                    // Common overrides for specific cores
+                    if (strcmp(var->key, "vba_next_language") == 0) { var->value = langStr; return true; }
+                    if (strcmp(var->key, "mgba_language") == 0) { var->value = langStr; return true; }
+                    if (strstr(var->key, "beetle_psx") != NULL) { var->value = langStr; return true; }
+
+                    var->value = langStr; // Default to capitalized word
+                    NSLog(@"[Bridge] Intercepted variable %s -> %s", var->key, var->value);
+                    return true;
+                }
+                
+                // Also handle region variables which sometimes affect language
+                if (strstr(var->key, "region") != NULL || strstr(var->key, "Region") != NULL) {
+                    if (g_selectedLanguage == RETRO_LANGUAGE_JAPANESE) {
+                        var->value = "Japan";
+                    } else if (g_selectedLanguage == RETRO_LANGUAGE_ENGLISH) {
+                        var->value = "North America"; // Or Europe, but NA is safer for English
+                    } else {
+                        var->value = "Europe"; // Most other European languages
+                    }
+                    return true;
+                }
+
                 // mupen64plus-next: force angrylion (software) RDP to avoid GL4.2+ DSA requirement
                 // gliden64 requires glCreateTextures/glDispatchCompute etc. (GL4.5) not available on macOS
                 
@@ -720,4 +773,5 @@ static int16_t bridge_input_state(unsigned port, unsigned device, unsigned index
 + (void)saveState { if (g_instance) [g_instance saveState]; }
 + (void)setKeyState:(int)rid pressed:(BOOL)p { if (g_instance) [g_instance setKeyState:rid pressed:p]; }
 + (void)setAnalogState:(int)idx id:(int)id value:(int)v { if (g_instance) [g_instance setAnalogState:idx id:id value:v]; }
++ (void)setLanguage:(int)language { g_selectedLanguage = language; }
 @end

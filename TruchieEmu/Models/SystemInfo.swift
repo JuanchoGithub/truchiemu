@@ -80,9 +80,69 @@ enum BoxType: String, CaseIterable, Identifiable {
     }
 }
 
+enum EmulatorLanguage: Int, CaseIterable, Identifiable {
+    case english = 0
+    case japanese = 1
+    case french = 2
+    case german = 3
+    case spanish = 4
+    case italian = 5
+    case dutch = 6
+    case portuguese = 7
+    case russian = 8
+    case korean = 9
+    case chineseTraditional = 10
+    case chineseSimplified = 11
+    case esperanto = 12
+    case polish = 13
+    case vietnamese = 14
+    case arabic = 15
+    case greek = 16
+    case turkish = 17
+    case britishEnglish = 28
+    
+    var id: Int { self.rawValue }
+    
+    var name: String {
+        switch self {
+        case .english: return "English"
+        case .japanese: return "Japanese"
+        case .french: return "French"
+        case .german: return "German"
+        case .spanish: return "Spanish"
+        case .italian: return "Italian"
+        case .dutch: return "Dutch"
+        case .portuguese: return "Portuguese"
+        case .russian: return "Russian"
+        case .korean: return "Korean"
+        case .chineseTraditional: return "Chinese (Trad)"
+        case .chineseSimplified: return "Chinese (Simp)"
+        case .esperanto: return "Esperanto"
+        case .polish: return "Polish"
+        case .vietnamese: return "Vietnamese"
+        case .arabic: return "Arabic"
+        case .greek: return "Greek"
+        case .turkish: return "Turkish"
+        case .britishEnglish: return "British English"
+        }
+    }
+}
+
 class SystemPreferences: ObservableObject {
     static let shared = SystemPreferences()
     @Published var updateTrigger: Int = 0
+    
+    @Published var systemLanguage: EmulatorLanguage = .english {
+        didSet {
+            UserDefaults.standard.set(systemLanguage.rawValue, forKey: "systemLanguage")
+            updateTrigger += 1
+        }
+    }
+
+    init() {
+        let langRaw = UserDefaults.standard.integer(forKey: "systemLanguage")
+        self.systemLanguage = EmulatorLanguage(rawValue: langRaw) ?? .english
+    }
     
     func boxType(for systemID: String) -> BoxType {
         let rawValue = UserDefaults.standard.string(forKey: "boxType_\(systemID)") ?? BoxType.vertical.rawValue

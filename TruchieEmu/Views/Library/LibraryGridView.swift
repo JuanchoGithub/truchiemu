@@ -99,6 +99,24 @@ struct LibraryGridView: View {
                     }
                 }
 
+                // Language Selection
+                Menu {
+                    Picker("System Language", selection: Binding(
+                        get: { prefs.systemLanguage },
+                        set: { prefs.systemLanguage = $0 }
+                    )) {
+                        ForEach(EmulatorLanguage.allCases) { lang in
+                            Text(lang.name).tag(lang)
+                        }
+                    }
+                } label: {
+                    HStack(spacing: 4) {
+                        Image(systemName: "globe")
+                        Text(prefs.systemLanguage.name)
+                            .font(.caption)
+                    }
+                }
+
                 if case .system(let system) = filter {
                     Menu {
                         Picker("Box Type", selection: Binding(

@@ -49,7 +49,10 @@ class EmulatorRunner: ObservableObject, @unchecked Sendable {
         
         isRunning = true
         
+        let selectedLang = SystemPreferences.shared.systemLanguage.rawValue
+        
         emulationQueue.async {
+            LibretroBridge.setLanguage(Int32(selectedLang))
             LibretroBridge.launch(withDylibPath: core, romPath: rom.path.path,
                                   videoCallback: { [weak self] data, width, height, pitch, format in
                 self?.updateFrame(data: data, width: Int(width), height: Int(height), pitch: Int(pitch), format: Int(format))
