@@ -43,26 +43,42 @@ struct GeneralSettingsView: View {
     @EnvironmentObject var library: ROMLibrary
     var body: some View {
         Form {
-            Section("Library") {
-                LabeledContent("ROM Folder") {
+            Section("Library Folders") {
+                ForEach(Array(library.libraryFolders.enumerated()), id: \.element) { index, folder in
                     HStack {
-                        Text(library.romFolderURL?.lastPathComponent ?? "Not set")
-                            .foregroundColor(.secondary)
-                        Button("Change…") {
-                            let panel = NSOpenPanel()
-                            panel.canChooseDirectories = true
-                            panel.canChooseFiles = false
-                            if panel.runModal() == .OK, let url = panel.url {
-                                Task { await library.scanROMs(in: url) }
-                            }
+                        Image(systemName: "folder")
+                            .foregroundColor(.purple)
+                        Text(folder.path)
+                            .lineLimit(1)
+                            .truncationMode(.middle)
+                        Spacer()
+                        Button(role: .destructive) {
+                            library.removeLibraryFolder(at: index)
+                        } label: {
+                            Image(systemName: "trash")
                         }
+                        .buttonStyle(.plain)
+                        .foregroundColor(.red)
                     }
                 }
-                Button("Rescan Library") {
-                    if let url = library.romFolderURL {
-                        Task { await library.scanROMs(in: url) }
+                
+                Button("Add Folder…") {
+                    let panel = NSOpenPanel()
+                    panel.canChooseDirectories = true
+                    panel.canChooseFiles = false
+                    if panel.runModal() == .OK, let url = panel.url {
+                        library.addLibraryFolder(url: url)
                     }
                 }
+            }
+            
+            Section("Maintenance") {
+                Button("Rebuild Library from Scratch") {
+                    Task { await library.fullRescan() }
+                }
+                Text("This will clear the current library list and re-index all folders. Local metadata (info.json) and box art will be preserved.")
+                    .font(.caption)
+                    .foregroundColor(.secondary)
             }
         }
         .formStyle(.grouped)

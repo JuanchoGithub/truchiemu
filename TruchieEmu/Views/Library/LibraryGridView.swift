@@ -232,6 +232,12 @@ struct LibraryGridView: View {
         
         guard let cid = coreID else { return }
         
+        // Ensure the core is actually installed on disk
+        if !coreManager.isInstalled(coreID: cid) {
+            coreManager.requestCoreDownload(for: cid, systemID: sysID)
+            return
+        }
+
         // Log game played
         library.markPlayed(rom)
         

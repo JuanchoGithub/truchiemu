@@ -42,19 +42,40 @@ class CoreManager: ObservableObject {
         isFetchingCoreList = true
         defer { isFetchingCoreList = false }
 
-        guard let (data, _) = try? await URLSession.shared.data(from: buildbotBase),
-              let html = String(data: data, encoding: .utf8) else { return }
+        print("[CoreManager] Fetching cores from \(buildbotBase)")
+        var request = URLRequest(url: buildbotBase)
+        request.setValue("Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36", forHTTPHeaderField: "User-Agent")
 
-        // Parse the HTML index page for .dylib.zip links
-        let pattern = #"href="([^"]+_libretro\.dylib\.zip)""#
-        let regex = try? NSRegularExpression(pattern: pattern)
+        guard let (data, response) = try? await URLSession.shared.data(for: request) else {
+            print("[CoreManager] Failed to fetch core list: Network error")
+            return
+        }
+        
+        if let http = response as? HTTPURLResponse, http.statusCode != 200 {
+            print("[CoreManager] Failed to fetch core list: HTTP \(http.statusCode)")
+            return
+        }
+
+        guard let html = String(data: data, encoding: .utf8) else { 
+            print("[CoreManager] Failed to parse core list: Encoding error")
+            return 
+        }
+
+        // Parse the HTML index page for .dylib.zip links - handle both " and ' and relative/absolute paths
+        let pattern = #"href=['"]([^'"]+_libretro\.dylib\.zip)['"]"#
+        let regex = try? NSRegularExpression(pattern: pattern, options: .caseInsensitive)
         let matches = regex?.matches(in: html, range: NSRange(html.startIndex..., in: html)) ?? []
+
+        print("[CoreManager] Found \(matches.count) core links")
 
         var cores: [RemoteCoreInfo] = []
         for match in matches {
             guard let range = Range(match.range(at: 1), in: html) else { continue }
-            let fileName = String(html[range])
-            let downloadURL = buildbotBase.appendingPathComponent(fileName)
+            let fileNameFull = String(html[range])
+            // Extract just the filename if it's a full URL or path
+            let fileName = (fileNameFull as NSString).lastPathComponent
+            
+            let downloadURL = fileNameFull.contains("://") ? URL(string: fileNameFull)! : buildbotBase.appendingPathComponent(fileName)
             let coreID = fileName
                 .replacingOccurrences(of: ".dylib.zip", with: "")
                 .replacingOccurrences(of: ".dll.zip", with: "")
@@ -67,7 +88,6 @@ class CoreManager: ObservableObject {
                 .joined(separator: " ")
 
             var systemIDs = CoreManager.supportedSystems(for: coreID)
-            
             systemIDs = Array(Set(systemIDs)) // deduplicate
 
             cores.append(RemoteCoreInfo(
@@ -107,6 +127,8 @@ class CoreManager: ObservableObject {
     }
 
     func downloadCore(_ info: RemoteCoreInfo) async {
+        print("[CoreManager] Starting download: \(info.coreID) from \(info.downloadURL)")
+        
         // Mark as downloading
         if let idx = installedCores.firstIndex(where: { $0.id == info.coreID }) {
             installedCores[idx].isDownloading = true
@@ -117,7 +139,15 @@ class CoreManager: ObservableObject {
         }
 
         do {
-            let (tmpURL, _) = try await URLSession.shared.download(from: info.downloadURL)
+            var request = URLRequest(url: info.downloadURL)
+            request.setValue("Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36", forHTTPHeaderField: "User-Agent")
+            
+            let (tmpURL, response) = try await URLSession.shared.download(for: request)
+            
+            if let http = response as? HTTPURLResponse, http.statusCode != 200 {
+                throw NSError(domain: "CoreManager", code: http.statusCode, userInfo: [NSLocalizedDescriptionKey: "Server returned HTTP \(http.statusCode)"])
+            }
+            
             let tag = ISO8601DateFormatter().string(from: Date()).prefix(10).description
 
             // Destination folder
@@ -127,6 +157,8 @@ class CoreManager: ObservableObject {
             // Unzip
             let dylibName = info.fileName.replacingOccurrences(of: ".zip", with: "")
             let dylibDest = coreFolder.appendingPathComponent(dylibName)
+            
+            print("[CoreManager] Unzipping to \(dylibDest.path)")
             try await unzip(zipURL: tmpURL, extracting: dylibName, to: dylibDest)
 
             let version = CoreVersion(tag: tag, dylibPath: dylibDest, downloadedAt: Date(), remoteURL: info.downloadURL)
@@ -139,11 +171,12 @@ class CoreManager: ObservableObject {
             }
 
             saveInstalledCores()
+            print("[CoreManager] Successfully installed \(info.coreID)")
         } catch {
             if let idx = installedCores.firstIndex(where: { $0.id == info.coreID }) {
                 installedCores[idx].isDownloading = false
             }
-            print("[CoreManager] Download failed: \(error)")
+            print("[CoreManager] Download failed for \(info.coreID): \(error.localizedDescription)")
         }
     }
 
@@ -220,8 +253,13 @@ class CoreManager: ObservableObject {
         let proc = Process()
         proc.executableURL = URL(fileURLWithPath: "/usr/bin/ditto")
         proc.arguments = ["-xk", zipURL.path, tmpDir.path]
+        
         try proc.run()
         proc.waitUntilExit()
+        
+        if proc.terminationStatus != 0 {
+            throw NSError(domain: "CoreManager", code: Int(proc.terminationStatus), userInfo: [NSLocalizedDescriptionKey: "ditto failed with exit code \(proc.terminationStatus)"])
+        }
 
         // Recursive search for the dylib
         let enumerator = FileManager.default.enumerator(at: tmpDir, includingPropertiesForKeys: nil)
@@ -239,6 +277,7 @@ class CoreManager: ObservableObject {
             await prepareCore(at: destination.path)
         } else {
             print("[CoreManager] Failed to find \(targetName) in unzipped archive.")
+            throw NSError(domain: "CoreManager", code: 404, userInfo: [NSLocalizedDescriptionKey: "Failed to find \(targetName) in unzipped archive."])
         }
         try? FileManager.default.removeItem(at: tmpDir)
     }

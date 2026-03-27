@@ -7,7 +7,8 @@ class ROMLibrary: ObservableObject {
     @Published var isScanning: Bool = false
     @Published var scanProgress: Double = 0
     @Published var hasCompletedOnboarding: Bool
-    @Published var romFolderURL: URL?
+    @Published var libraryFolders: [URL] = []
+    var romFolderURL: URL? { libraryFolders.first }
 
     // File signature index for smart rescan
     private struct FileSignature: Codable, Hashable { let size: Int64; let modTime: TimeInterval }
@@ -20,21 +21,39 @@ class ROMLibrary: ObservableObject {
 
     private let romsKey = "saved_roms"
     private let onboardingKey = "has_completed_onboarding"
-    private let folderKey = "rom_folder_bookmark"
+    private let foldersKey = "library_folders_bookmarks_v2"
 
     init() {
         self.hasCompletedOnboarding = UserDefaults.standard.bool(forKey: "has_completed_onboarding")
         loadROMsFromDisk()
-        restoreROMFolderAccess()
+        restoreLibraryAccess()
         loadFileIndex()
     }
 
     func completeOnboarding(folderURL: URL) {
-        self.romFolderURL = folderURL
-        saveSecurityScopedBookmark(for: folderURL)
+        addLibraryFolder(url: folderURL)
         hasCompletedOnboarding = true
         defaults.set(true, forKey: onboardingKey)
-        Task { await scanROMs(in: folderURL) }
+    }
+
+    func addLibraryFolder(url: URL) {
+        if !libraryFolders.contains(url) {
+            libraryFolders.append(url)
+            saveSecurityScopedBookmarks()
+        }
+        Task { await scanROMs(in: url) }
+    }
+
+    func removeLibraryFolder(at index: Int) {
+        guard index < libraryFolders.count else { return }
+        let url = libraryFolders[index]
+        libraryFolders.remove(at: index)
+        saveSecurityScopedBookmarks()
+        
+        // Remove ROMs that are descendants of this folder
+        let folderPath = url.path
+        roms.removeAll { $0.path.path.hasPrefix(folderPath) }
+        saveROMsToDisk()
     }
 
     func scanROMs(in folder: URL) async {
@@ -54,6 +73,24 @@ class ROMLibrary: ObservableObject {
         isScanning = false
         saveROMsToDisk()
         Task { await BoxArtService.shared.batchDownloadBoxArtGoogle(for: self.roms, library: self) }
+    }
+
+    func fullRescan() async {
+        isScanning = true
+        scanProgress = 0
+        
+        // Clear all except maybe favorites? 
+        // User said "rebuild from scratch", so let's wipe roms but keep metadata on disk.
+        roms = []
+        fileIndex = [:]
+        saveROMsToDisk()
+        saveFileIndex()
+        
+        for folder in libraryFolders {
+            await scanROMs(in: folder)
+        }
+        
+        isScanning = false
     }
 
     func updateROM(_ rom: ROM) {
@@ -163,22 +200,39 @@ class ROMLibrary: ObservableObject {
         roms = saved
     }
 
-    private func saveSecurityScopedBookmark(for url: URL) {
-        guard let bookmark = try? url.bookmarkData(options: .withSecurityScope,
-                                                    includingResourceValuesForKeys: nil,
-                                                    relativeTo: nil) else { return }
-        defaults.set(bookmark, forKey: folderKey)
+    private func saveSecurityScopedBookmarks() {
+        let bookmarks = libraryFolders.compactMap { url -> Data? in
+            _ = url.startAccessingSecurityScopedResource()
+            return try? url.bookmarkData(options: .withSecurityScope,
+                                          includingResourceValuesForKeys: nil,
+                                          relativeTo: nil)
+        }
+        defaults.set(bookmarks, forKey: foldersKey)
     }
 
-    private func restoreROMFolderAccess() {
-        guard let bookmark = defaults.data(forKey: folderKey) else { return }
-        var stale = false
-        if let url = try? URL(resolvingBookmarkData: bookmark,
-                               options: .withSecurityScope,
-                               relativeTo: nil,
-                               bookmarkDataIsStale: &stale) {
-            _ = url.startAccessingSecurityScopedResource()
-            romFolderURL = url
+    private func restoreLibraryAccess() {
+        if let bookmarks = defaults.array(forKey: foldersKey) as? [Data] {
+            for data in bookmarks {
+                var stale = false
+                if let url = try? URL(resolvingBookmarkData: data,
+                                       options: .withSecurityScope,
+                                       relativeTo: nil,
+                                       bookmarkDataIsStale: &stale) {
+                    _ = url.startAccessingSecurityScopedResource()
+                    libraryFolders.append(url)
+                }
+            }
+        } else if let legacyData = defaults.data(forKey: "rom_folder_bookmark") {
+            // Migration
+            var stale = false
+            if let url = try? URL(resolvingBookmarkData: legacyData,
+                                   options: .withSecurityScope,
+                                   relativeTo: nil,
+                                   bookmarkDataIsStale: &stale) {
+                _ = url.startAccessingSecurityScopedResource()
+                libraryFolders.append(url)
+                saveSecurityScopedBookmarks() // Move to new format
+            }
         }
     }
 

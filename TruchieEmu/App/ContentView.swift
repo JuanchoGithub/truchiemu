@@ -37,6 +37,9 @@ struct ContentView: View {
             EmptyDetailView()
         }
         .navigationSplitViewStyle(.balanced)
+        .sheet(item: $coreManager.pendingDownload) { pending in
+            CoreDownloadSheet(pending: pending)
+        }
     }
 
     private var navigationTitle: String {

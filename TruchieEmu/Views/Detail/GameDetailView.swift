@@ -232,6 +232,12 @@ struct GameDetailView: View {
         let coreID = useCustomCore ? selectedCoreID : (sysPrefs.preferredCoreID(for: sysID) ?? system?.defaultCoreID)
         guard let cid = coreID else { return }
         
+        // Ensure the core is actually installed on disk
+        if !coreManager.isInstalled(coreID: cid) {
+            coreManager.requestCoreDownload(for: cid, systemID: sysID)
+            return
+        }
+
         library.markPlayed(currentROM)
         
         let runner = EmulatorRunner.forSystem(sysID)
