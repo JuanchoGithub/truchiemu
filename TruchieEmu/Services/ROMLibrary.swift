@@ -8,6 +8,8 @@ class ROMLibrary: ObservableObject {
     @Published var scanProgress: Double = 0
     @Published var hasCompletedOnboarding: Bool
     @Published var libraryFolders: [URL] = []
+    @Published var romCounts: [String: Int] = [:] // "all", "favorites", "recent", or systemID
+    @Published var lastChangeDate = Date()
     var romFolderURL: URL? { libraryFolders.first }
 
     // File signature index for smart rescan
@@ -28,6 +30,21 @@ class ROMLibrary: ObservableObject {
         loadROMsFromDisk()
         restoreLibraryAccess()
         loadFileIndex()
+        updateCounts()
+    }
+
+    private func updateCounts() {
+        var counts: [String: Int] = [:]
+        counts["all"] = roms.count
+        counts["favorites"] = roms.filter { $0.isFavorite }.count
+        counts["recent"] = roms.filter { $0.lastPlayed != nil }.count
+        
+        let grouped = Dictionary(grouping: roms) { $0.systemID ?? "unknown" }
+        for (sysID, list) in grouped {
+            counts[sysID] = list.count
+        }
+        self.romCounts = counts
+        self.lastChangeDate = Date()
     }
 
     func completeOnboarding(folderURL: URL) {
@@ -53,6 +70,7 @@ class ROMLibrary: ObservableObject {
         // Remove ROMs that are descendants of this folder
         let folderPath = url.path
         roms.removeAll { $0.path.path.hasPrefix(folderPath) }
+        updateCounts()
         saveROMsToDisk()
     }
 
@@ -78,6 +96,7 @@ class ROMLibrary: ObservableObject {
             }
             return true
         }.sorted { $0.displayName < $1.displayName }
+        updateCounts()
         isScanning = false
         saveROMsToDisk()
         // Task { await BoxArtService.shared.batchDownloadBoxArtGoogle(for: self.roms, library: self) }
@@ -114,6 +133,7 @@ class ROMLibrary: ObservableObject {
             }
             
             updateGamesXML(for: rom)
+            updateCounts()
             saveROMsToDisk()
         }
     }

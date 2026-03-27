@@ -11,31 +11,21 @@ struct SystemSidebarView: View {
             .sorted { $0.sortOrder < $1.sortOrder }
     }
 
-    private var romCount: (SystemInfo?) -> Int {
-        { system in
-            if let system = system {
-                return library.roms.filter { $0.systemID == system.id }.count
-            } else {
-                return library.roms.count
-            }
-        }
-    }
-
     var body: some View {
         List(selection: $selectedFilter) {
             // All games
-            sidebarRow(icon: "square.grid.2x2", label: "All Games", count: romCount(nil))
+            sidebarRow(icon: "square.grid.2x2", label: "All Games", count: library.romCounts["all"] ?? 0)
                 .tag(LibraryFilter.all)
 
             // Favorites
-            let favCount = library.roms.filter { $0.isFavorite }.count
+            let favCount = library.romCounts["favorites"] ?? 0
             if favCount > 0 {
                 sidebarRow(icon: "heart.fill", label: "Favorites", count: favCount, tint: .pink)
                     .tag(LibraryFilter.favorites)
             }
 
             // Recently played
-            let recentCount = library.roms.filter { $0.lastPlayed != nil }.count
+            let recentCount = library.romCounts["recent"] ?? 0
             sidebarRow(icon: "clock.fill", label: "Recent", count: recentCount, tint: .orange)
                  .tag(LibraryFilter.recent)
 
@@ -45,7 +35,7 @@ struct SystemSidebarView: View {
                         sidebarRow(
                             icon: system.iconName,
                             label: system.name,
-                            count: romCount(system)
+                            count: library.romCounts[system.id] ?? 0
                         )
                         .tag(LibraryFilter.system(system))
                     }

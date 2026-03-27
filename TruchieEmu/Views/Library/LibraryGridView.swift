@@ -19,23 +19,9 @@ struct LibraryGridView: View {
 
     private enum ViewMode: String { case grid, list }
 
-    private var filteredROMs: [ROM] {
-        let base: [ROM]
-        switch filter {
-        case .all:
-            base = library.roms
-        case .favorites:
-            base = library.roms.filter { $0.isFavorite }
-        case .recent:
-            base = library.roms.filter { $0.lastPlayed != nil }
-                .sorted { ($0.lastPlayed ?? Date.distantPast) > ($1.lastPlayed ?? Date.distantPast) }
-        case .system(let system):
-            base = library.roms.filter { $0.systemID == system.id }
-        }
+    @State private var displayedROMs: [ROM] = []
+    @State private var columns: [GridItem] = []
 
-        if searchText.isEmpty { return base }
-        return base.filter { $0.displayName.localizedCaseInsensitiveContains(searchText) }
-    }
     var body: some View {
         VStack(spacing: 0) {
             searchField
@@ -43,7 +29,7 @@ struct LibraryGridView: View {
             ZStack {
                 if library.isScanning {
                     scanningOverlay
-                } else if filteredROMs.isEmpty {
+                } else if displayedROMs.isEmpty {
                     emptyState
                 } else if viewMode == .grid {
                     gridView
@@ -169,21 +155,61 @@ struct LibraryGridView: View {
         .sheet(item: $manualBoxArtSearchROM) { rom in
             BoxArtPickerView(rom: rom)
         }
+        .onAppear { 
+            updateDisplayedROMs() 
+            updateColumns()
+        }
+        .onChange(of: searchText) { _ in updateDisplayedROMs() }
+        .onChange(of: filter) { _ in updateDisplayedROMs() }
+        .onChange(of: library.lastChangeDate) { _ in updateDisplayedROMs() }
+        .onChange(of: columnCount) { _ in updateColumns() }
+    }
+
+    private func updateDisplayedROMs() {
+        let base: [ROM]
+        switch filter {
+        case .all:
+            base = library.roms
+        case .favorites:
+            base = library.roms.filter { $0.isFavorite }
+        case .recent:
+            base = library.roms.filter { $0.lastPlayed != nil }
+                .sorted { ($0.lastPlayed ?? Date.distantPast) > ($1.lastPlayed ?? Date.distantPast) }
+        case .system(let system):
+            base = library.roms.filter { $0.systemID == system.id }
+        }
+
+        if searchText.isEmpty {
+            displayedROMs = base
+        } else {
+            displayedROMs = base.filter { $0.displayName.localizedCaseInsensitiveContains(searchText) }
+        }
+    }
+
+    private func updateColumns() {
+        columns = Array(repeating: GridItem(.flexible(), spacing: 16), count: columnCount)
     }
 
     private var gridView: some View {
-        let columns = Array(repeating: GridItem(.flexible(), spacing: 16), count: columnCount)
-        return ScrollView {
+        ScrollView {
             LazyVGrid(columns: columns, spacing: 16) {
-                ForEach(filteredROMs) { rom in
+                ForEach(displayedROMs) { rom in
                     GameCardView(rom: rom, isSelected: selectedROM?.id == rom.id)
-                        .onTapGesture(count: 2) { 
-                            selectedROM = rom
-                            launchGame(rom)
-                        }
-                        .onTapGesture { 
-                            selectedROM = rom 
-                        }
+                        .contentShape(Rectangle()) // Ensure the whole card is tappable
+                        .gesture(
+                            DragGesture(minimumDistance: 0)
+                                .onChanged { _ in
+                                    // Instant selection on "push down"
+                                    if selectedROM?.id != rom.id {
+                                        selectedROM = rom
+                                    }
+                                }
+                        )
+                        .simultaneousGesture(
+                            TapGesture(count: 2).onEnded {
+                                launchGame(rom)
+                            }
+                        )
                         .contextMenu { contextMenu(for: rom) }
                 }
             }
@@ -192,7 +218,7 @@ struct LibraryGridView: View {
     }
 
     private var listView: some View {
-        List(filteredROMs, selection: $selectedROM) { rom in
+        List(displayedROMs, selection: $selectedROM) { rom in
             GameListRowView(rom: rom)
                 .tag(rom)
                 .onTapGesture(count: 2) {
@@ -330,6 +356,7 @@ struct GameCardView: View {
     let rom: ROM
     let isSelected: Bool
     @State private var isHovered = false
+    @State private var image: NSImage?
     @ObservedObject var prefs = SystemPreferences.shared
 
     private var boxType: BoxType {
@@ -358,12 +385,19 @@ struct GameCardView: View {
         .scaleEffect(isHovered ? 1.03 : 1)
         .animation(.spring(response: 0.25, dampingFraction: 0.7), value: isHovered)
         .onHover { isHovered = $0 }
+        .task(id: rom.boxArtPath) {
+            if let artPath = rom.boxArtPath {
+                // Load image asynchronously
+                self.image = await ImageCache.shared.image(for: artPath)
+            } else {
+                self.image = nil
+            }
+        }
     }
 
     private var artworkView: some View {
         ZStack {
-            if let artPath = rom.boxArtPath,
-               let nsImage = ImageCache.shared.image(for: artPath) {
+            if let nsImage = image {
                 Image(nsImage: nsImage)
                     .resizable()
                     .aspectRatio(contentMode: .fit)
@@ -376,6 +410,7 @@ struct GameCardView: View {
         .clipShape(RoundedRectangle(cornerRadius: 8))
         .shadow(color: .black.opacity(0.3), radius: 6, x: 0, y: 3)
     }
+
 
     private var placeholderArt: some View {
         ZStack {
@@ -412,6 +447,7 @@ struct GameCardView: View {
 
 struct GameListRowView: View {
     let rom: ROM
+    @State private var thumb: NSImage?
 
     var body: some View {
         HStack(spacing: 12) {
@@ -436,11 +472,18 @@ struct GameListRowView: View {
             }
         }
         .padding(.vertical, 4)
+        .task(id: rom.boxArtPath) {
+            if let artPath = rom.boxArtPath {
+                self.thumb = await ImageCache.shared.image(for: artPath)
+            } else {
+                self.thumb = nil
+            }
+        }
     }
 
     private var artThumb: some View {
         Group {
-            if let artPath = rom.boxArtPath, let img = ImageCache.shared.image(for: artPath) {
+            if let img = thumb {
                 Image(nsImage: img).resizable().aspectRatio(contentMode: .fit)
             } else {
                 Image(systemName: SystemDatabase.system(forID: rom.systemID ?? "")?.iconName ?? "gamecontroller")
@@ -457,21 +500,25 @@ struct GameListRowView: View {
 import SwiftUI
 import AppKit
 
-class ImageCache {
+actor ImageCache {
     static let shared = ImageCache()
     private var cache = NSCache<NSURL, NSImage>()
     
-    func image(for url: URL) -> NSImage? {
+    func image(for url: URL) async -> NSImage? {
         if let cached = cache.object(forKey: url as NSURL) {
             return cached
         }
         
-        if let image = NSImage(contentsOf: url) {
+        // Load on background thread
+        let image = await Task.detached(priority: .userInitiated) {
+            return NSImage(contentsOf: url)
+        }.value
+        
+        if let image = image {
             cache.setObject(image, forKey: url as NSURL)
-            return image
         }
         
-        return nil
+        return image
     }
     
     func clear() {
