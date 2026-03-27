@@ -1,4 +1,5 @@
 import SwiftUI
+import GameController
 
 struct SettingsView: View {
     @EnvironmentObject var library: ROMLibrary
@@ -359,12 +360,26 @@ struct ControllerMappingDetail: View {
     private func listenForButton(_ btn: RetroButton) {
         guard let gc = player.gcController else { return }
         gc.extendedGamepad?.valueChangedHandler = { pad, element in
+            // If it's a complex element (DPad or Stick), we want to find the specific direction button
+            if let dpad = element as? GCControllerDirectionPad {
+                if dpad.up.isPressed { save(dpad.up) }
+                else if dpad.down.isPressed { save(dpad.down) }
+                else if dpad.left.isPressed { save(dpad.left) }
+                else if dpad.right.isPressed { save(dpad.right) }
+            } else if let button = element as? GCControllerButtonInput, button.isPressed {
+                save(button)
+            } else if let axis = element as? GCControllerAxisInput, abs(axis.value) > 0.6 {
+                save(axis)
+            }
+        }
+        
+        func save(_ element: GCControllerElement) {
             let name = element.localizedName ?? "Button"
             DispatchQueue.main.async {
                 mapping.buttons[btn] = GCButtonMapping(gcElementName: name, gcElementAlias: name)
                 listeningFor = nil
                 gc.extendedGamepad?.valueChangedHandler = nil
-                save()
+                self.save()
             }
         }
     }
