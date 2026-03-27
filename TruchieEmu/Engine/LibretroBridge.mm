@@ -175,15 +175,28 @@ static bool bridge_environment(unsigned cmd, void *data) {
         case RETRO_ENVIRONMENT_GET_CAN_DUPE:
             if (data) *(unsigned char *)data = 1;
             return true;
-        case RETRO_ENVIRONMENT_GET_SYSTEM_DIRECTORY:
+        case RETRO_ENVIRONMENT_GET_SYSTEM_DIRECTORY: {
+            static char s_sysPath[1024];
+            NSString *path = nil;
+            if (g_instance && g_instance->_retainedRomPath) {
+                path = [g_instance->_retainedRomPath stringByDeletingLastPathComponent];
+            } else {
+                path = [NSSearchPathForDirectoriesInDomains(NSApplicationSupportDirectory, NSUserDomainMask, YES) firstObject];
+                path = [path stringByAppendingPathComponent:@"TruchieEmu/System"];
+                [[NSFileManager defaultManager] createDirectoryAtPath:path withIntermediateDirectories:YES attributes:nil error:nil];
+            }
+            strncpy(s_sysPath, path.UTF8String, sizeof(s_sysPath) - 1);
+            if (data) *(const char **)data = s_sysPath;
+            return true;
+        }
         case RETRO_ENVIRONMENT_GET_SAVE_DIRECTORY: {
+            static char s_savePath[1024];
             NSString *path = [NSSearchPathForDirectoriesInDomains(NSApplicationSupportDirectory, NSUserDomainMask, YES) firstObject];
             path = [path stringByAppendingPathComponent:@"TruchieEmu"];
             [[NSFileManager defaultManager] createDirectoryAtPath:path withIntermediateDirectories:YES attributes:nil error:nil];
             
-            static char s_sysPath[1024];
-            strncpy(s_sysPath, path.UTF8String, sizeof(s_sysPath) - 1);
-            if (data) *(const char **)data = s_sysPath;
+            strncpy(s_savePath, path.UTF8String, sizeof(s_savePath) - 1);
+            if (data) *(const char **)data = s_savePath;
             return true;
         }
         case RETRO_ENVIRONMENT_SET_PIXEL_FORMAT:
@@ -366,6 +379,10 @@ static int16_t bridge_input_state(unsigned port, unsigned device, unsigned index
 
 - (BOOL)launchROM:(NSString *)romPath videoCallback:(VideoFrameCallback)cb {
     _videoCallback = cb;
+    _retainedRomPath = [romPath copy];
+    _retainedRomData = [[NSData alloc] initWithContentsOfFile:_retainedRomPath];
+    NSLog(@"[Bridge] Loading ROM: %@ (Size: %lu bytes)", _retainedRomPath, (unsigned long)_retainedRomData.length);
+
     _retro_set_environment(bridge_environment);
     _retro_set_video_refresh(bridge_video_refresh);
     _retro_set_audio_sample(bridge_audio_sample);
@@ -374,10 +391,6 @@ static int16_t bridge_input_state(unsigned port, unsigned device, unsigned index
     _retro_set_input_state(bridge_input_state);
     
     _retro_init();
-    
-    _retainedRomPath = [romPath copy];
-    _retainedRomData = [[NSData alloc] initWithContentsOfFile:_retainedRomPath];
-    NSLog(@"[Bridge] Loading ROM: %@ (Size: %lu bytes)", _retainedRomPath, (unsigned long)_retainedRomData.length);
     
     struct retro_game_info gi = {0};
     gi.path = _retainedRomPath.UTF8String;
