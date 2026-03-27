@@ -133,6 +133,7 @@ typedef void (^VideoFrameCallback)(const void *data, int width, int height, int 
 
 static LibretroBridgeImpl *g_instance = nil;
 static int g_selectedLanguage = 0; // RETRO_LANGUAGE_ENGLISH
+static int g_logLevel = 1; // 1 = Warn & Error
 // Shared with bridge_get_current_framebuffer — updated by setupHWRender
 static GLuint g_hwFBO = 0;
 
@@ -172,9 +173,10 @@ static void bridge_log_printf(enum retro_log_level level, const char *fmt, ...) 
     if (format) {
         NSString *message = [[NSString alloc] initWithFormat:format arguments:args];
         if (message) {
-            if (level >= RETRO_LOG_ERROR) NSLog(@"[Core-ERR] %@", message);
-            else if (level == RETRO_LOG_WARN) NSLog(@"[Core-WRN] %@", message);
-            else if (level == RETRO_LOG_INFO) NSLog(@"[Core-INF] %@", message);
+            // Mapping retro_log_level to our internal g_logLevel (0:Info, 1:Warn, 2:Error, 3:None)
+            if (level >= RETRO_LOG_ERROR && g_logLevel <= 2) NSLog(@"[Core-ERR] %@", message);
+            else if (level == RETRO_LOG_WARN && g_logLevel <= 1) NSLog(@"[Core-WRN] %@", message);
+            else if (level <= RETRO_LOG_INFO && g_logLevel == 0) NSLog(@"[Core-INF] %@", message);
         }
     }
     va_end(args);
@@ -774,4 +776,5 @@ static int16_t bridge_input_state(unsigned port, unsigned device, unsigned index
 + (void)setKeyState:(int)rid pressed:(BOOL)p { if (g_instance) [g_instance setKeyState:rid pressed:p]; }
 + (void)setAnalogState:(int)idx id:(int)id value:(int)v { if (g_instance) [g_instance setAnalogState:idx id:id value:v]; }
 + (void)setLanguage:(int)language { g_selectedLanguage = language; }
++ (void)setLogLevel:(int)level { g_logLevel = level; }
 @end

@@ -36,10 +36,8 @@ struct SystemSidebarView: View {
 
             // Recently played
             let recentCount = library.roms.filter { $0.lastPlayed != nil }.count
-            if recentCount > 0 {
-                sidebarRow(icon: "clock.fill", label: "Recent", count: recentCount, tint: .orange)
-                    .tag(LibraryFilter.recent)
-            }
+            sidebarRow(icon: "clock.fill", label: "Recent", count: recentCount, tint: .orange)
+                 .tag(LibraryFilter.recent)
 
             if !systemsWithROMs.isEmpty {
                 Section("Systems") {

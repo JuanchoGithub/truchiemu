@@ -117,6 +117,24 @@ struct LibraryGridView: View {
                     }
                 }
 
+                // Log Level Selection
+                Menu {
+                    Picker("Core Logs", selection: Binding(
+                        get: { prefs.coreLogLevel },
+                        set: { prefs.coreLogLevel = $0 }
+                    )) {
+                        ForEach(CoreLogLevel.allCases) { level in
+                            Text(level.name).tag(level)
+                        }
+                    }
+                } label: {
+                    HStack(spacing: 4) {
+                        Image(systemName: "list.bullet.rectangle")
+                        Text(prefs.coreLogLevel == .info ? "Verbose" : (prefs.coreLogLevel == .none ? "Silenced" : "Logs"))
+                            .font(.caption)
+                    }
+                }
+
                 if case .system(let system) = filter {
                     Menu {
                         Picker("Box Type", selection: Binding(
@@ -159,10 +177,12 @@ struct LibraryGridView: View {
             LazyVGrid(columns: columns, spacing: 16) {
                 ForEach(filteredROMs) { rom in
                     GameCardView(rom: rom, isSelected: selectedROM?.id == rom.id)
-                        .onTapGesture { selectedROM = rom }
                         .onTapGesture(count: 2) { 
                             selectedROM = rom
                             launchGame(rom)
+                        }
+                        .onTapGesture { 
+                            selectedROM = rom 
                         }
                         .contextMenu { contextMenu(for: rom) }
                 }
@@ -343,7 +363,7 @@ struct GameCardView: View {
     private var artworkView: some View {
         ZStack {
             if let artPath = rom.boxArtPath,
-               let nsImage = NSImage(contentsOf: artPath) {
+               let nsImage = ImageCache.shared.image(for: artPath) {
                 Image(nsImage: nsImage)
                     .resizable()
                     .aspectRatio(contentMode: .fit)
@@ -420,7 +440,7 @@ struct GameListRowView: View {
 
     private var artThumb: some View {
         Group {
-            if let artPath = rom.boxArtPath, let img = NSImage(contentsOf: artPath) {
+            if let artPath = rom.boxArtPath, let img = ImageCache.shared.image(for: artPath) {
                 Image(nsImage: img).resizable().aspectRatio(contentMode: .fit)
             } else {
                 Image(systemName: SystemDatabase.system(forID: rom.systemID ?? "")?.iconName ?? "gamecontroller")
@@ -434,3 +454,27 @@ struct GameListRowView: View {
     }
 }
 
+import SwiftUI
+import AppKit
+
+class ImageCache {
+    static let shared = ImageCache()
+    private var cache = NSCache<NSURL, NSImage>()
+    
+    func image(for url: URL) -> NSImage? {
+        if let cached = cache.object(forKey: url as NSURL) {
+            return cached
+        }
+        
+        if let image = NSImage(contentsOf: url) {
+            cache.setObject(image, forKey: url as NSURL)
+            return image
+        }
+        
+        return nil
+    }
+    
+    func clear() {
+        cache.removeAllObjects()
+    }
+}

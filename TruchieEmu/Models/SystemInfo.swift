@@ -128,6 +128,23 @@ enum EmulatorLanguage: Int, CaseIterable, Identifiable {
     }
 }
 
+enum CoreLogLevel: Int, CaseIterable, Identifiable {
+    case info = 0
+    case warn = 1
+    case error = 2
+    case none = 3
+    
+    var id: Int { self.rawValue }
+    var name: String {
+        switch self {
+        case .info: return "All Logs"
+        case .warn: return "Warnings & Errors"
+        case .error: return "Errors Only"
+        case .none: return "No Logs"
+        }
+    }
+}
+
 class SystemPreferences: ObservableObject {
     static let shared = SystemPreferences()
     @Published var updateTrigger: Int = 0
@@ -138,10 +155,19 @@ class SystemPreferences: ObservableObject {
             updateTrigger += 1
         }
     }
+    
+    @Published var coreLogLevel: CoreLogLevel = .warn {
+        didSet {
+            UserDefaults.standard.set(coreLogLevel.rawValue, forKey: "coreLogLevel")
+            updateTrigger += 1
+        }
+    }
 
     init() {
         let langRaw = UserDefaults.standard.integer(forKey: "systemLanguage")
         self.systemLanguage = EmulatorLanguage(rawValue: langRaw) ?? .english
+        let logRaw = UserDefaults.standard.object(forKey: "coreLogLevel") as? Int ?? CoreLogLevel.warn.rawValue
+        self.coreLogLevel = CoreLogLevel(rawValue: logRaw) ?? .warn
     }
     
     func boxType(for systemID: String) -> BoxType {

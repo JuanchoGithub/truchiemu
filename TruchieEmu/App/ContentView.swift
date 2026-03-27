@@ -3,7 +3,7 @@ import SwiftUI
 struct ContentView: View {
     @EnvironmentObject var library: ROMLibrary
     @EnvironmentObject var coreManager: CoreManager
-    @State private var selectedFilter: LibraryFilter = .all
+    @State private var selectedFilter: LibraryFilter = .recent
     @State private var selectedROM: ROM? = nil
     @State private var showOnboarding = false
     @State private var searchText = ""
@@ -26,15 +26,13 @@ struct ContentView: View {
     private var mainInterface: some View {
         NavigationSplitView {
             SystemSidebarView(selectedFilter: $selectedFilter)
-        } content: {
+        } detail: {
             LibraryGridView(
                 filter: selectedFilter,
                 selectedROM: $selectedROM,
                 searchText: $searchText
             )
             .navigationTitle(navigationTitle)
-        } detail: {
-            EmptyDetailView()
         }
         .navigationSplitViewStyle(.balanced)
         .sheet(item: $coreManager.pendingDownload) { pending in
