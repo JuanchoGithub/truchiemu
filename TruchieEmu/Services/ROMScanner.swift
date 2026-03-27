@@ -109,12 +109,150 @@ actor ROMScanner {
     // MARK: - System Identification
 
     private func identifySystem(url: URL, extension ext: String) -> SystemInfo? {
-        // For ZIP files, peek inside to determine if it's MAME or a known compressed ROM
+        // 1. For ZIP files, peek inside to determine if it's MAME or a known compressed ROM
         if ext == "zip" || ext == "7z" {
             return identifyArchive(url: url)
         }
+
+        // 2. Try to identify by filename hints (e.g. "(PS1)" or "SLES-00918")
+        if let systemID = detectSystemFromFilename(url.lastPathComponent) {
+            if let system = SystemDatabase.system(forID: systemID) {
+                return system
+            }
+        }
+
+        // 3. For CD-based or ambiguous extensions, peek at the header
+        let ambiguous = ["cue", "bin", "iso", "img"]
+        if ambiguous.contains(ext) {
+            if let systemID = peekSystemID(url: url) {
+                if let system = SystemDatabase.system(forID: systemID) {
+                    return system
+                }
+            }
+        }
+
+        // 4. Fallback to extension matching
         return SystemDatabase.system(forExtension: ext)
     }
+
+    private func detectSystemFromFilename(_ filename: String) -> String? {
+        let upper = filename.uppercased()
+        
+        // Explicit tags
+        if upper.contains("(PS1)") || upper.contains("[PS1]") || upper.contains("(PSX)") {
+            return "psx"
+        }
+        if upper.contains("(SATURN)") || upper.contains("[SATURN]") {
+            return "saturn"
+        }
+        if upper.contains("(GENESIS)") || upper.contains("(MEGA DRIVE)") {
+            return "genesis"
+        }
+        
+        // PS1 Serials: SCES, SLES, SLUS, SCUS, SLPS, SLPM, SCPH followed by 5 digits
+        let ps1Regex = try? NSRegularExpression(pattern: "(S[CL][EP][SM]|SCPH)-\\d{5}", options: [])
+        if let regex = ps1Regex, regex.firstMatch(in: upper, options: [], range: NSRange(location: 0, length: upper.count)) != nil {
+            return "psx"
+        }
+        
+        return nil
+    }
+
+    private func peekSystemID(url: URL) -> String? {
+        let ext = url.pathExtension.lowercased()
+        
+        if ext == "cue" {
+            // Read cue and find first file
+            guard let content = try? String(contentsOf: url, encoding: .utf8) else { return nil }
+            let lines = content.components(separatedBy: .newlines)
+            for line in lines {
+                let trimmed = line.trimmingCharacters(in: .whitespaces)
+                if trimmed.uppercased().hasPrefix("FILE") {
+                    // Extract filename between quotes or after FILE
+                    // FILE "FIFA 98 [PAL] [SLES-00918].bin" BINARY
+                    let scanner = Scanner(string: trimmed)
+                    _ = scanner.scanString("FILE")
+                    var filename: NSString?
+                    if scanner.scanString("\"") != nil {
+                        _ = scanner.scanUpTo("\"", into: &filename)
+                    } else {
+                        // Fallback to reading until whitespace
+                        var temp: String = ""
+                        while !scanner.isAtEnd {
+                            if let char = scanner.scanCharacter(), !char.isWhitespace {
+                                temp.append(char)
+                            } else {
+                                break
+                            }
+                        }
+                        filename = temp as NSString
+                    }
+                    
+                    if let filename = filename as String? {
+                        let binURL = url.deletingLastPathComponent().appendingPathComponent(filename)
+                        debugPrint("Checking bin found in cue: \(binURL.path)")
+                        return peekHeader(url: binURL)
+                    }
+                    break // Only check first FILE
+                }
+            }
+        } else {
+            return peekHeader(url: url)
+        }
+        return nil
+    }
+
+    private func peekHeader(url: URL) -> String? {
+        // Ensure file exists and is readable
+        guard FileManager.default.fileExists(atPath: url.path) else { return nil }
+        
+        guard let fileHandle = try? FileHandle(forReadingFrom: url) else { return nil }
+        defer { try? fileHandle.close() }
+        
+        // Read up to 0x9400 bytes to cover both 2048 and 2352 sector sizes for PS1
+        guard let data = try? fileHandle.read(upToCount: 0x9400) else { return nil }
+        
+        // 1. Check Sega Saturn (at 0x0) - "SEGA SEGASATURN"
+        let saturnMagic = "SEGA SEGASATURN"
+        if data.count >= saturnMagic.count {
+            if let str = String(data: data.prefix(saturnMagic.count), encoding: .ascii),
+               str == saturnMagic {
+                return "saturn"
+            }
+        }
+        
+        // 2. Check Sega Genesis (at 0x100) - "SEGA"
+        if data.count >= 0x104 {
+            let genesisMagic = "SEGA"
+            let slice = data[0x100..<0x104]
+            if let str = String(data: slice, encoding: .ascii),
+               str == genesisMagic {
+                return "genesis"
+            }
+        }
+        
+        // 3. Check PS1 (at 0x8008 or 0x9318) - "PLAYSTATION"
+        let ps1Magic = "PLAYSTATION"
+        // Check 2048 sector PVD
+        if data.count >= 0x8008 + ps1Magic.count {
+            let slice = data[0x8008..<0x8008 + ps1Magic.count]
+            if let str = String(data: slice, encoding: .ascii),
+               str.contains(ps1Magic) {
+                return "psx"
+            }
+        }
+        // Check 2352 sector PVD
+        if data.count >= 0x9318 + ps1Magic.count {
+            let slice = data[0x9318..<0x9318 + ps1Magic.count]
+            if let str = String(data: slice, encoding: .ascii),
+               str.contains(ps1Magic) {
+                return "psx"
+            }
+        }
+        
+        return nil
+    }
+
 
     private func identifyArchive(url: URL) -> SystemInfo? {
         // Check if zip is in a folder named after a known MAME system

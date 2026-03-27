@@ -114,16 +114,18 @@ struct WebSearchView: NSViewRepresentable {
         let webView = WKWebView(frame: .zero, configuration: config)
         webView.navigationDelegate = context.coordinator
         
+        let target = targetURLString
+        context.coordinator.lastLoadedURL = target
         loadSearch(in: webView)
         return webView
     }
 
     func updateNSView(_ nsView: WKWebView, context: Context) {
-        // Check if query or engine changed (simplified for now by just checking URL)
-        let currentURL = nsView.url?.absoluteString ?? ""
-        let targetURL = targetURLString
-        if !currentURL.contains(targetURL) {
-             loadSearch(in: nsView)
+        // Only reload if the target URL has actually changed since last load
+        let target = targetURLString
+        if context.coordinator.lastLoadedURL != target {
+            context.coordinator.lastLoadedURL = target
+            loadSearch(in: nsView)
         }
     }
 
@@ -149,6 +151,7 @@ struct WebSearchView: NSViewRepresentable {
 
     class Coordinator: NSObject, WKScriptMessageHandler, WKNavigationDelegate {
         let onImagePicked: (URL) -> Void
+        var lastLoadedURL: String = ""
 
         init(onImagePicked: @escaping (URL) -> Void) {
             self.onImagePicked = onImagePicked
