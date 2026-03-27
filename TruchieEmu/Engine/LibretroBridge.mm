@@ -98,6 +98,11 @@ typedef void (^VideoFrameCallback)(const void *data, int width, int height, int 
     void *_hwReadbackBuffer;
     size_t _hwReadbackBufferSize;
     BOOL _hwRenderEnabled;
+    GLuint _hwFBO;        // The FBO the N64/HW core renders into
+    GLuint _hwColorRB;    // Color renderbuffer backing the FBO
+    GLuint _hwDepthRB;    // Depth renderbuffer backing the FBO
+    int _fboWidth;
+    int _fboHeight;
 }
 - (BOOL)loadDylib:(NSString *)path;
 - (BOOL)launchROM:(NSString *)romPath videoCallback:(VideoFrameCallback)cb;
@@ -112,11 +117,13 @@ typedef void (^VideoFrameCallback)(const void *data, int width, int height, int 
 - (const void *)readHWRenderedPixels:(int)w height:(int)h;
 @end
 
-static uintptr_t bridge_get_current_framebuffer() {
-    return 0;
-}
-
 static LibretroBridgeImpl *g_instance = nil;
+// Shared with bridge_get_current_framebuffer — updated by setupHWRender
+static GLuint g_hwFBO = 0;
+
+static uintptr_t bridge_get_current_framebuffer() {
+    return (uintptr_t)g_hwFBO;
+}
 
 static dispatch_queue_t g_bridgeQueue = nil;
 static dispatch_semaphore_t g_bridgeFinishedSemaphore = nil;
@@ -131,26 +138,35 @@ static uintptr_t bridge_get_proc_address(const char *sym) {
         snprintf(buf, sizeof(buf), "_%s", sym);
         res = (uintptr_t)dlsym(glHandle ? glHandle : RTLD_DEFAULT, buf);
     }
+    // Note: cores probe for many optional extensions (OES, ARB, GL4.2-4.5 DSA, etc.)
+    // Missing symbols for optional probes is expected on macOS (GL capped at 4.1).
+    // Only log if you need to debug a specific symbol.
     return res;
 }
 
 // MARK: - C Callbacks
 static void bridge_log_printf(enum retro_log_level level, const char *fmt, ...) {
+    if (!fmt) return;
     va_list args;
     va_start(args, fmt);
     NSString *format = [[NSString alloc] initWithUTF8String:fmt];
+    if (!format) {
+        // Fallback for non-UTF8 or malformed strings
+        format = [[NSString alloc] initWithCString:fmt encoding:NSASCIIStringEncoding];
+    }
     if (format) {
         NSString *message = [[NSString alloc] initWithFormat:format arguments:args];
-        if (level >= RETRO_LOG_ERROR) NSLog(@"[Core-ERR] %@", message);
-        else if (level == RETRO_LOG_WARN) NSLog(@"[Core-WRN] %@", message);
-        else NSLog(@"[Core] %@", message);
+        if (message) {
+            if (level >= RETRO_LOG_ERROR) NSLog(@"[Core-ERR] %@", message);
+            else if (level == RETRO_LOG_WARN) NSLog(@"[Core-WRN] %@", message);
+            else if (level == RETRO_LOG_INFO) NSLog(@"[Core-INF] %@", message);
+        }
     }
     va_end(args);
 }
 
 static bool bridge_environment(unsigned cmd, void *data) {
     if (!g_instance) return false;
-    NSLog(@"[Bridge-Env] Cmd: %u", cmd);
     
     switch (cmd) {
         case RETRO_ENVIRONMENT_GET_LOG_INTERFACE:
@@ -187,23 +203,59 @@ static bool bridge_environment(unsigned cmd, void *data) {
         case RETRO_ENVIRONMENT_GET_VARIABLE: {
             struct retro_variable *var = (struct retro_variable *)data;
             if (var && var->key) {
-                if (strcmp(var->key, "mupen64plus-next-cpucore") == 0) { var->value = "pure_interpreter"; return true; }
-                if (strcmp(var->key, "mupen64plus-next-aspect") == 0) { var->value = "4:3"; return true; }
+                // mupen64plus-next: force angrylion (software) RDP to avoid GL4.2+ DSA requirement
+                // gliden64 requires glCreateTextures/glDispatchCompute etc. (GL4.5) not available on macOS
+                
+                // CPU core: pure interpreter is safest on ARM64 macOS (no JIT recompilation)
+                if (strcmp(var->key, "mupen64plus-next-cpucore") == 0 ||
+                    strcmp(var->key, "mupen64plus-cpucore") == 0)
+                    { var->value = "pure_interpreter"; return true; }
+                
+                // Force software RDP — avoids all GL4.2+ DSA/compute shader calls
+                if (strcmp(var->key, "mupen64plus-rdp-plugin") == 0 ||
+                    strcmp(var->key, "mupen64plus-next-rdp-plugin") == 0)
+                    { var->value = "angrylion"; return true; }
+                
+                // Disable threaded renderer (can cause race conditions on macOS)
+                if (strcmp(var->key, "mupen64plus-next-ThreadedRenderer") == 0 ||
+                    strcmp(var->key, "mupen64plus-next-parallel-rdp-synchronous") == 0)
+                    { var->value = "Disabled"; return true; }
+                
+                if (strcmp(var->key, "mupen64plus-next-aspect") == 0)
+                    { var->value = "4:3"; return true; }
+                
                 var->value = NULL;
             }
             return false;
         }
         case RETRO_ENVIRONMENT_SET_GEOMETRY:
+        case RETRO_ENVIRONMENT_SET_INPUT_DESCRIPTORS:
+        case RETRO_ENVIRONMENT_SET_DISK_CONTROL_INTERFACE:
+        case RETRO_ENVIRONMENT_SET_ROTATION:
+        case RETRO_ENVIRONMENT_SET_VARIABLES:          // core tells us what options exist — we acknowledge
+        case RETRO_ENVIRONMENT_SET_SUPPORT_NO_GAME:
+        case RETRO_ENVIRONMENT_SET_SYSTEM_AV_INFO:     // core updates A/V timing — accept it
+            return true;
+        case RETRO_ENVIRONMENT_GET_VARIABLE_UPDATE:    // has anything changed? → no, vars are stable
+            if (data) *(bool *)data = false;
             return true;
         case RETRO_ENVIRONMENT_SET_HW_RENDER: {
             struct retro_hw_render_callback *cb = (struct retro_hw_render_callback *)data;
-            if (g_instance) {
+            if (g_instance && cb) {
                 [g_instance setupHWRender:cb];
                 return true;
             }
             return false;
         }
-        default: return false;
+        case RETRO_ENVIRONMENT_GET_PERF_INTERFACE:
+        case RETRO_ENVIRONMENT_GET_RUMBLE_INTERFACE:
+        case RETRO_ENVIRONMENT_GET_SENSOR_INTERFACE:
+            return false;
+        case RETRO_ENVIRONMENT_GET_AUDIO_VIDEO_ENABLE:
+            if (data) *(int*)data = 3; // Enable both
+            return true;
+        default: 
+            return false;
     }
 }
 
@@ -391,8 +443,19 @@ static int16_t bridge_input_state(unsigned port, unsigned device, unsigned index
     _hwRenderEnabled = YES;
     memset(&_hw_callback, 0, sizeof(_hw_callback));
     memcpy(&_hw_callback, cb, sizeof(_hw_callback));
-    _hw_callback.get_proc_address = bridge_get_proc_address;
+    
+    // *** Write our callbacks back into the struct the core owns ***
+    // The Libretro spec: the core passes its retro_hw_render_callback* and the
+    // frontend FILLS IN get_proc_address + get_current_framebuffer in that same
+    // struct. The core then reads the pointers from cb after this env call returns.
+    // If we only set them on our local _hw_callback copy, the core still sees NULL
+    // for get_proc_address → every GL lookup inside context_reset returns NULL →
+    // crash at address 0x0 on the first GL call.
+    cb->get_proc_address         = bridge_get_proc_address;
+    cb->get_current_framebuffer  = bridge_get_current_framebuffer;
+    _hw_callback.get_proc_address        = bridge_get_proc_address;
     _hw_callback.get_current_framebuffer = bridge_get_current_framebuffer;
+
     
     CGLPixelFormatAttribute profile = (CGLPixelFormatAttribute)kCGLOGLPVersion_Legacy;
     if (_hw_callback.context_type == RETRO_HW_CONTEXT_OPENGL_CORE) {
@@ -402,23 +465,20 @@ static int16_t bridge_input_state(unsigned port, unsigned device, unsigned index
     NSLog(@"[Bridge] Creating OpenGL context type %d (Profile: %d, Depth: %d, Stencil: %d)", 
           _hw_callback.context_type, (int)profile, _hw_callback.depth, _hw_callback.stencil);
 
-    CGLPixelFormatAttribute attrs[16];
+    CGLPixelFormatAttribute attrs[20];
     int i = 0;
     attrs[i++] = kCGLPFAOpenGLProfile; attrs[i++] = profile;
     attrs[i++] = kCGLPFAAccelerated;
-    attrs[i++] = kCGLPFADoubleBuffer;
-    if (_hw_callback.depth) {
-        attrs[i++] = kCGLPFADepthSize; attrs[i++] = (CGLPixelFormatAttribute)24;
-    }
-    if (_hw_callback.stencil) {
-        attrs[i++] = kCGLPFAStencilSize; attrs[i++] = (CGLPixelFormatAttribute)8;
-    }
+    attrs[i++] = kCGLPFAColorSize;  attrs[i++] = (CGLPixelFormatAttribute)32;
+    attrs[i++] = kCGLPFADepthSize;  attrs[i++] = (CGLPixelFormatAttribute)24;
+    attrs[i++] = kCGLPFAStencilSize; attrs[i++] = (CGLPixelFormatAttribute)8;
     attrs[i++] = (CGLPixelFormatAttribute)0;
     
     CGLPixelFormatObj pix;
     GLint num;
-    if (CGLChoosePixelFormat(attrs, &pix, &num) != kCGLNoError) {
-        NSLog(@"[Bridge] ERROR: Could not choose Pixel Format for GL");
+    CGLError err = CGLChoosePixelFormat(attrs, &pix, &num);
+    if (err != kCGLNoError || !pix) {
+        NSLog(@"[Bridge] ERROR: Could not choose Pixel Format for GL (err=%d)", (int)err);
         return;
     }
     CGLCreateContext(pix, NULL, &_glContext);
@@ -430,6 +490,35 @@ static int16_t bridge_input_state(unsigned port, unsigned device, unsigned index
     }
     
     CGLSetCurrentContext(_glContext);
+
+    // ── Create a real FBO for the core to render into ──────────────────────
+    // Use 640x480 as a safe default; some cores will call SET_GEOMETRY later.
+    _fboWidth  = 640;
+    _fboHeight = 480;
+
+    glGenFramebuffers(1, &_hwFBO);
+    glBindFramebuffer(GL_FRAMEBUFFER, _hwFBO);
+
+    glGenRenderbuffers(1, &_hwColorRB);
+    glBindRenderbuffer(GL_RENDERBUFFER, _hwColorRB);
+    glRenderbufferStorage(GL_RENDERBUFFER, GL_RGBA8, _fboWidth, _fboHeight);
+    glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_RENDERBUFFER, _hwColorRB);
+
+    glGenRenderbuffers(1, &_hwDepthRB);
+    glBindRenderbuffer(GL_RENDERBUFFER, _hwDepthRB);
+    glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH24_STENCIL8, _fboWidth, _fboHeight);
+    glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT, GL_RENDERBUFFER, _hwDepthRB);
+
+    GLenum status = glCheckFramebufferStatus(GL_FRAMEBUFFER);
+    if (status != GL_FRAMEBUFFER_COMPLETE) {
+        NSLog(@"[Bridge] ERROR: FBO incomplete (status=0x%x)", status);
+    } else {
+        NSLog(@"[Bridge] FBO %u created (%dx%d) – ready for core", _hwFBO, _fboWidth, _fboHeight);
+        g_hwFBO = _hwFBO; // expose to bridge_get_current_framebuffer
+    }
+
+    glBindFramebuffer(GL_FRAMEBUFFER, 0);
+    // ────────────────────────────────────────────────────────────────────────
     
     if (_hw_callback.context_reset) {
         NSLog(@"[Bridge] Calling Core's context_reset()");
@@ -438,16 +527,33 @@ static int16_t bridge_input_state(unsigned port, unsigned device, unsigned index
 }
 
 - (const void *)readHWRenderedPixels:(int)w height:(int)h {
-    size_t needed = w * h * 4;
+    // Resize FBO if the core changed resolution
+    if (w != _fboWidth || h != _fboHeight) {
+        _fboWidth  = w;
+        _fboHeight = h;
+        
+        glBindFramebuffer(GL_FRAMEBUFFER, _hwFBO);
+        
+        glBindRenderbuffer(GL_RENDERBUFFER, _hwColorRB);
+        glRenderbufferStorage(GL_RENDERBUFFER, GL_RGBA8, w, h);
+        
+        glBindRenderbuffer(GL_RENDERBUFFER, _hwDepthRB);
+        glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH24_STENCIL8, w, h);
+        
+        glBindFramebuffer(GL_FRAMEBUFFER, 0);
+        NSLog(@"[Bridge] FBO resized to %dx%d", w, h);
+    }
+    
+    size_t needed = (size_t)w * (size_t)h * 4;
     if (needed > _hwReadbackBufferSize) {
         _hwReadbackBuffer = realloc(_hwReadbackBuffer, needed);
         _hwReadbackBufferSize = needed;
     }
     
     CGLSetCurrentContext(_glContext);
-    // Bind the front buffer for reading if double buffered
-    glReadBuffer(GL_BACK);
+    glBindFramebuffer(GL_READ_FRAMEBUFFER, _hwFBO);
     glReadPixels(0, 0, w, h, GL_BGRA, GL_UNSIGNED_INT_8_8_8_8_REV, _hwReadbackBuffer);
+    glBindFramebuffer(GL_READ_FRAMEBUFFER, 0);
     
     return _hwReadbackBuffer;
 }
@@ -455,7 +561,12 @@ static int16_t bridge_input_state(unsigned port, unsigned device, unsigned index
 - (void)dealloc {
     if (g_instance == self) g_instance = nil;
     if (_glContext) {
+        CGLSetCurrentContext(_glContext);
         if (_hw_callback.context_destroy) _hw_callback.context_destroy();
+        if (_hwFBO)     { glDeleteFramebuffers(1, &_hwFBO);     _hwFBO = 0; g_hwFBO = 0; }
+        if (_hwColorRB) { glDeleteRenderbuffers(1, &_hwColorRB); _hwColorRB = 0; }
+        if (_hwDepthRB) { glDeleteRenderbuffers(1, &_hwDepthRB); _hwDepthRB = 0; }
+        CGLSetCurrentContext(NULL);
         CGLReleaseContext(_glContext);
         _glContext = nil;
     }
