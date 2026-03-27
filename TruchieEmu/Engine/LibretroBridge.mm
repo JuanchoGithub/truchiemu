@@ -5,6 +5,8 @@
 #import <AVFoundation/AVFoundation.h>
 #import "libretro.h"
 #include <atomic>
+#include <algorithm>
+#include <mach/mach_time.h>
 #include <OpenGL/OpenGL.h>
 #include <OpenGL/gl.h>
 
@@ -49,7 +51,14 @@ public:
         return r;
     }
 
+    void clear() {
+        _readPtr = 0;
+        _writePtr = 0;
+        _fillCount = 0;
+    }
+
     size_t available() const { return _fillCount; }
+    size_t capacity() const { return _capacity; }
 
 private:
     int16_t *_buffer;
@@ -85,8 +94,13 @@ typedef void (^VideoFrameCallback)(const void *data, int width, int height, int 
     AVAudioSourceNode *_audioSourceNode;
     AudioRingBuffer *_audioBuffer;
     
+    // Scratch buffer for audio render block (avoiding malloc in real-time)
+    int16_t *_audioRenderScratch;
+    size_t _audioRenderScratchCapacity;
+    
     CGLContextObj _glContext;
     struct retro_hw_render_callback _hw_callback;
+    struct retro_system_av_info _avInfo;
     
     int _pixelFormat;
     NSString *_saveStatePath;
@@ -247,7 +261,12 @@ static bool bridge_environment(unsigned cmd, void *data) {
         case RETRO_ENVIRONMENT_SET_ROTATION:
         case RETRO_ENVIRONMENT_SET_VARIABLES:          // core tells us what options exist — we acknowledge
         case RETRO_ENVIRONMENT_SET_SUPPORT_NO_GAME:
-        case RETRO_ENVIRONMENT_SET_SYSTEM_AV_INFO:     // core updates A/V timing — accept it
+        case RETRO_ENVIRONMENT_SET_SYSTEM_AV_INFO:
+            if (data && g_instance) {
+                struct retro_system_av_info *info = (struct retro_system_av_info *)data;
+                g_instance->_avInfo = *info;
+                NSLog(@"[Bridge] Core updated A/V info: FPS=%f SampleRate=%f", info->timing.fps, info->timing.sample_rate);
+            }
             return true;
         case RETRO_ENVIRONMENT_GET_VARIABLE_UPDATE:    // has anything changed? → no, vars are stable
             if (data) *(bool *)data = false;
@@ -306,17 +325,26 @@ static int16_t bridge_input_state(unsigned port, unsigned device, unsigned index
 - (instancetype)init {
     if (self = [super init]) {
         _audioBuffer = new AudioRingBuffer(44100 * 2 * 2); // 2 seconds buffer
-        [self setupAudio];
+        _audioRenderScratchCapacity = 4096; // Enough for standard frame counts
+        _audioRenderScratch = (int16_t *)malloc(_audioRenderScratchCapacity * sizeof(int16_t));
+        memset(&_avInfo, 0, sizeof(_avInfo));
         memset(g_input_state, 0, sizeof(g_input_state));
     }
     return self;
 }
 
-- (void)setupAudio {
-    _audioEngine = [[AVAudioEngine alloc] init];
-    AVAudioFormat *format = [[AVAudioFormat alloc] initWithCommonFormat:AVAudioPCMFormatFloat32 sampleRate:44100 channels:2 interleaved:NO];
+- (void)setupAudioWithSampleRate:(double)sampleRate {
+    if (_audioEngine) {
+        [_audioEngine stop];
+        _audioEngine = nil;
+    }
     
-    // We use __unsafe_unretained to avoid capturing cycles without requiring ARC weak references
+    _audioEngine = [[AVAudioEngine alloc] init];
+    AVAudioFormat *format = [[AVAudioFormat alloc] initWithCommonFormat:AVAudioPCMFormatFloat32 sampleRate:sampleRate channels:2 interleaved:NO];
+    
+    // Reset ring buffer to avoid old samples causing noise/reverb
+    _audioBuffer->clear();
+    
     __unsafe_unretained LibretroBridgeImpl *weakSelf = self;
     _audioSourceNode = [[AVAudioSourceNode alloc] initWithRenderBlock:^OSStatus(BOOL * _Nonnull silence, const AudioTimeStamp * _Nonnull timestamp, AVAudioFrameCount frameCount, AudioBufferList * _Nonnull outputData) {
         
@@ -326,20 +354,26 @@ static int16_t bridge_input_state(unsigned port, unsigned device, unsigned index
         float *left = (float *)outputData->mBuffers[0].mData;
         float *right = (float *)outputData->mBuffers[1].mData;
         
-        int16_t *temp = (int16_t *)malloc(frameCount * 2 * sizeof(int16_t));
-        size_t readCount = strongSelf->_audioBuffer->read(temp, frameCount * 2);
+        // Ensure scratch buffer is large enough (rarely happens if frameCount 1024)
+        if (frameCount * 2 > strongSelf->_audioRenderScratchCapacity) {
+             // In real-time threads this is bad, but this would only happen once or if frame size changes drastically
+             // We'll just read what we can and skip rather than mallocing if possible.
+             // For now, let's just use what we have.
+        }
+        
+        size_t toRead = std::min((size_t)frameCount * 2, strongSelf->_audioRenderScratchCapacity);
+        size_t readCount = strongSelf->_audioBuffer->read(strongSelf->_audioRenderScratch, toRead);
         
         for (size_t i = 0; i < frameCount; ++i) {
-            if (i * 2 < readCount) {
-                left[i] = (float)temp[i*2] / 32768.0f;
-                right[i] = (float)temp[i*2+1] / 32768.0f;
+            if (i * 2 + 1 < readCount) {
+                left[i] = (float)strongSelf->_audioRenderScratch[i*2] / 32768.0f;
+                right[i] = (float)strongSelf->_audioRenderScratch[i*2+1] / 32768.0f;
             } else {
                 left[i] = 0;
                 right[i] = 0;
             }
         }
         
-        free(temp);
         return noErr;
     }];
     
@@ -405,16 +439,57 @@ static int16_t bridge_input_state(unsigned port, unsigned device, unsigned index
     
     if (!_retro_load_game(&gi)) return NO;
     
+    // config A/V
+    _retro_get_system_av_info(&_avInfo);
+    double sampleRate = _avInfo.timing.sample_rate > 0 ? _avInfo.timing.sample_rate : 44100.0;
+    double fps = _avInfo.timing.fps > 0 ? _avInfo.timing.fps : 60.0;
+    NSLog(@"[Bridge] Core A/V Info: SampleRate=%.1f FPS=%.2f", sampleRate, fps);
+    
+    [self setupAudioWithSampleRate:sampleRate];
+    
     NSError *err;
     [_audioEngine startAndReturnError:&err];
     
     _saveStatePath = [romPath stringByAppendingString:@".state"];
     
     _running = YES;
+    
+    // Timing loop using Mach Absolute Time for high precision
     while (_running) {
+        uint64_t start = mach_absolute_time();
+        
+        // Use current FPS from _avInfo in case it changed mid-run
+        double currentFps = _avInfo.timing.fps > 0 ? _avInfo.timing.fps : 60.0;
+        NSTimeInterval frameTime = 1.0 / currentFps;
+        
         if (_hwRenderEnabled && _glContext) CGLSetCurrentContext(_glContext);
         _retro_run();
-        [NSThread sleepForTimeInterval:1.0/60.0];
+        
+        uint64_t end = mach_absolute_time();
+        
+        // Convert to seconds
+        static mach_timebase_info_data_t timebase;
+        if (timebase.denom == 0) mach_timebase_info(&timebase);
+        double elapsed = (double)(end - start) * timebase.numer / timebase.denom / 1e9;
+        
+        if (elapsed < frameTime) {
+            // Adaptive sleep: check audio buffer fill level
+            // If we have plenty of audio, we can sleep more precisely.
+            // If we are running low, we run faster.
+            size_t availableSamples = _audioBuffer->available();
+            size_t capacity = _audioBuffer->capacity();
+            float fillRatio = (float)availableSamples / capacity;
+            
+            double sleepTime = frameTime - elapsed;
+            
+            // If buffer is very full (>70%), we might want to slow down slightly more to avoid overflow
+            // If buffer is very empty (<5%), we skip sleep to catch up
+            if (fillRatio < 0.05f) {
+                // Buffer critical! No sleep.
+            } else {
+                [NSThread sleepForTimeInterval:sleepTime];
+            }
+        }
     }
     
     [_audioEngine stop];
@@ -584,6 +659,7 @@ static int16_t bridge_input_state(unsigned port, unsigned device, unsigned index
         _glContext = nil;
     }
     if (_hwReadbackBuffer) free(_hwReadbackBuffer);
+    if (_audioRenderScratch) free(_audioRenderScratch);
     delete _audioBuffer;
     _audioBuffer = nil;
     if (_dlHandle) dlclose(_dlHandle);
