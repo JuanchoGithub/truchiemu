@@ -27,6 +27,17 @@ actor ROMScanner {
         ) else { return [] }
 
         let allURLs = enumerator.allObjects.compactMap { $0 as? URL }
+        
+        // --- NEW: Identify all referenced files to skip redundant entries (e.g., .bin files referenced by .cue) ---
+        var ignoredURLs = Set<String>()
+        for url in allURLs {
+            let refs = getReferencedFiles(in: url)
+            for ref in refs {
+                ignoredURLs.insert(ref.standardized.path)
+            }
+        }
+        // --- END ---
+
         let total = Double(allURLs.count)
         var processed = 0
 
@@ -38,6 +49,13 @@ actor ROMScanner {
             if isCancelled { break }
 
             processed += 1
+            
+            // --- NEW: Skip ignored files ---
+            if ignoredURLs.contains(url.standardized.path) {
+                continue
+            }
+            // --- END ---
+
             let now = DispatchTime.now()
             if now.uptimeNanoseconds - lastProgressUpdate.uptimeNanoseconds >= throttleNanos || processed == Int(total) {
                 lastProgressUpdate = now
@@ -163,43 +181,81 @@ actor ROMScanner {
         
         if ext == "cue" {
             // Read cue and find first file
-            guard let content = try? String(contentsOf: url, encoding: .utf8) else { return nil }
+            let referenced = getReferencedFiles(in: url)
+            if let firstBin = referenced.first {
+                debugPrint("Checking bin found in cue: \(firstBin.path)")
+                return peekHeader(url: firstBin)
+            }
+        } else {
+            return peekHeader(url: url)
+        }
+        return nil
+    }
+
+    // MARK: - Container Logic
+
+    private func getReferencedFiles(in url: URL) -> [URL] {
+        let ext = url.pathExtension.lowercased()
+        var referenced: [URL] = []
+        
+        if ext == "cue" {
+            guard let content = try? String(contentsOf: url, encoding: .utf8) else { return [] }
             let lines = content.components(separatedBy: .newlines)
             for line in lines {
                 let trimmed = line.trimmingCharacters(in: .whitespaces)
                 if trimmed.uppercased().hasPrefix("FILE") {
-                    // Extract filename between quotes or after FILE
-                    // FILE "FIFA 98 [PAL] [SLES-00918].bin" BINARY
                     let scanner = Scanner(string: trimmed)
                     _ = scanner.scanString("FILE")
                     var filename: NSString?
                     if scanner.scanString("\"") != nil {
                         _ = scanner.scanUpTo("\"", into: &filename)
                     } else {
-                        // Fallback to reading until whitespace
+                        // Fallback to reading until next whitespace or end
                         var temp: String = ""
                         while !scanner.isAtEnd {
-                            if let char = scanner.scanCharacter(), !char.isWhitespace {
-                                temp.append(char)
-                            } else {
-                                break
-                            }
+                            if let char = scanner.scanCharacter() {
+                                if char.isWhitespace && !temp.isEmpty { break }
+                                if !char.isWhitespace { temp.append(char) }
+                            } else { break }
                         }
                         filename = temp as NSString
                     }
                     
-                    if let filename = filename as String? {
-                        let binURL = url.deletingLastPathComponent().appendingPathComponent(filename)
-                        debugPrint("Checking bin found in cue: \(binURL.path)")
-                        return peekHeader(url: binURL)
+                    if let name = filename as String? {
+                        let fileURL = url.deletingLastPathComponent().appendingPathComponent(name)
+                        referenced.append(fileURL)
                     }
-                    break // Only check first FILE
                 }
             }
-        } else {
-            return peekHeader(url: url)
+        } else if ext == "m3u" {
+            guard let content = try? String(contentsOf: url, encoding: .utf8) else { return [] }
+            let lines = content.components(separatedBy: .newlines)
+            for line in lines {
+                let trimmed = line.trimmingCharacters(in: .whitespaces)
+                if !trimmed.isEmpty && !trimmed.hasPrefix("#") {
+                    let fileURL = url.deletingLastPathComponent().appendingPathComponent(trimmed)
+                    referenced.append(fileURL)
+                }
+            }
         }
-        return nil
+        
+        return referenced
+    }
+
+    func getIgnoredFiles(in folder: URL) -> Set<String> {
+        let fm = FileManager.default
+        guard let files = try? fm.contentsOfDirectory(at: folder, includingPropertiesForKeys: nil, options: .skipsHiddenFiles) else { return [] }
+        var ignored = Set<String>()
+        for file in files {
+            let ext = file.pathExtension.lowercased()
+            if ext == "cue" || ext == "m3u" {
+                let refs = getReferencedFiles(in: file)
+                for ref in refs {
+                    ignored.insert(ref.standardized.path)
+                }
+            }
+        }
+        return ignored
     }
 
     private func peekHeader(url: URL) -> String? {
@@ -337,10 +393,26 @@ actor ROMScanner {
         var lastProgressUpdate = DispatchTime.now()
         let throttleNanos: UInt64 = 50_000_000 // 50ms
 
+        var folderRefsCache: [URL: Set<String>] = [:]
+
         for url in urls {
             if isCancelled { break }
 
             processed += 1
+            
+            // --- NEW: Check if this file is referenced by a container in its folder ---
+            let folder = url.deletingLastPathComponent()
+            let ignored = folderRefsCache[folder] ?? {
+                let refs = getIgnoredFiles(in: folder)
+                folderRefsCache[folder] = refs
+                return refs
+            }()
+            
+            if ignored.contains(url.standardized.path) {
+                continue
+            }
+            // --- END ---
+
             let now = DispatchTime.now()
             if now.uptimeNanoseconds - lastProgressUpdate.uptimeNanoseconds >= throttleNanos || processed == Int(total) {
                 lastProgressUpdate = now

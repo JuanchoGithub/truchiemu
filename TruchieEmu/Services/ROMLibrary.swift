@@ -69,7 +69,15 @@ class ROMLibrary: ObservableObject {
         for rom in found where existing[rom.path.path] == nil {
             existing[rom.path.path] = rom
         }
-        roms = existing.values.sorted { $0.displayName < $1.displayName }
+        
+        let ignored = await scanner.getIgnoredFiles(in: folder)
+        let folderPath = folder.path
+        roms = existing.values.filter { rom in
+            if rom.path.path.hasPrefix(folderPath) {
+                return !ignored.contains(rom.path.standardized.path)
+            }
+            return true
+        }.sorted { $0.displayName < $1.displayName }
         isScanning = false
         saveROMsToDisk()
         Task { await BoxArtService.shared.batchDownloadBoxArtGoogle(for: self.roms, library: self) }
@@ -297,7 +305,15 @@ class ROMLibrary: ObservableObject {
         // Merge
         var byPath = Dictionary(uniqueKeysWithValues: roms.map { ($0.path.path, $0) })
         for r in imported { byPath[r.path.path] = r }
-        roms = byPath.values.sorted { $0.displayName < $1.displayName }
+        
+        let ignored = await scanner.getIgnoredFiles(in: url)
+        let folderPath = url.path
+        roms = byPath.values.filter { rom in
+            if rom.path.path.hasPrefix(folderPath) {
+                return !ignored.contains(rom.path.standardized.path)
+            }
+            return true
+        }.sorted { $0.displayName < $1.displayName }
 
         // Save index and roms
         fileIndex = newIndex
