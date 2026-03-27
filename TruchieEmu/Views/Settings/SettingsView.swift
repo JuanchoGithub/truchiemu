@@ -352,7 +352,7 @@ struct ControllerMappingDetail: View {
                 VStack(spacing: 24) {
                     // Premium visuals
                     HStack(spacing: 32) {
-                        ControllerDrawingView()
+                        ControllerIconView(systemID: systemID)
                         
                         Divider().frame(height: 100)
                         
@@ -477,6 +477,40 @@ struct StickTesterView: View {
         .background(.background.opacity(0.5))
         .cornerRadius(12)
         .overlay(RoundedRectangle(cornerRadius: 12).stroke(.secondary.opacity(0.1), lineWidth: 1))
+    }
+}
+
+struct ControllerIconView: View {
+    let systemID: String
+    
+    var body: some View {
+        if let image = loadIcon(for: systemID) {
+            Image(nsImage: image)
+                .resizable()
+                .interpolation(.high)
+                .aspectRatio(contentMode: .fit)
+                .frame(width: 140, height: 100)
+                .padding()
+                .background(.white.opacity(0.05))
+                .cornerRadius(12)
+                .shadow(color: .black.opacity(0.3), radius: 10, x: 0, y: 5)
+        } else {
+            ControllerDrawingView()
+        }
+    }
+    
+    private func loadIcon(for id: String) -> NSImage? {
+        let name = id.lowercased()
+        // Attempt to find the icon in the project resources folder
+        let home = FileManager.default.homeDirectoryForCurrentUser
+        // Assuming the user's path structure provided in metadata
+        let basePath = "gitrepos/truchiemu/TruchieEmu/Resources/ControllerIcons"
+        let fullPath = home.appendingPathComponent("\(basePath)/\(name).ico").path
+        
+        if FileManager.default.fileExists(atPath: fullPath) {
+            return NSImage(contentsOfFile: fullPath)
+        }
+        return nil
     }
 }
 
