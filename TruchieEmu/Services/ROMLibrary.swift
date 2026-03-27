@@ -80,7 +80,7 @@ class ROMLibrary: ObservableObject {
         }.sorted { $0.displayName < $1.displayName }
         isScanning = false
         saveROMsToDisk()
-        Task { await BoxArtService.shared.batchDownloadBoxArtGoogle(for: self.roms, library: self) }
+        // Task { await BoxArtService.shared.batchDownloadBoxArtGoogle(for: self.roms, library: self) }
     }
 
     func fullRescan() async {
@@ -322,6 +322,6 @@ class ROMLibrary: ObservableObject {
 
         isScanning = false
         
-        Task { await BoxArtService.shared.batchDownloadBoxArtGoogle(for: self.roms, library: self) }
+        // Task { await BoxArtService.shared.batchDownloadBoxArtGoogle(for: self.roms, library: self) }
     }
 }
