@@ -4,7 +4,7 @@ import SwiftUI
 struct TruchieEmuApp: App {
     @StateObject private var library = ROMLibrary()
     @StateObject private var coreManager = CoreManager()
-    @StateObject private var controllerService = ControllerService()
+    @StateObject private var controllerService = ControllerService.shared
 
     var body: some Scene {
         WindowGroup {
