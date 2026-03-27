@@ -3,6 +3,7 @@ import SwiftUI
 struct LibraryGridView: View {
     @EnvironmentObject var library: ROMLibrary
     @EnvironmentObject var coreManager: CoreManager
+    @EnvironmentObject var controllerService: ControllerService
     var filter: LibraryFilter
     @Binding var selectedROM: ROM?
     @Binding var searchText: String
@@ -66,6 +67,38 @@ struct LibraryGridView: View {
         }
         .toolbar {
             ToolbarItemGroup {
+                // Controller Selection
+                Menu {
+                    Button(action: { controllerService.activePlayerIndex = 0 }) {
+                        Label("Keyboard", systemImage: "keyboard")
+                            .symbolVariant(controllerService.activePlayerIndex == 0 ? .fill : .none)
+                    }
+                    
+                    Divider()
+                    
+                    if controllerService.connectedControllers.isEmpty {
+                        Text("No Controllers Detected")
+                            .font(.caption)
+                            .foregroundColor(.secondary)
+                    } else {
+                        ForEach(controllerService.connectedControllers) { controller in
+                            Button(action: { controllerService.activePlayerIndex = controller.playerIndex }) {
+                                Label(controller.name, systemImage: "gamecontroller")
+                                    .symbolVariant(controllerService.activePlayerIndex == controller.playerIndex ? .fill : .none)
+                            }
+                        }
+                    }
+                } label: {
+                    let activeName = controllerService.activePlayerIndex == 0 ? "Keyboard" : 
+                        (controllerService.connectedControllers.first(where: { $0.playerIndex == controllerService.activePlayerIndex })?.name ?? "Disconnected")
+                    
+                    HStack(spacing: 4) {
+                        Image(systemName: controllerService.activePlayerIndex == 0 ? "keyboard" : "gamecontroller")
+                        Text(activeName)
+                            .font(.caption)
+                    }
+                }
+
                 if case .system(let system) = filter {
                     Menu {
                         Picker("Box Type", selection: Binding(

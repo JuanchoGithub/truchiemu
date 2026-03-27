@@ -13,6 +13,7 @@ struct EmulatorView: View {
     @State private var showFilterPanel = false
     @EnvironmentObject private var library: ROMLibrary
     @EnvironmentObject private var coreManager: CoreManager
+    @EnvironmentObject private var controllerService: ControllerService
     
     // Per-game settings state
     @State private var settings = ROMSettings()
@@ -111,6 +112,45 @@ struct EmulatorView: View {
                 }
                 .buttonStyle(.plain)
 
+                // Controller Selection in HUD
+                Menu {
+                    Button(action: { controllerService.activePlayerIndex = 0 }) {
+                        Label("Keyboard", systemImage: "keyboard")
+                            .symbolVariant(controllerService.activePlayerIndex == 0 ? .fill : .none)
+                    }
+                    
+                    Divider()
+                    
+                    if controllerService.connectedControllers.isEmpty {
+                        Text("No Controllers Detected")
+                            .font(.caption)
+                            .foregroundColor(.secondary)
+                    } else {
+                        ForEach(controllerService.connectedControllers) { controller in
+                            Button(action: { controllerService.activePlayerIndex = controller.playerIndex }) {
+                                Label(controller.name, systemImage: "gamecontroller")
+                                    .symbolVariant(controllerService.activePlayerIndex == controller.playerIndex ? .fill : .none)
+                            }
+                        }
+                    }
+                } label: {
+                    let activeName = controllerService.activePlayerIndex == 0 ? "Keyboard" : 
+                        (controllerService.connectedControllers.first(where: { $0.playerIndex == controllerService.activePlayerIndex })?.name ?? "Disconnected")
+                    
+                    HStack(spacing: 8) {
+                        Image(systemName: controllerService.activePlayerIndex == 0 ? "keyboard" : "gamecontroller")
+                        Text(activeName)
+                            .font(.subheadline)
+                    }
+                    .padding(.horizontal, 12)
+                    .padding(.vertical, 6)
+                    .background(Color.white.opacity(0.1))
+                    .cornerRadius(8)
+                    .foregroundColor(.white)
+                }
+                .menuStyle(.borderlessButton)
+                .fixedSize()
+
                 Button { runner.saveState() } label: {
                     Image(systemName: "square.and.arrow.down")
                         .font(.title2)
@@ -120,6 +160,10 @@ struct EmulatorView: View {
             }
             .padding(16)
             .background(.ultraThinMaterial)
+            .onChange(of: controllerService.activePlayerIndex) { _ in
+                // Re-hook gamepad if it changed during emulation
+                runner.setupGamepadInput()
+            }
 
             if showFilterPanel {
                 filterPanel

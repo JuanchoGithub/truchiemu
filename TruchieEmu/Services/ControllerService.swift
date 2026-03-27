@@ -8,6 +8,12 @@ class ControllerService: ObservableObject {
     
     @Published var connectedControllers: [PlayerController] = []
 
+    @Published var activePlayerIndex: Int = 0 {
+        didSet {
+            defaults.set(activePlayerIndex, forKey: "active_player_index")
+        }
+    }
+
     private let defaults = UserDefaults.standard
     private let mappingKey = "controller_mappings_v1"
     private let kbMappingKey = "keyboard_mapping_v1"
@@ -16,6 +22,7 @@ class ControllerService: ObservableObject {
     private var cancellables = Set<AnyCancellable>()
 
     init() {
+        self.activePlayerIndex = UserDefaults.standard.integer(forKey: "active_player_index")
         loadMappings()
         setupControllerNotifications()
         refreshConnectedControllers()

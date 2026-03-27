@@ -1,6 +1,7 @@
 import MetalKit
 import Foundation
 import SwiftUI
+import GameController
 
 class EmulatorRunner: ObservableObject, @unchecked Sendable {
     @MainActor weak var metalView: MTKView?
@@ -17,6 +18,7 @@ class EmulatorRunner: ObservableObject, @unchecked Sendable {
     var romPath: String = ""
     /// Keyboard mapping snapshot captured at launch — safe to read from any thread.
     var cachedKeyboardMapping: KeyboardMapping = KeyboardMapping(buttons: [:])
+    private var hookedController: GCController? = nil
     
     static func forSystem(_ systemID: String?) -> EmulatorRunner {
         switch systemID {
@@ -42,6 +44,9 @@ class EmulatorRunner: ObservableObject, @unchecked Sendable {
             mapping = KeyboardMapping.defaults(for: sysID)
         }
         self.cachedKeyboardMapping = mapping
+        
+        setupGamepadInput()
+        
         isRunning = true
         
         emulationQueue.async {
@@ -56,6 +61,9 @@ class EmulatorRunner: ObservableObject, @unchecked Sendable {
         print("[Runner] Stopping emulation thread...")
         isRunning = false
         LibretroBridge.stop()
+        
+        hookedController?.extendedGamepad?.valueChangedHandler = nil
+        hookedController = nil
     }
 
     func saveState() {
@@ -135,5 +143,34 @@ class EmulatorRunner: ObservableObject, @unchecked Sendable {
             }
         }
         return nil
+    }
+
+    @MainActor
+    func setupGamepadInput() {
+        let activeIdx = ControllerService.shared.activePlayerIndex
+        if activeIdx == 0 { return } // Keyboard
+        
+        guard let player = ControllerService.shared.connectedControllers.first(where: { $0.playerIndex == activeIdx }),
+              let controller = player.gcController else { return }
+        
+        print("[Runner] Hooking gamepad: \(controller.vendorName ?? "Unknown")")
+        self.hookedController = controller
+        
+        controller.extendedGamepad?.valueChangedHandler = { [weak self] pad, element in
+            guard let self = self else { return }
+            
+            // Map element to RetroButton
+            let name = element.localizedName ?? ""
+            for (btn, btnMapping) in player.mapping.buttons {
+                if btnMapping.gcElementName == name {
+                    let retroID = btn.retroID
+                    if let btnElement = element as? GCControllerButtonInput {
+                        self.setKeyState(retroID: Int(retroID), pressed: btnElement.isPressed)
+                    } else if let axisElement = element as? GCControllerAxisInput {
+                        self.setKeyState(retroID: Int(retroID), pressed: abs(axisElement.value) > 0.5)
+                    }
+                }
+            }
+        }
     }
 }
