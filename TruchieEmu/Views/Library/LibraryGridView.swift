@@ -19,7 +19,26 @@ struct LibraryGridView: View {
 
     private enum ViewMode: String { case grid, list }
 
-    @State private var displayedROMs: [ROM] = []
+    private var displayedROMs: [ROM] {
+        let base: [ROM]
+        switch filter {
+        case .all:
+            base = library.roms
+        case .favorites:
+            base = library.roms.filter { $0.isFavorite }
+        case .recent:
+            base = library.roms.filter { $0.lastPlayed != nil }
+                .sorted { ($0.lastPlayed ?? Date.distantPast) > ($1.lastPlayed ?? Date.distantPast) }
+        case .system(let system):
+            base = library.roms.filter { $0.systemID == system.id }
+        }
+
+        if searchText.isEmpty {
+            return base
+        } else {
+            return base.filter { $0.displayName.localizedCaseInsensitiveContains(searchText) }
+        }
+    }
     @State private var columns: [GridItem] = []
 
     var body: some View {
@@ -156,35 +175,11 @@ struct LibraryGridView: View {
             BoxArtPickerView(rom: rom)
         }
         .onAppear { 
-            updateDisplayedROMs() 
             updateColumns()
         }
-        .onChange(of: searchText) { _ in updateDisplayedROMs() }
-        .onChange(of: filter) { _ in updateDisplayedROMs() }
-        .onChange(of: library.lastChangeDate) { _ in updateDisplayedROMs() }
         .onChange(of: columnCount) { _ in updateColumns() }
     }
 
-    private func updateDisplayedROMs() {
-        let base: [ROM]
-        switch filter {
-        case .all:
-            base = library.roms
-        case .favorites:
-            base = library.roms.filter { $0.isFavorite }
-        case .recent:
-            base = library.roms.filter { $0.lastPlayed != nil }
-                .sorted { ($0.lastPlayed ?? Date.distantPast) > ($1.lastPlayed ?? Date.distantPast) }
-        case .system(let system):
-            base = library.roms.filter { $0.systemID == system.id }
-        }
-
-        if searchText.isEmpty {
-            displayedROMs = base
-        } else {
-            displayedROMs = base.filter { $0.displayName.localizedCaseInsensitiveContains(searchText) }
-        }
-    }
 
     private func updateColumns() {
         columns = Array(repeating: GridItem(.flexible(), spacing: 16), count: columnCount)
@@ -419,9 +414,18 @@ struct GameCardView: View {
                 startPoint: .topLeading, endPoint: .bottomTrailing
             )
             VStack(spacing: 8) {
-                Image(systemName: systemIcon)
-                    .font(.system(size: 32))
-                    .foregroundColor(.white.opacity(0.8))
+                if let sys = SystemDatabase.system(forID: rom.systemID ?? ""),
+                   let img = sys.emuImage(size: 600) {
+                    Image(nsImage: img)
+                        .resizable()
+                        .aspectRatio(contentMode: .fit)
+                        .frame(width: 80, height: 80)
+                } else {
+                    Image(systemName: systemIcon)
+                        .font(.system(size: 32))
+                        .foregroundColor(.white.opacity(0.8))
+                }
+                
                 Text(rom.displayName)
                     .font(.caption2)
                     .foregroundColor(.white.opacity(0.6))
@@ -456,9 +460,17 @@ struct GameListRowView: View {
                 Text(rom.displayName)
                     .font(.body.weight(.medium))
                 if let sys = SystemDatabase.system(forID: rom.systemID ?? "") {
-                    Text(sys.name)
-                        .font(.caption)
-                        .foregroundColor(.secondary)
+                    HStack(spacing: 4) {
+                        if let emuImg = sys.emuImage(size: 132) {
+                            Image(nsImage: emuImg)
+                                .resizable()
+                                .aspectRatio(contentMode: .fit)
+                                .frame(width: 12, height: 12)
+                        }
+                        Text(sys.name)
+                            .font(.caption)
+                            .foregroundColor(.secondary)
+                    }
                 }
             }
             Spacer()
@@ -486,10 +498,18 @@ struct GameListRowView: View {
             if let img = thumb {
                 Image(nsImage: img).resizable().aspectRatio(contentMode: .fit)
             } else {
-                Image(systemName: SystemDatabase.system(forID: rom.systemID ?? "")?.iconName ?? "gamecontroller")
-                    .foregroundColor(.secondary)
-                    .frame(maxWidth: .infinity, maxHeight: .infinity)
-                    .background(Color.secondary.opacity(0.1))
+                let sys = SystemDatabase.system(forID: rom.systemID ?? "")
+                if let emuImg = sys?.emuImage(size: 132) {
+                    Image(nsImage: emuImg)
+                        .resizable()
+                        .aspectRatio(contentMode: .fit)
+                        .padding(4)
+                } else {
+                    Image(systemName: sys?.iconName ?? "gamecontroller")
+                        .foregroundColor(.secondary)
+                        .frame(maxWidth: .infinity, maxHeight: .infinity)
+                        .background(Color.secondary.opacity(0.1))
+                }
             }
         }
         .frame(width: 36, height: 36)

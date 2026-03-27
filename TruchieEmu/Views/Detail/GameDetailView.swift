@@ -75,9 +75,17 @@ struct GameDetailView: View {
                     .font(.system(size: 24, weight: .bold))
                 
                 if let sys = system {
-                    Text(sys.name)
-                        .font(.headline)
-                        .foregroundColor(.secondary)
+                    HStack(spacing: 8) {
+                        if let emuImg = sys.emuImage(size: 132) {
+                            Image(nsImage: emuImg)
+                                .resizable()
+                                .aspectRatio(contentMode: .fit)
+                                .frame(width: 20, height: 20)
+                        }
+                        Text(sys.name)
+                            .font(.headline)
+                            .foregroundColor(.secondary)
+                    }
                 }
                 
                 Spacer()
@@ -178,7 +186,15 @@ struct GameDetailView: View {
                 Picker("Selected Core", selection: $selectedCoreID) {
                     if selectedCoreID == nil { Text("Select Core...").tag(nil as String?) }
                     ForEach(installedCores) { core in
-                        Text(core.displayName).tag(core.id as String?)
+                        HStack {
+                            if let img = system?.emuImage(size: 132) {
+                                Image(nsImage: img)
+                                    .resizable()
+                                    .aspectRatio(contentMode: .fit)
+                                    .frame(width: 14, height: 14)
+                            }
+                            Text(core.displayName)
+                        }.tag(core.id as String?)
                     }
                 }
                 .labelsHidden()
@@ -205,10 +221,17 @@ struct GameDetailView: View {
 
     private var placeholderArt: some View {
         ZStack {
-            Color.secondary.opacity(0.2)
-            Image(systemName: system?.iconName ?? "gamecontroller")
-                .font(.system(size: 40))
-                .foregroundColor(.secondary)
+            Color.secondary.opacity(0.1)
+            if let img = system?.emuImage(size: 600) {
+                Image(nsImage: img)
+                    .resizable()
+                    .aspectRatio(contentMode: .fit)
+                    .padding(20)
+            } else {
+                Image(systemName: system?.iconName ?? "gamecontroller")
+                    .font(.system(size: 40))
+                    .foregroundColor(.secondary)
+            }
         }
     }
 

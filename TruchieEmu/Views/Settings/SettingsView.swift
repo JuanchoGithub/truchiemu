@@ -157,8 +157,18 @@ struct CoreSettingsView: View {
             VStack(alignment: .leading, spacing: 24) {
                 ForEach(SystemDatabase.systems.sorted(by: { $0.name < $1.name })) { sys in
                     VStack(alignment: .leading, spacing: 8) {
-                        Label(sys.name, systemImage: sys.iconName)
-                            .font(.headline)
+                        HStack(spacing: 8) {
+                            if let img = sys.emuImage(size: 132) {
+                                Image(nsImage: img)
+                                    .resizable()
+                                    .aspectRatio(contentMode: .fit)
+                                    .frame(width: 24, height: 24)
+                            } else {
+                                Image(systemName: sys.iconName)
+                                    .foregroundColor(.secondary)
+                            }
+                            Text(sys.name).font(.headline)
+                        }
                         
                         let coresForSys = coreManager.availableCores.filter { $0.systemIDs.contains(sys.id) || sys.defaultCoreID == $0.coreID }
                         
@@ -290,10 +300,18 @@ struct ControllerSettingsView: View {
                     Text("Global / Default").tag("default")
                     Divider()
                     ForEach(SystemDatabase.systems) { sys in
-                        Text(sys.name).tag(sys.id)
+                        HStack {
+                            if let img = sys.emuImage(size: 132) {
+                                Image(nsImage: img)
+                                    .resizable()
+                                    .aspectRatio(contentMode: .fit)
+                                    .frame(width: 16, height: 16)
+                            }
+                            Text(sys.name)
+                        }.tag(sys.id)
                     }
                 }
-                .frame(width: 250)
+                .frame(width: 280)
             }
             .padding([.horizontal, .top])
 
@@ -501,15 +519,21 @@ struct ControllerIconView: View {
     
     private func loadIcon(for id: String) -> NSImage? {
         let name = id.lowercased()
-        // Attempt to find the icon in the project resources folder
-        let home = FileManager.default.homeDirectoryForCurrentUser
-        // Assuming the user's path structure provided in metadata
-        let basePath = "gitrepos/truchiemu/TruchieEmu/Resources/ControllerIcons"
-        let fullPath = home.appendingPathComponent("\(basePath)/\(name).ico").path
+        let bundle = Bundle.main
         
-        if FileManager.default.fileExists(atPath: fullPath) {
-            return NSImage(contentsOfFile: fullPath)
+        // Try ControllerIcons folder in bundle
+        if let url = bundle.url(forResource: name, withExtension: "ico", subdirectory: "ControllerIcons") {
+            return NSImage(contentsOf: url)
         }
+        if let url = bundle.url(forResource: name, withExtension: "png", subdirectory: "ControllerIcons") {
+            return NSImage(contentsOf: url)
+        }
+        
+        // Fallback to EmulatorIcons
+        if let sys = SystemDatabase.systems.first(where: { $0.id == id }) {
+            return sys.emuImage(size: 600)
+        }
+        
         return nil
     }
 }
@@ -569,10 +593,18 @@ struct KeyboardSettingsView: View {
                     Text("Global / Default").tag("default")
                     Divider()
                     ForEach(SystemDatabase.systems) { sys in
-                        Text(sys.name).tag(sys.id)
+                        HStack {
+                            if let img = sys.emuImage(size: 132) {
+                                Image(nsImage: img)
+                                    .resizable()
+                                    .aspectRatio(contentMode: .fit)
+                                    .frame(width: 16, height: 16)
+                            }
+                            Text(sys.name)
+                        }.tag(sys.id)
                     }
                 }
-                .frame(width: 250)
+                .frame(width: 280)
                 
                 Spacer()
                 

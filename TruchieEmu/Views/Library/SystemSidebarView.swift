@@ -35,6 +35,7 @@ struct SystemSidebarView: View {
                         sidebarRow(
                             icon: system.iconName,
                             label: system.name,
+                            system: system,
                             count: library.romCounts[system.id] ?? 0
                         )
                         .tag(LibraryFilter.system(system))
@@ -59,11 +60,18 @@ struct SystemSidebarView: View {
     }
 
     @ViewBuilder
-    private func sidebarRow(icon: String, label: String, count: Int, tint: Color = .accentColor) -> some View {
+    private func sidebarRow(icon: String, label: String, system: SystemInfo? = nil, count: Int, tint: Color = .accentColor) -> some View {
         HStack {
-            Image(systemName: icon)
-                .foregroundColor(tint)
-                .frame(width: 18)
+            if let sys = system, let img = sys.emuImage(size: 132) {
+                Image(nsImage: img)
+                    .resizable()
+                    .aspectRatio(contentMode: .fit)
+                    .frame(width: 22, height: 22)
+            } else {
+                Image(systemName: icon)
+                    .foregroundColor(tint)
+                    .frame(width: 18)
+            }
             Text(label)
                 .lineLimit(1)
             Spacer()
