@@ -349,15 +349,36 @@ struct ControllerMappingDetail: View {
             Divider()
 
             ScrollView {
-                LazyVGrid(columns: [GridItem(.flexible()), GridItem(.flexible())], spacing: 12) {
-                    let buttons = RetroButton.relevantButtons(for: systemID)
-                    ForEach(buttons, id: \.self) { btn in
-                        buttonRow(btn)
+                VStack(spacing: 24) {
+                    // Premium visuals
+                    HStack(spacing: 32) {
+                        ControllerDrawingView()
+                        
+                        Divider().frame(height: 100)
+                        
+                        HStack(spacing: 20) {
+                            StickTesterView(x: lStickState.x, y: lStickState.y, label: "LEFT STICK")
+                            StickTesterView(x: rStickState.x, y: rStickState.y, label: "RIGHT STICK")
+                        }
                     }
+                    .padding()
+                    .background(.ultraThinMaterial)
+                    .cornerRadius(16)
+                    .overlay(RoundedRectangle(cornerRadius: 16).stroke(.secondary.opacity(0.1), lineWidth: 1))
+                    .padding(.horizontal)
+                    
+                    LazyVGrid(columns: [GridItem(.flexible()), GridItem(.flexible())], spacing: 12) {
+                        let buttons = RetroButton.relevantButtons(for: systemID)
+                        ForEach(buttons, id: \.self) { btn in
+                            buttonRow(btn)
+                        }
+                    }
+                    .padding(.horizontal)
                 }
-                .padding()
+                .padding(.vertical)
             }
         }
+        .onAppear { startStickVisualizer() }
     }
 
     private func buttonRow(_ btn: RetroButton) -> some View {
@@ -403,6 +424,100 @@ struct ControllerMappingDetail: View {
 
     private func save() {
         controllerService.updateMapping(for: mapping.vendorName, systemID: systemID, mapping: mapping)
+    }
+
+    // Real-time stick states for visualizers
+    @State private var lStickState: (x: Double, y: Double) = (0, 0)
+    @State private var rStickState: (x: Double, y: Double) = (0, 0)
+
+    private func startStickVisualizer() {
+        guard let gc = player.gcController else { return }
+        gc.extendedGamepad?.leftThumbstick.valueChangedHandler = { _, x, y in
+            DispatchQueue.main.async { lStickState = (Double(x), Double(y)) }
+        }
+        gc.extendedGamepad?.rightThumbstick.valueChangedHandler = { _, x, y in
+            DispatchQueue.main.async { rStickState = (Double(x), Double(y)) }
+        }
+    }
+}
+
+struct StickTesterView: View {
+    let x: Double
+    let y: Double
+    let label: String
+    
+    var body: some View {
+        VStack(spacing: 8) {
+            ZStack {
+                Circle().fill(.quaternary.opacity(0.2))
+                    .frame(width: 100, height: 100)
+                Circle().stroke(.secondary.opacity(0.3), lineWidth: 1)
+                    .frame(width: 100, height: 100)
+                
+                // Crosshairs
+                Rectangle().fill(.secondary.opacity(0.1)).frame(width: 100, height: 1)
+                Rectangle().fill(.secondary.opacity(0.1)).frame(width: 1, height: 100)
+                
+                // Active Dot
+                Circle().fill(LinearGradient(colors: [.purple, .blue], startPoint: .top, endPoint: .bottom))
+                    .frame(width: 14, height: 14)
+                    .offset(x: CGFloat(x * 43), y: CGFloat(y * -43))
+                    .shadow(color: .purple.opacity(0.5), radius: 6)
+            }
+            .clipShape(Circle())
+            
+            Text(label).font(.caption2.bold()).foregroundColor(.secondary)
+            HStack(spacing: 8) {
+                Text("X: \(String(format: "%.2f", x))").font(.system(size: 9, design: .monospaced))
+                Text("Y: \(String(format: "%.2f", y))").font(.system(size: 9, design: .monospaced))
+            }
+            .foregroundColor(.secondary)
+        }
+        .padding(12)
+        .background(.background.opacity(0.5))
+        .cornerRadius(12)
+        .overlay(RoundedRectangle(cornerRadius: 12).stroke(.secondary.opacity(0.1), lineWidth: 1))
+    }
+}
+
+struct ControllerDrawingView: View {
+    var body: some View {
+        ZStack {
+            // Main Body
+            Capsule()
+                .fill(.quaternary.opacity(0.1))
+                .frame(width: 200, height: 120)
+                .overlay(Capsule().stroke(.secondary.opacity(0.2), lineWidth: 1))
+            
+            // Handles
+            HStack(spacing: 120) {
+                Circle().fill(.quaternary.opacity(0.05)).frame(width: 60)
+                Circle().fill(.quaternary.opacity(0.05)).frame(width: 60)
+            }
+            
+            // Sticks
+            HStack(spacing: 60) {
+                Circle().fill(.secondary.opacity(0.2)).frame(width: 30)
+                Circle().fill(.secondary.opacity(0.2)).frame(width: 30)
+            }
+            .offset(y: 20)
+            
+            // D-Pad & Buttons
+            HStack(spacing: 100) {
+                Image(systemName: "plus.circle.fill").font(.title2).foregroundColor(.secondary.opacity(0.3))
+                VStack(spacing: 5) {
+                    HStack(spacing: 5) { Circle().frame(width: 10); Circle().frame(width: 10) }
+                    HStack(spacing: 5) { Circle().frame(width: 10); Circle().frame(width: 10) }
+                }
+                .foregroundColor(.secondary.opacity(0.3))
+            }
+            .offset(y: -15)
+            
+            Text("INPUT PREVIEW").font(.system(size: 8, weight: .black)).tracking(2)
+                .foregroundColor(.secondary.opacity(0.5))
+                .offset(y: -50)
+        }
+        .padding()
     }
 }
 
