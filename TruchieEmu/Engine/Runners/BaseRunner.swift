@@ -159,16 +159,27 @@ class EmulatorRunner: ObservableObject, @unchecked Sendable {
         controller.extendedGamepad?.valueChangedHandler = { [weak self] pad, element in
             guard let self = self else { return }
             
-            // Map element to RetroButton
-            let name = element.localizedName ?? ""
-            for (btn, btnMapping) in player.mapping.buttons {
-                if btnMapping.gcElementName == name {
-                    let retroID = btn.retroID
-                    if let btnElement = element as? GCControllerButtonInput {
-                        self.setKeyState(retroID: Int(retroID), pressed: btnElement.isPressed)
-                    } else if let axisElement = element as? GCControllerAxisInput {
-                        self.setKeyState(retroID: Int(retroID), pressed: abs(axisElement.value) > 0.5)
-                    }
+            // If it's a DPad or Stick, we want to handle its 4 directions
+            if let dpad = element as? GCControllerDirectionPad {
+                self.updateGamepadButton(dpad.up, in: player.mapping)
+                self.updateGamepadButton(dpad.down, in: player.mapping)
+                self.updateGamepadButton(dpad.left, in: player.mapping)
+                self.updateGamepadButton(dpad.right, in: player.mapping)
+            } else {
+                self.updateGamepadButton(element, in: player.mapping)
+            }
+        }
+    }
+
+    private func updateGamepadButton(_ element: GCControllerElement, in mapping: ControllerMapping) {
+        let name = element.localizedName ?? ""
+        for (btn, btnMapping) in mapping.buttons {
+            if btnMapping.gcElementName == name {
+                let retroID = btn.retroID
+                if let btnElement = element as? GCControllerButtonInput {
+                    self.setKeyState(retroID: Int(retroID), pressed: btnElement.isPressed)
+                } else if let axisElement = element as? GCControllerAxisInput {
+                    self.setKeyState(retroID: Int(retroID), pressed: abs(axisElement.value) > 0.5)
                 }
             }
         }
