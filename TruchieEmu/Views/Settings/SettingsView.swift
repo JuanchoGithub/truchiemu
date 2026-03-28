@@ -248,7 +248,7 @@ struct CoreRowView: View {
                     get: { core.activeVersionTag ?? core.installedVersions.last?.tag ?? "" },
                     set: { coreManager.setActiveVersion(coreID: core.id, tag: $0) }
                 )) {
-                    ForEach(core.installedVersions.reversed(), id: \.tag) { v in
+                    ForEach(core.installedVersions.reversed()) { v in
                         Text(v.tag).tag(v.tag)
                     }
                 }
@@ -305,7 +305,7 @@ struct ControllerSettingsView: View {
                                 Image(nsImage: img)
                                     .resizable()
                                     .aspectRatio(contentMode: .fit)
-                                    .frame(width: 16, height: 16)
+                                    .frame(width: 12, height: 12)
                             }
                             Text(sys.name)
                         }.tag(sys.id)
@@ -507,8 +507,8 @@ struct ControllerIconView: View {
                 .resizable()
                 .interpolation(.high)
                 .aspectRatio(contentMode: .fit)
-                .frame(width: 140, height: 100)
-                .padding()
+                .frame(width: 160, height: 110)
+                .padding(8)
                 .background(.white.opacity(0.05))
                 .cornerRadius(12)
                 .shadow(color: .black.opacity(0.3), radius: 10, x: 0, y: 5)

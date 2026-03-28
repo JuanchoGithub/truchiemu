@@ -90,7 +90,7 @@ struct SystemSidebarView: View {
         panel.canChooseDirectories = true
         panel.canChooseFiles = false
         if panel.runModal() == .OK, let url = panel.url {
-            Task { await library.scanROMs(in: url) }
+            library.addLibraryFolder(url: url)
         }
     }
 }

@@ -544,4 +544,8 @@ actor ImageCache {
     func clear() {
         cache.removeAllObjects()
     }
+    
+    func removeImage(for url: URL) {
+        cache.removeObject(forKey: url as NSURL)
+    }
 }

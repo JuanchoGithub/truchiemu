@@ -148,7 +148,10 @@ class CoreManager: ObservableObject {
                 throw NSError(domain: "CoreManager", code: http.statusCode, userInfo: [NSLocalizedDescriptionKey: "Server returned HTTP \(http.statusCode)"])
             }
             
-            let tag = ISO8601DateFormatter().string(from: Date()).prefix(10).description
+            // Use date and time for tag to ensure uniqueness if downloaded on same day
+            let tag = ISO8601DateFormatter().string(from: Date()).prefix(19).description
+                .replacingOccurrences(of: "T", with: " ")
+                .replacingOccurrences(of: ":", with: "-")
 
             // Destination folder
             let coreFolder = appSupportURL.appendingPathComponent("\(info.coreID)/\(tag)", isDirectory: true)
@@ -164,6 +167,8 @@ class CoreManager: ObservableObject {
             let version = CoreVersion(tag: tag, dylibPath: dylibDest, downloadedAt: Date(), remoteURL: info.downloadURL)
 
             if let idx = installedCores.firstIndex(where: { $0.id == info.coreID }) {
+                // Ensure no duplicate path entries exist
+                installedCores[idx].installedVersions.removeAll { $0.dylibPath.path == dylibDest.path }
                 installedCores[idx].installedVersions.append(version)
                 installedCores[idx].activeVersionTag = tag
                 installedCores[idx].isDownloading = false
@@ -221,9 +226,18 @@ class CoreManager: ObservableObject {
         guard let data = defaults.data(forKey: coresKey),
               var saved = try? decoder.decode([LibretroCore].self, from: data) else { return }
         
-        // Migrate/Refresh systemIDs for installed cores
+        // Migrate/Refresh systemIDs for installed cores and deduplicate versions
         for i in 0..<saved.count {
             saved[i].systemIDs = CoreManager.supportedSystems(for: saved[i].id)
+            
+            // Fix existing data corruption: ensure each version has a unique path
+            var seenPaths = Set<String>()
+            saved[i].installedVersions = saved[i].installedVersions.filter { v in
+                let path = v.dylibPath.path
+                if seenPaths.contains(path) { return false }
+                seenPaths.insert(path)
+                return true
+            }
         }
         
         installedCores = saved

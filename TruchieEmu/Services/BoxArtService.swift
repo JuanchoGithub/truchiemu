@@ -124,6 +124,7 @@ class BoxArtService: ObservableObject {
         do {
             let (tmpURL, _) = try await URLSession.shared.download(from: artURL)
             try FileManager.default.moveItem(at: tmpURL, to: localURL)
+            await ImageCache.shared.removeImage(for: localURL)
             print("Successfully cached boxart for \(rom.name) at \(localURL.lastPathComponent)")
             return localURL
         } catch {

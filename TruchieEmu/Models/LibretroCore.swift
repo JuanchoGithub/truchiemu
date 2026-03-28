@@ -17,7 +17,8 @@ struct LibretroCore: Identifiable, Codable, Hashable {
     var isInstalled: Bool { !installedVersions.isEmpty }
 }
 
-struct CoreVersion: Codable, Hashable {
+struct CoreVersion: Codable, Hashable, Identifiable {
+    var id: String { dylibPath.absoluteString }
     var tag: String              // e.g. "2024-01-15"
     var dylibPath: URL
     var downloadedAt: Date

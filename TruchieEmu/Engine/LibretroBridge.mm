@@ -269,7 +269,7 @@ static bool bridge_environment(unsigned cmd, void *data) {
                     if (strstr(var->key, "beetle_psx") != NULL) { var->value = langStr; return true; }
 
                     var->value = langStr; // Default to capitalized word
-                    NSLog(@"[Bridge] Intercepted variable %s -> %s", var->key, var->value);
+                    if (g_logLevel == 0) NSLog(@"[Bridge] Intercepted variable %s -> %s", var->key, var->value);
                     return true;
                 }
                 

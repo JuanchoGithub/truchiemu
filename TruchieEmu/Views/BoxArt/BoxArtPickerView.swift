@@ -77,6 +77,13 @@ struct BoxArtPickerView: View {
         Task {
             if let localURL = await BoxArtService.shared.downloadAndCache(artURL: url, for: rom) {
                 var updated = rom
+                
+                // Force UI state change by removing and re-adding path
+                updated.boxArtPath = nil
+                library.updateROM(updated)
+                
+                try? await Task.sleep(nanoseconds: 50_000_000)
+                
                 updated.boxArtPath = localURL
                 library.updateROM(updated)
                 dismiss()

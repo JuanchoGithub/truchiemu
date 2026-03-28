@@ -289,7 +289,7 @@ struct CoreVersionPickerView: View {
                 if selectedTag == nil {
                     Text("Select Version...").tag(nil as String?)
                 }
-                ForEach(core.installedVersions.reversed(), id: \.tag) { v in
+                ForEach(core.installedVersions.reversed()) { v in
                     Text(v.tag).tag(v.tag as String?)
                 }
             }
