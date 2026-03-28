@@ -9,12 +9,13 @@ struct ROM: Identifiable, Codable, Hashable {
     var isFavorite: Bool = false
     var lastPlayed: Date?
     var selectedCoreID: String?
+    var customName: String?
     var useCustomCore: Bool = false
     var metadata: ROMMetadata?
     var settings: ROMSettings = ROMSettings()
 
     // Derived
-    var displayName: String { metadata?.title ?? name }
+    var displayName: String { customName ?? metadata?.title ?? name }
     var fileExtension: String { path.pathExtension.lowercased() }
 
     // Persistent storage paths

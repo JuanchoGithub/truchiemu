@@ -5,6 +5,7 @@ struct GameDetailView: View {
     @EnvironmentObject var coreManager: CoreManager
     @EnvironmentObject var controllerService: ControllerService
     @ObservedObject var sysPrefs = SystemPreferences.shared
+    @Environment(\.dismiss) var dismiss
     var rom: ROM
 
     @State private var showBoxArtPicker = false
@@ -71,8 +72,29 @@ struct GameDetailView: View {
             .onTapGesture { showBoxArtPicker = true }
 
             VStack(alignment: .leading, spacing: 8) {
-                Text(currentROM.displayName)
+                HStack {
+                    TextField("Game Title", text: Binding(
+                        get: { currentROM.customName ?? currentROM.metadata?.title ?? currentROM.name },
+                        set: { newName in
+                            var updated = currentROM
+                            updated.customName = newName.isEmpty ? nil : newName
+                            library.updateROM(updated)
+                        }
+                    ))
                     .font(.system(size: 24, weight: .bold))
+                    .textFieldStyle(.plain)
+                    
+                    Spacer()
+                    
+                    Button {
+                        dismiss()
+                    } label: {
+                        Image(systemName: "xmark.circle.fill")
+                            .font(.title2)
+                            .foregroundColor(.secondary)
+                    }
+                    .buttonStyle(.plain)
+                }
                 
                 if let sys = system {
                     HStack(spacing: 8) {
