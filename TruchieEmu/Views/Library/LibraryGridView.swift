@@ -38,7 +38,12 @@ struct LibraryGridView: View {
         if searchText.isEmpty {
             return base
         } else {
-            return base.filter { $0.displayName.localizedCaseInsensitiveContains(searchText) }
+            let searchTerms = searchText.split(separator: " ")
+            return base.filter { rom in
+                searchTerms.allSatisfy { term in
+                    rom.displayName.localizedCaseInsensitiveContains(term)
+                }
+            }
         }
     }
     @State private var columns: [GridItem] = []
