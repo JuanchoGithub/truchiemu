@@ -106,20 +106,11 @@ actor ROMScanner {
         return found
     }
 
-    // New: Look for .dat files in the folder and its subfolders to register them
-    func registerDats(in folderURL: URL) {
-        let fm = FileManager.default
-        guard let enumerator = fm.enumerator(at: folderURL, includingPropertiesForKeys: nil, options: [.skipsHiddenFiles]) else { return }
-        
-        for case let url as URL in enumerator {
-            if url.pathExtension.lowercased() == "dat" {
-                // Try to infer system from filename
-                let filename = url.lastPathComponent.lowercased()
-                for system in SystemDatabase.systems {
-                    if filename.contains(system.id.lowercased()) || filename.contains(system.name.lowercased()) {
-                        ROMIdentifierService.shared.loadDatFile(url: url, forSystem: system.id)
-                    }
-                }
+    // New: Trigger DAT download for any newly discovered systems
+    func downloadDatsForDiscoveredSystems(_ systems: Set<String>) async {
+        for sysID in systems {
+            if let system = SystemDatabase.system(forID: sysID) {
+                _ = await LibretroDatabaseLibrary.shared.fetchAndLoadDat(for: system)
             }
         }
     }

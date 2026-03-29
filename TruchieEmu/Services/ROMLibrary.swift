@@ -78,10 +78,13 @@ class ROMLibrary: ObservableObject {
         isScanning = true
         scanProgress = 0
         let scanner = ROMScanner()
-        await scanner.registerDats(in: folder)
         let found = await scanner.scan(folder: folder) { progress in
             Task { @MainActor in self.scanProgress = progress }
         }
+        
+        let detectedSystems = Set(found.compactMap { $0.systemID })
+        Task { await scanner.downloadDatsForDiscoveredSystems(detectedSystems) }
+        
         // Merge: keep existing metadata, add new
         var existing = Dictionary(uniqueKeysWithValues: roms.map { ($0.path.path, $0) })
         for rom in found where existing[rom.path.path] == nil {
@@ -140,7 +143,7 @@ class ROMLibrary: ObservableObject {
 
     func identifyROM(_ rom: ROM) async {
         let identifier = ROMIdentifierService.shared
-        if let info = identifier.identify(rom: rom) {
+        if let info = await identifier.identify(rom: rom) {
             var updated = rom
             if updated.metadata == nil { updated.metadata = ROMMetadata() }
             updated.metadata?.title = info.name
@@ -284,7 +287,6 @@ class ROMLibrary: ObservableObject {
         // Enumerate current files
         let fm = FileManager.default
         let scanner = ROMScanner()
-        await scanner.registerDats(in: url)
         
         guard let enumerator = fm.enumerator(at: url,
                                              includingPropertiesForKeys: [.isRegularFileKey, .fileSizeKey, .contentModificationDateKey],
@@ -321,6 +323,9 @@ class ROMLibrary: ObservableObject {
         let imported = await scanner.scan(urls: changed) { p in
             Task { @MainActor in self.scanProgress = p }
         }
+
+        let detectedSystems = Set(imported.compactMap { $0.systemID })
+        Task { await scanner.downloadDatsForDiscoveredSystems(detectedSystems) }
 
         // Merge
         var byPath = Dictionary(uniqueKeysWithValues: roms.map { ($0.path.path, $0) })

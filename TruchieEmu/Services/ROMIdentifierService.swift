@@ -35,12 +35,12 @@ class ROMIdentifierService {
     // Cache for loaded databases: [systemID: [CRC: GameInfo]]
     private var databases: [String: [String: GameInfo]] = [:]
 
-    func identify(rom: ROM) -> GameInfo? {
+    func identify(rom: ROM) async -> GameInfo? {
         guard let systemID = rom.systemID,
               let system = SystemDatabase.system(forID: systemID) else { return nil }
         
-        // 1. Ensure database is loaded for this system
-        let db = getDatabase(for: system)
+        // 1. Ensure database is loaded/downloaded for this system
+        let db = await LibretroDatabaseLibrary.shared.fetchAndLoadDat(for: system)
         if db.isEmpty {
             print("No .dat database found for system: \(systemID)")
             return nil
@@ -81,90 +81,144 @@ class ROMIdentifierService {
             return nil
         }
     }
+}
 
-    private func getDatabase(for system: SystemInfo) -> [String: GameInfo] {
-        if let db = databases[system.id] { return db }
-        
-        // Try to find a .dat file in the ROM folder or a global Dats folder
-        // For now, let's look in the same folder as the ROM or in a subfolder 'Dats'
-        // In a real app, we might have a dedicated location.
-        
-        // Let's assume the user might have placed .dat files in the ROM folder.
-        // We'll search for .dat files matching the system name or id.
-        
-        // This is a bit tricky without knowing where the user keeps them.
-        // The user's script says: "download from libretro-database"
-        
-        // Let's check common locations.
-        let db = loadBestMatchingDat(for: system)
-        if !db.isEmpty {
-            databases[system.id] = db
-        }
-        return db
-    }
+struct LibretroDatGame {
+    var name: String = ""
+    var description: String = ""
+    var year: String?
+    var developer: String?
+    var publisher: String?
+    var crcs: [String] = []  // A game can have multiple roms/crcs
+}
 
-    private func loadBestMatchingDat(for system: SystemInfo) -> [String: GameInfo] {
-        // 1. Check Application Support/TruchieEmu/Dats
-        let appSupport = FileManager.default.urls(for: .applicationSupportDirectory, in: .userDomainMask).first!
-        let datsDir = appSupport.appendingPathComponent("TruchieEmu").appendingPathComponent("Dats")
+/// A specialized service/library to download and parse libretro database files (.dat) formatted in ClrMamePro syntax.
+class LibretroDatabaseLibrary {
+    static let shared = LibretroDatabaseLibrary()
+    
+    // Cache for loaded databases: [systemID: [CRC: GameInfo]]
+    private var databases: [String: [String: GameInfo]] = [:]
+    
+    /// Parses a ClrMamePro formatted DAT file into a dictionary grouped by CRC.
+    func parseDat(contentsOf url: URL) -> [String: GameInfo] {
+        guard let lines = try? String(contentsOf: url).components(separatedBy: .newlines) else { return [:] }
         
-        let searchPaths = [datsDir]
+        var database: [String: GameInfo] = [:]
+        var currentGame: LibretroDatGame?
         
-        // If we have a ROM folder, check there too
-        // (This service doesn't know about ROMLibrary's folder easily without being passed it)
-        
-        for path in searchPaths {
-            guard let enumerator = FileManager.default.enumerator(at: path, includingPropertiesForKeys: nil) else { continue }
-            for case let url as URL in enumerator {
-                if url.pathExtension.lowercased() == "dat" {
-                    let filename = url.lastPathComponent.lowercased()
-                    // Match system name or extensions in filename
-                    if filename.contains(system.id.lowercased()) || 
-                       filename.contains(system.name.lowercased()) ||
-                       system.extensions.contains(where: { filename.contains($0.lowercased()) }) {
-                        let db = loadNoIntroDat(url)
-                        if !db.isEmpty { return db }
+        for line in lines {
+            let trimmed = line.trimmingCharacters(in: .whitespaces)
+            if trimmed.hasPrefix("game (") || trimmed.hasPrefix("machine (") {
+                currentGame = LibretroDatGame()
+            } else if trimmed == ")" && currentGame != nil {
+                let nameToUse = !(currentGame?.description.isEmpty ?? true) ? currentGame!.description : currentGame!.name
+                for crc in currentGame!.crcs {
+                    database[crc.uppercased()] = GameInfo(
+                        name: nameToUse,
+                        year: currentGame?.year,
+                        publisher: currentGame?.publisher ?? currentGame?.developer,
+                        crc: crc.uppercased()
+                    )
+                }
+                currentGame = nil
+            } else if currentGame != nil {
+                // inside game block
+                if trimmed.hasPrefix("name ") {
+                    currentGame?.name = extractQuotes(trimmed) ?? ""
+                } else if trimmed.hasPrefix("description ") {
+                    currentGame?.description = extractQuotes(trimmed) ?? ""
+                } else if trimmed.hasPrefix("comment ") && (currentGame?.description.isEmpty ?? true) {
+                    currentGame?.description = extractQuotes(trimmed) ?? ""
+                } else if trimmed.hasPrefix("year ") {
+                    currentGame?.year = extractQuotes(trimmed)
+                } else if trimmed.hasPrefix("developer ") {
+                    currentGame?.developer = extractQuotes(trimmed)
+                } else if trimmed.hasPrefix("publisher ") {
+                    currentGame?.publisher = extractQuotes(trimmed)
+                } else if trimmed.hasPrefix("rom (") || trimmed.hasPrefix("disk (") {
+                    if let crcRange = trimmed.range(of: "crc ") {
+                        let substring = trimmed[crcRange.upperBound...]
+                        if let firstWord = substring.components(separatedBy: .whitespaces).first {
+                            let finalCrc = firstWord.trimmingCharacters(in: CharacterSet(charactersIn: ")"))
+                            currentGame?.crcs.append(finalCrc.uppercased())
+                        }
                     }
                 }
             }
         }
         
-        return [:]
-    }
-
-    private func loadNoIntroDat(_ url: URL) -> [String: GameInfo] {
-        guard let xml = try? XMLDocument(contentsOf: url, options: []),
-              let root = xml.rootElement() else {
-            return [:]
-        }
-
-        var database: [String: GameInfo] = [:]
-
-        for gameNode in root.elements(forName: "game") {
-            let description = gameNode.elements(forName: "description").first?.stringValue ?? "Unknown"
-            let year        = gameNode.elements(forName: "year").first?.stringValue
-            let publisher   = gameNode.elements(forName: "publisher").first?.stringValue
-
-            for romNode in gameNode.elements(forName: "rom") {
-                if let crc = romNode.attribute(forName: "crc")?.stringValue?.uppercased() {
-                    database[crc] = GameInfo(
-                        name: description,
-                        year: year,
-                        publisher: publisher,
-                        crc: crc
-                    )
-                }
-            }
-        }
-        print("✅ Loaded \(database.count) verified games from \(url.lastPathComponent)")
+        print("✅ Parsed \(database.count) ROM hashes from \(url.lastPathComponent)")
         return database
     }
     
-    // Manually load a DAT file
-    func loadDatFile(url: URL, forSystem systemID: String) {
-        let db = loadNoIntroDat(url)
-        if !db.isEmpty {
-            databases[systemID] = db
+    private func extractQuotes(_ string: String) -> String? {
+        if let start = string.firstIndex(of: "\""),
+           let end = string[string.index(after: start)...].firstIndex(of: "\"") {
+            return String(string[string.index(after: start)..<end])
         }
+        return nil
+    }
+    
+    /// Ensures we have the database locally, optionally downloading it from github if missing. Returns parsed entries.
+    func fetchAndLoadDat(for system: SystemInfo) async -> [String: GameInfo] {
+        if let db = databases[system.id] { return db }
+        
+        let appSupport = FileManager.default.urls(for: .applicationSupportDirectory, in: .userDomainMask).first!
+        let datsDir = appSupport.appendingPathComponent("TruchieEmu").appendingPathComponent("Dats")
+        try? FileManager.default.createDirectory(at: datsDir, withIntermediateDirectories: true)
+        
+        var expectedFileName = "\(system.name).dat"
+        if !system.manufacturer.isEmpty && system.manufacturer != "Various" {
+            expectedFileName = "\(system.manufacturer) - \(system.name).dat"
+        }
+        let fallbackFileName = "\(system.name).dat"
+        let fallbackVendorFileName = "\(system.manufacturer.isEmpty ? "" : "\(system.manufacturer) ")\(system.name).dat"
+        
+        let localNames = [expectedFileName, fallbackFileName, fallbackVendorFileName]
+        
+        // 1. Check local files first
+        for fileName in localNames {
+            let localUrl = datsDir.appendingPathComponent(fileName)
+            if FileManager.default.fileExists(atPath: localUrl.path) {
+                print("📂 Using local DAT: \(fileName)")
+                let db = parseDat(contentsOf: localUrl)
+                if !db.isEmpty {
+                    databases[system.id] = db
+                    return db
+                }
+            }
+        }
+        
+        // 2. Not found locally, let's download from GitHub
+        print("🌐 Downloading libretro DAT for \(system.name)...")
+        let paths = ["metadat/no-intro", "metadat/redump", "metadat/mame", "metadat/fba", "metadat/fbneo-split", "dat"]
+        let baseUrl = "https://raw.githubusercontent.com/libretro/libretro-database/master/"
+        
+        for fileName in localNames {
+            guard let encodedFile = fileName.addingPercentEncoding(withAllowedCharacters: .urlPathAllowed) else { continue }
+            
+            for path in paths {
+                let checkUrlStr = baseUrl + path + "/" + encodedFile
+                guard let checkUrl = URL(string: checkUrlStr) else { continue }
+                
+                print("   - Testing URL: \(checkUrlStr)")
+                if let data = try? await URLSession.shared.data(from: checkUrl).0, data.count > 100 {
+                    // Check if string contains "game (" to ensure it's not a 404 page masquerading as 200
+                    if let stringContent = String(data: data, encoding: .utf8), stringContent.contains("game (") || stringContent.contains("machine (") {
+                        let localUrl = datsDir.appendingPathComponent(fileName)
+                        try? data.write(to: localUrl)
+                        print("⬇️ Downloaded DAT successfully to \(localUrl.lastPathComponent)")
+                        
+                        let db = parseDat(contentsOf: localUrl)
+                        databases[system.id] = db
+                        return db
+                    }
+                }
+            }
+        }
+        
+        print("❌ Could not find an upstream DAT for \(system.name)")
+        databases[system.id] = [:] // Avoid repeated lookups
+        return [:]
     }
 }
