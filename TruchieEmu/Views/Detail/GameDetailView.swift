@@ -175,6 +175,9 @@ struct GameDetailView: View {
                 }
 
                 if let meta = currentROM.metadata {
+                    if let original = meta.title, currentROM.customName != nil {
+                        GridRow { Text("Orig. Name").bold(); Text(original).foregroundColor(.secondary) }
+                    }
                     if let dev = meta.developer { GridRow { Text("Developer").bold(); Text(dev).foregroundColor(.secondary) } }
                     if let pub = meta.publisher { GridRow { Text("Publisher").bold(); Text(pub).foregroundColor(.secondary) } }
                     if let year = meta.year { GridRow { Text("Year").bold(); Text(year).foregroundColor(.secondary) } }

@@ -149,6 +149,8 @@ class ROMLibrary: ObservableObject {
             updated.metadata?.title = info.name
             updated.metadata?.year = info.year
             updated.metadata?.publisher = info.publisher
+            updated.metadata?.developer = info.developer
+            updated.metadata?.genre = info.genre
             
             updateROM(updated)
         }

@@ -26,6 +26,8 @@ struct GameInfo {
     let name: String
     let year: String?
     let publisher: String?
+    let developer: String?
+    let genre: String?
     let crc: String
 }
 
@@ -89,6 +91,7 @@ struct LibretroDatGame {
     var year: String?
     var developer: String?
     var publisher: String?
+    var genre: String?
     var crcs: [String] = []  // A game can have multiple roms/crcs
 }
 
@@ -117,6 +120,8 @@ class LibretroDatabaseLibrary {
                         name: nameToUse,
                         year: currentGame?.year,
                         publisher: currentGame?.publisher ?? currentGame?.developer,
+                        developer: currentGame?.developer,
+                        genre: currentGame?.genre,
                         crc: crc.uppercased()
                     )
                 }
@@ -135,6 +140,8 @@ class LibretroDatabaseLibrary {
                     currentGame?.developer = extractQuotes(trimmed)
                 } else if trimmed.hasPrefix("publisher ") {
                     currentGame?.publisher = extractQuotes(trimmed)
+                } else if trimmed.hasPrefix("genre ") || trimmed.hasPrefix("category ") {
+                    currentGame?.genre = extractQuotes(trimmed)
                 } else if trimmed.hasPrefix("rom (") || trimmed.hasPrefix("disk (") {
                     if let crcRange = trimmed.range(of: "crc ") {
                         let substring = trimmed[crcRange.upperBound...]
