@@ -8,7 +8,9 @@ struct LibraryGridView: View {
     @Binding var selectedROM: ROM?
     @Binding var searchText: String
 
-    @State private var showingInfoROM: ROM? = nil
+    @Environment(\.openWindow) private var openWindow
+    @State private var renamingROM: ROM? = nil
+    @State private var renameText: String = ""
     @State private var gameWindowController: StandaloneGameWindowController? = nil
 
     @State private var viewMode: ViewMode = .grid
@@ -66,9 +68,22 @@ struct LibraryGridView: View {
             }
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity)
-        .sheet(item: $showingInfoROM) { rom in
-            GameDetailView(rom: rom)
-                .frame(minWidth: 500, minHeight: 600)
+        .alert("Rename Game", isPresented: Binding(
+            get: { renamingROM != nil },
+            set: { if !$0 { renamingROM = nil } }
+        )) {
+            TextField("Name", text: $renameText)
+            Button("Save") {
+                if let rom = renamingROM {
+                    var updated = rom
+                    updated.customName = renameText.isEmpty ? nil : renameText
+                    library.updateROM(updated)
+                }
+                renamingROM = nil
+            }
+            Button("Cancel", role: .cancel) {
+                renamingROM = nil
+            }
         }
         .toolbar {
             ToolbarItemGroup {
@@ -266,7 +281,7 @@ struct LibraryGridView: View {
     @ViewBuilder
     private func contextMenu(for rom: ROM) -> some View {
         Button {
-            showingInfoROM = rom
+            openWindow(id: "game-info", value: rom.id)
         } label: {
             Label("See Game Info", systemImage: "info.circle")
         }
@@ -275,6 +290,13 @@ struct LibraryGridView: View {
             launchGame(rom)
         } label: {
             Label("Launch Game", systemImage: "play.fill")
+        }
+
+        Button {
+            renameText = rom.customName ?? rom.metadata?.title ?? rom.name
+            renamingROM = rom
+        } label: {
+            Label("Rename Game", systemImage: "pencil")
         }
 
         Divider()

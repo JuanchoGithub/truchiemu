@@ -29,6 +29,19 @@ struct TruchieEmuApp: App {
             }
         }
 
+        WindowGroup("Game Info", id: "game-info", for: ROM.ID.self) { $romID in
+            if let romID = romID, let rom = library.roms.first(where: { $0.id == romID }) {
+                GameDetailView(rom: rom)
+                    .environmentObject(library)
+                    .environmentObject(coreManager)
+                    .environmentObject(controllerService)
+                    .frame(minWidth: 500, minHeight: 600)
+            } else {
+                Text("Select a game from the library")
+                    .foregroundColor(.secondary)
+            }
+        }
+
         Settings {
             SettingsView()
                 .environmentObject(library)

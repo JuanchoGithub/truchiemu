@@ -11,6 +11,8 @@ struct GameDetailView: View {
     @State private var showBoxArtPicker = false
     @State private var showControlsPicker = false
     @State private var boxArtImage: NSImage? = nil
+    @State private var crcHash: String? = nil
+    @State private var fileSize: String? = nil
 
     private var currentROM: ROM {
         library.roms.first { $0.id == rom.id } ?? rom
@@ -46,6 +48,17 @@ struct GameDetailView: View {
             loadBoxArt()
             useCustomCore = currentROM.useCustomCore
             selectedCoreID = currentROM.selectedCoreID ?? sysPrefs.preferredCoreID(for: currentROM.systemID ?? "") ?? system?.defaultCoreID
+        }
+        .task(id: currentROM.id) {
+            if let attrs = try? FileManager.default.attributesOfItem(atPath: currentROM.path.path),
+               let size = attrs[.size] as? Int64 {
+                let formatter = ByteCountFormatter()
+                formatter.countStyle = .file
+                fileSize = formatter.string(fromByteCount: size)
+            }
+            if let crc = ROMIdentifierService.shared.computeCRC(for: currentROM.path, systemID: currentROM.systemID ?? "") {
+                crcHash = crc
+            }
         }
         .onChange(of: currentROM.boxArtPath) { _ in loadBoxArt() }
         .sheet(isPresented: $showBoxArtPicker) {
@@ -137,29 +150,44 @@ struct GameDetailView: View {
                 .help("Identify game using checksum and .dat files")
             }
             
-            if let meta = currentROM.metadata {
-                Grid(alignment: .leading, horizontalSpacing: 20, verticalSpacing: 8) {
-                    if let year = meta.year {
-                        GridRow { Text("Year"); Text(year).foregroundColor(.secondary) }
-                    }
-                    if let dev = meta.developer {
-                        GridRow { Text("Developer"); Text(dev).foregroundColor(.secondary) }
-                    }
-                    if let genre = meta.genre {
-                        GridRow { Text("Genre"); Text(genre).foregroundColor(.secondary) }
-                    }
+            Grid(alignment: .leading, horizontalSpacing: 20, verticalSpacing: 8) {
+                GridRow { Text("System").bold(); Text(system?.name ?? currentROM.systemID ?? "Unknown").foregroundColor(.secondary) }
+                GridRow { Text("File").bold().gridColumnAlignment(.leading); Text(currentROM.path.lastPathComponent).foregroundColor(.secondary) }
+                
+                if let size = fileSize {
+                    GridRow { Text("Size").bold(); Text(size).foregroundColor(.secondary) }
                 }
                 
-                if let desc = meta.description {
-                    Text(desc)
-                        .font(.body)
-                        .foregroundColor(.secondary)
-                        .padding(.top, 4)
+                if let crc = crcHash {
+                    GridRow { 
+                        Text("CRC32").bold(); 
+                        HStack {
+                            Text(crc).font(.system(.body, design: .monospaced)).foregroundColor(.secondary)
+                            Button { 
+                                NSPasteboard.general.clearContents()
+                                NSPasteboard.general.setString(crc, forType: .string) 
+                            } label: { 
+                                Image(systemName: "doc.on.doc").font(.caption) 
+                            }.buttonStyle(.plain)
+                            .help("Copy Hash")
+                        }
+                    }
                 }
-            } else {
-                Text("No metadata available for this game.")
-                    .font(.caption)
+
+                if let meta = currentROM.metadata {
+                    if let dev = meta.developer { GridRow { Text("Developer").bold(); Text(dev).foregroundColor(.secondary) } }
+                    if let pub = meta.publisher { GridRow { Text("Publisher").bold(); Text(pub).foregroundColor(.secondary) } }
+                    if let year = meta.year { GridRow { Text("Year").bold(); Text(year).foregroundColor(.secondary) } }
+                    if let genre = meta.genre { GridRow { Text("Genre").bold(); Text(genre).foregroundColor(.secondary) } }
+                    if let players = meta.players { GridRow { Text("Players").bold(); Text(String(players)).foregroundColor(.secondary) } }
+                }
+            }
+            
+            if let desc = currentROM.metadata?.description {
+                Text(desc)
+                    .font(.body)
                     .foregroundColor(.secondary)
+                    .padding(.top, 4)
             }
         }
     }
