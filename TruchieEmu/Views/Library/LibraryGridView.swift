@@ -189,6 +189,15 @@ struct LibraryGridView: View {
                 }
                 .pickerStyle(.segmented)
                 .frame(width: 70)
+
+                Button {
+                    Task {
+                        await BoxArtService.shared.batchDownloadBoxArtLibretro(for: displayedROMs, library: library)
+                    }
+                } label: {
+                    Label("Fetch missing art", systemImage: "arrow.down.circle")
+                }
+                .help("Download missing box art from Libretro CDN (CRC + DAT when enabled)")
             }
         }
         .sheet(item: $manualBoxArtSearchROM) { rom in

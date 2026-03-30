@@ -702,9 +702,36 @@ struct BoxArtSettingsView: View {
     @State private var username = ""
     @State private var password = ""
     @State private var saved = false
+    @State private var thumbnailBaseURLString = ""
+
+    @AppStorage("thumbnail_use_libretro") private var useLibretroThumbnails = true
+    @AppStorage("thumbnail_server_url") private var thumbnailServerURLStorage = ""
+    @AppStorage("thumbnail_priority_type") private var thumbnailPriorityRaw = LibretroThumbnailPriority.boxart.rawValue
+    @AppStorage("thumbnail_use_crc_matching") private var useCRCMatching = true
+    @AppStorage("thumbnail_fallback_filename") private var fallbackFilename = true
+    @AppStorage("thumbnail_use_head_check") private var useHeadCheck = false
 
     var body: some View {
         Form {
+            Section {
+                Toggle("Use Libretro thumbnail CDN", isOn: $useLibretroThumbnails)
+                TextField("CDN base URL", text: $thumbnailBaseURLString)
+                    .textFieldStyle(.roundedBorder)
+                    .font(.system(.body, design: .monospaced))
+                Picker("Try first", selection: $thumbnailPriorityRaw) {
+                    ForEach(LibretroThumbnailPriority.allCases) { p in
+                        Text(p.displayName).tag(p.rawValue)
+                    }
+                }
+                Toggle("Match ROM using CRC + No-Intro DAT", isOn: $useCRCMatching)
+                Toggle("Fallback to sanitized filename if CRC not in DAT", isOn: $fallbackFilename)
+                Toggle("Use HTTP HEAD before downloading (fewer bytes on miss)", isOn: $useHeadCheck)
+            } header: {
+                Label("Libretro Thumbnails", systemImage: "photo.on.rectangle.angled")
+            } footer: {
+                Text("Uses thumbnails.libretro.com with CRC-based names from Libretro DAT files when available, then Named_Boxarts → Named_Titles → Named_Snaps, with a fuzzy name pass.")
+            }
+
             Section {
                 TextField("Username", text: $username)
                 SecureField("Password", text: $password)
@@ -716,7 +743,7 @@ struct BoxArtSettingsView: View {
             } header: {
                 Label("ScreenScraper Account", systemImage: "person.badge.key")
             } footer: {
-                Text("Create a free account at [screenscraper.fr](https://www.screenscraper.fr). Your credentials are stored locally on this device only.")
+                Text("Optional fallback when Libretro CDN has no art. Create a free account at [screenscraper.fr](https://www.screenscraper.fr). Your credentials are stored locally on this device only.")
             }
             if saved {
                 Label("Credentials saved!", systemImage: "checkmark.circle.fill")
@@ -726,6 +753,12 @@ struct BoxArtSettingsView: View {
         .formStyle(.grouped)
         .onAppear {
             username = BoxArtService.shared.credentials?.username ?? ""
+            thumbnailBaseURLString = thumbnailServerURLStorage.isEmpty
+                ? LibretroThumbnailResolver.defaultBaseURL.absoluteString
+                : thumbnailServerURLStorage
+        }
+        .onChange(of: thumbnailBaseURLString) { newValue in
+            thumbnailServerURLStorage = newValue.trimmingCharacters(in: .whitespacesAndNewlines)
         }
     }
 }

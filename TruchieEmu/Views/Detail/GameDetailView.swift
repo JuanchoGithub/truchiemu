@@ -1,5 +1,41 @@
 import SwiftUI
 
+// Shown only when the user triggers an action from Game detail (e.g. Identify).
+private enum ManualStatusTone: Equatable {
+    case success, info, warning, error
+
+    var iconName: String {
+        switch self {
+        case .success: return "checkmark.circle.fill"
+        case .info: return "info.circle.fill"
+        case .warning: return "exclamationmark.triangle.fill"
+        case .error: return "xmark.octagon.fill"
+        }
+    }
+
+    var foregroundColor: Color {
+        switch self {
+        case .success: return .green
+        case .info: return .accentColor
+        case .warning: return .orange
+        case .error: return .red
+        }
+    }
+}
+
+private enum ManualActionStatus: Equatable {
+    case hidden
+    case working(String)
+    case result(String, tone: ManualStatusTone)
+
+    var isVisible: Bool {
+        switch self {
+        case .hidden: return false
+        default: return true
+        }
+    }
+}
+
 struct GameDetailView: View {
     @EnvironmentObject var library: ROMLibrary
     @EnvironmentObject var coreManager: CoreManager
@@ -24,30 +60,48 @@ struct GameDetailView: View {
 
     @State private var useCustomCore: Bool = false
     @State private var selectedCoreID: String? = nil
+    @State private var manualActionStatus: ManualActionStatus = .hidden
+    @State private var manualStatusAutoDismiss: Task<Void, Never>?
 
     private var installedCores: [LibretroCore] {
         guard let sysID = currentROM.systemID else { return [] }
         return coreManager.installedCores.filter { $0.systemIDs.contains(sysID) }
     }
 
+    private var isIdentifyWorking: Bool {
+        if case .working = manualActionStatus { return true }
+        return false
+    }
+
     var body: some View {
-        ScrollView {
-            VStack(alignment: .leading, spacing: 0) {
-                headerSection
-                
-                VStack(alignment: .leading, spacing: 24) {
-                    metadataSection
-                    displaySection
-                    coreSection
+        VStack(spacing: 0) {
+            ScrollView {
+                VStack(alignment: .leading, spacing: 0) {
+                    headerSection
+
+                    VStack(alignment: .leading, spacing: 24) {
+                        metadataSection
+                        displaySection
+                        coreSection
+                    }
+                    .padding(24)
                 }
-                .padding(24)
+            }
+            .background(Color(NSColor.windowBackgroundColor))
+
+            if manualActionStatus.isVisible {
+                manualActionStatusBar
+                    .transition(.move(edge: .bottom).combined(with: .opacity))
             }
         }
-        .background(Color(NSColor.windowBackgroundColor))
+        .animation(.easeInOut(duration: 0.2), value: manualActionStatus.isVisible)
         .onAppear {
             loadBoxArt()
             useCustomCore = currentROM.useCustomCore
             selectedCoreID = currentROM.selectedCoreID ?? sysPrefs.preferredCoreID(for: currentROM.systemID ?? "") ?? system?.defaultCoreID
+        }
+        .onChange(of: currentROM.id) { _ in
+            clearManualStatus()
         }
         .task(id: currentROM.id) {
             if let attrs = try? FileManager.default.attributesOfItem(atPath: currentROM.path.path),
@@ -63,6 +117,67 @@ struct GameDetailView: View {
         .onChange(of: currentROM.boxArtPath) { _ in loadBoxArt() }
         .sheet(isPresented: $showBoxArtPicker) {
             BoxArtPickerView(rom: currentROM)
+        }
+    }
+
+    private var manualActionStatusBar: some View {
+        HStack(alignment: .top, spacing: 10) {
+            switch manualActionStatus {
+            case .hidden:
+                EmptyView()
+            case .working(let title):
+                ProgressView()
+                    .controlSize(.small)
+                Text(title)
+                    .font(.callout)
+                    .foregroundColor(.primary)
+            case .result(let message, let tone):
+                Image(systemName: tone.iconName)
+                    .font(.title3)
+                    .foregroundStyle(tone.foregroundColor)
+                    .frame(width: 22, alignment: .center)
+                Text(message)
+                    .font(.callout)
+                    .foregroundColor(.primary)
+                    .textSelection(.enabled)
+                    .frame(maxWidth: .infinity, alignment: .leading)
+            }
+            if case .result = manualActionStatus {
+                Button {
+                    clearManualStatus()
+                } label: {
+                    Image(systemName: "xmark.circle.fill")
+                        .foregroundStyle(.secondary)
+                }
+                .buttonStyle(.plain)
+                .help("Dismiss")
+            }
+        }
+        .padding(.horizontal, 16)
+        .padding(.vertical, 11)
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .background(.regularMaterial)
+        .overlay(alignment: .top) {
+            Divider()
+        }
+    }
+
+    private func clearManualStatus() {
+        manualStatusAutoDismiss?.cancel()
+        manualStatusAutoDismiss = nil
+        manualActionStatus = .hidden
+    }
+
+    /// Shows a result in the status bar and dismisses automatically after a delay (manual dismiss always available).
+    private func showManualResult(_ message: String, tone: ManualStatusTone) {
+        manualStatusAutoDismiss?.cancel()
+        manualActionStatus = .result(message, tone: tone)
+        manualStatusAutoDismiss = Task { @MainActor in
+            try? await Task.sleep(nanoseconds: 12_000_000_000)
+            guard !Task.isCancelled else { return }
+            if case .result = manualActionStatus {
+                manualActionStatus = .hidden
+            }
         }
     }
 
@@ -142,12 +257,58 @@ struct GameDetailView: View {
                     .font(.headline)
                 Spacer()
                 Button {
-                    Task { await library.identifyROM(currentROM) }
+                    Task {
+                        manualActionStatus = .working("Identifying from No-Intro database…")
+                        let result = await library.identifyROM(currentROM)
+                        switch result {
+                        case .identified(let info):
+                            showManualResult("Matched by CRC: \(info.name)", tone: .success)
+                        case .identifiedFromName(let info):
+                            showManualResult(
+                                "No CRC match — matched by filename using your UI language for region preference: \(info.name)",
+                                tone: .success
+                            )
+                        case .crcNotInDatabase(let crc):
+                            showManualResult(
+                                "No DAT entry for CRC \(crc), and no No-Intro title matched this filename (try renaming closer to the official set name).",
+                                tone: .warning
+                            )
+                        case .databaseUnavailable:
+                            showManualResult(
+                                "Could not load the No-Intro DAT. Go online once so TruchieEmu can download it, or add a .dat in Application Support → TruchieEmu → Dats.",
+                                tone: .error
+                            )
+                        case .romReadFailed(let reason):
+                            showManualResult(reason, tone: .error)
+                        case .noSystem:
+                            showManualResult("This ROM has no system assigned.", tone: .error)
+                        }
+                    }
                 } label: {
-                    Label("Identify Game", systemImage: "qrcode.viewfinder")
+                    if case .working = manualActionStatus {
+                        ProgressView().controlSize(.small)
+                    } else {
+                        Label("Identify Game", systemImage: "qrcode.viewfinder")
+                    }
                 }
                 .buttonStyle(.borderless)
+                .disabled(isIdentifyWorking)
                 .help("Identify game using checksum and .dat files")
+
+                Button {
+                    Task {
+                        if let url = await BoxArtService.shared.fetchBoxArt(for: currentROM) {
+                            var u = currentROM
+                            u.boxArtPath = url
+                            library.updateROM(u)
+                            loadBoxArt()
+                        }
+                    }
+                } label: {
+                    Label("Fetch Box Art", systemImage: "arrow.down.circle")
+                }
+                .buttonStyle(.borderless)
+                .help("Libretro CDN first, then ScreenScraper if configured")
             }
             
             Grid(alignment: .leading, horizontalSpacing: 20, verticalSpacing: 8) {

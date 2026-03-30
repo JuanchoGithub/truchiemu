@@ -170,6 +170,50 @@ enum EmulatorLanguage: Int, CaseIterable, Identifiable {
     
     var id: Int { self.rawValue }
     
+    /// No-Intro-style region markers in order of preference when matching by filename (CRC miss).
+    var noIntroRegionPreference: [String] {
+        switch self {
+        case .english:
+            return ["(USA)", "(World)", "(En,", "(En)", "(U)"]
+        case .britishEnglish:
+            return ["(Europe)", "(UK)", "(En,", "(World)"]
+        case .japanese:
+            return ["(Japan)", "(JP)", "(Ja)"]
+        case .french:
+            return ["(France)", "(Europe)", "(World)", "(Fr,", "(Fr)"]
+        case .german:
+            return ["(Germany)", "(Europe)", "(World)", "(De,", "(De)"]
+        case .spanish:
+            return ["(Spain)", "(Europe)", "(World)", "(Es,", "(Es)", "(USA)"]
+        case .italian:
+            return ["(Italy)", "(Europe)", "(World)", "(It,", "(It)"]
+        case .dutch:
+            return ["(Netherlands)", "(Europe)", "(World)", "(Nl)"]
+        case .portuguese:
+            return ["(Brazil)", "(Portugal)", "(Europe)", "(World)"]
+        case .russian:
+            return ["(Russia)", "(Europe)", "(World)", "(Ru)"]
+        case .korean:
+            return ["(Korea)", "(KR)", "(Ko)"]
+        case .chineseTraditional:
+            return ["(Taiwan)", "(Hong Kong)", "(Traditional)"]
+        case .chineseSimplified:
+            return ["(China)", "(Simplified)"]
+        case .esperanto:
+            return ["(World)", "(Europe)"]
+        case .polish:
+            return ["(Poland)", "(Europe)", "(World)"]
+        case .vietnamese:
+            return ["(Vietnam)"]
+        case .arabic:
+            return ["(Arab world)"]
+        case .greek:
+            return ["(Greece)", "(Europe)", "(World)"]
+        case .turkish:
+            return ["(Turkey)", "(Europe)", "(World)"]
+        }
+    }
+
     var name: String {
         switch self {
         case .english: return "English"

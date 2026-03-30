@@ -12,11 +12,29 @@ struct ROM: Identifiable, Codable, Hashable {
     var customName: String?
     var useCustomCore: Bool = false
     var metadata: ROMMetadata?
+    /// No-Intro / identification CRC32 (hex), persisted in library metadata file.
+    var crc32: String?
+    /// Libretro thumbnail CDN folder (`Nintendo - Game Boy` vs `GBC`) when identification matched a different DB (e.g. GB ROM in merged GB+GBC set).
+    var thumbnailLookupSystemID: String?
     var settings: ROMSettings = ROMSettings()
 
     // Derived
     var displayName: String { customName ?? metadata?.title ?? name }
     var fileExtension: String { path.pathExtension.lowercased() }
+
+    /// Post-scan automation: fetch No-Intro title when missing.
+    var needsAutomaticIdentification: Bool {
+        if customName != nil { return false }
+        let title = metadata?.title?.trimmingCharacters(in: .whitespacesAndNewlines) ?? ""
+        return title.isEmpty
+    }
+
+    /// Post-scan automation: fetch art when no file on disk yet.
+    var needsAutomaticBoxArt: Bool {
+        let fm = FileManager.default
+        if let p = boxArtPath, fm.fileExists(atPath: p.path) { return false }
+        return !fm.fileExists(atPath: boxArtLocalPath.path)
+    }
 
     // Persistent storage paths
     var boxArtLocalPath: URL {

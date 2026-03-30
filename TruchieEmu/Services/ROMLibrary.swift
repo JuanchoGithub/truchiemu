@@ -28,6 +28,9 @@ class ROMLibrary: ObservableObject {
     init() {
         self.hasCompletedOnboarding = UserDefaults.standard.bool(forKey: "has_completed_onboarding")
         loadROMsFromDisk()
+        LibraryMetadataStore.shared.migrateLegacySidecarsIfStoreEmpty(roms: roms)
+        roms = roms.map { LibraryMetadataStore.shared.mergedROM($0) }
+        saveROMsToDisk()
         restoreLibraryAccess()
         loadFileIndex()
         updateCounts()
@@ -74,7 +77,7 @@ class ROMLibrary: ObservableObject {
         saveROMsToDisk()
     }
 
-    func scanROMs(in folder: URL) async {
+    func scanROMs(in folder: URL, runAutomationAfter: Bool = true) async {
         isScanning = true
         scanProgress = 0
         let scanner = ROMScanner()
@@ -99,10 +102,13 @@ class ROMLibrary: ObservableObject {
             }
             return true
         }.sorted { $0.displayName < $1.displayName }
+        roms = roms.map { LibraryMetadataStore.shared.mergedROM($0) }
         updateCounts()
         isScanning = false
         saveROMsToDisk()
-        // Task { await BoxArtService.shared.batchDownloadBoxArtGoogle(for: self.roms, library: self) }
+        if runAutomationAfter {
+            await LibraryAutomationCoordinator.shared.runAfterLibraryUpdate(library: self)
+        }
     }
 
     func fullRescan() async {
@@ -116,8 +122,9 @@ class ROMLibrary: ObservableObject {
         saveROMsToDisk()
         saveFileIndex()
         
-        for folder in libraryFolders {
-            await scanROMs(in: folder)
+        for (i, folder) in libraryFolders.enumerated() {
+            let last = i == libraryFolders.count - 1
+            await scanROMs(in: folder, runAutomationAfter: last)
         }
         
         isScanning = false
@@ -126,34 +133,44 @@ class ROMLibrary: ObservableObject {
     func updateROM(_ rom: ROM) {
         if let idx = roms.firstIndex(where: { $0.id == rom.id }) {
             roms[idx] = rom
-            
-            // Per user request: save rom info to <romname_info>.json in rom folder
-            let encoder = JSONEncoder()
-            encoder.outputFormatting = .prettyPrinted
-            if let meta = rom.metadata,
-               let data = try? encoder.encode(meta) {
-                try? data.write(to: rom.infoLocalPath)
-            }
-            
+            LibraryMetadataStore.shared.persist(rom: rom)
             updateGamesXML(for: rom)
             updateCounts()
             saveROMsToDisk()
         }
     }
 
-    func identifyROM(_ rom: ROM) async {
-        let identifier = ROMIdentifierService.shared
-        if let info = await identifier.identify(rom: rom) {
-            var updated = rom
+    @discardableResult
+    func identifyROM(_ rom: ROM) async -> ROMIdentifyResult {
+        var working = rom
+        if let sid = rom.systemID,
+           let c = ROMIdentifierService.shared.computeCRC(for: rom.path, systemID: sid) {
+            working.crc32 = c
+        }
+
+        let result = await ROMIdentifierService.shared.identify(rom: rom)
+        switch result {
+        case .identified(let info), .identifiedFromName(let info):
+            var updated = working
+            updated.crc32 = info.crc
+            updated.thumbnailLookupSystemID = info.thumbnailLookupSystemID
             if updated.metadata == nil { updated.metadata = ROMMetadata() }
             updated.metadata?.title = info.name
             updated.metadata?.year = info.year
             updated.metadata?.publisher = info.publisher
             updated.metadata?.developer = info.developer
             updated.metadata?.genre = info.genre
-            
             updateROM(updated)
+        case .crcNotInDatabase(let crc):
+            var updated = working
+            updated.crc32 = crc
+            updateROM(updated)
+        default:
+            if working.crc32 != rom.crc32 {
+                updateROM(working)
+            }
         }
+        return result
     }
 
     private func updateGamesXML(for rom: ROM) {
@@ -342,13 +359,14 @@ class ROMLibrary: ObservableObject {
             return true
         }.sorted { $0.displayName < $1.displayName }
 
+        roms = roms.map { LibraryMetadataStore.shared.mergedROM($0) }
+
         // Save index and roms
         fileIndex = newIndex
         saveFileIndex()
         saveROMsToDisk()
 
         isScanning = false
-        
-        // Task { await BoxArtService.shared.batchDownloadBoxArtGoogle(for: self.roms, library: self) }
+        await LibraryAutomationCoordinator.shared.runAfterLibraryUpdate(library: self)
     }
 }

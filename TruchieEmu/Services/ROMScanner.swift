@@ -81,17 +81,7 @@ actor ROMScanner {
                 systemID: system?.id
             )
 
-            // Load local metadata if exists
-            if let data = try? Data(contentsOf: rom.infoLocalPath) {
-                if let meta = try? JSONDecoder().decode(ROMMetadata.self, from: data) {
-                    rom.metadata = meta
-                }
-            }
-            
-            // Try games.xml if no individual JSON found
-            if rom.metadata == nil {
-                rom.metadata = loadFromGamesXML(at: url)
-            }
+            rom.metadata = loadFromGamesXML(at: url)
             
             // Check for local boxart
             if fm.fileExists(atPath: rom.boxArtLocalPath.path) {
@@ -429,17 +419,7 @@ actor ROMScanner {
                 systemID: system?.id
             )
 
-            // Load local metadata if exists
-            if let data = try? Data(contentsOf: rom.infoLocalPath) {
-                if let meta = try? JSONDecoder().decode(ROMMetadata.self, from: data) {
-                    rom.metadata = meta
-                }
-            }
-            
-            // Try games.xml if no individual JSON found
-            if rom.metadata == nil {
-                rom.metadata = loadFromGamesXML(at: url)
-            }
+            rom.metadata = loadFromGamesXML(at: url)
             
             // Check for local boxart
             if fm.fileExists(atPath: rom.boxArtLocalPath.path) {

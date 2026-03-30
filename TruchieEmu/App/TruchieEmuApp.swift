@@ -12,6 +12,7 @@ struct TruchieEmuApp: App {
                 .environmentObject(library)
                 .environmentObject(coreManager)
                 .environmentObject(controllerService)
+                .environmentObject(LibraryAutomationCoordinator.shared)
                 .frame(minWidth: 1100, minHeight: 700)
         }
         .windowStyle(.hiddenTitleBar)

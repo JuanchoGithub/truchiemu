@@ -1,120 +1,99 @@
-# Design Document: Libretro Thumbnail Integration
+# Design Document: Libretro Thumbnail Integration (V2)
 
 ## 1. Objective
-
-To implement an automated boxart and metadata visual system by leveraging the **libretro-thumbnails** ecosystem. This will allow the frontend to automatically fetch high-quality Front Covers, Screenshots, and Title Screens based on the user's ROM library.
+To implement an automated boxart and metadata visual system by leveraging the **libretro-thumbnails** ecosystem. This system will prioritize **data integrity via CRC matching** over fragile filename matching, ensuring the correct artwork is displayed even if the user's ROM files are poorly named.
 
 ---
 
 ## 2. Technical Architecture
 
 ### A. Resource Discovery (The CDN)
-
-While the thumbnails are hosted on GitHub, we should not clone the repository (it is many gigabytes). Instead, we use the official Libretro build server/CDN:
-
 * **Base URL:** `https://thumbnails.libretro.com/`
 * **Structure:** `{System_Name}/{Type}/{Game_Name}.png`
 
 ### B. Directory & Type Mapping
-
-Libretro categorizes thumbnails into three specific sub-folders. Our frontend should support all three:
-
-1. **`Named_Boxarts`**: The physical game packaging (Priority 1).
-2. **`Named_Snaps`**: In-game gameplay screenshots (Priority 2).
-3. **`Named_Titles`**: The game’s start/title screen (Priority 3).
+1. **`Named_Boxarts`**: Physical packaging (Priority 1).
+2. **`Named_Snaps`**: Gameplay screenshots (Priority 2).
+3. **`Named_Titles`**: Game title screens (Priority 3).
 
 ---
 
-## 3. The "Matching" Logic (Crucial Step)
+## 3. The "Matching" Logic (Source of Truth)
 
-The most difficult part of using libretro-thumbnails is that the image filenames must match the **Clean Name** of the game, not the filename of your ROM.
+Unlike traditional scrapers that guess based on filenames, this implementation uses a three-tier identification strategy.
 
-### Filename Sanitization Algorithm
+### Tier 1: CRC-to-DAT (The Gold Standard)
+The frontend will not rely on the ROM filename. Instead:
+1.  **Calculate CRC32** of the ROM file.
+2.  **Lookup CRC** in the official Libretro/No-Intro DAT file for that system.
+3.  **Extract the `<machine name>`** attribute. This is the "Clean Name" used by the thumbnail server.
 
-To increase the "hit rate" of the search, the frontend must transform a filename like `Final Fantasy VII (USA) (Disc 1).bin` into `Final Fantasy VII (USA).png`.
+### Tier 2: Filename Sanitization (Fallback)
+If the CRC is not found in the DAT, sanitize the ROM filename:
+1.  **Strip Tags:** Remove common tags (e.g., `[!]`, `(USA)`, `(En,Fr)`).
+2.  **Clean Whitespace:** Trim leading/trailing spaces.
 
-**Steps for the Sanitizer:**
+### Tier 3: Character Replacement Algorithm
+Once a "Clean Name" is obtained (from DAT or Sanitization), it must be transformed to match Libretro’s filesystem-safe naming convention:
 
-1. **Remove Extension:** Strip `.zip`, `.iso`, `.bin`, etc.
-2. **Character Replacement:** Libretro replaces specific illegal filesystem characters with underscores.
-    * Replace `&` with `_`
-    * Replace `*` with `_`
-    * Replace `/` or `\` with `_`
-    * Replace `:` with `_`
-    * Replace `<` or `>` with `_`
-    * Replace `?` with `_`
-    * Replace `|` with `_"
-    * Replace `"` with `_`
-3. **No-Intro Compatibility:** If the user’s ROMs follow No-Intro or Redump naming conventions, the match rate will be ~99%.
+| Forbidden Character | Replacement |
+| :--- | :--- |
+| `&` | `_` |
+| `*`, `:`, `?`, `"`, `<`, `>`, `\|` | `_` |
+| `/`, `\` | `_` |
+
+*Note: Libretro replaces almost all special punctuation with a literal underscore `_` to ensure cross-platform compatibility.*
 
 ---
 
 ## 4. Implementation Workflow
 
-### Step 1: System Identification
-
-The frontend must map its internal system names to the **Libretro System Names**.
-
-* *Internal:* `ps1` -> *Libretro:* `Sony - PlayStation`
-* *Internal:* `snes` -> *Libretro:* `Nintendo - Super Nintendo Entertainment System`
+### Step 1: System Mapping
+Map internal system keys to Libretro’s official folder names:
+* `nes` $\rightarrow$ `Nintendo - Nintendo Entertainment System`
+* `megadrive` $\rightarrow$ `Sega - Mega Drive - Genesis`
 
 ### Step 2: URL Construction
+For a file `adv-aba.nes` with CRC `67123456`:
+1. **DAT Lookup:** `67123456` $\rightarrow$ `Abadox: The Deadly Inner War (USA)`
+2. **Sanitize:** `Abadox_ The Deadly Inner War (USA)`
+3. **URL:** `.../Named_Boxarts/Abadox_The_Deadly_Inner_War_(USA).png`
 
-For a game "Chrono Trigger" on SNES, the downloader would attempt to fetch:
-`https://thumbnails.libretro.com/Nintendo%20-%20Super%20Nintendo%20Entertainment%20System/Named_Boxarts/Chrono%20Trigger%20(USA).png`
+### Step 3: Handling Local Variants
+If the user provides a local directory of images containing multiple variants (e.g., `Game (USA).png`, `Game (USA) [b1].png`):
+1.  **Strict Match:** Look for the sanitized name exactly.
+2.  **Shortest-Match Heuristic:** If multiple files start with the sanitized name, select the one with the **shortest string length**. This effectively filters out "bad dump" `[b]` or "hacked" `[h]` versions in favor of the clean original.
 
-### Step 3: Local Storage Strategy
 
-Store images in a structured local cache to avoid re-downloading:
-
-```text
-/assets/thumbnails/
-    /Sony - PlayStation/
-        /Named_Boxarts/
-            Final Fantasy VII (USA).png
-        /Named_Snaps/
-            Final Fantasy VII (USA).png
-```
 
 ---
 
 ## 5. UI/UX Requirements
 
 ### A. Bulk Downloader (Background Task)
+* **Asynchronous Queue:** Process 3–5 concurrent downloads.
+* **Smart Skip:** Do not request files that already exist in the local cache.
 
-* **Feature:** A "Download All Missing Boxart" button in the settings.
-* **Requirement:** Must be asynchronous. Use a thread pool or `async/await` to download 3–5 images simultaneously to avoid throttling but remain fast.
-* **Progress UI:** A progress bar showing `(Current / Total)` and the name of the file currently being fetched.
-
-### B. Single Game Refresh
-
-* **Feature:** Right-click (or Long-press) a game -> "Update Media."
-* **Logic:** Re-scans all three types (`Boxarts`, `Snaps`, `Titles`) for that specific title.
-
-### C. Fallback Mechanism
-
-If `Named_Boxarts` returns a 404 (Not Found):
-
-1. Try `Named_Titles`.
-2. If 404, try `Named_Snaps`.
-3. If all 404, display a generic "Console-themed" placeholder image generated by the frontend.
+### B. Fallback Chain
+If a request returns a **404**:
+1. Try `Named_Boxarts` (Sanitized Name)
+2. Try `Named_Titles` (Sanitized Name)
+3. Try `Named_Snaps` (Sanitized Name)
+4. **Fuzzy Fallback:** Strip parentheses `( )` from the name and try `Named_Boxarts` again (e.g., `Game Name.png` instead of `Game Name (USA).png`).
 
 ---
 
 ## 6. Optimization & "Pro" Features
 
-* **URL Encoding:** Ensure spaces are converted to `%20` and special characters are escaped before sending the HTTP GET request.
-* **User-Agent:** Set a custom User-Agent (e.g., `MyCustomFrontend/1.0`) so Libretro maintainers can see the traffic source.
-* **ETag Support:** Use HTTP `If-Modified-Since` headers to check if an image has been updated on the server without re-downloading the whole file.
-* **Fuzzy Matching (Optional):** If a direct match fails, try stripping all content inside brackets `( )` and search again.
-  * *Original:* `Metal Gear Solid (USA) (v1.1).png` -> 404
-  * *Fuzzy:* `Metal Gear Solid.png` -> Success!
+* **URL Encoding:** Ensure the final URL is percent-encoded (e.g., spaces to `%20`).
+* **Head Requests:** Optionally use HTTP `HEAD` to check for image existence before full download.
+* **User-Agent:** Use `[FrontendName]/[Version] (ContactInfo)` to assist Libretro server admins.
+* **Pre-computed DAT Hashmap:** Load system DAT files into a Dictionary/Hashmap at startup for $O(1)$ CRC lookups.
 
-## 7. Configuration Variables (Required)
+---
 
-The user should be able to toggle these in the frontend:
-
-* `thumbnail_server_url`: (Default: `https://thumbnails.libretro.com/`)
-* `download_snaps`: True/False
-* `download_titles`: True/False
-* `prefer_high_res`: (Future-proofing for when higher res packs are available)
+## 7. Configuration Variables
+* `thumbnail_server_url`: `https://thumbnails.libretro.com/`
+* `priority_type`: (Boxart, Snap, or Title)
+* `use_crc_matching`: (Default: True)
+* `fallback_to_filename`: (Default: True)

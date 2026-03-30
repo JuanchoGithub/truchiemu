@@ -15,6 +15,65 @@ class BoxArtService: ObservableObject {
     private let defaults = UserDefaults.standard
     private let credKey = "screenscraper_credentials"
 
+    private let keyThumbnailBaseURL = "thumbnail_server_url"
+    private let keyThumbnailPriority = "thumbnail_priority_type"
+    private let keyUseCRCMatching = "thumbnail_use_crc_matching"
+    private let keyFallbackFilename = "thumbnail_fallback_filename"
+    private let keyUseLibretroThumbnails = "thumbnail_use_libretro"
+    private let keyHeadBeforeDownload = "thumbnail_use_head_check"
+
+    /// Libretro CDN base URL (default: https://thumbnails.libretro.com/)
+    var thumbnailServerURL: URL {
+        get {
+            if let s = defaults.string(forKey: keyThumbnailBaseURL), let u = URL(string: s), u.scheme != nil {
+                return u
+            }
+            return LibretroThumbnailResolver.defaultBaseURL
+        }
+        set {
+            defaults.set(newValue.absoluteString, forKey: keyThumbnailBaseURL)
+        }
+    }
+
+    var thumbnailPriority: LibretroThumbnailPriority {
+        get {
+            let raw = defaults.string(forKey: keyThumbnailPriority) ?? LibretroThumbnailPriority.boxart.rawValue
+            return LibretroThumbnailPriority(rawValue: raw) ?? .boxart
+        }
+        set {
+            defaults.set(newValue.rawValue, forKey: keyThumbnailPriority)
+        }
+    }
+
+    var useCRCMatchingForThumbnails: Bool {
+        get { defaults.object(forKey: keyUseCRCMatching) as? Bool ?? true }
+        set { defaults.set(newValue, forKey: keyUseCRCMatching) }
+    }
+
+    var fallbackToFilenameForThumbnails: Bool {
+        get { defaults.object(forKey: keyFallbackFilename) as? Bool ?? true }
+        set { defaults.set(newValue, forKey: keyFallbackFilename) }
+    }
+
+    var useLibretroThumbnails: Bool {
+        get { defaults.object(forKey: keyUseLibretroThumbnails) as? Bool ?? true }
+        set { defaults.set(newValue, forKey: keyUseLibretroThumbnails) }
+    }
+
+    var useHeadBeforeThumbnailDownload: Bool {
+        get { defaults.bool(forKey: keyHeadBeforeDownload) }
+        set { defaults.set(newValue, forKey: keyHeadBeforeDownload) }
+    }
+
+    private lazy var thumbnailURLSession: URLSession = {
+        let config = URLSessionConfiguration.default
+        let version = Bundle.main.infoDictionary?["CFBundleShortVersionString"] as? String ?? "1.0"
+        config.httpAdditionalHeaders = [
+            "User-Agent": "TruchieEmu/\(version) (TruchieEmu macOS)"
+        ]
+        return URLSession(configuration: config)
+    }()
+
     init() {
         try? FileManager.default.createDirectory(at: cacheBase, withIntermediateDirectories: true)
         loadCredentials()
@@ -43,6 +102,10 @@ class BoxArtService: ObservableObject {
     // MARK: - Art Fetching
 
     func fetchBoxArt(for rom: ROM) async -> URL? {
+        if useLibretroThumbnails,
+           let lib = await fetchBoxArtLibretro(for: rom) {
+            return lib
+        }
         guard let creds = credentials else { return nil }
         let systemID = rom.systemID ?? ""
         let ssSystemID = screenScraperSystemID(for: systemID)
@@ -111,7 +174,8 @@ class BoxArtService: ObservableObject {
         return candidates
     }
 
-    func downloadAndCache(artURL: URL, for rom: ROM) async -> URL? {
+    func downloadAndCache(artURL: URL, for rom: ROM, session: URLSession? = nil) async -> URL? {
+        let sess = session ?? URLSession.shared
         let localURL = rom.boxArtLocalPath
         let folder = localURL.deletingLastPathComponent()
         
@@ -122,7 +186,7 @@ class BoxArtService: ObservableObject {
         }
 
         do {
-            let (tmpURL, _) = try await URLSession.shared.download(from: artURL)
+            let (tmpURL, _) = try await sess.download(from: artURL)
             try FileManager.default.moveItem(at: tmpURL, to: localURL)
             await ImageCache.shared.removeImage(for: localURL)
             print("Successfully cached boxart for \(rom.name) at \(localURL.lastPathComponent)")
@@ -131,6 +195,127 @@ class BoxArtService: ObservableObject {
             print("Error downloading boxart for \(rom.name): \(error.localizedDescription)")
             return nil
         }
+    }
+
+    // MARK: - Libretro thumbnails CDN
+
+    func fetchBoxArtLibretro(for rom: ROM) async -> URL? {
+        guard let sysID = LibretroThumbnailResolver.effectiveThumbnailSystemID(for: rom),
+              let folder = LibretroThumbnailResolver.libretroFolderName(forSystemID: sysID) else {
+            return nil
+        }
+
+        guard let gameTitle = await LibretroThumbnailResolver.resolveGameTitle(
+            for: rom,
+            useCRC: useCRCMatchingForThumbnails,
+            fallbackFilename: fallbackToFilenameForThumbnails
+        ), !gameTitle.isEmpty else {
+            print("Libretro thumbnails: could not resolve title for \(rom.name)")
+            return nil
+        }
+
+        let localBoxArtDir = rom.path.deletingLastPathComponent().appendingPathComponent("boxart", isDirectory: true)
+        let safeStem = LibretroThumbnailResolver.libretroFilesystemSafeName(gameTitle)
+        for stem in [gameTitle, safeStem] where !stem.isEmpty {
+            if let local = LibretroThumbnailResolver.resolveLocalThumbnail(named: stem, in: localBoxArtDir) {
+                print("Using local boxart \(local.lastPathComponent) for \(rom.name)")
+                return local
+            }
+        }
+
+        let candidates = LibretroThumbnailResolver.candidateURLs(
+            base: thumbnailServerURL,
+            systemFolder: folder,
+            gameTitle: gameTitle,
+            priority: thumbnailPriority
+        )
+
+        for url in candidates {
+            if useHeadBeforeThumbnailDownload {
+                guard await httpStatus(for: url, method: "HEAD", session: thumbnailURLSession) == 200 else {
+                    continue
+                }
+            }
+            if let saved = await downloadAndCache(artURL: url, for: rom, session: thumbnailURLSession) {
+                return saved
+            }
+        }
+
+        print("Libretro thumbnails: no asset found for \(rom.name) (\(gameTitle))")
+        return nil
+    }
+
+    private func httpStatus(for url: URL, method: String, session: URLSession) async -> Int {
+        var req = URLRequest(url: url)
+        req.httpMethod = method
+        guard let (_, resp) = try? await session.data(for: req),
+              let http = resp as? HTTPURLResponse else {
+            return -1
+        }
+        return http.statusCode
+    }
+
+    /// Batch download from libretro CDN (3–5 concurrent). Skips ROMs that already have cached art on disk.
+    /// `onItemProgress` is invoked on the caller's executor after each finished download (`completed` 1...total).
+    func batchDownloadBoxArtLibretro(
+        for roms: [ROM],
+        library: ROMLibrary,
+        onItemProgress: ((Int, Int, String) -> Void)? = nil
+    ) async {
+        let missing = roms.filter { rom in
+            !FileManager.default.fileExists(atPath: rom.boxArtLocalPath.path)
+        }
+        guard !missing.isEmpty else {
+            print("No ROMs missing boxart cache, skipping Libretro batch.")
+            return
+        }
+
+        let total = missing.count
+
+        await MainActor.run {
+            self.downloadQueueCount = total
+            self.downloadedCount = 0
+            self.isDownloadingBatch = true
+        }
+
+        let maxConcurrent = 4
+        var completed = 0
+        await withTaskGroup(of: (ROM, URL?).self) { group in
+            var active = 0
+            var iter = missing.makeIterator()
+
+            while active < maxConcurrent, let rom = iter.next() {
+                group.addTask {
+                    let url = await self.fetchBoxArtLibretro(for: rom)
+                    return (rom, url)
+                }
+                active += 1
+            }
+
+            for await result in group {
+                active -= 1
+                var (completedRom, url) = result
+                if let savedURL = url {
+                    completedRom.boxArtPath = savedURL
+                    await MainActor.run { library.updateROM(completedRom) }
+                }
+                completed += 1
+                let label = "\(completedRom.displayName).png"
+                await MainActor.run {
+                    self.downloadedCount = completed
+                    onItemProgress?(completed, total, label)
+                }
+                if let next = iter.next() {
+                    group.addTask {
+                        let url = await self.fetchBoxArtLibretro(for: next)
+                        return (next, url)
+                    }
+                    active += 1
+                }
+            }
+        }
+
+        await MainActor.run { self.isDownloadingBatch = false }
     }
 
     // MARK: - Google Image Search Fallback
@@ -192,7 +377,7 @@ class BoxArtService: ObservableObject {
     }
     
     func fetchBoxArtGoogle(for rom: ROM) async -> URL? {
-        let systemIdentifier = rom.systemID?.uppercased() ?? ""
+        let systemIdentifier = LibretroThumbnailResolver.effectiveThumbnailSystemID(for: rom)?.uppercased() ?? ""
         let cleanName = rom.name.replacingOccurrences(of: "_", with: " ")
         let query = "\(cleanName) \(systemIdentifier) BoxArt"
         print("Searching Google for \(rom.name): \"\(query)\"")

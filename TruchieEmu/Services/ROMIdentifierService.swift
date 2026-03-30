@@ -1,4 +1,5 @@
 import Foundation
+import os.log
 
 struct CRC32 {
     private static let table: [UInt32] = {
@@ -22,44 +23,180 @@ struct CRC32 {
     }
 }
 
-struct GameInfo {
+struct GameInfo: Equatable {
     let name: String
     let year: String?
     let publisher: String?
     let developer: String?
     let genre: String?
     let crc: String
+    /// When set (e.g. merged GB+GBC DB), Libretro thumbnails use this system folder (`gb` vs `gbc`) instead of the ROM’s `systemID`.
+    let thumbnailLookupSystemID: String?
 }
+
+enum ROMIdentifyResult: Equatable {
+    /// Metadata was written to the ROM entry (CRC matched in DAT).
+    case identified(GameInfo)
+    /// Matched by sanitized filename vs DAT titles; region chosen using emulator language preference.
+    case identifiedFromName(GameInfo)
+    /// CRC was computed but no game in the No-Intro DAT uses that hash, and name search found nothing.
+    case crcNotInDatabase(crc: String)
+    /// DAT file missing, empty, or could not be downloaded.
+    case databaseUnavailable
+    /// ROM file could not be read (permissions, missing file, etc.).
+    case romReadFailed(String)
+    case noSystem
+}
+
+private let identifyLog = Logger(subsystem: Bundle.main.bundleIdentifier ?? "TruchieEmu", category: "ROMIdentify")
+private let databaseLog = Logger(subsystem: Bundle.main.bundleIdentifier ?? "TruchieEmu", category: "LibretroDB")
 
 class ROMIdentifierService {
     static let shared = ROMIdentifierService()
-    
-    // Cache for loaded databases: [systemID: [CRC: GameInfo]]
-    private var databases: [String: [String: GameInfo]] = [:]
 
-    func identify(rom: ROM) async -> GameInfo? {
+    func identify(rom: ROM) async -> ROMIdentifyResult {
         guard let systemID = rom.systemID,
-              let system = SystemDatabase.system(forID: systemID) else { return nil }
-        
-        // 1. Ensure database is loaded/downloaded for this system
+              let system = SystemDatabase.system(forID: systemID) else {
+            identifyLog.warning("Identify: no system for ROM \(rom.path.lastPathComponent, privacy: .public)")
+            return .noSystem
+        }
+
+        identifyLog.info("Identify: start system=\(systemID, privacy: .public) file=\(rom.path.lastPathComponent, privacy: .public)")
+
         let db = await LibretroDatabaseLibrary.shared.fetchAndLoadDat(for: system)
         if db.isEmpty {
-            print("No .dat database found for system: \(systemID)")
+            identifyLog.error("Identify: empty database for system \(systemID, privacy: .public)")
+            return .databaseUnavailable
+        }
+        identifyLog.info("Identify: database has \(db.count) CRC entries for lookup")
+
+        guard let crc = computeCRC(for: rom.path, systemID: systemID) else {
+            identifyLog.error("Identify: CRC read failed for \(rom.path.path, privacy: .public)")
+            return .romReadFailed("Could not read the ROM file. If the library is on a removable drive or you moved files, re-add the folder in Settings.")
+        }
+
+        let key = crc.uppercased()
+        identifyLog.info("Identify: ROM CRC \(key, privacy: .public)")
+
+        if let info = db[key] {
+            if let thumb = info.thumbnailLookupSystemID, thumb != systemID {
+                identifyLog.info("Identify: CRC match → \(info.name, privacy: .public) (thumbnails: use system \(thumb, privacy: .public), ROM is \(systemID, privacy: .public))")
+            } else {
+                identifyLog.info("Identify: CRC match → \(info.name, privacy: .public)")
+            }
+            return .identified(info)
+        }
+
+        let language = Self.currentEmulatorLanguage()
+        if let byName = identifyByName(rom: rom, database: db, language: language) {
+            identifyLog.info("Identify: filename match → \(byName.name, privacy: .public) (language \(language.name, privacy: .public))")
+            return .identifiedFromName(byName)
+        }
+
+        identifyLog.notice("Identify: CRC \(key, privacy: .public) not in database and no filename match for \(systemID, privacy: .public)")
+        return .crcNotInDatabase(crc: key)
+    }
+
+    /// Legacy helper for code that only needs a successful match.
+    func identifyReturningGameInfo(rom: ROM) async -> GameInfo? {
+        switch await identify(rom: rom) {
+        case .identified(let info), .identifiedFromName(let info):
+            return info
+        default:
             return nil
         }
-        
-        // 2. Compute CRC based on system rules
-        guard let crc = computeCRC(for: rom.path, systemID: systemID) else { return nil }
-        
-        // 3. Match in database
-        if let info = db[crc.uppercased()] {
-            return info
+    }
+
+    private static func currentEmulatorLanguage() -> EmulatorLanguage {
+        let raw = UserDefaults.standard.integer(forKey: "systemLanguage")
+        return EmulatorLanguage(rawValue: raw) ?? .english
+    }
+
+    /// Compare No-Intro titles after stripping region/version parentheticals.
+    private static func normalizedComparableTitle(_ s: String) -> String {
+        let stripped = LibretroThumbnailResolver.stripParenthesesForFuzzyMatch(s)
+        return stripped
+            .lowercased()
+            .replacingOccurrences(of: "  +", with: " ", options: .regularExpression)
+            .trimmingCharacters(in: .whitespacesAndNewlines)
+    }
+
+    /// Lower index = stronger preference when multiple DAT entries share the same base title.
+    private static func regionPreferenceRank(fullName: String, language: EmulatorLanguage) -> Int {
+        let prefs = language.noIntroRegionPreference
+        for (idx, tag) in prefs.enumerated() where fullName.contains(tag) {
+            return idx
         }
-        
-        return nil
+        return prefs.count
+    }
+
+    /// When `regionPreferenceRank` ties (e.g. no tag matched), avoid lexicographic tiebreak where `(Japan)` sorts before `(World)`.
+    private static func regionTieBreakOrdinal(fullName: String, language: EmulatorLanguage) -> Int {
+        if language == .japanese {
+            if fullName.contains("(Japan)") || fullName.contains("(JP)") || fullName.contains("(Ja)") { return 0 }
+            return 50
+        }
+        if fullName.contains("(World)") { return 0 }
+        if fullName.contains("(USA)") || fullName.contains("(Canada)") { return 2 }
+        if fullName.contains("(Europe)") || fullName.contains("(EU)") { return 3 }
+        if fullName.contains("(Japan)") || fullName.contains("(JP)") { return 30 }
+        return 15
+    }
+
+    private func identifyByName(rom: ROM, database: [String: GameInfo], language: EmulatorLanguage) -> GameInfo? {
+        let stem = rom.path.deletingPathExtension().lastPathComponent
+        var cleaned = LibretroThumbnailResolver.stripRomFilenameTags(stem)
+        cleaned = LibretroThumbnailResolver.stripParenthesesForFuzzyMatch(cleaned)
+        let queryBase = Self.normalizedComparableTitle(cleaned)
+        guard queryBase.count >= 2 else { return nil }
+
+        var exact: [GameInfo] = []
+        for info in database.values {
+            let datBase = Self.normalizedComparableTitle(info.name)
+            if datBase == queryBase {
+                exact.append(info)
+            }
+        }
+
+        var candidates = exact
+        if candidates.isEmpty {
+            for info in database.values {
+                let datBase = Self.normalizedComparableTitle(info.name)
+                guard datBase.count >= 3, queryBase.count >= 3 else { continue }
+                if datBase.contains(queryBase) || queryBase.contains(datBase) {
+                    candidates.append(info)
+                }
+            }
+        }
+
+        guard !candidates.isEmpty else { return nil }
+
+        let prefs = language.noIntroRegionPreference
+        let sorted = candidates.sorted { a, b in
+            let ra = Self.regionPreferenceRank(fullName: a.name, language: language)
+            let rb = Self.regionPreferenceRank(fullName: b.name, language: language)
+            if ra != rb { return ra < rb }
+            let ta = Self.regionTieBreakOrdinal(fullName: a.name, language: language)
+            let tb = Self.regionTieBreakOrdinal(fullName: b.name, language: language)
+            if ta != tb { return ta < tb }
+            if a.name.count != b.name.count { return a.name.count < b.name.count }
+            return a.name < b.name
+        }
+
+        if let best = sorted.first {
+            let rank = Self.regionPreferenceRank(fullName: best.name, language: language)
+            if rank >= prefs.count {
+                identifyLog.notice("Identify: name match without preferred region tag; used worldwide/Japan tie-break then length/lex order")
+            }
+        }
+        return sorted.first
     }
     
     func computeCRC(for url: URL, systemID: String) -> String? {
+        let scoped = url.startAccessingSecurityScopedResource()
+        defer {
+            if scoped { url.stopAccessingSecurityScopedResource() }
+        }
         do {
             let fullData = try Data(contentsOf: url, options: .mappedIfSafe)
             let dataToHash: Data
@@ -79,7 +216,7 @@ class ROMIdentifierService {
 
             return CRC32.compute(dataToHash)
         } catch {
-            print("Error reading ROM for CRC: \(error.localizedDescription)")
+            identifyLog.error("CRC read error: \(error.localizedDescription, privacy: .public)")
             return nil
         }
     }
@@ -95,12 +232,98 @@ struct LibretroDatGame {
     var crcs: [String] = []  // A game can have multiple roms/crcs
 }
 
-/// A specialized service/library to download and parse libretro database files (.dat) formatted in ClrMamePro syntax.
+/// Downloads and parses libretro-database sources: No-Intro `.dat` first, then other `.dat` trees, then compiled `rdb/` (RARCHDB + MessagePack).
 class LibretroDatabaseLibrary {
     static let shared = LibretroDatabaseLibrary()
-    
+
+    /// Game Boy and Game Boy Color sets overlap; we always merge both for CRC/name lookup.
+    private static let gbFamilyCacheKey = "gb+gbc"
+
+    private static func isGbFamily(_ systemID: String) -> Bool {
+        systemID == "gb" || systemID == "gbc"
+    }
+
+    private static func tagGameInfo(_ info: GameInfo, thumbnailLookupSystemID: String) -> GameInfo {
+        GameInfo(
+            name: info.name,
+            year: info.year,
+            publisher: info.publisher,
+            developer: info.developer,
+            genre: info.genre,
+            crc: info.crc,
+            thumbnailLookupSystemID: thumbnailLookupSystemID
+        )
+    }
+
+    /// Exact `.dat` basenames as in [libretro-database](https://github.com/libretro/libretro-database) (`metadat/no-intro`, `metadat/redump`, etc.).
+    /// Use when `"\(manufacturer) - \(name).dat"` does not match upstream (short display names vs official No-Intro set names).
+    private static let libretroDatBasenameOverrides: [String: String] = [
+        "snes": "Nintendo - Super Nintendo Entertainment System.dat",
+        "genesis": "Sega - Mega Drive - Genesis.dat",
+        "pce": "NEC - PC Engine - TurboGrafx 16.dat",
+        "sms": "Sega - Master System - Mark III.dat",
+        "gamegear": "Sega - Game Gear.dat",
+        "saturn": "Sega - Saturn.dat",
+        "dreamcast": "Sega - Dreamcast.dat",
+        "atari2600": "Atari - 2600.dat",
+        "atari5200": "Atari - 5200.dat",
+        "atari7800": "Atari - 7800.dat",
+        "lynx": "Atari - Lynx.dat",
+        "gb": "Nintendo - Game Boy.dat",
+        "gbc": "Nintendo - Game Boy Color.dat",
+        "gba": "Nintendo - Game Boy Advance.dat",
+        // libretro-database metadat/mame/MAME.dat
+        "mame": "MAME.dat",
+    ]
+
+    /// [libretro-database `rdb/`](https://github.com/libretro/libretro-database/tree/master/rdb): `MAME.rdb` plus per-core `MAME *.rdb` files.
+    private static let mameRdbBasenames: [String] = [
+        "MAME.rdb",
+        "MAME 2016.rdb",
+        "MAME 2015.rdb",
+        "MAME 2010.rdb",
+        "MAME 2003-Plus.rdb",
+        "MAME 2003.rdb",
+        "MAME 2000.rdb",
+    ]
+
     // Cache for loaded databases: [systemID: [CRC: GameInfo]]
     private var databases: [String: [String: GameInfo]] = [:]
+
+    /// Ordered unique basenames to try locally and on GitHub raw URLs.
+    private func datBasenamesToTry(for system: SystemInfo) -> [String] {
+        var ordered: [String] = []
+        var seen = Set<String>()
+        func append(_ name: String) {
+            guard !seen.contains(name) else { return }
+            seen.insert(name)
+            ordered.append(name)
+        }
+
+        if let exact = Self.libretroDatBasenameOverrides[system.id] {
+            append(exact)
+        }
+
+        var primary = "\(system.name).dat"
+        if !system.manufacturer.isEmpty && system.manufacturer != "Various" {
+            primary = "\(system.manufacturer) - \(system.name).dat"
+        }
+        append(primary)
+        append("\(system.name).dat")
+
+        let spacedVendor = "\(system.manufacturer.isEmpty ? "" : "\(system.manufacturer) ")\(system.name).dat"
+        append(spacedVendor)
+
+        return ordered
+    }
+
+    /// Same basenames as DAT but with `.rdb` (see `rdb/` on GitHub). Arcade/MAME uses `MAME.rdb` and `MAME *.rdb`, not `Various - Arcade (MAME).rdb`.
+    private func rdbBasenamesToTry(for system: SystemInfo) -> [String] {
+        if system.id == "mame" {
+            return Self.mameRdbBasenames
+        }
+        return datBasenamesToTry(for: system).map { ($0 as NSString).deletingPathExtension + ".rdb" }
+    }
     
     /// Parses a ClrMamePro formatted DAT file into a dictionary grouped by CRC.
     func parseDat(contentsOf url: URL) -> [String: GameInfo] {
@@ -122,7 +345,8 @@ class LibretroDatabaseLibrary {
                         publisher: currentGame?.publisher ?? currentGame?.developer,
                         developer: currentGame?.developer,
                         genre: currentGame?.genre,
-                        crc: crc.uppercased()
+                        crc: crc.uppercased(),
+                        thumbnailLookupSystemID: nil
                     )
                 }
                 currentGame = nil
@@ -154,7 +378,7 @@ class LibretroDatabaseLibrary {
             }
         }
         
-        print("✅ Parsed \(database.count) ROM hashes from \(url.lastPathComponent)")
+        databaseLog.info("Parsed DAT \(url.lastPathComponent, privacy: .public) → \(database.count) CRC entries")
         return database
     }
     
@@ -166,66 +390,188 @@ class LibretroDatabaseLibrary {
         return nil
     }
     
-    /// Ensures we have the database locally, optionally downloading it from github if missing. Returns parsed entries.
+    /// Ensures we have the database locally, optionally downloading it from GitHub. Order: **No-Intro `.dat`** → **other `.dat` trees** → **`rdb/` RDB** (compiled libretrodb).
+    /// For **Game Boy** and **Game Boy Color**, loads and merges **both** sets (mixed libraries).
     func fetchAndLoadDat(for system: SystemInfo) async -> [String: GameInfo] {
-        if let db = databases[system.id] { return db }
-        
-        let appSupport = FileManager.default.urls(for: .applicationSupportDirectory, in: .userDomainMask).first!
-        let datsDir = appSupport.appendingPathComponent("TruchieEmu").appendingPathComponent("Dats")
-        try? FileManager.default.createDirectory(at: datsDir, withIntermediateDirectories: true)
-        
-        var expectedFileName = "\(system.name).dat"
-        if !system.manufacturer.isEmpty && system.manufacturer != "Various" {
-            expectedFileName = "\(system.manufacturer) - \(system.name).dat"
+        if Self.isGbFamily(system.id) {
+            if let merged = databases[Self.gbFamilyCacheKey] {
+                databaseLog.info("LibretroDB: cache hit merged Game Boy + Game Boy Color (\(merged.count) CRC entries)")
+                return merged
+            }
+            let partnerID = system.id == "gb" ? "gbc" : "gb"
+            guard let partner = SystemDatabase.system(forID: partnerID) else {
+                databaseLog.error("LibretroDB: GB family merge failed — missing partner system \(partnerID, privacy: .public)")
+                return await loadSingleSystemDatabase(for: system)
+            }
+
+            databaseLog.info("LibretroDB: Game Boy family — loading \(system.id, privacy: .public) then \(partnerID, privacy: .public), then merging")
+
+            let primary = await loadSingleSystemDatabase(for: system)
+            databaseLog.info("LibretroDB: primary \(system.id, privacy: .public) → \(primary.count) CRC entries")
+
+            let secondary = await loadSingleSystemDatabase(for: partner)
+            databaseLog.info("LibretroDB: partner \(partnerID, privacy: .public) → \(secondary.count) CRC entries")
+
+            var merged: [String: GameInfo] = [:]
+            for (crc, info) in primary {
+                merged[crc] = Self.tagGameInfo(info, thumbnailLookupSystemID: system.id)
+            }
+            var overlap = 0
+            for (crc, info) in secondary {
+                if merged[crc] != nil {
+                    overlap += 1
+                } else {
+                    merged[crc] = Self.tagGameInfo(info, thumbnailLookupSystemID: partner.id)
+                }
+            }
+            databaseLog.info("LibretroDB: merged GB+GBC → \(merged.count) unique CRCs (\(overlap) CRCs present in both sets; primary \(system.id, privacy: .public) wins on overlap); entries tagged for thumbnail CDN folder")
+
+            databases[Self.gbFamilyCacheKey] = merged
+            databases["gb"] = merged
+            databases["gbc"] = merged
+            return merged
         }
-        let fallbackFileName = "\(system.name).dat"
-        let fallbackVendorFileName = "\(system.manufacturer.isEmpty ? "" : "\(system.manufacturer) ")\(system.name).dat"
-        
-        let localNames = [expectedFileName, fallbackFileName, fallbackVendorFileName]
-        
-        // 1. Check local files first
+
+        if let db = databases[system.id] {
+            databaseLog.info("LibretroDB: cache hit \(system.id, privacy: .public) (\(db.count) CRC entries)")
+            return db
+        }
+
+        let loaded = await loadSingleSystemDatabase(for: system)
+        databases[system.id] = loaded
+        return loaded
+    }
+
+    /// One libretro system: local DAT → No-Intro DAT → other DAT trees → RDB (no GB/GBC merge).
+    private func loadSingleSystemDatabase(for system: SystemInfo) async -> [String: GameInfo] {
+        let appSupport = FileManager.default.urls(for: .applicationSupportDirectory, in: .userDomainMask).first!
+        let datsDir = appSupport.appendingPathComponent("TruchieEmu/Dats", isDirectory: true)
+        let rdbDir = appSupport.appendingPathComponent("TruchieEmu/Rdb", isDirectory: true)
+        try? FileManager.default.createDirectory(at: datsDir, withIntermediateDirectories: true)
+        try? FileManager.default.createDirectory(at: rdbDir, withIntermediateDirectories: true)
+
+        let localNames = datBasenamesToTry(for: system)
+        let baseUrl = "https://raw.githubusercontent.com/libretro/libretro-database/master/"
+
+        databaseLog.info("LibretroDB: [\(system.id, privacy: .public)] Step 1 — scan local DATs in \(datsDir.path, privacy: .public)")
         for fileName in localNames {
             let localUrl = datsDir.appendingPathComponent(fileName)
             if FileManager.default.fileExists(atPath: localUrl.path) {
-                print("📂 Using local DAT: \(fileName)")
                 let db = parseDat(contentsOf: localUrl)
-                if !db.isEmpty {
-                    databases[system.id] = db
+                if db.isEmpty {
+                    databaseLog.info("LibretroDB: [\(system.id, privacy: .public)] local DAT \(fileName, privacy: .public) exists but parsed 0 entries — continuing")
+                } else {
+                    databaseLog.info("LibretroDB: [\(system.id, privacy: .public)] using local DAT \(fileName, privacy: .public) (\(db.count) entries)")
                     return db
                 }
+            } else {
+                databaseLog.info("LibretroDB: [\(system.id, privacy: .public)] no local file \(fileName, privacy: .public)")
             }
         }
-        
-        // 2. Not found locally, let's download from GitHub
-        print("🌐 Downloading libretro DAT for \(system.name)...")
-        let paths = ["metadat/no-intro", "metadat/redump", "metadat/mame", "metadat/fba", "metadat/fbneo-split", "dat"]
-        let baseUrl = "https://raw.githubusercontent.com/libretro/libretro-database/master/"
-        
-        for fileName in localNames {
-            guard let encodedFile = fileName.addingPercentEncoding(withAllowedCharacters: .urlPathAllowed) else { continue }
-            
-            for path in paths {
-                let checkUrlStr = baseUrl + path + "/" + encodedFile
-                guard let checkUrl = URL(string: checkUrlStr) else { continue }
-                
-                print("   - Testing URL: \(checkUrlStr)")
-                if let data = try? await URLSession.shared.data(from: checkUrl).0, data.count > 100 {
-                    // Check if string contains "game (" to ensure it's not a 404 page masquerading as 200
-                    if let stringContent = String(data: data, encoding: .utf8), stringContent.contains("game (") || stringContent.contains("machine (") {
-                        let localUrl = datsDir.appendingPathComponent(fileName)
-                        try? data.write(to: localUrl)
-                        print("⬇️ Downloaded DAT successfully to \(localUrl.lastPathComponent)")
-                        
-                        let db = parseDat(contentsOf: localUrl)
-                        databases[system.id] = db
-                        return db
-                    }
-                }
-            }
+
+        databaseLog.info("LibretroDB: [\(system.id, privacy: .public)] Step 2 — download No-Intro DAT (metadat/no-intro)")
+        let noIntroOnly = ["metadat/no-intro"]
+        if let db = await downloadDatRemote(systemID: system.id, names: localNames, remotePaths: noIntroOnly, datsDir: datsDir, baseUrl: baseUrl) {
+            return db
         }
-        
-        print("❌ Could not find an upstream DAT for \(system.name)")
-        databases[system.id] = [:] // Avoid repeated lookups
+
+        databaseLog.info("LibretroDB: [\(system.id, privacy: .public)] Step 3 — download other DAT trees (redump, mame, …)")
+        let otherDatPaths = ["metadat/redump", "metadat/mame", "metadat/fba", "metadat/fbneo-split", "dat"]
+        if let db = await downloadDatRemote(systemID: system.id, names: localNames, remotePaths: otherDatPaths, datsDir: datsDir, baseUrl: baseUrl) {
+            return db
+        }
+
+        databaseLog.info("LibretroDB: [\(system.id, privacy: .public)] Step 4 — load RDB (local cache then rdb/ on GitHub)")
+        if let db = await downloadRdbRemote(systemID: system.id, names: rdbBasenamesToTry(for: system), rdbDir: rdbDir, baseUrl: baseUrl) {
+            return db
+        }
+
+        databaseLog.error("LibretroDB: [\(system.id, privacy: .public)] Step 5 — FAILED — no usable DAT or RDB (tried DAT names: \(localNames.joined(separator: ", "), privacy: .public))")
         return [:]
+    }
+
+    private func downloadDatRemote(systemID: String, names: [String], remotePaths: [String], datsDir: URL, baseUrl: String) async -> [String: GameInfo]? {
+        for fileName in names {
+            guard let encodedFile = fileName.addingPercentEncoding(withAllowedCharacters: .urlPathAllowed) else {
+                databaseLog.info("LibretroDB: [\(systemID, privacy: .public)] skip DAT (bad encoding): \(fileName, privacy: .public)")
+                continue
+            }
+            for path in remotePaths {
+                let checkUrlStr = baseUrl + path + "/" + encodedFile
+                guard let checkUrl = URL(string: checkUrlStr) else {
+                    databaseLog.info("LibretroDB: [\(systemID, privacy: .public)] bad URL for \(fileName, privacy: .public)")
+                    continue
+                }
+                databaseLog.info("LibretroDB: [\(systemID, privacy: .public)] GET DAT \(checkUrlStr, privacy: .public)")
+                guard let data = try? await URLSession.shared.data(from: checkUrl).0 else {
+                    databaseLog.info("LibretroDB: [\(systemID, privacy: .public)] GET failed (no data) \(checkUrlStr, privacy: .public)")
+                    continue
+                }
+                guard data.count > 100 else {
+                    databaseLog.info("LibretroDB: [\(systemID, privacy: .public)] response too small (\(data.count) bytes) \(checkUrlStr, privacy: .public)")
+                    continue
+                }
+                guard let stringContent = String(data: data, encoding: .utf8),
+                      stringContent.contains("game (") || stringContent.contains("machine (") else {
+                    databaseLog.info("LibretroDB: [\(systemID, privacy: .public)] not a ClrMamePro DAT (no game/machine blocks) \(checkUrlStr, privacy: .public)")
+                    continue
+                }
+                let localUrl = datsDir.appendingPathComponent(fileName)
+                try? data.write(to: localUrl)
+                databaseLog.info("LibretroDB: [\(systemID, privacy: .public)] saved DAT \(localUrl.lastPathComponent, privacy: .public) (\(data.count) bytes)")
+                let db = parseDat(contentsOf: localUrl)
+                if !db.isEmpty {
+                    databaseLog.info("LibretroDB: [\(systemID, privacy: .public)] DAT OK → \(db.count) CRC entries from \(fileName, privacy: .public)")
+                    return db
+                }
+                databaseLog.info("LibretroDB: [\(systemID, privacy: .public)] parsed 0 entries from \(fileName, privacy: .public)")
+            }
+        }
+        return nil
+    }
+
+    private func downloadRdbRemote(systemID: String, names: [String], rdbDir: URL, baseUrl: String) async -> [String: GameInfo]? {
+        for fileName in names {
+            let localUrl = rdbDir.appendingPathComponent(fileName)
+            if FileManager.default.fileExists(atPath: localUrl.path),
+               let data = try? Data(contentsOf: localUrl),
+               data.count > 32 {
+                databaseLog.info("LibretroDB: [\(systemID, privacy: .public)] read local RDB \(fileName, privacy: .public) (\(data.count) bytes)")
+                let db = LibretroRDBParser.buildCRCIndex(data: data)
+                if !db.isEmpty {
+                    databaseLog.info("LibretroDB: [\(systemID, privacy: .public)] RDB OK (local) → \(db.count) CRC entries")
+                    return db
+                }
+                databaseLog.info("LibretroDB: [\(systemID, privacy: .public)] local RDB \(fileName, privacy: .public) parsed 0 entries")
+            }
+        }
+        for fileName in names {
+            guard let encoded = fileName.addingPercentEncoding(withAllowedCharacters: .urlPathAllowed) else { continue }
+            let checkUrlStr = baseUrl + "rdb/" + encoded
+            guard let checkUrl = URL(string: checkUrlStr) else { continue }
+            databaseLog.info("LibretroDB: [\(systemID, privacy: .public)] GET RDB \(checkUrlStr, privacy: .public)")
+            guard let data = try? await URLSession.shared.data(from: checkUrl).0 else {
+                databaseLog.info("LibretroDB: [\(systemID, privacy: .public)] GET failed (no data) \(checkUrlStr, privacy: .public)")
+                continue
+            }
+            guard data.count > 100 else {
+                databaseLog.info("LibretroDB: [\(systemID, privacy: .public)] RDB response too small (\(data.count) bytes) \(checkUrlStr, privacy: .public)")
+                continue
+            }
+            guard data.starts(with: Data("RARCHDB\0".utf8)) else {
+                databaseLog.info("LibretroDB: [\(systemID, privacy: .public)] not RARCHDB magic \(checkUrlStr, privacy: .public)")
+                continue
+            }
+            let localUrl = rdbDir.appendingPathComponent(fileName)
+            try? data.write(to: localUrl)
+            databaseLog.info("LibretroDB: [\(systemID, privacy: .public)] saved RDB \(localUrl.lastPathComponent, privacy: .public) (\(data.count) bytes)")
+            let db = LibretroRDBParser.buildCRCIndex(data: data)
+            if !db.isEmpty {
+                databaseLog.info("LibretroDB: [\(systemID, privacy: .public)] RDB OK (remote) → \(db.count) CRC entries")
+                return db
+            }
+            databaseLog.info("LibretroDB: [\(systemID, privacy: .public)] RDB parsed 0 entries \(fileName, privacy: .public)")
+        }
+        return nil
     }
 }
