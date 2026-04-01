@@ -728,50 +728,102 @@ class StandaloneGameWindowController: NSWindowController, NSWindowDelegate, Obse
         super.windowDidLoad()
     }
     
-    func launch(rom: ROM, coreID: String) {
-        // Store ROM reference on runner before launching
-        runner?.rom = rom
-        runner?.romPath = rom.path.path
-        
-        // Update window title
-        window?.title = "TruchieEmu - " + rom.displayName
-        
-        // Unpause the metal view
-        metalView?.isPaused = false
-        
-        // Launch the game
-        runner?.launch(rom: rom, coreID: coreID)
-        
-        // Make sure the metal view is the first responder
-        DispatchQueue.main.async { [weak self] in
-            self?.window?.makeFirstResponder(self?.metalView)
-        }
-        
-        // Auto-load from slot -1 after launch completes (if enabled)
-        let shouldAutoLoad = UserDefaults.standard.bool(forKey: "auto_load_on_start")
-        if shouldAutoLoad {
-            // Wait for emulation to stabilize
-            DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) { [weak self] in
-                guard let self = self, let runner = self.runner else { return }
-                let systemID = rom.systemID ?? "default"
-                let stateURL = runner.saveManager.statePath(gameName: rom.displayName, systemID: systemID, slot: -1)
-                if FileManager.default.fileExists(atPath: stateURL.path) {
-                    print("[AutoLoad] Found save state at: \(stateURL.path)")
-                    let success = runner.loadState(slot: -1)
-                    if success {
-                        runner.osdMessage = "Auto-loaded last session"
-                        print("[AutoLoad] Successfully loaded auto-save state")
-                        Task {
-                            try? await Task.sleep(nanoseconds: 2_000_000_000)
-                            await MainActor.run { runner.osdMessage = nil }
+    func launch(rom: ROM, coreID: String, slotToLoad: Int? = nil) {
+        func _doLaunch() {
+            // Store ROM reference on runner before launching
+            runner?.rom = rom
+            runner?.romPath = rom.path.path
+            
+            // Update window title
+            window?.title = "TruchieEmu - " + rom.displayName
+            
+            // Show and bring window to front
+            window?.orderFrontRegardless()
+            window?.makeKeyAndOrderFront(nil)
+            NSApp.activate(ignoringOtherApps: true)
+            
+            // Unpause the metal view
+            metalView?.isPaused = false
+            
+            // Launch the game
+            runner?.launch(rom: rom, coreID: coreID)
+            
+            // Make sure the metal view is the first responder
+            DispatchQueue.main.async { [weak self] in
+                self?.window?.makeFirstResponder(self?.metalView)
+            }
+            
+            // Load from the specified slot after launch completes
+            if let slotToLoad = slotToLoad {
+                // Wait for emulation to stabilize
+                DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) { [weak self] in
+                    guard let self = self, let runner = self.runner else { return }
+                    let systemID = rom.systemID ?? "default"
+                    let stateURL = runner.saveManager.statePath(gameName: rom.displayName, systemID: systemID, slot: slotToLoad)
+                    if FileManager.default.fileExists(atPath: stateURL.path) {
+                        print("[SlotLoad] Found save state at: \(stateURL.path)")
+                        let success = runner.loadState(slot: slotToLoad)
+                        if success {
+                            runner.osdMessage = "Loaded Slot \(slotToLoad)"
+                            print("[SlotLoad] Successfully loaded save state from slot \(slotToLoad)")
+                            Task {
+                                try? await Task.sleep(nanoseconds: 2_000_000_000)
+                                await MainActor.run { runner.osdMessage = nil }
+                            }
+                        } else {
+                            print("[SlotLoad] Failed to load save state from slot \(slotToLoad)")
                         }
                     } else {
-                        print("[AutoLoad] Failed to load auto-save state")
+                        print("[SlotLoad] No save state found at: \(stateURL.path)")
                     }
-                } else {
-                    print("[AutoLoad] No save state found at: \(stateURL.path)")
+                }
+            } else {
+                // Auto-load from slot -1 after launch completes (if enabled)
+                let shouldAutoLoad = UserDefaults.standard.bool(forKey: "auto_load_on_start")
+                if shouldAutoLoad {
+                    // Wait for emulation to stabilize
+                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) { [weak self] in
+                        guard let self = self, let runner = self.runner else { return }
+                        let systemID = rom.systemID ?? "default"
+                        let stateURL = runner.saveManager.statePath(gameName: rom.displayName, systemID: systemID, slot: -1)
+                        if FileManager.default.fileExists(atPath: stateURL.path) {
+                            print("[AutoLoad] Found save state at: \(stateURL.path)")
+                            let success = runner.loadState(slot: -1)
+                            if success {
+                                runner.osdMessage = "Auto-loaded last session"
+                                print("[AutoLoad] Successfully loaded auto-save state")
+                                Task {
+                                    try? await Task.sleep(nanoseconds: 2_000_000_000)
+                                    await MainActor.run { runner.osdMessage = nil }
+                                }
+                            } else {
+                                print("[AutoLoad] Failed to load auto-save state")
+                            }
+                        } else {
+                            print("[AutoLoad] No save state found at: \(stateURL.path)")
+                        }
+                    }
                 }
             }
+        }
+        
+        // If there's already a window, close the old one first
+        if let existingWindow = window, existingWindow.isVisible {
+            window?.close()
+            // Create a new window for the new launch
+            let newWindow = NSWindow(
+                contentRect: NSRect(x: 0, y: 0, width: 1024, height: 768),
+                styleMask: [.titled, .closable, .miniaturizable, .resizable, .fullSizeContentView],
+                backing: .buffered, defer: false)
+            newWindow.center()
+            newWindow.backgroundColor = .black
+            newWindow.isReleasedWhenClosed = false
+            self.window = newWindow
+            newWindow.delegate = self
+            setupMetalView()
+            _doLaunch()
+        } else {
+            _doLaunch()
         }
     }
     

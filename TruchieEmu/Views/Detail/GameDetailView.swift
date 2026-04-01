@@ -1031,7 +1031,7 @@ struct GameDetailView: View {
         ModernSectionCard(
             title: "Saved States",
             icon: "externaldrive",
-            badge: slotInfoList.filter(\.exists).isEmpty ? nil : "\(slotInfoList.filter(\.exists).count)"
+            badge: slotInfoList.filter { $0.exists && $0.id >= 0 }.isEmpty ? nil : "\(slotInfoList.filter { $0.exists && $0.id >= 0 }.count)"
         ) {
             VStack(alignment: .leading, spacing: 14) {
                 let existingSlots = slotInfoList.filter { $0.exists }
@@ -1063,7 +1063,10 @@ struct GameDetailView: View {
                                 slot: slot,
                                 rom: currentROM,
                                 saveStateManager: saveStateManager,
-                                onDelete: { loadSlotInfo() }
+                                onDelete: { loadSlotInfo() },
+                                onLaunchSlot: { slotId in
+                                    launchGame(slotToLoad: slotId)
+                                }
                             )
                         }
                     }
@@ -1292,19 +1295,31 @@ struct GameDetailView: View {
         library.updateROM(updated)
     }
 
-    private func launchGame() {
+    @State private var isLaunchingGame = false
+    
+    private func launchGame(slotToLoad: Int? = nil) {
+        guard !isLaunchingGame else { return }
+        isLaunchingGame = true
+        
         guard let sysID = currentROM.systemID,
-              let system = SystemDatabase.system(forID: sysID) else { return }
+              let system = SystemDatabase.system(forID: sysID) else { 
+            isLaunchingGame = false
+            return 
+        }
         
         let sysPrefs = SystemPreferences.shared
         let coreID = currentROM.useCustomCore
             ? (currentROM.selectedCoreID ?? sysPrefs.preferredCoreID(for: sysID) ?? system.defaultCoreID)
             : (sysPrefs.preferredCoreID(for: sysID) ?? system.defaultCoreID)
         
-        guard let cid = coreID else { return }
+        guard let cid = coreID else { 
+            isLaunchingGame = false
+            return 
+        }
         
         if !coreManager.isInstalled(coreID: cid) {
             coreManager.requestCoreDownload(for: cid, systemID: sysID)
+            isLaunchingGame = false
             return
         }
 
@@ -1321,11 +1336,18 @@ struct GameDetailView: View {
         let runner = EmulatorRunner.forSystem(sysID)
         let controller = StandaloneGameWindowController(runner: runner)
         self.gameWindowController = controller
-        controller.showWindow(nil)
-        controller.window?.makeKeyAndOrderFront(nil)
+        
+        // Make the app active first
         NSApp.activate(ignoringOtherApps: true)
         
-        controller.launch(rom: currentROM, coreID: cid)
+        // Show the window - showWindow handles window ordering properly
+        controller.showWindow(nil)
+        controller.window?.makeKeyAndOrderFront(nil)
+        controller.window?.orderFrontRegardless()
+        
+        // Launch game with slot
+        controller.launch(rom: currentROM, coreID: cid, slotToLoad: slotToLoad)
+        isLaunchingGame = false
     }
 }
 
@@ -1336,29 +1358,56 @@ struct ModernSaveStateSlotView: View {
     let rom: ROM
     @ObservedObject var saveStateManager: SaveStateManager
     var onDelete: () -> Void
+    var onLaunchSlot: (Int) -> Void = { _ in }
     @State private var thumbnail: NSImage?
-
+    @State private var showPlayButton = false
+    
     var body: some View {
         VStack(spacing: 6) {
-            // Thumbnail or placeholder
             ZStack {
-                if let thumb = thumbnail {
-                    Image(nsImage: thumb)
-                        .resizable()
-                        .aspectRatio(contentMode: .fill)
-                        .clipped()
-                } else {
-                    Rectangle()
-                        .fill(Color.white.opacity(0.05))
-                        .overlay(
-                            Image(systemName: slot.exists ? "externaldrive.fill" : "externaldrive")
-                                .font(.system(size: 20))
-                                .foregroundColor(.white.opacity(0.3))
-                        )
+                // Thumbnail or placeholder
+                ZStack {
+                    if let thumb = thumbnail {
+                        Image(nsImage: thumb)
+                            .resizable()
+                            .aspectRatio(contentMode: .fill)
+                            .clipped()
+                    } else {
+                        Rectangle()
+                            .fill(Color.white.opacity(0.05))
+                            .overlay(
+                                Image(systemName: slot.exists ? "externaldrive.fill" : "externaldrive")
+                                    .font(.system(size: 20))
+                                    .foregroundColor(.white.opacity(0.3))
+                            )
+                    }
+                }
+                .frame(width: 70, height: 52)
+                .clipShape(RoundedRectangle(cornerRadius: 6))
+                
+                // Play button overlay (appears on single-click for saved slots)
+                if slot.exists && showPlayButton {
+                    Button {
+                        onLaunchSlot(slot.id)
+                    } label: {
+                        ZStack {
+                            Color.black.opacity(0.6)
+                            VStack(spacing: 4) {
+                                Image(systemName: "play.circle.fill")
+                                    .font(.system(size: 20))
+                                    .foregroundColor(.white)
+                                Text("Play")
+                                    .font(.caption2)
+                                    .fontWeight(.semibold)
+                                    .foregroundColor(.white)
+                            }
+                        }
+                        .clipShape(RoundedRectangle(cornerRadius: 6))
+                    }
+                    .buttonStyle(.plain)
+                    .transition(.opacity)
                 }
             }
-            .frame(width: 70, height: 52)
-            .clipShape(RoundedRectangle(cornerRadius: 6))
             .overlay(
                 RoundedRectangle(cornerRadius: 6)
                     .stroke(slot.exists ? Color.blue.opacity(0.5) : Color.clear, lineWidth: 1.5)
@@ -1383,9 +1432,35 @@ struct ModernSaveStateSlotView: View {
             }
         }
         .frame(width: 74)
-        .onTapGesture {
+        // Single tap: show play button
+        .onTapGesture(count: 1) {
             if slot.exists {
-                // Could trigger load state action
+                withAnimation(.easeInOut(duration: 0.15)) {
+                    showPlayButton = true
+                }
+            }
+        }
+        // Double tap: launch game and load this slot directly
+        .simultaneousGesture(
+            TapGesture(count: 2)
+                .onEnded {
+                    if slot.exists {
+                        withAnimation(.easeInOut(duration: 0.15)) {
+                            showPlayButton = false
+                        }
+                        onLaunchSlot(slot.id)
+                    }
+                }
+        )
+        // Dismiss play button when tapping elsewhere
+        .onChange(of: showPlayButton) { _ in
+            if showPlayButton {
+                // Auto-dismiss after 5 seconds
+                DispatchQueue.main.asyncAfter(deadline: .now() + 5) {
+                    withAnimation(.easeInOut(duration: 0.15)) {
+                        showPlayButton = false
+                    }
+                }
             }
         }
         .contextMenu {
