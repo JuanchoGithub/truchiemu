@@ -49,5 +49,6 @@ struct TruchieEmuApp: App {
                 .environmentObject(coreManager)
                 .environmentObject(controllerService)
         }
+        .windowToolbarStyle(.unified)
     }
 }

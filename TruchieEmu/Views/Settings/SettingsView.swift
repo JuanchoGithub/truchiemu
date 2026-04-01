@@ -1,31 +1,33 @@
 import SwiftUI
 import GameController
 
+// MARK: - Main Settings View
 struct SettingsView: View {
     @EnvironmentObject var library: ROMLibrary
     @EnvironmentObject var coreManager: CoreManager
     @EnvironmentObject var controllerService: ControllerService
 
-    private enum Page: Hashable { case general, cores, controllers, keyboard, boxArt, display, about }
-    @State private var selectedPage: Page = .general
+    private enum Page: Hashable { case library, cores, controllers, keyboard, boxArt, display, about }
+    @State private var selectedPage: Page = .library
 
     var body: some View {
         NavigationSplitView {
             List(selection: $selectedPage) {
-                Label("General",     systemImage: "gearshape")    .tag(Page.general)
-                Label("Cores",       systemImage: "cpu")           .tag(Page.cores)
-                Label("Controllers", systemImage: "gamecontroller").tag(Page.controllers)
-                Label("Keyboard",    systemImage: "keyboard")      .tag(Page.keyboard)
-                Label("Box Art",     systemImage: "photo.stack")   .tag(Page.boxArt)
-                Label("Display",     systemImage: "tv")            .tag(Page.display)
-                Label("About",       systemImage: "info.circle")   .tag(Page.about)
+                sidebarItem(icon: "book.fill", label: "Library", page: .library)
+                sidebarItem(icon: "cpu.fill", label: "Cores", page: .cores)
+                sidebarItem(icon: "gamecontroller.fill", label: "Controllers", page: .controllers)
+                sidebarItem(icon: "keyboard.fill", label: "Keyboard", page: .keyboard)
+                sidebarItem(icon: "photo.stack.fill", label: "Box Art", page: .boxArt)
+                sidebarItem(icon: "tv.fill", label: "Display", page: .display)
+                sidebarItem(icon: "info.circle.fill", label: "About", page: .about)
             }
             .listStyle(.sidebar)
-            .frame(minWidth: 160)
+            .frame(minWidth: 180)
+            .scrollContentBackground(.hidden)
         } detail: {
             Group {
                 switch selectedPage {
-                case .general:     GeneralSettingsView()
+                case .library:     LibrarySettingsView()
                 case .cores:       CoreSettingsView()
                 case .controllers: ControllerSettingsView()
                 case .keyboard:    KeyboardSettingsView()
@@ -34,70 +36,219 @@ struct SettingsView: View {
                 case .about:       AboutView()
                 }
             }
-            .frame(minWidth: 500, minHeight: 400)
+            .frame(minWidth: 550, minHeight: 420)
+        }
+        .navigationSplitViewStyle(.prominentDetail)
+    }
+    
+    private func sidebarItem(icon: String, label: String, page: Page) -> some View {
+        HStack(spacing: 12) {
+            Image(systemName: icon)
+                .font(.system(size: 16, weight: .medium))
+                .symbolVariant(.fill)
+                .frame(width: 28, height: 20)
+                .fixedSize()
+            Text(label)
+                .font(.body)
+        }
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .padding(.vertical, 8)
+        .tag(page)
+    }
+}
+
+// MARK: - Library Settings
+struct LibrarySettingsView: View {
+    @EnvironmentObject var library: ROMLibrary
+    @State private var scanningFolders: Set<Int> = []
+
+    var body: some View {
+        ScrollView {
+            VStack(alignment: .leading, spacing: 24) {
+                // Library Folders Section
+                VStack(alignment: .leading, spacing: 12) {
+                    HStack {
+                        Label("Library Folders", systemImage: "folder.fill")
+                            .font(.headline)
+                        Spacer()
+                        Button(action: addLibraryFolder) {
+                            Label("Add Folder", systemImage: "plus")
+                        }
+                        .buttonStyle(.bordered)
+                        .controlSize(.small)
+                    }
+                    
+                    if library.libraryFolders.isEmpty {
+                        VStack(spacing: 12) {
+                            Image(systemName: "folder")
+                                .font(.system(size: 36))
+                                .foregroundColor(.secondary)
+                            Text("No library folders added yet")
+                                .foregroundColor(.secondary)
+                            Text("Add a folder containing your ROM files to get started.")
+                                .font(.caption)
+                                .foregroundColor(.secondary)
+                                .multilineTextAlignment(.center)
+                        }
+                        .frame(maxWidth: .infinity)
+                        .padding(.vertical, 24)
+                        .background(.ultraThinMaterial)
+                        .cornerRadius(12)
+                        .padding(.top, 12)
+                    } else {
+                        VStack(spacing: 8) {
+                            ForEach(Array(library.libraryFolders.enumerated()), id: \.element) { index, folder in
+                                LibraryFolderRow(
+                                    folder: folder,
+                                    index: index,
+                                    isScanning: scanningFolders.contains(index)
+                                ) {
+                                    Task {
+                                        scanningFolders.insert(index)
+                                        await library.rescanLibrary(at: folder)
+                                        scanningFolders.remove(index)
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+                
+                // Maintenance Section
+                VStack(alignment: .leading, spacing: 12) {
+                    HStack {
+                        Label("Maintenance", systemImage: "wrench.and.screwdriver")
+                            .font(.headline)
+                    }
+                    
+                    VStack(spacing: 0) {
+                        Button(action: { Task { await library.fullRescan() } }) {
+                            HStack {
+                                Image(systemName: "arrow.clockwise.circle.fill")
+                                VStack(alignment: .leading) {
+                                    Text("Full Library Rebuild")
+                                        .font(.body)
+                                    Text("Clear and rebuild all game data from folders")
+                                        .font(.caption)
+                                        .foregroundColor(.secondary)
+                                }
+                                Spacer()
+                                if library.isScanning {
+                                    ProgressView()
+                                        .controlSize(.small)
+                                }
+                            }
+                            .padding(.vertical, 8)
+                            .padding(.horizontal, 12)
+                        }
+                        .buttonStyle(.plain)
+                        
+                        Divider()
+                        
+                        VStack(alignment: .leading, spacing: 8) {
+                            Text("Total Games: \(library.roms.count)")
+                                .font(.caption)
+                                .foregroundColor(.secondary)
+                            Text("Folders: \(library.libraryFolders.count)")
+                                .font(.caption)
+                                .foregroundColor(.secondary)
+                        }
+                        .padding(.horizontal, 12)
+                        .padding(.bottom, 8)
+                    }
+                    .background(.ultraThinMaterial)
+                    .cornerRadius(12)
+                }
+            }
+            .padding()
+        }
+        .navigationTitle("Library")
+    }
+    
+    private func addLibraryFolder() {
+        let panel = NSOpenPanel()
+        panel.canChooseDirectories = true
+        panel.canChooseFiles = false
+        panel.prompt = "Add Folder"
+        if panel.runModal() == .OK, let url = panel.url {
+            library.addLibraryFolder(url: url)
         }
     }
 }
 
-// MARK: - General
-struct GeneralSettingsView: View {
+struct LibraryFolderRow: View {
+    let folder: URL
+    let index: Int
+    let isScanning: Bool
+    let onRescan: () -> Void
+    
     @EnvironmentObject var library: ROMLibrary
-    @ObservedObject var prefs = SystemPreferences.shared
-    @AppStorage("logging_enabled") private var loggingEnabled = true
-
+    @State private var showDeleteConfirmation = false
+    
+    private var gameCount: Int {
+        let folderPath = folder.path
+        return library.roms.filter { $0.path.path.hasPrefix(folderPath) }.count
+    }
+    
     var body: some View {
-        Form {
-            Section("Library Folders") {
-                ForEach(Array(library.libraryFolders.enumerated()), id: \.element) { index, folder in
-                    HStack {
-                        Image(systemName: "folder")
-                            .foregroundColor(.purple)
-                        Text(folder.path)
-                            .lineLimit(1)
-                            .truncationMode(.middle)
-                        Spacer()
-                        Button(role: .destructive) {
-                            library.removeLibraryFolder(at: index)
-                        } label: {
-                            Image(systemName: "trash")
-                        }
-                        .buttonStyle(.plain)
-                        .foregroundColor(.red)
-                    }
-                }
-                
-                Button("Add Folder…") {
-                    let panel = NSOpenPanel()
-                    panel.canChooseDirectories = true
-                    panel.canChooseFiles = false
-                    if panel.runModal() == .OK, let url = panel.url {
-                        library.addLibraryFolder(url: url)
-                    }
-                }
-            }
-
-            Section("Logging") {
-                Toggle("Enable Logging", isOn: $loggingEnabled)
-                if loggingEnabled {
-                    Picker("Log Level", selection: $prefs.coreLogLevel) {
-                        ForEach(CoreLogLevel.allCases) { level in
-                            Text(level.name).tag(level)
-                        }
-                    }
-                }
-            }
+        HStack(spacing: 12) {
+            Image(systemName: "folder.fill")
+                .foregroundColor(.purple)
+                .font(.title3)
             
-            Section("Maintenance") {
-                Button("Rebuild Library from Scratch") {
-                    Task { await library.fullRescan() }
-                }
-                Text("This will clear the current library list and re-index all folders. Local metadata (info.json) and box art will be preserved.")
+            VStack(alignment: .leading, spacing: 2) {
+                Text(folder.path)
+                    .lineLimit(1)
+                    .truncationMode(.middle)
+                    .font(.body)
+                Text("\(gameCount) game\(gameCount == 1 ? "" : "s")")
                     .font(.caption)
                     .foregroundColor(.secondary)
             }
+            
+            Spacer()
+            
+            Button(action: onRescan) {
+                if isScanning {
+                    HStack(spacing: 6) {
+                        ProgressView()
+                            .controlSize(.small)
+                        Text("Scanning...")
+                    }
+                } else {
+                    Label("Rescan", systemImage: "arrow.clockwise")
+                }
+            }
+            .buttonStyle(.bordered)
+            .controlSize(.small)
+            .disabled(isScanning || library.isScanning)
+            .help("Rescan this folder for new games and clean up missing ones")
+            
+            Button(role: .destructive) {
+                showDeleteConfirmation = true
+            } label: {
+                Image(systemName: "trash")
+            }
+            .buttonStyle(.bordered)
+            .tint(.red.opacity(0.8))
+            .controlSize(.small)
+            .confirmationDialog(
+                "Remove Folder",
+                isPresented: $showDeleteConfirmation,
+                titleVisibility: .visible
+            ) {
+                Button("Remove", role: .destructive) {
+                    library.removeLibraryFolder(at: index)
+                }
+                Button("Cancel", role: .cancel) {}
+            } message: {
+                Text("Remove '\(folder.lastPathComponent)' from your library? The ROMs from this folder will be removed from your library.")
+            }
         }
-        .formStyle(.grouped)
-        .navigationTitle("General")
+        .padding(.vertical, 8)
+        .padding(.horizontal, 12)
+        .background(.ultraThinMaterial)
+        .cornerRadius(10)
     }
 }
 
@@ -105,196 +256,507 @@ struct GeneralSettingsView: View {
 struct CoreSettingsView: View {
     @EnvironmentObject var coreManager: CoreManager
 
-    @State private var tab: CoreTab = .installed
-    private enum CoreTab { case installed, catalog }
+    @State private var selectedSystemID: String? = nil
+    @State private var expandedCoreID: String? = nil
+
+    private var selectedSystem: SystemInfo? {
+        if let id = selectedSystemID {
+            return SystemDatabase.system(forID: id)
+        }
+        return nil
+    }
 
     var body: some View {
         VStack(alignment: .leading, spacing: 0) {
-            HStack {
-                Picker("Tab", selection: $tab) {
-                    Text("Installed").tag(CoreTab.installed)
-                    Text("Catalog").tag(CoreTab.catalog)
+            // System selection header - with proper top padding
+            VStack(alignment: .leading, spacing: 12) {
+                HStack(alignment: .center) {
+                    VStack(alignment: .leading, spacing: 4) {
+                        Text("TruchieEmu Settings")
+                            .font(.title2)
+                            .fontWeight(.semibold)
+                        Text("Select System")
+                            .font(.headline)
+                    }
+                    Spacer()
+                    Button("Refresh List") { Task { await coreManager.fetchAvailableCores() } }
+                        .buttonStyle(.bordered)
+                        .controlSize(.small)
+                        .disabled(coreManager.isFetchingCoreList)
                 }
-                .pickerStyle(.segmented)
-                .frame(width: 200)
-
-                Spacer()
-                Button("Refresh List") { Task { await coreManager.fetchAvailableCores() } }
+                
+                if coreManager.isFetchingCoreList {
+                    HStack(spacing: 8) {
+                        ProgressView()
+                            .controlSize(.small)
+                        Text("Fetching core list from buildbot...")
+                            .foregroundColor(.secondary)
+                            .font(.caption)
+                    }
+                }
             }
-            .padding()
+            .padding(.horizontal, 16)
+            .padding(.top, 40)
+            .padding(.bottom, 12)
 
             Divider()
-
-            if tab == .installed {
-                installedSection
-            } else if coreManager.isFetchingCoreList {
-                VStack(spacing: 20) {
-                    ProgressView()
-                    Text("Fetching core list from buildbot...")
+            
+            HStack(spacing: 0) {
+                // System list (middle column)
+                VStack(spacing: 0) {
+                    Text("Systems")
+                        .font(.caption2)
+                        .fontWeight(.semibold)
                         .foregroundColor(.secondary)
+                        .frame(maxWidth: .infinity, alignment: .leading)
+                        .padding(.horizontal, 12)
+                        .padding(.vertical, 8)
+                    
+                    List(selection: $selectedSystemID) {
+                        ForEach(SystemDatabase.systems.sorted(by: { $0.name < $1.name })) { sys in
+                            SystemRowView(system: sys, coreManager: coreManager)
+                                .tag(sys.id)
+                        }
+                    }
+                    .listStyle(.inset)
+                    .frame(minWidth: 220, maxWidth: 300)
                 }
-                .frame(maxWidth: .infinity, maxHeight: .infinity)
-            } else {
-                catalogSection
+                .border(.separator, width: 0.5)
+                
+                Divider()
+                
+                // Cores list (right pane)
+                VStack(spacing: 0) {
+                    if let system = selectedSystem {
+                        Text(system.name)
+                            .font(.caption2)
+                            .fontWeight(.semibold)
+                            .foregroundColor(.secondary)
+                            .frame(maxWidth: .infinity, alignment: .leading)
+                            .padding(.horizontal, 12)
+                            .padding(.vertical, 8)
+                        
+                        SystemCoresView(system: system, coreManager: coreManager)
+                    } else {
+                        VStack(spacing: 12) {
+                            Image(systemName: "gamecontroller")
+                                .font(.system(size: 40))
+                                .foregroundColor(.secondary)
+                            Text("Select a system to see available cores")
+                                .foregroundColor(.secondary)
+                                .multilineTextAlignment(.center)
+                        }
+                        .frame(maxWidth: .infinity, maxHeight: .infinity)
+                    }
+                }
+                .frame(maxWidth: .infinity)
             }
+            .frame(maxHeight: .infinity)
         }
+        .clipped()
         .onAppear {
             if coreManager.availableCores.isEmpty {
                 Task { await coreManager.fetchAvailableCores() }
             }
         }
     }
-
-    private var installedSection: some View {
-        Group {
-            if coreManager.installedCores.isEmpty {
-                VStack(spacing: 12) {
-                    Image(systemName: "cpu").font(.system(size: 48)).foregroundColor(.secondary)
-                    Text("No cores installed yet.\nCores are downloaded when you launch a game.")
-                        .foregroundColor(.secondary)
-                        .multilineTextAlignment(.center)
-                }
-                .frame(maxWidth: .infinity, maxHeight: .infinity)
-            } else {
-                List {
-                    ForEach(coreManager.installedCores) { core in
-                        CoreRowView(core: core)
-                    }
-                }
-                .listStyle(.inset(alternatesRowBackgrounds: true))
-            }
-        }
-    }
-
-    private var catalogSection: some View {
-        ScrollView {
-            VStack(alignment: .leading, spacing: 24) {
-                ForEach(SystemDatabase.systems.sorted(by: { $0.name < $1.name })) { sys in
-                    VStack(alignment: .leading, spacing: 8) {
-                        HStack(spacing: 8) {
-                            if let img = sys.emuImage(size: 132) {
-                                Image(nsImage: img)
-                                    .resizable()
-                                    .aspectRatio(contentMode: .fit)
-                                    .frame(width: 24, height: 24)
-                            } else {
-                                Image(systemName: sys.iconName)
-                                    .foregroundColor(.secondary)
-                            }
-                            Text(sys.name).font(.headline)
-                        }
-                        
-                        let coresForSys = coreManager.availableCores.filter { $0.systemIDs.contains(sys.id) || sys.defaultCoreID == $0.coreID }
-                        
-                        if coresForSys.isEmpty {
-                            Text("No cores available for this system in the buildbot.")
-                                .font(.caption).foregroundColor(.secondary).padding(.leading, 28)
-                        } else {
-                            ForEach(coresForSys) { core in
-                                CatalogCoreRow(core: core)
-                                    .padding(.leading, 28)
-                            }
-                        }
-                    }
-                    .padding(.horizontal)
-                }
-            }
-            .padding(.vertical)
-        }
-    }
 }
 
-struct CatalogCoreRow: View {
-    @EnvironmentObject var coreManager: CoreManager
-    let core: RemoteCoreInfo
+struct SystemRowView: View {
+    let system: SystemInfo
+    @ObservedObject var coreManager: CoreManager
+    
+    var installedCount: Int {
+        coreManager.installedCores.filter { core in
+            core.systemIDs.contains(system.id) || system.defaultCoreID == core.id
+        }.count
+    }
+    
+    var hasInstalled: Bool { installedCount > 0 }
     
     var body: some View {
-        HStack {
-            VStack(alignment: .leading) {
-                Text(core.displayName).font(.body)
-                Text(core.coreID).font(.caption2).foregroundColor(.secondary)
+        HStack(spacing: 10) {
+            // System icon/image in uniform 32x32 container
+            ZStack {
+                RoundedRectangle(cornerRadius: 6)
+                    .fill(Color.secondary.opacity(0.1))
+                
+                if let img = system.emuImage(size: 132) {
+                    Image(nsImage: img)
+                        .resizable()
+                        .aspectRatio(contentMode: .fit)
+                        .frame(width: 24, height: 24)
+                } else {
+                    Image(systemName: system.iconName)
+                        .foregroundColor(.secondary)
+                        .font(.system(size: 16))
+                }
             }
+            .frame(width: 32, height: 32)
+            .fixedSize()
+            
+            Text(system.name)
+                .font(.body)
+                .lineLimit(1)
+                .minimumScaleFactor(0.7)
+                .fixedSize(horizontal: true, vertical: false)
+            
             Spacer()
             
-            let installed = coreManager.installedCores.first(where: { $0.id == core.coreID })
-            
-            if let inst = installed, inst.isInstalled {
-                Image(systemName: "checkmark.circle.fill").foregroundColor(.green)
-            } else if let inst = installed, inst.isDownloading {
-                ProgressView().controlSize(.small)
-            } else {
-                Button("Download") {
-                    coreManager.requestCoreDownload(for: core.coreID)
-                }
-                .buttonStyle(.bordered)
-                .controlSize(.small)
+            if hasInstalled {
+                Image(systemName: "checkmark.circle.fill")
+                    .foregroundColor(.green)
+                    .font(.caption)
+                    .frame(width: 16)
+                    .fixedSize()
             }
         }
-        .padding(.vertical, 4)
+        .padding(.vertical, 6)
+        .padding(.horizontal, 8)
+        .listRowInsets(EdgeInsets(top: 2, leading: 8, bottom: 2, trailing: 8))
+        .listRowSeparator(.hidden)
     }
 }
 
-struct CoreRowView: View {
-    @EnvironmentObject var coreManager: CoreManager
-    let core: LibretroCore
-    @State private var showOptions = false
+struct SystemCoresView: View {
+    let system: SystemInfo
+    @ObservedObject var coreManager: CoreManager
+    @State private var expandedCoreID: String? = nil
+    @State private var showOptionsFor: String? = nil
+
+    var coresForSystem: [RemoteCoreInfo] {
+        coreManager.availableCores.filter { remoteCore in
+            remoteCore.systemIDs.contains(system.id) || system.defaultCoreID == remoteCore.coreID
+        }
+    }
+    
+    var installedCoresForSystem: [LibretroCore] {
+        coreManager.installedCores.filter { core in
+            core.systemIDs.contains(system.id) || system.defaultCoreID == core.id
+        }
+    }
 
     var body: some View {
-        VStack(alignment: .leading, spacing: 8) {
-            HStack {
-                VStack(alignment: .leading) {
-                    Text(core.displayName).font(.body.weight(.medium))
-                    Text(core.id).font(.caption2).foregroundColor(.secondary)
+        ScrollView {
+            LazyVStack(spacing: 8) {
+                if installedCoresForSystem.isEmpty && coresForSystem.isEmpty {
+                    VStack(spacing: 12) {
+                        Image(systemName: "cpu")
+                            .font(.system(size: 32))
+                            .foregroundColor(.secondary)
+                        Text("No cores available for this system.")
+                            .foregroundColor(.secondary)
+                            .multilineTextAlignment(.center)
+                    }
+                    .frame(maxWidth: .infinity)
+                    .padding(.vertical, 24)
+                } else {
+                    // Show installed cores first
+                    if !installedCoresForSystem.isEmpty {
+                        InstalledCoresSection(
+                            cores: installedCoresForSystem,
+                            expandedCoreID: $expandedCoreID,
+                            showOptionsFor: $showOptionsFor,
+                            coreManager: coreManager
+                        )
+                    }
+                    
+                    // Show available cores for download
+                    if !coresForSystem.isEmpty {
+                        let availableForDownload = coresForSystem.filter { remoteCore in
+                            !coreManager.isInstalled(coreID: remoteCore.coreID)
+                        }
+                        
+                        if !availableForDownload.isEmpty {
+                            DownloadableCoresSection(
+                                cores: availableForDownload,
+                                coreManager: coreManager
+                            )
+                        }
+                    }
                 }
-                Spacer()
-                
-                Button {
-                    showOptions = true
-                } label: {
-                    Label("Options", systemImage: "slider.vertical.3")
+            }
+            .padding(.horizontal, 12)
+            .padding(.bottom, 16)
+        }
+        .frame(maxWidth: .infinity)
+        .sheet(isPresented: Binding(
+            get: { showOptionsFor != nil },
+            set: { if !$0 { showOptionsFor = nil } }
+        )) {
+            if let coreID = showOptionsFor {
+                CoreOptionsView(coreID: coreID)
+            }
+        }
+    }
+}
+
+struct InstalledCoresSection: View {
+    let cores: [LibretroCore]
+    @Binding var expandedCoreID: String?
+    @Binding var showOptionsFor: String?
+    @ObservedObject var coreManager: CoreManager
+    
+    var body: some View {
+        VStack(alignment: .leading, spacing: 8) {
+            Text("INSTALLED")
+                .font(.caption2)
+                .fontWeight(.semibold)
+                .foregroundColor(.secondary)
+                .padding(.horizontal, 4)
+                .padding(.bottom, 4)
+            
+            VStack(spacing: 8) {
+                ForEach(cores) { core in
+                    InstalledCoreRowView(
+                        core: core,
+                        isExpanded: expandedCoreID == core.id,
+                        onToggle: {
+                            withAnimation {
+                                if expandedCoreID == core.id {
+                                    expandedCoreID = nil
+                                } else {
+                                    expandedCoreID = core.id
+                                }
+                            }
+                        },
+                        onShowOptions: {
+                            showOptionsFor = core.id
+                        },
+                        onDelete: {
+                            coreManager.deleteCore(core)
+                        },
+                        coreManager: coreManager
+                    )
+                }
+            }
+        }
+        .padding(.top, 8)
+    }
+}
+
+struct DownloadableCoresSection: View {
+    let cores: [RemoteCoreInfo]
+    @ObservedObject var coreManager: CoreManager
+    
+    var body: some View {
+        VStack(alignment: .leading, spacing: 8) {
+            Text("AVAILABLE FOR DOWNLOAD")
+                .font(.caption2)
+                .fontWeight(.semibold)
+                .foregroundColor(.secondary)
+                .padding(.horizontal, 4)
+                .padding(.bottom, 4)
+            
+            VStack(spacing: 8) {
+                ForEach(cores) { remoteCore in
+                    DownloadableCoreRowView(
+                        remoteCore: remoteCore,
+                        coreManager: coreManager
+                    )
+                }
+            }
+        }
+        .padding(.top, 8)
+    }
+}
+
+struct InstalledCoreRowView: View {
+    let core: LibretroCore
+    let isExpanded: Bool
+    let onToggle: () -> Void
+    let onShowOptions: () -> Void
+    let onDelete: () -> Void
+    let coreManager: CoreManager
+    
+    @State private var showDeleteConfirmation = false
+    
+    var body: some View {
+        VStack(spacing: 0) {
+            Button(action: onToggle) {
+                HStack(spacing: 12) {
+                    // Icon in fixed container
+                    Image(systemName: "cpu")
+                        .foregroundColor(.purple)
+                        .font(.system(size: 16, weight: .medium))
+                        .frame(width: 24, height: 24)
+                        .fixedSize()
+                    
+                    // VStack centered vertically with button
+                    VStack(alignment: .leading, spacing: 2) {
+                        Text(core.displayName)
+                            .font(.body)
+                            .fontWeight(.medium)
+                        Text(core.id)
+                            .font(.caption)
+                            .foregroundColor(.secondary)
+                            .fontDesign(.monospaced)
+                    }
+                    
+                    Spacer()
+                    
+                    // Status indicator
+                    VStack(alignment: .trailing, spacing: 2) {
+                        HStack(spacing: 4) {
+                            Image(systemName: "checkmark.circle.fill")
+                                .foregroundColor(.green)
+                            Text("Installed")
+                                .font(.caption)
+                                .foregroundColor(.secondary)
+                        }
+                        if let version = core.activeVersionTag {
+                            Text("v\(version)")
+                                .font(.caption2)
+                                .foregroundColor(.secondary.opacity(0.7))
+                        }
+                    }
+                    
+                    // Options button
+                    Button(action: onShowOptions) {
+                        Image(systemName: "slider.vertical.3")
+                    }
+                    .buttonStyle(.plain)
+                    .symbolVariant(.circle)
+                    .help("Configure core options")
+                    
+                    // Delete button
+                    Button(role: .destructive) {
+                        showDeleteConfirmation = true
+                    } label: {
+                        Image(systemName: "trash")
+                    }
+                    .buttonStyle(.plain)
+                    .foregroundColor(.red.opacity(0.6))
+                    .symbolVariant(.circle)
+                    .confirmationDialog(
+                        "Delete Core",
+                        isPresented: $showDeleteConfirmation,
+                        titleVisibility: .visible
+                    ) {
+                        Button("Delete", role: .destructive) { onDelete() }
+                        Button("Cancel", role: .cancel) {}
+                    } message: {
+                        Text("Delete '\(core.displayName)' and all its versions? This will free up disk space.")
+                    }
+                    
+                    Image(systemName: isExpanded ? "chevron.down" : "chevron.right")
+                        .foregroundColor(.secondary)
+                        .font(.caption)
+                        .frame(width: 16)
+                }
+                .frame(minHeight: 48)
+                .padding(.horizontal, 12)
+                .padding(.vertical, 10)
+                .contentShape(Rectangle())
+            }
+            .buttonStyle(.plain)
+            
+            if isExpanded {
+                Divider()
+                VStack(alignment: .leading, spacing: 8) {
+                    HStack {
+                        Text("Installed Versions:")
+                            .font(.caption)
+                            .foregroundColor(.secondary)
+                        
+                        if !core.installedVersions.isEmpty {
+                            Picker("Version", selection: Binding(
+                                get: { core.activeVersionTag ?? core.installedVersions.last?.tag ?? "" },
+                                set: { tag in
+                                    coreManager.setActiveVersion(coreID: core.id, tag: tag)
+                                }
+                            )) {
+                                ForEach(core.installedVersions.reversed()) { v in
+                                    Text(v.tag).tag(v.tag)
+                                }
+                            }
+                            .pickerStyle(.menu)
+                            .labelsHidden()
+                        }
+                    }
+                    
+                    let sysNames = core.systemIDs.compactMap { SystemDatabase.system(forID: $0)?.name }
+                    if !sysNames.isEmpty {
+                        ScrollView(.horizontal, showsIndicators: false) {
+                            HStack(spacing: 4) {
+                                ForEach(sysNames, id: \.self) { name in
+                                    Text(name)
+                                        .font(.caption2)
+                                        .padding(.horizontal, 6)
+                                        .padding(.vertical, 2)
+                                        .background(.secondary.opacity(0.2))
+                                        .cornerRadius(4)
+                                }
+                            }
+                        }
+                    }
+                    
+                    Text("\(core.installedVersions.count) version\(core.installedVersions.count == 1 ? "" : "s") installed")
+                        .font(.caption)
+                        .foregroundColor(.secondary)
+                }
+                .padding(.horizontal, 12)
+                .padding(.vertical, 8)
+                .background(.secondary.opacity(0.05))
+            }
+        }
+        .background(.ultraThinMaterial)
+        .cornerRadius(8)
+    }
+}
+
+struct DownloadableCoreRowView: View {
+    let remoteCore: RemoteCoreInfo
+    @ObservedObject var coreManager: CoreManager
+    
+    var body: some View {
+        HStack(spacing: 12) {
+            // Icon in fixed container
+            Image(systemName: "cpu.badge.plus")
+                .foregroundColor(.orange)
+                .font(.system(size: 16, weight: .medium))
+                .frame(width: 24, height: 24)
+                .fixedSize()
+            
+            // VStack centered vertically relative to button
+            VStack(alignment: .leading, spacing: 2) {
+                Text(remoteCore.displayName)
+                    .font(.body)
+                Text(remoteCore.coreID)
+                    .font(.caption)
+                    .foregroundColor(.secondary)
+                    .fontDesign(.monospaced)
+            }
+            
+            Spacer()
+            
+            let installed = coreManager.installedCores.first(where: { $0.id == remoteCore.coreID })
+            
+            if let inst = installed, inst.isDownloading {
+                VStack(alignment: .trailing, spacing: 4) {
+                    ProgressView(value: Double(inst.downloadProgress) / 100.0)
+                        .frame(width: 100)
+                        .tint(.orange)
+                    Text("Downloading...")
+                        .font(.caption2)
+                        .foregroundColor(.secondary)
+                }
+            } else if let inst = installed, inst.isInstalled {
+                Image(systemName: "checkmark.circle.fill")
+                    .foregroundColor(.green)
+            } else {
+                Button("Download") {
+                    coreManager.requestCoreDownload(for: remoteCore.coreID)
                 }
                 .buttonStyle(.bordered)
                 .controlSize(.small)
-                .help("Configure core options")
-                
-                Button(role: .destructive) {
-                    coreManager.deleteCore(core)
-                } label: {
-                    Image(systemName: "trash")
-                }
-                .buttonStyle(.plain)
-                .foregroundColor(.red)
-                .help("Delete core and all versions")
-            }
-
-            HStack {
-                Picker("Version", selection: Binding(
-                    get: { core.activeVersionTag ?? core.installedVersions.last?.tag ?? "" },
-                    set: { coreManager.setActiveVersion(coreID: core.id, tag: $0) }
-                )) {
-                    ForEach(core.installedVersions.reversed()) { v in
-                        Text(v.tag).tag(v.tag)
-                    }
-                }
-                .pickerStyle(.menu)
-                .frame(width: 180)
-                
-                Spacer()
-                
-                Text("\(core.installedVersions.count) version\(core.installedVersions.count == 1 ? "" : "s")")
-                    .font(.caption)
-                    .foregroundColor(.secondary)
-            }
-
-            let sysNames = core.systemIDs.compactMap { SystemDatabase.system(forID: $0)?.name }.joined(separator: " · ")
-            if !sysNames.isEmpty {
-                Text(sysNames).font(.caption).foregroundColor(.secondary)
             }
         }
-        .padding(.vertical, 8)
-        .sheet(isPresented: $showOptions) {
-            CoreOptionsView(coreID: core.id)
-        }
+        .frame(minHeight: 48)
+        .padding(.horizontal, 12)
+        .padding(.vertical, 10)
+        .background(.ultraThinMaterial)
+        .cornerRadius(8)
     }
 }
 
@@ -327,12 +789,12 @@ struct ControllerSettingsView: View {
                     Text("Global / Default").tag("default")
                     Divider()
                     ForEach(SystemDatabase.systems) { sys in
-                        HStack {
+                        HStack(spacing: 4) {
                             if let img = sys.emuImage(size: 132) {
                                 Image(nsImage: img)
                                     .resizable()
                                     .aspectRatio(contentMode: .fit)
-                                    .frame(width: 12, height: 12)
+                                    .frame(width: 10, height: 10)
                             }
                             Text(sys.name)
                         }.tag(sys.id)
@@ -346,7 +808,7 @@ struct ControllerSettingsView: View {
 
             if let player = controllerService.connectedControllers.first(where: { $0.playerIndex == selectedPlayer }) {
                 ControllerMappingDetail(player: player, systemID: selectedSystemID)
-                    .id("\(selectedPlayer)-\(selectedSystemID)") // Reset view when system/player changes
+                    .id("\(selectedPlayer)-\(selectedSystemID)")
             } else {
                 VStack(spacing: 12) {
                     Image(systemName: "gamecontroller")
@@ -395,7 +857,6 @@ struct ControllerMappingDetail: View {
 
             ScrollView {
                 VStack(spacing: 24) {
-                    // Premium visuals
                     HStack(spacing: 32) {
                         ControllerIconView(systemID: systemID)
                         
@@ -443,7 +904,6 @@ struct ControllerMappingDetail: View {
     private func listenForButton(_ btn: RetroButton) {
         guard let gc = player.gcController else { return }
         gc.extendedGamepad?.valueChangedHandler = { pad, element in
-            // If it's a complex element (DPad or Stick), we want to find the specific direction button
             if let dpad = element as? GCControllerDirectionPad {
                 if dpad.up.isPressed { save(dpad.up) }
                 else if dpad.down.isPressed { save(dpad.down) }
@@ -471,7 +931,6 @@ struct ControllerMappingDetail: View {
         controllerService.updateMapping(for: mapping.vendorName, systemID: systemID, mapping: mapping)
     }
 
-    // Real-time stick states for visualizers
     @State private var lStickState: (x: Double, y: Double) = (0, 0)
     @State private var rStickState: (x: Double, y: Double) = (0, 0)
 
@@ -499,11 +958,9 @@ struct StickTesterView: View {
                 Circle().stroke(.secondary.opacity(0.3), lineWidth: 1)
                     .frame(width: 100, height: 100)
                 
-                // Crosshairs
                 Rectangle().fill(.secondary.opacity(0.1)).frame(width: 100, height: 1)
                 Rectangle().fill(.secondary.opacity(0.1)).frame(width: 1, height: 100)
                 
-                // Active Dot
                 Circle().fill(LinearGradient(colors: [.purple, .blue], startPoint: .top, endPoint: .bottom))
                     .frame(width: 14, height: 14)
                     .offset(x: CGFloat(x * 43), y: CGFloat(y * -43))
@@ -548,7 +1005,6 @@ struct ControllerIconView: View {
         let name = id.lowercased()
         let bundle = Bundle.main
         
-        // Try ControllerIcons folder in bundle
         if let url = bundle.url(forResource: name, withExtension: "ico", subdirectory: "ControllerIcons") {
             return NSImage(contentsOf: url)
         }
@@ -556,7 +1012,6 @@ struct ControllerIconView: View {
             return NSImage(contentsOf: url)
         }
         
-        // Fallback to EmulatorIcons
         if let sys = SystemDatabase.systems.first(where: { $0.id == id }) {
             return sys.emuImage(size: 600)
         }
@@ -568,26 +1023,22 @@ struct ControllerIconView: View {
 struct ControllerDrawingView: View {
     var body: some View {
         ZStack {
-            // Main Body
             Capsule()
                 .fill(.quaternary.opacity(0.1))
                 .frame(width: 200, height: 120)
                 .overlay(Capsule().stroke(.secondary.opacity(0.2), lineWidth: 1))
             
-            // Handles
             HStack(spacing: 120) {
                 Circle().fill(.quaternary.opacity(0.05)).frame(width: 60)
                 Circle().fill(.quaternary.opacity(0.05)).frame(width: 60)
             }
             
-            // Sticks
             HStack(spacing: 60) {
                 Circle().fill(.secondary.opacity(0.2)).frame(width: 30)
                 Circle().fill(.secondary.opacity(0.2)).frame(width: 30)
             }
             .offset(y: 20)
             
-            // D-Pad & Buttons
             HStack(spacing: 100) {
                 Image(systemName: "plus.circle.fill").font(.title2).foregroundColor(.secondary.opacity(0.3))
                 VStack(spacing: 5) {
@@ -620,12 +1071,12 @@ struct KeyboardSettingsView: View {
                     Text("Global / Default").tag("default")
                     Divider()
                     ForEach(SystemDatabase.systems) { sys in
-                        HStack {
+                        HStack(spacing: 4) {
                             if let img = sys.emuImage(size: 132) {
                                 Image(nsImage: img)
                                     .resizable()
                                     .aspectRatio(contentMode: .fit)
-                                    .frame(width: 16, height: 16)
+                                    .frame(width: 10, height: 10)
                             }
                             Text(sys.name)
                         }.tag(sys.id)
@@ -645,7 +1096,6 @@ struct KeyboardSettingsView: View {
             Divider()
 
             ScrollView {
-                // Show relevant buttons for the selected system
                 let buttons = relevantButtons(for: selectedSystemID)
                 
                 LazyVGrid(columns: [GridItem(.flexible()), GridItem(.flexible())], spacing: 12) {

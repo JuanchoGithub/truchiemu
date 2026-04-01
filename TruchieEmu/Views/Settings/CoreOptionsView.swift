@@ -34,7 +34,7 @@ struct CoreOptionsView: View {
                     .frame(maxWidth: .infinity, maxHeight: .infinity)
                 } else {
                     ScrollView {
-                        VStack(alignment: .leading, spacing: 24) {
+                        VStack(alignment: .leading, spacing: 32) {
                             ForEach(viewModel.sortedKeys, id: \.self) { category in
                                 VStack(alignment: .leading, spacing: 12) {
                                     Text(viewModel.categoryDisplayName(for: category))
@@ -224,34 +224,52 @@ struct CoreOptionRow: View {
     }
 
     var body: some View {
-        guard let option = viewModel.options[key] else { return AnyView(EmptyView()) }
-        return AnyView(
-            VStack(alignment: .leading, spacing: 6) {
-                VStack(alignment: .leading, spacing: 4) {
-                    Text(option.description).font(.body)
-                    if !option.info.isEmpty {
-                        Text(option.info).font(.caption).foregroundColor(.secondary).lineLimit(3)
-                    }
-                }.frame(maxWidth: .infinity, alignment: .leading)
+        VStack(alignment: .leading, spacing: 6) {
+            if let option = viewModel.options[key] {
+            VStack(alignment: .leading, spacing: 4) {
+                Text(option.description).font(.body)
+                if !option.info.isEmpty {
+                    Text(option.info).font(.caption).foregroundColor(.secondary).lineLimit(3)
+                }
+            }
+            .frame(maxWidth: .infinity, alignment: .leading)
 
-                if option.values.count > 1 {
-                    Picker("", selection: $selectedValue) {
-                        ForEach(option.values) { v in Text(v.label).tag(v.value) }
-                    }.pickerStyle(.menu).labelsHidden()
-                        .onChange(of: selectedValue) { newValue in viewModel.updateValue(newValue, for: key) }
-                } else {
-                    Text(option.currentValue).font(.caption).foregroundColor(.secondary)
-                        .padding(.horizontal, 8).padding(.vertical, 4).background(.ultraThinMaterial).cornerRadius(8)
+            if option.values.count > 1 {
+                Picker("", selection: $selectedValue) {
+                    ForEach(option.values) { v in Text(v.label).tag(v.value) }
                 }
-                if option.isModified {
-                    HStack {
-                        Text("Modified").font(.caption2).foregroundColor(.orange)
-                        Spacer()
-                        Button("Reset") { selectedValue = option.defaultValue; viewModel.updateValue(option.defaultValue, for: key) }
-                            .buttonStyle(.plain).foregroundColor(.blue).font(.caption2)
+                .pickerStyle(.menu)
+                .labelsHidden()
+                .onChange(of: selectedValue) { newValue in
+                    viewModel.updateValue(newValue, for: key)
+                }
+            } else {
+                Text(option.currentValue)
+                    .font(.caption)
+                    .foregroundColor(.secondary)
+                    .padding(.horizontal, 8)
+                    .padding(.vertical, 4)
+                    .background(.ultraThinMaterial)
+                    .cornerRadius(8)
+            }
+
+            if option.isModified {
+                HStack {
+                    Text("Modified")
+                        .font(.caption2)
+                        .foregroundColor(.orange)
+                    Spacer()
+                    Button("Reset") {
+                        selectedValue = option.defaultValue
+                        viewModel.updateValue(option.defaultValue, for: key)
                     }
+                    .buttonStyle(.link)
+                    .foregroundColor(.blue)
+                    .font(.caption2)
                 }
-            }.padding(.vertical, 4)
-        )
+            }
+            }
+        }
+        .padding(.vertical, 4)
     }
 }
