@@ -17,19 +17,44 @@ struct MouseDownButtonAction<Label: View>: NSViewRepresentable {
     let action: () -> Void
     let label: () -> Label
     
-    func makeNSView(context: Context) -> NSButton {
+    func makeNSView(context: Context) -> NSView {
+        let container = NSView()
+        
+        // Create the clickable button area
         let button = MouseDownButton()
         button.bezelStyle = .regularSquare
         button.isBordered = false
         button.target = context.coordinator
         button.action = #selector(Coordinator.performAction)
-        button.setContentHuggingPriority(.defaultLow, for: .horizontal)
-        button.setContentHuggingPriority(.defaultLow, for: .vertical)
-        return button
+        button.translatesAutoresizingMaskIntoConstraints = false
+        
+        // Create hosting view for SwiftUI label
+        let hostingView = NSHostingView(rootView: label())
+        hostingView.translatesAutoresizingMaskIntoConstraints = false
+        
+        container.addSubview(button)
+        container.addSubview(hostingView)
+        
+        NSLayoutConstraint.activate([
+            button.leadingAnchor.constraint(equalTo: container.leadingAnchor),
+            button.trailingAnchor.constraint(equalTo: container.trailingAnchor),
+            button.topAnchor.constraint(equalTo: container.topAnchor),
+            button.bottomAnchor.constraint(equalTo: container.bottomAnchor),
+            hostingView.centerXAnchor.constraint(equalTo: container.centerXAnchor),
+            hostingView.centerYAnchor.constraint(equalTo: container.centerYAnchor)
+        ])
+        
+        container.setContentHuggingPriority(.defaultHigh, for: .horizontal)
+        container.setContentHuggingPriority(.defaultHigh, for: .vertical)
+        
+        return container
     }
     
-    func updateNSView(_ nsView: NSButton, context: Context) {
-        // Button action is set in makeNSView
+    func updateNSView(_ nsView: NSView, context: Context) {
+        // Update the hosting view content if needed
+        if let hostingView = nsView.subviews.first(where: { $0 is NSHostingView<Label> }) as? NSHostingView<Label> {
+            hostingView.rootView = label()
+        }
     }
     
     func makeCoordinator() -> Coordinator {

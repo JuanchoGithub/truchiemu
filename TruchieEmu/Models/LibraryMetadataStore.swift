@@ -26,6 +26,8 @@ struct ROMMetadataRecord: Codable, Hashable {
     var titleScreenPath: String?
     /// Reserved: snap / screenshot.
     var screenshotPath: String?
+    /// Custom core ID selected by the user for this ROM.
+    var customCoreID: String?
 
     init() {}
 
@@ -151,5 +153,29 @@ final class LibraryMetadataStore: ObservableObject {
     func migrateLegacySidecarsIfStoreEmpty(roms: [ROM]) {
         guard data.entries.isEmpty else { return }
         importLegacySidecarJSON(roms: roms)
+    }
+    
+    // MARK: - Custom Core Management
+    
+    /// Get the custom core ID for a ROM, if one was set.
+    func customCore(for rom: ROM) -> String? {
+        data.entries[Self.pathKey(for: rom)]?.customCoreID
+    }
+    
+    /// Set a custom core ID for a ROM.
+    func setCustomCore(_ coreID: String, for rom: ROM) {
+        let key = Self.pathKey(for: rom)
+        if data.entries[key] == nil {
+            data.entries[key] = ROMMetadataRecord(from: rom)
+        }
+        data.entries[key]?.customCoreID = coreID
+        saveToDisk()
+    }
+    
+    /// Remove custom core assignment for a ROM.
+    func clearCustomCore(for rom: ROM) {
+        let key = Self.pathKey(for: rom)
+        data.entries[key]?.customCoreID = nil
+        saveToDisk()
     }
 }
