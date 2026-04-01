@@ -7,11 +7,11 @@ import Foundation
 // This file holds the Swift-side helper that calls into it.
 
 class LibretroBridgeSwift {
-    static func launch(dylibPath: String, romPath: String,
+    static func launch(dylibPath: String, romPath: String, coreID: String,
                        videoCallback: @escaping (UnsafeRawPointer?, Int, Int, Int, Int) -> Void) {
-        LibretroBridge.launch(withDylibPath: dylibPath, romPath: romPath) { data, w, h, pitch, format in
+        LibretroBridge.launch(withDylibPath: dylibPath, romPath: romPath, videoCallback: { data, w, h, pitch, format in
             videoCallback(data, Int(w), Int(h), Int(pitch), Int(format))
-        }
+        }, coreID: coreID)
     }
 
     static func setKeyState(retroID: Int, pressed: Bool) {
@@ -24,5 +24,30 @@ class LibretroBridgeSwift {
 
     static func saveState() {
         LibretroBridge.saveState()
+    }
+
+    // MARK: - Core Options Accessors
+    static func getOptionValue(forKey key: String) -> String? {
+        LibretroBridge.getOptionValue(forKey: key)
+    }
+
+    static func setOptionValue(_ value: String, forKey key: String) {
+        LibretroBridge.setOptionValue(value, forKey: key)
+    }
+
+    static func resetOptionToDefault(forKey key: String) {
+        LibretroBridge.resetOptionToDefault(forKey: key)
+    }
+
+    static func resetAllOptionsToDefaults() {
+        LibretroBridge.resetAllOptionsToDefaults()
+    }
+
+    static func getOptionsDictionary() -> [String: Any]? {
+        LibretroBridge.getOptionsDictionary() as? [String: Any]
+    }
+
+    static func getCategoriesDictionary() -> [String: Any]? {
+        LibretroBridge.getCategoriesDictionary() as? [String: Any]
     }
 }

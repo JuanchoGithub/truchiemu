@@ -30,6 +30,31 @@
 #define RETRO_ENVIRONMENT_GET_CORE_OPTIONS_VERSION 45
 #define RETRO_ENVIRONMENT_GET_FULLPATH_CONFIG 35
 
+/* Core options V1 */
+#define RETRO_ENVIRONMENT_SET_CORE_OPTIONS             53
+#define RETRO_ENVIRONMENT_SET_CORE_OPTIONS_INTL        54
+#define RETRO_ENVIRONMENT_SET_CORE_OPTIONS_DISPLAYED   57  /* Legacy, core can show/hide options */
+#define RETRO_ENVIRONMENT_GET_CORE_OPTIONS_UPDATE      67
+
+/* Core options V2 — the modern standard */
+#define RETRO_ENVIRONMENT_SET_CORE_OPTIONS_V2          66
+#define RETRO_ENVIRONMENT_SET_CORE_OPTIONS_V2_INTL     68
+#define RETRO_ENVIRONMENT_SET_CORE_OPTIONS_UPDATE_DISPLAYED 71
+
+/* Subsystem support */
+#define RETRO_ENVIRONMENT_SET_SUBSYSTEM_INFO           34
+
+/* Fast-forward / performance */
+#define RETRO_ENVIRONMENT_SET_FRAME_TIME_CALLBACK      41
+#define RETRO_ENVIRONMENT_GET_FASTFORWARDING           56
+#define RETRO_ENVIRONMENT_GET_TARGET_REFRESH_RATE      63
+
+/* Achievements */
+#define RETRO_ENVIRONMENT_SET_SUPPORT_ACHIEVEMENTS     44
+
+/* HW render context negotiation */
+#define RETRO_ENVIRONMENT_SET_HW_RENDER_CONTEXT_NEGOTIATION_INTERFACE 40
+
 #define RETRO_DEVICE_JOYPAD 1
 #define RETRO_DEVICE_ANALOG 5
 
@@ -179,3 +204,70 @@ struct retro_hw_render_callback {
 };
 
 #define RETRO_HW_FRAME_BUFFER_VALID ((void*)-1)
+
+/* ========================================================================
+ * Core Options V1 (legacy but still used by older cores)
+ * ======================================================================== */
+
+struct retro_core_option_value {
+    const char *value;
+    const char *label;  /* label in UI; NULL → use value as label */
+};
+
+struct retro_core_option_definition {
+    const char *key;                        /* Unique key, e.g. "genesis_plus_gx_blargg"          */
+    const char *desc;                       /* Short human-readable name                          */
+    const char *info;                       /* Detailed description                               */
+    const char *info_cat;                   /* Category key (usually NULL for V1)                 */
+    struct retro_core_option_value *values; /* NULL-terminated array of possible values           */
+    const char *default_value;              /* Default value; NULL or "disabled"                  */
+};
+
+struct retro_core_options {
+    struct retro_core_option_definition *definitions;
+};
+
+struct retro_core_options_intl {
+    struct retro_core_options *us;          /* US English (fallback)                              */
+    struct retro_core_options *local;       /* Local language (can be NULL)                       */
+};
+
+/* ========================================================================
+ * Core Options V2 (the standard — almost all maintained cores use this)
+ * ======================================================================== */
+
+struct retro_core_option_v2_category {
+    const char *key;                        /* Unique category key, e.g. "hacks", "video"         */
+    const char *desc;                       /* Display name, e.g. "Speed Hacks"                   */
+    const char *info;                       /* Optional description                                */
+};
+
+struct retro_core_option_v2_definition {
+    const char *key;                        /* Unique option key                                  */
+    const char *desc;                       /* Short name (used if desc_categorized is NULL)     */
+    const char *desc_categorized;           /* Short name shown when in a category (can be NULL)  */
+    const char *info;                       /* Detailed description                               */
+    const char *info_categorized;           /* Description shown in category (can be NULL)        */
+    const char *category_key;               /* Category this option belongs to (can be NULL)      */
+    struct retro_core_option_value *values; /* NULL-terminated array of possible values           */
+    const char *default_value;              /* Default value (must be one of the values[])        */
+};
+
+struct retro_core_options_v2 {
+    struct retro_core_option_v2_category *categories;    /* NULL-terminated array (can be NULL)  */
+    struct retro_core_option_v2_definition *definitions; /* NULL-terminated array                */
+};
+
+struct retro_core_options_v2_intl {
+    struct retro_core_options_v2 *us;       /* US English (fallback)                              */
+    struct retro_core_options_v2 *local;    /* Local language (can be NULL)                       */
+};
+
+/* ========================================================================
+ * Core Options Displayed (V2) — core can selectively hide options
+ * ======================================================================== */
+
+struct retro_core_options_display {
+    const char *key;                        /* Option key to show/hide                            */
+    bool visible;                           /* true = show, false = hide                          */
+};

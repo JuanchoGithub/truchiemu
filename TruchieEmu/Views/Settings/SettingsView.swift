@@ -223,6 +223,7 @@ struct CatalogCoreRow: View {
 struct CoreRowView: View {
     @EnvironmentObject var coreManager: CoreManager
     let core: LibretroCore
+    @State private var showOptions = false
 
     var body: some View {
         VStack(alignment: .leading, spacing: 8) {
@@ -232,6 +233,15 @@ struct CoreRowView: View {
                     Text(core.id).font(.caption2).foregroundColor(.secondary)
                 }
                 Spacer()
+                
+                Button {
+                    showOptions = true
+                } label: {
+                    Label("Options", systemImage: "slider.vertical.3")
+                }
+                .buttonStyle(.bordered)
+                .controlSize(.small)
+                .help("Configure core options")
                 
                 Button(role: .destructive) {
                     coreManager.deleteCore(core)
@@ -268,6 +278,9 @@ struct CoreRowView: View {
             }
         }
         .padding(.vertical, 8)
+        .sheet(isPresented: $showOptions) {
+            CoreOptionsView(coreID: core.id)
+        }
     }
 }
 

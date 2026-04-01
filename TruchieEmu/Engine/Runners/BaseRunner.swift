@@ -52,13 +52,16 @@ class EmulatorRunner: ObservableObject, @unchecked Sendable {
         let selectedLang = SystemPreferences.shared.systemLanguage.rawValue
         let selectedLogLevel = SystemPreferences.shared.coreLogLevel.rawValue
         
+        // Track last loaded core so Options view knows which file to persist to
+        UserDefaults.standard.set(coreID, forKey: "lastLoadedCoreID")
+        
         emulationQueue.async {
             LibretroBridge.setLanguage(Int32(selectedLang))
             LibretroBridge.setLogLevel(Int32(selectedLogLevel))
             LibretroBridge.launch(withDylibPath: core, romPath: rom.path.path,
                                   videoCallback: { [weak self] data, width, height, pitch, format in
                 self?.updateFrame(data: data, width: Int(width), height: Int(height), pitch: Int(pitch), format: Int(format))
-            })
+            }, coreID: coreID)
         }
     }
 

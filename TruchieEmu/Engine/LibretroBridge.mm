@@ -134,8 +134,128 @@ typedef void (^VideoFrameCallback)(const void *data, int width, int height, int 
 static LibretroBridgeImpl *g_instance = nil;
 static int g_selectedLanguage = 0; // RETRO_LANGUAGE_ENGLISH
 static int g_logLevel = 1; // 1 = Warn & Error
+static NSString *g_coreID = nil;   // Core ID for options persistence
 // Shared with bridge_get_current_framebuffer — updated by setupHWRender
 static GLuint g_hwFBO = 0;
+
+/* ── Core Options Storage ──
+ * Global mutable state so the C environment callback and Swift bridge methods
+ * can both read/write option values without dispatching through libdispatch.
+ * g_optValues: [optionKey: currentValue]  (NSString -> NSString)
+ * g_optDefinitions: [optionKey: {desc, info, default, values[], category}]
+ * g_optCategories: [categoryKey: {desc, info}]
+ */
+static NSMutableDictionary<NSString *, NSString *> *g_optValues = nil;
+static NSDictionary<NSString *, NSDictionary *> *g_optDefinitions = nil;
+static NSDictionary<NSString *, NSDictionary *> *g_optCategories = nil;
+
+static void initOptStorage() {
+    if (!g_optValues) {
+        g_optValues = [NSMutableDictionary dictionary];
+    }
+}
+
+/* Parse V2 definitions into the global dict.
+ * Called from the C environment callback. */
+static void parseCoreOptionsV2(struct retro_core_options_v2 *opts) {
+    initOptStorage();
+    [g_optValues removeAllObjects];
+    
+    NSMutableDictionary *defs = [NSMutableDictionary dictionary];
+    NSMutableDictionary *cats = [NSMutableDictionary dictionary];
+    
+    /* Parse categories */
+    if (opts && opts->categories) {
+        struct retro_core_option_v2_category *cat = opts->categories;
+        while (cat->key) {
+            cats[[NSString stringWithUTF8String:cat->key]] = @{
+                @"desc": cat->desc ? [NSString stringWithUTF8String:cat->desc] : @"",
+                @"info": cat->info ? [NSString stringWithUTF8String:cat->info] : @""
+            };
+            cat++;
+        }
+    }
+    g_optCategories = [cats copy];
+    
+    /* Parse definitions */
+    if (opts && opts->definitions) {
+        struct retro_core_option_v2_definition *def = opts->definitions;
+        while (def->key) {
+            NSString *key = [NSString stringWithUTF8String:def->key];
+            NSString *desc = [NSString stringWithUTF8String:(def->desc_categorized ?: def->desc)];
+            NSString *info = [NSString stringWithUTF8String:(def->info_categorized ?: def->info)];
+            NSString *catKey = def->category_key ? [NSString stringWithUTF8String:def->category_key] : nil;
+            NSString *defaultVal = def->default_value ? [NSString stringWithUTF8String:def->default_value] : @"";
+            
+            /* Parse possible values */
+            NSMutableArray *vals = [NSMutableArray array];
+            if (def->values) {
+                struct retro_core_option_value *v = def->values;
+                while (v->value) {
+                    NSString *label = v->label ? [NSString stringWithUTF8String:v->label] : [NSString stringWithUTF8String:v->value];
+                    [vals addObject:@{@"value": [NSString stringWithUTF8String:v->value], @"label": label}];
+                    v++;
+                }
+            }
+            
+            defs[key] = @{
+                @"desc": desc ?: @"",
+                @"info": info ?: @"",
+                @"defaultValue": defaultVal,
+                @"category": catKey ?: @"",
+                @"values": [vals copy]
+            };
+            
+            /* Set initial value to default */
+            g_optValues[key] = defaultVal;
+            
+            def++;
+        }
+    }
+    g_optDefinitions = [defs copy];
+}
+
+/* Parse V1 definition (simpler, no categories) */
+static void parseCoreOptionsV1(struct retro_core_options *opts) {
+    initOptStorage();
+    [g_optValues removeAllObjects];
+    
+    NSMutableDictionary *defs = [NSMutableDictionary dictionary];
+    
+    if (opts && opts->definitions) {
+        struct retro_core_option_definition *def = opts->definitions;
+        while (def && def->key) {
+            NSString *key = [NSString stringWithUTF8String:def->key];
+            NSString *desc = def->desc ? [NSString stringWithUTF8String:def->desc] : @"";
+            NSString *info = def->info ? [NSString stringWithUTF8String:def->info] : @"";
+            NSString *defaultVal = def->default_value ? [NSString stringWithUTF8String:def->default_value] : @"";
+            
+            NSMutableArray *vals = [NSMutableArray array];
+            if (def->values) {
+                struct retro_core_option_value *v = def->values;
+                while (v->value) {
+                    NSString *label = v->label ? [NSString stringWithUTF8String:v->label] : [NSString stringWithUTF8String:v->value];
+                    [vals addObject:@{@"value": [NSString stringWithUTF8String:v->value], @"label": label}];
+                    v++;
+                }
+            }
+            
+            defs[key] = @{
+                @"desc": desc,
+                @"info": info,
+                @"defaultValue": defaultVal,
+                @"category": @"",
+                @"values": [vals copy]
+            };
+            
+            g_optValues[key] = defaultVal;
+            
+            def++;
+        }
+    }
+    g_optCategories = @{};
+    g_optDefinitions = [defs copy];
+}
 
 static uintptr_t bridge_get_current_framebuffer() {
     return (uintptr_t)g_hwFBO;
@@ -225,87 +345,130 @@ static bool bridge_environment(unsigned cmd, void *data) {
             }
             return true;
         case RETRO_ENVIRONMENT_GET_CORE_OPTIONS_VERSION:
-            if (data) *(unsigned *)data = 1;
+            if (data) *(unsigned *)data = 2;  // We support V2
             return true;
+
+        /* ── Core Options — V2 (modern standard) ── */
+        case RETRO_ENVIRONMENT_SET_CORE_OPTIONS_V2: {
+            struct retro_core_options_v2 *opts = (struct retro_core_options_v2 *)data;
+            if (opts && opts->definitions) {
+                parseCoreOptionsV2(opts);
+                NSLog(@"[Bridge] Core options V2 set: %lu options parsed", (unsigned long)g_optDefinitions.count);
+            }
+            return true;
+        }
+        case RETRO_ENVIRONMENT_SET_CORE_OPTIONS_V2_INTL: {
+            struct retro_core_options_v2_intl *intl = (struct retro_core_options_v2_intl *)data;
+            if (intl) {
+                /* Prefer localised version if available and language isn't English */
+                if (intl->local && g_selectedLanguage != RETRO_LANGUAGE_ENGLISH) {
+                    parseCoreOptionsV2(intl->local);
+                } else if (intl->us) {
+                    parseCoreOptionsV2(intl->us);
+                }
+                NSLog(@"[Bridge] Core options V2 INTL set: %lu options parsed", (unsigned long)g_optDefinitions.count);
+            }
+            return true;
+        }
+
+        /* ── Core Options — V1 (legacy fallback) ── */
+        case RETRO_ENVIRONMENT_SET_CORE_OPTIONS: {
+            struct retro_core_options *opts = (struct retro_core_options *)data;
+            if (opts && opts->definitions) {
+                parseCoreOptionsV1(opts);
+                NSLog(@"[Bridge] Core options V1 set: %lu options parsed", (unsigned long)g_optDefinitions.count);
+            }
+            return true;
+        }
+        case RETRO_ENVIRONMENT_SET_CORE_OPTIONS_INTL: {
+            struct retro_core_options_intl *intl = (struct retro_core_options_intl *)data;
+            if (intl) {
+                if (intl->local && g_selectedLanguage != RETRO_LANGUAGE_ENGLISH) {
+                    parseCoreOptionsV1(intl->local);
+                } else if (intl->us) {
+                    parseCoreOptionsV1(intl->us);
+                }
+                NSLog(@"[Bridge] Core options V1 INTL set: %lu options parsed", (unsigned long)g_optDefinitions.count);
+            }
+            return true;
+        }
         case RETRO_ENVIRONMENT_GET_LANGUAGE:
             if (data) *(unsigned *)data = (unsigned)g_selectedLanguage;
             return true;
         case RETRO_ENVIRONMENT_GET_VARIABLE: {
             struct retro_variable *var = (struct retro_variable *)data;
             if (var && var->key) {
-                // NSLog(@"[Bridge] Core requested variable: %s", var->key);
-
-                // Common language keys for various cores
-                if (strcmp(var->key, "beetle_psx_hw_initial_vram_buffer_size") == 0) {
-                     // This is NOT a language key, but just testing I can intercept. 
-                     // Wait, I should find the real language keys.
-                }
-
-                // Generic language mapping for cores that use a "language" or "system_language" key
-                const char* langStr = "English";
-                const char* langShort = "en";
-                switch (g_selectedLanguage) {
-                    case RETRO_LANGUAGE_JAPANESE: langStr = "Japanese"; langShort = "jp"; break;
-                    case RETRO_LANGUAGE_FRENCH:   langStr = "French";   langShort = "fr"; break;
-                    case RETRO_LANGUAGE_GERMAN:   langStr = "German";   langShort = "de"; break;
-                    case RETRO_LANGUAGE_SPANISH:  langStr = "Spanish";  langShort = "es"; break;
-                    case RETRO_LANGUAGE_ITALIAN:  langStr = "Italian";  langShort = "it"; break;
-                    case RETRO_LANGUAGE_DUTCH:    langStr = "Dutch";    langShort = "nl"; break;
-                    case RETRO_LANGUAGE_PORTUGUESE: langStr = "Portuguese"; langShort = "pt"; break;
-                    case RETRO_LANGUAGE_RUSSIAN:  langStr = "Russian";  langShort = "ru"; break;
-                    case RETRO_LANGUAGE_KOREAN:   langStr = "Korean";   langShort = "ko"; break;
-                    default: langStr = "English"; langShort = "en"; break;
-                }
-
-                if (strstr(var->key, "language") != NULL || strstr(var->key, "Language") != NULL) {
-                    // Some cores might expect lowercase language names
-                    static char s_langLower[32];
-                    strncpy(s_langLower, langStr, sizeof(s_langLower)-1);
-                    for(int i=0; s_langLower[i]; i++) s_langLower[i] = tolower(s_langLower[i]);
-
-                    // Common overrides for specific cores
-                    if (strcmp(var->key, "vba_next_language") == 0) { var->value = langStr; return true; }
-                    if (strcmp(var->key, "mgba_language") == 0) { var->value = langStr; return true; }
-                    if (strstr(var->key, "beetle_psx") != NULL) { var->value = langStr; return true; }
-
-                    var->value = langStr; // Default to capitalized word
-                    if (g_logLevel == 0) NSLog(@"[Bridge] Intercepted variable %s -> %s", var->key, var->value);
-                    return true;
-                }
-                
-                // Also handle region variables which sometimes affect language
-                if (strstr(var->key, "region") != NULL || strstr(var->key, "Region") != NULL) {
-                    if (g_selectedLanguage == RETRO_LANGUAGE_JAPANESE) {
-                        var->value = "Japan";
-                    } else if (g_selectedLanguage == RETRO_LANGUAGE_ENGLISH) {
-                        var->value = "North America"; // Or Europe, but NA is safer for English
-                    } else {
-                        var->value = "Europe"; // Most other European languages
-                    }
+                /* ── Check g_optValues first (user-set core options) ── */
+                initOptStorage();
+                NSString *key = [NSString stringWithUTF8String:var->key];
+                if (g_optValues[key]) {
+                    const char *val = [g_optValues[key] UTF8String];
+                    static __thread char s_optValueBuf[512];
+                    strncpy(s_optValueBuf, val, sizeof(s_optValueBuf) - 1);
+                    s_optValueBuf[sizeof(s_optValueBuf) - 1] = '\0';
+                    var->value = s_optValueBuf;
                     return true;
                 }
 
-                // mupen64plus-next: force angrylion (software) RDP to avoid GL4.2+ DSA requirement
-                // gliden64 requires glCreateTextures/glDispatchCompute etc. (GL4.5) not available on macOS
-                
-                // CPU core: pure interpreter is safest on ARM64 macOS (no JIT recompilation)
+                // ── mupen64plus defaults (avoid GL4.2+ calls) ──
                 if (strcmp(var->key, "mupen64plus-next-cpucore") == 0 ||
                     strcmp(var->key, "mupen64plus-cpucore") == 0)
                     { var->value = "pure_interpreter"; return true; }
                 
-                // Force software RDP — avoids all GL4.2+ DSA/compute shader calls
                 if (strcmp(var->key, "mupen64plus-rdp-plugin") == 0 ||
                     strcmp(var->key, "mupen64plus-next-rdp-plugin") == 0)
                     { var->value = "angrylion"; return true; }
                 
-                // Disable threaded renderer (can cause race conditions on macOS)
                 if (strcmp(var->key, "mupen64plus-next-ThreadedRenderer") == 0 ||
                     strcmp(var->key, "mupen64plus-next-parallel-rdp-synchronous") == 0)
                     { var->value = "Disabled"; return true; }
                 
                 if (strcmp(var->key, "mupen64plus-next-aspect") == 0)
                     { var->value = "4:3"; return true; }
+
+                // ── Language mapping ──
+                const char* langStr = "English";
+                switch (g_selectedLanguage) {
+                    case RETRO_LANGUAGE_JAPANESE: langStr = "Japanese"; break;
+                    case RETRO_LANGUAGE_FRENCH:   langStr = "French";   break;
+                    case RETRO_LANGUAGE_GERMAN:   langStr = "German";   break;
+                    case RETRO_LANGUAGE_SPANISH:  langStr = "Spanish";  break;
+                    case RETRO_LANGUAGE_ITALIAN:  langStr = "Italian";  break;
+                    case RETRO_LANGUAGE_DUTCH:    langStr = "Dutch";    break;
+                    case RETRO_LANGUAGE_PORTUGUESE: langStr = "Portuguese"; break;
+                    case RETRO_LANGUAGE_RUSSIAN:  langStr = "Russian";  break;
+                    case RETRO_LANGUAGE_KOREAN:   langStr = "Korean";   break;
+                    default: langStr = "English"; break;
+                }
+
+                if (strstr(var->key, "language") != NULL || strstr(var->key, "Language") != NULL) {
+                    var->value = langStr;
+                    return true;
+                }
                 
+                // ── Region variables ──
+                if (strstr(var->key, "region") != NULL || strstr(var->key, "Region") != NULL) {
+                    if (g_selectedLanguage == RETRO_LANGUAGE_JAPANESE) {
+                        var->value = "Japan";
+                    } else if (g_selectedLanguage == RETRO_LANGUAGE_ENGLISH) {
+                        var->value = "North America";
+                    } else {
+                        var->value = "Europe";
+                    }
+                    return true;
+                }
+
+                // Variable not found — return default from definition if available
+                if (g_optDefinitions && g_optDefinitions[key]) {
+                    NSDictionary *def = g_optDefinitions[key];
+                    NSString *defVal = def[@"defaultValue"];
+                    if (defVal) {
+                        g_optValues[key] = defVal;  // Cache it
+                        var->value = [defVal UTF8String];
+                        return true;
+                    }
+                }
+
                 var->value = NULL;
             }
             return false;
@@ -734,21 +897,23 @@ static int16_t bridge_input_state(unsigned port, unsigned device, unsigned index
 @end
 
 @implementation LibretroBridge
-+ (void)launchWithDylibPath:(NSString *)dylib romPath:(NSString *)rom videoCallback:(void(^)(const void*, int, int, int, int))cb {
++ (void)launchWithDylibPath:(NSString *)dylib romPath:(NSString *)rom videoCallback:(void(^)(const void*, int, int, int, int))cb coreID:(NSString *)coreID {
     static dispatch_once_t onceToken;
     dispatch_once(&onceToken, ^{
         g_bridgeQueue = dispatch_queue_create("com.truchiemu.bridge", DISPATCH_QUEUE_SERIAL);
     });
 
+    // Reset options storage for new core
+    g_coreID = [coreID copy];
+    initOptStorage();
+    [g_optValues removeAllObjects];
+    g_optDefinitions = nil;
+    g_optCategories = nil;
+
     dispatch_async(g_bridgeQueue, ^{
         if (g_instance) {
             NSLog(@"[Bridge] Signalling previous instance to stop...");
             [g_instance stop];
-            // Wait for it to finish its loop. We can use a small delay or a more robust signal.
-            // Since this is a serial queue, and we are on the background, we can sleep-wait briefly
-            // but the previous block on this queue would have finished if it was also async.
-            // WAIT - the previous launch was also async on this queue! 
-            // So if we use a serial queue, this block won't start until the previous one finishes.
         }
         
         LibretroBridgeImpl *newInst = [[LibretroBridgeImpl alloc] init];
@@ -777,4 +942,181 @@ static int16_t bridge_input_state(unsigned port, unsigned device, unsigned index
 + (void)setAnalogState:(int)idx id:(int)id value:(int)v { if (g_instance) [g_instance setAnalogState:idx id:id value:v]; }
 + (void)setLanguage:(int)language { g_selectedLanguage = language; }
 + (void)setLogLevel:(int)level { g_logLevel = level; }
+
+/* ── Load Core For Options (no content) ── */
+static BOOL g_loadingForOptions = NO;
+static NSString * _Nullable g_optionsDylibPath = nil;
+
++ (void)loadCoreForOptions:(NSString *)dylibPath coreID:(NSString *)coreID {
+    g_loadingForOptions = YES;
+    g_coreID = [coreID copy];
+    g_optionsDylibPath = [dylibPath copy];
+    g_optValues = nil;
+    g_optDefinitions = nil;
+    g_optCategories = nil;
+    
+    LibretroBridgeImpl *impl = [[LibretroBridgeImpl alloc] init];
+    g_instance = impl;
+    
+    if (![impl loadDylib:dylibPath]) {
+        NSLog(@"[Bridge] Failed to load core for options at %@", dylibPath);
+        g_optCategories = @{};
+        g_optDefinitions = @{};
+        g_optValues = [NSMutableDictionary dictionary];
+        g_instance = nil;
+        g_loadingForOptions = NO;
+        return;
+    }
+    
+    // Setup minimal environment and init
+    impl->_retro_set_environment(bridge_environment);
+    impl->_retro_init();
+    
+    struct retro_system_av_info avInfo;
+    avInfo.geometry.base_width = 640;
+    avInfo.geometry.base_height = 480;
+    avInfo.geometry.max_width = 640;
+    avInfo.geometry.max_height = 480;
+    avInfo.geometry.aspect_ratio = 4.0f/3.0f;
+    avInfo.timing.fps = 60.0;
+    avInfo.timing.sample_rate = 44100.0;
+    impl->_avInfo = avInfo;
+    
+    // Check if core supports no-game
+    BOOL supportsNoGame = NO;
+    bridge_environment(RETRO_ENVIRONMENT_SET_SUPPORT_NO_GAME, &supportsNoGame);
+    
+    if (supportsNoGame) {
+        // Load with NULL game info (no content)
+        struct retro_game_info gi;
+        memset(&gi, 0, sizeof(gi));
+        if (impl->_retro_load_game(&gi)) {
+            NSLog(@"[Bridge] Core initialized with no content. Options available.");
+        } else {
+            NSLog(@"[Bridge] Core does not support no-game mode. Options will be empty.");
+        }
+    } else {
+        NSLog(@"[Bridge] Core does not advertise no-game support. Attempting no-content init anyway...");
+        struct retro_game_info gi;
+        memset(&gi, 0, sizeof(gi));
+        if (impl->_retro_load_game(&gi)) {
+            NSLog(@"[Bridge] Core loaded with no content successfully.");
+        } else {
+            NSLog(@"[Bridge] Core rejected no-content load.");
+        }
+    }
+    
+    // Run one iteration to let the core fully init
+    impl->_retro_run();
+    
+    // Save coreID for persistence
+    [[NSUserDefaults standardUserDefaults] setObject:coreID forKey:@"lastLoadedCoreID"];
+    
+    // Unload and cleanup
+    [impl stop];
+    impl->_retro_unload_game();
+    impl->_retro_deinit();
+    
+    g_instance = nil;
+    g_loadingForOptions = NO;
+    
+    NSLog(@"[Bridge] Core options loaded: %lu definitions", (unsigned long)g_optDefinitions.count);
+}
+
++ (BOOL)isCoreLoadedForOptions {
+    return g_loadingForOptions;
+}
+
+/* ── Core Options Accessors ── */
+static dispatch_queue_t g_optAccessQueue;
+static dispatch_once_t g_optAccessQueueOnce;
+
++ (NSString *)getOptionValueForKey:(NSString *)key {
+    dispatch_once(&g_optAccessQueueOnce, ^{
+        g_optAccessQueue = dispatch_queue_create("com.truchiemu.bridge.options", DISPATCH_QUEUE_SERIAL);
+    });
+    __block NSString *result = nil;
+    dispatch_sync(g_optAccessQueue, ^{
+        if (g_optValues) {
+            result = [g_optValues[key] copy];
+        }
+    });
+    return result;
+}
+
++ (void)setOptionValue:(NSString *)value forKey:(NSString *)key {
+    dispatch_once(&g_optAccessQueueOnce, ^{
+        g_optAccessQueue = dispatch_queue_create("com.truchiemu.bridge.options", DISPATCH_QUEUE_SERIAL);
+    });
+    dispatch_async(g_optAccessQueue, ^{
+        initOptStorage();
+        if (key) {
+            g_optValues[key] = value ?: @"";
+        }
+    });
+}
+
++ (void)resetOptionToDefaultForKey:(NSString *)key {
+    dispatch_once(&g_optAccessQueueOnce, ^{
+        g_optAccessQueue = dispatch_queue_create("com.truchiemu.bridge.options", DISPATCH_QUEUE_SERIAL);
+    });
+    dispatch_async(g_optAccessQueue, ^{
+        if (g_optDefinitions && g_optDefinitions[key]) {
+            NSString *defaultVal = g_optDefinitions[key][@"defaultValue"];
+            if (defaultVal) {
+                initOptStorage();
+                g_optValues[key] = defaultVal;
+            }
+        }
+    });
+}
+
++ (void)resetAllOptionsToDefaults {
+    dispatch_once(&g_optAccessQueueOnce, ^{
+        g_optAccessQueue = dispatch_queue_create("com.truchiemu.bridge.options", DISPATCH_QUEUE_SERIAL);
+    });
+    dispatch_async(g_optAccessQueue, ^{
+        if (g_optDefinitions) {
+            initOptStorage();
+            [g_optValues removeAllObjects];
+            for (NSString *key in g_optDefinitions) {
+                NSString *defVal = g_optDefinitions[key][@"defaultValue"];
+                if (defVal) {
+                    g_optValues[key] = defVal;
+                }
+            }
+        }
+    });
+}
+
++ (NSDictionary<NSString *, NSDictionary *> *)getOptionsDictionary {
+    dispatch_once(&g_optAccessQueueOnce, ^{
+        g_optAccessQueue = dispatch_queue_create("com.truchiemu.bridge.options", DISPATCH_QUEUE_SERIAL);
+    });
+    __block NSDictionary *result = nil;
+    dispatch_sync(g_optAccessQueue, ^{
+        if (g_optDefinitions && g_optValues) {
+            NSMutableDictionary *combined = [NSMutableDictionary dictionary];
+            for (NSString *key in g_optDefinitions) {
+                NSMutableDictionary *entry = [NSMutableDictionary dictionaryWithDictionary:g_optDefinitions[key]];
+                entry[@"currentValue"] = g_optValues[key] ?: g_optDefinitions[key][@"defaultValue"] ?: @"";
+                combined[key] = [entry copy];
+            }
+            result = [combined copy];
+        }
+    });
+    return result;
+}
+
+/* Expose categories to Swift */
++ (NSDictionary<NSString *, NSDictionary *> *)getCategoriesDictionary {
+    dispatch_once(&g_optAccessQueueOnce, ^{
+        g_optAccessQueue = dispatch_queue_create("com.truchiemu.bridge.options", DISPATCH_QUEUE_SERIAL);
+    });
+    __block NSDictionary *result = nil;
+    dispatch_sync(g_optAccessQueue, ^{
+        result = [g_optCategories copy] ?: @{};
+    });
+    return result;
+}
 @end
