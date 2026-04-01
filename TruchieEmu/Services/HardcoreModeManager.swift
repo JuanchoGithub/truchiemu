@@ -12,9 +12,12 @@ private let hardcoreLog = Logger(subsystem: Bundle.main.bundleIdentifier ?? "Tru
 class HardcoreModeManager: ObservableObject {
     static let shared = HardcoreModeManager()
     
-    @Published var isHardcoreActive: Bool {
-        get { RetroAchievementsService.shared.hardcoreMode && RetroAchievementsService.shared.isEnabled }
-        set { RetroAchievementsService.shared.setHardcoreMode(newValue) }
+    @Published var isHardcoreActive: Bool = false
+    
+    init() {}
+    
+    func updateFromHardcoreState() {
+        isHardcoreActive = RetroAchievementsService.shared.hardcoreMode && RetroAchievementsService.shared.isEnabled
     }
     
     /// Whether save states are currently blocked
@@ -88,7 +91,7 @@ class HardcoreModeManager: ObservableObject {
         RetroAchievementsService.shared.setHardcoreMode(false)
         
         // Show notification
-        osLog("Hardcore mode disabled: \(reason)", level: .warning)
+        hardcoreLog.warning("Hardcore mode disabled: \(reason)")
     }
     
     /// Get a user-friendly message about blocked features

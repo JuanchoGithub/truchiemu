@@ -574,6 +574,9 @@ class StandaloneGameWindowController: NSWindowController, NSWindowDelegate, Obse
     private var pendingROM: ROM?
     private var pendingCoreID: String?
     
+    /// Track the ROM path for this window instance (for cleanup on close)
+    private var trackedROMPath: String?
+    
     // Toolbar auto-hide state
     @MainActor @Published var isToolbarVisible: Bool = true
     @MainActor @Published var isFullscreen: Bool = false
@@ -729,6 +732,17 @@ class StandaloneGameWindowController: NSWindowController, NSWindowDelegate, Obse
     }
     
     func launch(rom: ROM, coreID: String, slotToLoad: Int? = nil) {
+        // Check if this same ROM is already running in another window
+        if RunningGamesTracker.shared.isRunning(romPath: rom.path.path) {
+            RunningGamesTracker.shared.notifyDuplicateLaunch(romName: rom.displayName)
+            window?.close()
+            return
+        }
+        
+        // Register this ROM as running
+        RunningGamesTracker.shared.registerRunning(romPath: rom.path.path)
+        trackedROMPath = rom.path.path
+        
         func _doLaunch() {
             // Store ROM reference on runner before launching
             runner?.rom = rom
@@ -840,6 +854,11 @@ class StandaloneGameWindowController: NSWindowController, NSWindowDelegate, Obse
             }
         }
         runner?.stop()
+        
+        // Unregister this ROM from the running games tracker
+        if let romPath = trackedROMPath {
+            RunningGamesTracker.shared.unregisterRunning(romPath: romPath)
+        }
     }
 
     @MainActor

@@ -141,7 +141,6 @@ struct AchievementListView: View {
             }
         }
         .navigationTitle("Achievements")
-        .navigationBarTitleDisplayMode(.inline)
     }
 }
 

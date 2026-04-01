@@ -4,6 +4,8 @@ import Darwin
 
 @MainActor
 class CoreManager: ObservableObject {
+    static let shared = CoreManager()
+    
     @Published var installedCores: [LibretroCore] = []
     @Published var availableCores: [RemoteCoreInfo] = []
     @Published var isFetchingCoreList: Bool = false

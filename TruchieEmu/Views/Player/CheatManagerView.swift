@@ -286,7 +286,6 @@ struct AddCheatSheet: View {
                 }
             }
             .navigationTitle("Add Custom Cheat")
-            .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .cancellationAction) {
                     Button("Cancel") { dismiss() }

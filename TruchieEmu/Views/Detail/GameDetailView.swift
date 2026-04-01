@@ -1298,7 +1298,15 @@ struct GameDetailView: View {
     @State private var isLaunchingGame = false
     
     private func launchGame(slotToLoad: Int? = nil) {
+        // Prevent launching more than once
         guard !isLaunchingGame else { return }
+        
+        // Check if this ROM is already running via RunningGamesTracker
+        if RunningGamesTracker.shared.isRunning(romPath: currentROM.path.path) {
+            RunningGamesTracker.shared.notifyDuplicateLaunch(romName: currentROM.displayName)
+            return
+        }
+        
         isLaunchingGame = true
         
         guard let sysID = currentROM.systemID,
@@ -1337,16 +1345,16 @@ struct GameDetailView: View {
         let controller = StandaloneGameWindowController(runner: runner)
         self.gameWindowController = controller
         
-        // Make the app active first
-        NSApp.activate(ignoringOtherApps: true)
-        
-        // Show the window - showWindow handles window ordering properly
-        controller.showWindow(nil)
-        controller.window?.makeKeyAndOrderFront(nil)
-        controller.window?.orderFrontRegardless()
-        
-        // Launch game with slot
+        // Launch game with slot (this will also check RunningGamesTracker internally)
         controller.launch(rom: currentROM, coreID: cid, slotToLoad: slotToLoad)
+        
+        // Only bring window to front if it wasn't closed due to duplicate detection
+        if controller.window != nil {
+            NSApp.activate(ignoringOtherApps: true)
+            controller.window?.makeKeyAndOrderFront(nil)
+            controller.window?.orderFrontRegardless()
+        }
+        
         isLaunchingGame = false
     }
 }
