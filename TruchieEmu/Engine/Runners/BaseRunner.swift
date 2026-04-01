@@ -25,6 +25,7 @@ class EmulatorRunner: ObservableObject, @unchecked Sendable {
         case "nes":  return NESRunner()
         case "snes": return SNESRunner()
         case "n64":  return N64Runner()
+        case "dos":  return DOSRunner()
         default:     return EmulatorRunner()
         }
     }

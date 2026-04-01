@@ -291,22 +291,53 @@ actor ROMScanner {
     }
 
 
+    /// DOS-specific executable extensions found inside a ZIP that indicate a DOS game.
+    private static let dosInnerExtensions: Set<String> = [
+        "exe", "com", "bat", "dos", "dosz", "conf", "ins"
+    ]
+
+    /// MAME-specific file patterns found inside a ZIP that indicate an arcade ROM set.
+    /// MAME ROMs typically contain .bin files with specific CRC-named files.
+    private static let mameInnerExtensions: Set<String> = [
+        "bin", "rom", "a", "b", "c", "d", "e", "f"
+    ]
+
     private func identifyArchive(url: URL) -> SystemInfo? {
-        // Check if zip is in a folder named after a known MAME system
+        // Check if zip is in a folder named after a known system
         let parentName = url.deletingLastPathComponent().lastPathComponent.lowercased()
         if parentName.contains("mame") || parentName.contains("arcade") || parentName.contains("fba") {
             return SystemDatabase.system(forID: "mame")
         }
+        if parentName.contains("dos") || parentName.contains("dosbox") || parentName.contains("pc") {
+            return SystemDatabase.system(forID: "dos")
+        }
 
-        // Try to peek at zip contents for known inner extensions
+        // Peek inside the ZIP to determine system based on inner file extensions
         if let innerExt = peekInsideZip(url: url) {
             return SystemDatabase.system(forExtension: innerExt)
         }
 
-        // Default ZIP to MAME (arcade) since that's most common for ZIPs
-        return SystemDatabase.system(forID: "mame")
+        // If no known console extension found inside, check for DOS vs MAME patterns
+        if let innerExtensions = peekInsideZipAllExtensions(url: url) {
+            // Check for DOS executables first
+            let hasDosFiles = !innerExtensions.isDisjoint(with: Self.dosInnerExtensions)
+            if hasDosFiles {
+                return SystemDatabase.system(forID: "dos")
+            }
+
+            // Check for MAME-style ROM files (multiple .bin files)
+            let hasMameFiles = !innerExtensions.isDisjoint(with: Self.mameInnerExtensions)
+            if hasMameFiles {
+                return SystemDatabase.system(forID: "mame")
+            }
+        }
+
+        // Default ZIP to DOS (DOSBox-Pure is the preferred way to play DOS games)
+        // Users can manually reassign to MAME if needed
+        return SystemDatabase.system(forID: "dos")
     }
 
+    /// Peek inside a ZIP and return the first inner extension that matches a known console system.
     private func peekInsideZip(url: URL) -> String? {
         guard let data = try? Data(contentsOf: url, options: .mappedIfSafe),
               data.count >= 30 else { return nil }
@@ -359,6 +390,60 @@ actor ROMScanner {
         }
 
         return nil
+    }
+
+    /// Peek inside a ZIP and return ALL unique inner file extensions (for DOS/MAME detection).
+    private func peekInsideZipAllExtensions(url: URL) -> Set<String>? {
+        guard let data = try? Data(contentsOf: url, options: .mappedIfSafe),
+              data.count >= 30 else { return nil }
+
+        func readLEUInt16(_ start: Int) -> UInt16? {
+            guard start + 2 <= data.count else { return nil }
+            var value: UInt16 = 0
+            for i in 0..<2 { value |= UInt16(data[start + i]) << (8 * i) }
+            return value
+        }
+
+        func readLEUInt32(_ start: Int) -> UInt32? {
+            guard start + 4 <= data.count else { return nil }
+            var value: UInt32 = 0
+            for i in 0..<4 { value |= UInt32(data[start + i]) << (8 * i) }
+            return value
+        }
+
+        var extensions = Set<String>()
+        var offset = 0
+        let localHeaderSig: UInt32 = 0x04034b50
+        var maxEntries = 100 // Limit to avoid scanning huge ZIPs
+
+        while maxEntries > 0 {
+            guard offset + 30 <= data.count else { break }
+            guard let sig = readLEUInt32(offset), sig == localHeaderSig else { break }
+
+            guard let fileNameLen = readLEUInt16(offset + 26),
+                  let extraLen = readLEUInt16(offset + 28),
+                  let compressedSize = readLEUInt32(offset + 18) else { break }
+
+            let nameLen = Int(fileNameLen)
+            let extra = Int(extraLen)
+            let comp = Int(compressedSize)
+
+            guard offset + 30 + nameLen <= data.count else { break }
+            let nameData = data[offset + 30 ..< offset + 30 + nameLen]
+            if let name = String(data: nameData, encoding: .utf8) {
+                let innerExt = URL(fileURLWithPath: name).pathExtension.lowercased()
+                if !innerExt.isEmpty {
+                    extensions.insert(innerExt)
+                }
+            }
+
+            let next = offset + 30 + nameLen + extra + comp
+            guard next > offset else { break }
+            offset = next
+            maxEntries -= 1
+        }
+
+        return extensions.isEmpty ? nil : extensions
     }
 
     // Scan only specific URLs (for smart rescan)

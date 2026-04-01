@@ -254,6 +254,7 @@ class CoreManager: ObservableObject {
         if coreID.contains("mupen64plus") || coreID.contains("parallel_n64") { ids += ["n64"] }
         if coreID.contains("picodrive") { ids += ["genesis", "sms", "gamegear", "32x"] }
         if coreID.contains("mednafen_psx") { ids += ["psx"] }
+        if coreID.contains("dosbox_pure") { ids += ["dos"] }
         
         return Array(Set(ids))
     }

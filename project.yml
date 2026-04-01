@@ -55,6 +55,10 @@ targets:
       - path: TruchieEmu/Services
       - path: TruchieEmu/Engine
       - path: TruchieEmu/Shaders
+        excludes:
+          - "slang/**"
+          - "internal/**"
+          - "all_shaders.metal"
       - path: TruchieEmu/Views
       - path: TruchieEmu/Views/Shaders
 

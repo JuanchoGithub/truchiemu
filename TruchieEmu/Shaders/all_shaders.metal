@@ -161,8 +161,9 @@ fragment float4 fragmentVibrantLCD(VertexOut in [[stage_in]],
     
     // LCD pixel grid effect
     float2 px = in.position.xy;
-    float gridX = step(0.5, fract(px * 0.5));
-    float gridY = step(0.5, fract(px * 0.5));
+    float2 gridUV = fract(px * 0.5);
+    float gridX = step(0.5, gridUV.x);
+    float gridY = step(0.5, gridUV.y);
     float grid = gridX * gridY;
     color.rgb *= 0.95 + 0.05 * grid;
     
