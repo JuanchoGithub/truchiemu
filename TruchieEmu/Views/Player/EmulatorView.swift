@@ -12,7 +12,7 @@ struct EmulatorView: View {
     @StateObject private var shaderManager = ShaderManager.shared
     @State private var showHUD = false
     @State private var showFilterPanel = false
-    @State private var showShaderPicker = false
+    @State private var shaderWindowSettings: ShaderWindowSettings?
     @EnvironmentObject private var library: ROMLibrary
     @EnvironmentObject private var coreManager: CoreManager
     @EnvironmentObject private var controllerService: ControllerService
@@ -110,26 +110,22 @@ struct EmulatorView: View {
                 }
             }
         }
-        .sheet(isPresented: $showShaderPicker) {
-            ShaderPresetPickerView(
-                selectedPresetID: $settings.shaderPresetID,
-                uniformValues: $shaderManager.uniformValues
-            )
-            .onDisappear {
-                // Save selected preset to ROM settings
-                var updated = rom
-                updated.settings = settings
-                library.updateROM(updated)
-                runner.rom = updated
-                
-                // Activate the new preset
-                if let preset = ShaderPreset.preset(id: settings.shaderPresetID) {
-                    shaderManager.activatePreset(preset)
-                }
+        .onChange(of: settings.shaderPresetID) { newID in
+            // When the shader preset changes, activate it and save to ROM
+            if let preset = ShaderPreset.preset(id: newID) {
+                shaderManager.activatePreset(preset)
             }
+            var updated = rom
+            updated.settings = settings
+            library.updateROM(updated)
+            runner.rom = updated
         }
         .frame(minWidth: 800, minHeight: 600) // Force a healthy size
-        .onDisappear { runner.stop() }
+        .onDisappear {
+            runner.stop()
+            // Close shader window if open
+            ShaderWindowController.shared?.hide()
+        }
         .onExitCommand { dismiss() }
     }
 
@@ -154,7 +150,7 @@ struct EmulatorView: View {
                 Spacer()
 
                 // Shader preset button
-                Button { withAnimation { showShaderPicker.toggle() } } label: {
+                Button { presentShaderWindow() } label: {
                     Image(systemName: "sparkles")
                         .font(.title2)
                         .foregroundStyle(.white)
@@ -228,10 +224,6 @@ struct EmulatorView: View {
                 filterPanel
             }
             
-            if showShaderPicker {
-                shaderPanel
-            }
-
             Spacer()
 
             // Tap outside to dismiss HUD
@@ -258,7 +250,7 @@ struct EmulatorView: View {
                 Spacer()
                 
                 Button("Browse...") {
-                    showShaderPicker = true
+                    presentShaderWindow()
                 }
                 .font(.caption)
             }
@@ -297,7 +289,7 @@ struct EmulatorView: View {
                 Spacer()
                 
                 Button(ShaderManager.displayName(for: settings.shaderPresetID)) {
-                    showShaderPicker = true
+                    presentShaderWindow()
                 }
                 .buttonStyle(.bordered)
                 .buttonStyle(.borderedProminent)
@@ -345,6 +337,40 @@ struct EmulatorView: View {
             library.updateROM(updated)
             runner.rom = updated
         }
+    }
+    
+    // MARK: - Shader Window Presentation
+    
+    @MainActor
+    private func presentShaderWindow() {
+        // Create settings if not exists
+        if shaderWindowSettings == nil {
+            shaderWindowSettings = ShaderWindowSettings(
+                shaderPresetID: settings.shaderPresetID,
+                uniformValues: shaderManager.uniformValues
+            )
+        } else {
+            // Update existing settings
+            shaderWindowSettings?.shaderPresetID = settings.shaderPresetID
+            shaderWindowSettings?.uniformValues = shaderManager.uniformValues
+        }
+        
+        let windowController = ShaderWindowController(
+            settings: shaderWindowSettings!
+        ) { [self] newPresetID in
+            // This closure is called when preset changes in the window
+            settings.shaderPresetID = newPresetID
+            if let preset = ShaderPreset.preset(id: newPresetID) {
+                shaderManager.activatePreset(preset)
+            }
+            var updated = rom
+            updated.settings = settings
+            library.updateROM(updated)
+            runner.rom = updated
+        }
+        
+        ShaderWindowController.shared = windowController
+        windowController.show()
     }
 }
 

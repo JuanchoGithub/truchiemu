@@ -1245,7 +1245,7 @@ struct BoxArtSettingsView: View {
 // MARK: - Display Settings
 struct DisplaySettingsView: View {
     @AppStorage("display_default_shader_preset") private var selectedPresetID: String = "builtin-crt-classic"
-    @State private var showShaderPicker = false
+    @State private var shaderWindowSettings: ShaderWindowSettings?
     @StateObject private var shaderManager = ShaderManager.shared
     
     var body: some View {
@@ -1253,7 +1253,7 @@ struct DisplaySettingsView: View {
             Section("Shader Presets") {
                 LabeledContent("Default Shader") {
                     Button(ShaderManager.displayName(for: selectedPresetID)) {
-                        showShaderPicker = true
+                        presentShaderWindow()
                     }
                     .buttonStyle(.bordered)
                 }
@@ -1299,19 +1299,30 @@ struct DisplaySettingsView: View {
         }
         .formStyle(.grouped)
         .navigationTitle("Display")
-        .sheet(isPresented: $showShaderPicker) {
-            ShaderPresetPickerView(
-                selectedPresetID: $selectedPresetID,
-                uniformValues: .constant([:])
+    }
+    
+    @MainActor
+    private func presentShaderWindow() {
+        if shaderWindowSettings == nil {
+            shaderWindowSettings = ShaderWindowSettings(
+                shaderPresetID: selectedPresetID,
+                uniformValues: [:]
             )
-            .frame(width: 550, height: 500)
-            .onDisappear {
-                // Activate the selected preset globally
-                if let preset = ShaderPreset.preset(id: selectedPresetID) {
-                    shaderManager.activatePreset(preset)
-                }
+        } else {
+            shaderWindowSettings?.shaderPresetID = selectedPresetID
+        }
+        
+        let windowController = ShaderWindowController(
+            settings: shaderWindowSettings!
+        ) { [self] newPresetID in
+            selectedPresetID = newPresetID
+            if let preset = ShaderPreset.preset(id: newPresetID) {
+                shaderManager.activatePreset(preset)
             }
         }
+        
+        ShaderWindowController.shared = windowController
+        windowController.show()
     }
     
     private func shaderIcon(for type: ShaderType) -> String {

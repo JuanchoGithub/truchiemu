@@ -357,7 +357,7 @@ struct GameDetailView: View {
         }
     }
 
-    @State private var showShaderPicker = false
+    @State private var shaderWindowSettings: ShaderWindowSettings?
     
     private var displaySection: some View {
         VStack(alignment: .leading, spacing: 12) {
@@ -378,7 +378,7 @@ struct GameDetailView: View {
                     Spacer()
                     
                     Button(ShaderManager.displayName(for: currentROM.settings.shaderPresetID)) {
-                        showShaderPicker = true
+                        presentShaderWindow()
                     }
                     .buttonStyle(.bordered)
                 }
@@ -424,18 +424,30 @@ struct GameDetailView: View {
             .background(Color.secondary.opacity(0.05))
             .cornerRadius(10)
         }
-        .sheet(isPresented: $showShaderPicker) {
-            ShaderPresetPickerView(
-                selectedPresetID: Binding(
-                    get: { currentROM.settings.shaderPresetID },
-                    set: { newID in
-                        updateSettings { $0.shaderPresetID = newID }
-                    }
-                ),
-                uniformValues: .constant([:])
+    }
+    
+    @MainActor
+    private func presentShaderWindow() {
+        if shaderWindowSettings == nil {
+            shaderWindowSettings = ShaderWindowSettings(
+                shaderPresetID: currentROM.settings.shaderPresetID,
+                uniformValues: [:]
             )
-            .frame(width: 550, height: 500)
+        } else {
+            shaderWindowSettings?.shaderPresetID = currentROM.settings.shaderPresetID
         }
+        
+        let windowController = ShaderWindowController(
+            settings: shaderWindowSettings!
+        ) { [self] newPresetID in
+            updateSettings { $0.shaderPresetID = newPresetID }
+            if let preset = ShaderPreset.preset(id: newPresetID) {
+                ShaderManager.shared.activatePreset(preset)
+            }
+        }
+        
+        ShaderWindowController.shared = windowController
+        windowController.show()
     }
     
     private var shaderManager: ShaderManager {
