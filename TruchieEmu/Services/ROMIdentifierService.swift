@@ -121,6 +121,20 @@ class ROMIdentifierService {
             .trimmingCharacters(in: .whitespacesAndNewlines)
     }
 
+    /// Heuristic: No-Intro DATs use `description` as the game title and `name` as
+    /// an internal ROM filename.  ScummVM/MAME DATs use `name` as the title and
+    /// `description` as a long prose paragraph.  Pick whichever looks like a real title.
+    private static func titleFromDatGame(name: String, description: String) -> String {
+        guard !description.isEmpty else { return name }
+        // Long descriptions are prose paragraphs → use `name` (ScummVM / MAME style)
+        if description.count > 150 { return name }
+        // Count sentence-ending punctuation (.!?)
+        let sentenceEndCount = description.ranges(of: "[.!?]+[\n]|[.!?]+$", options: .regularExpression).count
+        if sentenceEndCount >= 2 { return name }
+        // Short description = likely the actual title (No-Intro style)
+        return description
+    }
+
     /// Lower index = stronger preference when multiple DAT entries share the same base title.
     private static func regionPreferenceRank(fullName: String, language: EmulatorLanguage) -> Int {
         let prefs = language.noIntroRegionPreference
@@ -143,6 +157,51 @@ class ROMIdentifierService {
         return 15
     }
 
+    // MARK: – Roman-numeral variant generation
+    // Produces alternate forms of a normalised title where standalone Arabic
+    // numerals 1-19 are replaced with their Roman equivalent, and vice versa.
+    // Also strips a trailing " 1" or " i" because many ROM sets omit the
+    // number for the first entry in a series (Road Rash 1 → Road Rash).
+    private static func romanNumeralVariants(of normalized: String) -> [String] {
+        guard normalized.count >= 2 else { return [] }
+        var variants: Set<String> = []
+        let arabicToRoman: [Int: String] = [
+            1: "I",   2: "II",   3: "III",   4: "IV",
+            5: "V",   6: "VI",   7: "VII",   8: "VIII",
+            9: "IX",  10: "X",   11: "XI",   12: "XII",
+            13: "XIII", 14: "XIV", 15: "XV",
+            16: "XVI",  17: "XVII", 18: "XVIII", 19: "XIX",
+        ]
+        let romanToArabic: [String: Int] = {
+            var d: [String: Int] = [:]
+            for (a, r) in arabicToRoman {
+                d[r.lowercased()] = a
+                d[r] = a
+            }
+            return d
+        }()
+        // Arabic → Roman  (word-boundary match: not preceded by a letter, not followed by one)
+        for (a, r) in arabicToRoman {
+            let p = "(?<![a-zA-Z])\b" + String(a) + "\b(?![a-zA-Z0-9])"
+            let s = normalized.replacingOccurrences(of: p, with: r, options: .regularExpression)
+            if s != normalized { variants.insert(s) }
+        }
+        // Roman → Arabic
+        for (r, a) in romanToArabic {
+            let esc = NSRegularExpression.escapedPattern(for: r)
+            let p = "(?<![a-zA-Z])\b" + esc + "\b(?![a-zA-Z0-9])"
+            let s = normalized.replacingOccurrences(of: p, with: String(a), options: .regularExpression)
+            if s != normalized { variants.insert(s) }
+        }
+        // Strip trailing " 1" or " i" for first-game-in-series
+        let t = normalized.trimmingCharacters(in: .whitespaces)
+        for pat in [" 1$", " i$"] {
+            let s = t.replacingOccurrences(of: pat, with: "", options: .regularExpression).trimmingCharacters(in: .whitespaces)
+            if s != t && s.count >= 2 { variants.insert(s) }
+        }
+        return Array(variants)
+    }
+
     private func identifyByName(rom: ROM, database: [String: GameInfo], language: EmulatorLanguage) -> GameInfo? {
         let stem = rom.path.deletingPathExtension().lastPathComponent
         var cleaned = LibretroThumbnailResolver.stripRomFilenameTags(stem)
@@ -150,6 +209,7 @@ class ROMIdentifierService {
         let queryBase = Self.normalizedComparableTitle(cleaned)
         guard queryBase.count >= 2 else { return nil }
 
+        // --- pass 1: exact match on base query ---
         var exact: [GameInfo] = []
         for info in database.values {
             let datBase = Self.normalizedComparableTitle(info.name)
@@ -158,6 +218,20 @@ class ROMIdentifierService {
             }
         }
 
+        // --- pass 2: exact match on Roman-numeral / trailing-number variants ---
+        if exact.isEmpty {
+            for variant in Self.romanNumeralVariants(of: queryBase) {
+                for info in database.values {
+                    let datBase = Self.normalizedComparableTitle(info.name)
+                    if datBase == variant {
+                        exact.append(info)
+                    }
+                }
+                if !exact.isEmpty { break }
+            }
+        }
+
+        // --- pass 3: substring / prefix containment (original fuzzy) ---
         var candidates = exact
         if candidates.isEmpty {
             for info in database.values {
@@ -165,6 +239,20 @@ class ROMIdentifierService {
                 guard datBase.count >= 3, queryBase.count >= 3 else { continue }
                 if datBase.contains(queryBase) || queryBase.contains(datBase) {
                     candidates.append(info)
+                }
+            }
+            // Final fallback: containment using Roman-numeral variants of the query
+            if candidates.isEmpty {
+                for variant in Self.romanNumeralVariants(of: queryBase) {
+                    guard variant.count >= 3 else { continue }
+                    for info in database.values {
+                        let datBase = Self.normalizedComparableTitle(info.name)
+                        guard datBase.count >= 3 else { continue }
+                        if datBase.contains(variant) || variant.contains(datBase) {
+                            candidates.append(info)
+                        }
+                    }
+                    if !candidates.isEmpty { break }
                 }
             }
         }
@@ -337,7 +425,7 @@ class LibretroDatabaseLibrary {
             if trimmed.hasPrefix("game (") || trimmed.hasPrefix("machine (") {
                 currentGame = LibretroDatGame()
             } else if trimmed == ")" && currentGame != nil {
-                let nameToUse = !(currentGame?.description.isEmpty ?? true) ? currentGame!.description : currentGame!.name
+                let nameToUse = Self.titleFromDatGame(name: currentGame!.name, description: currentGame!.description)
                 for crc in currentGame!.crcs {
                     database[crc.uppercased()] = GameInfo(
                         name: nameToUse,
