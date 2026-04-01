@@ -224,52 +224,54 @@ struct CoreOptionRow: View {
     }
 
     var body: some View {
-        VStack(alignment: .leading, spacing: 6) {
+        Group {
             if let option = viewModel.options[key] {
-            VStack(alignment: .leading, spacing: 4) {
-                Text(option.description).font(.body)
-                if !option.info.isEmpty {
-                    Text(option.info).font(.caption).foregroundColor(.secondary).lineLimit(3)
-                }
-            }
-            .frame(maxWidth: .infinity, alignment: .leading)
-
-            if option.values.count > 1 {
-                Picker("", selection: $selectedValue) {
-                    ForEach(option.values) { v in Text(v.label).tag(v.value) }
-                }
-                .pickerStyle(.menu)
-                .labelsHidden()
-                .onChange(of: selectedValue) { newValue in
-                    viewModel.updateValue(newValue, for: key)
-                }
-            } else {
-                Text(option.currentValue)
-                    .font(.caption)
-                    .foregroundColor(.secondary)
-                    .padding(.horizontal, 8)
-                    .padding(.vertical, 4)
-                    .background(.ultraThinMaterial)
-                    .cornerRadius(8)
-            }
-
-            if option.isModified {
-                HStack {
-                    Text("Modified")
-                        .font(.caption2)
-                        .foregroundColor(.orange)
-                    Spacer()
-                    Button("Reset") {
-                        selectedValue = option.defaultValue
-                        viewModel.updateValue(option.defaultValue, for: key)
+                VStack(alignment: .leading, spacing: 6) {
+                    VStack(alignment: .leading, spacing: 4) {
+                        Text(option.description).font(.body)
+                        if !option.info.isEmpty {
+                            Text(option.info).font(.caption).foregroundColor(.secondary).lineLimit(3)
+                        }
                     }
-                    .buttonStyle(.link)
-                    .foregroundColor(.blue)
-                    .font(.caption2)
+                    .frame(maxWidth: .infinity, alignment: .leading)
+
+                    if option.values.count > 1 {
+                        Picker("", selection: $selectedValue) {
+                            ForEach(option.values) { v in Text(v.label).tag(v.value) }
+                        }
+                        .pickerStyle(.menu)
+                        .labelsHidden()
+                        .onChange(of: selectedValue) { newValue in
+                            viewModel.updateValue(newValue, for: key)
+                        }
+                    } else {
+                        Text(option.currentValue)
+                            .font(.caption)
+                            .foregroundColor(.secondary)
+                            .padding(.horizontal, 8)
+                            .padding(.vertical, 4)
+                            .background(.ultraThinMaterial)
+                            .cornerRadius(8)
+                    }
+
+                    if option.isModified {
+                        HStack {
+                            Text("Modified")
+                                .font(.caption2)
+                                .foregroundColor(.orange)
+                            Spacer()
+                            Button("Reset") {
+                                selectedValue = option.defaultValue
+                                viewModel.updateValue(option.defaultValue, for: key)
+                            }
+                            .buttonStyle(.link)
+                            .foregroundColor(.blue)
+                            .font(.caption2)
+                        }
+                    }
                 }
-            }
+                .padding(.vertical, 4)
             }
         }
-        .padding(.vertical, 4)
     }
 }
