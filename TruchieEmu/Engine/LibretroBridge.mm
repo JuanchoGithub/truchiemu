@@ -716,6 +716,24 @@ static int16_t bridge_input_state(unsigned port, unsigned device, unsigned index
         _retro_run();
         localRunCount++;
         
+        // For HW-rendered cores (like ScummVM) that don't call video_refresh,
+        // manually read from the FBO after each retro_run() to push frames
+        if (_hwRenderEnabled && _glContext && _hwFBO) {
+            CGLSetCurrentContext(_glContext);
+            // Get the current geometry (width/height may have changed from defaults)
+            unsigned hw = _avInfo.geometry.base_width;
+            unsigned hh = _avInfo.geometry.base_height;
+            if (hw <= 0) hw = 640;
+            if (hh <= 0) hh = 480;
+            // Read from the core's FBO and pass to the video callback
+            const void *pixels = [self readHWRenderedPixels:hw height:hh];
+            if (pixels) {
+                // Format: BGRA (GL_UNSIGNED_INT_8_8_8_8_REV readback = XRGB8888)
+                int fmt = 1; // RETRO_PIXEL_FORMAT_XRGB8888
+                [self handleVideoData:pixels width:hw height:hh pitch:(int)(hw*4) format:fmt];
+            }
+        }
+        
         if (localRunCount <= 3 || localRunCount % 60 == 0) {
             NSLog(@"[Bridge] retro_run() called, iteration %d", localRunCount);
         }

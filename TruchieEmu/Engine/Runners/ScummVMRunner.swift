@@ -296,14 +296,25 @@ class ScummVMRunner: EmulatorRunner {
         
         // Check if hook file already exists
         if FileManager.default.fileExists(atPath: hookPath.path) {
-            print("[ScummVM] Hook file already exists: \(hookPath.path)")
-            return hookPath
+            // Validate that it has the new manifest format (not just a plain game ID)
+            let existingContent = (try? String(contentsOf: hookPath, encoding: .utf8)) ?? ""
+            if existingContent.contains("[scummvm]") && existingContent.contains("engineid=") {
+                print("[ScummVM] Hook file already exists with valid manifest: \(hookPath.path)")
+                return hookPath
+            } else {
+                // Old format (just game ID), remove and recreate
+                print("[ScummVM] Hook file uses old format, recreating with manifest...")
+                try? FileManager.default.removeItem(at: hookPath)
+            }
         }
         
-        // Create the hook file with the game ID as content
+        // Create the hook file with a proper ScummVM manifest format
+        // Modern scummvm_libretro cores need a manifest with engineid and game path
+        let manifestContent = "[scummvm]\nengineid=\(gameID)\npath=\(gameFolder.path)"
+        
         do {
-            try gameID.write(to: hookPath, atomically: true, encoding: .utf8)
-            print("[ScummVM] Created hook file: \(hookPath.path)")
+            try manifestContent.write(to: hookPath, atomically: true, encoding: .utf8)
+            print("[ScummVM] Created hook file with manifest: \(hookPath.path)")
             return hookPath
         } catch {
             print("[ScummVM] Failed to create hook file: \(error)")
