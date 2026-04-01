@@ -3,8 +3,11 @@ import AppKit
 
 struct LibraryGridView: View {
     @EnvironmentObject var library: ROMLibrary
+    @EnvironmentObject var categoryManager: CategoryManager
     @EnvironmentObject var coreManager: CoreManager
     @EnvironmentObject var controllerService: ControllerService
+    @StateObject private var dragState = GameDragState.shared
+    @Binding var showCreateCategorySheet: Bool
     var filter: LibraryFilter
     @Binding var selectedROM: ROM?
     @Binding var searchText: String
@@ -23,6 +26,18 @@ struct LibraryGridView: View {
     // Smooth pinch-to-zoom state
     @State private var continuousZoom: Double = 0.5 // 0.0 to 1.0, matches slider midpoint
     @State private var lastMagnification: Double = 1.0
+    
+    // Multi-select state
+    @State private var selectedROMs: Set<UUID> = []
+    @State private var isDraggingSelection = false
+    @State private var lastSelectedIndex: Int? = nil
+    @State private var showAddToCategorySheet = false
+    @State private var marqueeStartPoint: CGPoint? = nil
+    @State private var marqueeCurrentPoint: CGPoint? = nil
+    @State private var isMarqueeSelecting = false
+    
+    // Drag and drop
+    @State private var draggedROMs: [ROM] = []
 
     private enum ViewMode: String { case grid, list }
 
@@ -38,6 +53,8 @@ struct LibraryGridView: View {
                 .sorted { ($0.lastPlayed ?? Date.distantPast) > ($1.lastPlayed ?? Date.distantPast) }
         case .system(let system):
             base = library.roms.filter { $0.systemID == system.id }
+        case .category(let categoryID):
+            base = categoryManager.gamesInCategory(categoryID: categoryID, fromROMs: library.roms)
         }
 
         // Filter out BIOS files unless "Show BIOS Files" is enabled
@@ -257,27 +274,83 @@ struct LibraryGridView: View {
 
     private var gridView: some View {
         ScrollView {
-            LazyVGrid(columns: columns, spacing: 16) {
-                ForEach(displayedROMs) { rom in
-                    GameCardView(rom: rom, isSelected: selectedROM?.id == rom.id, zoomLevel: zoomLevel)
-                        .contentShape(Rectangle())
-                        .gesture(
-                            DragGesture(minimumDistance: 0)
-                                .onChanged { _ in
-                                    if selectedROM?.id != rom.id {
-                                        selectedROM = rom
-                                    }
-                                }
+            ZStack {
+                // Marquee selection overlay
+                if let start = marqueeStartPoint, let current = marqueeCurrentPoint {
+                    let rect = CGRect(x: min(start.x, current.x), y: min(start.y, current.y),
+                                     width: abs(current.x - start.x), height: abs(current.y - start.y))
+                    Rectangle()
+                        .fill(Color.accentColor.opacity(0.15))
+                        .overlay(
+                            Rectangle()
+                                .stroke(Color.accentColor, lineWidth: 1.5)
                         )
-                        .simultaneousGesture(
-                            TapGesture(count: 2).onEnded {
-                                launchGame(rom)
-                            }
-                        )
-                        .contextMenu { contextMenu(for: rom) }
+                        .frame(width: rect.width, height: rect.height)
+                        .position(x: rect.midX, y: rect.midY)
                 }
+                
+                LazyVGrid(columns: columns, spacing: 16) {
+                    ForEach(Array(displayedROMs.enumerated()), id: \.element.id) { index, rom in
+                        let isSelected = selectedROMs.contains(rom.id) || selectedROM?.id == rom.id
+                        GameCardView(rom: rom, isSelected: isSelected, isMultiSelected: selectedROMs.contains(rom.id), zoomLevel: zoomLevel)
+                            .contentShape(Rectangle())
+                            .onTapGesture {
+                                handleTap(on: rom, at: index)
+                            }
+                            .simultaneousGesture(
+                                TapGesture(count: 2).onEnded {
+                                    launchGame(rom)
+                                }
+                            )
+                            .contextMenu { contextMenu(for: rom) }
+                            .onDrag {
+                                let items = selectedROMs.contains(rom.id) || selectedROM?.id == rom.id
+                                    ? selectedROMs.compactMap { id in displayedROMs.first(where: { $0.id == id }) }
+                                    : [rom]
+                                draggedROMs = items
+                                dragState.startDrag(gameIDs: items.map { $0.id })
+                                let provider = NSItemProvider(object: NSString(string: items.map { $0.id.uuidString }.joined(separator: ",")))
+                                return provider
+                            }
+                            // Store position for marquee detection
+                            .background(
+                                GeometryReader { geometry in
+                                    Color.clear
+                                        .onAppear {
+                                            romPositions[rom.id] = geometry.frame(in: .global)
+                                        }
+                                        .onChange(of: geometry.frame(in: .global)) { newFrame in
+                                            romPositions[rom.id] = newFrame
+                                        }
+                                }
+                            )
+                    }
+                }
+                .padding()
             }
-            .padding()
+            .simultaneousGesture(
+                // Marquee selection only with Option key held - otherwise normal drag works
+                DragGesture(minimumDistance: 5)
+                    .onChanged { value in
+                        let modifiers = NSEvent.modifierFlags
+                        if modifiers.contains(.option) {
+                            if marqueeStartPoint == nil {
+                                marqueeStartPoint = value.startLocation
+                            }
+                            marqueeCurrentPoint = value.location
+                            isMarqueeSelecting = true
+                            updateMarqueeSelection()
+                        }
+                    }
+                    .onEnded { _ in
+                        if isMarqueeSelecting {
+                            updateMarqueeSelection()
+                        }
+                        marqueeStartPoint = nil
+                        marqueeCurrentPoint = nil
+                        isMarqueeSelecting = false
+                    }
+            )
         }
         .gesture(
             MagnificationGesture()
@@ -296,28 +369,94 @@ struct LibraryGridView: View {
                     lastMagnification = 1.0
                 }
         )
+        .onDrop(of: [.url], isTargeted: nil) { items, location in
+            // Handle dropping items onto the grid (could be used for adding to category)
+            return false
+        }
+    }
+    
+    // Track ROM positions for marquee selection
+    @State private var romPositions: [UUID: CGRect] = [:]
+    
+    /// Handle tap with modifier key support for multi-select
+    private func handleTap(on rom: ROM, at index: Int) {
+        let modifiers = NSEvent.modifierFlags
+        
+        if modifiers.contains(.command) {
+            // Command+click: toggle selection
+            if selectedROMs.contains(rom.id) {
+                selectedROMs.remove(rom.id)
+                if selectedROMs.isEmpty {
+                    selectedROM = nil
+                }
+            } else {
+                selectedROMs.insert(rom.id)
+                selectedROM = rom
+            }
+            lastSelectedIndex = index
+        } else if modifiers.contains(.shift), let lastIndex = lastSelectedIndex {
+            // Shift+click: range selection
+            let range = min(lastIndex, index)...max(lastIndex, index)
+            let rangeIDs = range.compactMap { i in
+                i < displayedROMs.count ? displayedROMs[i].id : nil
+            }
+            selectedROMs.formUnion(rangeIDs)
+            selectedROM = rom
+        } else {
+            // Regular click: single select
+            selectedROMs.removeAll()
+            selectedROM = rom
+            lastSelectedIndex = index
+        }
+    }
+    
+    /// Update selection based on marquee rectangle
+    private func updateMarqueeSelection() {
+        guard let start = marqueeStartPoint, let current = marqueeCurrentPoint else { return }
+        
+        let marquee = CGRect(x: min(start.x, current.x), y: min(start.y, current.y),
+                            width: abs(current.x - start.x), height: abs(current.y - start.y))
+        
+        // Only apply marquee selection if the drag was significant
+        guard marquee.width > 10 || marquee.height > 10 else { return }
+        
+        let modifiers = NSEvent.modifierFlags
+        if !modifiers.contains(.command) {
+            selectedROMs.removeAll()
+        }
+        
+        for (romID, position) in romPositions {
+            if marquee.intersects(position) {
+                selectedROMs.insert(romID)
+            }
+        }
     }
 
     private var listView: some View {
         List(selection: $selectedROM) {
-            ForEach(displayedROMs) { rom in
-                GameListRowView(rom: rom, zoomLevel: zoomLevel)
+            ForEach(Array(displayedROMs.enumerated()), id: \.element.id) { index, rom in
+                let isSelected = selectedROMs.contains(rom.id) || selectedROM?.id == rom.id
+                GameListRowView(rom: rom, isSelected: isSelected, zoomLevel: zoomLevel)
                     .tag(rom)
                     .contentShape(Rectangle())
-                    .gesture(
-                        DragGesture(minimumDistance: 0)
-                            .onChanged { _ in
-                                if selectedROM?.id != rom.id {
-                                    selectedROM = rom
-                                }
-                            }
-                    )
+                    .onTapGesture {
+                        handleListTap(on: rom, at: index)
+                    }
                     .simultaneousGesture(
                         TapGesture(count: 2).onEnded {
                             launchGame(rom)
                         }
                     )
                     .contextMenu { contextMenu(for: rom) }
+                    .onDrag {
+                        let items = selectedROMs.contains(rom.id) || selectedROM?.id == rom.id
+                            ? selectedROMs.compactMap { id in displayedROMs.first(where: { $0.id == id }) }
+                            : [rom]
+                        draggedROMs = items
+                        dragState.startDrag(gameIDs: items.map { $0.id })
+                        let provider = NSItemProvider(object: NSString(string: items.map { $0.id.uuidString }.joined(separator: ",")))
+                        return provider
+                    }
             }
         }
         .listStyle(.inset(alternatesRowBackgrounds: true))
@@ -338,6 +477,38 @@ struct LibraryGridView: View {
                     lastMagnification = 1.0
                 }
         )
+    }
+    
+    /// Handle tap with modifier key support for multi-select in list view
+    private func handleListTap(on rom: ROM, at index: Int) {
+        let modifiers = NSEvent.modifierFlags
+        
+        if modifiers.contains(.command) {
+            // Command+click: toggle selection
+            if selectedROMs.contains(rom.id) {
+                selectedROMs.remove(rom.id)
+                if selectedROMs.isEmpty {
+                    selectedROM = nil
+                }
+            } else {
+                selectedROMs.insert(rom.id)
+                selectedROM = rom
+            }
+            lastSelectedIndex = index
+        } else if modifiers.contains(.shift), let lastIndex = lastSelectedIndex {
+            // Shift+click: range selection
+            let range = min(lastIndex, index)...max(lastIndex, index)
+            let rangeIDs = range.compactMap { i in
+                i < displayedROMs.count ? displayedROMs[i].id : nil
+            }
+            selectedROMs.formUnion(rangeIDs)
+            selectedROM = rom
+        } else {
+            // Regular click: single select
+            selectedROMs.removeAll()
+            selectedROM = rom
+            lastSelectedIndex = index
+        }
     }
 
     /// Zoom level from 0.0 (min zoom, 8 columns) to 1.0 (max zoom, 1 column)
@@ -412,6 +583,57 @@ struct LibraryGridView: View {
             Label("Rename Game", systemImage: "pencil")
         }
 
+        Divider()
+        
+        // Add to Category submenu
+        Menu {
+            Button {
+                showCreateCategorySheet = true
+            } label: {
+                Label("New Category...", systemImage: "plus.circle")
+            }
+            
+            if !categoryManager.categories.isEmpty {
+                Divider()
+            }
+            
+            ForEach(categoryManager.categories) { category in
+                let isInCategory = category.gameIDs.contains(rom.id)
+                Button {
+                    if isInCategory {
+                        categoryManager.removeGamesFromCategory(gameIDs: [rom.id], categoryID: category.id)
+                    } else {
+                        categoryManager.addGamesToCategory(gameIDs: [rom.id], categoryID: category.id)
+                    }
+                } label: {
+                    HStack {
+                        Image(systemName: category.iconName)
+                            .foregroundColor(Color(hex: category.colorHex) ?? .blue)
+                        Text(category.name)
+                        Spacer()
+                        if isInCategory {
+                            Image(systemName: "checkmark")
+                        }
+                    }
+                }
+            }
+            
+            // Remove from all categories option
+            let categoriesForGame = categoryManager.categories.filter { $0.gameIDs.contains(rom.id) }
+            if !categoriesForGame.isEmpty {
+                Divider()
+                Button(role: .destructive) {
+                    for category in categoriesForGame {
+                        categoryManager.removeGamesFromCategory(gameIDs: [rom.id], categoryID: category.id)
+                    }
+                } label: {
+                    Label("Remove from All Categories", systemImage: "folder.badge.minus")
+                }
+            }
+        } label: {
+            Label("Categories", systemImage: "folder.badge.plus")
+        }
+        
         Divider()
         Button(rom.isFavorite ? "Remove from Favorites" : "Add to Favorites") {
             var updated = rom
@@ -490,10 +712,12 @@ struct LibraryGridView: View {
 struct GameCardView: View {
     let rom: ROM
     let isSelected: Bool
+    let isMultiSelected: Bool
     let zoomLevel: Double
     @State private var isHovered = false
     @State private var image: NSImage?
     @ObservedObject var prefs = SystemPreferences.shared
+    @EnvironmentObject var categoryManager: CategoryManager
 
     private var boxType: BoxType {
         prefs.boxType(for: rom.systemID ?? "")
@@ -502,15 +726,42 @@ struct GameCardView: View {
     private var titleFontSize: CGFloat {
         10 + zoomLevel * 6
     }
+    
+    private var categoryBadges: [GameCategory] {
+        categoryManager.categories.filter { $0.gameIDs.contains(rom.id) }
+    }
 
     var body: some View {
         VStack(alignment: .leading, spacing: 8) {
-            artworkView
+            ZStack(alignment: .topTrailing) {
+                artworkView
+                
+                // Multi-select indicator
+                if isMultiSelected {
+                    Image(systemName: "checkmark.circle.fill")
+                        .font(.title2)
+                        .foregroundColor(.white)
+                        .shadow(radius: 2)
+                        .padding(4)
+                }
+            }
+            
             Text(rom.displayName)
                 .font(.system(size: titleFontSize, weight: .medium))
                 .lineLimit(2)
                 .multilineTextAlignment(.leading)
                 .foregroundColor(.primary)
+            
+            // Category badges
+            if !categoryBadges.isEmpty {
+                ScrollView(.horizontal, showsIndicators: false) {
+                    HStack(spacing: 4) {
+                        ForEach(categoryBadges) { category in
+                            CategoryBadgeView(category: category)
+                        }
+                    }
+                }
+            }
         }
         .padding(8)
         .background(
@@ -593,8 +844,10 @@ struct GameCardView: View {
 
 struct GameListRowView: View {
     let rom: ROM
+    let isSelected: Bool
     let zoomLevel: Double
     @State private var thumb: NSImage?
+    @EnvironmentObject var categoryManager: CategoryManager
     
     private var titleFontSize: CGFloat {
         12 + zoomLevel * 8
@@ -607,9 +860,20 @@ struct GameListRowView: View {
     private var thumbSize: CGFloat {
         36 + zoomLevel * 24
     }
+    
+    private var categoryBadges: [GameCategory] {
+        categoryManager.categories.filter { $0.gameIDs.contains(rom.id) }
+    }
 
     var body: some View {
         HStack(spacing: 12) {
+            // Multi-select indicator
+            if isSelected {
+                Image(systemName: "checkmark.circle.fill")
+                    .foregroundColor(.accentColor)
+                    .frame(width: 16, height: 16)
+            }
+            
             artThumb
             VStack(alignment: .leading, spacing: 2) {
                 Text(rom.displayName)
@@ -625,6 +889,17 @@ struct GameListRowView: View {
                         Text(sys.name)
                             .font(.system(size: subtitleFontSize))
                             .foregroundColor(.secondary)
+                    }
+                }
+                
+                // Category badges
+                if !categoryBadges.isEmpty {
+                    ScrollView(.horizontal, showsIndicators: false) {
+                        HStack(spacing: 4) {
+                            ForEach(categoryBadges) { category in
+                                CategoryBadgeView(category: category)
+                            }
+                        }
                     }
                 }
             }
@@ -669,6 +944,67 @@ struct GameListRowView: View {
         }
         .frame(width: thumbSize, height: thumbSize)
         .clipShape(RoundedRectangle(cornerRadius: 6))
+    }
+}
+
+// MARK: - Category Badge
+
+struct CategoryBadgeView: View {
+    let category: GameCategory
+    
+    var body: some View {
+        HStack(spacing: 3) {
+            Image(systemName: category.iconName)
+                .font(.system(size: 7))
+            Text(category.name)
+                .font(.system(size: 8))
+        }
+        .foregroundColor(.white)
+        .padding(.horizontal, 5)
+        .padding(.vertical, 2)
+        .background(Color(hex: category.colorHex) ?? .blue)
+        .cornerRadius(4)
+    }
+}
+
+// MARK: - Add to Category Sheet
+
+struct AddToCategorySheet: View {
+    @Environment(\.dismiss) private var dismiss
+    @EnvironmentObject var categoryManager: CategoryManager
+    let gameIDs: [UUID]
+    
+    var body: some View {
+        NavigationStack {
+            List {
+                ForEach(categoryManager.categories) { category in
+                    let alreadyContains = !Set(category.gameIDs).intersection(gameIDs).isEmpty
+                    Button {
+                        categoryManager.addGamesToCategory(gameIDs: gameIDs, categoryID: category.id)
+                        dismiss()
+                    } label: {
+                        HStack {
+                            Image(systemName: category.iconName)
+                                .foregroundColor(Color(hex: category.colorHex) ?? .blue)
+                            Text(category.name)
+                            Spacer()
+                            if alreadyContains {
+                                Image(systemName: "checkmark")
+                                    .foregroundColor(.secondary)
+                            }
+                        }
+                    }
+                    .buttonStyle(.plain)
+                }
+            }
+            .navigationTitle("Add to Category")
+            .toolbar {
+                ToolbarItem(placement: .cancellationAction) {
+                    Button("Cancel") { dismiss() }
+                }
+            }
+        }
+        .frame(width: 300, height: 300)
     }
 }
 

@@ -3,6 +3,7 @@ import SwiftUI
 @main
 struct TruchieEmuApp: App {
     @StateObject private var library = ROMLibrary()
+    @StateObject private var categoryManager = CategoryManager()
     @StateObject private var coreManager = CoreManager()
     @StateObject private var controllerService = ControllerService.shared
 
@@ -10,6 +11,7 @@ struct TruchieEmuApp: App {
         WindowGroup {
             ContentView()
                 .environmentObject(library)
+                .environmentObject(categoryManager)
                 .environmentObject(coreManager)
                 .environmentObject(controllerService)
                 .environmentObject(LibraryAutomationCoordinator.shared)

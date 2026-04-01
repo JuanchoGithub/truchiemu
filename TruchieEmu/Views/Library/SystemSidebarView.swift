@@ -2,7 +2,10 @@ import SwiftUI
 
 struct SystemSidebarView: View {
     @EnvironmentObject var library: ROMLibrary
+    @EnvironmentObject var categoryManager: CategoryManager
     @Binding var selectedFilter: LibraryFilter
+    @Binding var showCreateCategorySheet: Bool
+    @Binding var editingCategory: GameCategory?
 
     private var systemsWithROMs: [SystemInfo] {
         let ids = Set(library.roms.compactMap { $0.systemID })
@@ -42,6 +45,21 @@ struct SystemSidebarView: View {
                         .tag(LibraryFilter.system(system))
                     }
                 }
+            }
+            
+            Section("Categories") {
+                ForEach(categoryManager.categories) { category in
+                    categoryRow(category: category)
+                        .tag(LibraryFilter.category(category.id))
+                }
+                .onMove(perform: categoryManager.reorderCategories)
+                
+                Button {
+                    showCreateCategorySheet = true
+                } label: {
+                    Label("New Category", systemImage: "plus.circle")
+                }
+                .buttonStyle(.plain)
             }
         }
         .listStyle(.sidebar)
@@ -93,6 +111,63 @@ struct SystemSidebarView: View {
         )
     }
 
+    @StateObject private var dragState = GameDragState.shared
+    
+    @ViewBuilder
+    private func categoryRow(category: GameCategory) -> some View {
+        let count = categoryManager.gamesInCategory(categoryID: category.id, fromROMs: library.roms).count
+        
+        HStack {
+            Image(systemName: category.iconName)
+                .foregroundColor(Color(hex: category.colorHex) ?? .blue)
+                .frame(width: 18)
+            Text(category.name)
+                .lineLimit(1)
+            Spacer()
+            Text("\(count)")
+                .font(.caption)
+                .foregroundColor(.secondary)
+                .padding(.horizontal, 6)
+                .padding(.vertical, 2)
+                .background(Color.secondary.opacity(0.15))
+                .cornerRadius(6)
+        }
+        .contentShape(Rectangle())
+        .gesture(
+            DragGesture(minimumDistance: 0)
+                .onChanged { _ in
+                    selectedFilter = .category(category.id)
+                }
+        )
+        .onDrop(of: [.plainText], isTargeted: nil) { items in
+            handleDropOnCategory(items: items, categoryID: category.id)
+        }
+        .contextMenu {
+            Button {
+                showEditCategorySheet(category: category)
+            } label: {
+                Label("Edit Category", systemImage: "pencil")
+            }
+            Button(role: .destructive) {
+                categoryManager.deleteCategory(id: category.id)
+                if case .category(let catID) = selectedFilter, catID == category.id {
+                    selectedFilter = .all
+                }
+            } label: {
+                Label("Delete Category", systemImage: "trash")
+            }
+        }
+    }
+    
+    private func handleDropOnCategory(items: [NSItemProvider], categoryID: String) -> Bool {
+        // Use the shared drag state to get the dragged game IDs
+        guard !dragState.draggedGameIDs.isEmpty else { return false }
+        
+        categoryManager.addGamesToCategory(gameIDs: dragState.draggedGameIDs, categoryID: categoryID)
+        dragState.endDrag()
+        return true
+    }
+    
     private func pickFolder() {
         let panel = NSOpenPanel()
         panel.canChooseDirectories = true
@@ -100,6 +175,155 @@ struct SystemSidebarView: View {
         if panel.runModal() == .OK, let url = panel.url {
             library.addLibraryFolder(url: url)
         }
+    }
+    
+    private func showEditCategorySheet(category: GameCategory) {
+        editingCategory = category
+    }
+}
+
+// MARK: - Category Sheet Views
+
+struct CreateCategorySheet: View {
+    @Environment(\.dismiss) private var dismiss
+    @EnvironmentObject var categoryManager: CategoryManager
+    
+    @State private var name: String = ""
+    @State private var selectedIcon: String = "folder.fill"
+    @State private var selectedColor: String = "007AFF"
+    
+    var body: some View {
+        NavigationStack {
+            Form {
+                Section("Category Name") {
+                    TextField("Name", text: $name)
+                }
+                
+                Section("Icon") {
+                    LazyVGrid(columns: Array(repeating: GridItem(.flexible()), count: 6), spacing: 12) {
+                        ForEach(GameCategory.commonIcons, id: \.self) { icon in
+                            Button {
+                                selectedIcon = icon
+                            } label: {
+                                Image(systemName: icon)
+                                    .font(.title2)
+                                    .foregroundColor(selectedIcon == icon ? Color(hex: selectedColor) ?? .blue : .secondary)
+                                    .frame(width: 32, height: 32)
+                            }
+                            .buttonStyle(.plain)
+                        }
+                    }
+                }
+                
+                Section("Color") {
+                    LazyVGrid(columns: Array(repeating: GridItem(.flexible()), count: 7), spacing: 12) {
+                        ForEach(GameCategory.colorPalette, id: \.hex) { color in
+                            Button {
+                                selectedColor = color.hex
+                            } label: {
+                                Circle()
+                                    .fill(Color(hex: color.hex) ?? .blue)
+                                    .frame(width: 28, height: 28)
+                                    .overlay(
+                                        Circle()
+                                            .stroke(selectedColor == color.hex ? Color.primary : Color.clear, lineWidth: 2)
+                                    )
+                            }
+                            .buttonStyle(.plain)
+                        }
+                    }
+                }
+                
+                Section("Preview") {
+                    HStack {
+                        Image(systemName: selectedIcon)
+                            .font(.title2)
+                            .foregroundColor(Color(hex: selectedColor) ?? .blue)
+                        Text(name.isEmpty ? "Category Name" : name)
+                    }
+                }
+            }
+            .formStyle(.grouped)
+            .navigationTitle("New Category")
+            .toolbar {
+                ToolbarItem(placement: .cancellationAction) {
+                    Button("Cancel") { dismiss() }
+                }
+                ToolbarItem(placement: .confirmationAction) {
+                    Button("Create") {
+                        categoryManager.addCategory(name: name, iconName: selectedIcon, colorHex: selectedColor)
+                        dismiss()
+                    }
+                    .disabled(name.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty)
+                }
+            }
+        }
+        .frame(width: 360, height: 500)
+    }
+}
+
+struct EditCategorySheet: View {
+    @Environment(\.dismiss) private var dismiss
+    @EnvironmentObject var categoryManager: CategoryManager
+    @State var category: GameCategory
+    
+    var body: some View {
+        NavigationStack {
+            Form {
+                Section("Category Name") {
+                    TextField("Name", text: $category.name)
+                }
+                
+                Section("Icon") {
+                    LazyVGrid(columns: Array(repeating: GridItem(.flexible()), count: 6), spacing: 12) {
+                        ForEach(GameCategory.commonIcons, id: \.self) { icon in
+                            Button {
+                                category.iconName = icon
+                            } label: {
+                                Image(systemName: icon)
+                                    .font(.title2)
+                                    .foregroundColor(category.iconName == icon ? category.color : .secondary)
+                                    .frame(width: 32, height: 32)
+                            }
+                            .buttonStyle(.plain)
+                        }
+                    }
+                }
+                
+                Section("Color") {
+                    LazyVGrid(columns: Array(repeating: GridItem(.flexible()), count: 7), spacing: 12) {
+                        ForEach(GameCategory.colorPalette, id: \.hex) { color in
+                            Button {
+                                category.colorHex = color.hex
+                            } label: {
+                                Circle()
+                                    .fill(Color(hex: color.hex) ?? .blue)
+                                    .frame(width: 28, height: 28)
+                                    .overlay(
+                                        Circle()
+                                            .stroke(category.colorHex == color.hex ? Color.primary : Color.clear, lineWidth: 2)
+                                    )
+                            }
+                            .buttonStyle(.plain)
+                        }
+                    }
+                }
+            }
+            .formStyle(.grouped)
+            .navigationTitle("Edit Category")
+            .toolbar {
+                ToolbarItem(placement: .cancellationAction) {
+                    Button("Cancel") { dismiss() }
+                }
+                ToolbarItem(placement: .confirmationAction) {
+                    Button("Save") {
+                        categoryManager.updateCategory(category)
+                        dismiss()
+                    }
+                }
+            }
+        }
+        .frame(width: 360, height: 450)
     }
 }
 
@@ -110,6 +334,7 @@ enum LibraryFilter: Hashable, Identifiable {
     case favorites
     case recent
     case system(SystemInfo)
+    case category(String) // category ID
     
     var id: String {
         switch self {
@@ -117,6 +342,7 @@ enum LibraryFilter: Hashable, Identifiable {
         case .favorites: return "favorites"
         case .recent: return "recent"
         case .system(let system): return "system-\(system.id)"
+        case .category(let id): return "category-\(id)"
         }
     }
 }

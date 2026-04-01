@@ -2,12 +2,15 @@ import SwiftUI
 
 struct ContentView: View {
     @EnvironmentObject var library: ROMLibrary
+    @EnvironmentObject var categoryManager: CategoryManager
     @EnvironmentObject var coreManager: CoreManager
     @EnvironmentObject var libraryAutomation: LibraryAutomationCoordinator
     @State private var selectedFilter: LibraryFilter = .recent
     @State private var selectedROM: ROM? = nil
     @State private var showOnboarding = false
     @State private var searchText = ""
+    @State private var showCreateCategorySheet = false
+    @State private var editingCategory: GameCategory? = nil
 
     var body: some View {
         Group {
@@ -27,9 +30,14 @@ struct ContentView: View {
     private var mainInterface: some View {
         VStack(spacing: 0) {
             NavigationSplitView {
-                SystemSidebarView(selectedFilter: $selectedFilter)
+                SystemSidebarView(
+                    selectedFilter: $selectedFilter,
+                    showCreateCategorySheet: $showCreateCategorySheet,
+                    editingCategory: $editingCategory
+                )
             } detail: {
                 LibraryGridView(
+                    showCreateCategorySheet: $showCreateCategorySheet,
                     filter: selectedFilter,
                     selectedROM: $selectedROM,
                     searchText: $searchText
@@ -37,6 +45,12 @@ struct ContentView: View {
                 .navigationTitle(navigationTitle)
             }
             .navigationSplitViewStyle(.balanced)
+            .sheet(isPresented: $showCreateCategorySheet) {
+                CreateCategorySheet()
+            }
+            .sheet(item: $editingCategory) { category in
+                EditCategorySheet(category: category)
+            }
 
             if libraryAutomation.isActive {
                 VStack(alignment: .leading, spacing: 6) {
@@ -64,6 +78,11 @@ struct ContentView: View {
         case .favorites: return "Favorites"
         case .recent: return "Recent"
         case .system(let sys): return sys.name
+        case .category(let id):
+            if let category = categoryManager.categories.first(where: { $0.id == id }) {
+                return category.name
+            }
+            return "Category"
         }
     }
 }
