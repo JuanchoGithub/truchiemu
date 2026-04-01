@@ -485,10 +485,21 @@ static bool bridge_environment(unsigned cmd, void *data) {
         case RETRO_ENVIRONMENT_SET_VARIABLES:          // core tells us what options exist — we acknowledge
         case RETRO_ENVIRONMENT_SET_SUPPORT_NO_GAME:
         case RETRO_ENVIRONMENT_SET_SYSTEM_AV_INFO:
-            if (data && g_instance) {
+            if (data) {
                 struct retro_system_av_info *info = (struct retro_system_av_info *)data;
-                g_instance->_avInfo = *info;
-                NSLog(@"[Bridge] Core updated A/V info: FPS=%f SampleRate=%f", info->timing.fps, info->timing.sample_rate);
+                // Validate FPS — some cores (e.g., mame2003-plus) send 0 or garbage during init.
+                // Never let invalid timing data overwrite good values.
+                double fps = info->timing.fps;
+                if (fps > 0.0 && fps < 1000.0
+                    && info->timing.sample_rate > 0.0 && info->timing.sample_rate < 1000000.0) {
+                    if (g_instance) {
+                        g_instance->_avInfo = *info;
+                    }
+                    NSLog(@"[Bridge] Core updated A/V info: FPS=%f SampleRate=%f", info->timing.fps, info->timing.sample_rate);
+                } else {
+                    NSLog(@"[Bridge] Ignoring invalid A/V info from core (FPS=%f SR=%f) — keeping previous values",
+                          fps, info->timing.sample_rate);
+                }
             }
             return true;
         case RETRO_ENVIRONMENT_GET_VARIABLE_UPDATE:    // has anything changed? → no, vars are stable
@@ -708,8 +719,10 @@ static int16_t bridge_input_state(unsigned port, unsigned device, unsigned index
         
         uint64_t start = mach_absolute_time();
         
-        // Use current FPS from _avInfo in case it changed mid-run
-        double currentFps = _avInfo.timing.fps > 0 ? _avInfo.timing.fps : 60.0;
+        // Use current FPS from _avInfo in case it changed mid-run.
+        // Clamp to sane bounds: 10-240 FPS to handle corrupted/missing values.
+        double rawFps = _avInfo.timing.fps > 0 ? _avInfo.timing.fps : 60.0;
+        double currentFps = rawFps < 10.0 ? 60.0 : (rawFps > 240.0 ? 240.0 : rawFps);
         NSTimeInterval frameTime = 1.0 / currentFps;
         
         if (_hwRenderEnabled && _glContext) CGLSetCurrentContext(_glContext);
