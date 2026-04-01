@@ -135,6 +135,7 @@ static LibretroBridgeImpl *g_instance = nil;
 static int g_selectedLanguage = 0; // RETRO_LANGUAGE_ENGLISH
 static int g_logLevel = 1; // 1 = Warn & Error
 static NSString *g_coreID = nil;   // Core ID for options persistence
+static BOOL g_isPaused = NO;    // Pause state
 // Shared with bridge_get_current_framebuffer — updated by setupHWRender
 static GLuint g_hwFBO = 0;
 
@@ -689,6 +690,14 @@ static int16_t bridge_input_state(unsigned port, unsigned device, unsigned index
     // Timing loop using Mach Absolute Time for high precision
     int localRunCount = 0;
     while (_running) {
+        // Check pause state - if paused, just sleep and skip emulation
+        while (g_isPaused && _running) {
+            // When paused, still render the last frame but don't advance emulation
+            [NSThread sleepForTimeInterval:0.05];
+        }
+        
+        if (!_running) break;
+        
         uint64_t start = mach_absolute_time();
         
         // Use current FPS from _avInfo in case it changed mid-run
@@ -738,12 +747,37 @@ static int16_t bridge_input_state(unsigned port, unsigned device, unsigned index
 
 - (void)stop { _running = NO; }
 
+- (NSData *)serializeState {
+    if (!_retro_serialize_size || !_retro_serialize) return nil;
+    size_t sz = _retro_serialize_size();
+    if (sz == 0) return nil;
+    
+    void *buf = malloc(sz);
+    if (!buf) return nil;
+    
+    if (_retro_serialize(buf, sz)) {
+        return [NSData dataWithBytesNoCopy:buf length:sz freeWhenDone:YES];
+    } else {
+        free(buf);
+        return nil;
+    }
+}
+
+- (BOOL)unserializeState:(NSData *)data {
+    if (!data || !_retro_unserialize) return NO;
+    return _retro_unserialize(data.bytes, data.length);
+}
+
 - (void)saveState {
     if (!_retro_serialize_size || !_retro_serialize) return;
     size_t sz = _retro_serialize_size();
+    if (sz == 0) return;
+    
     void *buf = malloc(sz);
+    if (!buf) return;
+    
     if (_retro_serialize(buf, sz)) {
-        NSData *data = [NSData dataWithBytesNoCopy:buf length:sz];
+        NSData *data = [NSData dataWithBytesNoCopy:buf length:sz freeWhenDone:YES];
         [data writeToFile:_saveStatePath atomically:YES];
     } else {
         free(buf);
@@ -964,10 +998,15 @@ static int16_t bridge_input_state(unsigned port, unsigned device, unsigned index
 }
 
 + (void)saveState { if (g_instance) [g_instance saveState]; }
++ (NSData *)serializeState { return g_instance ? [g_instance serializeState] : nil; }
++ (BOOL)unserializeState:(NSData *)data { return g_instance ? [g_instance unserializeState:data] : NO; }
++ (size_t)serializeSize { return g_instance && g_instance->_retro_serialize_size ? g_instance->_retro_serialize_size() : 0; }
 + (void)setKeyState:(int)rid pressed:(BOOL)p { if (g_instance) [g_instance setKeyState:rid pressed:p]; }
 + (void)setAnalogState:(int)idx id:(int)id value:(int)v { if (g_instance) [g_instance setAnalogState:idx id:id value:v]; }
 + (void)setLanguage:(int)language { g_selectedLanguage = language; }
 + (void)setLogLevel:(int)level { g_logLevel = level; }
++ (void)setPaused:(BOOL)paused { g_isPaused = paused; }
++ (BOOL)isPaused { return g_isPaused; }
 
 /* ── Load Core For Options (no content) ── */
 static BOOL g_loadingForOptions = NO;

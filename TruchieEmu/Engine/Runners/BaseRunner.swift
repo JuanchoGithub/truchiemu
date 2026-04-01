@@ -2,10 +2,69 @@ import MetalKit
 import Foundation
 import SwiftUI
 import GameController
+import AppKit
+
+// MARK: - MTLTexture to NSImage conversion
+
+/// Convert MTLTexture to NSImage using Metal texture bytes directly
+func NSImageFromMTLTexture(_ texture: MTLTexture) -> NSImage? {
+    let width = texture.width
+    let height = texture.height
+    
+    guard texture.pixelFormat == .bgra8Unorm else { return nil }
+    
+    let bytesPerPixel = 4
+    let bytesPerRow = width * bytesPerPixel
+    let byteCount = width * height * bytesPerPixel
+    
+    var byteArray = [UInt8](repeating: 0, count: byteCount)
+    
+    let region = MTLRegionMake2D(0, 0, width, height)
+    byteArray.withUnsafeMutableBytes { pointer in
+        texture.getBytes(
+            pointer.baseAddress!,
+            bytesPerRow: bytesPerRow,
+            from: region,
+            mipmapLevel: 0
+        )
+    }
+    
+    guard let colorSpace = CGColorSpace(name: CGColorSpace.sRGB) else { return nil }
+    
+    let bitmapInfo = CGBitmapInfo(rawValue: CGImageAlphaInfo.premultipliedFirst.rawValue)
+        .union(.byteOrder32Little)
+    
+    var cgImage: CGImage?
+    byteArray.withUnsafeMutableBytes { ptr in
+        guard let context = CGContext(
+            data: ptr.baseAddress,
+            width: width,
+            height: height,
+            bitsPerComponent: 8,
+            bytesPerRow: bytesPerRow,
+            space: colorSpace,
+            bitmapInfo: bitmapInfo.rawValue
+        ) else { return }
+        cgImage = context.makeImage()
+    }
+    guard let image = cgImage else { return nil }
+    
+    return NSImage(cgImage: image, size: NSSize(width: width, height: height))
+}
 
 class EmulatorRunner: ObservableObject, @unchecked Sendable {
     @MainActor weak var metalView: MTKView?
     @MainActor @Published var currentFrameTexture: MTLTexture? = nil
+    
+    // MARK: - Save State
+    @MainActor @Published var currentSlot: Int = 0
+    @MainActor @Published var osdMessage: String?
+    var undoBuffer: Data?
+    
+    /// Whether the current core supports save states
+    var supportsSaveStates: Bool {
+        LibretroBridge.serializeSize() > 0
+    }
     
     internal var device: MTLDevice? = MTLCreateSystemDefaultDevice()
     private var emulationQueue = DispatchQueue(label: "truchiemu.emulation", qos: .userInteractive)
@@ -14,8 +73,12 @@ class EmulatorRunner: ObservableObject, @unchecked Sendable {
     private var runnerFrameCount = 0
     private var textureCache: MTLTexture? = nil
     private let textureLock = NSLock()
-    var rom: ROM?
+    @MainActor @Published var rom: ROM?
     var romPath: String = ""
+    
+    /// Expose saveManager for UI access
+    var saveManager: SaveStateManager { _saveManager }
+    private let _saveManager = SaveStateManager()
     /// Keyboard mapping snapshot captured at launch — safe to read from any thread.
     var cachedKeyboardMapping: KeyboardMapping = KeyboardMapping(buttons: [:])
     private var hookedController: GCController? = nil
@@ -85,6 +148,9 @@ class EmulatorRunner: ObservableObject, @unchecked Sendable {
         }
     }
 
+    // MARK: - Pause State
+    @MainActor @Published var isPaused: Bool = false
+    
     func stop() {
         print("[Runner] Stopping emulation thread...")
         isRunning = false
@@ -93,9 +159,234 @@ class EmulatorRunner: ObservableObject, @unchecked Sendable {
         hookedController?.extendedGamepad?.valueChangedHandler = nil
         hookedController = nil
     }
+    
+    /// Toggle pause state
+    @MainActor
+    func togglePause() {
+        isPaused.toggle()
+        LibretroBridge.setPaused(isPaused)
+        osdMessage = isPaused ? "Paused" : "Resumed"
+        
+        Task {
+            try? await Task.sleep(nanoseconds: 2_000_000_000)
+            await MainActor.run { self.osdMessage = nil }
+        }
+    }
+    
+    /// Reload the current ROM
+    @MainActor
+    func reloadGame() {
+        guard let gameRom = rom else { return }
+        guard let sysID = gameRom.systemID else { return }
+        
+        // Store current core info
+        let coreID = UserDefaults.standard.string(forKey: "lastLoadedCoreID") ?? ""
+        
+        // Reset pause state
+        isPaused = false
+        LibretroBridge.setPaused(false)
+        
+        // Stop current game
+        stop()
+        
+        // Small delay to ensure cleanup
+        Thread.sleep(forTimeInterval: 0.1)
+        
+        // Relaunch
+        isRunning = true
+        emulationQueue.async {
+            LibretroBridge.launch(withDylibPath: self.findCoreLib(coreID: coreID) ?? coreID, 
+                                  romPath: gameRom.path.path,
+                                  videoCallback: { [weak self] data, width, height, pitch, format in
+                self?.updateFrame(data: data, width: Int(width), height: Int(height), pitch: Int(pitch), format: Int(format))
+            }, coreID: coreID)
+        }
+    }
 
+    // MARK: - Slot-based Save State
+    
+    /// Compression preference
+    var compressSaveStates: Bool {
+        UserDefaults.standard.bool(forKey: "compress_save_states")
+    }
+    
+    /// Save the current emulator state to the specified slot
+    @MainActor
+    func saveState(slot: Int) -> Bool {
+        guard supportsSaveStates else {
+            osdMessage = "Error: Core doesn't support save states"
+            return false
+        }
+        
+        guard let stateData = LibretroBridge.serializeState() else {
+            osdMessage = "Error: Serialization failed"
+            return false
+        }
+        
+        guard let gameRom = rom else {
+            osdMessage = "Error: No game loaded"
+            return false
+        }
+        
+        let systemID = gameRom.systemID ?? "default"
+        let stateURL = saveManager.statePath(gameName: gameRom.displayName, systemID: systemID, slot: slot)
+        
+        do {
+            // Apply compression if enabled
+            let finalData: Data
+            if compressSaveStates, let compressed = SaveStateManager.compressStateData(stateData) {
+                finalData = compressed
+                let ratio = Double(finalData.count) / Double(stateData.count) * 100
+                print("[SaveState] Compressed: \(Int64(stateData.count).formattedByteSize) -> \(Int64(finalData.count).formattedByteSize) (\(Int(ratio))%)")
+            } else {
+                finalData = stateData
+            }
+            
+            try finalData.write(to: stateURL, options: [.atomic])
+            
+            // Capture and save thumbnail if we have a current frame
+            if let frameTex = currentFrameTexture {
+                let nsImage = NSImageFromMTLTexture(frameTex)
+                if let nsImage = nsImage {
+                    saveManager.saveThumbnail(nsImage, gameName: gameRom.displayName, systemID: systemID, slot: slot)
+                }
+            }
+            
+            osdMessage = "Saved \(slot == -1 ? "Auto" : "Slot \(slot)")"
+            
+            // Clear OSD after 2 seconds
+            Task {
+                try? await Task.sleep(nanoseconds: 2_000_000_000)
+                await MainActor.run { self.osdMessage = nil }
+            }
+            
+            return true
+        } catch {
+            osdMessage = "Error: Could not write save state"
+            return false
+        }
+    }
+    
+    /// Load an emulator state from the specified slot
+    @MainActor
+    func loadState(slot: Int) -> Bool {
+        guard supportsSaveStates else {
+            osdMessage = "Error: Core doesn't support save states"
+            return false
+        }
+        
+        guard let gameRom = rom else {
+            osdMessage = "Error: No game loaded"
+            return false
+        }
+        
+        let systemID = gameRom.systemID ?? "default"
+        let stateURL = saveManager.statePath(gameName: gameRom.displayName, systemID: systemID, slot: slot)
+        
+        // Save current state as undo buffer before loading
+        undoBuffer = LibretroBridge.serializeState()
+        
+        guard let fileData = try? Data(contentsOf: stateURL) else {
+            osdMessage = "Error: State file not found"
+            return false
+        }
+        
+        // Decompress if needed (handles both compressed and raw data)
+        let actualData: Data
+        if let decompressed = SaveStateManager.decompressStateData(fileData) {
+            actualData = decompressed
+        } else {
+            osdMessage = "Error: State incompatible or corrupted"
+            return false
+        }
+        
+        let success = LibretroBridge.unserializeState(actualData)
+        if success {
+            osdMessage = "Loaded \(slot == -1 ? "Auto" : "Slot \(slot)")"
+            
+            // Clear OSD after 2 seconds
+            Task {
+                try? await Task.sleep(nanoseconds: 2_000_000_000)
+                await MainActor.run { self.osdMessage = nil }
+            }
+        } else {
+            osdMessage = "Error: State incompatible or corrupted"
+        }
+        
+        return success
+    }
+    
+    /// Undo the last load operation (restore from undo buffer)
+    @MainActor
+    func undoLoadState() -> Bool {
+        guard let undoData = undoBuffer else {
+            osdMessage = "Nothing to undo"
+            return false
+        }
+        
+        // Decompress undo buffer if needed
+        let actualData: Data
+        if let decompressed = SaveStateManager.decompressStateData(undoData) {
+            actualData = decompressed
+        } else {
+            osdMessage = "Error: Could not restore previous state"
+            return false
+        }
+        
+        let success = LibretroBridge.unserializeState(actualData)
+        if success {
+            undoBuffer = nil
+            osdMessage = "Undo successful"
+            
+            // Clear OSD after 2 seconds
+            Task {
+                try? await Task.sleep(nanoseconds: 2_000_000_000)
+                await MainActor.run { self.osdMessage = nil }
+            }
+        } else {
+            osdMessage = "Error: Could not restore previous state"
+        }
+        
+        return success
+    }
+    
+    /// Cycle to the next save slot (0-9)
+    @MainActor
+    func nextSlot() {
+        if currentSlot >= 9 {
+            currentSlot = 0
+        } else {
+            currentSlot += 1
+        }
+        osdMessage = "Slot: \(currentSlot)"
+        
+        Task {
+            try? await Task.sleep(nanoseconds: 1_000_000_000)
+            await MainActor.run { self.osdMessage = nil }
+        }
+    }
+    
+    /// Cycle to the previous save slot (0-9)
+    @MainActor
+    func previousSlot() {
+        if currentSlot <= 0 {
+            currentSlot = 9
+        } else {
+            currentSlot -= 1
+        }
+        osdMessage = "Slot: \(currentSlot)"
+        
+        Task {
+            try? await Task.sleep(nanoseconds: 1_000_000_000)
+            await MainActor.run { self.osdMessage = nil }
+        }
+    }
+    
+    // Legacy method for backward compat—calls current slot
     func saveState() {
-        LibretroBridge.saveState()
+        Task { @MainActor in
+            _ = saveState(slot: currentSlot)
+        }
     }
 
     func setKeyState(retroID: Int, pressed: Bool) {

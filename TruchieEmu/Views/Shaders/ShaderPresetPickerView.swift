@@ -3,7 +3,7 @@ import AppKit
 import Combine
 
 // MARK: - Shader Window Settings (Observable)
-/// Settings container for the shader picker window, shared between EmulatorView and picker.
+/// Settings container for the shader picker window, shared between StandaloneGameWindowController and picker.
 class ShaderWindowSettings: ObservableObject {
     @Published var shaderPresetID: String
     @Published var uniformValues: [String: Float]

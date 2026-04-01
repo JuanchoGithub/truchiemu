@@ -41,13 +41,14 @@
 #define RETRO_ENVIRONMENT_SET_CORE_OPTIONS_V2_INTL     68
 #define RETRO_ENVIRONMENT_SET_CORE_OPTIONS_UPDATE_DISPLAYED 71
 
-/* Subsystem support */
-#define RETRO_ENVIRONMENT_SET_SUBSYSTEM_INFO           34
-
-/* Fast-forward / performance */
+/* Frame time / Pause / Performance */
 #define RETRO_ENVIRONMENT_SET_FRAME_TIME_CALLBACK      41
+#define RETRO_ENVIRONMENT_SET_PAUSE_TOGGLE               48
 #define RETRO_ENVIRONMENT_GET_FASTFORWARDING           56
 #define RETRO_ENVIRONMENT_GET_TARGET_REFRESH_RATE      63
+
+/* Subsystem support */
+#define RETRO_ENVIRONMENT_SET_SUBSYSTEM_INFO           34
 
 /* Achievements */
 #define RETRO_ENVIRONMENT_SET_SUPPORT_ACHIEVEMENTS     44

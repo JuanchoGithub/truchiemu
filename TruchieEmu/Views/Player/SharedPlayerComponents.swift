@@ -1,0 +1,1011 @@
+import SwiftUI
+import MetalKit
+import Cocoa
+
+// MARK: - MouseDownButton (NSButton that fires action on mouseDown)
+class MouseDownButton: NSButton {
+    override func mouseDown(with event: NSEvent) {
+        // Fire action immediately on mouse down
+        if let target = self.target, let action = self.action {
+            NSApp.sendAction(action, to: target, from: self)
+        }
+    }
+}
+
+// MARK: - MouseDownButtonAction (SwiftUI wrapper for mouse-down button)
+struct MouseDownButtonAction<Label: View>: NSViewRepresentable {
+    let action: () -> Void
+    let label: () -> Label
+    
+    func makeNSView(context: Context) -> NSButton {
+        let button = MouseDownButton()
+        button.bezelStyle = .regularSquare
+        button.isBordered = false
+        button.target = context.coordinator
+        button.action = #selector(Coordinator.performAction)
+        button.setContentHuggingPriority(.defaultLow, for: .horizontal)
+        button.setContentHuggingPriority(.defaultLow, for: .vertical)
+        return button
+    }
+    
+    func updateNSView(_ nsView: NSButton, context: Context) {
+        // Button action is set in makeNSView
+    }
+    
+    func makeCoordinator() -> Coordinator {
+        Coordinator(action: action)
+    }
+    
+    class Coordinator: NSObject {
+        let action: () -> Void
+        init(action: @escaping () -> Void) {
+            self.action = action
+        }
+        @objc func performAction() {
+            action()
+        }
+    }
+}
+
+// MARK: - Pause/Resume Button (triggers on mouseDown via NSButton override)
+struct PauseResumeButton: View {
+    @ObservedObject var runner: EmulatorRunner
+    
+    var body: some View {
+        Button(action: {
+            runner.togglePause()
+        }) {
+            VStack(spacing: 4) {
+                Image(systemName: runner.isPaused ? "play.fill" : "pause.fill")
+                    .font(.system(size: 16, weight: .semibold))
+                Text(runner.isPaused ? "Resume" : "Pause")
+                    .font(.system(size: 10, weight: .medium))
+            }
+            .frame(minWidth: 50)
+        }
+        .buttonStyle(ToolbarButtonStyle())
+        .foregroundColor(runner.isPaused ? .green : .white)
+    }
+}
+
+// MARK: - Fullscreen Toggle Button (uses macOS native fullscreen)
+struct FullscreenButton: View {
+    @ObservedObject var windowController: StandaloneGameWindowController
+    
+    var body: some View {
+        Button(action: {
+            windowController.toggleFullscreen()
+        }) {
+            VStack(spacing: 4) {
+                Image(systemName: windowController.isFullscreen ? "arrow.down.right.and.arrow.up.left" : "arrow.up.left.and.arrow.down.right")
+                    .font(.system(size: 16, weight: .semibold))
+                Text(windowController.isFullscreen ? "Exit FS" : "Full")
+                    .font(.system(size: 10, weight: .medium))
+                    .lineLimit(1)
+            }
+            .frame(minWidth: 50)
+        }
+        .buttonStyle(ToolbarButtonStyle())
+    }
+}
+
+// MARK: - Reload Button (triggers on mouseDown for instant reset)
+struct ReloadButton: View {
+    @ObservedObject var runner: EmulatorRunner
+    
+    var body: some View {
+        MouseDownButtonAction(action: {
+            runner.reloadGame()
+        }) {
+            VStack(spacing: 4) {
+                Image(systemName: "arrow.counterclockwise")
+                    .font(.system(size: 16, weight: .semibold))
+                Text("Reload")
+                    .font(.system(size: 10, weight: .medium))
+            }
+            .frame(minWidth: 50)
+        }
+        .buttonStyle(ToolbarButtonStyle())
+    }
+}
+
+// MARK: - Game Overlay Toolbar View
+struct GameOverlayToolbar: View {
+    @ObservedObject var runner: EmulatorRunner
+    @ObservedObject var windowController: StandaloneGameWindowController
+    
+    var body: some View {
+        HStack(spacing: 12) {
+            // Stop Button
+            ToolbarButton(
+                icon: "power",
+                label: "Stop",
+                danger: true
+            ) {
+                windowController.window?.close()
+            }
+            
+            Divider()
+                .frame(height: 30)
+                .opacity(0.3)
+            
+            // Pause Button
+            PauseResumeButton(runner: runner)
+            
+            // Reload Button (mouse-down trigger)
+            ReloadButton(runner: runner)
+            
+            Divider()
+                .frame(height: 30)
+                .opacity(0.3)
+            
+            // Save Button
+            ToolbarButton(
+                icon: "square.and.arrow.down",
+                label: "Save"
+            ) {
+                Task { @MainActor in
+                    _ = runner.saveState(slot: runner.currentSlot)
+                }
+            }
+            
+            // Load Button
+            ToolbarButton(
+                icon: "square.and.arrow.down.on.square",
+                label: "Load"
+            ) {
+                Task { @MainActor in
+                    _ = runner.loadState(slot: runner.currentSlot)
+                }
+            }
+            
+            // Slot Selector
+            SlotSelectorButton(
+                currentSlot: runner.currentSlot
+            )
+            
+            Divider()
+                .frame(height: 30)
+                .opacity(0.3)
+            
+            // Fullscreen Button
+            FullscreenButton(windowController: windowController)
+        }
+        .padding(.horizontal, 16)
+        .padding(.vertical, 10)
+        .background(
+            RoundedRectangle(cornerRadius: 12)
+                .fill(Color.black.opacity(0.75))
+                .shadow(color: .black.opacity(0.5), radius: 10, x: 0, y: 4)
+        )
+    }
+}
+
+// MARK: - Custom Button Style for Toolbar Buttons
+struct ToolbarButtonStyle: ButtonStyle {
+    func makeBody(configuration: Configuration) -> some View {
+        configuration.label
+            .opacity(configuration.isPressed ? 0.7 : 1.0)
+            .background(
+                RoundedRectangle(cornerRadius: 8)
+                    .fill(configuration.isPressed ? Color.white.opacity(0.25) : Color.white.opacity(0.15))
+            )
+            .contentShape(Rectangle())
+    }
+}
+
+// MARK: - Toolbar Button Component
+struct ToolbarButton: View {
+    let icon: String
+    let label: String
+    var danger: Bool = false
+    let action: () -> Void
+    
+    var body: some View {
+        Button(action: action) {
+            VStack(spacing: 4) {
+                Image(systemName: icon)
+                    .font(.system(size: 16, weight: .semibold))
+                Text(label)
+                    .font(.system(size: 10, weight: .medium))
+            }
+            .frame(minWidth: 50)
+        }
+        .buttonStyle(ToolbarButtonStyle())
+        .foregroundColor(danger ? .red : .white)
+    }
+}
+
+// MARK: - Slot Selector Button
+struct SlotSelectorButton: View {
+    let currentSlot: Int
+    @State private var isDropdownShown = false
+    @State private var selectedSlot: Int = 0
+    
+    var body: some View {
+        VStack(spacing: 4) {
+            Image(systemName: "number.circle")
+                .font(.system(size: 16, weight: .semibold))
+            Text("Slot \(currentSlot == -1 ? "Auto" : "\(abs(currentSlot))")")
+                .font(.system(size: 10, weight: .medium))
+        }
+        .frame(minWidth: 50)
+        .foregroundColor(.white)
+        .padding(6)
+        .background(
+            RoundedRectangle(cornerRadius: 8)
+                .fill(isDropdownShown ? Color.white.opacity(0.15) : Color.clear)
+        )
+        .contentShape(Rectangle())
+        .onTapGesture {
+            selectedSlot = currentSlot
+            isDropdownShown = true
+        }
+        .popover(isPresented: $isDropdownShown, arrowEdge: .top) {
+            SlotPickerView(selectedSlot: $selectedSlot)
+                .frame(width: 180, height: 200)
+        }
+        .onChange(of: selectedSlot) { newValue in
+            // Slot changed via popover
+        }
+    }
+}
+
+// MARK: - Slot Picker View
+struct SlotPickerView: View {
+    @Binding var selectedSlot: Int
+    @Environment(\.dismiss) var dismiss
+    
+    var body: some View {
+        VStack(spacing: 0) {
+            Text("Select Save Slot")
+                .font(.headline)
+                .padding()
+            
+            Divider()
+            
+            ScrollView {
+                VStack(spacing: 0) {
+                    ForEach(-1...9, id: \.self) { slot in
+                        Button(action: {
+                            selectedSlot = slot
+                            UserDefaults.standard.set(slot, forKey: "selected_save_slot")
+                            dismiss()
+                        }) {
+                            HStack {
+                                Text(slot == -1 ? "Auto" : "Slot \(slot)")
+                                    .foregroundColor(.white)
+                                Spacer()
+                                if selectedSlot == slot {
+                                    Image(systemName: "checkmark")
+                                        .foregroundColor(.blue)
+                                }
+                            }
+                            .padding(.horizontal, 12)
+                            .padding(.vertical, 8)
+                            .frame(maxWidth: .infinity)
+                            .contentShape(Rectangle())
+                        }
+                        .buttonStyle(.plain)
+                        
+                        if slot < 9 {
+                            Divider().opacity(0.3)
+                        }
+                    }
+                }
+            }
+        }
+        .background(Color(NSColor.windowBackgroundColor))
+        .clipShape(RoundedRectangle(cornerRadius: 12))
+    }
+}
+
+// MARK: - Focusable MTKView for macOS keyboard input
+class FocusableMTKView: MTKView {
+    override var acceptsFirstResponder: Bool { true }
+    
+    /// Tracks active game keys to properly release them on keyUp
+    private var activeGameKeys: Set<Int> = []
+    
+    override func mouseDown(with event: NSEvent) {
+        self.window?.makeFirstResponder(self)
+        super.mouseDown(with: event)
+    }
+    
+    override func keyDown(with event: NSEvent) {
+        // Escape - pass through
+        if event.keyCode == 53 {
+            super.keyDown(with: event)
+            return
+        }
+        
+        // Save state hotkeys (only process when not in text input)
+        if event.modifierFlags.isEmpty || event.modifierFlags.contains(.command) {
+            switch event.keyCode {
+            case 96: // F5 - Quick Save
+                Task { @MainActor in
+                    _ = runner?.saveState(slot: runner!.currentSlot)
+                }
+                return
+                
+            case 98: // F7 - Quick Load
+                Task { @MainActor in
+                    let success = runner?.loadState(slot: runner!.currentSlot) ?? false
+                    if success {
+                        // Show undo hint
+                    }
+                }
+                return
+                
+            case 97: // F6 - Slot +1
+                Task { @MainActor in
+                    runner?.nextSlot()
+                }
+                return
+                
+            case 95: // F4 - Slot -1
+                Task { @MainActor in
+                    runner?.previousSlot()
+                }
+                return
+                
+            case 6: // Z key (for Cmd+Z Undo)
+                if event.modifierFlags.contains(.command) {
+                    Task { @MainActor in
+                        _ = runner?.undoLoadState()
+                    }
+                    return
+                }
+                // Fall through to normal key handling
+                break
+                
+            default:
+                break
+            }
+        }
+        
+        // Normal game key
+        if let rid = runner?.mapKey(event.keyCode) {
+            activeGameKeys.insert(rid)
+            runner?.setKeyState(retroID: rid, pressed: true)
+        }
+    }
+    
+    override func keyUp(with event: NSEvent) {
+        // Release game keys
+        if let rid = runner?.mapKey(event.keyCode) {
+            activeGameKeys.remove(rid)
+            runner?.setKeyState(retroID: rid, pressed: false)
+        }
+        super.keyUp(with: event)
+    }
+    
+    // Allow runner to be weak so we don't leak
+    weak var runner: EmulatorRunner?
+}
+
+// MARK: - Shader Uniforms
+// Each Metal shader expects a specific uniform buffer layout.
+// We create per-shader layouts that match exactly what Metal expects.
+
+/// CRT Filter uniforms (32 bytes) - matches CRTUniforms in CRTFilter.metal
+struct CRTUniforms {
+    var crtEnabled: Int32
+    var scanlinesEnabled: Int32
+    var barrelEnabled: Int32
+    var phosphorEnabled: Int32
+    var scanlineIntensity: Float
+    var barrelAmount: Float
+    var colorBoost: Float
+    var time: Float
+}
+
+/// Edge Smooth / VibrantLCD uniforms (48 bytes) - source/dest size at offset 16
+struct EdgeSmoothUniforms {
+    var smoothStrength: Float   // mapped from scanlineIntensity
+    var colorBoost: Float
+    var time: Float
+    // 4 bytes padding to align float4 to 16-byte boundary
+    var _pad: Float
+    var sourceSize: SIMD4<Float>
+    var outputSize: SIMD4<Float>
+}
+
+/// LCD Grid / Composite uniforms (64 bytes) - source/dest size at offset 32
+struct LCDGridUniforms {
+    var uniform0: Float   // gridOpacity or horizontalBlur
+    var uniform1: Float   // ghostingAmount or verticalBlur
+    var uniform2: Float   // gridSize or bleedAmount
+    var colorBoost: Float
+    var time: Float
+    var _pad: SIMD3<Float>    // padding to align SourceSize to offset 32
+    var sourceSize: SIMD4<Float>
+    var outputSize: SIMD4<Float>
+}
+
+// Legacy alias for CRT passthrough
+typealias ShaderUniforms = CRTUniforms
+
+// MARK: - Bezel
+
+enum BezelStyle: String, Codable, CaseIterable {
+    case none, tv, arcade, handheld
+
+    var displayName: String {
+        switch self {
+        case .none:     return "None"
+        case .tv:       return "TV Cabinet"
+        case .arcade:   return "Arcade"
+        case .handheld: return "Handheld"
+        }
+    }
+
+    var gamePadding: EdgeInsets {
+        switch self {
+        case .none:     return EdgeInsets()
+        case .tv:       return EdgeInsets(top: 60, leading: 80, bottom: 60, trailing: 80)
+        case .arcade:   return EdgeInsets(top: 100, leading: 60, bottom: 120, trailing: 60)
+        case .handheld: return EdgeInsets(top: 80, leading: 40, bottom: 80, trailing: 40)
+        }
+    }
+}
+
+struct BezelView: View {
+    let style: BezelStyle
+
+    var body: some View {
+        ZStack {
+            // Simple stylised bezels drawn in SwiftUI
+            switch style {
+            case .tv:       tvBezel
+            case .arcade:   arcadeBezel
+            case .handheld: handheldBezel
+            case .none:     EmptyView()
+            }
+        }
+    }
+
+    private var tvBezel: some View {
+        ZStack {
+            RoundedRectangle(cornerRadius: 40)
+                .fill(LinearGradient(colors: [Color(white: 0.15), Color(white: 0.08)],
+                                      startPoint: .top, endPoint: .bottom))
+                .padding(8)
+                .shadow(color: .black.opacity(0.8), radius: 24, x: 0, y: 12)
+            // Screen cutout handled by padding
+        }
+        .ignoresSafeArea()
+    }
+
+    private var arcadeBezel: some View {
+        ZStack {
+            Rectangle()
+                .fill(LinearGradient(colors: [Color(hue: 0.65, saturation: 0.5, brightness: 0.2),
+                                               Color(hue: 0.68, saturation: 0.6, brightness: 0.1)],
+                                      startPoint: .top, endPoint: .bottom))
+                .ignoresSafeArea()
+            // Marquee strip
+            VStack {
+                LinearGradient(colors: [.purple, .blue], startPoint: .leading, endPoint: .trailing)
+                    .frame(height: 80)
+                    .overlay(
+                        Text("TRUCHIE EMU")
+                            .font(.system(size: 28, weight: .black, design: .rounded))
+                            .foregroundColor(.white)
+                            .tracking(6)
+                    )
+                Spacer()
+            }
+        }
+    }
+
+    private var handheldBezel: some View {
+        ZStack {
+            RoundedRectangle(cornerRadius: 30)
+                .fill(LinearGradient(colors: [Color(white: 0.12), Color(white: 0.06)],
+                                      startPoint: .top, endPoint: .bottom))
+                .padding(4)
+                .shadow(color: .black.opacity(0.9), radius: 30, x: 0, y: 16)
+        }
+        .ignoresSafeArea()
+    }
+}
+
+// MARK: - Container view with tracking area for toolbar auto-hide
+class GameContainerView: NSView {
+    weak var windowController: StandaloneGameWindowController?
+    private var lastMouseLocation: NSPoint?
+    
+    override func updateTrackingAreas() {
+        super.updateTrackingAreas()
+        // Remove old tracking areas
+        for trackingArea in self.trackingAreas {
+            removeTrackingArea(trackingArea)
+        }
+        // Add new tracking area covering the entire view
+        let options: NSTrackingArea.Options = [.mouseMoved, .activeAlways, .inVisibleRect]
+        let trackingArea = NSTrackingArea(rect: bounds, options: options, owner: self, userInfo: nil)
+        addTrackingArea(trackingArea)
+    }
+    
+    override func mouseMoved(with event: NSEvent) {
+        // In fullscreen, the cursor position is pinned to the top of the screen,
+        // and mouseMoved events keep firing even though the cursor hasn't moved.
+        // Only notify the controller if the mouse actually changed position.
+        let location = event.locationInWindow
+        if lastMouseLocation != location {
+            lastMouseLocation = location
+            windowController?.onMouseActivity()
+        }
+    }
+}
+
+// MARK: - Standalone Game Window Controller
+
+class StandaloneGameWindowController: NSWindowController, NSWindowDelegate, ObservableObject {
+    private var runner: EmulatorRunner?
+    private var metalView: FocusableMTKView?
+    private var coordinator: MetalCoordinator?
+    private var pendingROM: ROM?
+    private var pendingCoreID: String?
+    
+    // Toolbar auto-hide state
+    @MainActor @Published var isToolbarVisible: Bool = true
+    @MainActor @Published var isFullscreen: Bool = false
+    private var toolbarView: NSHostingView<GameOverlayToolbar>?
+    private var hideToolbarTimer: Timer?
+    
+    init(runner: EmulatorRunner) {
+        self.runner = runner
+        
+        let window = NSWindow(
+            contentRect: NSRect(x: 0, y: 0, width: 1024, height: 768),
+            styleMask: [.titled, .closable, .miniaturizable, .resizable, .fullSizeContentView],
+            backing: .buffered, defer: false)
+        
+        window.center()
+        window.backgroundColor = .black
+        window.isReleasedWhenClosed = false
+        
+        super.init(window: window)
+        window.delegate = self
+        
+        setupMetalView()
+    }
+    
+    required init?(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
+    
+    private func setupMetalView() {
+        guard let runner = self.runner else { return }
+        
+        print("[StandaloneMetal] Setting up MetalView...")
+        let mtkView = FocusableMTKView()
+        mtkView.device = MTLCreateSystemDefaultDevice()
+        mtkView.colorPixelFormat = .bgra8Unorm
+        mtkView.clearColor = MTLClearColor(red: 0, green: 0, blue: 0, alpha: 1)
+        mtkView.isPaused = true  // Start paused until game is launched
+        mtkView.enableSetNeedsDisplay = false
+        mtkView.autoResizeDrawable = true
+        
+        let coord = MetalCoordinator(runner: runner)
+        mtkView.delegate = coord
+        self.coordinator = coord
+        self.metalView = mtkView
+        
+        // Set runner reference on view
+        mtkView.runner = runner
+        runner.metalView = mtkView
+        
+        // Create container view with overlay and mouse tracking
+        let containerView = GameContainerView(frame: mtkView.bounds)
+        containerView.windowController = self
+        containerView.autoresizingMask = [.width, .height]
+        containerView.wantsLayer = true
+        
+        mtkView.frame = containerView.bounds
+        mtkView.autoresizingMask = [.width, .height]
+        containerView.addSubview(mtkView)
+        
+        // Force update tracking areas
+        containerView.updateTrackingAreas()
+        
+        // Add SwiftUI overlay toolbar
+        let hostingView = NSHostingView(rootView: GameOverlayToolbar(
+            runner: runner,
+            windowController: self
+        ))
+        hostingView.translatesAutoresizingMaskIntoConstraints = false
+        hostingView.wantsLayer = true
+        containerView.addSubview(hostingView)
+        self.toolbarView = hostingView
+        
+        // Position toolbar at bottom center
+        NSLayoutConstraint.activate([
+            hostingView.centerXAnchor.constraint(equalTo: containerView.centerXAnchor),
+            hostingView.bottomAnchor.constraint(equalTo: containerView.bottomAnchor, constant: -8)
+        ])
+        
+        window?.contentView = containerView
+        window?.acceptsMouseMovedEvents = true
+        
+        // Update fullscreen state on window changes
+        NotificationCenter.default.addObserver(
+            self,
+            selector: #selector(windowDidChangeScreen),
+            name: NSWindow.didChangeScreenNotification,
+            object: window
+        )
+        
+        // Initially hide toolbar after 2 seconds
+        DispatchQueue.main.asyncAfter(deadline: .now() + 2) { [weak self] in
+            self?.hideToolbar()
+        }
+        
+        print("[StandaloneMetal] MetalView setup complete, isPaused=true")
+    }
+    
+    @objc private func windowDidChangeScreen() {
+        DispatchQueue.main.async { [weak self] in
+            self?.isFullscreen = self?.window?.styleMask.contains(.fullScreen) ?? false
+        }
+    }
+    
+    /// Toggle macOS native fullscreen mode
+    @MainActor
+    func toggleFullscreen() {
+        window?.toggleFullScreen(nil)
+        isFullscreen = window?.styleMask.contains(.fullScreen) ?? false
+    }
+    
+    @MainActor
+    func onMouseActivity() {
+        showToolbar()
+    }
+    
+    @MainActor
+    private func showToolbar() {
+        if !isToolbarVisible {
+            isToolbarVisible = true
+            toolbarView?.alphaValue = 0
+            NSAnimationContext.runAnimationGroup { context in
+                context.duration = 0.3
+                context.timingFunction = CAMediaTimingFunction(name: .easeInEaseOut)
+                toolbarView?.animator().alphaValue = 1
+            }
+        }
+        // Restart timer on real mouse activity (filtered by GameContainerView)
+        scheduleHideToolbar()
+    }
+    
+    func scheduleHideToolbar() {
+        hideToolbarTimer?.invalidate()
+        hideToolbarTimer = Timer.scheduledTimer(withTimeInterval: 2.5, repeats: false) { [weak self] _ in
+            self?.hideToolbar()
+        }
+    }
+    
+    @MainActor
+    private func hideToolbar() {
+        if isToolbarVisible {
+            NSAnimationContext.runAnimationGroup { context in
+                context.duration = 0.3
+                context.timingFunction = CAMediaTimingFunction(name: .easeInEaseOut)
+                toolbarView?.animator().alphaValue = 0
+            } completionHandler: { [weak self] in
+                self?.isToolbarVisible = false
+            }
+        }
+    }
+    
+    override func windowDidLoad() {
+        super.windowDidLoad()
+    }
+    
+    func launch(rom: ROM, coreID: String) {
+        // Store ROM reference on runner before launching
+        runner?.rom = rom
+        runner?.romPath = rom.path.path
+        
+        // Update window title
+        window?.title = "TruchieEmu - " + rom.displayName
+        
+        // Unpause the metal view
+        metalView?.isPaused = false
+        
+        // Launch the game
+        runner?.launch(rom: rom, coreID: coreID)
+        
+        // Make sure the metal view is the first responder
+        DispatchQueue.main.async { [weak self] in
+            self?.window?.makeFirstResponder(self?.metalView)
+        }
+        
+        // Auto-load from slot -1 after launch completes (if enabled)
+        let shouldAutoLoad = UserDefaults.standard.bool(forKey: "auto_load_on_start")
+        if shouldAutoLoad {
+            // Wait for emulation to stabilize
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) { [weak self] in
+                guard let self = self, let runner = self.runner else { return }
+                let systemID = rom.systemID ?? "default"
+                let stateURL = runner.saveManager.statePath(gameName: rom.displayName, systemID: systemID, slot: -1)
+                if FileManager.default.fileExists(atPath: stateURL.path) {
+                    print("[AutoLoad] Found save state at: \(stateURL.path)")
+                    let success = runner.loadState(slot: -1)
+                    if success {
+                        runner.osdMessage = "Auto-loaded last session"
+                        print("[AutoLoad] Successfully loaded auto-save state")
+                        Task {
+                            try? await Task.sleep(nanoseconds: 2_000_000_000)
+                            await MainActor.run { runner.osdMessage = nil }
+                        }
+                    } else {
+                        print("[AutoLoad] Failed to load auto-save state")
+                    }
+                } else {
+                    print("[AutoLoad] No save state found at: \(stateURL.path)")
+                }
+            }
+        }
+    }
+    
+    func windowWillClose(_ notification: Notification) {
+        // Auto-save to slot -1 on exit if enabled
+        let shouldAutoSave = UserDefaults.standard.bool(forKey: "auto_save_on_exit")
+        if shouldAutoSave, let runner = runner {
+            print("[AutoSave] Saving state on window close...")
+            let success = runner.saveState(slot: -1)
+            if success {
+                print("[AutoSave] Successfully saved auto-save state")
+            } else {
+                print("[AutoSave] Failed to save auto-save state")
+            }
+        }
+        runner?.stop()
+    }
+
+    @MainActor
+    class MetalCoordinator: NSObject, MTKViewDelegate {
+        let runner: EmulatorRunner
+        private var commandQueue: MTLCommandQueue?
+        private var pipelineCache: [String: MTLRenderPipelineState] = [:]
+        private var innerDrawCount = 0
+
+        init(runner: EmulatorRunner) {
+            self.runner = runner
+        }
+
+        func mtkView(_ view: MTKView, drawableSizeWillChange size: CGSize) {}
+
+        private func getFragmentFunctionName() -> String {
+            let preset = ShaderManager.shared.activePreset
+            guard let firstPass = preset.passes.first,
+                  let shaderFile = firstPass.shaderFile.components(separatedBy: ".").first else {
+                return "fragmentPassthrough"
+            }
+            switch shaderFile {
+            case "CRTFilter": return "fragmentCRT"
+            case "LCDGrid": return "fragmentLCDGrid"
+            case "VibrantLCD": return "fragmentVibrantLCD"
+            case "EdgeSmooth": return "fragmentEdgeSmooth"
+            case "Composite": return "fragmentComposite"
+            case "Passthrough": return "fragmentPassthrough"
+            default: return "fragment" + shaderFile
+            }
+        }
+
+        private func getPipelineState(device: MTLDevice) -> MTLRenderPipelineState? {
+            let fragmentName = getFragmentFunctionName()
+            
+            if let cached = pipelineCache[fragmentName] {
+                return cached
+            }
+            
+            // Create new pipeline
+            guard let library = loadShaderLibrary(device: device) else {
+                print("[StandaloneMetal] ERROR: Could not create shader library.")
+                return nil
+            }
+            
+            guard let vertexFunction = library.makeFunction(name: "vertexPassthrough"),
+                  let fragmentFunction = library.makeFunction(name: fragmentName) else {
+                print("[StandaloneMetal] ERROR: Could not find shader function '\(fragmentName)'")
+                print("[StandaloneMetal] Available functions: \(library.functionNames.joined(separator: ", "))")
+                return nil
+            }
+
+            let desc = MTLRenderPipelineDescriptor()
+            desc.colorAttachments[0].pixelFormat = .bgra8Unorm
+            desc.vertexFunction = vertexFunction
+            desc.fragmentFunction = fragmentFunction
+
+            do {
+                let pipeline = try device.makeRenderPipelineState(descriptor: desc)
+                pipelineCache[fragmentName] = pipeline
+                print("[StandaloneMetal] Created pipeline for '\(fragmentName)'")
+                return pipeline
+            } catch {
+                print("[StandaloneMetal] ERROR: Failed to create pipeline '\(fragmentName)': \(error)")
+                return nil
+            }
+        }
+
+        func draw(in view: MTKView) {
+            guard let device = view.device,
+                  let drawable = view.currentDrawable,
+                  let descriptor = view.currentRenderPassDescriptor else {
+                return
+            }
+            
+            // Solid black background
+            descriptor.colorAttachments[0].loadAction = .clear
+            descriptor.colorAttachments[0].clearColor = MTLClearColor(red: 0, green: 0, blue: 0, alpha: 1)
+            descriptor.colorAttachments[0].storeAction = .store
+
+            if commandQueue == nil {
+                print("[StandaloneMetal] Initializing Command Queue...")
+                commandQueue = device.makeCommandQueue()
+            }
+
+            guard let cmdQueue = commandQueue,
+                  let cmdBuffer = cmdQueue.makeCommandBuffer() else { 
+                print("[StandaloneMetal] Failed to create command buffer")
+                return 
+            }
+
+            let pipeline = getPipelineState(device: device)
+            if let pipeline = pipeline {
+                if let frameTex = runner.currentFrameTexture {
+                    if let enc = cmdBuffer.makeRenderCommandEncoder(descriptor: descriptor) {
+                        // ASPECT RATIO STRETCHING (4:3)
+                        let viewWidth = view.drawableSize.width
+                        let viewHeight = view.drawableSize.height
+                        
+                        // Fixed 4:3 aspect ratio display
+                        let targetAspect: CGFloat = 4.0 / 3.0
+                        var drawWidth = viewWidth
+                        var drawHeight = viewWidth / targetAspect
+                        
+                        if drawHeight > viewHeight {
+                            drawHeight = viewHeight
+                            drawWidth = viewHeight * targetAspect
+                        }
+                        
+                        let x = (viewWidth - drawWidth) / 2.0
+                        let y = (viewHeight - drawHeight) / 2.0
+                        
+                        let viewport = MTLViewport(originX: Double(x), originY: Double(y), 
+                                                   width: Double(drawWidth), height: Double(drawHeight), 
+                                                   znear: 0.0, zfar: 1.0)
+                        enc.setViewport(viewport)
+                        
+                        let fw = Float(frameTex.width)
+                        let fh = Float(frameTex.height)
+                        let vpW = Float(view.drawableSize.width)
+                        let vpH = Float(view.drawableSize.height)
+                        let time = Float(CACurrentMediaTime().truncatingRemainder(dividingBy: 100))
+                        let settings = runner.rom?.settings ?? ROMSettings()
+                        let fragmentName = getFragmentFunctionName()
+
+                        enc.setRenderPipelineState(pipeline)
+                        enc.setFragmentTexture(frameTex, index: 0)
+
+                        switch fragmentName {
+                        case "fragmentCRT", "fragmentPassthrough":
+                            var u = CRTUniforms(
+                                crtEnabled: settings.crtEnabled ? 1 : 0,
+                                scanlinesEnabled: settings.scanlinesEnabled ? 1 : 0,
+                                barrelEnabled: settings.barrelEnabled ? 1 : 0,
+                                phosphorEnabled: settings.phosphorEnabled ? 1 : 0,
+                                scanlineIntensity: settings.scanlineIntensity,
+                                barrelAmount: settings.barrelAmount,
+                                colorBoost: settings.colorBoost,
+                                time: time
+                            )
+                            enc.setFragmentBytes(&u, length: MemoryLayout<CRTUniforms>.stride, index: 0)
+                        case "fragmentEdgeSmooth", "fragmentVibrantLCD":
+                            var u = EdgeSmoothUniforms(
+                                smoothStrength: settings.scanlineIntensity,
+                                colorBoost: settings.colorBoost,
+                                time: time,
+                                _pad: 0,
+                                sourceSize: SIMD4<Float>(fw, fh, 1.0/fw, 1.0/fh),
+                                outputSize: SIMD4<Float>(vpW, vpH, 0.0, 0.0)
+                            )
+                            enc.setFragmentBytes(&u, length: MemoryLayout<EdgeSmoothUniforms>.stride, index: 0)
+                        case "fragmentLCDGrid", "fragmentComposite":
+                            var u = LCDGridUniforms(
+                                uniform0: fragmentName == "fragmentLCDGrid" ? settings.scanlineIntensity : 1.0,
+                                uniform1: 0.0,
+                                uniform2: fragmentName == "fragmentLCDGrid" ? 1.0 : 0.0,
+                                colorBoost: settings.colorBoost,
+                                time: time,
+                                _pad: SIMD3<Float>(0, 0, 0),
+                                sourceSize: SIMD4<Float>(fw, fh, 1.0/fw, 1.0/fh),
+                                outputSize: SIMD4<Float>(vpW, vpH, 0.0, 0.0)
+                            )
+                            enc.setFragmentBytes(&u, length: MemoryLayout<LCDGridUniforms>.stride, index: 0)
+                        default:
+                            var u = CRTUniforms(
+                                crtEnabled: 0,
+                                scanlinesEnabled: 0,
+                                barrelEnabled: 0,
+                                phosphorEnabled: 0,
+                                scanlineIntensity: 0,
+                                barrelAmount: 0,
+                                colorBoost: settings.colorBoost,
+                                time: time
+                            )
+                            enc.setFragmentBytes(&u, length: MemoryLayout<CRTUniforms>.stride, index: 0)
+                        }
+                        enc.drawPrimitives(type: .triangleStrip, vertexStart: 0, vertexCount: 4)
+                        enc.endEncoding()
+                        innerDrawCount += 1
+                        
+                        if innerDrawCount <= 3 {
+                            print("[StandaloneMetal] Drawing frame \(innerDrawCount) with texture \(frameTex.width)x\(frameTex.height)")
+                        }
+                    }
+                } else {
+                    // No frame texture yet - just present black screen
+                    if innerDrawCount < 10 {
+                        print("[StandaloneMetal] No frame texture yet, drawing black")
+                    }
+                }
+            } else {
+                if innerDrawCount < 5 {
+                    print("[StandaloneMetal] Failed to get pipeline state for fragment shader")
+                }
+            }
+
+            cmdBuffer.present(drawable)
+            cmdBuffer.commit()
+        }
+        
+        /// Load the shader library containing all shaders
+        private func loadShaderLibrary(device: MTLDevice) -> MTLLibrary? {
+            // Try to load pre-compiled metallib from bundle
+            if let url = Bundle.main.url(forResource: "default", withExtension: "metallib") {
+                do {
+                    let library = try device.makeLibrary(URL: url)
+                    print("[StandaloneMetal] Loaded metallib with functions: \(library.functionNames.joined(separator: ", "))")
+                    return library
+                } catch {
+                    print("[StandaloneMetal] Failed to load metallib: \(error)")
+                }
+            }
+            
+            // Fallback: compile all_shaders.metal from bundle resources
+            if let bundlePath = Bundle.main.resourcePath {
+                let shadersPath = (bundlePath as NSString).appendingPathComponent("all_shaders.metal")
+                if let source = try? String(contentsOfFile: shadersPath, encoding: .utf8) {
+                    do {
+                        let library = try device.makeLibrary(source: source, options: nil)
+                        print("[StandaloneMetal] Compiled all_shaders.metal with functions: \(library.functionNames.joined(separator: ", "))")
+                        return library
+                    } catch {
+                        print("[StandaloneMetal] Failed to compile all_shaders.metal: \(error)")
+                    }
+                }
+                
+                // Try individual shader files as last resort
+                let shaderFiles = ["CRTFilter", "LCDGrid", "VibrantLCD", "EdgeSmooth", "Composite", "Passthrough"]
+                for file in shaderFiles {
+                    let filePath = (bundlePath as NSString).appendingPathComponent("\(file).metal")
+                    if let source = try? String(contentsOfFile: filePath, encoding: .utf8) {
+                        do {
+                            let library = try device.makeLibrary(source: source, options: nil)
+                            print("[StandaloneMetal] Compiled \(file).metal with functions: \(library.functionNames.joined(separator: ", "))")
+                            return library
+                        } catch {
+                            print("[StandaloneMetal] Failed to compile \(file).metal: \(error)")
+                        }
+                    }
+                }
+            }
+            
+            return nil
+        }
+    }
+}

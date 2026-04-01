@@ -140,3 +140,101 @@ Note that some Libretro cores have "Deterministic" states and some don't.
 * **Deterministic:** Loading a state works 100% of the time (SNES, NES, Genesis).
 * **Non-Deterministic:** Loading a state might cause audio crackling for a split second (some 3D systems like Saturn or complex PC emulators).
 * **No Support:** Some cores (rare) return `0` for `retro_serialize_size`. Your UI should grey out the "Save State" button in these cases.
+
+---
+
+## 9. Implementation Plan — Sequential Feature Checklist
+
+> **Rule:** Build one feature at a time, verify compilation, then proceed to the next.
+
+### Phase 1: Core Infrastructure
+- [x] **Feature 1: SaveStateManager Service** — Create `SaveStateManager.swift`
+  - [x] `@MainActor class SaveStateManager: ObservableObject`
+  - [x] Directory management: `~/Library/Application Support/TruchieEmu/saves/states/<System>/`
+  - [x] Path resolution: `statePath(for gameName: String, systemID: String, slot: Int) -> URL`
+  - [x] Thumbnail path: `thumbnailPath(for gameName: String, systemID: String, slot: Int) -> URL`
+  - [x] Slot enumeration: `allSlotInfo(for gameName: String, systemID: String) -> [SlotInfo]`
+  - [x] `SlotInfo` struct: `id: Int, exists: Bool, fileSize: Int64?, modificationDate: Date?`
+  - [x] Auto-create directories on first access
+
+- [x] **Feature 2: Libretro Bridge Extensions** — Extend `LibretroBridge` (`LibretroBridge.h` + `LibretroBridge.mm`)
+  - [x] `+ (NSData *)serializeState;` — Returns serialized state as NSData (or nil)
+  - [x] `+ (BOOL)unserializeState:(NSData *)data;` — Returns true on success
+  - [x] `+ (size_t)serializeSize;` — Returns `retro_serialize_size()`
+  - [x] Keep existing `saveState()` for backward compatibility
+
+- [x] **Feature 3: EmulatorRunner Save/Load** — Extend `EmulatorRunner.swift`
+  - [x] `@Published var currentSlot: Int = 0`
+  - [x] `@Published var osdMessage: String?` (for OSD)
+  - [x] `func saveState(slot: Int) -> Bool` — Uses SaveStateManager + LibretroBridge
+  - [x] `func loadState(slot: Int) -> Bool` — Uses SaveStateManager + LibretroBridge
+  - [x] `var undoBuffer: Data?` — Stores state before load for undo
+  - [x] `func undoLoadState() -> Bool` — Restores from undoBuffer
+  - [x] Check core support: `var supportsSaveStates: Bool { LibretroBridge.serializeSize() > 0 }`
+  - [x] `func nextSlot()` / `func previousSlot()` — Slot cycling helpers
+
+### Phase 2: User Interface
+- [x] **Feature 4: HUD Slot Selection** — Modify `EmulatorView.swift` HUD
+  - [x] Add slot indicator display: `"Slot: \(currentSlot)"`
+  - [x] Add slot +/- buttons in HUD
+  - [x] Add slot picker sheet/grid showing slots 0-9 (`SlotPickerSheet.swift`)
+  - [x] Visual indicator for which slots have saved states (checkmark + thumbnail)
+  - [x] Replace existing `runner.saveState()` call with slot-aware version
+
+- [x] **Feature 5: Thumbnails** — Integrate with save/load flow
+  - [x] Capture `currentFrameTexture` during save, convert to CGImage via `NSImageFromMTLTexture`
+  - [x] Save as PNG alongside `.state` file with `.png` extension
+  - [x] Load and display thumbnail in slot picker
+  - [x] Thumbnail loading in slot picker with 320x240 downscaling
+
+- [x] **Feature 6: OSD Notifications** — Add overlay messages
+  - [x] `@Published var osdMessage: String?` in EmulatorRunner
+  - [x] Auto-dismiss after 2 seconds with `Task.sleep`
+  - [x] Messages: "Saved Slot X", "Loaded Slot X", "Error: State file not found", "Error: Core doesn't support save states"
+  - [x] Display in EmulatorView HUD area
+
+- [x] **Feature 7: Undo Load State** — Safety net implementation
+  - [x] Before `loadState`, serialize current state into `undoBuffer`
+  - [x] Add "Undo" button in HUD (visible briefly after load)
+  - [x] `undoLoadState()` function restores from `undoBuffer`
+  - [x] OSD: "Undo successful" / "Nothing to undo"
+
+### Phase 3: Input & Automation
+- [x] **Feature 8: Hotkeys** — Keyboard shortcuts in `FocusableMTKView`
+  - [x] `F5` — Quick Save (current slot)
+  - [x] `F7` — Quick Load (current slot)
+  - [x] `F6` — Slot +1 (cycle 0-9)
+  - [x] `F4` — Slot -1 (cycle 0-9)
+  - [x] `Cmd+Z` — Undo Load
+  - [x] OSD feedback for each hotkey action (via runner's osdMessage)
+
+- [x] **Feature 9: Compression** — LZ4 compression for state files
+  - [x] Use `compression` framework (Apple's built-in)
+  - [x] Compress before writing to disk
+  - [x] Decompress when reading from disk
+  - [x] Magic header to distinguish compressed vs uncompressed (backward compat)
+  - [x] OSD: "Compressed: 15.2 MB -> 4.8 MB"
+  - [x] UI toggle in SlotPickerSheet: "Compress Save States"
+
+### Phase 4: Automation
+- [x] **Feature 10: Auto-Save / Auto-Load**
+  - [x] Auto-save to slot `-1` on `onDisappear` / app quit
+  - [x] Auto-load from slot `-1` on launch (if exists)
+  - [x] User preference toggles in Settings > General: "Auto-save on game exit", "Auto-load on game start", "Compress save states"
+  - [x] OSD on launch: "Auto-loaded last session"
+
+---
+
+## 10. Current Progress Tracker
+
+**Next up:** Feature 1 — SaveStateManager Service
+**Status:** Ready to implement
+
+### Implementation Order
+1. ✅ This plan document
+2. ⬜ SaveStateManager.swift (Feature 1)
+3. ⬜ LibretroBridge extensions (Feature 2)
+4. ⬜ EmulatorRunner save/load (Feature 3)
+5. ⬜ HUD updates (Features 4-8)
+6. ⬜ Compression (Feature 9)
+7. ⬜ Auto-save/load (Feature 10)

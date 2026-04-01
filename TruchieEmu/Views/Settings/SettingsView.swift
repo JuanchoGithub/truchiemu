@@ -1340,9 +1340,32 @@ struct DisplaySettingsView: View {
 struct GeneralSettingsView: View {
     @AppStorage("logging_enabled") private var loggingEnabled = false
     @AppStorage("logging_level") private var loggingLevel: Int = 1 // 0=None, 1=Info, 2=Debug
+    @AppStorage("auto_save_on_exit") private var autoSaveOnExit = true
+    @AppStorage("auto_load_on_start") private var autoLoadOnStart = true
+    @AppStorage("compress_save_states") private var compressSaveStates = false
     
     var body: some View {
         Form {
+            Section("Save States") {
+                Toggle("Auto-save on game exit", isOn: $autoSaveOnExit)
+                    .toggleStyle(.switch)
+                Toggle("Auto-load on game start", isOn: $autoLoadOnStart)
+                    .toggleStyle(.switch)
+                Toggle("Compress save states (LZ4)", isOn: $compressSaveStates)
+                    .toggleStyle(.switch)
+                
+                VStack(alignment: .leading, spacing: 8) {
+                    Text("Save states are stored in:")
+                        .font(.caption)
+                        .foregroundColor(.secondary)
+                    Text("~/Library/Application Support/TruchieEmu/saves/states/")
+                        .font(.caption)
+                        .foregroundColor(.secondary)
+                        .textSelection(.enabled)
+                }
+                .padding(.top, 4)
+            }
+            
             Section("Logging") {
                 Toggle("Enable Logging", isOn: $loggingEnabled)
                     .toggleStyle(.switch)

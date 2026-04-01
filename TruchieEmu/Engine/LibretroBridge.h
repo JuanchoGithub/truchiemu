@@ -13,6 +13,13 @@
 + (void)setAnalogState:(int)index id:(int)id value:(int)value;
 + (void)setLanguage:(int)language;
 + (void)setLogLevel:(int)level;
++ (void)setPaused:(BOOL)paused;
++ (BOOL)isPaused;
+
+/* Save State Serialization — returns raw state data for slot-based saving */
++ (nullable NSData *)serializeState;
++ (BOOL)unserializeState:(NSData *)data;
++ (size_t)serializeSize;
 
 /* Load a core without content to initialize its options (supports_no_game) */
 + (void)loadCoreForOptions:(NSString *)dylibPath coreID:(NSString *)coreID;
