@@ -7,12 +7,13 @@ struct SettingsView: View {
     @EnvironmentObject var coreManager: CoreManager
     @EnvironmentObject var controllerService: ControllerService
 
-    private enum Page: Hashable { case library, cores, controllers, keyboard, boxArt, display, about }
-    @State private var selectedPage: Page = .library
+    private enum Page: Hashable { case general, library, cores, controllers, keyboard, boxArt, display, about }
+    @State private var selectedPage: Page = .general
 
     var body: some View {
         NavigationSplitView {
             List(selection: $selectedPage) {
+                sidebarItem(icon: "gearshape.fill", label: "General", page: .general)
                 sidebarItem(icon: "book.fill", label: "Library", page: .library)
                 sidebarItem(icon: "cpu.fill", label: "Cores", page: .cores)
                 sidebarItem(icon: "gamecontroller.fill", label: "Controllers", page: .controllers)
@@ -27,6 +28,7 @@ struct SettingsView: View {
         } detail: {
             Group {
                 switch selectedPage {
+                case .general:     GeneralSettingsView()
                 case .library:     LibrarySettingsView()
                 case .cores:       CoreSettingsView()
                 case .controllers: ControllerSettingsView()
@@ -1242,22 +1244,54 @@ struct BoxArtSettingsView: View {
 
 // MARK: - Display Settings
 struct DisplaySettingsView: View {
-    @AppStorage("crt_enabled") private var crtEnabled = false
-    @AppStorage("scanlines_enabled") private var scanlinesEnabled = true
-    @AppStorage("scanline_intensity") private var scanlineIntensity = 0.35
-
+    @AppStorage("display_default_shader_preset") private var selectedPresetID: String = "builtin-crt-classic"
+    @State private var showShaderPicker = false
+    @StateObject private var shaderManager = ShaderManager.shared
+    
     var body: some View {
         Form {
-            Section("CRT Effects") {
-                Toggle("CRT Filter (barrel distortion + glow)", isOn: $crtEnabled)
-                Toggle("Scanlines", isOn: $scanlinesEnabled)
-                if scanlinesEnabled {
-                    LabeledContent("Scanline Intensity") {
-                        Slider(value: $scanlineIntensity, in: 0.1...0.8)
-                            .frame(width: 160)
+            Section("Shader Presets") {
+                LabeledContent("Default Shader") {
+                    Button(ShaderManager.displayName(for: selectedPresetID)) {
+                        showShaderPicker = true
+                    }
+                    .buttonStyle(.bordered)
+                }
+                
+                Text("Select a default shader preset for all games. Individual games can override this in their settings.")
+                    .font(.caption)
+                    .foregroundColor(.secondary)
+            }
+            
+            Section("Quick Preview") {
+                VStack(spacing: 8) {
+                    ForEach(ShaderPreset.builtinPresets.prefix(4), id: \.id) { preset in
+                        HStack {
+                            Image(systemName: shaderIcon(for: preset.shaderType))
+                                .foregroundColor(.accentColor)
+                            VStack(alignment: .leading) {
+                                Text(preset.name)
+                                    .font(.subheadline)
+                                Text(preset.description ?? "")
+                                    .font(.caption)
+                                    .foregroundColor(.secondary)
+                            }
+                            Spacer()
+                            if preset.recommendedSystems.isEmpty {
+                                Text("All systems")
+                                    .font(.caption2)
+                                    .foregroundColor(.secondary)
+                            } else {
+                                Text(preset.recommendedSystems.prefix(3).joined(separator: ", ").uppercased())
+                                    .font(.caption2)
+                                    .foregroundColor(.secondary)
+                            }
+                        }
+                        .padding(.vertical, 4)
                     }
                 }
             }
+            
             Section("Bezel") {
                 Text("Bezel options are available in the in-game HUD (shown on hover).")
                     .foregroundColor(.secondary)
@@ -1265,6 +1299,85 @@ struct DisplaySettingsView: View {
         }
         .formStyle(.grouped)
         .navigationTitle("Display")
+        .sheet(isPresented: $showShaderPicker) {
+            ShaderPresetPickerView(
+                selectedPresetID: $selectedPresetID,
+                uniformValues: .constant([:])
+            )
+            .frame(width: 550, height: 500)
+            .onDisappear {
+                // Activate the selected preset globally
+                if let preset = ShaderPreset.preset(id: selectedPresetID) {
+                    shaderManager.activatePreset(preset)
+                }
+            }
+        }
+    }
+    
+    private func shaderIcon(for type: ShaderType) -> String {
+        switch type {
+        case .crt: return "tv"
+        case .lcd: return "iphone"
+        case .smoothing: return "sparkles"
+        case .composite: return "waveform.path"
+        case .custom: return "wrench"
+        }
+    }
+}
+
+// MARK: - General Settings
+struct GeneralSettingsView: View {
+    @AppStorage("logging_enabled") private var loggingEnabled = false
+    @AppStorage("logging_level") private var loggingLevel: Int = 1 // 0=None, 1=Info, 2=Debug
+    
+    var body: some View {
+        Form {
+            Section("Logging") {
+                Toggle("Enable Logging", isOn: $loggingEnabled)
+                    .toggleStyle(.switch)
+                
+                if loggingEnabled {
+                    Picker("Log Level", selection: $loggingLevel) {
+                        Text("None").tag(0)
+                        Text("Info").tag(1)
+                        Text("Debug").tag(2)
+                    }
+                    .pickerStyle(.segmented)
+                    
+                    VStack(alignment: .leading, spacing: 8) {
+                        Text("Log levels:")
+                            .font(.caption)
+                            .foregroundColor(.secondary)
+                        Text("• Info: Core loading, game launches, shader changes")
+                            .font(.caption)
+                            .foregroundColor(.secondary)
+                        Text("• Debug: Metal pipeline, frame rendering, detailed emulation info")
+                            .font(.caption)
+                            .foregroundColor(.secondary)
+                    }
+                    .padding(.top, 4)
+                }
+                
+                HStack(spacing: 8) {
+                    Image(systemName: "terminal")
+                        .foregroundColor(.secondary)
+                    Text("Logs appear in Console.app (filter by 'TruchieEmu') or Xcode debug console")
+                        .font(.caption)
+                        .foregroundColor(.secondary)
+                }
+            }
+            
+            Section("Application") {
+                LabeledContent("Version") {
+                    Text(Bundle.main.infoDictionary?["CFBundleShortVersionString"] as? String ?? "1.0.0")
+                }
+                LabeledContent("Build") {
+                    Text(Bundle.main.infoDictionary?["CFBundleVersion"] as? String ?? "1")
+                }
+            }
+        }
+        .formStyle(.grouped)
+        .navigationTitle("General")
     }
 }
 

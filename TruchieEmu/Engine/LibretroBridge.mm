@@ -509,15 +509,24 @@ static bool bridge_environment(unsigned cmd, void *data) {
     }
 }
 
+static uint32_t g_videoRefreshCount = 0;
 static void bridge_video_refresh(const void *data, unsigned width, unsigned height, size_t pitch) {
+    // Only log once to avoid console spam
+    if (g_videoRefreshCount == 0) {
+        NSLog(@"[Bridge] video_refresh called: %dx%d pitch=%d data=%p hw=%d", width, height, (int)pitch, data, (data == RETRO_HW_FRAME_BUFFER_VALID));
+    }
+    g_videoRefreshCount++;
     if (g_instance) {
         if (g_instance->_hwRenderEnabled && g_instance->_glContext) CGLSetCurrentContext(g_instance->_glContext);
         const void *finalData = data;
-        if (data == RETRO_HW_FRAME_BUFFER_VALID) {
+        BOOL isHW = (data == RETRO_HW_FRAME_BUFFER_VALID);
+        if (isHW) {
             finalData = [g_instance readHWRenderedPixels:width height:height];
             pitch = width * 4; // Assuming RGBA8888 for GL readback
         }
         [g_instance handleVideoData:finalData width:width height:height pitch:(int)pitch format:[g_instance pixelFormat]];
+    } else {
+        NSLog(@"[Bridge] video_refresh called but g_instance is nil!");
     }
 }
 
@@ -661,7 +670,8 @@ static int16_t bridge_input_state(unsigned port, unsigned device, unsigned index
     
     if (!_retro_load_game(&gi)) return NO;
     
-    // config A/V
+    // config A/V - call retro_get_system_av_info AFTER load_game to get proper timing
+    memset(&_avInfo, 0, sizeof(_avInfo));
     _retro_get_system_av_info(&_avInfo);
     double sampleRate = _avInfo.timing.sample_rate > 0 ? _avInfo.timing.sample_rate : 44100.0;
     double fps = _avInfo.timing.fps > 0 ? _avInfo.timing.fps : 60.0;
@@ -677,6 +687,7 @@ static int16_t bridge_input_state(unsigned port, unsigned device, unsigned index
     _running = YES;
     
     // Timing loop using Mach Absolute Time for high precision
+    int localRunCount = 0;
     while (_running) {
         uint64_t start = mach_absolute_time();
         
@@ -686,6 +697,11 @@ static int16_t bridge_input_state(unsigned port, unsigned device, unsigned index
         
         if (_hwRenderEnabled && _glContext) CGLSetCurrentContext(_glContext);
         _retro_run();
+        localRunCount++;
+        
+        if (localRunCount <= 3 || localRunCount % 60 == 0) {
+            NSLog(@"[Bridge] retro_run() called, iteration %d", localRunCount);
+        }
         
         uint64_t end = mach_absolute_time();
         
@@ -735,7 +751,17 @@ static int16_t bridge_input_state(unsigned port, unsigned device, unsigned index
 }
 
 - (void)handleVideoData:(const void *)data width:(int)w height:(int)h pitch:(int)pitch format:(int)format {
-    if (_videoCallback) _videoCallback(data, w, h, pitch, format);
+    // Only log first few times to avoid console spam
+    static uint32_t handleCount = 0;
+    if (handleCount < 2) {
+        NSLog(@"[Bridge] handleVideoData: %dx%d pitch=%d format=%d data=%p cb=%p", w, h, pitch, format, data, _videoCallback);
+        handleCount++;
+    }
+    if (_videoCallback) {
+        _videoCallback(data, w, h, pitch, format);
+    } else {
+        NSLog(@"[Bridge] WARNING: handleVideoData called but _videoCallback is nil!");
+    }
 }
 
 - (void)handleAudioSamples:(const int16_t *)data count:(size_t)count {

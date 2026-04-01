@@ -46,6 +46,7 @@ struct GameDetailView: View {
 
     @State private var showBoxArtPicker = false
     @State private var showControlsPicker = false
+    @State private var gameWindowController: StandaloneGameWindowController? = nil
     @State private var boxArtImage: NSImage? = nil
     @State private var crcHash: String? = nil
     @State private var fileSize: String? = nil
@@ -356,38 +357,98 @@ struct GameDetailView: View {
         }
     }
 
+    @State private var showShaderPicker = false
+    
     private var displaySection: some View {
         VStack(alignment: .leading, spacing: 12) {
-            Label("Display Filters", systemImage: "tv")
+            Label("Shader & Display", systemImage: "tv")
                 .font(.headline)
             
-            VStack(alignment: .leading, spacing: 16) {
-                HStack(spacing: 20) {
-                    Toggle("Scanlines", isOn: Binding(
-                        get: { currentROM.settings.scanlinesEnabled },
-                        set: { newVal in updateSettings { $0.scanlinesEnabled = newVal } }
-                    ))
-                    Toggle("Curvature", isOn: Binding(
-                        get: { currentROM.settings.barrelEnabled },
-                        set: { newVal in updateSettings { $0.barrelEnabled = newVal } }
-                    ))
-                    Toggle("Phosphor", isOn: Binding(
-                        get: { currentROM.settings.phosphorEnabled },
-                        set: { newVal in updateSettings { $0.phosphorEnabled = newVal } }
-                    ))
+            VStack(alignment: .leading, spacing: 12) {
+                HStack {
+                    VStack(alignment: .leading, spacing: 4) {
+                        Text("Shader Preset")
+                            .font(.subheadline)
+                            .fontWeight(.medium)
+                        Text("Choose a post-processing shader for this game")
+                            .font(.caption)
+                            .foregroundColor(.secondary)
+                    }
+                    
+                    Spacer()
+                    
+                    Button(ShaderManager.displayName(for: currentROM.settings.shaderPresetID)) {
+                        showShaderPicker = true
+                    }
+                    .buttonStyle(.bordered)
                 }
                 
-                VStack(alignment: .leading) {
-                    Text("Color Intensity").font(.caption)
-                    Slider(value: Binding(
-                        get: { currentROM.settings.colorBoost },
-                        set: { newVal in updateSettings { $0.colorBoost = newVal } }
-                    ), in: 1.0...2.0)
+                // Quick shader presets
+                VStack(spacing: 6) {
+                    let recommended = shaderManager.recommendedPresets(for: currentROM.systemID ?? "")
+                    let presetsToShow = recommended.isEmpty ? Array(ShaderPreset.builtinPresets.prefix(4)) : recommended
+                    
+                    ForEach(presetsToShow.prefix(4), id: \.id) { preset in
+                        Button {
+                            updateSettings { $0.shaderPresetID = preset.id }
+                        } label: {
+                            HStack {
+                                Image(systemName: shaderIcon(for: preset.shaderType))
+                                    .foregroundColor(.accentColor)
+                                    .frame(width: 20)
+                                Text(preset.name)
+                                    .font(.subheadline)
+                                Spacer()
+                                if currentROM.settings.shaderPresetID == preset.id {
+                                    Image(systemName: "checkmark.circle.fill")
+                                        .foregroundColor(.accentColor)
+                                }
+                                if let desc = preset.description {
+                                    Text(desc)
+                                        .font(.caption)
+                                        .foregroundColor(.secondary)
+                                        .lineLimit(1)
+                                }
+                            }
+                            .padding(.vertical, 6)
+                            .padding(.horizontal, 10)
+                            .background(currentROM.settings.shaderPresetID == preset.id ? 
+                                Color.accentColor.opacity(0.1) : Color.clear)
+                            .cornerRadius(6)
+                        }
+                        .buttonStyle(.plain)
+                    }
                 }
             }
             .padding()
             .background(Color.secondary.opacity(0.05))
             .cornerRadius(10)
+        }
+        .sheet(isPresented: $showShaderPicker) {
+            ShaderPresetPickerView(
+                selectedPresetID: Binding(
+                    get: { currentROM.settings.shaderPresetID },
+                    set: { newID in
+                        updateSettings { $0.shaderPresetID = newID }
+                    }
+                ),
+                uniformValues: .constant([:])
+            )
+            .frame(width: 550, height: 500)
+        }
+    }
+    
+    private var shaderManager: ShaderManager {
+        ShaderManager.shared
+    }
+    
+    private func shaderIcon(for type: ShaderType) -> String {
+        switch type {
+        case .crt: return "tv"
+        case .lcd: return "iphone"
+        case .smoothing: return "sparkles"
+        case .composite: return "waveform.path"
+        case .custom: return "wrench"
         }
     }
 
@@ -464,12 +525,14 @@ struct GameDetailView: View {
     }
 
     private func launchGame() {
-        // Find system and core
-        guard let sysID = currentROM.systemID else { return }
-        let coreID = useCustomCore ? selectedCoreID : (sysPrefs.preferredCoreID(for: sysID) ?? system?.defaultCoreID)
+        guard let sysID = currentROM.systemID,
+              let system = SystemDatabase.system(forID: sysID) else { return }
+        
+        let sysPrefs = SystemPreferences.shared
+        let coreID = currentROM.useCustomCore ? (currentROM.selectedCoreID ?? sysPrefs.preferredCoreID(for: sysID) ?? system.defaultCoreID) : (sysPrefs.preferredCoreID(for: sysID) ?? system.defaultCoreID)
+        
         guard let cid = coreID else { return }
         
-        // Ensure the core is actually installed on disk
         if !coreManager.isInstalled(coreID: cid) {
             coreManager.requestCoreDownload(for: cid, systemID: sysID)
             return
@@ -477,13 +540,23 @@ struct GameDetailView: View {
 
         library.markPlayed(currentROM)
         
+        // Activate the shader preset BEFORE launching the game
+        let presetID = currentROM.settings.shaderPresetID.isEmpty ? "builtin-crt-classic" : currentROM.settings.shaderPresetID
+        if let preset = ShaderPreset.preset(id: presetID) {
+            ShaderManager.shared.activatePreset(preset)
+            print("[SHADER-DEBUG] launchGame: Activated preset '\(preset.name)' for ROM '\(currentROM.displayName)'")
+        } else {
+            print("[SHADER-DEBUG] launchGame: Could not find preset '\(presetID)', using default")
+        }
+        
         let runner = EmulatorRunner.forSystem(sysID)
         let controller = StandaloneGameWindowController(runner: runner)
+        self.gameWindowController = controller
         controller.showWindow(nil)
         controller.window?.makeKeyAndOrderFront(nil)
         NSApp.activate(ignoringOtherApps: true)
         
-        runner.launch(rom: currentROM, coreID: cid)
+        controller.launch(rom: currentROM, coreID: cid)
     }
 }
 

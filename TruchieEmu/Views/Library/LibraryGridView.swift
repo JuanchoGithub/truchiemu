@@ -454,6 +454,15 @@ struct LibraryGridView: View {
 
         library.markPlayed(rom)
         
+        // Activate the shader preset BEFORE launching the game
+        let presetID = rom.settings.shaderPresetID.isEmpty ? "builtin-crt-classic" : rom.settings.shaderPresetID
+        if let preset = ShaderPreset.preset(id: presetID) {
+            ShaderManager.shared.activatePreset(preset)
+            print("[SHADER-DEBUG] LibraryGridView.launchGame: Activated preset '\(preset.name)' for ROM '\(rom.displayName)'")
+        } else {
+            print("[SHADER-DEBUG] LibraryGridView.launchGame: Could not find preset '\(presetID)', using default")
+        }
+        
         let runner = EmulatorRunner.forSystem(sysID)
         let controller = StandaloneGameWindowController(runner: runner)
         self.gameWindowController = controller
@@ -461,7 +470,8 @@ struct LibraryGridView: View {
         controller.window?.makeKeyAndOrderFront(nil)
         NSApp.activate(ignoringOtherApps: true)
         
-        runner.launch(rom: rom, coreID: cid)
+        // Use the controller's launch method to ensure proper setup
+        controller.launch(rom: rom, coreID: cid)
     }
 }
 

@@ -1,8 +1,19 @@
 #include <metal_stdlib>
+#include "internal/ShaderTypes.h.metal"
 using namespace metal;
 
-// MARK: - Uniforms
-struct Uniforms {
+// MARK: - Vertex Shader
+vertex VertexOut vertexPassthrough(uint id [[vertex_id]]) {
+    float2 positions[4] = { {-1, -1}, {1, -1}, {-1, 1}, {1, 1} };
+    float2 uvs[4]       = { {0, 1},   {1, 1},  {0, 0},  {1, 0} };
+    VertexOut out;
+    out.position = float4(positions[id], 0, 1);
+    out.texCoord = uvs[id];
+    return out;
+}
+
+// MARK: - Uniforms (legacy compatibility - matches ShaderUniforms in Swift)
+struct CRTUniforms {
     int   crtEnabled;
     int   scanlinesEnabled;
     int   barrelEnabled;
@@ -13,26 +24,10 @@ struct Uniforms {
     float time;
 };
 
-// MARK: - Passthrough vertex shader
-struct VertexOut {
-    float4 position [[position]];
-    float2 texCoord;
-};
-
-vertex VertexOut vertexPassthrough(uint id [[vertex_id]]) {
-    // Full-screen quad
-    float2 positions[4] = { {-1, -1}, {1, -1}, {-1, 1}, {1, 1} };
-    float2 uvs[4]       = { {0, 1},   {1, 1},  {0, 0},  {1, 0} };
-    VertexOut out;
-    out.position = float4(positions[id], 0, 1);
-    out.texCoord = uvs[id];
-    return out;
-}
-
 // MARK: - CRT + Scanline fragment shader
 fragment float4 fragmentCRT(VertexOut in [[stage_in]],
                              texture2d<float> tex [[texture(0)]],
-                             constant Uniforms &u [[buffer(0)]]) {
+                             constant CRTUniforms &u [[buffer(0)]]) {
     constexpr sampler s(filter::linear, address::clamp_to_edge);
     float2 uv = in.texCoord;
 

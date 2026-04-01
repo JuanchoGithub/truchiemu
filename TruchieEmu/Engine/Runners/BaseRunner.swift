@@ -51,7 +51,25 @@ class EmulatorRunner: ObservableObject, @unchecked Sendable {
         
         let selectedLang = SystemPreferences.shared.systemLanguage.rawValue
         let loggingEnabled = UserDefaults.standard.bool(forKey: "logging_enabled")
-        let selectedLogLevel = loggingEnabled ? SystemPreferences.shared.coreLogLevel.rawValue : CoreLogLevel.none.rawValue
+        let loggingLevel = UserDefaults.standard.integer(forKey: "logging_level")
+        
+        // Map logging level to core log level
+        let selectedLogLevel: Int32
+        if !loggingEnabled {
+            selectedLogLevel = Int32(CoreLogLevel.none.rawValue)
+        } else {
+            switch loggingLevel {
+            case 0: selectedLogLevel = Int32(CoreLogLevel.none.rawValue)
+            case 1: selectedLogLevel = Int32(CoreLogLevel.info.rawValue)
+            case 2: selectedLogLevel = Int32(CoreLogLevel.warn.rawValue)  // Most verbose available
+            default: selectedLogLevel = Int32(CoreLogLevel.info.rawValue)
+            }
+        }
+        
+        if loggingEnabled {
+            let levelName = loggingLevel == 0 ? "None" : loggingLevel == 1 ? "Info" : "Debug/Verbose"
+            print("[Runner] Logging enabled at level: \(levelName)")
+        }
         
         // Track last loaded core so Options view knows which file to persist to
         UserDefaults.standard.set(coreID, forKey: "lastLoadedCoreID")

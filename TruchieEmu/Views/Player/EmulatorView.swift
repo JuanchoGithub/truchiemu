@@ -9,8 +9,10 @@ struct EmulatorView: View {
     @Environment(\.dismiss) private var dismiss
 
     @StateObject private var runner: EmulatorRunner
+    @StateObject private var shaderManager = ShaderManager.shared
     @State private var showHUD = false
     @State private var showFilterPanel = false
+    @State private var showShaderPicker = false
     @EnvironmentObject private var library: ROMLibrary
     @EnvironmentObject private var coreManager: CoreManager
     @EnvironmentObject private var controllerService: ControllerService
@@ -63,7 +65,35 @@ struct EmulatorView: View {
         }
         .onAppear {
             self.settings = rom.settings
-            Task {
+            
+            // Migrate legacy settings if needed
+            if settings.isLegacyShaderMode {
+                settings.migrateFromLegacyShaders()
+            }
+            
+            print("[SHADER-DEBUG] ===== EmulatorView.onAppear =====")
+            print("[SHADER-DEBUG] ROM: \(rom.displayName)")
+            print("[SHADER-DEBUG] ROM settings shaderPresetID: '\(rom.settings.shaderPresetID)'")
+            print("[SHADER-DEBUG] Local settings shaderPresetID: '\(settings.shaderPresetID)'")
+            print("[SHADER-DEBUG] Current active preset BEFORE activation: '\(ShaderManager.shared.activePreset.id)'")
+            
+            // Initialize shader manager with ROM's preset
+            Task { @MainActor in
+                let presetID = settings.shaderPresetID.isEmpty ? "builtin-crt-classic" : settings.shaderPresetID
+                print("[SHADER-DEBUG] Resolved preset ID to use: '\(presetID)'")
+                
+                if let preset = ShaderPreset.preset(id: presetID) {
+                    print("[SHADER-DEBUG] Found preset: '\(preset.name)'")
+                    print("[SHADER-DEBUG] Preset passes: \(preset.passes.count)")
+                    if let firstPass = preset.passes.first {
+                        print("[SHADER-DEBUG] First pass shaderFile: '\(firstPass.shaderFile)'")
+                    }
+                    shaderManager.activatePreset(preset)
+                    print("[SHADER-DEBUG] After activation, activePreset: '\(ShaderManager.shared.activePreset.id)'")
+                } else {
+                    print("[SHADER-DEBUG] ERROR: Could not find preset with ID '\(presetID)'")
+                }
+                
                 if let corePath = runner.findCoreLib(coreID: coreID) {
                     await coreManager.prepareCore(at: corePath)
                 }
@@ -77,6 +107,24 @@ struct EmulatorView: View {
                             mv.window?.makeFirstResponder(mv)
                         }
                     }
+                }
+            }
+        }
+        .sheet(isPresented: $showShaderPicker) {
+            ShaderPresetPickerView(
+                selectedPresetID: $settings.shaderPresetID,
+                uniformValues: $shaderManager.uniformValues
+            )
+            .onDisappear {
+                // Save selected preset to ROM settings
+                var updated = rom
+                updated.settings = settings
+                library.updateROM(updated)
+                runner.rom = updated
+                
+                // Activate the new preset
+                if let preset = ShaderPreset.preset(id: settings.shaderPresetID) {
+                    shaderManager.activatePreset(preset)
                 }
             }
         }
@@ -105,12 +153,23 @@ struct EmulatorView: View {
 
                 Spacer()
 
+                // Shader preset button
+                Button { withAnimation { showShaderPicker.toggle() } } label: {
+                    Image(systemName: "sparkles")
+                        .font(.title2)
+                        .foregroundStyle(.white)
+                }
+                .buttonStyle(.plain)
+                .help("Shader Presets")
+                
+                // Filter toggle button
                 Button { withAnimation { showFilterPanel.toggle() } } label: {
                     Image(systemName: "slider.horizontal.3")
                         .font(.title2)
                         .foregroundStyle(.white)
                 }
                 .buttonStyle(.plain)
+                .help("Filters")
 
                 // Controller Selection in HUD
                 Menu {
@@ -168,6 +227,10 @@ struct EmulatorView: View {
             if showFilterPanel {
                 filterPanel
             }
+            
+            if showShaderPicker {
+                shaderPanel
+            }
 
             Spacer()
 
@@ -178,8 +241,70 @@ struct EmulatorView: View {
         }
     }
 
+    // MARK: - Shader Panel (quick access in HUD)
+    
+    private var shaderPanel: some View {
+        VStack(spacing: 12) {
+            HStack {
+                Text("Shader:")
+                    .font(.caption)
+                    .foregroundColor(.secondary)
+                
+                Text(ShaderManager.displayName(for: settings.shaderPresetID))
+                    .font(.caption)
+                    .fontWeight(.medium)
+                    .foregroundColor(.white)
+                
+                Spacer()
+                
+                Button("Browse...") {
+                    showShaderPicker = true
+                }
+                .font(.caption)
+            }
+            
+            QuickShaderSelectorView(
+                selectedPresetID: $settings.shaderPresetID,
+                shaderEnabled: .constant(true)
+            )
+            .onChange(of: settings.shaderPresetID) { newID in
+                // Apply preset immediately
+                if let preset = ShaderPreset.preset(id: newID) {
+                    shaderManager.activatePreset(preset)
+                }
+                // Save to ROM
+                var updated = rom
+                updated.settings = settings
+                library.updateROM(updated)
+                runner.rom = updated
+            }
+        }
+        .padding(16)
+        .background(.ultraThinMaterial)
+        .cornerRadius(12)
+    }
+    
+    // MARK: - Legacy Filter Panel
+    
     private var filterPanel: some View {
         VStack(spacing: 16) {
+            // Shader preset quick select
+            HStack {
+                Text("Shader Preset:")
+                    .font(.subheadline)
+                    .foregroundColor(.secondary)
+                
+                Spacer()
+                
+                Button(ShaderManager.displayName(for: settings.shaderPresetID)) {
+                    showShaderPicker = true
+                }
+                .buttonStyle(.bordered)
+                .buttonStyle(.borderedProminent)
+            }
+            
+            Divider()
+            
             HStack(spacing: 24) {
                 Toggle("CRT", isOn: $settings.crtEnabled)
                 Toggle("Scanlines", isOn: $settings.scanlinesEnabled)
@@ -204,23 +329,24 @@ struct EmulatorView: View {
                 }
             }
                 
-                Picker("Bezel", selection: $settings.bezelStyle) {
-                    Text("None").tag("none")
-                    Text("TV").tag("tv")
-                    Text("Arcade").tag("arcade")
-                }
+            Picker("Bezel", selection: $settings.bezelStyle) {
+                Text("None").tag("none")
+                Text("TV").tag("tv")
+                Text("Arcade").tag("arcade")
             }
-            .padding(16)
-            .background(.ultraThinMaterial)
-            .cornerRadius(12)
-            .onChange(of: settings) { newSettings in
-                var updated = rom
-                updated.settings = newSettings
-                library.updateROM(updated)
-                runner.rom = updated
-            }
+            .pickerStyle(.segmented)
+        }
+        .padding(16)
+        .background(.ultraThinMaterial)
+        .cornerRadius(12)
+        .onChange(of: settings) { newSettings in
+            var updated = rom
+            updated.settings = newSettings
+            library.updateROM(updated)
+            runner.rom = updated
         }
     }
+}
 
 // MARK: - Focusable MTKView for macOS keyboard input
 class FocusableMTKView: MTKView {
@@ -295,7 +421,7 @@ struct MetalGameView: NSViewRepresentable {
     class MetalCoordinator: NSObject, MTKViewDelegate {
         let runner: EmulatorRunner
         private var commandQueue: MTLCommandQueue?
-        private var pipelineState: MTLRenderPipelineState?
+        private var pipelineCache: [String: MTLRenderPipelineState] = [:]
         private var device: MTLDevice?
         private var innerDrawCount = 0
 
@@ -304,6 +430,69 @@ struct MetalGameView: NSViewRepresentable {
         }
 
         func mtkView(_ view: MTKView, drawableSizeWillChange size: CGSize) {}
+
+        private func getFragmentFunctionName() -> String {
+            // Map from preset's shader file to fragment function name
+            let preset = ShaderManager.shared.activePreset
+            print("[SHADER-DEBUG] getFragmentFunctionName: activePreset='\(preset.id)', passes=\(preset.passes.count)")
+            guard let firstPass = preset.passes.first,
+                  let shaderFile = firstPass.shaderFile.components(separatedBy: ".").first else {
+                print("[SHADER-DEBUG] getFragmentFunctionName: No passes found, returning fragmentPassthrough")
+                return "fragmentPassthrough"  // fallback
+            }
+            print("[SHADER-DEBUG] getFragmentFunctionName: shaderFile='\(shaderFile)'")
+            // Map shader file name to actual Metal function name
+            // Note: CRTFilter.metal uses "fragmentCRT" (not "fragmentCRTFilter")
+            let result: String
+            switch shaderFile {
+            case "CRTFilter": result = "fragmentCRT"
+            case "LCDGrid": result = "fragmentLCDGrid"
+            case "VibrantLCD": result = "fragmentVibrantLCD"
+            case "EdgeSmooth": result = "fragmentEdgeSmooth"
+            case "Composite": result = "fragmentComposite"
+            case "Passthrough": result = "fragmentPassthrough"
+            default: result = "fragment" + shaderFile
+            }
+            print("[SHADER-DEBUG] getFragmentFunctionName: returning '\(result)'")
+            return result
+        }
+
+        private func getPipelineState(device: MTLDevice) -> MTLRenderPipelineState? {
+            let fragmentName = getFragmentFunctionName()
+            
+            // Check cache first
+            if let cached = pipelineCache[fragmentName] {
+                return cached
+            }
+            
+            // Create new pipeline
+            guard let library = loadShaderLibrary(device: device) else {
+                print("[Metal] ERROR: Could not create shader library.")
+                return nil
+            }
+            
+            guard let vertexFunction = library.makeFunction(name: "vertexPassthrough"),
+                  let fragmentFunction = library.makeFunction(name: fragmentName) else {
+                print("[Metal] ERROR: Could not find shader function '\(fragmentName)'")
+                print("[Metal] Available functions: \(library.functionNames.joined(separator: ", "))")
+                return nil
+            }
+
+            let desc = MTLRenderPipelineDescriptor()
+            desc.colorAttachments[0].pixelFormat = .bgra8Unorm
+            desc.vertexFunction = vertexFunction
+            desc.fragmentFunction = fragmentFunction
+
+            do {
+                let pipeline = try device.makeRenderPipelineState(descriptor: desc)
+                pipelineCache[fragmentName] = pipeline
+                print("[Metal] Created pipeline for '\(fragmentName)'")
+                return pipeline
+            } catch {
+                print("[Metal] ERROR: Failed to create pipeline '\(fragmentName)': \(error)")
+                return nil
+            }
+        }
 
         func draw(in view: MTKView) {
             guard let device = view.device,
@@ -317,16 +506,16 @@ struct MetalGameView: NSViewRepresentable {
             descriptor.colorAttachments[0].storeAction = .store
 
             if commandQueue == nil {
-                print("[Metal] Initializing Command Queue and Pipeline...")
+                print("[Metal] Initializing Command Queue...")
                 commandQueue = device.makeCommandQueue()
                 self.device = device
-                setupPipeline(device: device)
             }
 
             guard let cmdQueue = commandQueue,
                   let cmdBuffer = cmdQueue.makeCommandBuffer() else { return }
 
-            if let pipeline = pipelineState,
+            let pipeline = getPipelineState(device: device)
+            if let pipeline = pipeline,
                let enc = cmdBuffer.makeRenderCommandEncoder(descriptor: descriptor) {
                 
                 if let frameTex = runner.currentFrameTexture {
@@ -351,55 +540,123 @@ struct MetalGameView: NSViewRepresentable {
                                                znear: 0.0, zfar: 1.0)
                     enc.setViewport(viewport)
                     
+                    let fw = Float(frameTex.width)
+                    let fh = Float(frameTex.height)
+                    let vpW = Float(view.drawableSize.width)
+                    let vpH = Float(view.drawableSize.height)
+                    let time = Float(CACurrentMediaTime().truncatingRemainder(dividingBy: 100))
                     let settings = runner.rom?.settings ?? ROMSettings()
-                    var uniforms = ShaderUniforms(
-                        crtEnabled: settings.crtEnabled ? 1 : 0,
-                        scanlinesEnabled: settings.scanlinesEnabled ? 1 : 0,
-                        barrelEnabled: settings.barrelEnabled ? 1 : 0,
-                        phosphorEnabled: settings.phosphorEnabled ? 1 : 0,
-                        scanlineIntensity: settings.scanlineIntensity,
-                        barrelAmount: settings.barrelAmount,
-                        colorBoost: settings.colorBoost,
-                        time: Float(CACurrentMediaTime().truncatingRemainder(dividingBy: 100))
-                    )
 
                     enc.setRenderPipelineState(pipeline)
                     enc.setFragmentTexture(frameTex, index: 0)
-                    enc.setFragmentBytes(&uniforms, length: MemoryLayout<ShaderUniforms>.size, index: 0)
+
+                    let fragmentName = getFragmentFunctionName()
+                    switch fragmentName {
+                    case "fragmentCRT", "fragmentPassthrough":
+                        var u = CRTUniforms(
+                            crtEnabled: settings.crtEnabled ? 1 : 0,
+                            scanlinesEnabled: settings.scanlinesEnabled ? 1 : 0,
+                            barrelEnabled: settings.barrelEnabled ? 1 : 0,
+                            phosphorEnabled: settings.phosphorEnabled ? 1 : 0,
+                            scanlineIntensity: settings.scanlineIntensity,
+                            barrelAmount: settings.barrelAmount,
+                            colorBoost: settings.colorBoost,
+                            time: time
+                        )
+                        enc.setFragmentBytes(&u, length: MemoryLayout<CRTUniforms>.stride, index: 0)
+                    case "fragmentEdgeSmooth", "fragmentVibrantLCD":
+                        var u = EdgeSmoothUniforms(
+                            smoothStrength: settings.scanlineIntensity,
+                            colorBoost: settings.colorBoost,
+                            time: time,
+                            _pad: 0,
+                            sourceSize: SIMD4<Float>(fw, fh, 1.0/fw, 1.0/fh),
+                            outputSize: SIMD4<Float>(vpW, vpH, 0.0, 0.0)
+                        )
+                        enc.setFragmentBytes(&u, length: MemoryLayout<EdgeSmoothUniforms>.stride, index: 0)
+                    case "fragmentLCDGrid", "fragmentComposite":
+                        var u = LCDGridUniforms(
+                            uniform0: fragmentName == "fragmentLCDGrid" ? settings.scanlineIntensity : 1.0,
+                            uniform1: 0.0,
+                            uniform2: fragmentName == "fragmentLCDGrid" ? 1.0 : 0.0,
+                            colorBoost: settings.colorBoost,
+                            time: time,
+                            _pad: SIMD3<Float>(0, 0, 0),
+                            sourceSize: SIMD4<Float>(fw, fh, 1.0/fw, 1.0/fh),
+                            outputSize: SIMD4<Float>(vpW, vpH, 0.0, 0.0)
+                        )
+                        enc.setFragmentBytes(&u, length: MemoryLayout<LCDGridUniforms>.stride, index: 0)
+                    default:
+                        var u = CRTUniforms(
+                            crtEnabled: 0,
+                            scanlinesEnabled: 0,
+                            barrelEnabled: 0,
+                            phosphorEnabled: 0,
+                            scanlineIntensity: 0,
+                            barrelAmount: 0,
+                            colorBoost: settings.colorBoost,
+                            time: time
+                        )
+                        enc.setFragmentBytes(&u, length: MemoryLayout<CRTUniforms>.stride, index: 0)
+                    }
                     enc.drawPrimitives(type: .triangleStrip, vertexStart: 0, vertexCount: 4)
                     
                     innerDrawCount += 1
                 }
                 enc.endEncoding()
+            } else {
+                if innerDrawCount < 5 {
+                    print("[Metal] Failed to get pipeline state for fragment shader")
+                }
             }
 
             cmdBuffer.present(drawable)
             cmdBuffer.commit()
         }
-
-        private func setupPipeline(device: MTLDevice) {
-            guard let library = device.makeDefaultLibrary() else {
-                print("[Metal] ERROR: Could not create default library.")
-                return
+        
+        /// Load the shader library containing all shaders
+        private func loadShaderLibrary(device: MTLDevice) -> MTLLibrary? {
+            // Try to load pre-compiled metallib from bundle
+            if let url = Bundle.main.url(forResource: "default", withExtension: "metallib") {
+                do {
+                    let library = try device.makeLibrary(URL: url)
+                    print("[Metal] Loaded metallib with functions: \(library.functionNames.joined(separator: ", "))")
+                    return library
+                } catch {
+                    print("[Metal] Failed to load metallib: \(error)")
+                }
             }
             
-            guard let vertexFunction = library.makeFunction(name: "vertexPassthrough"),
-                  let fragmentFunction = library.makeFunction(name: "fragmentCRT") else {
-                print("[Metal] ERROR: Could not find shader functions vertexPassthrough or fragmentCRT.")
-                return
+            // Fallback: compile all_shaders.metal from bundle resources
+            if let bundlePath = Bundle.main.resourcePath {
+                let shadersPath = (bundlePath as NSString).appendingPathComponent("all_shaders.metal")
+                if let source = try? String(contentsOfFile: shadersPath, encoding: .utf8) {
+                    do {
+                        let library = try device.makeLibrary(source: source, options: nil)
+                        print("[Metal] Compiled all_shaders.metal with functions: \(library.functionNames.joined(separator: ", "))")
+                        return library
+                    } catch {
+                        print("[Metal] Failed to compile all_shaders.metal: \(error)")
+                    }
+                }
+                
+                // Try individual shader files as last resort
+                let shaderFiles = ["CRTFilter", "LCDGrid", "VibrantLCD", "EdgeSmooth", "Composite", "Passthrough"]
+                for file in shaderFiles {
+                    let filePath = (bundlePath as NSString).appendingPathComponent("\(file).metal")
+                    if let source = try? String(contentsOfFile: filePath, encoding: .utf8) {
+                        do {
+                            let library = try device.makeLibrary(source: source, options: nil)
+                            print("[Metal] Compiled \(file).metal with functions: \(library.functionNames.joined(separator: ", "))")
+                            return library
+                        } catch {
+                            print("[Metal] Failed to compile \(file).metal: \(error)")
+                        }
+                    }
+                }
             }
-
-            let desc = MTLRenderPipelineDescriptor()
-            desc.colorAttachments[0].pixelFormat = .bgra8Unorm
-            desc.vertexFunction = vertexFunction
-            desc.fragmentFunction = fragmentFunction
             
-            do {
-                pipelineState = try device.makeRenderPipelineState(descriptor: desc)
-                print("[Metal] Pipeline successfully setup")
-            } catch {
-                print("[Metal] ERROR: Failed to create pipeline state: \(error)")
-            }
+            return nil
         }
     }
 }
@@ -408,8 +665,12 @@ struct MetalGameView: NSViewRepresentable {
 
 // EmulatorRunner and its former methods are now in separate files in Engine/Runners/
 
-// MARK: - Shader Uniforms (matches CRTFilter.metal)
-struct ShaderUniforms {
+// MARK: - Shader Uniforms
+// Each Metal shader expects a specific uniform buffer layout.
+// We create per-shader layouts that match exactly what Metal expects.
+
+/// CRT Filter uniforms (32 bytes) - matches CRTUniforms in CRTFilter.metal
+struct CRTUniforms {
     var crtEnabled: Int32
     var scanlinesEnabled: Int32
     var barrelEnabled: Int32
@@ -419,6 +680,32 @@ struct ShaderUniforms {
     var colorBoost: Float
     var time: Float
 }
+
+/// Edge Smooth / VibrantLCD uniforms (48 bytes) - source/dest size at offset 16
+struct EdgeSmoothUniforms {
+    var smoothStrength: Float   // mapped from scanlineIntensity
+    var colorBoost: Float
+    var time: Float
+    // 4 bytes padding to align float4 to 16-byte boundary
+    var _pad: Float
+    var sourceSize: SIMD4<Float>
+    var outputSize: SIMD4<Float>
+}
+
+/// LCD Grid / Composite uniforms (64 bytes) - source/dest size at offset 32
+struct LCDGridUniforms {
+    var uniform0: Float   // gridOpacity or horizontalBlur
+    var uniform1: Float   // ghostingAmount or verticalBlur
+    var uniform2: Float   // gridSize or bleedAmount
+    var colorBoost: Float
+    var time: Float
+    var _pad: SIMD3<Float>    // padding to align SourceSize to offset 32
+    var sourceSize: SIMD4<Float>
+    var outputSize: SIMD4<Float>
+}
+
+// Legacy alias for CRT passthrough
+typealias ShaderUniforms = CRTUniforms
 
 // MARK: - Bezel
 
@@ -508,58 +795,87 @@ struct BezelView: View {
 
 class StandaloneGameWindowController: NSWindowController, NSWindowDelegate {
     private var runner: EmulatorRunner?
-    private var metalView: MTKView?
+    private var metalView: FocusableMTKView?
     private var coordinator: MetalCoordinator?
-    
+    private var pendingROM: ROM?
+    private var pendingCoreID: String?
 
-
-    convenience init(runner: EmulatorRunner) {
+    init(runner: EmulatorRunner) {
+        self.runner = runner
+        
         let window = NSWindow(
             contentRect: NSRect(x: 0, y: 0, width: 1024, height: 768),
             styleMask: [.titled, .closable, .miniaturizable, .resizable, .fullSizeContentView],
             backing: .buffered, defer: false)
         
-        window.title = "TruchieEmu - " + (runner.romPath as NSString).lastPathComponent
         window.center()
         window.backgroundColor = .black
         window.isReleasedWhenClosed = false
         
-        self.init(window: window)
-        self.runner = runner
+        super.init(window: window)
         window.delegate = self
         
         setupMetalView()
     }
     
+    required init?(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
+    
     private func setupMetalView() {
         guard let runner = self.runner else { return }
         
+        print("[StandaloneMetal] Setting up MetalView...")
         let mtkView = FocusableMTKView()
         mtkView.device = MTLCreateSystemDefaultDevice()
         mtkView.colorPixelFormat = .bgra8Unorm
         mtkView.clearColor = MTLClearColor(red: 0, green: 0, blue: 0, alpha: 1)
-        mtkView.isPaused = false
+        mtkView.isPaused = true  // Start paused until game is launched
         mtkView.enableSetNeedsDisplay = false
+        mtkView.autoResizeDrawable = true
         
-        let coordinator = MetalCoordinator(runner: runner)
-        mtkView.delegate = coordinator
-        self.coordinator = coordinator
+        let coord = MetalCoordinator(runner: runner)
+        mtkView.delegate = coord
+        self.coordinator = coord
         self.metalView = mtkView
         
-        window?.contentView = mtkView
+        // Set runner reference on view
         mtkView.runner = runner
         runner.metalView = mtkView
+        
+        window?.contentView = mtkView
+        print("[StandaloneMetal] MetalView setup complete, isPaused=true")
+    }
+    
+    func launch(rom: ROM, coreID: String) {
+        // Store ROM reference on runner before launching
+        runner?.rom = rom
+        runner?.romPath = rom.path.path
+        
+        // Update window title
+        window?.title = "TruchieEmu - " + rom.displayName
+        
+        // Unpause the metal view
+        metalView?.isPaused = false
+        
+        // Launch the game
+        runner?.launch(rom: rom, coreID: coreID)
+        
+        // Make sure the metal view is the first responder
+        DispatchQueue.main.async { [weak self] in
+            self?.window?.makeFirstResponder(self?.metalView)
+        }
     }
     
     func windowWillClose(_ notification: Notification) {
         runner?.stop()
-        // Signal back to library if needed
     }
 
+    @MainActor
     class MetalCoordinator: NSObject, MTKViewDelegate {
         let runner: EmulatorRunner
         private var commandQueue: MTLCommandQueue?
-        private var pipelineState: MTLRenderPipelineState?
+        private var pipelineCache: [String: MTLRenderPipelineState] = [:]
         private var innerDrawCount = 0
 
         init(runner: EmulatorRunner) {
@@ -567,6 +883,59 @@ class StandaloneGameWindowController: NSWindowController, NSWindowDelegate {
         }
 
         func mtkView(_ view: MTKView, drawableSizeWillChange size: CGSize) {}
+
+        private func getFragmentFunctionName() -> String {
+            let preset = ShaderManager.shared.activePreset
+            guard let firstPass = preset.passes.first,
+                  let shaderFile = firstPass.shaderFile.components(separatedBy: ".").first else {
+                return "fragmentPassthrough"
+            }
+            switch shaderFile {
+            case "CRTFilter": return "fragmentCRT"
+            case "LCDGrid": return "fragmentLCDGrid"
+            case "VibrantLCD": return "fragmentVibrantLCD"
+            case "EdgeSmooth": return "fragmentEdgeSmooth"
+            case "Composite": return "fragmentComposite"
+            case "Passthrough": return "fragmentPassthrough"
+            default: return "fragment" + shaderFile
+            }
+        }
+
+        private func getPipelineState(device: MTLDevice) -> MTLRenderPipelineState? {
+            let fragmentName = getFragmentFunctionName()
+            
+            if let cached = pipelineCache[fragmentName] {
+                return cached
+            }
+            
+            // Create new pipeline
+            guard let library = loadShaderLibrary(device: device) else {
+                print("[StandaloneMetal] ERROR: Could not create shader library.")
+                return nil
+            }
+            
+            guard let vertexFunction = library.makeFunction(name: "vertexPassthrough"),
+                  let fragmentFunction = library.makeFunction(name: fragmentName) else {
+                print("[StandaloneMetal] ERROR: Could not find shader function '\(fragmentName)'")
+                print("[StandaloneMetal] Available functions: \(library.functionNames.joined(separator: ", "))")
+                return nil
+            }
+
+            let desc = MTLRenderPipelineDescriptor()
+            desc.colorAttachments[0].pixelFormat = .bgra8Unorm
+            desc.vertexFunction = vertexFunction
+            desc.fragmentFunction = fragmentFunction
+
+            do {
+                let pipeline = try device.makeRenderPipelineState(descriptor: desc)
+                pipelineCache[fragmentName] = pipeline
+                print("[StandaloneMetal] Created pipeline for '\(fragmentName)'")
+                return pipeline
+            } catch {
+                print("[StandaloneMetal] ERROR: Failed to create pipeline '\(fragmentName)': \(error)")
+                return nil
+            }
+        }
 
         func draw(in view: MTKView) {
             guard let device = view.device,
@@ -581,75 +950,169 @@ class StandaloneGameWindowController: NSWindowController, NSWindowDelegate {
             descriptor.colorAttachments[0].storeAction = .store
 
             if commandQueue == nil {
+                print("[StandaloneMetal] Initializing Command Queue...")
                 commandQueue = device.makeCommandQueue()
-                setupPipeline(device: device)
             }
 
             guard let cmdQueue = commandQueue,
-                  let cmdBuffer = cmdQueue.makeCommandBuffer() else { return }
+                  let cmdBuffer = cmdQueue.makeCommandBuffer() else { 
+                print("[StandaloneMetal] Failed to create command buffer")
+                return 
+            }
 
-            if let pipeline = pipelineState,
-               let enc = cmdBuffer.makeRenderCommandEncoder(descriptor: descriptor) {
-                
+            let pipeline = getPipelineState(device: device)
+            if let pipeline = pipeline {
                 if let frameTex = runner.currentFrameTexture {
-                    // INTEGER SCALING CALCULATION
-                    // ASPECT RATIO STRETCHING (4:3)
-                    let viewWidth = view.drawableSize.width
-                    let viewHeight = view.drawableSize.height
-                    
-                    // Fixed 4:3 aspect ratio display
-                    let targetAspect: CGFloat = 4.0 / 3.0
-                    var drawWidth = viewWidth
-                    var drawHeight = viewWidth / targetAspect
-                    
-                    if drawHeight > viewHeight {
-                        drawHeight = viewHeight
-                        drawWidth = viewHeight * targetAspect
-                    }
-                    
-                    let x = (viewWidth - drawWidth) / 2.0
-                    let y = (viewHeight - drawHeight) / 2.0
-                    
-                    let viewport = MTLViewport(originX: Double(x), originY: Double(y), 
-                                               width: Double(drawWidth), height: Double(drawHeight), 
-                                               znear: 0.0, zfar: 1.0)
-                    enc.setViewport(viewport)
-                    
-                    let settings = runner.rom?.settings ?? ROMSettings()
-                    var uniforms = ShaderUniforms(
-                        crtEnabled: settings.crtEnabled ? 1 : 0,
-                        scanlinesEnabled: settings.scanlinesEnabled ? 1 : 0,
-                        barrelEnabled: settings.barrelEnabled ? 1 : 0,
-                        phosphorEnabled: settings.phosphorEnabled ? 1 : 0,
-                        scanlineIntensity: settings.scanlineIntensity,
-                        barrelAmount: settings.barrelAmount,
-                        colorBoost: settings.colorBoost,
-                        time: Float(CACurrentMediaTime().truncatingRemainder(dividingBy: 100))
-                    )
+                    if let enc = cmdBuffer.makeRenderCommandEncoder(descriptor: descriptor) {
+                        // INTEGER SCALING CALCULATION
+                        // ASPECT RATIO STRETCHING (4:3)
+                        let viewWidth = view.drawableSize.width
+                        let viewHeight = view.drawableSize.height
+                        
+                        // Fixed 4:3 aspect ratio display
+                        let targetAspect: CGFloat = 4.0 / 3.0
+                        var drawWidth = viewWidth
+                        var drawHeight = viewWidth / targetAspect
+                        
+                        if drawHeight > viewHeight {
+                            drawHeight = viewHeight
+                            drawWidth = viewHeight * targetAspect
+                        }
+                        
+                        let x = (viewWidth - drawWidth) / 2.0
+                        let y = (viewHeight - drawHeight) / 2.0
+                        
+                        let viewport = MTLViewport(originX: Double(x), originY: Double(y), 
+                                                   width: Double(drawWidth), height: Double(drawHeight), 
+                                                   znear: 0.0, zfar: 1.0)
+                        enc.setViewport(viewport)
+                        
+                        let fw = Float(frameTex.width)
+                        let fh = Float(frameTex.height)
+                        let vpW = Float(view.drawableSize.width)
+                        let vpH = Float(view.drawableSize.height)
+                        let time = Float(CACurrentMediaTime().truncatingRemainder(dividingBy: 100))
+                        let settings = runner.rom?.settings ?? ROMSettings()
+                        let fragmentName = getFragmentFunctionName()
 
-                    enc.setRenderPipelineState(pipeline)
-                    enc.setFragmentTexture(frameTex, index: 0)
-                    enc.setFragmentBytes(&uniforms, length: MemoryLayout<ShaderUniforms>.size, index: 0)
-                    enc.drawPrimitives(type: .triangleStrip, vertexStart: 0, vertexCount: 4)
+                        enc.setRenderPipelineState(pipeline)
+                        enc.setFragmentTexture(frameTex, index: 0)
+
+                        switch fragmentName {
+                        case "fragmentCRT", "fragmentPassthrough":
+                            var u = CRTUniforms(
+                                crtEnabled: settings.crtEnabled ? 1 : 0,
+                                scanlinesEnabled: settings.scanlinesEnabled ? 1 : 0,
+                                barrelEnabled: settings.barrelEnabled ? 1 : 0,
+                                phosphorEnabled: settings.phosphorEnabled ? 1 : 0,
+                                scanlineIntensity: settings.scanlineIntensity,
+                                barrelAmount: settings.barrelAmount,
+                                colorBoost: settings.colorBoost,
+                                time: time
+                            )
+                            enc.setFragmentBytes(&u, length: MemoryLayout<CRTUniforms>.stride, index: 0)
+                        case "fragmentEdgeSmooth", "fragmentVibrantLCD":
+                            var u = EdgeSmoothUniforms(
+                                smoothStrength: settings.scanlineIntensity,
+                                colorBoost: settings.colorBoost,
+                                time: time,
+                                _pad: 0,
+                                sourceSize: SIMD4<Float>(fw, fh, 1.0/fw, 1.0/fh),
+                                outputSize: SIMD4<Float>(vpW, vpH, 0.0, 0.0)
+                            )
+                            enc.setFragmentBytes(&u, length: MemoryLayout<EdgeSmoothUniforms>.stride, index: 0)
+                        case "fragmentLCDGrid", "fragmentComposite":
+                            var u = LCDGridUniforms(
+                                uniform0: fragmentName == "fragmentLCDGrid" ? settings.scanlineIntensity : 1.0,
+                                uniform1: 0.0,
+                                uniform2: fragmentName == "fragmentLCDGrid" ? 1.0 : 0.0,
+                                colorBoost: settings.colorBoost,
+                                time: time,
+                                _pad: SIMD3<Float>(0, 0, 0),
+                                sourceSize: SIMD4<Float>(fw, fh, 1.0/fw, 1.0/fh),
+                                outputSize: SIMD4<Float>(vpW, vpH, 0.0, 0.0)
+                            )
+                            enc.setFragmentBytes(&u, length: MemoryLayout<LCDGridUniforms>.stride, index: 0)
+                        default:
+                            var u = CRTUniforms(
+                                crtEnabled: 0,
+                                scanlinesEnabled: 0,
+                                barrelEnabled: 0,
+                                phosphorEnabled: 0,
+                                scanlineIntensity: 0,
+                                barrelAmount: 0,
+                                colorBoost: settings.colorBoost,
+                                time: time
+                            )
+                            enc.setFragmentBytes(&u, length: MemoryLayout<CRTUniforms>.stride, index: 0)
+                        }
+                        enc.drawPrimitives(type: .triangleStrip, vertexStart: 0, vertexCount: 4)
+                        enc.endEncoding()
+                        innerDrawCount += 1
+                        
+                        if innerDrawCount <= 3 {
+                            print("[StandaloneMetal] Drawing frame \(innerDrawCount) with texture \(frameTex.width)x\(frameTex.height)")
+                        }
+                    }
+                } else {
+                    // No frame texture yet - just present black screen
+                    if innerDrawCount < 10 {
+                        print("[StandaloneMetal] No frame texture yet, drawing black")
+                    }
                 }
-                enc.endEncoding()
+            } else {
+                if innerDrawCount < 5 {
+                    print("[StandaloneMetal] Failed to get pipeline state for fragment shader")
+                }
             }
 
             cmdBuffer.present(drawable)
             cmdBuffer.commit()
         }
-
-        private func setupPipeline(device: MTLDevice) {
-            guard let library = device.makeDefaultLibrary() else { return }
-            guard let vert = library.makeFunction(name: "vertexPassthrough"),
-                  let frag = library.makeFunction(name: "fragmentCRT") else { return }
-
-            let desc = MTLRenderPipelineDescriptor()
-            desc.colorAttachments[0].pixelFormat = .bgra8Unorm
-            desc.vertexFunction = vert
-            desc.fragmentFunction = frag
+        
+        /// Load the shader library containing all shaders
+        private func loadShaderLibrary(device: MTLDevice) -> MTLLibrary? {
+            // Try to load pre-compiled metallib from bundle
+            if let url = Bundle.main.url(forResource: "default", withExtension: "metallib") {
+                do {
+                    let library = try device.makeLibrary(URL: url)
+                    print("[StandaloneMetal] Loaded metallib with functions: \(library.functionNames.joined(separator: ", "))")
+                    return library
+                } catch {
+                    print("[StandaloneMetal] Failed to load metallib: \(error)")
+                }
+            }
             
-            pipelineState = try? device.makeRenderPipelineState(descriptor: desc)
+            // Fallback: compile all_shaders.metal from bundle resources
+            if let bundlePath = Bundle.main.resourcePath {
+                let shadersPath = (bundlePath as NSString).appendingPathComponent("all_shaders.metal")
+                if let source = try? String(contentsOfFile: shadersPath, encoding: .utf8) {
+                    do {
+                        let library = try device.makeLibrary(source: source, options: nil)
+                        print("[StandaloneMetal] Compiled all_shaders.metal with functions: \(library.functionNames.joined(separator: ", "))")
+                        return library
+                    } catch {
+                        print("[StandaloneMetal] Failed to compile all_shaders.metal: \(error)")
+                    }
+                }
+                
+                // Try individual shader files as last resort
+                let shaderFiles = ["CRTFilter", "LCDGrid", "VibrantLCD", "EdgeSmooth", "Composite", "Passthrough"]
+                for file in shaderFiles {
+                    let filePath = (bundlePath as NSString).appendingPathComponent("\(file).metal")
+                    if let source = try? String(contentsOfFile: filePath, encoding: .utf8) {
+                        do {
+                            let library = try device.makeLibrary(source: source, options: nil)
+                            print("[StandaloneMetal] Compiled \(file).metal with functions: \(library.functionNames.joined(separator: ", "))")
+                            return library
+                        } catch {
+                            print("[StandaloneMetal] Failed to compile \(file).metal: \(error)")
+                        }
+                    }
+                }
+            }
+            
+            return nil
         }
     }
 }

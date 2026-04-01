@@ -59,6 +59,27 @@ struct ROMSettings: Codable, Hashable {
     var scanlineSmooth: Bool = false
     var colorBoost: Float = 1.0
     var bezelStyle: String = "none"
+    
+    // New shader preset system
+    var shaderPresetID: String = "builtin-crt-classic"  // Default to CRT Classic
+    
+    // Check if using legacy toggle-based shaders (for migration)
+    var isLegacyShaderMode: Bool {
+        return shaderPresetID.isEmpty
+    }
+    
+    /// Migrate from legacy toggle-based shaders to preset system
+    mutating func migrateFromLegacyShaders() {
+        guard isLegacyShaderMode else { return }
+        
+        if crtEnabled || scanlinesEnabled || barrelEnabled || phosphorEnabled {
+            // User had custom CRT settings - use CRT Classic preset
+            shaderPresetID = "builtin-crt-classic"
+        } else {
+            // No shaders enabled - use raw pixels
+            shaderPresetID = "builtin-none"
+        }
+    }
 }
 
 struct ROMMetadata: Codable, Hashable {

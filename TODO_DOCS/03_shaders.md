@@ -1,5 +1,16 @@
 # Design Document: Shader Subsystem & Post-Processing Pipeline
 
+> **Implementation Status**: Phase 1-3 Complete (Core Infrastructure + Custom Shaders)
+> - [x] ShaderPreset model system
+> - [x] ShaderManager service
+> - [x] SLANGP Parser for Libretro presets
+> - [x] Custom Metal shaders (CRT, LCD Grid, Vibrant LCD, Edge Smooth, Composite, Passthrough)
+> - [x] Shader preset picker UI
+> - [x] HUD integration
+> - [ ] Multi-pass rendering pipeline
+> - [ ] Libretro shader bundling (slang-shaders repo)
+> - [ ] SPIRV-Cross integration for Vulkan->Metal conversion
+
 ## 1. Objective
 
 To implement a robust post-processing pipeline that supports both custom high-performance shaders (like the provided Metal CRT filter) and the industry-standard **Libretro Shader Preset (.slangp/.glslp)** ecosystem.

@@ -56,5 +56,6 @@ targets:
       - path: TruchieEmu/Engine
       - path: TruchieEmu/Shaders
       - path: TruchieEmu/Views
+      - path: TruchieEmu/Views/Shaders
 
     preBuildScripts: []
