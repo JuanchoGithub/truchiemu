@@ -402,9 +402,12 @@ class ROMLibrary: ObservableObject {
             if fileIndex[path] != sig { changed.append(u) }
         }
 
-        // Remove deleted
+        // Remove deleted - only for ROMs in this specific folder
+        let folderPath = url.path
         let currentPaths = Set(candidates.map { $0.path })
-        let deletedPaths = Set(roms.map { $0.path.path }).subtracting(currentPaths)
+        let romsInThisFolder = roms.filter { $0.path.path.hasPrefix(folderPath) }
+        let romPathsInThisFolder = Set(romsInThisFolder.map { $0.path.path })
+        let deletedPaths = romPathsInThisFolder.subtracting(currentPaths)
         if !deletedPaths.isEmpty {
             roms.removeAll { deletedPaths.contains($0.path.path) }
         }
@@ -422,7 +425,6 @@ class ROMLibrary: ObservableObject {
         for r in imported { byPath[r.path.path] = r }
         
         let ignored = await scanner.getIgnoredFiles(in: url)
-        let folderPath = url.path
         roms = byPath.values.filter { rom in
             if rom.path.path.hasPrefix(folderPath) {
                 return !ignored.contains(rom.path.standardized.path)

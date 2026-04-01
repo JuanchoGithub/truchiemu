@@ -63,6 +63,14 @@ struct TruchieEmuApp: App {
                 .environmentObject(coreManager)
                 .environmentObject(controllerService)
         }
+        
+        Settings {
+            SettingsView()
+                .environmentObject(library)
+                .environmentObject(categoryManager)
+                .environmentObject(coreManager)
+                .environmentObject(controllerService)
+        }
     }
 }
 
