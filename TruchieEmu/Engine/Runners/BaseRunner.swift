@@ -50,7 +50,8 @@ class EmulatorRunner: ObservableObject, @unchecked Sendable {
         isRunning = true
         
         let selectedLang = SystemPreferences.shared.systemLanguage.rawValue
-        let selectedLogLevel = SystemPreferences.shared.coreLogLevel.rawValue
+        let loggingEnabled = UserDefaults.standard.bool(forKey: "logging_enabled")
+        let selectedLogLevel = loggingEnabled ? SystemPreferences.shared.coreLogLevel.rawValue : CoreLogLevel.none.rawValue
         
         // Track last loaded core so Options view knows which file to persist to
         UserDefaults.standard.set(coreID, forKey: "lastLoadedCoreID")

@@ -42,6 +42,9 @@ struct SettingsView: View {
 // MARK: - General
 struct GeneralSettingsView: View {
     @EnvironmentObject var library: ROMLibrary
+    @ObservedObject var prefs = SystemPreferences.shared
+    @AppStorage("logging_enabled") private var loggingEnabled = true
+
     var body: some View {
         Form {
             Section("Library Folders") {
@@ -69,6 +72,17 @@ struct GeneralSettingsView: View {
                     panel.canChooseFiles = false
                     if panel.runModal() == .OK, let url = panel.url {
                         library.addLibraryFolder(url: url)
+                    }
+                }
+            }
+
+            Section("Logging") {
+                Toggle("Enable Logging", isOn: $loggingEnabled)
+                if loggingEnabled {
+                    Picker("Log Level", selection: $prefs.coreLogLevel) {
+                        ForEach(CoreLogLevel.allCases) { level in
+                            Text(level.name).tag(level)
+                        }
                     }
                 }
             }

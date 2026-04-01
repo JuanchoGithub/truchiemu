@@ -1,4 +1,5 @@
 import SwiftUI
+import AppKit
 
 struct LibraryGridView: View {
     @EnvironmentObject var library: ROMLibrary
@@ -18,6 +19,10 @@ struct LibraryGridView: View {
     @ObservedObject var prefs = SystemPreferences.shared
     @ObservedObject var boxArtService = BoxArtService.shared
     @State private var manualBoxArtSearchROM: ROM?
+    
+    // Smooth pinch-to-zoom state
+    @State private var continuousZoom: Double = 0.5 // 0.0 to 1.0, matches slider midpoint
+    @State private var lastMagnification: Double = 1.0
 
     private enum ViewMode: String { case grid, list }
 
@@ -119,76 +124,78 @@ struct LibraryGridView: View {
                     
                     HStack(spacing: 4) {
                         Image(systemName: controllerService.activePlayerIndex == 0 ? "keyboard" : "gamecontroller")
+                            .font(.caption)
                         Text(activeName)
                             .font(.caption)
                     }
                 }
+                .help("Select input device")
 
                 // Language Selection
                 Menu {
-                    Picker("System Language", selection: Binding(
-                        get: { prefs.systemLanguage },
-                        set: { prefs.systemLanguage = $0 }
-                    )) {
-                        ForEach(EmulatorLanguage.allCases) { lang in
-                            Text(lang.name).tag(lang)
+                    ForEach(EmulatorLanguage.allCases) { lang in
+                        Button {
+                            prefs.systemLanguage = lang
+                        } label: {
+                            HStack {
+                                Text("\(lang.name) \(lang.flagEmoji)")
+                                if prefs.systemLanguage == lang {
+                                    Spacer()
+                                    Image(systemName: "checkmark")
+                                }
+                            }
                         }
                     }
                 } label: {
                     HStack(spacing: 4) {
-                        Image(systemName: "globe")
+                        Text(prefs.systemLanguage.flagEmoji)
                         Text(prefs.systemLanguage.name)
                             .font(.caption)
                     }
                 }
-
-                // Log Level Selection
-                Menu {
-                    Picker("Core Logs", selection: Binding(
-                        get: { prefs.coreLogLevel },
-                        set: { prefs.coreLogLevel = $0 }
-                    )) {
-                        ForEach(CoreLogLevel.allCases) { level in
-                            Text(level.name).tag(level)
-                        }
-                    }
-                } label: {
-                    HStack(spacing: 4) {
-                        Image(systemName: "list.bullet.rectangle")
-                        Text(prefs.coreLogLevel == .info ? "Verbose" : (prefs.coreLogLevel == .none ? "Silenced" : "Logs"))
-                            .font(.caption)
-                    }
-                }
+                .help("System language")
 
                 if case .system(let system) = filter {
+                    // Box Type - directly open the menu with options
                     Menu {
-                        Picker("Box Type", selection: Binding(
-                            get: { prefs.boxType(for: system.id) },
-                            set: { prefs.setBoxType($0, for: system.id) }
-                        )) {
-                            ForEach(BoxType.allCases) { type in
-                                Label(type.rawValue, systemImage: type.iconName).tag(type)
+                        ForEach(BoxType.allCases) { type in
+                            Button {
+                                prefs.setBoxType(type, for: system.id)
+                            } label: {
+                                HStack {
+                                    Label(type.rawValue, systemImage: type.iconName)
+                                    if prefs.boxType(for: system.id) == type {
+                                        Spacer()
+                                        Image(systemName: "checkmark")
+                                    }
+                                }
                             }
                         }
                     } label: {
                         Image(systemName: prefs.boxType(for: system.id).iconName)
                     }
                     .opacity(viewMode == .grid ? 1 : 0)
+                    .help("Box art type")
                 }
 
-                Slider(value: Binding(
-                    get: { Double(columnCount) },
-                    set: { columnCount = Int($0) }
-                ), in: 2...8, step: 1)
-                .frame(width: 80)
-                .opacity(viewMode == .grid ? 1 : 0)
+                // Zoom slider - works for both grid and list views
+                Slider(value: $continuousZoom, in: 0...1, step: 1.0/7.0)
+                    .frame(width: 120)
+                    .help("Zoom level")
+                    .onChange(of: continuousZoom) { newValue in
+                        // Snap to nearest column count
+                        let snapped = round(newValue * 7.0) / 7.0
+                        columnCount = max(1, min(8, Int(round((1.0 - snapped) * 7.0) + 1)))
+                    }
 
+                // View mode toggle
                 Picker("View", selection: $viewMode) {
                     Image(systemName: "square.grid.2x2").tag(ViewMode.grid)
                     Image(systemName: "list.bullet").tag(ViewMode.list)
                 }
                 .pickerStyle(.segmented)
                 .frame(width: 70)
+                .help("View mode")
 
                 Button {
                     Task {
@@ -197,7 +204,33 @@ struct LibraryGridView: View {
                 } label: {
                     Label("Fetch missing art", systemImage: "arrow.down.circle")
                 }
+                .labelStyle(.iconOnly)
                 .help("Download missing box art from Libretro CDN (CRC + DAT when enabled)")
+
+                // Settings button
+                Button {
+                    // Trigger the Settings menu item via the main menu
+                    if let mainMenu = NSApp.mainMenu {
+                        for item in mainMenu.items {
+                            if let submenu = item.submenu {
+                                for subItem in submenu.items {
+                                    if subItem.title == "Settings…" || subItem.title == "Preferences…" {
+                                        if let action = subItem.action {
+                                            NSApp.sendAction(action, to: subItem.target, from: subItem)
+                                        }
+                                        return
+                                    }
+                                }
+                            }
+                        }
+                    }
+                    // Fallback: try to open settings window directly
+                    NSApp.windows.first { $0.identifier?.rawValue == "settings" }?.makeKeyAndOrderFront(nil)
+                } label: {
+                    Label("Settings", systemImage: "gearshape")
+                }
+                .labelStyle(.iconOnly)
+                .help("Settings")
             }
         }
         .sheet(item: $manualBoxArtSearchROM) { rom in
@@ -205,8 +238,13 @@ struct LibraryGridView: View {
         }
         .onAppear { 
             updateColumns()
+            // Sync continuous zoom with column count
+            continuousZoom = 1.0 - Double(columnCount - 1) / 7.0
         }
-        .onChange(of: columnCount) { _ in updateColumns() }
+        .onChange(of: columnCount) { _ in 
+            updateColumns()
+            continuousZoom = 1.0 - Double(columnCount - 1) / 7.0
+        }
     }
 
 
@@ -218,12 +256,11 @@ struct LibraryGridView: View {
         ScrollView {
             LazyVGrid(columns: columns, spacing: 16) {
                 ForEach(displayedROMs) { rom in
-                    GameCardView(rom: rom, isSelected: selectedROM?.id == rom.id)
-                        .contentShape(Rectangle()) // Ensure the whole card is tappable
+                    GameCardView(rom: rom, isSelected: selectedROM?.id == rom.id, zoomLevel: zoomLevel)
+                        .contentShape(Rectangle())
                         .gesture(
                             DragGesture(minimumDistance: 0)
                                 .onChanged { _ in
-                                    // Instant selection on "push down"
                                     if selectedROM?.id != rom.id {
                                         selectedROM = rom
                                     }
@@ -239,18 +276,70 @@ struct LibraryGridView: View {
             }
             .padding()
         }
+        .gesture(
+            MagnificationGesture()
+                .onChanged { value in
+                    // Smooth continuous zoom during gesture
+                    let scale = value / lastMagnification
+                    let zoomDelta = (scale - 1.0) * 0.3
+                    continuousZoom = max(0, min(1, continuousZoom + zoomDelta))
+                    lastMagnification = value
+                }
+                .onEnded { _ in
+                    // Snap to nearest step when gesture ends
+                    let snapped = round(continuousZoom * 7.0) / 7.0
+                    continuousZoom = snapped
+                    columnCount = max(1, min(8, Int(round((1.0 - snapped) * 7.0) + 1)))
+                    lastMagnification = 1.0
+                }
+        )
     }
 
     private var listView: some View {
-        List(displayedROMs, selection: $selectedROM) { rom in
-            GameListRowView(rom: rom)
-                .tag(rom)
-                .onTapGesture(count: 2) {
-                    launchGame(rom)
-                }
-                .contextMenu { contextMenu(for: rom) }
+        List(selection: $selectedROM) {
+            ForEach(displayedROMs) { rom in
+                GameListRowView(rom: rom, zoomLevel: zoomLevel)
+                    .tag(rom)
+                    .contentShape(Rectangle())
+                    .gesture(
+                        DragGesture(minimumDistance: 0)
+                            .onChanged { _ in
+                                if selectedROM?.id != rom.id {
+                                    selectedROM = rom
+                                }
+                            }
+                    )
+                    .simultaneousGesture(
+                        TapGesture(count: 2).onEnded {
+                            launchGame(rom)
+                        }
+                    )
+                    .contextMenu { contextMenu(for: rom) }
+            }
         }
         .listStyle(.inset(alternatesRowBackgrounds: true))
+        .gesture(
+            MagnificationGesture()
+                .onChanged { value in
+                    // Higher sensitivity for list view
+                    let scale = value / lastMagnification
+                    let zoomDelta = (scale - 1.0) * 0.8
+                    continuousZoom = max(0, min(1, continuousZoom + zoomDelta))
+                    lastMagnification = value
+                }
+                .onEnded { _ in
+                    // Snap to nearest step when gesture ends
+                    let snapped = round(continuousZoom * 7.0) / 7.0
+                    continuousZoom = snapped
+                    columnCount = max(1, min(8, Int(round((1.0 - snapped) * 7.0) + 1)))
+                    lastMagnification = 1.0
+                }
+        )
+    }
+
+    /// Zoom level from 0.0 (min zoom, 8 columns) to 1.0 (max zoom, 1 column)
+    private var zoomLevel: Double {
+        1.0 - Double(columnCount - 1) / 7.0
     }
 
     private var scanningOverlay: some View {
@@ -350,26 +439,21 @@ struct LibraryGridView: View {
     }
 
     private func launchGame(_ rom: ROM) {
-        // Find system and core
         guard let sysID = rom.systemID,
               let system = SystemDatabase.system(forID: sysID) else { return }
         
-        // Check if preferred core is installed
         let sysPrefs = SystemPreferences.shared
         let coreID = rom.useCustomCore ? (rom.selectedCoreID ?? sysPrefs.preferredCoreID(for: sysID) ?? system.defaultCoreID) : (sysPrefs.preferredCoreID(for: sysID) ?? system.defaultCoreID)
         
         guard let cid = coreID else { return }
         
-        // Ensure the core is actually installed on disk
         if !coreManager.isInstalled(coreID: cid) {
             coreManager.requestCoreDownload(for: cid, systemID: sysID)
             return
         }
 
-        // Log game played
         library.markPlayed(rom)
         
-        // Launch in standalone window
         let runner = EmulatorRunner.forSystem(sysID)
         let controller = StandaloneGameWindowController(runner: runner)
         self.gameWindowController = controller
@@ -386,6 +470,7 @@ struct LibraryGridView: View {
 struct GameCardView: View {
     let rom: ROM
     let isSelected: Bool
+    let zoomLevel: Double
     @State private var isHovered = false
     @State private var image: NSImage?
     @ObservedObject var prefs = SystemPreferences.shared
@@ -393,15 +478,18 @@ struct GameCardView: View {
     private var boxType: BoxType {
         prefs.boxType(for: rom.systemID ?? "")
     }
+    
+    private var titleFontSize: CGFloat {
+        10 + zoomLevel * 6
+    }
 
     var body: some View {
         VStack(alignment: .leading, spacing: 8) {
             artworkView
             Text(rom.displayName)
-                .font(.caption.weight(.medium))
+                .font(.system(size: titleFontSize, weight: .medium))
                 .lineLimit(2)
                 .multilineTextAlignment(.leading)
-                .frame(height: 32, alignment: .topLeading)
                 .foregroundColor(.primary)
         }
         .padding(8)
@@ -418,7 +506,6 @@ struct GameCardView: View {
         .onHover { isHovered = $0 }
         .task(id: rom.boxArtPath) {
             if let artPath = rom.boxArtPath {
-                // Load image asynchronously
                 self.image = await ImageCache.shared.image(for: artPath)
             } else {
                 self.image = nil
@@ -442,7 +529,6 @@ struct GameCardView: View {
         .shadow(color: .black.opacity(0.3), radius: 6, x: 0, y: 3)
     }
 
-
     private var placeholderArt: some View {
         ZStack {
             LinearGradient(
@@ -463,7 +549,7 @@ struct GameCardView: View {
                 }
                 
                 Text(rom.displayName)
-                    .font(.caption2)
+                    .font(.system(size: titleFontSize * 0.8))
                     .foregroundColor(.white.opacity(0.6))
                     .multilineTextAlignment(.center)
                     .lineLimit(3)
@@ -487,14 +573,27 @@ struct GameCardView: View {
 
 struct GameListRowView: View {
     let rom: ROM
+    let zoomLevel: Double
     @State private var thumb: NSImage?
+    
+    private var titleFontSize: CGFloat {
+        12 + zoomLevel * 8
+    }
+    
+    private var subtitleFontSize: CGFloat {
+        9 + zoomLevel * 5
+    }
+    
+    private var thumbSize: CGFloat {
+        36 + zoomLevel * 24
+    }
 
     var body: some View {
         HStack(spacing: 12) {
             artThumb
             VStack(alignment: .leading, spacing: 2) {
                 Text(rom.displayName)
-                    .font(.body.weight(.medium))
+                    .font(.system(size: titleFontSize, weight: .medium))
                 if let sys = SystemDatabase.system(forID: rom.systemID ?? "") {
                     HStack(spacing: 4) {
                         if let emuImg = sys.emuImage(size: 132) {
@@ -504,18 +603,18 @@ struct GameListRowView: View {
                                 .frame(width: 12, height: 12)
                         }
                         Text(sys.name)
-                            .font(.caption)
+                            .font(.system(size: subtitleFontSize))
                             .foregroundColor(.secondary)
                     }
                 }
             }
             Spacer()
             if rom.isFavorite {
-                Image(systemName: "heart.fill").foregroundColor(.pink).font(.caption)
+                Image(systemName: "heart.fill").foregroundColor(.pink).font(.system(size: subtitleFontSize))
             }
             if let played = rom.lastPlayed {
                 Text(played, style: .relative)
-                    .font(.caption)
+                    .font(.system(size: subtitleFontSize))
                     .foregroundColor(.secondary)
             }
         }
@@ -548,13 +647,12 @@ struct GameListRowView: View {
                 }
             }
         }
-        .frame(width: 36, height: 36)
+        .frame(width: thumbSize, height: thumbSize)
         .clipShape(RoundedRectangle(cornerRadius: 6))
     }
 }
 
-import SwiftUI
-import AppKit
+// MARK: - Image Cache
 
 actor ImageCache {
     static let shared = ImageCache()

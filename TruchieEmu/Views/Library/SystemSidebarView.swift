@@ -14,19 +14,19 @@ struct SystemSidebarView: View {
     var body: some View {
         List(selection: $selectedFilter) {
             // All games
-            sidebarRow(icon: "square.grid.2x2", label: "All Games", count: library.romCounts["all"] ?? 0)
+            sidebarRow(icon: "square.grid.2x2", label: "All Games", count: library.romCounts["all"] ?? 0, filter: .all)
                 .tag(LibraryFilter.all)
 
             // Favorites
             let favCount = library.romCounts["favorites"] ?? 0
             if favCount > 0 {
-                sidebarRow(icon: "heart.fill", label: "Favorites", count: favCount, tint: .pink)
+                sidebarRow(icon: "heart.fill", label: "Favorites", count: favCount, tint: .pink, filter: .favorites)
                     .tag(LibraryFilter.favorites)
             }
 
             // Recently played
             let recentCount = library.romCounts["recent"] ?? 0
-            sidebarRow(icon: "clock.fill", label: "Recent", count: recentCount, tint: .orange)
+            sidebarRow(icon: "clock.fill", label: "Recent", count: recentCount, tint: .orange, filter: .recent)
                  .tag(LibraryFilter.recent)
 
             if !systemsWithROMs.isEmpty {
@@ -36,7 +36,8 @@ struct SystemSidebarView: View {
                             icon: system.iconName,
                             label: system.name,
                             system: system,
-                            count: library.romCounts[system.id] ?? 0
+                            count: library.romCounts[system.id] ?? 0,
+                            filter: .system(system)
                         )
                         .tag(LibraryFilter.system(system))
                     }
@@ -60,7 +61,7 @@ struct SystemSidebarView: View {
     }
 
     @ViewBuilder
-    private func sidebarRow(icon: String, label: String, system: SystemInfo? = nil, count: Int, tint: Color = .accentColor) -> some View {
+    private func sidebarRow(icon: String, label: String, system: SystemInfo? = nil, count: Int, tint: Color = .accentColor, filter: LibraryFilter) -> some View {
         HStack {
             if let sys = system, let img = sys.emuImage(size: 132) {
                 Image(nsImage: img)
@@ -83,6 +84,13 @@ struct SystemSidebarView: View {
                 .background(Color.secondary.opacity(0.15))
                 .cornerRadius(6)
         }
+        .contentShape(Rectangle())
+        .gesture(
+            DragGesture(minimumDistance: 0)
+                .onChanged { _ in
+                    selectedFilter = filter
+                }
+        )
     }
 
     private func pickFolder() {
