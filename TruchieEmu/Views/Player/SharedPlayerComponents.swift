@@ -872,7 +872,18 @@ class StandaloneGameWindowController: NSWindowController, NSWindowDelegate, Obse
             self.runner = runner
         }
 
-        func mtkView(_ view: MTKView, drawableSizeWillChange size: CGSize) {}
+        func mtkView(_ view: MTKView, drawableSizeWillChange size: CGSize) {
+            // Apply CATransform3D layer rotation so rotated games display upright
+            let rotation = runner.currentFrameRotation
+            let angle: Double
+            switch rotation {
+            case 1: angle = .pi / 2.0      // 90° CW
+            case 2: angle = .pi             // 180°
+            case 3: angle = -.pi / 2.0     // 270° CW (= -90°)
+            default: angle = 0.0
+            }
+            view.layer?.transform = CATransform3DMakeRotation(angle, 0, 0, 1)
+        }
 
         private func getFragmentFunctionName() -> String {
             let preset = ShaderManager.shared.activePreset
@@ -954,12 +965,19 @@ class StandaloneGameWindowController: NSWindowController, NSWindowDelegate, Obse
             if let pipeline = pipeline {
                 if let frameTex = runner.currentFrameTexture {
                     if let enc = cmdBuffer.makeRenderCommandEncoder(descriptor: descriptor) {
-                        // ASPECT RATIO STRETCHING (4:3)
+                        // ASPECT RATIO — use actual game dimensions, accounting for rotation
                         let viewWidth = view.drawableSize.width
                         let viewHeight = view.drawableSize.height
-                        
-                        // Fixed 4:3 aspect ratio display
-                        let targetAspect: CGFloat = 4.0 / 3.0
+                        let isRotated = (runner.currentFrameRotation == 1 || runner.currentFrameRotation == 3)
+                        let frameW = CGFloat(frameTex.width)
+                        let frameH = CGFloat(frameTex.height)
+                        let targetAspect: CGFloat
+                        if isRotated {
+                            // For 90°/270° rotated games, swap width/height for display calculations
+                            targetAspect = frameH / frameW
+                        } else {
+                            targetAspect = frameW / frameH
+                        }
                         var drawWidth = viewWidth
                         var drawHeight = viewWidth / targetAspect
                         

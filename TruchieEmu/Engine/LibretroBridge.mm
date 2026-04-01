@@ -140,6 +140,7 @@ static int g_selectedLanguage = 0; // RETRO_LANGUAGE_ENGLISH
 static int g_logLevel = 1; // 1 = Warn & Error
 static NSString *g_coreID = nil;   // Core ID for options persistence
 static BOOL g_isPaused = NO;    // Pause state
+static int g_currentRotation = 0;   // Current rotation from core (0=0 deg, 1=90 deg CW, 2=180 deg, 3=270 deg CW)
 // Shared with bridge_get_current_framebuffer — updated by setupHWRender
 static GLuint g_hwFBO = 0;
 
@@ -481,7 +482,6 @@ static bool bridge_environment(unsigned cmd, void *data) {
         case RETRO_ENVIRONMENT_SET_GEOMETRY:
         case RETRO_ENVIRONMENT_SET_INPUT_DESCRIPTORS:
         case RETRO_ENVIRONMENT_SET_DISK_CONTROL_INTERFACE:
-        case RETRO_ENVIRONMENT_SET_ROTATION:
         case RETRO_ENVIRONMENT_SET_VARIABLES:          // core tells us what options exist — we acknowledge
         case RETRO_ENVIRONMENT_SET_SUPPORT_NO_GAME:
         case RETRO_ENVIRONMENT_SET_SYSTEM_AV_INFO:
@@ -491,6 +491,18 @@ static bool bridge_environment(unsigned cmd, void *data) {
                 NSLog(@"[Bridge] Core updated A/V info: FPS=%f SampleRate=%f", info->timing.fps, info->timing.sample_rate);
             }
             return true;
+        case RETRO_ENVIRONMENT_SET_ROTATION:
+            if (data) {
+                g_currentRotation = (int)*(unsigned *)data;
+                NSLog(@"[Bridge] Core set rotation: %d (%.0f deg CW)", g_currentRotation, (double)g_currentRotation * 90.0);
+            }
+            return true;
+        case RETRO_ENVIRONMENT_GET_ROTATION:
+            if (data) {
+                *(unsigned *)data = (unsigned)g_currentRotation;
+            }
+            return true;
+
         case RETRO_ENVIRONMENT_GET_VARIABLE_UPDATE:    // has anything changed? → no, vars are stable
             if (data) *(bool *)data = false;
             return true;
@@ -1116,6 +1128,10 @@ static NSString * _Nullable g_optionsDylibPath = nil;
 
 + (BOOL)isCoreLoadedForOptions {
     return g_loadingForOptions;
+}
+
++ (int)currentRotation {
+    return g_currentRotation;
 }
 
 /* ── Core Options Accessors ── */

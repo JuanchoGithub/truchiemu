@@ -55,6 +55,7 @@ func NSImageFromMTLTexture(_ texture: MTLTexture) -> NSImage? {
 class EmulatorRunner: ObservableObject, @unchecked Sendable {
     @MainActor weak var metalView: MTKView?
     @MainActor @Published var currentFrameTexture: MTLTexture? = nil
+    @MainActor @Published var currentFrameRotation: Int = 0  // 0, 1, 2, 3 = 0, 90, 180, 270 CW
     
     // MARK: - Save State
     @MainActor @Published var currentSlot: Int = 0
@@ -440,6 +441,12 @@ class EmulatorRunner: ObservableObject, @unchecked Sendable {
             if !self.hasLoggedFrame {
                 print("[Runner] UI ACTIVATED with first frame (\(width)x\(height))")
                 self.hasLoggedFrame = true
+                // Read rotation from core on first frame
+                let rotation = LibretroBridge.currentRotation()
+                if self.currentFrameRotation != rotation {
+                    self.currentFrameRotation = rotation
+                    print("[Runner] Frame rotation: \(rotation) (\(rotation * 90) deg CW)")
+                }
             }
 
             self.runnerFrameCount += 1

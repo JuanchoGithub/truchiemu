@@ -33,6 +33,9 @@
 + (NSDictionary<NSString *, NSDictionary *> * _Nullable)getOptionsDictionary;
 + (NSDictionary<NSString *, NSDictionary *> * _Nullable)getCategoriesDictionary;
 
+/* Rotation — returns 0, 1, 2, or 3 (0/90/180/270 degrees clockwise) */
++ (int)currentRotation;
+
 /* Cheat Management */
 + (void)setCheatEnabled:(int)index code:(NSString *)code enabled:(BOOL)enabled;
 + (void)resetCheats;

@@ -1,5 +1,4 @@
 #pragma once
-#include <stdint.h>
 #include <stdbool.h>
 #include <stddef.h>
 #include <stdarg.h>
@@ -7,6 +6,7 @@
 #define RETRO_API_VERSION 1
 
 #define RETRO_ENVIRONMENT_SET_ROTATION  1
+#define RETRO_ENVIRONMENT_GET_ROTATION  34
 #define RETRO_ENVIRONMENT_GET_CAN_DUPE  3
 #define RETRO_ENVIRONMENT_GET_SYSTEM_DIRECTORY 9
 #define RETRO_ENVIRONMENT_SET_PIXEL_FORMAT 10
