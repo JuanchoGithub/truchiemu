@@ -1,6 +1,7 @@
 import SwiftUI
 
-// Shown only when the user triggers an action from Game detail (e.g. Identify).
+// MARK: - Manual Status Tone
+
 private enum ManualStatusTone: Equatable {
     case success, info, warning, error
 
@@ -16,7 +17,7 @@ private enum ManualStatusTone: Equatable {
     var foregroundColor: Color {
         switch self {
         case .success: return .green
-        case .info: return .accentColor
+        case .info: return .blue
         case .warning: return .orange
         case .error: return .red
         }
@@ -47,74 +48,132 @@ enum DetailSection: String, CaseIterable {
     case achievements = "Achievements"
 }
 
-// MARK: - Section Card Component
+// MARK: - Modern Section Card Component
 
-struct SectionCard<Content: View>: View {
-    let title: String
-    let icon: String
+struct ModernSectionCard<Content: View>: View {
+    let title: String?
+    let icon: String?
     var isExpanded: Bool = true
     var badge: String? = nil
+    var showHeader: Bool = true
     @ViewBuilder let content: Content
     @State private var expanded: Bool
     
     init(
-        title: String,
-        icon: String,
+        title: String? = nil,
+        icon: String? = nil,
         isExpanded: Bool = true,
         badge: String? = nil,
+        showHeader: Bool = true,
         @ViewBuilder content: () -> Content
     ) {
         self.title = title
         self.icon = icon
         self.badge = badge
+        self.showHeader = showHeader
         self._expanded = State(initialValue: isExpanded)
         self.content = content()
     }
 
     var body: some View {
         VStack(spacing: 0) {
-            Button {
-                withAnimation(.easeInOut(duration: 0.2)) {
-                    expanded.toggle()
-                }
-            } label: {
-                HStack {
-                    Image(systemName: icon)
-                        .foregroundColor(.accentColor)
-                    Text(title)
-                        .font(.headline)
-                    if let badge = badge {
-                        Text(badge)
-                            .font(.caption2)
-                            .fontWeight(.medium)
-                            .padding(.horizontal, 6)
-                            .padding(.vertical, 2)
-                            .background(Color.accentColor.opacity(0.15))
-                            .foregroundColor(.accentColor)
-                            .cornerRadius(4)
+            if showHeader, let title = title {
+                Button {
+                    withAnimation(.easeInOut(duration: 0.2)) {
+                        expanded.toggle()
                     }
-                    Spacer()
-                    Image(systemName: expanded ? "chevron.up" : "chevron.down")
-                        .font(.caption)
-                        .foregroundColor(.secondary)
+                } label: {
+                    HStack(spacing: 10) {
+                        if let icon = icon {
+                            Image(systemName: icon)
+                                .foregroundColor(.white.opacity(0.7))
+                                .font(.body)
+                        }
+                        Text(title)
+                            .font(.subheadline)
+                            .fontWeight(.semibold)
+                            .foregroundColor(.white.opacity(0.6))
+                            .textCase(.uppercase)
+                            .tracking(0.5)
+                        if let badge = badge {
+                            Text(badge)
+                                .font(.caption2)
+                                .fontWeight(.semibold)
+                                .padding(.horizontal, 8)
+                                .padding(.vertical, 3)
+                                .background(Color.blue.opacity(0.3))
+                                .foregroundColor(.white)
+                                .cornerRadius(6)
+                        }
+                        Spacer()
+                        if icon != nil {
+                            Image(systemName: expanded ? "chevron.up" : "chevron.down")
+                                .font(.caption)
+                                .foregroundColor(.white.opacity(0.4))
+                        }
+                    }
+                    .contentShape(Rectangle())
                 }
-                .contentShape(Rectangle())
-            }
-            .buttonStyle(.plain)
-
-            if expanded {
+                .buttonStyle(.plain)
+                
                 Divider()
-                    .padding(.vertical, 8)
+                    .padding(.vertical, 10)
+                    .overlay(Color.white.opacity(0.1))
+            }
 
+            if expanded || !showHeader {
                 content
                     .transition(.opacity.combined(with: .move(edge: .top)))
             }
         }
-        .padding(.horizontal, 16)
-        .padding(.vertical, 12)
-        .background(Color.secondary.opacity(0.05))
-        .cornerRadius(10)
+        .padding(16)
+        .background(
+            RoundedRectangle(cornerRadius: 12)
+                .fill(Color.white.opacity(0.06))
+                .overlay(
+                    RoundedRectangle(cornerRadius: 12)
+                        .stroke(Color.white.opacity(0.1), lineWidth: 1)
+                )
+        )
         .animation(.easeInOut(duration: 0.2), value: expanded)
+    }
+}
+
+// MARK: - Metadata Row Component
+
+struct MetadataRow: View {
+    let label: String
+    let value: String
+    var isMonospaced: Bool = false
+    var copyAction: (() -> Void)? = nil
+
+    var body: some View {
+        HStack(alignment: .top, spacing: 16) {
+            Text(label.uppercased())
+                .font(.caption)
+                .fontWeight(.medium)
+                .foregroundColor(.white.opacity(0.4))
+                .frame(width: 100, alignment: .leading)
+            
+            Text(value)
+                .font(.body)
+                .foregroundColor(.white.opacity(0.85))
+                .lineLimit(2)
+                .truncationMode(.middle)
+                .font(isMonospaced ? .body.monospaced() : .body)
+            
+            Spacer()
+            
+            if copyAction != nil {
+                Button(action: copyAction!) {
+                    Image(systemName: "doc.on.doc")
+                        .foregroundColor(.white.opacity(0.4))
+                        .font(.caption)
+                }
+                .buttonStyle(.plain)
+                .help("Copy")
+            }
+        }
     }
 }
 
@@ -135,6 +194,7 @@ struct GameDetailView: View {
     @State private var showControlsPicker = false
     @State private var gameWindowController: StandaloneGameWindowController? = nil
     @State private var boxArtImage: NSImage? = nil
+    @State private var screenshotImages: [NSImage] = []
     @State private var crcHash: String? = nil
     @State private var fileSize: String? = nil
     @State private var slotInfoList: [SlotInfo] = []
@@ -171,7 +231,6 @@ struct GameDetailView: View {
     // Shader helpers
     private var shaderManager: ShaderManager { ShaderManager.shared }
 
-
     // Achievements helpers
     private var unlockedAchievementCount: Int { gameAchievements.filter { $0.isUnlocked }.count }
     private var totalAchievementPoints: Int { gameAchievements.reduce(0) { $0 + $1.points } }
@@ -184,47 +243,56 @@ struct GameDetailView: View {
     }
 
     var body: some View {
-        VStack(spacing: 0) {
-            // Header always visible
-            compactHeaderSection
-
-            Divider()
-
-            // Sidebar + Content layout
-            HStack(spacing: 0) {
-                // Sidebar
-                sidebarNavigation
-
+        ZStack {
+            // Immersive Background - Blurred box art
+            immersiveBackground
+            
+            // Main content overlay
+            VStack(spacing: 0) {
+                // Header always visible
+                compactHeaderSection
+                
                 Divider()
+                    .overlay(Color.white.opacity(0.1))
 
-                // Main content area
-                ScrollView {
-                    VStack(alignment: .leading, spacing: 16) {
-                        switch selectedSection {
-                        case .gameInfo:
-                            gameInfoSection
-                        case .shader:
-                            shaderSection
-                        case .controls:
-                            controlsSection
-                        case .savedStates:
-                            savedStatesSection
-                        case .cheats:
-                            cheatsSection
-                        case .achievements:
-                            if achievementsService.isEnabled {
-                                achievementsSection
+                // Sidebar + Content layout
+                HStack(spacing: 0) {
+                    // Sidebar with glassmorphism
+                    sidebarNavigation
+
+                    Divider()
+                        .overlay(Color.white.opacity(0.1))
+
+                    // Main content area
+                    ScrollView {
+                        VStack(alignment: .leading, spacing: 20) {
+                            switch selectedSection {
+                            case .gameInfo:
+                                gameInfoSection
+                            case .shader:
+                                shaderSection
+                            case .controls:
+                                controlsSection
+                            case .savedStates:
+                                savedStatesSection
+                            case .cheats:
+                                cheatsSection
+                            case .achievements:
+                                if achievementsService.isEnabled {
+                                    achievementsSection
+                                }
                             }
                         }
+                        .padding(24)
                     }
-                    .padding(24)
+                    .scrollContentBackground(.hidden)
+                    .background(Color.clear)
                 }
-                .background(Color(NSColor.windowBackgroundColor))
-            }
 
-            if manualActionStatus.isVisible {
-                manualActionStatusBar
-                    .transition(.move(edge: .bottom).combined(with: .opacity))
+                if manualActionStatus.isVisible {
+                    manualActionStatusBar
+                        .transition(.move(edge: .bottom).combined(with: .opacity))
+                }
             }
         }
         .animation(.easeInOut(duration: 0.2), value: manualActionStatus.isVisible)
@@ -252,6 +320,7 @@ struct GameDetailView: View {
             }
         }
         .onChange(of: currentROM.boxArtPath) { _ in loadBoxArt() }
+        .onChange(of: currentROM.screenshotPaths) { _ in loadScreenshots() }
         .sheet(isPresented: $showBoxArtPicker) {
             BoxArtPickerView(rom: currentROM)
         }
@@ -264,27 +333,42 @@ struct GameDetailView: View {
         }
     }
 
-    // MARK: - Sidebar Navigation
+    // MARK: - Immersive Background
+
+    private var immersiveBackground: some View {
+        ZStack {
+            // Deep charcoal base
+            Color(red: 0.12, green: 0.13, blue: 0.16)
+            
+            // Blurred box art overlay
+            if let img = boxArtImage {
+                Image(nsImage: img)
+                    .resizable()
+                    .aspectRatio(contentMode: .fill)
+                    .blur(radius: 60, opaque: false)
+                    .scaleEffect(1.1)
+                    .opacity(0.25)
+            }
+        }
+        .ignoresSafeArea()
+    }
+
+    // MARK: - Sidebar Navigation (Glassmorphism)
 
     private var sidebarNavigation: some View {
-        VStack(alignment: .leading, spacing: 4) {
-            Text("Sections")
-                .font(.caption)
-                .fontWeight(.semibold)
-                .foregroundColor(.secondary)
-                .padding(.horizontal, 12)
-                .padding(.top, 12)
-                .padding(.bottom, 4)
-
+        VStack(alignment: .leading, spacing: 2) {
             ForEach(DetailSection.allCases, id: \.self) { section in
                 sidebarItem(for: section)
             }
 
             Spacer()
         }
-        .frame(width: 160)
-        .padding(.vertical, 8)
-        .background(Color(NSColor.controlBackgroundColor))
+        .frame(width: 180)
+        .padding(.vertical, 12)
+        .padding(.horizontal, 8)
+        .background(
+            Color.white.opacity(0.03)
+        )
     }
 
     private func sidebarItem(for section: DetailSection) -> some View {
@@ -303,25 +387,29 @@ struct GameDetailView: View {
                     selectedSection = section
                 }
             } label: {
-                HStack(spacing: 8) {
+                HStack(spacing: 10) {
                     Image(systemName: icon)
-                        .frame(width: 16)
+                        .frame(width: 18)
+                        .font(.body)
+                        .foregroundColor(isSelected ? .blue : .white.opacity(0.5))
                     Text(section.rawValue)
                         .lineLimit(1)
+                        .foregroundColor(isSelected ? .white : .white.opacity(0.6))
+                        .fontWeight(isSelected ? .medium : .regular)
                     Spacer()
-                    if isSelected {
-                        Image(systemName: "chevron.right")
-                            .font(.caption)
-                    }
                 }
-                .foregroundColor(isSelected ? .accentColor : .primary)
-                .font(.subheadline)
                 .padding(.horizontal, 12)
-                .padding(.vertical, 6)
+                .padding(.vertical, 8)
             }
             .buttonStyle(.plain)
-            .background(isSelected ? Color.accentColor.opacity(0.15) : Color.clear)
-            .cornerRadius(6)
+            .background(
+                isSelected ? 
+                    AnyView(
+                        RoundedRectangle(cornerRadius: 8)
+                            .fill(Color.blue.opacity(0.2))
+                    ) : 
+                    AnyView(Color.clear)
+            )
         )
     }
 
@@ -348,8 +436,6 @@ struct GameDetailView: View {
     private func loadAchievements() {
         guard achievementsService.isEnabled else { return }
         isAchievementsLoading = true
-        // For now, we'll display placeholder achievements since game identification
-        // needs proper RetroAchievements game ID mapping
         gameAchievements = []
         isAchievementsLoading = false
     }
@@ -360,6 +446,10 @@ struct GameDetailView: View {
         } else {
             boxArtImage = nil
         }
+    }
+
+    private func loadScreenshots() {
+        screenshotImages = currentROM.screenshotPaths.compactMap { NSImage(contentsOf: $0) }
     }
 
     // MARK: - Manual Action Status
@@ -374,7 +464,7 @@ struct GameDetailView: View {
                     .controlSize(.small)
                 Text(title)
                     .font(.callout)
-                    .foregroundColor(.primary)
+                    .foregroundColor(.white.opacity(0.85))
             case .result(let message, let tone):
                 Image(systemName: tone.iconName)
                     .font(.title3)
@@ -382,7 +472,7 @@ struct GameDetailView: View {
                     .frame(width: 22, alignment: .center)
                 Text(message)
                     .font(.callout)
-                    .foregroundColor(.primary)
+                    .foregroundColor(.white.opacity(0.85))
                     .textSelection(.enabled)
                     .frame(maxWidth: .infinity, alignment: .leading)
             }
@@ -391,7 +481,7 @@ struct GameDetailView: View {
                     clearManualStatus()
                 } label: {
                     Image(systemName: "xmark.circle.fill")
-                        .foregroundStyle(.secondary)
+                        .foregroundStyle(.white.opacity(0.4))
                 }
                 .buttonStyle(.plain)
                 .help("Dismiss")
@@ -400,9 +490,10 @@ struct GameDetailView: View {
         .padding(.horizontal, 16)
         .padding(.vertical, 11)
         .frame(maxWidth: .infinity, alignment: .leading)
-        .background(.regularMaterial)
+        .background(Color.black.opacity(0.5))
         .overlay(alignment: .top) {
             Divider()
+                .overlay(Color.white.opacity(0.1))
         }
     }
 
@@ -427,7 +518,8 @@ struct GameDetailView: View {
     // MARK: - Compact Header
 
     private var compactHeaderSection: some View {
-        HStack(alignment: .top, spacing: 20) {
+        HStack(alignment: .top, spacing: 24) {
+            // Cover art with play overlay
             ZStack {
                 if let img = boxArtImage {
                     Image(nsImage: img)
@@ -436,14 +528,24 @@ struct GameDetailView: View {
                 } else {
                     placeholderArt
                 }
+                
+                // Play icon overlay
+                RoundedRectangle(cornerRadius: 12)
+                    .fill(Color.black.opacity(0.3))
+                
+                Image(systemName: "play.circle.fill")
+                    .font(.system(size: 48))
+                    .foregroundColor(.white)
+                    .shadow(radius: 8)
             }
-            .frame(width: 140, height: 180)
+            .frame(width: 160, height: 200)
             .clipShape(RoundedRectangle(cornerRadius: 12))
-            .shadow(radius: 8)
+            .shadow(color: .black.opacity(0.4), radius: 12, y: 4)
             .onTapGesture { showBoxArtPicker = true }
 
-            VStack(alignment: .leading, spacing: 8) {
-                HStack {
+            VStack(alignment: .leading, spacing: 12) {
+                // Game title with year
+                HStack(alignment: .firstTextBaseline, spacing: 10) {
                     TextField("Game Title", text: Binding(
                         get: { currentROM.customName ?? currentROM.metadata?.title ?? currentROM.name },
                         set: { newName in
@@ -452,29 +554,43 @@ struct GameDetailView: View {
                             library.updateROM(updated)
                         }
                     ))
-                    .font(.system(size: 24, weight: .bold))
+                    .font(.system(size: 28, weight: .bold))
+                    .foregroundColor(.white)
                     .textFieldStyle(.plain)
                     
-                    Spacer()
+                    if let year = currentROM.metadata?.year {
+                        Text("(\(year))")
+                            .font(.title3)
+                            .fontWeight(.medium)
+                            .foregroundColor(.white.opacity(0.5))
+                    }
                     
+                    Spacer()
                 }
                 
+                // System badge
                 if let sys = system {
                     HStack(spacing: 8) {
                         if let emuImg = sys.emuImage(size: 132) {
                             Image(nsImage: emuImg)
                                 .resizable()
                                 .aspectRatio(contentMode: .fit)
-                                .frame(width: 20, height: 20)
+                                .frame(width: 18, height: 18)
                         }
                         Text(sys.name)
-                            .font(.headline)
-                            .foregroundColor(.secondary)
+                            .font(.subheadline)
+                            .fontWeight(.medium)
+                            .foregroundColor(.white.opacity(0.7))
                     }
+                    .padding(.horizontal, 12)
+                    .padding(.vertical, 6)
+                    .background(Color.white.opacity(0.08))
+                    .cornerRadius(8)
                 }
                 
                 Spacer()
                 
+                // Launch button - Pill shape
                 launchButton
             }
             .padding(.vertical, 4)
@@ -482,168 +598,189 @@ struct GameDetailView: View {
             Spacer()
         }
         .padding(24)
-        .background(Color.secondary.opacity(0.05))
     }
 
     // MARK: - Section 1: Game Info
 
     private var gameInfoSection: some View {
-        SectionCard(title: "Game Info", icon: "info.circle") {
-            VStack(alignment: .leading, spacing: 12) {
-                // Action buttons
-                HStack(spacing: 12) {
-                    Button {
-                        Task {
-                            manualActionStatus = .working("Identifying from No-Intro database…")
-                            let result = await library.identifyROM(currentROM)
-                            switch result {
-                            case .identified(let info):
-                                showManualResult("Matched by CRC: \(info.name)", tone: .success)
-                            case .identifiedFromName(let info):
-                                showManualResult(
-                                    "No CRC match — matched by filename using your UI language for region preference: \(info.name)",
-                                    tone: .success
-                                )
-                            case .crcNotInDatabase(let crc):
-                                showManualResult(
-                                    "No DAT entry for CRC \(crc), and no No-Intro title matched this filename.",
-                                    tone: .warning
-                                )
-                            case .databaseUnavailable:
-                                showManualResult(
-                                    "Could not load the No-Intro DAT. Go online once or add a .dat file.",
-                                    tone: .error
-                                )
-                            case .romReadFailed(let reason):
-                                showManualResult(reason, tone: .error)
-                            case .noSystem:
-                                showManualResult("This ROM has no system assigned.", tone: .error)
-                            }
+        VStack(spacing: 16) {
+            // Action buttons row
+            HStack(spacing: 12) {
+                identifyButton
+                fetchBoxArtButton
+            }
+            
+            // Screenshots row
+            if !screenshotImages.isEmpty {
+                screenshotsRow
+            }
+            
+            // Metadata card
+            ModernSectionCard(showHeader: false) {
+                VStack(alignment: .leading, spacing: 14) {
+                    MetadataRow(label: "System", value: system?.name ?? currentROM.systemID ?? "Unknown")
+                    
+                    Divider().overlay(Color.white.opacity(0.08))
+                    
+                    MetadataRow(label: "File Name", value: currentROM.path.lastPathComponent)
+                    
+                    Divider().overlay(Color.white.opacity(0.08))
+                    
+                    MetadataRow(
+                        label: "Path",
+                        value: currentROM.path.deletingLastPathComponent().path,
+                        copyAction: {
+                            NSPasteboard.general.clearContents()
+                            NSPasteboard.general.setString(currentROM.path.path, forType: .string)
                         }
-                    } label: {
-                        if case .working = manualActionStatus {
-                            ProgressView().controlSize(.small)
-                        } else {
-                            Label("Identify Game", systemImage: "qrcode.viewfinder")
-                        }
-                    }
-                    .buttonStyle(.borderless)
-                    .disabled(isIdentifyWorking)
-
-                    Button {
-                        Task {
-                            if let url = await BoxArtService.shared.fetchBoxArt(for: currentROM) {
-                                var u = currentROM
-                                u.boxArtPath = url
-                                library.updateROM(u)
-                                loadBoxArt()
-                            }
-                        }
-                    } label: {
-                        Label("Fetch Box Art", systemImage: "arrow.down.circle")
-                    }
-                    .buttonStyle(.borderless)
-                }
-
-                Divider()
-
-                // Metadata grid
-                Grid(alignment: .leading, horizontalSpacing: 20, verticalSpacing: 8) {
-                    GridRow {
-                        Text("System").bold().frame(width: 80, alignment: .leading)
-                        Text(system?.name ?? currentROM.systemID ?? "Unknown").foregroundColor(.secondary)
-                    }
-                    GridRow {
-                        Text("File").bold().frame(width: 80, alignment: .leading)
-                        Text(currentROM.path.lastPathComponent).foregroundColor(.secondary)
-                    }
-                    GridRow {
-                        Text("Path").bold().frame(width: 80, alignment: .leading)
-                        HStack {
-                            Text(currentROM.path.deletingLastPathComponent().path)
-                                .foregroundColor(.secondary)
-                                .lineLimit(1)
-                                .truncationMode(.middle)
-                            Button {
-                                NSPasteboard.general.clearContents()
-                                NSPasteboard.general.setString(currentROM.path.path, forType: .string)
-                            } label: {
-                                Image(systemName: "doc.on.doc").font(.caption)
-                            }
-                            .buttonStyle(.plain)
-                            .help("Copy Full Path")
-                        }
-                    }
-
+                    )
+                    
                     if let size = fileSize {
-                        GridRow {
-                            Text("Size").bold().frame(width: 80, alignment: .leading)
-                            Text(size).foregroundColor(.secondary)
-                        }
+                        Divider().overlay(Color.white.opacity(0.08))
+                        MetadataRow(label: "File Size", value: size)
                     }
 
                     if let crc = crcHash {
-                        GridRow {
-                            Text("CRC32").bold().frame(width: 80, alignment: .leading)
-                            HStack {
-                                Text(crc).font(.system(.body, design: .monospaced)).foregroundColor(.secondary)
-                                Button {
-                                    NSPasteboard.general.clearContents()
-                                    NSPasteboard.general.setString(crc, forType: .string)
-                                } label: {
-                                    Image(systemName: "doc.on.doc").font(.caption)
-                                }
-                                .buttonStyle(.plain)
-                                .help("Copy Hash")
+                        Divider().overlay(Color.white.opacity(0.08))
+                        MetadataRow(
+                            label: "CRC32",
+                            value: crc,
+                            isMonospaced: true,
+                            copyAction: {
+                                NSPasteboard.general.clearContents()
+                                NSPasteboard.general.setString(crc, forType: .string)
                             }
-                        }
+                        )
                     }
 
+                    // Additional metadata
                     if let meta = currentROM.metadata {
                         if let original = meta.title, currentROM.customName != nil {
-                            GridRow {
-                                Text("Orig. Name").bold().frame(width: 80, alignment: .leading)
-                                Text(original).foregroundColor(.secondary)
-                            }
+                            Divider().overlay(Color.white.opacity(0.08))
+                            MetadataRow(label: "Original Name", value: original)
                         }
                         if let dev = meta.developer {
-                            GridRow {
-                                Text("Developer").bold().frame(width: 80, alignment: .leading)
-                                Text(dev).foregroundColor(.secondary)
-                            }
+                            Divider().overlay(Color.white.opacity(0.08))
+                            MetadataRow(label: "Developer", value: dev)
                         }
                         if let pub = meta.publisher {
-                            GridRow {
-                                Text("Publisher").bold().frame(width: 80, alignment: .leading)
-                                Text(pub).foregroundColor(.secondary)
-                            }
-                        }
-                        if let year = meta.year {
-                            GridRow {
-                                Text("Year").bold().frame(width: 80, alignment: .leading)
-                                Text(year).foregroundColor(.secondary)
-                            }
+                            Divider().overlay(Color.white.opacity(0.08))
+                            MetadataRow(label: "Publisher", value: pub)
                         }
                         if let genre = meta.genre {
-                            GridRow {
-                                Text("Genre").bold().frame(width: 80, alignment: .leading)
-                                Text(genre).foregroundColor(.secondary)
-                            }
+                            Divider().overlay(Color.white.opacity(0.08))
+                            MetadataRow(label: "Genre", value: genre)
                         }
                         if let players = meta.players {
-                            GridRow {
-                                Text("Players").bold().frame(width: 80, alignment: .leading)
-                                Text(String(players)).foregroundColor(.secondary)
-                            }
+                            Divider().overlay(Color.white.opacity(0.08))
+                            MetadataRow(label: "Players", value: String(players))
                         }
                     }
                 }
+            }
 
-                if let desc = currentROM.metadata?.description {
-                    Divider()
+            // Description card
+            if let desc = currentROM.metadata?.description {
+                ModernSectionCard(showHeader: false) {
                     Text(desc)
                         .font(.body)
-                        .foregroundColor(.secondary)
+                        .foregroundColor(.white.opacity(0.7))
+                        .lineSpacing(4)
+                        .fixedSize(horizontal: false, vertical: true)
+                }
+            }
+        }
+    }
+    
+    private var identifyButton: some View {
+        Button {
+            Task {
+                manualActionStatus = .working("Identifying from No-Intro database…")
+                let result = await library.identifyROM(currentROM)
+                switch result {
+                case .identified(let info):
+                    showManualResult("Matched by CRC: \(info.name)", tone: .success)
+                case .identifiedFromName(let info):
+                    showManualResult(
+                        "No CRC match — matched by filename using your UI language for region preference: \(info.name)",
+                        tone: .success
+                    )
+                case .crcNotInDatabase(let crc):
+                    showManualResult(
+                        "No DAT entry for CRC \(crc), and no No-Intro title matched this filename.",
+                        tone: .warning
+                    )
+                case .databaseUnavailable:
+                    showManualResult(
+                        "Could not load the No-Intro DAT. Go online once or add a .dat file.",
+                        tone: .error
+                    )
+                case .romReadFailed(let reason):
+                    showManualResult(reason, tone: .error)
+                case .noSystem:
+                    showManualResult("This ROM has no system assigned.", tone: .error)
+                }
+            }
+        } label: {
+            HStack(spacing: 6) {
+                if case .working = manualActionStatus {
+                    ProgressView().controlSize(.small)
+                } else {
+                    Image(systemName: "qrcode.viewfinder")
+                }
+                Text("Identify Game")
+            }
+            .foregroundColor(.white.opacity(0.8))
+            .padding(.horizontal, 14)
+            .padding(.vertical, 8)
+            .background(Color.white.opacity(0.1))
+            .cornerRadius(20)
+        }
+        .buttonStyle(.plain)
+        .disabled(isIdentifyWorking)
+    }
+    
+    private var fetchBoxArtButton: some View {
+        Button {
+            Task {
+                if let url = await BoxArtService.shared.fetchBoxArt(for: currentROM) {
+                    var u = currentROM
+                    u.boxArtPath = url
+                    library.updateROM(u)
+                    loadBoxArt()
+                }
+            }
+        } label: {
+            HStack(spacing: 6) {
+                Image(systemName: "arrow.down.circle")
+                Text("Fetch Art")
+            }
+            .foregroundColor(.white.opacity(0.8))
+            .padding(.horizontal, 14)
+            .padding(.vertical, 8)
+            .background(Color.white.opacity(0.1))
+            .cornerRadius(20)
+        }
+        .buttonStyle(.plain)
+    }
+
+    // MARK: - Screenshots Row
+
+    private var screenshotsRow: some View {
+        ModernSectionCard(title: "Screenshots", icon: "photo.on.rectangle", showHeader: true) {
+            ScrollView(.horizontal, showsIndicators: false) {
+                HStack(spacing: 10) {
+                    ForEach(screenshotImages.indices, id: \.self) { index in
+                        Image(nsImage: screenshotImages[index])
+                            .resizable()
+                            .aspectRatio(contentMode: .fill)
+                            .frame(width: 180, height: 120)
+                            .clipShape(RoundedRectangle(cornerRadius: 8))
+                            .overlay(
+                                RoundedRectangle(cornerRadius: 8)
+                                    .stroke(Color.white.opacity(0.15), lineWidth: 1)
+                            )
+                    }
                 }
             }
         }
@@ -652,30 +789,37 @@ struct GameDetailView: View {
     // MARK: - Section 2: Shader
 
     private var shaderSection: some View {
-        SectionCard(
+        ModernSectionCard(
             title: "Shader",
             icon: "tv",
             badge: isShaderCustomized ? "Custom" : nil
         ) {
-            VStack(alignment: .leading, spacing: 12) {
-                // Current shader display and edit button
+            VStack(alignment: .leading, spacing: 14) {
+                // Current shader display
                 HStack {
-                    VStack(alignment: .leading, spacing: 4) {
+                    VStack(alignment: .leading, spacing: 2) {
                         Text("Current Shader")
                             .font(.subheadline)
                             .fontWeight(.medium)
-                        Text("Post-processing shader for this game")
+                            .foregroundColor(.white.opacity(0.85))
+                        Text(ShaderManager.displayName(for: currentROM.settings.shaderPresetID))
                             .font(.caption)
-                            .foregroundColor(.secondary)
+                            .foregroundColor(.white.opacity(0.5))
                     }
 
                     Spacer()
 
-                    Button(ShaderManager.displayName(for: currentROM.settings.shaderPresetID)) {
+                    Button("Customize") {
                         presentShaderWindow()
                     }
-                    .buttonStyle(.bordered)
+                    .foregroundColor(.white)
+                    .padding(.horizontal, 14)
+                    .padding(.vertical, 8)
+                    .background(Color.blue.opacity(0.6))
+                    .cornerRadius(8)
                 }
+
+                Divider().overlay(Color.white.opacity(0.08))
 
                 // Quick preset buttons
                 VStack(spacing: 6) {
@@ -690,19 +834,20 @@ struct GameDetailView: View {
                         } label: {
                             HStack {
                                 Image(systemName: shaderIcon(for: preset.shaderType))
-                                    .foregroundColor(.accentColor)
+                                    .foregroundColor(.blue)
                                     .frame(width: 20)
                                 Text(preset.name)
                                     .font(.subheadline)
+                                    .foregroundColor(.white.opacity(0.85))
                                 Spacer()
                                 if currentROM.settings.shaderPresetID == preset.id {
                                     Image(systemName: "checkmark.circle.fill")
-                                        .foregroundColor(.accentColor)
+                                        .foregroundColor(.blue)
                                 }
                                 if let desc = preset.description {
                                     Text(desc)
                                         .font(.caption)
-                                        .foregroundColor(.secondary)
+                                        .foregroundColor(.white.opacity(0.4))
                                         .lineLimit(1)
                                 }
                             }
@@ -710,7 +855,7 @@ struct GameDetailView: View {
                             .padding(.horizontal, 10)
                             .background(
                                 currentROM.settings.shaderPresetID == preset.id
-                                    ? Color.accentColor.opacity(0.1)
+                                    ? Color.blue.opacity(0.15)
                                     : Color.clear
                             )
                             .cornerRadius(6)
@@ -719,22 +864,27 @@ struct GameDetailView: View {
                     }
                 }
 
-                Divider()
+                Divider().overlay(Color.white.opacity(0.08))
 
                 // Reset to system default button
                 HStack {
                     VStack(alignment: .leading, spacing: 2) {
-                        Text("System Default Shader")
+                        Text("System Default")
                             .font(.caption)
-                        Text("Reset to the default shader for this system")
+                            .foregroundColor(.white.opacity(0.5))
+                        Text("Reset to default shader for this system")
                             .font(.caption)
-                            .foregroundColor(.secondary)
+                            .foregroundColor(.white.opacity(0.4))
                     }
                     Spacer()
-                    Button("Use System Default") {
+                    Button("Use Default") {
                         updateSettings { $0.shaderPresetID = systemDefaultShaderID }
                     }
-                    .buttonStyle(.bordered)
+                    .foregroundColor(.white)
+                    .padding(.horizontal, 12)
+                    .padding(.vertical, 6)
+                    .background(Color.white.opacity(0.1))
+                    .cornerRadius(6)
                     .disabled(!isShaderCustomized)
                 }
             }
@@ -778,29 +928,34 @@ struct GameDetailView: View {
     // MARK: - Section 3: Controls
 
     private var controlsSection: some View {
-        SectionCard(
+        ModernSectionCard(
             title: "Controls",
             icon: "gamecontroller",
             badge: "System"
         ) {
-            VStack(alignment: .leading, spacing: 12) {
+            VStack(alignment: .leading, spacing: 14) {
                 // Controller display
                 HStack {
-                    VStack(alignment: .leading, spacing: 4) {
+                    VStack(alignment: .leading, spacing: 2) {
                         Text("Controller Mapping")
                             .font(.subheadline)
                             .fontWeight(.medium)
-                        Text("Per-game controls for \(system?.name ?? "this system")")
+                            .foregroundColor(.white.opacity(0.85))
+                        Text("Uses standard \(system?.name ?? "this system") layout")
                             .font(.caption)
-                            .foregroundColor(.secondary)
+                            .foregroundColor(.white.opacity(0.5))
                     }
 
                     Spacer()
 
-                    Button("Edit Controls") {
+                    Button("Edit") {
                         showControlsPicker = true
                     }
-                    .buttonStyle(.bordered)
+                    .foregroundColor(.white)
+                    .padding(.horizontal, 14)
+                    .padding(.vertical, 8)
+                    .background(Color.blue.opacity(0.6))
+                    .cornerRadius(8)
                 }
 
                 // Controller icon display
@@ -809,40 +964,46 @@ struct GameDetailView: View {
                         Image(nsImage: controllerIcon)
                             .resizable()
                             .aspectRatio(contentMode: .fit)
-                            .frame(width: 80, height: 80)
+                            .frame(width: 64, height: 64)
 
-                        VStack(alignment: .leading, spacing: 4) {
+                        VStack(alignment: .leading, spacing: 2) {
                             Text("Default Mapping")
-                                .font(.caption)
+                                .font(.subheadline)
                                 .fontWeight(.medium)
-                            Text("Uses the standard \(sys.name) controller layout")
+                                .foregroundColor(.white.opacity(0.85))
+                            Text("Standard \(sys.name) controller")
                                 .font(.caption)
-                                .foregroundColor(.secondary)
+                                .foregroundColor(.white.opacity(0.5))
                         }
 
                         Spacer()
                     }
-                    .padding()
-                    .background(Color.secondary.opacity(0.05))
+                    .padding(12)
+                    .background(Color.white.opacity(0.05))
                     .cornerRadius(8)
                 }
 
-                Divider()
+                Divider().overlay(Color.white.opacity(0.08))
 
                 // Reset to system defaults
                 HStack {
                     VStack(alignment: .leading, spacing: 2) {
                         Text("System Default Controls")
                             .font(.caption)
-                        Text("Reset to the default controls for this system")
+                            .foregroundColor(.white.opacity(0.5))
+                        Text("Reset to default controls")
                             .font(.caption)
-                            .foregroundColor(.secondary)
+                            .foregroundColor(.white.opacity(0.4))
                     }
                     Spacer()
-                    Button("Use System Default") {
+                    Button("Reset") {
                         resetControlsToSystemDefault()
                     }
-                    .buttonStyle(.bordered)
+                    .foregroundColor(.white)
+                    .padding(.horizontal, 12)
+                    .padding(.vertical, 6)
+                    .background(Color.white.opacity(0.1))
+                    .cornerRadius(6)
                 }
             }
         }
@@ -857,7 +1018,6 @@ struct GameDetailView: View {
     }
 
     private func resetControlsToSystemDefault() {
-        // Reset keyboard mapping for this system to defaults
         let systemID = currentROM.systemID ?? ""
         controllerService.updateKeyboardMapping(
             KeyboardMapping.defaults(for: systemID),
@@ -868,12 +1028,12 @@ struct GameDetailView: View {
     // MARK: - Section 4: Saved States
 
     private var savedStatesSection: some View {
-        SectionCard(
+        ModernSectionCard(
             title: "Saved States",
             icon: "externaldrive",
             badge: slotInfoList.filter(\.exists).isEmpty ? nil : "\(slotInfoList.filter(\.exists).count)"
         ) {
-            VStack(alignment: .leading, spacing: 12) {
+            VStack(alignment: .leading, spacing: 14) {
                 let existingSlots = slotInfoList.filter { $0.exists }
                 let emptySlots = slotInfoList.filter { !$0.exists && $0.id >= 0 }.prefix(10)
                 let showSlots = existingSlots.isEmpty ? Array(emptySlots) : slotInfoList.filter { $0.id >= 0 }
@@ -882,13 +1042,13 @@ struct GameDetailView: View {
                     VStack(spacing: 8) {
                         Image(systemName: "externaldrive.slash")
                             .font(.system(size: 30))
-                            .foregroundColor(.secondary)
+                            .foregroundColor(.white.opacity(0.3))
                         Text("No saved states")
                             .font(.subheadline)
-                            .foregroundColor(.secondary)
-                        Text("Save states are created during gameplay")
+                            .foregroundColor(.white.opacity(0.5))
+                        Text("Save states created during gameplay")
                             .font(.caption)
-                            .foregroundColor(.secondary)
+                            .foregroundColor(.white.opacity(0.4))
                     }
                     .frame(maxWidth: .infinity)
                     .padding(.vertical, 16)
@@ -899,7 +1059,7 @@ struct GameDetailView: View {
                         spacing: 12
                     ) {
                         ForEach(showSlots.filter { $0.id >= 0 }, id: \.id) { slot in
-                            SaveStateSlotView(
+                            ModernSaveStateSlotView(
                                 slot: slot,
                                 rom: currentROM,
                                 saveStateManager: saveStateManager,
@@ -910,19 +1070,19 @@ struct GameDetailView: View {
                 }
 
                 if !existingSlots.isEmpty {
-                    Divider()
+                    Divider().overlay(Color.white.opacity(0.08))
 
                     // Summary
                     HStack {
                         Text("\(existingSlots.count) save state(s)")
                             .font(.caption)
-                            .foregroundColor(.secondary)
+                            .foregroundColor(.white.opacity(0.5))
                         Spacer()
                         let totalSize = existingSlots.reduce(0) { $0 + ($1.fileSize ?? 0) }
                         if totalSize > 0 {
                             Text(Int64(totalSize).formattedByteSize)
                                 .font(.caption)
-                                .foregroundColor(.secondary)
+                                .foregroundColor(.white.opacity(0.5))
                         }
                     }
                 }
@@ -933,57 +1093,62 @@ struct GameDetailView: View {
     // MARK: - Section 5: Cheats
 
     private var cheatsSection: some View {
-        SectionCard(
+        ModernSectionCard(
             title: "Cheats",
             icon: "wand.and.stars"
         ) {
-            VStack(spacing: 12) {
+            VStack(spacing: 14) {
                 HStack {
-                    VStack(alignment: .leading, spacing: 4) {
+                    VStack(alignment: .leading, spacing: 2) {
                         Text("Cheat Codes")
                             .font(.subheadline)
                             .fontWeight(.medium)
-                        Text("Import and manage cheat codes for this game")
+                            .foregroundColor(.white.opacity(0.85))
+                        Text("Import and manage cheat codes")
                             .font(.caption)
-                            .foregroundColor(.secondary)
+                            .foregroundColor(.white.opacity(0.5))
                     }
                     Spacer()
                 }
 
-                Divider()
+                Divider().overlay(Color.white.opacity(0.08))
 
                 HStack {
                     Spacer()
                     Button {
                         showCheatManager = true
                     } label: {
-                        Label("Manage Cheats", systemImage: "wand.and.stars")
+                        HStack(spacing: 6) {
+                            Image(systemName: "wand.and.stars")
+                            Text("Manage Cheats")
+                        }
+                        .foregroundColor(.white)
+                        .padding(.horizontal, 14)
+                        .padding(.vertical, 8)
+                        .background(Color.blue.opacity(0.6))
+                        .cornerRadius(8)
                     }
-                    .buttonStyle(.bordered)
                 }
             }
         }
-        // Note: CheatManagerView is not part of the project build phase.
-        // To enable cheat management, add CheatManagerView.swift and Cheat.swift
-        // to the TruchieEmu target in Xcode.
     }
 
     // MARK: - Section 6: Achievements
 
     private var achievementsSection: some View {
-        SectionCard(
+        ModernSectionCard(
             title: "Achievements",
             icon: "trophy",
             badge: gameAchievements.isEmpty ? nil : "\(unlockedAchievementCount)/\(gameAchievements.count)"
         ) {
-            VStack(alignment: .leading, spacing: 12) {
+            VStack(alignment: .leading, spacing: 14) {
                 if isAchievementsLoading {
                     HStack(spacing: 8) {
                         ProgressView()
                             .controlSize(.small)
                         Text("Loading achievements...")
                             .font(.subheadline)
-                            .foregroundColor(.secondary)
+                            .foregroundColor(.white.opacity(0.5))
                     }
                     .frame(maxWidth: .infinity)
                     .padding(.vertical, 16)
@@ -991,35 +1156,37 @@ struct GameDetailView: View {
                     VStack(spacing: 8) {
                         Image(systemName: "trophy.slash")
                             .font(.system(size: 30))
-                            .foregroundColor(.secondary)
+                            .foregroundColor(.white.opacity(0.3))
                         Text("No achievements available")
                             .font(.subheadline)
-                            .foregroundColor(.secondary)
-                        Text("This game may not have RetroAchievements data")
+                            .foregroundColor(.white.opacity(0.5))
+                        Text("Game may not have RetroAchievements data")
                             .font(.caption)
-                            .foregroundColor(.secondary)
+                            .foregroundColor(.white.opacity(0.4))
                     }
                     .frame(maxWidth: .infinity)
                     .padding(.vertical, 16)
                 } else {
                     // Summary
-                    HStack(spacing: 16) {
+                    HStack(spacing: 20) {
                         VStack(alignment: .leading, spacing: 2) {
-                            Text("\(unlockedAchievementCount) of \(gameAchievements.count)")
+                            Text("\(unlockedAchievementCount)/\(gameAchievements.count)")
                                 .font(.title2)
                                 .fontWeight(.bold)
+                                .foregroundColor(.white)
                             Text("Achievements")
                                 .font(.caption)
-                                .foregroundColor(.secondary)
+                                .foregroundColor(.white.opacity(0.5))
                         }
 
                         VStack(alignment: .leading, spacing: 2) {
                             Text("\(earnedPoints)/\(totalAchievementPoints)")
                                 .font(.title2)
                                 .fontWeight(.bold)
+                                .foregroundColor(.white)
                             Text("Points")
                                 .font(.caption)
-                                .foregroundColor(.secondary)
+                                .foregroundColor(.white.opacity(0.5))
                         }
 
                         Spacer()
@@ -1029,10 +1196,11 @@ struct GameDetailView: View {
                             ? 0.0
                             : Double(unlockedAchievementCount) / Double(gameAchievements.count)
                         ProgressView(value: progress)
+                            .tint(.blue)
                             .frame(width: 100)
                     }
 
-                    Divider()
+                    Divider().overlay(Color.white.opacity(0.08))
 
                     // Achievement list (limited display)
                     ScrollView(.horizontal, showsIndicators: false) {
@@ -1044,7 +1212,7 @@ struct GameDetailView: View {
                             if gameAchievements.count > 6 {
                                 Text("+\(gameAchievements.count - 6) more")
                                     .font(.caption)
-                                    .foregroundColor(.secondary)
+                                    .foregroundColor(.white.opacity(0.4))
                                     .frame(width: 60)
                             }
                         }
@@ -1055,32 +1223,63 @@ struct GameDetailView: View {
         }
     }
 
-    // MARK: - Launch Button
+    // MARK: - Launch Button (Pill Shape - Steam Style)
 
     private var launchButton: some View {
         Button {
             launchGame()
         } label: {
-            Label("Launch Game", systemImage: "play.fill")
-                .frame(width: 200)
+            HStack(spacing: 10) {
+                Image(systemName: "play.fill")
+                    .font(.title3)
+                Text("Play")
+                    .font(.headline)
+                    .fontWeight(.semibold)
+            }
+            .foregroundColor(.white)
+            .frame(maxWidth: .infinity)
+            .padding(.vertical, 14)
+            .padding(.horizontal, 28)
+            .background(
+                LinearGradient(
+                    colors: [
+                        Color(red: 0.35, green: 0.75, blue: 0.35),
+                        Color(red: 0.25, green: 0.60, blue: 0.25)
+                    ],
+                    startPoint: .leading,
+                    endPoint: .trailing
+                )
+            )
+            .clipShape(Capsule())
+            .shadow(color: .green.opacity(0.3), radius: 8, y: 2)
         }
-        .buttonStyle(.borderedProminent)
+        .buttonStyle(.plain)
     }
 
     // MARK: - Placeholder Art
 
     private var placeholderArt: some View {
         ZStack {
-            Color.secondary.opacity(0.1)
+            // Gradient background
+            LinearGradient(
+                colors: [
+                    Color(red: 0.2, green: 0.22, blue: 0.25),
+                    Color(red: 0.15, green: 0.16, blue: 0.2)
+                ],
+                startPoint: .topLeading,
+                endPoint: .bottomTrailing
+            )
+            
             if let img = system?.emuImage(size: 600) {
                 Image(nsImage: img)
                     .resizable()
                     .aspectRatio(contentMode: .fit)
                     .padding(20)
+                    .opacity(0.6)
             } else {
                 Image(systemName: system?.iconName ?? "gamecontroller")
                     .font(.system(size: 40))
-                    .foregroundColor(.secondary)
+                    .foregroundColor(.white.opacity(0.4))
             }
         }
     }
@@ -1130,15 +1329,14 @@ struct GameDetailView: View {
     }
 }
 
-// MARK: - Save State Slot View
+// MARK: - Modern Save State Slot View
 
-struct SaveStateSlotView: View {
+struct ModernSaveStateSlotView: View {
     let slot: SlotInfo
     let rom: ROM
     @ObservedObject var saveStateManager: SaveStateManager
     var onDelete: () -> Void
     @State private var thumbnail: NSImage?
-    @State private var showContextMenu = false
 
     var body: some View {
         VStack(spacing: 6) {
@@ -1151,11 +1349,11 @@ struct SaveStateSlotView: View {
                         .clipped()
                 } else {
                     Rectangle()
-                        .fill(Color.secondary.opacity(0.1))
+                        .fill(Color.white.opacity(0.05))
                         .overlay(
                             Image(systemName: slot.exists ? "externaldrive.fill" : "externaldrive")
-                                .font(.system(size: 24))
-                                .foregroundColor(.secondary)
+                                .font(.system(size: 20))
+                                .foregroundColor(.white.opacity(0.3))
                         )
                 }
             }
@@ -1163,29 +1361,28 @@ struct SaveStateSlotView: View {
             .clipShape(RoundedRectangle(cornerRadius: 6))
             .overlay(
                 RoundedRectangle(cornerRadius: 6)
-                    .stroke(slot.exists ? Color.accentColor.opacity(0.5) : Color.clear, lineWidth: 2)
+                    .stroke(slot.exists ? Color.blue.opacity(0.5) : Color.clear, lineWidth: 1.5)
             )
 
             // Slot number
             Text(slot.displayName)
                 .font(.caption)
                 .fontWeight(slot.exists ? .semibold : .regular)
-                .foregroundColor(slot.exists ? .primary : .secondary)
+                .foregroundColor(slot.exists ? .white.opacity(0.85) : .white.opacity(0.4))
 
             // Date and size info
             if let date = slot.formattedDate {
                 Text(date)
                     .font(.system(size: 9))
-                    .foregroundColor(.secondary)
+                    .foregroundColor(.white.opacity(0.4))
                     .lineLimit(1)
             } else if let fileSize = slot.fileSize {
                 Text(fileSize.formattedByteSize)
                     .font(.system(size: 9))
-                    .foregroundColor(.secondary)
+                    .foregroundColor(.white.opacity(0.4))
             }
         }
         .frame(width: 74)
-        .contentShape(Rectangle())
         .onTapGesture {
             if slot.exists {
                 // Could trigger load state action
@@ -1228,28 +1425,29 @@ struct AchievementBadgeView: View {
         VStack(spacing: 4) {
             // Badge image
             ZStack {
-                RoundedRectangle(cornerRadius: 6)
+                RoundedRectangle(cornerRadius: 8)
                     .fill(achievement.isUnlocked
-                        ? Color.accentColor.opacity(0.2)
-                        : Color.secondary.opacity(0.1))
+                        ? Color.blue.opacity(0.2)
+                        : Color.white.opacity(0.05))
                     .frame(width: 50, height: 50)
 
                 Image(systemName: achievement.isUnlocked ? "trophy.fill" : "trophy")
-                    .font(.system(size: 24))
-                    .foregroundColor(achievement.isUnlocked ? .accentColor : .secondary)
+                    .font(.system(size: 22))
+                    .foregroundColor(achievement.isUnlocked ? .blue : .white.opacity(0.3))
             }
 
             // Points
             Text("\(achievement.points)")
                 .font(.caption2)
                 .fontWeight(.bold)
-                .foregroundColor(achievement.isUnlocked ? .accentColor : .secondary)
+                .foregroundColor(achievement.isUnlocked ? .blue : .white.opacity(0.4))
 
             // Title
             Text(achievement.isUnlocked ? achievement.title : "???")
                 .font(.system(size: 9))
                 .lineLimit(1)
                 .frame(width: 60)
+                .foregroundColor(.white.opacity(0.7))
         }
     }
 }
@@ -1265,7 +1463,7 @@ struct CoreVersionPickerView: View {
         HStack {
             Text("Version")
                 .font(.caption)
-                .foregroundColor(.secondary)
+                .foregroundColor(.white.opacity(0.5))
             Picker("Version", selection: $selectedTag) {
                 if selectedTag == nil {
                     Text("Select Version...").tag(nil as String?)

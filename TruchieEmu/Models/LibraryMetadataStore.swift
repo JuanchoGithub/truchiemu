@@ -24,8 +24,8 @@ struct ROMMetadataRecord: Codable, Hashable {
     var boxArtPath: String?
     /// Reserved: title screen / Libretro Named_Titles.
     var titleScreenPath: String?
-    /// Reserved: snap / screenshot.
-    var screenshotPath: String?
+    /// Array of screenshot image paths for the game
+    var screenshotPaths: [String] = []
     /// Custom core ID selected by the user for this ROM.
     var customCoreID: String?
 
@@ -44,7 +44,7 @@ struct ROMMetadataRecord: Codable, Hashable {
         thumbnailLookupSystemID = rom.thumbnailLookupSystemID
         boxArtPath = rom.boxArtPath?.path
         titleScreenPath = nil
-        screenshotPath = nil
+        screenshotPaths = rom.screenshotPaths.map { $0.path }
     }
 
     func applying(to rom: ROM) -> ROM {
@@ -63,6 +63,12 @@ struct ROMMetadataRecord: Codable, Hashable {
         if let t = thumbnailLookupSystemID { r.thumbnailLookupSystemID = t }
         if let p = boxArtPath, FileManager.default.fileExists(atPath: p) {
             r.boxArtPath = URL(fileURLWithPath: p)
+        }
+        if !screenshotPaths.isEmpty {
+            r.screenshotPaths = screenshotPaths.compactMap {
+                let url = URL(fileURLWithPath: $0)
+                return FileManager.default.fileExists(atPath: url.path) ? url : nil
+            }
         }
         return r
     }
@@ -126,7 +132,9 @@ final class LibraryMetadataStore: ObservableObject {
         var rec = ROMMetadataRecord(from: rom)
         if let existing = data.entries[Self.pathKey(for: rom)] {
             if rec.titleScreenPath == nil { rec.titleScreenPath = existing.titleScreenPath }
-            if rec.screenshotPath == nil { rec.screenshotPath = existing.screenshotPath }
+            if rec.screenshotPaths.isEmpty && !existing.screenshotPaths.isEmpty {
+                rec.screenshotPaths = existing.screenshotPaths
+            }
         }
         data.entries[Self.pathKey(for: rom)] = rec
         saveToDisk()
