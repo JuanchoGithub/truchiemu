@@ -270,7 +270,7 @@ struct RetroAchievementsSettingsView: View {
         
         Task {
             do {
-                let token = try await raService.login(username: username, password: password)
+                _ = try await raService.login(username: username, password: password)
                 await MainActor.run {
                     isLoggingIn = false
                     password = "" // Clear password after login

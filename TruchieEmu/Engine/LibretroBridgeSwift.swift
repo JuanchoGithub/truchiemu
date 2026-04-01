@@ -26,7 +26,7 @@ class LibretroBridgeSwift {
     /// Returns the current rotation from the core: 0, 1, 2, or 3
     /// (representing 0, 90, 180, or 270 degrees clockwise)
     static func currentRotation() -> Int {
-        return LibretroBridge.currentRotation()
+        return Int(LibretroBridge.currentRotation())
     }
 
     static func saveState() {

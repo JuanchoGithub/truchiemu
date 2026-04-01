@@ -179,7 +179,7 @@ class EmulatorRunner: ObservableObject, @unchecked Sendable {
     @MainActor
     func reloadGame() {
         guard let gameRom = rom else { return }
-        guard let sysID = gameRom.systemID else { return }
+        guard gameRom.systemID != nil else { return }
         
         // Store current core info
         let coreID = UserDefaults.standard.string(forKey: "lastLoadedCoreID") ?? ""
@@ -443,8 +443,8 @@ class EmulatorRunner: ObservableObject, @unchecked Sendable {
                 self.hasLoggedFrame = true
                 // Read rotation from core on first frame
                 let rotation = LibretroBridge.currentRotation()
-                if self.currentFrameRotation != rotation {
-                    self.currentFrameRotation = rotation
+                if self.currentFrameRotation != Int(rotation) {
+                    self.currentFrameRotation = Int(rotation)
                     print("[Runner] Frame rotation: \(rotation) (\(rotation * 90) deg CW)")
                 }
             }

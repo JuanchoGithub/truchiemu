@@ -15,7 +15,7 @@ struct LibraryGridView: View {
     @Environment(\.openWindow) private var openWindow
     @State private var renamingROM: ROM? = nil
     @State private var renameText: String = ""
-    @State private var gameWindowController: StandaloneGameWindowController? = nil
+    @StateObject private var gameLauncher = GameLauncher.shared
 
     @State private var viewMode: ViewMode = .grid
     @AppStorage("gridColumns") private var columnCount: Int = 4
@@ -58,7 +58,7 @@ struct LibraryGridView: View {
         }
 
         // Filter out BIOS files unless "Show BIOS Files" is enabled
-        var filtered = prefs.showBiosFiles ? base : base.filter { !$0.isHidden }
+        let filtered = prefs.showBiosFiles ? base : base.filter { !$0.isHidden }
 
         if searchText.isEmpty {
             return filtered
@@ -674,6 +674,7 @@ struct LibraryGridView: View {
         .padding(.bottom, 8)
     }
 
+    @MainActor
     private func launchGame(_ rom: ROM) {
         guard let sysID = rom.systemID,
               let system = SystemDatabase.system(forID: sysID) else { return }
@@ -688,26 +689,12 @@ struct LibraryGridView: View {
             return
         }
 
-        library.markPlayed(rom)
-        
-        // Activate the shader preset BEFORE launching the game
-        let presetID = rom.settings.shaderPresetID.isEmpty ? "builtin-crt-classic" : rom.settings.shaderPresetID
-        if let preset = ShaderPreset.preset(id: presetID) {
-            ShaderManager.shared.activatePreset(preset)
-            print("[SHADER-DEBUG] LibraryGridView.launchGame: Activated preset '\(preset.name)' for ROM '\(rom.displayName)'")
-        } else {
-            print("[SHADER-DEBUG] LibraryGridView.launchGame: Could not find preset '\(presetID)', using default")
-        }
-        
-        let runner = EmulatorRunner.forSystem(sysID)
-        let controller = StandaloneGameWindowController(runner: runner)
-        self.gameWindowController = controller
-        controller.showWindow(nil)
-        controller.window?.makeKeyAndOrderFront(nil)
-        NSApp.activate(ignoringOtherApps: true)
-        
-        // Use the controller's launch method to ensure proper setup
-        controller.launch(rom: rom, coreID: cid)
+        // Use unified GameLauncher for consistent launch behavior across all entry points
+        gameLauncher.launchGame(
+            rom: rom,
+            coreID: cid,
+            library: library
+        )
     }
 }
 
@@ -1024,7 +1011,7 @@ actor ImageCache {
         }
         
         // Load on background thread
-        let image = await Task.detached(priority: .userInitiated) {
+        let image = await Task(priority: .userInitiated) {
             return NSImage(contentsOf: url)
         }.value
         

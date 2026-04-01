@@ -539,9 +539,9 @@ static bool bridge_environment(unsigned cmd, void *data) {
 
 static uint32_t g_videoRefreshCount = 0;
 static void bridge_video_refresh(const void *data, unsigned width, unsigned height, size_t pitch) {
-    // Only log once to avoid console spam
-    if (g_videoRefreshCount == 0) {
-        NSLog(@"[Bridge] video_refresh called: %dx%d pitch=%d data=%p hw=%d", width, height, (int)pitch, data, (data == RETRO_HW_FRAME_BUFFER_VALID));
+    // Always log the first few calls for debugging - ScummVM HW rendering path needs this
+    if (g_videoRefreshCount < 3) {
+        NSLog(@"[Bridge] video_refresh called: %dx%d pitch=%d data=%p hw=%d g_instance=%p", width, height, (int)pitch, data, (data == RETRO_HW_FRAME_BUFFER_VALID), (__bridge void*)g_instance);
     }
     g_videoRefreshCount++;
     if (g_instance) {
@@ -743,8 +743,18 @@ static int16_t bridge_input_state(unsigned port, unsigned device, unsigned index
         
         // For HW-rendered cores (like ScummVM) that don't call video_refresh,
         // manually read from the FBO after each retro_run() to push frames
-        if (_hwRenderEnabled && _glContext && _hwFBO) {
+        BOOL hwPath = _hwRenderEnabled && _glContext && _hwFBO;
+        if (localRunCount == 1) {
+            NSLog(@"[Bridge] HW render path enabled: hwRender=%d glCtx=%p fbo=%u", _hwRenderEnabled, (void*)_glContext, _hwFBO);
+        }
+        if (hwPath) {
             CGLSetCurrentContext(_glContext);
+            
+            // Ensure all GL commands from retro_run() have completed before readback.
+            // ScummVM runs rendering on a separate cothread; glFinish() is critical
+            // to ensure its GL commands reached our FBO before we read it.
+            glFinish();
+            
             // Get the current geometry (width/height may have changed from defaults)
             unsigned hw = _avInfo.geometry.base_width;
             unsigned hh = _avInfo.geometry.base_height;
@@ -755,7 +765,14 @@ static int16_t bridge_input_state(unsigned port, unsigned device, unsigned index
             if (pixels) {
                 // Format: BGRA (GL_UNSIGNED_INT_8_8_8_8_REV readback = XRGB8888)
                 int fmt = 1; // RETRO_PIXEL_FORMAT_XRGB8888
+                if (localRunCount <= 3) {
+                    NSLog(@"[Bridge] HW readback success: %ux%u, sending to videoCallback", hw, hh);
+                }
                 [self handleVideoData:pixels width:hw height:hh pitch:(int)(hw*4) format:fmt];
+            } else {
+                if (localRunCount <= 3) {
+                    NSLog(@"[Bridge] HW readback returned NULL");
+                }
             }
         }
         

@@ -124,12 +124,14 @@ class ROMIdentifierService {
     /// Heuristic: No-Intro DATs use `description` as the game title and `name` as
     /// an internal ROM filename.  ScummVM/MAME DATs use `name` as the title and
     /// `description` as a long prose paragraph.  Pick whichever looks like a real title.
-    private static func titleFromDatGame(name: String, description: String) -> String {
+    fileprivate static func titleFromDatGame(name: String, description: String) -> String {
         guard !description.isEmpty else { return name }
         // Long descriptions are prose paragraphs → use `name` (ScummVM / MAME style)
         if description.count > 150 { return name }
         // Count sentence-ending punctuation (.!?)
-        let sentenceEndCount = description.ranges(of: "[.!?]+[\n]|[.!?]+$", options: .regularExpression).count
+        let sentenceEndCount = description.split(whereSeparator: { $0.isNewline }).filter { line in
+            line.contains(".") || line.contains("!") || line.contains("?") || line.hasSuffix(".") || line.hasSuffix("!") || line.hasSuffix("?")
+        }.count
         if sentenceEndCount >= 2 { return name }
         // Short description = likely the actual title (No-Intro style)
         return description
@@ -182,14 +184,14 @@ class ROMIdentifierService {
         }()
         // Arabic → Roman  (word-boundary match: not preceded by a letter, not followed by one)
         for (a, r) in arabicToRoman {
-            let p = "(?<![a-zA-Z])\b" + String(a) + "\b(?![a-zA-Z0-9])"
+            let p = "(?<![a-zA-Z])\\b" + String(a) + "\\b(?![a-zA-Z0-9])"
             let s = normalized.replacingOccurrences(of: p, with: r, options: .regularExpression)
             if s != normalized { variants.insert(s) }
         }
         // Roman → Arabic
         for (r, a) in romanToArabic {
             let esc = NSRegularExpression.escapedPattern(for: r)
-            let p = "(?<![a-zA-Z])\b" + esc + "\b(?![a-zA-Z0-9])"
+            let p = "(?<![a-zA-Z])\\b" + esc + "\\b(?![a-zA-Z0-9])"
             let s = normalized.replacingOccurrences(of: p, with: String(a), options: .regularExpression)
             if s != normalized { variants.insert(s) }
         }
@@ -425,7 +427,7 @@ class LibretroDatabaseLibrary {
             if trimmed.hasPrefix("game (") || trimmed.hasPrefix("machine (") {
                 currentGame = LibretroDatGame()
             } else if trimmed == ")" && currentGame != nil {
-                let nameToUse = Self.titleFromDatGame(name: currentGame!.name, description: currentGame!.description)
+                let nameToUse = ROMIdentifierService.titleFromDatGame(name: currentGame!.name, description: currentGame!.description)
                 for crc in currentGame!.crcs {
                     database[crc.uppercased()] = GameInfo(
                         name: nameToUse,

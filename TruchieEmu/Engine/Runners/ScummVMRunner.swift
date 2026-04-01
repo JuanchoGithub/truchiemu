@@ -294,27 +294,30 @@ class ScummVMRunner: EmulatorRunner {
     func createHookFile(in gameFolder: URL, gameID: String) -> URL? {
         let hookPath = gameFolder.appendingPathComponent("\(gameID).scummvm")
         
-        // Check if hook file already exists
+        // Check if hook file already exists with correct format
         if FileManager.default.fileExists(atPath: hookPath.path) {
-            // Validate that it has the new manifest format (not just a plain game ID)
+            // Validate that it has the correct format (just the game ID on the first line)
             let existingContent = (try? String(contentsOf: hookPath, encoding: .utf8)) ?? ""
-            if existingContent.contains("[scummvm]") && existingContent.contains("engineid=") {
-                print("[ScummVM] Hook file already exists with valid manifest: \(hookPath.path)")
+            let firstLine = existingContent.components(separatedBy: "\n").first?.trimmingCharacters(in: .whitespacesAndNewlines) ?? ""
+            if firstLine == gameID {
+                print("[ScummVM] Hook file already exists with valid format: \(hookPath.path)")
                 return hookPath
             } else {
-                // Old format (just game ID), remove and recreate
-                print("[ScummVM] Hook file uses old format, recreating with manifest...")
+                // Wrong format, remove and recreate
+                print("[ScummVM] Hook file has wrong format (first line='\(firstLine)'), recreating...")
                 try? FileManager.default.removeItem(at: hookPath)
             }
         }
         
-        // Create the hook file with a proper ScummVM manifest format
-        // Modern scummvm_libretro cores need a manifest with engineid and game path
-        let manifestContent = "[scummvm]\nengineid=\(gameID)\npath=\(gameFolder.path)"
+        // Create the hook file with the game ID on the first line only.
+        // The scummvm_libretro core reads ONLY the first line of the .scummvm file
+        // and uses it as the target/game ID for game detection.
+        // See: backends/platform/libretro/src/libretro-core.cpp:retro_load_game()
+        let content = gameID
         
         do {
-            try manifestContent.write(to: hookPath, atomically: true, encoding: .utf8)
-            print("[ScummVM] Created hook file with manifest: \(hookPath.path)")
+            try content.write(to: hookPath, atomically: true, encoding: .utf8)
+            print("[ScummVM] Created hook file with game ID: \(hookPath.path)")
             return hookPath
         } catch {
             print("[ScummVM] Failed to create hook file: \(error)")

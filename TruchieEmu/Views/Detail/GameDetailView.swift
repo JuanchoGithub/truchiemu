@@ -192,7 +192,7 @@ struct GameDetailView: View {
     @StateObject private var achievementsService = RetroAchievementsService.shared
     @State private var showBoxArtPicker = false
     @State private var showControlsPicker = false
-    @State private var gameWindowController: StandaloneGameWindowController? = nil
+    @StateObject private var gameLauncher = GameLauncher.shared
     @State private var boxArtImage: NSImage? = nil
     @State private var screenshotImages: [NSImage] = []
     @State private var crcHash: String? = nil
@@ -1297,17 +1297,10 @@ struct GameDetailView: View {
 
     @State private var isLaunchingGame = false
     
+    /// Unified game launch - uses GameLauncher for consistent behavior across all launch points
+    /// (double-click, launch button, save state click)
     private func launchGame(slotToLoad: Int? = nil) {
-        // Prevent launching more than once
         guard !isLaunchingGame else { return }
-        
-        // Check if this ROM is already running via RunningGamesTracker
-        if RunningGamesTracker.shared.isRunning(romPath: currentROM.path.path) {
-            RunningGamesTracker.shared.notifyDuplicateLaunch(romName: currentROM.displayName)
-            return
-        }
-        
-        isLaunchingGame = true
         
         guard let sysID = currentROM.systemID,
               let system = SystemDatabase.system(forID: sysID) else { 
@@ -1331,31 +1324,17 @@ struct GameDetailView: View {
             return
         }
 
-        library.markPlayed(currentROM)
+        isLaunchingGame = true
         
-        // Activate shader preset
-        let presetID = currentROM.settings.shaderPresetID.isEmpty
-            ? "builtin-crt-classic"
-            : currentROM.settings.shaderPresetID
-        if let preset = ShaderPreset.preset(id: presetID) {
-            ShaderManager.shared.activatePreset(preset)
+        // Use unified GameLauncher for consistent launch behavior
+        gameLauncher.launchGame(
+            rom: currentROM,
+            coreID: cid,
+            slotToLoad: slotToLoad,
+            library: library
+        ) { _ in
+            self.isLaunchingGame = false
         }
-        
-        let runner = EmulatorRunner.forSystem(sysID)
-        let controller = StandaloneGameWindowController(runner: runner)
-        self.gameWindowController = controller
-        
-        // Launch game with slot (this will also check RunningGamesTracker internally)
-        controller.launch(rom: currentROM, coreID: cid, slotToLoad: slotToLoad)
-        
-        // Only bring window to front if it wasn't closed due to duplicate detection
-        if controller.window != nil {
-            NSApp.activate(ignoringOtherApps: true)
-            controller.window?.makeKeyAndOrderFront(nil)
-            controller.window?.orderFrontRegardless()
-        }
-        
-        isLaunchingGame = false
     }
 }
 

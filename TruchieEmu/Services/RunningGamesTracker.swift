@@ -27,6 +27,11 @@ class RunningGamesTracker: ObservableObject {
         runningROMPaths.remove(romPath)
     }
     
+    /// Clear all running games (useful for CLI launches)
+    func resetAll() {
+        runningROMPaths.removeAll()
+    }
+    
     /// Show a notification when attempting to launch an already-running game
     func notifyDuplicateLaunch(romName: String) {
         let content = UNMutableNotificationContent()
