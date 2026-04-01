@@ -612,7 +612,11 @@ struct LibraryGridView: View {
                         Text(category.name)
                         Spacer()
                         if isInCategory {
-                            Image(systemName: "checkmark")
+                            Image(systemName: "checkmark.circle.fill")
+                                .foregroundColor(.blue)
+                        } else {
+                            Image(systemName: "plus.circle")
+                                .foregroundColor(.secondary)
                         }
                     }
                 }

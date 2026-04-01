@@ -267,6 +267,10 @@ struct EditCategorySheet: View {
     @EnvironmentObject var categoryManager: CategoryManager
     @State var category: GameCategory
     
+    // Use separate state variables for selection tracking
+    @State private var selectedIcon: String = ""
+    @State private var selectedColor: String = ""
+    
     var body: some View {
         NavigationStack {
             Form {
@@ -278,11 +282,12 @@ struct EditCategorySheet: View {
                     LazyVGrid(columns: Array(repeating: GridItem(.flexible()), count: 6), spacing: 12) {
                         ForEach(GameCategory.commonIcons, id: \.self) { icon in
                             Button {
+                                selectedIcon = icon
                                 category.iconName = icon
                             } label: {
                                 Image(systemName: icon)
                                     .font(.title2)
-                                    .foregroundColor(category.iconName == icon ? category.color : .secondary)
+                                    .foregroundColor(selectedIcon == icon ? Color(hex: selectedColor) ?? .blue : .secondary)
                                     .frame(width: 32, height: 32)
                             }
                             .buttonStyle(.plain)
@@ -294,6 +299,7 @@ struct EditCategorySheet: View {
                     LazyVGrid(columns: Array(repeating: GridItem(.flexible()), count: 7), spacing: 12) {
                         ForEach(GameCategory.colorPalette, id: \.hex) { color in
                             Button {
+                                selectedColor = color.hex
                                 category.colorHex = color.hex
                             } label: {
                                 Circle()
@@ -301,11 +307,20 @@ struct EditCategorySheet: View {
                                     .frame(width: 28, height: 28)
                                     .overlay(
                                         Circle()
-                                            .stroke(category.colorHex == color.hex ? Color.primary : Color.clear, lineWidth: 2)
+                                            .stroke(selectedColor == color.hex ? Color.primary : Color.clear, lineWidth: 2)
                                     )
                             }
                             .buttonStyle(.plain)
                         }
+                    }
+                }
+                
+                Section("Preview") {
+                    HStack {
+                        Image(systemName: selectedIcon)
+                            .font(.title2)
+                            .foregroundColor(Color(hex: selectedColor) ?? .blue)
+                        Text(category.name.isEmpty ? "Category Name" : category.name)
                     }
                 }
             }
@@ -323,7 +338,12 @@ struct EditCategorySheet: View {
                 }
             }
         }
-        .frame(width: 360, height: 450)
+        .frame(width: 360, height: 500)
+        .onAppear {
+            // Initialize selection state from the category
+            selectedIcon = category.iconName
+            selectedColor = category.colorHex
+        }
     }
 }
 
