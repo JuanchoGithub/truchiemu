@@ -148,6 +148,7 @@ struct GameDetailView: View {
     @State private var manualStatusAutoDismiss: Task<Void, Never>?
     
     @State private var shaderWindowSettings: ShaderWindowSettings?
+    @State private var selectedSection: DetailSection = .gameInfo
 
     private var currentROM: ROM {
         library.roms.first { $0.id == rom.id } ?? rom
@@ -184,36 +185,42 @@ struct GameDetailView: View {
 
     var body: some View {
         VStack(spacing: 0) {
-            ScrollView {
-                VStack(alignment: .leading, spacing: 0) {
-                    // Header always visible
-                    compactHeaderSection
+            // Header always visible
+            compactHeaderSection
 
+            Divider()
+
+            // Sidebar + Content layout
+            HStack(spacing: 0) {
+                // Sidebar
+                sidebarNavigation
+
+                Divider()
+
+                // Main content area
+                ScrollView {
                     VStack(alignment: .leading, spacing: 16) {
-                        // Section 1: Game Info
-                        gameInfoSection
-
-                        // Section 2: Shader
-                        shaderSection
-
-                        // Section 3: Controls
-                        controlsSection
-
-                        // Section 4: Saved States
-                        savedStatesSection
-
-                        // Section 5: Cheats
-                        cheatsSection
-
-                        // Section 6: Achievements (conditional)
-                        if achievementsService.isEnabled {
-                            achievementsSection
+                        switch selectedSection {
+                        case .gameInfo:
+                            gameInfoSection
+                        case .shader:
+                            shaderSection
+                        case .controls:
+                            controlsSection
+                        case .savedStates:
+                            savedStatesSection
+                        case .cheats:
+                            cheatsSection
+                        case .achievements:
+                            if achievementsService.isEnabled {
+                                achievementsSection
+                            }
                         }
                     }
                     .padding(24)
                 }
+                .background(Color(NSColor.windowBackgroundColor))
             }
-            .background(Color(NSColor.windowBackgroundColor))
 
             if manualActionStatus.isVisible {
                 manualActionStatusBar
@@ -254,6 +261,78 @@ struct GameDetailView: View {
                 systemName: system?.name ?? "Unknown"
             )
             .environmentObject(controllerService)
+        }
+    }
+
+    // MARK: - Sidebar Navigation
+
+    private var sidebarNavigation: some View {
+        VStack(alignment: .leading, spacing: 4) {
+            Text("Sections")
+                .font(.caption)
+                .fontWeight(.semibold)
+                .foregroundColor(.secondary)
+                .padding(.horizontal, 12)
+                .padding(.top, 12)
+                .padding(.bottom, 4)
+
+            ForEach(DetailSection.allCases, id: \.self) { section in
+                sidebarItem(for: section)
+            }
+
+            Spacer()
+        }
+        .frame(width: 160)
+        .padding(.vertical, 8)
+        .background(Color(NSColor.controlBackgroundColor))
+    }
+
+    private func sidebarItem(for section: DetailSection) -> some View {
+        let isSelected = selectedSection == section
+        let icon = sectionIcon(for: section)
+        let showAchievements = achievementsService.isEnabled
+
+        // Skip achievements if disabled
+        if section == .achievements && !showAchievements {
+            return AnyView(EmptyView())
+        }
+
+        return AnyView(
+            Button {
+                withAnimation(.easeInOut(duration: 0.15)) {
+                    selectedSection = section
+                }
+            } label: {
+                HStack(spacing: 8) {
+                    Image(systemName: icon)
+                        .frame(width: 16)
+                    Text(section.rawValue)
+                        .lineLimit(1)
+                    Spacer()
+                    if isSelected {
+                        Image(systemName: "chevron.right")
+                            .font(.caption)
+                    }
+                }
+                .foregroundColor(isSelected ? .accentColor : .primary)
+                .font(.subheadline)
+                .padding(.horizontal, 12)
+                .padding(.vertical, 6)
+            }
+            .buttonStyle(.plain)
+            .background(isSelected ? Color.accentColor.opacity(0.15) : Color.clear)
+            .cornerRadius(6)
+        )
+    }
+
+    private func sectionIcon(for section: DetailSection) -> String {
+        switch section {
+        case .gameInfo: return "info.circle"
+        case .shader: return "tv"
+        case .controls: return "gamecontroller"
+        case .savedStates: return "externaldrive"
+        case .cheats: return "wand.and.stars"
+        case .achievements: return "trophy"
         }
     }
 
@@ -378,14 +457,6 @@ struct GameDetailView: View {
                     
                     Spacer()
                     
-                    Button {
-                        dismiss()
-                    } label: {
-                        Image(systemName: "xmark.circle.fill")
-                            .font(.title2)
-                            .foregroundColor(.secondary)
-                    }
-                    .buttonStyle(.plain)
                 }
                 
                 if let sys = system {
