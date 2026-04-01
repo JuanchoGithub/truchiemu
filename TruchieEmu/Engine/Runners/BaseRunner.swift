@@ -85,11 +85,12 @@ class EmulatorRunner: ObservableObject, @unchecked Sendable {
     
     static func forSystem(_ systemID: String?) -> EmulatorRunner {
         switch systemID {
-        case "nes":  return NESRunner()
-        case "snes": return SNESRunner()
-        case "n64":  return N64Runner()
-        case "dos":  return DOSRunner()
-        default:     return EmulatorRunner()
+        case "nes":      return NESRunner()
+        case "snes":     return SNESRunner()
+        case "n64":      return N64Runner()
+        case "dos":      return DOSRunner()
+        case "scummvm":  return ScummVMRunner()
+        default:         return EmulatorRunner()
         }
     }
 

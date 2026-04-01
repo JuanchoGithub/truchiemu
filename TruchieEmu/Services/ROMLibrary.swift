@@ -27,6 +27,21 @@ final class ScanCancellationToken: @unchecked Sendable {
 
 @MainActor
 class ROMLibrary: ObservableObject {
+    
+    // MARK: - Internal Directory Validation
+    
+    /// Path to the app's own Application Support directory (where cache files are stored).
+    private var appInternalPath: String {
+        let appSupport = FileManager.default.urls(for: .applicationSupportDirectory, in: .userDomainMask).first!
+        return appSupport.appendingPathComponent("TruchieEmu").path
+    }
+    
+    /// Check if a folder URL is inside the app's own internal directory.
+    /// Prevents users from accidentally adding the ScummVMExtracted cache as a library folder.
+    private func isInternalPath(_ url: URL) -> Bool {
+        return url.path.hasPrefix(appInternalPath)
+    }
+    
     @Published var roms: [ROM] = []
     @Published var isScanning: Bool = false
     @Published var scanProgress: Double = 0
@@ -76,12 +91,22 @@ class ROMLibrary: ObservableObject {
     }
 
     func completeOnboarding(folderURL: URL) {
+        // Validate: don't allow adding internal app directories
+        if isInternalPath(folderURL) {
+            print("[ROMLibrary] Rejected adding internal path as library folder: \(folderURL.path)")
+            return
+        }
         addLibraryFolder(url: folderURL)
         hasCompletedOnboarding = true
         defaults.set(true, forKey: onboardingKey)
     }
 
     func addLibraryFolder(url: URL) {
+        // Validate: don't allow adding internal app directories
+        if isInternalPath(url) {
+            print("[ROMLibrary] Rejected adding internal path as library folder: \(url.path)")
+            return
+        }
         if !libraryFolders.contains(url) {
             libraryFolders.append(url)
             saveSecurityScopedBookmarks()
@@ -100,6 +125,9 @@ class ROMLibrary: ObservableObject {
         roms.removeAll { $0.path.path.hasPrefix(folderPath) }
         updateCounts()
         saveROMsToDisk()
+        
+        // Clean up orphaned ScummVM extracted caches
+        cleanupScummVVCaches()
     }
 
     func scanROMs(in folder: URL, runAutomationAfter: Bool = true) async {
@@ -132,9 +160,19 @@ class ROMLibrary: ObservableObject {
         updateCounts()
         isScanning = false
         saveROMsToDisk()
+        
+        // Clean up orphaned ScummVM extracted caches
+        cleanupScummVVCaches()
+        
         if runAutomationAfter {
             await LibraryAutomationCoordinator.shared.runAfterLibraryUpdate(library: self)
         }
+    }
+    
+    /// Clean up ScummVM extracted caches for games no longer in the library.
+    private func cleanupScummVVCaches() {
+        let activeScummvmPaths = Set(roms.filter { $0.systemID == "scummvm" }.map { $0.path.path })
+        ScummVMCacheManager.cleanupOrphanedCaches(activeScummvmPaths: activeScummvmPaths)
     }
 
     func fullRescan() async {
@@ -400,6 +438,10 @@ class ROMLibrary: ObservableObject {
         saveROMsToDisk()
 
         isScanning = false
+        
+        // Clean up orphaned ScummVM extracted caches
+        cleanupScummVVCaches()
+        
         await LibraryAutomationCoordinator.shared.runAfterLibraryUpdate(library: self)
     }
 }

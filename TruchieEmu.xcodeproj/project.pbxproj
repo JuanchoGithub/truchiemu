@@ -36,6 +36,7 @@
 		889D5640E4056E730D0FAF6F /* GameDragState.swift in Sources */ = {isa = PBXBuildFile; fileRef = 02BBEDBAB8126B08C4C9D008 /* GameDragState.swift */; };
 		8D69C38D2C52B6392EC9C0AA /* CoreManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = C9D4F3329E4574FD30094324 /* CoreManager.swift */; };
 		8EE995D174427204927B68F4 /* GameCategory.swift in Sources */ = {isa = PBXBuildFile; fileRef = A5DBDEA905A82BDEF2D0FF92 /* GameCategory.swift */; };
+		8F729FB157583DECC75B0124 /* ScummVMRunner.swift in Sources */ = {isa = PBXBuildFile; fileRef = C87485B36AA3B87BBC03C577 /* ScummVMRunner.swift */; };
 		9CBCACA409FDC46E119C5F02 /* CoreDownloadSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = E86D4B032CD724A2520F4EF5 /* CoreDownloadSheet.swift */; };
 		9FF94EED26CFDB4DE9216DF0 /* CheatAutoLoader.swift in Sources */ = {isa = PBXBuildFile; fileRef = FEAB7F598545E0EC1ADC7095 /* CheatAutoLoader.swift */; };
 		A00192372A0183EF4772CACF /* CategoryManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 571AFD6EF6839C2FBF185419 /* CategoryManager.swift */; };
@@ -112,6 +113,7 @@
 		BB93840EA89D1346651C53BE /* LibretroBridgeSwift.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LibretroBridgeSwift.swift; sourceTree = "<group>"; };
 		BCB346F2AEB7FDB0705ADC7C /* EmptyDetailView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EmptyDetailView.swift; sourceTree = "<group>"; };
 		C818FB0D70AE32972B1C5458 /* Cheat.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Cheat.swift; sourceTree = "<group>"; };
+		C87485B36AA3B87BBC03C577 /* ScummVMRunner.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScummVMRunner.swift; sourceTree = "<group>"; };
 		C9D4F3329E4574FD30094324 /* CoreManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CoreManager.swift; sourceTree = "<group>"; };
 		D117D4363FBC8E02D7F7B049 /* CheatParser.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CheatParser.swift; sourceTree = "<group>"; };
 		D4BD45E407C6A4D3059F2996 /* N64Runner.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = N64Runner.swift; sourceTree = "<group>"; };
@@ -140,6 +142,7 @@
 				E87593F08B97B23BA2CAC02A /* DOSRunner.swift */,
 				D4BD45E407C6A4D3059F2996 /* N64Runner.swift */,
 				81440507D3F6155A9AC60E31 /* NESRunner.swift */,
+				C87485B36AA3B87BBC03C577 /* ScummVMRunner.swift */,
 				514B30B47B86FD0161D5DD71 /* SNESRunner.swift */,
 			);
 			path = Runners;
@@ -443,6 +446,7 @@
 				77B4F896AAB550DAA8D735D2 /* SLANGPParser.swift in Sources */,
 				EACA95E35BCDF368B91F18EC /* SNESRunner.swift in Sources */,
 				69C5F4C099C331E5E4BE4DCB /* SaveStateManager.swift in Sources */,
+				8F729FB157583DECC75B0124 /* ScummVMRunner.swift in Sources */,
 				2B95ADBBD965C8784E0F14C1 /* SettingsView.swift in Sources */,
 				FC2EA7938982440C4F5BA3D3 /* ShaderManager.swift in Sources */,
 				2426F4E6C399C0218826CFF6 /* ShaderPreset.swift in Sources */,
