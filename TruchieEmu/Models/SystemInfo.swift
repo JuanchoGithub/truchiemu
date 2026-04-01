@@ -25,6 +25,49 @@ enum BoxType: String, CaseIterable, Identifiable, Codable {
     }
 }
 
+// MARK: - Known MAME/Arcade BIOS Files
+// These filenames will be hidden from the game list as they are BIOS files, not playable games.
+enum KnownBIOS {
+    static let mameFiles: Set<String> = [
+        "neogeo", "cpzn1", "cpzn2", "cvs", "decocass", "konamigx",
+        "nmk004", "pgm", "playch10", "skns", "stvbios", "vmax3",
+        "eeprom", "f355dlx", "gaelco", "gaelco2", "gq863", "isgsm",
+        "itoch3", "midssio", "nba99hsk", "nscd15", "ssv", "ym2608",
+        "coh1000c", "coh3002c", "ym2413", "cchip", "sprc2kb", "segas16b",
+        "skimaxx", "cworld", "k054539", "n64sound",
+        // Additional common BIOS
+        "naomi", "hod2bios", "awbios", "cis4.5b", "cis4.5c",
+        "gts1s", "gts1", "gts1h", "gts1a", "gts1b", "gts1c", "gts1d", "gts1e", "gts1f", "gts1g",
+        "gts1h2", "gts1h3", "gts1h4", "gts1h5", "gts1h6", "gts1h7", "gts1h8", "gts1h9",
+        "model2", "model2a", "model2b", "model2c", "model3a", "model3b", "model3c", "model3d",
+        "system16", "system18", "system24", "system32", "system24e",
+        "cps1", "cps2", "cps2a", "cps2b", "cps_changer",
+        "pgm", "pgma", "pgmb", "pgmc", "pgmd", "pgme", "pgmf",
+        "taito_f3", "taito_gnet", "taito_type1", "taito_type2", "taito_type3",
+        "atomiswave", "naomi2", "naomigd", "hikaru", "lindbergh",
+        // FBNeo specific
+        "decocass", "neocdz", "neogeo", "pgm", "skns", "stvbios",
+        "ym2608", "ym2610", "ym2612", "ym3438", "ymf278b", "ymf271",
+        // Cave
+        "cv1000",
+        // Irem
+        "m72", "m84", "m90", "m92", "m107",
+        // Jaleco
+        "jalmah", "jaleco_gambl",
+        // Kaneko
+        "airlet", "gaelco2",
+        // Seta
+        "jaleco_gambl",
+        // Taito
+        "taito_f1", "taito_f2", "taito_f3",
+    ]
+    
+    static func isKnownBios(filename: String) -> Bool {
+        let nameWithoutExt = URL(fileURLWithPath: filename).deletingPathExtension().lastPathComponent.lowercased()
+        return mameFiles.contains(nameWithoutExt)
+    }
+}
+
 struct SystemInfo: Identifiable, Codable, Hashable {
     var id: String           // e.g. "nes", "snes", "mame", "gba"
     var name: String         // e.g. "Nintendo Entertainment System"
@@ -119,6 +162,7 @@ enum SystemDatabase {
         SystemInfo(id: "genesis",      name: "Sega Genesis / Mega Drive",       manufacturer: "Sega",       extensions: ["md", "gen", "bin", "smd"],    defaultCoreID: "genesis_plus_gx_libretro",   iconName: "gamecontroller.fill", emuIconName: "MD",  year: "1988", sortOrder: 10, defaultBoxType: .vertical),
         SystemInfo(id: "sms",          name: "Sega Master System",              manufacturer: "Sega",       extensions: ["sms"],                        defaultCoreID: "genesis_plus_gx_libretro",   iconName: "gamecontroller.fill", emuIconName: "MS",  year: "1985", sortOrder: 11, defaultBoxType: .vertical),
         SystemInfo(id: "gamegear",     name: "Sega Game Gear",                  manufacturer: "Sega",       extensions: ["gg"],                         defaultCoreID: "genesis_plus_gx_libretro",   iconName: "iphone",         emuIconName: "GG",       year: "1990", sortOrder: 12, defaultBoxType: .vertical),
+        SystemInfo(id: "32x",          name: "Sega 32X",                        manufacturer: "Sega",       extensions: ["32x", "smd", "bin", "md"],     defaultCoreID: "picodrive_libretro",         iconName: "gamecontroller.fill", emuIconName: "32X",  year: "1994", sortOrder: 15, defaultBoxType: .vertical),
         SystemInfo(id: "saturn",       name: "Sega Saturn",                     manufacturer: "Sega",       extensions: ["cue", "toc", "m3u"],          defaultCoreID: "mednafen_saturn_libretro",   iconName: "opticaldisc",    emuIconName: "SATURN",   year: "1994", sortOrder: 13, defaultBoxType: .landscape),
         SystemInfo(id: "dreamcast",    name: "Sega Dreamcast",                  manufacturer: "Sega",       extensions: ["cdi", "gdi", "chd"],          defaultCoreID: "flycast_libretro",           iconName: "opticaldisc",    emuIconName: "DC",       year: "1998", sortOrder: 14, defaultBoxType: .landscape),
         SystemInfo(id: "ps2",          name: "PlayStation 2",                   manufacturer: "Sony",       extensions: ["iso", "chd"],                 defaultCoreID: "pcsx2_libretro",             iconName: "opticaldisc",    emuIconName: "PS",       year: "2000", sortOrder: 21, defaultBoxType: .landscape),
@@ -132,6 +176,7 @@ enum SystemDatabase {
         SystemInfo(id: "ngp",          name: "Neo Geo Pocket",                  manufacturer: "SNK",        extensions: ["ngp", "ngc"],                 defaultCoreID: "mednafen_ngp_libretro",      iconName: "iphone",         emuIconName: "NGP",      year: "1998", sortOrder: 50, defaultBoxType: .vertical),
         SystemInfo(id: "pce",          name: "PC Engine / TurboGrafx-16",       manufacturer: "NEC",        extensions: ["pce", "cue"],                 defaultCoreID: "mednafen_pce_libretro",      iconName: "gamecontroller", emuIconName: "PCE",      year: "1987", sortOrder: 60, defaultBoxType: .landscape),
         SystemInfo(id: "pcfx",         name: "PC-FX",                           manufacturer: "NEC",        extensions: ["cue", "toc"],                 defaultCoreID: "mednafen_pcfx_libretro",     iconName: "opticaldisc",    emuIconName: "PCFX",     year: "1994", sortOrder: 61, defaultBoxType: .landscape),
+        SystemInfo(id: "scummvm",      name: "ScummVM",                         manufacturer: "Various",    extensions: ["zip", "scummvm"],             defaultCoreID: "scummvm_libretro",           iconName: "gamecontroller", emuIconName: "SCUMMVM", year: nil,    sortOrder: 75, defaultBoxType: .landscape),
         SystemInfo(id: "dos",          name: "MS-DOS",                          manufacturer: "Microsoft",  extensions: ["zip", "dosz", "conf", "exe", "bat", "iso", "img", "cue", "ins"], defaultCoreID: "dosbox_pure_libretro", iconName: "desktopcomputer", emuIconName: "DOS", year: "1981", sortOrder: 70, defaultBoxType: .landscape),
     ]
 
@@ -285,6 +330,14 @@ class SystemPreferences: ObservableObject {
     static let shared = SystemPreferences()
     @Published var updateTrigger: Int = 0
     
+    /// Whether to show BIOS files in the game list (default: false)
+    @Published var showBiosFiles: Bool = false {
+        didSet {
+            UserDefaults.standard.set(showBiosFiles, forKey: "showBiosFiles")
+            updateTrigger += 1
+        }
+    }
+    
     @Published var systemLanguage: EmulatorLanguage = .english {
         didSet {
             UserDefaults.standard.set(systemLanguage.rawValue, forKey: "systemLanguage")
@@ -300,6 +353,7 @@ class SystemPreferences: ObservableObject {
     }
 
     init() {
+        self.showBiosFiles = UserDefaults.standard.bool(forKey: "showBiosFiles")
         let langRaw = UserDefaults.standard.integer(forKey: "systemLanguage")
         self.systemLanguage = EmulatorLanguage(rawValue: langRaw) ?? .english
         let logRaw = UserDefaults.standard.object(forKey: "coreLogLevel") as? Int ?? CoreLogLevel.warn.rawValue

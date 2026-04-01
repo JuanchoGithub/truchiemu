@@ -15,6 +15,9 @@
 		2426F4E6C399C0218826CFF6 /* ShaderPreset.swift in Sources */ = {isa = PBXBuildFile; fileRef = E85C7A0C40C8A384AA47160D /* ShaderPreset.swift */; };
 		25B7586B9799B197EAE6D393 /* LibraryMetadataStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6A44B2F841BBDAD4B6D2DAA0 /* LibraryMetadataStore.swift */; };
 		2B95ADBBD965C8784E0F14C1 /* SettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5F2F3523E6BDCD5E1618ED1F /* SettingsView.swift */; };
+		A1B2C3D4E5F6A7B8C9D0E1F3 /* RetroAchievementsSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1B2C3D4E5F6A7B8C9D0E1F2 /* RetroAchievementsSettingsView.swift */; };
+		B1C2D3E4F5A6B7C8D9E0F1B2 /* RetroAchievementsService.swift in Sources */ = {isa = PBXBuildFile; fileRef = B1C2D3E4F5A6B7C8D9E0F1A2 /* RetroAchievementsService.swift */; };
+		B1C2D3E4F5A6B7C8D9E0F1B3 /* Achievement.swift in Sources */ = {isa = PBXBuildFile; fileRef = B1C2D3E4F5A6B7C8D9E0F1A3 /* Achievement.swift */; };
 		2BC6C72C9075C6652E2F1398 /* BoxArtPickerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 00BCE112C7493BEA7436F109 /* BoxArtPickerView.swift */; };
 		2E504CB095236AB9CFF8C433 /* CoreOption.swift in Sources */ = {isa = PBXBuildFile; fileRef = 88CE9892979FB7B724F9F25B /* CoreOption.swift */; };
 		3C8A90F76B0E04A65E48EBED /* GameDetailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = EA462E15A1500FD878B5160A /* GameDetailView.swift */; };
@@ -66,6 +69,7 @@
 		35A5B2396F8000C8435A2E45 /* ROMLibrary.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ROMLibrary.swift; sourceTree = "<group>"; };
 		514B30B47B86FD0161D5DD71 /* SNESRunner.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SNESRunner.swift; sourceTree = "<group>"; };
 		5F2F3523E6BDCD5E1618ED1F /* SettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsView.swift; sourceTree = "<group>"; };
+		A1B2C3D4E5F6A7B8C9D0E1F2 /* RetroAchievementsSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RetroAchievementsSettingsView.swift; sourceTree = "<group>"; };
 		5F78F845B9C63B8B6F072751 /* LibraryAutomationCoordinator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LibraryAutomationCoordinator.swift; sourceTree = "<group>"; };
 		676A433C26413EA5440A49A6 /* TruchieEmu-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "TruchieEmu-Bridging-Header.h"; sourceTree = "<group>"; };
 		67828B9B95A21FE57196B832 /* SaveStateManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SaveStateManager.swift; sourceTree = "<group>"; };
@@ -100,6 +104,8 @@
 		F92119B38E7206704F501F92 /* SlotPickerSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SlotPickerSheet.swift; sourceTree = "<group>"; };
 		FA471582BD64CAFD5D7353DA /* ROM.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ROM.swift; sourceTree = "<group>"; };
 		FC2BC1B2F22591954A0E02B5 /* ROMIdentifierService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ROMIdentifierService.swift; sourceTree = "<group>"; };
+		B1C2D3E4F5A6B7C8D9E0F1A2 /* RetroAchievementsService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RetroAchievementsService.swift; sourceTree = "<group>"; };
+		B1C2D3E4F5A6B7C8D9E0F1A3 /* Achievement.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Achievement.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXGroup section */
@@ -139,6 +145,7 @@
 		22252D163B158EFEB49A0DAF /* Services */ = {
 			isa = PBXGroup;
 			children = (
+				B1C2D3E4F5A6B7C8D9E0F1A2 /* RetroAchievementsService.swift */,
 				6DDE7FC6FAA1F8677EB963A1 /* BoxArtService.swift */,
 				93D8EB529663CB9A8702FAD3 /* ControllerService.swift */,
 				C9D4F3329E4574FD30094324 /* CoreManager.swift */,
@@ -190,6 +197,7 @@
 			isa = PBXGroup;
 			children = (
 				B8A759D694F034223120BFB5 /* CoreOptionsView.swift */,
+				A1B2C3D4E5F6A7B8C9D0E1F2 /* RetroAchievementsSettingsView.swift */,
 				5F2F3523E6BDCD5E1618ED1F /* SettingsView.swift */,
 			);
 			path = Settings;
@@ -214,6 +222,7 @@
 		58DECDD14D2EF32E5076893B /* Models */ = {
 			isa = PBXGroup;
 			children = (
+				B1C2D3E4F5A6B7C8D9E0F1A3 /* Achievement.swift */,
 				88CE9892979FB7B724F9F25B /* CoreOption.swift */,
 				6A44B2F841BBDAD4B6D2DAA0 /* LibraryMetadataStore.swift */,
 				E35518FB34DEB243BF979DE0 /* LibretroCore.swift */,
@@ -378,12 +387,15 @@
 				6F744ECC857F8807BD5BF1AA /* OnboardingView.swift in Sources */,
 				C99B75B6B31091E08C1F162A /* ROM.swift in Sources */,
 				D7A2504994F1DE09E699F30F /* ROMIdentifierService.swift in Sources */,
+				B1C2D3E4F5A6B7C8D9E0F1B2 /* RetroAchievementsService.swift in Sources */,
+				B1C2D3E4F5A6B7C8D9E0F1B3 /* Achievement.swift in Sources */,
 				F3C6A31B44657B3FF9B89A4F /* ROMLibrary.swift in Sources */,
 				D0C382CCE62AD453784ED800 /* ROMScanner.swift in Sources */,
 				77B4F896AAB550DAA8D735D2 /* SLANGPParser.swift in Sources */,
 				EACA95E35BCDF368B91F18EC /* SNESRunner.swift in Sources */,
 				69C5F4C099C331E5E4BE4DCB /* SaveStateManager.swift in Sources */,
 				2B95ADBBD965C8784E0F14C1 /* SettingsView.swift in Sources */,
+				A1B2C3D4E5F6A7B8C9D0E1F3 /* RetroAchievementsSettingsView.swift in Sources */,
 				FC2EA7938982440C4F5BA3D3 /* ShaderManager.swift in Sources */,
 				2426F4E6C399C0218826CFF6 /* ShaderPreset.swift in Sources */,
 				5AE08777350BDC6F25FA69E1 /* ShaderPresetPickerView.swift in Sources */,

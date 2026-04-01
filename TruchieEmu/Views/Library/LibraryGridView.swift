@@ -40,11 +40,14 @@ struct LibraryGridView: View {
             base = library.roms.filter { $0.systemID == system.id }
         }
 
+        // Filter out BIOS files unless "Show BIOS Files" is enabled
+        var filtered = prefs.showBiosFiles ? base : base.filter { !$0.isHidden }
+
         if searchText.isEmpty {
-            return base
+            return filtered
         } else {
             let searchTerms = searchText.split(separator: " ")
-            return base.filter { rom in
+            return filtered.filter { rom in
                 searchTerms.allSatisfy { term in
                     rom.displayName.localizedCaseInsensitiveContains(term)
                 }
@@ -348,6 +351,13 @@ struct LibraryGridView: View {
                 .frame(width: 280)
             Text("Scanning your ROM library…")
                 .foregroundColor(.secondary)
+            Button(role: .cancel) {
+                library.stopScan()
+            } label: {
+                Label("Stop", systemImage: "stop.fill")
+            }
+            .buttonStyle(.borderedProminent)
+            .tint(.red)
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity)
     }

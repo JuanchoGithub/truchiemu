@@ -1,11 +1,36 @@
 import Foundation
 import Combine
 
+/// A thread-safe cancellation token that can be safely shared between MainActor and the ROMScanner actor
+final class ScanCancellationToken: @unchecked Sendable {
+    private let lock = NSLock()
+    private var _isCancelled = false
+    
+    var isCancelled: Bool {
+        lock.lock()
+        defer { lock.unlock() }
+        return _isCancelled
+    }
+    
+    func cancel() {
+        lock.lock()
+        _isCancelled = true
+        lock.unlock()
+    }
+    
+    func reset() {
+        lock.lock()
+        _isCancelled = false
+        lock.unlock()
+    }
+}
+
 @MainActor
 class ROMLibrary: ObservableObject {
     @Published var roms: [ROM] = []
     @Published var isScanning: Bool = false
     @Published var scanProgress: Double = 0
+    private let scanCancellationToken = ScanCancellationToken()
     @Published var hasCompletedOnboarding: Bool
     @Published var libraryFolders: [URL] = []
     @Published var romCounts: [String: Int] = [:] // "all", "favorites", "recent", or systemID
@@ -80,8 +105,9 @@ class ROMLibrary: ObservableObject {
     func scanROMs(in folder: URL, runAutomationAfter: Bool = true) async {
         isScanning = true
         scanProgress = 0
+        scanCancellationToken.reset()
         let scanner = ROMScanner()
-        let found = await scanner.scan(folder: folder) { progress in
+        let found = await scanner.scan(folder: folder, cancellationToken: scanCancellationToken) { progress in
             Task { @MainActor in self.scanProgress = progress }
         }
         
@@ -123,10 +149,16 @@ class ROMLibrary: ObservableObject {
         saveFileIndex()
         
         for (i, folder) in libraryFolders.enumerated() {
+            if !isScanning { break } // Allow cancellation during full rescan
             let last = i == libraryFolders.count - 1
             await scanROMs(in: folder, runAutomationAfter: last)
         }
         
+        isScanning = false
+    }
+
+    func stopScan() {
+        scanCancellationToken.cancel()
         isScanning = false
     }
 
@@ -302,6 +334,7 @@ class ROMLibrary: ObservableObject {
     func rescanLibrary(at url: URL) async {
         isScanning = true
         scanProgress = 0
+        scanCancellationToken.reset()
 
         // Enumerate current files
         let fm = FileManager.default

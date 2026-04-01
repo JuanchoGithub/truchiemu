@@ -12,6 +12,14 @@ struct ROM: Identifiable, Codable, Hashable {
     var customName: String?
     var useCustomCore: Bool = false
     var metadata: ROMMetadata?
+    
+    // MARK: - BIOS & Categorization
+    /// Whether this ROM is a BIOS file (not a playable game)
+    var isBios: Bool = false
+    /// Whether this ROM should be hidden from the main game list
+    var isHidden: Bool = false
+    /// Category: "game", "bios", "system"
+    var category: String = "game"
     /// No-Intro / identification CRC32 (hex), persisted in library metadata file.
     var crc32: String?
     /// Libretro thumbnail CDN folder (`Nintendo - Game Boy` vs `GBC`) when identification matched a different DB (e.g. GB ROM in merged GB+GBC set).

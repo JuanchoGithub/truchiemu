@@ -7,7 +7,7 @@ struct SettingsView: View {
     @EnvironmentObject var coreManager: CoreManager
     @EnvironmentObject var controllerService: ControllerService
 
-    private enum Page: Hashable { case general, library, cores, controllers, keyboard, boxArt, display, about }
+    private enum Page: Hashable { case general, library, cores, controllers, keyboard, boxArt, display, retroAchievements, about }
     @State private var selectedPage: Page = .general
 
     var body: some View {
@@ -20,6 +20,7 @@ struct SettingsView: View {
                 sidebarItem(icon: "keyboard.fill", label: "Keyboard", page: .keyboard)
                 sidebarItem(icon: "photo.stack.fill", label: "Box Art", page: .boxArt)
                 sidebarItem(icon: "tv.fill", label: "Display", page: .display)
+                sidebarItem(icon: "trophy.fill", label: "RetroAchievements", page: .retroAchievements)
                 sidebarItem(icon: "info.circle.fill", label: "About", page: .about)
             }
             .listStyle(.sidebar)
@@ -35,6 +36,7 @@ struct SettingsView: View {
                 case .keyboard:    KeyboardSettingsView()
                 case .boxArt:      BoxArtSettingsView()
                 case .display:     DisplaySettingsView()
+                case .retroAchievements: RetroAchievementsSettingsView()
                 case .about:       AboutView()
                 }
             }
@@ -63,10 +65,36 @@ struct SettingsView: View {
 struct LibrarySettingsView: View {
     @EnvironmentObject var library: ROMLibrary
     @State private var scanningFolders: Set<Int> = []
+    @ObservedObject var prefs = SystemPreferences.shared
 
     var body: some View {
         ScrollView {
             VStack(alignment: .leading, spacing: 24) {
+                // Display Options Section
+                VStack(alignment: .leading, spacing: 12) {
+                    HStack {
+                        Label("Display Options", systemImage: "eyeglasses")
+                            .font(.headline)
+                    }
+                    
+                    VStack(spacing: 0) {
+                        Toggle(isOn: $prefs.showBiosFiles) {
+                            VStack(alignment: .leading, spacing: 2) {
+                                Text("Show BIOS Files in Game List")
+                                    .font(.body)
+                                Text("When enabled, BIOS files will appear alongside playable games")
+                                    .font(.caption)
+                                    .foregroundColor(.secondary)
+                            }
+                        }
+                        .padding(.vertical, 8)
+                        .padding(.horizontal, 12)
+                    }
+                    .background(.ultraThinMaterial)
+                    .cornerRadius(12)
+                    .padding(.top, 4)
+                }
+                
                 // Library Folders Section
                 VStack(alignment: .leading, spacing: 12) {
                     HStack {

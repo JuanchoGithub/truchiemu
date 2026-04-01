@@ -88,6 +88,10 @@ typedef void (^VideoFrameCallback)(const void *data, int width, int height, int 
     fn_retro_serialize_size _retro_serialize_size;
     fn_retro_serialize _retro_serialize;
     fn_retro_unserialize _retro_unserialize;
+    fn_retro_cheat_set _retro_cheat_set;
+    fn_retro_cheat_reset _retro_cheat_reset;
+    fn_retro_get_memory_data _retro_get_memory_data;
+    fn_retro_get_memory_size _retro_get_memory_size;
     BOOL _running;
     VideoFrameCallback _videoCallback;
     AVAudioEngine *_audioEngine;
@@ -639,6 +643,10 @@ static int16_t bridge_input_state(unsigned port, unsigned device, unsigned index
     LOAD_SYM(retro_serialize_size)
     LOAD_SYM(retro_serialize)
     LOAD_SYM(retro_unserialize)
+    LOAD_SYM(retro_cheat_set)
+    LOAD_SYM(retro_cheat_reset)
+    LOAD_SYM(retro_get_memory_data)
+    LOAD_SYM(retro_get_memory_size)
 #undef LOAD_SYM
     return YES;
 }
@@ -1183,5 +1191,95 @@ static dispatch_once_t g_optAccessQueueOnce;
         result = [g_optCategories copy] ?: @{};
     });
     return result;
+}
+
+/* ── Cheat Management ── */
++ (void)setCheatEnabled:(int)index code:(NSString *)code enabled:(BOOL)enabled {
+    if (!g_instance || !g_instance->_retro_cheat_set) {
+        NSLog(@"[Bridge] Cheat not supported by this core");
+        return;
+    }
+    const char *codeStr = code.UTF8String;
+    g_instance->_retro_cheat_set(index, enabled, codeStr);
+    NSLog(@"[Bridge] Cheat %d %s: %@", index, enabled ? "enabled" : "disabled", code);
+}
+
++ (void)resetCheats {
+    if (!g_instance || !g_instance->_retro_cheat_reset) {
+        return;
+    }
+    g_instance->_retro_cheat_reset();
+    NSLog(@"[Bridge] Cheats reset");
+}
+
++ (void)applyCheats:(NSArray<NSDictionary *> *)cheats {
+    if (!g_instance) return;
+    
+    // Reset all cheats first
+    [self resetCheats];
+    
+    // Apply each enabled cheat
+    for (NSDictionary *cheat in cheats) {
+        NSNumber *indexNum = cheat[@"index"];
+        NSString *code = cheat[@"code"];
+        BOOL enabled = [cheat[@"enabled"] boolValue];
+        
+        if (indexNum && code && enabled) {
+            [self setCheatEnabled:[indexNum intValue] code:code enabled:YES];
+        }
+    }
+}
+
+/* ── Direct Memory Access for Cheats ── */
++ (void *)getMemoryData:(unsigned)type size:(size_t *)size {
+    if (!g_instance || !g_instance->_retro_get_memory_data) {
+        return NULL;
+    }
+    void *data = g_instance->_retro_get_memory_data(type);
+    if (size && g_instance->_retro_get_memory_size) {
+        *size = g_instance->_retro_get_memory_size(type);
+    }
+    return data;
+}
+
++ (void)writeMemoryByte:(uint32_t)address value:(uint8_t)value {
+    size_t memSize = 0;
+    uint8_t *ram = (uint8_t *)[self getMemoryData:RETRO_MEMORY_SYSTEM_RAM size:&memSize];
+    if (ram && address < memSize) {
+        ram[address] = value;
+    }
+}
+
++ (void)applyDirectMemoryCheats:(NSArray<NSDictionary *> *)cheats {
+    size_t memSize = 0;
+    uint8_t *ram = (uint8_t *)[self getMemoryData:RETRO_MEMORY_SYSTEM_RAM size:&memSize];
+    if (!ram) {
+        // Try save RAM as fallback
+        ram = (uint8_t *)[self getMemoryData:RETRO_MEMORY_SAVE_RAM size:&memSize];
+    }
+    if (!ram) {
+        NSLog(@"[Bridge] No memory available for direct cheat injection");
+        return;
+    }
+    
+    for (NSDictionary *cheat in cheats) {
+        BOOL enabled = [cheat[@"enabled"] boolValue];
+        if (!enabled) continue;
+        
+        NSNumber *addressNum = cheat[@"address"];
+        NSNumber *valueNum = cheat[@"value"];
+        
+        if (addressNum && valueNum) {
+            uint32_t address = [addressNum unsignedIntValue];
+            uint8_t value = [valueNum unsignedCharValue];
+            
+            if (address < memSize) {
+                ram[address] = value;
+                NSLog(@"[Bridge] Direct memory write: 0x%06X = 0x%02X", address, value);
+            } else {
+                NSLog(@"[Bridge] Direct memory write: address 0x%06X out of range (size: %zu)", address, memSize);
+            }
+        }
+    }
 }
 @end

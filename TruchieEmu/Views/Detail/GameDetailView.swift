@@ -315,6 +315,22 @@ struct GameDetailView: View {
             Grid(alignment: .leading, horizontalSpacing: 20, verticalSpacing: 8) {
                 GridRow { Text("System").bold(); Text(system?.name ?? currentROM.systemID ?? "Unknown").foregroundColor(.secondary) }
                 GridRow { Text("File").bold().gridColumnAlignment(.leading); Text(currentROM.path.lastPathComponent).foregroundColor(.secondary) }
+                GridRow {
+                    Text("Path").bold().gridColumnAlignment(.leading);
+                    HStack {
+                        Text(currentROM.path.deletingLastPathComponent().path)
+                            .foregroundColor(.secondary)
+                            .lineLimit(1)
+                            .truncationMode(.middle)
+                        Button {
+                            NSPasteboard.general.clearContents()
+                            NSPasteboard.general.setString(currentROM.path.path, forType: .string)
+                        } label: {
+                            Image(systemName: "doc.on.doc").font(.caption)
+                        }.buttonStyle(.plain)
+                        .help("Copy Full Path")
+                    }
+                }
                 
                 if let size = fileSize {
                     GridRow { Text("Size").bold(); Text(size).foregroundColor(.secondary) }

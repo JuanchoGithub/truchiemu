@@ -59,6 +59,10 @@
 #define RETRO_DEVICE_JOYPAD 1
 #define RETRO_DEVICE_ANALOG 5
 
+/* Memory constants */
+#define RETRO_MEMORY_SYSTEM_RAM 0
+#define RETRO_MEMORY_SAVE_RAM 1
+
 #define RETRO_DEVICE_ID_JOYPAD_B        0
 #define RETRO_DEVICE_ID_JOYPAD_Y        1
 #define RETRO_DEVICE_ID_JOYPAD_SELECT   2
@@ -172,6 +176,10 @@ typedef void (*fn_retro_get_system_av_info)(struct retro_system_av_info *info);
 typedef size_t (*fn_retro_serialize_size)(void);
 typedef bool (*fn_retro_serialize)(void *data, size_t size);
 typedef bool (*fn_retro_unserialize)(const void *data, size_t size);
+typedef void (*fn_retro_cheat_set)(unsigned index, bool enabled, const char *code);
+typedef void (*fn_retro_cheat_reset)(void);
+typedef void *(*fn_retro_get_memory_data)(unsigned id);
+typedef size_t (*fn_retro_get_memory_size)(unsigned id);
 
 enum retro_hw_context_type {
    RETRO_HW_CONTEXT_NONE             = 0,
