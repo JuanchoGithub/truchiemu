@@ -385,16 +385,51 @@ static bool bridge_environment(unsigned cmd, void *data) {
             return false;
         }
         case RETRO_ENVIRONMENT_SET_GEOMETRY:
+            if (data && g_instance) {
+                struct retro_game_geometry *geo = (struct retro_game_geometry *)data;
+                g_instance->_avInfo.geometry = *geo;
+                NSLog(@"[Bridge] Core updated geometry: %ux%u", geo->base_width, geo->base_height);
+            }
+            return true;
         case RETRO_ENVIRONMENT_SET_INPUT_DESCRIPTORS:
         case RETRO_ENVIRONMENT_SET_DISK_CONTROL_INTERFACE:
-        case RETRO_ENVIRONMENT_SET_ROTATION:
         case RETRO_ENVIRONMENT_SET_VARIABLES:          // core tells us what options exist — we acknowledge
         case RETRO_ENVIRONMENT_SET_SUPPORT_NO_GAME:
+            return true;
         case RETRO_ENVIRONMENT_SET_SYSTEM_AV_INFO:
             if (data && g_instance) {
                 struct retro_system_av_info *info = (struct retro_system_av_info *)data;
-                g_instance->_avInfo = *info;
-                NSLog(@"[Bridge] Core updated A/V info: FPS=%f SampleRate=%f", info->timing.fps, info->timing.sample_rate);
+                // Validate timing values to prevent corruption/zero FPS causing speedup
+                double fps = info->timing.fps;
+                double sampleRate = info->timing.sample_rate;
+                
+                // Sanity check: FPS should be between 10 and 120, sample rate between 8000 and 192000
+                if (fps > 10.0 && fps < 120.0) {
+                    g_instance->_avInfo.timing.fps = fps;
+                } else if (fps > 0.0) {
+                    NSLog(@"[Bridge-WRN] Suspicious FPS value: %f, clamping to 60", fps);
+                    g_instance->_avInfo.timing.fps = 60.0;
+                } else {
+                    NSLog(@"[Bridge-WRN] Invalid FPS value: %f, keeping current (was %f)", fps, g_instance->_avInfo.timing.fps);
+                    // Keep existing FPS if it's valid, otherwise use 60
+                    if (g_instance->_avInfo.timing.fps <= 0.0) {
+                        g_instance->_avInfo.timing.fps = 60.0;
+                    }
+                }
+                
+                if (sampleRate > 8000.0 && sampleRate < 192000.0) {
+                    g_instance->_avInfo.timing.sample_rate = sampleRate;
+                } else if (sampleRate > 0.0) {
+                    NSLog(@"[Bridge-WRN] Suspicious sample rate: %f, keeping current", sampleRate);
+                } else {
+                    NSLog(@"[Bridge-WRN] Invalid sample rate: %f, keeping current", sampleRate);
+                }
+                
+                // Update geometry
+                g_instance->_avInfo.geometry = info->geometry;
+                
+                NSLog(@"[Bridge] Core updated A/V info: FPS=%.2f SampleRate=%.1f", 
+                      g_instance->_avInfo.timing.fps, g_instance->_avInfo.timing.sample_rate);
             }
             return true;
         case RETRO_ENVIRONMENT_GET_VARIABLE_UPDATE:    // has anything changed? → no, vars are stable
@@ -461,6 +496,14 @@ static int16_t bridge_input_state(unsigned port, unsigned device, unsigned index
         _audioRenderScratchCapacity = 4096; // Enough for standard frame counts
         _audioRenderScratch = (int16_t *)malloc(_audioRenderScratchCapacity * sizeof(int16_t));
         memset(&_avInfo, 0, sizeof(_avInfo));
+        // Initialize with sensible defaults so the timing loop never sees 0 FPS
+        _avInfo.timing.fps = 60.0;
+        _avInfo.timing.sample_rate = 44100.0;
+        _avInfo.geometry.base_width = 640;
+        _avInfo.geometry.base_height = 480;
+        _avInfo.geometry.max_width = 1920;
+        _avInfo.geometry.max_height = 1080;
+        _avInfo.geometry.aspect_ratio = 4.0f/3.0f;
         memset(g_input_state, 0, sizeof(g_input_state));
     }
     return self;
@@ -599,6 +642,9 @@ static int16_t bridge_input_state(unsigned port, unsigned device, unsigned index
         
         // Use current FPS from _avInfo in case it changed mid-run
         double currentFps = _avInfo.timing.fps > 0 ? _avInfo.timing.fps : 60.0;
+        // Clamp FPS to reasonable range (10-120 Hz) to prevent speedup/spin issues
+        if (currentFps < 10.0) currentFps = 60.0;
+        if (currentFps > 120.0) currentFps = 120.0;
         NSTimeInterval frameTime = 1.0 / currentFps;
         
         if (_hwRenderEnabled && _glContext) CGLSetCurrentContext(_glContext);

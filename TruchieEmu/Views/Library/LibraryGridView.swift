@@ -29,12 +29,7 @@ struct LibraryGridView: View {
     
     // Multi-select state
     @State private var selectedROMs: Set<UUID> = []
-    @State private var isDraggingSelection = false
     @State private var lastSelectedIndex: Int? = nil
-    @State private var showAddToCategorySheet = false
-    @State private var marqueeStartPoint: CGPoint? = nil
-    @State private var marqueeCurrentPoint: CGPoint? = nil
-    @State private var isMarqueeSelecting = false
     
     // Drag and drop
     @State private var draggedROMs: [ROM] = []
@@ -202,11 +197,6 @@ struct LibraryGridView: View {
                 Slider(value: $continuousZoom, in: 0...1, step: 1.0/7.0)
                     .frame(width: 120)
                     .help("Zoom level")
-                    .onChange(of: continuousZoom) { newValue in
-                        // Snap to nearest column count
-                        let snapped = round(newValue * 7.0) / 7.0
-                        columnCount = max(1, min(8, Int(round((1.0 - snapped) * 7.0) + 1)))
-                    }
 
                 // View mode toggle
                 Picker("View", selection: $viewMode) {
@@ -261,10 +251,6 @@ struct LibraryGridView: View {
             // Sync continuous zoom with column count
             continuousZoom = 1.0 - Double(columnCount - 1) / 7.0
         }
-        .onChange(of: columnCount) { _ in 
-            updateColumns()
-            continuousZoom = 1.0 - Double(columnCount - 1) / 7.0
-        }
     }
 
 
@@ -274,83 +260,32 @@ struct LibraryGridView: View {
 
     private var gridView: some View {
         ScrollView {
-            ZStack {
-                // Marquee selection overlay
-                if let start = marqueeStartPoint, let current = marqueeCurrentPoint {
-                    let rect = CGRect(x: min(start.x, current.x), y: min(start.y, current.y),
-                                     width: abs(current.x - start.x), height: abs(current.y - start.y))
-                    Rectangle()
-                        .fill(Color.accentColor.opacity(0.15))
-                        .overlay(
-                            Rectangle()
-                                .stroke(Color.accentColor, lineWidth: 1.5)
+            LazyVGrid(columns: columns, spacing: 16) {
+                ForEach(Array(displayedROMs.enumerated()), id: \.element.id) { index, rom in
+                    let isSelected = selectedROMs.contains(rom.id) || selectedROM?.id == rom.id
+                    GameCardView(rom: rom, isSelected: isSelected, isMultiSelected: selectedROMs.contains(rom.id), zoomLevel: zoomLevel)
+                        .contentShape(Rectangle())
+                        .onTapGesture {
+                            handleTap(on: rom, at: index)
+                        }
+                        .simultaneousGesture(
+                            TapGesture(count: 2).onEnded {
+                                launchGame(rom)
+                            }
                         )
-                        .frame(width: rect.width, height: rect.height)
-                        .position(x: rect.midX, y: rect.midY)
+                        .contextMenu { contextMenu(for: rom) }
+                        .onDrag {
+                            let items = selectedROMs.contains(rom.id) || selectedROM?.id == rom.id
+                                ? selectedROMs.compactMap { id in displayedROMs.first(where: { $0.id == id }) }
+                                : [rom]
+                            draggedROMs = items
+                            dragState.startDrag(gameIDs: items.map { $0.id })
+                            let provider = NSItemProvider(object: NSString(string: items.map { $0.id.uuidString }.joined(separator: ",")))
+                            return provider
+                        }
                 }
-                
-                LazyVGrid(columns: columns, spacing: 16) {
-                    ForEach(Array(displayedROMs.enumerated()), id: \.element.id) { index, rom in
-                        let isSelected = selectedROMs.contains(rom.id) || selectedROM?.id == rom.id
-                        GameCardView(rom: rom, isSelected: isSelected, isMultiSelected: selectedROMs.contains(rom.id), zoomLevel: zoomLevel)
-                            .contentShape(Rectangle())
-                            .onTapGesture {
-                                handleTap(on: rom, at: index)
-                            }
-                            .simultaneousGesture(
-                                TapGesture(count: 2).onEnded {
-                                    launchGame(rom)
-                                }
-                            )
-                            .contextMenu { contextMenu(for: rom) }
-                            .onDrag {
-                                let items = selectedROMs.contains(rom.id) || selectedROM?.id == rom.id
-                                    ? selectedROMs.compactMap { id in displayedROMs.first(where: { $0.id == id }) }
-                                    : [rom]
-                                draggedROMs = items
-                                dragState.startDrag(gameIDs: items.map { $0.id })
-                                let provider = NSItemProvider(object: NSString(string: items.map { $0.id.uuidString }.joined(separator: ",")))
-                                return provider
-                            }
-                            // Store position for marquee detection
-                            .background(
-                                GeometryReader { geometry in
-                                    Color.clear
-                                        .onAppear {
-                                            romPositions[rom.id] = geometry.frame(in: .global)
-                                        }
-                                        .onChange(of: geometry.frame(in: .global)) { newFrame in
-                                            romPositions[rom.id] = newFrame
-                                        }
-                                }
-                            )
-                    }
-                }
-                .padding()
             }
-            .simultaneousGesture(
-                // Marquee selection only with Option key held - otherwise normal drag works
-                DragGesture(minimumDistance: 5)
-                    .onChanged { value in
-                        let modifiers = NSEvent.modifierFlags
-                        if modifiers.contains(.option) {
-                            if marqueeStartPoint == nil {
-                                marqueeStartPoint = value.startLocation
-                            }
-                            marqueeCurrentPoint = value.location
-                            isMarqueeSelecting = true
-                            updateMarqueeSelection()
-                        }
-                    }
-                    .onEnded { _ in
-                        if isMarqueeSelecting {
-                            updateMarqueeSelection()
-                        }
-                        marqueeStartPoint = nil
-                        marqueeCurrentPoint = nil
-                        isMarqueeSelecting = false
-                    }
-            )
+            .padding()
         }
         .gesture(
             MagnificationGesture()
@@ -374,9 +309,6 @@ struct LibraryGridView: View {
             return false
         }
     }
-    
-    // Track ROM positions for marquee selection
-    @State private var romPositions: [UUID: CGRect] = [:]
     
     /// Handle tap with modifier key support for multi-select
     private func handleTap(on rom: ROM, at index: Int) {
@@ -407,28 +339,6 @@ struct LibraryGridView: View {
             selectedROMs.removeAll()
             selectedROM = rom
             lastSelectedIndex = index
-        }
-    }
-    
-    /// Update selection based on marquee rectangle
-    private func updateMarqueeSelection() {
-        guard let start = marqueeStartPoint, let current = marqueeCurrentPoint else { return }
-        
-        let marquee = CGRect(x: min(start.x, current.x), y: min(start.y, current.y),
-                            width: abs(current.x - start.x), height: abs(current.y - start.y))
-        
-        // Only apply marquee selection if the drag was significant
-        guard marquee.width > 10 || marquee.height > 10 else { return }
-        
-        let modifiers = NSEvent.modifierFlags
-        if !modifiers.contains(.command) {
-            selectedROMs.removeAll()
-        }
-        
-        for (romID, position) in romPositions {
-            if marquee.intersects(position) {
-                selectedROMs.insert(romID)
-            }
         }
     }
 
