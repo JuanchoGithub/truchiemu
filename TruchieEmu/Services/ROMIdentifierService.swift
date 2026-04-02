@@ -354,6 +354,7 @@ class LibretroDatabaseLibrary {
         "sms": "Sega - Master System - Mark III.dat",
         "gamegear": "Sega - Game Gear.dat",
         "saturn": "Sega - Saturn.dat",
+        "32x": "Sega - 32X.dat",
         "dreamcast": "Sega - Dreamcast.dat",
         "atari2600": "Atari - 2600.dat",
         "atari5200": "Atari - 5200.dat",
@@ -396,7 +397,24 @@ class LibretroDatabaseLibrary {
 
         var primary = "\(system.name).dat"
         if !system.manufacturer.isEmpty && system.manufacturer != "Various" {
-            primary = "\(system.manufacturer) - \(system.name).dat"
+            // If the system name already starts with the manufacturer (case-insensitive),
+            // avoid creating duplicates like "Sega - Sega 32X.dat".
+            let nameLower = system.name.lowercased()
+            let mfrLower = system.manufacturer.lowercased()
+            if nameLower.hasPrefix(mfrLower) {
+                // name already contains manufacturer; check if what follows makes sense
+                // e.g. "Sega 32X" starts with "sega", remainder " 32X" → basename "Sega - 32X.dat"
+                let remainder = system.name.dropFirst(mfrLower.count).trimmingCharacters(in: .whitespaces)
+                if remainder.isEmpty {
+                    // name == manufacturer exactly, just use plain name
+                    primary = "\(system.name).dat"
+                } else {
+                    // Use manufacturer + remainder, e.g. "Sega - 32X"
+                    primary = "\(system.manufacturer) - \(remainder).dat"
+                }
+            } else {
+                primary = "\(system.manufacturer) - \(system.name).dat"
+            }
         }
         append(primary)
         append("\(system.name).dat")
