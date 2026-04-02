@@ -462,11 +462,14 @@ static void bridge_video_refresh(const void *data, unsigned width, unsigned heig
     if (g_instance) {
         if (g_instance->_hwRenderEnabled && g_instance->_glContext) CGLSetCurrentContext(g_instance->_glContext);
         const void *finalData = data;
+        int format = [g_instance pixelFormat];
         if (data == RETRO_HW_FRAME_BUFFER_VALID) {
             finalData = [g_instance readHWRenderedPixels:width height:height];
-            pitch = width * 4; // Assuming RGBA8888 for GL readback
+            pitch = width * 4; // RGBA8888 for GL readback
+            format = RETRO_PIXEL_FORMAT_XRGB8888; // glReadPixels with GL_BGRA + UNSIGNED_INT_8_8_8_8_REV produces 32-bit data
+            NSLog(@"[Bridge-HW-R] HW frame %ux%u pitch=%d format=XRGB8888", width, height, pitch);
         }
-        [g_instance handleVideoData:finalData width:width height:height pitch:(int)pitch format:[g_instance pixelFormat]];
+        [g_instance handleVideoData:finalData width:width height:height pitch:(int)pitch format:format];
     }
 }
 
