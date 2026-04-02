@@ -221,6 +221,8 @@ class SaveStateManager: ObservableObject, @unchecked Sendable {
     ///   - slot: Slot number
     func saveThumbnail(_ image: NSImage, gameName: String, systemID: String, slot: Int) {
         let thumbURL = thumbnailPath(gameName: gameName, systemID: systemID, slot: slot)
+        print("[SaveStateManager] Saving thumbnail: gameName='\(gameName)', systemID='\(systemID)', slot=\(slot)")
+        print("[SaveStateManager] Thumbnail path: \(thumbURL.path)")
         
         // Downscale to 320x240 for consistent thumbnails
         let targetSize = NSSize(width: 320, height: 240)
@@ -273,7 +275,20 @@ class SaveStateManager: ObservableObject, @unchecked Sendable {
     /// - Returns: The loaded NSImage, or nil if not found
     func loadThumbnail(gameName: String, systemID: String, slot: Int) -> NSImage? {
         let thumbURL = thumbnailPath(gameName: gameName, systemID: systemID, slot: slot)
-        guard FileManager.default.fileExists(atPath: thumbURL.path) else { return nil }
+        print("[SaveStateManager] Loading thumbnail: gameName='\(gameName)', systemID='\(systemID)', slot=\(slot)")
+        print("[SaveStateManager] Thumbnail path: \(thumbURL.path)")
+        let exists = FileManager.default.fileExists(atPath: thumbURL.path)
+        print("[SaveStateManager] File exists: \(exists)")
+        
+        // Also check what other files exist in the directory
+        if !exists {
+            let dir = thumbURL.deletingLastPathComponent()
+            if let contents = try? FileManager.default.contentsOfDirectory(atPath: dir.path) {
+                print("[SaveStateManager] Directory contents: \(contents)")
+            }
+        }
+        
+        guard exists else { return nil }
         return NSImage(contentsOf: thumbURL)
     }
     

@@ -11,15 +11,32 @@ func NSImageFromMTLTexture(_ texture: MTLTexture) -> NSImage? {
     let width = texture.width
     let height = texture.height
     
-    guard texture.pixelFormat == .bgra8Unorm else { return nil }
+    guard width > 0 && height > 0 else { return nil }
     
-    let bytesPerPixel = 4
+    var bytesPerPixel: Int
+    let region = MTLRegionMake2D(0, 0, width, height)
+    
+    // Handle different pixel formats
+    switch texture.pixelFormat {
+    case .bgra8Unorm, .rgba8Unorm, .rgba8Unorm_srgb:
+        // 32-bit formats (XRGB8888, RGBA)
+        bytesPerPixel = 4
+    case .b5g6r5Unorm, .a1bgr5Unorm, .bgr5A1Unorm:
+        // 16-bit formats (RGB565, 1555, 5551)
+        bytesPerPixel = 2
+    case .r8Unorm:
+        // 8-bit grayscale fallback
+        bytesPerPixel = 1
+    default:
+        print("[NSImageFromMTLTexture] Unsupported pixel format: \(texture.pixelFormat.rawValue)")
+        return nil
+    }
+    
     let bytesPerRow = width * bytesPerPixel
     let byteCount = width * height * bytesPerPixel
     
     var byteArray = [UInt8](repeating: 0, count: byteCount)
     
-    let region = MTLRegionMake2D(0, 0, width, height)
     byteArray.withUnsafeMutableBytes { pointer in
         texture.getBytes(
             pointer.baseAddress!,
@@ -31,25 +48,133 @@ func NSImageFromMTLTexture(_ texture: MTLTexture) -> NSImage? {
     
     guard let colorSpace = CGColorSpace(name: CGColorSpace.sRGB) else { return nil }
     
-    let bitmapInfo = CGBitmapInfo(rawValue: CGImageAlphaInfo.premultipliedFirst.rawValue)
-        .union(.byteOrder32Little)
-    
     var cgImage: CGImage?
-    byteArray.withUnsafeMutableBytes { ptr in
-        guard let context = CGContext(
-            data: ptr.baseAddress,
-            width: width,
-            height: height,
-            bitsPerComponent: 8,
-            bytesPerRow: bytesPerRow,
-            space: colorSpace,
-            bitmapInfo: bitmapInfo.rawValue
-        ) else { return }
-        cgImage = context.makeImage()
+    
+    switch texture.pixelFormat {
+    case .bgra8Unorm:
+        // Standard BGRA8888 format
+        let bitmapInfo = CGBitmapInfo(rawValue: CGImageAlphaInfo.premultipliedFirst.rawValue)
+            .union(.byteOrder32Little)
+        byteArray.withUnsafeMutableBytes { ptr in
+            guard let context = CGContext(
+                data: ptr.baseAddress,
+                width: width,
+                height: height,
+                bitsPerComponent: 8,
+                bytesPerRow: bytesPerRow,
+                space: colorSpace,
+                bitmapInfo: bitmapInfo.rawValue
+            ) else { return }
+            cgImage = context.makeImage()
+        }
+        
+    case .b5g6r5Unorm:
+        // RGB565 - need to expand to 32-bit
+        let expanded = expandRGB565toBGRA(from: byteArray, width: width, height: height)
+        let bitmapInfo = CGBitmapInfo(rawValue: CGImageAlphaInfo.noneSkipFirst.rawValue)
+            .union(.byteOrder32Little)
+        expanded.withUnsafeBytes { ptr in
+            guard let context = CGContext(
+                data: UnsafeMutableRawPointer(mutating: ptr.baseAddress!),
+                width: width,
+                height: height,
+                bitsPerComponent: 8,
+                bytesPerRow: width * 4,
+                space: colorSpace,
+                bitmapInfo: bitmapInfo.rawValue
+            ) else { return }
+            cgImage = context.makeImage()
+        }
+        
+    case .a1bgr5Unorm, .bgr5A1Unorm:
+        // ARGB1555 / BGR5A1 - expand to 32-bit
+        let expanded = expandARGB1555toBGRA(from: byteArray, width: width, height: height)
+        let bitmapInfo = CGBitmapInfo(rawValue: CGImageAlphaInfo.premultipliedFirst.rawValue)
+            .union(.byteOrder32Little)
+        expanded.withUnsafeBytes { ptr in
+            guard let context = CGContext(
+                data: UnsafeMutableRawPointer(mutating: ptr.baseAddress!),
+                width: width,
+                height: height,
+                bitsPerComponent: 8,
+                bytesPerRow: width * 4,
+                space: colorSpace,
+                bitmapInfo: bitmapInfo.rawValue
+            ) else { return }
+            cgImage = context.makeImage()
+        }
+        
+    default:
+        return nil
     }
+    
     guard let image = cgImage else { return nil }
     
     return NSImage(cgImage: image, size: NSSize(width: width, height: height))
+}
+
+/// Expand RGB565 data to BGRA8888
+private func expandRGB565toBGRA(from data: [UInt8], width: Int, height: Int) -> [UInt8] {
+    var result = [UInt8](repeating: 0, count: width * height * 4)
+    let srcCount = data.count / 2  // number of 16-bit pixels
+    
+    for i in 0..<srcCount {
+        let offset = i * 2
+        // Handle endianness - read as little-endian 16-bit
+        let pixel = UInt16(data[offset]) | (UInt16(data[offset + 1]) << 8)
+        
+        // Extract RGB565 components
+        let r = Int((pixel >> 11) & 0x1F)
+        let g = Int((pixel >> 5) & 0x3F)
+        let b = Int(pixel & 0x1F)
+        
+        // Expand to 8-bit
+        let expandedR = UInt8((r << 3) | (r >> 2))  // 5 -> 8 bits
+        let expandedG = UInt8((g << 2) | (g >> 4))  // 6 -> 8 bits
+        let expandedB = UInt8((b << 3) | (b >> 2))  // 5 -> 8 bits
+        
+        // Write as BGRA (skip alpha)
+        let dstOffset = i * 4
+        result[dstOffset] = expandedB       // B
+        result[dstOffset + 1] = expandedG   // G
+        result[dstOffset + 2] = expandedR   // R
+        result[dstOffset + 3] = 0xFF        // A (unused)
+    }
+    
+    return result
+}
+
+/// Expand ARGB1555 data to BGRA8888
+private func expandARGB1555toBGRA(from data: [UInt8], width: Int, height: Int) -> [UInt8] {
+    var result = [UInt8](repeating: 0, count: width * height * 4)
+    let srcCount = data.count / 2  // number of 16-bit pixels
+    
+    for i in 0..<srcCount {
+        let offset = i * 2
+        // Handle endianness - read as little-endian 16-bit
+        let pixel = UInt16(data[offset]) | (UInt16(data[offset + 1]) << 8)
+        
+        // Extract ARGB1555 components (A1R5G5B5 format)
+        let a = Int((pixel >> 15) & 0x1)
+        let r = Int((pixel >> 10) & 0x1F)
+        let g = Int((pixel >> 5) & 0x1F)
+        let b = Int(pixel & 0x1F)
+        
+        // Expand to 8-bit
+        let expandedR = UInt8((r << 3) | (r >> 2))
+        let expandedG = UInt8((g << 3) | (g >> 2))
+        let expandedB = UInt8((b << 3) | (b >> 2))
+        let expandedA = a == 0 ? UInt8(0x00) : UInt8(0xFF)
+        
+        // Write as BGRA
+        let dstOffset = i * 4
+        result[dstOffset] = expandedB       // B
+        result[dstOffset + 1] = expandedG   // G
+        result[dstOffset + 2] = expandedR   // R
+        result[dstOffset + 3] = expandedA   // A
+    }
+    
+    return result
 }
 
 class EmulatorRunner: ObservableObject, @unchecked Sendable {
@@ -251,10 +376,16 @@ class EmulatorRunner: ObservableObject, @unchecked Sendable {
             
             // Capture and save thumbnail if we have a current frame
             if let frameTex = currentFrameTexture {
+                print("[SaveStateManager] Attempting to capture thumbnail for slot \(slot)")
                 let nsImage = NSImageFromMTLTexture(frameTex)
                 if let nsImage = nsImage {
+                    print("[SaveStateManager] Captured thumbnail: \(nsImage.size.width)x\(nsImage.size.height)")
                     saveManager.saveThumbnail(nsImage, gameName: gameRom.displayName, systemID: systemID, slot: slot)
+                } else {
+                    print("[SaveStateManager] ERROR: NSImageFromMTLTexture returned nil")
                 }
+            } else {
+                print("[SaveStateManager] WARNING: currentFrameTexture is nil, cannot capture thumbnail")
             }
             
             osdMessage = "Saved \(slot == -1 ? "Auto" : "Slot \(slot)")"
