@@ -819,15 +819,7 @@ struct ControllerSettingsView: View {
                     Text("Global / Default").tag("default")
                     Divider()
                     ForEach(SystemDatabase.systems) { sys in
-                        HStack(spacing: 4) {
-                            if let img = sys.emuImage(size: 132) {
-                                Image(nsImage: img)
-                                    .resizable()
-                                    .aspectRatio(contentMode: .fit)
-                                    .frame(width: 10, height: 10)
-                            }
-                            Text(sys.name)
-                        }.tag(sys.id)
+                        Text(sys.name).tag(sys.id)
                     }
                 }
                 .frame(width: 280)
@@ -1101,15 +1093,7 @@ struct KeyboardSettingsView: View {
                     Text("Global / Default").tag("default")
                     Divider()
                     ForEach(SystemDatabase.systems) { sys in
-                        HStack(spacing: 4) {
-                            if let img = sys.emuImage(size: 132) {
-                                Image(nsImage: img)
-                                    .resizable()
-                                    .aspectRatio(contentMode: .fit)
-                                    .frame(width: 10, height: 10)
-                            }
-                            Text(sys.name)
-                        }.tag(sys.id)
+                        Text(sys.name).tag(sys.id)
                     }
                 }
                 .frame(width: 280)
