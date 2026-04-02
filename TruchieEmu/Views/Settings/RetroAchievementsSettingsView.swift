@@ -250,7 +250,6 @@ struct RetroAchievementsSettingsView: View {
             .padding()
         }
         .navigationTitle("RetroAchievements")
-        .disabled(!raService.isEnabled)
     }
     
     private func hardcoreRule(_ text: String) -> some View {

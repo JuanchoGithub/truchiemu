@@ -672,6 +672,12 @@ static int16_t bridge_input_state(unsigned port, unsigned device, unsigned index
     
     // Timing loop using Mach Absolute Time for high precision
     while (_running) {
+        // Check pause state - skip emulation when paused
+        if (g_isPaused) {
+            [NSThread sleepForTimeInterval:0.05]; // Sleep briefly while paused
+            continue;
+        }
+        
         uint64_t start = mach_absolute_time();
         
         // Use current FPS from _avInfo in case it changed mid-run

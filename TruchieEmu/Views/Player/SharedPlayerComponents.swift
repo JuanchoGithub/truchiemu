@@ -22,6 +22,7 @@ struct MouseDownButtonAction<Label: View>: NSViewRepresentable {
         
         // Create the clickable button area
         let button = MouseDownButton()
+        button.title = ""
         button.bezelStyle = .regularSquare
         button.isBordered = false
         button.target = context.coordinator
@@ -186,7 +187,10 @@ struct GameOverlayToolbar: View {
             
             // Slot Selector
             SlotSelectorButton(
-                currentSlot: runner.currentSlot
+                currentSlot: runner.currentSlot,
+                onSlotChange: { newSlot in
+                    runner.currentSlot = newSlot
+                }
             )
             
             Divider()
@@ -244,6 +248,7 @@ struct ToolbarButton: View {
 // MARK: - Slot Selector Button
 struct SlotSelectorButton: View {
     let currentSlot: Int
+    let onSlotChange: (Int) -> Void
     @State private var isDropdownShown = false
     @State private var selectedSlot: Int = 0
     
@@ -267,11 +272,8 @@ struct SlotSelectorButton: View {
             isDropdownShown = true
         }
         .popover(isPresented: $isDropdownShown, arrowEdge: .top) {
-            SlotPickerView(selectedSlot: $selectedSlot)
+            SlotPickerView(selectedSlot: $selectedSlot, onSlotSelect: onSlotChange)
                 .frame(width: 180, height: 200)
-        }
-        .onChange(of: selectedSlot) { newValue in
-            // Slot changed via popover
         }
     }
 }
@@ -279,6 +281,7 @@ struct SlotSelectorButton: View {
 // MARK: - Slot Picker View
 struct SlotPickerView: View {
     @Binding var selectedSlot: Int
+    let onSlotSelect: ((Int) -> Void)?
     @Environment(\.dismiss) var dismiss
     
     var body: some View {
@@ -294,6 +297,7 @@ struct SlotPickerView: View {
                     ForEach(-1...9, id: \.self) { slot in
                         Button(action: {
                             selectedSlot = slot
+                            onSlotSelect?(slot)
                             UserDefaults.standard.set(slot, forKey: "selected_save_slot")
                             dismiss()
                         }) {

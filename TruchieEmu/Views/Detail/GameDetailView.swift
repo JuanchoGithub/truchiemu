@@ -440,9 +440,38 @@ struct GameDetailView: View {
     @MainActor
     private func loadAchievements() {
         guard achievementsService.isEnabled else { return }
+        guard achievementsService.isLoggedIn else { return }
+        
         isAchievementsLoading = true
         gameAchievements = []
-        isAchievementsLoading = false
+        
+        // Compute CRC hash for the ROM
+        let hash = ROMIdentifierService.shared.computeCRC(for: currentROM.path, systemID: currentROM.systemID ?? "")
+        
+        if let hash = hash {
+            Task {
+                do {
+                    let gameInfo = try await achievementsService.identifyGame(hash: hash)
+                    await MainActor.run {
+                        if let gameInfo = gameInfo {
+                            achievementsService.currentGame = gameInfo
+                            gameAchievements = gameInfo.achievements
+                        } else {
+                            gameAchievements = []
+                        }
+                        isAchievementsLoading = false
+                    }
+                } catch {
+                    await MainActor.run {
+                        print("[Achievements] Failed to load achievements: \(error.localizedDescription)")
+                        gameAchievements = []
+                        isAchievementsLoading = false
+                    }
+                }
+            }
+        } else {
+            isAchievementsLoading = false
+        }
     }
 
     private func loadBoxArt() {
