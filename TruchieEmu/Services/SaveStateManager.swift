@@ -321,9 +321,11 @@ class SaveStateManager: ObservableObject, @unchecked Sendable {
     
     // MARK: - Compression Utilities
     
-    /// Magic header to identify compressed save states
-    /// "TCS1" = TruChie State v1 (compressed)
-    private static let compressedMagicHeader: [UInt8] = [0x54, 0x43, 0x53, 0x31]
+    /// Compressed save state format:
+    /// - Bytes 0-3: Magic header "TCS2" (TruChie State v2)
+    /// - Bytes 4-7: Original uncompressed size (UInt32, little-endian)
+    /// - Bytes 8+:  LZ4 compressed data
+    private static let compressedMagicHeader: [UInt8] = [0x54, 0x43, 0x53, 0x32] // "TCS2"
     
     /// Compress state data using LZ4 compression
     /// - Parameter data: Raw state data
@@ -355,7 +357,11 @@ class SaveStateManager: ObservableObject, @unchecked Sendable {
             return data
         }
         
+        // Build result: magic (4) + original size (4) + compressed data
         var result = Data(compressedMagicHeader)
+        // Store original size as UInt32 little-endian
+        let sizeBytes = withUnsafeBytes(of: UInt32(sourceSize).littleEndian) { Array($0) }
+        result.append(contentsOf: sizeBytes)
         result.append(Data(destBuffer.prefix(compressedSize)))
         return result
     }
@@ -364,24 +370,33 @@ class SaveStateManager: ObservableObject, @unchecked Sendable {
     /// - Parameter data: Compressed or raw state data
     /// - Returns: Decompressed data, or nil on failure
     static func decompressStateData(_ data: Data) -> Data? {
-        guard data.count >= compressedMagicHeader.count else { return nil }
+        let headerSize = 8  // 4 bytes magic + 4 bytes original size
+        guard data.count >= headerSize else {
+            // Too small to be compressed - return as-is (might be raw data)
+            return data
+        }
         
         let headerBytes = [UInt8](data.prefix(4))
         let isCompressed = headerBytes.elementsEqual(compressedMagicHeader)
         
         if isCompressed {
-            let compressedData = [UInt8](data.dropFirst(4))
+            // Read original size from bytes 4-7
+            let sizeBytes = [UInt8](data.subdata(in: 4..<8))
+            let originalSize = sizeBytes.withUnsafeBytes { ptr in
+                ptr.load(as: UInt32.self).littleEndian
+            }
+            
+            let compressedData = [UInt8](data.dropFirst(headerSize))
             let compressedSize = compressedData.count
             let algorithm = COMPRESSION_LZ4_RAW
             
-            // Estimate decompressed size (LZ4 typically decompresses to < 3x)
-            let destSize = compressedSize * 4
-            var destBuffer = [UInt8](repeating: 0, count: destSize)
+            // Allocate buffer with exact original size
+            var destBuffer = [UInt8](repeating: 0, count: Int(originalSize))
             
             let decompressedSize = compressedData.withUnsafeBufferPointer { srcBuf in
                 return destBuffer.withUnsafeMutableBufferPointer { destBuf in
                     return compression_decode_buffer(
-                        destBuf.baseAddress!, destSize,
+                        destBuf.baseAddress!, Int(originalSize),
                         srcBuf.baseAddress!, compressedSize,
                         nil,
                         algorithm
@@ -390,12 +405,13 @@ class SaveStateManager: ObservableObject, @unchecked Sendable {
             }
             
             guard decompressedSize > 0 else {
-                print("[SaveStateManager] ERROR: Decompression failed")
+                print("[SaveStateManager] ERROR: Decompression failed (got \(decompressedSize) bytes)")
                 return nil
             }
             
             return Data(destBuffer.prefix(decompressedSize))
         } else {
+            // Not compressed (raw state data or old format without header)
             return data
         }
     }
