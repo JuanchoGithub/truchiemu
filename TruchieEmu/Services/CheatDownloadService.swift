@@ -68,8 +68,11 @@ class CheatDownloadService: ObservableObject {
     /// Base URL for libretro cheat database
     private let baseURL = "https://github.com/libretro/libretro-database/raw/master/cht"
     
-    /// Raw API URL for listing files
+    /// Raw API URL for listing files (Contents API)
     private let apiBaseURL = "https://api.github.com/repos/libretro/libretro-database/contents/cht"
+    
+    /// Git Trees API base URL for getting all files in a tree (recursive)
+    private let gitTreesBaseURL = "https://api.github.com/repos/libretro/libretro-database/git/trees/master?recursive=1"
     
     /// Local directory for downloaded cheats
     private var localCheatsDirectory: URL {
@@ -180,7 +183,7 @@ class CheatDownloadService: ObservableObject {
     }
     
     /// Download a cheat file for a specific ROM by finding the matching cheat in the libretro-database.
-    /// Only downloads the cheat file that matches the ROM's filename.
+    /// Tries the .dat name (metadata.title) first, then falls back to the ROM filename.
     @MainActor
     func downloadCheatForROM(_ rom: ROM, systemID: String) async throws -> Bool {
         cheatDownloadLog.info("=== Starting cheat download for ROM: \(rom.displayName) ===")
@@ -204,10 +207,6 @@ class CheatDownloadService: ObservableObject {
             cheatDownloadLog.info("=== Download session ended (isDownloading=false) ===")
         }
         
-        // Get the ROM's filename (without extension)
-        let romFilename = rom.path.deletingPathExtension().lastPathComponent
-        downloadStatus = "Looking for cheat file matching: \(romFilename)"
-        
         // Map system ID to folder name
         let systemFolderName = mapSystemIDToFolderName(systemID)
         let encodedFolderName = systemFolderName.addingPercentEncoding(withAllowedCharacters: .urlPathAllowed) ?? systemFolderName
@@ -222,26 +221,44 @@ class CheatDownloadService: ObservableObject {
         downloadStatus = "Searching in \(systemFolderName)..."
         let contents = try await fetchGitHubContents(url.absoluteString)
         
-        // Look for a matching .cht file
-        let matchingFile = findMatchingCheatFile(in: contents, romFilename: romFilename)
-        
-        guard let targetFile = matchingFile else {
-            cheatDownloadLog.info("No matching cheat file found for: \(romFilename)")
-            downloadStatus = "No cheat file found for \(rom.displayName)"
-            return false
-        }
-        
         // Create destination directory
         let destDir = systemCheatDirectory(for: systemID)
         try FileManager.default.createDirectory(at: destDir, withIntermediateDirectories: true)
         
+        // Try searching using the .dat name (metadata.title) first, then fall back to ROM filename
+        var targetFile: GitHubContent?
+        
+        // Priority 1: Try the .dat name (from No-Intro identification)
+        if let datName = rom.metadata?.title {
+            cheatDownloadLog.info("Trying .dat name first: \(datName)")
+            downloadStatus = "Looking for cheat file matching: \(datName)"
+            targetFile = findMatchingCheatFile(in: contents, romFilename: datName)
+            if targetFile != nil {
+                cheatDownloadLog.info("Found match using .dat name: \(datName)")
+            }
+        }
+        
+        // Priority 2: Fall back to the ROM file name if .dat name didn't match
+        if targetFile == nil {
+            let romFilename = rom.path.deletingPathExtension().lastPathComponent
+            cheatDownloadLog.info("Falling back to ROM filename: \(romFilename)")
+            downloadStatus = "Looking for cheat file matching: \(romFilename)"
+            targetFile = findMatchingCheatFile(in: contents, romFilename: romFilename)
+        }
+        
+        guard let matchingFile = targetFile else {
+            cheatDownloadLog.info("No matching cheat file found for ROM: \(rom.displayName)")
+            downloadStatus = "No cheat file found for \(rom.displayName)"
+            return false
+        }
+        
         // Download the matching file
-        cheatDownloadLog.info("Downloading cheat file: \(targetFile.name)")
-        downloadStatus = "Downloading \(targetFile.name)..."
+        cheatDownloadLog.info("Downloading cheat file: \(matchingFile.name)")
+        downloadStatus = "Downloading \(matchingFile.name)..."
         self.totalItemsToDownload = 1
         self.currentDownloadedCount = 0
         
-        try await downloadFile(targetFile, to: destDir, systemName: systemID)
+        try await downloadFile(matchingFile, to: destDir, systemName: systemID)
         self.currentDownloadedCount = 1
         
         downloadProgress = 1.0
@@ -372,15 +389,49 @@ class CheatDownloadService: ObservableObject {
     
     // MARK: - Private Methods
     
-    /// Fetch directory contents from GitHub API
+    /// Fetch directory contents from GitHub API.
+    /// Uses the Git Trees API for directories that may have >1000 files (like NES cheats),
+    /// since the Contents API is limited to 1000 results.
     private func fetchGitHubContents(_ urlString: String) async throws -> [GitHubContent] {
-        guard let url = URL(string: urlString) else {
+        // Check if this is the cheats base directory or a system subdirectory
+        // These directories have >1000 files, so we use the Git Trees API
+        if urlString.contains("/contents/cht") || urlString.hasPrefix(apiBaseURL) {
+            return try await fetchUsingGitTreesAPI(urlString)
+        }
+        
+        // For other directories, use the standard Contents API
+        return try await fetchUsingContentsAPI(urlString)
+    }
+    
+    /// Fetch using the Git Trees API (returns all files, no pagination limit)
+    private func fetchUsingGitTreesAPI(_ urlString: String) async throws -> [GitHubContent] {
+        cheatDownloadLog.info("Using Git Trees API for: \(urlString)")
+        
+        // Extract the system folder name from the URL
+        // URL format: https://api.github.com/repos/libretro/libretro-database/contents/cht/[SystemName]
+        // or: https://api.github.com/repos/libretro/libretro-database/contents/cht
+        let systemFolderName: String
+        if urlString.hasSuffix("/cht") || urlString.hasSuffix("%2Fcht") {
+            // This is the root cht directory - return system folders
+            systemFolderName = ""
+        } else {
+            // Extract system folder name
+            let components = urlString.components(separatedBy: "/")
+            if let lastComponent = components.last, !lastComponent.isEmpty {
+                systemFolderName = lastComponent.removingPercentEncoding ?? lastComponent
+            } else if let secondToLast = components.dropLast().last {
+                systemFolderName = secondToLast.removingPercentEncoding ?? secondToLast
+            } else {
+                systemFolderName = ""
+            }
+        }
+        
+        guard let treesURL = URL(string: gitTreesBaseURL) else {
             throw CheatDownloadError.invalidURL
         }
         
-        var request = URLRequest(url: url)
+        var request = URLRequest(url: treesURL)
         request.setValue("application/vnd.github.v3+json", forHTTPHeaderField: "Accept")
-        // GitHub API requires User-Agent
         request.setValue("TruchieEmu/1.0", forHTTPHeaderField: "User-Agent")
         
         let (data, response) = try await URLSession.shared.data(for: request)
@@ -389,16 +440,8 @@ class CheatDownloadService: ObservableObject {
             throw CheatDownloadError.invalidResponse
         }
         
-        // Check HTTP status code first
         if httpResponse.statusCode == 403 {
-            // Rate limited - return empty array instead of throwing
-            cheatDownloadLog.warning("GitHub API rate limit reached for: \(urlString)")
-            return []
-        }
-        
-        if httpResponse.statusCode == 404 {
-            // Not found - return empty array (folder might not exist yet in repo)
-            cheatDownloadLog.warning("GitHub API path not found: \(urlString)")
+            cheatDownloadLog.warning("GitHub API rate limit reached for trees API")
             return []
         }
         
@@ -406,30 +449,102 @@ class CheatDownloadService: ObservableObject {
             throw CheatDownloadError.httpError(httpResponse.statusCode)
         }
         
-        // Verify we got JSON content before trying to decode
-        let contentType = httpResponse.value(forHTTPHeaderField: "Content-Type") ?? ""
-        guard contentType.contains("json") || !contentType.isEmpty else {
-            cheatDownloadLog.error("Non-JSON response received (Content-Type: \(contentType)), data preview: \(String(data: data.prefix(200), encoding: .utf8) ?? "empty")")
+        let decoder = JSONDecoder()
+        
+        do {
+            let treesResponse = try decoder.decode(GitTreesResponse.self, from: data)
+            var result: [GitHubContent] = []
+            
+            // Find the commit SHA for the current tree
+            guard let sha = treesResponse.sha else {
+                throw CheatDownloadError.invalidResponse
+            }
+            
+            if systemFolderName.isEmpty {
+                // Root cht directory - return system folders
+                let pathPrefix = "cht/"
+                var seenFolders: Set<String> = []
+                
+                for treeItem in treesResponse.tree where treeItem.path.hasPrefix(pathPrefix) {
+                    let remainingPath = String(treeItem.path.dropFirst(pathPrefix.count))
+                    if let firstSlash = remainingPath.firstIndex(of: "/") {
+                        let folderName = String(remainingPath[..<firstSlash])
+                        if seenFolders.insert(folderName).inserted {
+                            // Extract URL for this folder
+                            let folderPath = "cht/\(folderName)"
+                            let folderURL = "https://api.github.com/repos/libretro/libretro-database/contents/\(folderPath)?ref=master"
+                            let content = GitHubContent(name: folderName, path: folderPath, url: folderURL, htmlUrl: nil, downloadUrl: nil, sha: nil, size: nil, type: GitHubContent.ContentType.directory)
+                            result.append(content)
+                        }
+                    }
+                }
+            } else {
+                // System subdirectory - return files in that system
+                let pathPrefix = "cht/\(systemFolderName)/"
+                
+                for treeItem in treesResponse.tree where treeItem.path.hasPrefix(pathPrefix) {
+                    let remainingPath = String(treeItem.path.dropFirst(pathPrefix.count))
+                    // Only include direct children (no subdirectories for now, unless needed)
+                    if !remainingPath.contains("/") && treeItem.path.hasSuffix(".cht") {
+                        let filePath = treeItem.path
+                        let downloadURL = "https://raw.githubusercontent.com/libretro/libretro-database/master/\(filePath)"
+                        let content = GitHubContent(
+                            name: remainingPath,
+                            path: filePath,
+                            url: "https://api.github.com/repos/libretro/libretro-database/contents/\(filePath)?ref=master",
+                            htmlUrl: nil,
+                            downloadUrl: downloadURL,
+                            sha: treeItem.sha,
+                            size: nil,
+                            type: .file
+                        )
+                        result.append(content)
+                    }
+                }
+            }
+            
+            cheatDownloadLog.info("Git Trees API returned \(result.count) items for: \(systemFolderName)")
+            return result
+            
+        } catch let decodeError as DecodingError {
+            cheatDownloadLog.error("JSON decode error: \(decodeError)")
+            throw CheatDownloadError.invalidResponse
+        }
+    }
+    
+    /// Standard Contents API fetch (for directories with <1000 files)
+    private func fetchUsingContentsAPI(_ urlString: String) async throws -> [GitHubContent] {
+        guard let url = URL(string: urlString) else {
+            throw CheatDownloadError.invalidURL
+        }
+        
+        var request = URLRequest(url: url)
+        request.setValue("application/vnd.github.v3+json", forHTTPHeaderField: "Accept")
+        request.setValue("TruchieEmu/1.0", forHTTPHeaderField: "User-Agent")
+        
+        let (data, response) = try await URLSession.shared.data(for: request)
+        
+        guard let httpResponse = response as? HTTPURLResponse else {
             throw CheatDownloadError.invalidResponse
         }
         
-        // Check if data is empty
-        guard !data.isEmpty else {
-            cheatDownloadLog.error("Empty response from GitHub API for: \(urlString)")
-            throw CheatDownloadError.networkError
+        if httpResponse.statusCode == 403 {
+            cheatDownloadLog.warning("GitHub API rate limit reached for: \(urlString)")
+            return []
+        }
+        
+        if httpResponse.statusCode == 404 {
+            return []
+        }
+        
+        if httpResponse.statusCode != 200 {
+            throw CheatDownloadError.httpError(httpResponse.statusCode)
         }
         
         let decoder = JSONDecoder()
         decoder.keyDecodingStrategy = .convertFromSnakeCase
         
-        do {
-            return try decoder.decode([GitHubContent].self, from: data)
-        } catch let decodeError {
-            // Log the actual response for debugging
-            let responsePreview = String(data: data.prefix(500), encoding: .utf8) ?? "(unable to decode response)"
-            cheatDownloadLog.error("JSON decode error: \(decodeError.localizedDescription). Response preview: \(responsePreview)")
-            throw CheatDownloadError.invalidResponse
-        }
+        return try decoder.decode([GitHubContent].self, from: data)
     }
     
     /// Count total cheat files across all system folders
@@ -920,6 +1035,18 @@ private struct GitHubContent: Decodable {
         case type
     }
     
+    /// Public initializer for creating GitHubContent from Git Trees API
+    init(name: String, path: String?, url: String?, htmlUrl: String?, downloadUrl: String?, sha: String?, size: Int?, type: ContentType) {
+        self.name = name
+        self.path = path
+        self.url = url
+        self.htmlUrl = htmlUrl
+        self.downloadUrl = downloadUrl
+        self.sha = sha
+        self.size = size
+        self.type = type
+    }
+
     // Custom decoder to handle missing or invalid fields gracefully
     init(from decoder: Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
@@ -959,6 +1086,26 @@ private struct GitHubContent: Decodable {
     var safePath: String {
         path ?? name
     }
+}
+
+/// Git Trees API response model for recursive tree listing
+private struct GitTreesResponse: Decodable {
+    let sha: String?
+    let tree: [GitTreeItem]
+    let truncated: Bool
+    
+    enum CodingKeys: String, CodingKey {
+        case sha, tree, truncated
+    }
+}
+
+/// Individual item in a Git tree response
+private struct GitTreeItem: Decodable {
+    let path: String
+    let mode: String?
+    let type: String
+    let sha: String?
+    let size: Int?
 }
 
 /// Result of cheat download operation

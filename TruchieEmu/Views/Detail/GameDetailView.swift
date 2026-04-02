@@ -1130,52 +1130,27 @@ struct GameDetailView: View {
     @State private var downloadMessage: String? = nil
     @State private var downloadMessageTone: ManualStatusTone = .info
 
+    @State private var cheatsList: [Cheat] = []
+    @State private var cheatSearchText: String = ""
+    
+    private var filteredCheatsList: [Cheat] {
+        guard !cheatSearchText.trimmingCharacters(in: .whitespaces).isEmpty else {
+            return cheatsList
+        }
+        let searchWords = cheatSearchText.lowercased().split(separator: " ").map { String($0) }
+        return cheatsList.filter { cheat in
+            let cheatText = cheat.displayName.lowercased()
+            return searchWords.allSatisfy { word in cheatText.contains(word) }
+        }
+    }
+    
     private var cheatsSection: some View {
         ModernSectionCard(
             title: "Cheats",
             icon: "wand.and.stars",
             badge: cheatCount > 0 ? "\(enabledCheatCount)/\(cheatCount)" : nil
         ) {
-            VStack(spacing: 14) {
-                // Cheat status display
-                HStack {
-                    VStack(alignment: .leading, spacing: 4) {
-                        Text("Cheat Codes")
-                            .font(.subheadline)
-                            .fontWeight(.medium)
-                            .foregroundColor(.white.opacity(0.85))
-                        
-                        if cheatCount > 0 {
-                            Text("\(enabledCheatCount) of \(cheatCount) enabled")
-                                .font(.caption)
-                                .foregroundColor(.white.opacity(0.5))
-                        } else {
-                            Text("No cheats loaded")
-                                .font(.caption)
-                                .foregroundColor(.white.opacity(0.5))
-                        }
-                    }
-                    Spacer()
-                    
-                    // Quick actions
-                    if cheatCount > 0 {
-                        Button {
-                            if enabledCheatCount > 0 {
-                                cheatManagerService.disableAllCheats(for: currentROM)
-                            } else {
-                                cheatManagerService.enableAllCheats(for: currentROM)
-                            }
-                        } label: {
-                            Label(enabledCheatCount > 0 ? "Disable All" : "Enable All", 
-                                  systemImage: enabledCheatCount > 0 ? "stop.circle" : "play.circle")
-                                .font(.caption)
-                        }
-                        .buttonStyle(.plain)
-                    }
-                }
-
-                Divider().overlay(Color.white.opacity(0.08))
-
+            VStack(spacing: 10) {
                 // Download status message
                 if let message = downloadMessage {
                     HStack(spacing: 8) {
@@ -1198,14 +1173,13 @@ struct GameDetailView: View {
                         }
                         .buttonStyle(.plain)
                     }
-                    .padding(10)
+                    .padding(8)
                     .background(Color.white.opacity(0.05))
-                    .cornerRadius(8)
+                    .cornerRadius(6)
                 }
 
                 // Download and manage buttons
-                HStack(spacing: 8) {
-                    // Download cheats button - downloads only the cheat for this specific game
+                HStack(spacing: 6) {
                     Button {
                         Task {
                             print("[CheatUI] === Download button tapped ===")
@@ -1214,105 +1188,183 @@ struct GameDetailView: View {
                             
                             do {
                                 let systemID = currentROM.systemID ?? ""
-                                print("[CheatUI] System ID: '\(systemID)'")
-                                print("[CheatUI] ROM: \(currentROM.displayName)")
-                                
-                                // Check if system ID is valid
                                 guard !systemID.isEmpty else {
-                                    print("[CheatUI] ERROR: No system ID")
                                     downloadMessage = "No system assigned to this game"
                                     downloadMessageTone = .warning
                                     return
                                 }
                                 
-                                 print("[CheatUI] Starting download for this specific game with 120s timeout...")
-                                 // Capture cheat count before download
-                                 let cheatCountBefore = cheatManagerService.totalCount(for: currentROM)
-                                 
-                                 // Use Task with timeout to prevent infinite hangs
-                                 let success = try await withTimeout(seconds: 120) {
-                                     try await cheatDownloadService.downloadCheatForROM(currentROM, systemID: systemID)
-                                 }
-                                 
-                                 print("[CheatUI] Download completed: success=\(success)")
-                                 if success {
-                                     cheatManagerService.loadCheatsForROM(currentROM)
-                                     updateCheatCounts()
-                                     let cheatsFound = cheatCount - cheatCountBefore
-                                     if cheatsFound > 0 {
-                                         downloadMessage = "Downloaded cheat for \(currentROM.displayName) — \(cheatsFound) cheat\(cheatsFound == 1 ? "" : "s") found"
-                                     } else {
-                                         downloadMessage = "Downloaded cheat for \(currentROM.displayName)"
-                                     }
-                                     downloadMessageTone = .success
-                                 } else {
-                                    downloadMessage = "No cheat file found for \(currentROM.displayName). Try importing manually."
+                                let cheatCountBefore = cheatManagerService.totalCount(for: currentROM)
+                                let success = try await withTimeout(seconds: 120) {
+                                    try await cheatDownloadService.downloadCheatForROM(currentROM, systemID: systemID)
+                                }
+                                
+                                if success {
+                                    cheatManagerService.loadCheatsForROM(currentROM)
+                                    updateCheatCounts()
+                                    loadCheatsList()
+                                    let cheatsFound = cheatCount - cheatCountBefore
+                                    if cheatsFound > 0 {
+                                        downloadMessage = "Downloaded \(cheatsFound) cheat\(cheatsFound == 1 ? "" : "s")"
+                                    } else {
+                                        downloadMessage = "Downloaded cheat for \(currentROM.displayName)"
+                                    }
+                                    downloadMessageTone = .success
+                                } else {
+                                    downloadMessage = "No cheat file found for \(currentROM.displayName)"
                                     downloadMessageTone = .warning
                                 }
                             } catch is TimeoutError {
-                                print("[CheatUI] ERROR: Download timed out")
-                                downloadMessage = "Download timed out. The server may be slow or unreachable."
+                                downloadMessage = "Download timed out"
                                 downloadMessageTone = .error
-                            } catch CheatDownloadError.alreadyDownloading {
-                                print("[CheatUI] WARNING: Already downloading")
-                                downloadMessage = "A download is already in progress"
-                                downloadMessageTone = .warning
                             } catch {
-                                print("[CheatUI] ERROR: \(error.localizedDescription)")
                                 downloadMessage = "Download failed: \(error.localizedDescription)"
                                 downloadMessageTone = .error
                             }
-                            
-                            print("[CheatUI] === Download task finished ===")
                         }
                     } label: {
-                        HStack(spacing: 6) {
+                        HStack(spacing: 4) {
                             if cheatDownloadService.isDownloading {
-                                ProgressView()
-                                    .controlSize(.small)
+                                ProgressView().controlSize(.small)
                             } else {
                                 Image(systemName: "arrow.down.circle")
                             }
                             Text(cheatDownloadService.isDownloading ? "Downloading..." : "Download")
                         }
                         .foregroundColor(.white)
-                        .padding(.horizontal, 12)
-                        .padding(.vertical, 6)
+                        .padding(.horizontal, 10)
+                        .padding(.vertical, 5)
                         .background(cheatDownloadService.isDownloading ? Color.green.opacity(0.4) : Color.green.opacity(0.6))
-                        .cornerRadius(6)
+                        .cornerRadius(5)
                     }
                     .disabled(cheatDownloadService.isDownloading)
                     
-                    // Import .cht file button
                     Button {
                         showImportCheatFile = true
                     } label: {
-                        HStack(spacing: 6) {
+                        HStack(spacing: 4) {
                             Image(systemName: "square.and.arrow.down")
                             Text("Import")
                         }
                         .foregroundColor(.white)
-                        .padding(.horizontal, 12)
-                        .padding(.vertical, 6)
+                        .padding(.horizontal, 10)
+                        .padding(.vertical, 5)
                         .background(Color.orange.opacity(0.6))
-                        .cornerRadius(6)
+                        .cornerRadius(5)
                     }
                     
                     Spacer()
                     
-                    // Manage cheats button
                     Button {
                         showCheatManager = true
                     } label: {
-                        HStack(spacing: 6) {
+                        HStack(spacing: 4) {
                             Image(systemName: "wand.and.stars")
                             Text("Manage")
                         }
                         .foregroundColor(.white)
-                        .padding(.horizontal, 14)
-                        .padding(.vertical, 6)
+                        .padding(.horizontal, 10)
+                        .padding(.vertical, 5)
                         .background(Color.blue.opacity(0.6))
-                        .cornerRadius(6)
+                        .cornerRadius(5)
+                    }
+                }
+
+                Divider().overlay(Color.white.opacity(0.08))
+
+                // Search field (when cheats are available)
+                if !cheatsList.isEmpty {
+                    HStack(spacing: 6) {
+                        Image(systemName: "magnifyingglass")
+                            .foregroundColor(.white.opacity(0.4))
+                            .font(.caption)
+                        TextField("Search cheats...", text: $cheatSearchText)
+                            .textFieldStyle(.plain)
+                            .font(.caption)
+                            .foregroundColor(.white.opacity(0.85))
+                        if !cheatSearchText.isEmpty {
+                            Button {
+                                cheatSearchText = ""
+                            } label: {
+                                Image(systemName: "xmark.circle.fill")
+                                    .foregroundColor(.white.opacity(0.3))
+                                    .font(.caption)
+                            }
+                            .buttonStyle(.plain)
+                        }
+                    }
+                    .padding(6)
+                    .background(Color.white.opacity(0.05))
+                    .cornerRadius(5)
+                }
+
+                // Cheat list display
+                if cheatsList.isEmpty {
+                    VStack(spacing: 4) {
+                        Image(systemName: "wand.and.stars")
+                            .font(.system(size: 20))
+                            .foregroundColor(.white.opacity(0.3))
+                        Text("No cheats available")
+                            .font(.caption)
+                            .foregroundColor(.white.opacity(0.5))
+                        Text("Download or import a cheat file")
+                            .font(.caption2)
+                            .foregroundColor(.white.opacity(0.4))
+                    }
+                    .frame(maxWidth: .infinity)
+                    .padding(.vertical, 10)
+                } else {
+                    ScrollView {
+                        LazyVStack(spacing: 4) {
+                            ForEach(filteredCheatsList) { cheat in
+                                CheatListRowView(
+                                    cheat: cheat,
+                                    isOn: cheat.enabled,
+                                    onToggle: {
+                                        var updated = cheat
+                                        updated.enabled.toggle()
+                                        cheatManagerService.updateCheat(updated, for: currentROM)
+                                        loadCheatsList()
+                                        updateCheatCounts()
+                                    }
+                                )
+                            }
+                        }
+                    }
+                    .frame(maxHeight: 300)
+                    
+                    if !cheatSearchText.isEmpty && filteredCheatsList.isEmpty {
+                        Text("No cheats match \"\(cheatSearchText)\"")
+                            .font(.caption2)
+                            .foregroundColor(.white.opacity(0.4))
+                            .padding(.vertical, 4)
+                    }
+                    
+                    Divider().overlay(Color.white.opacity(0.08))
+                    
+                    // Quick toggle all button
+                    HStack {
+                        Button {
+                            if enabledCheatCount > 0 {
+                                cheatManagerService.disableAllCheats(for: currentROM)
+                            } else {
+                                cheatManagerService.enableAllCheats(for: currentROM)
+                            }
+                            loadCheatsList()
+                            updateCheatCounts()
+                        } label: {
+                            Label(enabledCheatCount > 0 ? "Disable All" : "Enable All", 
+                                  systemImage: enabledCheatCount > 0 ? "stop.circle" : "play.circle")
+                                .font(.caption)
+                                .foregroundColor(.white.opacity(0.7))
+                        }
+                        .buttonStyle(.plain)
+                        
+                        Spacer()
+                        
+                        Text("\(enabledCheatCount) of \(cheatCount) enabled")
+                            .font(.caption)
+                            .foregroundColor(.white.opacity(0.5))
                     }
                 }
 
@@ -1320,7 +1372,7 @@ struct GameDetailView: View {
 
                 // Link to cheat settings
                 Button {
-                    NSApp.sendAction(Selector(("showSettingsWindow:")), to: nil, from: nil)
+                    openCheatSettings()
                 } label: {
                     HStack {
                         Image(systemName: "gearshape")
@@ -1339,9 +1391,22 @@ struct GameDetailView: View {
         }
         .onAppear {
             updateCheatCounts()
+            loadCheatsList()
+            // Auto-load cheats for this ROM on appear if not already loaded
+            if cheatsList.isEmpty {
+                cheatManagerService.loadCheatsForROM(currentROM)
+                cheatsList = cheatManagerService.cheats(for: currentROM)
+                updateCheatCounts()
+            }
         }
         .onChange(of: currentROM.id) { _ in
             updateCheatCounts()
+            loadCheatsList()
+            if cheatsList.isEmpty {
+                cheatManagerService.loadCheatsForROM(currentROM)
+                cheatsList = cheatManagerService.cheats(for: currentROM)
+                updateCheatCounts()
+            }
         }
         .fileImporter(
             isPresented: $showImportCheatFile,
@@ -1354,6 +1419,7 @@ struct GameDetailView: View {
                     Task {
                         _ = await cheatManagerService.importChtFile(url, for: currentROM)
                         updateCheatCounts()
+                        loadCheatsList()
                     }
                 }
             case .failure(let error):
@@ -1362,9 +1428,22 @@ struct GameDetailView: View {
         }
     }
     
+    private func loadCheatsList() {
+        cheatsList = cheatManagerService.cheats(for: currentROM)
+    }
+    
     private func updateCheatCounts() {
         cheatCount = cheatManagerService.totalCount(for: currentROM)
         enabledCheatCount = cheatManagerService.enabledCount(for: currentROM)
+    }
+    
+    private func openCheatSettings() {
+        // Open the app's settings window
+        NSApp.sendAction(Selector(("showSettingsWindow:")), to: nil, from: nil)
+        // Also try the standard preferences approach
+        if NSApp.mainWindow == nil {
+            NSApp.activate(ignoringOtherApps: true)
+        }
     }
 
     // MARK: - Section 6: Achievements
@@ -1741,6 +1820,70 @@ struct AchievementBadgeView: View {
                 .lineLimit(1)
                 .frame(width: 60)
                 .foregroundColor(.white.opacity(0.7))
+        }
+    }
+}
+
+// MARK: - Cheat List Row View (for GameDetailView)
+
+struct CheatListRowView: View {
+    let cheat: Cheat
+    let isOn: Bool
+    var onToggle: () -> Void
+    
+    var body: some View {
+        HStack(alignment: .top, spacing: 10) {
+            Toggle(isOn: Binding(
+                get: { isOn },
+                set: { _ in onToggle() }
+            )) {
+                VStack(alignment: .leading, spacing: 2) {
+                    Text(cheat.displayName)
+                        .font(.subheadline)
+                        .foregroundColor(.white.opacity(0.85))
+                    if !cheat.code.isEmpty {
+                        Text(cheat.codePreview)
+                            .font(.system(.caption, design: .monospaced))
+                            .foregroundColor(.white.opacity(0.4))
+                    }
+                }
+            }
+            .toggleStyle(CheatToggleStyle())
+            
+            Spacer()
+            
+            // Format badge
+            Text(cheat.format.displayName)
+                .font(.caption2)
+                .padding(.horizontal, 6)
+                .padding(.vertical, 2)
+                .background(Color.white.opacity(0.1))
+                .foregroundColor(.white.opacity(0.6))
+                .cornerRadius(4)
+        }
+        .padding(.vertical, 6)
+        .padding(.horizontal, 8)
+        .background(Color.white.opacity(0.03))
+        .cornerRadius(6)
+    }
+}
+
+// MARK: - Cheat Toggle Style
+
+struct CheatToggleStyle: ToggleStyle {
+    func makeBody(configuration: Configuration) -> some View {
+        HStack(spacing: 10) {
+            Image(systemName: configuration.isOn ? "checkmark.circle.fill" : "circle")
+                .foregroundColor(configuration.isOn ? .green : .white.opacity(0.3))
+                .font(.body)
+            
+            configuration.label
+            
+            Spacer()
+        }
+        .contentShape(Rectangle())
+        .onTapGesture {
+            configuration.isOn.toggle()
         }
     }
 }

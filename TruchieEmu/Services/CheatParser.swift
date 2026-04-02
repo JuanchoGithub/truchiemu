@@ -23,11 +23,15 @@ class CheatParser {
     
     /// Parse a .cht file from a URL.
     static func parseChtFile(url: URL) -> [Cheat]? {
-        guard let content = try? String(contentsOf: url, encoding: .utf8) else {
-            cheatLog.error("Failed to read cheat file: \(url.path)")
+        do {
+            let content = try String(contentsOf: url, encoding: .utf8)
+            let result = parseChtContent(content)
+            cheatLog.info("parseChtFile: read \(content.count) bytes, parsed \(result.count) cheats from \(url.lastPathComponent)")
+            return result
+        } catch {
+            cheatLog.error("Failed to read cheat file \(url.path): \(error.localizedDescription)")
             return nil
         }
-        return parseChtContent(content)
     }
     
     /// Parse .cht content from a string.
@@ -46,6 +50,8 @@ class CheatParser {
                 }
             }
         }
+        
+        cheatLog.info("parseChtContent: found cheatCount=\(cheatCount) from \(lines.count) lines")
         
         // Second pass: parse individual cheats
         for i in 0..<cheatCount {

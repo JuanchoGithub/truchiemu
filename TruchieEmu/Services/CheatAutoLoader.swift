@@ -17,72 +17,113 @@ class CheatAutoLoader {
         return base.appendingPathComponent("TruchieEmu/cheats")
     }
     
+    /// Directory for downloaded cheats (from libretro database)
+    static var downloadedCheatsDirectory: URL {
+        let base = FileManager.default.urls(for: .applicationSupportDirectory, in: .userDomainMask).first!
+        return base.appendingPathComponent("TruchieEmu/cheats_downloaded")
+    }
+    
     /// Get the cheats directory for a specific system
     static func systemCheatsDirectory(for systemID: String) -> URL {
         systemCheatsDirectory.appendingPathComponent(systemID)
     }
     
+    /// Get the downloaded cheats directory for a specific system
+    static func downloadedCheatsDirectory(for systemID: String) -> URL {
+        downloadedCheatsDirectory.appendingPathComponent(systemID)
+    }
+    
     // MARK: - Auto-Loading
+    
+    /// Build list of possible cheat filenames for a ROM (includes filename, metadata title, and display name).
+    private static func possibleFilenames(for rom: ROM) -> [String] {
+        var names: [String] = []
+        
+        // 1. ROM filename without extension
+        let romFilename = rom.path.deletingPathExtension().lastPathComponent
+        names.append(romFilename)
+        
+        // 2. ROM metadata title (from No-Intro DAT, e.g. "Super Mario Bros. 3 (USA) (Rev 1)")
+        if let datTitle = rom.metadata?.title?.trimmingCharacters(in: .whitespacesAndNewlines), !datTitle.isEmpty {
+            // Only add if different from romFilename
+            if datTitle != romFilename {
+                names.append(datTitle)
+            }
+        }
+        
+        // 3. Display name (custom name or metadata title or name)
+        let displayName = rom.displayName
+        if !names.contains(displayName) && displayName != romFilename {
+            names.append(displayName)
+        }
+        
+        cheatLoaderLog.info("Possible cheat filenames: \(names)")
+        return names
+    }
     
     /// Find and load cheats for a given ROM.
     /// Returns an array of Cheat objects.
     @MainActor
     static func loadCheats(for rom: ROM) -> [Cheat] {
         var allCheats: [Cheat] = []
-        
         let systemID = rom.systemID ?? "unknown"
-        let romFilename = rom.path.deletingPathExtension().lastPathComponent
+        let possibleNames = possibleFilenames(for: rom)
+        
+        // Helper to try loading a cheat file
+        func tryLoadFromDirectory(directory: URL, names: [String], label: String, source: CheatSource) -> [Cheat]? {
+            for name in names {
+                let chtPath = directory.appendingPathComponent("\(name).cht")
+                let exists = FileManager.default.fileExists(atPath: chtPath.path)
+                cheatLoaderLog.info("\(label) '\(name)': \(chtPath.path) \(exists ? "EXISTS" : "not found")")
+                if exists, let cheats = loadCheatFile(chtPath, source: source) {
+                    cheatLoaderLog.info("Found cheats via \(label) '\(name)': \(chtPath.path)")
+                    return cheats
+                }
+            }
+            return nil
+        }
         
         // Priority 1: Cheats alongside ROM file
-        if let romFolderCheats = loadFromSameFolderAsROM(rom: rom) {
-            allCheats.append(contentsOf: romFolderCheats)
+        let romFolder = rom.path.deletingLastPathComponent()
+        for name in possibleNames {
+            let chtPath = romFolder.appendingPathComponent("\(name).cht")
+            let exists = FileManager.default.fileExists(atPath: chtPath.path)
+            cheatLoaderLog.info("P1 ROM folder '\(name)': \(chtPath.path) \(exists ? "EXISTS" : "not found")")
+            if exists, let cheats = loadCheatFile(chtPath, source: .autoDetected) {
+                cheatLoaderLog.info("Found cheats in ROM folder: \(chtPath.path)")
+                allCheats.append(contentsOf: cheats)
+                break
+            }
         }
         
         // Priority 2: System cheats directory
         let systemDir = systemCheatsDirectory(for: systemID)
-        if let systemCheats = loadFromSystemDirectory(directory: systemDir, filename: romFilename) {
-            allCheats.append(contentsOf: systemCheats)
+        if let sysCheats = tryLoadFromDirectory(directory: systemDir, names: possibleNames, label: "P2 System cheats", source: .libretroDatabase) {
+            allCheats.append(contentsOf: sysCheats)
         }
         
-        // Priority 3: Global cheats directory
-        if let globalCheats = loadFromSystemDirectory(directory: systemCheatsDirectory, filename: romFilename) {
+        // Priority 3: Downloaded cheats directory (system-specific)
+        let downloadedDir = downloadedCheatsDirectory(for: systemID)
+        if let dlCheats = tryLoadFromDirectory(directory: downloadedDir, names: possibleNames, label: "P3 Downloaded cheats", source: .libretroDatabase) {
+            allCheats.append(contentsOf: dlCheats)
+        }
+        
+        // Priority 4: Global cheats directory
+        if let globalCheats = tryLoadFromDirectory(directory: systemCheatsDirectory, names: possibleNames, label: "P4 Global cheats", source: .libretroDatabase) {
             allCheats.append(contentsOf: globalCheats)
+        }
+        
+        // Priority 5: Global downloaded cheats directory
+        if let globalDlCheats = tryLoadFromDirectory(directory: downloadedCheatsDirectory, names: possibleNames, label: "P5 Global downloaded", source: .libretroDatabase) {
+            allCheats.append(contentsOf: globalDlCheats)
         }
         
         // Merge duplicates (prefer later sources)
         allCheats = mergeCheats(allCheats)
         
-        cheatLoaderLog.info("Loaded \(allCheats.count) cheats for \(rom.displayName)")
+        cheatLoaderLog.info("Loaded \(allCheats.count) cheats for \(rom.displayName) [systemID=\(systemID), names=\(possibleNames)]")
         
         return allCheats
-    }
-    
-    /// Load cheats from .cht files alongside the ROM file.
-    private static func loadFromSameFolderAsROM(rom: ROM) -> [Cheat]? {
-        let folder = rom.path.deletingLastPathComponent()
-        let romFilename = rom.path.deletingPathExtension().lastPathComponent
-        
-        // Look for: <romname>.cht
-        let chtPath = folder.appendingPathComponent("\(romFilename).cht")
-        
-        if let cheats = loadCheatFile(chtPath, source: .autoDetected) {
-            cheatLoaderLog.info("Found cheats in ROM folder: \(chtPath.path)")
-            return cheats
-        }
-        
-        return nil
-    }
-    
-    /// Load cheats from a system/global cheats directory.
-    private static func loadFromSystemDirectory(directory: URL, filename: String) -> [Cheat]? {
-        let chtPath = directory.appendingPathComponent("\(filename).cht")
-        
-        if let cheats = loadCheatFile(chtPath, source: .libretroDatabase) {
-            cheatLoaderLog.info("Found cheats in system directory: \(chtPath.path)")
-            return cheats
-        }
-        
-        return nil
     }
     
     /// Load and parse a single .cht file if it exists.
@@ -126,7 +167,9 @@ class CheatAutoLoader {
     
     /// Ensure cheat directories exist.
     static func ensureDirectoriesExist() {
-        let directories = [systemCheatsDirectory] + SystemDatabase.systems.map { systemCheatsDirectory(for: $0.id) }
+        let directories = [systemCheatsDirectory, downloadedCheatsDirectory] 
+            + SystemDatabase.systems.map { systemCheatsDirectory(for: $0.id) }
+            + SystemDatabase.systems.map { downloadedCheatsDirectory(for: $0.id) }
         
         for dir in directories {
             var isDir: ObjCBool = false
@@ -143,32 +186,36 @@ class CheatAutoLoader {
     
     // MARK: - Cheat Discovery
     
-    /// Find all available .cht files for a ROM.
+    /// Find all available .cht files for a ROM (searching multiple filename variants).
     static func findAvailableCheatFiles(for rom: ROM) -> [URL] {
         var found: [URL] = []
-        
         let systemID = rom.systemID ?? "unknown"
-        let romFilename = rom.path.deletingPathExtension().lastPathComponent
+        let possibleNames = possibleFilenames(for: rom)
+        
+        func findInDirectory(_ directory: URL) {
+            for name in possibleNames {
+                let chtPath = directory.appendingPathComponent("\(name).cht")
+                if FileManager.default.fileExists(atPath: chtPath.path), !found.contains(chtPath) {
+                    found.append(chtPath)
+                }
+            }
+        }
         
         // Same folder as ROM
-        let folder = rom.path.deletingLastPathComponent()
-        let romFolderCht = folder.appendingPathComponent("\(romFilename).cht")
-        if FileManager.default.fileExists(atPath: romFolderCht.path) {
-            found.append(romFolderCht)
-        }
+        let romFolder = rom.path.deletingLastPathComponent()
+        findInDirectory(romFolder)
         
         // System directory
-        let systemDir = systemCheatsDirectory(for: systemID)
-        let systemCht = systemDir.appendingPathComponent("\(romFilename).cht")
-        if FileManager.default.fileExists(atPath: systemCht.path) {
-            found.append(systemCht)
-        }
+        findInDirectory(systemCheatsDirectory(for: systemID))
+        
+        // Downloaded cheats directory (system-specific)
+        findInDirectory(downloadedCheatsDirectory(for: systemID))
         
         // Global directory
-        let globalCht = systemCheatsDirectory.appendingPathComponent("\(romFilename).cht")
-        if FileManager.default.fileExists(atPath: globalCht.path) {
-            found.append(globalCht)
-        }
+        findInDirectory(systemCheatsDirectory)
+        
+        // Global downloaded cheats directory
+        findInDirectory(downloadedCheatsDirectory)
         
         return found
     }
