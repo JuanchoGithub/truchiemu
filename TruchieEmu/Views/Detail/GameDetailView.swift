@@ -37,7 +37,7 @@ private enum ManualActionStatus: Equatable {
     }
 }
 
-// MARK: - Collapsible Detail Section
+// MARK: - Detail Sections
 
 enum DetailSection: String, CaseIterable {
     case gameInfo = "Game Info"
@@ -48,21 +48,18 @@ enum DetailSection: String, CaseIterable {
     case achievements = "Achievements"
 }
 
-// MARK: - Modern Section Card Component
+// MARK: - Modern Section Card Component (Non-collapsible)
 
 struct ModernSectionCard<Content: View>: View {
     let title: String?
     let icon: String?
-    var isExpanded: Bool = true
     var badge: String? = nil
     var showHeader: Bool = true
     @ViewBuilder let content: Content
-    @State private var expanded: Bool
-    
+
     init(
         title: String? = nil,
         icon: String? = nil,
-        isExpanded: Bool = true,
         badge: String? = nil,
         showHeader: Bool = true,
         @ViewBuilder content: () -> Content
@@ -71,60 +68,43 @@ struct ModernSectionCard<Content: View>: View {
         self.icon = icon
         self.badge = badge
         self.showHeader = showHeader
-        self._expanded = State(initialValue: isExpanded)
         self.content = content()
     }
 
     var body: some View {
         VStack(spacing: 0) {
             if showHeader, let title = title {
-                Button {
-                    withAnimation(.easeInOut(duration: 0.2)) {
-                        expanded.toggle()
+                HStack(spacing: 10) {
+                    if let icon = icon {
+                        Image(systemName: icon)
+                            .foregroundColor(.white.opacity(0.7))
+                            .font(.body)
                     }
-                } label: {
-                    HStack(spacing: 10) {
-                        if let icon = icon {
-                            Image(systemName: icon)
-                                .foregroundColor(.white.opacity(0.7))
-                                .font(.body)
-                        }
-                        Text(title)
-                            .font(.subheadline)
+                    Text(title)
+                        .font(.subheadline)
+                        .fontWeight(.semibold)
+                        .foregroundColor(.white.opacity(0.6))
+                        .textCase(.uppercase)
+                        .tracking(0.5)
+                    if let badge = badge {
+                        Text(badge)
+                            .font(.caption2)
                             .fontWeight(.semibold)
-                            .foregroundColor(.white.opacity(0.6))
-                            .textCase(.uppercase)
-                            .tracking(0.5)
-                        if let badge = badge {
-                            Text(badge)
-                                .font(.caption2)
-                                .fontWeight(.semibold)
-                                .padding(.horizontal, 8)
-                                .padding(.vertical, 3)
-                                .background(Color.blue.opacity(0.3))
-                                .foregroundColor(.white)
-                                .cornerRadius(6)
-                        }
-                        Spacer()
-                        if icon != nil {
-                            Image(systemName: expanded ? "chevron.up" : "chevron.down")
-                                .font(.caption)
-                                .foregroundColor(.white.opacity(0.4))
-                        }
+                            .padding(.horizontal, 8)
+                            .padding(.vertical, 3)
+                            .background(Color.blue.opacity(0.3))
+                            .foregroundColor(.white)
+                            .cornerRadius(6)
                     }
-                    .contentShape(Rectangle())
+                    Spacer()
                 }
-                .buttonStyle(.plain)
                 
                 Divider()
                     .padding(.vertical, 10)
                     .overlay(Color.white.opacity(0.1))
             }
 
-            if expanded || !showHeader {
-                content
-                    .transition(.opacity.combined(with: .move(edge: .top)))
-            }
+            content
         }
         .padding(16)
         .background(
@@ -135,7 +115,6 @@ struct ModernSectionCard<Content: View>: View {
                         .stroke(Color.white.opacity(0.1), lineWidth: 1)
                 )
         )
-        .animation(.easeInOut(duration: 0.2), value: expanded)
     }
 }
 
@@ -264,7 +243,7 @@ struct GameDetailView: View {
                     Divider()
                         .overlay(Color.white.opacity(0.1))
 
-                    // Main content area
+                    // Main content area - fill remaining space
                     ScrollView {
                         VStack(alignment: .leading, spacing: 20) {
                             switch selectedSection {
@@ -289,6 +268,7 @@ struct GameDetailView: View {
                     .scrollContentBackground(.hidden)
                     .background(Color.clear)
                 }
+                .frame(maxHeight: .infinity)
 
                 if manualActionStatus.isVisible {
                     manualActionStatusBar
@@ -341,21 +321,23 @@ struct GameDetailView: View {
     // MARK: - Immersive Background
 
     private var immersiveBackground: some View {
-        ZStack {
-            // Deep charcoal base
-            Color(red: 0.12, green: 0.13, blue: 0.16)
-            
-            // Blurred box art overlay
-            if let img = boxArtImage {
-                Image(nsImage: img)
-                    .resizable()
-                    .aspectRatio(contentMode: .fill)
-                    .blur(radius: 60, opaque: false)
-                    .scaleEffect(1.1)
-                    .opacity(0.25)
+        GeometryReader { geo in
+            ZStack {
+                // Deep charcoal base
+                Color(red: 0.12, green: 0.13, blue: 0.16)
+                
+                // Blurred box art overlay
+                if let img = boxArtImage {
+                    Image(nsImage: img)
+                        .resizable()
+                        .aspectRatio(contentMode: .fill)
+                        .frame(width: geo.size.width, height: geo.size.height)
+                        .blur(radius: 60, opaque: false)
+                        .scaleEffect(1.1)
+                        .opacity(0.25)
+                }
             }
         }
-        .ignoresSafeArea()
     }
 
     // MARK: - Sidebar Navigation (Glassmorphism)
@@ -549,34 +531,11 @@ struct GameDetailView: View {
         }
     }
 
-    // MARK: - Compact Header
+    // MARK: - Top Header Panel (160px fixed height)
 
     private var compactHeaderSection: some View {
-        HStack(alignment: .top, spacing: 24) {
-            // Cover art with play overlay
-            ZStack {
-                if let img = boxArtImage {
-                    Image(nsImage: img)
-                        .resizable()
-                        .aspectRatio(contentMode: .fit)
-                } else {
-                    placeholderArt
-                }
-                
-                // Play icon overlay
-                RoundedRectangle(cornerRadius: 12)
-                    .fill(Color.black.opacity(0.3))
-                
-                Image(systemName: "play.circle.fill")
-                    .font(.system(size: 48))
-                    .foregroundColor(.white)
-                    .shadow(radius: 8)
-            }
-            .frame(width: 160, height: 200)
-            .clipShape(RoundedRectangle(cornerRadius: 12))
-            .shadow(color: .black.opacity(0.4), radius: 12, y: 4)
-            .onTapGesture { showBoxArtPicker = true }
-
+        HStack(alignment: .center, spacing: 20) {
+            // Left side: Launch button + Game info
             VStack(alignment: .leading, spacing: 12) {
                 // Game title with year
                 HStack(alignment: .firstTextBaseline, spacing: 10) {
@@ -588,7 +547,7 @@ struct GameDetailView: View {
                             library.updateROM(updated)
                         }
                     ))
-                    .font(.system(size: 28, weight: .bold))
+                    .font(.system(size: 24, weight: .bold))
                     .foregroundColor(.white)
                     .textFieldStyle(.plain)
                     
@@ -609,29 +568,64 @@ struct GameDetailView: View {
                             Image(nsImage: emuImg)
                                 .resizable()
                                 .aspectRatio(contentMode: .fit)
-                                .frame(width: 18, height: 18)
+                                .frame(width: 16, height: 16)
                         }
                         Text(sys.name)
-                            .font(.subheadline)
+                            .font(.caption)
                             .fontWeight(.medium)
                             .foregroundColor(.white.opacity(0.7))
                     }
-                    .padding(.horizontal, 12)
-                    .padding(.vertical, 6)
+                    .padding(.horizontal, 10)
+                    .padding(.vertical, 4)
                     .background(Color.white.opacity(0.08))
-                    .cornerRadius(8)
+                    .cornerRadius(6)
                 }
                 
                 Spacer()
                 
-                // Launch button - Pill shape
+                // Launch button moved to left side
                 launchButton
+                
+                Spacer()
             }
-            .padding(.vertical, 4)
+            .frame(maxWidth: .infinity, alignment: .leading)
             
-            Spacer()
+            // Right side: Box art images (clear + blurred)
+            HStack(spacing: 12) {
+                // Clear box art (main image)
+                ZStack {
+                    if let img = boxArtImage {
+                        Image(nsImage: img)
+                            .resizable()
+                            .aspectRatio(contentMode: .fit)
+                    } else {
+                        placeholderArt
+                    }
+                }
+                .frame(width: 110, height: 140)
+                .clipShape(RoundedRectangle(cornerRadius: 10))
+                .shadow(color: .black.opacity(0.5), radius: 10, y: 4)
+                .onTapGesture { showBoxArtPicker = true }
+                
+                // Blurred version as decorative accent
+                ZStack {
+                    if let img = boxArtImage {
+                        Image(nsImage: img)
+                            .resizable()
+                            .aspectRatio(contentMode: .fill)
+                            .blur(radius: 8)
+                            .opacity(0.6)
+                    } else {
+                        placeholderArt
+                    }
+                }
+                .frame(width: 80, height: 140)
+                .clipShape(RoundedRectangle(cornerRadius: 10))
+            }
         }
-        .padding(24)
+        .padding(.horizontal, 24)
+        .padding(.vertical, 12)
+        .frame(height: 160)
     }
 
     // MARK: - Section 1: Game Info
@@ -1130,8 +1124,11 @@ struct GameDetailView: View {
     // MARK: - Section 5: Cheats
 
     @StateObject private var cheatManagerService = CheatManagerService.shared
+    @StateObject private var cheatDownloadService = CheatDownloadService.shared
     @State private var cheatCount: Int = 0
     @State private var enabledCheatCount: Int = 0
+    @State private var downloadMessage: String? = nil
+    @State private var downloadMessageTone: ManualStatusTone = .info
 
     private var cheatsSection: some View {
         ModernSectionCard(
@@ -1179,26 +1176,112 @@ struct GameDetailView: View {
 
                 Divider().overlay(Color.white.opacity(0.08))
 
+                // Download status message
+                if let message = downloadMessage {
+                    HStack(spacing: 8) {
+                        if cheatDownloadService.isDownloading {
+                            ProgressView()
+                                .controlSize(.small)
+                        } else {
+                            Image(systemName: downloadMessageTone.iconName)
+                                .foregroundColor(downloadMessageTone.foregroundColor)
+                        }
+                        Text(message)
+                            .font(.caption)
+                            .foregroundColor(.white.opacity(0.7))
+                        Spacer()
+                        Button {
+                            downloadMessage = nil
+                        } label: {
+                            Image(systemName: "xmark.circle.fill")
+                                .foregroundColor(.white.opacity(0.3))
+                        }
+                        .buttonStyle(.plain)
+                    }
+                    .padding(10)
+                    .background(Color.white.opacity(0.05))
+                    .cornerRadius(8)
+                }
+
                 // Download and manage buttons
                 HStack(spacing: 8) {
-                    // Download cheats button
+                    // Download cheats button - downloads only the cheat for this specific game
                     Button {
                         Task {
-                            _ = await CheatDownloadService.shared.downloadCheatsForSystem(currentROM.systemID ?? "")
-                            cheatManagerService.loadCheatsForROM(currentROM)
-                            updateCheatCounts()
+                            print("[CheatUI] === Download button tapped ===")
+                            downloadMessage = "Starting download..."
+                            downloadMessageTone = .info
+                            
+                            do {
+                                let systemID = currentROM.systemID ?? ""
+                                print("[CheatUI] System ID: '\(systemID)'")
+                                print("[CheatUI] ROM: \(currentROM.displayName)")
+                                
+                                // Check if system ID is valid
+                                guard !systemID.isEmpty else {
+                                    print("[CheatUI] ERROR: No system ID")
+                                    downloadMessage = "No system assigned to this game"
+                                    downloadMessageTone = .warning
+                                    return
+                                }
+                                
+                                 print("[CheatUI] Starting download for this specific game with 120s timeout...")
+                                 // Capture cheat count before download
+                                 let cheatCountBefore = cheatManagerService.totalCount(for: currentROM)
+                                 
+                                 // Use Task with timeout to prevent infinite hangs
+                                 let success = try await withTimeout(seconds: 120) {
+                                     try await cheatDownloadService.downloadCheatForROM(currentROM, systemID: systemID)
+                                 }
+                                 
+                                 print("[CheatUI] Download completed: success=\(success)")
+                                 if success {
+                                     cheatManagerService.loadCheatsForROM(currentROM)
+                                     updateCheatCounts()
+                                     let cheatsFound = cheatCount - cheatCountBefore
+                                     if cheatsFound > 0 {
+                                         downloadMessage = "Downloaded cheat for \(currentROM.displayName) — \(cheatsFound) cheat\(cheatsFound == 1 ? "" : "s") found"
+                                     } else {
+                                         downloadMessage = "Downloaded cheat for \(currentROM.displayName)"
+                                     }
+                                     downloadMessageTone = .success
+                                 } else {
+                                    downloadMessage = "No cheat file found for \(currentROM.displayName). Try importing manually."
+                                    downloadMessageTone = .warning
+                                }
+                            } catch is TimeoutError {
+                                print("[CheatUI] ERROR: Download timed out")
+                                downloadMessage = "Download timed out. The server may be slow or unreachable."
+                                downloadMessageTone = .error
+                            } catch CheatDownloadError.alreadyDownloading {
+                                print("[CheatUI] WARNING: Already downloading")
+                                downloadMessage = "A download is already in progress"
+                                downloadMessageTone = .warning
+                            } catch {
+                                print("[CheatUI] ERROR: \(error.localizedDescription)")
+                                downloadMessage = "Download failed: \(error.localizedDescription)"
+                                downloadMessageTone = .error
+                            }
+                            
+                            print("[CheatUI] === Download task finished ===")
                         }
                     } label: {
                         HStack(spacing: 6) {
-                            Image(systemName: "arrow.down.circle")
-                            Text("Download")
+                            if cheatDownloadService.isDownloading {
+                                ProgressView()
+                                    .controlSize(.small)
+                            } else {
+                                Image(systemName: "arrow.down.circle")
+                            }
+                            Text(cheatDownloadService.isDownloading ? "Downloading..." : "Download")
                         }
                         .foregroundColor(.white)
                         .padding(.horizontal, 12)
                         .padding(.vertical, 6)
-                        .background(Color.green.opacity(0.6))
+                        .background(cheatDownloadService.isDownloading ? Color.green.opacity(0.4) : Color.green.opacity(0.6))
                         .cornerRadius(6)
                     }
+                    .disabled(cheatDownloadService.isDownloading)
                     
                     // Import .cht file button
                     Button {

@@ -179,11 +179,87 @@ class CheatDownloadService: ObservableObject {
         return .success(downloaded: totalDownloaded, failed: totalFailed, message: message)
     }
     
-    /// Download cheats for a specific system
+    /// Download a cheat file for a specific ROM by finding the matching cheat in the libretro-database.
+    /// Only downloads the cheat file that matches the ROM's filename.
     @MainActor
-    func downloadCheatsForSystem(_ systemID: String) async -> CheatDownloadResult {
+    func downloadCheatForROM(_ rom: ROM, systemID: String) async throws -> Bool {
+        cheatDownloadLog.info("=== Starting cheat download for ROM: \(rom.displayName) ===")
+        
         guard !isDownloading else {
-            return .alreadyDownloading
+            cheatDownloadLog.warning("Download already in progress, rejecting request")
+            throw CheatDownloadError.alreadyDownloading
+        }
+        
+        isDownloading = true
+        downloadProgress = 0.0
+        downloadStatus = "Searching for cheat for \(rom.displayName)..."
+        downloadLog = []
+        currentDownloadedCount = 0
+        currentlyDownloadingCount = 0
+        totalItemsToDownload = 0
+        
+        defer {
+            isDownloading = false
+            currentlyDownloadingCount = 0
+            cheatDownloadLog.info("=== Download session ended (isDownloading=false) ===")
+        }
+        
+        // Get the ROM's filename (without extension)
+        let romFilename = rom.path.deletingPathExtension().lastPathComponent
+        downloadStatus = "Looking for cheat file matching: \(romFilename)"
+        
+        // Map system ID to folder name
+        let systemFolderName = mapSystemIDToFolderName(systemID)
+        let encodedFolderName = systemFolderName.addingPercentEncoding(withAllowedCharacters: .urlPathAllowed) ?? systemFolderName
+        let folderURL = apiBaseURL + "/" + encodedFolderName
+        
+        guard let url = URL(string: folderURL) else {
+            cheatDownloadLog.error("Invalid URL constructed: \(folderURL)")
+            throw CheatDownloadError.invalidURL
+        }
+        
+        // Fetch contents of the system folder
+        downloadStatus = "Searching in \(systemFolderName)..."
+        let contents = try await fetchGitHubContents(url.absoluteString)
+        
+        // Look for a matching .cht file
+        let matchingFile = findMatchingCheatFile(in: contents, romFilename: romFilename)
+        
+        guard let targetFile = matchingFile else {
+            cheatDownloadLog.info("No matching cheat file found for: \(romFilename)")
+            downloadStatus = "No cheat file found for \(rom.displayName)"
+            return false
+        }
+        
+        // Create destination directory
+        let destDir = systemCheatDirectory(for: systemID)
+        try FileManager.default.createDirectory(at: destDir, withIntermediateDirectories: true)
+        
+        // Download the matching file
+        cheatDownloadLog.info("Downloading cheat file: \(targetFile.name)")
+        downloadStatus = "Downloading \(targetFile.name)..."
+        self.totalItemsToDownload = 1
+        self.currentDownloadedCount = 0
+        
+        try await downloadFile(targetFile, to: destDir, systemName: systemID)
+        self.currentDownloadedCount = 1
+        
+        downloadProgress = 1.0
+        downloadStatus = "Successfully downloaded cheat for \(rom.displayName)"
+        lastDownloadDate = Date()
+        
+        cheatDownloadLog.info("=== Cheat download complete for: \(rom.displayName) ===")
+        return true
+    }
+    
+    /// Download cheats for a specific system (throws on error, returns count on success)
+    @MainActor
+    func downloadCheatsForSystem(_ systemID: String) async throws -> Int {
+        cheatDownloadLog.info("=== Starting download for system: \(systemID) ===")
+        
+        guard !isDownloading else {
+            cheatDownloadLog.warning("Download already in progress, rejecting request")
+            throw CheatDownloadError.alreadyDownloading
         }
         
         isDownloading = true
@@ -197,39 +273,52 @@ class CheatDownloadService: ObservableObject {
         defer {
             isDownloading = false
             currentlyDownloadingCount = 0
+            cheatDownloadLog.info("=== Download session ended (isDownloading=false) ===")
         }
         
-        do {
-            let systemFolderName = mapSystemIDToFolderName(systemID)
-            let encodedFolderName = systemFolderName.addingPercentEncoding(withAllowedCharacters: .urlPathAllowed) ?? systemFolderName
-            let folderURL = apiBaseURL + "/" + encodedFolderName
-            
-            guard let url = URL(string: folderURL) else {
-                return .failed("Invalid system ID")
-            }
-            
-            // Count total files first
-            totalItemsToDownload = await countCheatFilesInFolder(url, maxDepth: 1)
-            downloadStatus = "Found \(totalItemsToDownload) cheat files for \(systemID)"
-            
-            let downloaded = try await downloadCheatsFromFolder(url, to: systemCheatDirectory(for: systemID), systemName: systemID)
-            
-            // Check for subdirectories and download them too
-            let contents = try await fetchGitHubContents(url.absoluteString)
-            for item in contents where item.type == .directory {
-                let encodedItemName = item.name.addingPercentEncoding(withAllowedCharacters: .urlPathAllowed) ?? item.name
-                let subFolderURL = "\(url.absoluteString)/\(encodedItemName)"
-                if let subURL = URL(string: subFolderURL) {
-                    _ = try await downloadCheatsFromFolder(subURL, to: systemCheatDirectory(for: systemID), systemName: systemID)
-                }
-            }
-            
-            lastDownloadDate = Date()
-            return .success(downloaded: downloaded, failed: 0, message: "Downloaded \(downloaded) cheat files for \(systemID)")
-        } catch {
-            cheatDownloadLog.error("Failed to download cheats for \(systemID): \(error.localizedDescription)")
-            return .failed("Failed to download cheats: \(error.localizedDescription)")
+        let systemFolderName = mapSystemIDToFolderName(systemID)
+        cheatDownloadLog.info("Mapped system ID '\(systemID)' to folder name: '\(systemFolderName)'")
+        
+        let encodedFolderName = systemFolderName.addingPercentEncoding(withAllowedCharacters: .urlPathAllowed) ?? systemFolderName
+        let folderURL = apiBaseURL + "/" + encodedFolderName
+        cheatDownloadLog.info("GitHub API URL: \(folderURL)")
+        
+        guard let url = URL(string: folderURL) else {
+            cheatDownloadLog.error("Invalid URL constructed: \(folderURL)")
+            throw CheatDownloadError.invalidURL
         }
+        
+        // Count total files first
+        cheatDownloadLog.info("Counting cheat files in folder...")
+        self.totalItemsToDownload = await countCheatFilesInFolder(url, maxDepth: 1)
+        cheatDownloadLog.info("Found \(self.totalItemsToDownload) cheat files for \(systemID)")
+        downloadStatus = "Found \(self.totalItemsToDownload) cheat files for \(systemID)"
+        
+        // Download from main folder
+        cheatDownloadLog.info("Downloading cheats from main folder...")
+        var totalDownloaded = try await downloadCheatsFromFolder(url, to: systemCheatDirectory(for: systemID), systemName: systemID)
+        cheatDownloadLog.info("Downloaded \(totalDownloaded) files from main folder")
+        
+        // Check for subdirectories and download them too
+        cheatDownloadLog.info("Checking for subdirectories...")
+        let contents = try await fetchGitHubContents(url.absoluteString)
+        let subDirs = contents.filter { $0.type == .directory }
+        cheatDownloadLog.info("Found \(subDirs.count) subdirectories")
+        
+        for item in subDirs {
+            cheatDownloadLog.info("Processing subdirectory: \(item.name)")
+            let encodedItemName = item.name.addingPercentEncoding(withAllowedCharacters: .urlPathAllowed) ?? item.name
+            let subFolderURL = "\(url.absoluteString)/\(encodedItemName)"
+            if let subURL = URL(string: subFolderURL) {
+                let subCount = try await downloadCheatsFromFolder(subURL, to: systemCheatDirectory(for: systemID), systemName: systemID)
+                cheatDownloadLog.info("Downloaded \(subCount) files from subdirectory: \(item.name)")
+                totalDownloaded += subCount
+            }
+        }
+        
+        cheatDownloadLog.info("=== Download complete: \(totalDownloaded) total files ===")
+        lastDownloadDate = Date()
+        return totalDownloaded
     }
     
     // MARK: - ROM Cheat Lookup
@@ -412,12 +501,18 @@ class CheatDownloadService: ObservableObject {
     
     /// Download cheat files from a specific folder URL
     private func downloadCheatsFromFolder(_ url: URL, to destination: URL, systemName: String = "Unknown") async throws -> Int {
+        cheatDownloadLog.info("Downloading from folder: \(url.absoluteString)")
+        cheatDownloadLog.info("Destination: \(destination.path)")
+        
         try FileManager.default.createDirectory(at: destination, withIntermediateDirectories: true)
         
         let contents = try await fetchGitHubContents(url.absoluteString)
-        var downloaded = 0
+        let chtFiles = contents.filter { $0.type == .file && $0.name.hasSuffix(".cht") }
+        cheatDownloadLog.info("Found \(chtFiles.count) .cht files in folder")
         
-        for item in contents where item.type == .file && item.name.hasSuffix(".cht") {
+        var downloaded = 0
+        for item in chtFiles {
+            cheatDownloadLog.info("Downloading file: \(item.name)")
             try await downloadFile(item, to: destination, systemName: systemName)
             await MainActor.run {
                 currentDownloadedCount += 1
@@ -425,6 +520,7 @@ class CheatDownloadService: ObservableObject {
             downloaded += 1
         }
         
+        cheatDownloadLog.info("Downloaded \(downloaded) files from folder")
         return downloaded
     }
     
@@ -702,6 +798,86 @@ class CheatDownloadService: ObservableObject {
         return mapping[systemID.lowercased()] ?? systemID
     }
     
+    /// Find a matching cheat file for a given ROM filename.
+    /// Looks for exact match first, then partial matches.
+    private func findMatchingCheatFile(in contents: [GitHubContent], romFilename: String) -> GitHubContent? {
+        let chtFiles = contents.filter { $0.type == .file && $0.name.hasSuffix(".cht") }
+        
+        // Normalize the ROM filename for comparison
+        let romFilenameLower = romFilename.lowercased()
+        let romFilenameNoBracket = removeBracketsAndParentheses(romFilenameLower)
+        
+        // 1. Check for exact match (ignoring .cht extension)
+        for file in chtFiles {
+            let fileBaseName = String(file.name.dropLast(4)).lowercased() // Remove ".cht"
+            if fileBaseName == romFilenameLower {
+                cheatDownloadLog.info("Found exact match: \(file.name)")
+                return file
+            }
+        }
+        
+        // 2. Check for exact match ignoring brackets and special characters
+        for file in chtFiles {
+            let fileBaseName = String(file.name.dropLast(4)).lowercased() // Remove ".cht"
+            let fileNoBracket = removeBracketsAndParentheses(fileBaseName)
+            if fileNoBracket == romFilenameNoBracket {
+                cheatDownloadLog.info("Found match (ignoring brackets): \(file.name)")
+                return file
+            }
+        }
+        
+        // 3. Check for partial match - file name contains ROM name or vice versa
+        for file in chtFiles {
+            let fileBaseName = String(file.name.dropLast(4)).lowercased() // Remove ".cht"
+            let fileNoBracket = removeBracketsAndParentheses(fileBaseName)
+            if fileNoBracket.contains(romFilenameNoBracket) || romFilenameNoBracket.contains(fileNoBracket) {
+                // Only accept if the shorter name is at least 4 characters to avoid false matches
+                let shorterLength = min(fileNoBracket.count, romFilenameNoBracket.count)
+                if shorterLength >= 4 {
+                    cheatDownloadLog.info("Found partial match: \(file.name) for \(romFilename)")
+                    return file
+                }
+            }
+        }
+        
+        cheatDownloadLog.info("No matching cheat file found for: \(romFilename)")
+        return nil
+    }
+    
+    /// Remove brackets, parentheses and their contents from a string
+    private func removeBracketsAndParentheses(_ str: String) -> String {
+        var result = str
+        // Remove content in parentheses: (USA), (Europe), etc.
+        var inParens = false
+        var temp = ""
+        for char in result {
+            if char == "(" {
+                inParens = true
+            } else if char == ")" {
+                inParens = false
+            } else if !inParens {
+                temp.append(char)
+            }
+        }
+        result = temp
+        
+        // Remove content in brackets: [!], [b1], etc.
+        var inBrackets = false
+        temp = ""
+        for char in result {
+            if char == "[" {
+                inBrackets = true
+            } else if char == "]" {
+                inBrackets = false
+            } else if !inBrackets {
+                temp.append(char)
+            }
+        }
+        result = temp.trimmingCharacters(in: .whitespaces)
+        
+        return result
+    }
+    
     private func mergeCheats(_ cheats: [Cheat]) -> [Cheat] {
         var cheatByIndex: [Int: Cheat] = [:]
         for cheat in cheats {
@@ -799,6 +975,7 @@ enum CheatDownloadError: LocalizedError {
     case httpError(Int)
     case fileWriteError
     case networkError
+    case alreadyDownloading
     
     var errorDescription: String? {
         switch self {
@@ -812,6 +989,43 @@ enum CheatDownloadError: LocalizedError {
             return "Failed to write file"
         case .networkError:
             return "Network error"
+        case .alreadyDownloading:
+            return "A download is already in progress"
         }
+    }
+}
+
+// MARK: - Timeout Support
+
+/// Error thrown when an operation exceeds the specified time limit
+struct TimeoutError: Error, LocalizedError {
+    let seconds: TimeInterval
+    
+    var errorDescription: String? {
+        return "Operation timed out after \(Int(seconds)) seconds"
+    }
+}
+
+/// Executes an async operation with a timeout. Throws TimeoutError if the operation doesn't complete in time.
+func withTimeout<T: Sendable>(seconds: TimeInterval, operation: @Sendable @escaping () async throws -> T) async throws -> T {
+    return try await withThrowingTaskGroup(of: T.self) { group in
+        // Start the actual operation
+        group.addTask {
+            return try await operation()
+        }
+        
+        // Start the timeout task
+        group.addTask {
+            try await Task.sleep(nanoseconds: UInt64(seconds * 1_000_000_000))
+            throw TimeoutError(seconds: seconds)
+        }
+        
+        // Return the first result (either operation completes or timeout fires)
+        let result = try await group.next()!
+        
+        // Cancel the remaining task
+        group.cancelAll()
+        
+        return result
     }
 }

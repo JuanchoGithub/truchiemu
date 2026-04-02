@@ -8,7 +8,7 @@ struct CheatSettingsView: View {
     @StateObject private var cheatManager = CheatManagerService.shared
     @ObservedObject var prefs = SystemPreferences.shared
     
-    @State private var downloadResult: CheatDownloadResult?
+    @State private var downloadResult: String?
     @State private var showClearConfirmation = false
     @State private var selectedSystem: String = "all"
     @State private var isExporting = false
@@ -103,7 +103,15 @@ struct CheatSettingsView: View {
                 HStack(spacing: 12) {
                     Button {
                         Task {
-                            downloadResult = await downloadService.downloadAllCheats()
+                            let result = await downloadService.downloadAllCheats()
+                            switch result {
+                            case .success(_, _, let message):
+                                downloadResult = message
+                            case .failed(let message):
+                                downloadResult = message
+                            case .alreadyDownloading:
+                                break
+                            }
                         }
                     } label: {
                         Label("Download All Cheats", systemImage: "arrow.down.circle")
@@ -117,7 +125,16 @@ struct CheatSettingsView: View {
                         ForEach(SystemDatabase.systems.sorted(by: { $0.name < $1.name })) { system in
                             Button(system.name) {
                                 Task {
-                                    downloadResult = await downloadService.downloadCheatsForSystem(system.id)
+                                    do {
+                                        let count = try await downloadService.downloadCheatsForSystem(system.id)
+                                        if count > 0 {
+                                            downloadResult = "Downloaded \(count) cheat file(s) for \(system.name)"
+                                        } else {
+                                            downloadResult = "No cheat files found for \(system.name)"
+                                        }
+                                    } catch {
+                                        downloadResult = "Download failed: \(error.localizedDescription)"
+                                    }
                                 }
                             }
                         }
@@ -139,41 +156,20 @@ struct CheatSettingsView: View {
         }
     }
     
-    private func resultBanner(result: CheatDownloadResult) -> some View {
-        Group {
-            switch result {
-            case .success(_, _, let message):
-                HStack {
-                    Image(systemName: "checkmark.circle.fill")
-                        .foregroundColor(.green)
-                    Text(message)
-                        .font(.caption)
-                    Spacer()
-                    Button("Dismiss") {
-                        downloadResult = nil
-                    }
-                }
-                .padding(10)
-                .background(Color.green.opacity(0.1))
-                .cornerRadius(8)
-            case .failed(let message):
-                HStack {
-                    Image(systemName: "xmark.circle.fill")
-                        .foregroundColor(.red)
-                    Text(message)
-                        .font(.caption)
-                    Spacer()
-                    Button("Dismiss") {
-                        downloadResult = nil
-                    }
-                }
-                .padding(10)
-                .background(Color.red.opacity(0.1))
-                .cornerRadius(8)
-            case .alreadyDownloading:
-                EmptyView()
+    private func resultBanner(result: String) -> some View {
+        HStack {
+            Image(systemName: "checkmark.circle.fill")
+                .foregroundColor(result.contains("Downloaded") ? .green : .red)
+            Text(result)
+                .font(.caption)
+            Spacer()
+            Button("Dismiss") {
+                downloadResult = nil
             }
         }
+        .padding(10)
+        .background(result.contains("Downloaded") ? Color.green.opacity(0.1) : Color.red.opacity(0.1))
+        .cornerRadius(8)
     }
     
     // MARK: - Preferences Section

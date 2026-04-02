@@ -6,8 +6,9 @@ import SwiftUI
 /// Accessible from the in-game HUD or game detail view.
 struct CheatManagerView: View {
     let rom: ROM
+    @Environment(\.dismiss) var dismiss
     @StateObject private var cheatManager = CheatManager.shared
-    @State private var showAddCheatSheet = false
+    @State private var showAddCheatWindow = false
     @State private var showImportFile = false
     @State private var searchText = ""
     @State private var selectedCategory: CheatCategory? = nil
@@ -38,7 +39,7 @@ struct CheatManagerView: View {
     
     var body: some View {
         VStack(spacing: 0) {
-            // Header
+            // Header with title and close button
             HStack {
                 VStack(alignment: .leading, spacing: 4) {
                     Text("Cheats for \(rom.displayName)")
@@ -48,14 +49,14 @@ struct CheatManagerView: View {
                         .foregroundColor(.secondary)
                 }
                 Spacer()
-                Button(action: { showAddCheatSheet = true }) {
-                    Image(systemName: "plus.circle.fill")
+                Button {
+                    dismiss()
+                } label: {
+                    Image(systemName: "xmark.circle.fill")
+                        .font(.title3)
+                        .foregroundColor(.secondary)
                 }
-                .help("Add custom cheat")
-                Button(action: { showImportFile = true }) {
-                    Image(systemName: "square.and.arrow.down")
-                }
-                .help("Import .cht file")
+                .help("Close")
             }
             .padding()
             
@@ -114,6 +115,33 @@ struct CheatManagerView: View {
             
             Divider()
             
+            // Action buttons row
+            HStack(spacing: 8) {
+                Button {
+                    showAddCheatWindow = true
+                } label: {
+                    Label("Add Cheat", systemImage: "plus")
+                        .padding(.horizontal, 12)
+                        .padding(.vertical, 6)
+                }
+                .help("Add custom cheat code")
+                
+                Button {
+                    showImportFile = true
+                } label: {
+                    Label("Import File", systemImage: "square.and.arrow.down")
+                        .padding(.horizontal, 12)
+                        .padding(.vertical, 6)
+                }
+                .help("Import .cht file")
+                
+                Spacer()
+            }
+            .padding(.horizontal)
+            .padding(.vertical, 8)
+            
+            Divider()
+            
             // Cheat list
             if filteredCheats.isEmpty {
                 VStack(spacing: 12) {
@@ -152,8 +180,9 @@ struct CheatManagerView: View {
                 .padding()
             }
         }
-        .sheet(isPresented: $showAddCheatSheet) {
-            AddCheatSheet(rom: rom)
+        .sheet(isPresented: $showAddCheatWindow) {
+            AddCheatWindow(rom: rom)
+                .frame(minWidth: 500, minHeight: 400)
         }
         .fileImporter(
             isPresented: $showImportFile,
@@ -247,9 +276,9 @@ struct CheatRowView: View {
     }
 }
 
-// MARK: - Add Cheat Sheet
+// MARK: - Add Cheat Window
 
-struct AddCheatSheet: View {
+struct AddCheatWindow: View {
     let rom: ROM
     @Environment(\.dismiss) private var dismiss
     @StateObject private var cheatManager = CheatManager.shared
@@ -259,7 +288,25 @@ struct AddCheatSheet: View {
     @State private var errorMessage: String?
     
     var body: some View {
-        NavigationView {
+        VStack(spacing: 0) {
+            // Header with close button
+            HStack {
+                Text("Add Custom Cheat")
+                    .font(.headline)
+                Spacer()
+                Button {
+                    dismiss()
+                } label: {
+                    Image(systemName: "xmark.circle.fill")
+                        .font(.title3)
+                        .foregroundColor(.secondary)
+                }
+            }
+            .padding()
+            
+            Divider()
+            
+            // Form content
             Form {
                 Section("Cheat Details") {
                     TextField("Description (e.g., Infinite Lives)", text: $description)
@@ -276,6 +323,7 @@ struct AddCheatSheet: View {
                     Text(format.example)
                         .font(.system(.body, design: .monospaced))
                         .foregroundColor(.secondary)
+                        .textSelection(.enabled)
                 }
                 
                 if let error = errorMessage {
@@ -285,19 +333,26 @@ struct AddCheatSheet: View {
                     }
                 }
             }
-            .navigationTitle("Add Custom Cheat")
-            .toolbar {
-                ToolbarItem(placement: .cancellationAction) {
-                    Button("Cancel") { dismiss() }
+            .formStyle(.grouped)
+            
+            // Action buttons
+            HStack {
+                Spacer()
+                Button("Cancel") {
+                    dismiss()
                 }
-                ToolbarItem(placement: .confirmationAction) {
-                    Button("Add") {
-                        addCheat()
-                    }
-                    .disabled(code.trimmingCharacters(in: .whitespaces).isEmpty)
+                .keyboardShortcut(.escape, modifiers: .command)
+                
+                Button("Add Cheat") {
+                    addCheat()
                 }
+                .keyboardShortcut(.return, modifiers: .command)
+                .disabled(code.trimmingCharacters(in: .whitespaces).isEmpty)
+                .buttonStyle(.borderedProminent)
             }
+            .padding()
         }
+        .frame(minWidth: 450, minHeight: 400)
     }
     
     private func addCheat() {
