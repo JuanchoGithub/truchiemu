@@ -243,7 +243,7 @@ class ShaderManager: ObservableObject {
     static func presetsGroupedByType() -> [(type: ShaderType, presets: [ShaderPreset])] {
         var grouped: [ShaderType: [ShaderPreset]] = [:]
         
-        for preset in ShaderPreset.builtinPresets {
+        for preset in ShaderPreset.allPresets {
             if grouped[preset.shaderType] == nil {
                 grouped[preset.shaderType] = []
             }
@@ -257,7 +257,7 @@ class ShaderManager: ObservableObject {
     
     /// Get recommended presets for a specific system
     func recommendedPresets(for systemID: String) -> [ShaderPreset] {
-        ShaderPreset.builtinPresets.filter { preset in
+        ShaderPreset.allPresets.filter { preset in
             preset.recommendedSystems.contains(systemID)
         }
     }

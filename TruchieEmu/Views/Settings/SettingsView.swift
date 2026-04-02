@@ -1678,7 +1678,7 @@ struct DisplaySettingsView: View {
             
             Section("Quick Preview") {
                 VStack(spacing: 8) {
-                    ForEach(ShaderPreset.builtinPresets.prefix(4), id: \.id) { preset in
+                    ForEach(ShaderPreset.allPresets.prefix(4), id: \.id) { preset in
                         HStack {
                             Image(systemName: shaderIcon(for: preset.shaderType))
                                 .foregroundColor(.accentColor)

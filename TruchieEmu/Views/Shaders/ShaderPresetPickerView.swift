@@ -277,7 +277,7 @@ struct ShaderPresetPickerView: View {
     }
     
     private func categoryChip(type: ShaderType) -> some View {
-        let count = ShaderPreset.builtinPresets.filter { $0.shaderType == type }.count
+        let count = ShaderPreset.allPresets.filter { $0.shaderType == type }.count
         guard count > 0 else { return AnyView(EmptyView()) }
         
         return AnyView(
@@ -330,9 +330,9 @@ struct ShaderPresetPickerView: View {
     
     private var filteredPresets: [ShaderPreset] {
         if let category = selectedCategory {
-            return ShaderPreset.builtinPresets.filter { $0.shaderType == category }
+            return ShaderPreset.allPresets.filter { $0.shaderType == category }
         }
-        return ShaderPreset.builtinPresets
+        return ShaderPreset.allPresets
     }
     
     private func presetCard(preset: ShaderPreset) -> some View {
@@ -537,7 +537,7 @@ struct QuickShaderSelectorView: View {
             
             if shaderEnabled {
                 LazyVGrid(columns: [GridItem(.flexible()), GridItem(.flexible())], spacing: 8) {
-                    ForEach(ShaderPreset.builtinPresets.prefix(6), id: \.id) { preset in
+                    ForEach(ShaderPreset.allPresets.prefix(6), id: \.id) { preset in
                         quickPresetButton(preset: preset)
                     }
                 }

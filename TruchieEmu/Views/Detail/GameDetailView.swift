@@ -853,7 +853,7 @@ struct GameDetailView: View {
                 VStack(spacing: 6) {
                     let recommended = shaderManager.recommendedPresets(for: currentROM.systemID ?? "")
                     let presetsToShow = recommended.isEmpty
-                        ? Array(ShaderPreset.builtinPresets.prefix(4))
+                        ? Array(ShaderPreset.allPresets.prefix(4))
                         : recommended
 
                     ForEach(presetsToShow.prefix(4), id: \.id) { preset in
