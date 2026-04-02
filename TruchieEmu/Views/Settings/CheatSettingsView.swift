@@ -62,12 +62,39 @@ struct CheatSettingsView: View {
                 // Progress indicator
                 if downloadService.isDownloading {
                     VStack(alignment: .leading, spacing: 8) {
-                        ProgressView(value: downloadService.downloadProgress)
-                            .progressViewStyle(.linear)
+                        // Progress bar with counts
+                        VStack(alignment: .leading, spacing: 4) {
+                            HStack {
+                                ProgressView(value: Double(downloadService.currentDownloadedCount), total: max(Double(downloadService.totalItemsToDownload), 1))
+                                    .progressViewStyle(.linear)
+                                
+                                Text("\(downloadService.currentDownloadedCount)/\(downloadService.totalItemsToDownload)")
+                                    .font(.caption.monospacedDigit())
+                                    .foregroundColor(.secondary)
+                            }
+                            
+                            // Status with currently downloading count
+                            HStack(spacing: 6) {
+                                Text(downloadService.downloadStatus)
+                                    .font(.caption)
+                                    .foregroundColor(.secondary)
+                                
+                                if downloadService.currentlyDownloadingCount > 0 {
+                                    Image(systemName: "arrow.down.circle.fill")
+                                        .font(.caption)
+                                        .foregroundColor(.blue)
+                                    Text("\(downloadService.currentlyDownloadingCount) downloading")
+                                        .font(.caption)
+                                        .foregroundColor(.blue)
+                                }
+                            }
+                        }
                         
-                        Text(downloadService.downloadStatus)
-                            .font(.caption)
-                            .foregroundColor(.secondary)
+                        // Download log (scrollable, limited height)
+                        if !downloadService.downloadLog.isEmpty {
+                            DownloadLogView(logEntries: downloadService.downloadLog)
+                                .frame(height: 120)
+                        }
                     }
                     .padding(.top, 8)
                 }
@@ -350,6 +377,99 @@ struct StatCard: View {
         .padding(.horizontal, 12)
         .background(.ultraThinMaterial)
         .cornerRadius(12)
+    }
+}
+
+// MARK: - Download Log View
+
+/// Shows a scrollable log of download entries with success/error status
+struct DownloadLogView: View {
+    let logEntries: [CheatDownloadLogEntry]
+    
+    var body: some View {
+        ScrollViewReader { proxy in
+            ScrollView {
+                VStack(alignment: .leading, spacing: 2) {
+                    ForEach(logEntries) { entry in
+                        LogEntryRow(entry: entry)
+                    }
+                }
+                .onChange(of: logEntries.count) { _ in
+                    // Auto-scroll to bottom when new entries are added
+                    if let lastId = logEntries.last?.id {
+                        withAnimation {
+                            proxy.scrollTo(lastId, anchor: .bottom)
+                        }
+                    }
+                }
+            }
+            .background(Color.black.opacity(0.1))
+            .cornerRadius(6)
+        }
+    }
+}
+
+/// Single row in the download log
+struct LogEntryRow: View {
+    let entry: CheatDownloadLogEntry
+    
+    var body: some View {
+        HStack(spacing: 6) {
+            // Status icon
+            Image(systemName: statusIcon)
+                .foregroundColor(statusColor)
+                .font(.system(size: 10))
+            
+            // File name (truncated if needed)
+            Text(entry.fileName)
+                .font(.system(size: 11, design: .monospaced))
+                .lineLimit(1)
+            
+            Spacer()
+            
+            // Status message (shortened)
+            Text(statusMessage)
+                .font(.system(size: 10))
+                .foregroundColor(statusColor)
+        }
+        .padding(.horizontal, 6)
+        .padding(.vertical, 2)
+        .id(entry.id)
+    }
+    
+    private var statusIcon: String {
+        switch entry.status {
+        case .inProgress:
+            return "arrow.down.circle.fill"
+        case .success:
+            return "checkmark.circle.fill"
+        case .failed:
+            return "xmark.circle.fill"
+        }
+    }
+    
+    private var statusColor: Color {
+        switch entry.status {
+        case .inProgress:
+            return .blue
+        case .success:
+            return .green
+        case .failed:
+            return .red
+        }
+    }
+    
+    private var statusMessage: String {
+        switch entry.status {
+        case .inProgress:
+            return "Downloading..."
+        case .success:
+            return "OK"
+        case .failed(let reason):
+            // Show a shortened error message
+            let shortReason = reason.count > 30 ? reason.prefix(30) + "..." : reason
+            return String(shortReason)
+        }
     }
 }
 
