@@ -351,130 +351,35 @@ static bool bridge_environment(unsigned cmd, void *data) {
             }
             return true;
         case RETRO_ENVIRONMENT_GET_CORE_OPTIONS_VERSION:
-            if (data) *(unsigned *)data = 2;  // We support V2
+            if (data) *(unsigned *)data = 1;
             return true;
-
-        /* ── Core Options — V2 (modern standard) ── */
-        case RETRO_ENVIRONMENT_SET_CORE_OPTIONS_V2: {
-            struct retro_core_options_v2 *opts = (struct retro_core_options_v2 *)data;
-            if (opts && opts->definitions) {
-                parseCoreOptionsV2(opts);
-                NSLog(@"[Bridge] Core options V2 set: %lu options parsed", (unsigned long)g_optDefinitions.count);
-            }
-            return true;
-        }
-        case RETRO_ENVIRONMENT_SET_CORE_OPTIONS_V2_INTL: {
-            struct retro_core_options_v2_intl *intl = (struct retro_core_options_v2_intl *)data;
-            if (intl) {
-                /* Prefer localised version if available and language isn't English */
-                if (intl->local && g_selectedLanguage != RETRO_LANGUAGE_ENGLISH) {
-                    parseCoreOptionsV2(intl->local);
-                } else if (intl->us) {
-                    parseCoreOptionsV2(intl->us);
-                }
-                NSLog(@"[Bridge] Core options V2 INTL set: %lu options parsed", (unsigned long)g_optDefinitions.count);
-            }
-            return true;
-        }
-
-        /* ── Core Options — V1 (legacy fallback) ── */
-        case RETRO_ENVIRONMENT_SET_CORE_OPTIONS: {
-            struct retro_core_options *opts = (struct retro_core_options *)data;
-            if (opts && opts->definitions) {
-                parseCoreOptionsV1(opts);
-                NSLog(@"[Bridge] Core options V1 set: %lu options parsed", (unsigned long)g_optDefinitions.count);
-            }
-            return true;
-        }
-        case RETRO_ENVIRONMENT_SET_CORE_OPTIONS_INTL: {
-            struct retro_core_options_intl *intl = (struct retro_core_options_intl *)data;
-            if (intl) {
-                if (intl->local && g_selectedLanguage != RETRO_LANGUAGE_ENGLISH) {
-                    parseCoreOptionsV1(intl->local);
-                } else if (intl->us) {
-                    parseCoreOptionsV1(intl->us);
-                }
-                NSLog(@"[Bridge] Core options V1 INTL set: %lu options parsed", (unsigned long)g_optDefinitions.count);
-            }
-            return true;
-        }
         case RETRO_ENVIRONMENT_GET_LANGUAGE:
-            if (data) *(unsigned *)data = (unsigned)g_selectedLanguage;
+            if (data) *(unsigned *)data = RETRO_LANGUAGE_ENGLISH;
             return true;
         case RETRO_ENVIRONMENT_GET_VARIABLE: {
             struct retro_variable *var = (struct retro_variable *)data;
             if (var && var->key) {
-                /* ── Check g_optValues first (user-set core options) ── */
-                initOptStorage();
-                NSString *key = [NSString stringWithUTF8String:var->key];
-                if (g_optValues[key]) {
-                    const char *val = [g_optValues[key] UTF8String];
-                    static __thread char s_optValueBuf[512];
-                    strncpy(s_optValueBuf, val, sizeof(s_optValueBuf) - 1);
-                    s_optValueBuf[sizeof(s_optValueBuf) - 1] = '\0';
-                    var->value = s_optValueBuf;
-                    return true;
-                }
-
-                // ── mupen64plus defaults (avoid GL4.2+ calls) ──
+                // mupen64plus-next: force angrylion (software) RDP to avoid GL4.2+ DSA requirement
+                // gliden64 requires glCreateTextures/glDispatchCompute etc. (GL4.5) not available on macOS
+                
+                // CPU core: pure interpreter is safest on ARM64 macOS (no JIT recompilation)
                 if (strcmp(var->key, "mupen64plus-next-cpucore") == 0 ||
                     strcmp(var->key, "mupen64plus-cpucore") == 0)
                     { var->value = "pure_interpreter"; return true; }
                 
+                // Force software RDP — avoids all GL4.2+ DSA/compute shader calls
                 if (strcmp(var->key, "mupen64plus-rdp-plugin") == 0 ||
                     strcmp(var->key, "mupen64plus-next-rdp-plugin") == 0)
                     { var->value = "angrylion"; return true; }
                 
+                // Disable threaded renderer (can cause race conditions on macOS)
                 if (strcmp(var->key, "mupen64plus-next-ThreadedRenderer") == 0 ||
                     strcmp(var->key, "mupen64plus-next-parallel-rdp-synchronous") == 0)
                     { var->value = "Disabled"; return true; }
                 
                 if (strcmp(var->key, "mupen64plus-next-aspect") == 0)
                     { var->value = "4:3"; return true; }
-
-                // ── Language mapping ──
-                const char* langStr = "English";
-                switch (g_selectedLanguage) {
-                    case RETRO_LANGUAGE_JAPANESE: langStr = "Japanese"; break;
-                    case RETRO_LANGUAGE_FRENCH:   langStr = "French";   break;
-                    case RETRO_LANGUAGE_GERMAN:   langStr = "German";   break;
-                    case RETRO_LANGUAGE_SPANISH:  langStr = "Spanish";  break;
-                    case RETRO_LANGUAGE_ITALIAN:  langStr = "Italian";  break;
-                    case RETRO_LANGUAGE_DUTCH:    langStr = "Dutch";    break;
-                    case RETRO_LANGUAGE_PORTUGUESE: langStr = "Portuguese"; break;
-                    case RETRO_LANGUAGE_RUSSIAN:  langStr = "Russian";  break;
-                    case RETRO_LANGUAGE_KOREAN:   langStr = "Korean";   break;
-                    default: langStr = "English"; break;
-                }
-
-                if (strstr(var->key, "language") != NULL || strstr(var->key, "Language") != NULL) {
-                    var->value = langStr;
-                    return true;
-                }
                 
-                // ── Region variables ──
-                if (strstr(var->key, "region") != NULL || strstr(var->key, "Region") != NULL) {
-                    if (g_selectedLanguage == RETRO_LANGUAGE_JAPANESE) {
-                        var->value = "Japan";
-                    } else if (g_selectedLanguage == RETRO_LANGUAGE_ENGLISH) {
-                        var->value = "North America";
-                    } else {
-                        var->value = "Europe";
-                    }
-                    return true;
-                }
-
-                // Variable not found — return default from definition if available
-                if (g_optDefinitions && g_optDefinitions[key]) {
-                    NSDictionary *def = g_optDefinitions[key];
-                    NSString *defVal = def[@"defaultValue"];
-                    if (defVal) {
-                        g_optValues[key] = defVal;  // Cache it
-                        var->value = [defVal UTF8String];
-                        return true;
-                    }
-                }
-
                 var->value = NULL;
             }
             return false;
@@ -482,38 +387,16 @@ static bool bridge_environment(unsigned cmd, void *data) {
         case RETRO_ENVIRONMENT_SET_GEOMETRY:
         case RETRO_ENVIRONMENT_SET_INPUT_DESCRIPTORS:
         case RETRO_ENVIRONMENT_SET_DISK_CONTROL_INTERFACE:
+        case RETRO_ENVIRONMENT_SET_ROTATION:
         case RETRO_ENVIRONMENT_SET_VARIABLES:          // core tells us what options exist — we acknowledge
         case RETRO_ENVIRONMENT_SET_SUPPORT_NO_GAME:
         case RETRO_ENVIRONMENT_SET_SYSTEM_AV_INFO:
-            if (data) {
+            if (data && g_instance) {
                 struct retro_system_av_info *info = (struct retro_system_av_info *)data;
-                // Validate FPS — some cores (e.g., mame2003-plus) send 0 or garbage during init.
-                // Never let invalid timing data overwrite good values.
-                double fps = info->timing.fps;
-                if (fps > 0.0 && fps < 1000.0
-                    && info->timing.sample_rate > 0.0 && info->timing.sample_rate < 1000000.0) {
-                    if (g_instance) {
-                        g_instance->_avInfo = *info;
-                    }
-                    NSLog(@"[Bridge] Core updated A/V info: FPS=%f SampleRate=%f", info->timing.fps, info->timing.sample_rate);
-                } else {
-                    NSLog(@"[Bridge] Ignoring invalid A/V info from core (FPS=%f SR=%f) — keeping previous values",
-                          fps, info->timing.sample_rate);
-                }
+                g_instance->_avInfo = *info;
+                NSLog(@"[Bridge] Core updated A/V info: FPS=%f SampleRate=%f", info->timing.fps, info->timing.sample_rate);
             }
             return true;
-        case RETRO_ENVIRONMENT_SET_ROTATION:
-            if (data) {
-                g_currentRotation = (int)*(unsigned *)data;
-                NSLog(@"[Bridge] Core set rotation: %d (%.0f deg CW)", g_currentRotation, (double)g_currentRotation * 90.0);
-            }
-            return true;
-        case RETRO_ENVIRONMENT_GET_ROTATION:
-            if (data) {
-                *(unsigned *)data = (unsigned)g_currentRotation;
-            }
-            return true;
-
         case RETRO_ENVIRONMENT_GET_VARIABLE_UPDATE:    // has anything changed? → no, vars are stable
             if (data) *(bool *)data = false;
             return true;
@@ -537,24 +420,15 @@ static bool bridge_environment(unsigned cmd, void *data) {
     }
 }
 
-static uint32_t g_videoRefreshCount = 0;
 static void bridge_video_refresh(const void *data, unsigned width, unsigned height, size_t pitch) {
-    // Always log the first few calls for debugging - ScummVM HW rendering path needs this
-    if (g_videoRefreshCount < 3) {
-        NSLog(@"[Bridge] video_refresh called: %dx%d pitch=%d data=%p hw=%d g_instance=%p", width, height, (int)pitch, data, (data == RETRO_HW_FRAME_BUFFER_VALID), (__bridge void*)g_instance);
-    }
-    g_videoRefreshCount++;
     if (g_instance) {
         if (g_instance->_hwRenderEnabled && g_instance->_glContext) CGLSetCurrentContext(g_instance->_glContext);
         const void *finalData = data;
-        BOOL isHW = (data == RETRO_HW_FRAME_BUFFER_VALID);
-        if (isHW) {
+        if (data == RETRO_HW_FRAME_BUFFER_VALID) {
             finalData = [g_instance readHWRenderedPixels:width height:height];
             pitch = width * 4; // Assuming RGBA8888 for GL readback
         }
         [g_instance handleVideoData:finalData width:width height:height pitch:(int)pitch format:[g_instance pixelFormat]];
-    } else {
-        NSLog(@"[Bridge] video_refresh called but g_instance is nil!");
     }
 }
 
@@ -649,7 +523,9 @@ static int16_t bridge_input_state(unsigned port, unsigned device, unsigned index
     
 #define LOAD_SYM(name) \
     _##name = (fn_##name)dlsym(_dlHandle, #name); \
-    if (!_##name) NSLog(@"[Bridge-WRN] Could not find symbol %s", #name);
+    /* Only warn for critical symbols */ \
+    if (!_##name && (strcmp(#name, "retro_init") == 0 || strcmp(#name, "retro_run") == 0 || strcmp(#name, "retro_load_game") == 0)) \
+        NSLog(@"[Bridge-WRN] Could not find symbol %s", #name);
     
     LOAD_SYM(retro_init)
     LOAD_SYM(retro_deinit)
@@ -702,8 +578,7 @@ static int16_t bridge_input_state(unsigned port, unsigned device, unsigned index
     
     if (!_retro_load_game(&gi)) return NO;
     
-    // config A/V - call retro_get_system_av_info AFTER load_game to get proper timing
-    memset(&_avInfo, 0, sizeof(_avInfo));
+    // config A/V
     _retro_get_system_av_info(&_avInfo);
     double sampleRate = _avInfo.timing.sample_rate > 0 ? _avInfo.timing.sample_rate : 44100.0;
     double fps = _avInfo.timing.fps > 0 ? _avInfo.timing.fps : 60.0;
@@ -719,66 +594,15 @@ static int16_t bridge_input_state(unsigned port, unsigned device, unsigned index
     _running = YES;
     
     // Timing loop using Mach Absolute Time for high precision
-    int localRunCount = 0;
     while (_running) {
-        // Check pause state - if paused, just sleep and skip emulation
-        while (g_isPaused && _running) {
-            // When paused, still render the last frame but don't advance emulation
-            [NSThread sleepForTimeInterval:0.05];
-        }
-        
-        if (!_running) break;
-        
         uint64_t start = mach_absolute_time();
         
-        // Use current FPS from _avInfo in case it changed mid-run.
-        // Clamp to sane bounds: 10-240 FPS to handle corrupted/missing values.
-        double rawFps = _avInfo.timing.fps > 0 ? _avInfo.timing.fps : 60.0;
-        double currentFps = rawFps < 10.0 ? 60.0 : (rawFps > 240.0 ? 240.0 : rawFps);
+        // Use current FPS from _avInfo in case it changed mid-run
+        double currentFps = _avInfo.timing.fps > 0 ? _avInfo.timing.fps : 60.0;
         NSTimeInterval frameTime = 1.0 / currentFps;
         
         if (_hwRenderEnabled && _glContext) CGLSetCurrentContext(_glContext);
         _retro_run();
-        localRunCount++;
-        
-        // For HW-rendered cores (like ScummVM) that don't call video_refresh,
-        // manually read from the FBO after each retro_run() to push frames
-        BOOL hwPath = _hwRenderEnabled && _glContext && _hwFBO;
-        if (localRunCount == 1) {
-            NSLog(@"[Bridge] HW render path enabled: hwRender=%d glCtx=%p fbo=%u", _hwRenderEnabled, (void*)_glContext, _hwFBO);
-        }
-        if (hwPath) {
-            CGLSetCurrentContext(_glContext);
-            
-            // Ensure all GL commands from retro_run() have completed before readback.
-            // ScummVM runs rendering on a separate cothread; glFinish() is critical
-            // to ensure its GL commands reached our FBO before we read it.
-            glFinish();
-            
-            // Get the current geometry (width/height may have changed from defaults)
-            unsigned hw = _avInfo.geometry.base_width;
-            unsigned hh = _avInfo.geometry.base_height;
-            if (hw <= 0) hw = 640;
-            if (hh <= 0) hh = 480;
-            // Read from the core's FBO and pass to the video callback
-            const void *pixels = [self readHWRenderedPixels:hw height:hh];
-            if (pixels) {
-                // Format: BGRA (GL_UNSIGNED_INT_8_8_8_8_REV readback = XRGB8888)
-                int fmt = 1; // RETRO_PIXEL_FORMAT_XRGB8888
-                if (localRunCount <= 3) {
-                    NSLog(@"[Bridge] HW readback success: %ux%u, sending to videoCallback", hw, hh);
-                }
-                [self handleVideoData:pixels width:hw height:hh pitch:(int)(hw*4) format:fmt];
-            } else {
-                if (localRunCount <= 3) {
-                    NSLog(@"[Bridge] HW readback returned NULL");
-                }
-            }
-        }
-        
-        if (localRunCount <= 3 || localRunCount % 60 == 0) {
-            NSLog(@"[Bridge] retro_run() called, iteration %d", localRunCount);
-        }
         
         uint64_t end = mach_absolute_time();
         
@@ -839,13 +663,9 @@ static int16_t bridge_input_state(unsigned port, unsigned device, unsigned index
 - (void)saveState {
     if (!_retro_serialize_size || !_retro_serialize) return;
     size_t sz = _retro_serialize_size();
-    if (sz == 0) return;
-    
     void *buf = malloc(sz);
-    if (!buf) return;
-    
     if (_retro_serialize(buf, sz)) {
-        NSData *data = [NSData dataWithBytesNoCopy:buf length:sz freeWhenDone:YES];
+        NSData *data = [NSData dataWithBytesNoCopy:buf length:sz];
         [data writeToFile:_saveStatePath atomically:YES];
     } else {
         free(buf);
@@ -853,17 +673,7 @@ static int16_t bridge_input_state(unsigned port, unsigned device, unsigned index
 }
 
 - (void)handleVideoData:(const void *)data width:(int)w height:(int)h pitch:(int)pitch format:(int)format {
-    // Only log first few times to avoid console spam
-    static uint32_t handleCount = 0;
-    if (handleCount < 2) {
-        NSLog(@"[Bridge] handleVideoData: %dx%d pitch=%d format=%d data=%p cb=%p", w, h, pitch, format, data, _videoCallback);
-        handleCount++;
-    }
-    if (_videoCallback) {
-        _videoCallback(data, w, h, pitch, format);
-    } else {
-        NSLog(@"[Bridge] WARNING: handleVideoData called but _videoCallback is nil!");
-    }
+    if (_videoCallback) _videoCallback(data, w, h, pitch, format);
 }
 
 - (void)handleAudioSamples:(const int16_t *)data count:(size_t)count {
