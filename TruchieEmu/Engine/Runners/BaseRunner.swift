@@ -268,10 +268,14 @@ class EmulatorRunner: ObservableObject, @unchecked Sendable {
         // Track last loaded core so Options view knows which file to persist to
         UserDefaults.standard.set(coreID, forKey: "lastLoadedCoreID")
         
+        // Get the bundled slang shader directory path
+        let shaderDir = Bundle.main.resourceURL?.appendingPathComponent("slang").path
+        
         emulationQueue.async {
             LibretroBridge.setLanguage(Int32(selectedLang))
             LibretroBridge.setLogLevel(Int32(selectedLogLevel))
             LibretroBridge.launch(withDylibPath: core, romPath: rom.path.path,
+                                  shaderDir: shaderDir,
                                   videoCallback: { [weak self] data, width, height, pitch, format in
                 self?.updateFrame(data: data, width: Int(width), height: Int(height), pitch: Int(pitch), format: Int(format))
             }, coreID: coreID)
@@ -324,9 +328,11 @@ class EmulatorRunner: ObservableObject, @unchecked Sendable {
         
         // Relaunch
         isRunning = true
+        let shaderDir = Bundle.main.resourceURL?.appendingPathComponent("slang").path
         emulationQueue.async {
             LibretroBridge.launch(withDylibPath: self.findCoreLib(coreID: coreID) ?? coreID, 
                                   romPath: gameRom.path.path,
+                                  shaderDir: shaderDir,
                                   videoCallback: { [weak self] data, width, height, pitch, format in
                 self?.updateFrame(data: data, width: Int(width), height: Int(height), pitch: Int(pitch), format: Int(format))
             }, coreID: coreID)

@@ -141,6 +141,7 @@ static LibretroBridgeImpl *g_instance = nil;
 static int g_selectedLanguage = 0; // RETRO_LANGUAGE_ENGLISH
 static int g_logLevel = 1; // 1 = Warn & Error
 static NSString *g_coreID = nil;   // Core ID for options persistence
+static NSString *g_shaderDir = nil; // Shader directory for libretro slang shaders
 static BOOL g_isPaused = NO;    // Pause state
 static int g_currentRotation = 0;   // Current rotation from core (0=0 deg, 1=90 deg CW, 2=180 deg, 3=270 deg CW)
 // Shared with bridge_get_current_framebuffer — updated by setupHWRender
@@ -936,7 +937,7 @@ static int16_t bridge_input_state(unsigned port, unsigned device, unsigned index
 @end
 
 @implementation LibretroBridge
-+ (void)launchWithDylibPath:(NSString *)dylib romPath:(NSString *)rom videoCallback:(void(^)(const void*, int, int, int, int))cb coreID:(NSString *)coreID {
++ (void)launchWithDylibPath:(NSString *)dylib romPath:(NSString *)rom shaderDir:(NSString *)shaderDir videoCallback:(void(^)(const void*, int, int, int, int))cb coreID:(NSString *)coreID {
     static dispatch_once_t onceToken;
     dispatch_once(&onceToken, ^{
         g_bridgeQueue = dispatch_queue_create("com.truchiemu.bridge", DISPATCH_QUEUE_SERIAL);
@@ -944,6 +945,7 @@ static int16_t bridge_input_state(unsigned port, unsigned device, unsigned index
 
     // Reset options storage for new core
     g_coreID = [coreID copy];
+    g_shaderDir = [shaderDir copy];
     initOptStorage();
     [g_optValues removeAllObjects];
     g_optDefinitions = nil;

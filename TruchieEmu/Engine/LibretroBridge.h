@@ -6,6 +6,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 + (void)launchWithDylibPath:(NSString *)dylibPath
                     romPath:(NSString *)romPath
+                  shaderDir:(nullable NSString *)shaderDir
               videoCallback:(void(^)(const void *data, int width, int height, int pitch, int format))cb
                      coreID:(NSString *)coreID;
 
