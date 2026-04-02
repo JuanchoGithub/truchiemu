@@ -41,12 +41,11 @@ struct MouseDownButtonAction<Label: View>: NSViewRepresentable {
             button.trailingAnchor.constraint(equalTo: container.trailingAnchor),
             button.topAnchor.constraint(equalTo: container.topAnchor),
             button.bottomAnchor.constraint(equalTo: container.bottomAnchor),
-            hostingView.centerXAnchor.constraint(equalTo: container.centerXAnchor),
-            hostingView.centerYAnchor.constraint(equalTo: container.centerYAnchor)
+            hostingView.leadingAnchor.constraint(equalTo: container.leadingAnchor),
+            hostingView.trailingAnchor.constraint(equalTo: container.trailingAnchor),
+            hostingView.topAnchor.constraint(equalTo: container.topAnchor),
+            hostingView.bottomAnchor.constraint(equalTo: container.bottomAnchor)
         ])
-        
-        container.setContentHuggingPriority(.defaultHigh, for: .horizontal)
-        container.setContentHuggingPriority(.defaultHigh, for: .vertical)
         
         return container
     }
@@ -70,6 +69,36 @@ struct MouseDownButtonAction<Label: View>: NSViewRepresentable {
         @objc func performAction() {
             action()
         }
+    }
+}
+
+// MARK: - MouseDownButtonActionStyled (with pressed state tracking)
+struct MouseDownButtonActionStyled<Label: View>: View {
+    let action: () -> Void
+    let label: () -> Label
+    @State private var isPressed = false
+    
+    var body: some View {
+        MouseDownButtonAction(action: {
+            withAnimation(.easeInOut(duration: 0.1)) {
+                isPressed = true
+            }
+            action()
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+                withAnimation(.easeInOut(duration: 0.1)) {
+                    isPressed = false
+                }
+            }
+        }) {
+            label()
+                .opacity(isPressed ? 0.7 : 1.0)
+                .background(
+                    RoundedRectangle(cornerRadius: 8)
+                        .fill(isPressed ? Color.white.opacity(0.25) : Color.white.opacity(0.15))
+                )
+                .contentShape(Rectangle())
+        }
+        .frame(minWidth: 50)
     }
 }
 
@@ -120,7 +149,7 @@ struct ReloadButton: View {
     @ObservedObject var runner: EmulatorRunner
     
     var body: some View {
-        MouseDownButtonAction(action: {
+        MouseDownButtonActionStyled(action: {
             runner.reloadGame()
         }) {
             VStack(spacing: 4) {
@@ -131,7 +160,6 @@ struct ReloadButton: View {
             }
             .frame(minWidth: 50)
         }
-        .buttonStyle(ToolbarButtonStyle())
     }
 }
 
