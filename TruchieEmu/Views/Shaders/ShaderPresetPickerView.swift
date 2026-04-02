@@ -26,6 +26,9 @@ struct ShaderParameterSliders: View {
     let preset: ShaderPreset
     @Binding var uniformValues: [String: Float]
     
+    /// Callback fired when user releases any slider (not during drag)
+    var onValueCommitted: (([String: Float]) -> Void)?
+    
     var body: some View {
         VStack(alignment: .leading, spacing: 10) {
             HStack {
@@ -69,7 +72,13 @@ struct ShaderParameterSliders: View {
                     }
                 ),
                 in: uniform.minValue...uniform.maxValue,
-                step: uniform.step
+                step: uniform.step,
+                onEditingChanged: { editing in
+                    // Only notify when user releases the slider (editing = false)
+                    if !editing {
+                        onValueCommitted?(uniformValues)
+                    }
+                }
             )
         }
     }
@@ -108,7 +117,6 @@ class ShaderWindowController: NSWindowController, NSWindowDelegate {
     private var settings: ShaderWindowSettings
     private var onPresetChanged: ((String, [String: Float]) -> Void)?
     private var settingsCancellable: AnyCancellable?
-    private var uniformValuesCancellable: AnyCancellable?
     
     static var shared: ShaderWindowController?
     
@@ -143,26 +151,23 @@ class ShaderWindowController: NSWindowController, NSWindowDelegate {
         
         window.delegate = self
         
-        let hostingView = NSHostingView(rootView: ShaderPresetPickerView(settings: settings))
+        let hostingView = NSHostingView(rootView: ShaderPresetPickerView(
+            settings: settings,
+            onValueCommitted: { [weak self] values in
+                guard let self = self else { return }
+                self.onPresetChanged?(self.settings.shaderPresetID, values)
+            }
+        ))
         hostingView.translatesAutoresizingMaskIntoConstraints = true
         hostingView.autoresizingMask = [.width, .height]
         window.contentView = hostingView
         
-        // Observe preset changes using Combine
+        // Observe preset changes using Combine (for preset switches only)
         settingsCancellable = settings.$shaderPresetID
             .dropFirst()
             .removeDuplicates()
             .sink { [weak self] presetID in
                 self?.onPresetChanged?(presetID, self?.settings.uniformValues ?? [:])
-            }
-        
-        // Observe uniform value changes using Combine
-        uniformValuesCancellable = settings.$uniformValues
-            .dropFirst()
-            .removeDuplicates()
-            .sink { [weak self] values in
-                // Notify the callback with current preset + updated values
-                self?.onPresetChanged?(self?.settings.shaderPresetID ?? "", values)
             }
     }
     
@@ -209,6 +214,9 @@ struct ShaderPresetPickerView: View {
     @ObservedObject var settings: ShaderWindowSettings
     
     @State private var selectedCategory: ShaderType?
+    
+    /// Callback fired when user releases any slider (not during drag)
+    var onValueCommitted: (([String: Float]) -> Void)?
     
     var body: some View {
         VStack(spacing: 0) {
@@ -417,7 +425,8 @@ struct ShaderPresetPickerView: View {
                !preset.globalUniforms.isEmpty {
                 ShaderParameterSliders(
                     preset: preset,
-                    uniformValues: $settings.uniformValues
+                    uniformValues: $settings.uniformValues,
+                    onValueCommitted: onValueCommitted
                 )
             }
         }
