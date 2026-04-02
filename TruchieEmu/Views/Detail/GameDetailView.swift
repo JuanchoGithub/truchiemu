@@ -201,6 +201,7 @@ struct GameDetailView: View {
     @State private var gameAchievements: [Achievement] = []
     @State private var isAchievementsLoading = false
     @State private var showCheatManager = false
+    @State private var showImportCheatFile = false
 
     @State private var useCustomCore: Bool = false
     @State private var selectedCoreID: String? = nil
@@ -330,6 +331,10 @@ struct GameDetailView: View {
                 systemName: system?.name ?? "Unknown"
             )
             .environmentObject(controllerService)
+        }
+        .sheet(isPresented: $showCheatManager) {
+            CheatManagerView(rom: currentROM)
+                .frame(minWidth: 500, minHeight: 600)
         }
     }
 
@@ -1095,45 +1100,159 @@ struct GameDetailView: View {
 
     // MARK: - Section 5: Cheats
 
+    @StateObject private var cheatManagerService = CheatManagerService.shared
+    @State private var cheatCount: Int = 0
+    @State private var enabledCheatCount: Int = 0
+
     private var cheatsSection: some View {
         ModernSectionCard(
             title: "Cheats",
-            icon: "wand.and.stars"
+            icon: "wand.and.stars",
+            badge: cheatCount > 0 ? "\(enabledCheatCount)/\(cheatCount)" : nil
         ) {
             VStack(spacing: 14) {
+                // Cheat status display
                 HStack {
-                    VStack(alignment: .leading, spacing: 2) {
+                    VStack(alignment: .leading, spacing: 4) {
                         Text("Cheat Codes")
                             .font(.subheadline)
                             .fontWeight(.medium)
                             .foregroundColor(.white.opacity(0.85))
-                        Text("Import and manage cheat codes")
-                            .font(.caption)
-                            .foregroundColor(.white.opacity(0.5))
+                        
+                        if cheatCount > 0 {
+                            Text("\(enabledCheatCount) of \(cheatCount) enabled")
+                                .font(.caption)
+                                .foregroundColor(.white.opacity(0.5))
+                        } else {
+                            Text("No cheats loaded")
+                                .font(.caption)
+                                .foregroundColor(.white.opacity(0.5))
+                        }
                     }
                     Spacer()
+                    
+                    // Quick actions
+                    if cheatCount > 0 {
+                        Button {
+                            if enabledCheatCount > 0 {
+                                cheatManagerService.disableAllCheats(for: currentROM)
+                            } else {
+                                cheatManagerService.enableAllCheats(for: currentROM)
+                            }
+                        } label: {
+                            Label(enabledCheatCount > 0 ? "Disable All" : "Enable All", 
+                                  systemImage: enabledCheatCount > 0 ? "stop.circle" : "play.circle")
+                                .font(.caption)
+                        }
+                        .buttonStyle(.plain)
+                    }
                 }
 
                 Divider().overlay(Color.white.opacity(0.08))
 
-                HStack {
+                // Download and manage buttons
+                HStack(spacing: 8) {
+                    // Download cheats button
+                    Button {
+                        Task {
+                            await CheatDownloadService.shared.downloadCheatsForSystem(currentROM.systemID ?? "")
+                            cheatManagerService.loadCheatsForROM(currentROM)
+                            updateCheatCounts()
+                        }
+                    } label: {
+                        HStack(spacing: 6) {
+                            Image(systemName: "arrow.down.circle")
+                            Text("Download")
+                        }
+                        .foregroundColor(.white)
+                        .padding(.horizontal, 12)
+                        .padding(.vertical, 6)
+                        .background(Color.green.opacity(0.6))
+                        .cornerRadius(6)
+                    }
+                    
+                    // Import .cht file button
+                    Button {
+                        showImportCheatFile = true
+                    } label: {
+                        HStack(spacing: 6) {
+                            Image(systemName: "square.and.arrow.down")
+                            Text("Import")
+                        }
+                        .foregroundColor(.white)
+                        .padding(.horizontal, 12)
+                        .padding(.vertical, 6)
+                        .background(Color.orange.opacity(0.6))
+                        .cornerRadius(6)
+                    }
+                    
                     Spacer()
+                    
+                    // Manage cheats button
                     Button {
                         showCheatManager = true
                     } label: {
                         HStack(spacing: 6) {
                             Image(systemName: "wand.and.stars")
-                            Text("Manage Cheats")
+                            Text("Manage")
                         }
                         .foregroundColor(.white)
                         .padding(.horizontal, 14)
-                        .padding(.vertical, 8)
+                        .padding(.vertical, 6)
                         .background(Color.blue.opacity(0.6))
-                        .cornerRadius(8)
+                        .cornerRadius(6)
                     }
                 }
+
+                Divider().overlay(Color.white.opacity(0.08))
+
+                // Link to cheat settings
+                Button {
+                    NSApp.sendAction(Selector(("showSettingsWindow:")), to: nil, from: nil)
+                } label: {
+                    HStack {
+                        Image(systemName: "gearshape")
+                            .foregroundColor(.white.opacity(0.5))
+                        Text("Cheat Settings")
+                            .font(.caption)
+                            .foregroundColor(.white.opacity(0.5))
+                        Spacer()
+                        Image(systemName: "chevron.right")
+                            .font(.caption)
+                            .foregroundColor(.white.opacity(0.3))
+                    }
+                }
+                .buttonStyle(.plain)
             }
         }
+        .onAppear {
+            updateCheatCounts()
+        }
+        .onChange(of: currentROM.id) { _ in
+            updateCheatCounts()
+        }
+        .fileImporter(
+            isPresented: $showImportCheatFile,
+            allowedContentTypes: [.item],
+            allowsMultipleSelection: false
+        ) { result in
+            switch result {
+            case .success(let urls):
+                if let url = urls.first {
+                    Task {
+                        await cheatManagerService.importChtFile(url, for: currentROM)
+                        updateCheatCounts()
+                    }
+                }
+            case .failure(let error):
+                print("File import error: \(error)")
+            }
+        }
+    }
+    
+    private func updateCheatCounts() {
+        cheatCount = cheatManagerService.totalCount(for: currentROM)
+        enabledCheatCount = cheatManagerService.enabledCount(for: currentROM)
     }
 
     // MARK: - Section 6: Achievements
