@@ -14,14 +14,22 @@ class ControllerService: ObservableObject {
         }
     }
 
+    /// Handedness preference: "right" (default) or "left"
+    @Published var handedness: String {
+        didSet {
+            defaults.set(handedness, forKey: "controller_handedness")
+        }
+    }
+
     private let defaults = UserDefaults.standard
-    private let mappingKey = "controller_mappings_v2" 
+    private let mappingKey = "controller_mappings_v2"
     private let kbMappingKey = "keyboard_mapping_v1"
-    private var savedMappings: [String: [String: ControllerMapping]] = [:] 
+    private var savedMappings: [String: [String: ControllerMapping]] = [:]
 
     private var cancellables = Set<AnyCancellable>()
 
     init() {
+        self.handedness = defaults.string(forKey: "controller_handedness") ?? "right"
         self.activePlayerIndex = defaults.integer(forKey: "active_player_index")
         loadMappings()
         setupControllerNotifications()
@@ -44,7 +52,7 @@ class ControllerService: ObservableObject {
         var players: [PlayerController] = []
         for (index, gc) in GCController.controllers().prefix(4).enumerated() {
             let vendorName = gc.vendorName ?? "Unknown Controller"
-            let mapping = savedMappings[vendorName]?["default"] ?? ControllerMapping.defaults(for: vendorName, systemID: "default")
+            let mapping = savedMappings[vendorName]?["default"] ?? ControllerMapping.defaults(for: vendorName, systemID: "default", handedness: handedness)
             players.append(PlayerController(
                 playerIndex: index + 1,
                 gcController: gc,
@@ -71,7 +79,7 @@ class ControllerService: ObservableObject {
         if let global = savedMappings[vendorName]?["default"] {
             return global
         }
-        return ControllerMapping.defaults(for: vendorName, systemID: systemID)
+        return ControllerMapping.defaults(for: vendorName, systemID: systemID, handedness: handedness)
     }
 
     func updateKeyboardMapping(_ mapping: KeyboardMapping, for systemID: String) {
@@ -104,7 +112,7 @@ class ControllerService: ObservableObject {
     @Published var keyboardMappings: [String: KeyboardMapping] = [:]
     
     func keyboardMapping(for systemID: String) -> KeyboardMapping {
-        keyboardMappings[systemID] ?? KeyboardMapping.defaults(for: systemID)
+        keyboardMappings[systemID] ?? KeyboardMapping.defaults(for: systemID, handedness: handedness)
     }
 }
 
@@ -124,90 +132,485 @@ struct ControllerMapping: Codable {
     var vendorName: String
     var buttons: [RetroButton: GCButtonMapping]
 
-    static func defaults(for vendorName: String, systemID: String) -> ControllerMapping {
+    static func defaults(for vendorName: String, systemID: String, handedness: String = "right") -> ControllerMapping {
+        let isLeftHanded = handedness == "left"
         var mapping = ControllerMapping(vendorName: vendorName, buttons: [:])
         
-        mapping.buttons[.a] = GCButtonMapping(gcElementName: "Button A", gcElementAlias: "A")
-        mapping.buttons[.b] = GCButtonMapping(gcElementName: "Button B", gcElementAlias: "B")
-        mapping.buttons[.x] = GCButtonMapping(gcElementName: "Button X", gcElementAlias: "X")
-        mapping.buttons[.y] = GCButtonMapping(gcElementName: "Button Y", gcElementAlias: "Y")
+        // Get the available buttons for this system
+        let availableButtons = RetroButton.availableButtons(for: systemID)
         
-        mapping.buttons[.up] = GCButtonMapping(gcElementName: "D-pad Up", gcElementAlias: "Up")
-        mapping.buttons[.down] = GCButtonMapping(gcElementName: "D-pad Down", gcElementAlias: "Down")
-        mapping.buttons[.left] = GCButtonMapping(gcElementName: "D-pad Left", gcElementAlias: "Left")
-        mapping.buttons[.right] = GCButtonMapping(gcElementName: "D-pad Right", gcElementAlias: "Right")
+        // MARK: - NES and NES-style (8-bit era)
+        // Buttons: D-Pad, Start, Select, A, B (+ Turbo variants)
+        if availableButtons.contains(.a) && availableButtons.contains(.b) && !availableButtons.contains(.x) {
+            // NES Standard layout
+            mapping.buttons[.up] = GCButtonMapping(gcElementName: "D-pad Up", gcElementAlias: "Up")
+            mapping.buttons[.down] = GCButtonMapping(gcElementName: "D-pad Down", gcElementAlias: "Down")
+            mapping.buttons[.left] = GCButtonMapping(gcElementName: "D-pad Left", gcElementAlias: "Left")
+            mapping.buttons[.right] = GCButtonMapping(gcElementName: "D-pad Right", gcElementAlias: "Right")
+            
+            if isLeftHanded {
+                // Left-handed: A on X, B on Y
+                mapping.buttons[.a] = GCButtonMapping(gcElementName: "Button X", gcElementAlias: "X")
+                mapping.buttons[.b] = GCButtonMapping(gcElementName: "Button Y", gcElementAlias: "Y")
+                mapping.buttons[.turboA] = GCButtonMapping(gcElementName: "Button A", gcElementAlias: "A")
+                mapping.buttons[.turboB] = GCButtonMapping(gcElementName: "Button B", gcElementAlias: "B")
+            } else {
+                // Right-handed (default): A on A, B on B
+                mapping.buttons[.a] = GCButtonMapping(gcElementName: "Button A", gcElementAlias: "A")
+                mapping.buttons[.b] = GCButtonMapping(gcElementName: "Button B", gcElementAlias: "B")
+                mapping.buttons[.turboA] = GCButtonMapping(gcElementName: "Button X", gcElementAlias: "X")
+                mapping.buttons[.turboB] = GCButtonMapping(gcElementName: "Button Y", gcElementAlias: "Y")
+            }
+            
+            mapping.buttons[.start] = GCButtonMapping(gcElementName: "Button Menu", gcElementAlias: "Menu")
+            mapping.buttons[.select] = GCButtonMapping(gcElementName: "Button Options", gcElementAlias: "Options")
+        }
+        // MARK: - SNES-style (16-bit era with X, Y, L, R)
+        // SNES, Genesis 6-button, etc.
+        else if availableButtons.contains(.x) && availableButtons.contains(.y) {
+            // D-Pad (all systems)
+            mapping.buttons[.up] = GCButtonMapping(gcElementName: "D-pad Up", gcElementAlias: "Up")
+            mapping.buttons[.down] = GCButtonMapping(gcElementName: "D-pad Down", gcElementAlias: "Down")
+            mapping.buttons[.left] = GCButtonMapping(gcElementName: "D-pad Left", gcElementAlias: "Left")
+            mapping.buttons[.right] = GCButtonMapping(gcElementName: "D-pad Right", gcElementAlias: "Right")
+            
+            if isLeftHanded {
+                // Left-handed layout for SNES-style
+                mapping.buttons[.a] = GCButtonMapping(gcElementName: "Button X", gcElementAlias: "X")
+                mapping.buttons[.b] = GCButtonMapping(gcElementName: "Button Y", gcElementAlias: "Y")
+                mapping.buttons[.x] = GCButtonMapping(gcElementName: "Button A", gcElementAlias: "A")
+                mapping.buttons[.y] = GCButtonMapping(gcElementName: "Button B", gcElementAlias: "B")
+            } else {
+                // Right-handed (default): Standard layout
+                mapping.buttons[.a] = GCButtonMapping(gcElementName: "Button A", gcElementAlias: "A")
+                mapping.buttons[.b] = GCButtonMapping(gcElementName: "Button B", gcElementAlias: "B")
+                mapping.buttons[.x] = GCButtonMapping(gcElementName: "Button X", gcElementAlias: "X")
+                mapping.buttons[.y] = GCButtonMapping(gcElementName: "Button Y", gcElementAlias: "Y")
+            }
+            
+            // Shoulder buttons
+            mapping.buttons[.l1] = GCButtonMapping(gcElementName: "Left Shoulder", gcElementAlias: "L1")
+            mapping.buttons[.r1] = GCButtonMapping(gcElementName: "Right Shoulder", gcElementAlias: "R1")
+            
+            // L2/R2 only on systems that use them
+            if availableButtons.contains(.l2) {
+                mapping.buttons[.l2] = GCButtonMapping(gcElementName: "Left Trigger", gcElementAlias: "L2")
+            }
+            if availableButtons.contains(.r2) {
+                mapping.buttons[.r2] = GCButtonMapping(gcElementName: "Right Trigger", gcElementAlias: "R2")
+            }
+            
+            mapping.buttons[.start] = GCButtonMapping(gcElementName: "Button Menu", gcElementAlias: "Menu")
+            mapping.buttons[.select] = GCButtonMapping(gcElementName: "Button Options", gcElementAlias: "Options")
+        }
         
-        mapping.buttons[.l1] = GCButtonMapping(gcElementName: "Left Shoulder", gcElementAlias: "L1")
-        mapping.buttons[.r1] = GCButtonMapping(gcElementName: "Right Shoulder", gcElementAlias: "R1")
-        mapping.buttons[.l2] = GCButtonMapping(gcElementName: "Left Trigger", gcElementAlias: "L2")
-        mapping.buttons[.r2] = GCButtonMapping(gcElementName: "Right Trigger", gcElementAlias: "R2")
+        // MARK: - Genesis/Mega Drive specific
+        if systemID == "genesis" || systemID == "megadrive", availableButtons.contains(.c), availableButtons.contains(.z) {
+            mapping.buttons[.c] = GCButtonMapping(gcElementName: "Button X", gcElementAlias: "X")
+            if availableButtons.contains(.z) {
+                mapping.buttons[.z] = GCButtonMapping(gcElementName: "Button Y", gcElementAlias: "Y")
+            }
+        }
         
-        mapping.buttons[.start] = GCButtonMapping(gcElementName: "Button Menu", gcElementAlias: "Menu")
-        mapping.buttons[.select] = GCButtonMapping(gcElementName: "Button Options", gcElementAlias: "Options")
+        // MARK: - Analog sticks (only for systems that support them)
+        if availableButtons.contains(.lStickX) {
+            mapping.buttons[.lStickX] = GCButtonMapping(gcElementName: "Left Stick", gcElementAlias: "L Stick X")
+            mapping.buttons[.lStickY] = GCButtonMapping(gcElementName: "Left Stick", gcElementAlias: "L Stick Y")
+        }
+        if availableButtons.contains(.rStickX) {
+            mapping.buttons[.rStickX] = GCButtonMapping(gcElementName: "Right Stick", gcElementAlias: "R Stick X")
+            mapping.buttons[.rStickY] = GCButtonMapping(gcElementName: "Right Stick", gcElementAlias: "R Stick Y")
+        }
         
-        // Analog sticks
-        mapping.buttons[.lStickX] = GCButtonMapping(gcElementName: "Left Stick", gcElementAlias: "L Stick X")
-        mapping.buttons[.lStickY] = GCButtonMapping(gcElementName: "Left Stick", gcElementAlias: "L Stick Y")
-        mapping.buttons[.rStickX] = GCButtonMapping(gcElementName: "Right Stick", gcElementAlias: "R Stick X")
-        mapping.buttons[.rStickY] = GCButtonMapping(gcElementName: "Right Stick", gcElementAlias: "R Stick Y")
+        // N64 C-buttons
+        if availableButtons.contains(.cUp) {
+            // Map C-buttons to right stick or face buttons
+            if isLeftHanded {
+                mapping.buttons[.cUp] = GCButtonMapping(gcElementName: "D-pad Up", gcElementAlias: "Up")
+                mapping.buttons[.cDown] = GCButtonMapping(gcElementName: "D-pad Down", gcElementAlias: "Down")
+                mapping.buttons[.cLeft] = GCButtonMapping(gcElementName: "D-pad Left", gcElementAlias: "Left")
+                mapping.buttons[.cRight] = GCButtonMapping(gcElementName: "D-pad Right", gcElementAlias: "Right")
+            } else {
+                mapping.buttons[.cUp] = GCButtonMapping(gcElementName: "Right Stick", gcElementAlias: "R Stick Y")
+                mapping.buttons[.cDown] = GCButtonMapping(gcElementName: "Right Stick", gcElementAlias: "R Stick Y")
+                mapping.buttons[.cLeft] = GCButtonMapping(gcElementName: "Right Stick", gcElementAlias: "R Stick X")
+                mapping.buttons[.cRight] = GCButtonMapping(gcElementName: "Right Stick", gcElementAlias: "R Stick X")
+            }
+        }
+        
+        // Arcade coin/start buttons
+        if availableButtons.contains(.coin1) {
+            mapping.buttons[.coin1] = GCButtonMapping(gcElementName: "Button Y", gcElementAlias: "Y")
+            mapping.buttons[.start1] = GCButtonMapping(gcElementName: "Button Menu", gcElementAlias: "Menu")
+        }
+        if availableButtons.contains(.coin2) {
+            mapping.buttons[.coin2] = GCButtonMapping(gcElementName: "Button X", gcElementAlias: "X")
+            mapping.buttons[.start2] = GCButtonMapping(gcElementName: "Button Options", gcElementAlias: "Options")
+        }
         
         return mapping
     }
 }
 
 struct GCButtonMapping: Codable {
-    var gcElementName: String   
-    var gcElementAlias: String? 
+    var gcElementName: String
+    var gcElementAlias: String?
 }
 
 struct KeyboardMapping: Codable {
-    var buttons: [RetroButton: UInt16]  
+    var buttons: [RetroButton: UInt16]
 
-    static func defaults(for systemID: String) -> KeyboardMapping {
-        var base: [RetroButton: UInt16] = [
-            .up:     126,  
-            .down:   125,  
-            .left:   123,  
-            .right:  124,  
-            .a:      6,    
-            .b:      7,    
-            .start:  36,   
-            .select: 48,   
-        ]
+    static func defaults(for systemID: String, handedness: String = "right") -> KeyboardMapping {
+        let isLeftHanded = handedness == "left"
+        var base: [RetroButton: UInt16] = [:]
+        
+        // Standard D-Pad on arrow keys for all systems
+        base[.up] = 126     // Up Arrow
+        base[.down] = 125   // Down Arrow
+        base[.left] = 123   // Left Arrow
+        base[.right] = 124  // Right Arrow
+        
+        // Start and Select
+        base[.start] = 36   // Return/Enter
+        base[.select] = 48  // Tab
         
         switch systemID {
-        case "snes":
-            base[.x] = 8 
-            base[.y] = 9 
-            base[.l1] = 12 
-            base[.r1] = 14 
-        case "genesis":
-            base[.c] = 8 
-            base[.x] = 12 
-            base[.y] = 13 
-            base[.z] = 14 
+        case "nes":
+            // NES: 4 directions + Start + Select + A + B (+ Turbo)
+            if isLeftHanded {
+                base[.a] = 8     // X key
+                base[.b] = 9     // Y key
+                base[.turboA] = 6  // A key (turbo)
+                base[.turboB] = 7  // B key (turbo)
+            } else {
+                base[.a] = 6     // A key
+                base[.b] = 7     // B key
+                base[.turboA] = 8  // X key (turbo)
+                base[.turboB] = 9  // Y key (turbo)
+            }
+            
+        case "nes_turbo":
+            // NES Turbo variant with explicit turbo buttons
+            if isLeftHanded {
+                base[.a] = 8     // X key
+                base[.b] = 9     // Y key
+                base[.turboA] = 6  // A key (turbo)
+                base[.turboB] = 7  // B key (turbo)
+            } else {
+                base[.a] = 6     // A key
+                base[.b] = 7     // B key
+                base[.turboA] = 8  // X key (turbo)
+                base[.turboB] = 9  // Y key (turbo)
+            }
+            
+        case "snes", "sfc":
+            // SNES: D-Pad + Start + Select + A, B, X, Y + L, R
+            base[.a] = 6     // A
+            base[.b] = 7     // B
+            base[.x] = 8     // X
+            base[.y] = 9     // Y
+            base[.l1] = 12   // Q
+            base[.r1] = 14   // W
+            if isLeftHanded {
+                // Swap A/B with X/Y for left-handed
+                base[.a] = 8
+                base[.b] = 9
+                base[.x] = 6
+                base[.y] = 7
+            }
+            
+        case "genesis", "megadrive":
+            // Genesis: D-Pad + Start + A, B, C, X, Y, Z (Mode for Select)
+            base[.a] = 6     // A
+            base[.b] = 7     // B
+            base[.c] = 8     // X
+            base[.x] = 12    // Q
+            base[.y] = 13    // E
+            base[.z] = 14    // W
+            base[.select] = 48  // Tab (Mode button)
+            
+        case "n64":
+            // N64: D-Pad + Start + A, B, Z + L, R + C-buttons (on right stick or WASD)
+            base[.a] = 6     // A
+            base[.b] = 7     // B
+            base[.z] = 14    // W (R)
+            base[.l1] = 12   // Q
+            base[.r1] = 11   // E
+            // C-buttons mapped to num pad or IJKL
+            base[.cUp] = 126   // Up arrow (secondary - C buttons)
+            base[.cDown] = 125 // Down arrow
+            base[.cLeft] = 123 // Left arrow
+            base[.cRight] = 124 // Right arrow
+            
+        case "psx", "ps1":
+            // PlayStation: D-Pad + Start + Select + Square(□), X, Circle(○), △
+            // + L1, R1, L2, R2, Analog
+            base[.a] = 6     // A (X button)
+            base[.b] = 7     // B (Circle button)
+            base[.x] = 8     // X (Square button)
+            base[.y] = 9     // Y (Triangle button)
+            base[.l1] = 12   // Q
+            base[.r1] = 14   // W
+            base[.l2] = 1    // 1 (top row)
+            base[.r2] = 3    // 3 (top row)
+            base[.select] = 48  // Tab
+            if isLeftHanded {
+                base[.a] = 8
+                base[.b] = 9
+                base[.x] = 6
+                base[.y] = 7
+            }
+            
+        case "gba", "gb", "gbc":
+            // Game Boy family: D-Pad + Start + Select + A, B (+ L, R on GBA)
+            base[.a] = 6     // A
+            base[.b] = 7     // B
+            if systemID == "gba" {
+                base[.l1] = 12  // Q
+                base[.r1] = 14  // W
+            }
+            
+        case "nds":
+            // Nintendo DS: D-Pad + Start + Select + A, B, X, Y + L, R
+            base[.a] = 6     // A
+            base[.b] = 7     // B
+            base[.x] = 8     // X
+            base[.y] = 9     // Y
+            base[.l1] = 12   // Q
+            base[.r1] = 14   // W
+            // Touch screen support via mouse
+        
+        case "sms":
+            // Sega Master System: D-Pad + 1, 2 (Start for Select)
+            base[.a] = 6     // A (Button 1)
+            base[.b] = 7     // B (Button 2)
+            
+        case "gamegear":
+            // Game Gear: Similar to Master System
+            base[.a] = 6     // A (Button 1)
+            base[.b] = 7     // B (Button 2)
+            
+        case "32x":
+            // Sega 32X: 6-button + Start + A, B, C, X, Y, Z + Mode (Select)
+            base[.a] = 6     // A
+            base[.b] = 7     // B
+            base[.c] = 8     // X
+            base[.x] = 12    // Q
+            base[.y] = 13    // E
+            base[.z] = 14    // W
+            base[.start] = 36  // Return
+            base[.select] = 48 // Tab (Mode)
+            
+        case "atari2600":
+            // Atari 2600: Joystick + Action button + Reset, Select (on console)
+            base[.a] = 6     // A (Action)
+            base[.select] = 48  // Tab (Difficulty)
+            
+        case "atari5200":
+            // Atari 5200: Joystick + 4 action buttons + Start, Pause, Reset
+            base[.a] = 6     // Button 1
+            base[.b] = 7     // Button 2
+            base[.x] = 8     // Button 3
+            base[.y] = 9     // Button 4
+            
+        case "atari7800":
+            // Atari 7800: Joystick + 1 or 2 buttons
+            base[.a] = 6     // A
+            base[.b] = 7     // B
+            
+        case "lynx":
+            // Atari Lynx: D-Pad + A, B + Option, Pause
+            base[.a] = 6     // A
+            base[.b] = 7     // B
+            
+        case "ngp", "ngc":
+            // Neo Geo Pocket: D-Pad + A, B + Option
+            base[.a] = 6     // A
+            base[.b] = 7     // B
+            
+        case "pce":
+            // PC Engine / TurboGrafx-16: D-Pad + 1, 2 buttons + Run and Select
+            base[.a] = 6     // Button 1
+            base[.b] = 7     // Button 2
+            
+        case "saturn":
+            // Sega Saturn: D-Pad + Start + A, B, C, X, Y, Z + L, R
+            base[.a] = 6     // A
+            base[.b] = 7     // B
+            base[.c] = 8     // X (C)
+            base[.x] = 12    // Q (X)
+            base[.y] = 13    // E (Y)
+            base[.z] = 14    // W (Z)
+            base[.l1] = 1    // 1 (L)
+            base[.r1] = 3    // 3 (R)
+            
+        case "dreamcast":
+            // Dreamcast: D-Pad + Start + A, B, X, Y + L, R + Analog
+            base[.a] = 6     // A
+            base[.b] = 7     // B
+            base[.x] = 8     // X
+            base[.y] = 9     // Y
+            base[.l1] = 12   // Q
+            base[.r1] = 14   // W
+            base[.l2] = 1    // 1 (L Trigger)
+            base[.r2] = 3    // 3 (R Trigger)
+            // Analog stick support
+            base[.lStickX] = 123 // Left Arrow (secondary)
+            base[.lStickY] = 125 // Right Arrow
+            
+        case "ps2":
+            // PlayStation 2: Similar to PS1 + Analog
+            base[.a] = 6     // A (Cross)
+            base[.b] = 7     // B (Circle)
+            base[.x] = 8     // X (Square)
+            base[.y] = 9     // Y (Triangle)
+            base[.l1] = 12   // Q
+            base[.r1] = 14   // W
+            base[.l2] = 1    // 1 (L2)
+            base[.r2] = 3    // 3 (R2)
+            if isLeftHanded {
+                base[.a] = 8
+                base[.b] = 9
+                base[.x] = 6
+                base[.y] = 7
+            }
+            
+        case "psp":
+            // PSP: D-Pad + Start + Select + Square, X, Circle, Triangle + L, R
+            base[.a] = 6     // A (Cross)
+            base[.b] = 7     // B (Circle)
+            base[.x] = 8     // X (Square)
+            base[.y] = 9     // Y (Triangle)
+            base[.l1] = 12   // Q
+            base[.r1] = 14   // W
+            base[.select] = 48 // Tab
+            
+        case "3do":
+            // 3DO: D-Pad + Start + A, B, C + Play, Stop, X
+            base[.a] = 6     // A (Play)
+            base[.b] = 7     // B (Pause)
+            base[.c] = 8     // C (Stop)
+            base[.x] = 12    // X (Play/Pause)
+            
         case "mame", "fba", "arcade":
-            base[.coin1] = 18 
-            base[.start1] = 19 
+            // Arcade: D-Pad + Coin + Start + A, B + others
+            base[.a] = 6     // A (Button 1)
+            base[.b] = 7     // B (Button 2)
+            base[.x] = 8     // X (Button 3)
+            base[.y] = 9     // Y (Button 4)
+            base[.l1] = 12   // Q (Button 5)
+            base[.r1] = 14   // W (Button 6)
+            base[.coin1] = 18  // R (Coin 1)
+            base[.start1] = 19 // T (Start 1)
+            
+        case "scummvm":
+            // ScummVM: Full mouse and keyboard emulation
+            // D-Pad or Left Stick for movement
+            base[.a] = 6     // A (Left Click)
+            base[.b] = 7     // B (Right Click)
+            // Additional keys for interaction
+            base[.x] = 49    // Space
+            base[.y] = 53    // Escape
+            base[.l1] = 12   // Q
+            base[.r1] = 14   // W
+            base[.l2] = 1    // 1
+            base[.r2] = 3    // 3
+            
+        case "dos":
+            // DOSBox: Full keyboard support - use all standard keys
+            // Arrow keys for D-Pad are already set
+            // Standard WASD for movement in many DOS games
+            base[.a] = 0     // A
+            base[.b] = 11    // B
+            base[.c] = 8     // C
+            base[.x] = 7     // X
+            base[.y] = 16    // Y
+            base[.z] = 6     // Z
+            base[.start] = 36  // Return
+            base[.select] = 53 // Escape
+            // Additional keys for DOS games
+            base[.space] = 49  // Space
+            base[.l1] = 12   // Q
+            base[.r1] = 14   // W
+            
+        case "wii":
+            // Wii Remote: D-Pad + A, B + 1, 2 + Home (Select)
+            base[.a] = 6     // A
+            base[.b] = 7     // B
+            base[.x] = 8     // 1
+            base[.y] = 9     // 2
+            base[.l1] = 12   // Q
+            base[.r1] = 14   // W
+            base[.select] = 48  // Home
+            
+        case "switch":
+            // Nintendo Switch: D-Pad + Plus/Minus (Start/Select) + A, B, X, Y + L, R, ZL, ZR
+            // Note: Nintendo uses different face button layout than Sony
+            base[.a] = 6     // A (Right)
+            base[.b] = 7     // B (Bottom)
+            base[.x] = 8     // X (Top)
+            base[.y] = 9     // Y (Left)
+            base[.l1] = 12   // L
+            base[.r1] = 14   // R
+            base[.l2] = 1    // ZL
+            base[.r2] = 3    // ZR
+            if isLeftHanded {
+                base[.a] = 8
+                base[.b] = 9
+                base[.x] = 6
+                base[.y] = 7
+            }
+            
         default:
-            base[.x] = 8
-            base[.y] = 9
+            // Generic/Default: Most common buttons
+            base[.a] = 6     // A
+            base[.b] = 7     // B
+            base[.x] = 8     // X
+            base[.y] = 9     // Y
         }
         
         return KeyboardMapping(buttons: base)
     }
 }
 
+// MARK: - RetroButton Enum
+
 enum RetroButton: String, Codable, CaseIterable {
-    case up, down, left, right
-    case a, b, c, x, y, z
-    case start, select
+    // Basic buttons (available on all systems)
+    case up, down, left, right    // D-Pad
+    case start, select            // System buttons
+    
+    // Primary face buttons
+    case a, b  // Common to most systems
+    
+    // Extended face buttons (SNES and up)
+    case x, y, c, z  // Additional buttons
+    
+    // Shoulder buttons
     case l1, l2, l3
     case r1, r2, r3
+    
+    // Arcade specific
     case coin1, coin2, start1, start2
-    case lStickX, lStickY, rStickX, rStickY // Individual axes
-    case cUp, cDown, cLeft, cRight // N64 C-buttons
+    
+    // Turbo buttons (special)
+    case turboA, turboB
+    case turboX, turboY
+    
+    // Analog sticks
+    case lStickX, lStickY, rStickX, rStickY
+    
+    // N64 C buttons
+    case cUp, cDown, cLeft, cRight
+    
+    // Additional buttons
     case pause, reset
+    case space // Space bar for DOS
+    
+    // Mouse buttons (ScummVM, etc)
+    case mouseLeft, mouseRight, mouseMiddle
+    case mouseX, mouseY
+    case mouseScrollUp, mouseScrollDown
 
     var displayName: String {
         switch self {
@@ -241,24 +644,178 @@ enum RetroButton: String, Codable, CaseIterable {
         case .cDown:  return "C-Button Down"
         case .cLeft:  return "C-Button Left"
         case .cRight: return "C-Button Right"
-        case .pause: return "Pause"
-        case .reset: return "Reset"
+        case .pause:  return "Pause"
+        case .reset:  return "Reset"
+        case .turboA: return "Turbo A"
+        case .turboB: return "Turbo B"
+        case .turboX: return "Turbo X"
+        case .turboY: return "Turbo Y"
+        case .space:  return "Space"
+        case .mouseLeft: return "Mouse Left Click"
+        case .mouseRight: return "Mouse Right Click"
+        case .mouseMiddle: return "Mouse Middle Click"
+        case .mouseX: return "Mouse X Axis"
+        case .mouseY: return "Mouse Y Axis"
+        case .mouseScrollUp: return "Mouse Scroll Up"
+        case .mouseScrollDown: return "Mouse Scroll Down"
         }
     }
     
-    static func relevantButtons(for systemID: String) -> [RetroButton] {
+    /// Returns the list of buttons that are relevant/available for a given system.
+    /// This limits the UI to only show buttons that can be mapped for that system.
+    static func availableButtons(for systemID: String) -> [RetroButton] {
         switch systemID.lowercased() {
-        case "nes":      return [.up, .down, .left, .right, .a, .b, .start, .select]
-        case "snes":     return [.up, .down, .left, .right, .a, .b, .x, .y, .l1, .r1, .start, .select]
-        case "ps1", "psx": return [.up, .down, .left, .right, .a, .b, .x, .y, .l1, .r1, .l2, .r2, .l3, .r3, .lStickX, .lStickY, .rStickX, .rStickY, .start, .select]
-        case "n64":      return [.up, .down, .left, .right, .a, .b, .l1, .r1, .z, .start, .lStickX, .lStickY, .cUp, .cDown, .cLeft, .cRight]
-        case "genesis":  return [.up, .down, .left, .right, .a, .b, .c, .x, .y, .z, .start, .select]
-        case "mame", "fba", "arcade": return [.up, .down, .left, .right, .a, .b, .x, .y, .l1, .r1, .coin1, .start1]
-        case "default":  return [.up, .down, .left, .right, .a, .b, .x, .y, .l1, .r1, .l2, .r2, .lStickX, .lStickY, .rStickX, .rStickY, .start, .select]
-        default:         return RetroButton.allCases
+        // MARK: - NES Family (8-bit Nintendo)
+        case "nes":
+            return [.up, .down, .left, .right, .a, .b, .turboA, .turboB, .start, .select]
+        case "nes_turbo":
+            // NES with explicit Turbo - same as NES but emphasizes turbo buttons
+            return [.up, .down, .left, .right, .a, .b, .turboA, .turboB, .start, .select]
+            
+        // MARK: - SNES Family (16-bit Nintendo)
+        case "snes", "sfc":
+            return [.up, .down, .left, .right, .a, .b, .x, .y, .l1, .r1, .start, .select]
+            
+        // MARK: - Game Boy Family
+        case "gb", "gbc":
+            return [.up, .down, .left, .right, .a, .b, .start, .select]
+        case "gba":
+            return [.up, .down, .left, .right, .a, .b, .l1, .r1, .start, .select]
+            
+        // MARK: - N64
+        case "n64":
+            return [.up, .down, .left, .right, .a, .b, .z, .l1, .r1, .start, .lStickX, .lStickY, .cUp, .cDown, .cLeft, .cRight]
+            
+        // MARK: - Nintendo DS/3DS
+        case "nds":
+            return [.up, .down, .left, .right, .a, .b, .x, .y, .l1, .r1, .start, .select]
+        case "3ds":
+            return [.up, .down, .left, .right, .a, .b, .x, .y, .l1, .r1, .l2, .r2, .start, .select, .lStickX, .lStickY]
+            
+        // MARK: - Sega Genesis/Mega Drive
+        case "genesis", "megadrive":
+            return [.up, .down, .left, .right, .a, .b, .c, .x, .y, .z, .start, .select]
+            
+        // MARK: - Sega Master System / Game Gear
+        case "sms":
+            return [.up, .down, .left, .right, .a, .b, .start]
+        case "gamegear":
+            return [.up, .down, .left, .right, .a, .b, .start]
+            
+        // MARK: - Sega Saturn
+        case "saturn":
+            return [.up, .down, .left, .right, .a, .b, .c, .x, .y, .z, .l1, .r1, .start, .select]
+            
+        // MARK: - Sega 32X
+        case "32x":
+            return [.up, .down, .left, .right, .a, .b, .c, .x, .y, .z, .start, .select]
+            
+        // MARK: - Dreamcast
+        case "dreamcast":
+            return [.up, .down, .left, .right, .a, .b, .x, .y, .l1, .r1, .l2, .r2, .start, .select, .lStickX, .lStickY]
+            
+        // MARK: - PlayStation Family
+        case "psx", "ps1":
+            return [.up, .down, .left, .right, .a, .b, .x, .y, .l1, .r1, .l2, .r2, .l3, .r3, .start, .select, .lStickX, .lStickY, .rStickX, .rStickY]
+        case "ps2":
+            return [.up, .down, .left, .right, .a, .b, .x, .y, .l1, .r1, .l2, .r2, .l3, .r3, .start, .select, .lStickX, .lStickY, .rStickX, .rStickY]
+        case "psp":
+            return [.up, .down, .left, .right, .a, .b, .x, .y, .l1, .r1, .start, .select, .lStickX, .lStickY]
+            
+        // MARK: - Nintendo Switch/Wii
+        case "switch":
+            return [.up, .down, .left, .right, .a, .b, .x, .y, .l1, .r1, .l2, .r2, .lStickX, .lStickY, .rStickX, .rStickY, .start, .select]
+        case "wii":
+            return [.up, .down, .left, .right, .a, .b, .x, .y, .l1, .r1, .l2, .r2, .start, .select]
+        case "wiiu":
+            return [.up, .down, .left, .right, .a, .b, .x, .y, .l1, .r1, .l2, .r2, .lStickX, .lStickY, .rStickX, .rStickY, .start, .select]
+            
+        // MARK: - Arcade
+        case "mame", "fba", "arcade":
+            return [.up, .down, .left, .right, .a, .b, .x, .y, .l1, .r1, .coin1, .coin2, .start1, .start2]
+            
+        // MARK: - Atari
+        case "atari2600":
+            return [.up, .down, .left, .right, .a, .select]
+        case "atari5200":
+            return [.up, .down, .left, .right, .a, .b, .x, .y, .start, .pause]
+        case "atari7800":
+            return [.up, .down, .left, .right, .a, .b]
+        case "lynx":
+            return [.up, .down, .left, .right, .a, .b]
+            
+        // MARK: - NEC
+        case "pce", "tg16":
+            return [.up, .down, .left, .right, .a, .b, .start, .select]
+        case "pcfx":
+            return [.up, .down, .left, .right, .a, .b, .x, .y, .l1, .r1, .start, .select]
+            
+        // MARK: - SNK
+        case "ngp", "ngc":
+            return [.up, .down, .left, .right, .a, .b, .start]
+            
+        // MARK: - 3DO
+        case "3do":
+            return [.up, .down, .left, .right, .a, .b, .c, .x, .y, .start, .select]
+            
+        // MARK: - ScummVM (requires mouse)
+        case "scummvm":
+            return [.up, .down, .left, .right, .a, .b, .x, .y, .l1, .r1, .start, .select, .mouseLeft, .mouseRight, .mouseX, .mouseY]
+            
+        // MARK: - DOSBox (requires full keyboard + mouse)
+        case "dos":
+            return [.up, .down, .left, .right, .a, .b, .c, .x, .y, .z, .l1, .r1, .start, .select, .space, .pause, .lStickX, .lStickY, .mouseLeft, .mouseRight, .mouseX, .mouseY]
+            
+        // MARK: - Default (fallback with most common buttons)
+        default:
+            return [.up, .down, .left, .right, .a, .b, .x, .y, .l1, .r1, .l2, .r2, .start, .select, .lStickX, .lStickY]
         }
     }
     
+    /// Returns the list of button names for a turbo variation of a system.
+    /// Turbo buttons rapidly toggle their associated button on/off when held.
+    static func turboButtons(for systemID: String) -> [RetroButton] {
+        switch systemID.lowercased() {
+        case "nes", "nes_turbo":
+            return [.turboA, .turboB]
+        case "snes", "sfc":
+            return [.turboA, .turboB, .turboX, .turboY]
+        case "genesis", "megadrive":
+            return [.turboA, .turboB, .turboX, .turboY]
+        case "scummvm":
+            // Turbo for rapid clicking
+            return [.turboA]
+        default:
+            return []
+        }
+    }
+    
+    /// Returns a human-readable system category name for UI grouping
+    static func systemCategory(for systemID: String) -> String {
+        switch systemID.lowercased() {
+        case "nes": return "NES (8-bit Nintendo)"
+        case "snes", "sfc": return "SNES (16-bit Nintendo)"
+        case "n64": return "Nintendo 64"
+        case "gb", "gbc", "gba": return "Game Boy Family"
+        case "nds", "3ds": return "Nintendo Handhelds"
+        case "genesis", "megadrive": return "Genesis / Mega Drive"
+        case "sms", "gamegear": return "Sega 8-bit"
+        case "saturn": return "Sega Saturn"
+        case "dreamcast": return "Sega Dreamcast"
+        case "psx", "ps1", "ps2", "psp": return "PlayStation Family"
+        case "switch", "wii", "wiiu": return "Modern Nintendo"
+        case "mame", "fba", "arcade": return "Arcade"
+        case "atari2600", "atari5200", "atari7800", "lynx": return "Atari Family"
+        case "pce", "tg16", "pcfx": return "NEC Family"
+        case "ngp", "ngc": return "SNK Neo Geo Pocket"
+        case "3do": return "3DO"
+        case "scummvm": return "ScummVM (Adventure Games)"
+        case "dos": return "DOS (MS-DOS Games)"
+        default: return "Other"
+        }
+    }
+    
+    /// Returns the retro input ID for libretro compatibility
     var retroID: Int32 {
         switch self {
         case .b: return 0
@@ -277,27 +834,61 @@ enum RetroButton: String, Codable, CaseIterable {
         case .r2: return 13
         case .l3: return 14
         case .r3: return 15
-        case .coin1: return 2 
+        case .coin1: return 2  // RETRO_DEVICE_ID_JOYPAD_SELECT mapped to coin
         case .start1: return 3
-        case .lStickX, .lStickY, .rStickX, .rStickY, .cUp, .cDown, .cLeft, .cRight, .c, .z, .coin2, .start2, .pause, .reset: return 0
+        case .turboA: return 0  // Turbo A maps to normal A
+        case .turboB: return 1  // Turbo B maps to normal B
+        case .turboX: return 9  // Turbo X maps to normal X
+        case .turboY: return 1  // Turbo Y maps to normal Y
+        case .cUp, .cDown, .cLeft, .cRight:
+            // C-buttons are handled as analog in most N64 cores
+            return 0
+        case .mouseLeft: return 0  // Mouse handled separately
+        case .mouseRight: return 1
+        case .mouseMiddle: return 2
+        case .mouseX, .mouseY, .mouseScrollUp, .mouseScrollDown:
+            return 0  // Mouse handled separately
+        case .space, .pause, .reset, .coin2, .start2, .lStickX, .lStickY, .rStickX, .rStickY, .c, .z:
+            return 0
         }
     }
     
+    /// Returns whether this button is an analog axis rather than a digital button
     var isAnalog: Bool {
         return self == .lStickX || self == .lStickY || self == .rStickX || self == .rStickY ||
-               self == .cUp || self == .cDown || self == .cLeft || self == .cRight
+               self == .cUp || self == .cDown || self == .cLeft || self == .cRight ||
+               self == .mouseX || self == .mouseY
     }
 
+    /// Returns analog axis information for libretro analog state
     var analogInfo: (index: Int32, id: Int32, sign: Float)? {
         switch self {
         case .lStickX: return (0, 0, 1.0)
         case .lStickY: return (0, 1, 1.0)
         case .rStickX: return (1, 0, 1.0)
         case .rStickY: return (1, 1, 1.0)
-        case .cUp:     return (1, 1, -1.0)
+        case .cUp:     return (1, 1, -1.0)  // C-Up is negative Y axis on analog
         case .cDown:   return (1, 1, 1.0)
-        case .cLeft:   return (1, 0, -1.0)
+        case .cLeft:   return (1, 0, -1.0)  // C-Left is negative X axis on analog
         case .cRight:  return (1, 0, 1.0)
+        case .mouseX:  return (2, 0, 1.0)   // Mouse X
+        case .mouseY:  return (2, 1, 1.0)   // Mouse Y
+        default: return nil
+        }
+    }
+    
+    /// Whether this is a turbo button that should rapidly toggle
+    var isTurbo: Bool {
+        return self == .turboA || self == .turboB || self == .turboX || self == .turboY
+    }
+    
+    /// The base button this turbo button maps to
+    var turboBaseButton: RetroButton? {
+        switch self {
+        case .turboA: return .a
+        case .turboB: return .b
+        case .turboX: return .x
+        case .turboY: return .y
         default: return nil
         }
     }

@@ -18,6 +18,10 @@ class LibretroBridgeSwift {
         LibretroBridge.setKeyState(Int32(retroID), pressed: pressed)
     }
 
+    static func setTurboState(turboIdx: Int, active: Bool, targetButton: Int) {
+        LibretroBridge.setTurboState(Int32(turboIdx), active: active, targetButton: Int32(targetButton))
+    }
+
     static func stop() {
         LibretroBridge.stop()
     }

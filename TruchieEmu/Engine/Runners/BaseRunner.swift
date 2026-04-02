@@ -84,6 +84,9 @@ class EmulatorRunner: ObservableObject, @unchecked Sendable {
     var cachedKeyboardMapping: KeyboardMapping = KeyboardMapping(buttons: [:])
     private var hookedController: GCController? = nil
     
+    // Turbo button state tracking
+    private var activeTurboButtons: Set<RetroButton> = []
+    
     static func forSystem(_ systemID: String?) -> EmulatorRunner {
         switch systemID {
         case "nes":      return NESRunner()

@@ -904,7 +904,7 @@ struct ControllerMappingDetail: View {
                     .padding(.horizontal)
                     
                     LazyVGrid(columns: [GridItem(.flexible()), GridItem(.flexible())], spacing: 12) {
-                        let buttons = RetroButton.relevantButtons(for: systemID)
+                        let buttons = RetroButton.availableButtons(for: systemID)
                         ForEach(buttons, id: \.self) { btn in
                             buttonRow(btn)
                         }
@@ -1126,7 +1126,7 @@ struct KeyboardSettingsView: View {
             Divider()
 
             ScrollView {
-                let buttons = relevantButtons(for: selectedSystemID)
+                let buttons = availableButtons(for: selectedSystemID)
                 
                 LazyVGrid(columns: [GridItem(.flexible()), GridItem(.flexible())], spacing: 12) {
                     ForEach(buttons, id: \.self) { btn in
@@ -1152,8 +1152,8 @@ struct KeyboardSettingsView: View {
         }
     }
     
-    private func relevantButtons(for systemID: String) -> [RetroButton] {
-        return RetroButton.relevantButtons(for: systemID)
+    private func availableButtons(for systemID: String) -> [RetroButton] {
+        return RetroButton.availableButtons(for: systemID)
     }
 }
 

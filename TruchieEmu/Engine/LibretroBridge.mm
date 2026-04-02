@@ -129,6 +129,8 @@ typedef void (^VideoFrameCallback)(const void *data, int width, int height, int 
 - (void)handleVideoData:(const void *)data width:(int)w height:(int)h pitch:(int)pitch format:(int)format;
 - (void)handleAudioSamples:(const int16_t *)data count:(size_t)count;
 - (void)setKeyState:(int)retroID pressed:(BOOL)pressed;
+- (void)setTurboState:(int)idx active:(BOOL)active targetButton:(int)targetIdx;
+- (void)setAnalogState:(int)idx id:(int)id value:(int)v;
 - (void)setPixelFormat:(int)format;
 - (int)pixelFormat;
 - (void)setupHWRender:(struct retro_hw_render_callback *)cb;
@@ -477,9 +479,41 @@ static size_t bridge_audio_sample_batch(const int16_t *data, size_t frames) {
     return frames;
 }
 
-static void bridge_input_poll(void) {}
+// MARK: - Turbo Button State Machine
+// Turbo is implemented by toggling button state at a configurable frequency
+// Each turbo button has a counter that decrements each poll
+// When counter reaches 0, the button state toggles
 static int16_t g_input_state[32];
 static int16_t g_analog_state[2][2]; // index, id
+static BOOL g_turbo_state[32];       // Current turbo button on/off state
+static int g_turbo_counter[32];      // Countdown counter for each turbo button
+static BOOL g_turbo_active[32];      // Whether player is holding the turbo button
+static const int g_turbo_rate = 6;   // Turbo fires 10 times per second at 60fps (60/10=6)
+static int g_turbo_fireButton[32];   // Map from turbo button to actual RETRO button
+
+static void bridge_handle_turbo(void) {
+    for (int i = 0; i < 32; i++) {
+        if (g_turbo_active[i]) {
+            if (g_turbo_counter[i] <= 0) {
+                g_turbo_counter[i] = g_turbo_rate;
+                // Toggle turbo state
+                g_turbo_state[i] = !g_turbo_state[i];
+                // Apply to the underlying button
+                int targetIdx = g_turbo_fireButton[i];
+                if (targetIdx >= 0 && targetIdx < 32) {
+                    g_input_state[targetIdx] = g_turbo_state[i] ? 1 : 0;
+                }
+            } else {
+                g_turbo_counter[i]--;
+            }
+        }
+    }
+}
+
+static void bridge_input_poll(void) {
+    // Handle turbo button state machines each poll cycle
+    bridge_handle_turbo();
+}
 static int16_t bridge_input_state(unsigned port, unsigned device, unsigned index, unsigned id) {
     if (port == 0) {
         if (device == RETRO_DEVICE_JOYPAD) return g_input_state[id & 0x1F] ? 32767 : 0;
@@ -730,6 +764,21 @@ static int16_t bridge_input_state(unsigned port, unsigned device, unsigned index
     if (idx >= 0 && idx < 32) g_input_state[idx] = p ? 1 : 0;
 }
 
+- (void)setTurboState:(int)idx active:(BOOL)active targetButton:(int)targetIdx {
+    if (idx >= 0 && idx < 32) {
+        g_turbo_active[idx] = active;
+        g_turbo_fireButton[idx] = targetIdx;
+        if (!active) {
+            // When turbo is released, ensure the target button is released
+            g_turbo_state[idx] = NO;
+            g_turbo_counter[idx] = 0;
+            if (targetIdx >= 0 && targetIdx < 32) {
+                g_input_state[targetIdx] = 0;
+            }
+        }
+    }
+}
+
 - (void)setAnalogState:(int)idx id:(int)id value:(int)v {
     if (idx >= 0 && idx < 2 && id >= 0 && id < 2) g_analog_state[idx][id] = (int16_t)v;
 }
@@ -926,6 +975,7 @@ static int16_t bridge_input_state(unsigned port, unsigned device, unsigned index
 + (BOOL)unserializeState:(NSData *)data { return g_instance ? [g_instance unserializeState:data] : NO; }
 + (size_t)serializeSize { return g_instance && g_instance->_retro_serialize_size ? g_instance->_retro_serialize_size() : 0; }
 + (void)setKeyState:(int)rid pressed:(BOOL)p { if (g_instance) [g_instance setKeyState:rid pressed:p]; }
++ (void)setTurboState:(int)idx active:(BOOL)active targetButton:(int)targetIdx { if (g_instance) [g_instance setTurboState:idx active:active targetButton:targetIdx]; }
 + (void)setAnalogState:(int)idx id:(int)id value:(int)v { if (g_instance) [g_instance setAnalogState:idx id:id value:v]; }
 + (void)setLanguage:(int)language { g_selectedLanguage = language; }
 + (void)setLogLevel:(int)level { g_logLevel = level; }
