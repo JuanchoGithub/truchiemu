@@ -934,7 +934,7 @@ struct GameDetailView: View {
         if shaderWindowSettings == nil {
             shaderWindowSettings = ShaderWindowSettings(
                 shaderPresetID: currentROM.settings.shaderPresetID,
-                uniformValues: [:]
+                uniformValues: extractUniformValues(from: currentROM.settings)
             )
         } else {
             shaderWindowSettings?.shaderPresetID = currentROM.settings.shaderPresetID
@@ -942,8 +942,13 @@ struct GameDetailView: View {
 
         let windowController = ShaderWindowController(
             settings: shaderWindowSettings!
-        ) { [self] newPresetID in
-            updateSettings { $0.shaderPresetID = newPresetID }
+        ) { [self] newPresetID, newUniformValues in
+            // Update ROM settings with new preset and uniform values
+            updateSettings { romSettings in
+                romSettings.shaderPresetID = newPresetID
+                // Apply uniform values to ROM settings
+                applyUniformValues(newUniformValues, to: &romSettings)
+            }
             if let preset = ShaderPreset.preset(id: newPresetID) {
                 ShaderManager.shared.activatePreset(preset)
             }
@@ -951,6 +956,30 @@ struct GameDetailView: View {
 
         ShaderWindowController.shared = windowController
         windowController.show()
+    }
+    
+    /// Extract uniform values from ROM settings into a dictionary for ShaderWindowSettings
+    private func extractUniformValues(from settings: ROMSettings) -> [String: Float] {
+        var values: [String: Float] = [:]
+        values["scanlineIntensity"] = settings.scanlineIntensity
+        values["barrelAmount"] = settings.barrelAmount
+        values["colorBoost"] = settings.colorBoost
+        values["crtEnabled"] = settings.crtEnabled ? 1.0 : 0.0
+        values["scanlinesEnabled"] = settings.scanlinesEnabled ? 1.0 : 0.0
+        values["barrelEnabled"] = settings.barrelEnabled ? 1.0 : 0.0
+        values["phosphorEnabled"] = settings.phosphorEnabled ? 1.0 : 0.0
+        return values
+    }
+    
+    /// Apply uniform values from dictionary to ROM settings
+    private func applyUniformValues(_ values: [String: Float], to settings: inout ROMSettings) {
+        if let v = values["scanlineIntensity"] { settings.scanlineIntensity = v }
+        if let v = values["barrelAmount"] { settings.barrelAmount = v }
+        if let v = values["colorBoost"] { settings.colorBoost = v }
+        if let v = values["crtEnabled"] { settings.crtEnabled = v != 0.0 }
+        if let v = values["scanlinesEnabled"] { settings.scanlinesEnabled = v != 0.0 }
+        if let v = values["barrelEnabled"] { settings.barrelEnabled = v != 0.0 }
+        if let v = values["phosphorEnabled"] { settings.phosphorEnabled = v != 0.0 }
     }
 
     // MARK: - Section 3: Controls

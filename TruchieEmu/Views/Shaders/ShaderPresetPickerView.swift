@@ -14,6 +14,71 @@ class ShaderWindowSettings: ObservableObject {
     }
 }
 
+// MARK: - Key Window Panel
+/// A custom NSPanel that can become key and receive user input
+class KeyWindowPanel: NSPanel {
+    override var canBecomeKey: Bool { true }
+    override var canBecomeMain: Bool { true }
+}
+
+// MARK: - Shader Parameter Sliders (Embedded in Picker View)
+struct ShaderParameterSliders: View {
+    let preset: ShaderPreset
+    @Binding var uniformValues: [String: Float]
+    
+    var body: some View {
+        VStack(alignment: .leading, spacing: 10) {
+            HStack {
+                Image(systemName: "slider.horizontal.3")
+                    .foregroundColor(.accentColor)
+                Text("Parameters for \(preset.name)")
+                    .font(.headline)
+                Spacer()
+            }
+            
+            Divider()
+            
+            ForEach(preset.globalUniforms) { uniform in
+                parameterSliderRow(for: uniform)
+            }
+        }
+        .padding()
+        .background(Color(NSColor.controlBackgroundColor))
+        .cornerRadius(12)
+    }
+    
+    private func parameterSliderRow(for uniform: ShaderUniform) -> some View {
+        VStack(spacing: 6) {
+            HStack {
+                Text(uniform.displayLabel)
+                    .font(.subheadline)
+                
+                Spacer()
+                
+                Text(String(format: "%.2f", currentUniformValue(for: uniform)))
+                    .font(.caption)
+                    .foregroundColor(.secondary)
+                    .monospacedDigit()
+            }
+            
+            Slider(
+                value: Binding(
+                    get: { currentUniformValue(for: uniform) },
+                    set: { newValue in
+                        uniformValues[uniform.name] = newValue
+                    }
+                ),
+                in: uniform.minValue...uniform.maxValue,
+                step: uniform.step
+            )
+        }
+    }
+    
+    private func currentUniformValue(for uniform: ShaderUniform) -> Float {
+        uniformValues[uniform.name] ?? uniform.defaultValue
+    }
+}
+
 // MARK: - Shader Window Settings Storage
 @objc class ShaderWindowPosition: NSObject {
     static let shared = ShaderWindowPosition()
@@ -41,12 +106,13 @@ class ShaderWindowSettings: ObservableObject {
 /// Native macOS window controller for the shader preset picker.
 class ShaderWindowController: NSWindowController, NSWindowDelegate {
     private var settings: ShaderWindowSettings
-    private var onPresetChanged: ((String) -> Void)?
+    private var onPresetChanged: ((String, [String: Float]) -> Void)?
     private var settingsCancellable: AnyCancellable?
+    private var uniformValuesCancellable: AnyCancellable?
     
     static var shared: ShaderWindowController?
     
-    init(settings: ShaderWindowSettings, onPresetChanged: ((String) -> Void)? = nil) {
+    init(settings: ShaderWindowSettings, onPresetChanged: ((String, [String: Float]) -> Void)? = nil) {
         self.settings = settings
         self.onPresetChanged = onPresetChanged
         
@@ -58,9 +124,9 @@ class ShaderWindowController: NSWindowController, NSWindowDelegate {
             rect = NSRect(x: 0, y: 0, width: 550, height: 450)
         }
         
-        let window = NSPanel(
+        let window = KeyWindowPanel(
             contentRect: rect,
-            styleMask: [.titled, .closable, .resizable, .utilityWindow, .nonactivatingPanel],
+            styleMask: [.titled, .closable, .resizable],
             backing: .buffered,
             defer: false
         )
@@ -87,7 +153,16 @@ class ShaderWindowController: NSWindowController, NSWindowDelegate {
             .dropFirst()
             .removeDuplicates()
             .sink { [weak self] presetID in
-                self?.onPresetChanged?(presetID)
+                self?.onPresetChanged?(presetID, self?.settings.uniformValues ?? [:])
+            }
+        
+        // Observe uniform value changes using Combine
+        uniformValuesCancellable = settings.$uniformValues
+            .dropFirst()
+            .removeDuplicates()
+            .sink { [weak self] values in
+                // Notify the callback with current preset + updated values
+                self?.onPresetChanged?(self?.settings.shaderPresetID ?? "", values)
             }
     }
     
@@ -134,7 +209,6 @@ struct ShaderPresetPickerView: View {
     @ObservedObject var settings: ShaderWindowSettings
     
     @State private var selectedCategory: ShaderType?
-    @State private var showUniformEditor = false
     
     var body: some View {
         VStack(spacing: 0) {
@@ -147,8 +221,11 @@ struct ShaderPresetPickerView: View {
             // Preset list
             presetList
             
-            // Uniform editor button
-            uniformEditorButton
+            // Uniform sliders (embedded directly)
+            if let selectedPreset = ShaderPreset.preset(id: settings.shaderPresetID),
+               !selectedPreset.globalUniforms.isEmpty {
+                parameterSliders
+            }
         }
         .frame(minWidth: 500, minHeight: 400)
     }
@@ -332,27 +409,16 @@ struct ShaderPresetPickerView: View {
         .buttonStyle(.plain)
     }
     
-    // MARK: - Uniform Editor Button
+    // MARK: - Parameter Sliders (Embedded)
     
-    private var uniformEditorButton: some View {
+    private var parameterSliders: some View {
         Group {
             if let preset = ShaderPreset.preset(id: settings.shaderPresetID),
                !preset.globalUniforms.isEmpty {
-                Button {
-                    showUniformEditor = true
-                } label: {
-                    Label("Adjust Parameters", systemImage: "slider.horizontal.3")
-                        .frame(maxWidth: .infinity)
-                        .padding()
-                        .background(Color(NSColor.controlBackgroundColor))
-                }
-                .buttonStyle(.plain)
-                .sheet(isPresented: $showUniformEditor) {
-                   ShaderUniformEditorView(
-                        preset: preset,
-                        uniformValues: $settings.uniformValues
-                    )
-                }
+                ShaderParameterSliders(
+                    preset: preset,
+                    uniformValues: $settings.uniformValues
+                )
             }
         }
     }
@@ -371,12 +437,12 @@ struct ShaderUniformEditorView: View {
             List {
                 Section("Parameters") {
                     ForEach(preset.globalUniforms) { uniform in
-                        uniformSlider(for: uniform)
+                        uniformSliderRow(for: uniform)
                     }
                 }
                 
-                Section("Info") {
-                    if let description = preset.description {
+                if let description = preset.description {
+                    Section("Info") {
                         Text(description)
                             .font(.caption)
                             .foregroundColor(.secondary)
@@ -386,22 +452,33 @@ struct ShaderUniformEditorView: View {
             
             Divider()
             
-            Button("Done") { dismiss() }
-                .buttonStyle(.borderedProminent)
-                .padding()
+            HStack {
+                Button("Reset") {
+                    for uniform in preset.globalUniforms {
+                        uniformValues[uniform.name] = uniform.defaultValue
+                    }
+                }
+                .buttonStyle(.bordered)
+                
+                Spacer()
+                
+                Button("Done") { dismiss() }
+                    .buttonStyle(.borderedProminent)
+            }
+            .padding()
         }
         .frame(minWidth: 400, minHeight: 300)
     }
     
-    private func uniformSlider(for uniform: ShaderUniform) -> some View {
-        VStack(alignment: .leading, spacing: 8) {
+    private func uniformSliderRow(for uniform: ShaderUniform) -> some View {
+        VStack(spacing: 6) {
             HStack {
                 Text(uniform.displayLabel)
                     .font(.subheadline)
                 
                 Spacer()
                 
-                Text(String(format: "%.2f", uniformValues[uniform.name] ?? uniform.defaultValue))
+                Text(String(format: "%.2f", currentUniformValue(for: uniform)))
                     .font(.caption)
                     .foregroundColor(.secondary)
                     .monospacedDigit()
@@ -409,14 +486,24 @@ struct ShaderUniformEditorView: View {
             
             Slider(
                 value: Binding(
-                    get: { uniformValues[uniform.name] ?? uniform.defaultValue },
-                    set: { uniformValues[uniform.name] = $0 }
+                    get: { currentUniformValue(for: uniform) },
+                    set: { newValue in
+                        updateUniform(uniform.name, to: newValue)
+                    }
                 ),
                 in: uniform.minValue...uniform.maxValue,
                 step: uniform.step
             )
         }
         .padding(.vertical, 4)
+    }
+    
+    private func currentUniformValue(for uniform: ShaderUniform) -> Float {
+        uniformValues[uniform.name] ?? uniform.defaultValue
+    }
+    
+    private func updateUniform(_ name: String, to value: Float) {
+        uniformValues[name] = value
     }
 }
 

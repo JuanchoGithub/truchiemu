@@ -1719,7 +1719,7 @@ struct DisplaySettingsView: View {
         if shaderWindowSettings == nil {
             shaderWindowSettings = ShaderWindowSettings(
                 shaderPresetID: selectedPresetID,
-                uniformValues: [:]
+                uniformValues: extractUniformValuesFromSettings()
             )
         } else {
             shaderWindowSettings?.shaderPresetID = selectedPresetID
@@ -1727,15 +1727,27 @@ struct DisplaySettingsView: View {
         
         let windowController = ShaderWindowController(
             settings: shaderWindowSettings!
-        ) { [self] newPresetID in
+        ) { [self] newPresetID, newUniformValues in
             selectedPresetID = newPresetID
             if let preset = ShaderPreset.preset(id: newPresetID) {
                 shaderManager.activatePreset(preset)
+            }
+            // Update shader manager uniform values
+            for (key, value) in newUniformValues {
+                shaderManager.updateUniform(key, value: value)
             }
         }
         
         ShaderWindowController.shared = windowController
         windowController.show()
+    }
+    
+    private func extractUniformValuesFromSettings() -> [String: Float] {
+        var values: [String: Float] = [:]
+        values["scanlineIntensity"] = 0.35 // default
+        values["barrelAmount"] = 0.12 // default
+        values["colorBoost"] = 1.0 // default
+        return values
     }
     
     private func shaderIcon(for type: ShaderType) -> String {
