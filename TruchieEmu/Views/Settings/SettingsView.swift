@@ -1,4 +1,5 @@
 import SwiftUI
+import Combine
 import GameController
 
 // MARK: - Main Settings View
@@ -793,44 +794,129 @@ struct DownloadableCoreRowView: View {
 // MARK: - Controllers
 struct ControllerSettingsView: View {
     @EnvironmentObject var controllerService: ControllerService
-    @State private var selectedPlayer: Int = 0
+    @State private var selectedPlayer: Int = 1
     @State private var selectedSystemID: String = "default"
+    @State private var configName: String = ""
+    @State private var savedConfigs: [String: ControllerMapping] = [:]
+    @State private var leftColumnWidth: CGFloat = 340
+    @State private var showDeleteConfirmation = false
 
     var body: some View {
-        VStack(alignment: .leading, spacing: 16) {
-            HStack {
-                // Player tabs
-                HStack(spacing: 8) {
-                    ForEach(1...4, id: \.self) { i in
-                        let connected = controllerService.connectedControllers.first(where: { $0.playerIndex == i })?.isConnected ?? false
-                        Button("P\(i)") { selectedPlayer = i }
-                            .buttonStyle(.bordered)
-                            .tint(selectedPlayer == i ? .purple : .secondary)
-                            .overlay(
-                                connected ? Circle().fill(.green).frame(width: 6, height: 6).offset(x: 10, y: -10) : nil,
-                                alignment: .topTrailing
-                            )
+        VStack(alignment: .leading, spacing: 0) {
+            // Top bar: Player selection + Config management
+            VStack(spacing: 10) {
+                HStack(spacing: 12) {
+                    // Player selection
+                    Text("Player")
+                        .font(.body)
+                        .foregroundColor(.secondary)
+                    HStack(spacing: 6) {
+                        ForEach(1...4, id: \.self) { i in
+                            let connected = controllerService.connectedControllers.first(where: { $0.playerIndex == i })?.isConnected ?? false
+                            Button("P\(i)") { selectedPlayer = i }
+                                .buttonStyle(.bordered)
+                                .controlSize(.small)
+                                .tint(selectedPlayer == i ? .purple : .secondary)
+                                .overlay(
+                                    connected ? Circle().fill(.green).frame(width: 6, height: 6).offset(x: 8, y: -8) : nil,
+                                    alignment: .topTrailing
+                                )
+                        }
                     }
-                }
-                
-                Spacer()
-                
-                Picker("Mapping for System", selection: $selectedSystemID) {
-                    Text("Global / Default").tag("default")
-                    Divider()
-                    ForEach(SystemDatabase.systems) { sys in
-                        Text(sys.name).tag(sys.id)
+
+                    Divider().frame(height: 20)
+
+                    // System picker
+                    Picker("System", selection: $selectedSystemID) {
+                        Text("Global / Default").tag("default")
+                        Divider()
+                        ForEach(SystemDatabase.systems) { sys in
+                            Text(sys.name).tag(sys.id)
+                        }
                     }
+                    .frame(width: 180)
+
+                    Spacer()
+
+                    // Reset to default
+                    Button("Back to Default") {
+                        if let player = controllerService.connectedControllers.first(where: { $0.playerIndex == selectedPlayer }) {
+                            let vendorName = player.gcController?.vendorName ?? "Unknown"
+                            let defaults = ControllerMapping.defaults(for: vendorName, systemID: selectedSystemID, handedness: controllerService.handedness)
+                            controllerService.updateMapping(for: vendorName, systemID: selectedSystemID, mapping: defaults)
+                        }
+                    }
+                    .buttonStyle(.bordered)
+                    .controlSize(.small)
                 }
-                .frame(width: 280)
+
+                // Config name row: Load / Save / Delete / Config name
+                HStack(spacing: 6) {
+                    Text("Config")
+                        .font(.body)
+                        .foregroundColor(.secondary)
+                    TextField("Name", text: $configName)
+                        .textFieldStyle(.roundedBorder)
+                        .frame(width: 150)
+                    Button("Save") {
+                        saveCurrentConfig()
+                    }
+                    .disabled(configName.isEmpty)
+                    .buttonStyle(.bordered)
+                    .controlSize(.small)
+                    Button("Load") {
+                        loadConfig(name: configName)
+                    }
+                    .disabled(configName.isEmpty || savedConfigs[configName] == nil)
+                    .buttonStyle(.bordered)
+                    .controlSize(.small)
+                    Button {
+                        deleteConfig(name: configName)
+                    } label: {
+                        Label("Delete", systemImage: "trash")
+                    }
+                    .buttonStyle(.bordered)
+                    .tint(.red)
+                    .controlSize(.small)
+                    .disabled(configName.isEmpty || savedConfigs[configName] == nil)
+
+                    Spacer()
+
+                    // Config selector
+                    Menu {
+                        ForEach(Array(savedConfigs.keys.sorted()), id: \.self) { name in
+                            Button(name) {
+                                configName = name
+                                loadConfig(name: name)
+                            }
+                        }
+                    } label: {
+                        Label("Saved Configs", systemImage: "archivebox")
+                    }
+                    .menuStyle(.borderlessButton)
+                    .controlSize(.small)
+                }
             }
-            .padding([.horizontal, .top])
+            .padding(.horizontal, 12)
+            .padding(.top, 6)
+            .padding(.bottom, 10)
 
             Divider()
 
+            // Main content area - left panel (icon+sticks) | draggable divider | right panel (button mapping)
             if let player = controllerService.connectedControllers.first(where: { $0.playerIndex == selectedPlayer }) {
-                ControllerMappingDetail(player: player, systemID: selectedSystemID)
-                    .id("\(selectedPlayer)-\(selectedSystemID)")
+                HStack(spacing: 0) {
+                    // Left side: Controller icon (unbounded) and stick visualization - wider, 300-380
+                    ControllerLeftPanel(systemID: selectedSystemID, width: leftColumnWidth)
+
+                    // Draggable divider
+                    DraggableDivider(width: $leftColumnWidth)
+
+                    // Right side: Button mapping list - narrower, bounded to right edge
+                    ButtonMappingList(systemID: selectedSystemID, player: player, controllerService: controllerService)
+                        .frame(minWidth: 140)
+                }
+                .id("\(selectedPlayer)-\(selectedSystemID)-\(leftColumnWidth)")
             } else {
                 VStack(spacing: 12) {
                     Image(systemName: "gamecontroller")
@@ -842,7 +928,249 @@ struct ControllerSettingsView: View {
                 .frame(maxWidth: .infinity, maxHeight: .infinity)
             }
         }
-        .onAppear { selectedPlayer = controllerService.connectedControllers.first?.playerIndex ?? 1 }
+        .onAppear {
+            selectedPlayer = controllerService.connectedControllers.first?.playerIndex ?? 1
+            loadSavedConfigs()
+        }
+    }
+
+    private func playerMappingBinding(for btn: RetroButton, player: PlayerController) -> Binding<GCButtonMapping?> {
+        Binding<GCButtonMapping?>(
+            get: { controllerService.mapping(for: player.gcController?.vendorName ?? "Unknown", systemID: selectedSystemID).buttons[btn] },
+            set: { _ in }
+        )
+    }
+
+    private func saveCurrentConfig() {
+        guard let player = controllerService.connectedControllers.first(where: { $0.playerIndex == selectedPlayer }) else { return }
+        guard !configName.isEmpty else { return }
+        let currentMapping = controllerService.mapping(for: player.gcController?.vendorName ?? "Unknown", systemID: selectedSystemID)
+        savedConfigs[configName] = currentMapping
+        saveConfigsToDisk()
+    }
+
+    private func loadConfig(name: String) {
+        guard let mapping = savedConfigs[name],
+              let player = controllerService.connectedControllers.first(where: { $0.playerIndex == selectedPlayer }) else { return }
+        controllerService.updateMapping(for: player.gcController?.vendorName ?? "Unknown", systemID: selectedSystemID, mapping: mapping)
+        configName = name
+    }
+
+    private func deleteConfig(name: String) {
+        guard !name.isEmpty, savedConfigs[name] != nil else { return }
+        savedConfigs.removeValue(forKey: name)
+        saveConfigsToDisk()
+        if configName == name {
+            configName = ""
+        }
+    }
+
+    private func loadSavedConfigs() {
+        let defaults = UserDefaults.standard
+        if let data = defaults.data(forKey: "controller_saved_configs"),
+           let configs = try? JSONDecoder().decode([String: ControllerMapping].self, from: data) {
+            savedConfigs = configs
+        }
+    }
+
+    private func saveConfigsToDisk() {
+        if let data = try? JSONEncoder().encode(savedConfigs) {
+            UserDefaults.standard.set(data, forKey: "controller_saved_configs")
+        }
+    }
+}
+
+// MARK: - Draggable Divider
+struct DraggableDivider: View {
+    @Binding var width: CGFloat
+    @State private var isHovered = false
+    
+    var body: some View {
+        Rectangle()
+            .fill(isHovered ? Color.secondary.opacity(0.4) : Color.secondary.opacity(0.2))
+            .frame(width: 4)
+            .frame(maxHeight: .infinity)
+            .onHover { hovering in
+                isHovered = hovering
+            }
+            .gesture(
+                DragGesture()
+                    .onChanged { value in
+                        let delta = value.location.x - value.startLocation.x
+                        width = max(260, min(420, width + delta))
+                    }
+            )
+    }
+}
+
+// MARK: - Controller Left Panel (icon + sticks)
+struct ControllerLeftPanel: View {
+    let systemID: String
+    let width: CGFloat
+
+    var body: some View {
+        VStack(spacing: 8) {
+            ControllerIconView(systemID: systemID)
+                .frame(maxWidth: 180)
+            
+            Divider().padding(.horizontal, 16)
+            
+            StickVisualizerView(systemID: systemID)
+                .padding(.bottom, 8)
+            
+            Spacer()
+        }
+        .frame(width: width)
+        .padding(.vertical, 8)
+    }
+}
+
+// MARK: - Stick Visualizer with live state
+struct StickVisualizerView: View {
+    let systemID: String
+    @State private var lStick: (x: Double, y: Double) = (0, 0)
+    @State private var rStick: (x: Double, y: Double) = (0, 0)
+    @EnvironmentObject var controllerService: ControllerService
+    @StateObject private var stickManager = StickStateTracker()
+    
+    var body: some View {
+        VStack(spacing: 6) {
+            Text("Sticks")
+                .font(.caption)
+                .fontWeight(.semibold)
+                .foregroundColor(.secondary)
+            HStack(spacing: 12) {
+                CompactStickView(x: stickManager.lX, y: stickManager.lY, label: "L")
+                CompactStickView(x: stickManager.rX, y: stickManager.rY, label: "R")
+            }
+        }
+    }
+}
+
+// MARK: - Button Mapping List (right panel)
+struct ButtonMappingList: View {
+    let systemID: String
+    let player: PlayerController
+    let controllerService: ControllerService
+    @State private var listeningFor: RetroButton? = nil
+    @State private var currentMapping: ControllerMapping
+    
+    init(systemID: String, player: PlayerController, controllerService: ControllerService) {
+        self.systemID = systemID
+        self.player = player
+        self.controllerService = controllerService
+        _currentMapping = State(initialValue: controllerService.mapping(for: player.gcController?.vendorName ?? "Unknown", systemID: systemID))
+    }
+    
+    var body: some View {
+        VStack(spacing: 0) {
+            Text("Button Mapping")
+                .font(.caption2)
+                .fontWeight(.semibold)
+                .foregroundColor(.secondary)
+                .frame(maxWidth: .infinity, alignment: .leading)
+                .padding(.horizontal, 10)
+                .padding(.vertical, 6)
+            
+            Divider()
+            
+            List {
+                ForEach(RetroButton.availableButtons(for: systemID), id: \.self) { btn in
+                    MappingRowView(
+                        button: btn,
+                        currentMapping: currentMapping.buttons[btn],
+                        isListening: listeningFor == btn,
+                        onStartListening: { startListening(for: btn) },
+                        onMappingCaptured: { newMapping in
+                            currentMapping.buttons[btn] = newMapping
+                            listeningFor = nil
+                            saveMapping()
+                        }
+                    )
+                }
+            }
+            .listStyle(.plain)
+        }
+        .frame(minWidth: 140)
+        .onDisappear { stopListening() }
+    }
+    
+    private func startListening(for btn: RetroButton) {
+        listeningFor = btn
+        guard let gc = player.gcController else { return }
+        gc.extendedGamepad?.valueChangedHandler = { [self] pad, element in
+            if let dpad = element as? GCControllerDirectionPad {
+                if dpad.up.isPressed { capture(dpad.up) }
+                else if dpad.down.isPressed { capture(dpad.down) }
+                else if dpad.left.isPressed { capture(dpad.left) }
+                else if dpad.right.isPressed { capture(dpad.right) }
+            } else if let button = element as? GCControllerButtonInput, button.isPressed {
+                capture(button)
+            } else if let axis = element as? GCControllerAxisInput, abs(axis.value) > 0.6 {
+                capture(axis)
+            }
+        }
+    }
+    
+    private func capture(_ element: GCControllerElement) {
+        let name = element.localizedName ?? "Button"
+        DispatchQueue.main.async {
+            currentMapping.buttons[listeningFor!] = GCButtonMapping(gcElementName: name, gcElementAlias: name)
+            listeningFor = nil
+            stopListening()
+            saveMapping()
+        }
+    }
+    
+    private func stopListening() {
+        player.gcController?.extendedGamepad?.valueChangedHandler = nil
+    }
+    
+    private func saveMapping() {
+        controllerService.updateMapping(for: currentMapping.vendorName, systemID: systemID, mapping: currentMapping)
+    }
+}
+
+// MARK: - Stick State Manager
+class StickStateTracker: ObservableObject {
+    @Published var lX: Double = 0
+    @Published var lY: Double = 0
+    @Published var rX: Double = 0
+    @Published var rY: Double = 0
+    
+    private var cancellables = Set<AnyCancellable>()
+    
+    init() {
+        NotificationCenter.default.publisher(for: .GCControllerDidConnect)
+            .sink { [weak self] _ in self?.startMonitoring() }
+            .store(in: &cancellables)
+        
+        NotificationCenter.default.publisher(for: .GCControllerDidDisconnect)
+            .sink { [weak self] _ in
+                self?.lX = 0; self?.lY = 0; self?.rX = 0; self?.rY = 0
+            }
+            .store(in: &cancellables)
+        
+        startMonitoring()
+    }
+    
+    private func startMonitoring() {
+        guard let gc = GCController.controllers().first,
+              let gamepad = gc.extendedGamepad else { return }
+        
+        gamepad.leftThumbstick.valueChangedHandler = { [weak self] _, x, y in
+            DispatchQueue.main.async {
+                self?.lX = Double(x)
+                self?.lY = Double(y)
+            }
+        }
+        
+        gamepad.rightThumbstick.valueChangedHandler = { [weak self] _, x, y in
+            DispatchQueue.main.async {
+                self?.rX = Double(x)
+                self?.rY = Double(y)
+            }
+        }
     }
 }
 
@@ -860,96 +1188,103 @@ struct ControllerMappingDetail: View {
     }
 
     var body: some View {
-        VStack(alignment: .leading, spacing: 0) {
-            HStack {
-                Image(systemName: "gamecontroller.fill")
-                    .foregroundColor(.purple)
-                Text(player.name)
-                    .font(.headline)
-                Spacer()
-                Button("Reset to Defaults") {
-                    mapping = ControllerMapping.defaults(for: player.mapping.vendorName, systemID: systemID)
-                    save()
+        HStack(spacing: 0) {
+            // Left side: Controller icon and stick visualization
+            VStack(spacing: 8) {
+                // Controller icon - unbounded
+                ControllerIconView(systemID: systemID)
+
+                Divider().padding(.horizontal, 12)
+
+                // Stick visualization
+                VStack(spacing: 8) {
+                    Text("Sticks")
+                        .font(.caption)
+                        .fontWeight(.semibold)
+                        .foregroundColor(.secondary)
+                    HStack(spacing: 8) {
+                        CompactStickView(x: lStickState.x, y: lStickState.y, label: "L")
+                        CompactStickView(x: rStickState.x, y: rStickState.y, label: "R")
+                    }
                 }
-                .buttonStyle(.bordered)
+                .padding(.bottom, 8)
+
+                Spacer()
             }
-            .padding()
+            .frame(width: 160)
+            .padding(.vertical, 8)
 
             Divider()
 
-            ScrollView {
-                VStack(spacing: 24) {
-                    HStack(spacing: 32) {
-                        ControllerIconView(systemID: systemID)
-                        
-                        Divider().frame(height: 100)
-                        
-                        HStack(spacing: 20) {
-                            StickTesterView(x: lStickState.x, y: lStickState.y, label: "LEFT STICK")
-                            StickTesterView(x: rStickState.x, y: rStickState.y, label: "RIGHT STICK")
-                        }
+            // Right side: Scrollable list of control mappings
+            VStack(spacing: 0) {
+                Text("Button Mapping")
+                    .font(.caption2)
+                    .fontWeight(.semibold)
+                    .foregroundColor(.secondary)
+                    .frame(maxWidth: .infinity, alignment: .leading)
+                    .padding(.horizontal, 12)
+                    .padding(.vertical, 6)
+
+                Divider()
+
+                List {
+                    ForEach(RetroButton.availableButtons(for: systemID), id: \.self) { btn in
+                        MappingRowView(
+                            button: btn,
+                            currentMapping: mapping.buttons[btn],
+                            isListening: listeningFor == btn,
+                            onStartListening: {
+                                listeningFor = btn
+                                startListeningForButton(btn)
+                            },
+                            onMappingCaptured: { newMapping in
+                                mapping.buttons[btn] = newMapping
+                                listeningFor = nil
+                                saveMapping()
+                            }
+                        )
                     }
-                    .padding()
-                    .background(.ultraThinMaterial)
-                    .cornerRadius(16)
-                    .overlay(RoundedRectangle(cornerRadius: 16).stroke(.secondary.opacity(0.1), lineWidth: 1))
-                    .padding(.horizontal)
-                    
-                    LazyVGrid(columns: [GridItem(.flexible()), GridItem(.flexible())], spacing: 12) {
-                        let buttons = RetroButton.availableButtons(for: systemID)
-                        ForEach(buttons, id: \.self) { btn in
-                            buttonRow(btn)
-                        }
-                    }
-                    .padding(.horizontal)
                 }
-                .padding(.vertical)
+                .listStyle(.plain)
             }
+            .frame(minWidth: 300, maxWidth: 380)
         }
         .onAppear { startStickVisualizer() }
+        .onDisappear { stopListening() }
     }
 
-    private func buttonRow(_ btn: RetroButton) -> some View {
-        HStack {
-            Text(btn.displayName)
-                .frame(width: 100, alignment: .leading)
-            Spacer()
-            Button(listeningFor == btn ? "Press a button…" : (mapping.buttons[btn]?.gcElementAlias ?? "—")) {
-                listeningFor = btn
-                listenForButton(btn)
-            }
-            .buttonStyle(.bordered)
-            .tint(listeningFor == btn ? .orange : .secondary)
-        }
-    }
-
-    private func listenForButton(_ btn: RetroButton) {
+    private func startListeningForButton(_ btn: RetroButton) {
         guard let gc = player.gcController else { return }
-        gc.extendedGamepad?.valueChangedHandler = { pad, element in
+        gc.extendedGamepad?.valueChangedHandler = { [self] pad, element in
             if let dpad = element as? GCControllerDirectionPad {
-                if dpad.up.isPressed { save(dpad.up) }
-                else if dpad.down.isPressed { save(dpad.down) }
-                else if dpad.left.isPressed { save(dpad.left) }
-                else if dpad.right.isPressed { save(dpad.right) }
+                if dpad.up.isPressed { captureMapping(dpad.up, for: btn) }
+                else if dpad.down.isPressed { captureMapping(dpad.down, for: btn) }
+                else if dpad.left.isPressed { captureMapping(dpad.left, for: btn) }
+                else if dpad.right.isPressed { captureMapping(dpad.right, for: btn) }
             } else if let button = element as? GCControllerButtonInput, button.isPressed {
-                save(button)
+                captureMapping(button, for: btn)
             } else if let axis = element as? GCControllerAxisInput, abs(axis.value) > 0.6 {
-                save(axis)
-            }
-        }
-        
-        func save(_ element: GCControllerElement) {
-            let name = element.localizedName ?? "Button"
-            DispatchQueue.main.async {
-                mapping.buttons[btn] = GCButtonMapping(gcElementName: name, gcElementAlias: name)
-                listeningFor = nil
-                gc.extendedGamepad?.valueChangedHandler = nil
-                self.save()
+                captureMapping(axis, for: btn)
             }
         }
     }
 
-    private func save() {
+    private func captureMapping(_ element: GCControllerElement, for btn: RetroButton) {
+        let name = element.localizedName ?? "Button"
+        DispatchQueue.main.async {
+            mapping.buttons[btn] = GCButtonMapping(gcElementName: name, gcElementAlias: name)
+            listeningFor = nil
+            stopListening()
+            saveMapping()
+        }
+    }
+
+    private func stopListening() {
+        player.gcController?.extendedGamepad?.valueChangedHandler = nil
+    }
+
+    private func saveMapping() {
         controllerService.updateMapping(for: mapping.vendorName, systemID: systemID, mapping: mapping)
     }
 
@@ -963,6 +1298,73 @@ struct ControllerMappingDetail: View {
         }
         gc.extendedGamepad?.rightThumbstick.valueChangedHandler = { _, x, y in
             DispatchQueue.main.async { rStickState = (Double(x), Double(y)) }
+        }
+    }
+}
+
+// MARK: - Mapping Row View
+struct MappingRowView: View {
+    let button: RetroButton
+    let currentMapping: GCButtonMapping?
+    let isListening: Bool
+    let onStartListening: () -> Void
+    let onMappingCaptured: (GCButtonMapping) -> Void
+
+    var body: some View {
+        HStack(spacing: 6) {
+            Text(button.displayName)
+                .font(.body)
+                .lineLimit(1)
+
+            Spacer(minLength: 4)
+
+            Button(isListening ? "Press..." : (currentMapping?.gcElementAlias ?? "—")) {
+                onStartListening()
+            }
+            .buttonStyle(.bordered)
+            .controlSize(.small)
+            .tint(isListening ? .orange : .secondary)
+            .fixedSize()
+        }
+        .padding(.vertical, 4)
+        .padding(.horizontal, 8)
+    }
+}
+
+// MARK: - Compact Stick View
+struct CompactStickView: View {
+    let x: Double
+    let y: Double
+    let label: String
+
+    var body: some View {
+        VStack(spacing: 6) {
+            ZStack {
+                Circle()
+                    .fill(.quaternary.opacity(0.2))
+                    .frame(width: 80, height: 80)
+                Circle()
+                    .stroke(.secondary.opacity(0.3), lineWidth: 1)
+                    .frame(width: 80, height: 80)
+
+                Rectangle().fill(.secondary.opacity(0.1)).frame(width: 80, height: 1)
+                Rectangle().fill(.secondary.opacity(0.1)).frame(width: 1, height: 80)
+
+                Circle()
+                    .fill(LinearGradient(colors: [.purple, .blue], startPoint: .top, endPoint: .bottom))
+                    .frame(width: 16, height: 16)
+                    .offset(x: CGFloat(x * 34), y: CGFloat(y * -34))
+                    .shadow(color: .purple.opacity(0.5), radius: 5)
+            }
+            .clipShape(Circle())
+
+            Text(label)
+                .font(.caption.weight(.semibold))
+                .foregroundColor(.secondary)
+
+            Text("\(String(format: "%.2f", x)), \(String(format: "%.2f", y))")
+                .font(.system(size: 9, design: .monospaced))
+                .foregroundColor(.secondary.opacity(0.7))
         }
     }
 }
@@ -1008,18 +1410,15 @@ struct ControllerIconView: View {
     let systemID: String
     
     var body: some View {
-        if let image = loadIcon(for: systemID) {
-            Image(nsImage: image)
-                .resizable()
-                .interpolation(.high)
-                .aspectRatio(contentMode: .fit)
-                .frame(width: 160, height: 110)
-                .padding(8)
-                .background(.white.opacity(0.05))
-                .cornerRadius(12)
-                .shadow(color: .black.opacity(0.3), radius: 10, x: 0, y: 5)
-        } else {
-            ControllerDrawingView()
+        Group {
+            if let image = loadIcon(for: systemID) {
+                Image(nsImage: image)
+                    .resizable()
+                    .interpolation(.high)
+                    .aspectRatio(contentMode: .fit)
+            } else {
+                ControllerDrawingView()
+            }
         }
     }
     
