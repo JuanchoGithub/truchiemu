@@ -165,7 +165,7 @@ static void initOptStorage() {
 
 /* Parse V2 definitions into the global dict.
  * Called from the C environment callback. */
-static void parseCoreOptionsV2(struct retro_core_options_v2 *opts) {
+__attribute__((unused)) static void parseCoreOptionsV2(struct retro_core_options_v2 *opts) {
     initOptStorage();
     [g_optValues removeAllObjects];
     
@@ -224,7 +224,7 @@ static void parseCoreOptionsV2(struct retro_core_options_v2 *opts) {
 }
 
 /* Parse V1 definition (simpler, no categories) */
-static void parseCoreOptionsV1(struct retro_core_options *opts) {
+__attribute__((unused)) static void parseCoreOptionsV1(struct retro_core_options *opts) {
     initOptStorage();
     [g_optValues removeAllObjects];
     

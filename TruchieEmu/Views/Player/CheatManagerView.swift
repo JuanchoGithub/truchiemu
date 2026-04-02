@@ -316,9 +316,8 @@ struct AddCheatSheet: View {
             return
         }
         
-        let cheatCount = cheatManager.cheats(for: rom).count
-        var cheat = Cheat(
-            index: cheatCount,
+        let cheat = Cheat(
+            index: cheatManager.cheats(for: rom).count,
             description: trimmedDesc.isEmpty ? "Custom Cheat" : trimmedDesc,
             code: trimmedCode,
             enabled: true,

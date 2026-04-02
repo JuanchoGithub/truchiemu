@@ -157,7 +157,7 @@ class CLILauncher {
         timeout: TimeInterval? = nil,
         appBundleID: String = "com.truchiemu.app"
     ) -> Bool {
-        var arguments = buildLaunchArguments(
+        let arguments = buildLaunchArguments(
             romPath: romPath,
             coreID: coreID,
             slot: slot,

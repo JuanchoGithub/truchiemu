@@ -46,7 +46,7 @@ enum ScummVMCacheManager {
 /// 2. Detecting the game ID from filenames
 /// 3. Generating a .scummvm hook file
 /// 4. Passing the .scummvm file to the core instead of the ZIP
-class ScummVMRunner: EmulatorRunner {
+class ScummVMRunner: EmulatorRunner, @unchecked Sendable {
     
     // MARK: - Game ID Detection Patterns
     

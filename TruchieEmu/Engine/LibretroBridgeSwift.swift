@@ -55,10 +55,10 @@ class LibretroBridgeSwift {
     }
 
     static func getOptionsDictionary() -> [String: Any]? {
-        LibretroBridge.getOptionsDictionary() as? [String: Any]
+        LibretroBridge.getOptionsDictionary() as [String: Any]?
     }
 
     static func getCategoriesDictionary() -> [String: Any]? {
-        LibretroBridge.getCategoriesDictionary() as? [String: Any]
+        LibretroBridge.getCategoriesDictionary() as [String: Any]?
     }
 }

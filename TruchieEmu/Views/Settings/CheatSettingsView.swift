@@ -142,7 +142,7 @@ struct CheatSettingsView: View {
     private func resultBanner(result: CheatDownloadResult) -> some View {
         Group {
             switch result {
-            case .success(let downloaded, let failed, let message):
+            case .success(_, _, let message):
                 HStack {
                     Image(systemName: "checkmark.circle.fill")
                         .foregroundColor(.green)

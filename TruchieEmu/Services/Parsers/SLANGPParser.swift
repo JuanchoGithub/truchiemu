@@ -127,7 +127,6 @@ class SLANGPParser {
         guard index >= 0, index < preset.shaders.count else { return }
         
         let baseKey = key.replacingOccurrences(of: String(index), with: "")
-        let shader = preset.shaders[index]
         
         switch baseKey {
         case "shader":

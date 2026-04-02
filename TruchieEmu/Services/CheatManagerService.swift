@@ -193,7 +193,7 @@ class CheatManagerService: ObservableObject {
         let finalDesc = trimmedDesc.isEmpty ? "Custom Cheat" : trimmedDesc
         
         let cheatCount = cheats(for: rom).count
-        var cheat = Cheat(
+        let cheat = Cheat(
             index: cheatCount,
             description: finalDesc,
             code: trimmedCode,

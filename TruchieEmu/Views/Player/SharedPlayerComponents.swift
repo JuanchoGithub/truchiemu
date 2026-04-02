@@ -710,7 +710,9 @@ class StandaloneGameWindowController: NSWindowController, NSWindowDelegate, Obse
     func scheduleHideToolbar() {
         hideToolbarTimer?.invalidate()
         hideToolbarTimer = Timer.scheduledTimer(withTimeInterval: 2.5, repeats: false) { [weak self] _ in
-            self?.hideToolbar()
+            DispatchQueue.main.async {
+                self?.hideToolbar()
+            }
         }
     }
     
@@ -722,7 +724,9 @@ class StandaloneGameWindowController: NSWindowController, NSWindowDelegate, Obse
                 context.timingFunction = CAMediaTimingFunction(name: .easeInEaseOut)
                 toolbarView?.animator().alphaValue = 0
             } completionHandler: { [weak self] in
-                self?.isToolbarVisible = false
+                Task { @MainActor [weak self] in
+                    self?.isToolbarVisible = false
+                }
             }
         }
     }

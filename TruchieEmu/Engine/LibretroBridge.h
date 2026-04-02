@@ -1,5 +1,7 @@
 #import <Foundation/Foundation.h>
 
+NS_ASSUME_NONNULL_BEGIN
+
 @interface LibretroBridge : NSObject
 
 + (void)launchWithDylibPath:(NSString *)dylibPath
@@ -9,9 +11,9 @@
 
 + (void)stop;
 + (void)saveState;
- + (void)setKeyState:(int)retroID pressed:(BOOL)pressed;
- + (void)setTurboState:(int)turboIdx active:(BOOL)active targetButton:(int)targetButton;
- + (void)setAnalogState:(int)index id:(int)id value:(int)value;
++ (void)setKeyState:(int)retroID pressed:(BOOL)pressed;
++ (void)setTurboState:(int)turboIdx active:(BOOL)active targetButton:(int)targetButton;
++ (void)setAnalogState:(int)index id:(int)id value:(int)value;
 + (void)setLanguage:(int)language;
 + (void)setLogLevel:(int)level;
 + (void)setPaused:(BOOL)paused;
@@ -40,10 +42,12 @@
 /* Cheat Management */
 + (void)setCheatEnabled:(int)index code:(NSString *)code enabled:(BOOL)enabled;
 + (void)resetCheats;
-+ (void)applyCheats:(NSArray<NSDictionary *> * _Nonnull)cheats;  // Array of {index, code, enabled}
++ (void)applyCheats:(NSArray<NSDictionary *> *)cheats;  // Array of {index, code, enabled}
 
 /* Direct Memory Access for Cheats */
 + (nullable void *)getMemoryData:(unsigned)type size:(size_t *_Nullable)size;  // type: RETRO_MEMORY_SYSTEM_RAM or RETRO_MEMORY_SAVE_RAM
 + (void)writeMemoryByte:(uint32_t)address value:(uint8_t)value;
-+ (void)applyDirectMemoryCheats:(NSArray<NSDictionary *> * _Nonnull)cheats;  // Array of {address, value, enabled}
++ (void)applyDirectMemoryCheats:(NSArray<NSDictionary *> *)cheats;  // Array of {address, value, enabled}
 @end
+
+NS_ASSUME_NONNULL_END

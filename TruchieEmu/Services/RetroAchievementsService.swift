@@ -150,7 +150,7 @@ class RetroAchievementsService: ObservableObject {
     
     /// Resolve a ROM hash to a RetroAchievements game ID.
     private func resolveHash(hash: String) async throws -> Int? {
-        guard let username = username else { return nil }
+        guard username != nil else { return nil }
         
         return nil // Requires separate hash resolution endpoint
     }

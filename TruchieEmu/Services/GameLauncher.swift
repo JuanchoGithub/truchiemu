@@ -21,6 +21,7 @@ class GameLauncher: ObservableObject {
     // MARK: - Launch Configuration
     
     /// Complete launch configuration for a game
+    @MainActor
     struct LaunchConfig {
         let rom: ROM
         let coreID: String

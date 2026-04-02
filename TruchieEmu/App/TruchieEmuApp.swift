@@ -27,7 +27,7 @@ struct TruchieEmuApp: App {
                         // Launch the game - CLIManager handles all window cleanup
                         Task { @MainActor in
                             print("[App] CLI launch - starting game")
-                            CLIManager.shared.handleStartupCommands()
+                            _ = CLIManager.shared.handleStartupCommands()
                         }
                     }
             } else {
@@ -88,7 +88,7 @@ struct EmptyScene: Scene {
                     // Start the game launch process
                     Task { @MainActor in
                         RunningGamesTracker.shared.resetAll()
-                        CLIManager.shared.handleStartupCommands()
+                        _ = CLIManager.shared.handleStartupCommands()
                     }
                 }
         }

@@ -199,7 +199,9 @@ actor ROMScanner {
                     _ = scanner.scanString("FILE")
                     var filename: NSString?
                     if scanner.scanString("\"") != nil {
-                        _ = scanner.scanUpTo("\"", into: &filename)
+                        if let scanned = scanner.scanUpToString("\"") {
+                            filename = scanned as NSString
+                        }
                     } else {
                         // Fallback to reading until next whitespace or end
                         var temp: String = ""

@@ -237,7 +237,6 @@ class CheatDownloadService: ObservableObject {
     /// Find cheats for a specific ROM by searching downloaded cheat files
     func findCheatsForROM(_ rom: ROM) -> [CheatFile] {
         let romFilename = rom.path.deletingPathExtension().lastPathComponent
-        let systemID = rom.systemID ?? "unknown"
         var foundFiles: [CheatFile] = []
         
         // Search in downloaded cheats directory

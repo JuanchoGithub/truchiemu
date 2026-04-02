@@ -920,10 +920,8 @@ actor ImageCache {
             return cached
         }
         
-        // Load on background thread
-        let image = await Task(priority: .userInitiated) {
-            return NSImage(contentsOf: url)
-        }.value
+        // Load image - NSImage(contentsOf:) is synchronous and thread-safe for loading
+        let image = NSImage(contentsOf: url)
         
         if let image = image {
             cache.setObject(image, forKey: url as NSURL)

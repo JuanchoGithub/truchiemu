@@ -1155,7 +1155,7 @@ struct GameDetailView: View {
                     // Download cheats button
                     Button {
                         Task {
-                            await CheatDownloadService.shared.downloadCheatsForSystem(currentROM.systemID ?? "")
+                            _ = await CheatDownloadService.shared.downloadCheatsForSystem(currentROM.systemID ?? "")
                             cheatManagerService.loadCheatsForROM(currentROM)
                             updateCheatCounts()
                         }
@@ -1240,7 +1240,7 @@ struct GameDetailView: View {
             case .success(let urls):
                 if let url = urls.first {
                     Task {
-                        await cheatManagerService.importChtFile(url, for: currentROM)
+                        _ = await cheatManagerService.importChtFile(url, for: currentROM)
                         updateCheatCounts()
                     }
                 }
