@@ -1,6 +1,84 @@
 import SwiftUI
 import AppKit
 
+// MARK: - Game Filter Options
+
+/// Filter chips for refining the game library view
+enum GameFilterOption: String, CaseIterable, Identifiable {
+    case noBoxArt      = "noBoxArt"
+    case neverPlayed   = "neverPlayed"
+    case notFavorite   = "notFavorite"
+    case unscanned     = "unscanned"
+    case multiplayer   = "multiplayer"
+    case hasMetadata   = "hasMetadata"
+    
+    var id: String { rawValue }
+    
+    var icon: String {
+        switch self {
+        case .noBoxArt:     return "photo"
+        case .neverPlayed:  return "play.slash"
+        case .notFavorite:  return "heart.slash"
+        case .unscanned:    return "qrcode.viewfinder"
+        case .multiplayer:  return "person.2.fill"
+        case .hasMetadata:  return "info.circle"
+        }
+    }
+    
+    var label: String {
+        switch self {
+        case .noBoxArt:     return "No Box Art"
+        case .neverPlayed:  return "Never Played"
+        case .notFavorite:  return "Not Favorite"
+        case .unscanned:    return "Unidentified"
+        case .multiplayer:  return "Multiplayer"
+        case .hasMetadata:  return "Has Metadata"
+        }
+    }
+    
+    var tooltip: String {
+        switch self {
+        case .noBoxArt:     return "Games missing cover art"
+        case .neverPlayed:  return "Games that have never been launched"
+        case .notFavorite:  return "Games not marked as favorites"
+        case .unscanned:    return "Games lacking identification data"
+        case .multiplayer:  return "Games supporting 2+ players"
+        case .hasMetadata:  return "Games with a metadata title"
+        }
+    }
+    
+    func matches(_ rom: ROM) -> Bool {
+        let fm = FileManager.default
+        switch self {
+        case .noBoxArt:
+            if let p = rom.boxArtPath { return !fm.fileExists(atPath: p.path) }
+            return true
+        case .neverPlayed:
+            return rom.lastPlayed == nil
+        case .notFavorite:
+            return !rom.isFavorite
+        case .unscanned:
+            return rom.crc32 == nil && rom.thumbnailLookupSystemID == nil
+        case .multiplayer:
+            return (rom.metadata?.players ?? 0) >= 2
+        case .hasMetadata:
+            let title = rom.metadata?.title?.trimmingCharacters(in: .whitespacesAndNewlines) ?? ""
+            return !title.isEmpty
+        }
+    }
+    
+    var activeColor: Color {
+        switch self {
+        case .noBoxArt:     return .orange
+        case .neverPlayed:  return .purple
+        case .notFavorite:  return .pink
+        case .unscanned:    return .yellow
+        case .multiplayer:  return .green
+        case .hasMetadata:  return .cyan
+        }
+    }
+}
+
 struct LibraryGridView: View {
     @EnvironmentObject var library: ROMLibrary
     @EnvironmentObject var categoryManager: CategoryManager
@@ -24,7 +102,7 @@ struct LibraryGridView: View {
     @State private var manualBoxArtSearchROM: ROM?
     
     // Smooth pinch-to-zoom state
-    @State private var continuousZoom: Double = 0.5 // 0.0 to 1.0, matches slider midpoint
+    @State private var continuousZoom: Double = 0.5
     @State private var lastMagnification: Double = 1.0
     
     // Multi-select state
@@ -33,6 +111,9 @@ struct LibraryGridView: View {
     
     // Drag and drop
     @State private var draggedROMs: [ROM] = []
+    
+    // Filter chips
+    @State private var activeFilters: Set<String> = []
 
     private enum ViewMode: String { case grid, list }
 
@@ -53,7 +134,21 @@ struct LibraryGridView: View {
         }
 
         // Filter out BIOS files unless "Show BIOS Files" is enabled
-        let filtered = prefs.showBiosFiles ? base : base.filter { !$0.isHidden }
+        var filtered = prefs.showBiosFiles ? base : base.filter { !$0.isHidden }
+
+        // Apply filter chips
+        if !activeFilters.isEmpty {
+            filtered = filtered.filter { rom in
+                for rawValue in activeFilters {
+                    if let option = GameFilterOption(rawValue: rawValue) {
+                        if !option.matches(rom) {
+                            return false
+                        }
+                    }
+                }
+                return true
+            }
+        }
 
         if searchText.isEmpty {
             return filtered
@@ -71,6 +166,12 @@ struct LibraryGridView: View {
     var body: some View {
         VStack(spacing: 0) {
             searchField
+            filterChips
+            
+            // Active filter summary bar
+            if !activeFilters.isEmpty {
+                activeFilterSummary
+            }
             
             ZStack {
                 if library.isScanning {
@@ -171,7 +272,6 @@ struct LibraryGridView: View {
                 .help("System language")
 
                 if case .system(let system) = filter {
-                    // Box Type - directly open the menu with options
                     Menu {
                         ForEach(BoxType.allCases) { type in
                             Button {
@@ -193,7 +293,7 @@ struct LibraryGridView: View {
                     .help("Box art type")
                 }
 
-                // Zoom slider - works for both grid and list views
+                // Zoom slider
                 Slider(value: $continuousZoom, in: 0...1, step: 1.0/7.0)
                     .frame(width: 120)
                     .help("Zoom level")
@@ -215,11 +315,10 @@ struct LibraryGridView: View {
                     Label("Fetch missing art", systemImage: "arrow.down.circle")
                 }
                 .labelStyle(.iconOnly)
-                .help("Download missing box art from Libretro CDN (CRC + DAT when enabled)")
+                .help("Download missing box art from Libretro CDN")
 
                 // Settings button
                 Button {
-                    // Trigger the Settings menu item via the main menu
                     if let mainMenu = NSApp.mainMenu {
                         for item in mainMenu.items {
                             if let submenu = item.submenu {
@@ -234,7 +333,6 @@ struct LibraryGridView: View {
                             }
                         }
                     }
-                    // Fallback: try to open settings window directly
                     NSApp.windows.first { $0.identifier?.rawValue == "settings" }?.makeKeyAndOrderFront(nil)
                 } label: {
                     Label("Settings", systemImage: "gearshape")
@@ -248,11 +346,9 @@ struct LibraryGridView: View {
         }
         .onAppear { 
             updateColumns()
-            // Sync continuous zoom with column count
             continuousZoom = 1.0 - Double(columnCount - 1) / 7.0
         }
     }
-
 
     private func updateColumns() {
         columns = Array(repeating: GridItem(.flexible(), spacing: 16), count: columnCount)
@@ -290,14 +386,12 @@ struct LibraryGridView: View {
         .gesture(
             MagnificationGesture()
                 .onChanged { value in
-                    // Smooth continuous zoom during gesture
                     let scale = value / lastMagnification
                     let zoomDelta = (scale - 1.0) * 0.3
                     continuousZoom = max(0, min(1, continuousZoom + zoomDelta))
                     lastMagnification = value
                 }
                 .onEnded { _ in
-                    // Snap to nearest step when gesture ends
                     let snapped = round(continuousZoom * 7.0) / 7.0
                     continuousZoom = snapped
                     columnCount = max(1, min(8, Int(round((1.0 - snapped) * 7.0) + 1)))
@@ -305,17 +399,14 @@ struct LibraryGridView: View {
                 }
         )
         .onDrop(of: [.url], isTargeted: nil) { items, location in
-            // Handle dropping items onto the grid (could be used for adding to category)
             return false
         }
     }
     
-    /// Handle tap with modifier key support for multi-select
     private func handleTap(on rom: ROM, at index: Int) {
         let modifiers = NSEvent.modifierFlags
         
         if modifiers.contains(.command) {
-            // Command+click: toggle selection
             if selectedROMs.contains(rom.id) {
                 selectedROMs.remove(rom.id)
                 if selectedROMs.isEmpty {
@@ -327,7 +418,6 @@ struct LibraryGridView: View {
             }
             lastSelectedIndex = index
         } else if modifiers.contains(.shift), let lastIndex = lastSelectedIndex {
-            // Shift+click: range selection
             let range = min(lastIndex, index)...max(lastIndex, index)
             let rangeIDs = range.compactMap { i in
                 i < displayedROMs.count ? displayedROMs[i].id : nil
@@ -335,7 +425,6 @@ struct LibraryGridView: View {
             selectedROMs.formUnion(rangeIDs)
             selectedROM = rom
         } else {
-            // Regular click: single select
             selectedROMs.removeAll()
             selectedROM = rom
             lastSelectedIndex = index
@@ -373,14 +462,12 @@ struct LibraryGridView: View {
         .gesture(
             MagnificationGesture()
                 .onChanged { value in
-                    // Higher sensitivity for list view
                     let scale = value / lastMagnification
                     let zoomDelta = (scale - 1.0) * 0.8
                     continuousZoom = max(0, min(1, continuousZoom + zoomDelta))
                     lastMagnification = value
                 }
                 .onEnded { _ in
-                    // Snap to nearest step when gesture ends
                     let snapped = round(continuousZoom * 7.0) / 7.0
                     continuousZoom = snapped
                     columnCount = max(1, min(8, Int(round((1.0 - snapped) * 7.0) + 1)))
@@ -389,12 +476,10 @@ struct LibraryGridView: View {
         )
     }
     
-    /// Handle tap with modifier key support for multi-select in list view
     private func handleListTap(on rom: ROM, at index: Int) {
         let modifiers = NSEvent.modifierFlags
         
         if modifiers.contains(.command) {
-            // Command+click: toggle selection
             if selectedROMs.contains(rom.id) {
                 selectedROMs.remove(rom.id)
                 if selectedROMs.isEmpty {
@@ -406,7 +491,6 @@ struct LibraryGridView: View {
             }
             lastSelectedIndex = index
         } else if modifiers.contains(.shift), let lastIndex = lastSelectedIndex {
-            // Shift+click: range selection
             let range = min(lastIndex, index)...max(lastIndex, index)
             let rangeIDs = range.compactMap { i in
                 i < displayedROMs.count ? displayedROMs[i].id : nil
@@ -414,14 +498,12 @@ struct LibraryGridView: View {
             selectedROMs.formUnion(rangeIDs)
             selectedROM = rom
         } else {
-            // Regular click: single select
             selectedROMs.removeAll()
             selectedROM = rom
             lastSelectedIndex = index
         }
     }
 
-    /// Zoom level from 0.0 (min zoom, 8 columns) to 1.0 (max zoom, 1 column)
     private var zoomLevel: Double {
         1.0 - Double(columnCount - 1) / 7.0
     }
@@ -465,9 +547,19 @@ struct LibraryGridView: View {
             Image(systemName: "tray")
                 .font(.system(size: 56))
                 .foregroundColor(.secondary)
-            Text(searchText.isEmpty ? "No games found" : "No results for \(searchText)")
-                .font(.title3)
-                .foregroundColor(.secondary)
+            if !activeFilters.isEmpty && searchText.isEmpty {
+                Text("No games match the active filters")
+                    .font(.title3)
+                    .foregroundColor(.secondary)
+            } else if !searchText.isEmpty {
+                Text("No results for \(searchText)")
+                    .font(.title3)
+                    .foregroundColor(.secondary)
+            } else {
+                Text("No games found")
+                    .font(.title3)
+                    .foregroundColor(.secondary)
+            }
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity)
     }
@@ -495,7 +587,6 @@ struct LibraryGridView: View {
 
         Divider()
         
-        // Add to Category submenu
         Menu {
             Button {
                 showCreateCategorySheet = true
@@ -532,7 +623,6 @@ struct LibraryGridView: View {
                 }
             }
             
-            // Remove from all categories option
             let categoriesForGame = categoryManager.categories.filter { $0.gameIDs.contains(rom.id) }
             if !categoriesForGame.isEmpty {
                 Divider()
@@ -563,6 +653,8 @@ struct LibraryGridView: View {
         }
     }
 
+    // MARK: - Search & Filters
+
     private var searchField: some View {
         HStack {
             Image(systemName: "magnifyingglass")
@@ -581,7 +673,77 @@ struct LibraryGridView: View {
         .background(Color.secondary.opacity(0.1))
         .cornerRadius(10)
         .padding([.horizontal, .top], 16)
-        .padding(.bottom, 8)
+        .padding(.bottom, 4)
+    }
+    
+    private var filterChips: some View {
+        ScrollView(.horizontal, showsIndicators: false) {
+            HStack(spacing: 6) {
+                ForEach(GameFilterOption.allCases) { option in
+                    FilterChipView(
+                        option: option,
+                        isActive: activeFilters.contains(option.rawValue),
+                        action: { toggleFilter(option) }
+                    )
+                }
+                
+                if !activeFilters.isEmpty {
+                    Button {
+                        activeFilters.removeAll()
+                    } label: {
+                        HStack(spacing: 3) {
+                            Image(systemName: "xmark")
+                                .font(.system(size: 9, weight: .medium))
+                            Text("Clear")
+                                .font(.system(size: 10, weight: .medium))
+                        }
+                        .foregroundColor(.white)
+                        .padding(.horizontal, 8)
+                        .padding(.vertical, 4)
+                        .background(Color.accentColor)
+                        .clipShape(Capsule())
+                    }
+                    .buttonStyle(.plain)
+                    .padding(.leading, 2)
+                }
+            }
+            .padding(.horizontal, 16)
+            .padding(.bottom, 8)
+        }
+    }
+    
+    private var activeFilterSummary: some View {
+        HStack {
+            Image(systemName: "line.3.horizontal.decrease.circle.fill")
+                .foregroundColor(.accentColor)
+                .font(.caption)
+            
+            let activeNames = activeFilters.compactMap { rawValue -> String? in
+                GameFilterOption(rawValue: rawValue)?.label
+            }
+            
+            Text("Filtering: " + activeNames.joined(separator: ", "))
+                .font(.caption)
+                .foregroundColor(.secondary)
+                .lineLimit(1)
+            
+            Spacer()
+            
+            Text("\(displayedROMs.count) game\(displayedROMs.count == 1 ? "" : "s")")
+                .font(.caption)
+                .foregroundColor(.secondary)
+        }
+        .padding(.horizontal, 16)
+        .padding(.vertical, 6)
+        .background(Color.secondary.opacity(0.06))
+    }
+    
+    private func toggleFilter(_ option: GameFilterOption) {
+        if activeFilters.contains(option.rawValue) {
+            activeFilters.remove(option.rawValue)
+        } else {
+            activeFilters.insert(option.rawValue)
+        }
     }
 
     @MainActor
@@ -599,12 +761,39 @@ struct LibraryGridView: View {
             return
         }
 
-        // Use unified GameLauncher for consistent launch behavior across all entry points
         gameLauncher.launchGame(
             rom: rom,
             coreID: cid,
             library: library
         )
+    }
+}
+
+// MARK: - Filter Chip View
+
+struct FilterChipView: View {
+    let option: GameFilterOption
+    let isActive: Bool
+    let action: () -> Void
+    
+    var body: some View {
+        Button(action: action) {
+            HStack(spacing: 4) {
+                Image(systemName: option.icon)
+                    .font(.system(size: 9, weight: .medium))
+                Text(option.label)
+                    .font(.system(size: 10, weight: .medium))
+            }
+            .foregroundColor(isActive ? .white : .secondary)
+            .padding(.horizontal, 8)
+            .padding(.vertical, 4)
+            .background(
+                Capsule()
+                    .fill(isActive ? option.activeColor : Color.secondary.opacity(0.12))
+            )
+        }
+        .buttonStyle(.plain)
+        .help(option.tooltip)
     }
 }
 
@@ -637,7 +826,6 @@ struct GameCardView: View {
             ZStack(alignment: .topTrailing) {
                 artworkView
                 
-                // Multi-select indicator
                 if isMultiSelected {
                     Image(systemName: "checkmark.circle.fill")
                         .font(.title2)
@@ -653,7 +841,6 @@ struct GameCardView: View {
                 .multilineTextAlignment(.leading)
                 .foregroundColor(.primary)
             
-            // Category badges
             if !categoryBadges.isEmpty {
                 ScrollView(.horizontal, showsIndicators: false) {
                     HStack(spacing: 4) {
@@ -768,7 +955,6 @@ struct GameListRowView: View {
 
     var body: some View {
         HStack(spacing: 12) {
-            // Multi-select indicator
             if isSelected {
                 Image(systemName: "checkmark.circle.fill")
                     .foregroundColor(.accentColor)
@@ -793,7 +979,6 @@ struct GameListRowView: View {
                     }
                 }
                 
-                // Category badges
                 if !categoryBadges.isEmpty {
                     ScrollView(.horizontal, showsIndicators: false) {
                         HStack(spacing: 4) {
@@ -920,7 +1105,6 @@ actor ImageCache {
             return cached
         }
         
-        // Load image - NSImage(contentsOf:) is synchronous and thread-safe for loading
         let image = NSImage(contentsOf: url)
         
         if let image = image {
