@@ -144,15 +144,8 @@ class GameLauncher: ObservableObject {
         // Track the controller
         activeControllers[rom.id] = controller
         
-        // Launch the game
+        // Launch the game (window will be shown by controller when ready)
         controller.launch(rom: rom, coreID: coreID, slotToLoad: slotToLoad)
-        
-        // Bring window to front
-        if let window = controller.window {
-            NSApp.activate(ignoringOtherApps: true)
-            window.makeKeyAndOrderFront(nil)
-            window.orderFrontRegardless()
-        }
         
         // Cleanup
         isLaunching = false

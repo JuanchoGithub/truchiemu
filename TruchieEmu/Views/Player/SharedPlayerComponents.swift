@@ -163,6 +163,29 @@ struct ReloadButton: View {
     }
 }
 
+// MARK: - Bezel Toggle Button
+struct BezelToggleButton: View {
+    @ObservedObject var windowController: StandaloneGameWindowController
+    
+    var body: some View {
+        Button(action: {
+            windowController.toggleBezelVisibility()
+        }) {
+            VStack(spacing: 4) {
+                Image(systemName: windowController.isBezelVisible ? "rectangle.on.rectangle" : "rectangle.on.rectangle.slash")
+                    .font(.system(size: 16, weight: .semibold))
+                Text(windowController.isBezelVisible ? "Hide Bezel" : "Show Bezel")
+                    .font(.system(size: 9, weight: .medium))
+                    .lineLimit(2)
+                    .multilineTextAlignment(.center)
+            }
+            .frame(minWidth: 80)
+        }
+        .buttonStyle(ToolbarButtonStyle())
+        .foregroundColor(.cyan)
+    }
+}
+
 // MARK: - Game Overlay Toolbar View
 struct GameOverlayToolbar: View {
     @ObservedObject var runner: EmulatorRunner
@@ -170,6 +193,13 @@ struct GameOverlayToolbar: View {
     
     var body: some View {
         HStack(spacing: 12) {
+            // Bezel Toggle Button
+            BezelToggleButton(windowController: windowController)
+            
+            Divider()
+                .frame(height: 30)
+                .opacity(0.3)
+            
             // Stop Button
             ToolbarButton(
                 icon: "power",
@@ -705,6 +735,9 @@ class StandaloneGameWindowController: NSWindowController, NSWindowDelegate, Obse
     private var toolbarView: NSHostingView<GameOverlayToolbar>?
     private var hideToolbarTimer: Timer?
     
+    // Bezel visibility toggle
+    @MainActor @Published var isBezelVisible: Bool = true
+    
     init(runner: EmulatorRunner) {
         self.runner = runner
         
@@ -734,13 +767,14 @@ class StandaloneGameWindowController: NSWindowController, NSWindowDelegate, Obse
         let mtkView = FocusableMTKView()
         mtkView.device = MTLCreateSystemDefaultDevice()
         mtkView.colorPixelFormat = .bgra8Unorm
-        mtkView.clearColor = MTLClearColor(red: 0, green: 0, blue: 0, alpha: 1)
+        mtkView.clearColor = MTLClearColor(red: 0, green: 0, blue: 0, alpha: 0)  // Transparent clear color
         mtkView.isPaused = true  // Start paused until game is launched
         mtkView.enableSetNeedsDisplay = false
         mtkView.autoResizeDrawable = true
         // Make the Metal view's layer transparent so bezel shows through
         mtkView.wantsLayer = true
         mtkView.layer?.backgroundColor = CGColor(red: 0, green: 0, blue: 0, alpha: 0)
+        mtkView.layer?.isOpaque = false  // Important: layer must be non-opaque for transparency
         
         let coord = MetalCoordinator(runner: runner)
         mtkView.delegate = coord
@@ -757,6 +791,8 @@ class StandaloneGameWindowController: NSWindowController, NSWindowDelegate, Obse
         containerView.autoresizingMask = [.width, .height]
         containerView.wantsLayer = true
         
+        // Metal view will be sized dynamically based on game aspect ratio
+        // For now, start with full size but we'll adjust it when game starts
         mtkView.frame = containerView.bounds
         mtkView.autoresizingMask = [.width, .height]
         containerView.addSubview(mtkView)
@@ -904,6 +940,21 @@ class StandaloneGameWindowController: NSWindowController, NSWindowDelegate, Obse
         super.windowDidLoad()
     }
     
+    // MARK: - Bezel Visibility Toggle
+    
+    /// Toggle bezel visibility to help debug bezel/emulation layering issues.
+    @MainActor
+    func toggleBezelVisibility() {
+        isBezelVisible.toggle()
+        let wasHidden = bezelBackgroundLayer?.isHidden ?? true
+        bezelBackgroundLayer?.isHidden = !isBezelVisible
+        LoggerService.info(category: "Bezel", "Bezel visibility toggled to: \(isBezelVisible ? "visible" : "hidden"). Layer exists: \(bezelBackgroundLayer != nil), wasHidden: \(wasHidden), nowHidden: \(!isBezelVisible)")
+        // Force the layer to redraw
+        bezelBackgroundLayer?.needsDisplay = true
+    }
+    
+    // MARK: - Normal Launch
+    
     func launch(rom: ROM, coreID: String, slotToLoad: Int? = nil) {
         // Check if this same ROM is already running in another window
         if RunningGamesTracker.shared.isRunning(romPath: rom.path.path) {
@@ -916,107 +967,123 @@ class StandaloneGameWindowController: NSWindowController, NSWindowDelegate, Obse
         RunningGamesTracker.shared.registerRunning(romPath: rom.path.path)
         trackedROMPath = rom.path.path
         
-        // Load bezel before launching
+        // Load bezel before launching (synchronously wait for bezel to be ready)
         let systemID = rom.systemID ?? "default"
         Task { @MainActor in
             await loadBezelForGame(systemID: systemID, rom: rom)
+            // Bezel is now loaded, proceed with launch
+            _doLaunch(rom: rom, coreID: coreID, slotToLoad: slotToLoad)
+        }
+    }
+    
+    private func _doLaunch(rom: ROM, coreID: String, slotToLoad: Int? = nil) {
+        // Store ROM reference on runner before launching
+        runner?.rom = rom
+        runner?.romPath = rom.path.path
+        
+        // Update window title
+        window?.title = "TruchieEmu - " + rom.displayName
+        
+        // Unpause the metal view and start emulation
+        metalView?.isPaused = false
+        
+        // Launch the game
+        runner?.launch(rom: rom, coreID: coreID)
+        
+        // Make sure the metal view is the first responder
+        DispatchQueue.main.async { [weak self] in
+            self?.window?.makeFirstResponder(self?.metalView)
         }
         
-        func _doLaunch() {
-            // Store ROM reference on runner before launching
-            runner?.rom = rom
-            runner?.romPath = rom.path.path
-            
-            // Update window title
-            window?.title = "TruchieEmu - " + rom.displayName
-            
-            // Show and bring window to front
-            window?.orderFrontRegardless()
-            window?.makeKeyAndOrderFront(nil)
-            NSApp.activate(ignoringOtherApps: true)
-            
-            // Unpause the metal view
-            metalView?.isPaused = false
-            
-            // Launch the game
-            runner?.launch(rom: rom, coreID: coreID)
-            
-            // Make sure the metal view is the first responder
-            DispatchQueue.main.async { [weak self] in
-                self?.window?.makeFirstResponder(self?.metalView)
+        // Wait for the first frame before showing the window (prevents bezel flash)
+        waitForFirstFrameAndShowWindow(slotToLoad: slotToLoad, rom: rom)
+    }
+    
+    /// Wait for the first frame to be rendered before showing the window.
+    /// This prevents the user from seeing a flash of the bezel without game content.
+    private func waitForFirstFrameAndShowWindow(slotToLoad: Int?, rom: ROM) {
+        // Poll for isReadyForDisplay with a timeout (5 seconds max)
+        var attempts = 0
+        let maxAttempts = 50 // 5 seconds at 100ms intervals
+        let timer = Timer.scheduledTimer(withTimeInterval: 0.1, repeats: true) { [weak self] timer in
+            guard let self = self else {
+                timer.invalidate()
+                return
             }
             
-            // Load from the specified slot after launch completes
-            if let slotToLoad = slotToLoad {
+            attempts += 1
+            
+            // Check if runner is ready for display
+            if let runner = self.runner, runner.isReadyForDisplay {
+                timer.invalidate()
+                self.showWindowAndLoadSlot(slotToLoad: slotToLoad, rom: rom)
+            } else if attempts >= maxAttempts {
+                // Timeout - show window anyway to avoid hanging
+                LoggerService.info(category: "Runner", "Timeout waiting for first frame, showing window anyway")
+                timer.invalidate()
+                self.showWindowAndLoadSlot(slotToLoad: slotToLoad, rom: rom)
+            }
+        }
+    }
+    
+    /// Show the window and handle save state loading.
+    private func showWindowAndLoadSlot(slotToLoad: Int?, rom: ROM) {
+        // Show and bring window to front
+        window?.orderFrontRegardless()
+        window?.makeKeyAndOrderFront(nil)
+        NSApp.activate(ignoringOtherApps: true)
+        
+        // Load from the specified slot after launch completes
+        if let slotToLoad = slotToLoad {
+            // Wait for emulation to stabilize
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) { [weak self] in
+                guard let self = self, let runner = self.runner else { return }
+                let systemID = rom.systemID ?? "default"
+                let stateURL = runner.saveManager.statePath(gameName: rom.displayName, systemID: systemID, slot: slotToLoad)
+                if FileManager.default.fileExists(atPath: stateURL.path) {
+                    LoggerService.info(category: "SaveState", "Found save state at: \(stateURL.path)")
+                    let success = runner.loadState(slot: slotToLoad)
+                    if success {
+                        runner.osdMessage = "Loaded Slot \(slotToLoad)"
+                        LoggerService.info(category: "SaveState", "Successfully loaded save state from slot \(slotToLoad)")
+                        Task {
+                            try? await Task.sleep(nanoseconds: 2_000_000_000)
+                            await MainActor.run { runner.osdMessage = nil }
+                        }
+                    } else {
+                        LoggerService.debug(category: "SaveState", "Failed to load save state from slot \(slotToLoad)")
+                    }
+                } else {
+                    LoggerService.debug(category: "SaveState", "No save state found at: \(stateURL.path)")
+                }
+            }
+        } else {
+            // Auto-load from slot -1 after launch completes (if enabled)
+            let shouldAutoLoad = UserDefaults.standard.bool(forKey: "auto_load_on_start")
+            if shouldAutoLoad {
                 // Wait for emulation to stabilize
                 DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) { [weak self] in
                     guard let self = self, let runner = self.runner else { return }
                     let systemID = rom.systemID ?? "default"
-                    let stateURL = runner.saveManager.statePath(gameName: rom.displayName, systemID: systemID, slot: slotToLoad)
+                    let stateURL = runner.saveManager.statePath(gameName: rom.displayName, systemID: systemID, slot: -1)
                     if FileManager.default.fileExists(atPath: stateURL.path) {
                         LoggerService.info(category: "SaveState", "Found save state at: \(stateURL.path)")
-                        let success = runner.loadState(slot: slotToLoad)
+                        let success = runner.loadState(slot: -1)
                         if success {
-                            runner.osdMessage = "Loaded Slot \(slotToLoad)"
-                            LoggerService.info(category: "SaveState", "Successfully loaded save state from slot \(slotToLoad)")
+                            runner.osdMessage = "Auto-loaded last session"
+                            LoggerService.info(category: "SaveState", "Successfully loaded auto-save state")
                             Task {
                                 try? await Task.sleep(nanoseconds: 2_000_000_000)
                                 await MainActor.run { runner.osdMessage = nil }
                             }
                         } else {
-                            LoggerService.debug(category: "SaveState", "Failed to load save state from slot \(slotToLoad)")
+                            LoggerService.debug(category: "SaveState", "Failed to load auto-save state")
                         }
                     } else {
                         LoggerService.debug(category: "SaveState", "No save state found at: \(stateURL.path)")
                     }
                 }
-            } else {
-                // Auto-load from slot -1 after launch completes (if enabled)
-                let shouldAutoLoad = UserDefaults.standard.bool(forKey: "auto_load_on_start")
-                if shouldAutoLoad {
-                    // Wait for emulation to stabilize
-                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) { [weak self] in
-                        guard let self = self, let runner = self.runner else { return }
-                        let systemID = rom.systemID ?? "default"
-                        let stateURL = runner.saveManager.statePath(gameName: rom.displayName, systemID: systemID, slot: -1)
-                        if FileManager.default.fileExists(atPath: stateURL.path) {
-                            LoggerService.info(category: "SaveState", "Found save state at: \(stateURL.path)")
-                            let success = runner.loadState(slot: -1)
-                            if success {
-                                runner.osdMessage = "Auto-loaded last session"
-                                LoggerService.info(category: "SaveState", "Successfully loaded auto-save state")
-                                Task {
-                                    try? await Task.sleep(nanoseconds: 2_000_000_000)
-                                    await MainActor.run { runner.osdMessage = nil }
-                                }
-                            } else {
-                                LoggerService.debug(category: "SaveState", "Failed to load auto-save state")
-                            }
-                        } else {
-                            LoggerService.debug(category: "SaveState", "No save state found at: \(stateURL.path)")
-                        }
-                    }
-                }
             }
-        }
-        
-        // If there's already a window, close the old one first
-        if let existingWindow = window, existingWindow.isVisible {
-            window?.close()
-            // Create a new window for the new launch
-            let newWindow = NSWindow(
-                contentRect: NSRect(x: 0, y: 0, width: 1024, height: 768),
-                styleMask: [.titled, .closable, .miniaturizable, .resizable, .fullSizeContentView],
-                backing: .buffered, defer: false)
-            newWindow.center()
-            newWindow.backgroundColor = .black
-            newWindow.isReleasedWhenClosed = false
-            self.window = newWindow
-            newWindow.delegate = self
-            setupMetalView()
-            _doLaunch()
-        } else {
-            _doLaunch()
         }
     }
     

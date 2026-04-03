@@ -182,6 +182,10 @@ class EmulatorRunner: ObservableObject, @unchecked Sendable {
     @MainActor @Published var currentFrameTexture: MTLTexture? = nil
     @MainActor @Published var currentFrameRotation: Int = 0  // 0, 1, 2, 3 = 0, 90, 180, 270 CW
     
+    /// Whether the first frame has been received and the view is ready for display.
+    /// Used to prevent showing the window before game content is ready (avoids bezel flash).
+    @MainActor @Published var isReadyForDisplay: Bool = false
+    
     // MARK: - Save State
     @MainActor @Published var currentSlot: Int = 0
     @MainActor @Published var osdMessage: String?
@@ -581,6 +585,7 @@ class EmulatorRunner: ObservableObject, @unchecked Sendable {
             if !self.hasLoggedFrame {
                 LoggerService.info(category: "Runner", "First frame received (\(width)x\(height))")
                 self.hasLoggedFrame = true
+                self.isReadyForDisplay = true
                 // Read rotation from core on first frame
                 let rotation = LibretroBridge.currentRotation()
                 if self.currentFrameRotation != Int(rotation) {

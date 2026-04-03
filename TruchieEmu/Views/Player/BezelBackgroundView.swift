@@ -263,7 +263,7 @@ class BezelViewModel: ObservableObject {
                     image: image,
                     aspectRatio: result.aspectRatio
                 )
-                LoggerService.debug(category: "Bezel", "Loaded bezel for \(rom.displayName): \(entry.displayName) (\(Int(image.size.width))x\(Int(image.size.height)))")
+                LoggerService.info(category: "Bezel", "Loaded bezel for \(rom.displayName): \(entry.displayName) at path: \(localURL.path) (\(Int(image.size.width))x\(Int(image.size.height)))")
             } else {
                 LoggerService.info(category: "Bezel", "Failed to load bezel image for \(rom.displayName) from \(localURL.path)")
             }
