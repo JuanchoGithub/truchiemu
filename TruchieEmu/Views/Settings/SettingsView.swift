@@ -824,6 +824,7 @@ struct ControllerSettingsView: View {
                 }
                 .tag(1)
         }
+        .tabViewStyle(.automatic)
     }
 
     // MARK: - Controllers Tab
