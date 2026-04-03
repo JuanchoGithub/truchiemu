@@ -1202,6 +1202,7 @@ class StandaloneGameWindowController: NSWindowController, NSWindowDelegate, Obse
                 self?.cheatManagerSheetWindow = nil
                 // Resume the game if it was paused for the sheet
                 self?.runner?.isPaused = false
+                LibretroBridge.setPaused(false)
             }
         }
     }
@@ -1213,6 +1214,7 @@ class StandaloneGameWindowController: NSWindowController, NSWindowDelegate, Obse
         window.endSheet(sheetWindow)
         cheatManagerSheetWindow = nil
         runner?.isPaused = false
+        LibretroBridge.setPaused(false)
     }
     
     /// Constrain the window size to fit within screen bounds.
@@ -1683,10 +1685,13 @@ struct CheatManagerViewWrapper: View {
     weak var windowController: StandaloneGameWindowController?
     
     @StateObject private var cheatManager = CheatManager.shared
+    @StateObject private var cheatDownloadService = CheatDownloadService.shared
     @State private var showAddCheatWindow = false
     @State private var showImportFile = false
     @State private var searchText = ""
     @State private var selectedCategory: CheatCategory? = nil
+    @State private var isDownloadingCheat = false
+    @State private var downloadMessage: String? = nil
     
     private var filteredCheats: [Cheat] {
         var cheats = cheatManager.cheats(for: rom)
@@ -1787,6 +1792,27 @@ struct CheatManagerViewWrapper: View {
             .padding(.horizontal)
             .padding(.vertical, 8)
             
+            // Download status message
+            if let downloadMessage = downloadMessage {
+                HStack(spacing: 8) {
+                    Image(systemName: downloadMessage.contains("success") || downloadMessage.contains("found") ? "checkmark.circle.fill" : "exclamationmark.circle.fill")
+                        .foregroundColor(downloadMessage.contains("success") || downloadMessage.contains("found") ? .green : .orange)
+                    Text(downloadMessage)
+                        .font(.caption)
+                        .foregroundColor(.primary)
+                    Spacer()
+                    Button(action: { downloadMessage = nil }) {
+                        Image(systemName: "xmark.circle.fill")
+                            .foregroundColor(.secondary)
+                    }
+                    .buttonStyle(.plain)
+                }
+                .padding(8)
+                .background(Color.secondary.opacity(0.1))
+                .cornerRadius(8)
+                .padding(.horizontal)
+            }
+            
             Divider()
             
             // Action buttons row
@@ -1809,6 +1835,26 @@ struct CheatManagerViewWrapper: View {
                 }
                 .help("Import .cht file")
                 
+                Button {
+                    Task {
+                        await downloadOnlineCheat()
+                    }
+                } label: {
+                    HStack(spacing: 4) {
+                        if isDownloadingCheat {
+                            ProgressView()
+                                .controlSize(.small)
+                        } else {
+                            Image(systemName: "arrow.down.circle")
+                        }
+                        Text(isDownloadingCheat ? "Searching..." : "Download")
+                            .padding(.horizontal, 12)
+                            .padding(.vertical, 6)
+                    }
+                }
+                .help("Search and download cheats from libretro database")
+                .disabled(isDownloadingCheat)
+                
                 Spacer()
             }
             .padding(.horizontal)
@@ -1825,7 +1871,7 @@ struct CheatManagerViewWrapper: View {
                     Text(searchText.isEmpty ? "No cheats available" : "No matching cheats")
                         .foregroundColor(.secondary)
                     if searchText.isEmpty {
-                        Text("Import a .cht file or add custom codes")
+                        Text("Download cheats, import a .cht file, or add custom codes")
                             .font(.caption)
                             .foregroundColor(.secondary)
                     }
@@ -1891,6 +1937,45 @@ struct CheatManagerViewWrapper: View {
             ] as [String: Any]
         }
         LibretroBridge.applyCheats(cheatData)
+    }
+    
+    /// Search and download cheats from the libretro-database for this ROM.
+    @MainActor
+    private func downloadOnlineCheat() async {
+        guard let systemID = rom.systemID else {
+            downloadMessage = "Unable to determine system for \(rom.displayName)"
+            return
+        }
+        
+        isDownloadingCheat = true
+        downloadMessage = nil
+        
+        do {
+            let success = try await withTimeout(seconds: 120) {
+                try await CheatDownloadService.shared.downloadCheatForROM(self.rom, systemID: systemID)
+            }
+            
+            if success {
+                // Reload cheats into the manager now that they're downloaded
+                CheatManagerService.shared.loadCheatsForROM(self.rom)
+                // Also reload the CheatManager shared instance by re-importing from downloaded
+                let downloaded = CheatDownloadService.shared.findCheatsForROM(self.rom)
+                for cheatFile in downloaded {
+                    for cheat in cheatFile.cheats {
+                        if !self.cheatManager.cheats(for: self.rom).contains(where: { $0.index == cheat.index && $0.code == cheat.code }) {
+                            self.cheatManager.addCheat(cheat, for: self.rom)
+                        }
+                    }
+                }
+                downloadMessage = "Cheats found and downloaded for \(rom.displayName)!"
+            } else {
+                downloadMessage = "No cheat file found for \(rom.displayName) in the libretro database"
+            }
+        } catch {
+            downloadMessage = "Download failed: \(error.localizedDescription)"
+        }
+        
+        isDownloadingCheat = false
     }
     
     private func categoryMatches(_ description: String, category: CheatCategory) -> Bool {
