@@ -49,6 +49,10 @@ enum LibretroRDBParser {
             var nameStr: String?
             var descStr: String?
             var crcHex: String?
+            var yearStr: String?
+            var developerStr: String?
+            var publisherStr: String?
+            var genreStr: String?
 
             for (k, val) in pairs {
                 guard case .string(let key) = k else { continue }
@@ -59,6 +63,24 @@ enum LibretroRDBParser {
                     if case .string(let s) = val { descStr = s }
                 case "crc":
                     crcHex = crcString(from: val)
+                case "year":
+                    if case .string(let s) = val, !s.isEmpty { yearStr = s }
+                    else if case .uint(let u) = val { yearStr = String(u) }
+                    else if case .int(let i) = val, i >= 0 { yearStr = String(i) }
+                case "developer":
+                    if case .string(let s) = val, !s.isEmpty { developerStr = s }
+                case "publisher":
+                    if case .string(let s) = val, !s.isEmpty { publisherStr = s }
+                case "genre":
+                    if case .string(let s) = val, !s.isEmpty { genreStr = s }
+                    else if case .array(let items) = val {
+                        // Some sources store genres as an array of strings
+                        let genres = items.compactMap { item -> String? in
+                            if case .string(let s) = item, !s.isEmpty { return s }
+                            return nil
+                        }
+                        if !genres.isEmpty { genreStr = genres.joined(separator: ", ") }
+                    }
                 default:
                     break
                 }
@@ -71,10 +93,10 @@ enum LibretroRDBParser {
             let upper = crc.uppercased()
             let info = GameInfo(
                 name: title,
-                year: nil,
-                publisher: nil,
-                developer: nil,
-                genre: nil,
+                year: yearStr,
+                publisher: publisherStr,
+                developer: developerStr,
+                genre: genreStr,
                 crc: upper,
                 thumbnailLookupSystemID: nil
             )
@@ -87,7 +109,8 @@ enum LibretroRDBParser {
         if out.isEmpty {
             log.info("LibretroDB RDB: parsed 0 CRC entries (metadata range \(metaOffset) bytes)")
         } else {
-            log.info("LibretroDB RDB: parsed \(out.count) CRC entries (MessagePack)")
+            let enriched = out.filter { $0.value.year != nil || $0.value.genre != nil || $0.value.developer != nil || $0.value.publisher != nil }.count
+            log.info("LibretroDB RDB: parsed \(out.count) CRC entries (MessagePack), \(enriched) with metadata beyond name/CRC")
         }
         return out
     }
