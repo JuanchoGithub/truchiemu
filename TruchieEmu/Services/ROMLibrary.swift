@@ -349,6 +349,7 @@ class ROMLibrary: ObservableObject {
     func updateROM(_ rom: ROM) {
         if let idx = roms.firstIndex(where: { $0.id == rom.id }) {
             let oldBezel = roms[idx].settings.bezelFileName
+            objectWillChange.send()
             roms[idx] = rom
             if oldBezel != rom.settings.bezelFileName {
                 bezelUpdateToken += 1
