@@ -892,6 +892,17 @@ struct GameDetailView: View {
     @State private var fetchMetadataStatus: ManualActionStatus = .hidden
     @State private var fetchMetadataAutoDismiss: Task<Void, Never>?
     
+    // MARK: - Fetch Box Art Status
+    
+    @State private var fetchBoxArtStatus: ManualActionStatus = .hidden
+    @State private var fetchBoxArtAutoDismiss: Task<Void, Never>?
+    
+    private func clearFetchBoxArtStatus() {
+        fetchBoxArtAutoDismiss?.cancel()
+        fetchBoxArtAutoDismiss = nil
+        fetchBoxArtStatus = .hidden
+    }
+    
     private func clearFetchMetadataStatus() {
         fetchMetadataAutoDismiss?.cancel()
         fetchMetadataAutoDismiss = nil
@@ -973,27 +984,79 @@ struct GameDetailView: View {
     }
 
     private var fetchBoxArtButton: some View {
-        Button {
-            Task {
-                if let url = await BoxArtService.shared.fetchBoxArt(for: currentROM) {
-                    var u = currentROM
-                    u.boxArtPath = url
-                    library.updateROM(u)
-                    loadBoxArt()
+        Group {
+            switch fetchBoxArtStatus {
+            case .hidden:
+                Button {
+                    Task { await fetchBoxArt() }
+                } label: {
+                    HStack(spacing: 6) {
+                        Image(systemName: "arrow.down.circle")
+                        Text("Fetch Art")
+                    }
+                    .foregroundColor(.white.opacity(0.8))
+                    .padding(.horizontal, 14)
+                    .padding(.vertical, 8)
+                    .background(Color.white.opacity(0.1))
+                    .cornerRadius(20)
+                }
+                .buttonStyle(.plain)
+            case .working(let msg):
+                HStack(spacing: 6) {
+                    ProgressView()
+                        .controlSize(.small)
+                    Text(msg)
+                        .font(.caption)
+                        .foregroundColor(.white.opacity(0.7))
+                }
+                .padding(.horizontal, 14)
+                .padding(.vertical, 8)
+                .background(Color.white.opacity(0.1))
+                .cornerRadius(20)
+            case .result(let msg, let tone):
+                Button {
+                    clearFetchBoxArtStatus()
+                } label: {
+                    HStack(spacing: 6) {
+                        Image(systemName: tone.iconName)
+                            .font(.caption)
+                            .foregroundColor(tone.foregroundColor)
+                        Text(msg)
+                            .font(.caption)
+                            .foregroundColor(.white.opacity(0.7))
+                    }
+                    .padding(.horizontal, 14)
+                    .padding(.vertical, 8)
+                    .background(tone.foregroundColor.opacity(0.1))
+                    .cornerRadius(20)
+                }
+                .buttonStyle(.plain)
+            }
+        }
+    }
+    
+    private func fetchBoxArt() async {
+        await MainActor.run { fetchBoxArtStatus = .working("Searching...") }
+        
+        if let url = await BoxArtService.shared.fetchBoxArt(for: currentROM) {
+            var u = currentROM
+            u.boxArtPath = url
+            library.updateROM(u)
+            loadBoxArt()
+            
+            fetchBoxArtAutoDismiss?.cancel()
+            fetchBoxArtAutoDismiss = Task { @MainActor in
+                try? await Task.sleep(nanoseconds: 10_000_000_000)
+                guard !Task.isCancelled else { return }
+                if case .result = fetchBoxArtStatus {
+                    fetchBoxArtStatus = .hidden
                 }
             }
-        } label: {
-            HStack(spacing: 6) {
-                Image(systemName: "arrow.down.circle")
-                Text("Fetch Art")
-            }
-            .foregroundColor(.white.opacity(0.8))
-            .padding(.horizontal, 14)
-            .padding(.vertical, 8)
-            .background(Color.white.opacity(0.1))
-            .cornerRadius(20)
+            
+            await MainActor.run { fetchBoxArtStatus = .result("Art found", tone: .success) }
+        } else {
+            await MainActor.run { fetchBoxArtStatus = .result("No art found", tone: .warning) }
         }
-        .buttonStyle(.plain)
     }
 
     // MARK: - Screenshots Row
