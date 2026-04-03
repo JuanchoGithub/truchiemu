@@ -124,13 +124,9 @@ class ScummVMRunner: EmulatorRunner, @unchecked Sendable {
     }
     
     /// Get the .scummvm hook file path for a given ZIP file
-    private func hookFilePath(in gameFolder: URL) -> URL? {
-        // Find the game ID first
+    private func hookFilePath(in gameFolder: URL) -> URL {
         let gameID = detectGameID(in: gameFolder)
-        if let gameID = gameID {
-            return gameFolder.appendingPathComponent("\(gameID).scummvm")
-        }
-        return nil
+        return gameFolder.appendingPathComponent("\(gameID).scummvm")
     }
     
     // MARK: - ZIP Extraction
@@ -148,6 +144,7 @@ class ScummVMRunner: EmulatorRunner, @unchecked Sendable {
                 return destFolder
             } else {
                 // Corrupted or incomplete extraction, remove and re-extract
+                LoggerService.info(category: "ScummVM", "Cached extraction is incomplete, removing and re-extracting: \(destFolder.path)")
                 try? FileManager.default.removeItem(at: destFolder)
             }
         }
@@ -219,7 +216,7 @@ class ScummVMRunner: EmulatorRunner, @unchecked Sendable {
     // MARK: - Game ID Detection
     
     /// Detect the ScummVM game ID by scanning files in the extracted folder
-    func detectGameID(in folder: URL) -> String? {
+    func detectGameID(in folder: URL) -> String {
         do {
             let files = try FileManager.default.contentsOfDirectory(atPath: folder.path)
             
@@ -283,8 +280,10 @@ class ScummVMRunner: EmulatorRunner, @unchecked Sendable {
             }
         }
         
-        LoggerService.info(category: "ScummVM", "Could not detect game ID")
-        return nil
+        // Final fallback: use "auto" which tells scummvm_libretro to auto-detect
+        // the game by scanning the directory contents.
+        LoggerService.info(category: "ScummVM", "Could not detect specific game ID, using \"auto\" for game detection")
+        return "auto"
     }
     
     // MARK: - Hook File Generation
@@ -361,6 +360,15 @@ class ScummVMRunner: EmulatorRunner, @unchecked Sendable {
     
     @MainActor
     override func launch(rom: ROM, coreID: String) {
+        // Force "No Shader" (passthrough) for ScummVM.
+        // ScummVM renders point-and-click adventure games at higher resolutions (320x200, 640x480+)
+        // that look best with raw pixels — CRT scanlines, barrel distortion, and phosphor masks
+        // are designed for low-res console output and are destructive on ScummVM's output.
+        if let preset = ShaderPreset.preset(id: "builtin-none") {
+            ShaderManager.shared.activatePreset(preset)
+            LoggerService.info(category: "ScummVM", "Forced Passthrough shader (raw pixels) for ScummVM")
+        }
+        
         let romPath = rom.path
         let fileExt = romPath.pathExtension.lowercased()
         
@@ -370,24 +378,21 @@ class ScummVMRunner: EmulatorRunner, @unchecked Sendable {
             
             // Step 1: Extract the ZIP
             guard let extractedFolder = extractIfNeeded(zipPath: romPath) else {
-                LoggerService.info(category: "ScummVM", "Failed to extract ZIP")
+                LoggerService.info(category: "ScummVM", "Failed to extract ZIP: \(romPath.path)")
                 return
             }
             
-            // Step 2: Detect game ID
-            guard let gameID = detectGameID(in: extractedFolder) else {
-                LoggerService.info(category: "ScummVM", "Could not detect game ID from extracted files")
-                return
-            }
+            // Step 2: Detect game ID (always returns a value, falls back to "auto")
+            let gameID = detectGameID(in: extractedFolder)
             
             // Step 3: Create hook file
             guard let hookPath = createHookFile(in: extractedFolder, gameID: gameID) else {
-                LoggerService.info(category: "ScummVM", "Failed to create hook file")
+                LoggerService.info(category: "ScummVM", "Failed to create hook file in: \(extractedFolder.path)")
                 return
             }
             
             // Step 4: Launch with hook file instead of ZIP
-            LoggerService.info(category: "ScummVM", "Launching with hook file: \(hookPath.path)")
+            LoggerService.info(category: "ScummVM", "Launching with hook file: \(hookPath.path), gameID: \(gameID)")
             
             // Create a temporary ROM with the hook file path
             var modifiedRom = rom

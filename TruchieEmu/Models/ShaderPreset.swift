@@ -314,7 +314,7 @@ extension ShaderPreset {
             ],
             globalUniforms: [],
             description: "No post-processing. Integer-scaled raw pixels with nearest-neighbor filtering.",
-            recommendedSystems: ["nes", "gb", "snes", "genesis"]
+            recommendedSystems: ["nes", "gb", "snes", "genesis", "scummvm"]
         ),
         
         // Sharp Bilinear
@@ -477,7 +477,7 @@ extension ShaderPreset {
                 ShaderUniform(name: "colorBoost", defaultValue: 1.0, minValue: 0.5, maxValue: 2.0),
             ],
             description: "Nearest-neighbor pixels with anti-aliased edges.",
-            recommendedSystems: ["nes", "gb", "snes", "genesis"]
+            recommendedSystems: ["nes", "gb", "snes", "genesis", "scummvm"]
         ),
     ]
     
