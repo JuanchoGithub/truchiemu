@@ -10,12 +10,69 @@ struct CorePickerView: View {
     @StateObject private var coreManager = CoreManager.shared
     @State private var selectedCoreID: String = ""
     @StateObject private var metadataStore = LibraryMetadataStore.shared
+    @State private var downloadTask: Task<Void, Never>? = nil
     
-    private var availableCores: [LibretroCore] {
+    /// All cores that match this game's system — including uninstalled ones from the buildbot.
+    private struct CoreEntry: Identifiable {
+        enum Kind {
+            case installed(LibretroCore)
+            case available(RemoteCoreInfo)
+        }
+        let id: String
+        let kind: Kind
+        var metadata: CoreMetadata {
+            switch kind {
+            case .installed(let core): return core.metadata
+            case .available(let remote): return remote.metadata
+            }
+        }
+        var isInstalled: Bool {
+            if case .installed = kind { return true }
+            return false
+        }
+        var coreID: String { id }
+    }
+    
+    private var availableCores: [CoreEntry] {
         guard let systemID = rom.systemID else { return [] }
-        return coreManager.installedCores.filter { core in
+        var result: [CoreEntry] = []
+        
+        // Installed cores for this system
+        let installed = coreManager.installedCores.filter { core in
             core.systemIDs.contains(systemID)
         }
+        
+        // Sort by recommendation then displayName
+        let recommendedOrder = ["mame2003_plus", "mame2010", "mame", "mame2003", "mame2000"]
+        let sortedInstalled = installed.sorted { a, b in
+            let ai = recommendedOrder.firstIndex(of: a.id.replacingOccurrences(of: "_libretro", with: "")) ?? 999
+            let bi = recommendedOrder.firstIndex(of: b.id.replacingOccurrences(of: "_libretro", with: "")) ?? 999
+            if ai != bi { return ai < bi }
+            return a.displayName < b.displayName
+        }
+        
+        for core in sortedInstalled {
+            result.append(CoreEntry(id: core.id, kind: .installed(core)))
+        }
+        
+        // Available but uninstalled cores for this system (from buildbot list)
+        let availableRemote = coreManager.availableCores.filter { remote in
+            remote.systemIDs.contains(systemID)
+                && !installed.contains { $0.id == remote.coreID }
+        }
+        
+        let sortedAvailable = availableRemote.sorted { a, b in
+            let ai = recommendedOrder.firstIndex(of: a.coreID) ?? 999
+            let bi = recommendedOrder.firstIndex(of: b.coreID) ?? 999
+            if ai != bi { return ai < bi }
+            return a.displayName < b.displayName
+        }
+        
+        for remote in sortedAvailable {
+            result.append(CoreEntry(id: remote.coreID, kind: .available(remote)))
+        }
+        
+        return result
     }
     
     var body: some View {
@@ -35,16 +92,9 @@ struct CorePickerView: View {
                     .frame(maxWidth: .infinity, maxHeight: .infinity)
                 } else {
                     ScrollView {
-                        LazyVStack(spacing: 8) {
-                            ForEach(availableCores, id: \.id) { core in
-                                CoreRowView(
-                                    core: core,
-                                    isSelected: core.id == selectedCoreID,
-                                    action: {
-                                        selectedCoreID = core.id
-                                        applyCore(core.id)
-                                    }
-                                )
+                        LazyVStack(spacing: 12) {
+                            ForEach(availableCores, id: \.id) { entry in
+                                coreEntryRow(entry)
                             }
                         }
                         .padding()
@@ -60,13 +110,138 @@ struct CorePickerView: View {
         }
     }
     
+    @ViewBuilder
+    private func coreEntryRow(_ entry: CoreEntry) -> some View {
+        let meta = entry.metadata
+        let isSelected = entry.isInstalled
+            && coreManager.installedCores.first(where: { $0.id == entry.coreID })?.isInstalled == true
+            && LibraryMetadataStore.shared.customCore(for: rom) == entry.coreID
+        
+        VStack(alignment: .leading, spacing: 8) {
+            // Title row
+            HStack(spacing: 8) {
+                // Status indicator
+                if isSelected {
+                    Image(systemName: "checkmark.circle.fill")
+                        .foregroundColor(.green)
+                        .imageScale(.medium)
+                } else if entry.isInstalled {
+                    Image(systemName: "checkmark.seal")
+                        .foregroundColor(.secondary)
+                        .imageScale(.medium)
+                } else {
+                    Image(systemName: "arrow.down.circle")
+                        .foregroundColor(.blue)
+                        .imageScale(.medium)
+                }
+                
+                Text(meta.displayName)
+                    .font(.headline)
+                
+                // Version badge
+                Text(meta.version)
+                    .font(.caption2)
+                    .padding(.horizontal, 6)
+                    .padding(.vertical, 2)
+                    .background(Color.secondary.opacity(0.15))
+                    .cornerRadius(4)
+                
+                Spacer()
+                
+                // Recommendation badge
+                if let rec = meta.recommendation {
+                    Text(rec)
+                        .font(.caption)
+                        .fontWeight(.semibold)
+                        .foregroundColor(.white)
+                        .padding(.horizontal, 8)
+                        .padding(.vertical, 3)
+                        .background(
+                            LinearGradient(
+                                colors: [.purple.opacity(0.8), .cyan.opacity(0.8)],
+                                startPoint: .leading,
+                                endPoint: .trailing
+                            )
+                        )
+                        .cornerRadius(6)
+                }
+            }
+            
+            // Description
+            Text(meta.description)
+                .font(.subheadline)
+                .foregroundColor(.secondary)
+                .lineLimit(3)
+            
+            // Action row
+            HStack {
+                Spacer()
+                
+                if entry.isInstalled {
+                    Button(action: {
+                        selectedCoreID = entry.coreID
+                        applyCore(entry.coreID)
+                    }) {
+                        HStack(spacing: 4) {
+                            if isSelected {
+                                Text("Active")
+                                    .foregroundColor(.green)
+                            } else {
+                                Text("Use This Core")
+                                    .foregroundColor(.accentColor)
+                            }
+                        }
+                        .fontWeight(.medium)
+                    }
+                    .buttonStyle(.bordered)
+                } else {
+                    Button(action: {
+                        requestDownload(entry)
+                    }) {
+                        HStack(spacing: 4) {
+                            Image(systemName: "arrow.down.circle.fill")
+                            Text("Download & Use")
+                        }
+                        .fontWeight(.medium)
+                    }
+                    .buttonStyle(.borderedProminent)
+                    .tint(.purple)
+                }
+            }
+        }
+        .padding()
+        .background(
+            isSelected
+                ? Color.accentColor.opacity(0.08)
+                : Color.secondary.opacity(0.05)
+        )
+        .cornerRadius(12)
+        .overlay(
+            RoundedRectangle(cornerRadius: 12)
+                .stroke(isSelected ? Color.accentColor.opacity(0.3) : Color.clear, lineWidth: 1)
+        )
+    }
+    
     private func applyCore(_ coreID: String) {
         metadataStore.setCustomCore(coreID, for: rom)
-        dismiss()
+    }
+    
+    private func requestDownload(_ entry: CoreEntry) {
+        switch entry.kind {
+        case .available(let remote):
+            downloadTask = Task {
+                await coreManager.downloadCore(remote)
+                // Trigger a re-render by modifying the core list
+                metadataStore.setCustomCore(remote.coreID, for: rom)
+            }
+        case .installed(let core):
+            // Already installed — just select it
+            applyCore(core.id)
+        }
     }
 }
 
-// MARK: - Core Row View
+// MARK: - Core Row View (simplified for non-MAME systems)
 
 struct CoreRowView: View {
     let core: LibretroCore
@@ -79,40 +254,68 @@ struct CoreRowView: View {
     
     var body: some View {
         Button(action: action) {
-            HStack(spacing: 12) {
-                // Status indicator
-                VStack {
-                    Circle()
-                        .fill(isSelected ? Color.accentColor : (isDownloaded ? Color.green : Color.secondary))
-                        .frame(width: 10, height: 10)
-                    
-                    if isSelected {
-                        Image(systemName: "checkmark.circle.fill")
-                            .foregroundColor(.accentColor)
+            VStack(alignment: .leading, spacing: 6) {
+                // Title row
+                HStack(spacing: 8) {
+                    VStack {
+                        Circle()
+                            .fill(isSelected ? Color.accentColor : (isDownloaded ? Color.green : Color.secondary))
+                            .frame(width: 10, height: 10)
                     }
-                }
-                
-                VStack(alignment: .leading, spacing: 4) {
-                    Text(core.displayName)
+                    
+                    Text(core.metadata.displayName)
                         .font(.body)
                         .foregroundColor(.primary)
                     
-                    Text(core.id)
-                        .font(.caption)
-                        .foregroundColor(.secondary)
-                        .lineLimit(2)
+                    // Version badge for known cores
+                    if core.metadata.version != "?" {
+                        Text(core.metadata.version)
+                            .font(.caption2)
+                            .padding(.horizontal, 5)
+                            .padding(.vertical, 1)
+                            .background(Color.secondary.opacity(0.15))
+                            .cornerRadius(3)
+                    }
+                    
+                    Spacer()
+                    
+                    // Recommendation badge
+                    if let rec = core.metadata.recommendation {
+                        Text(rec)
+                            .font(.caption)
+                            .fontWeight(.semibold)
+                            .foregroundColor(.white)
+                            .padding(.horizontal, 6)
+                            .padding(.vertical, 2)
+                            .background(
+                                LinearGradient(
+                                    colors: [.purple.opacity(0.8), .cyan.opacity(0.8)],
+                                    startPoint: .leading,
+                                    endPoint: .trailing
+                                )
+                            )
+                            .cornerRadius(4)
+                    }
+                    
+                    if isDownloaded {
+                        Image(systemName: "checkmark.circle.fill")
+                            .foregroundColor(.green)
+                    } else {
+                        Image(systemName: "icloud.and.arrow.down")
+                            .foregroundColor(.secondary)
+                    }
                 }
                 
-                Spacer()
+                // Description
+                Text(core.metadata.description)
+                    .font(.caption)
+                    .foregroundColor(.secondary)
+                    .lineLimit(2)
                 
-                // Download status
-                if isDownloaded {
-                    Image(systemName: "checkmark.circle.fill")
-                        .foregroundColor(.green)
-                } else {
-                    Image(systemName: "icloud.and.arrow.down")
-                        .foregroundColor(.secondary)
-                }
+                // Internal ID
+                Text(core.id)
+                    .font(.caption2)
+                    .foregroundColor(.secondary.opacity(0.7))
             }
             .padding(12)
             .background(isSelected ? Color.accentColor.opacity(0.1) : Color.secondary.opacity(0.05))
@@ -134,11 +337,63 @@ struct CoreSelectionSheet: View {
     @State private var selectedCoreID: String = ""
     @State private var rememberChoice: Bool = false
     
-    private var availableCores: [LibretroCore] {
+    private struct CoreEntry: Identifiable {
+        enum Kind {
+            case installed(LibretroCore)
+            case available(RemoteCoreInfo)
+        }
+        let id: String
+        let kind: Kind
+        var metadata: CoreMetadata {
+            switch kind {
+            case .installed(let core): return core.metadata
+            case .available(let remote): return remote.metadata
+            }
+        }
+        var isInstalled: Bool {
+            if case .installed = kind { return true }
+            return false
+        }
+    }
+    
+    private var allCoreEntries: [CoreEntry] {
         guard let systemID = rom.systemID else { return [] }
-        return coreManager.installedCores.filter { core in
+        var result: [CoreEntry] = []
+        
+        let installed = coreManager.installedCores.filter { core in
             core.systemIDs.contains(systemID) && core.isInstalled
         }
+        
+        let recommendedOrder = ["mame2003_plus", "mame2010", "mame", "mame2003", "mame2000"]
+        let sortedInstalled = installed.sorted { a, b in
+            let ai = recommendedOrder.firstIndex(of: a.id.replacingOccurrences(of: "_libretro", with: "")) ?? 999
+            let bi = recommendedOrder.firstIndex(of: b.id.replacingOccurrences(of: "_libretro", with: "")) ?? 999
+            if ai != bi { return ai < bi }
+            return a.displayName < b.displayName
+        }
+        
+        for core in sortedInstalled {
+            result.append(CoreEntry(id: core.id, kind: .installed(core)))
+        }
+        
+        // Available but uninstalled
+        let availableRemote = coreManager.availableCores.filter { remote in
+            remote.systemIDs.contains(systemID)
+                && !installed.contains { $0.id == remote.coreID }
+        }
+        
+        let sortedAvailable = availableRemote.sorted { a, b in
+            let ai = recommendedOrder.firstIndex(of: a.coreID) ?? 999
+            let bi = recommendedOrder.firstIndex(of: b.coreID) ?? 999
+            if ai != bi { return ai < bi }
+            return a.displayName < b.displayName
+        }
+        
+        for remote in sortedAvailable {
+            result.append(CoreEntry(id: remote.coreID, kind: .available(remote)))
+        }
+        
+        return result
     }
     
     var body: some View {
@@ -149,7 +404,7 @@ struct CoreSelectionSheet: View {
             actionButtons
         }
         .padding()
-        .frame(width: 400)
+        .frame(width: 500)
     }
     
     private var headerSection: some View {
@@ -167,16 +422,69 @@ struct CoreSelectionSheet: View {
     }
     
     private var coreListView: some View {
-        VStack(spacing: 8) {
-            ForEach(availableCores, id: \.id) { core in
-                SimpleCoreRow(core: core, selectedCoreID: $selectedCoreID)
+        ScrollView {
+            LazyVStack(spacing: 8) {
+                ForEach(allCoreEntries, id: \.id) { entry in
+                    Button(action: { selectedCoreID = entry.id }) {
+                        HStack(spacing: 8) {
+                            VStack(alignment: .leading, spacing: 2) {
+                                HStack(spacing: 6) {
+                                    Text(entry.metadata.displayName)
+                                        .font(.body)
+                                        .foregroundColor(selectedCoreID == entry.id ? .accentColor : .primary)
+                                    
+                                    if entry.metadata.version != "?" {
+                                        Text(entry.metadata.version)
+                                            .font(.caption2)
+                                            .padding(.horizontal, 4)
+                                            .padding(.vertical, 1)
+                                            .background(Color.secondary.opacity(0.12))
+                                            .cornerRadius(3)
+                                    }
+                                    
+                                    Spacer()
+                                    
+                                    Image(systemName: selectedCoreID == entry.id ? "checkmark.circle.fill" : "circle")
+                                        .foregroundColor(selectedCoreID == entry.id ? .accentColor : .secondary)
+                                }
+                                
+                                Text(entry.metadata.description)
+                                    .font(.caption)
+                                    .foregroundColor(.secondary)
+                                    .lineLimit(2)
+                            }
+                            
+                            if let rec = entry.metadata.recommendation {
+                                Text(rec)
+                                    .font(.caption)
+                                    .fontWeight(.semibold)
+                                    .foregroundColor(.white)
+                                    .padding(.horizontal, 6)
+                                    .padding(.vertical, 2)
+                                    .background(
+                                        LinearGradient(
+                                            colors: [.purple.opacity(0.8), .cyan.opacity(0.8)],
+                                            startPoint: .leading,
+                                            endPoint: .trailing
+                                        )
+                                    )
+                                    .cornerRadius(4)
+                            }
+                        }
+                        .padding()
+                        .background(selectedCoreID == entry.id ? Color.accentColor.opacity(0.1) : Color.secondary.opacity(0.05))
+                        .cornerRadius(8)
+                    }
+                    .buttonStyle(.plain)
                     .onAppear {
-                        if selectedCoreID.isEmpty {
-                            selectedCoreID = core.id
+                        if selectedCoreID.isEmpty && entry.isInstalled {
+                            selectedCoreID = entry.id
                         }
                     }
+                }
             }
         }
+        .frame(maxHeight: 300)
     }
     
     private var actionButtons: some View {
@@ -207,10 +515,44 @@ struct SimpleCoreRow: View {
         Button(action: { selectedCoreID = core.id }) {
             HStack {
                 VStack(alignment: .leading, spacing: 4) {
-                    Text(core.displayName)
-                        .font(.body)
-                        .foregroundColor(selectedCoreID == core.id ? .accentColor : .primary)
+                    HStack(spacing: 6) {
+                        Text(core.metadata.displayName)
+                            .font(.body)
+                            .foregroundColor(selectedCoreID == core.id ? .accentColor : .primary)
+                        
+                        if core.metadata.version != "?" {
+                            Text(core.metadata.version)
+                                .font(.caption2)
+                                .padding(.horizontal, 4)
+                                .padding(.vertical, 1)
+                                .background(Color.secondary.opacity(0.12))
+                                .cornerRadius(3)
+                        }
+                    }
+                    
+                    Text(core.metadata.description)
+                        .font(.caption)
+                        .foregroundColor(.secondary)
+                        .lineLimit(1)
                 }
+                
+                if let rec = core.metadata.recommendation {
+                    Text(rec)
+                        .font(.caption)
+                        .fontWeight(.semibold)
+                        .foregroundColor(.white)
+                        .padding(.horizontal, 5)
+                        .padding(.vertical, 1)
+                        .background(
+                            LinearGradient(
+                                colors: [.purple.opacity(0.8), .cyan.opacity(0.8)],
+                                startPoint: .leading,
+                                endPoint: .trailing
+                            )
+                        )
+                        .cornerRadius(4)
+                }
+                
                 Spacer()
                 Image(systemName: selectedCoreID == core.id ? "checkmark.circle.fill" : "circle")
                     .foregroundColor(selectedCoreID == core.id ? .accentColor : .secondary)

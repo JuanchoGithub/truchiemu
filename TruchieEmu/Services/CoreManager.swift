@@ -281,6 +281,9 @@ class CoreManager: ObservableObject {
         if coreID.contains("picodrive") { ids += ["genesis", "sms", "gamegear", "32x"] }
         if coreID.contains("mednafen_psx") { ids += ["psx"] }
         if coreID.contains("dosbox_pure") { ids += ["dos"] }
+        // MAME: map ALL MAME variants to the "mame" system
+        // Available: mame2000, mame2003, mame2003_plus, mame2010, mame (current)
+        if coreID.contains("mame") { ids += ["mame"] }
         
         return Array(Set(ids))
     }
