@@ -692,6 +692,12 @@ class StandaloneGameWindowController: NSWindowController, NSWindowDelegate, Obse
     private var pendingROM: ROM?
     private var pendingCoreID: String?
     
+    /// Reference to the ROM library for updating playtime (weak to avoid retain cycles)
+    weak var library: ROMLibrary?
+    /// Track the ROM reference for this window instance (for playtime tracking)
+    private var trackedROM: ROM?
+    /// Track when this game session started (for playtime tracking)
+    private var sessionStartDate: Date?
     /// Track the ROM path for this window instance (for cleanup on close)
     private var trackedROMPath: String?
     
@@ -945,6 +951,8 @@ class StandaloneGameWindowController: NSWindowController, NSWindowDelegate, Obse
         // Register this ROM as running
         RunningGamesTracker.shared.registerRunning(romPath: rom.path.path)
         trackedROMPath = rom.path.path
+        trackedROM = rom
+        sessionStartDate = Date()
         
         // Load bezel before launching (synchronously wait for bezel to be ready)
         let systemID = rom.systemID ?? "default"
@@ -1155,6 +1163,12 @@ class StandaloneGameWindowController: NSWindowController, NSWindowDelegate, Obse
             }
         }
         runner?.stop()
+        
+        // Record play session
+        if let rom = trackedROM, let startDate = sessionStartDate {
+            let duration = Date().timeIntervalSince(startDate)
+            library?.recordPlaySession(rom, duration: duration)
+        }
         
         // Unregister this ROM from the running games tracker
         if let romPath = trackedROMPath {

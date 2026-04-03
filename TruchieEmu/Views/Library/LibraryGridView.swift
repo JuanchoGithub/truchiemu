@@ -1038,6 +1038,53 @@ struct GameListRowView: View {
     private var categoryBadges: [GameCategory] {
         categoryManager.categories.filter { $0.gameIDs.contains(rom.id) }
     }
+    
+    // MARK: - Formatted Playtime
+    
+    private var formattedPlaytime: String? {
+        guard rom.totalPlaytimeSeconds > 0 else { return nil }
+        let seconds = rom.totalPlaytimeSeconds
+        let hours = Int(seconds) / 3600
+        let minutes = (Int(seconds) % 3600) / 60
+        if hours > 0 {
+            return String(format: "%dh %02dm", hours, minutes)
+        } else {
+            return String(format: "%dm", minutes)
+        }
+    }
+    
+    private var timesPlayedLabel: String? {
+        guard rom.timesPlayed > 0 else { return nil }
+        if rom.timesPlayed == 1 {
+            return "1 play"
+        } else {
+            return "\(rom.timesPlayed) plays"
+        }
+    }
+    
+    private var metadataLine1: String? {
+        var parts: [String] = []
+        if let year = rom.metadata?.year, !year.isEmpty {
+            parts.append(year)
+        }
+        if let dev = rom.metadata?.developer, !dev.isEmpty {
+            parts.append(dev)
+        }
+        guard !parts.isEmpty else { return nil }
+        return parts.joined(separator: " \u{2022} ")
+    }
+    
+    private var metadataLine2: String? {
+        var parts: [String] = []
+        if let genre = rom.metadata?.genre, !genre.isEmpty {
+            parts.append(genre)
+        }
+        if let players = rom.metadata?.players, players > 0 {
+            parts.append(players == 1 ? "1 player" : "\(players) players")
+        }
+        guard !parts.isEmpty else { return nil }
+        return parts.joined(separator: " \u{2022} ")
+    }
 
     var body: some View {
         HStack(spacing: 12) {
@@ -1048,9 +1095,13 @@ struct GameListRowView: View {
             }
             
             artThumb
+            
+            // Left side: game info
             VStack(alignment: .leading, spacing: 2) {
                 Text(rom.displayName)
                     .font(.system(size: titleFontSize, weight: .medium))
+                
+                // System name
                 if let sys = SystemDatabase.system(forID: rom.systemID ?? "") {
                     HStack(spacing: 4) {
                         if let emuImg = sys.emuImage(size: 132) {
@@ -1065,6 +1116,7 @@ struct GameListRowView: View {
                     }
                 }
                 
+                // Category badges
                 if !categoryBadges.isEmpty {
                     ScrollView(.horizontal, showsIndicators: false) {
                         HStack(spacing: 4) {
@@ -1074,15 +1126,58 @@ struct GameListRowView: View {
                         }
                     }
                 }
+                
+                // Metadata: Year/Developer
+                if let line1 = metadataLine1 {
+                    Text(line1)
+                        .font(.system(size: subtitleFontSize - 1))
+                        .foregroundColor(.secondary.opacity(0.8))
+                }
+                
+                // Metadata: Genre/Players
+                if let line2 = metadataLine2 {
+                    Text(line2)
+                        .font(.system(size: subtitleFontSize - 1))
+                        .foregroundColor(.secondary.opacity(0.8))
+                }
             }
+            
             Spacer()
-            if rom.isFavorite {
-                Image(systemName: "heart.fill").foregroundColor(.pink).font(.system(size: subtitleFontSize))
-            }
-            if let played = rom.lastPlayed {
-                Text(played, style: .relative)
-                    .font(.system(size: subtitleFontSize))
+            
+            // Right side: stats column
+            VStack(alignment: .trailing, spacing: 2) {
+                // Playtime
+                if let playtime = formattedPlaytime {
+                    HStack(spacing: 3) {
+                        Image(systemName: "clock.fill")
+                            .font(.system(size: subtitleFontSize - 0.5))
+                        Text(playtime)
+                            .font(.system(size: subtitleFontSize))
+                            .fontWeight(.medium)
+                    }
                     .foregroundColor(.secondary)
+                }
+                
+                // Times played
+                if let timesPlayed = timesPlayedLabel {
+                    Text(timesPlayed)
+                        .font(.system(size: subtitleFontSize))
+                        .foregroundColor(.secondary)
+                }
+                
+                // Last played
+                if let played = rom.lastPlayed {
+                    Text(played, style: .relative)
+                        .font(.system(size: subtitleFontSize - 0.5))
+                        .foregroundColor(.secondary.opacity(0.7))
+                }
+                
+                // Favorite indicator
+                if rom.isFavorite {
+                    Image(systemName: "heart.fill")
+                        .foregroundColor(.pink)
+                        .font(.system(size: subtitleFontSize))
+                }
             }
         }
         .padding(.vertical, 4)
@@ -1118,7 +1213,6 @@ struct GameListRowView: View {
         .clipShape(RoundedRectangle(cornerRadius: 6))
     }
 }
-
 // MARK: - Category Badge
 
 struct CategoryBadgeView: View {

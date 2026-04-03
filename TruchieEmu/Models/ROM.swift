@@ -8,6 +8,10 @@ struct ROM: Identifiable, Codable, Hashable {
     var boxArtPath: URL?
     var isFavorite: Bool = false
     var lastPlayed: Date?
+    /// Total playtime across all sessions (in seconds)
+    var totalPlaytimeSeconds: Double = 0
+    /// Number of times this game has been launched
+    var timesPlayed: Int = 0
     var selectedCoreID: String?
     var customName: String?
     var useCustomCore: Bool = false

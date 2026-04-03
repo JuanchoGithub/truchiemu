@@ -314,6 +314,14 @@ class ROMLibrary: ObservableObject {
         updateROM(updated)
     }
 
+    func recordPlaySession(_ rom: ROM, duration: TimeInterval) {
+        var updated = rom
+        updated.lastPlayed = Date()
+        updated.timesPlayed += 1
+        updated.totalPlaytimeSeconds += duration
+        updateROM(updated)
+    }
+
     // MARK: - Persistence
     private func saveROMsToDisk() {
         if let data = try? encoder.encode(roms) {

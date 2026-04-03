@@ -140,6 +140,7 @@ class GameLauncher: ObservableObject {
         // Create runner and window controller
         let runner = EmulatorRunner.forSystem(systemID)
         let controller = StandaloneGameWindowController(runner: runner)
+        controller.library = library
         
         // Track the controller
         activeControllers[rom.id] = controller
