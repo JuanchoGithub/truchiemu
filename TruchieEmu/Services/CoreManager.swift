@@ -18,6 +18,8 @@ class CoreManager: ObservableObject {
 
     private let defaults = UserDefaults.standard
     private let coresKey = "installed_cores_v2"
+    private let availableCoresKey = "available_cores_v1"
+    private let coresInitialFetchDoneKey = "cores_initial_fetch_done_v1"
     private let encoder = JSONEncoder()
     private let decoder = JSONDecoder()
 
@@ -29,6 +31,13 @@ class CoreManager: ObservableObject {
         #endif
     }
 
+    /// Whether to trigger an automatic core list fetch from the buildbot. Returns true only on first launch with no cached data.
+    var shouldAutoFetchCores: Bool {
+        let hasCache = !availableCores.isEmpty
+        let hasBeenFetched = defaults.bool(forKey: coresInitialFetchDoneKey)
+        return !hasCache && !hasBeenFetched
+    }
+
     var buildbotBase: URL {
         URL(string: "https://buildbot.libretro.com/nightly/apple/osx/\(arch)/latest/")!
     }
@@ -36,6 +45,7 @@ class CoreManager: ObservableObject {
     init() {
         try? FileManager.default.createDirectory(at: appSupportURL, withIntermediateDirectories: true)
         loadInstalledCores()
+        loadAvailableCores()
     }
 
     // MARK: - Core List
@@ -101,6 +111,8 @@ class CoreManager: ObservableObject {
             ))
         }
         availableCores = cores.sorted { $0.displayName < $1.displayName }
+        saveAvailableCores()
+        defaults.set(true, forKey: coresInitialFetchDoneKey)
     }
 
     // MARK: - Download (user must authorize via pendingDownload)
@@ -243,6 +255,18 @@ class CoreManager: ObservableObject {
         }
         
         installedCores = saved
+    }
+
+    private func loadAvailableCores() {
+        guard let data = defaults.data(forKey: availableCoresKey),
+              let saved = try? decoder.decode([RemoteCoreInfo].self, from: data) else { return }
+        availableCores = saved
+    }
+
+    private func saveAvailableCores() {
+        if let data = try? encoder.encode(availableCores) {
+            defaults.set(data, forKey: availableCoresKey)
+        }
     }
 
     static func supportedSystems(for coreID: String) -> [String] {

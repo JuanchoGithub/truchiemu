@@ -392,7 +392,7 @@ struct CoreSettingsView: View {
         }
         .clipped()
         .onAppear {
-            if coreManager.availableCores.isEmpty {
+            if coreManager.shouldAutoFetchCores {
                 Task { await coreManager.fetchAvailableCores() }
             }
         }
