@@ -21,6 +21,29 @@ class KeyWindowPanel: NSPanel {
     override var canBecomeMain: Bool { true }
 }
 
+// MARK: - Shader Window Settings Storage
+@objc class ShaderWindowPosition: NSObject {
+    static let shared = ShaderWindowPosition()
+    
+    private let defaults = UserDefaults.standard
+    private let positionKey = "shaderWindowPosition"
+    
+    var savedPosition: NSPoint? {
+        guard let data = defaults.data(forKey: positionKey),
+              let dict = try? JSONSerialization.jsonObject(with: data) as? [String: Double] else {
+            return nil
+        }
+        return NSPoint(x: dict["x"] ?? 0, y: dict["y"] ?? 0)
+    }
+    
+    func savePosition(_ point: NSPoint) {
+        let dict: [String: Double] = ["x": point.x, "y": point.y]
+        if let data = try? JSONSerialization.data(withJSONObject: dict) {
+            defaults.set(data, forKey: positionKey)
+        }
+    }
+}
+
 // MARK: - Shader Parameter Sliders (Embedded in Picker View)
 struct ShaderParameterSliders: View {
     let preset: ShaderPreset
@@ -30,11 +53,11 @@ struct ShaderParameterSliders: View {
     var onValueCommitted: (([String: Float]) -> Void)?
     
     var body: some View {
-        VStack(alignment: .leading, spacing: 10) {
+        VStack(alignment: .leading, spacing: 8) {
             HStack {
                 Image(systemName: "slider.horizontal.3")
                     .foregroundColor(.accentColor)
-                Text("Parameters for \(preset.name)")
+                Text("Parameters")
                     .font(.headline)
                 Spacer()
             }
@@ -45,13 +68,13 @@ struct ShaderParameterSliders: View {
                 parameterSliderRow(for: uniform)
             }
         }
-        .padding()
+        .padding(10)
         .background(Color(NSColor.controlBackgroundColor))
-        .cornerRadius(12)
+        .cornerRadius(8)
     }
     
     private func parameterSliderRow(for uniform: ShaderUniform) -> some View {
-        VStack(spacing: 6) {
+        VStack(spacing: 4) {
             HStack {
                 Text(uniform.displayLabel)
                     .font(.subheadline)
@@ -80,34 +103,12 @@ struct ShaderParameterSliders: View {
                     }
                 }
             )
+            .controlSize(.small)
         }
     }
     
     private func currentUniformValue(for uniform: ShaderUniform) -> Float {
         uniformValues[uniform.name] ?? uniform.defaultValue
-    }
-}
-
-// MARK: - Shader Window Settings Storage
-@objc class ShaderWindowPosition: NSObject {
-    static let shared = ShaderWindowPosition()
-    
-    private let defaults = UserDefaults.standard
-    private let positionKey = "shaderWindowPosition"
-    
-    var savedPosition: NSPoint? {
-        guard let data = defaults.data(forKey: positionKey),
-              let dict = try? JSONSerialization.jsonObject(with: data) as? [String: Double] else {
-            return nil
-        }
-        return NSPoint(x: dict["x"] ?? 0, y: dict["y"] ?? 0)
-    }
-    
-    func savePosition(_ point: NSPoint) {
-        let dict: [String: Double] = ["x": point.x, "y": point.y]
-        if let data = try? JSONSerialization.data(withJSONObject: dict) {
-            defaults.set(data, forKey: positionKey)
-        }
     }
 }
 
@@ -127,9 +128,9 @@ class ShaderWindowController: NSWindowController, NSWindowDelegate {
         // Restore saved position or use default
         let rect: NSRect
         if let savedPos = ShaderWindowPosition.shared.savedPosition {
-            rect = NSRect(x: savedPos.x, y: savedPos.y, width: 550, height: 450)
+            rect = NSRect(x: savedPos.x, y: savedPos.y, width: 700, height: 450)
         } else {
-            rect = NSRect(x: 0, y: 0, width: 550, height: 450)
+            rect = NSRect(x: 0, y: 0, width: 700, height: 450)
         }
         
         let window = KeyWindowPanel(
@@ -140,7 +141,7 @@ class ShaderWindowController: NSWindowController, NSWindowDelegate {
         )
         
         window.title = "Shader Presets"
-        window.minSize = NSSize(width: 500, height: 400)
+        window.minSize = NSSize(width: 650, height: 350)
         window.isReleasedWhenClosed = false
         window.level = .floating
         window.collectionBehavior = [.canJoinAllSpaces, .fullScreenAuxiliary]
@@ -210,10 +211,100 @@ class ShaderWindowController: NSWindowController, NSWindowDelegate {
 // MARK: - Shader Preset Picker View
 /// A window that lets users browse and select shader presets by category.
 
+// MARK: - Shader Preset Row View
+struct ShaderPresetRowView: View {
+    let preset: ShaderPreset
+    let isSelected: Bool
+    let onSelect: () -> Void
+    
+    @State private var isHovered = false
+    
+    var body: some View {
+        HStack(spacing: 10) {
+            // Shader type icon
+            Image(systemName: shaderIcon(for: preset.shaderType))
+                .font(.body)
+                .frame(width: 24)
+                .foregroundColor(isSelected ? .accentColor : .secondary)
+            
+            // Name and info - full row height
+            VStack(alignment: .leading, spacing: 4) {
+                Text(preset.name)
+                    .font(.subheadline.weight(isSelected ? .semibold : .regular))
+                    .lineLimit(1)
+                    .foregroundColor(isSelected ? .accentColor : .primary)
+                
+                // Show comma-separated systems instead of chips
+                if !preset.recommendedSystems.isEmpty {
+                    Text(preset.recommendedSystems.joined(separator: ", ").uppercased())
+                        .font(.caption2)
+                        .foregroundColor(.secondary)
+                        .lineLimit(1)
+                }
+            }
+            
+            Spacer()
+            
+            // Parameters count badge
+            if !preset.globalUniforms.isEmpty {
+                Text("⚙️ \(preset.globalUniforms.count)")
+                    .font(.caption)
+                    .foregroundColor(.secondary)
+                    .padding(.horizontal, 6)
+                    .padding(.vertical, 2)
+                    .background(Color.secondary.opacity(0.15))
+                    .cornerRadius(4)
+            }
+            
+            // Checkmark for active
+            if isSelected {
+                Image(systemName: "checkmark.circle.fill")
+                    .foregroundColor(.accentColor)
+                    .font(.body)
+            }
+        }
+        .padding(.vertical, 10)
+        .padding(.horizontal, 12)
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .background {
+            if isSelected {
+                Color.accentColor.opacity(0.2)
+                    .cornerRadius(6)
+            } else if isHovered {
+                Color.secondary.opacity(0.1)
+                    .cornerRadius(6)
+            }
+        }
+        .contentShape(Rectangle())
+        .onHover { hovering in
+            withAnimation(.easeInOut(duration: 0.1)) {
+                isHovered = hovering
+            }
+        }
+        .onTapGesture {
+            withAnimation(.easeInOut(duration: 0.15)) {
+                onSelect()
+            }
+        }
+    }
+    
+    private func shaderIcon(for type: ShaderType) -> String {
+        switch type {
+        case .crt: return "tv"
+        case .lcd: return "iphone"
+        case .smoothing: return "sparkles"
+        case .composite: return "waveform.path"
+        case .custom: return "wrench"
+        }
+    }
+}
+
+// MARK: - Shader Preset Picker View
 struct ShaderPresetPickerView: View {
     @ObservedObject var settings: ShaderWindowSettings
     
     @State private var selectedCategory: ShaderType?
+    @State private var searchText: String = ""
     
     /// Callback fired when user releases any slider (not during drag)
     var onValueCommitted: (([String: Float]) -> Void)?
@@ -223,61 +314,102 @@ struct ShaderPresetPickerView: View {
             // Current selection indicator
             currentSelectionHeader
             
+            // Search bar
+            searchBar
+            
             // Category tabs
             categoryTabs
             
-            // Preset list
-            presetList
-            
-            // Uniform sliders (embedded directly)
-            if let selectedPreset = ShaderPreset.preset(id: settings.shaderPresetID),
-               !selectedPreset.globalUniforms.isEmpty {
-                parameterSliders
+            // Main content area: list on left, sliders on right
+            HStack(spacing: 0) {
+                // Preset list (left side)
+                presetList
+                
+                // Uniform sliders (right side)
+                if let selectedPreset = ShaderPreset.preset(id: settings.shaderPresetID),
+                   !selectedPreset.globalUniforms.isEmpty {
+                    Divider()
+                    parameterSliders
+                }
             }
         }
-        .frame(minWidth: 500, minHeight: 400)
+        .frame(minWidth: 650, minHeight: 350)
     }
     
     // MARK: - Current Selection Header
     
     private var currentSelectionHeader: some View {
         HStack {
-            VStack(alignment: .leading, spacing: 4) {
-                Text("Currently Active")
-                    .font(.caption)
+            VStack(alignment: .leading, spacing: 2) {
+                Text("Active")
+                    .font(.caption2)
                     .foregroundColor(.secondary)
                 Text(ShaderManager.displayName(for: settings.shaderPresetID))
-                    .font(.headline)
+                    .font(.subheadline.bold())
             }
             
             Spacer()
             
-            Button("Reset to Default") {
+            Button("Reset") {
                 settings.shaderPresetID = ShaderPreset.defaultPreset.id
                 settings.uniformValues.removeAll()
             }
             .font(.caption)
+            .controlSize(.small)
         }
-        .padding()
+        .padding(8)
         .background(Color(NSColor.controlBackgroundColor))
+    }
+    
+    // MARK: - Search Bar
+    
+    private var searchBar: some View {
+        HStack {
+            Image(systemName: "magnifyingglass")
+                .foregroundColor(.secondary)
+            TextField("Search shaders...", text: $searchText)
+                .textFieldStyle(.plain)
+            if !searchText.isEmpty {
+                Button("Clear", systemImage: "xmark.circle.fill") {
+                    searchText = ""
+                }
+                .buttonStyle(.plain)
+            }
+        }
+        .padding(6)
+        .background(Color(NSColor.textBackgroundColor))
+        .cornerRadius(6)
+        .padding(.horizontal, 8)
+        .padding(.top, 4)
     }
     
     // MARK: - Category Tabs
     
     private var categoryTabs: some View {
         ScrollView(.horizontal, showsIndicators: false) {
-            HStack(spacing: 8) {
+            HStack(spacing: 6) {
+                Button("All") {
+                    selectedCategory = nil
+                }
+                .font(.caption)
+                .padding(.horizontal, 10)
+                .padding(.vertical, 4)
+                .background(selectedCategory == nil ? Color.accentColor : Color(NSColor.controlBackgroundColor))
+                .foregroundColor(selectedCategory == nil ? .white : .primary)
+                .cornerRadius(12)
+                .buttonStyle(.plain)
+                
                 ForEach(ShaderType.allCases, id: \.self) { type in
                     categoryChip(type: type)
                 }
             }
-            .padding(.horizontal)
-            .padding(.vertical, 8)
+            .padding(.horizontal, 8)
+            .padding(.vertical, 6)
         }
     }
     
     private func categoryChip(type: ShaderType) -> some View {
-        let count = ShaderPreset.allPresets.filter { $0.shaderType == type }.count
+        let count = filteredPresets(for: type).count
         guard count > 0 else { return AnyView(EmptyView()) }
         
         return AnyView(
@@ -290,18 +422,18 @@ struct ShaderPresetPickerView: View {
                     }
                 }
             } label: {
-                HStack(spacing: 4) {
+                HStack(spacing: 2) {
                     Text(type.displayName)
-                        .font(.subheadline)
-                    Text("(\(count))")
                         .font(.caption)
-                        .foregroundColor(.secondary)
+                    Text("(\(count))")
+                        .font(.caption2)
+                        .foregroundColor(selectedCategory == type ? .white.opacity(0.7) : .secondary)
                 }
-                .padding(.horizontal, 12)
-                .padding(.vertical, 6)
+                .padding(.horizontal, 10)
+                .padding(.vertical, 4)
                 .background(selectedCategory == type ? Color.accentColor : Color(NSColor.controlBackgroundColor))
                 .foregroundColor(selectedCategory == type ? .white : .primary)
-                .cornerRadius(16)
+                .cornerRadius(12)
             }
             .buttonStyle(.plain)
         )
@@ -311,110 +443,78 @@ struct ShaderPresetPickerView: View {
     
     private var presetList: some View {
         ScrollView {
-            LazyVStack(spacing: 12) {
-                let presets = filteredPresets
+            LazyVStack(spacing: 2) {
+                let presets = visiblePresets
                 
                 if presets.isEmpty {
-                    Text("No presets in this category")
+                    Text("No shaders found")
                         .foregroundColor(.secondary)
                         .padding()
                 } else {
                     ForEach(presets, id: \.id) { preset in
-                        presetCard(preset: preset)
+                        presetRow(preset: preset)
                     }
                 }
             }
-            .padding()
+            .padding(8)
         }
     }
     
-    private var filteredPresets: [ShaderPreset] {
+    private var visiblePresets: [ShaderPreset] {
+        let categoryFiltered: [ShaderPreset]
         if let category = selectedCategory {
-            return ShaderPreset.allPresets.filter { $0.shaderType == category }
+            categoryFiltered = ShaderPreset.allPresets.filter { $0.shaderType == category }
+        } else {
+            categoryFiltered = ShaderPreset.allPresets
         }
-        return ShaderPreset.allPresets
+        
+        if searchText.isEmpty {
+            return categoryFiltered
+        }
+        
+        let search = searchText.lowercased()
+        return categoryFiltered.filter { preset in
+            preset.name.lowercased().contains(search) ||
+            preset.description?.lowercased().contains(search) == true ||
+            preset.recommendedSystems.contains { $0.lowercased().contains(search) }
+        }
     }
     
-    private func presetCard(preset: ShaderPreset) -> some View {
-        Button {
-            withAnimation(.easeInOut(duration: 0.2)) {
-                settings.shaderPresetID = preset.id
-                // Reset uniforms to preset defaults
-                settings.uniformValues.removeAll()
-                for uniform in preset.globalUniforms {
-                    settings.uniformValues[uniform.name] = uniform.defaultValue
-                }
-            }
-        } label: {
-            VStack(alignment: .leading, spacing: 8) {
-                HStack {
-                    VStack(alignment: .leading, spacing: 4) {
-                        HStack {
-                            Text(preset.name)
-                                .font(.headline)
-                            
-                            if preset.id == settings.shaderPresetID {
-                                Image(systemName: "checkmark.circle.fill")
-                                    .foregroundColor(.accentColor)
-                            }
-                        }
-                        
-                        Text(preset.shaderType.displayName)
-                            .font(.caption)
-                            .foregroundColor(.secondary)
-                    }
-                    
-                    Spacer()
-                    
-                    Image(systemName: "wand.and.rays")
-                        .foregroundColor(.secondary)
-                        .imageScale(.large)
-                }
-                
-                if let description = preset.description {
-                    Text(description)
-                        .font(.caption)
-                        .foregroundColor(.secondary)
-                        .lineLimit(2)
-                }
-                
-                // Recommended systems chips
-                if !preset.recommendedSystems.isEmpty {
-                    ScrollView(.horizontal, showsIndicators: false) {
-                        HStack(spacing: 4) {
-                            Text("Best for:")
-                                .font(.caption2)
-                                .foregroundColor(.secondary)
-                            
-                            ForEach(preset.recommendedSystems.prefix(5), id: \.self) { system in
-                                Text(system.uppercased())
-                                    .font(.caption2)
-                                    .padding(.horizontal, 6)
-                                    .padding(.vertical, 2)
-                                    .background(Color(NSColor.controlBackgroundColor))
-                                    .cornerRadius(4)
-                            }
-                        }
-                    }
-                }
-                
-                // Uniform count
-                if !preset.globalUniforms.isEmpty {
-                    HStack(spacing: 4) {
-                        Image(systemName: "slider.horizontal.3")
-                            .imageScale(.small)
-                        Text("\(preset.globalUniforms.count) adjustable parameters")
-                            .font(.caption2)
-                            .foregroundColor(.secondary)
-                    }
-                }
-            }
-            .padding()
-        .background(preset.id == settings.shaderPresetID ? 
-            Color.accentColor.opacity(0.1) : Color(NSColor.controlBackgroundColor))
-            .cornerRadius(12)
+    private func filteredPresets(for type: ShaderType) -> [ShaderPreset] {
+        let search = searchText.lowercased()
+        let categoryFiltered = ShaderPreset.allPresets.filter { $0.shaderType == type }
+        if search.isEmpty {
+            return categoryFiltered
         }
-        .buttonStyle(.plain)
+        return categoryFiltered.filter { preset in
+            preset.name.lowercased().contains(search) ||
+            preset.description?.lowercased().contains(search) == true
+        }
+    }
+    
+    // MARK: - Compact Preset Row
+    
+    private func presetRow(preset: ShaderPreset) -> some View {
+        VStack(spacing: 0) {
+            ShaderPresetRowView(
+                preset: preset,
+                isSelected: preset.id == settings.shaderPresetID
+            ) {
+                withAnimation(.easeInOut(duration: 0.15)) {
+                    settings.shaderPresetID = preset.id
+                    // Reset uniforms to preset defaults
+                    settings.uniformValues.removeAll()
+                    for uniform in preset.globalUniforms {
+                        settings.uniformValues[uniform.name] = uniform.defaultValue
+                    }
+                }
+            }
+            
+            // Divider between rows
+            Divider()
+                .padding(.leading, 40)
+                .opacity(0.5)
+        }
     }
     
     // MARK: - Parameter Sliders (Embedded)
@@ -428,150 +528,10 @@ struct ShaderPresetPickerView: View {
                     uniformValues: $settings.uniformValues,
                     onValueCommitted: onValueCommitted
                 )
+                .frame(minWidth: 180, maxWidth: 220)
+                .padding(.horizontal, 8)
+                .padding(.vertical, 8)
             }
-        }
-    }
-}
-
-// MARK: - Shader Uniform Editor View
-
-struct ShaderUniformEditorView: View {
-    @Environment(\.dismiss) private var dismiss
-    
-    let preset: ShaderPreset
-    @Binding var uniformValues: [String: Float]
-    
-    var body: some View {
-        VStack {
-            List {
-                Section("Parameters") {
-                    ForEach(preset.globalUniforms) { uniform in
-                        uniformSliderRow(for: uniform)
-                    }
-                }
-                
-                if let description = preset.description {
-                    Section("Info") {
-                        Text(description)
-                            .font(.caption)
-                            .foregroundColor(.secondary)
-                    }
-                }
-            }
-            
-            Divider()
-            
-            HStack {
-                Button("Reset") {
-                    for uniform in preset.globalUniforms {
-                        uniformValues[uniform.name] = uniform.defaultValue
-                    }
-                }
-                .buttonStyle(.bordered)
-                
-                Spacer()
-                
-                Button("Done") { dismiss() }
-                    .buttonStyle(.borderedProminent)
-            }
-            .padding()
-        }
-        .frame(minWidth: 400, minHeight: 300)
-    }
-    
-    private func uniformSliderRow(for uniform: ShaderUniform) -> some View {
-        VStack(spacing: 6) {
-            HStack {
-                Text(uniform.displayLabel)
-                    .font(.subheadline)
-                
-                Spacer()
-                
-                Text(String(format: "%.2f", currentUniformValue(for: uniform)))
-                    .font(.caption)
-                    .foregroundColor(.secondary)
-                    .monospacedDigit()
-            }
-            
-            Slider(
-                value: Binding(
-                    get: { currentUniformValue(for: uniform) },
-                    set: { newValue in
-                        updateUniform(uniform.name, to: newValue)
-                    }
-                ),
-                in: uniform.minValue...uniform.maxValue,
-                step: uniform.step
-            )
-        }
-        .padding(.vertical, 4)
-    }
-    
-    private func currentUniformValue(for uniform: ShaderUniform) -> Float {
-        uniformValues[uniform.name] ?? uniform.defaultValue
-    }
-    
-    private func updateUniform(_ name: String, to value: Float) {
-        uniformValues[name] = value
-    }
-}
-
-// MARK: - Quick Shader Selector (for HUD overlay)
-
-struct QuickShaderSelectorView: View {
-    @Binding var selectedPresetID: String
-    @Binding var shaderEnabled: Bool
-    
-    var body: some View {
-        VStack(alignment: .leading, spacing: 12) {
-            HStack {
-                Toggle("Shaders", isOn: $shaderEnabled)
-                    .font(.headline)
-                
-                Spacer()
-                
-                Text(ShaderManager.displayName(for: selectedPresetID))
-                    .font(.caption)
-                    .foregroundColor(.secondary)
-            }
-            
-            if shaderEnabled {
-                LazyVGrid(columns: [GridItem(.flexible()), GridItem(.flexible())], spacing: 8) {
-                    ForEach(ShaderPreset.allPresets.prefix(6), id: \.id) { preset in
-                        quickPresetButton(preset: preset)
-                    }
-                }
-            }
-        }
-    }
-    
-    private func quickPresetButton(preset: ShaderPreset) -> some View {
-        Button {
-            selectedPresetID = preset.id
-        } label: {
-            VStack(spacing: 4) {
-                Image(systemName: shaderIcon(for: preset.shaderType))
-                    .font(.title2)
-                Text(preset.name)
-                    .font(.caption2)
-                    .lineLimit(1)
-            }
-            .frame(maxWidth: .infinity)
-            .padding(.vertical, 8)
-            .background(selectedPresetID == preset.id ? Color.accentColor : Color(NSColor.controlBackgroundColor))
-            .foregroundColor(selectedPresetID == preset.id ? .white : .primary)
-            .cornerRadius(8)
-        }
-        .buttonStyle(.plain)
-    }
-    
-    private func shaderIcon(for type: ShaderType) -> String {
-        switch type {
-        case .crt: return "tv"
-        case .lcd: return "iphone"
-        case .smoothing: return "sparkles"
-        case .composite: return "waveform.path"
-        case .custom: return "wrench"
         }
     }
 }
