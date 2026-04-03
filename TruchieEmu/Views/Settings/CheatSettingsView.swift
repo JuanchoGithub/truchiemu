@@ -180,20 +180,6 @@ struct CheatSettingsView: View {
                 .font(.headline)
             
             VStack(spacing: 0) {
-                Toggle(isOn: $prefs.autoLoadCheats) {
-                    VStack(alignment: .leading, spacing: 2) {
-                        Text("Auto-load Cheats")
-                            .font(.body)
-                        Text("Automatically load available cheats when launching games")
-                            .font(.caption)
-                            .foregroundColor(.secondary)
-                    }
-                }
-                .padding(.vertical, 8)
-                .padding(.horizontal, 12)
-                
-                Divider()
-                
                 Toggle(isOn: $prefs.applyCheatsOnLaunch) {
                     VStack(alignment: .leading, spacing: 2) {
                         Text("Apply Cheats on Launch")

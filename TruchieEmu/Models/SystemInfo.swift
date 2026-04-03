@@ -404,14 +404,7 @@ class SystemPreferences: ObservableObject {
         updateTrigger += 1
     }
 
-    /// Whether to automatically load cheats when launching games
-    @Published var autoLoadCheats: Bool = true {
-        didSet {
-            UserDefaults.standard.set(autoLoadCheats, forKey: "autoLoadCheats")
-        }
-    }
-    
-    /// Whether to automatically apply enabled cheats on game launch
+    /// Whether to automatically apply enabled cheats on game launch (disabled by default)
     @Published var applyCheatsOnLaunch: Bool = false {
         didSet {
             UserDefaults.standard.set(applyCheatsOnLaunch, forKey: "applyCheatsOnLaunch")
@@ -440,7 +433,6 @@ class SystemPreferences: ObservableObject {
         self.systemLanguage = EmulatorLanguage(rawValue: langRaw) ?? .english
         let logRaw = UserDefaults.standard.object(forKey: "coreLogLevel") as? Int ?? CoreLogLevel.warn.rawValue
         self.coreLogLevel = CoreLogLevel(rawValue: logRaw) ?? .warn
-        self.autoLoadCheats = UserDefaults.standard.object(forKey: "autoLoadCheats") as? Bool ?? true
         self.applyCheatsOnLaunch = UserDefaults.standard.object(forKey: "applyCheatsOnLaunch") as? Bool ?? false
         self.showCheatNotifications = UserDefaults.standard.object(forKey: "showCheatNotifications") as? Bool ?? true
     }
