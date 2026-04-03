@@ -64,3 +64,21 @@ targets:
       - path: TruchieEmu/Views/Shaders
 
     preBuildScripts: []
+
+  TruchieEmuTests:
+    type: bundle.unit-test
+    platform: macOS
+    deploymentTarget: "13.0"
+
+    settings:
+      base:
+        PRODUCT_NAME: TruchieEmuTests
+        PRODUCT_BUNDLE_IDENTIFIER: com.truchiemu.tests
+        SWIFT_VERSION: "5.9"
+        GENERATE_INFOPLIST_FILE: YES
+
+    sources:
+      - path: TruchieEmuTests
+
+    dependencies:
+      - target: TruchieEmu

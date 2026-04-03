@@ -19,16 +19,19 @@
 		2BC6C72C9075C6652E2F1398 /* BoxArtPickerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 00BCE112C7493BEA7436F109 /* BoxArtPickerView.swift */; };
 		2C90FACC3F4A1834DEBA87F2 /* GameLauncher.swift in Sources */ = {isa = PBXBuildFile; fileRef = 824B99AA8F4D46E6A5E01A05 /* GameLauncher.swift */; };
 		2E504CB095236AB9CFF8C433 /* CoreOption.swift in Sources */ = {isa = PBXBuildFile; fileRef = 88CE9892979FB7B724F9F25B /* CoreOption.swift */; };
+		399D63EAFFDA48F827AA0318 /* CRTTest.metal in Sources */ = {isa = PBXBuildFile; fileRef = C238E3A21D9F9C24E3C71D88 /* CRTTest.metal */; };
+		3C668C57624222E97E081DC2 /* BezelPaginationTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 70AD4E9D0AD7D1D5D29E94E2 /* BezelPaginationTests.swift */; };
 		3C8A90F76B0E04A65E48EBED /* GameDetailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = EA462E15A1500FD878B5160A /* GameDetailView.swift */; };
 		3D30F9BC2F7FBA0BEA44693B /* BoxArtService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6DDE7FC6FAA1F8677EB963A1 /* BoxArtService.swift */; };
 		43C778A329E437002D224F79 /* HardcoreModeManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 482780863BA2AF1C5DA43B2F /* HardcoreModeManager.swift */; };
 		455AB80D7490B0717CBE94AD /* NESRunner.swift in Sources */ = {isa = PBXBuildFile; fileRef = 81440507D3F6155A9AC60E31 /* NESRunner.swift */; };
 		469CB718F4F3CEB1456E1454 /* LibretroBridgeSwift.swift in Sources */ = {isa = PBXBuildFile; fileRef = BB93840EA89D1346651C53BE /* LibretroBridgeSwift.swift */; };
+		47D4F38CBBF4A91CD81BC7FE /* BezelStorageManagerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B7C8087833B0A16BD322ECCE /* BezelStorageManagerTests.swift */; };
 		4C8AAEEA6E56CEC1ABCC53D8 /* CheatDownloadService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7DF10A2892C7DDEB5683637F /* CheatDownloadService.swift */; };
 		4CFD764CC4B9F8C057BC0E10 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = DAD4BAC83053A0F149602D6D /* ContentView.swift */; };
 		5412DF664DF0F1052D430F56 /* SystemInfo.swift in Sources */ = {isa = PBXBuildFile; fileRef = ACC34ADA0917BCC91FAA1989 /* SystemInfo.swift */; };
 		55F19268FAB68DFC6D19F209 /* CRTFilter.metal in Sources */ = {isa = PBXBuildFile; fileRef = 2F02B2718F34118A171C7103 /* CRTFilter.metal */; };
-		A1B2C3D4E5F6789012345678 /* CRTTest.metal in Sources */ = {isa = PBXBuildFile; fileRef = 9A8B7C6D5E4F3A2B1C0D9E8F /* CRTTest.metal */; };
+		59F004458D3DA067C6728CA2 /* BezelAPIService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 429518CD364123358B2D8AEC /* BezelAPIService.swift */; };
 		5AE08777350BDC6F25FA69E1 /* ShaderPresetPickerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 31472C6AA70EE71CBF6669A8 /* ShaderPresetPickerView.swift */; };
 		5D044254D97EF1A2198DC22C /* CheatManagerService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2E5CF9A3D4671251F618EA57 /* CheatManagerService.swift */; };
 		5FFDEBF8550AFB751087D5F7 /* SharedPlayerComponents.swift in Sources */ = {isa = PBXBuildFile; fileRef = D88D96DF545C1C1905F21A6C /* SharedPlayerComponents.swift */; };
@@ -37,30 +40,44 @@
 		71B49A85A5A4F01FC962FEEE /* CorePickerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2509BE73DFA2ACCF17CAA8DD /* CorePickerView.swift */; };
 		785352A1776D2F26AE6E9BDA /* CLILauncher.swift in Sources */ = {isa = PBXBuildFile; fileRef = C8CF37F3EE97D10E700B56DF /* CLILauncher.swift */; };
 		8406C90890303236B45F5FE2 /* SystemSidebarView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F0ECEE62736D1B11B66E5CED /* SystemSidebarView.swift */; };
+		85DCB8701ABFD43946F210E9 /* BezelSystemMapping.swift in Sources */ = {isa = PBXBuildFile; fileRef = 25381400F40B6B9F5699C25C /* BezelSystemMapping.swift */; };
 		889D5640E4056E730D0FAF6F /* GameDragState.swift in Sources */ = {isa = PBXBuildFile; fileRef = 02BBEDBAB8126B08C4C9D008 /* GameDragState.swift */; };
+		899F4D160E1258D6A3512441 /* BezelModels.swift in Sources */ = {isa = PBXBuildFile; fileRef = 64A688BC67EE841CEE4466D4 /* BezelModels.swift */; };
 		8D69C38D2C52B6392EC9C0AA /* CoreManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = C9D4F3329E4574FD30094324 /* CoreManager.swift */; };
 		8EE995D174427204927B68F4 /* GameCategory.swift in Sources */ = {isa = PBXBuildFile; fileRef = A5DBDEA905A82BDEF2D0FF92 /* GameCategory.swift */; };
 		8F729FB157583DECC75B0124 /* ScummVMRunner.swift in Sources */ = {isa = PBXBuildFile; fileRef = C87485B36AA3B87BBC03C577 /* ScummVMRunner.swift */; };
+		8FD8E7C72CB64F4BF522DB48 /* BezelAPIServiceIntegrationTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9A57889A8837E10FEB44BCFD /* BezelAPIServiceIntegrationTests.swift */; };
 		90BFE4669CA37266D841CA99 /* CLIManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7D4DE8B36744135985A50982 /* CLIManager.swift */; };
 		9CBCACA409FDC46E119C5F02 /* CoreDownloadSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = E86D4B032CD724A2520F4EF5 /* CoreDownloadSheet.swift */; };
 		9FF94EED26CFDB4DE9216DF0 /* CheatAutoLoader.swift in Sources */ = {isa = PBXBuildFile; fileRef = FEAB7F598545E0EC1ADC7095 /* CheatAutoLoader.swift */; };
 		A00192372A0183EF4772CACF /* CategoryManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 571AFD6EF6839C2FBF185419 /* CategoryManager.swift */; };
 		A2E8895528D33C9C62CD7E70 /* LibretroRDBParser.swift in Sources */ = {isa = PBXBuildFile; fileRef = AD6D8A426A0F0B5278A2061D /* LibretroRDBParser.swift */; };
+		A58FDFAC497AD46C53D234BE /* BezelSelectorWindow.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6FC6B9BA043D75E9DC8B7710 /* BezelSelectorWindow.swift */; };
+		A62A82DD470DD8861DF3384C /* BezelSystemMappingTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = BD7CD170E8F21A7C11AA8A96 /* BezelSystemMappingTests.swift */; };
+		A99CC1C5CCF818F96154A141 /* BezelStorageManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3A2C594EB5610588966E03EA /* BezelStorageManager.swift */; };
+		A9D2785CF59E59283B83E3FF /* BezelE2ETests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 19031B83BE57CD18DC9CF433 /* BezelE2ETests.swift */; };
 		AA0B53183BF112AB49210A6D /* LibraryAutomationCoordinator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5F78F845B9C63B8B6F072751 /* LibraryAutomationCoordinator.swift */; };
 		AA9FF76AF209339503C6148E /* LibretroThumbnailResolver.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8A47A2618C88081828F43315 /* LibretroThumbnailResolver.swift */; };
 		ACEEC7183618E1C5DCE326AE /* CoreOptionsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B8A759D694F034223120BFB5 /* CoreOptionsView.swift */; };
+		AF0FD8317EA5491707CFE410 /* BezelManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = D2741A6AD9158E9F4EBE44C4 /* BezelManager.swift */; };
+		B97555AF8F8965415DADB4F5 /* BezelWindowSizingTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 19EC93357FB106505B7E3B49 /* BezelWindowSizingTests.swift */; };
 		BB92BE6DDFAB5F4215EF6CF0 /* RetroAchievementsSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B6B43857C6383165BD22A9AF /* RetroAchievementsSettingsView.swift */; };
 		BE53CB7D7C4EF9D138148628 /* SlotPickerSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = F92119B38E7206704F501F92 /* SlotPickerSheet.swift */; };
 		C1A4A19926D1834FC8C42E3D /* Cheat.swift in Sources */ = {isa = PBXBuildFile; fileRef = C818FB0D70AE32972B1C5458 /* Cheat.swift */; };
 		C99B75B6B31091E08C1F162A /* ROM.swift in Sources */ = {isa = PBXBuildFile; fileRef = FA471582BD64CAFD5D7353DA /* ROM.swift */; };
 		C9B9D094E83252DCCF416DA4 /* ControllerService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 93D8EB529663CB9A8702FAD3 /* ControllerService.swift */; };
+		CB7627997EA3152E14D89998 /* BezelBrowserView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A853FDE98AE470141649C4D7 /* BezelBrowserView.swift */; };
 		D02B80BF5046C50DD6849639 /* CoreOptionsManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = A4134F4B89D3CF5680BCEA25 /* CoreOptionsManager.swift */; };
 		D0C382CCE62AD453784ED800 /* ROMScanner.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7A96B3453958E60812D9DA1D /* ROMScanner.swift */; };
+		D3DFF4B19710FC24B2FA821D /* BezelDownloadProgressTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 681D379EFFCD99F4BDE955CA /* BezelDownloadProgressTests.swift */; };
 		D7A2504994F1DE09E699F30F /* ROMIdentifierService.swift in Sources */ = {isa = PBXBuildFile; fileRef = FC2BC1B2F22591954A0E02B5 /* ROMIdentifierService.swift */; };
 		DA7B953D862BCA9932664C99 /* RunningGamesTracker.swift in Sources */ = {isa = PBXBuildFile; fileRef = EAE090319110B0F262FC2BC2 /* RunningGamesTracker.swift */; };
 		DDAC0689F34313CEF845E3FC /* DOSRunner.swift in Sources */ = {isa = PBXBuildFile; fileRef = E87593F08B97B23BA2CAC02A /* DOSRunner.swift */; };
 		E31C6BB9549D14BAAB7259D7 /* CheatParser.swift in Sources */ = {isa = PBXBuildFile; fileRef = D117D4363FBC8E02D7F7B049 /* CheatParser.swift */; };
+		E36F364A38437CEB07D7D7C8 /* BezelBackgroundView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1B07E7146789A12D6E627BD9 /* BezelBackgroundView.swift */; };
 		E3AF0FC4B15408E1686E33C7 /* Achievement.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5DE05F787C487A0BBA81DAB7 /* Achievement.swift */; };
+		E86E336D3B6A25D45A599969 /* BezelDownloadLogView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8E6BF5D840A5C89EDA5E68BC /* BezelDownloadLogView.swift */; };
+		E870DB3A767A66FA7166E4BD /* BezelSelectorSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = EAE67E62E85282D55D114D49 /* BezelSelectorSheet.swift */; };
 		EACA95E35BCDF368B91F18EC /* SNESRunner.swift in Sources */ = {isa = PBXBuildFile; fileRef = 514B30B47B86FD0161D5DD71 /* SNESRunner.swift */; };
 		EC8FCCD2DB45AA136AEE82C6 /* GameInfoWindow.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3C280DAAB43D202DBEEA100A /* GameInfoWindow.swift */; };
 		EE160B3D7565B6301E7474B3 /* LibretroCore.swift in Sources */ = {isa = PBXBuildFile; fileRef = E35518FB34DEB243BF979DE0 /* LibretroCore.swift */; };
@@ -69,40 +86,63 @@
 		F3C6A31B44657B3FF9B89A4F /* ROMLibrary.swift in Sources */ = {isa = PBXBuildFile; fileRef = 35A5B2396F8000C8435A2E45 /* ROMLibrary.swift */; };
 		F59885E8417267AF6A34F97C /* TruchieEmuApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2A348F996E22D8E72782CE2B /* TruchieEmuApp.swift */; };
 		F78B007ED4F76DEFC5324B2F /* LibraryGridView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3356A4F200DFBFEEEE0F91A7 /* LibraryGridView.swift */; };
+		F7CBDBE5E1AC00456D6AC7D8 /* BezelManagerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 79981162FE4F8B8B1624598B /* BezelManagerTests.swift */; };
 		F97B9EE26C8F47F9C0B54E1D /* AchievementToastView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 19166B656DA22482BC3BF197 /* AchievementToastView.swift */; };
+		FB3E637776BC6CA41BE42990 /* BezelSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C33C12F5883FC11131A65FF7 /* BezelSettingsView.swift */; };
 		FC2EA7938982440C4F5BA3D3 /* ShaderManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 055E2AC9E58C1AC87C32C168 /* ShaderManager.swift */; };
 		FC67BB50EE78744FF7A11536 /* EmptyDetailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = BCB346F2AEB7FDB0705ADC7C /* EmptyDetailView.swift */; };
 		FFBB71BB1E6660833F75F2C1 /* CheatManagerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB9293E37E0A331CD54CDBF3 /* CheatManagerView.swift */; };
 /* End PBXBuildFile section */
 
+/* Begin PBXContainerItemProxy section */
+		09F8EF341958BC84153A61A1 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 164C875B02C4E1D8FFD04C9B /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = CB3BA833402929B57F3054AB;
+			remoteInfo = TruchieEmu;
+		};
+/* End PBXContainerItemProxy section */
+
 /* Begin PBXFileReference section */
 		00BCE112C7493BEA7436F109 /* BoxArtPickerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BoxArtPickerView.swift; sourceTree = "<group>"; };
 		02BBEDBAB8126B08C4C9D008 /* GameDragState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GameDragState.swift; sourceTree = "<group>"; };
 		055E2AC9E58C1AC87C32C168 /* ShaderManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShaderManager.swift; sourceTree = "<group>"; };
+		19031B83BE57CD18DC9CF433 /* BezelE2ETests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BezelE2ETests.swift; sourceTree = "<group>"; };
 		19166B656DA22482BC3BF197 /* AchievementToastView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AchievementToastView.swift; sourceTree = "<group>"; };
+		19EC93357FB106505B7E3B49 /* BezelWindowSizingTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BezelWindowSizingTests.swift; sourceTree = "<group>"; };
+		1B07E7146789A12D6E627BD9 /* BezelBackgroundView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BezelBackgroundView.swift; sourceTree = "<group>"; };
 		1DD9E5B55884D34FCDA03196 /* EmulatorView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EmulatorView.swift; sourceTree = "<group>"; };
 		2039A7902CA4B44A7D4CA878 /* BaseRunner.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BaseRunner.swift; sourceTree = "<group>"; };
 		2509BE73DFA2ACCF17CAA8DD /* CorePickerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CorePickerView.swift; sourceTree = "<group>"; };
+		25381400F40B6B9F5699C25C /* BezelSystemMapping.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BezelSystemMapping.swift; sourceTree = "<group>"; };
 		29AA23F97722816919BB9A98 /* libretro.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = libretro.h; sourceTree = "<group>"; };
 		2A348F996E22D8E72782CE2B /* TruchieEmuApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TruchieEmuApp.swift; sourceTree = "<group>"; };
 		2D9EAD70473602ACB00FE54F /* AchievementListView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AchievementListView.swift; sourceTree = "<group>"; };
 		2E5CF9A3D4671251F618EA57 /* CheatManagerService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CheatManagerService.swift; sourceTree = "<group>"; };
 		2F02B2718F34118A171C7103 /* CRTFilter.metal */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.metal; path = CRTFilter.metal; sourceTree = "<group>"; };
-		9A8B7C6D5E4F3A2B1C0D9E8F /* CRTTest.metal */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.metal; path = CRTTest.metal; sourceTree = "<group>"; };
 		31472C6AA70EE71CBF6669A8 /* ShaderPresetPickerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShaderPresetPickerView.swift; sourceTree = "<group>"; };
 		3356A4F200DFBFEEEE0F91A7 /* LibraryGridView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LibraryGridView.swift; sourceTree = "<group>"; };
 		35A5B2396F8000C8435A2E45 /* ROMLibrary.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ROMLibrary.swift; sourceTree = "<group>"; };
+		3A2C594EB5610588966E03EA /* BezelStorageManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BezelStorageManager.swift; sourceTree = "<group>"; };
 		3C280DAAB43D202DBEEA100A /* GameInfoWindow.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GameInfoWindow.swift; sourceTree = "<group>"; };
+		429518CD364123358B2D8AEC /* BezelAPIService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BezelAPIService.swift; sourceTree = "<group>"; };
 		482780863BA2AF1C5DA43B2F /* HardcoreModeManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HardcoreModeManager.swift; sourceTree = "<group>"; };
 		514B30B47B86FD0161D5DD71 /* SNESRunner.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SNESRunner.swift; sourceTree = "<group>"; };
 		571AFD6EF6839C2FBF185419 /* CategoryManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CategoryManager.swift; sourceTree = "<group>"; };
 		5DE05F787C487A0BBA81DAB7 /* Achievement.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Achievement.swift; sourceTree = "<group>"; };
 		5F2F3523E6BDCD5E1618ED1F /* SettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsView.swift; sourceTree = "<group>"; };
 		5F78F845B9C63B8B6F072751 /* LibraryAutomationCoordinator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LibraryAutomationCoordinator.swift; sourceTree = "<group>"; };
+		64A688BC67EE841CEE4466D4 /* BezelModels.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BezelModels.swift; sourceTree = "<group>"; };
+		6585DF4DC7B0FEC323F3AB80 /* TruchieEmuTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = TruchieEmuTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		676A433C26413EA5440A49A6 /* TruchieEmu-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "TruchieEmu-Bridging-Header.h"; sourceTree = "<group>"; };
 		67828B9B95A21FE57196B832 /* SaveStateManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SaveStateManager.swift; sourceTree = "<group>"; };
+		681D379EFFCD99F4BDE955CA /* BezelDownloadProgressTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BezelDownloadProgressTests.swift; sourceTree = "<group>"; };
 		6A44B2F841BBDAD4B6D2DAA0 /* LibraryMetadataStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LibraryMetadataStore.swift; sourceTree = "<group>"; };
 		6DDE7FC6FAA1F8677EB963A1 /* BoxArtService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BoxArtService.swift; sourceTree = "<group>"; };
+		6FC6B9BA043D75E9DC8B7710 /* BezelSelectorWindow.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BezelSelectorWindow.swift; sourceTree = "<group>"; };
+		70AD4E9D0AD7D1D5D29E94E2 /* BezelPaginationTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BezelPaginationTests.swift; sourceTree = "<group>"; };
+		79981162FE4F8B8B1624598B /* BezelManagerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BezelManagerTests.swift; sourceTree = "<group>"; };
 		7A96B3453958E60812D9DA1D /* ROMScanner.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ROMScanner.swift; sourceTree = "<group>"; };
 		7D4DE8B36744135985A50982 /* CLIManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CLIManager.swift; sourceTree = "<group>"; };
 		7DF10A2892C7DDEB5683637F /* CheatDownloadService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CheatDownloadService.swift; sourceTree = "<group>"; };
@@ -110,26 +150,34 @@
 		824B99AA8F4D46E6A5E01A05 /* GameLauncher.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GameLauncher.swift; sourceTree = "<group>"; };
 		88CE9892979FB7B724F9F25B /* CoreOption.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CoreOption.swift; sourceTree = "<group>"; };
 		8A47A2618C88081828F43315 /* LibretroThumbnailResolver.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LibretroThumbnailResolver.swift; sourceTree = "<group>"; };
+		8E6BF5D840A5C89EDA5E68BC /* BezelDownloadLogView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BezelDownloadLogView.swift; sourceTree = "<group>"; };
 		8EAA8B5D7F9154D320382A23 /* CheatSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CheatSettingsView.swift; sourceTree = "<group>"; };
 		93D8EB529663CB9A8702FAD3 /* ControllerService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ControllerService.swift; sourceTree = "<group>"; };
 		99510C445D5B9B6435F169A6 /* SystemControlsMappingView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SystemControlsMappingView.swift; sourceTree = "<group>"; };
 		99591C00996BDFB5DC9F6CD4 /* RetroAchievementsService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RetroAchievementsService.swift; sourceTree = "<group>"; };
+		9A57889A8837E10FEB44BCFD /* BezelAPIServiceIntegrationTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BezelAPIServiceIntegrationTests.swift; sourceTree = "<group>"; };
 		A4134F4B89D3CF5680BCEA25 /* CoreOptionsManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CoreOptionsManager.swift; sourceTree = "<group>"; };
 		A5DBDEA905A82BDEF2D0FF92 /* GameCategory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GameCategory.swift; sourceTree = "<group>"; };
+		A853FDE98AE470141649C4D7 /* BezelBrowserView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BezelBrowserView.swift; sourceTree = "<group>"; };
 		ACC34ADA0917BCC91FAA1989 /* SystemInfo.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SystemInfo.swift; sourceTree = "<group>"; };
 		ACEC10EE62F062AF5FAEE9BB /* TruchieEmu.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = TruchieEmu.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		AD6D8A426A0F0B5278A2061D /* LibretroRDBParser.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LibretroRDBParser.swift; sourceTree = "<group>"; };
 		B6B43857C6383165BD22A9AF /* RetroAchievementsSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RetroAchievementsSettingsView.swift; sourceTree = "<group>"; };
+		B7C8087833B0A16BD322ECCE /* BezelStorageManagerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BezelStorageManagerTests.swift; sourceTree = "<group>"; };
 		B7D46AC62DC8C09CBAA53763 /* LibretroBridge.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; path = LibretroBridge.mm; sourceTree = "<group>"; };
 		B8A759D694F034223120BFB5 /* CoreOptionsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CoreOptionsView.swift; sourceTree = "<group>"; };
 		BB27DEA4536CF36FCD8394F2 /* OnboardingView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OnboardingView.swift; sourceTree = "<group>"; };
 		BB93840EA89D1346651C53BE /* LibretroBridgeSwift.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LibretroBridgeSwift.swift; sourceTree = "<group>"; };
 		BCB346F2AEB7FDB0705ADC7C /* EmptyDetailView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EmptyDetailView.swift; sourceTree = "<group>"; };
+		BD7CD170E8F21A7C11AA8A96 /* BezelSystemMappingTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BezelSystemMappingTests.swift; sourceTree = "<group>"; };
+		C238E3A21D9F9C24E3C71D88 /* CRTTest.metal */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.metal; path = CRTTest.metal; sourceTree = "<group>"; };
+		C33C12F5883FC11131A65FF7 /* BezelSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BezelSettingsView.swift; sourceTree = "<group>"; };
 		C818FB0D70AE32972B1C5458 /* Cheat.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Cheat.swift; sourceTree = "<group>"; };
 		C87485B36AA3B87BBC03C577 /* ScummVMRunner.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScummVMRunner.swift; sourceTree = "<group>"; };
 		C8CF37F3EE97D10E700B56DF /* CLILauncher.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CLILauncher.swift; sourceTree = "<group>"; };
 		C9D4F3329E4574FD30094324 /* CoreManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CoreManager.swift; sourceTree = "<group>"; };
 		D117D4363FBC8E02D7F7B049 /* CheatParser.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CheatParser.swift; sourceTree = "<group>"; };
+		D2741A6AD9158E9F4EBE44C4 /* BezelManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BezelManager.swift; sourceTree = "<group>"; };
 		D4BD45E407C6A4D3059F2996 /* N64Runner.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = N64Runner.swift; sourceTree = "<group>"; };
 		D57E42574E494390B161B243 /* LibretroBridge.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = LibretroBridge.h; sourceTree = "<group>"; };
 		D88D96DF545C1C1905F21A6C /* SharedPlayerComponents.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SharedPlayerComponents.swift; sourceTree = "<group>"; };
@@ -141,6 +189,7 @@
 		E87593F08B97B23BA2CAC02A /* DOSRunner.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DOSRunner.swift; sourceTree = "<group>"; };
 		EA462E15A1500FD878B5160A /* GameDetailView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GameDetailView.swift; sourceTree = "<group>"; };
 		EAE090319110B0F262FC2BC2 /* RunningGamesTracker.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RunningGamesTracker.swift; sourceTree = "<group>"; };
+		EAE67E62E85282D55D114D49 /* BezelSelectorSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BezelSelectorSheet.swift; sourceTree = "<group>"; };
 		F0ECEE62736D1B11B66E5CED /* SystemSidebarView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SystemSidebarView.swift; sourceTree = "<group>"; };
 		F92119B38E7206704F501F92 /* SlotPickerSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SlotPickerSheet.swift; sourceTree = "<group>"; };
 		FA471582BD64CAFD5D7353DA /* ROM.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ROM.swift; sourceTree = "<group>"; };
@@ -166,7 +215,7 @@
 			isa = PBXGroup;
 			children = (
 				2F02B2718F34118A171C7103 /* CRTFilter.metal */,
-				9A8B7C6D5E4F3A2B1C0D9E8F /* CRTTest.metal */,
+				C238E3A21D9F9C24E3C71D88 /* CRTTest.metal */,
 			);
 			path = Shaders;
 			sourceTree = "<group>";
@@ -211,8 +260,21 @@
 				EAE090319110B0F262FC2BC2 /* RunningGamesTracker.swift */,
 				67828B9B95A21FE57196B832 /* SaveStateManager.swift */,
 				055E2AC9E58C1AC87C32C168 /* ShaderManager.swift */,
+				2702288214CCCA56E93A55AA /* Bezels */,
 			);
 			path = Services;
+			sourceTree = "<group>";
+		};
+		2702288214CCCA56E93A55AA /* Bezels */ = {
+			isa = PBXGroup;
+			children = (
+				429518CD364123358B2D8AEC /* BezelAPIService.swift */,
+				D2741A6AD9158E9F4EBE44C4 /* BezelManager.swift */,
+				64A688BC67EE841CEE4466D4 /* BezelModels.swift */,
+				3A2C594EB5610588966E03EA /* BezelStorageManager.swift */,
+				25381400F40B6B9F5699C25C /* BezelSystemMapping.swift */,
+			);
+			path = Bezels;
 			sourceTree = "<group>";
 		};
 		2C503F1AC4270AE1CC303595 /* Library */ = {
@@ -241,6 +303,7 @@
 			children = (
 				2D9EAD70473602ACB00FE54F /* AchievementListView.swift */,
 				19166B656DA22482BC3BF197 /* AchievementToastView.swift */,
+				1B07E7146789A12D6E627BD9 /* BezelBackgroundView.swift */,
 				DB9293E37E0A331CD54CDBF3 /* CheatManagerView.swift */,
 				2509BE73DFA2ACCF17CAA8DD /* CorePickerView.swift */,
 				1DD9E5B55884D34FCDA03196 /* EmulatorView.swift */,
@@ -273,6 +336,7 @@
 			isa = PBXGroup;
 			children = (
 				1877F5A2D47F3BEBD4C9F107 /* TruchieEmu */,
+				73C7F441286CE6892F0B3412 /* TruchieEmuTests */,
 				898E3BAF8FE5EB5068391AB1 /* Products */,
 			);
 			sourceTree = "<group>";
@@ -291,6 +355,14 @@
 				ACC34ADA0917BCC91FAA1989 /* SystemInfo.swift */,
 			);
 			path = Models;
+			sourceTree = "<group>";
+		};
+		73C7F441286CE6892F0B3412 /* TruchieEmuTests */ = {
+			isa = PBXGroup;
+			children = (
+				E74F801CA16F02B94D8B046F /* Services */,
+			);
+			path = TruchieEmuTests;
 			sourceTree = "<group>";
 		};
 		778AF2550C9A43CD6CD9D601 /* BoxArt */ = {
@@ -318,8 +390,24 @@
 			isa = PBXGroup;
 			children = (
 				ACEC10EE62F062AF5FAEE9BB /* TruchieEmu.app */,
+				6585DF4DC7B0FEC323F3AB80 /* TruchieEmuTests.xctest */,
 			);
 			name = Products;
+			sourceTree = "<group>";
+		};
+		8AD67A74849445446C88D837 /* Bezels */ = {
+			isa = PBXGroup;
+			children = (
+				9A57889A8837E10FEB44BCFD /* BezelAPIServiceIntegrationTests.swift */,
+				681D379EFFCD99F4BDE955CA /* BezelDownloadProgressTests.swift */,
+				19031B83BE57CD18DC9CF433 /* BezelE2ETests.swift */,
+				79981162FE4F8B8B1624598B /* BezelManagerTests.swift */,
+				70AD4E9D0AD7D1D5D29E94E2 /* BezelPaginationTests.swift */,
+				B7C8087833B0A16BD322ECCE /* BezelStorageManagerTests.swift */,
+				BD7CD170E8F21A7C11AA8A96 /* BezelSystemMappingTests.swift */,
+				19EC93357FB106505B7E3B49 /* BezelWindowSizingTests.swift */,
+			);
+			path = Bezels;
 			sourceTree = "<group>";
 		};
 		A655ADE29C2FB2E6D809951D /* Detail */ = {
@@ -334,6 +422,7 @@
 		BD0AC71C3B8CE60EEEDFAAEC /* Views */ = {
 			isa = PBXGroup;
 			children = (
+				ECA345BFDFAA76553C45C37F /* Bezels */,
 				778AF2550C9A43CD6CD9D601 /* BoxArt */,
 				4F07E586C17BC93480F71E29 /* CoreDownload */,
 				A655ADE29C2FB2E6D809951D /* Detail */,
@@ -353,9 +442,47 @@
 			path = Shaders;
 			sourceTree = "<group>";
 		};
+		E74F801CA16F02B94D8B046F /* Services */ = {
+			isa = PBXGroup;
+			children = (
+				8AD67A74849445446C88D837 /* Bezels */,
+			);
+			path = Services;
+			sourceTree = "<group>";
+		};
+		ECA345BFDFAA76553C45C37F /* Bezels */ = {
+			isa = PBXGroup;
+			children = (
+				A853FDE98AE470141649C4D7 /* BezelBrowserView.swift */,
+				8E6BF5D840A5C89EDA5E68BC /* BezelDownloadLogView.swift */,
+				EAE67E62E85282D55D114D49 /* BezelSelectorSheet.swift */,
+				6FC6B9BA043D75E9DC8B7710 /* BezelSelectorWindow.swift */,
+				C33C12F5883FC11131A65FF7 /* BezelSettingsView.swift */,
+			);
+			path = Bezels;
+			sourceTree = "<group>";
+		};
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
+		0DFF743C147C334A93F07CF2 /* TruchieEmuTests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 18BF14EC82D4DBF8D574A3B2 /* Build configuration list for PBXNativeTarget "TruchieEmuTests" */;
+			buildPhases = (
+				C9FC12B027E6C2F4A5B93B92 /* Sources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				5C95227A25E59E39D746DB65 /* PBXTargetDependency */,
+			);
+			name = TruchieEmuTests;
+			packageProductDependencies = (
+			);
+			productName = TruchieEmuTests;
+			productReference = 6585DF4DC7B0FEC323F3AB80 /* TruchieEmuTests.xctest */;
+			productType = "com.apple.product-type.bundle.unit-test";
+		};
 		CB3BA833402929B57F3054AB /* TruchieEmu */ = {
 			isa = PBXNativeTarget;
 			buildConfigurationList = FC61AF2BB3ABF32D52509631 /* Build configuration list for PBXNativeTarget "TruchieEmu" */;
@@ -402,6 +529,7 @@
 			projectRoot = "";
 			targets = (
 				CB3BA833402929B57F3054AB /* TruchieEmu */,
+				0DFF743C147C334A93F07CF2 /* TruchieEmuTests */,
 			);
 		};
 /* End PBXProject section */
@@ -415,12 +543,23 @@
 				F017645B40D693F252D1A0CB /* AchievementListView.swift in Sources */,
 				F97B9EE26C8F47F9C0B54E1D /* AchievementToastView.swift in Sources */,
 				1A35E4BC913F2B92D6C21A1D /* BaseRunner.swift in Sources */,
+				59F004458D3DA067C6728CA2 /* BezelAPIService.swift in Sources */,
+				E36F364A38437CEB07D7D7C8 /* BezelBackgroundView.swift in Sources */,
+				CB7627997EA3152E14D89998 /* BezelBrowserView.swift in Sources */,
+				E86E336D3B6A25D45A599969 /* BezelDownloadLogView.swift in Sources */,
+				AF0FD8317EA5491707CFE410 /* BezelManager.swift in Sources */,
+				899F4D160E1258D6A3512441 /* BezelModels.swift in Sources */,
+				E870DB3A767A66FA7166E4BD /* BezelSelectorSheet.swift in Sources */,
+				A58FDFAC497AD46C53D234BE /* BezelSelectorWindow.swift in Sources */,
+				FB3E637776BC6CA41BE42990 /* BezelSettingsView.swift in Sources */,
+				A99CC1C5CCF818F96154A141 /* BezelStorageManager.swift in Sources */,
+				85DCB8701ABFD43946F210E9 /* BezelSystemMapping.swift in Sources */,
 				2BC6C72C9075C6652E2F1398 /* BoxArtPickerView.swift in Sources */,
 				3D30F9BC2F7FBA0BEA44693B /* BoxArtService.swift in Sources */,
 				785352A1776D2F26AE6E9BDA /* CLILauncher.swift in Sources */,
 				90BFE4669CA37266D841CA99 /* CLIManager.swift in Sources */,
 				55F19268FAB68DFC6D19F209 /* CRTFilter.metal in Sources */,
-				A1B2C3D4E5F6789012345678 /* CRTTest.metal in Sources */,
+				399D63EAFFDA48F827AA0318 /* CRTTest.metal in Sources */,
 				A00192372A0183EF4772CACF /* CategoryManager.swift in Sources */,
 				C1A4A19926D1834FC8C42E3D /* Cheat.swift in Sources */,
 				9FF94EED26CFDB4DE9216DF0 /* CheatAutoLoader.swift in Sources */,
@@ -480,7 +619,30 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		C9FC12B027E6C2F4A5B93B92 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				8FD8E7C72CB64F4BF522DB48 /* BezelAPIServiceIntegrationTests.swift in Sources */,
+				D3DFF4B19710FC24B2FA821D /* BezelDownloadProgressTests.swift in Sources */,
+				A9D2785CF59E59283B83E3FF /* BezelE2ETests.swift in Sources */,
+				F7CBDBE5E1AC00456D6AC7D8 /* BezelManagerTests.swift in Sources */,
+				3C668C57624222E97E081DC2 /* BezelPaginationTests.swift in Sources */,
+				47D4F38CBBF4A91CD81BC7FE /* BezelStorageManagerTests.swift in Sources */,
+				A62A82DD470DD8861DF3384C /* BezelSystemMappingTests.swift in Sources */,
+				B97555AF8F8965415DADB4F5 /* BezelWindowSizingTests.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 /* End PBXSourcesBuildPhase section */
+
+/* Begin PBXTargetDependency section */
+		5C95227A25E59E39D746DB65 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = CB3BA833402929B57F3054AB /* TruchieEmu */;
+			targetProxy = 09F8EF341958BC84153A61A1 /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
 
 /* Begin XCBuildConfiguration section */
 		0B9F0BC16E2A5DEADF60344E /* Debug */ = {
@@ -630,6 +792,46 @@
 			};
 			name = Release;
 		};
+		4CC5A5B5BCF3FF4048266F99 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				COMBINE_HIDPI_IMAGES = YES;
+				GENERATE_INFOPLIST_FILE = YES;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+					"@loader_path/../Frameworks",
+				);
+				MACOSX_DEPLOYMENT_TARGET = 13.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.truchiemu.tests;
+				PRODUCT_NAME = TruchieEmuTests;
+				SDKROOT = macosx;
+				SWIFT_VERSION = 5.9;
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/TruchieEmu.app/Contents/MacOS/TruchieEmu";
+			};
+			name = Debug;
+		};
+		9D8BEF90EA0D2895D3E38704 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				COMBINE_HIDPI_IMAGES = YES;
+				GENERATE_INFOPLIST_FILE = YES;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+					"@loader_path/../Frameworks",
+				);
+				MACOSX_DEPLOYMENT_TARGET = 13.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.truchiemu.tests;
+				PRODUCT_NAME = TruchieEmuTests;
+				SDKROOT = macosx;
+				SWIFT_VERSION = 5.9;
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/TruchieEmu.app/Contents/MacOS/TruchieEmu";
+			};
+			name = Release;
+		};
 		CFCDDDC495B6418772AF4305 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
@@ -661,6 +863,15 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
+		18BF14EC82D4DBF8D574A3B2 /* Build configuration list for PBXNativeTarget "TruchieEmuTests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				4CC5A5B5BCF3FF4048266F99 /* Debug */,
+				9D8BEF90EA0D2895D3E38704 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
 		E0C01427B5CD045D4AC754BE /* Build configuration list for PBXProject "TruchieEmu" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (

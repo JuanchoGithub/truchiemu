@@ -42,6 +42,7 @@ private enum ManualActionStatus: Equatable {
 enum DetailSection: String, CaseIterable {
     case gameInfo = "Game Info"
     case shader = "Shader"
+    case bezels = "Bezels"
     case controls = "Controls"
     case savedStates = "Saved States"
     case cheats = "Cheats"
@@ -189,6 +190,7 @@ struct GameDetailView: View {
     
     @State private var shaderWindowSettings: ShaderWindowSettings?
     @State private var selectedSection: DetailSection = .gameInfo
+    @State private var bezelSelectorWindowController: BezelSelectorWindowController?
 
     private var currentROM: ROM {
         library.roms.first { $0.id == rom.id } ?? rom
@@ -251,6 +253,8 @@ struct GameDetailView: View {
                                 gameInfoSection
                             case .shader:
                                 shaderSection
+                            case .bezels:
+                                bezelsSection
                             case .controls:
                                 controlsSection
                             case .savedStates:
@@ -302,6 +306,9 @@ struct GameDetailView: View {
         }
         .onChange(of: currentROM.boxArtPath) { _ in loadBoxArt() }
         .onChange(of: currentROM.screenshotPaths) { _ in loadScreenshots() }
+        .onChange(of: library.bezelUpdateToken) { _ in
+            Task { await loadCurrentBezelImage() }
+        }
         .sheet(isPresented: $showBoxArtPicker) {
             BoxArtPickerView(rom: currentROM)
         }
@@ -403,7 +410,8 @@ struct GameDetailView: View {
     private func sectionIcon(for section: DetailSection) -> String {
         switch section {
         case .gameInfo: return "info.circle"
-        case .shader: return "tv"
+        case .shader: return "display"
+        case .bezels: return "rectangle.on.rectangle"
         case .controls: return "gamecontroller"
         case .savedStates: return "externaldrive"
         case .cheats: return "wand.and.stars"
@@ -980,6 +988,282 @@ struct GameDetailView: View {
         if let v = values["scanlinesEnabled"] { settings.scanlinesEnabled = v != 0.0 }
         if let v = values["barrelEnabled"] { settings.barrelEnabled = v != 0.0 }
         if let v = values["phosphorEnabled"] { settings.phosphorEnabled = v != 0.0 }
+    }
+
+    // MARK: - Section 2.5: Bezels
+
+    @State private var currentBezelImage: NSImage?
+    
+    private var bezelsSection: some View {
+        ModernSectionCard(
+            title: "Bezels",
+            icon: "picture.inset.filled",
+            badge: currentBezelStatusText.isEmpty ? nil : currentBezelStatusText
+        ) {
+            VStack(alignment: .leading, spacing: 14) {
+                // Bezel preview image
+                if let bezelImage = currentBezelImage {
+                    Image(nsImage: bezelImage)
+                        .resizable()
+                        .aspectRatio(contentMode: .fit)
+                        .frame(maxHeight: 200)
+                        .clipShape(RoundedRectangle(cornerRadius: 8))
+                        .overlay(
+                            RoundedRectangle(cornerRadius: 8)
+                                .stroke(Color.white.opacity(0.15), lineWidth: 1)
+                        )
+                } else {
+                    // Placeholder when no bezel preview available
+                    HStack(spacing: 8) {
+                        Image(systemName: "photo.on.rectangle.angled")
+                            .font(.system(size: 24))
+                            .foregroundColor(.white.opacity(0.3))
+                        VStack(alignment: .leading, spacing: 2) {
+                            Text(currentBezelDisplayName)
+                                .font(.subheadline)
+                                .foregroundColor(.white.opacity(0.5))
+                            Text("No preview available")
+                                .font(.caption)
+                                .foregroundColor(.white.opacity(0.3))
+                        }
+                    }
+                    .frame(maxWidth: .infinity)
+                    .padding(.vertical, 16)
+                    .background(Color.white.opacity(0.03))
+                    .cornerRadius(8)
+                }
+
+                Divider().overlay(Color.white.opacity(0.08))
+
+                // Current bezel display and actions
+                HStack {
+                    VStack(alignment: .leading, spacing: 2) {
+                        Text("Current Bezel")
+                            .font(.subheadline)
+                            .fontWeight(.medium)
+                            .foregroundColor(.white.opacity(0.85))
+                        Text(currentBezelDisplayName)
+                            .font(.caption)
+                            .foregroundColor(.white.opacity(0.5))
+                    }
+
+                    Spacer()
+
+                    Button("Browse Bezels") {
+                        presentBezelSelectorWindow()
+                    }
+                    .foregroundColor(.white)
+                    .padding(.horizontal, 14)
+                    .padding(.vertical, 8)
+                    .background(Color.blue.opacity(0.6))
+                    .cornerRadius(8)
+                }
+
+                Divider().overlay(Color.white.opacity(0.08))
+
+                // Bezel options
+                VStack(spacing: 8) {
+                    // Auto-match button
+                    Button {
+                        autoMatchBezel()
+                    } label: {
+                        HStack {
+                            Image(systemName: "magnifyingglass")
+                                .foregroundColor(.white)
+                                .frame(width: 20)
+                            Text("Auto-Match Bezel")
+                                .foregroundColor(.white.opacity(0.85))
+                            Spacer()
+                        }
+                        .padding(.vertical, 6)
+                        .padding(.horizontal, 10)
+                        .background(Color.white.opacity(0.1))
+                        .cornerRadius(6)
+                    }
+                    .buttonStyle(.plain)
+
+                    // Clear bezel button
+                    Button {
+                        clearBezel()
+                    } label: {
+                        HStack {
+                            Image(systemName: "nosign")
+                                .foregroundColor(.white)
+                                .frame(width: 20)
+                            Text("Clear Bezel")
+                                .foregroundColor(.white.opacity(0.85))
+                            Spacer()
+                        }
+                        .padding(.vertical, 6)
+                        .padding(.horizontal, 10)
+                        .background(Color.white.opacity(0.1))
+                        .cornerRadius(6)
+                    }
+                    .buttonStyle(.plain)
+                }
+
+                Divider().overlay(Color.white.opacity(0.08))
+
+                // Info text
+                Text("Bezels are pre-downloaded before gameplay. Browse available bezels from The Bezel Project or import your own.")
+                    .font(.caption)
+                    .foregroundColor(.white.opacity(0.4))
+            }
+        }
+        .task(id: currentROM.id) {
+            await loadCurrentBezelImage()
+        }
+    }
+
+    /// Get the current bezel display text.
+    private var currentBezelStatusText: String {
+        let bezelFileName = currentROM.settings.bezelFileName
+        if bezelFileName == "none" {
+            return "Disabled"
+        } else if bezelFileName.isEmpty {
+            return "Auto"
+        } else {
+            return "Custom"
+        }
+    }
+
+    /// Get the current bezel display name.
+    private var currentBezelDisplayName: String {
+        let bezelFileName = currentROM.settings.bezelFileName
+        if bezelFileName == "none" {
+            return "Bezels disabled"
+        } else if bezelFileName.isEmpty {
+            return "Auto-detected (if available)"
+        } else {
+            return bezelFileName.replacingOccurrences(of: ".png", with: "")
+                .replacingOccurrences(of: "_", with: " ")
+        }
+    }
+
+    /// Load the current bezel image for preview
+    @MainActor
+    private func loadCurrentBezelImage() async {
+        let bezelFileName = currentROM.settings.bezelFileName
+        
+        guard bezelFileName != "none" else {
+            currentBezelImage = nil
+            return
+        }
+        
+        guard let systemID = currentROM.systemID else {
+            currentBezelImage = nil
+            return
+        }
+        
+        // Strategy 1: Try direct path with the bezelFileName
+        let directURL = BezelStorageManager.shared.bezelFilePath(
+            systemID: systemID,
+            gameName: bezelFileName.isEmpty ? currentROM.displayName : bezelFileName
+        )
+        
+        if let image = NSImage(contentsOf: directURL) {
+            currentBezelImage = image
+            print("[BezelPreview] Loaded from direct path: \(directURL.path)")
+            return
+        }
+        print("[BezelPreview] Direct path not found: \(directURL.path)")
+        
+        // Strategy 2: Try with .png extension appended (in case bezelFileName is just the base name)
+        let baseName = bezelFileName.isEmpty ? currentROM.displayName : bezelFileName
+        let fileNameWithExt = baseName.hasSuffix(".png") ? baseName : baseName + ".png"
+        let urlWithExt = BezelStorageManager.shared.bezelFilePath(
+            systemID: systemID,
+            gameName: fileNameWithExt
+        )
+        
+        if let image = NSImage(contentsOf: urlWithExt) {
+            currentBezelImage = image
+            print("[BezelPreview] Loaded from path with extension: \(urlWithExt.path)")
+            return
+        }
+        print("[BezelPreview] Path with extension not found: \(urlWithExt.path)")
+        
+        // Strategy 3: Try auto-match via BezelManager
+        let result = BezelManager.shared.resolveBezel(systemID: systemID, rom: currentROM)
+        if let entry = result.entry, let url = entry.localURL,
+           FileManager.default.fileExists(atPath: url.path) {
+            currentBezelImage = NSImage(contentsOf: url)
+            print("[BezelPreview] Loaded from BezelManager resolve: \(url.path)")
+            return
+        }
+        print("[BezelPreview] BezelManager resolve failed")
+        
+        // Strategy 4: Scan the bezel directory for a matching file
+        let bezelDir = BezelStorageManager.shared.systemBezelsDirectory(for: systemID)
+        if FileManager.default.fileExists(atPath: bezelDir.path) {
+            let searchName = bezelFileName.isEmpty ? currentROM.displayName : bezelFileName
+            let searchNameLower = searchName.lowercased()
+            let fileManager = FileManager.default
+            
+            if let enumerator = fileManager.enumerator(at: bezelDir, includingPropertiesForKeys: nil) {
+                for case let fileURL as URL in enumerator {
+                    if fileURL.pathExtension.lowercased() == "png" {
+                        let fileBaseName = fileURL.deletingPathExtension().lastPathComponent.lowercased()
+                        if fileBaseName == searchNameLower {
+                            if let image = NSImage(contentsOf: fileURL) {
+                                currentBezelImage = image
+                                print("[BezelPreview] Loaded from directory scan: \(fileURL.path)")
+                                return
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        print("[BezelPreview] Directory scan found no match")
+        
+        currentBezelImage = nil
+        print("[BezelPreview] No bezel image found for \(currentROM.displayName)")
+    }
+
+    /// Auto-match bezel for the current game.
+    @MainActor
+    private func autoMatchBezel() {
+        guard let systemID = currentROM.systemID else { return }
+        
+        print("[Bezel] Auto-matching bezel for \(currentROM.displayName) (system: \(systemID))")
+        let result = BezelManager.shared.resolveBezel(systemID: systemID, rom: currentROM, preferAutoMatch: true)
+        
+        if let entry = result.entry {
+            print("[Bezel] Auto-matched bezel: \(entry.filename) (method: \(result.resolutionMethod))")
+            var updated = currentROM
+            updated.settings.bezelFileName = entry.filename
+            library.updateROM(updated)
+            
+            // Refresh the bezel preview
+            Task {
+                await loadCurrentBezelImage()
+            }
+            
+            showManualResult("Auto-matched bezel: \(entry.id)", tone: .success)
+        } else {
+            print("[Bezel] No bezel found for \(currentROM.displayName)")
+            showManualResult("No bezel found for \(currentROM.displayName)", tone: .warning)
+        }
+    }
+
+    /// Clear bezel for the current game.
+    private func clearBezel() {
+        var updated = currentROM
+        updated.settings.bezelFileName = ""
+        library.updateROM(updated)
+    }
+
+    @MainActor
+    private func presentBezelSelectorWindow() {
+        let controller = BezelSelectorWindowController(
+            rom: currentROM,
+            systemID: currentROM.systemID ?? "",
+            library: library
+        )
+        controller.showWindow(nil)
+        NSApp.activate(ignoringOtherApps: true)
+        controller.window?.makeKeyAndOrderFront(nil)
     }
 
     // MARK: - Section 3: Controls

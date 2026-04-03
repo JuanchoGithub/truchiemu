@@ -360,6 +360,7 @@ struct SlotPickerView: View {
 // MARK: - Focusable MTKView for macOS keyboard input
 class FocusableMTKView: MTKView {
     override var acceptsFirstResponder: Bool { true }
+    override var isOpaque: Bool { false }
     
     /// Tracks active game keys to properly release them on keyUp
     private var activeGameKeys: Set<Int> = []
@@ -693,6 +694,11 @@ class StandaloneGameWindowController: NSWindowController, NSWindowDelegate, Obse
     /// Track the ROM path for this window instance (for cleanup on close)
     private var trackedROMPath: String?
     
+    // Bezel support
+    @MainActor @Published var bezelImage: NSImage?
+    private var bezelBackgroundLayer: BezelBackgroundLayer?
+    private var bezelViewModel: BezelViewModel?
+    
     // Toolbar auto-hide state
     @MainActor @Published var isToolbarVisible: Bool = true
     @MainActor @Published var isFullscreen: Bool = false
@@ -732,6 +738,9 @@ class StandaloneGameWindowController: NSWindowController, NSWindowDelegate, Obse
         mtkView.isPaused = true  // Start paused until game is launched
         mtkView.enableSetNeedsDisplay = false
         mtkView.autoResizeDrawable = true
+        // Make the Metal view's layer transparent so bezel shows through
+        mtkView.wantsLayer = true
+        mtkView.layer?.backgroundColor = CGColor(red: 0, green: 0, blue: 0, alpha: 0)
         
         let coord = MetalCoordinator(runner: runner)
         mtkView.delegate = coord
@@ -782,6 +791,24 @@ class StandaloneGameWindowController: NSWindowController, NSWindowDelegate, Obse
             object: window
         )
         
+        // Observe window resize to dynamically scale bezel
+        NotificationCenter.default.addObserver(
+            forName: NSWindow.didResizeNotification,
+            object: window,
+            queue: .main
+        ) { [weak self] _ in
+            self?.onWindowResized()
+        }
+        
+        // Observe window did move to handle screen changes
+        NotificationCenter.default.addObserver(
+            forName: NSWindow.didMoveNotification,
+            object: window,
+            queue: .main
+        ) { [weak self] _ in
+            self?.onWindowMoved()
+        }
+        
         // Initially hide toolbar after 2 seconds
         DispatchQueue.main.asyncAfter(deadline: .now() + 2) { [weak self] in
             self?.hideToolbar()
@@ -793,7 +820,33 @@ class StandaloneGameWindowController: NSWindowController, NSWindowDelegate, Obse
     @objc private func windowDidChangeScreen() {
         DispatchQueue.main.async { [weak self] in
             self?.isFullscreen = self?.window?.styleMask.contains(.fullScreen) ?? false
+            // Rescale bezel for new screen
+            self?.onWindowMoved()
         }
+    }
+    
+    /// Called when the window is resized. Dynamically scales bezel to fit new window size.
+    private func onWindowResized() {
+        guard let containerView = window?.contentView as? GameContainerView,
+              let bezelLayer = bezelBackgroundLayer else { return }
+        
+        // Update bezel layer frame to match container
+        bezelLayer.frame = containerView.bounds
+        
+        // If we have a bezel image, update the screen-scaled version
+        if let bezelImage = bezelImage {
+            let screenBounds = window?.screen?.visibleFrame ?? NSScreen.main?.visibleFrame ?? NSRect(x: 0, y: 0, width: 1920, height: 1080)
+            bezelLayer.setBezelImageForScreen(bezelImage, screenSize: screenBounds.size)
+        }
+    }
+    
+    /// Called when the window moves to a different screen or returns from fullscreen.
+    private func onWindowMoved() {
+        // Update max window size for current screen
+        constrainWindowToScreenBounds()
+        
+        // Re-scale bezel for new screen
+        onWindowResized()
     }
     
     /// Toggle macOS native fullscreen mode
@@ -862,6 +915,12 @@ class StandaloneGameWindowController: NSWindowController, NSWindowDelegate, Obse
         // Register this ROM as running
         RunningGamesTracker.shared.registerRunning(romPath: rom.path.path)
         trackedROMPath = rom.path.path
+        
+        // Load bezel before launching
+        let systemID = rom.systemID ?? "default"
+        Task { @MainActor in
+            await loadBezelForGame(systemID: systemID, rom: rom)
+        }
         
         func _doLaunch() {
             // Store ROM reference on runner before launching
@@ -959,6 +1018,74 @@ class StandaloneGameWindowController: NSWindowController, NSWindowDelegate, Obse
         } else {
             _doLaunch()
         }
+    }
+    
+    /// Load bezel for a game and set up the background layer.
+    /// Constrains window size to screen bounds if bezel is larger than screen.
+    @MainActor
+    private func loadBezelForGame(systemID: String, rom: ROM) async {
+        // Initialize bezel view model if needed
+        if bezelViewModel == nil {
+            bezelViewModel = BezelViewModel()
+        }
+        
+        // Load bezel
+        await bezelViewModel?.loadBezel(systemID: systemID, rom: rom)
+        
+        // Apply bezel image if loaded
+        if let bezelImage = bezelViewModel?.bezelImage {
+            self.bezelImage = bezelImage
+            
+            // Get screen bounds to constrain bezel size
+            let screenBounds = window?.screen?.visibleFrame ?? NSScreen.main?.visibleFrame ?? NSScreen.main?.frame ?? NSRect(x: 0, y: 0, width: 1920, height: 1080)
+            
+            print("[Bezel] Loading bezel for game. Screen bounds: \(screenBounds.width)x\(screenBounds.height), Bezel size: \(bezelImage.size.width)x\(bezelImage.size.height)")
+            
+            // Create bezel background layer if needed
+            if let containerView = window?.contentView as? GameContainerView {
+                if bezelBackgroundLayer == nil {
+                    let layer = BezelBackgroundLayer(frame: containerView.bounds)
+                    layer.autoresizingMask = [.width, .height]
+                    containerView.addSubview(layer, positioned: .below, relativeTo: metalView)
+                    bezelBackgroundLayer = layer
+                }
+                
+                // Use scaled bezel image to prevent oversized window
+                bezelBackgroundLayer?.setBezelImageForScreen(bezelImage, screenSize: screenBounds.size)
+                
+                // Constrain window to screen bounds if bezel would make it larger
+                constrainWindowToScreenBounds()
+            }
+        }
+    }
+    
+    /// Constrain the window size to fit within screen bounds.
+    /// This prevents bezels from making the window larger than the screen.
+    @MainActor
+    private func constrainWindowToScreenBounds() {
+        guard let window = window, let screen = window.screen ?? NSScreen.main else { return }
+        
+        let screenFrame = screen.visibleFrame
+        let currentFrame = window.frame
+        
+        // If window is larger than screen, constrain it
+        if currentFrame.width > screenFrame.width || currentFrame.height > screenFrame.height {
+            print("[Bezel] Constraining window to screen bounds. Current: \(currentFrame.width)x\(currentFrame.height), Screen: \(screenFrame.width)x\(screenFrame.height)")
+            
+            var newFrame = currentFrame
+            newFrame.size.width = min(currentFrame.width, screenFrame.width)
+            newFrame.size.height = min(currentFrame.height, screenFrame.height)
+            
+            // Recenter window
+            newFrame.origin.x = screenFrame.origin.x + (screenFrame.width - newFrame.width) / 2
+            newFrame.origin.y = screenFrame.origin.y + (screenFrame.height - newFrame.height) / 2
+            
+            window.setFrame(newFrame, display: true, animate: true)
+        }
+        
+        // Set window size constraints to prevent future resizing beyond screen bounds
+        window.minSize = NSSize(width: 640, height: 480)
+        window.maxSize = NSSize(width: screenFrame.width, height: screenFrame.height)
     }
     
     func windowWillClose(_ notification: Notification) {
@@ -1071,9 +1198,9 @@ class StandaloneGameWindowController: NSWindowController, NSWindowDelegate, Obse
                 return
             }
             
-            // Solid black background
+            // Transparent background (alpha 0) so bezel shows through
             descriptor.colorAttachments[0].loadAction = .clear
-            descriptor.colorAttachments[0].clearColor = MTLClearColor(red: 0, green: 0, blue: 0, alpha: 1)
+            descriptor.colorAttachments[0].clearColor = MTLClearColor(red: 0, green: 0, blue: 0, alpha: 0)
             descriptor.colorAttachments[0].storeAction = .store
 
             if commandQueue == nil {

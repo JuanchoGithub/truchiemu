@@ -50,6 +50,8 @@ class ROMLibrary: ObservableObject {
     @Published var libraryFolders: [URL] = []
     @Published var romCounts: [String: Int] = [:] // "all", "favorites", "recent", or systemID
     @Published var lastChangeDate = Date()
+    /// Increments whenever a ROM's bezel settings change, so observers can refresh bezel previews
+    @Published var bezelUpdateToken: Int = 0
     var romFolderURL: URL? { libraryFolders.first }
 
     // File signature index for smart rescan
@@ -202,7 +204,12 @@ class ROMLibrary: ObservableObject {
 
     func updateROM(_ rom: ROM) {
         if let idx = roms.firstIndex(where: { $0.id == rom.id }) {
+            let oldBezel = roms[idx].settings.bezelFileName
             roms[idx] = rom
+            // Signal bezel change so observers can refresh bezel previews
+            if oldBezel != rom.settings.bezelFileName {
+                bezelUpdateToken += 1
+            }
             LibraryMetadataStore.shared.persist(rom: rom)
             updateGamesXML(for: rom)
             updateCounts()

@@ -68,10 +68,15 @@ struct ROMSettings: Codable, Hashable {
     var phosphorEnabled: Bool = true
     var scanlineSmooth: Bool = false
     var colorBoost: Float = 1.0
+    
+    // Legacy bezel style (deprecated - use bezelFileName instead)
     var bezelStyle: String = "none"
     
     // New shader preset system
     var shaderPresetID: String = "builtin-crt-classic"  // Default to CRT Classic
+    
+    // Bezel: filename of the selected bezel, empty = auto-detect, "none" = disabled
+    var bezelFileName: String = ""
     
     // Check if using legacy toggle-based shaders (for migration)
     var isLegacyShaderMode: Bool {
@@ -89,6 +94,13 @@ struct ROMSettings: Codable, Hashable {
             // No shaders enabled - use raw pixels
             shaderPresetID = "builtin-none"
         }
+    }
+    
+    /// Migrate legacy bezelStyle to bezelFileName
+    mutating func migrateFromLegacyBezels() {
+        // Legacy bezelStyle only had simple styles, no specific bezel assignment
+        // This is a no-op since we're moving to per-game bezel selection
+        // The bezelStyle value is kept for backward compatibility but not used for new bezel system
     }
 }
 
