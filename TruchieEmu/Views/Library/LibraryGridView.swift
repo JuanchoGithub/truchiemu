@@ -79,6 +79,34 @@ enum GameFilterOption: String, CaseIterable, Identifiable {
     }
 }
 
+// MARK: - Sort Options
+
+/// Sort orders for the main game library list
+enum GameSortOption: String, CaseIterable, Identifiable {
+    case name       // A-Z alphabetical
+    case lastPlayed // Most recently played first
+    case system     // Grouped by system name, then alphabetical by game name
+    
+    var id: String { rawValue }
+    
+    var displayName: String {
+        switch self {
+        case .name: return "Name"
+        case .lastPlayed: return "Last Played"
+        case .system: return "System"
+        }
+    }
+    
+    var iconName: String {
+        switch self {
+        case .name: return "textformat"
+        case .lastPlayed: return "clock"
+        case .system: return "cpu"
+        }
+    }
+}
+
+
 struct LibraryGridView: View {
     @EnvironmentObject var library: ROMLibrary
     @EnvironmentObject var categoryManager: CategoryManager
@@ -114,6 +142,7 @@ struct LibraryGridView: View {
     
     // Filter chips
     @State private var activeFilters: Set<String> = []
+    @State private var sortOption: GameSortOption = .name
 
     private enum ViewMode: String { case grid, list }
 
@@ -126,7 +155,6 @@ struct LibraryGridView: View {
             base = library.roms.filter { $0.isFavorite }
         case .recent:
             base = library.roms.filter { $0.lastPlayed != nil }
-                .sorted { ($0.lastPlayed ?? Date.distantPast) > ($1.lastPlayed ?? Date.distantPast) }
         case .system(let system):
             base = library.roms.filter { $0.systemID == system.id }
         case .category(let categoryID):
@@ -150,14 +178,48 @@ struct LibraryGridView: View {
             }
         }
 
-        if searchText.isEmpty {
-            return filtered
-        } else {
+        // Apply search text filter
+        if !searchText.isEmpty {
             let searchTerms = searchText.split(separator: " ")
-            return filtered.filter { rom in
+            filtered = filtered.filter { rom in
                 searchTerms.allSatisfy { term in
                     rom.displayName.localizedCaseInsensitiveContains(term)
                 }
+            }
+        }
+
+        // Apply sort
+        let sorted = applySorting(to: filtered)
+        return sorted
+    }
+
+    private func applySorting(to roms: [ROM]) -> [ROM] {
+        switch sortOption {
+        case .name:
+            return roms.sorted { $0.displayName.localizedCaseInsensitiveCompare($1.displayName) == .orderedAscending }
+        case .lastPlayed:
+            return roms.sorted { a, b in
+                switch (a.lastPlayed, b.lastPlayed) {
+                case (nil, nil):
+                    return a.displayName.localizedCaseInsensitiveCompare(b.displayName) == .orderedAscending
+                case (_, nil):
+                    return true  // played sorts before never-played
+                case (nil, _):
+                    return false // never-played sorts after
+                case let (dateA?, dateB?):
+                    return dateA > dateB  // most recent first
+                }
+            }
+        case .system:
+            return roms.sorted { a, b in
+                let sysNameA = SystemDatabase.system(forID: a.systemID ?? "")?.name ?? "ZZZZ"
+                let sysNameB = SystemDatabase.system(forID: b.systemID ?? "")?.name ?? "ZZZZ"
+                let sysCompare = sysNameA.localizedCaseInsensitiveCompare(sysNameB)
+                if sysCompare != .orderedSame {
+                    return sysCompare == .orderedAscending
+                }
+                // Secondary sort by game name within same system
+                return a.displayName.localizedCaseInsensitiveCompare(b.displayName) == .orderedAscending
             }
         }
     }
@@ -297,6 +359,30 @@ struct LibraryGridView: View {
                 Slider(value: $continuousZoom, in: 0...1, step: 1.0/7.0)
                     .frame(width: 120)
                     .help("Zoom level")
+
+                // Sort menu
+                Menu {
+                    ForEach(GameSortOption.allCases) { option in
+                        Button {
+                            sortOption = option
+                        } label: {
+                            HStack {
+                                Label(option.displayName, systemImage: option.iconName)
+                                if sortOption == option {
+                                    Spacer()
+                                    Image(systemName: "checkmark")
+                                }
+                            }
+                        }
+                    }
+                } label: {
+                    HStack(spacing: 4) {
+                        Image(systemName: sortOption.iconName)
+                        Text(sortOption.displayName)
+                            .font(.caption)
+                    }
+                }
+                .help("Sort games")
 
                 // View mode toggle
                 Picker("View", selection: $viewMode) {
