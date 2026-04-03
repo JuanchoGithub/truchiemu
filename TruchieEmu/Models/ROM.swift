@@ -82,6 +82,16 @@ struct ROMSettings: Codable, Hashable {
     // Bezel: filename of the selected bezel, empty = auto-detect, "none" = disabled
     var bezelFileName: String = ""
     
+    // MARK: - Game Boy Colorization
+    /// Whether to apply color palettes to original Game Boy (DMG) games.
+    /// Defaults to true (colorization enabled). Only relevant for GB system games.
+    var gbColorizationEnabled: Bool = true
+    
+    /// Colorization mode for Game Boy games.
+    /// "auto" = auto-select best palette, "disabled" = monochrome
+    /// Maps to gambatte's gb_colorization, mGBA's model, sameboy's model
+    var gbColorizationMode: String = "auto"
+    
     // Check if using legacy toggle-based shaders (for migration)
     var isLegacyShaderMode: Bool {
         return shaderPresetID.isEmpty

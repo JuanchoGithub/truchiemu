@@ -181,6 +181,9 @@ class GameLauncher: ObservableObject {
             LoggerService.debug(category: "GameLauncher", "Applied \(config.coreOptions.count) core option(s)")
         }
         
+        // 2.5. Apply Game Boy colorization settings for original GB games
+        applyGBColorizationForROM(config.rom, coreID: config.coreID)
+        
         // 3. Apply auto-load/save preferences
         UserDefaults.standard.set(config.autoLoad, forKey: "auto_load_on_start")
         UserDefaults.standard.set(config.autoSave, forKey: "auto_save_on_exit")
@@ -195,6 +198,61 @@ class GameLauncher: ObservableObject {
         
         // 6. Apply cheats setting
         UserDefaults.standard.set(config.cheatsEnabled, forKey: "cheats_enabled")
+    }
+    
+    // MARK: - Game Boy Colorization
+    
+    /// Apply GB colorization core options based on ROM settings.
+    /// This modifies the core options for the active core before game launch.
+    private func applyGBColorizationForROM(_ rom: ROM, coreID: String) {
+        // Only apply for Game Boy (original DMG) system
+        guard rom.systemID == "gb" else { return }
+        
+        let enabled = rom.settings.gbColorizationEnabled
+        let mode = rom.settings.gbColorizationMode
+        LoggerService.debug(category: "GameLauncher", "GB Colorization: enabled=\(enabled), mode=\(mode) for \(rom.displayName) with core \(coreID)")
+        
+        // Load existing overrides
+        var overrides = CoreOptionsManager.shared.loadUserOverrides(for: coreID)
+        
+        // Determine the base option key(s) based on the core
+        let coreBaseID = coreID.replacingOccurrences(of: "_libretro", with: "")
+        
+        if coreBaseID.contains("gambatte") {
+            // Gambatte: gambatte_gb_colorization (disabled/auto/GBC/SGB/internal/custom)
+            if enabled {
+                overrides["gambatte_gb_colorization"] = mode
+            } else {
+                overrides["gambatte_gb_colorization"] = "disabled"
+            }
+        } else if coreBaseID.contains("mgba") {
+            // mGBA: uses mgba_gb_model to determine colorization
+            // When set to "Game Boy Color", GB games get colored
+            if enabled {
+                overrides["mgba_gb_model"] = "Game Boy Color"
+            } else {
+                overrides["mgba_gb_model"] = "Game Boy"
+            }
+        } else if coreBaseID.contains("sameboy") {
+            // SameBoy: sameboy_model (Game Boy/Game Boy Color/Auto)
+            if enabled {
+                overrides["sameboy_model"] = "Game Boy Color"
+            } else {
+                overrides["sameboy_model"] = "Game Boy"
+            }
+        } else if coreBaseID.contains("gearboy") {
+            // Gearboy: gearboy_colorization
+            if enabled {
+                overrides["gearboy_colorization"] = "enabled"
+            } else {
+                overrides["gearboy_colorization"] = "disabled"
+            }
+        }
+        
+        // Save the overrides
+        if !overrides.isEmpty {
+            CoreOptionsManager.shared.saveOverride(for: coreID, values: overrides)
+        }
     }
     
     // MARK: - Cleanup
