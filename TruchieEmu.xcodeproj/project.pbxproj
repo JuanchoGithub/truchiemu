@@ -32,6 +32,7 @@
 		47D4F38CBBF4A91CD81BC7FE /* BezelStorageManagerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B7C8087833B0A16BD322ECCE /* BezelStorageManagerTests.swift */; };
 		4C8AAEEA6E56CEC1ABCC53D8 /* CheatDownloadService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7DF10A2892C7DDEB5683637F /* CheatDownloadService.swift */; };
 		4CFD764CC4B9F8C057BC0E10 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = DAD4BAC83053A0F149602D6D /* ContentView.swift */; };
+		4EF1EF83528BFC5727AA0FDC /* LaunchBoxGamesDBServiceTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7228AD18450AF5FD261CFAC5 /* LaunchBoxGamesDBServiceTests.swift */; };
 		5412DF664DF0F1052D430F56 /* SystemInfo.swift in Sources */ = {isa = PBXBuildFile; fileRef = ACC34ADA0917BCC91FAA1989 /* SystemInfo.swift */; };
 		55F19268FAB68DFC6D19F209 /* CRTFilter.metal in Sources */ = {isa = PBXBuildFile; fileRef = 2F02B2718F34118A171C7103 /* CRTFilter.metal */; };
 		59F004458D3DA067C6728CA2 /* BezelAPIService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 429518CD364123358B2D8AEC /* BezelAPIService.swift */; };
@@ -148,6 +149,7 @@
 		6DDE7FC6FAA1F8677EB963A1 /* BoxArtService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BoxArtService.swift; sourceTree = "<group>"; };
 		6FC6B9BA043D75E9DC8B7710 /* BezelSelectorWindow.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BezelSelectorWindow.swift; sourceTree = "<group>"; };
 		70AD4E9D0AD7D1D5D29E94E2 /* BezelPaginationTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BezelPaginationTests.swift; sourceTree = "<group>"; };
+		7228AD18450AF5FD261CFAC5 /* LaunchBoxGamesDBServiceTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LaunchBoxGamesDBServiceTests.swift; sourceTree = "<group>"; };
 		79981162FE4F8B8B1624598B /* BezelManagerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BezelManagerTests.swift; sourceTree = "<group>"; };
 		7A96B3453958E60812D9DA1D /* ROMScanner.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ROMScanner.swift; sourceTree = "<group>"; };
 		7D4DE8B36744135985A50982 /* CLIManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CLIManager.swift; sourceTree = "<group>"; };
@@ -463,6 +465,7 @@
 		E74F801CA16F02B94D8B046F /* Services */ = {
 			isa = PBXGroup;
 			children = (
+				7228AD18450AF5FD261CFAC5 /* LaunchBoxGamesDBServiceTests.swift */,
 				8AD67A74849445446C88D837 /* Bezels */,
 			);
 			path = Services;
@@ -655,6 +658,7 @@
 				47D4F38CBBF4A91CD81BC7FE /* BezelStorageManagerTests.swift in Sources */,
 				A62A82DD470DD8861DF3384C /* BezelSystemMappingTests.swift in Sources */,
 				B97555AF8F8965415DADB4F5 /* BezelWindowSizingTests.swift in Sources */,
+				4EF1EF83528BFC5727AA0FDC /* LaunchBoxGamesDBServiceTests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

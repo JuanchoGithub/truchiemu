@@ -171,7 +171,7 @@ class LaunchBoxGamesDBService: ObservableObject {
     private func searchGamesWeb(title: String, platformName: String?) async -> [LaunchBoxGameResult] {
         var results: [LaunchBoxGameResult] = []
 
-        var searchURL = baseURL
+        let searchURL = baseURL
             .appendingPathComponent("games")
             .appendingPathComponent("search")
 
@@ -221,7 +221,6 @@ class LaunchBoxGamesDBService: ObservableObject {
                     if let gameId = Int(idStr), !titleStr.isEmpty, titleStr.count > 1 {
                         // Try to find boxart URL near this entry
                         let entryStart = match.range.location
-                        let entryLength = match.range.length
                         let searchRange = NSRange(location: max(0, entryStart - 2000),
                                                   length: min(4000, html.utf16.count - max(0, entryStart - 2000)))
                         let boxartURL = extractFirstBoxartURL(in: html, range: searchRange)
@@ -356,7 +355,7 @@ class LaunchBoxGamesDBService: ObservableObject {
             }
 
             // Verify file is valid image
-            if let image = NSImage(contentsOf: tmpURL) {
+            if NSImage(contentsOf: tmpURL) != nil {
                 try FileManager.default.moveItem(at: tmpURL, to: localURL)
                 await ImageCache.shared.removeImage(for: localURL)
                 LoggerService.debug(category: "LaunchBoxDB", "Cached LaunchBox boxart for '\(rom.name)'")

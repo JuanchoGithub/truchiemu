@@ -5,6 +5,15 @@ options:
     macOS: "13.0"
   createIntermediateGroups: true
   xcodeVersion: "15"
+schemes:
+  TruchieEmu:
+    build:
+      targets:
+        TruchieEmu: all
+        TruchieEmuTests: [test]
+    test:
+      targets:
+        - TruchieEmuTests
 
 targets:
   TruchieEmu:
