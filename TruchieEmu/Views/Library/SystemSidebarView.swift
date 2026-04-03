@@ -37,7 +37,7 @@ struct SystemSidebarView: View {
                     ForEach(systemsWithROMs) { system in
                         sidebarRow(
                             icon: system.iconName,
-                            label: system.name,
+                            label: system.sidebarDisplayName,
                             system: system,
                             count: library.romCounts[system.id] ?? 0,
                             filter: .system(system)

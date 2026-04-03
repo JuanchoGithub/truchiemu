@@ -146,6 +146,15 @@ struct SystemInfo: Identifiable, Codable, Hashable {
         
         return nil
     }
+    
+    /// Display name used only in the sidebar. Keeps the canonical `name` unchanged for services.
+    var sidebarDisplayName: String {
+        switch id {
+        case "nes": return "Nintendo NES"
+        case "genesis": return "Sega Genesis"
+        default: return name
+        }
+    }
 }
 
 // MARK: - Known system list (seeded locally, refreshed from core-info repo)
