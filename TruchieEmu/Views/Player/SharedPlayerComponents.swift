@@ -163,28 +163,6 @@ struct ReloadButton: View {
     }
 }
 
-// MARK: - Bezel Toggle Button
-struct BezelToggleButton: View {
-    @ObservedObject var windowController: StandaloneGameWindowController
-    
-    var body: some View {
-        Button(action: {
-            windowController.toggleBezelVisibility()
-        }) {
-            VStack(spacing: 4) {
-                Image(systemName: windowController.isBezelVisible ? "rectangle.on.rectangle" : "rectangle.on.rectangle.slash")
-                    .font(.system(size: 16, weight: .semibold))
-                Text(windowController.isBezelVisible ? "Hide Bezel" : "Show Bezel")
-                    .font(.system(size: 9, weight: .medium))
-                    .lineLimit(2)
-                    .multilineTextAlignment(.center)
-            }
-            .frame(minWidth: 80)
-        }
-        .buttonStyle(ToolbarButtonStyle())
-        .foregroundColor(.cyan)
-    }
-}
 
 // MARK: - Game Overlay Toolbar View
 struct GameOverlayToolbar: View {
@@ -193,13 +171,6 @@ struct GameOverlayToolbar: View {
     
     var body: some View {
         HStack(spacing: 12) {
-            // Bezel Toggle Button
-            BezelToggleButton(windowController: windowController)
-            
-            Divider()
-                .frame(height: 30)
-                .opacity(0.3)
-            
             // Stop Button
             ToolbarButton(
                 icon: "power",
@@ -735,8 +706,6 @@ class StandaloneGameWindowController: NSWindowController, NSWindowDelegate, Obse
     private var toolbarView: NSHostingView<GameOverlayToolbar>?
     private var hideToolbarTimer: Timer?
     
-    // Bezel visibility toggle
-    @MainActor @Published var isBezelVisible: Bool = true
     
     init(runner: EmulatorRunner) {
         self.runner = runner
@@ -794,8 +763,9 @@ class StandaloneGameWindowController: NSWindowController, NSWindowDelegate, Obse
         containerView.layer?.backgroundColor = NSColor.black.cgColor
         
         // Metal view will be sized dynamically based on bezel playable area
-        // Start centered at full size, but NO autoresizing - we control the frame manually
+        // Use autoresizing so it tracks containerView size (overridden when bezel loads)
         mtkView.frame = containerView.bounds
+        mtkView.autoresizingMask = [.width, .height]
         containerView.addSubview(mtkView)
         
         // Force update tracking areas
@@ -887,20 +857,13 @@ class StandaloneGameWindowController: NSWindowController, NSWindowDelegate, Obse
             return
         }
         
-        // Check if bezel exists and is visible
-        guard let bezelLayer = bezelBackgroundLayer, !bezelLayer.isHidden else {
-            // No bezel visible - Metal view fills the entire container
-            metalView?.frame = containerView.bounds
-            return
-        }
-        
-        // Get the playable area from the bezel layer
-        if let playableArea = bezelLayer.playableAreaRect {
+        // Check if bezel layer exists and has a playable area
+        if let bezelLayer = bezelBackgroundLayer, let playableArea = bezelLayer.playableAreaRect {
             // Resize Metal view to match the playable area
             metalView?.frame = playableArea
             LoggerService.debug(category: "Bezel", "Metal view resized to playable area: \(playableArea.width)x\(playableArea.height)")
         } else {
-            // No playable area calculated yet - fill container
+            // No bezel or no playable area - Metal view fills the entire container
             metalView?.frame = containerView.bounds
         }
     }
@@ -967,22 +930,6 @@ class StandaloneGameWindowController: NSWindowController, NSWindowDelegate, Obse
     
     override func windowDidLoad() {
         super.windowDidLoad()
-    }
-    
-    // MARK: - Bezel Visibility Toggle
-    
-    /// Toggle bezel visibility to help debug bezel/emulation layering issues.
-    @MainActor
-    func toggleBezelVisibility() {
-        isBezelVisible.toggle()
-        let wasHidden = bezelBackgroundLayer?.isHidden ?? true
-        bezelBackgroundLayer?.isHidden = !isBezelVisible
-        LoggerService.info(category: "Bezel", "Bezel visibility toggled to: \(isBezelVisible ? "visible" : "hidden"). Layer exists: \(bezelBackgroundLayer != nil), wasHidden: \(wasHidden), nowHidden: \(!isBezelVisible)")
-        // Force the layer to redraw
-        bezelBackgroundLayer?.needsDisplay = true
-        
-        // Update Metal view frame to match new bezel visibility state
-        updateMetalViewFrameForBezel()
     }
     
     // MARK: - Normal Launch
