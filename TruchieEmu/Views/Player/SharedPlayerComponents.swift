@@ -704,8 +704,10 @@ class StandaloneGameWindowController: NSWindowController, NSWindowDelegate, Obse
     weak var library: ROMLibrary?
     /// Track the ROM reference for this window instance (for playtime tracking)
     private var trackedROM: ROM?
-    /// Track when this game session started (for playtime tracking)
-    private var sessionStartDate: Date?
+    /// Accumulated playtime in seconds (only counts when game is running and not paused)
+    private var accumulatedPlaytime: TimeInterval = 0
+    /// Timer that increments playtime every second while the game is active and not paused
+    private var playtimeTimer: Timer?
     
     /// The currently running game's ROM. Published so the toolbar can observe it.
     @MainActor @Published public var currentGameROM: ROM?
@@ -936,6 +938,29 @@ class StandaloneGameWindowController: NSWindowController, NSWindowDelegate, Obse
         }
     }
     
+    // MARK: - Playtime Tracking
+    
+    /// Start tracking playtime with a timer that accumulates seconds only when the game is running and not paused
+    private func startPlaytimeTracking() {
+        playtimeTimer?.invalidate()
+        playtimeTimer = Timer.scheduledTimer(withTimeInterval: 1.0, repeats: true) { [weak self] timer in
+            guard let self = self, let runner = self.runner else {
+                timer.invalidate()
+                return
+            }
+            // Only accumulate time when the game is running and not paused
+            if runner.isRunning && !runner.isPaused {
+                self.accumulatedPlaytime += 1.0
+            }
+        }
+    }
+    
+    /// Stop playtime tracking
+    private func stopPlaytimeTracking() {
+        playtimeTimer?.invalidate()
+        playtimeTimer = nil
+    }
+    
     @MainActor
     private func hideToolbar() {
         if isToolbarVisible {
@@ -969,7 +994,8 @@ class StandaloneGameWindowController: NSWindowController, NSWindowDelegate, Obse
         RunningGamesTracker.shared.registerRunning(romPath: rom.path.path)
         trackedROMPath = rom.path.path
         trackedROM = rom
-        sessionStartDate = Date()
+        accumulatedPlaytime = 0
+        startPlaytimeTracking()
         
         // Load bezel before launching (synchronously wait for bezel to be ready)
         let systemID = rom.systemID ?? "default"
@@ -1247,6 +1273,9 @@ class StandaloneGameWindowController: NSWindowController, NSWindowDelegate, Obse
     }
     
     func windowWillClose(_ notification: Notification) {
+        // Stop playtime tracking immediately so no more time accumulates
+        stopPlaytimeTracking()
+        
         // Auto-save to slot -1 on exit if enabled
         let shouldAutoSave = UserDefaults.standard.bool(forKey: "auto_save_on_exit")
         if shouldAutoSave, let runner = runner {
@@ -1260,15 +1289,19 @@ class StandaloneGameWindowController: NSWindowController, NSWindowDelegate, Obse
         }
         runner?.stop()
         
-        // Record play session
-        if let rom = trackedROM, let startDate = sessionStartDate {
-            let duration = Date().timeIntervalSince(startDate)
-            library?.recordPlaySession(rom, duration: duration)
+        // Record play session with the accumulated playtime
+        if let rom = trackedROM, accumulatedPlaytime > 0 {
+            library?.recordPlaySession(rom, duration: accumulatedPlaytime)
         }
         
         // Unregister this ROM from the running games tracker
         if let romPath = trackedROMPath {
             RunningGamesTracker.shared.unregisterRunning(romPath: romPath)
+        }
+        
+        // Clean up from GameLauncher's active controllers
+        if let rom = trackedROM {
+            GameLauncher.shared.removeController(for: rom.id)
         }
     }
 

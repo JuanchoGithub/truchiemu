@@ -8,6 +8,9 @@ import Combine
 class CLIManager: ObservableObject {
     static let shared = CLIManager()
     
+    /// Reference to the ROM library for recording playtime in CLI launches (weak to avoid retain cycles)
+    weak var library: ROMLibrary?
+    
     @MainActor
     @Published var isHandlingCLI = false
     @MainActor
@@ -311,6 +314,7 @@ class CLIManager: ObservableObject {
             rom: rom,
             coreID: coreID,
             slotToLoad: options.slot,
+            library: library,
             shaderUniformOverrides: options.shaderUniformOverrides
         )
         

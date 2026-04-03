@@ -27,6 +27,8 @@ struct TruchieEmuApp: App {
                         // Launch the game - CLIManager handles all window cleanup
                         Task { @MainActor in
                             LoggerService.info(category: "App", "CLI launch - starting game")
+                            // Set library reference for playtime tracking in CLI launches
+                            CLIManager.shared.library = library
                             _ = CLIManager.shared.handleStartupCommands()
                         }
                     }
