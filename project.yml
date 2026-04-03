@@ -56,31 +56,10 @@ targets:
       - path: TruchieEmu/Engine
       - path: TruchieEmu/Shaders
         excludes:
-          - "slang/**/*.slang"
-          - "slang/**/*.inc"
-          - "slang/**/*.h"
-          - "slang/**/*.py"
-          - "slang/**/*.yml"
-          - "slang/Makefile"
-          - "slang/configure"
-          - "slang/README.md"
-          - "slang/.gitlab-ci.yml"
-          - "slang/shader_deploy.py"
+          - "slang/**"
           - "internal/**"
           - "all_shaders.metal"
         buildPhase: sources
-      - path: TruchieEmu/Shaders/slang
-        type: folder
-        buildPhase: resources
-        excludes:
-          - "**/.git*"
-          - "**/*.py"
-          - "**/*.yml"
-          - "Makefile"
-          - "configure"
-          - "README.md"
-          - "shader_deploy.py"
-          - ".gitlab-ci.yml"
       - path: TruchieEmu/Views
       - path: TruchieEmu/Views/Shaders
 

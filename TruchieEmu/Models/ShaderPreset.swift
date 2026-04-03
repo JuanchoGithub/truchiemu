@@ -296,42 +296,14 @@ extension ShaderPreset {
         ),
     ]
     
-    // MARK: - Cached Libretro Presets
-    
-    /// Cached libretro presets to avoid repeated disk scanning
-    private static var cachedLibretroPresets: [ShaderPreset]?
-    
-    /// Clear the cached libretro presets (call when shaders change on disk)
-    static func clearLibretroCache() {
-        cachedLibretroPresets = nil
-    }
-    
-    /// Get cached libretro presets, loading them only once
-    private static var libretroPresets: [ShaderPreset] {
-        if let cached = cachedLibretroPresets {
-            return cached
-        }
-        let presets = LibretroShaderLoader.loadAllPresets()
-        cachedLibretroPresets = presets
-        return presets
-    }
-    
-    /// All available presets (built-in + libretro)
-    /// Libretro presets are cached after first load to avoid repeated disk scanning
+    /// All available presets (built-in only)
     static var allPresets: [ShaderPreset] {
-        var presets = builtinPresets
-        presets.append(contentsOf: libretroPresets)
-        return presets
+        builtinPresets
     }
     
-    /// Get preset by ID (searches both built-in and libretro presets)
+    /// Get preset by ID
     static func preset(id: String) -> ShaderPreset? {
-        // First check built-in presets
-        if let builtin = builtinPresets.first(where: { $0.id == id }) {
-            return builtin
-        }
-        // Then check cached libretro presets
-        return libretroPresets.first(where: { $0.id == id })
+        builtinPresets.first(where: { $0.id == id })
     }
     
     /// Default preset (no filtering)
