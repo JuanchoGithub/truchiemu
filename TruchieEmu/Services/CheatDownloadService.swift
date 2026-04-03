@@ -455,8 +455,7 @@ class CheatDownloadService: ObservableObject {
             let treesResponse = try decoder.decode(GitTreesResponse.self, from: data)
             var result: [GitHubContent] = []
             
-            // Find the commit SHA for the current tree
-            guard let sha = treesResponse.sha else {
+            guard treesResponse.sha != nil else {
                 throw CheatDownloadError.invalidResponse
             }
             

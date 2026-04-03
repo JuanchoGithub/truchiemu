@@ -185,7 +185,7 @@ struct BezelSelectorSheet: View {
                         importCustomBezel(from: url)
                     }
                 case .failure(let error):
-                    print("[BezelSelector] File import failed: \(error)")
+                    LoggerService.debug(category: "Bezel", "File import failed: \(error)")
                 }
             }
         }

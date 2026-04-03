@@ -321,7 +321,7 @@ struct CheatSettingsView: View {
                 do {
                     try downloadService.clearDownloadedCheats()
                 } catch {
-                    print("Failed to clear cheats: \(error)")
+                    LoggerService.debug(category: "Cheats", "Failed to clear cheats: \(error)")
                 }
             }
             Button("Cancel", role: .cancel) {}

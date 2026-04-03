@@ -91,19 +91,19 @@ class BezelManager: ObservableObject {
             
             // Check exact match after normalization
             if normalizedInput == normalizedEntry {
-                print("[Bezel] Found bezel for \(gameName) via manifest match: \(entry.displayName)")
+                LoggerService.debug(category: "Bezel", "Found bezel for \(gameName) via manifest match: \(entry.displayName)")
                 return createResultFor(entry: entry, systemID: systemID)
             }
             
             // Check if entry contains the game name (handles region variants)
             if normalizedInput.count > 3 && normalizedEntry.contains(normalizedInput) {
-                print("[Bezel] Found bezel for \(gameName) via partial match: \(entry.displayName)")
+                LoggerService.debug(category: "Bezel", "Found bezel for \(gameName) via partial match: \(entry.displayName)")
                 return createResultFor(entry: entry, systemID: systemID)
             }
             
             // Check if input contains the entry
             if normalizedEntry.count > 3 && normalizedInput.contains(normalizedEntry) {
-                print("[Bezel] Found bezel for \(gameName) via reverse match: \(entry.displayName)")
+                LoggerService.debug(category: "Bezel", "Found bezel for \(gameName) via reverse match: \(entry.displayName)")
                 return createResultFor(entry: entry, systemID: systemID)
             }
         }
@@ -305,7 +305,7 @@ class BezelManager: ObservableObject {
             let entries = try await apiService.getManifest(systemID: systemID)
             return entries.map { updateDownloadStatus(for: $0, systemID: systemID) }
         } catch {
-            print("[BezelManager] Failed to load bezels for \(systemID): \(error)")
+            LoggerService.info(category: "Bezel", "Failed to load bezels for \(systemID): \(error)")
             return []
         }
     }

@@ -74,7 +74,7 @@ class BezelBackgroundLayer: NSView {
             height: originalSize.height * scaleFactor
         )
         
-        print("[Bezel] Scaling bezel from \(originalSize.width)x\(originalSize.height) to \(newSize.width)x\(newSize.height)")
+        LoggerService.debug(category: "Bezel", "Scaling bezel from \(originalSize.width)x\(originalSize.height) to \(newSize.width)x\(newSize.height)")
         
         // Create scaled image
         let scaledImage = NSImage(size: newSize)
@@ -110,7 +110,7 @@ class BezelBackgroundLayer: NSView {
         bezelImage = image
         
         if let image = image {
-            print("[BezelLayer] Setting bezel image: \(image.size.width)x\(image.size.height), view frame: \(frame)")
+            LoggerService.debug(category: "Bezel", "Setting bezel image: \(image.size.width)x\(image.size.height), view frame: \(frame)")
             if imageView == nil {
                 let iv = NSImageView()
                 iv.image = image
@@ -123,7 +123,7 @@ class BezelBackgroundLayer: NSView {
                 
                 addSubview(iv)
                 imageView = iv
-                print("[BezelLayer] Created new NSImageView for bezel")
+                LoggerService.debug(category: "Bezel", "Created new NSImageView for bezel")
                 
                 // Pin to all edges - the image view scales to fit the container
                 NSLayoutConstraint.activate([
@@ -132,10 +132,10 @@ class BezelBackgroundLayer: NSView {
                     iv.topAnchor.constraint(equalTo: topAnchor),
                     iv.bottomAnchor.constraint(equalTo: bottomAnchor)
                 ])
-                print("[BezelLayer] NSImageView constraints activated")
+                LoggerService.debug(category: "Bezel", "NSImageView constraints activated")
             } else {
                 imageView?.image = image
-                print("[BezelLayer] Updated existing NSImageView bezel image")
+                LoggerService.debug(category: "Bezel", "Updated existing NSImageView bezel image")
             }
             
             // Black background (visible behind bezel transparent areas)
@@ -143,9 +143,9 @@ class BezelBackgroundLayer: NSView {
             
             // Force layout update
             layoutSubtreeIfNeeded()
-            print("[BezelLayer] Bezels layer set, imageView exists: \(imageView != nil), superview: \(imageView?.superview != nil)")
+            LoggerService.debug(category: "Bezel", "Bezel layer set, imageView exists: \(imageView != nil), superview: \(imageView?.superview != nil)")
         } else {
-            print("[BezelLayer] Bezels image is nil, removing image view")
+            LoggerService.debug(category: "Bezel", "Bezel image is nil, removing image view")
             imageView?.removeFromSuperview()
             imageView = nil
             layer?.backgroundColor = NSColor.black.cgColor
@@ -263,10 +263,14 @@ class BezelViewModel: ObservableObject {
                     image: image,
                     aspectRatio: result.aspectRatio
                 )
+                LoggerService.debug(category: "Bezel", "Loaded bezel for \(rom.displayName): \(entry.displayName) (\(Int(image.size.width))x\(Int(image.size.height)))")
+            } else {
+                LoggerService.info(category: "Bezel", "Failed to load bezel image for \(rom.displayName) from \(localURL.path)")
             }
         } else {
             self.bezelImage = nil
             self.playableAreaRect = nil
+            LoggerService.debug(category: "Bezel", "No bezel found for \(rom.displayName) (system: \(systemID))")
         }
         
         isLoading = false
@@ -277,18 +281,15 @@ class BezelViewModel: ObservableObject {
         let imageAspect = image.size.width / image.size.height
         
         // Determine if horizontal or vertical bezel
-        let playableAspect: CGFloat
         let horizontalInsetRatio: CGFloat
         let verticalInsetRatio: CGFloat
         
         if imageAspect > 1 {
             // Horizontal bezel (1920x1080 with 4:3 hole)
-            playableAspect = 4.0 / 3.0
             horizontalInsetRatio = 0.125 // 12.5% each side = 25% total = 4:3 within 16:9
             verticalInsetRatio = 0
         } else {
             // Vertical bezel (1080x1920 with 3:4 hole)
-            playableAspect = 3.0 / 4.0
             horizontalInsetRatio = 0
             verticalInsetRatio = 0.125
         }

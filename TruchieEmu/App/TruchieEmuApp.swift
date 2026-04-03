@@ -26,7 +26,7 @@ struct TruchieEmuApp: App {
                     .onAppear {
                         // Launch the game - CLIManager handles all window cleanup
                         Task { @MainActor in
-                            print("[App] CLI launch - starting game")
+                            LoggerService.info(category: "App", "CLI launch - starting game")
                             _ = CLIManager.shared.handleStartupCommands()
                         }
                     }
@@ -119,11 +119,11 @@ class AppDelegate: NSObject, NSApplicationDelegate {
     func applicationDidFinishLaunching(_ notification: Notification) {
         let args = ProcessInfo.processInfo.arguments
         if args.contains("--launch") {
-            print("[App] CLI launch detected - will terminate when last window closes")
+            LoggerService.info(category: "App", "CLI launch detected - will terminate when last window closes")
             // Ensure we're still in accessory mode (no dock icon)
             NSApp.setActivationPolicy(.accessory)
         } else {
-            print("[App] Normal launch")
+            LoggerService.info(category: "App", "Normal launch - app ready")
         }
     }
 }

@@ -34,7 +34,7 @@ enum ScummVMCacheManager {
             }
             
             if !isActive {
-                print("[ScummVMCache] Removing orphaned cache: \(folder.path)")
+                LoggerService.info(category: "ScummVM", "Removing orphaned cache: \(folder.path)")
                 try? fm.removeItem(at: folder)
             }
         }
@@ -144,7 +144,7 @@ class ScummVMRunner: EmulatorRunner, @unchecked Sendable {
         if FileManager.default.fileExists(atPath: destFolder.path) {
             // Verify extraction is complete (has game files)
             if hasGameFiles(in: destFolder) {
-                print("[ScummVM] Using cached extraction: \(destFolder.path)")
+                LoggerService.debug(category: "ScummVM", "Using cached extraction: \(destFolder.path)")
                 return destFolder
             } else {
                 // Corrupted or incomplete extraction, remove and re-extract
@@ -156,12 +156,12 @@ class ScummVMRunner: EmulatorRunner, @unchecked Sendable {
         do {
             try FileManager.default.createDirectory(at: destFolder, withIntermediateDirectories: true)
         } catch {
-            print("[ScummVM] Failed to create extraction directory: \(error)")
+            LoggerService.info(category: "ScummVM", "Failed to create extraction directory: \(error)")
             return nil
         }
         
         // Extract using unzip (standard macOS utility)
-        print("[ScummVM] Extracting ZIP to: \(destFolder.path)")
+        LoggerService.info(category: "ScummVM", "Extracting ZIP to: \(destFolder.path)")
         let process = Process()
         process.executableURL = URL(fileURLWithPath: "/usr/bin/unzip")
         process.arguments = ["-o", zipPath.path, "-d", destFolder.path]
@@ -176,19 +176,19 @@ class ScummVMRunner: EmulatorRunner, @unchecked Sendable {
             process.waitUntilExit()
             
             if process.terminationStatus == 0 {
-                print("[ScummVM] Extraction successful")
+                LoggerService.debug(category: "ScummVM", "Extraction successful")
                 return destFolder
             } else {
                 let errorData = errorPipe.fileHandleForReading.readDataToEndOfFile()
                 let errorMsg = String(data: errorData, encoding: .utf8) ?? "Unknown error"
-                print("[ScummVM] Extraction failed: \(errorMsg)")
+                LoggerService.info(category: "ScummVM", "Extraction failed: \(errorMsg)")
                 
                 // Try alternative: use ditto
-                print("[ScummVM] Trying ditto as fallback...")
+                LoggerService.debug(category: "ScummVM", "Trying ditto as fallback...")
                 return extractWithDitto(zipPath: zipPath, destFolder: destFolder)
             }
         } catch {
-            print("[ScummVM] Exception during extraction: \(error)")
+            LoggerService.info(category: "ScummVM", "Exception during extraction: \(error)")
             return extractWithDitto(zipPath: zipPath, destFolder: destFolder)
         }
     }
@@ -204,14 +204,14 @@ class ScummVMRunner: EmulatorRunner, @unchecked Sendable {
             process.waitUntilExit()
             
             if process.terminationStatus == 0 {
-                print("[ScummVM] ditto extraction successful")
+                LoggerService.debug(category: "ScummVM", "ditto extraction successful")
                 return destFolder
             } else {
-                print("[ScummVM] ditto extraction failed with status: \(process.terminationStatus)")
+                LoggerService.info(category: "ScummVM", "ditto extraction failed with status: \(process.terminationStatus)")
                 return nil
             }
         } catch {
-            print("[ScummVM] ditto extraction exception: \(error)")
+            LoggerService.debug(category: "ScummVM", "ditto extraction exception: \(error)")
             return nil
         }
     }
@@ -231,7 +231,7 @@ class ScummVMRunner: EmulatorRunner, @unchecked Sendable {
                 // Check against known patterns
                 for (pattern, gameID) in Self.gameFilePatterns {
                     if nameWithoutExt == pattern || nameWithoutExt.hasPrefix(pattern + ".") {
-                        print("[ScummVM] Detected game ID: \(gameID) from file: \(file)")
+                        LoggerService.debug(category: "ScummVM", "Detected game ID: \(gameID) from file: \(file)")
                         return gameID
                     }
                 }
@@ -251,11 +251,11 @@ class ScummVMRunner: EmulatorRunner, @unchecked Sendable {
             if hasAudioFiles || hasDataFiles {
                 // We have ScummVM game files but couldn't detect specific game
                 // Return "auto" to use fallback detection from the folder name
-                print("[ScummVM] Detected ScummVM data files but no specific game ID")
+                LoggerService.debug(category: "ScummVM", "Detected ScummVM data files but no specific game ID")
             }
             
         } catch {
-            print("[ScummVM] Failed to read extracted folder: \(error)")
+            LoggerService.info(category: "ScummVM", "Failed to read extracted folder: \(error)")
         }
         
         // Fallback: derive game ID from the folder/ZIP name
@@ -268,7 +268,7 @@ class ScummVMRunner: EmulatorRunner, @unchecked Sendable {
         // Try to match from known patterns on the folder name
         for (pattern, gameID) in Self.gameFilePatterns {
             if folderName.contains(pattern.lowercased()) {
-                print("[ScummVM] Detected game ID from folder name: \(gameID)")
+                LoggerService.debug(category: "ScummVM", "Detected game ID from folder name: \(gameID)")
                 return gameID
             }
         }
@@ -278,12 +278,12 @@ class ScummVMRunner: EmulatorRunner, @unchecked Sendable {
             let cleanID = folderName
                 .filter { $0.isLetter || $0.isNumber }
             if !cleanID.isEmpty {
-                print("[ScummVM] Using fallback game ID: \(cleanID)")
+                LoggerService.debug(category: "ScummVM", "Using fallback game ID: \(cleanID)")
                 return cleanID
             }
         }
         
-        print("[ScummVM] Could not detect game ID")
+        LoggerService.info(category: "ScummVM", "Could not detect game ID")
         return nil
     }
     
@@ -300,11 +300,11 @@ class ScummVMRunner: EmulatorRunner, @unchecked Sendable {
             let existingContent = (try? String(contentsOf: hookPath, encoding: .utf8)) ?? ""
             let firstLine = existingContent.components(separatedBy: "\n").first?.trimmingCharacters(in: .whitespacesAndNewlines) ?? ""
             if firstLine == gameID {
-                print("[ScummVM] Hook file already exists with valid format: \(hookPath.path)")
+                LoggerService.debug(category: "ScummVM", "Hook file already exists with valid format: \(hookPath.path)")
                 return hookPath
             } else {
                 // Wrong format, remove and recreate
-                print("[ScummVM] Hook file has wrong format (first line='\(firstLine)'), recreating...")
+                LoggerService.debug(category: "ScummVM", "Hook file has wrong format (first line='\(firstLine)'), recreating...")
                 try? FileManager.default.removeItem(at: hookPath)
             }
         }
@@ -317,10 +317,10 @@ class ScummVMRunner: EmulatorRunner, @unchecked Sendable {
         
         do {
             try content.write(to: hookPath, atomically: true, encoding: .utf8)
-            print("[ScummVM] Created hook file with game ID: \(hookPath.path)")
+            LoggerService.info(category: "ScummVM", "Created hook file with game ID: \(gameID)")
             return hookPath
         } catch {
-            print("[ScummVM] Failed to create hook file: \(error)")
+            LoggerService.info(category: "ScummVM", "Failed to create hook file: \(error)")
             return nil
         }
     }
@@ -352,7 +352,7 @@ class ScummVMRunner: EmulatorRunner, @unchecked Sendable {
                 }
             }
         } catch {
-            print("[ScummVM] Failed to check for game files: \(error)")
+            LoggerService.debug(category: "ScummVM", "Failed to check for game files: \(error)")
         }
         return false
     }
@@ -366,28 +366,28 @@ class ScummVMRunner: EmulatorRunner, @unchecked Sendable {
         
         // Only handle ZIP files - pass through other formats directly
         if fileExt == "zip" {
-            print("[ScummVM] Processing ZIP file: \(romPath.path)")
+            LoggerService.info(category: "ScummVM", "Processing ZIP file: \(romPath.path)")
             
             // Step 1: Extract the ZIP
             guard let extractedFolder = extractIfNeeded(zipPath: romPath) else {
-                print("[ScummVM-ERR] Failed to extract ZIP")
+                LoggerService.info(category: "ScummVM", "Failed to extract ZIP")
                 return
             }
             
             // Step 2: Detect game ID
             guard let gameID = detectGameID(in: extractedFolder) else {
-                print("[ScummVM-ERR] Could not detect game ID from extracted files")
+                LoggerService.info(category: "ScummVM", "Could not detect game ID from extracted files")
                 return
             }
             
             // Step 3: Create hook file
             guard let hookPath = createHookFile(in: extractedFolder, gameID: gameID) else {
-                print("[ScummVM-ERR] Failed to create hook file")
+                LoggerService.info(category: "ScummVM", "Failed to create hook file")
                 return
             }
             
             // Step 4: Launch with hook file instead of ZIP
-            print("[ScummVM] Launching with hook file: \(hookPath.path)")
+            LoggerService.info(category: "ScummVM", "Launching with hook file: \(hookPath.path)")
             
             // Create a temporary ROM with the hook file path
             var modifiedRom = rom
@@ -399,7 +399,7 @@ class ScummVMRunner: EmulatorRunner, @unchecked Sendable {
             super.launch(rom: modifiedRom, coreID: coreID)
         } else {
             // Non-ZIP file (maybe already a .scummvm file), launch normally
-            print("[ScummVM] Launching non-ZIP file normally")
+            LoggerService.debug(category: "ScummVM", "Launching non-ZIP file normally")
             super.launch(rom: rom, coreID: coreID)
         }
     }

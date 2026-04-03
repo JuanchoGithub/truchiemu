@@ -8,7 +8,7 @@ struct SettingsView: View {
     @EnvironmentObject var coreManager: CoreManager
     @EnvironmentObject var controllerService: ControllerService
 
-    private enum Page: Hashable { case general, library, cores, controllers, keyboard, boxArt, display, cheats, bezels, retroAchievements, about }
+    private enum Page: Hashable { case general, library, cores, controllers, keyboard, boxArt, display, cheats, bezels, retroAchievements, logging, about }
     @State private var selectedPage: Page = .general
 
     var body: some View {
@@ -24,6 +24,7 @@ struct SettingsView: View {
                 sidebarItem(icon: "wand.and.stars", label: "Cheats", page: .cheats)
                 sidebarItem(icon: "rectangle.on.rectangle", label: "Bezels", page: .bezels)
                 sidebarItem(icon: "trophy.fill", label: "RetroAchievements", page: .retroAchievements)
+                sidebarItem(icon: "doc.text.fill", label: "Logging", page: .logging)
                 sidebarItem(icon: "info.circle.fill", label: "About", page: .about)
             }
             .listStyle(.sidebar)
@@ -42,6 +43,7 @@ struct SettingsView: View {
                 case .cheats:      CheatSettingsView()
                 case .bezels:      BezelSettingsView()
                 case .retroAchievements: RetroAchievementsSettingsView()
+                case .logging:     LoggingSettingsView()
                 case .about:       AboutView()
                 }
             }

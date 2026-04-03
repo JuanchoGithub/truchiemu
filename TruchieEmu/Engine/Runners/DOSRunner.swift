@@ -30,9 +30,7 @@ class DOSRunner: EmulatorRunner, @unchecked Sendable {
     override func launch(rom: ROM, coreID: String) {
         // DOSBox-Pure handles ZIP files natively - no extraction needed
         // The core will mount the ZIP as a C: drive automatically
-        print("[DOSRunner] Launching DOS game: \(rom.name)")
-        print("[DOSRunner] ROM path: \(rom.path.path)")
-        print("[DOSRunner] Cycles setting: \(cyclesSetting)")
+        LoggerService.info(category: "DOSRunner", "Launching DOS game: \(rom.name), cycles: \(cyclesSetting)")
         
         // Set DOS-specific core options before launch
         configureCoreOptions()
@@ -61,7 +59,7 @@ class DOSRunner: EmulatorRunner, @unchecked Sendable {
     /// In mouse mode, the left analog stick controls the DOS mouse cursor
     @MainActor func toggleMouseMode() {
         isMouseMode.toggle()
-        print("[DOSRunner] Mouse mode: \(isMouseMode ? "ON" : "OFF")")
+        LoggerService.debug(category: "DOSRunner", "Mouse mode: \(isMouseMode ? "ON" : "OFF")")
     }
     
     // MARK: - DOS-Specific Input Handling
@@ -71,7 +69,7 @@ class DOSRunner: EmulatorRunner, @unchecked Sendable {
         let activeIdx = ControllerService.shared.activePlayerIndex
         if activeIdx == 0 {
             // Keyboard mode - DOSBox-Pure handles keyboard natively
-            print("[DOSRunner] Using keyboard input for DOS")
+            LoggerService.debug(category: "DOSRunner", "Using keyboard input for DOS")
             return
         }
         
@@ -81,7 +79,7 @@ class DOSRunner: EmulatorRunner, @unchecked Sendable {
             return
         }
         
-        print("[DOSRunner] Hooking gamepad for DOS: \(controller.vendorName ?? "Unknown")")
+        LoggerService.debug(category: "DOSRunner", "Hooking gamepad for DOS: \(controller.vendorName ?? "Unknown")")
         
         controller.extendedGamepad?.valueChangedHandler = { [weak self] _, element in
             guard let self = self else { return }
@@ -120,7 +118,7 @@ class DOSRunner: EmulatorRunner, @unchecked Sendable {
     /// Load a new disk image for multi-disc DOS games
     /// DOSBox-Pure supports the Libretro Disk Control API
     func loadDisk(imagePath: String) {
-        print("[DOSRunner] Loading disk image: \(imagePath)")
+        LoggerService.info(category: "DOSRunner", "Loading disk image: \(imagePath)")
         // Use Libretro disk control API to swap disks
         // This is handled by the core's RETRO_ENVIRONMENT_SET_DISK_CONTROL_EXT_INTERFACE
     }

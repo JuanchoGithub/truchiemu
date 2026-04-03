@@ -95,7 +95,7 @@ class ROMLibrary: ObservableObject {
     func completeOnboarding(folderURL: URL) {
         // Validate: don't allow adding internal app directories
         if isInternalPath(folderURL) {
-            print("[ROMLibrary] Rejected adding internal path as library folder: \(folderURL.path)")
+            LoggerService.info(category: "ROMLibrary", "Rejected adding internal path as library folder: \(folderURL.path)")
             return
         }
         addLibraryFolder(url: folderURL)
@@ -106,7 +106,7 @@ class ROMLibrary: ObservableObject {
     func addLibraryFolder(url: URL) {
         // Validate: don't allow adding internal app directories
         if isInternalPath(url) {
-            print("[ROMLibrary] Rejected adding internal path as library folder: \(url.path)")
+            LoggerService.info(category: "ROMLibrary", "Rejected adding internal path as library folder: \(url.path)")
             return
         }
         if !libraryFolders.contains(url) {

@@ -48,7 +48,7 @@ class ShaderManager: ObservableObject {
     private func loadLibrary() {
         library = device?.makeDefaultLibrary()
         if library == nil {
-            print("[ShaderManager] WARNING: Could not create default Metal library")
+            LoggerService.info(category: "ShaderManager", "WARNING: Could not create default Metal library")
         }
     }
     
@@ -89,13 +89,13 @@ class ShaderManager: ObservableObject {
         // Create new pipeline
         guard let library = library,
               let device = device else {
-            print("[ShaderManager] ERROR: Library or device not available")
+            LoggerService.info(category: "ShaderManager", "ERROR: Library or device not available")
             return nil
         }
         
         guard let vertexFunction = library.makeFunction(name: "vertexPassthrough"),
               let fragmentFunction = library.makeFunction(name: shaderName) else {
-            print("[ShaderManager] ERROR: Could not find shader function '\(shaderName)'")
+            LoggerService.info(category: "ShaderManager", "ERROR: Could not find shader function '\(shaderName)'")
             return nil
         }
         
@@ -107,10 +107,10 @@ class ShaderManager: ObservableObject {
         do {
             let pipeline = try device.makeRenderPipelineState(descriptor: descriptor)
             pipelineCache[shaderName] = pipeline
-            print("[ShaderManager] Created pipeline for '\(shaderName)'")
+            LoggerService.debug(category: "ShaderManager", "Created pipeline for '\(shaderName)'")
             return pipeline
         } catch {
-            print("[ShaderManager] ERROR: Failed to create pipeline for '\(shaderName)': \(error)")
+            LoggerService.info(category: "ShaderManager", "ERROR: Failed to create pipeline for '\(shaderName)': \(error)")
             return nil
         }
     }
@@ -133,7 +133,7 @@ class ShaderManager: ObservableObject {
             uniformValues[uniform.name] = uniform.defaultValue
         }
         
-        print("[ShaderManager] Activated preset: \(preset.name)")
+        LoggerService.info(category: "ShaderManager", "Activated shader preset: \(preset.name)")
     }
     
     /// Update a uniform value

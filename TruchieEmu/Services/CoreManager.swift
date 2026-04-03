@@ -44,22 +44,22 @@ class CoreManager: ObservableObject {
         isFetchingCoreList = true
         defer { isFetchingCoreList = false }
 
-        print("[CoreManager] Fetching cores from \(buildbotBase)")
+        LoggerService.info(category: "CoreManager", "Fetching available cores from \(buildbotBase)")
         var request = URLRequest(url: buildbotBase)
         request.setValue("Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36", forHTTPHeaderField: "User-Agent")
 
         guard let (data, response) = try? await URLSession.shared.data(for: request) else {
-            print("[CoreManager] Failed to fetch core list: Network error")
+            LoggerService.info(category: "CoreManager", "Failed to fetch core list: Network error")
             return
         }
         
         if let http = response as? HTTPURLResponse, http.statusCode != 200 {
-            print("[CoreManager] Failed to fetch core list: HTTP \(http.statusCode)")
+            LoggerService.info(category: "CoreManager", "Failed to fetch core list: HTTP \(http.statusCode)")
             return
         }
 
         guard let html = String(data: data, encoding: .utf8) else { 
-            print("[CoreManager] Failed to parse core list: Encoding error")
+            LoggerService.info(category: "CoreManager", "Failed to parse core list: Encoding error")
             return 
         }
 
@@ -68,7 +68,7 @@ class CoreManager: ObservableObject {
         let regex = try? NSRegularExpression(pattern: pattern, options: .caseInsensitive)
         let matches = regex?.matches(in: html, range: NSRange(html.startIndex..., in: html)) ?? []
 
-        print("[CoreManager] Found \(matches.count) core links")
+        LoggerService.debug(category: "CoreManager", "Found \(matches.count) core links in HTML")
 
         var cores: [RemoteCoreInfo] = []
         for match in matches {
@@ -129,7 +129,7 @@ class CoreManager: ObservableObject {
     }
 
     func downloadCore(_ info: RemoteCoreInfo) async {
-        print("[CoreManager] Starting download: \(info.coreID) from \(info.downloadURL)")
+        LoggerService.info(category: "CoreManager", "Starting download: \(info.coreID) from \(info.downloadURL)")
         
         // Mark as downloading
         if let idx = installedCores.firstIndex(where: { $0.id == info.coreID }) {
@@ -163,7 +163,7 @@ class CoreManager: ObservableObject {
             let dylibName = info.fileName.replacingOccurrences(of: ".zip", with: "")
             let dylibDest = coreFolder.appendingPathComponent(dylibName)
             
-            print("[CoreManager] Unzipping to \(dylibDest.path)")
+            LoggerService.debug(category: "CoreManager", "Unzipping to \(dylibDest.path)")
             try await unzip(zipURL: tmpURL, extracting: dylibName, to: dylibDest)
 
             let version = CoreVersion(tag: tag, dylibPath: dylibDest, downloadedAt: Date(), remoteURL: info.downloadURL)
@@ -178,12 +178,12 @@ class CoreManager: ObservableObject {
             }
 
             saveInstalledCores()
-            print("[CoreManager] Successfully installed \(info.coreID)")
+            LoggerService.info(category: "CoreManager", "Successfully installed \(info.coreID)")
         } catch {
             if let idx = installedCores.firstIndex(where: { $0.id == info.coreID }) {
                 installedCores[idx].isDownloading = false
             }
-            print("[CoreManager] Download failed for \(info.coreID): \(error.localizedDescription)")
+            LoggerService.info(category: "CoreManager", "Download failed for \(info.coreID): \(error.localizedDescription)")
         }
     }
 
@@ -293,7 +293,7 @@ class CoreManager: ObservableObject {
             try FileManager.default.moveItem(at: dylib, to: destination)
             await prepareCore(at: destination.path)
         } else {
-            print("[CoreManager] Failed to find \(targetName) in unzipped archive.")
+            LoggerService.info(category: "CoreManager", "Failed to find \(targetName) in unzipped archive.")
             throw NSError(domain: "CoreManager", code: 404, userInfo: [NSLocalizedDescriptionKey: "Failed to find \(targetName) in unzipped archive."])
         }
         try? FileManager.default.removeItem(at: tmpDir)

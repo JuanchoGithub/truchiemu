@@ -304,17 +304,17 @@ class CLILauncher {
         
         do {
             try process.run()
-            print("[CLILauncher] Spawning app with: open -a \(bundleID) --args \(arguments.joined(separator: " "))")
+            LoggerService.info(category: "CLI", "Spawning app with: open -a \(bundleID) --args \(arguments.joined(separator: " "))")
             return true
         } catch {
-            print("[CLILauncher] Failed to spawn app: \(error)")
+            LoggerService.debug(category: "CLI", "Failed to spawn app: \(error)")
             return false
         }
     }
     
     private func spawnDirect(arguments: [String]) -> Process? {
         guard let executablePath = Bundle.main.executablePath else {
-            print("[CLILauncher] Cannot find app executable path")
+            LoggerService.debug(category: "CLI", "Cannot find app executable path")
             return nil
         }
         
@@ -324,10 +324,10 @@ class CLILauncher {
         
         do {
             try process.run()
-            print("[CLILauncher] Spawned directly: \(executablePath) \(arguments.joined(separator: " "))")
+            LoggerService.info(category: "CLI", "Spawned directly: \(executablePath) \(arguments.joined(separator: " "))")
             return process
         } catch {
-            print("[CLILauncher] Failed to spawn directly: \(error)")
+            LoggerService.debug(category: "CLI", "Failed to spawn directly: \(error)")
             return nil
         }
     }

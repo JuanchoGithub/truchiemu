@@ -28,7 +28,7 @@ func NSImageFromMTLTexture(_ texture: MTLTexture) -> NSImage? {
         // 8-bit grayscale fallback
         bytesPerPixel = 1
     default:
-        print("[NSImageFromMTLTexture] Unsupported pixel format: \(texture.pixelFormat.rawValue)")
+        LoggerService.debug(category: "Renderer", "Unsupported pixel format: \(texture.pixelFormat.rawValue)")
         return nil
     }
     
@@ -226,7 +226,7 @@ class EmulatorRunner: ObservableObject, @unchecked Sendable {
     @MainActor
     func launch(rom: ROM, coreID: String) {
         guard let core = findCoreLib(coreID: coreID) else {
-            print("[Runner] Core dylib not found: \(coreID)")
+            LoggerService.info(category: "Runner", "Core dylib not found: \(coreID)")
             return
         }
         
@@ -262,7 +262,7 @@ class EmulatorRunner: ObservableObject, @unchecked Sendable {
         
         if loggingEnabled {
             let levelName = loggingLevel == 0 ? "None" : loggingLevel == 1 ? "Info" : "Debug/Verbose"
-            print("[Runner] Logging enabled at level: \(levelName)")
+            LoggerService.info(category: "Runner", "Core logging enabled at level: \(levelName)")
         }
         
         // Track last loaded core so Options view knows which file to persist to
@@ -286,7 +286,7 @@ class EmulatorRunner: ObservableObject, @unchecked Sendable {
     @MainActor @Published var isPaused: Bool = false
     
     func stop() {
-        print("[Runner] Stopping emulation thread...")
+        LoggerService.info(category: "Runner", "Stopping emulation thread")
         isRunning = false
         LibretroBridge.stop()
         
@@ -373,7 +373,7 @@ class EmulatorRunner: ObservableObject, @unchecked Sendable {
             if compressSaveStates, let compressed = SaveStateManager.compressStateData(stateData) {
                 finalData = compressed
                 let ratio = Double(finalData.count) / Double(stateData.count) * 100
-                print("[SaveState] Compressed: \(Int64(stateData.count).formattedByteSize) -> \(Int64(finalData.count).formattedByteSize) (\(Int(ratio))%)")
+                LoggerService.debug(category: "SaveState", "Compressed: \(Int64(stateData.count).formattedByteSize) -> \(Int64(finalData.count).formattedByteSize) (\(Int(ratio))%)")
             } else {
                 finalData = stateData
             }
@@ -382,16 +382,16 @@ class EmulatorRunner: ObservableObject, @unchecked Sendable {
             
             // Capture and save thumbnail if we have a current frame
             if let frameTex = currentFrameTexture {
-                print("[SaveStateManager] Attempting to capture thumbnail for slot \(slot)")
+                LoggerService.debug(category: "SaveState", "Capturing thumbnail for slot \(slot)")
                 let nsImage = NSImageFromMTLTexture(frameTex)
                 if let nsImage = nsImage {
-                    print("[SaveStateManager] Captured thumbnail: \(nsImage.size.width)x\(nsImage.size.height)")
+                    LoggerService.debug(category: "SaveState", "Captured thumbnail: \(nsImage.size.width)x\(nsImage.size.height)")
                     saveManager.saveThumbnail(nsImage, gameName: gameRom.displayName, systemID: systemID, slot: slot)
                 } else {
-                    print("[SaveStateManager] ERROR: NSImageFromMTLTexture returned nil")
+                    LoggerService.info(category: "SaveState", "ERROR: NSImageFromMTLTexture returned nil")
                 }
             } else {
-                print("[SaveStateManager] WARNING: currentFrameTexture is nil, cannot capture thumbnail")
+                LoggerService.debug(category: "SaveState", "WARNING: currentFrameTexture is nil, cannot capture thumbnail")
             }
             
             osdMessage = "Saved \(slot == -1 ? "Auto" : "Slot \(slot)")"
@@ -579,13 +579,13 @@ class EmulatorRunner: ObservableObject, @unchecked Sendable {
             self.metalView?.needsDisplay = true
             
             if !self.hasLoggedFrame {
-                print("[Runner] UI ACTIVATED with first frame (\(width)x\(height))")
+                LoggerService.info(category: "Runner", "First frame received (\(width)x\(height))")
                 self.hasLoggedFrame = true
                 // Read rotation from core on first frame
                 let rotation = LibretroBridge.currentRotation()
                 if self.currentFrameRotation != Int(rotation) {
                     self.currentFrameRotation = Int(rotation)
-                    print("[Runner] Frame rotation: \(rotation) (\(rotation * 90) deg CW)")
+                    LoggerService.info(category: "Runner", "Frame rotation: \(rotation) (\(rotation * 90) deg CW)")
                 }
             }
 
@@ -623,7 +623,7 @@ class EmulatorRunner: ObservableObject, @unchecked Sendable {
         let sysID = rom?.systemID ?? "default"
         let mapping = ControllerService.shared.mapping(for: controller.vendorName ?? "Unknown", systemID: sysID)
         
-        print("[Runner] Hooking gamepad: \(controller.vendorName ?? "Unknown") for system: \(sysID)")
+        LoggerService.debug(category: "Runner", "Hooking gamepad: \(controller.vendorName ?? "Unknown") for system: \(sysID)")
         self.hookedController = controller
         
         controller.extendedGamepad?.valueChangedHandler = { [weak self] _, element in

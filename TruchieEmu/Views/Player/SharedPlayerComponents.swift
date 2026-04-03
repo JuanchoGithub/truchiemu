@@ -730,7 +730,7 @@ class StandaloneGameWindowController: NSWindowController, NSWindowDelegate, Obse
     private func setupMetalView() {
         guard let runner = self.runner else { return }
         
-        print("[StandaloneMetal] Setting up MetalView...")
+        LoggerService.info(category: "Metal", "Setting up MetalView...")
         let mtkView = FocusableMTKView()
         mtkView.device = MTLCreateSystemDefaultDevice()
         mtkView.colorPixelFormat = .bgra8Unorm
@@ -814,7 +814,7 @@ class StandaloneGameWindowController: NSWindowController, NSWindowDelegate, Obse
             self?.hideToolbar()
         }
         
-        print("[StandaloneMetal] MetalView setup complete, isPaused=true")
+        LoggerService.info(category: "Metal", "MetalView setup complete, isPaused=true")
     }
     
     @objc private func windowDidChangeScreen() {
@@ -954,20 +954,20 @@ class StandaloneGameWindowController: NSWindowController, NSWindowDelegate, Obse
                     let systemID = rom.systemID ?? "default"
                     let stateURL = runner.saveManager.statePath(gameName: rom.displayName, systemID: systemID, slot: slotToLoad)
                     if FileManager.default.fileExists(atPath: stateURL.path) {
-                        print("[SlotLoad] Found save state at: \(stateURL.path)")
+                        LoggerService.info(category: "SaveState", "Found save state at: \(stateURL.path)")
                         let success = runner.loadState(slot: slotToLoad)
                         if success {
                             runner.osdMessage = "Loaded Slot \(slotToLoad)"
-                            print("[SlotLoad] Successfully loaded save state from slot \(slotToLoad)")
+                            LoggerService.info(category: "SaveState", "Successfully loaded save state from slot \(slotToLoad)")
                             Task {
                                 try? await Task.sleep(nanoseconds: 2_000_000_000)
                                 await MainActor.run { runner.osdMessage = nil }
                             }
                         } else {
-                            print("[SlotLoad] Failed to load save state from slot \(slotToLoad)")
+                            LoggerService.debug(category: "SaveState", "Failed to load save state from slot \(slotToLoad)")
                         }
                     } else {
-                        print("[SlotLoad] No save state found at: \(stateURL.path)")
+                        LoggerService.debug(category: "SaveState", "No save state found at: \(stateURL.path)")
                     }
                 }
             } else {
@@ -980,20 +980,20 @@ class StandaloneGameWindowController: NSWindowController, NSWindowDelegate, Obse
                         let systemID = rom.systemID ?? "default"
                         let stateURL = runner.saveManager.statePath(gameName: rom.displayName, systemID: systemID, slot: -1)
                         if FileManager.default.fileExists(atPath: stateURL.path) {
-                            print("[AutoLoad] Found save state at: \(stateURL.path)")
+                            LoggerService.info(category: "SaveState", "Found save state at: \(stateURL.path)")
                             let success = runner.loadState(slot: -1)
                             if success {
                                 runner.osdMessage = "Auto-loaded last session"
-                                print("[AutoLoad] Successfully loaded auto-save state")
+                                LoggerService.info(category: "SaveState", "Successfully loaded auto-save state")
                                 Task {
                                     try? await Task.sleep(nanoseconds: 2_000_000_000)
                                     await MainActor.run { runner.osdMessage = nil }
                                 }
                             } else {
-                                print("[AutoLoad] Failed to load auto-save state")
+                                LoggerService.debug(category: "SaveState", "Failed to load auto-save state")
                             }
                         } else {
-                            print("[AutoLoad] No save state found at: \(stateURL.path)")
+                            LoggerService.debug(category: "SaveState", "No save state found at: \(stateURL.path)")
                         }
                     }
                 }
@@ -1039,7 +1039,7 @@ class StandaloneGameWindowController: NSWindowController, NSWindowDelegate, Obse
             // Get screen bounds to constrain bezel size
             let screenBounds = window?.screen?.visibleFrame ?? NSScreen.main?.visibleFrame ?? NSScreen.main?.frame ?? NSRect(x: 0, y: 0, width: 1920, height: 1080)
             
-            print("[Bezel] Loading bezel for game. Screen bounds: \(screenBounds.width)x\(screenBounds.height), Bezel size: \(bezelImage.size.width)x\(bezelImage.size.height)")
+            LoggerService.debug(category: "Bezel", "Loading bezel for game. Screen bounds: \(Int(screenBounds.width))x\(Int(screenBounds.height)), Bezel size: \(Int(bezelImage.size.width))x\(Int(bezelImage.size.height))")
             
             // Create bezel background layer if needed
             if let containerView = window?.contentView as? GameContainerView {
@@ -1055,7 +1055,11 @@ class StandaloneGameWindowController: NSWindowController, NSWindowDelegate, Obse
                 
                 // Constrain window to screen bounds if bezel would make it larger
                 constrainWindowToScreenBounds()
+                
+                LoggerService.info(category: "Bezel", "Bezel applied for \(rom.displayName)")
             }
+        } else {
+            LoggerService.debug(category: "Bezel", "No bezel image loaded for \(rom.displayName)")
         }
     }
     
@@ -1070,7 +1074,7 @@ class StandaloneGameWindowController: NSWindowController, NSWindowDelegate, Obse
         
         // If window is larger than screen, constrain it
         if currentFrame.width > screenFrame.width || currentFrame.height > screenFrame.height {
-            print("[Bezel] Constraining window to screen bounds. Current: \(currentFrame.width)x\(currentFrame.height), Screen: \(screenFrame.width)x\(screenFrame.height)")
+            LoggerService.debug(category: "Bezel", "Constraining window to screen bounds. Current: \(Int(currentFrame.width))x\(Int(currentFrame.height)), Screen: \(Int(screenFrame.width))x\(Int(screenFrame.height))")
             
             var newFrame = currentFrame
             newFrame.size.width = min(currentFrame.width, screenFrame.width)
@@ -1092,12 +1096,12 @@ class StandaloneGameWindowController: NSWindowController, NSWindowDelegate, Obse
         // Auto-save to slot -1 on exit if enabled
         let shouldAutoSave = UserDefaults.standard.bool(forKey: "auto_save_on_exit")
         if shouldAutoSave, let runner = runner {
-            print("[AutoSave] Saving state on window close...")
+            LoggerService.info(category: "SaveState", "Saving state on window close...")
             let success = runner.saveState(slot: -1)
             if success {
-                print("[AutoSave] Successfully saved auto-save state")
+                LoggerService.info(category: "SaveState", "Successfully saved auto-save state")
             } else {
-                print("[AutoSave] Failed to save auto-save state")
+                LoggerService.debug(category: "SaveState", "Failed to save auto-save state")
             }
         }
         runner?.stop()
@@ -1134,10 +1138,10 @@ class StandaloneGameWindowController: NSWindowController, NSWindowDelegate, Obse
 
         private func getFragmentFunctionName() -> String {
             let preset = ShaderManager.shared.activePreset
-            print("[CRT-DEBUG] Active shader preset: \(preset.id) - \(preset.name)")
+            LoggerService.debug(category: "Shaders", "Active shader preset: \(preset.id) - \(preset.name)")
             guard let firstPass = preset.passes.first,
                   let shaderFile = firstPass.shaderFile.components(separatedBy: ".").first else {
-                print("[CRT-DEBUG] No passes found, falling back to fragmentPassthrough")
+                LoggerService.debug(category: "Shaders", "No passes found, falling back to fragmentPassthrough")
                 return "fragmentPassthrough"
             }
             let result: String
@@ -1151,7 +1155,7 @@ class StandaloneGameWindowController: NSWindowController, NSWindowDelegate, Obse
             case "Passthrough": result = "fragmentPassthrough"
             default: result = "fragment" + shaderFile
             }
-            print("[CRT-DEBUG] ShaderFile: '\(shaderFile)' -> Fragment: '\(result)'")
+            LoggerService.debug(category: "Shaders", "ShaderFile: '\(shaderFile)' -> Fragment: '\(result)'")
             return result
         }
 
@@ -1164,14 +1168,14 @@ class StandaloneGameWindowController: NSWindowController, NSWindowDelegate, Obse
             
             // Create new pipeline
             guard let library = loadShaderLibrary(device: device) else {
-                print("[StandaloneMetal] ERROR: Could not create shader library.")
+                LoggerService.debug(category: "Shaders", "ERROR: Could not create shader library.")
                 return nil
             }
             
             guard let vertexFunction = library.makeFunction(name: "vertexPassthrough"),
                   let fragmentFunction = library.makeFunction(name: fragmentName) else {
-                print("[StandaloneMetal] ERROR: Could not find shader function '\(fragmentName)'")
-                print("[StandaloneMetal] Available functions: \(library.functionNames.joined(separator: ", "))")
+                LoggerService.debug(category: "Shaders", "ERROR: Could not find shader function '\(fragmentName)'")
+                LoggerService.debug(category: "Shaders", "Available functions: \(library.functionNames.joined(separator: ", "))")
                 return nil
             }
 
@@ -1183,10 +1187,10 @@ class StandaloneGameWindowController: NSWindowController, NSWindowDelegate, Obse
             do {
                 let pipeline = try device.makeRenderPipelineState(descriptor: desc)
                 pipelineCache[fragmentName] = pipeline
-                print("[StandaloneMetal] Created pipeline for '\(fragmentName)'")
+                LoggerService.debug(category: "Shaders", "Created pipeline for '\(fragmentName)'")
                 return pipeline
             } catch {
-                print("[StandaloneMetal] ERROR: Failed to create pipeline '\(fragmentName)': \(error)")
+                LoggerService.debug(category: "Shaders", "ERROR: Failed to create pipeline '\(fragmentName)': \(error)")
                 return nil
             }
         }
@@ -1204,13 +1208,13 @@ class StandaloneGameWindowController: NSWindowController, NSWindowDelegate, Obse
             descriptor.colorAttachments[0].storeAction = .store
 
             if commandQueue == nil {
-                print("[StandaloneMetal] Initializing Command Queue...")
+                LoggerService.debug(category: "Metal", "Initializing Command Queue...")
                 commandQueue = device.makeCommandQueue()
             }
 
             guard let cmdQueue = commandQueue,
                   let cmdBuffer = cmdQueue.makeCommandBuffer() else { 
-                print("[StandaloneMetal] Failed to create command buffer")
+                LoggerService.debug(category: "Metal", "Failed to create command buffer")
                 return 
             }
 
@@ -1277,7 +1281,7 @@ class StandaloneGameWindowController: NSWindowController, NSWindowDelegate, Obse
                             let scanInt = getUniform("scanlineIntensity", fallback: 0.35)
                             let barrelAmt = getUniform("barrelAmount", fallback: 0.12)
                             let colorB = getUniform("colorBoost", fallback: 1.0)
-                            print("[CRT-UNIFORMS] scanInt=\(scanInt) barrelAmt=\(barrelAmt) colorBoost=\(colorB)")
+                            LoggerService.extreme(category: "Shaders", "scanInt=\(scanInt) barrelAmt=\(barrelAmt) colorBoost=\(colorB)")
                             var u = CRTTestUniforms(
                                 scanlineIntensity: scanInt,
                                 barrelAmount: barrelAmt,
@@ -1290,7 +1294,7 @@ class StandaloneGameWindowController: NSWindowController, NSWindowDelegate, Obse
                             let scanInt = getUniform("scanlineIntensity", fallback: 0.35)
                             let barrelAmt = getUniform("barrelAmount", fallback: 0.12)
                             let colorB = getUniform("colorBoost", fallback: 1.0)
-                            print("[CRT-UNIFORMS] scanInt=\(scanInt) barrelAmt=\(barrelAmt) colorBoost=\(colorB)")
+                            LoggerService.extreme(category: "Shaders", "scanInt=\(scanInt) barrelAmt=\(barrelAmt) colorBoost=\(colorB)")
                             var u = CRTUniforms(
                                 scanlineIntensity: scanInt,
                                 barrelAmount: barrelAmt,
@@ -1448,18 +1452,18 @@ class StandaloneGameWindowController: NSWindowController, NSWindowDelegate, Obse
                         innerDrawCount += 1
                         
                         if innerDrawCount <= 3 {
-                            print("[StandaloneMetal] Drawing frame \(innerDrawCount) with texture \(frameTex.width)x\(frameTex.height)")
+                            LoggerService.extreme(category: "Metal", "Drawing frame \(innerDrawCount) with texture \(frameTex.width)x\(frameTex.height)")
                         }
                     }
                 } else {
                     // No frame texture yet - just present black screen
                     if innerDrawCount < 10 {
-                        print("[StandaloneMetal] No frame texture yet, drawing black")
+                        LoggerService.extreme(category: "Metal", "No frame texture yet, drawing black")
                     }
                 }
             } else {
                 if innerDrawCount < 5 {
-                    print("[StandaloneMetal] Failed to get pipeline state for fragment shader")
+                    LoggerService.debug(category: "Metal", "Failed to get pipeline state for fragment shader")
                 }
             }
 
@@ -1473,10 +1477,10 @@ class StandaloneGameWindowController: NSWindowController, NSWindowDelegate, Obse
             if let url = Bundle.main.url(forResource: "default", withExtension: "metallib") {
                 do {
                     let library = try device.makeLibrary(URL: url)
-                    print("[StandaloneMetal] Loaded metallib with functions: \(library.functionNames.joined(separator: ", "))")
+                    LoggerService.info(category: "Shaders", "Loaded metallib with functions: \(library.functionNames.joined(separator: ", "))")
                     return library
                 } catch {
-                    print("[StandaloneMetal] Failed to load metallib: \(error)")
+                    LoggerService.debug(category: "Shaders", "Failed to load metallib: \(error)")
                 }
             }
             
@@ -1486,10 +1490,10 @@ class StandaloneGameWindowController: NSWindowController, NSWindowDelegate, Obse
                 if let source = try? String(contentsOfFile: shadersPath, encoding: .utf8) {
                     do {
                         let library = try device.makeLibrary(source: source, options: nil)
-                        print("[StandaloneMetal] Compiled all_shaders.metal with functions: \(library.functionNames.joined(separator: ", "))")
+                        LoggerService.info(category: "Shaders", "Compiled all_shaders.metal with functions: \(library.functionNames.joined(separator: ", "))")
                         return library
                     } catch {
-                        print("[StandaloneMetal] Failed to compile all_shaders.metal: \(error)")
+                        LoggerService.debug(category: "Shaders", "Failed to compile all_shaders.metal: \(error)")
                     }
                 }
                 
@@ -1500,10 +1504,10 @@ class StandaloneGameWindowController: NSWindowController, NSWindowDelegate, Obse
                     if let source = try? String(contentsOfFile: filePath, encoding: .utf8) {
                         do {
                             let library = try device.makeLibrary(source: source, options: nil)
-                            print("[StandaloneMetal] Compiled \(file).metal with functions: \(library.functionNames.joined(separator: ", "))")
+                            LoggerService.info(category: "Shaders", "Compiled \(file).metal with functions: \(library.functionNames.joined(separator: ", "))")
                             return library
                         } catch {
-                            print("[StandaloneMetal] Failed to compile \(file).metal: \(error)")
+                            LoggerService.debug(category: "Shaders", "Failed to compile \(file).metal: \(error)")
                         }
                     }
                 }

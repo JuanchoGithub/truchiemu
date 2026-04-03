@@ -19,6 +19,8 @@
 		2BC6C72C9075C6652E2F1398 /* BoxArtPickerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 00BCE112C7493BEA7436F109 /* BoxArtPickerView.swift */; };
 		2C90FACC3F4A1834DEBA87F2 /* GameLauncher.swift in Sources */ = {isa = PBXBuildFile; fileRef = 824B99AA8F4D46E6A5E01A05 /* GameLauncher.swift */; };
 		2E504CB095236AB9CFF8C433 /* CoreOption.swift in Sources */ = {isa = PBXBuildFile; fileRef = 88CE9892979FB7B724F9F25B /* CoreOption.swift */; };
+		2F8441505DD14F2DC1B83795 /* LoggingSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9183DACD944D63FC80019B78 /* LoggingSettingsView.swift */; };
+		3407D4D1297B8DA39CE0A93D /* LoggerService.swift in Sources */ = {isa = PBXBuildFile; fileRef = F306F0B7FE1B38A2A9EA5989 /* LoggerService.swift */; };
 		399D63EAFFDA48F827AA0318 /* CRTTest.metal in Sources */ = {isa = PBXBuildFile; fileRef = C238E3A21D9F9C24E3C71D88 /* CRTTest.metal */; };
 		3C668C57624222E97E081DC2 /* BezelPaginationTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 70AD4E9D0AD7D1D5D29E94E2 /* BezelPaginationTests.swift */; };
 		3C8A90F76B0E04A65E48EBED /* GameDetailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = EA462E15A1500FD878B5160A /* GameDetailView.swift */; };
@@ -82,6 +84,7 @@
 		EC8FCCD2DB45AA136AEE82C6 /* GameInfoWindow.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3C280DAAB43D202DBEEA100A /* GameInfoWindow.swift */; };
 		EE160B3D7565B6301E7474B3 /* LibretroCore.swift in Sources */ = {isa = PBXBuildFile; fileRef = E35518FB34DEB243BF979DE0 /* LibretroCore.swift */; };
 		F017645B40D693F252D1A0CB /* AchievementListView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D9EAD70473602ACB00FE54F /* AchievementListView.swift */; };
+		F0D6B9000421AB5BD7E85EC8 /* LogManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = A3E6537CAC4420826C1A50C4 /* LogManager.swift */; };
 		F15802B871B1B524941360A4 /* CheatSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8EAA8B5D7F9154D320382A23 /* CheatSettingsView.swift */; };
 		F3C6A31B44657B3FF9B89A4F /* ROMLibrary.swift in Sources */ = {isa = PBXBuildFile; fileRef = 35A5B2396F8000C8435A2E45 /* ROMLibrary.swift */; };
 		F59885E8417267AF6A34F97C /* TruchieEmuApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2A348F996E22D8E72782CE2B /* TruchieEmuApp.swift */; };
@@ -152,10 +155,12 @@
 		8A47A2618C88081828F43315 /* LibretroThumbnailResolver.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LibretroThumbnailResolver.swift; sourceTree = "<group>"; };
 		8E6BF5D840A5C89EDA5E68BC /* BezelDownloadLogView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BezelDownloadLogView.swift; sourceTree = "<group>"; };
 		8EAA8B5D7F9154D320382A23 /* CheatSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CheatSettingsView.swift; sourceTree = "<group>"; };
+		9183DACD944D63FC80019B78 /* LoggingSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoggingSettingsView.swift; sourceTree = "<group>"; };
 		93D8EB529663CB9A8702FAD3 /* ControllerService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ControllerService.swift; sourceTree = "<group>"; };
 		99510C445D5B9B6435F169A6 /* SystemControlsMappingView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SystemControlsMappingView.swift; sourceTree = "<group>"; };
 		99591C00996BDFB5DC9F6CD4 /* RetroAchievementsService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RetroAchievementsService.swift; sourceTree = "<group>"; };
 		9A57889A8837E10FEB44BCFD /* BezelAPIServiceIntegrationTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BezelAPIServiceIntegrationTests.swift; sourceTree = "<group>"; };
+		A3E6537CAC4420826C1A50C4 /* LogManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LogManager.swift; sourceTree = "<group>"; };
 		A4134F4B89D3CF5680BCEA25 /* CoreOptionsManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CoreOptionsManager.swift; sourceTree = "<group>"; };
 		A5DBDEA905A82BDEF2D0FF92 /* GameCategory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GameCategory.swift; sourceTree = "<group>"; };
 		A853FDE98AE470141649C4D7 /* BezelBrowserView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BezelBrowserView.swift; sourceTree = "<group>"; };
@@ -191,6 +196,7 @@
 		EAE090319110B0F262FC2BC2 /* RunningGamesTracker.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RunningGamesTracker.swift; sourceTree = "<group>"; };
 		EAE67E62E85282D55D114D49 /* BezelSelectorSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BezelSelectorSheet.swift; sourceTree = "<group>"; };
 		F0ECEE62736D1B11B66E5CED /* SystemSidebarView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SystemSidebarView.swift; sourceTree = "<group>"; };
+		F306F0B7FE1B38A2A9EA5989 /* LoggerService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoggerService.swift; sourceTree = "<group>"; };
 		F92119B38E7206704F501F92 /* SlotPickerSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SlotPickerSheet.swift; sourceTree = "<group>"; };
 		FA471582BD64CAFD5D7353DA /* ROM.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ROM.swift; sourceTree = "<group>"; };
 		FC2BC1B2F22591954A0E02B5 /* ROMIdentifierService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ROMIdentifierService.swift; sourceTree = "<group>"; };
@@ -253,6 +259,8 @@
 				5F78F845B9C63B8B6F072751 /* LibraryAutomationCoordinator.swift */,
 				AD6D8A426A0F0B5278A2061D /* LibretroRDBParser.swift */,
 				8A47A2618C88081828F43315 /* LibretroThumbnailResolver.swift */,
+				F306F0B7FE1B38A2A9EA5989 /* LoggerService.swift */,
+				A3E6537CAC4420826C1A50C4 /* LogManager.swift */,
 				99591C00996BDFB5DC9F6CD4 /* RetroAchievementsService.swift */,
 				FC2BC1B2F22591954A0E02B5 /* ROMIdentifierService.swift */,
 				35A5B2396F8000C8435A2E45 /* ROMLibrary.swift */,
@@ -318,6 +326,7 @@
 			children = (
 				8EAA8B5D7F9154D320382A23 /* CheatSettingsView.swift */,
 				B8A759D694F034223120BFB5 /* CoreOptionsView.swift */,
+				9183DACD944D63FC80019B78 /* LoggingSettingsView.swift */,
 				B6B43857C6383165BD22A9AF /* RetroAchievementsSettingsView.swift */,
 				5F2F3523E6BDCD5E1618ED1F /* SettingsView.swift */,
 			);
@@ -593,6 +602,9 @@
 				EE160B3D7565B6301E7474B3 /* LibretroCore.swift in Sources */,
 				A2E8895528D33C9C62CD7E70 /* LibretroRDBParser.swift in Sources */,
 				AA9FF76AF209339503C6148E /* LibretroThumbnailResolver.swift in Sources */,
+				F0D6B9000421AB5BD7E85EC8 /* LogManager.swift in Sources */,
+				3407D4D1297B8DA39CE0A93D /* LoggerService.swift in Sources */,
+				2F8441505DD14F2DC1B83795 /* LoggingSettingsView.swift in Sources */,
 				236EFB0A130B6F76AC8713A5 /* N64Runner.swift in Sources */,
 				455AB80D7490B0717CBE94AD /* NESRunner.swift in Sources */,
 				6F744ECC857F8807BD5BF1AA /* OnboardingView.swift in Sources */,

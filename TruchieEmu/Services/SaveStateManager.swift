@@ -66,7 +66,7 @@ class SaveStateManager: ObservableObject, @unchecked Sendable {
                 withIntermediateDirectories: true
             )
         } catch {
-            print("[SaveStateManager] ERROR creating base directory: \(error)")
+            LoggerService.info(category: "SaveStateManager", "ERROR creating base directory: \(error)")
         }
     }
     
@@ -79,7 +79,7 @@ class SaveStateManager: ObservableObject, @unchecked Sendable {
                 withIntermediateDirectories: true
             )
         } catch {
-            print("[SaveStateManager] ERROR creating system directory: \(error)")
+            LoggerService.info(category: "SaveStateManager", "ERROR creating system directory: \(error)")
         }
         return dir
     }
@@ -221,8 +221,7 @@ class SaveStateManager: ObservableObject, @unchecked Sendable {
     ///   - slot: Slot number
     func saveThumbnail(_ image: NSImage, gameName: String, systemID: String, slot: Int) {
         let thumbURL = thumbnailPath(gameName: gameName, systemID: systemID, slot: slot)
-        print("[SaveStateManager] Saving thumbnail: gameName='\(gameName)', systemID='\(systemID)', slot=\(slot)")
-        print("[SaveStateManager] Thumbnail path: \(thumbURL.path)")
+        LoggerService.debug(category: "SaveStateManager", "Saving thumbnail: gameName='\(gameName)', systemID='\(systemID)', slot=\(slot), path: \(thumbURL.path)")
         
         // Downscale to 320x240 for consistent thumbnails
         let targetSize = NSSize(width: 320, height: 240)
@@ -240,7 +239,7 @@ class SaveStateManager: ObservableObject, @unchecked Sendable {
         
         // Convert to PNG data using CGImageDestination (more reliable than NSBitmapImageRep)
         guard let cgImage = scaledImage.cgImage(forProposedRect: nil, context: nil, hints: nil) else {
-            print("[SaveStateManager] ERROR: Could not get CGImage from NSImage")
+            LoggerService.info(category: "SaveStateManager", "ERROR: Could not get CGImage from NSImage")
             return
         }
         
@@ -250,19 +249,19 @@ class SaveStateManager: ObservableObject, @unchecked Sendable {
             1,
             nil
         ) else {
-            print("[SaveStateManager] ERROR: Could not create CGImageDestination")
+            LoggerService.info(category: "SaveStateManager", "ERROR: Could not create CGImageDestination")
             return
         }
         
         CGImageDestinationAddImage(destination, cgImage, nil)
         if !CGImageDestinationFinalize(destination) {
-            print("[SaveStateManager] ERROR: Could not finalize PNG file")
+            LoggerService.info(category: "SaveStateManager", "ERROR: Could not finalize PNG file")
             return
         }
         
         // Verify file was created
         guard FileManager.default.fileExists(atPath: thumbURL.path) else {
-            print("[SaveStateManager] ERROR: Thumbnail file was not created")
+            LoggerService.debug(category: "SaveStateManager", "ERROR: Thumbnail file was not created")
             return
         }
     }
@@ -275,20 +274,17 @@ class SaveStateManager: ObservableObject, @unchecked Sendable {
     /// - Returns: The loaded NSImage, or nil if not found
     func loadThumbnail(gameName: String, systemID: String, slot: Int) -> NSImage? {
         let thumbURL = thumbnailPath(gameName: gameName, systemID: systemID, slot: slot)
-        print("[SaveStateManager] Loading thumbnail: gameName='\(gameName)', systemID='\(systemID)', slot=\(slot)")
-        print("[SaveStateManager] Thumbnail path: \(thumbURL.path)")
-        let exists = FileManager.default.fileExists(atPath: thumbURL.path)
-        print("[SaveStateManager] File exists: \(exists)")
+        LoggerService.debug(category: "SaveStateManager", "Loading thumbnail: gameName='\(gameName)', systemID='\(systemID)', slot=\(slot)")
         
         // Also check what other files exist in the directory
-        if !exists {
+        if !FileManager.default.fileExists(atPath: thumbURL.path) {
             let dir = thumbURL.deletingLastPathComponent()
             if let contents = try? FileManager.default.contentsOfDirectory(atPath: dir.path) {
-                print("[SaveStateManager] Directory contents: \(contents)")
+                LoggerService.debug(category: "SaveStateManager", "Thumbnail not found, directory contents: \(contents)")
             }
         }
         
-        guard exists else { return nil }
+        guard FileManager.default.fileExists(atPath: thumbURL.path) else { return nil }
         return NSImage(contentsOf: thumbURL)
     }
     
@@ -405,7 +401,7 @@ class SaveStateManager: ObservableObject, @unchecked Sendable {
             }
             
             guard decompressedSize > 0 else {
-                print("[SaveStateManager] ERROR: Decompression failed (got \(decompressedSize) bytes)")
+                LoggerService.info(category: "SaveStateManager", "ERROR: Decompression failed (got \(decompressedSize) bytes)")
                 return nil
             }
             

@@ -183,7 +183,7 @@ struct SlotPickerSheet: View {
             slotThumbnails[slot] = nil
             refreshSlotInfo()
         } catch {
-            print("[SlotPicker] Error deleting state: \(error)")
+            LoggerService.debug(category: "SaveState", "Error deleting state: \(error)")
         }
     }
 }

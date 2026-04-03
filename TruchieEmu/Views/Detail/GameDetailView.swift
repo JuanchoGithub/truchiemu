@@ -453,7 +453,7 @@ struct GameDetailView: View {
                     }
                 } catch {
                     await MainActor.run {
-                        print("[Achievements] Failed to load achievements: \(error.localizedDescription)")
+                        LoggerService.debug(category: "Achievements", "Failed to load achievements: \(error.localizedDescription)")
                         gameAchievements = []
                         isAchievementsLoading = false
                     }
@@ -1163,10 +1163,10 @@ struct GameDetailView: View {
         
         if let image = NSImage(contentsOf: directURL) {
             currentBezelImage = image
-            print("[BezelPreview] Loaded from direct path: \(directURL.path)")
+            LoggerService.debug(category: "Bezel", "Loaded preview from direct path: \(directURL.path)")
             return
         }
-        print("[BezelPreview] Direct path not found: \(directURL.path)")
+        LoggerService.debug(category: "Bezel", "Direct path not found: \(directURL.path)")
         
         // Strategy 2: Try with .png extension appended (in case bezelFileName is just the base name)
         let baseName = bezelFileName.isEmpty ? currentROM.displayName : bezelFileName
@@ -1178,20 +1178,20 @@ struct GameDetailView: View {
         
         if let image = NSImage(contentsOf: urlWithExt) {
             currentBezelImage = image
-            print("[BezelPreview] Loaded from path with extension: \(urlWithExt.path)")
+            LoggerService.debug(category: "Bezel", "Loaded preview from path with extension: \(urlWithExt.path)")
             return
         }
-        print("[BezelPreview] Path with extension not found: \(urlWithExt.path)")
+        LoggerService.debug(category: "Bezel", "Path with extension not found: \(urlWithExt.path)")
         
         // Strategy 3: Try auto-match via BezelManager
         let result = BezelManager.shared.resolveBezel(systemID: systemID, rom: currentROM)
         if let entry = result.entry, let url = entry.localURL,
            FileManager.default.fileExists(atPath: url.path) {
             currentBezelImage = NSImage(contentsOf: url)
-            print("[BezelPreview] Loaded from BezelManager resolve: \(url.path)")
+            LoggerService.debug(category: "Bezel", "Loaded preview from BezelManager resolve: \(url.path)")
             return
         }
-        print("[BezelPreview] BezelManager resolve failed")
+        LoggerService.debug(category: "Bezel", "BezelManager resolve failed")
         
         // Strategy 4: Scan the bezel directory for a matching file
         let bezelDir = BezelStorageManager.shared.systemBezelsDirectory(for: systemID)
@@ -1200,25 +1200,23 @@ struct GameDetailView: View {
             let searchNameLower = searchName.lowercased()
             let fileManager = FileManager.default
             
-            if let enumerator = fileManager.enumerator(at: bezelDir, includingPropertiesForKeys: nil) {
-                for case let fileURL as URL in enumerator {
-                    if fileURL.pathExtension.lowercased() == "png" {
-                        let fileBaseName = fileURL.deletingPathExtension().lastPathComponent.lowercased()
-                        if fileBaseName == searchNameLower {
-                            if let image = NSImage(contentsOf: fileURL) {
-                                currentBezelImage = image
-                                print("[BezelPreview] Loaded from directory scan: \(fileURL.path)")
-                                return
-                            }
+            if let fileURLs = try? fileManager.contentsOfDirectory(at: bezelDir, includingPropertiesForKeys: nil) {
+                for fileURL in fileURLs where fileURL.pathExtension.lowercased() == "png" {
+                    let fileBaseName = fileURL.deletingPathExtension().lastPathComponent.lowercased()
+                    if fileBaseName == searchNameLower {
+                        if let image = NSImage(contentsOf: fileURL) {
+                            currentBezelImage = image
+                            LoggerService.debug(category: "Bezel", "Loaded preview from directory scan: \(fileURL.path)")
+                            return
                         }
                     }
                 }
             }
         }
-        print("[BezelPreview] Directory scan found no match")
+        LoggerService.debug(category: "Bezel", "Directory scan found no match")
         
         currentBezelImage = nil
-        print("[BezelPreview] No bezel image found for \(currentROM.displayName)")
+        LoggerService.debug(category: "Bezel", "No bezel image found for \(currentROM.displayName)")
     }
 
     /// Auto-match bezel for the current game.
@@ -1226,11 +1224,11 @@ struct GameDetailView: View {
     private func autoMatchBezel() {
         guard let systemID = currentROM.systemID else { return }
         
-        print("[Bezel] Auto-matching bezel for \(currentROM.displayName) (system: \(systemID))")
+        LoggerService.info(category: "Bezel", "Auto-matching bezel for \(currentROM.displayName) (system: \(systemID))")
         let result = BezelManager.shared.resolveBezel(systemID: systemID, rom: currentROM, preferAutoMatch: true)
         
         if let entry = result.entry {
-            print("[Bezel] Auto-matched bezel: \(entry.filename) (method: \(result.resolutionMethod))")
+            LoggerService.info(category: "Bezel", "Auto-matched bezel: \(entry.filename) (method: \(result.resolutionMethod))")
             var updated = currentROM
             updated.settings.bezelFileName = entry.filename
             library.updateROM(updated)
@@ -1242,7 +1240,7 @@ struct GameDetailView: View {
             
             showManualResult("Auto-matched bezel: \(entry.id)", tone: .success)
         } else {
-            print("[Bezel] No bezel found for \(currentROM.displayName)")
+            LoggerService.debug(category: "Bezel", "No bezel found for \(currentROM.displayName)")
             showManualResult("No bezel found for \(currentROM.displayName)", tone: .warning)
         }
     }
@@ -1495,7 +1493,7 @@ struct GameDetailView: View {
                 HStack(spacing: 6) {
                     Button {
                         Task {
-                            print("[CheatUI] === Download button tapped ===")
+                            LoggerService.info(category: "Cheats", "Download button tapped")
                             downloadMessage = "Starting download..."
                             downloadMessageTone = .info
                             
@@ -1736,7 +1734,7 @@ struct GameDetailView: View {
                     }
                 }
             case .failure(let error):
-                print("File import error: \(error)")
+                LoggerService.debug(category: "Cheats", "File import error: \(error)")
             }
         }
     }

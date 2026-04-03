@@ -125,20 +125,20 @@ class CLIManager: ObservableObject {
                 i += 1
                 if i < arguments.count {
                     let uniformStr = arguments[i]
-                    print("[CLI] Parsing shader uniform: '\(uniformStr)'")
+                    LoggerService.debug(category: "CLI", "Parsing shader uniform: '\(uniformStr)'")
                     // Remove surrounding quotes if present
                     let cleanStr = uniformStr.trimmingCharacters(in: CharacterSet(charactersIn: "\"'"))
                     if let eqIndex = cleanStr.firstIndex(of: "=") {
                         let key = String(cleanStr[..<eqIndex])
                         let valueStr = String(cleanStr[cleanStr.index(after: eqIndex)...])
                         if let value = Float(valueStr) {
-                            print("[CLI] Shader uniform override: \(key) = \(value)")
+                            LoggerService.debug(category: "CLI", "Shader uniform override: \(key) = \(value)")
                             shaderUniformOverrides[key] = value
                         } else {
-                            print("[CLI] Failed to parse shader uniform value: '\(valueStr)'")
+                            LoggerService.info(category: "CLI", "Failed to parse shader uniform value: '\(valueStr)'")
                         }
                     } else {
-                        print("[CLI] No '=' found in shader uniform: '\(cleanStr)'")
+                        LoggerService.debug(category: "CLI", "No '=' found in shader uniform: '\(cleanStr)'")
                     }
                 }
 
@@ -216,43 +216,43 @@ class CLIManager: ObservableObject {
     @MainActor
     private func handleLaunch(options: CLILaunchOptions) -> Bool {
         guard let romPath = options.romPath else {
-            print("[CLI] Error: No ROM path specified")
+            LoggerService.info(category: "CLI", "Error: No ROM path specified")
             return false
         }
         
         // Verify ROM file exists
         if !FileManager.default.fileExists(atPath: romPath) {
-            print("[CLI] Error: ROM file not found: \(romPath)")
+            LoggerService.info(category: "CLI", "Error: ROM file not found: \(romPath)")
             return false
         }
         
         isHandlingCLI = true
         currentCLICommand = "Launching: \(romPath)"
         
-        print("[CLI] Launching game: \(romPath)")
+        LoggerService.info(category: "CLI", "Launching game: \(romPath)")
         if let coreID = options.coreID {
-            print("[CLI] Core: \(coreID)")
+            LoggerService.debug(category: "CLI", "Core: \(coreID)")
         }
         if let slot = options.slot {
-            print("[CLI] Slot: \(slot)")
+            LoggerService.debug(category: "CLI", "Slot: \(slot)")
         }
         if let shader = options.shaderPresetID {
-            print("[CLI] Shader: \(shader)")
+            LoggerService.debug(category: "CLI", "Shader: \(shader)")
         }
         if options.achievementsEnabled {
-            print("[CLI] Achievements: Enabled" + (options.hardcoreMode ? " (Hardcore)" : ""))
+            LoggerService.info(category: "CLI", "Achievements: Enabled" + (options.hardcoreMode ? " (Hardcore)" : ""))
         }
         if options.cheatsEnabled {
-            print("[CLI] Cheats: Enabled")
+            LoggerService.debug(category: "CLI", "Cheats: Enabled")
         }
         if !options.coreOptions.isEmpty {
-            print("[CLI] Core options: \(options.coreOptions)")
+            LoggerService.debug(category: "CLI", "Core options: \(options.coreOptions)")
         }
         if options.headless {
-            print("[CLI] Mode: Headless")
+            LoggerService.info(category: "CLI", "Mode: Headless")
         }
         if !options.shaderUniformOverrides.isEmpty {
-            print("[CLI] Shader uniform overrides: \(options.shaderUniformOverrides)")
+            LoggerService.debug(category: "CLI", "Shader uniform overrides: \(options.shaderUniformOverrides)")
         }
         
         // Resolve system ID from ROM path
@@ -262,7 +262,7 @@ class CLIManager: ObservableObject {
         let coreID = options.coreID ?? selectCore(systemID: systemID)
         
         guard let coreID = coreID else {
-            print("[CLI] Error: Could not determine core for ROM")
+            LoggerService.info(category: "CLI", "Error: Could not determine core for ROM")
             isHandlingCLI = false
             currentCLICommand = nil
             return false
@@ -274,23 +274,23 @@ class CLIManager: ObservableObject {
         // Apply shader preset if specified
         if let shaderPresetID = options.shaderPresetID {
             rom.settings.shaderPresetID = shaderPresetID
-            print("[CLI] Applied shader preset: \(shaderPresetID)")
+            LoggerService.debug(category: "CLI", "Applied shader preset: \(shaderPresetID)")
         }
         
         // Apply core options if specified
         if !options.coreOptions.isEmpty {
             CoreOptionsManager.shared.saveOverride(for: coreID, values: options.coreOptions)
-            print("[CLI] Applied \(options.coreOptions.count) core option(s)")
+            LoggerService.debug(category: "CLI", "Applied \(options.coreOptions.count) core option(s)")
         }
         
         // Apply auto-load/save settings
         if options.autoLoad {
             UserDefaults.standard.set(true, forKey: "auto_load_on_start")
-            print("[CLI] Auto-load enabled")
+            LoggerService.debug(category: "CLI", "Auto-load enabled")
         }
         if options.autoSave {
             UserDefaults.standard.set(true, forKey: "auto_save_on_exit")
-            print("[CLI] Auto-save enabled")
+            LoggerService.debug(category: "CLI", "Auto-save enabled")
         }
         
         // Handle headless mode
@@ -304,8 +304,7 @@ class CLIManager: ObservableObject {
         RunningGamesTracker.shared.resetAll()
         
         // Normal UI mode - use unified GameLauncher for consistent launch behavior
-        print("[CLI] Creating game window...")
-        print("[CLI] System ID: \(systemID), Core ID: \(coreID)")
+        LoggerService.info(category: "CLI", "Creating game window (system: \(systemID), core: \(coreID))")
         
         // Use unified GameLauncher for all launch paths
         let controller = GameLauncher.shared.launchGame(
@@ -316,7 +315,7 @@ class CLIManager: ObservableObject {
         )
         
         guard let controller = controller, let gameWindow = controller.window else {
-            print("[CLI] Error: Failed to create game window")
+            LoggerService.info(category: "CLI", "Error: Failed to create game window")
             isHandlingCLI = false
             currentCLICommand = nil
             return false
@@ -327,33 +326,33 @@ class CLIManager: ObservableObject {
         gameWindow.makeKeyAndOrderFront(nil)
         NSApp.activate(ignoringOtherApps: true)
         
-        print("[CLI] Game window ordered front. Windows: \(NSApp.windows.map { $0.title })")
+        LoggerService.debug(category: "CLI", "Game window ordered front")
         
         // Close the CLI placeholder window immediately (on next run loop iteration after game window is shown)
         DispatchQueue.main.async {
-            print("[CLI] Starting cleanup. Current windows: \(NSApp.windows.map { "\($0.title)(\($0 == gameWindow ? "game" : "other"))" })")
+            LoggerService.debug(category: "CLI", "Starting cleanup. Current windows: \(NSApp.windows.count)")
             
             for window in NSApp.windows {
                 if window == gameWindow { 
-                    print("[CLI] Keeping game window")
+                    LoggerService.debug(category: "CLI", "Keeping game window")
                     continue 
                 }
                 // Only close CLI placeholder windows, not other important windows
                 if window.title.isEmpty || window.title == "TruchieEmu" {
-                    print("[CLI] Closing window: '\(window.title)'")
+                    LoggerService.debug(category: "CLI", "Closing window: '\(window.title)'")
                     window.close()
                 }
             }
-            print("[CLI] Cleanup complete")
+            LoggerService.debug(category: "CLI", "Cleanup complete")
         }
         
-        print("[CLI] Game window created")
+        LoggerService.info(category: "CLI", "Game window created successfully")
         return true
     }
     
     @MainActor
     private func handleHeadlessLaunch(rom: ROM, coreID: String, timeout: TimeInterval) -> Bool {
-        print("[CLI] Headless mode - launching without UI")
+        LoggerService.info(category: "CLI", "Headless mode - launching without UI")
         
         let runner = EmulatorRunner.forSystem(rom.systemID ?? "default")
         
@@ -370,12 +369,12 @@ class CLIManager: ObservableObject {
                 try? await Task.sleep(nanoseconds: 500_000_000) // 500ms
                 await MainActor.run {
                     let hasFrames = localRunner.currentFrameTexture != nil
-                    print("[CLI] Timeout reached (timeout: \(timeout)s)")
+                    LoggerService.info(category: "CLI", "Timeout reached (timeout: \(timeout)s)")
                     if hasFrames {
-                        print("[CLI] SUCCESS: Game rendered frames")
+                        LoggerService.info(category: "CLI", "SUCCESS: Game rendered frames")
                         exit(0)
                     } else {
-                        print("[CLI] FAILURE: No frames received within timeout")
+                        LoggerService.info(category: "CLI", "FAILURE: No frames received within timeout")
                         exit(1)
                     }
                 }
@@ -385,7 +384,7 @@ class CLIManager: ObservableObject {
         // Use the runner's launch method which handles ScummVM ZIP extraction
         runner.launch(rom: rom, coreID: coreID)
         
-        print("[CLI] Headless emulation started (timeout: \(timeout)s)")
+        LoggerService.info(category: "CLI", "Headless emulation started (timeout: \(timeout)s)")
         return true
     }
     

@@ -467,7 +467,7 @@ static void bridge_video_refresh(const void *data, unsigned width, unsigned heig
             finalData = [g_instance readHWRenderedPixels:width height:height];
             pitch = width * 4; // RGBA8888 for GL readback
             format = RETRO_PIXEL_FORMAT_XRGB8888; // glReadPixels with GL_BGRA + UNSIGNED_INT_8_8_8_8_REV produces 32-bit data
-            NSLog(@"[Bridge-HW-R] HW frame %ux%u pitch=%d format=XRGB8888", width, height, pitch);
+            NSLog(@"[Bridge-HW-R] HW frame %ux%u pitch=%zu format=XRGB8888", width, height, pitch);
         }
         [g_instance handleVideoData:finalData width:width height:height pitch:(int)pitch format:format];
     }

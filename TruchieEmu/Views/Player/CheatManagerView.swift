@@ -197,7 +197,7 @@ struct CheatManagerView: View {
                     }
                 }
             case .failure(let error):
-                print("File import error: \(error)")
+                LoggerService.debug(category: "Cheats", "File import error: \(error)")
             }
         }
     }
@@ -436,7 +436,7 @@ class CheatManager: ObservableObject {
         }
         
         guard let cheats = CheatParser.parseChtFile(url: url) else {
-            print("Failed to parse cheat file: \(url.path)")
+            LoggerService.debug(category: "Cheats", "Failed to parse cheat file: \(url.path)")
             return
         }
         

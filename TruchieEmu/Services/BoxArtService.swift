@@ -110,7 +110,7 @@ class BoxArtService: ObservableObject {
         let systemID = rom.systemID ?? ""
         let ssSystemID = screenScraperSystemID(for: systemID)
 
-        print("Searching ScreenScraper for \(rom.name)...")
+        LoggerService.debug(category: "BoxArt", "Searching ScreenScraper for \(rom.name)...")
 
         let query = rom.displayName.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed) ?? ""
         var urlStr = "https://www.screenscraper.fr/api2/jeuRecherche.php"
@@ -123,13 +123,13 @@ class BoxArtService: ObservableObject {
               let (data, _) = try? await URLSession.shared.data(from: url),
               let json = try? JSONSerialization.jsonObject(with: data) as? [String: Any],
               let response = json["response"] as? [String: Any] else {
-            print("ScreenScraper API request failed for \(rom.name)")
+            LoggerService.debug(category: "BoxArt", "ScreenScraper API request failed for \(rom.name)")
             return nil
         }
 
         guard let jeu = response["jeu"] as? [String: Any],
               let medias = jeu["medias"] as? [[String: Any]] else {
-            print("No results found on ScreenScraper for \(rom.name)")
+            LoggerService.debug(category: "BoxArt", "No results found on ScreenScraper for \(rom.name)")
             return nil
         }
 
@@ -137,11 +137,11 @@ class BoxArtService: ObservableObject {
         let box = medias.first(where: { ($0["type"] as? String) == "box-2D" })
         guard let urlString = box?["url"] as? String,
               let artURL = URL(string: urlString) else {
-            print("No box-2D art found on ScreenScraper for \(rom.name)")
+            LoggerService.debug(category: "BoxArt", "No box-2D art found on ScreenScraper for \(rom.name)")
             return nil
         }
 
-        print("Found ScreenScraper boxart URL for \(rom.name): \(urlString)")
+        LoggerService.debug(category: "BoxArt", "Found ScreenScraper boxart URL for \(rom.name): \(urlString)")
         return await downloadAndCache(artURL: artURL, for: rom)
     }
 
@@ -189,10 +189,10 @@ class BoxArtService: ObservableObject {
             let (tmpURL, _) = try await sess.download(from: artURL)
             try FileManager.default.moveItem(at: tmpURL, to: localURL)
             await ImageCache.shared.removeImage(for: localURL)
-            print("Successfully cached boxart for \(rom.name) at \(localURL.lastPathComponent)")
+            LoggerService.debug(category: "BoxArt", "Successfully cached boxart for \(rom.name) at \(localURL.lastPathComponent)")
             return localURL
         } catch {
-            print("Error downloading boxart for \(rom.name): \(error.localizedDescription)")
+            LoggerService.debug(category: "BoxArt", "Error downloading boxart for \(rom.name): \(error.localizedDescription)")
             return nil
         }
     }
@@ -210,7 +210,7 @@ class BoxArtService: ObservableObject {
             useCRC: useCRCMatchingForThumbnails,
             fallbackFilename: fallbackToFilenameForThumbnails
         ), !gameTitle.isEmpty else {
-            print("Libretro thumbnails: could not resolve title for \(rom.name)")
+            LoggerService.debug(category: "BoxArt", "Libretro thumbnails: could not resolve title for \(rom.name)")
             return nil
         }
 
@@ -218,7 +218,7 @@ class BoxArtService: ObservableObject {
         let safeStem = LibretroThumbnailResolver.libretroFilesystemSafeName(gameTitle)
         for stem in [gameTitle, safeStem] where !stem.isEmpty {
             if let local = LibretroThumbnailResolver.resolveLocalThumbnail(named: stem, in: localBoxArtDir) {
-                print("Using local boxart \(local.lastPathComponent) for \(rom.name)")
+                LoggerService.debug(category: "BoxArt", "Using local boxart \(local.lastPathComponent) for \(rom.name)")
                 return local
             }
         }
@@ -241,7 +241,7 @@ class BoxArtService: ObservableObject {
             }
         }
 
-        print("Libretro thumbnails: no asset found for \(rom.name) (\(gameTitle))")
+        LoggerService.debug(category: "BoxArt", "Libretro thumbnails: no asset found for \(rom.name) (\(gameTitle))")
         return nil
     }
 
@@ -266,7 +266,7 @@ class BoxArtService: ObservableObject {
             !FileManager.default.fileExists(atPath: rom.boxArtLocalPath.path)
         }
         guard !missing.isEmpty else {
-            print("No ROMs missing boxart cache, skipping Libretro batch.")
+            LoggerService.debug(category: "BoxArt", "No ROMs missing boxart cache, skipping Libretro batch.")
             return
         }
 
@@ -327,11 +327,11 @@ class BoxArtService: ObservableObject {
     func batchDownloadBoxArtGoogle(for roms: [ROM], library: ROMLibrary) async {
         let missingRoms = roms.filter { $0.boxArtPath == nil }
         guard !missingRoms.isEmpty else { 
-            print("No ROMs missing boxart, skipping batch download.")
+            LoggerService.info(category: "BoxArt", "No ROMs missing boxart, skipping batch download.")
             return 
         }
         
-        print("Starting batch boxart download for \(missingRoms.count) ROMs...")
+        LoggerService.info(category: "BoxArt", "Starting batch boxart download for \(missingRoms.count) ROMs...")
         
         await MainActor.run {
             self.downloadQueueCount = missingRoms.count
@@ -380,11 +380,11 @@ class BoxArtService: ObservableObject {
         let systemIdentifier = LibretroThumbnailResolver.effectiveThumbnailSystemID(for: rom)?.uppercased() ?? ""
         let cleanName = rom.name.replacingOccurrences(of: "_", with: " ")
         let query = "\(cleanName) \(systemIdentifier) BoxArt"
-        print("Searching Google for \(rom.name): \"\(query)\"")
+        LoggerService.debug(category: "BoxArt", "Searching Google for \(rom.name): \"\(query)\"")
         
         guard let encodedQuery = query.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed),
               let url = URL(string: "https://www.google.com/search?q=\(encodedQuery)&num=1&udm=2&source=lnt&tbs=isz:m") else {
-            print("Failed to encode query for \(rom.name)")
+            LoggerService.debug(category: "BoxArt", "Failed to encode query for \(rom.name)")
             return nil
         }
         
@@ -408,13 +408,13 @@ class BoxArtService: ObservableObject {
             attempts += 1
             if attempts < maxAttempts {
                 let delay = UInt64(pow(2.0, Double(attempts)) * 1_000_000_000)
-                print("Google search throttled or failed for \(rom.name), retrying in \(Int(pow(2.0, Double(attempts))))s...")
+                LoggerService.debug(category: "BoxArt", "Google search throttled or failed for \(rom.name), retrying in \(Int(pow(2.0, Double(attempts))))s...")
                 try? await Task.sleep(nanoseconds: delay)
             }
         }
         
         guard let html = html else { 
-            print("Failed to fetch Google Search results for \(rom.name) after \(maxAttempts) attempts.")
+            LoggerService.debug(category: "BoxArt", "Failed to fetch Google Search results for \(rom.name) after \(maxAttempts) attempts.")
             return nil 
         }
         
@@ -437,7 +437,7 @@ class BoxArtService: ObservableObject {
         }
         
         guard var finalUrl = imageUrlString else { 
-            print("No boxart image URL found in Google results for \(rom.name)")
+            LoggerService.debug(category: "BoxArt", "No boxart image URL found in Google results for \(rom.name)")
             return nil 
         }
         
@@ -445,10 +445,10 @@ class BoxArtService: ObservableObject {
         finalUrl = finalUrl.replacingOccurrences(of: "\\u0026", with: "&")
         finalUrl = finalUrl.removingPercentEncoding ?? finalUrl
         
-        print("Found image URL for \(rom.name): \(finalUrl)")
+        LoggerService.debug(category: "BoxArt", "Found image URL for \(rom.name)")
         
         guard let artURL = URL(string: finalUrl) else { 
-            print("Malformed image URL for \(rom.name): \(finalUrl)")
+            LoggerService.debug(category: "BoxArt", "Malformed image URL for \(rom.name): \(finalUrl)")
             return nil 
         }
         

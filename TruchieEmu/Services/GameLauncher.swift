@@ -34,6 +34,7 @@ class GameLauncher: ObservableObject {
         let coreOptions: [String: String]
         let autoLoad: Bool
         let autoSave: Bool
+        let bezelFileName: String
         
         init(
             rom: ROM,
@@ -70,6 +71,9 @@ class GameLauncher: ObservableObject {
             // Resolve auto save/load
             self.autoLoad = autoLoad ?? UserDefaults.standard.bool(forKey: "auto_load_on_start")
             self.autoSave = autoSave ?? UserDefaults.standard.bool(forKey: "auto_save_on_exit")
+            
+            // Resolve bezel
+            self.bezelFileName = rom.settings.bezelFileName
         }
     }
     
@@ -94,7 +98,7 @@ class GameLauncher: ObservableObject {
     ) -> StandaloneGameWindowController? {
         // Check if already launching
         guard !isLaunching else {
-            print("[GameLauncher] Already launching, ignoring")
+            LoggerService.debug(category: "GameLauncher", "Already launching, ignoring duplicate request")
             return nil
         }
         
@@ -116,13 +120,16 @@ class GameLauncher: ObservableObject {
             shaderUniformOverrides: shaderUniformOverrides
         )
         
-        print("[GameLauncher] Launching: \(rom.displayName)")
-        print("[GameLauncher] Core: \(coreID), Slot: \(slotToLoad.map { "\($0)" } ?? "none")")
-        print("[GameLauncher] Shader: \(config.shaderPresetID)")
-        print("[GameLauncher] Achievements: \(config.achievementsEnabled)" + (config.hardcoreMode ? " (Hardcore)" : ""))
-        print("[GameLauncher] Cheats: \(config.cheatsEnabled)")
-        print("[GameLauncher] Core options: \(config.coreOptions.count) override(s)")
-        print("[GameLauncher] Auto-load: \(config.autoLoad), Auto-save: \(config.autoSave)")
+        let systemID = rom.systemID ?? "default"
+        
+        LoggerService.info(category: "GameLauncher", "Launching game: \(rom.displayName)")
+        LoggerService.info(category: "GameLauncher", "ROM path: \(rom.path.path)")
+        LoggerService.info(category: "GameLauncher", "Core: \(coreID), System: \(systemID), Slot: \(slotToLoad.map { "\($0)" } ?? "none")")
+        LoggerService.info(category: "GameLauncher", "Shader: \(config.shaderPresetID), Uniform overrides: \(config.shaderUniformOverrides.count)")
+        LoggerService.info(category: "GameLauncher", "Bezel: \(config.bezelFileName.isEmpty ? "auto-match" : (config.bezelFileName == "none" ? "disabled" : config.bezelFileName))")
+        LoggerService.info(category: "GameLauncher", "Achievements: \(config.achievementsEnabled), Hardcore: \(config.hardcoreMode)")
+        LoggerService.info(category: "GameLauncher", "Cheats: \(config.cheatsEnabled), Core options: \(config.coreOptions.count) override(s)")
+        LoggerService.info(category: "GameLauncher", "Auto-load: \(config.autoLoad), Auto-save: \(config.autoSave)")
         
         // Apply all settings
         applyLaunchConfiguration(config)
@@ -131,7 +138,6 @@ class GameLauncher: ObservableObject {
         library?.markPlayed(rom)
         
         // Create runner and window controller
-        let systemID = rom.systemID ?? "default"
         let runner = EmulatorRunner.forSystem(systemID)
         let controller = StandaloneGameWindowController(runner: runner)
         
@@ -152,7 +158,7 @@ class GameLauncher: ObservableObject {
         isLaunching = false
         currentLaunchROM = nil
         
-        print("[GameLauncher] Launch complete: \(rom.displayName)")
+        LoggerService.info(category: "GameLauncher", "Launch complete: \(rom.displayName)")
         completion?(controller)
         return controller
     }
@@ -164,7 +170,7 @@ class GameLauncher: ObservableObject {
         // 1. Apply shader preset
         if let preset = ShaderPreset.preset(id: config.shaderPresetID) {
             ShaderManager.shared.activatePreset(preset)
-            print("[GameLauncher] Activated shader: \(preset.name)")
+            LoggerService.debug(category: "GameLauncher", "Activated shader: \(preset.name)")
         }
         
         // 1.5. Apply shader uniform overrides (after preset activation to override defaults)
@@ -172,13 +178,13 @@ class GameLauncher: ObservableObject {
             for (name, value) in config.shaderUniformOverrides {
                 ShaderManager.shared.updateUniform(name, value: value)
             }
-            print("[GameLauncher] Applied \(config.shaderUniformOverrides.count) shader uniform override(s): \(config.shaderUniformOverrides)")
+            LoggerService.debug(category: "GameLauncher", "Applied \(config.shaderUniformOverrides.count) shader uniform override(s): \(config.shaderUniformOverrides)")
         }
         
         // 2. Apply core options (persisted overrides are loaded automatically by the bridge)
         if !config.coreOptions.isEmpty {
             CoreOptionsManager.shared.saveOverride(for: config.coreID, values: config.coreOptions)
-            print("[GameLauncher] Applied \(config.coreOptions.count) core option(s)")
+            LoggerService.debug(category: "GameLauncher", "Applied \(config.coreOptions.count) core option(s)")
         }
         
         // 3. Apply auto-load/save preferences

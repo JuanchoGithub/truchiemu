@@ -128,7 +128,7 @@ class BezelStorageManager: ObservableObject {
             try ensureDirectoriesExist()
             NSWorkspace.shared.selectFile(nil, inFileViewerRootedAtPath: bezelRootDirectory.path)
         } catch {
-            print("[BezelStorageManager] Failed to open bezel directory: \(error)")
+            LoggerService.debug(category: "Bezel", "Failed to open bezel directory: \(error)")
         }
     }
     
@@ -200,7 +200,7 @@ class BezelStorageManager: ObservableObject {
         do {
             try ensureDirectoriesExist()
         } catch {
-            print("[BezelStorageManager] Failed to create directories: \(error)")
+            LoggerService.debug(category: "Bezel", "Failed to create directories: \(error)")
         }
         
         return true
@@ -310,7 +310,7 @@ class BezelStorageManager: ObservableObject {
             try fm.moveItem(at: source, to: destination)
         }
         
-        print("[BezelStorageManager] Migrated \(totalItems) items to \(newLocation.path)")
+        LoggerService.info(category: "Bezel", "Migrated \(totalItems) items to \(newLocation.path)")
     }
     
     /// Clear all bezel files from current location.

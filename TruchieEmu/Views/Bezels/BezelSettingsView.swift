@@ -164,7 +164,7 @@ struct BezelSettingsView: View {
                                                   forKey: BezelUserDefaultsKeys.customFolderPath)
                         try storageManager.ensureDirectoriesExist()
                     } catch {
-                        print("[BezelSettings] Failed to migrate: \(error)")
+                        LoggerService.debug(category: "Bezel", "Failed to migrate: \(error)")
                     }
                 }
             } else {
@@ -189,7 +189,7 @@ struct BezelSettingsView: View {
                                               forKey: BezelUserDefaultsKeys.storageMode)
                     try storageManager.ensureDirectoriesExist()
                 } catch {
-                    print("[BezelSettings] Failed to migrate: \(error)")
+                    LoggerService.debug(category: "Bezel", "Failed to migrate: \(error)")
                 }
             }
         }
@@ -469,7 +469,7 @@ struct BezelSettingsView: View {
                 do {
                     try storageManager.clearAllBezels()
                 } catch {
-                    print("[BezelSettings] Failed to clear bezels: \(error)")
+                    LoggerService.debug(category: "Bezel", "Failed to clear bezels: \(error)")
                 }
             }
             Button("Cancel", role: .cancel) {}

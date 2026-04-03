@@ -490,7 +490,7 @@ struct BezelBrowserView: View {
     private func applyBezel(_ entry: BezelEntry) {
         // This needs a ROM context - for now show the action
         // In practice, this would update the current game's bezel setting
-        print("[BezelBrowser] Would apply \(entry.displayName) to current game")
+        LoggerService.debug(category: "Bezel", "Would apply \(entry.displayName) to current game")
     }
     
     /// Open bezel in Finder
@@ -516,7 +516,7 @@ struct BezelBrowserView: View {
                 }
             } catch {
                 // Preview failed, continue
-                print("[BezelBrowser] Failed to load preview for \(entry.filename): \(error.localizedDescription)")
+                LoggerService.debug(category: "Bezel", "Failed to load preview for \(entry.filename): \(error.localizedDescription)")
             }
         }
     }
