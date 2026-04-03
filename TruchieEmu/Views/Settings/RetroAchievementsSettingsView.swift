@@ -164,6 +164,14 @@ struct RetroAchievementsSettingsView: View {
                         Text("Enter your RetroAchievements credentials. Your password is only used to obtain an API token and is never stored.")
                             .font(.caption)
                             .foregroundColor(.secondary)
+                        
+                        HStack(spacing: 4) {
+                            Text("Don't have an account?")
+                                .font(.caption)
+                                .foregroundColor(.secondary)
+                            Link("Register on RetroAchievements", destination: URL(string: "https://retroachievements.org/createaccount.php")!)
+                                .font(.caption)
+                        }
                     }
                 }
                 .padding()
