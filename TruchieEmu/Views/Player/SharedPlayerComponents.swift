@@ -790,11 +790,12 @@ class StandaloneGameWindowController: NSWindowController, NSWindowDelegate, Obse
         containerView.windowController = self
         containerView.autoresizingMask = [.width, .height]
         containerView.wantsLayer = true
+        // Black background on container shows through where Metal view doesn't cover
+        containerView.layer?.backgroundColor = NSColor.black.cgColor
         
-        // Metal view will be sized dynamically based on game aspect ratio
-        // For now, start with full size but we'll adjust it when game starts
+        // Metal view will be sized dynamically based on bezel playable area
+        // Start centered at full size, but NO autoresizing - we control the frame manually
         mtkView.frame = containerView.bounds
-        mtkView.autoresizingMask = [.width, .height]
         containerView.addSubview(mtkView)
         
         // Force update tracking areas
@@ -874,6 +875,34 @@ class StandaloneGameWindowController: NSWindowController, NSWindowDelegate, Obse
             let screenBounds = window?.screen?.visibleFrame ?? NSScreen.main?.visibleFrame ?? NSRect(x: 0, y: 0, width: 1920, height: 1080)
             bezelLayer.setBezelImageForScreen(bezelImage, screenSize: screenBounds.size)
         }
+        
+        // Update Metal view frame to match bezel playable area
+        updateMetalViewFrameForBezel()
+    }
+    
+    /// Updates the Metal view frame to match the playable area of the bezel.
+    /// This ensures the bezel is visible around the edges of the game content.
+    private func updateMetalViewFrameForBezel() {
+        guard let containerView = window?.contentView as? GameContainerView else {
+            return
+        }
+        
+        // Check if bezel exists and is visible
+        guard let bezelLayer = bezelBackgroundLayer, !bezelLayer.isHidden else {
+            // No bezel visible - Metal view fills the entire container
+            metalView?.frame = containerView.bounds
+            return
+        }
+        
+        // Get the playable area from the bezel layer
+        if let playableArea = bezelLayer.playableAreaRect {
+            // Resize Metal view to match the playable area
+            metalView?.frame = playableArea
+            LoggerService.debug(category: "Bezel", "Metal view resized to playable area: \(playableArea.width)x\(playableArea.height)")
+        } else {
+            // No playable area calculated yet - fill container
+            metalView?.frame = containerView.bounds
+        }
     }
     
     /// Called when the window moves to a different screen or returns from fullscreen.
@@ -951,6 +980,9 @@ class StandaloneGameWindowController: NSWindowController, NSWindowDelegate, Obse
         LoggerService.info(category: "Bezel", "Bezel visibility toggled to: \(isBezelVisible ? "visible" : "hidden"). Layer exists: \(bezelBackgroundLayer != nil), wasHidden: \(wasHidden), nowHidden: \(!isBezelVisible)")
         // Force the layer to redraw
         bezelBackgroundLayer?.needsDisplay = true
+        
+        // Update Metal view frame to match new bezel visibility state
+        updateMetalViewFrameForBezel()
     }
     
     // MARK: - Normal Launch
@@ -1122,6 +1154,9 @@ class StandaloneGameWindowController: NSWindowController, NSWindowDelegate, Obse
                 
                 // Constrain window to screen bounds if bezel would make it larger
                 constrainWindowToScreenBounds()
+                
+                // Resize Metal view to match bezel playable area
+                updateMetalViewFrameForBezel()
                 
                 LoggerService.info(category: "Bezel", "Bezel applied for \(rom.displayName)")
             }
