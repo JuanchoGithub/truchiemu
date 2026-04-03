@@ -1088,12 +1088,6 @@ struct GameListRowView: View {
 
     var body: some View {
         HStack(spacing: 12) {
-            if isSelected {
-                Image(systemName: "checkmark.circle.fill")
-                    .foregroundColor(.accentColor)
-                    .frame(width: 16, height: 16)
-            }
-            
             artThumb
             
             // Left side: game info
@@ -1181,6 +1175,13 @@ struct GameListRowView: View {
             }
         }
         .padding(.vertical, 4)
+        .background(
+            isSelected ? Color.accentColor.opacity(0.15) : Color.clear
+        )
+        .overlay(
+            RoundedRectangle(cornerRadius: 8)
+                .stroke(isSelected ? Color.accentColor.opacity(0.5) : Color.clear, lineWidth: 1.5)
+        )
         .task(id: rom.boxArtPath) {
             if let artPath = rom.boxArtPath {
                 self.thumb = await ImageCache.shared.image(for: artPath)
