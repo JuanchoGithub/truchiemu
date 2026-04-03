@@ -118,12 +118,6 @@ struct LoggingSettingsView: View {
                             .buttonStyle(.bordered)
                             .controlSize(.small)
                             
-                            Button(action: viewModel.showLogFolderInFinder) {
-                                Label("Show Folder in Finder", systemImage: "folder.badge.gearshape")
-                            }
-                            .buttonStyle(.bordered)
-                            .controlSize(.small)
-                            
                             if viewModel.hasCustomLogFolder {
                                 Button(action: viewModel.resetToDefaultFolder) {
                                     Label("Reset to Default", systemImage: "arrow.uturn.backward")
@@ -315,15 +309,8 @@ final class LoggingSettingsViewModel: ObservableObject {
         LogManager.shared.showLogInFinder()
     }
     
-    func showLogFolderInFinder() {
-        LogManager.shared.showLogFolderInFinder()
-    }
-    
     func clearAllLogs() {
         let alert = NSAlert()
-        alert.messageText = "Clear All Logs?"
-        alert.informativeText = "This will delete all log files, including rotated archives. This action cannot be undone."
-        alert.alertStyle = .warning
         alert.addButton(withTitle: "Clear All")
         alert.addButton(withTitle: "Cancel")
         
