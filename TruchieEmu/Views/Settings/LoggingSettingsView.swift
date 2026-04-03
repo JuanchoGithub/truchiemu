@@ -42,6 +42,39 @@ struct LoggingSettingsView: View {
                     .cornerRadius(12)
                 }
                 
+                // Core Logging Section
+                VStack(alignment: .leading, spacing: 12) {
+                    HStack {
+                        Label("Core Logging Level", systemImage: "cpu")
+                            .font(.headline)
+                    }
+                    
+                    VStack(spacing: 0) {
+                        Picker("Core Log Level", selection: $viewModel.coreLogLevel) {
+                            ForEach(CoreLogLevel.allCases, id: \.self) { level in
+                                Text(level.name).tag(level)
+                            }
+                        }
+                        .pickerStyle(.segmented)
+                        .padding(.vertical, 8)
+                        .padding(.horizontal, 12)
+                        
+                        Divider()
+                        
+                        VStack(alignment: .leading, spacing: 6) {
+                            VStack(alignment: .leading, spacing: 4) {
+                                levelDescIcon("info.circle.fill", .blue, "Controls the verbosity of logs from the emulation core itself (libretro core)")
+                                levelDescIcon("doc.badge.gearshape", .purple, "Affects core-level debug output; set this alongside App Log Level for comprehensive troubleshooting")
+                            }
+                        }
+                        .padding(.horizontal, 12)
+                        .padding(.bottom, 12)
+                        .padding(.top, 4)
+                    }
+                    .background(.ultraThinMaterial)
+                    .cornerRadius(12)
+                }
+                
                 // Log File Location Section
                 VStack(alignment: .leading, spacing: 12) {
                     HStack {
@@ -237,6 +270,7 @@ struct LoggingSettingsView: View {
 @MainActor
 final class LoggingSettingsViewModel: ObservableObject {
     @Published var selectedLevel: LogLevel = .none
+    @Published var coreLogLevel: CoreLogLevel = SystemPreferences.shared.coreLogLevel { didSet { SystemPreferences.shared.coreLogLevel = coreLogLevel } }
     @Published var currentLogFilePath: String = ""
     @Published var currentLogFileSize: String = ""
     @Published var totalLogFileSize: String = ""

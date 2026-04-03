@@ -20,7 +20,6 @@ struct SettingsView: View {
                 sidebarItem(icon: "cpu.fill", label: "Cores", page: .cores)
                 sidebarItem(icon: "tv.fill", label: "Display", page: .display)
                 sidebarItem(icon: "gearshape.fill", label: "General", page: .general)
-                sidebarItem(icon: "keyboard.fill", label: "Keyboard", page: .keyboard)
                 sidebarItem(icon: "book.fill", label: "Library", page: .library)
                 sidebarItem(icon: "doc.text.fill", label: "Logging", page: .logging)
                 sidebarItem(icon: "trophy.fill", label: "RetroAchievements", page: .retroAchievements)
@@ -1797,9 +1796,8 @@ struct DisplaySettingsView: View {
 }
 
 // MARK: - General Settings
+
 struct GeneralSettingsView: View {
-    @AppStorage("logging_enabled") private var loggingEnabled = false
-    @AppStorage("logging_level") private var loggingLevel: Int = 1 // 0=None, 1=Info, 2=Debug
     @AppStorage("auto_save_on_exit") private var autoSaveOnExit = true
     @AppStorage("auto_load_on_start") private var autoLoadOnStart = true
     @AppStorage("compress_save_states") private var compressSaveStates = false
@@ -1824,41 +1822,6 @@ struct GeneralSettingsView: View {
                         .textSelection(.enabled)
                 }
                 .padding(.top, 4)
-            }
-            
-            Section("Logging") {
-                Toggle("Enable Logging", isOn: $loggingEnabled)
-                    .toggleStyle(.switch)
-                
-                if loggingEnabled {
-                    Picker("Log Level", selection: $loggingLevel) {
-                        Text("None").tag(0)
-                        Text("Info").tag(1)
-                        Text("Debug").tag(2)
-                    }
-                    .pickerStyle(.segmented)
-                    
-                    VStack(alignment: .leading, spacing: 8) {
-                        Text("Log levels:")
-                            .font(.caption)
-                            .foregroundColor(.secondary)
-                        Text("• Info: Core loading, game launches, shader changes")
-                            .font(.caption)
-                            .foregroundColor(.secondary)
-                        Text("• Debug: Metal pipeline, frame rendering, detailed emulation info")
-                            .font(.caption)
-                            .foregroundColor(.secondary)
-                    }
-                    .padding(.top, 4)
-                }
-                
-                HStack(spacing: 8) {
-                    Image(systemName: "terminal")
-                        .foregroundColor(.secondary)
-                    Text("Logs appear in Console.app (filter by 'TruchieEmu') or Xcode debug console")
-                        .font(.caption)
-                        .foregroundColor(.secondary)
-                }
             }
             
             Section("Application") {
