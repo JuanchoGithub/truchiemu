@@ -992,14 +992,9 @@ class StandaloneGameWindowController: NSWindowController, NSWindowDelegate, Obse
             }
             
             attempts += 1
-            var isReady = false
-            var timedOut = false
-            
-            // Access @MainActor property on main thread
-            DispatchQueue.main.sync {
-                isReady = self.runner?.isReadyForDisplay ?? false
-                timedOut = attempts >= maxAttempts
-            }
+            // Already on main thread (Timer.scheduledTimer runs on main runloop)
+            let isReady = self.runner?.isReadyForDisplay ?? false
+            let timedOut = attempts >= maxAttempts
             
             if isReady || timedOut {
                 timer.invalidate()
