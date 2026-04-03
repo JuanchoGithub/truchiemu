@@ -1132,14 +1132,19 @@ class StandaloneGameWindowController: NSWindowController, NSWindowDelegate, Obse
                         let vpW = Float(view.drawableSize.width)
                         let vpH = Float(view.drawableSize.height)
                         let time = Float(CACurrentMediaTime().truncatingRemainder(dividingBy: 100))
-                        let settings = runner.rom?.settings ?? ROMSettings()
                         let fragmentName = getFragmentFunctionName()
                         
-                        // Helper: get a uniform value from ShaderManager overrides, falling back to settings
+                        // Helper: get a uniform value from ShaderManager overrides, falling back to the preset's defined default
                         func getUniform(_ name: String, fallback: Float) -> Float {
+                            // First check for user overrides
                             if let value = ShaderManager.shared.uniformValues[name] {
                                 return value
                             }
+                            // Then check the active preset's globalUniforms for a defined default
+                            if let uniform = ShaderManager.shared.activePreset.globalUniforms.first(where: { $0.name == name }) {
+                                return uniform.defaultValue
+                            }
+                            // Last resort: hardcoded fallback
                             return fallback
                         }
 
@@ -1148,14 +1153,15 @@ class StandaloneGameWindowController: NSWindowController, NSWindowDelegate, Obse
 
                         switch fragmentName {
                         case "fragmentCRTTest":
-                            let crtOn = settings.crtEnabled ? 1 : 0
-                            let scanOn = settings.scanlinesEnabled ? 1 : 0
-                            // Barrel is controlled by slider alone: barrelAmount > 0 automatically enables distortion
-                            let barrelAmt = getUniform("barrelAmount", fallback: settings.barrelAmount)
+                            // Use preset defaults for all uniforms - no ROMSettings fallback
+                            let scanInt = getUniform("scanlineIntensity", fallback: 0.35)
+                            let barrelAmt = getUniform("barrelAmount", fallback: 0.12)
                             let barrelOn = barrelAmt > 0.001 ? 1 : 0
-                            let phosphorOn = settings.phosphorEnabled ? 1 : 0
-                            let scanInt = getUniform("scanlineIntensity", fallback: settings.scanlineIntensity)
-                            let colorB = getUniform("colorBoost", fallback: settings.colorBoost)
+                            let colorB = getUniform("colorBoost", fallback: 1.0)
+                            // CRT features enabled by default when using CRT preset
+                            let crtOn = getUniform("crtEnabled", fallback: 1) > 0 ? 1 : 0
+                            let scanOn = getUniform("scanlinesEnabled", fallback: 1) > 0 ? 1 : 0
+                            let phosphorOn = getUniform("phosphorEnabled", fallback: 1) > 0 ? 1 : 0
                             print("[CRT-UNIFORMS] crt=\(crtOn) scan=\(scanOn) barrel=\(barrelOn) phosphor=\(phosphorOn) scanInt=\(scanInt) barrelAmt=\(barrelAmt) colorBoost=\(colorB)")
                             var u = CRTTestUniforms(
                                 crtEnabled: Int32(crtOn),
@@ -1169,14 +1175,14 @@ class StandaloneGameWindowController: NSWindowController, NSWindowDelegate, Obse
                             )
                             enc.setFragmentBytes(&u, length: MemoryLayout<CRTTestUniforms>.stride, index: 0)
                         case "fragmentCRT", "fragmentPassthrough":
-                            let crtOn = settings.crtEnabled ? 1 : 0
-                            let scanOn = settings.scanlinesEnabled ? 1 : 0
-                            // Barrel is controlled by slider alone: barrelAmount > 0 automatically enables distortion
-                            let barrelAmt = getUniform("barrelAmount", fallback: settings.barrelAmount)
+                            // Use preset defaults for all uniforms - no ROMSettings fallback
+                            let scanInt = getUniform("scanlineIntensity", fallback: 0.35)
+                            let barrelAmt = getUniform("barrelAmount", fallback: 0.12)
                             let barrelOn = barrelAmt > 0.001 ? 1 : 0
-                            let phosphorOn = settings.phosphorEnabled ? 1 : 0
-                            let scanInt = getUniform("scanlineIntensity", fallback: settings.scanlineIntensity)
-                            let colorB = getUniform("colorBoost", fallback: settings.colorBoost)
+                            let colorB = getUniform("colorBoost", fallback: 1.0)
+                            let crtOn = getUniform("crtEnabled", fallback: 1) > 0 ? 1 : 0
+                            let scanOn = getUniform("scanlinesEnabled", fallback: 1) > 0 ? 1 : 0
+                            let phosphorOn = getUniform("phosphorEnabled", fallback: 1) > 0 ? 1 : 0
                             print("[CRT-UNIFORMS] crt=\(crtOn) scan=\(scanOn) barrel=\(barrelOn) phosphor=\(phosphorOn) scanInt=\(scanInt) barrelAmt=\(barrelAmt) colorBoost=\(colorB)")
                             var u = CRTUniforms(
                                 crtEnabled: Int32(crtOn),
@@ -1190,9 +1196,12 @@ class StandaloneGameWindowController: NSWindowController, NSWindowDelegate, Obse
                             )
                             enc.setFragmentBytes(&u, length: MemoryLayout<CRTUniforms>.stride, index: 0)
                         case "fragmentEdgeSmooth", "fragmentVibrantLCD":
+                            // Use preset defaults for all uniforms
+                            let smoothStrength = getUniform("smoothStrength", fallback: 0.7)
+                            let colorB = getUniform("colorBoost", fallback: 1.0)
                             var u = EdgeSmoothUniforms(
-                                smoothStrength: settings.scanlineIntensity,
-                                colorBoost: settings.colorBoost,
+                                smoothStrength: smoothStrength,
+                                colorBoost: colorB,
                                 time: time,
                                 _pad: 0,
                                 sourceSize: SIMD4<Float>(fw, fh, 1.0/fw, 1.0/fh),
@@ -1200,105 +1209,137 @@ class StandaloneGameWindowController: NSWindowController, NSWindowDelegate, Obse
                             )
                             enc.setFragmentBytes(&u, length: MemoryLayout<EdgeSmoothUniforms>.stride, index: 0)
                         case "fragmentLCDGrid", "fragmentComposite":
-                            var u = LCDGridUniforms(
-                                uniform0: fragmentName == "fragmentLCDGrid" ? settings.scanlineIntensity : 1.0,
-                                uniform1: 0.0,
-                                uniform2: fragmentName == "fragmentLCDGrid" ? 1.0 : 0.0,
-                                colorBoost: settings.colorBoost,
-                                time: time,
-                                _pad: SIMD3<Float>(0, 0, 0),
-                                sourceSize: SIMD4<Float>(fw, fh, 1.0/fw, 1.0/fh),
-                                outputSize: SIMD4<Float>(vpW, vpH, 0.0, 0.0)
-                            )
-                            enc.setFragmentBytes(&u, length: MemoryLayout<LCDGridUniforms>.stride, index: 0)
+                            // Use preset defaults for all uniforms
+                            let colorB = getUniform("colorBoost", fallback: 1.0)
+                            if fragmentName == "fragmentLCDGrid" {
+                                var u = LCDGridUniforms(
+                                    uniform0: getUniform("gridOpacity", fallback: 0.3),
+                                    uniform1: getUniform("ghostingAmount", fallback: 0.0),
+                                    uniform2: getUniform("gridSize", fallback: 3.0),
+                                    colorBoost: colorB,
+                                    time: time,
+                                    _pad: SIMD3<Float>(0, 0, 0),
+                                    sourceSize: SIMD4<Float>(fw, fh, 1.0/fw, 1.0/fh),
+                                    outputSize: SIMD4<Float>(vpW, vpH, 0.0, 0.0)
+                                )
+                                enc.setFragmentBytes(&u, length: MemoryLayout<LCDGridUniforms>.stride, index: 0)
+                            } else {
+                                var u = LCDGridUniforms(
+                                    uniform0: getUniform("horizontalBlur", fallback: 1.5),
+                                    uniform1: getUniform("verticalBlur", fallback: 0.3),
+                                    uniform2: getUniform("bleedAmount", fallback: 0.4),
+                                    colorBoost: colorB,
+                                    time: time,
+                                    _pad: SIMD3<Float>(0, 0, 0),
+                                    sourceSize: SIMD4<Float>(fw, fh, 1.0/fw, 1.0/fh),
+                                    outputSize: SIMD4<Float>(vpW, vpH, 0.0, 0.0)
+                                )
+                                enc.setFragmentBytes(&u, length: MemoryLayout<LCDGridUniforms>.stride, index: 0)
+                            }
                         case "fragmentSharpBilinear":
+                            // Use preset defaults for all uniforms
+                            let colorB = getUniform("colorBoost", fallback: 1.0)
                             var u = SharpBilinearUniforms(
-                                sharpness: settings.scanlineIntensity,
-                                colorBoost: settings.colorBoost,
-                                scanlineOpacity: settings.scanlineIntensity,
+                                sharpness: getUniform("sharpness", fallback: 0.5),
+                                colorBoost: colorB,
+                                scanlineOpacity: getUniform("scanlineOpacity", fallback: 0.0),
                                 _pad: 0,
                                 sourceSize: SIMD4<Float>(fw, fh, 1.0/fw, 1.0/fh),
                                 outputSize: SIMD4<Float>(vpW, vpH, 0.0, 0.0)
                             )
                             enc.setFragmentBytes(&u, length: MemoryLayout<SharpBilinearUniforms>.stride, index: 0)
                         case "fragmentLottesCRT":
+                            // Use preset defaults for all uniforms
+                            let colorB = getUniform("colorBoost", fallback: 1.0)
                             var u = LottesCRTUniforms(
-                                scanlineStrength: settings.scanlineIntensity,
-                                beamMinWidth: 0.5,
-                                beamMaxWidth: 1.5,
-                                maskDark: 0.5,
-                                maskLight: 1.0,
-                                sharpness: 1.0,
-                                colorBoost: settings.colorBoost,
+                                scanlineStrength: getUniform("scanlineStrength", fallback: 0.5),
+                                beamMinWidth: getUniform("beamMinWidth", fallback: 0.5),
+                                beamMaxWidth: getUniform("beamMaxWidth", fallback: 1.5),
+                                maskDark: getUniform("maskDark", fallback: 0.5),
+                                maskLight: getUniform("maskLight", fallback: 1.5),
+                                sharpness: getUniform("sharpness", fallback: 0.3),
+                                colorBoost: colorB,
                                 _pad: SIMD3<Float>(0, 0, 0),
                                 sourceSize: SIMD4<Float>(fw, fh, 1.0/fw, 1.0/fh),
                                 outputSize: SIMD4<Float>(vpW, vpH, 0.0, 0.0)
                             )
                             enc.setFragmentBytes(&u, length: MemoryLayout<LottesCRTUniforms>.stride, index: 0)
                         case "fragmentFlatCRT":
+                            // Use preset defaults for all uniforms
+                            let colorB = getUniform("colorBoost", fallback: 1.0)
                             var u = FlatCRTUniforms(
-                                scanlineStrength: settings.scanlineIntensity,
-                                maskStrength: 0.3,
-                                beamWidth: 1.0,
-                                colorBoost: settings.colorBoost,
+                                scanlineStrength: getUniform("scanlineStrength", fallback: 0.4),
+                                maskStrength: getUniform("maskStrength", fallback: 0.3),
+                                beamWidth: getUniform("beamWidth", fallback: 1.0),
+                                colorBoost: colorB,
                                 _pad: SIMD3<Float>(0, 0, 0),
                                 sourceSize: SIMD4<Float>(fw, fh, 1.0/fw, 1.0/fh),
                                 outputSize: SIMD4<Float>(vpW, vpH, 0.0, 0.0)
                             )
                             enc.setFragmentBytes(&u, length: MemoryLayout<FlatCRTUniforms>.stride, index: 0)
                         case "fragmentXBRZ":
+                            // Use preset defaults for all uniforms
+                            let colorB = getUniform("colorBoost", fallback: 1.0)
                             var u = XBRZUniforms(
-                                blendStrength: 0.5,
-                                colorTolerance: 0.1,
-                                sharpness: 1.0,
-                                colorBoost: settings.colorBoost,
+                                blendStrength: getUniform("blendStrength", fallback: 0.7),
+                                colorTolerance: getUniform("colorTolerance", fallback: 0.1),
+                                sharpness: getUniform("sharpness", fallback: 0.3),
+                                colorBoost: colorB,
                                 _pad: SIMD3<Float>(0, 0, 0),
                                 sourceSize: SIMD4<Float>(fw, fh, 1.0/fw, 1.0/fh),
                                 outputSize: SIMD4<Float>(vpW, vpH, 0.0, 0.0)
                             )
                             enc.setFragmentBytes(&u, length: MemoryLayout<XBRZUniforms>.stride, index: 0)
                         case "fragmentPixellate":
+                            // Use preset defaults for all uniforms
+                            let colorB = getUniform("colorBoost", fallback: 1.0)
                             var u = PixellateUniforms(
-                                antialiasing: 0.5,
-                                colorBoost: settings.colorBoost,
+                                antialiasing: getUniform("antialiasing", fallback: 0.3),
+                                colorBoost: colorB,
                                 _pad: SIMD3<Float>(0, 0, 0),
                                 sourceSize: SIMD4<Float>(fw, fh, 1.0/fw, 1.0/fh),
                                 outputSize: SIMD4<Float>(vpW, vpH, 0.0, 0.0)
                             )
                             enc.setFragmentBytes(&u, length: MemoryLayout<PixellateUniforms>.stride, index: 0)
                         case "fragmentGammaCorrect":
+                            // Use preset defaults for all uniforms
+                            let colorB = getUniform("colorBoost", fallback: 1.0)
                             var u = GammaCorrectUniforms(
-                                gamma: 2.2,
-                                saturation: 1.2,
-                                contrast: 1.0,
-                                brightness: 0.0,
-                                colorBoost: settings.colorBoost,
+                                gamma: getUniform("gamma", fallback: 2.2),
+                                saturation: getUniform("saturation", fallback: 1.2),
+                                contrast: getUniform("contrast", fallback: 1.1),
+                                brightness: getUniform("brightness", fallback: 0.0),
+                                colorBoost: colorB,
                                 _pad: SIMD3<Float>(0, 0, 0),
                                 sourceSize: SIMD4<Float>(fw, fh, 1.0/fw, 1.0/fh),
                                 outputSize: SIMD4<Float>(vpW, vpH, 0.0, 0.0)
                             )
                             enc.setFragmentBytes(&u, length: MemoryLayout<GammaCorrectUniforms>.stride, index: 0)
                         case "fragmentHandheldLCD":
+                            // Use preset defaults for all uniforms
+                            let colorB = getUniform("colorBoost", fallback: 1.0)
                             var u = HandheldLCDUniforms(
-                                gridOpacity: settings.scanlineIntensity,
-                                gridSize: 2.0,
-                                ghosting: 0.3,
-                                gamma: 2.2,
-                                colorBoost: settings.colorBoost,
+                                gridOpacity: getUniform("gridOpacity", fallback: 0.3),
+                                gridSize: getUniform("gridSize", fallback: 3.0),
+                                ghosting: getUniform("ghosting", fallback: 0.0),
+                                gamma: getUniform("gamma", fallback: 2.2),
+                                colorBoost: colorB,
                                 _pad: SIMD3<Float>(0, 0, 0),
                                 sourceSize: SIMD4<Float>(fw, fh, 1.0/fw, 1.0/fh),
                                 outputSize: SIMD4<Float>(vpW, vpH, 0.0, 0.0)
                             )
                             enc.setFragmentBytes(&u, length: MemoryLayout<HandheldLCDUniforms>.stride, index: 0)
                         default:
+                            // Use preset defaults for unknown shaders
+                            let colorB = getUniform("colorBoost", fallback: 1.0)
                             var u = CRTUniforms(
-                                crtEnabled: 0,
-                                scanlinesEnabled: 0,
-                                barrelEnabled: 0,
-                                phosphorEnabled: 0,
-                                scanlineIntensity: 0,
-                                barrelAmount: 0,
-                                colorBoost: settings.colorBoost,
+                                crtEnabled: Int32(getUniform("crtEnabled", fallback: 0)),
+                                scanlinesEnabled: Int32(getUniform("scanlinesEnabled", fallback: 0)),
+                                barrelEnabled: Int32(getUniform("barrelEnabled", fallback: 0)),
+                                phosphorEnabled: Int32(getUniform("phosphorEnabled", fallback: 0)),
+                                scanlineIntensity: getUniform("scanlineIntensity", fallback: 0.0),
+                                barrelAmount: getUniform("barrelAmount", fallback: 0.0),
+                                colorBoost: colorB,
                                 time: time
                             )
                             enc.setFragmentBytes(&u, length: MemoryLayout<CRTUniforms>.stride, index: 0)
