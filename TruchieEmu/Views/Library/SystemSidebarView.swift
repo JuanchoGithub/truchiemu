@@ -72,7 +72,13 @@ struct SystemSidebarView: View {
                 Button {
                     showCreateCategorySheet = true
                 } label: {
-                    Label("New Category", systemImage: "plus.circle")
+                    HStack {
+                        Image(systemName: "plus.circle")
+                            .foregroundColor(.secondary)
+                            .frame(width: 18)
+                        Text("New Category")
+                            .lineLimit(1)
+                    }
                 }
                 .buttonStyle(.plain)
             }
