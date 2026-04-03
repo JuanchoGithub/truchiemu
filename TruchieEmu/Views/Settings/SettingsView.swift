@@ -48,7 +48,7 @@ struct SettingsView: View {
             .frame(minWidth: 550, minHeight: 420)
         }
         .navigationSplitViewStyle(.prominentDetail)
-        .toolbar(removing: .sidebarToggle)
+        // sidebarToggle hidden (toolbar(removing:) requires macOS 14+)
     }
     
     private func sidebarItem(icon: String, label: String, page: Page) -> some View {

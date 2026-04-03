@@ -143,6 +143,7 @@ struct BezelWindowSizingTests {
 // MARK: - BezelBackgroundLayer Integration Tests
 
 /// Tests for the BezelBackgroundLayer class itself
+@MainActor
 struct BezelBackgroundLayerTests {
     
     @Test("BezelBackgroundLayer can be created")
@@ -200,13 +201,14 @@ struct BezelBackgroundLayerTests {
         layer.setBezelImage(nil)
         
         // Then the image view should be removed
-        #expect(layer.subviews.count == 0), "ImageView should be removed"
+        #expect(layer.subviews.count == 0, "ImageView should be removed")
     }
 }
 
 // MARK: - BezelViewModel Tests
 
 /// Tests for the BezelViewModel class
+@MainActor
 struct BezelViewModelTests {
     
     @Test("BezelViewModel initializes with nil bezel")
@@ -223,7 +225,7 @@ struct BezelViewModelTests {
     @Test("BezelViewModel can be created with custom manager")
     func bezelViewModelWithCustomManager() async throws {
         // Given a custom bezel manager
-        let customManager = BezelManager()
+        let customManager = BezelManager.shared
         let viewModel = BezelViewModel(bezelManager: customManager)
         
         // When checking initial state

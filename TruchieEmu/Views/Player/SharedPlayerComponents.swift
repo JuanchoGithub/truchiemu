@@ -1022,7 +1022,7 @@ class StandaloneGameWindowController: NSWindowController, NSWindowDelegate, Obse
             
             attempts += 1
             // Already on main thread (Timer.scheduledTimer runs on main runloop)
-            let isReady = self.runner?.isReadyForDisplay ?? false
+            let isReady = MainActor.assumeIsolated { self.runner?.isReadyForDisplay } ?? false
             let timedOut = attempts >= maxAttempts
             
             if isReady || timedOut {

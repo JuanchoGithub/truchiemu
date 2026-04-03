@@ -162,7 +162,7 @@ struct SetupWizardView: View {
             
             Task {
                 await LibraryAutomationCoordinator.shared.runAfterLibraryUpdate(library: library)
-                await wizard.updateDetectedGames(from: library.roms)
+                wizard.updateDetectedGames(from: library.roms)
             }
             
             await withTaskGroup(of: Void.self) { group in
@@ -553,12 +553,12 @@ extension SetupWizardView {
         }
         .task {
             if !library.roms.isEmpty {
-                await wizard.updateDetectedGames(from: library.roms)
+                wizard.updateDetectedGames(from: library.roms)
             }
         }
         .onChange(of: library.lastChangeDate) { _ in
             if !library.roms.isEmpty {
-                Task { await wizard.updateDetectedGames(from: library.roms) }
+                Task { wizard.updateDetectedGames(from: library.roms) }
             }
         }
     }

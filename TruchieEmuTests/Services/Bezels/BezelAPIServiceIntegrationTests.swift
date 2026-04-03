@@ -45,7 +45,7 @@ final class BezelAPIServiceIntegrationTests: XCTestCase {
             XCTAssertGreaterThanOrEqual(entries.count, 0, "NES manifest should return without error")
         } catch let BezelError.systemNotFound(systemID) {
             print("[Test] NES bezel repo not found: \(systemID)")
-        } catch let BezelError.apiRateLimited {
+        } catch BezelError.apiRateLimited {
             // GitHub API rate limited - skip gracefully
             print("[Test] GitHub API rate limited, skipping NES manifest test")
         } catch let BezelError.apiError(code) {
@@ -62,7 +62,7 @@ final class BezelAPIServiceIntegrationTests: XCTestCase {
             XCTAssertGreaterThanOrEqual(entries.count, 0, "SNES manifest should return without error")
         } catch let BezelError.systemNotFound(systemID) {
             print("[Test] SNES bezel repo not found: \(systemID)")
-        } catch let BezelError.apiRateLimited {
+        } catch BezelError.apiRateLimited {
             print("[Test] GitHub API rate limited, skipping SNES manifest test")
         } catch let BezelError.apiError(code) {
             print("[Test] GitHub API error \(code), skipping SNES manifest test")

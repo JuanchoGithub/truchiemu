@@ -5,6 +5,7 @@ import Foundation
 // MARK: - Bezel Download Progress Tests
 
 @Suite("Bezel Download Progress Tests")
+@MainActor
 struct BezelDownloadProgressTests {
     
     @Test("Initial state is correct")

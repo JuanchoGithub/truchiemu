@@ -146,7 +146,7 @@ extension URLSession {
             semaphore.signal()
         }
         task.resume()
-        semaphore.wait(timeout: .now() + 3)
+        _ = semaphore.wait(timeout: .now() + 3)
         return response
     }
 }
