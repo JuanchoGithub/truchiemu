@@ -136,8 +136,14 @@ struct WebSearchView: NSViewRepresentable {
         }
     }
 
+    private static var urlQueryValueAllowed: CharacterSet = {
+        var allowed = CharacterSet.urlQueryAllowed
+        allowed.remove(charactersIn: "&+")
+        return allowed
+    }()
+
     private var targetURLString: String {
-        let encodedQuery = query.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed) ?? ""
+        let encodedQuery = query.addingPercentEncoding(withAllowedCharacters: Self.urlQueryValueAllowed) ?? ""
         switch engine {
         case .google:
             return "https://www.google.com/search?tbm=isch&q=\(encodedQuery)"
