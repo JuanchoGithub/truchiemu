@@ -445,24 +445,17 @@ class FocusableMTKView: MTKView {
 // Each Metal shader expects a specific uniform buffer layout.
 // We create per-shader layouts that match exactly what Metal expects.
 
-/// CRT Filter uniforms - matches Uniforms in CRTFilter.metal (64 bytes)
+/// CRT Filter uniforms - matches CRTUniforms in CRTFilter.metal
+/// Note: Enabled/disabled state is derived from amount values (no separate toggles)
 struct CRTUniforms {
-    var crtEnabled: Int32
-    var scanlinesEnabled: Int32
-    var barrelEnabled: Int32
-    var phosphorEnabled: Int32
     var scanlineIntensity: Float
     var barrelAmount: Float
     var colorBoost: Float
     var time: Float
 }
 
-/// CRT Test uniforms - matches CRTTestUniforms in CRTTest.metal (64 bytes)
+/// CRT Test uniforms - matches CRTTestUniforms in CRTTest.metal
 struct CRTTestUniforms {
-    var crtEnabled: Int32
-    var scanlinesEnabled: Int32
-    var barrelEnabled: Int32
-    var phosphorEnabled: Int32
     var scanlineIntensity: Float
     var barrelAmount: Float
     var colorBoost: Float
@@ -1156,18 +1149,9 @@ class StandaloneGameWindowController: NSWindowController, NSWindowDelegate, Obse
                             // Use preset defaults for all uniforms - no ROMSettings fallback
                             let scanInt = getUniform("scanlineIntensity", fallback: 0.35)
                             let barrelAmt = getUniform("barrelAmount", fallback: 0.12)
-                            let barrelOn = barrelAmt > 0.001 ? 1 : 0
                             let colorB = getUniform("colorBoost", fallback: 1.0)
-                            // CRT features enabled by default when using CRT preset
-                            let crtOn = getUniform("crtEnabled", fallback: 1) > 0 ? 1 : 0
-                            let scanOn = getUniform("scanlinesEnabled", fallback: 1) > 0 ? 1 : 0
-                            let phosphorOn = getUniform("phosphorEnabled", fallback: 1) > 0 ? 1 : 0
-                            print("[CRT-UNIFORMS] crt=\(crtOn) scan=\(scanOn) barrel=\(barrelOn) phosphor=\(phosphorOn) scanInt=\(scanInt) barrelAmt=\(barrelAmt) colorBoost=\(colorB)")
+                            print("[CRT-UNIFORMS] scanInt=\(scanInt) barrelAmt=\(barrelAmt) colorBoost=\(colorB)")
                             var u = CRTTestUniforms(
-                                crtEnabled: Int32(crtOn),
-                                scanlinesEnabled: Int32(scanOn),
-                                barrelEnabled: Int32(barrelOn),
-                                phosphorEnabled: Int32(phosphorOn),
                                 scanlineIntensity: scanInt,
                                 barrelAmount: barrelAmt,
                                 colorBoost: colorB,
@@ -1178,17 +1162,9 @@ class StandaloneGameWindowController: NSWindowController, NSWindowDelegate, Obse
                             // Use preset defaults for all uniforms - no ROMSettings fallback
                             let scanInt = getUniform("scanlineIntensity", fallback: 0.35)
                             let barrelAmt = getUniform("barrelAmount", fallback: 0.12)
-                            let barrelOn = barrelAmt > 0.001 ? 1 : 0
                             let colorB = getUniform("colorBoost", fallback: 1.0)
-                            let crtOn = getUniform("crtEnabled", fallback: 1) > 0 ? 1 : 0
-                            let scanOn = getUniform("scanlinesEnabled", fallback: 1) > 0 ? 1 : 0
-                            let phosphorOn = getUniform("phosphorEnabled", fallback: 1) > 0 ? 1 : 0
-                            print("[CRT-UNIFORMS] crt=\(crtOn) scan=\(scanOn) barrel=\(barrelOn) phosphor=\(phosphorOn) scanInt=\(scanInt) barrelAmt=\(barrelAmt) colorBoost=\(colorB)")
+                            print("[CRT-UNIFORMS] scanInt=\(scanInt) barrelAmt=\(barrelAmt) colorBoost=\(colorB)")
                             var u = CRTUniforms(
-                                crtEnabled: Int32(crtOn),
-                                scanlinesEnabled: Int32(scanOn),
-                                barrelEnabled: Int32(barrelOn),
-                                phosphorEnabled: Int32(phosphorOn),
                                 scanlineIntensity: scanInt,
                                 barrelAmount: barrelAmt,
                                 colorBoost: colorB,
@@ -1333,10 +1309,6 @@ class StandaloneGameWindowController: NSWindowController, NSWindowDelegate, Obse
                             // Use preset defaults for unknown shaders
                             let colorB = getUniform("colorBoost", fallback: 1.0)
                             var u = CRTUniforms(
-                                crtEnabled: Int32(getUniform("crtEnabled", fallback: 0)),
-                                scanlinesEnabled: Int32(getUniform("scanlinesEnabled", fallback: 0)),
-                                barrelEnabled: Int32(getUniform("barrelEnabled", fallback: 0)),
-                                phosphorEnabled: Int32(getUniform("phosphorEnabled", fallback: 0)),
                                 scanlineIntensity: getUniform("scanlineIntensity", fallback: 0.0),
                                 barrelAmount: getUniform("barrelAmount", fallback: 0.0),
                                 colorBoost: colorB,

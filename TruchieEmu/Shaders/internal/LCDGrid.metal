@@ -20,10 +20,10 @@ struct LCDGridUniforms {
 };
 
 // MARK: - Fragment Shader
+// Note: Removed dead buffer(2) parameter - u_time was never bound from Swift
 fragment float4 fragmentLCDGrid(VertexOut in [[stage_in]],
                                  texture2d<float> tex [[texture(0)]],
-                                 constant LCDGridUniforms &u [[buffer(0)]],
-                                 constant uint &u_time [[buffer(2)]]) {
+                                 constant LCDGridUniforms &u [[buffer(0)]]) {
     
     constexpr sampler s(filter::nearest, address::clamp_to_edge);
     
