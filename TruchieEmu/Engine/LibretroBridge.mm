@@ -107,6 +107,7 @@ typedef void (^VideoFrameCallback)(const void *data, int width, int height, int 
     struct retro_system_av_info _avInfo;
     
     int _pixelFormat;
+    BOOL _isMameLaunch;  // Enables MAME-specific timing/pixel-format fixes
     NSString *_saveStatePath;
     
     // Retain explicit resources so they outlive the emulation loop
@@ -637,6 +638,16 @@ static int16_t bridge_input_state(unsigned port, unsigned device, unsigned index
     _retainedRomData = [[NSData alloc] initWithContentsOfFile:_retainedRomPath];
     NSLog(@"[Bridge] Loading ROM: %@ (Size: %lu bytes)", _retainedRomPath, (unsigned long)_retainedRomData.length);
 
+
+    // ── MAME-only: detect MAME core for specific timing/pixel-format fixes ──
+    _isMameLaunch = (g_coreID && [[g_coreID lowercaseString] containsString:@"mame"]);
+    if (_isMameLaunch) {
+        // MAME cores use XRGB8888 by default but rarely send SET_PIXEL_FORMAT.
+        // Defaulting to 1 (XRGB8888) avoids the 0RGB1555 misinterpretation
+        // that causes scrambled/garbage colors and broken pitch calculations.
+        _pixelFormat = 1; // RETRO_PIXEL_FORMAT_XRGB8888
+        NSLog(@"[Bridge] MAME core detected ('%@'): pixel format forced to XRGB8888 (1)", g_coreID);
+    }
     _retro_set_environment(bridge_environment);
     _retro_set_video_refresh(bridge_video_refresh);
     _retro_set_audio_sample(bridge_audio_sample);
@@ -664,6 +675,17 @@ static int16_t bridge_input_state(unsigned port, unsigned device, unsigned index
     double sampleRate = _avInfo.timing.sample_rate > 0 ? _avInfo.timing.sample_rate : 44100.0;
     double fps = _avInfo.timing.fps > 0 ? _avInfo.timing.fps : 60.0;
     NSLog(@"[Bridge] Core A/V Info: SampleRate=%.1f FPS=%.2f", sampleRate, fps);
+    // MAME-specific: validate FPS to catch out-of-range values that cause speedup
+    if (_isMameLaunch) {
+        double mameFps = _avInfo.timing.fps;
+        double mameSR = _avInfo.timing.sample_rate;
+        if (mameFps > 10.0 && mameFps < 120.0) {
+            NSLog(@"[Bridge] MAME A/V validated: FPS=%.4f SampleRate=%.1f", mameFps, mameSR);
+        } else {
+            NSLog(@"[Bridge-WRN] MAME FPS out of range: %.2f, clamping to 60", mameFps);
+            _avInfo.timing.fps = 60.0;
+        }
+    }
     
     [self setupAudioWithSampleRate:sampleRate];
     
@@ -674,7 +696,7 @@ static int16_t bridge_input_state(unsigned port, unsigned device, unsigned index
     
     _running = YES;
     
-    // Timing loop using Mach Absolute Time for high precision
+    // MAIN GAME LOOP
     while (_running) {
         // Check pause state - skip emulation when paused
         if (g_isPaused) {
@@ -682,41 +704,109 @@ static int16_t bridge_input_state(unsigned port, unsigned device, unsigned index
             continue;
         }
         
-        uint64_t start = mach_absolute_time();
-        
-        // Use current FPS from _avInfo in case it changed mid-run
-        double currentFps = _avInfo.timing.fps > 0 ? _avInfo.timing.fps : 60.0;
-        // Clamp FPS to reasonable range (10-120 Hz) to prevent speedup/spin issues
-        if (currentFps < 10.0) currentFps = 60.0;
-        if (currentFps > 120.0) currentFps = 120.0;
-        NSTimeInterval frameTime = 1.0 / currentFps;
-        
-        if (_hwRenderEnabled && _glContext) CGLSetCurrentContext(_glContext);
-        _retro_run();
-        
-        uint64_t end = mach_absolute_time();
-        
-        // Convert to seconds
-        static mach_timebase_info_data_t timebase;
-        if (timebase.denom == 0) mach_timebase_info(&timebase);
-        double elapsed = (double)(end - start) * timebase.numer / timebase.denom / 1e9;
-        
-        if (elapsed < frameTime) {
-            // Adaptive sleep: check audio buffer fill level
-            // If we have plenty of audio, we can sleep more precisely.
-            // If we are running low, we run faster.
-            size_t availableSamples = _audioBuffer->available();
-            size_t capacity = _audioBuffer->capacity();
-            float fillRatio = (float)availableSamples / capacity;
-            
-            double sleepTime = frameTime - elapsed;
-            
-            // If buffer is very full (>70%), we might want to slow down slightly more to avoid overflow
-            // If buffer is very empty (<5%), we skip sleep to catch up
-            if (fillRatio < 0.05f) {
-                // Buffer critical! No sleep.
+        if (_isMameLaunch) {
+            // ── MAME-SPECIFIC FRAME LOOP: audio-driven fpsync + accumulator ──
+            // Arcade cores are particularly sensitive to timing. This loop uses:
+            //  1. Pre-run audio buffer throttling to prevent overflow (key fix!)
+            //  2. Frame time accumulator for precise pacing
+            //  3. Post-run buffer check as safety net
+            //
+            // Without pre-run throttling, retro_run() executes at maximum CPU speed
+            // and the audio callback silently drops samples → 100x+ speedup.
+            @autoreleasepool {
+                // PRE-RUN: check audio buffer fill and wait if needed
+                size_t availableSamples = _audioBuffer->available();
+                size_t capacity = _audioBuffer->capacity();
+                float fillRatio = (float)availableSamples / (float)capacity;
+
+                // If buffer is >70% full, wait for it to drain before producing frames.
+                // This is the key fpsync mechanism: audio buffer fill level is the
+                // primary pacing signal. Without this, retro_run() runs unbounded.
+                while (fillRatio > 0.70f && _running && !g_isPaused) {
+                    [NSThread sleepForTimeInterval:0.0005];
+                    availableSamples = _audioBuffer->available();
+                    fillRatio = (float)availableSamples / (float)capacity;
+                }
+            }
+
+            if (_hwRenderEnabled && _glContext) CGLSetCurrentContext(_glContext);
+            uint64_t start = mach_absolute_time();
+            _retro_run();
+            uint64_t end = mach_absolute_time();
+
+            static mach_timebase_info_data_t s_tb = {0, 0};
+            if (s_tb.denom == 0) mach_timebase_info(&s_tb);
+            uint64_t elapsed_ns = (end - start) * s_tb.numer / s_tb.denom;
+            double elapsed = (double)elapsed_ns / 1e9;
+
+            double targetFPS = _avInfo.timing.fps;
+            if (targetFPS <= 0) targetFPS = 60.0;
+            double idealFrameTime = 1.0 / targetFPS;
+
+            // ACCUMULATOR: add any deficit, subtract excess
+            static double mameFrameError = 0.0;
+            mameFrameError += (idealFrameTime - elapsed);
+
+            // POST-RUN: compensate for accumulated error
+            if (mameFrameError > 0.001) {
+                @autoreleasepool {
+                    size_t avail = _audioBuffer->available();
+                    size_t cap = _audioBuffer->capacity();
+                    float fill = (float)avail / (float)cap;
+
+                    if (fill > 0.10f) {
+                        // Ahead of schedule and buffer draining — sleep to catch up
+                        double sleepTime = mameFrameError > 0.008 ? 0.008 : mameFrameError;
+                        [NSThread sleepForTimeInterval:sleepTime];
+                        mameFrameError -= sleepTime;
+                        if (mameFrameError < 0) mameFrameError = 0;
+                    } else {
+                        // Buffer nearly empty — skip sleep to catch up
+                        mameFrameError = 0;
+                    }
+                }
             } else {
-                [NSThread sleepForTimeInterval:sleepTime];
+                // Behind schedule — don't sleep, try to recover
+                mameFrameError = 0;
+            }
+        } else {
+            // ── NON-MAME FRAME LOOP: unchanged original behavior ──
+            uint64_t start = mach_absolute_time();
+
+            // Use current FPS from _avInfo in case it changed mid-run
+            double currentFps = _avInfo.timing.fps > 0 ? _avInfo.timing.fps : 60.0;
+            // Clamp FPS to reasonable range (10-120 Hz) to prevent speedup/spin issues
+            if (currentFps < 10.0) currentFps = 60.0;
+            if (currentFps > 120.0) currentFps = 120.0;
+            NSTimeInterval frameTime = 1.0 / currentFps;
+
+            if (_hwRenderEnabled && _glContext) CGLSetCurrentContext(_glContext);
+            _retro_run();
+
+            uint64_t end = mach_absolute_time();
+
+            // Convert to seconds
+            static mach_timebase_info_data_t timebase;
+            if (timebase.denom == 0) mach_timebase_info(&timebase);
+            double elapsed = (double)(end - start) * timebase.numer / timebase.denom / 1e9;
+
+            if (elapsed < frameTime) {
+                // Adaptive sleep: check audio buffer fill level
+                // If we have plenty of audio, we can sleep more precisely.
+                // If we are running low, we run faster.
+                size_t availableSamples = _audioBuffer->available();
+                size_t capacity = _audioBuffer->capacity();
+                float fillRatio = (float)availableSamples / capacity;
+
+                double sleepTime = frameTime - elapsed;
+
+                // If buffer is very full (>70%), we might want to slow down slightly more to avoid overflow
+                // If buffer is very empty (<5%), we skip sleep to catch up
+                if (fillRatio < 0.05f) {
+                    // Buffer critical! No sleep.
+                } else {
+                    [NSThread sleepForTimeInterval:sleepTime];
+                }
             }
         }
     }
