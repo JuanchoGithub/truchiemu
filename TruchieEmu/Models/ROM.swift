@@ -127,4 +127,8 @@ struct ROMMetadata: Codable, Hashable {
     var players: Int?
     var description: String?
     var rating: Double?
+    /// Whether the game supports cooperative (co-op) play.
+    var cooperative: Bool?
+    /// ESRB rating (e.g. "E", "E10+", "T", "M", "AO", "RP").
+    var esrbRating: String?
 }

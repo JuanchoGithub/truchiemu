@@ -648,6 +648,7 @@ struct GameDetailView: View {
             HStack(spacing: 12) {
                 identifyButton
                 fetchBoxArtButton
+                fetchMetadataButton
             }
             
             // Screenshots row
@@ -714,6 +715,29 @@ struct GameDetailView: View {
                         if let players = meta.players {
                             Divider().overlay(Color.white.opacity(0.08))
                             MetadataRow(label: "Players", value: String(players))
+                        }
+                        if let coop = meta.cooperative {
+                            Divider().overlay(Color.white.opacity(0.08))
+                            MetadataRow(label: "Co-op", value: coop ? "Yes" : "No")
+                        }
+                        if let esrb = meta.esrbRating {
+                            Divider().overlay(Color.white.opacity(0.08))
+                            HStack(alignment: .top, spacing: 16) {
+                                Text("ESRB".uppercased())
+                                    .font(.caption)
+                                    .fontWeight(.medium)
+                                    .foregroundColor(.white.opacity(0.4))
+                                    .frame(width: 100, alignment: .leading)
+                                Text(esrb)
+                                    .font(.body)
+                                    .fontWeight(.semibold)
+                                    .foregroundColor(.white.opacity(0.85))
+                                    .padding(.horizontal, 10)
+                                    .padding(.vertical, 4)
+                                    .background(esrbBadgeColor(for: esrb))
+                                    .cornerRadius(6)
+                                Spacer()
+                            }
                         }
                     }
                 }
@@ -863,6 +887,91 @@ struct GameDetailView: View {
         .disabled(isIdentifyWorking)
     }
     
+    // MARK: - Fetch Metadata Button
+    
+    @State private var fetchMetadataStatus: ManualActionStatus = .hidden
+    @State private var fetchMetadataAutoDismiss: Task<Void, Never>?
+    
+    private func clearFetchMetadataStatus() {
+        fetchMetadataAutoDismiss?.cancel()
+        fetchMetadataAutoDismiss = nil
+        fetchMetadataStatus = .hidden
+    }
+    
+    private var fetchMetadataButton: some View {
+        Group {
+            switch fetchMetadataStatus {
+            case .hidden:
+                Button {
+                    Task { await fetchMetadata() }
+                } label: {
+                    Label("Fetch Metadata", systemImage: "network")
+                        .padding(.vertical, 6)
+                        .padding(.horizontal, 12)
+                        .frame(maxWidth: .infinity)
+                        .background(Color.white.opacity(0.06))
+                        .cornerRadius(8)
+                        .overlay(
+                            RoundedRectangle(cornerRadius: 8)
+                                .stroke(Color.white.opacity(0.12), lineWidth: 1)
+                        )
+                }
+                .buttonStyle(.plain)
+            case .working(_):
+                ProgressView()
+                    .controlSize(.small)
+                    .padding(.vertical, 6)
+                    .padding(.horizontal, 12)
+                    .frame(maxWidth: .infinity)
+                    .background(Color.white.opacity(0.06))
+                    .cornerRadius(8)
+            case .result(let msg, let tone):
+                Button {
+                    clearFetchMetadataStatus()
+                } label: {
+                    HStack(spacing: 6) {
+                        Image(systemName: tone.iconName)
+                            .font(.caption)
+                            .foregroundColor(tone.foregroundColor)
+                        Text(msg)
+                            .font(.caption)
+                            .foregroundColor(.white.opacity(0.7))
+                    }
+                    .padding(.vertical, 6)
+                    .padding(.horizontal, 12)
+                    .frame(maxWidth: .infinity)
+                    .background(tone.foregroundColor.opacity(0.1))
+                    .cornerRadius(8)
+                }
+                .buttonStyle(.plain)
+            }
+        }
+    }
+    
+    private func fetchMetadata() async {
+        await MainActor.run { fetchMetadataStatus = .working("Searching LaunchBox...") }
+        
+        let success = await LaunchBoxGamesDBService.shared.fetchAndApplyMetadata(
+            for: currentROM,
+            library: library
+        )
+        
+        fetchMetadataAutoDismiss?.cancel()
+        fetchMetadataAutoDismiss = Task { @MainActor in
+            try? await Task.sleep(nanoseconds: 10_000_000_000)
+            guard !Task.isCancelled else { return }
+            if case .result = fetchMetadataStatus {
+                fetchMetadataStatus = .hidden
+            }
+        }
+        
+        if success {
+            await MainActor.run { fetchMetadataStatus = .result("Metadata updated", tone: .success) }
+        } else {
+            await MainActor.run { fetchMetadataStatus = .result("No metadata found", tone: .warning) }
+        }
+    }
+
     private var fetchBoxArtButton: some View {
         Button {
             Task {
@@ -1992,6 +2101,17 @@ struct GameDetailView: View {
                     .font(.system(size: 40))
                     .foregroundColor(.white.opacity(0.4))
             }
+        }
+    }
+
+    /// Color-coded ESRB badge matching rating severity.
+    private func esrbBadgeColor(for rating: String) -> Color {
+        switch rating.lowercased() {
+        case "ec", "e": return Color.green.opacity(0.3)
+        case "e10+": return Color.blue.opacity(0.3)
+        case "t": return Color.yellow.opacity(0.3)
+        case "m", "ao": return Color.red.opacity(0.3)
+        default: return Color.white.opacity(0.1)
         }
     }
 

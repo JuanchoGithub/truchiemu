@@ -313,6 +313,7 @@ class ROMLibrary: ObservableObject {
         
         if runAutomationAfter {
             await LibraryAutomationCoordinator.shared.runAfterLibraryUpdate(library: self)
+            await MetadataSyncCoordinator.shared.runAfterLibraryUpdate(library: self)
         }
     }
     
@@ -602,5 +603,6 @@ class ROMLibrary: ObservableObject {
         isScanning = false
         cleanupScummVMCaches()
         await LibraryAutomationCoordinator.shared.runAfterLibraryUpdate(library: self)
+        await MetadataSyncCoordinator.shared.runAfterLibraryUpdate(library: self)
     }
 }

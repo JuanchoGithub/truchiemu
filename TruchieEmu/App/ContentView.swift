@@ -6,6 +6,7 @@ struct ContentView: View {
     @EnvironmentObject var coreManager: CoreManager
     @EnvironmentObject var libraryAutomation: LibraryAutomationCoordinator
     @EnvironmentObject var controllerService: ControllerService
+    @StateObject private var metadataSync = MetadataSyncCoordinator.shared
     @ObservedObject var wizard = SetupWizardState.shared
     
     @State private var selectedFilter: LibraryFilter = .recent
@@ -55,11 +56,12 @@ struct ContentView: View {
                 EditCategorySheet(category: category)
             }
 
-            if libraryAutomation.isActive {
+            // Status bar for library automation or metadata sync
+            if let activeStatus = activeBackgroundTask {
                 VStack(alignment: .leading, spacing: 6) {
-                    ProgressView(value: libraryAutomation.progress)
+                    ProgressView(value: activeStatus.progress)
                         .progressViewStyle(.linear)
-                    Text(libraryAutomation.statusLine)
+                    Text(activeStatus.statusLine)
                         .font(.caption)
                         .foregroundStyle(.secondary)
                         .lineLimit(2)
@@ -73,6 +75,17 @@ struct ContentView: View {
         .sheet(item: $coreManager.pendingDownload) { pending in
             CoreDownloadSheet(pending: pending)
         }
+    }
+
+    /// Shows whichever background task is currently active (library automation takes precedence).
+    private var activeBackgroundTask: (progress: Double, statusLine: String)? {
+        if libraryAutomation.isActive {
+            return (libraryAutomation.progress, libraryAutomation.statusLine)
+        }
+        if metadataSync.isActive {
+            return (metadataSync.progress, metadataSync.statusLine)
+        }
+        return nil
     }
 
     private var navigationTitle: String {

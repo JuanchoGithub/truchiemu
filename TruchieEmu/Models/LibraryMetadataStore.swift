@@ -18,6 +18,8 @@ struct ROMMetadataRecord: Codable, Hashable {
     var players: Int?
     var description: String?
     var rating: Double?
+    var cooperative: Bool?
+    var esrbRating: String?
     /// Matches `ROM.thumbnailLookupSystemID` for Libretro CDN.
     var thumbnailLookupSystemID: String?
     /// Cached box art path (usually beside the ROM).
@@ -41,6 +43,8 @@ struct ROMMetadataRecord: Codable, Hashable {
         players = rom.metadata?.players
         description = rom.metadata?.description
         rating = rom.metadata?.rating
+        cooperative = rom.metadata?.cooperative
+        esrbRating = rom.metadata?.esrbRating
         thumbnailLookupSystemID = rom.thumbnailLookupSystemID
         boxArtPath = rom.boxArtPath?.path
         titleScreenPath = nil
@@ -59,6 +63,8 @@ struct ROMMetadataRecord: Codable, Hashable {
         if let players { meta.players = players }
         if let description { meta.description = description }
         if let rating { meta.rating = rating }
+        if let cooperative { meta.cooperative = cooperative }
+        if let esrbRating { meta.esrbRating = esrbRating }
         r.metadata = meta
         if let t = thumbnailLookupSystemID { r.thumbnailLookupSystemID = t }
         if let p = boxArtPath, FileManager.default.fileExists(atPath: p) {
