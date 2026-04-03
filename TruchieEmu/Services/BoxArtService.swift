@@ -102,47 +102,49 @@ class BoxArtService: ObservableObject {
     // MARK: - Art Fetching
 
     func fetchBoxArt(for rom: ROM) async -> URL? {
+        // 1. Libretro Thumbnails CDN (primary)
         if useLibretroThumbnails,
            let lib = await fetchBoxArtLibretro(for: rom) {
             return lib
         }
-        guard let creds = credentials else { return nil }
-        let systemID = rom.systemID ?? ""
-        let ssSystemID = screenScraperSystemID(for: systemID)
 
-        LoggerService.debug(category: "BoxArt", "Searching ScreenScraper for \(rom.name)...")
+        // 2. ScreenScraper (if credentials configured)
+        if let creds = credentials {
+            let systemID = rom.systemID ?? ""
+            let ssSystemID = screenScraperSystemID(for: systemID)
 
-        let query = rom.displayName.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed) ?? ""
-        var urlStr = "https://www.screenscraper.fr/api2/jeuRecherche.php"
-        urlStr += "?devid=truchiemu&devpassword=truchiemu_dev"
-        urlStr += "&ssid=\(creds.username)&sspassword=\(creds.password)"
-        urlStr += "&softname=TruchieEmu&output=json"
-        urlStr += "&systemeid=\(ssSystemID)&romnom=\(query)"
+            LoggerService.debug(category: "BoxArt", "Searching ScreenScraper for \(rom.name)...")
 
-        guard let url = URL(string: urlStr),
-              let (data, _) = try? await URLSession.shared.data(from: url),
-              let json = try? JSONSerialization.jsonObject(with: data) as? [String: Any],
-              let response = json["response"] as? [String: Any] else {
-            LoggerService.debug(category: "BoxArt", "ScreenScraper API request failed for \(rom.name)")
-            return nil
+            let query = rom.displayName.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed) ?? ""
+            var urlStr = "https://www.screenscraper.fr/api2/jeuRecherche.php"
+            urlStr += "?devid=truchiemu&devpassword=truchiemu_dev"
+            urlStr += "&ssid=\(creds.username)&sspassword=\(creds.password)"
+            urlStr += "&softname=TruchieEmu&output=json"
+            urlStr += "&systemeid=\(ssSystemID)&romnom=\(query)"
+
+            if let url = URL(string: urlStr),
+               let (data, _) = try? await URLSession.shared.data(from: url),
+               let json = try? JSONSerialization.jsonObject(with: data) as? [String: Any],
+               let response = json["response"] as? [String: Any],
+               let jeu = response["jeu"] as? [String: Any],
+               let medias = jeu["medias"] as? [[String: Any]] {
+                let box = medias.first(where: { ($0["type"] as? String) == "box-2D" })
+                if let urlString = box?["url"] as? String,
+                   let artURL = URL(string: urlString) {
+                    LoggerService.debug(category: "BoxArt", "Found ScreenScraper boxart for \(rom.name)")
+                    return await downloadAndCache(artURL: artURL, for: rom)
+                }
+            }
+            LoggerService.debug(category: "BoxArt", "ScreenScraper no result for \(rom.name)")
         }
 
-        guard let jeu = response["jeu"] as? [String: Any],
-              let medias = jeu["medias"] as? [[String: Any]] else {
-            LoggerService.debug(category: "BoxArt", "No results found on ScreenScraper for \(rom.name)")
-            return nil
+        // 3. LaunchBox GamesDB (third-party fallback)
+        if let launchBoxArt = await LaunchBoxGamesDBService.shared.fetchBoxArt(for: rom) {
+            LoggerService.debug(category: "BoxArt", "Found LaunchBox boxart for \(rom.name)")
+            return launchBoxArt
         }
 
-        // Find box-2D image
-        let box = medias.first(where: { ($0["type"] as? String) == "box-2D" })
-        guard let urlString = box?["url"] as? String,
-              let artURL = URL(string: urlString) else {
-            LoggerService.debug(category: "BoxArt", "No box-2D art found on ScreenScraper for \(rom.name)")
-            return nil
-        }
-
-        LoggerService.debug(category: "BoxArt", "Found ScreenScraper boxart URL for \(rom.name): \(urlString)")
-        return await downloadAndCache(artURL: artURL, for: rom)
+        return nil
     }
 
     func searchBoxArt(query: String, systemID: String) async -> [BoxArtCandidate] {

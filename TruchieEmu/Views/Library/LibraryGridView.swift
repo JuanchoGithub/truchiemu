@@ -397,12 +397,14 @@ struct LibraryGridView: View {
                 Button {
                     Task {
                         await BoxArtService.shared.batchDownloadBoxArtLibretro(for: displayedROMs, library: library)
+                        // Also try LaunchBox GamesDB for remaining games
+                        await LaunchBoxGamesDBService.shared.batchDownloadBoxArt(for: displayedROMs, library: library)
                     }
                 } label: {
                     Label("Fetch missing art", systemImage: "arrow.down.circle")
                 }
                 .labelStyle(.iconOnly)
-                .help("Download missing box art from Libretro CDN")
+                .help("Download missing box art from Libretro CDN and LaunchBox GamesDB")
 
                 // Settings button
                 Button {

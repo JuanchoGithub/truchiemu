@@ -67,6 +67,7 @@
 		B97555AF8F8965415DADB4F5 /* BezelWindowSizingTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 19EC93357FB106505B7E3B49 /* BezelWindowSizingTests.swift */; };
 		BB92BE6DDFAB5F4215EF6CF0 /* RetroAchievementsSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B6B43857C6383165BD22A9AF /* RetroAchievementsSettingsView.swift */; };
 		BE53CB7D7C4EF9D138148628 /* SlotPickerSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = F92119B38E7206704F501F92 /* SlotPickerSheet.swift */; };
+		BEB2E809BAB983CF0E071449 /* LaunchBoxGamesDBService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 88C3C353EBC5C164CD49BB6A /* LaunchBoxGamesDBService.swift */; };
 		C1A4A19926D1834FC8C42E3D /* Cheat.swift in Sources */ = {isa = PBXBuildFile; fileRef = C818FB0D70AE32972B1C5458 /* Cheat.swift */; };
 		C99B75B6B31091E08C1F162A /* ROM.swift in Sources */ = {isa = PBXBuildFile; fileRef = FA471582BD64CAFD5D7353DA /* ROM.swift */; };
 		C9B9D094E83252DCCF416DA4 /* ControllerService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 93D8EB529663CB9A8702FAD3 /* ControllerService.swift */; };
@@ -153,6 +154,7 @@
 		7DF10A2892C7DDEB5683637F /* CheatDownloadService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CheatDownloadService.swift; sourceTree = "<group>"; };
 		81440507D3F6155A9AC60E31 /* NESRunner.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NESRunner.swift; sourceTree = "<group>"; };
 		824B99AA8F4D46E6A5E01A05 /* GameLauncher.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GameLauncher.swift; sourceTree = "<group>"; };
+		88C3C353EBC5C164CD49BB6A /* LaunchBoxGamesDBService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LaunchBoxGamesDBService.swift; sourceTree = "<group>"; };
 		88CE9892979FB7B724F9F25B /* CoreOption.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CoreOption.swift; sourceTree = "<group>"; };
 		8A47A2618C88081828F43315 /* LibretroThumbnailResolver.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LibretroThumbnailResolver.swift; sourceTree = "<group>"; };
 		8E6BF5D840A5C89EDA5E68BC /* BezelDownloadLogView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BezelDownloadLogView.swift; sourceTree = "<group>"; };
@@ -260,6 +262,7 @@
 				02BBEDBAB8126B08C4C9D008 /* GameDragState.swift */,
 				824B99AA8F4D46E6A5E01A05 /* GameLauncher.swift */,
 				482780863BA2AF1C5DA43B2F /* HardcoreModeManager.swift */,
+				88C3C353EBC5C164CD49BB6A /* LaunchBoxGamesDBService.swift */,
 				5F78F845B9C63B8B6F072751 /* LibraryAutomationCoordinator.swift */,
 				AD6D8A426A0F0B5278A2061D /* LibretroRDBParser.swift */,
 				8A47A2618C88081828F43315 /* LibretroThumbnailResolver.swift */,
@@ -600,6 +603,7 @@
 				EC8FCCD2DB45AA136AEE82C6 /* GameInfoWindow.swift in Sources */,
 				2C90FACC3F4A1834DEBA87F2 /* GameLauncher.swift in Sources */,
 				43C778A329E437002D224F79 /* HardcoreModeManager.swift in Sources */,
+				BEB2E809BAB983CF0E071449 /* LaunchBoxGamesDBService.swift in Sources */,
 				AA0B53183BF112AB49210A6D /* LibraryAutomationCoordinator.swift in Sources */,
 				F78B007ED4F76DEFC5324B2F /* LibraryGridView.swift in Sources */,
 				25B7586B9799B197EAE6D393 /* LibraryMetadataStore.swift in Sources */,

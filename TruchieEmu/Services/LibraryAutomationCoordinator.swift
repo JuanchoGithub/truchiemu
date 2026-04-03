@@ -64,6 +64,27 @@ final class LibraryAutomationCoordinator: ObservableObject {
             self.progress = frac
             self.statusLine = "Downloading box art: \(Int(frac * 100))% — \(fileLabel)"
         }
+
+        // After Libretro CDN, try LaunchBox GamesDB for remaining ROMs still missing art
+        if LaunchBoxGamesDBService.shared.downloadAfterScan {
+            let stillMissing = library.roms.filter { rom in
+                let hasBoxart = rom.boxArtPath.map { FileManager.default.fileExists(atPath: $0.path) } ?? false
+                return rom.needsAutomaticBoxArt && !hasBoxart
+            }
+            if !stillMissing.isEmpty {
+                statusLine = "Trying LaunchBox GamesDB for \(stillMissing.count) games…"
+                await LaunchBoxGamesDBService.shared.batchDownloadBoxArt(
+                    for: stillMissing,
+                    library: library
+                ) { [weak self] completed, totalCount, fileLabel in
+                    guard let self = self else { return }
+                    let frac = Double(completed) / max(Double(totalCount), 1)
+                    self.progress = frac
+                    self.statusLine = "LaunchBox box art: \(Int(frac * 100))% — \(fileLabel)"
+                }
+            }
+        }
+
         progress = 1
         statusLine = "Downloading box art: 100% — done"
     }

@@ -1640,6 +1640,8 @@ struct BoxArtSettingsView: View {
     @AppStorage("thumbnail_use_crc_matching") private var useCRCMatching = true
     @AppStorage("thumbnail_fallback_filename") private var fallbackFilename = true
     @AppStorage("thumbnail_use_head_check") private var useHeadCheck = false
+    @AppStorage("launchbox_use_for_boxart") private var useLaunchBox = false
+    @AppStorage("launchbox_download_after_scan") private var launchBoxDownloadAfterScan = true
 
     var body: some View {
         Form {
@@ -1660,6 +1662,15 @@ struct BoxArtSettingsView: View {
                 Label("Libretro Thumbnails", systemImage: "photo.on.rectangle.angled")
             } footer: {
                 Text("Uses thumbnails.libretro.com with CRC-based names from Libretro DAT files when available, then Named_Boxarts → Named_Titles → Named_Snaps, with a fuzzy name pass.")
+            }
+
+            Section {
+                Toggle("Enable LaunchBox GamesDB", isOn: $useLaunchBox)
+                Toggle("Auto-download box art after scan", isOn: $launchBoxDownloadAfterScan)
+            } header: {
+                Label("LaunchBox GamesDB", systemImage: "gamecontroller.fill")
+            } footer: {
+                Text("Queries gamesdb.launchbox-app.com as a third-party fallback when the Libretro CDN has no box art. Enable auto-download to fill gaps after scanning your library.")
             }
 
             Section {
@@ -1847,6 +1858,7 @@ struct AboutView: View {
     @State private var expandedSections: Set<String> = []
     
     var body: some View {
+
         ScrollView {
             VStack(spacing: 24) {
                 // App Identity
@@ -1990,6 +2002,15 @@ struct AboutView: View {
                             license: "CC-BY-NC-SA-4.0",
                             licenseURL: "https://www.screenscraper.fr",
                             description: "Optional fallback box art and metadata API. Media and data contributed by the ScreenScraper community. Licensed under Creative Commons Attribution-NonCommercial-ShareAlike 4.0 International. Requires a free account for API access."
+                        )                        
+                        Divider()
+                        
+                        DependencyGroup(
+                            name: "LaunchBox GamesDB",
+                            url: "https://gamesdb.launchbox-app.com",
+                            license: "Various",
+                            licenseURL: nil,
+                            description: "Game media and boxart database powering the LaunchBox and Big Box frontends. Used as an optional third-party fallback source for game artwork."
                         )
                     }
                     
