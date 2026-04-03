@@ -230,13 +230,11 @@ fragment float4 fragmentLottesCRT(VertexOut in [[stage_in]],
                                     constant LottesCRTUniforms &u [[buffer(0)]]) {
     constexpr sampler s(filter::linear, address::clamp_to_edge);
     float2 uv = in.texCoord;
-    float2 px = u.SourceSize.zw;
-    float2 py = u.OutputSize.zw;
 
     // Horizontal scanline intensity
     float scanline = 1.0 - u.scanlineStrength * 0.5 * (0.5 + 0.5 * sin(in.position.y * 3.14159));
 
-    // Beam min/max width
+    // Beam min/max width - modulates scanline intensity
     float dist = sin(uv.y * 3.14159 * u.SourceSize.y);
     float beam = mix(u.beamMinWidth, u.beamMaxWidth, dist);
 
@@ -247,8 +245,8 @@ fragment float4 fragmentLottesCRT(VertexOut in [[stage_in]],
     float4 nearColor = tex.sample(sampler(filter::nearest, address::clamp_to_edge), uv);
     color = mix(color, nearColor, u.sharpness);
 
-    // Apply scanline
-    color.rgb *= scanline;
+    // Apply scanline with beam width modulation
+    color.rgb *= scanline * beam;
 
     // Mask pattern (shadow mask)
     float mask = (int(in.position.x) % 2 == 0) ? u.maskDark : u.maskLight;
@@ -453,11 +451,6 @@ fragment float4 fragmentXBRZ(VertexOut in [[stage_in]],
     float4 b  = tex.sample(s, uv + float2(0.0, px.y));
     float4 l  = tex.sample(s, uv + float2(-px.x, 0.0));
     float4 r  = tex.sample(s, uv + float2(px.x, 0.0));
-    float4 tl = tex.sample(s, uv + float2(-px.x, -px.y));
-    float4 tr = tex.sample(s, uv + float2(px.x, -px.y));
-    float4 bl = tex.sample(s, uv + float2(-px.x, px.y));
-    float4 br = tex.sample(s, uv + float2(px.x, px.y));
-
     // Detect edges
     float tlDiff = length(t.rgb - l.rgb);
     float brDiff = length(b.rgb - r.rgb);

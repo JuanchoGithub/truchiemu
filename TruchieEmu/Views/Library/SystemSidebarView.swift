@@ -11,7 +11,7 @@ struct SystemSidebarView: View {
         let ids = Set(library.roms.compactMap { $0.systemID })
         return SystemDatabase.systems
             .filter { ids.contains($0.id) }
-            .sorted { $0.sortOrder < $1.sortOrder }
+            .sorted { $0.name.localizedCaseInsensitiveCompare($1.name) == .orderedAscending }
     }
 
     var body: some View {

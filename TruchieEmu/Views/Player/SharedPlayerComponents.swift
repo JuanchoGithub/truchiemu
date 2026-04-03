@@ -984,22 +984,28 @@ class StandaloneGameWindowController: NSWindowController, NSWindowDelegate, Obse
         // Poll for isReadyForDisplay with a timeout (5 seconds max)
         var attempts = 0
         let maxAttempts = 50 // 5 seconds at 100ms intervals
-        let timer = Timer.scheduledTimer(withTimeInterval: 0.1, repeats: true) { [weak self] timer in
-            guard let self = self else {
+        
+        Timer.scheduledTimer(withTimeInterval: 0.1, repeats: true) { [weak self] timer in
+            guard let self else {
                 timer.invalidate()
                 return
             }
             
             attempts += 1
+            var isReady = false
+            var timedOut = false
             
-            // Check if runner is ready for display
-            if let runner = self.runner, runner.isReadyForDisplay {
+            // Access @MainActor property on main thread
+            DispatchQueue.main.sync {
+                isReady = self.runner?.isReadyForDisplay ?? false
+                timedOut = attempts >= maxAttempts
+            }
+            
+            if isReady || timedOut {
                 timer.invalidate()
-                self.showWindowAndLoadSlot(slotToLoad: slotToLoad, rom: rom)
-            } else if attempts >= maxAttempts {
-                // Timeout - show window anyway to avoid hanging
-                LoggerService.info(category: "Runner", "Timeout waiting for first frame, showing window anyway")
-                timer.invalidate()
+                if !isReady {
+                    LoggerService.info(category: "Runner", "Timeout waiting for first frame, showing window anyway")
+                }
                 self.showWindowAndLoadSlot(slotToLoad: slotToLoad, rom: rom)
             }
         }
