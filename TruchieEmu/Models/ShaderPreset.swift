@@ -294,6 +294,169 @@ extension ShaderPreset {
             description: "No post-processing. Integer-scaled raw pixels with nearest-neighbor filtering.",
             recommendedSystems: ["nes", "gb", "snes", "genesis"]
         ),
+        
+        // Sharp Bilinear
+        ShaderPreset(
+            id: "builtin-sharp-bilinear",
+            name: "Sharp Bilinear",
+            shaderType: .smoothing,
+            passes: [
+                ShaderPass(
+                    shaderFile: "SharpBilinear",
+                    filter: .linear,
+                    scaleX: 1.0, scaleY: 1.0,
+                    scaleTypeX: .viewport, scaleTypeY: .viewport
+                )
+            ],
+            globalUniforms: [
+                ShaderUniform(name: "sharpness", defaultValue: 0.5, minValue: 0.0, maxValue: 1.0),
+                ShaderUniform(name: "colorBoost", defaultValue: 1.0, minValue: 0.5, maxValue: 2.0),
+                ShaderUniform(name: "scanlineOpacity", defaultValue: 0.0, minValue: 0.0, maxValue: 1.0),
+            ],
+            description: "Clean bilinear filtering that preserves sharp pixels. Great for pixel art upscaling.",
+            recommendedSystems: ["nes", "gb", "gbc", "gba", "snes", "genesis"]
+        ),
+        
+        // Gamma Correct / LCD Enhancement
+        ShaderPreset(
+            id: "builtin-gamma-correct",
+            name: "Gamma Correct",
+            shaderType: .lcd,
+            passes: [
+                ShaderPass(
+                    shaderFile: "GammaCorrect",
+                    filter: .linear,
+                    scaleX: 1.0, scaleY: 1.0,
+                    scaleTypeX: .viewport, scaleTypeY: .viewport
+                )
+            ],
+            globalUniforms: [
+                ShaderUniform(name: "gamma", defaultValue: 2.2, minValue: 1.0, maxValue: 3.0),
+                ShaderUniform(name: "saturation", defaultValue: 1.2, minValue: 0.5, maxValue: 3.0),
+                ShaderUniform(name: "contrast", defaultValue: 1.1, minValue: 0.5, maxValue: 2.0),
+                ShaderUniform(name: "brightness", defaultValue: 0.0, minValue: -0.3, maxValue: 0.3),
+                ShaderUniform(name: "colorBoost", defaultValue: 1.0, minValue: 0.5, maxValue: 2.0),
+            ],
+            description: "Gamma correction and color enhancement for washed-out LCD games.",
+            recommendedSystems: ["gba", "psp", "nds", "3ds"]
+        ),
+        
+        // Lottes CRT
+        ShaderPreset(
+            id: "builtin-lottes-crt",
+            name: "Lottes CRT",
+            shaderType: .crt,
+            passes: [
+                ShaderPass(
+                    shaderFile: "LottesCRT",
+                    filter: .linear,
+                    scaleX: 1.0, scaleY: 1.0,
+                    scaleTypeX: .viewport, scaleTypeY: .viewport
+                )
+            ],
+            globalUniforms: [
+                ShaderUniform(name: "scanlineStrength", defaultValue: 0.5, minValue: 0.0, maxValue: 1.0),
+                ShaderUniform(name: "beamMinWidth", defaultValue: 0.5, minValue: 0.0, maxValue: 1.0),
+                ShaderUniform(name: "beamMaxWidth", defaultValue: 1.5, minValue: 0.5, maxValue: 3.0),
+                ShaderUniform(name: "maskDark", defaultValue: 0.5, minValue: 0.0, maxValue: 1.0),
+                ShaderUniform(name: "maskLight", defaultValue: 1.5, minValue: 0.5, maxValue: 2.0),
+                ShaderUniform(name: "sharpness", defaultValue: 0.3, minValue: 0.0, maxValue: 1.0),
+                ShaderUniform(name: "colorBoost", defaultValue: 1.0, minValue: 0.5, maxValue: 2.0),
+            ],
+            description: "Clean CRT with scanlines and shadow mask. Good performance.",
+            recommendedSystems: ["nes", "snes", "genesis", "psx", "n64"]
+        ),
+        
+        // Flat CRT (no curvature)
+        ShaderPreset(
+            id: "builtin-flat-crt",
+            name: "Flat CRT",
+            shaderType: .crt,
+            passes: [
+                ShaderPass(
+                    shaderFile: "FlatCRT",
+                    filter: .linear,
+                    scaleX: 1.0, scaleY: 1.0,
+                    scaleTypeX: .viewport, scaleTypeY: .viewport
+                )
+            ],
+            globalUniforms: [
+                ShaderUniform(name: "scanlineStrength", defaultValue: 0.4, minValue: 0.0, maxValue: 1.0),
+                ShaderUniform(name: "maskStrength", defaultValue: 0.3, minValue: 0.0, maxValue: 1.0),
+                ShaderUniform(name: "beamWidth", defaultValue: 1.0, minValue: 0.0, maxValue: 2.0),
+                ShaderUniform(name: "colorBoost", defaultValue: 1.0, minValue: 0.5, maxValue: 2.0),
+            ],
+            description: "CRT scanlines and mask without barrel distortion. Clean look.",
+            recommendedSystems: ["nes", "snes", "genesis", "psx", "gb", "gba"]
+        ),
+        
+        // Handheld LCD
+        ShaderPreset(
+            id: "builtin-handheld-lcd",
+            name: "Handheld LCD",
+            shaderType: .lcd,
+            passes: [
+                ShaderPass(
+                    shaderFile: "HandheldLCD",
+                    filter: .nearest,
+                    scaleX: 1.0, scaleY: 1.0,
+                    scaleTypeX: .viewport, scaleTypeY: .viewport
+                )
+            ],
+            globalUniforms: [
+                ShaderUniform(name: "gridOpacity", defaultValue: 0.3, minValue: 0.0, maxValue: 1.0),
+                ShaderUniform(name: "gridSize", defaultValue: 3.0, minValue: 1.0, maxValue: 8.0),
+                ShaderUniform(name: "ghosting", defaultValue: 0.0, minValue: 0.0, maxValue: 1.0),
+                ShaderUniform(name: "gamma", defaultValue: 2.2, minValue: 1.0, maxValue: 3.0),
+                ShaderUniform(name: "colorBoost", defaultValue: 1.0, minValue: 0.5, maxValue: 2.0),
+            ],
+            description: "LCD pixel grid with gamma correction and optional motion ghosting.",
+            recommendedSystems: ["gb", "gbc", "gg", "sms"]
+        ),
+        
+        // XBRZ Upscaling
+        ShaderPreset(
+            id: "builtin-xbrz",
+            name: "XBRZ Upscaling",
+            shaderType: .smoothing,
+            passes: [
+                ShaderPass(
+                    shaderFile: "XBRZ",
+                    filter: .linear,
+                    scaleX: 2.0, scaleY: 2.0,
+                    scaleTypeX: .source, scaleTypeY: .source
+                )
+            ],
+            globalUniforms: [
+                ShaderUniform(name: "blendStrength", defaultValue: 0.7, minValue: 0.0, maxValue: 1.0),
+                ShaderUniform(name: "colorTolerance", defaultValue: 0.1, minValue: 0.0, maxValue: 0.5),
+                ShaderUniform(name: "sharpness", defaultValue: 0.3, minValue: 0.0, maxValue: 1.0),
+                ShaderUniform(name: "colorBoost", defaultValue: 1.0, minValue: 0.5, maxValue: 2.0),
+            ],
+            description: "Edge-directed upscale with smooth curves. Great for pixel art.",
+            recommendedSystems: ["snes", "genesis", "gba", "psx"]
+        ),
+        
+        // Pixellate (AA Nearest-Neighbor)
+        ShaderPreset(
+            id: "builtin-pixellate",
+            name: "Pixellate",
+            shaderType: .smoothing,
+            passes: [
+                ShaderPass(
+                    shaderFile: "Pixellate",
+                    filter: .linear,
+                    scaleX: 1.0, scaleY: 1.0,
+                    scaleTypeX: .viewport, scaleTypeY: .viewport
+                )
+            ],
+            globalUniforms: [
+                ShaderUniform(name: "antialiasing", defaultValue: 0.3, minValue: 0.0, maxValue: 1.0),
+                ShaderUniform(name: "colorBoost", defaultValue: 1.0, minValue: 0.5, maxValue: 2.0),
+            ],
+            description: "Nearest-neighbor pixels with anti-aliased edges.",
+            recommendedSystems: ["nes", "gb", "snes", "genesis"]
+        ),
     ]
     
     /// All available presets (built-in only)

@@ -480,6 +480,85 @@ struct LCDGridUniforms {
     var outputSize: SIMD4<Float>
 }
 
+/// Sharp Bilinear uniforms (48 bytes) - matches SharpBilinearUniforms in CRTFilter.metal
+struct SharpBilinearUniforms {
+    var sharpness: Float
+    var colorBoost: Float
+    var scanlineOpacity: Float
+    var _pad: Float               // padding to align SourceSize to 16-byte boundary
+    var sourceSize: SIMD4<Float>
+    var outputSize: SIMD4<Float>
+}
+
+/// Lottes CRT uniforms (64 bytes) - matches LottesCRTUniforms in CRTFilter.metal
+struct LottesCRTUniforms {
+    var scanlineStrength: Float
+    var beamMinWidth: Float
+    var beamMaxWidth: Float
+    var maskDark: Float
+    var maskLight: Float
+    var sharpness: Float
+    var colorBoost: Float
+    var _pad: SIMD3<Float>    // padding to align SourceSize to 16-byte boundary
+    var sourceSize: SIMD4<Float>
+    var outputSize: SIMD4<Float>
+}
+
+/// Flat CRT uniforms (64 bytes) - matches FlatCRTUniforms in CRTFilter.metal
+struct FlatCRTUniforms {
+    var scanlineStrength: Float
+    var maskStrength: Float
+    var beamWidth: Float
+    var colorBoost: Float
+    var _pad: SIMD3<Float>
+    var sourceSize: SIMD4<Float>
+    var outputSize: SIMD4<Float>
+}
+
+/// Gamma Correct uniforms (64 bytes) - matches GammaCorrectUniforms in CRTFilter.metal
+struct GammaCorrectUniforms {
+    var gamma: Float
+    var saturation: Float
+    var contrast: Float
+    var brightness: Float
+    var colorBoost: Float
+    var _pad: SIMD3<Float>
+    var sourceSize: SIMD4<Float>
+    var outputSize: SIMD4<Float>
+}
+
+/// Handheld LCD uniforms (64 bytes) - matches HandheldLCDUniforms in CRTFilter.metal
+struct HandheldLCDUniforms {
+    var gridOpacity: Float
+    var gridSize: Float
+    var ghosting: Float
+    var gamma: Float
+    var colorBoost: Float
+    var _pad: SIMD3<Float>
+    var sourceSize: SIMD4<Float>
+    var outputSize: SIMD4<Float>
+}
+
+/// Pixellate uniforms (48 bytes) - matches PixellateUniforms in CRTFilter.metal
+struct PixellateUniforms {
+    var antialiasing: Float
+    var colorBoost: Float
+    var _pad: SIMD3<Float>           // padding to align SourceSize to 16-byte boundary
+    var sourceSize: SIMD4<Float>
+    var outputSize: SIMD4<Float>
+}
+
+/// XBRZ uniforms (64 bytes) - matches XBRZUniforms in CRTFilter.metal
+struct XBRZUniforms {
+    var blendStrength: Float
+    var colorTolerance: Float
+    var sharpness: Float
+    var colorBoost: Float
+    var _pad: SIMD3<Float>
+    var sourceSize: SIMD4<Float>
+    var outputSize: SIMD4<Float>
+}
+
 // Legacy alias for CRT passthrough
 typealias ShaderUniforms = CRTUniforms
 
@@ -1076,6 +1155,85 @@ class StandaloneGameWindowController: NSWindowController, NSWindowDelegate, Obse
                                 outputSize: SIMD4<Float>(vpW, vpH, 0.0, 0.0)
                             )
                             enc.setFragmentBytes(&u, length: MemoryLayout<LCDGridUniforms>.stride, index: 0)
+                        case "fragmentSharpBilinear":
+                            var u = SharpBilinearUniforms(
+                                sharpness: settings.scanlineIntensity,
+                                colorBoost: settings.colorBoost,
+                                scanlineOpacity: settings.scanlineIntensity,
+                                _pad: 0,
+                                sourceSize: SIMD4<Float>(fw, fh, 1.0/fw, 1.0/fh),
+                                outputSize: SIMD4<Float>(vpW, vpH, 0.0, 0.0)
+                            )
+                            enc.setFragmentBytes(&u, length: MemoryLayout<SharpBilinearUniforms>.stride, index: 0)
+                        case "fragmentLottesCRT":
+                            var u = LottesCRTUniforms(
+                                scanlineStrength: settings.scanlineIntensity,
+                                beamMinWidth: 0.5,
+                                beamMaxWidth: 1.5,
+                                maskDark: 0.5,
+                                maskLight: 1.0,
+                                sharpness: 1.0,
+                                colorBoost: settings.colorBoost,
+                                _pad: SIMD3<Float>(0, 0, 0),
+                                sourceSize: SIMD4<Float>(fw, fh, 1.0/fw, 1.0/fh),
+                                outputSize: SIMD4<Float>(vpW, vpH, 0.0, 0.0)
+                            )
+                            enc.setFragmentBytes(&u, length: MemoryLayout<LottesCRTUniforms>.stride, index: 0)
+                        case "fragmentFlatCRT":
+                            var u = FlatCRTUniforms(
+                                scanlineStrength: settings.scanlineIntensity,
+                                maskStrength: 0.3,
+                                beamWidth: 1.0,
+                                colorBoost: settings.colorBoost,
+                                _pad: SIMD3<Float>(0, 0, 0),
+                                sourceSize: SIMD4<Float>(fw, fh, 1.0/fw, 1.0/fh),
+                                outputSize: SIMD4<Float>(vpW, vpH, 0.0, 0.0)
+                            )
+                            enc.setFragmentBytes(&u, length: MemoryLayout<FlatCRTUniforms>.stride, index: 0)
+                        case "fragmentXBRZ":
+                            var u = XBRZUniforms(
+                                blendStrength: 0.5,
+                                colorTolerance: 0.1,
+                                sharpness: 1.0,
+                                colorBoost: settings.colorBoost,
+                                _pad: SIMD3<Float>(0, 0, 0),
+                                sourceSize: SIMD4<Float>(fw, fh, 1.0/fw, 1.0/fh),
+                                outputSize: SIMD4<Float>(vpW, vpH, 0.0, 0.0)
+                            )
+                            enc.setFragmentBytes(&u, length: MemoryLayout<XBRZUniforms>.stride, index: 0)
+                        case "fragmentPixellate":
+                            var u = PixellateUniforms(
+                                antialiasing: 0.5,
+                                colorBoost: settings.colorBoost,
+                                _pad: SIMD3<Float>(0, 0, 0),
+                                sourceSize: SIMD4<Float>(fw, fh, 1.0/fw, 1.0/fh),
+                                outputSize: SIMD4<Float>(vpW, vpH, 0.0, 0.0)
+                            )
+                            enc.setFragmentBytes(&u, length: MemoryLayout<PixellateUniforms>.stride, index: 0)
+                        case "fragmentGammaCorrect":
+                            var u = GammaCorrectUniforms(
+                                gamma: 2.2,
+                                saturation: 1.2,
+                                contrast: 1.0,
+                                brightness: 0.0,
+                                colorBoost: settings.colorBoost,
+                                _pad: SIMD3<Float>(0, 0, 0),
+                                sourceSize: SIMD4<Float>(fw, fh, 1.0/fw, 1.0/fh),
+                                outputSize: SIMD4<Float>(vpW, vpH, 0.0, 0.0)
+                            )
+                            enc.setFragmentBytes(&u, length: MemoryLayout<GammaCorrectUniforms>.stride, index: 0)
+                        case "fragmentHandheldLCD":
+                            var u = HandheldLCDUniforms(
+                                gridOpacity: settings.scanlineIntensity,
+                                gridSize: 2.0,
+                                ghosting: 0.3,
+                                gamma: 2.2,
+                                colorBoost: settings.colorBoost,
+                                _pad: SIMD3<Float>(0, 0, 0),
+                                sourceSize: SIMD4<Float>(fw, fh, 1.0/fw, 1.0/fh),
+                                outputSize: SIMD4<Float>(vpW, vpH, 0.0, 0.0)
+                            )
+                            enc.setFragmentBytes(&u, length: MemoryLayout<HandheldLCDUniforms>.stride, index: 0)
                         default:
                             var u = CRTUniforms(
                                 crtEnabled: 0,

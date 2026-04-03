@@ -221,6 +221,324 @@ fragment float4 fragmentEdgeSmooth(VertexOut in [[stage_in]],
 }
 
 // ============================================================
+// Lottes CRT Shader (ported from OpenEmu)
+// Clean, efficient CRT with scanlines and mask
+// Best for: All retro consoles
+// ============================================================
+struct LottesCRTUniforms {
+    float scanlineStrength;
+    float beamMinWidth;
+    float beamMaxWidth;
+    float maskDark;
+    float maskLight;
+    float sharpness;
+    float colorBoost;
+    float4 SourceSize;
+    float4 OutputSize;
+};
+
+fragment float4 fragmentLottesCRT(VertexOut in [[stage_in]],
+                                   texture2d<float> tex [[texture(0)]],
+                                   constant LottesCRTUniforms &u [[buffer(0)]]) {
+    constexpr sampler s(filter::linear, address::clamp_to_edge);
+    float2 uv = in.texCoord;
+    float2 px = u.SourceSize.zw;
+    float2 py = u.OutputSize.zw;
+    
+    // Horizontal scanline intensity
+    float scanline = 1.0 - u.scanlineStrength * 0.5 * (0.5 + 0.5 * sin(in.position.y * 3.14159));
+    
+    // Beam min/max width
+    float dist = sin(uv.y * 3.14159 * u.SourceSize.y);
+    float beam = mix(u.beamMinWidth, u.beamMaxWidth, dist);
+    
+    // Sample texture
+    float4 color = tex.sample(s, uv);
+    
+    // Apply sharpness
+    float4 nearColor = tex.sample(sampler(filter::nearest, address::clamp_to_edge), uv);
+    color = mix(color, nearColor, u.sharpness);
+    
+    // Apply scanline
+    color.rgb *= scanline;
+    
+    // Mask pattern (shadow mask)
+    float mask = (int(in.position.x) % 2 == 0) ? u.maskDark : u.maskLight;
+    color.rgb *= mask;
+    
+    color.rgb *= u.colorBoost;
+    color.rgb = saturate(color.rgb);
+    color.a = 1.0;
+    return color;
+}
+
+// ============================================================
+// Flat CRT Shader (no curvature)
+// Simple scanlines + mask without barrel distortion
+// Best for: All retro consoles
+// ============================================================
+struct FlatCRTUniforms {
+    float scanlineStrength;
+    float maskStrength;
+    float beamWidth;
+    float colorBoost;
+    float4 SourceSize;
+    float4 OutputSize;
+};
+
+fragment float4 fragmentFlatCRT(VertexOut in [[stage_in]],
+                                 texture2d<float> tex [[texture(0)]],
+                                 constant FlatCRTUniforms &u [[buffer(0)]]) {
+    constexpr sampler s(filter::linear, address::clamp_to_edge);
+    float2 uv = in.texCoord;
+    float4 color = tex.sample(s, uv);
+    
+    // Scanlines
+    float scanLine = sin(uv.y * u.OutputSize.y * 3.14159) * 0.5 + 0.5;
+    color.rgb *= 1.0 - u.scanlineStrength * scanLine;
+    
+    // Shadow mask (RGB stripe)
+    int pixelX = int(in.position.x);
+    int maskType = pixelX % 3;
+    if (maskType == 0) {
+        color.r *= 1.0 - u.maskStrength * 0.3;
+    } else if (maskType == 1) {
+        color.g *= 1.0 - u.maskStrength * 0.3;
+    } else {
+        color.b *= 1.0 - u.maskStrength * 0.3;
+    }
+    
+    // Beam width (subtle horizontal variation)
+    float beam = 1.0 - u.beamWidth * 0.1 * sin(uv.y * u.SourceSize.y * 3.14159);
+    color.rgb *= beam;
+    
+    color.rgb *= u.colorBoost;
+    color.rgb = saturate(color.rgb);
+    color.a = 1.0;
+    return color;
+}
+
+// ============================================================
+// Gamma Correct / LCD Enhancement Shader
+// Fixes washed-out colors on handheld emulation
+// Best for: GBA, PSP, DS games with poor contrast
+// ============================================================
+struct GammaCorrectUniforms {
+    float gamma;
+    float saturation;
+    float contrast;
+    float brightness;
+    float colorBoost;
+    float4 SourceSize;
+    float4 OutputSize;
+};
+
+fragment float4 fragmentGammaCorrect(VertexOut in [[stage_in]],
+                                      texture2d<float> tex [[texture(0)]],
+                                      constant GammaCorrectUniforms &u [[buffer(0)]]) {
+    constexpr sampler s(filter::linear, address::clamp_to_edge);
+    float4 color = tex.sample(s, in.texCoord);
+    
+    // Adjust brightness
+    color.rgb += u.brightness;
+    
+    // Adjust contrast
+    color.rgb = (color.rgb - 0.5) * u.contrast + 0.5;
+    
+    // Gamma correction
+    color.rgb = pow(max(color.rgb, 0.0), float3(1.0 / u.gamma));
+    
+    // Saturation adjustment
+    float gray = dot(color.rgb, float3(0.299, 0.587, 0.114));
+    color.rgb = mix(float3(gray), color.rgb, u.saturation);
+    
+    color.rgb *= u.colorBoost;
+    color.rgb = saturate(color.rgb);
+    color.a = 1.0;
+    return color;
+}
+
+// ============================================================
+// Sharp Bilinear Shader
+// Preserves sharp pixels while smoothing with bilinear filter
+// Best for: Pixel art upscaling without blur
+// ============================================================
+struct SharpBilinearUniforms {
+    float sharpness;
+    float colorBoost;
+    float scanlineOpacity;
+    float4 SourceSize;
+    float4 OutputSize;
+};
+
+fragment float4 fragmentSharpBilinear(VertexOut in [[stage_in]],
+                                       texture2d<float> tex [[texture(0)]],
+                                       constant SharpBilinearUniforms &u [[buffer(0)]]) {
+    constexpr sampler s(filter::linear, address::clamp_to_edge);
+    float2 uv = in.texCoord;
+    float2 px = u.SourceSize.zw;
+    
+    // Pre-quantize UV coordinates to avoid nearest-neighbor artifacts
+    float2 uvQuantized = floor(uv / px) * px + px * 0.5;
+    
+    // Sample with bilinear filter on quantized UV
+    float4 color = tex.sample(s, uvQuantized);
+    
+    // Apply sharpness by blending with nearest
+    constexpr sampler nearest(filter::nearest, address::clamp_to_edge);
+    float4 nearestColor = tex.sample(nearest, uv);
+    color = mix(color, nearestColor, u.sharpness);
+    
+    // Optional subtle scanline overlay
+    if (u.scanlineOpacity > 0.0) {
+        float scanLine = sin(uv.y * 600.0) * 0.5 + 0.5;
+        color.rgb *= 1.0 - u.scanlineOpacity * scanLine * 0.3;
+    }
+    
+    color.rgb *= u.colorBoost;
+    color.a = 1.0;
+    return color;
+}
+
+// ============================================================
+// Handheld LCD Shader (enhanced LCD grid with ghosting)
+// Best for: Game Boy, Game Gear, SMS handheld
+// ============================================================
+struct HandheldLCDUniforms {
+    float gridOpacity;
+    float gridSize;
+    float ghosting;
+    float gamma;
+    float colorBoost;
+    float4 SourceSize;
+    float4 OutputSize;
+};
+
+fragment float4 fragmentHandheldLCD(VertexOut in [[stage_in]],
+                                     texture2d<float> tex [[texture(0)]],
+                                     constant HandheldLCDUniforms &u [[buffer(0)]]) {
+    constexpr sampler s(filter::nearest, address::clamp_to_edge);
+    float2 uv = in.texCoord;
+    float4 color = tex.sample(s, uv);
+    
+    // Motion ghosting
+    if (u.ghosting > 0.0) {
+        float ghost = 0.002 * u.ghosting;
+        float4 ghost1 = tex.sample(s, uv - float2(ghost, 0.0));
+        float4 ghost2 = tex.sample(s, uv + float2(0.0, ghost));
+        color = mix(color, (color + ghost1 + ghost2) / 3.0, u.ghosting);
+    }
+    
+    // Gamma correction
+    color.rgb = pow(max(color.rgb, 0.0), float3(1.0 / u.gamma));
+    
+    // LCD pixel grid
+    if (u.gridOpacity > 0.0) {
+        float2 gridUV = in.position.xy / u.gridSize;
+        float2 gridCell = fract(gridUV);
+        float gridMask = smoothstep(0.0, 0.1, gridCell.x) * smoothstep(1.0, 0.9, gridCell.x) *
+                         smoothstep(0.0, 0.1, gridCell.y) * smoothstep(1.0, 0.9, gridCell.y);
+        color.rgb = mix(color.rgb, color.rgb * gridMask, u.gridOpacity);
+    }
+    
+    color.rgb *= u.colorBoost;
+    color.rgb = saturate(color.rgb);
+    color.a = 1.0;
+    return color;
+}
+
+// ============================================================
+// XBRZ Upscaling Shader (2x)
+// Best for: Pixel art upscaling with edge smoothing
+// ============================================================
+struct XBRZUniforms {
+    float blendStrength;
+    float colorTolerance;
+    float sharpness;
+    float colorBoost;
+    float4 SourceSize;
+    float4 OutputSize;
+};
+
+fragment float4 fragmentXBRZ(VertexOut in [[stage_in]],
+                              texture2d<float> tex [[texture(0)]],
+                              constant XBRZUniforms &u [[buffer(0)]]) {
+    constexpr sampler s(filter::nearest, address::clamp_to_edge);
+    float2 uv = in.texCoord;
+    float2 px = u.SourceSize.zw;
+    
+    // Sample 3x3 neighborhood
+    float4 c  = tex.sample(s, uv);
+    float4 t  = tex.sample(s, uv + float2(0.0, -px.y));
+    float4 b  = tex.sample(s, uv + float2(0.0, px.y));
+    float4 l  = tex.sample(s, uv + float2(-px.x, 0.0));
+    float4 r  = tex.sample(s, uv + float2(px.x, 0.0));
+    float4 tl = tex.sample(s, uv + float2(-px.x, -px.y));
+    float4 tr = tex.sample(s, uv + float2(px.x, -px.y));
+    float4 bl = tex.sample(s, uv + float2(-px.x, px.y));
+    float4 br = tex.sample(s, uv + float2(px.x, px.y));
+    
+    // Detect edges
+    float tlDiff = length(t.rgb - l.rgb);
+    float brDiff = length(b.rgb - r.rgb);
+    float trDiff = length(t.rgb - r.rgb);
+    float blDiff = length(b.rgb - l.rgb);
+    
+    float minDiff = min(tlDiff, min(brDiff, min(trDiff, blDiff)));
+    float edgeFactor = smoothstep(u.colorTolerance, u.colorTolerance * 3.0, minDiff);
+    
+    // Blend along edges
+    float4 blended = (c * 4.0 + t + b + l + r) / 8.0;
+    float4 color = mix(c, blended, u.blendStrength * (1.0 - edgeFactor));
+    
+    // Sharpen
+    float4 sharp = c * 2.0 - (t + b + l + r) * 0.25;
+    color = mix(color, sharp, u.sharpness * 0.5);
+    
+    color.rgb *= u.colorBoost;
+    color.a = 1.0;
+    return color;
+}
+
+// ============================================================
+// Pixellate Shader with Anti-aliasing
+// Best for: Clean nearest-neighbor with smooth edges
+// ============================================================
+struct PixellateUniforms {
+    float antialiasing;
+    float colorBoost;
+    float4 SourceSize;
+    float4 OutputSize;
+};
+
+fragment float4 fragmentPixellate(VertexOut in [[stage_in]],
+                                   texture2d<float> tex [[texture(0)]],
+                                   constant PixellateUniforms &u [[buffer(0)]]) {
+    constexpr sampler nearest(filter::nearest, address::clamp_to_edge);
+    constexpr sampler linear(filter::linear, address::clamp_to_edge);
+    
+    float2 uv = in.texCoord;
+    float2 px = u.SourceSize.zw;
+    
+    // Nearest neighbor (pixelated)
+    float2 quantUV = floor(uv / px + 0.5) * px;
+    float4 color = tex.sample(nearest, quantUV);
+    
+    // Bilinear (smooth)
+    float4 smoothColor = tex.sample(linear, uv);
+    
+    // Anti-aliasing: blend near pixel boundaries
+    float2 fracUV = fract(uv / px);
+    float2 blend = smoothstep(0.0, u.antialiasing, fracUV) * smoothstep(1.0, 1.0 - u.antialiasing, fracUV);
+    float aaFactor = blend.x * blend.y;
+    color = mix(smoothColor, color, aaFactor);
+    
+    color.rgb *= u.colorBoost;
+    color.a = 1.0;
+    return color;
+}
+
+// ============================================================
 // Composite / VHS Shader
 // ============================================================
 struct CompositeUniforms {
