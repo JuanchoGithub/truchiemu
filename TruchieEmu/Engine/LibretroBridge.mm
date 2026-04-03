@@ -889,6 +889,7 @@ static int16_t bridge_input_state(unsigned port, unsigned device, unsigned index
         _fboWidth  = w;
         _fboHeight = h;
         
+        CGLSetCurrentContext(_glContext);
         glBindFramebuffer(GL_FRAMEBUFFER, _hwFBO);
         
         glBindRenderbuffer(GL_RENDERBUFFER, _hwColorRB);
@@ -908,7 +909,22 @@ static int16_t bridge_input_state(unsigned port, unsigned device, unsigned index
     }
     
     CGLSetCurrentContext(_glContext);
+    
+    // Ensure all GL rendering is complete before readback
+    glFinish();
+    
+    // Bind the FBO for reading and explicitly specify the read buffer
     glBindFramebuffer(GL_READ_FRAMEBUFFER, _hwFBO);
+    glReadBuffer(GL_COLOR_ATTACHMENT0);
+    
+    // Validate FBO before reading
+    GLenum status = glCheckFramebufferStatus(GL_READ_FRAMEBUFFER);
+    if (status != GL_FRAMEBUFFER_COMPLETE) {
+        NSLog(@"[Bridge-HW-R] FBO incomplete (status=0x%x), falling back to default FB", status);
+        glBindFramebuffer(GL_READ_FRAMEBUFFER, 0);
+        glReadBuffer(GL_BACK);
+    }
+    
     glReadPixels(0, 0, w, h, GL_BGRA, GL_UNSIGNED_INT_8_8_8_8_REV, _hwReadbackBuffer);
     glBindFramebuffer(GL_READ_FRAMEBUFFER, 0);
     

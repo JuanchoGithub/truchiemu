@@ -445,8 +445,20 @@ class FocusableMTKView: MTKView {
 // Each Metal shader expects a specific uniform buffer layout.
 // We create per-shader layouts that match exactly what Metal expects.
 
-/// CRT Filter uniforms (32 bytes) - matches CRTUniforms in CRTFilter.metal
+/// CRT Filter uniforms - matches Uniforms in CRTFilter.metal (64 bytes)
 struct CRTUniforms {
+    var crtEnabled: Int32
+    var scanlinesEnabled: Int32
+    var barrelEnabled: Int32
+    var phosphorEnabled: Int32
+    var scanlineIntensity: Float
+    var barrelAmount: Float
+    var colorBoost: Float
+    var time: Float
+}
+
+/// CRT Test uniforms - matches CRTTestUniforms in CRTTest.metal (64 bytes)
+struct CRTTestUniforms {
     var crtEnabled: Int32
     var scanlinesEnabled: Int32
     var barrelEnabled: Int32
@@ -1002,19 +1014,25 @@ class StandaloneGameWindowController: NSWindowController, NSWindowDelegate, Obse
 
         private func getFragmentFunctionName() -> String {
             let preset = ShaderManager.shared.activePreset
+            print("[CRT-DEBUG] Active shader preset: \(preset.id) - \(preset.name)")
             guard let firstPass = preset.passes.first,
                   let shaderFile = firstPass.shaderFile.components(separatedBy: ".").first else {
+                print("[CRT-DEBUG] No passes found, falling back to fragmentPassthrough")
                 return "fragmentPassthrough"
             }
+            let result: String
             switch shaderFile {
-            case "CRTFilter": return "fragmentCRT"
-            case "LCDGrid": return "fragmentLCDGrid"
-            case "VibrantLCD": return "fragmentVibrantLCD"
-            case "EdgeSmooth": return "fragmentEdgeSmooth"
-            case "Composite": return "fragmentComposite"
-            case "Passthrough": return "fragmentPassthrough"
-            default: return "fragment" + shaderFile
+            case "CRTFilter": result = "fragmentCRT"
+            case "CRTTest": result = "fragmentCRTTest"
+            case "LCDGrid": result = "fragmentLCDGrid"
+            case "VibrantLCD": result = "fragmentVibrantLCD"
+            case "EdgeSmooth": result = "fragmentEdgeSmooth"
+            case "Composite": result = "fragmentComposite"
+            case "Passthrough": result = "fragmentPassthrough"
+            default: result = "fragment" + shaderFile
             }
+            print("[CRT-DEBUG] ShaderFile: '\(shaderFile)' -> Fragment: '\(result)'")
+            return result
         }
 
         private func getPipelineState(device: MTLDevice) -> MTLRenderPipelineState? {
@@ -1116,20 +1134,58 @@ class StandaloneGameWindowController: NSWindowController, NSWindowDelegate, Obse
                         let time = Float(CACurrentMediaTime().truncatingRemainder(dividingBy: 100))
                         let settings = runner.rom?.settings ?? ROMSettings()
                         let fragmentName = getFragmentFunctionName()
+                        
+                        // Helper: get a uniform value from ShaderManager overrides, falling back to settings
+                        func getUniform(_ name: String, fallback: Float) -> Float {
+                            if let value = ShaderManager.shared.uniformValues[name] {
+                                return value
+                            }
+                            return fallback
+                        }
 
                         enc.setRenderPipelineState(pipeline)
                         enc.setFragmentTexture(frameTex, index: 0)
 
                         switch fragmentName {
+                        case "fragmentCRTTest":
+                            let crtOn = settings.crtEnabled ? 1 : 0
+                            let scanOn = settings.scanlinesEnabled ? 1 : 0
+                            // Barrel is controlled by slider alone: barrelAmount > 0 automatically enables distortion
+                            let barrelAmt = getUniform("barrelAmount", fallback: settings.barrelAmount)
+                            let barrelOn = barrelAmt > 0.001 ? 1 : 0
+                            let phosphorOn = settings.phosphorEnabled ? 1 : 0
+                            let scanInt = getUniform("scanlineIntensity", fallback: settings.scanlineIntensity)
+                            let colorB = getUniform("colorBoost", fallback: settings.colorBoost)
+                            print("[CRT-UNIFORMS] crt=\(crtOn) scan=\(scanOn) barrel=\(barrelOn) phosphor=\(phosphorOn) scanInt=\(scanInt) barrelAmt=\(barrelAmt) colorBoost=\(colorB)")
+                            var u = CRTTestUniforms(
+                                crtEnabled: Int32(crtOn),
+                                scanlinesEnabled: Int32(scanOn),
+                                barrelEnabled: Int32(barrelOn),
+                                phosphorEnabled: Int32(phosphorOn),
+                                scanlineIntensity: scanInt,
+                                barrelAmount: barrelAmt,
+                                colorBoost: colorB,
+                                time: time
+                            )
+                            enc.setFragmentBytes(&u, length: MemoryLayout<CRTTestUniforms>.stride, index: 0)
                         case "fragmentCRT", "fragmentPassthrough":
+                            let crtOn = settings.crtEnabled ? 1 : 0
+                            let scanOn = settings.scanlinesEnabled ? 1 : 0
+                            // Barrel is controlled by slider alone: barrelAmount > 0 automatically enables distortion
+                            let barrelAmt = getUniform("barrelAmount", fallback: settings.barrelAmount)
+                            let barrelOn = barrelAmt > 0.001 ? 1 : 0
+                            let phosphorOn = settings.phosphorEnabled ? 1 : 0
+                            let scanInt = getUniform("scanlineIntensity", fallback: settings.scanlineIntensity)
+                            let colorB = getUniform("colorBoost", fallback: settings.colorBoost)
+                            print("[CRT-UNIFORMS] crt=\(crtOn) scan=\(scanOn) barrel=\(barrelOn) phosphor=\(phosphorOn) scanInt=\(scanInt) barrelAmt=\(barrelAmt) colorBoost=\(colorB)")
                             var u = CRTUniforms(
-                                crtEnabled: settings.crtEnabled ? 1 : 0,
-                                scanlinesEnabled: settings.scanlinesEnabled ? 1 : 0,
-                                barrelEnabled: settings.barrelEnabled ? 1 : 0,
-                                phosphorEnabled: settings.phosphorEnabled ? 1 : 0,
-                                scanlineIntensity: settings.scanlineIntensity,
-                                barrelAmount: settings.barrelAmount,
-                                colorBoost: settings.colorBoost,
+                                crtEnabled: Int32(crtOn),
+                                scanlinesEnabled: Int32(scanOn),
+                                barrelEnabled: Int32(barrelOn),
+                                phosphorEnabled: Int32(phosphorOn),
+                                scanlineIntensity: scanInt,
+                                barrelAmount: barrelAmt,
+                                colorBoost: colorB,
                                 time: time
                             )
                             enc.setFragmentBytes(&u, length: MemoryLayout<CRTUniforms>.stride, index: 0)
@@ -1298,7 +1354,7 @@ class StandaloneGameWindowController: NSWindowController, NSWindowDelegate, Obse
                 }
                 
                 // Try individual shader files as last resort
-                let shaderFiles = ["CRTFilter", "LCDGrid", "VibrantLCD", "EdgeSmooth", "Composite", "Passthrough"]
+                let shaderFiles = ["CRTFilter", "CRTTest", "LCDGrid", "VibrantLCD", "EdgeSmooth", "Composite", "Passthrough"]
                 for file in shaderFiles {
                     let filePath = (bundlePath as NSString).appendingPathComponent("\(file).metal")
                     if let source = try? String(contentsOfFile: filePath, encoding: .utf8) {

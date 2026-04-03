@@ -145,6 +145,28 @@ struct ShaderPreset: Codable, Hashable, Identifiable {
 extension ShaderPreset {
     /// All built-in shader presets
     static let builtinPresets: [ShaderPreset] = [
+        // CRT Test Shader
+        ShaderPreset(
+            id: "builtin-crt-test",
+            name: "CRT Test",
+            shaderType: .crt,
+            passes: [
+                ShaderPass(
+                    shaderFile: "CRTTest",
+                    filter: .linear,
+                    scaleX: 1.0, scaleY: 1.0,
+                    scaleTypeX: .viewport, scaleTypeY: .viewport
+                )
+            ],
+             globalUniforms: [
+                 ShaderUniform(name: "scanlineIntensity", defaultValue: 0.35, minValue: 0.0, maxValue: 1.0),
+                 ShaderUniform(name: "barrelAmount", defaultValue: 0.12, minValue: 0.0, maxValue: 0.5),
+                 ShaderUniform(name: "colorBoost", defaultValue: 1.0, minValue: 0.5, maxValue: 2.0),
+             ],
+            description: "Test CRT shader with barrel distortion, phosphor mask, scanlines, and vignette.",
+            recommendedSystems: ["nes", "snes", "genesis", "psx"]
+        ),
+        
         // CRT Shader (existing, enhanced)
         ShaderPreset(
             id: "builtin-crt-classic",
@@ -158,12 +180,12 @@ extension ShaderPreset {
                     scaleTypeX: .viewport, scaleTypeY: .viewport
                 )
             ],
-            globalUniforms: [
-                ShaderUniform(name: "scanlineIntensity", defaultValue: 0.35, minValue: 0.0, maxValue: 1.0),
-                ShaderUniform(name: "barrelAmount", defaultValue: 0.12, minValue: 0.0, maxValue: 0.5),
-                ShaderUniform(name: "colorBoost", defaultValue: 1.0, minValue: 0.5, maxValue: 2.0),
-            ],
-            description: "Classic CRT scanlines with optional barrel distortion and phosphor mask.",
+             globalUniforms: [
+                 ShaderUniform(name: "scanlineIntensity", defaultValue: 0.35, minValue: 0.0, maxValue: 1.0),
+                 ShaderUniform(name: "barrelAmount", defaultValue: 0.12, minValue: 0.0, maxValue: 0.5),
+                 ShaderUniform(name: "colorBoost", defaultValue: 1.0, minValue: 0.5, maxValue: 2.0),
+             ],
+            description: "Classic CRT scanlines with barrel distortion, phosphor mask, and vignette.",
             recommendedSystems: ["nes", "snes", "genesis", "psx"]
         ),
         

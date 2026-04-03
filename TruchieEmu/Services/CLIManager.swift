@@ -74,6 +74,7 @@ class CLIManager: ObservableObject {
         var headless = false
         var timeout: TimeInterval?
         var shaderPresetID: String?
+        var shaderUniformOverrides: [String: Float] = [:]
         var achievementsEnabled = false
         var hardcoreMode = false
         var cheatsEnabled = false
@@ -119,7 +120,28 @@ class CLIManager: ObservableObject {
                 if i < arguments.count {
                     shaderPresetID = arguments[i]
                 }
-                
+
+            case CLIArg.shaderUniform.rawValue:
+                i += 1
+                if i < arguments.count {
+                    let uniformStr = arguments[i]
+                    print("[CLI] Parsing shader uniform: '\(uniformStr)'")
+                    // Remove surrounding quotes if present
+                    let cleanStr = uniformStr.trimmingCharacters(in: CharacterSet(charactersIn: "\"'"))
+                    if let eqIndex = cleanStr.firstIndex(of: "=") {
+                        let key = String(cleanStr[..<eqIndex])
+                        let valueStr = String(cleanStr[cleanStr.index(after: eqIndex)...])
+                        if let value = Float(valueStr) {
+                            print("[CLI] Shader uniform override: \(key) = \(value)")
+                            shaderUniformOverrides[key] = value
+                        } else {
+                            print("[CLI] Failed to parse shader uniform value: '\(valueStr)'")
+                        }
+                    } else {
+                        print("[CLI] No '=' found in shader uniform: '\(cleanStr)'")
+                    }
+                }
+
             case CLIArg.achievementsEnabled.rawValue:
                 achievementsEnabled = true
                 
@@ -178,6 +200,7 @@ class CLIManager: ObservableObject {
             headless: headless,
             timeout: timeout,
             shaderPresetID: shaderPresetID,
+            shaderUniformOverrides: shaderUniformOverrides,
             achievementsEnabled: achievementsEnabled,
             hardcoreMode: hardcoreMode,
             cheatsEnabled: cheatsEnabled,
@@ -227,6 +250,9 @@ class CLIManager: ObservableObject {
         }
         if options.headless {
             print("[CLI] Mode: Headless")
+        }
+        if !options.shaderUniformOverrides.isEmpty {
+            print("[CLI] Shader uniform overrides: \(options.shaderUniformOverrides)")
         }
         
         // Resolve system ID from ROM path
@@ -285,7 +311,8 @@ class CLIManager: ObservableObject {
         let controller = GameLauncher.shared.launchGame(
             rom: rom,
             coreID: coreID,
-            slotToLoad: options.slot
+            slotToLoad: options.slot,
+            shaderUniformOverrides: options.shaderUniformOverrides
         )
         
         guard let controller = controller, let gameWindow = controller.window else {
@@ -435,6 +462,7 @@ class CLIManager: ObservableObject {
           --core <core_id>       Specify which core to use
           --slot <number>        Load save state from slot (0-9)
           --shader <preset_id>   Set shader preset (e.g., builtin-none, builtin-crt-classic)
+          --shader-uniform <k=v> Override a shader uniform value (e.g., barrelAmount=0.25, scanlineIntensity=0.5, colorBoost=1.2)
           --achievements         Enable RetroAchievements
           --hardcore             Enable hardcore mode (with --achievements)
           --cheats               Load cheat files for the game
@@ -456,6 +484,9 @@ class CLIManager: ObservableObject {
         
           # Launch with shader and achievements
           open -a TruchieEmu --args --launch ~/Roms/Mario.nes --shader builtin-crt-classic --achievements
+
+          # Launch with custom shader uniform overrides
+          open -a TruchieEmu --args --launch ~/Roms/Mario.nes --shader builtin-crt-classic --shader-uniform "barrelAmount=0.25" --shader-uniform "scanlineIntensity=0.5" --shader-uniform "colorBoost=1.2"
         
           # Launch with hardcore mode and cheats
           open -a TruchieEmu --args --launch ~/Roms/Mario.nes --achievements --hardcore --cheats

@@ -60,12 +60,12 @@ struct ROM: Identifiable, Codable, Hashable {
 }
 
 struct ROMSettings: Codable, Hashable {
-    var crtEnabled: Bool = false
+    var crtEnabled: Bool = true
     var scanlinesEnabled: Bool = true
     var scanlineIntensity: Float = 0.35
-    var barrelEnabled: Bool = false
+    var barrelEnabled: Bool = true
     var barrelAmount: Float = 0.12
-    var phosphorEnabled: Bool = false
+    var phosphorEnabled: Bool = true
     var scanlineSmooth: Bool = false
     var colorBoost: Float = 1.0
     var bezelStyle: String = "none"

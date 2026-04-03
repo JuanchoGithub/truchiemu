@@ -28,6 +28,7 @@
 		4CFD764CC4B9F8C057BC0E10 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = DAD4BAC83053A0F149602D6D /* ContentView.swift */; };
 		5412DF664DF0F1052D430F56 /* SystemInfo.swift in Sources */ = {isa = PBXBuildFile; fileRef = ACC34ADA0917BCC91FAA1989 /* SystemInfo.swift */; };
 		55F19268FAB68DFC6D19F209 /* CRTFilter.metal in Sources */ = {isa = PBXBuildFile; fileRef = 2F02B2718F34118A171C7103 /* CRTFilter.metal */; };
+		A1B2C3D4E5F6789012345678 /* CRTTest.metal in Sources */ = {isa = PBXBuildFile; fileRef = 9A8B7C6D5E4F3A2B1C0D9E8F /* CRTTest.metal */; };
 		5AE08777350BDC6F25FA69E1 /* ShaderPresetPickerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 31472C6AA70EE71CBF6669A8 /* ShaderPresetPickerView.swift */; };
 		5D044254D97EF1A2198DC22C /* CheatManagerService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2E5CF9A3D4671251F618EA57 /* CheatManagerService.swift */; };
 		5FFDEBF8550AFB751087D5F7 /* SharedPlayerComponents.swift in Sources */ = {isa = PBXBuildFile; fileRef = D88D96DF545C1C1905F21A6C /* SharedPlayerComponents.swift */; };
@@ -87,6 +88,7 @@
 		2D9EAD70473602ACB00FE54F /* AchievementListView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AchievementListView.swift; sourceTree = "<group>"; };
 		2E5CF9A3D4671251F618EA57 /* CheatManagerService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CheatManagerService.swift; sourceTree = "<group>"; };
 		2F02B2718F34118A171C7103 /* CRTFilter.metal */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.metal; path = CRTFilter.metal; sourceTree = "<group>"; };
+		9A8B7C6D5E4F3A2B1C0D9E8F /* CRTTest.metal */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.metal; path = CRTTest.metal; sourceTree = "<group>"; };
 		31472C6AA70EE71CBF6669A8 /* ShaderPresetPickerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShaderPresetPickerView.swift; sourceTree = "<group>"; };
 		3356A4F200DFBFEEEE0F91A7 /* LibraryGridView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LibraryGridView.swift; sourceTree = "<group>"; };
 		35A5B2396F8000C8435A2E45 /* ROMLibrary.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ROMLibrary.swift; sourceTree = "<group>"; };
@@ -164,6 +166,7 @@
 			isa = PBXGroup;
 			children = (
 				2F02B2718F34118A171C7103 /* CRTFilter.metal */,
+				9A8B7C6D5E4F3A2B1C0D9E8F /* CRTTest.metal */,
 			);
 			path = Shaders;
 			sourceTree = "<group>";
@@ -417,6 +420,7 @@
 				785352A1776D2F26AE6E9BDA /* CLILauncher.swift in Sources */,
 				90BFE4669CA37266D841CA99 /* CLIManager.swift in Sources */,
 				55F19268FAB68DFC6D19F209 /* CRTFilter.metal in Sources */,
+				A1B2C3D4E5F6789012345678 /* CRTTest.metal in Sources */,
 				A00192372A0183EF4772CACF /* CategoryManager.swift in Sources */,
 				C1A4A19926D1834FC8C42E3D /* Cheat.swift in Sources */,
 				9FF94EED26CFDB4DE9216DF0 /* CheatAutoLoader.swift in Sources */,

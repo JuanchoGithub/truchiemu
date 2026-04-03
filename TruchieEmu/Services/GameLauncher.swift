@@ -27,6 +27,7 @@ class GameLauncher: ObservableObject {
         let coreID: String
         let slotToLoad: Int?
         let shaderPresetID: String
+        let shaderUniformOverrides: [String: Float]
         let achievementsEnabled: Bool
         let hardcoreMode: Bool
         let cheatsEnabled: Bool
@@ -39,6 +40,7 @@ class GameLauncher: ObservableObject {
             coreID: String,
             slotToLoad: Int? = nil,
             shaderPresetID: String? = nil,
+            shaderUniformOverrides: [String: Float] = [:],
             achievementsEnabled: Bool? = nil,
             hardcoreMode: Bool? = nil,
             cheatsEnabled: Bool? = nil,
@@ -49,6 +51,7 @@ class GameLauncher: ObservableObject {
             self.rom = rom
             self.coreID = coreID
             self.slotToLoad = slotToLoad
+            self.shaderUniformOverrides = shaderUniformOverrides
             
             // Resolve shader preset
             let romShader = rom.settings.shaderPresetID.isEmpty ? "builtin-crt-classic" : rom.settings.shaderPresetID
@@ -86,6 +89,7 @@ class GameLauncher: ObservableObject {
         coreID: String,
         slotToLoad: Int? = nil,
         library: ROMLibrary? = nil,
+        shaderUniformOverrides: [String: Float] = [:],
         completion: ((StandaloneGameWindowController?) -> Void)? = nil
     ) -> StandaloneGameWindowController? {
         // Check if already launching
@@ -108,7 +112,8 @@ class GameLauncher: ObservableObject {
         let config = LaunchConfig(
             rom: rom,
             coreID: coreID,
-            slotToLoad: slotToLoad
+            slotToLoad: slotToLoad,
+            shaderUniformOverrides: shaderUniformOverrides
         )
         
         print("[GameLauncher] Launching: \(rom.displayName)")
@@ -160,6 +165,14 @@ class GameLauncher: ObservableObject {
         if let preset = ShaderPreset.preset(id: config.shaderPresetID) {
             ShaderManager.shared.activatePreset(preset)
             print("[GameLauncher] Activated shader: \(preset.name)")
+        }
+        
+        // 1.5. Apply shader uniform overrides (after preset activation to override defaults)
+        if !config.shaderUniformOverrides.isEmpty {
+            for (name, value) in config.shaderUniformOverrides {
+                ShaderManager.shared.updateUniform(name, value: value)
+            }
+            print("[GameLauncher] Applied \(config.shaderUniformOverrides.count) shader uniform override(s): \(config.shaderUniformOverrides)")
         }
         
         // 2. Apply core options (persisted overrides are loaded automatically by the bridge)

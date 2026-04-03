@@ -13,6 +13,7 @@ enum CLIArg: String {
     
     // Shader options
     case shader = "--shader"
+    case shaderUniform = "--shader-uniform"
     
     // Achievement options
     case achievementsEnabled = "--achievements"
@@ -48,6 +49,7 @@ struct CLILaunchOptions {
     
     // Shader options
     let shaderPresetID: String?
+    let shaderUniformOverrides: [String: Float]
     
     // Achievement options
     let achievementsEnabled: Bool
@@ -78,6 +80,7 @@ struct CLILaunchOptions {
         headless: Bool = false,
         timeout: TimeInterval? = nil,
         shaderPresetID: String? = nil,
+        shaderUniformOverrides: [String: Float] = [:],
         achievementsEnabled: Bool = false,
         hardcoreMode: Bool = false,
         cheatsEnabled: Bool = false,
@@ -92,6 +95,7 @@ struct CLILaunchOptions {
         self.headless = headless
         self.timeout = timeout
         self.shaderPresetID = shaderPresetID
+        self.shaderUniformOverrides = shaderUniformOverrides
         self.achievementsEnabled = achievementsEnabled
         self.hardcoreMode = hardcoreMode
         self.cheatsEnabled = cheatsEnabled
@@ -147,6 +151,7 @@ class CLILauncher {
         coreID: String? = nil,
         slot: Int? = nil,
         shaderPresetID: String? = nil,
+        shaderUniformOverrides: [String: Float] = [:],
         achievementsEnabled: Bool = false,
         hardcoreMode: Bool = false,
         cheatsEnabled: Bool = false,
@@ -162,6 +167,7 @@ class CLILauncher {
             coreID: coreID,
             slot: slot,
             shaderPresetID: shaderPresetID,
+            shaderUniformOverrides: shaderUniformOverrides,
             achievementsEnabled: achievementsEnabled,
             hardcoreMode: hardcoreMode,
             cheatsEnabled: cheatsEnabled,
@@ -226,6 +232,7 @@ class CLILauncher {
         coreID: String?,
         slot: Int?,
         shaderPresetID: String?,
+        shaderUniformOverrides: [String: Float] = [:],
         achievementsEnabled: Bool,
         hardcoreMode: Bool,
         cheatsEnabled: Bool,
@@ -247,6 +254,10 @@ class CLILauncher {
         
         if let shaderPresetID = shaderPresetID {
             arguments.append(contentsOf: ["--shader", shaderPresetID])
+        }
+        
+        for (name, value) in shaderUniformOverrides {
+            arguments.append(contentsOf: ["--shader-uniform", "\(name)=\(value)"])
         }
         
         if achievementsEnabled {
