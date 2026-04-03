@@ -9,6 +9,7 @@
 /* Begin PBXBuildFile section */
 		02BCE4E07716E5E5E5D94A21 /* SystemControlsMappingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 99510C445D5B9B6435F169A6 /* SystemControlsMappingView.swift */; };
 		11210EDC6C1D31FA4E541116 /* LibretroBridge.mm in Sources */ = {isa = PBXBuildFile; fileRef = B7D46AC62DC8C09CBAA53763 /* LibretroBridge.mm */; };
+		14FD6E9E7603AB29B679170D /* SetupWizardState.swift in Sources */ = {isa = PBXBuildFile; fileRef = FAB6045B123F3B9A7267B3B0 /* SetupWizardState.swift */; };
 		1A35E4BC913F2B92D6C21A1D /* BaseRunner.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2039A7902CA4B44A7D4CA878 /* BaseRunner.swift */; };
 		1A364756DE475BC985F79341 /* EmulatorView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1DD9E5B55884D34FCDA03196 /* EmulatorView.swift */; };
 		236EFB0A130B6F76AC8713A5 /* N64Runner.swift in Sources */ = {isa = PBXBuildFile; fileRef = D4BD45E407C6A4D3059F2996 /* N64Runner.swift */; };
@@ -56,6 +57,7 @@
 		A2E8895528D33C9C62CD7E70 /* LibretroRDBParser.swift in Sources */ = {isa = PBXBuildFile; fileRef = AD6D8A426A0F0B5278A2061D /* LibretroRDBParser.swift */; };
 		A58FDFAC497AD46C53D234BE /* BezelSelectorWindow.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6FC6B9BA043D75E9DC8B7710 /* BezelSelectorWindow.swift */; };
 		A62A82DD470DD8861DF3384C /* BezelSystemMappingTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = BD7CD170E8F21A7C11AA8A96 /* BezelSystemMappingTests.swift */; };
+		A8D097D74DFDAB7242696289 /* SetupWizardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = EF7004FFCC159432F208C788 /* SetupWizardView.swift */; };
 		A99CC1C5CCF818F96154A141 /* BezelStorageManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3A2C594EB5610588966E03EA /* BezelStorageManager.swift */; };
 		A9D2785CF59E59283B83E3FF /* BezelE2ETests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 19031B83BE57CD18DC9CF433 /* BezelE2ETests.swift */; };
 		AA0B53183BF112AB49210A6D /* LibraryAutomationCoordinator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5F78F845B9C63B8B6F072751 /* LibraryAutomationCoordinator.swift */; };
@@ -195,10 +197,12 @@
 		EA462E15A1500FD878B5160A /* GameDetailView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GameDetailView.swift; sourceTree = "<group>"; };
 		EAE090319110B0F262FC2BC2 /* RunningGamesTracker.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RunningGamesTracker.swift; sourceTree = "<group>"; };
 		EAE67E62E85282D55D114D49 /* BezelSelectorSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BezelSelectorSheet.swift; sourceTree = "<group>"; };
+		EF7004FFCC159432F208C788 /* SetupWizardView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SetupWizardView.swift; sourceTree = "<group>"; };
 		F0ECEE62736D1B11B66E5CED /* SystemSidebarView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SystemSidebarView.swift; sourceTree = "<group>"; };
 		F306F0B7FE1B38A2A9EA5989 /* LoggerService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoggerService.swift; sourceTree = "<group>"; };
 		F92119B38E7206704F501F92 /* SlotPickerSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SlotPickerSheet.swift; sourceTree = "<group>"; };
 		FA471582BD64CAFD5D7353DA /* ROM.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ROM.swift; sourceTree = "<group>"; };
+		FAB6045B123F3B9A7267B3B0 /* SetupWizardState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SetupWizardState.swift; sourceTree = "<group>"; };
 		FC2BC1B2F22591954A0E02B5 /* ROMIdentifierService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ROMIdentifierService.swift; sourceTree = "<group>"; };
 		FEAB7F598545E0EC1ADC7095 /* CheatAutoLoader.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CheatAutoLoader.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -267,6 +271,7 @@
 				7A96B3453958E60812D9DA1D /* ROMScanner.swift */,
 				EAE090319110B0F262FC2BC2 /* RunningGamesTracker.swift */,
 				67828B9B95A21FE57196B832 /* SaveStateManager.swift */,
+				FAB6045B123F3B9A7267B3B0 /* SetupWizardState.swift */,
 				055E2AC9E58C1AC87C32C168 /* ShaderManager.swift */,
 				2702288214CCCA56E93A55AA /* Bezels */,
 			);
@@ -290,6 +295,7 @@
 			children = (
 				3356A4F200DFBFEEEE0F91A7 /* LibraryGridView.swift */,
 				BB27DEA4536CF36FCD8394F2 /* OnboardingView.swift */,
+				EF7004FFCC159432F208C788 /* SetupWizardView.swift */,
 				99510C445D5B9B6435F169A6 /* SystemControlsMappingView.swift */,
 				F0ECEE62736D1B11B66E5CED /* SystemSidebarView.swift */,
 			);
@@ -619,6 +625,8 @@
 				69C5F4C099C331E5E4BE4DCB /* SaveStateManager.swift in Sources */,
 				8F729FB157583DECC75B0124 /* ScummVMRunner.swift in Sources */,
 				2B95ADBBD965C8784E0F14C1 /* SettingsView.swift in Sources */,
+				14FD6E9E7603AB29B679170D /* SetupWizardState.swift in Sources */,
+				A8D097D74DFDAB7242696289 /* SetupWizardView.swift in Sources */,
 				FC2EA7938982440C4F5BA3D3 /* ShaderManager.swift in Sources */,
 				2426F4E6C399C0218826CFF6 /* ShaderPreset.swift in Sources */,
 				5AE08777350BDC6F25FA69E1 /* ShaderPresetPickerView.swift in Sources */,

@@ -5,6 +5,9 @@ struct ContentView: View {
     @EnvironmentObject var categoryManager: CategoryManager
     @EnvironmentObject var coreManager: CoreManager
     @EnvironmentObject var libraryAutomation: LibraryAutomationCoordinator
+    @EnvironmentObject var controllerService: ControllerService
+    @ObservedObject var wizard = SetupWizardState.shared
+    
     @State private var selectedFilter: LibraryFilter = .recent
     @State private var selectedROM: ROM? = nil
     @State private var showOnboarding = false
@@ -14,15 +17,15 @@ struct ContentView: View {
 
     var body: some View {
         Group {
-            if library.hasCompletedOnboarding {
-                mainInterface
-            } else {
-                OnboardingView()
-            }
-        }
-        .onAppear {
             if !library.hasCompletedOnboarding {
-                showOnboarding = true
+                // Show the setup wizard for first-time users
+                SetupWizardView(wizard: wizard)
+                    .environmentObject(library)
+                    .environmentObject(categoryManager)
+                    .environmentObject(coreManager)
+                    .environmentObject(controllerService)
+            } else {
+                mainInterface
             }
         }
     }
