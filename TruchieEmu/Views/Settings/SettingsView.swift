@@ -48,6 +48,7 @@ struct SettingsView: View {
             .frame(minWidth: 550, minHeight: 420)
         }
         .navigationSplitViewStyle(.prominentDetail)
+        .toolbar(removing: .sidebarToggle)
     }
     
     private func sidebarItem(icon: String, label: String, page: Page) -> some View {
