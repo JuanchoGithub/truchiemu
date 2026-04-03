@@ -197,7 +197,7 @@ struct GameDetailView: View {
     }
 
     private var system: SystemInfo? {
-        SystemDatabase.system(forID: currentROM.systemID ?? "")
+        SystemDatabase.displaySystem(forInternalID: currentROM.systemID ?? "")
     }
 
     private var installedCores: [LibretroCore] {

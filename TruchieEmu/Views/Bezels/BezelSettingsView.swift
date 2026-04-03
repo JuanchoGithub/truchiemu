@@ -269,7 +269,7 @@ struct BezelSettingsView: View {
                         Picker("System", selection: $selectedSystem) {
                             Text("All Systems").tag("all")
                             Divider()
-                            ForEach(SystemDatabase.systems.sorted(by: { $0.name < $1.name })) { system in
+                            ForEach(SystemDatabase.systemsForDisplay.sorted(by: { $0.name < $1.name })) { system in
                                 Text(system.name).tag(system.id)
                             }
                         }
@@ -318,7 +318,7 @@ struct BezelSettingsView: View {
                     
                     // System quick download menu
                     Menu {
-                        ForEach(SystemDatabase.systems.sorted(by: { $0.name < $1.name })) { system in
+                        ForEach(SystemDatabase.systemsForDisplay.sorted(by: { $0.name < $1.name })) { system in
                             Button(system.name) {
                                 selectedSystem = system.id
                                 Task {

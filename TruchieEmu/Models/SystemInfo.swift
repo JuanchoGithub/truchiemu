@@ -79,6 +79,7 @@ struct SystemInfo: Identifiable, Codable, Hashable {
     var year: String?
     var sortOrder: Int
     var defaultBoxType: BoxType = .vertical
+    var displayInUI: Bool = true
 
     static let all: [SystemInfo] = SystemDatabase.systems
 
@@ -166,7 +167,7 @@ enum SystemDatabase {
         SystemInfo(id: "psx",          name: "PlayStation",                     manufacturer: "Sony",       extensions: ["cue", "toc", "m3u", "pbp"],   defaultCoreID: "mednafen_psx_libretro",      iconName: "opticaldisc",    emuIconName: "PS",       year: "1994", sortOrder: 20, defaultBoxType: .landscape),
         SystemInfo(id: "gba",          name: "Game Boy Advance",                manufacturer: "Nintendo",   extensions: ["gba"],                        defaultCoreID: "mgba_libretro",              iconName: "iphone",         emuIconName: "GBA",      year: "2001", sortOrder: 4, defaultBoxType: .vertical),
         SystemInfo(id: "gb",           name: "Game Boy",                        manufacturer: "Nintendo",   extensions: ["gb"],                         defaultCoreID: "mgba_libretro",              iconName: "iphone",         emuIconName: "GB",       year: "1989", sortOrder: 5, defaultBoxType: .vertical),
-        SystemInfo(id: "gbc",          name: "Game Boy Color",                  manufacturer: "Nintendo",   extensions: ["gbc"],                        defaultCoreID: "mgba_libretro",              iconName: "iphone",         emuIconName: "GBC",      year: "1998", sortOrder: 6, defaultBoxType: .vertical),
+        SystemInfo(id: "gbc",          name: "Game Boy Color",                  manufacturer: "Nintendo",   extensions: ["gbc"],                        defaultCoreID: "mgba_libretro",              iconName: "iphone",         emuIconName: "GBC",      year: "1998", sortOrder: 6, defaultBoxType: .vertical, displayInUI: false),
         SystemInfo(id: "nds",          name: "Nintendo DS",                     manufacturer: "Nintendo",   extensions: ["nds", "dsi"],                 defaultCoreID: "desmume_libretro",           iconName: "ipad",           emuIconName: "NDS",      year: "2004", sortOrder: 7, defaultBoxType: .landscape),
         SystemInfo(id: "genesis",      name: "Sega Genesis / Mega Drive",       manufacturer: "Sega",       extensions: ["md", "gen", "bin", "smd"],    defaultCoreID: "genesis_plus_gx_libretro",   iconName: "gamecontroller.fill", emuIconName: "MD",  year: "1988", sortOrder: 10, defaultBoxType: .vertical),
         SystemInfo(id: "sms",          name: "Sega Master System",              manufacturer: "Sega",       extensions: ["sms"],                        defaultCoreID: "genesis_plus_gx_libretro",   iconName: "gamecontroller.fill", emuIconName: "MS",  year: "1985", sortOrder: 11, defaultBoxType: .vertical),
@@ -190,6 +191,30 @@ enum SystemDatabase {
         SystemInfo(id: "dos",          name: "MS-DOS",                          manufacturer: "Microsoft",  extensions: ["zip", "dosz", "conf", "exe", "bat", "iso", "img", "cue", "ins"], defaultCoreID: "dosbox_pure_libretro", iconName: "desktopcomputer", emuIconName: "DOS", year: "1981", sortOrder: 70, defaultBoxType: .landscape),
     ]
 
+
+    /// Systems that should appear in UI lists (settings, sidebar, dropdowns).
+    /// Filters out systems with `displayInUI == false` (e.g. GBC which is merged into Game Boy).
+    static var systemsForDisplay: [SystemInfo] {
+        systems.filter { $0.displayInUI }
+    }
+
+    /// For a given display system ID, returns all internal system IDs that should be included.
+    /// For example, "gb" includes both "gb" and "gbc" ROMs.
+    static func allInternalIDs(forDisplayID id: String) -> [String] {
+        switch id {
+        case "gb", "gbc": return ["gb", "gbc"]
+        default: return [id]
+        }
+    }
+
+    /// Returns the display system for a given internal system ID.
+    /// If the system is hidden from UI (like gbc), returns its display counterpart (gb).
+    static func displaySystem(forInternalID id: String) -> SystemInfo? {
+        switch id {
+        case "gbc": return systems.first { $0.id == "gb" }
+        default: return systems.first { $0.id == id }
+        }
+    }
 
     static func system(forExtension ext: String) -> SystemInfo? {
         let lower = ext.lowercased()

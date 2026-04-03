@@ -348,7 +348,7 @@ struct CoreSettingsView: View {
                         .padding(.vertical, 8)
                     
                     List(selection: $selectedSystemID) {
-                        ForEach(SystemDatabase.systems.sorted(by: { $0.name < $1.name })) { sys in
+                        ForEach(SystemDatabase.systemsForDisplay.sorted(by: { $0.name < $1.name })) { sys in
                             SystemRowView(system: sys, coreManager: coreManager)
                                 .tag(sys.id)
                         }
@@ -857,7 +857,7 @@ struct ControllerSettingsView: View {
                         Picker("System", selection: $selectedSystemID) {
                             Text("Global / Default").tag("default")
                             Divider()
-                            ForEach(SystemDatabase.systems) { sys in
+                            ForEach(SystemDatabase.systemsForDisplay) { sys in
                                 Text(sys.name).tag(sys.id)
                             }
                         }
@@ -1529,7 +1529,7 @@ struct KeyboardContentView: View {
                 Picker("System", selection: $selectedSystemID) {
                     Text("Global / Default").tag("default")
                     Divider()
-                    ForEach(SystemDatabase.systems) { sys in
+                    ForEach(SystemDatabase.systemsForDisplay) { sys in
                         Text(sys.name).tag(sys.id)
                     }
                 }

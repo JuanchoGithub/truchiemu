@@ -7,11 +7,26 @@ struct SystemSidebarView: View {
     @Binding var showCreateCategorySheet: Bool
     @Binding var editingCategory: GameCategory?
 
-    private var systemsWithROMs: [SystemInfo] {
+    /// Combined system entries for the sidebar. Game Boy (gb) absorbs Game Boy Color (gbc)
+    /// into a single "Game Boy" display entry while keeping internal systemIDs intact.
+    private var combinedSystemsWithROMs: [(system: SystemInfo, combinedCount: Int)] {
         let ids = Set(library.roms.compactMap { $0.systemID })
-        return SystemDatabase.systems
-            .filter { ids.contains($0.id) }
-            .sorted { $0.name.localizedCaseInsensitiveCompare($1.name) == .orderedAscending }
+        // Only include display-visible systems (gb visible, gbc hidden)
+        let displaySystems = SystemDatabase.systemsForDisplay
+        
+        var result: [(SystemInfo, Int)] = []
+        for sys in displaySystems {
+            // Check if any ROM exists for this system or its merged partners
+            let internalIDs = SystemDatabase.allInternalIDs(forDisplayID: sys.id)
+            let total = internalIDs.reduce(0) { sum, id in
+                sum + (ids.contains(id) ? (library.romCounts[id] ?? 0) : 0)
+            }
+            if total > 0 {
+                result.append((sys, total))
+            }
+        }
+        
+        return result.sorted(by: { $0.0.name.localizedCaseInsensitiveCompare($1.0.name) == .orderedAscending })
     }
 
     var body: some View {
@@ -32,17 +47,17 @@ struct SystemSidebarView: View {
             sidebarRow(icon: "clock.fill", label: "Recent", count: recentCount, tint: .orange, filter: .recent)
                  .tag(LibraryFilter.recent)
 
-            if !systemsWithROMs.isEmpty {
+            if !combinedSystemsWithROMs.isEmpty {
                 Section("Systems") {
-                    ForEach(systemsWithROMs) { system in
+                    ForEach(combinedSystemsWithROMs, id: \.system.id) { entry in
                         sidebarRow(
-                            icon: system.iconName,
-                            label: system.sidebarDisplayName,
-                            system: system,
-                            count: library.romCounts[system.id] ?? 0,
-                            filter: .system(system)
+                            icon: entry.system.iconName,
+                            label: entry.system.sidebarDisplayName,
+                            system: entry.system,
+                            count: entry.combinedCount,
+                            filter: .system(entry.system)
                         )
-                        .tag(LibraryFilter.system(system))
+                        .tag(LibraryFilter.system(entry.system))
                     }
                 }
             }

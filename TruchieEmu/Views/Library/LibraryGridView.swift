@@ -156,7 +156,8 @@ struct LibraryGridView: View {
         case .recent:
             base = library.roms.filter { $0.lastPlayed != nil }
         case .system(let system):
-            base = library.roms.filter { $0.systemID == system.id }
+            let systemIDs = SystemDatabase.allInternalIDs(forDisplayID: system.id)
+            base = library.roms.filter { systemIDs.contains($0.systemID ?? "") }
         case .category(let categoryID):
             base = categoryManager.gamesInCategory(categoryID: categoryID, fromROMs: library.roms)
         }
@@ -212,8 +213,8 @@ struct LibraryGridView: View {
             }
         case .system:
             return roms.sorted { a, b in
-                let sysNameA = SystemDatabase.system(forID: a.systemID ?? "")?.name ?? "ZZZZ"
-                let sysNameB = SystemDatabase.system(forID: b.systemID ?? "")?.name ?? "ZZZZ"
+                let sysNameA = SystemDatabase.displaySystem(forInternalID: a.systemID ?? "")?.name ?? "ZZZZ"
+                let sysNameB = SystemDatabase.displaySystem(forInternalID: b.systemID ?? "")?.name ?? "ZZZZ"
                 let sysCompare = sysNameA.localizedCaseInsensitiveCompare(sysNameB)
                 if sysCompare != .orderedSame {
                     return sysCompare == .orderedAscending

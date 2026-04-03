@@ -122,7 +122,7 @@ struct CheatSettingsView: View {
                     
                     // System-specific download
                     Menu {
-                        ForEach(SystemDatabase.systems.sorted(by: { $0.name < $1.name })) { system in
+                        ForEach(SystemDatabase.systemsForDisplay.sorted(by: { $0.name < $1.name })) { system in
                             Button(system.name) {
                                 Task {
                                     do {
