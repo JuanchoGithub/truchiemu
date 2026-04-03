@@ -8,14 +8,12 @@ struct SettingsView: View {
     @EnvironmentObject var coreManager: CoreManager
     @EnvironmentObject var controllerService: ControllerService
 
-    private enum Page: Hashable { case general, library, cores, controllers, keyboard, boxArt, display, cheats, bezels, retroAchievements, logging, about }
+    private enum Page: Hashable { case general, library, cores, controllers, boxArt, display, cheats, bezels, retroAchievements, logging, about }
     @State private var selectedPage: Page = .general
 
     var body: some View {
         NavigationSplitView {
             List(selection: $selectedPage) {
-                sidebarItem(icon: "info.circle.fill", label: "About", page: .about)
-                sidebarItem(icon: "rectangle.on.rectangle", label: "Bezels", page: .bezels)
                 sidebarItem(icon: "photo.stack.fill", label: "Box Art", page: .boxArt)
                 sidebarItem(icon: "wand.and.stars", label: "Cheats", page: .cheats)
                 sidebarItem(icon: "gamecontroller.fill", label: "Controllers", page: .controllers)
@@ -37,7 +35,6 @@ struct SettingsView: View {
                 case .library:     LibrarySettingsView()
                 case .cores:       CoreSettingsView()
                 case .controllers: ControllerSettingsView()
-                case .keyboard:    KeyboardSettingsView()
                 case .boxArt:      BoxArtSettingsView()
                 case .display:     DisplaySettingsView()
                 case .cheats:      CheatSettingsView()
@@ -807,138 +804,169 @@ struct ControllerSettingsView: View {
     @State private var leftColumnWidth: CGFloat = 340
     @State private var showDeleteConfirmation = false
 
+
+    @State private var activeTab = 0
+
     var body: some View {
-        VStack(alignment: .leading, spacing: 0) {
-            // Top bar: Player selection + Config management
-            VStack(spacing: 10) {
-                HStack(spacing: 12) {
-                    // Player selection
-                    Text("Player")
-                        .font(.body)
-                        .foregroundColor(.secondary)
-                    HStack(spacing: 6) {
-                        ForEach(1...4, id: \.self) { i in
-                            let connected = controllerService.connectedControllers.first(where: { $0.playerIndex == i })?.isConnected ?? false
-                            Button("P\(i)") { selectedPlayer = i }
-                                .buttonStyle(.bordered)
-                                .controlSize(.small)
-                                .tint(selectedPlayer == i ? .purple : .secondary)
-                                .overlay(
-                                    connected ? Circle().fill(.green).frame(width: 6, height: 6).offset(x: 8, y: -8) : nil,
-                                    alignment: .topTrailing
-                                )
-                        }
-                    }
-
-                    Divider().frame(height: 20)
-
-                    // System picker
-                    Picker("System", selection: $selectedSystemID) {
-                        Text("Global / Default").tag("default")
-                        Divider()
-                        ForEach(SystemDatabase.systems) { sys in
-                            Text(sys.name).tag(sys.id)
-                        }
-                    }
-                    .frame(width: 180)
-
-                    Spacer()
-
-                    // Reset to default
-                    Button("Back to Default") {
-                        if let player = controllerService.connectedControllers.first(where: { $0.playerIndex == selectedPlayer }) {
-                            let vendorName = player.gcController?.vendorName ?? "Unknown"
-                            let defaults = ControllerMapping.defaults(for: vendorName, systemID: selectedSystemID, handedness: controllerService.handedness)
-                            controllerService.updateMapping(for: vendorName, systemID: selectedSystemID, mapping: defaults)
-                        }
-                    }
-                    .buttonStyle(.bordered)
-                    .controlSize(.small)
+        TabView(selection: $activeTab) {
+            // Tab 1: Controllers
+            controllerTab
+                .tabItem {
+                    Label("Controllers", systemImage: "gamecontroller.fill")
                 }
+                .tag(0)
 
-                // Config name row: Load / Save / Delete / Config name
-                HStack(spacing: 6) {
-                    Text("Config")
-                        .font(.body)
-                        .foregroundColor(.secondary)
-                    TextField("Name", text: $configName)
-                        .textFieldStyle(.roundedBorder)
-                        .frame(width: 150)
-                    Button("Save") {
-                        saveCurrentConfig()
-                    }
-                    .disabled(configName.isEmpty)
-                    .buttonStyle(.bordered)
-                    .controlSize(.small)
-                    Button("Load") {
-                        loadConfig(name: configName)
-                    }
-                    .disabled(configName.isEmpty || savedConfigs[configName] == nil)
-                    .buttonStyle(.bordered)
-                    .controlSize(.small)
-                    Button {
-                        deleteConfig(name: configName)
-                    } label: {
-                        Label("Delete", systemImage: "trash")
-                    }
-                    .buttonStyle(.bordered)
-                    .tint(.red)
-                    .controlSize(.small)
-                    .disabled(configName.isEmpty || savedConfigs[configName] == nil)
-
-                    Spacer()
-
-                    // Config selector
-                    Menu {
-                        ForEach(Array(savedConfigs.keys.sorted()), id: \.self) { name in
-                            Button(name) {
-                                configName = name
-                                loadConfig(name: name)
-                            }
-                        }
-                    } label: {
-                        Label("Saved Configs", systemImage: "archivebox")
-                    }
-                    .menuStyle(.borderlessButton)
-                    .controlSize(.small)
+            // Tab 2: Keyboard
+            keyboardTab
+                .tabItem {
+                    Label("Keyboard", systemImage: "keyboard.fill")
                 }
-            }
-            .padding(.horizontal, 12)
-            .padding(.top, 6)
-            .padding(.bottom, 10)
-
-            Divider()
-
-            // Main content area - left panel (icon+sticks) | draggable divider | right panel (button mapping)
-            if let player = controllerService.connectedControllers.first(where: { $0.playerIndex == selectedPlayer }) {
-                HStack(spacing: 0) {
-                    // Left side: Controller icon (unbounded) and stick visualization - wider, 300-380
-                    ControllerLeftPanel(systemID: selectedSystemID, width: leftColumnWidth)
-
-                    // Draggable divider
-                    DraggableDivider(width: $leftColumnWidth)
-
-                    // Right side: Button mapping list - narrower, bounded to right edge
-                    ButtonMappingList(systemID: selectedSystemID, player: player, controllerService: controllerService)
-                        .frame(minWidth: 140)
-                }
-                .id("\(selectedPlayer)-\(selectedSystemID)-\(leftColumnWidth)")
-            } else {
-                VStack(spacing: 12) {
-                    Image(systemName: "gamecontroller")
-                        .font(.system(size: 48))
-                        .foregroundColor(.secondary)
-                    Text("No controller connected for Player \(selectedPlayer).")
-                        .foregroundColor(.secondary)
-                }
-                .frame(maxWidth: .infinity, maxHeight: .infinity)
-            }
-        }
-        .onAppear {
-            selectedPlayer = controllerService.connectedControllers.first?.playerIndex ?? 1
-            loadSavedConfigs()
+                .tag(1)
         }
     }
+
+    // MARK: - Controllers Tab
+    @ViewBuilder
+    private var controllerTab: some View {
+            VStack(alignment: .leading, spacing: 0) {
+                // Top bar: Player selection + Config management
+                VStack(spacing: 10) {
+                    HStack(spacing: 12) {
+                        // Player selection
+                        Text("Player")
+                            .font(.body)
+                            .foregroundColor(.secondary)
+                        HStack(spacing: 6) {
+                            ForEach(1...4, id: \.self) { i in
+                                let connected = controllerService.connectedControllers.first(where: { $0.playerIndex == i })?.isConnected ?? false
+                                Button("P\(i)") { selectedPlayer = i }
+                                    .buttonStyle(.bordered)
+                                    .controlSize(.small)
+                                    .tint(selectedPlayer == i ? .purple : .secondary)
+                                    .overlay(
+                                        connected ? Circle().fill(.green).frame(width: 6, height: 6).offset(x: 8, y: -8) : nil,
+                                        alignment: .topTrailing
+                                    )
+                            }
+                        }
+
+                        Divider().frame(height: 20)
+
+                        // System picker
+                        Picker("System", selection: $selectedSystemID) {
+                            Text("Global / Default").tag("default")
+                            Divider()
+                            ForEach(SystemDatabase.systems) { sys in
+                                Text(sys.name).tag(sys.id)
+                            }
+                        }
+                        .frame(width: 180)
+
+                        Spacer()
+
+                        // Reset to default
+                        Button("Back to Default") {
+                            if let player = controllerService.connectedControllers.first(where: { $0.playerIndex == selectedPlayer }) {
+                                let vendorName = player.gcController?.vendorName ?? "Unknown"
+                                let defaults = ControllerMapping.defaults(for: vendorName, systemID: selectedSystemID, handedness: controllerService.handedness)
+                                controllerService.updateMapping(for: vendorName, systemID: selectedSystemID, mapping: defaults)
+                            }
+                        }
+                        .buttonStyle(.bordered)
+                        .controlSize(.small)
+                    }
+
+                    // Config name row: Load / Save / Delete / Config name
+                    HStack(spacing: 6) {
+                        Text("Config")
+                            .font(.body)
+                            .foregroundColor(.secondary)
+                        TextField("Name", text: $configName)
+                            .textFieldStyle(.roundedBorder)
+                            .frame(width: 150)
+                        Button("Save") {
+                            saveCurrentConfig()
+                        }
+                        .disabled(configName.isEmpty)
+                        .buttonStyle(.bordered)
+                        .controlSize(.small)
+                        Button("Load") {
+                            loadConfig(name: configName)
+                        }
+                        .disabled(configName.isEmpty || savedConfigs[configName] == nil)
+                        .buttonStyle(.bordered)
+                        .controlSize(.small)
+                        Button {
+                            deleteConfig(name: configName)
+                        } label: {
+                            Label("Delete", systemImage: "trash")
+                        }
+                        .buttonStyle(.bordered)
+                        .tint(.red)
+                        .controlSize(.small)
+                        .disabled(configName.isEmpty || savedConfigs[configName] == nil)
+
+                        Spacer()
+
+                        // Config selector
+                        Menu {
+                            ForEach(Array(savedConfigs.keys.sorted()), id: \.self) { name in
+                                Button(name) {
+                                    configName = name
+                                    loadConfig(name: name)
+                                }
+                            }
+                        } label: {
+                            Label("Saved Configs", systemImage: "archivebox")
+                        }
+                        .menuStyle(.borderlessButton)
+                        .controlSize(.small)
+                    }
+                }
+                .padding(.horizontal, 12)
+                .padding(.top, 6)
+                .padding(.bottom, 10)
+
+                Divider()
+
+                // Main content area - left panel (icon+sticks) | draggable divider | right panel (button mapping)
+                if let player = controllerService.connectedControllers.first(where: { $0.playerIndex == selectedPlayer }) {
+                    HStack(spacing: 0) {
+                        // Left side: Controller icon (unbounded) and stick visualization - wider, 300-380
+                        ControllerLeftPanel(systemID: selectedSystemID, width: leftColumnWidth)
+
+                        // Draggable divider
+                        DraggableDivider(width: $leftColumnWidth)
+
+                        // Right side: Button mapping list - narrower, bounded to right edge
+                        ButtonMappingList(systemID: selectedSystemID, player: player, controllerService: controllerService)
+                            .frame(minWidth: 140)
+                    }
+                    .id("\(selectedPlayer)-\(selectedSystemID)-\(leftColumnWidth)")
+                } else {
+                    VStack(spacing: 12) {
+                        Image(systemName: "gamecontroller")
+                            .font(.system(size: 48))
+                            .foregroundColor(.secondary)
+                        Text("No controller connected for Player \(selectedPlayer).")
+                            .foregroundColor(.secondary)
+                    }
+                    .frame(maxWidth: .infinity, maxHeight: .infinity)
+                }
+            }
+            .onAppear {
+                selectedPlayer = controllerService.connectedControllers.first?.playerIndex ?? 1
+                loadSavedConfigs()
+            }
+        }
+
+    // MARK: - Keyboard Tab
+    @ViewBuilder
+    private var keyboardTab: some View {
+        KeyboardContentView()
+            .environmentObject(controllerService)
+    }
+
 
     private func playerMappingBinding(for btn: RetroButton, player: PlayerController) -> Binding<GCButtonMapping?> {
         Binding<GCButtonMapping?>(
@@ -985,6 +1013,7 @@ struct ControllerSettingsView: View {
         }
     }
 }
+
 
 // MARK: - Draggable Divider
 struct DraggableDivider: View {
@@ -1484,7 +1513,9 @@ struct ControllerDrawingView: View {
     }
 }
 
-struct KeyboardSettingsView: View {
+
+// MARK: - Keyboard
+struct KeyboardContentView: View {
     @EnvironmentObject var controllerService: ControllerService
     @State private var listeningFor: RetroButton? = nil
     @State private var selectedSystemID: String = "nes"
@@ -1540,7 +1571,7 @@ struct KeyboardSettingsView: View {
             }
         }
     }
-    
+
     private func availableButtons(for systemID: String) -> [RetroButton] {
         return RetroButton.availableButtons(for: systemID)
     }
