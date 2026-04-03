@@ -18,11 +18,13 @@ struct SettingsView: View {
                 sidebarItem(icon: "wand.and.stars", label: "Cheats", page: .cheats)
                 sidebarItem(icon: "gamecontroller.fill", label: "Controllers", page: .controllers)
                 sidebarItem(icon: "cpu.fill", label: "Cores", page: .cores)
+                sidebarItem(icon: "rectangle.on.rectangle", label: "Bezels", page: .bezels)
                 sidebarItem(icon: "tv.fill", label: "Display", page: .display)
                 sidebarItem(icon: "gearshape.fill", label: "General", page: .general)
                 sidebarItem(icon: "book.fill", label: "Library", page: .library)
                 sidebarItem(icon: "doc.text.fill", label: "Logging", page: .logging)
                 sidebarItem(icon: "trophy.fill", label: "RetroAchievements", page: .retroAchievements)
+                sidebarItem(icon: "info.circle.fill", label: "About", page: .about)
             }
             .listStyle(.sidebar)
             .frame(minWidth: 180)
