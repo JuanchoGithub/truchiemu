@@ -78,8 +78,8 @@ final class SetupWizardState: ObservableObject {
     
     // Completion state
     var hasCompletedWizard: Bool {
-        get { UserDefaults.standard.bool(forKey: "has_completed_full_setup") }
-        set { UserDefaults.standard.set(newValue, forKey: "has_completed_full_setup") }
+        get { AppSettings.getBool("has_completed_full_setup", defaultValue: false) }
+        set { AppSettings.setBool("has_completed_full_setup", value: newValue) }
     }
     
     private var controllerCancellables = Set<AnyCancellable>()
@@ -206,20 +206,17 @@ final class SetupWizardState: ObservableObject {
     // MARK: - Apply Settings & Complete
     
     func applySettings(to library: ROMLibrary) async {
-        // Add all library folders
+        // Add all library folders (addLibraryFolder handles persistence + scanning)
         for folder in libraryFolders {
-            guard !isInternalPath(folder) else { continue }
-            if !library.libraryFolders.contains(folder) {
-                library.libraryFolders.append(folder)
-            }
+            library.addLibraryFolder(url: folder)
         }
         library.hasCompletedOnboarding = true
         
-        // Apply logging
-        UserDefaults.standard.set(loggingEnabled, forKey: "logging_enabled")
+        // Apply logging via SQLite
+        AppSettings.setBool("logging_enabled", value: loggingEnabled)
         
-        // Apply shader preset
-        UserDefaults.standard.set(selectedShaderPresetID, forKey: "display_default_shader_preset")
+        // Apply shader preset via SQLite
+        AppSettings.set("display_default_shader_preset", value: selectedShaderPresetID)
         
         // Apply achievements
         if achievementsEnabled && !achievementsUsername.isEmpty && !achievementsPassword.isEmpty {

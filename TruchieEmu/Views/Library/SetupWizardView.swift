@@ -134,17 +134,21 @@ struct SetupWizardView: View {
         wizard.hasCompletedWizard = true
         library.hasCompletedOnboarding = true
         
-        // ─── Quick settings (sync) ───
-        UserDefaults.standard.set(wizard.loggingEnabled, forKey: "logging_enabled")
-        UserDefaults.standard.set(wizard.selectedShaderPresetID, forKey: "display_default_shader_preset")
+        // ─── Quick settings via SQLite (sync) ───
+        AppSettings.setBool("logging_enabled", value: wizard.loggingEnabled)
+        AppSettings.set("display_default_shader_preset", value: wizard.selectedShaderPresetID)
+        
+        // ─── Persist library folders BEFORE scanning (critical for restart durability) ───
+        // addLibraryFolder internally calls saveSecurityScopedBookmarks() which writes to SQLite.
+        // This ensures that if the app crashes during scanning, folders are already persisted.
+        for folder in wizard.libraryFolders {
+            library.addLibraryFolder(url: folder)
+        }
         
         // ─── Heavy work runs in a background Task — UI already transitioned ───
         Task {
-            // Register library folders and scan
+            // Scan each registered folder
             for folder in wizard.libraryFolders {
-                if !library.libraryFolders.contains(folder) {
-                    library.libraryFolders.append(folder)
-                }
                 await library.scanROMs(in: folder, runAutomationAfter: false)
             }
             

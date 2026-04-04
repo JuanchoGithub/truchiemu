@@ -100,6 +100,14 @@ class ROMLibrary: ObservableObject {
         restoreLibraryAccess()
         loadFileIndexFromStorage()
         updateCounts()
+        
+        // 4. Defensive check: if ROMs exist but no library folders, the DB is inconsistent.
+        // This can happen if folders weren't persisted (a known historical bug). Log a warning
+        // so it's visible, and trigger a fullRescan so folders get repopulated from ROM paths.
+        if !roms.isEmpty && libraryFolders.isEmpty {
+            LoggerService.warning(category: "ROMLibrary", "Inconsistent state: \(roms.count) ROMs loaded but 0 library folders. Triggering auto-recovery.")
+            Task { await recoverFoldersFromExistingROMs() }
+        }
     }
 
     // MARK: - Migration from UserDefaults to SQLite
@@ -628,5 +636,58 @@ class ROMLibrary: ObservableObject {
         cleanupScummVMCaches()
         await LibraryAutomationCoordinator.shared.runAfterLibraryUpdate(library: self)
         await MetadataSyncCoordinator.shared.runAfterLibraryUpdate(library: self)
+    }
+    
+    // MARK: - Auto-Recovery
+    
+    /// Recovers library folders from existing ROM paths when the DB is inconsistent.
+    /// This handles the case where ROMs were saved to SQLite but their parent
+    /// library folders were never persisted (a bug in the setup wizard).
+    private func recoverFoldersFromExistingROMs() async {
+        // Extract unique parent folder paths from existing ROMs
+        var candidateFolders: [URL] = []
+        let appSupport = FileManager.default.urls(for: .applicationSupportDirectory, in: .userDomainMask).first!
+        
+        for rom in roms {
+            let folder = rom.path.deletingLastPathComponent()
+            // Prefer the immediate parent of the ROM, but limit the number
+            if !isInternalPath(folder), folder.path.hasPrefix("/Volumes/") || folder.path.hasPrefix("/Users/") {
+                if !candidateFolders.contains(folder) {
+                    candidateFolders.append(folder)
+                }
+            }
+        }
+        
+        // Find the most common ancestor folder (if there are many, find the root)
+        // This prevents adding hundreds of ROM folders individually
+        if candidateFolders.count > 5 {
+            // Find common prefix - use the first folder as a starting point
+            var commonAncestor = candidateFolders[0]
+            for candidate in candidateFolders.dropFirst() {
+                while !candidate.path.hasPrefix(commonAncestor.path), commonAncestor.path.count > 1 {
+                    commonAncestor = commonAncestor.deletingLastPathComponent()
+                }
+            }
+            // Go up one level to get the top-level ROM directory
+            if commonAncestor.path.count > 1 {
+                commonAncestor = commonAncestor.deletingLastPathComponent()
+            }
+            candidateFolders = [commonAncestor]
+        }
+        
+        LoggerService.info(category: "ROMLibrary", "Auto-recovery: found \(candidateFolders.count) candidate folder(s) from existing ROMs")
+        
+        // Re-add these folders (which persists them to SQLite)
+        for folder in candidateFolders {
+            if !isInternalPath(folder), !libraryFolders.contains(folder) {
+                LoggerService.info(category: "ROMLibrary", "Auto-recovery: re-adding library folder: \(folder.path)")
+                libraryFolders.append(folder)
+                saveSecurityScopedBookmarks()
+            }
+        }
+        
+        // Trigger a rescan to ensure ROMs are fresh
+        LoggerService.info(category: "ROMLibrary", "Auto-recovery: triggering fullRescan")
+        await fullRescan()
     }
 }
