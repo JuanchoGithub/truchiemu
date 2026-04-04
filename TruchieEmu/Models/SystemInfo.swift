@@ -89,6 +89,9 @@ struct SystemInfo: Identifiable, Codable, Hashable {
         case "psx", "ps1", "ps2":
             // PlayStation family: 4:3 (original PS1/PS2 output to 4:3 CRTs)
             return 4.0 / 3.0
+        case "nds":
+            // Nintendo DS: two stacked 256x192 (4:3) screens = 256x384 (2:3 combined)
+            return 2.0 / 3.0
         case "n64":
             // N64: 4:3 (native output was 4:3, widescreen was a hack)
             return 4.0 / 3.0
