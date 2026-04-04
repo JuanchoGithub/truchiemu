@@ -43,7 +43,8 @@ final class MetadataSyncCoordinator: ObservableObject {
         phase = .syncing
         let total = Double(needMetadata.count)
 
-        let maxConcurrent = 3
+        // Reduced concurrency + inter-request throttle to keep app responsive
+        let maxConcurrent = 2
         var completed = 0
 
         await withTaskGroup(of: (Bool, String).self) { group in
@@ -64,6 +65,9 @@ final class MetadataSyncCoordinator: ObservableObject {
                 let frac = Double(completed) / max(total, 1)
                 progress = frac
                 statusLine = "Fetching metadata: \(Int(frac * 100))% — \(name)"
+
+                // Throttle: 500ms between requests to avoid saturating network/UI
+                try? await Task.sleep(nanoseconds: 500_000_000)
 
                 if let next = iter.next() {
                     group.addTask {

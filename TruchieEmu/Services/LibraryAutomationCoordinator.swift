@@ -34,6 +34,7 @@ final class LibraryAutomationCoordinator: ObservableObject {
             statusLine = ""
         }
 
+        // Phase 1: Identification — throttled to keep UI responsive
         if !needIdentify.isEmpty {
             phase = .identifying
             let total = Double(needIdentify.count)
@@ -44,11 +45,15 @@ final class LibraryAutomationCoordinator: ObservableObject {
                 let done = Double(idx + 1) / max(total, 1)
                 progress = done
                 statusLine = "Identifying games: \(Int(done * 100))% — Checking \(label)"
+
+                // Throttle: 300ms between identifications to keep UI responsive
+                try? await Task.sleep(nanoseconds: 300_000_000)
             }
             progress = 1
             statusLine = "Identifying games: 100% — done"
         }
 
+        // Phase 2: Box art downloads
         let artTargets = library.roms.filter { $0.needsAutomaticBoxArt }
         guard !artTargets.isEmpty else { return }
 
