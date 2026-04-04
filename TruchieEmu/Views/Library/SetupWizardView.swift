@@ -9,21 +9,23 @@ struct SetupWizardView: View {
     @EnvironmentObject var controllerService: ControllerService
     @EnvironmentObject var categoryManager: CategoryManager
     
-    @State private var isFinishing = false
-    @State private var finishError: String?
     @State private var raLoginError: String?
     @State private var isRALoggingIn: Bool = false
     
     var body: some View {
         ZStack {
+            // Full-screen dim backdrop with gradient
             LinearGradient(
-                colors: [Color(hue: 0.65, saturation: 0.8, brightness: 0.15),
-                         Color(hue: 0.70, saturation: 0.9, brightness: 0.08)],
+                colors: [
+                    Color(hue: 0.65, saturation: 0.8, brightness: 0.15),
+                    Color(hue: 0.70, saturation: 0.9, brightness: 0.08)
+                ],
                 startPoint: .topLeading,
                 endPoint: .bottomTrailing
             )
             .ignoresSafeArea()
-            
+
+            // Centered, rationally-sized wizard card
             VStack(spacing: 0) {
                 headerSection
                 stepIndicator
@@ -47,10 +49,12 @@ struct SetupWizardView: View {
                 bottomNavigation
             }
             .padding()
-            
-            if isFinishing {
-                finishOverlay
-            }
+            // ─── Constrained card size ───
+            .frame(width: 850, height: 580)
+            .background(Color(hue: 0.7, saturation: 0.3, brightness: 0.12))
+            .cornerRadius(16)
+            .shadow(color: .black.opacity(0.5), radius: 40, x: 0, y: 12)
+
         }
     }
     
@@ -124,33 +128,19 @@ struct SetupWizardView: View {
         .padding(.top, 20)
     }
     
-    private var finishOverlay: some View {
-        ZStack {
-            Color.black.opacity(0.6).ignoresSafeArea()
-            VStack(spacing: 20) {
-                ProgressView()
-                    .controlSize(.large)
-                    .tint(.purple)
-                Text("Setting up TruchieEmu...")
-                    .font(.title3.weight(.semibold))
-                    .foregroundColor(.white)
-                if let error = finishError {
-                    Text(error)
-                        .font(.caption)
-                        .foregroundColor(.red)
-                }
-            }
-            .padding(40)
-            .background(.ultraThinMaterial)
-            .cornerRadius(20)
-        }
-    }
-    
+
     private func finishSetup() {
-        isFinishing = true
-        finishError = nil
+        // ─── Show the main UI immediately ───
+        wizard.hasCompletedWizard = true
+        library.hasCompletedOnboarding = true
         
+        // ─── Quick settings (sync) ───
+        UserDefaults.standard.set(wizard.loggingEnabled, forKey: "logging_enabled")
+        UserDefaults.standard.set(wizard.selectedShaderPresetID, forKey: "display_default_shader_preset")
+        
+        // ─── Heavy work runs in a background Task — UI already transitioned ───
         Task {
+            // Register library folders and scan
             for folder in wizard.libraryFolders {
                 if !library.libraryFolders.contains(folder) {
                     library.libraryFolders.append(folder)
@@ -158,25 +148,27 @@ struct SetupWizardView: View {
                 await library.scanROMs(in: folder, runAutomationAfter: false)
             }
             
-            library.hasCompletedOnboarding = true
-            
+            // Library automation + game detection
             Task {
                 await LibraryAutomationCoordinator.shared.runAfterLibraryUpdate(library: library)
                 wizard.updateDetectedGames(from: library.roms)
             }
             
-            await withTaskGroup(of: Void.self) { group in
-                if wizard.downloadBezels {
-                    group.addTask { await wizard.downloadBezelsFromWizard() }
-                }
-                if wizard.downloadCheats {
-                    group.addTask { await wizard.downloadCheatsFromWizard() }
-                }
+            // Heavy downloads (run on detached background task)
+            if wizard.downloadBezels || wizard.downloadCheats {
+                let downloadBezels = wizard.downloadBezels
+                let downloadCheats = wizard.downloadCheats
+                await Task.detached(priority: .utility) {
+                    if downloadBezels {
+                        _ = await BezelAPIService.shared.downloadAllSystems()
+                    }
+                    if downloadCheats {
+                        _ = await CheatDownloadService.shared.downloadAllCheats()
+                    }
+                }.value
             }
             
-            UserDefaults.standard.set(wizard.loggingEnabled, forKey: "logging_enabled")
-            UserDefaults.standard.set(wizard.selectedShaderPresetID, forKey: "display_default_shader_preset")
-            
+            // Achievements login (network)
             if wizard.achievementsEnabled && !wizard.achievementsUsername.isEmpty && !wizard.achievementsPassword.isEmpty {
                 do {
                     let token = try await RetroAchievementsService.shared.login(
@@ -192,8 +184,6 @@ struct SetupWizardView: View {
                     LoggerService.info(category: "Wizard", "Achievements login failed: \(error.localizedDescription)")
                 }
             }
-            
-            wizard.hasCompletedWizard = true
         }
     }
 }
