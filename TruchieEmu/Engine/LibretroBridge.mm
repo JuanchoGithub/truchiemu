@@ -267,6 +267,46 @@ __attribute__((unused)) static void parseCoreOptionsV1(struct retro_core_options
     g_optDefinitions = [defs copy];
 }
 
+/* Load persisted overrides from .cfg file into g_optValues.
+ * File format: key = "value" (one per line).
+ * Called after parseCoreOptionsV1/V2 to apply user overrides. */
+static void applyPersistedOverrides() {
+    if (!g_coreID) return;
+    
+    NSString *configName = [NSString stringWithFormat:@"%@.cfg", g_coreID];
+    NSString *appSupport = [NSSearchPathForDirectoriesInDomains(NSApplicationSupportDirectory, NSUserDomainMask, YES) firstObject];
+    NSString *optionsDir = [appSupport stringByAppendingPathComponent:@"TruchieEmu/CoreOptions"];
+    NSString *configPath = [optionsDir stringByAppendingPathComponent:configName];
+    
+    if (![[NSFileManager defaultManager] fileExistsAtPath:configPath]) return;
+    
+    NSString *fileContent = [NSString stringWithContentsOfFile:configPath encoding:NSUTF8StringEncoding error:nil];
+    if (!fileContent) return;
+    
+    NSArray<NSString *> *allLines = [fileContent componentsSeparatedByCharactersInSet:[NSCharacterSet newlineCharacterSet]];
+    
+    for (NSString *line in allLines) {
+        NSString *trimmed = [line stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]];
+        if (trimmed.length == 0 || [trimmed hasPrefix:@"#"]) continue;
+        
+        // Parse: key = "value"
+        NSRange eqRange = [trimmed rangeOfString:@"="];
+        if (eqRange.location == NSNotFound) continue;
+        
+        NSString *key = [[trimmed substringToIndex:eqRange.location] stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceCharacterSet]];
+        NSString *val = [[trimmed substringFromIndex:NSMaxRange(eqRange)] stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceCharacterSet]];
+        
+        // Strip surrounding quotes
+        if ([val hasPrefix:@"\""] && [val hasSuffix:@"\""]) {
+            val = [val substringWithRange:NSMakeRange(1, val.length - 2)];
+        }
+        if (g_optValues && key.length > 0) {
+            g_optValues[key] = val;
+            NSLog(@"[Bridge-OPT] Override from .cfg: %@ = %@", key, val);
+        }
+    }
+}
+
 static uintptr_t bridge_get_current_framebuffer() {
     return (uintptr_t)g_hwFBO;
 }
@@ -426,6 +466,21 @@ static bool bridge_environment(unsigned cmd, void *data) {
                 if (strcmp(var->key, "mame2000-throttle") == 0)
                     { var->value = "enabled"; return true; }
                 
+                // ── Read from g_optValues (populated by SET_CORE_OPTIONS handlers) ──
+                // This is the critical link: cores query GET_VARIABLE to read option values,
+                // and we must return the user's override (or the default from g_optValues).
+                if (g_optValues) {
+                    NSString *keyStr = [NSString stringWithUTF8String:var->key];
+                    NSString *valStr = g_optValues[keyStr];
+                    if (valStr) {
+                        static __thread char g_varBuf[512];
+                        strncpy(g_varBuf, valStr.UTF8String, sizeof(g_varBuf) - 1);
+                        g_varBuf[sizeof(g_varBuf) - 1] = '\0';
+                        var->value = g_varBuf;
+                        return true;
+                    }
+                }
+                
                 var->value = NULL;
             }
             return false;
@@ -440,6 +495,34 @@ static bool bridge_environment(unsigned cmd, void *data) {
         case RETRO_ENVIRONMENT_SET_INPUT_DESCRIPTORS:
         case RETRO_ENVIRONMENT_SET_DISK_CONTROL_INTERFACE:
         case RETRO_ENVIRONMENT_SET_VARIABLES:          // core tells us what options exist — we acknowledge
+            return true;
+        case RETRO_ENVIRONMENT_SET_CORE_OPTIONS: {
+            if (data) parseCoreOptionsV1((struct retro_core_options *)data);
+            applyPersistedOverrides();
+            return true;
+        }
+        case RETRO_ENVIRONMENT_SET_CORE_OPTIONS_INTL: {
+            struct retro_core_options_intl *intl = (struct retro_core_options_intl *)data;
+            if (intl) {
+                // Use US English (fallback), or local if available
+                parseCoreOptionsV1(intl->us ? intl->us : intl->local);
+            }
+            applyPersistedOverrides();
+            return true;
+        }
+        case RETRO_ENVIRONMENT_SET_CORE_OPTIONS_V2: {
+            if (data) parseCoreOptionsV2((struct retro_core_options_v2 *)data);
+            applyPersistedOverrides();
+            return true;
+        }
+        case RETRO_ENVIRONMENT_SET_CORE_OPTIONS_V2_INTL: {
+            struct retro_core_options_v2_intl *intl = (struct retro_core_options_v2_intl *)data;
+            if (intl) {
+                parseCoreOptionsV2(intl->us ? intl->us : intl->local);
+            }
+            applyPersistedOverrides();
+            return true;
+        }
         case RETRO_ENVIRONMENT_SET_SUPPORT_NO_GAME:
             return true;
         case RETRO_ENVIRONMENT_SET_SYSTEM_AV_INFO:
