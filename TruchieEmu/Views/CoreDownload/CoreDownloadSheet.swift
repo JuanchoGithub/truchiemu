@@ -99,10 +99,6 @@ struct CoreDownloadSheet: View {
         return CoreEntry(id: pending.coreInfo.coreID, kind: .downloadable(pending.coreInfo))
     }
 
-    private var hasMultipleCores: Bool {
-        allCoresForSystem.count > 1
-    }
-
     /// The pending ROM looked up reliably by UUID
     private var pendingROM: ROM? {
         guard let id = pending.romID else { return nil }
@@ -204,64 +200,48 @@ struct CoreDownloadSheet: View {
                 }
             }
 
-            if hasMultipleCores {
-                Menu {
-                    ForEach(allCoresForSystem, id: \.id) { entry in
-                        Button {
-                            selectedCoreID = entry.id
-                        } label: {
-                            VStack(alignment: .leading, spacing: 2) {
-                                HStack {
-                                    if entry.id == selectedCoreID {
-                                        Image(systemName: "checkmark")
-                                    } else {
-                                        Image(systemName: "checkmark").opacity(0)
-                                    }
-                                    Text(entry.displayName)
-                                    if entry.metadata.version != "?" {
-                                        Text(entry.metadata.version)
-                                            .font(.caption).foregroundColor(.secondary)
-                                    }
+            Menu {
+                ForEach(allCoresForSystem, id: \.id) { entry in
+                    Button {
+                        selectedCoreID = entry.id
+                    } label: {
+                        VStack(alignment: .leading, spacing: 2) {
+                            HStack {
+                                if entry.id == selectedCoreID {
+                                    Image(systemName: "checkmark")
+                                } else {
+                                    Image(systemName: "checkmark").opacity(0)
                                 }
-                                Text(entry.metadata.description)
-                                    .font(.caption).foregroundColor(.secondary)
-                                    .lineLimit(1)
+                                Text(entry.displayName)
+                                if entry.metadata.version != "?" {
+                                    Text(entry.metadata.version)
+                                        .font(.caption).foregroundColor(.secondary)
+                                }
                             }
+                            Text(entry.metadata.description)
+                                .font(.caption).foregroundColor(.secondary)
+                                .lineLimit(1)
                         }
                     }
-                } label: {
-                    HStack {
-                        Image(systemName: "cpu").foregroundColor(.secondary)
-                        Text(selectedCoreEntry.displayName)
-                            .fontWeight(.medium)
-                        Spacer()
-                        Image(systemName: "chevron.down").font(.system(size: 10)).foregroundColor(.secondary)
-                    }
-                    .padding(12)
-                    .background(Color.secondary.opacity(0.08))
-                    .cornerRadius(10)
                 }
-                .buttonStyle(.plain)
-
-                Text("\(allCoresForSystem.count) cores available for this system")
-                    .font(.caption).foregroundColor(.secondary)
-            } else {
+            } label: {
                 HStack {
                     Image(systemName: "cpu").foregroundColor(.secondary)
-                    Text(selectedCoreEntry.displayName).fontWeight(.medium)
+                    Text(selectedCoreEntry.displayName)
+                        .fontWeight(.medium)
                     Spacer()
-                    if selectedCoreEntry.metadata.version != "?" {
-                        Text(selectedCoreEntry.metadata.version)
-                            .font(.caption)
-                            .padding(.horizontal, 8).padding(.vertical, 2)
-                            .background(Color.secondary.opacity(0.12))
-                            .cornerRadius(6)
-                    }
+                    Image(systemName: "chevron.down").font(.system(size: 10)).foregroundColor(.secondary)
                 }
                 .padding(12)
                 .background(Color.secondary.opacity(0.08))
                 .cornerRadius(10)
             }
+            .buttonStyle(.plain)
+
+            Text(allCoresForSystem.count == 1
+                ? "\(allCoresForSystem.count) core available for this system"
+                : "\(allCoresForSystem.count) cores available for this system")
+                .font(.caption).foregroundColor(.secondary)
         }
     }
 
