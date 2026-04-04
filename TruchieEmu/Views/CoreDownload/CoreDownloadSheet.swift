@@ -200,43 +200,23 @@ struct CoreDownloadSheet: View {
                 }
             }
 
-            Menu {
-                ForEach(allCoresForSystem, id: \.id) { entry in
-                    Button {
-                        selectedCoreID = entry.id
-                    } label: {
-                        VStack(alignment: .leading, spacing: 2) {
-                            HStack {
-                                if entry.id == selectedCoreID {
-                                    Image(systemName: "checkmark")
-                                } else {
-                                    Image(systemName: "checkmark").opacity(0)
-                                }
-                                Text(entry.displayName)
-                                if entry.metadata.version != "?" {
-                                    Text(entry.metadata.version)
-                                        .font(.caption).foregroundColor(.secondary)
-                                }
-                            }
-                            Text(entry.metadata.description)
-                                .font(.caption).foregroundColor(.secondary)
-                                .lineLimit(1)
-                        }
-                    }
+            Picker(selection: $selectedCoreID) {
+                ForEach(allCoresForSystem) { entry in
+                    Text(entry.displayName).tag(entry.id)
                 }
             } label: {
-                HStack {
+                HStack(spacing: 8) {
                     Image(systemName: "cpu").foregroundColor(.secondary)
                     Text(selectedCoreEntry.displayName)
                         .fontWeight(.medium)
                     Spacer()
-                    Image(systemName: "chevron.down").font(.system(size: 10)).foregroundColor(.secondary)
                 }
-                .padding(12)
-                .background(Color.secondary.opacity(0.08))
-                .cornerRadius(10)
             }
-            .buttonStyle(.plain)
+            .pickerStyle(.menu)
+            .frame(maxWidth: .infinity)
+            .padding(12)
+            .background(Color.secondary.opacity(0.08))
+            .cornerRadius(10)
 
             Text(allCoresForSystem.count == 1
                 ? "\(allCoresForSystem.count) core available for this system"
