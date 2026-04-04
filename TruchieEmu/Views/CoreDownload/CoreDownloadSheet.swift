@@ -91,8 +91,12 @@ struct CoreDownloadSheet: View {
         return result
     }
 
-    private var selectedCoreEntry: CoreEntry? {
-        allCoresForSystem.first { $0.id == selectedCoreID }
+    /// Never-nil — always resolves to either a matched entry or the pending coreInfo
+    private var selectedCoreEntry: CoreEntry {
+        if let found = allCoresForSystem.first(where: { $0.id == selectedCoreID }) {
+            return found
+        }
+        return CoreEntry(id: pending.coreInfo.coreID, kind: .downloadable(pending.coreInfo))
     }
 
     private var hasMultipleCores: Bool {
@@ -113,9 +117,7 @@ struct CoreDownloadSheet: View {
                 romContextBox
             }
             coreSelectionSection
-            if let entry = selectedCoreEntry {
-                coreDetailsCard(entry)
-            }
+            coreDetailsCard
             if let err = downloadError {
                 Label(err, systemImage: "exclamationmark.triangle")
                     .foregroundColor(.red)
@@ -181,7 +183,7 @@ struct CoreDownloadSheet: View {
                     .font(.body.weight(.medium))
                     .foregroundColor(.secondary)
                 Spacer()
-                if let rec = selectedCoreEntry?.metadata.recommendation {
+                if let rec = selectedCoreEntry.metadata.recommendation {
                     HStack(spacing: 4) {
                         Image(systemName: "star.fill")
                             .font(.system(size: 8))
@@ -230,7 +232,7 @@ struct CoreDownloadSheet: View {
                 } label: {
                     HStack {
                         Image(systemName: "cpu").foregroundColor(.secondary)
-                        Text(selectedCoreEntry?.displayName ?? "Select a core")
+                        Text(selectedCoreEntry.displayName)
                             .fontWeight(.medium)
                         Spacer()
                         Image(systemName: "chevron.down").font(.system(size: 10)).foregroundColor(.secondary)
@@ -246,10 +248,10 @@ struct CoreDownloadSheet: View {
             } else {
                 HStack {
                     Image(systemName: "cpu").foregroundColor(.secondary)
-                    Text(selectedCoreEntry?.displayName ?? "Unknown").fontWeight(.medium)
+                    Text(selectedCoreEntry.displayName).fontWeight(.medium)
                     Spacer()
-                    if let version = selectedCoreEntry?.metadata.version, version != "?" {
-                        Text(version)
+                    if selectedCoreEntry.metadata.version != "?" {
+                        Text(selectedCoreEntry.metadata.version)
                             .font(.caption)
                             .padding(.horizontal, 8).padding(.vertical, 2)
                             .background(Color.secondary.opacity(0.12))
@@ -263,9 +265,8 @@ struct CoreDownloadSheet: View {
         }
     }
 
-    @ViewBuilder
-    private func coreDetailsCard(_ entry: CoreEntry) -> some View {
-        let meta = entry.metadata
+    private var coreDetailsCard: some View {
+        let meta = selectedCoreEntry.metadata
         VStack(alignment: .leading, spacing: 8) {
             if !meta.description.isEmpty {
                 Text(meta.description)
@@ -273,11 +274,11 @@ struct CoreDownloadSheet: View {
                     .lineLimit(3)
             }
             HStack(spacing: 16) {
-                Label(entry.id, systemImage: "tag")
+                Label(selectedCoreEntry.id, systemImage: "tag")
                     .font(.caption).foregroundColor(.secondary)
                 Spacer()
-                if !entry.systemIDs.isEmpty {
-                    let names = entry.systemIDs.compactMap { SystemDatabase.system(forID: $0)?.name }.joined(separator: ", ")
+                if !selectedCoreEntry.systemIDs.isEmpty {
+                    let names = selectedCoreEntry.systemIDs.compactMap { SystemDatabase.system(forID: $0)?.name }.joined(separator: ", ")
                     Label(names, systemImage: "desktopcomputer")
                         .font(.caption).foregroundColor(.secondary)
                 }
@@ -301,12 +302,12 @@ struct CoreDownloadSheet: View {
                     startDownload()
                 } label: {
                     HStack(spacing: 6) {
-                        Image(systemName: selectedCoreEntry?.isInstalled == true ? "play.fill" : "arrow.down.circle")
+                        Image(systemName: selectedCoreEntry.isInstalled ? "play.fill" : "arrow.down.circle")
                         Text(pendingROM != nil ? "Download & Launch" : "Download & Install")
                     }
                 }
                 .buttonStyle(.borderedProminent)
-                .tint(selectedCoreEntry?.isInstalled == true ? .green : .purple)
+                .tint(selectedCoreEntry.isInstalled ? .green : .purple)
                 .keyboardShortcut(.defaultAction)
                 .controlSize(.large)
             }
@@ -316,15 +317,13 @@ struct CoreDownloadSheet: View {
     // MARK: - Action
 
     private func startDownload() {
-        guard let entry = selectedCoreEntry else { return }
-
         // If the selected core is already installed, skip download and launch directly
-        if entry.isInstalled {
-            launchWithCoreID(entry.id)
+        if selectedCoreEntry.isInstalled {
+            launchWithCoreID(selectedCoreEntry.id)
             return
         }
 
-        guard let remote = entry.remoteInfo else { return }
+        guard let remote = selectedCoreEntry.remoteInfo else { return }
         isDownloading = true
         downloadError = nil
 
@@ -332,7 +331,7 @@ struct CoreDownloadSheet: View {
             let slotToLoad = pending.slotToLoad
             await coreManager.downloadCore(remote)
 
-            guard coreManager.isInstalled(coreID: entry.id) else {
+            guard coreManager.isInstalled(coreID: selectedCoreEntry.id) else {
                 await MainActor.run {
                     isDownloading = false
                     downloadError = "Core download failed — please try again."
@@ -342,7 +341,7 @@ struct CoreDownloadSheet: View {
 
             await MainActor.run {
                 isDownloading = false
-                launchWithCoreID(entry.id)
+                launchWithCoreID(selectedCoreEntry.id)
             }
         }
     }
