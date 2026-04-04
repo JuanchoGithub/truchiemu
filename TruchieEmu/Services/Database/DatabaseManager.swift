@@ -101,6 +101,7 @@ final class DatabaseManager {
             db = handle
             logger.info("Database opened at \(path)")
             setupDatabase()
+            DatabaseMigrator.run(on: db!)
         }
     }
 
@@ -134,6 +135,7 @@ final class DatabaseManager {
                 db = retryDB
                 logger.info("Database recovered from backup")
                 setupDatabase()
+                DatabaseMigrator.run(on: db!)
             } else {
                 logger.error("Failed to open backup database")
                 sqlite3_close_v2(retryDB)
