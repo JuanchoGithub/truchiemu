@@ -949,8 +949,15 @@ class StandaloneGameWindowController: NSWindowController, NSWindowDelegate, Obse
                 return
             }
             // Only accumulate time when the game is running and not paused
-            if runner.isRunning && !runner.isPaused {
-                self.accumulatedPlaytime += 1.0
+            if runner.isRunning {
+                // isPaused is @MainActor isolated; read it on the main queue
+                if !Task.isCancelled {
+                    DispatchQueue.main.sync {
+                        if !runner.isPaused {
+                            self.accumulatedPlaytime += 1.0
+                        }
+                    }
+                }
             }
         }
     }
@@ -1834,7 +1841,7 @@ struct CheatManagerViewWrapper: View {
                         .font(.caption)
                         .foregroundColor(.primary)
                     Spacer()
-                    Button(action: { downloadMessage = nil }) {
+                    Button(action: { self.downloadMessage = nil }) {
                         Image(systemName: "xmark.circle.fill")
                             .foregroundColor(.secondary)
                     }

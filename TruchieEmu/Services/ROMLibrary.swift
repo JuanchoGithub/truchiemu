@@ -80,11 +80,13 @@ class ROMLibrary: ObservableObject {
     private var fileIndex: [String: FileSignature] = [:]
 
     init() {
-        // 1. Migrate UserDefaults -> SQLite if needed (one-time)
+        // 1. Initialize required properties before using self
+        self.hasCompletedOnboarding = DatabaseManager.shared.getBoolSetting("has_completed_onboarding", defaultValue: false)
+        
+        // 2. Migrate UserDefaults -> SQLite if needed (one-time)
         migrateLegacyUserDefaultsToSQLite()
         
-        // 2. Load state from SQLite
-        self.hasCompletedOnboarding = DatabaseManager.shared.getBoolSetting("has_completed_onboarding", defaultValue: false)
+        // 3. Load state from SQLite
         loadROMsFromDatabase()
         LibraryMetadataStore.shared.migrateLegacySidecarsIfStoreEmpty(roms: roms)
         roms = roms.map { LibraryMetadataStore.shared.mergedROM($0) }
@@ -131,9 +133,9 @@ class ROMLibrary: ObservableObject {
         LoggerService.info(category: "ROMLibrary", "Migrating \(legacyRoms.count) ROMs from UserDefaults to SQLite")
 
         let romRows: [(String, String, String, String?, String?, Bool, Double?, Double, Int, String?, String?, Bool, String?, Bool, Bool, String, String?, String?, String?, String?, Bool)] = legacyRoms.map { rom in
-            let metaJson: String? = rom.metadata.flatMap { try? JSONEncoder().encode($0) }.map { String(data: $0, encoding: .utf8) }
-            let settingsJson: String? = try? JSONEncoder().encode(rom.settings).flatMap { String(data: $0, encoding: .utf8) }
-            let ssPathsJson: String? = rom.screenshotPaths.isEmpty ? nil : try? JSONEncoder().encode(rom.screenshotPaths.map { $0.path }).flatMap { String(data: $0, encoding: .utf8) }
+            let metaJson: String? = rom.metadata.flatMap { (try? JSONEncoder().encode($0)).flatMap { String(data: $0, encoding: .utf8) } }
+            let settingsJson: String? = (try? JSONEncoder().encode(rom.settings)).flatMap { String(data: $0, encoding: .utf8) }
+            let ssPathsJson: String? = rom.screenshotPaths.isEmpty ? nil : (try? JSONEncoder().encode(rom.screenshotPaths.map { $0.path })).flatMap { String(data: $0, encoding: .utf8) }
             return (
                 rom.id.uuidString,
                 rom.name,
@@ -320,7 +322,7 @@ class ROMLibrary: ObservableObject {
     /// Clean up ScummVM extracted caches for games no longer in the library.
     private func cleanupScummVMCaches() {
         let activeScummVMPaths = Set(roms.filter { $0.systemID == "scummvm" }.map { $0.path.path })
-        ScummVMCacheManager.cleanupOrphanedCaches(activeScummVMPaths: activeScummVMPaths)
+        ScummVMCacheManager.cleanupOrphanedCaches(activeScummvmPaths: activeScummVMPaths)
     }
 
     func fullRescan() async {
@@ -472,9 +474,9 @@ class ROMLibrary: ObservableObject {
         // We do a bulk upsert — this is fast enough for typical library sizes.
         // For very large libraries (10k+ ROMs), could diff and only update changed rows.
         let romRows: [(id: String, name: String, path: String, systemID: String?, boxArtPath: String?, isFavorite: Bool, lastPlayed: Double?, totalPlaytime: Double, timesPlayed: Int, selectedCoreID: String?, customName: String?, useCustomCore: Bool, metadataJSON: String?, isBios: Bool, isHidden: Bool, category: String, crc32: String?, thumbnailSystemID: String?, screenshotPathsJSON: String?, settingsJSON: String?, isIdentified: Bool)] = roms.map { rom in
-            let metaJSON: String? = rom.metadata.flatMap { try? JSONEncoder().encode($0) }.flatMap { String(data: $0, encoding: .utf8) }
-            let settingsJSON: String? = try? JSONEncoder().encode(rom.settings).flatMap { String(data: $0, encoding: .utf8) }
-            let ssJSON: String? = rom.screenshotPaths.isEmpty ? nil : try? JSONEncoder().encode(rom.screenshotPaths.map { $0.path }).flatMap { String(data: $0, encoding: .utf8) }
+            let metaJSON: String? = rom.metadata.flatMap { (try? JSONEncoder().encode($0)).flatMap { String(data: $0, encoding: .utf8) } }
+            let settingsJSON: String? = (try? JSONEncoder().encode(rom.settings)).flatMap { String(data: $0, encoding: .utf8) }
+            let ssJSON: String? = rom.screenshotPaths.isEmpty ? nil : (try? JSONEncoder().encode(rom.screenshotPaths.map { $0.path })).flatMap { String(data: $0, encoding: .utf8) }
             return (
                 rom.id.uuidString,
                 rom.name,
@@ -530,11 +532,12 @@ class ROMLibrary: ObservableObject {
     }
 
     private func loadFileIndexFromStorage() {
-        fileIndex = DatabaseManager.shared.loadFileIndex()
+        let rawIndex = DatabaseManager.shared.loadFileIndex()
+        fileIndex = rawIndex.mapValues { FileSignature(size: $0.size, modTime: $0.modTime) }
     }
 
     private func saveFileIndexToStorage() {
-        DatabaseManager.shared.saveFileIndex(fileIndex)
+        DatabaseManager.shared.saveFileIndex(fileIndex.mapValues { (size: $0.size, modTime: $0.modTime) })
     }
 
     func rescanLibrary(at url: URL) async {

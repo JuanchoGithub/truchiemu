@@ -2,6 +2,10 @@ import Foundation
 import SQLite3
 import os.log
 
+// MARK: - SQLite Constants
+/// SQLite destructor callback pointer for transient data.
+private let SQLITE_TRANSIENT: sqlite3_destructor_type = unsafeBitCast(-1, to: sqlite3_destructor_type.self)
+
 // MARK: - Database Errors
 
 enum DatabaseError: Error, LocalizedError {
@@ -88,7 +92,8 @@ final class DatabaseManager {
         let result = sqlite3_open_v2(path, &handle, flags, nil)
 
         if result != SQLITE_OK {
-            logger.error("Failed to open database: \(sqlite3_errmsg(handle))")
+            let errMsg = sqlite3_errmsg(handle).flatMap { String(cString: $0) } ?? "Unknown error"
+            logger.error("Failed to open database: \(errMsg)")
             sqlite3_close_v2(handle)
             // Try recovery from backup
             tryRecoverFromBackup()
@@ -473,7 +478,7 @@ final class DatabaseManager {
     private func _saveROMs(_ roms: [ROMRow]) {
         guard let db = db else { return }
 
-        sql = "INSERT OR REPLACE INTO roms (id, name, path, system_id, box_art_path, is_favorite, last_played, total_playtime, times_played, selected_core_id, custom_name, use_custom_core, metadata_json, is_bios, is_hidden, category, crc32, thumbnail_system_id, screenshot_paths_json, settings_json, is_identified) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)"
+        let sql = "INSERT OR REPLACE INTO roms (id, name, path, system_id, box_art_path, is_favorite, last_played, total_playtime, times_played, selected_core_id, custom_name, use_custom_core, metadata_json, is_bios, is_hidden, category, crc32, thumbnail_system_id, screenshot_paths_json, settings_json, is_identified) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)"
         
         guard let stmt = prepare(sql) else { return }
         defer { sqlite3_finalize(stmt) }
@@ -515,7 +520,7 @@ final class DatabaseManager {
     func loadROMs() -> [ROM] {
         queue.sync { () -> [ROM] in
             guard let db = db else { return [] }
-            return _query(db: db, sql: "SELECT id, name, path, system_id, box_art_path, is_favorite, last_played, total_playtime, times_played, selected_core_id, custom_name, use_custom_core, metadata_json, is_bios, is_hidden, category, crc32, thumbnail_system_id, screenshot_paths_json, settings_json, is_identified FROM roms ORDER BY name") { stmt in
+            return _query(db: db, sql: "SELECT id, name, path, system_id, box_art_path, is_favorite, last_played, total_playtime, times_played, selected_core_id, custom_name, use_custom_core, metadata_json, is_bios, is_hidden, category, crc32, thumbnail_system_id, screenshot_paths_json, settings_json, is_identified FROM roms ORDER BY name", bindings: []) { stmt in
                 guard let id = self.columnString(stmt: stmt, index: 0),
                       let name = self.columnString(stmt: stmt, index: 1),
                       let path = self.columnString(stmt: stmt, index: 2)
@@ -535,14 +540,14 @@ final class DatabaseManager {
                     selectedCoreID: self.columnString(stmt: stmt, index: 9),
                     customName: self.columnString(stmt: stmt, index: 10),
                     useCustomCore: (self.columnInt64(stmt: stmt, index: 11) ?? 0) != 0,
-                    metadata: self.columnString(stmt: stmt, index: 12).compactMap { try? JSONDecoder().decode(ROMMetadata.self, from: Data($0.utf8)) },
+                    metadata: self.columnString(stmt: stmt, index: 12).flatMap { try? JSONDecoder().decode(ROMMetadata.self, from: Data($0.utf8)) },
                     isBios: (self.columnInt64(stmt: stmt, index: 13) ?? 0) != 0,
                     isHidden: (self.columnInt64(stmt: stmt, index: 14) ?? 0) != 0,
                     category: self.columnString(stmt: stmt, index: 15) ?? "game",
                     crc32: self.columnString(stmt: stmt, index: 16),
                     thumbnailLookupSystemID: self.columnString(stmt: stmt, index: 17),
-                    screenshotPaths: self.columnString(stmt: stmt, index: 18).compactMap { jsonStr -> [URL] in (try? JSONDecoder().decode([String].self, from: Data(jsonStr.utf8)))?.map { URL(fileURLWithPath: $0) } } ?? [],
-                    settings: self.columnString(stmt: stmt, index: 19).compactMap { try? JSONDecoder().decode(ROMSettings.self, from: Data($0.utf8)) } ?? ROMSettings()
+                    screenshotPaths: self.columnString(stmt: stmt, index: 18).flatMap { jsonStr -> [URL]? in (try? JSONDecoder().decode([String].self, from: Data(jsonStr.utf8)))?.map { URL(fileURLWithPath: $0) } } ?? [],
+                    settings: self.columnString(stmt: stmt, index: 19).flatMap { try? JSONDecoder().decode(ROMSettings.self, from: Data($0.utf8)) } ?? ROMSettings()
                 )
                 return rom
             }
@@ -584,7 +589,7 @@ final class DatabaseManager {
     func loadLibraryFolders() -> [(urlPath: String, bookmarkData: Data)] {
         queue.sync { () -> [(String, Data)] in
             guard let db = db else { return [] }
-            return _query(db: db, sql: "SELECT url_path, bookmark_data FROM library_folders") { stmt in
+            return _query(db: db, sql: "SELECT url_path, bookmark_data FROM library_folders", bindings: []) { stmt in
                 guard let path = self.columnString(stmt: stmt, index: 0),
                       let data = self.columnData(stmt: stmt, index: 1) else { return nil }
                 return (path, data)
@@ -628,7 +633,7 @@ final class DatabaseManager {
     func loadFileIndex() -> [String: (size: Int64, modTime: Double)] {
         queue.sync { () -> [String: (Int64, Double)] in
             guard let db = db else { return [:] }
-            let rows: [(String, Int64, Double)] = _query(db: db, sql: "SELECT path, size, mod_time FROM file_index") { stmt in
+            let rows: [(String, Int64, Double)] = _query(db: db, sql: "SELECT path, size, mod_time FROM file_index", bindings: []) { stmt in
                 guard let path = self.columnString(stmt: stmt, index: 0),
                       let size = self.columnInt64(stmt: stmt, index: 1),
                       let mod = self.columnDouble(stmt: stmt, index: 2) else { return nil }
@@ -810,7 +815,7 @@ final class DatabaseManager {
     func loadAllMetadataEntries() -> [MetadataRowInt] {
         queue.sync { () -> [MetadataRowInt] in
             guard let db = db else { return [] }
-            return _query(db: db, sql: "SELECT * FROM rom_metadata") { stmt in
+            return _query(db: db, sql: "SELECT * FROM rom_metadata", bindings: []) { stmt in
                 let count = sqlite3_column_count(stmt)
                 var dict: [String: Any] = [:]
                 for i in 0..<count {
@@ -851,7 +856,7 @@ final class DatabaseManager {
     func metadataEntryCount() -> Int {
         queue.sync { () -> Int in
             guard let db = db else { return 0 }
-            return _query(db: db, sql: "SELECT COUNT(*) FROM rom_metadata") { stmt in
+            return _query(db: db, sql: "SELECT COUNT(*) FROM rom_metadata", bindings: []) { stmt in
                 Int(sqlite3_column_int64(stmt, 0))
             }.first ?? 0
         }

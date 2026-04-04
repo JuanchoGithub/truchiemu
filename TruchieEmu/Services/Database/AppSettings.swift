@@ -64,17 +64,15 @@ enum AppSettings {
         if let str = UserDefaults.standard.string(forKey: key) {
             db.setSetting(key, value: str)
             logger.info("Migrated string: \(key) = \(str)")
-        } else if let int = UserDefaults.standard.integer(forKey: key) {
+        } else if UserDefaults.standard.object(forKey: key) != nil,
+                  let int = (UserDefaults.standard.object(forKey: key) as? NSNumber)?.intValue {
             // Only migrate non-zero integers (UserDefaults defaults to 0 for missing keys)
-            if UserDefaults.standard.object(forKey: key) != nil {
-                db.setSetting(key, value: String(int))
-                logger.info("Migrated int: \(key) = \(int)")
-            }
-        } else if let bool = UserDefaults.standard.bool(forKey: key) {
-            if UserDefaults.standard.object(forKey: key) != nil {
-                db.setBoolSetting(key, value: bool)
-                logger.info("Migrated bool: \(key) = \(bool)")
-            }
+            db.setSetting(key, value: String(int))
+            logger.info("Migrated int: \(key) = \(int)")
+        } else if UserDefaults.standard.object(forKey: key) != nil,
+                  let bool = UserDefaults.standard.object(forKey: key) as? Bool {
+            db.setBoolSetting(key, value: bool)
+            logger.info("Migrated bool: \(key) = \(bool)")
         } else if let date = UserDefaults.standard.object(forKey: key) as? Date {
             let str = String(date.timeIntervalSince1970)
             db.setSetting(key, value: str)
@@ -136,7 +134,7 @@ enum AppSettings {
     }
 
     static func getInt(_ key: String, defaultValue: Int = 0) -> Int {
-        db.getSetting(key).map { Int($0) } ?? defaultValue
+        db.getSetting(key).flatMap { Int($0) } ?? defaultValue
     }
 
     static func setInt(_ key: String, value: Int) {

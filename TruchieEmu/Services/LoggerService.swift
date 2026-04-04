@@ -179,6 +179,25 @@ final class LoggerService: @unchecked Sendable {
     static func extreme(category: String, _ message: String) {
         shared.log(.extreme, category: category, message: message)
     }
+    /// Log at WARNING level.
+    static func warning(_ message: String) {
+        let ts = ISO8601DateFormatter.string(from: Date(), timeZone: TimeZone.current)
+        let formatted = "\(ts) [WARN] [App] \(message)"
+        print(formatted)
+        shared.logFileQueue.async {
+            shared.writeToFile(formatted + "\n")
+        }
+    }
+    
+    /// Log at WARNING level with category.
+    static func warning(category: String, _ message: String) {
+        let ts = ISO8601DateFormatter.string(from: Date(), timeZone: TimeZone.current)
+        let formatted = "\(ts) [WARN] [\(category)] \(message)"
+        print(formatted)
+        shared.logFileQueue.async {
+            shared.writeToFile(formatted + "\n")
+        }
+    }
     
     // MARK: - Internal Log Implementation
     

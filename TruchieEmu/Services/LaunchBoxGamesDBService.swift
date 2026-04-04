@@ -82,6 +82,10 @@ class LaunchBoxGamesDBService: ObservableObject {
     private let keyUseLaunchBox = "launchbox_use_for_boxart"
     private let keyDownloadBoxartAfterScan = "launchbox_download_after_scan"
 
+    @Published var isSyncing: Bool = false
+    @Published var syncProgress: Double = 0
+    @Published var syncStatus: String = ""
+
     var isEnabled: Bool {
         get { UserDefaults.standard.object(forKey: keyUseLaunchBox) as? Bool ?? false }
         set { UserDefaults.standard.set(newValue, forKey: keyUseLaunchBox) }
@@ -506,5 +510,85 @@ class LaunchBoxGamesDBService: ObservableObject {
         }
 
         return nil
+    }
+
+    // MARK: - Metadata Sync (used by MetadataSyncCoordinator)
+
+    /// Set enabled/disabled state and persist.
+    func setEnabled(_ enabled: Bool) {
+        UserDefaults.standard.set(enabled, forKey: keyUseLaunchBox)
+    }
+
+    /// Last sync date stored in UserDefaults.
+    var lastSyncDate: Date? {
+        guard let interval = UserDefaults.standard.object(forKey: "launchbox_last_sync") as? TimeInterval else { return nil }
+        return Date(timeIntervalSince1970: interval)
+    }
+
+    /// Record the current sync time.
+    func recordSyncDate() {
+        UserDefaults.standard.set(Date().timeIntervalSince1970, forKey: "launchbox_last_sync")
+    }
+
+    /// Fetch and apply metadata for a single ROM.
+    func fetchAndApplyMetadata(for rom: ROM, library: ROMLibrary) async -> Bool {
+        guard let boxArtURL = await fetchBoxArt(for: rom) else { return false }
+        await MainActor.run {
+            var updated = rom
+            updated.boxArtPath = boxArtURL
+            library.updateROM(updated)
+        }
+        return true
+    }
+
+    /// Batch-sync the entire library with a progress callback.
+    func batchSyncLibrary(library: ROMLibrary, onProgress: @escaping (Int, Int, String) -> Void) async {
+        guard isEnabled else { return }
+
+        let allRoms = library.roms
+        let total = allRoms.count
+        guard total > 0 else { return }
+
+        let maxConcurrent = 3
+        var completed = 0
+
+        await withTaskGroup(of: (ROM, URL?).self) { group in
+            var iter = allRoms.makeIterator()
+            var active = 0
+
+            while active < maxConcurrent, let rom = iter.next() {
+                group.addTask { @MainActor [weak self] in
+                    if let s = self {
+                        let url = await s.fetchBoxArtInner(for: rom)
+                        return (rom, url)
+                    }
+                    return (rom, nil)
+                }
+                active += 1
+            }
+
+            for await (completedRom, url) in group {
+                active -= 1
+                completed += 1
+                if let savedURL = url {
+                    var updated = completedRom
+                    updated.boxArtPath = savedURL
+                    await MainActor.run { library.updateROM(updated) }
+                }
+                onProgress(completed, total, completedRom.displayName)
+                if let next = iter.next() {
+                    group.addTask { @MainActor [weak self] in
+                        if let s = self {
+                            let url = await s.fetchBoxArtInner(for: next)
+                            return (next, url)
+                        }
+                        return (next, nil)
+                    }
+                    active += 1
+                }
+            }
+        }
+
+        recordSyncDate()
     }
 }

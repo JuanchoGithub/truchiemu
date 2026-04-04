@@ -1,4 +1,5 @@
 import Foundation
+import SQLite3
 import os.log
 
 /// Runs database schema migrations on first open.
@@ -22,7 +23,7 @@ struct DatabaseMigrator {
             logger.info("Running migration v\(migration.version)")
             do {
                 // Each migration runs in its own transaction
-                let beginRc = sqlite3_exec(db, "BEGIN IMMEDIATE", nil, nil, nil)
+                let beginRc = runSQL(db, "BEGIN IMMEDIATE")
                 guard beginRc == SQLITE_OK else {
                     logger.error("Failed to begin migration v\(migration.version) transaction")
                     continue
@@ -35,20 +36,20 @@ struct DatabaseMigrator {
                 let updateRc = sqlite3_exec(db, updateSQL, nil, nil, nil)
 
                 if updateRc == SQLITE_OK {
-                    let commitRc = sqlite3_exec(db, "COMMIT", nil, nil, nil)
+                    let commitRc = runSQL(db, "COMMIT")
                     if commitRc == SQLITE_OK {
                         logger.info("Migration v\(migration.version) completed successfully")
                     } else {
                         logger.error("Failed to commit migration v\(migration.version)")
-                        _ = sqlite3_exec(db, "ROLLBACK", nil, nil, nil)
+                        _ = runSQL(db, "ROLLBACK")
                     }
                 } else {
                     logger.error("Failed to update schema version for v\(migration.version)")
-                    _ = sqlite3_exec(db, "ROLLBACK", nil, nil, nil)
+                    _ = runSQL(db, "ROLLBACK")
                 }
             } catch {
                 logger.error("Migration v\(migration.version) failed: \(error.localizedDescription)")
-                _ = sqlite3_exec(db, "ROLLBACK", nil, nil, nil)
+                _ = runSQL(db, "ROLLBACK")
             }
         }
 
@@ -71,12 +72,13 @@ struct DatabaseMigrator {
         guard hasTable else { return 0 }
 
         var version: Int = 0
-        let vRc = sqlite3_prepare_v2(db, "SELECT MAX(version) FROM schema_version", -1, &stmt, nil)
-        if vRc == SQLITE_OK, let stmt = stmt {
-            if sqlite3_step(stmt) == SQLITE_ROW {
-                version = Int(sqlite3_column_int64(stmt, 0))
+        var stmt2: OpaquePointer?
+        let vRc = sqlite3_prepare_v2(db, "SELECT MAX(version) FROM schema_version", -1, &stmt2, nil)
+        if vRc == SQLITE_OK, let preparedStmt = stmt2 {
+            if sqlite3_step(preparedStmt) == SQLITE_ROW {
+                version = Int(sqlite3_column_int64(preparedStmt, 0))
             }
-            sqlite3_finalize(stmt)
+            sqlite3_finalize(preparedStmt)
         }
         return version
     }
@@ -84,8 +86,11 @@ struct DatabaseMigrator {
 
 // MARK: - SQLite helpers for the migrator
 
-private func sqlite3_exec(_ db: OpaquePointer?, _ sql: String, _ arg1: UnsafeMutableRawPointer?, _ arg2: UnsafeMutableRawPointer?, _ arg3: UnsafeMutableRawPointer?) -> Int32 {
+/// Calls sqlite3_exec with a Swift String.
+private func runSQL(_ db: OpaquePointer?, _ sql: String) -> Int32 {
+    var result: Int32 = 0
     sql.withCString { cstr in
-        sqlite3_exec(db, cstr, nil, nil, nil)
+        result = sqlite3_exec(db, cstr, nil, nil, nil)
     }
+    return result
 }

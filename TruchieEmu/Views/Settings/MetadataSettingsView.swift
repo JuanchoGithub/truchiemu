@@ -97,7 +97,7 @@ struct MetadataSettingsView: View {
                         ) {
                             Button("Start Sync") {
                                 Task {
-                                    await launchboxService.batchSyncLibrary(library: library)
+                                    await launchboxService.batchSyncLibrary(library: library) { _, _, _ in }
                                     updateLastSyncText()
                                 }
                             }

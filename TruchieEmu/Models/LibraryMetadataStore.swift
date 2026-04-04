@@ -80,25 +80,9 @@ struct ROMMetadataRecord: Codable, Hashable {
     }
 }
 
-// MARK: - Internal persistence row (SQL-friendly)
+// MARK: - DatabaseManager.MetadataRowInt helpers
 
-private struct MetadataRow {
-    let pathKey: String
-    let crc32: String?
-    let title: String?
-    let year: String?
-    let developer: String?
-    let publisher: String?
-    let genre: String?
-    let players: Int?
-    let description: String?
-    let rating: Double?
-    let thumbnailSystemID: String?
-    let boxArtPath: String?
-    let titleScreenPath: String?
-    let screenshotPathsJSON: String?
-    let customCoreID: String?
-
+extension DatabaseManager.MetadataRowInt {
     init(pathKey: String, record: ROMMetadataRecord) {
         self.pathKey = pathKey
         self.crc32 = record.crc32
@@ -113,9 +97,7 @@ private struct MetadataRow {
         self.thumbnailSystemID = record.thumbnailLookupSystemID
         self.boxArtPath = record.boxArtPath
         self.titleScreenPath = record.titleScreenPath
-        if !record.screenshotPaths.isEmpty,
-           let data = try? JSONEncoder().encode(record.screenshotPaths),
-           let str = String(data: data, encoding: .utf8) {
+        if !record.screenshotPaths.isEmpty,           let data = try? JSONEncoder().encode(record.screenshotPaths),           let str = String(data: data, encoding: .utf8) {
             self.screenshotPathsJSON = str
         } else {
             self.screenshotPathsJSON = nil
@@ -138,9 +120,7 @@ private struct MetadataRow {
         record.boxArtPath = boxArtPath
         record.titleScreenPath = titleScreenPath
         record.customCoreID = customCoreID
-        if let json = screenshotPathsJSON,
-           let data = json.data(using: .utf8),
-           let paths = try? JSONDecoder().decode([String].self, from: data) {
+        if let json = screenshotPathsJSON,           let data = json.data(using: .utf8),           let paths = try? JSONDecoder().decode([String].self, from: data) {
             record.screenshotPaths = paths
         }
         return record
@@ -192,7 +172,7 @@ final class LibraryMetadataStore: ObservableObject {
             let file = try decoder.decode(ROMLibraryMetadataFile.self, from: rawData)
 
             if !file.entries.isEmpty {
-                let rows = file.entries.map { MetadataRow(pathKey: $0.key, record: $0.value) }
+                let rows = file.entries.map { DatabaseManager.MetadataRowInt(pathKey: $0.key, record: $0.value) }
                 DatabaseManager.shared.bulkUpsertMetadataEntries(rows)
                 LoggerService.info(category: "MetadataStore", "Migrated \(rows.count) metadata entries to SQLite")
             }
@@ -219,7 +199,7 @@ final class LibraryMetadataStore: ObservableObject {
 
     /// Flush entire cache to SQLite (used on init after sidecar migration and after bulk operations).
     private func flushAllToSQLite() {
-        let rows = entries.map { MetadataRow(pathKey: $0.key, record: $0.value) }
+        let rows = entries.map { DatabaseManager.MetadataRowInt(pathKey: $0.key, record: $0.value) }
         DatabaseManager.shared.bulkUpsertMetadataEntries(rows)
     }
 
@@ -243,7 +223,7 @@ final class LibraryMetadataStore: ObservableObject {
         entries[key] = rec
 
         // Upsert single row to SQLite
-        DatabaseManager.shared.upsertMetadataEntry(MetadataRow(pathKey: key, record: rec))
+        DatabaseManager.shared.upsertMetadataEntry(DatabaseManager.MetadataRowInt(pathKey: key, record: rec))
         objectWillChange.send()
     }
 
@@ -259,7 +239,7 @@ final class LibraryMetadataStore: ObservableObject {
                 r.metadata = meta
             }
             entries[key] = ROMMetadataRecord(from: r)
-            DatabaseManager.shared.upsertMetadataEntry(MetadataRow(pathKey: key, record: ROMMetadataRecord(from: r)))
+            DatabaseManager.shared.upsertMetadataEntry(DatabaseManager.MetadataRowInt(pathKey: key, record: ROMMetadataRecord(from: r)))
             any = true
         }
         if any { objectWillChange.send() }
@@ -283,7 +263,7 @@ final class LibraryMetadataStore: ObservableObject {
             entries[key] = ROMMetadataRecord(from: rom)
         }
         entries[key]?.customCoreID = coreID
-        let row = MetadataRow(pathKey: key, record: entries[key]!)
+        let row = DatabaseManager.MetadataRowInt(pathKey: key, record: entries[key]!)
         DatabaseManager.shared.upsertMetadataEntry(row)
         objectWillChange.send()
     }
@@ -292,7 +272,7 @@ final class LibraryMetadataStore: ObservableObject {
         let key = Self.pathKey(for: rom)
         entries[key]?.customCoreID = nil
         if let rec = entries[key] {
-            DatabaseManager.shared.upsertMetadataEntry(MetadataRow(pathKey: key, record: rec))
+            DatabaseManager.shared.upsertMetadataEntry(DatabaseManager.MetadataRowInt(pathKey: key, record: rec))
         }
         objectWillChange.send()
     }
