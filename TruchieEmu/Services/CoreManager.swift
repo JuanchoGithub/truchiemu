@@ -117,15 +117,44 @@ class CoreManager: ObservableObject {
 
     // MARK: - Download (user must authorize via pendingDownload)
 
-    struct PendingCoreDownload: Identifiable {
+    struct PendingCoreDownload: Identifiable, Equatable {
+        static func == (lhs: PendingCoreDownload, rhs: PendingCoreDownload) -> Bool {
+            lhs.coreInfo.coreID == rhs.coreInfo.coreID && lhs.romName == rhs.romName
+        }
+
         var id: String { coreInfo.coreID }
         let coreInfo: RemoteCoreInfo
+
+        // Launch context — when set, the game should be auto-launched after download
+        let romName: String?
+        let systemID: String?
+        let slotToLoad: Int?
+
+        init(coreInfo: RemoteCoreInfo, romName: String? = nil, systemID: String? = nil, slotToLoad: Int? = nil) {
+            self.coreInfo = coreInfo
+            self.romName = romName
+            self.systemID = systemID
+            self.slotToLoad = slotToLoad
+        }
+
+        /// Convenience: true when launch context is provided
+        var hasLaunchContext: Bool { romName != nil && systemID != nil }
     }
 
-    func requestCoreDownload(for coreID: String, systemID: String? = nil) {
+    func requestCoreDownload(
+        for coreID: String,
+        systemID: String? = nil,
+        romName: String? = nil,
+        slotToLoad: Int? = nil
+    ) {
         // Find in available list
         if let remote = availableCores.first(where: { $0.coreID == coreID }) {
-            pendingDownload = PendingCoreDownload(coreInfo: remote)
+            pendingDownload = PendingCoreDownload(
+                coreInfo: remote,
+                romName: romName,
+                systemID: systemID,
+                slotToLoad: slotToLoad
+            )
         } else {
             // Build a synthetic RemoteCoreInfo
             let fileName = "\(coreID).dylib.zip"
@@ -136,7 +165,12 @@ class CoreManager: ObservableObject {
                 .split(separator: " ").map { $0.capitalized }.joined(separator: " ")
             let info = RemoteCoreInfo(coreID: coreID, fileName: fileName, downloadURL: url,
                                       systemIDs: systemID.map { [$0] } ?? [], displayName: displayName)
-            pendingDownload = PendingCoreDownload(coreInfo: info)
+            pendingDownload = PendingCoreDownload(
+                coreInfo: info,
+                romName: romName,
+                systemID: systemID,
+                slotToLoad: slotToLoad
+            )
         }
     }
 
