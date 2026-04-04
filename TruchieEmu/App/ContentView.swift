@@ -25,6 +25,20 @@ struct ContentView: View {
                     .environmentObject(categoryManager)
                     .environmentObject(coreManager)
                     .environmentObject(controllerService)
+            } else if library.roms.isEmpty {
+                // Wizard was completed but no games found - guide user to add games
+                SetupWizardView(wizard: wizard)
+                    .environmentObject(library)
+                    .environmentObject(categoryManager)
+                    .environmentObject(coreManager)
+                    .environmentObject(controllerService)
+                    .onAppear {
+                        // Skip the welcome step since they've already been through the wizard;
+                        // send them straight to the Add Your Games step.
+                        if wizard.currentStep == .welcome {
+                            wizard.currentStep = .gameFolders
+                        }
+                    }
             } else {
                 mainInterface
             }
@@ -76,7 +90,7 @@ struct ContentView: View {
             CoreDownloadSheet(pending: pending)
         }
         .onAppear {
-            // After wizard completion, start on "All Games" until at least one game has been played.
+            // After wizard completion, start on All Games until at least one game has been played.
             let hasPlayedGames = library.roms.contains { $0.lastPlayed != nil || $0.timesPlayed > 0 }
             if !hasPlayedGames {
                 selectedFilter = .all
