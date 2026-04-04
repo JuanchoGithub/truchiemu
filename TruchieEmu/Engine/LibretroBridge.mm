@@ -197,15 +197,14 @@ __attribute__((unused)) static void parseCoreOptionsV2(struct retro_core_options
             NSString *catKey = def->category_key ? [NSString stringWithUTF8String:def->category_key] : nil;
             NSString *defaultVal = def->default_value ? [NSString stringWithUTF8String:def->default_value] : @"";
             
-            /* Parse possible values */
             NSMutableArray *vals = [NSMutableArray array];
-            if (def->values) {
-                struct retro_core_option_value *v = def->values;
-                while (v->value) {
-                    NSString *label = v->label ? [NSString stringWithUTF8String:v->label] : [NSString stringWithUTF8String:v->value];
-                    [vals addObject:@{@"value": [NSString stringWithUTF8String:v->value], @"label": label}];
-                    v++;
-                }
+            /* Parse possible values from fixed-size array */
+            for (int vi = 0; vi < RETRO_NUM_CORE_OPTION_VALUES_MAX && def->values[vi].value; vi++) {
+                NSString *vval = [NSString stringWithUTF8String:def->values[vi].value];
+                NSString *vlabel = def->values[vi].label
+                    ? [NSString stringWithUTF8String:def->values[vi].label]
+                    : vval;
+                [vals addObject:@{@"value": vval, @"label": vlabel}];
             }
             
             defs[key] = @{
@@ -241,13 +240,13 @@ __attribute__((unused)) static void parseCoreOptionsV1(struct retro_core_options
             NSString *defaultVal = def->default_value ? [NSString stringWithUTF8String:def->default_value] : @"";
             
             NSMutableArray *vals = [NSMutableArray array];
-            if (def->values) {
-                struct retro_core_option_value *v = def->values;
-                while (v->value) {
-                    NSString *label = v->label ? [NSString stringWithUTF8String:v->label] : [NSString stringWithUTF8String:v->value];
-                    [vals addObject:@{@"value": [NSString stringWithUTF8String:v->value], @"label": label}];
-                    v++;
-                }
+            /* Parse possible values from the fixed-size array */
+            for (int vi = 0; vi < RETRO_NUM_CORE_OPTION_VALUES_MAX && def->values[vi].value; vi++) {
+                NSString *vval = [NSString stringWithUTF8String:def->values[vi].value];
+                NSString *vlabel = def->values[vi].label
+                    ? [NSString stringWithUTF8String:def->values[vi].label]
+                    : vval;
+                [vals addObject:@{@"value": vval, @"label": vlabel}];
             }
             
             defs[key] = @{

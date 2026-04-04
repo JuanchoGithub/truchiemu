@@ -218,6 +218,8 @@ struct retro_hw_render_callback {
  * Core Options V1 (legacy but still used by older cores)
  * ======================================================================== */
 
+#define RETRO_NUM_CORE_OPTION_VALUES_MAX 128
+
 struct retro_core_option_value {
     const char *value;
     const char *label;  /* label in UI; NULL → use value as label */
@@ -227,8 +229,7 @@ struct retro_core_option_definition {
     const char *key;                        /* Unique key, e.g. "genesis_plus_gx_blargg"          */
     const char *desc;                       /* Short human-readable name                          */
     const char *info;                       /* Detailed description                               */
-    const char *info_cat;                   /* Category key (usually NULL for V1)                 */
-    struct retro_core_option_value *values; /* NULL-terminated array of possible values           */
+    struct retro_core_option_value values[RETRO_NUM_CORE_OPTION_VALUES_MAX]; /* Fixed-size array  */
     const char *default_value;              /* Default value; NULL or "disabled"                  */
 };
 
@@ -258,7 +259,7 @@ struct retro_core_option_v2_definition {
     const char *info;                       /* Detailed description                               */
     const char *info_categorized;           /* Description shown in category (can be NULL)        */
     const char *category_key;               /* Category this option belongs to (can be NULL)      */
-    struct retro_core_option_value *values; /* NULL-terminated array of possible values           */
+    struct retro_core_option_value values[RETRO_NUM_CORE_OPTION_VALUES_MAX]; /* Fixed-size array  */
     const char *default_value;              /* Default value (must be one of the values[])        */
 };
 
