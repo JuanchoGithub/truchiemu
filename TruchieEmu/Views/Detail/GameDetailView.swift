@@ -46,6 +46,7 @@ enum DetailSection: String, CaseIterable {
     case controls = "Controls"
     case savedStates = "Saved States"
     case cheats = "Cheats"
+    case core = "Core"
     case achievements = "Achievements"
 }
 
@@ -190,6 +191,9 @@ struct GameDetailView: View {
 
     @State private var useCustomCore: Bool = false
     @State private var selectedCoreID: String? = nil
+    @State private var applyCoreToSystem: Bool = false
+    @State private var infoCoreID: String? = nil
+    @State private var infoApplyCoreToSystem: Bool = false
     @State private var manualActionStatus: ManualActionStatus = .hidden
     @State private var manualStatusAutoDismiss: Task<Void, Never>?
     
@@ -278,6 +282,8 @@ struct GameDetailView: View {
                                 savedStatesSection
                             case .cheats:
                                 cheatsSection
+                            case .core:
+                                coreSection
                             case .achievements:
                                 if achievementsService.isEnabled {
                                     achievementsSection
@@ -304,6 +310,8 @@ struct GameDetailView: View {
             loadAchievements()
             useCustomCore = currentROM.useCustomCore
             selectedCoreID = currentROM.selectedCoreID ?? sysPrefs.preferredCoreID(for: currentROM.systemID ?? "") ?? system?.defaultCoreID
+            infoCoreID = currentROM.selectedCoreID ?? sysPrefs.preferredCoreID(for: currentROM.systemID ?? "") ?? system?.defaultCoreID
+            infoApplyCoreToSystem = !currentROM.useCustomCore
             gbColorizationEnabled = currentROM.settings.gbColorizationEnabled
             gbColorizationMode = currentROM.settings.gbColorizationMode
             gbInternalPalette = currentROM.settings.gbInternalPalette
@@ -437,6 +445,7 @@ struct GameDetailView: View {
         case .controls: return "gamecontroller"
         case .savedStates: return "externaldrive"
         case .cheats: return "wand.and.stars"
+        case .core: return "chip"
         case .achievements: return "trophy"
         }
     }
@@ -761,6 +770,10 @@ struct GameDetailView: View {
                 }
             }
 
+
+
+            // Core selection (Game Info quick access)
+            coreInfoSection
             // Game Boy Colorization (only for GB system)
             if currentROM.systemID == "gb" || currentROM.systemID == "gbc" {
                 gbColorizationSection
@@ -779,6 +792,118 @@ struct GameDetailView: View {
         }
     }
     
+    // MARK: - Core Info Section (Game Info quick access)
+
+    private var coreInfoSection: some View {
+        ModernSectionCard(title: "Core", icon: "chip") {
+            VStack(alignment: .leading, spacing: 12) {
+                // Core picker row
+                HStack {
+                    Image(systemName: "cpu")
+                        .foregroundColor(.white.opacity(0.5))
+                    Text("Emulation Core")
+                        .foregroundColor(.white.opacity(0.5))
+                        .font(.caption)
+                    Spacer()
+                    if installedCores.isEmpty {
+                        Text("No cores installed")
+                            .font(.caption)
+                            .foregroundColor(.white.opacity(0.3))
+                    } else {
+                        Picker("Core", selection: $infoCoreID) {
+                            ForEach(installedCores) { core in
+                                Text(core.metadata.displayName).tag(core.id as String?)
+                            }
+                        }
+                        .pickerStyle(.menu)
+                        .labelsHidden()
+                        .frame(width: 220)
+                        .onChange(of: infoCoreID) { _ in
+                            // Update the label to show override vs system default
+                        }
+                    }
+                }
+
+                Divider().overlay(Color.white.opacity(0.08))
+
+                // Apply to system toggle
+                Toggle(isOn: $infoApplyCoreToSystem) {
+                    HStack {
+                        Image(systemName: "globe")
+                            .foregroundColor(.white.opacity(0.5))
+                        Text("Apply to system default")
+                            .foregroundColor(.white.opacity(0.85))
+                    }
+                }
+                .toggleStyle(SwitchToggleStyle())
+
+                if infoApplyCoreToSystem {
+                    Text("This will change the default core for all \(systemName) games. The current game will no longer use a custom core override.")
+                        .font(.caption)
+                        .foregroundColor(.white.opacity(0.4))
+                        .lineSpacing(2)
+                } else {
+                    Text("Only this game will use the selected core.")
+                        .font(.caption)
+                        .foregroundColor(.white.opacity(0.4))
+                        .lineSpacing(2)
+                }
+
+                Divider().overlay(Color.white.opacity(0.08))
+
+                // Apply button
+                HStack {
+                    Spacer()
+                    Button {
+                        applyCoreConfigurationFromInfo()
+                    } label: {
+                        HStack(spacing: 6) {
+                            Image(systemName: infoApplyCoreToSystem ? "globe" : "gamecontroller")
+                            Text(infoApplyCoreToSystem ? "Set System Default" : "Set for This Game")
+                        }
+                        .foregroundColor(.white)
+                        .padding(.horizontal, 16)
+                        .padding(.vertical, 8)
+                        .background(Color.blue.opacity(0.6))
+                        .cornerRadius(8)
+                    }
+                    .buttonStyle(.plain)
+                    .disabled(infoCoreID == nil || installedCores.isEmpty)
+                }
+            }
+        }
+    }
+
+    private func applyCoreConfigurationFromInfo() {
+        guard let sysID = currentROM.systemID,
+              let coreID = infoCoreID,
+              !coreID.isEmpty else { return }
+
+        if infoApplyCoreToSystem {
+            // Apply as system default: remove per-game override, set system preference
+            sysPrefs.setPreferredCoreID(coreID, for: sysID)
+
+            // Clear per-game custom core
+            var updated = currentROM
+            updated.useCustomCore = false
+            updated.selectedCoreID = nil
+            library.updateROM(updated)
+
+            // Reset local state to reflect system default
+            useCustomCore = false
+            infoApplyCoreToSystem = true
+        } else {
+            // Apply as per-game override
+            var updated = currentROM
+            updated.useCustomCore = true
+            updated.selectedCoreID = coreID
+            library.updateROM(updated)
+
+            useCustomCore = true
+            infoApplyCoreToSystem = false
+        }
+    }
+
     // MARK: - Game Boy Colorization Section
 
     private var gbColorizationSection: some View {
@@ -2195,6 +2320,122 @@ struct GameDetailView: View {
         if NSApp.mainWindow == nil {
             NSApp.activate(ignoringOtherApps: true)
         }
+    }
+
+
+    // MARK: - Section: Core
+
+    private var coreSection: some View {
+        ModernSectionCard(title: "Core", icon: "chip") {
+            VStack(alignment: .leading, spacing: 12) {
+                // Core picker row
+                HStack {
+                    Image(systemName: "cpu")
+                        .foregroundColor(.white.opacity(0.5))
+                    Text("Emulation Core")
+                        .foregroundColor(.white.opacity(0.5))
+                        .font(.caption)
+                    Spacer()
+                    if installedCores.isEmpty {
+                        Text("No cores installed")
+                            .font(.caption)
+                            .foregroundColor(.white.opacity(0.3))
+                    } else {
+                        Picker("Core", selection: $selectedCoreID) {
+                            ForEach(installedCores) { core in
+                                Text(core.metadata.displayName).tag(core.id as String?)
+                            }
+                        }
+                        .pickerStyle(.menu)
+                        .labelsHidden()
+                        .frame(width: 220)
+                    }
+                }
+
+                Divider().overlay(Color.white.opacity(0.08))
+
+                // Apply to system toggle
+                Toggle(isOn: $applyCoreToSystem) {
+                    HStack {
+                        Image(systemName: "globe")
+                            .foregroundColor(.white.opacity(0.5))
+                        Text("Apply to system default")
+                            .foregroundColor(.white.opacity(0.85))
+                    }
+                }
+                .toggleStyle(SwitchToggleStyle())
+
+                if applyCoreToSystem {
+                    Text("This will change the default core for all \(systemName) games. The current game will no longer use a custom core override.")
+                        .font(.caption)
+                        .foregroundColor(.white.opacity(0.4))
+                        .lineSpacing(2)
+                } else {
+                    Text("Only this game will use the selected core.")
+                        .font(.caption)
+                        .foregroundColor(.white.opacity(0.4))
+                        .lineSpacing(2)
+                }
+
+                Divider().overlay(Color.white.opacity(0.08))
+
+                // Apply button
+                HStack {
+                    Spacer()
+                    Button {
+                        applyCoreConfiguration()
+                    } label: {
+                        HStack(spacing: 6) {
+                            Image(systemName: applyCoreToSystem ? "globe" : "gamecontroller")
+                            Text(applyCoreToSystem ? "Set System Default" : "Set for This Game")
+                        }
+                        .foregroundColor(.white)
+                        .padding(.horizontal, 16)
+                        .padding(.vertical, 8)
+                        .background(Color.blue.opacity(0.6))
+                        .cornerRadius(8)
+                    }
+                    .buttonStyle(.plain)
+                    .disabled(selectedCoreID == nil || installedCores.isEmpty)
+                }
+            }
+        }
+        .onAppear {
+            // Initialize applyToSystem based on whether this ROM has a custom core
+            applyCoreToSystem = !currentROM.useCustomCore
+        }
+    }
+
+    private func applyCoreConfiguration() {
+        guard let sysID = currentROM.systemID,
+              let coreID = selectedCoreID,
+              !coreID.isEmpty else { return }
+
+        if applyCoreToSystem {
+            // Apply as system default: remove per-game override, set system preference
+            sysPrefs.setPreferredCoreID(coreID, for: sysID)
+
+            // Clear per-game custom core
+            var updated = currentROM
+            updated.useCustomCore = false
+            updated.selectedCoreID = nil
+            library.updateROM(updated)
+
+            // Reset local state to reflect system default
+            useCustomCore = false
+        } else {
+            // Apply as per-game override
+            var updated = currentROM
+            updated.useCustomCore = true
+            updated.selectedCoreID = coreID
+            library.updateROM(updated)
+
+            useCustomCore = true
+        }
+    }
+
+    private var systemName: String {
+        system?.name ?? currentROM.systemID ?? "Unknown"
     }
 
     // MARK: - Section 6: Achievements
