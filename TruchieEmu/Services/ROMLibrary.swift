@@ -297,7 +297,10 @@ class ROMLibrary: ObservableObject {
         
         // Remove ROMs that are descendants of this folder
         roms.removeAll { $0.path.path.hasPrefix(folderPath) || $0.path.path == url.path }
-        
+
+        // Delete the removed ROMs from the database so they don't reappear on restart
+        DatabaseManager.shared.deleteROMsByPath(removedROMs.map { $0.path.path })
+
         // Clean up file index entries for removed ROMs
         let removedPaths = Set(removedROMs.map { $0.path.path })
         for path in removedPaths {

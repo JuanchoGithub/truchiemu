@@ -647,6 +647,32 @@ final class DatabaseManager {
         }
     }
 
+    /// Delete ROMs from the database by their filesystem paths.
+    /// Used when a library folder is removed, to purge orphaned ROMs so they
+    /// don't reappear on the next launch.
+    func deleteROMsByPath(_ paths: [String]) {
+        queue.sync { _deleteROMsByPath(paths) }
+    }
+
+    private func _deleteROMsByPath(_ paths: [String]) {
+        guard let db = db else { return }
+        guard !paths.isEmpty else { return }
+
+        let sql = "DELETE FROM roms WHERE path = ?"
+        guard let stmt = prepare(sql) else { return }
+        defer { sqlite3_finalize(stmt) }
+
+        for path in paths {
+            sqlite3_reset(stmt)
+            sqlite3_clear_bindings(stmt)
+            sqlite3_bind_text(stmt, 1, (path as NSString).utf8String, -1, nil)
+            let rc = sqlite3_step(stmt)
+            if rc != SQLITE_DONE {
+                LoggerService.warning(category: "Database", "Failed to delete ROM at \(path): \(sqliteErrorString(rc))")
+            }
+        }
+    }
+
     /// Load all ROMs from the database, reconstructing ROM model objects.
     func loadROMs() -> [ROM] {
         queue.sync { () -> [ROM] in
