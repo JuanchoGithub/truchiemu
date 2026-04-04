@@ -1193,9 +1193,11 @@ static int16_t bridge_input_state(unsigned port, unsigned device, unsigned index
     g_coreID = [coreID copy];
     g_shaderDir = [shaderDir copy];
     initOptStorage();
-    [g_optValues removeAllObjects];
-    g_optDefinitions = nil;
-    g_optCategories = nil;
+    // Preserve g_optCategories (not affected by core swap)
+    // g_optDefinitions cleared when SET_CORE_OPTIONS fires
+    // Pre-load persisted overrides NOW so GET_VARIABLE returns them even before
+    // SET_CORE_OPTIONS_V2 fires (mGBA and other cores query early during load)
+    applyPersistedOverrides();
 
     dispatch_async(g_bridgeQueue, ^{
         if (g_instance) {
