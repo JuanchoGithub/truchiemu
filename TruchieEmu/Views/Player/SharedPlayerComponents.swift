@@ -1417,14 +1417,16 @@ class StandaloneGameWindowController: NSWindowController, NSWindowDelegate, Obse
             if let pipeline = pipeline {
                 if let frameTex = runner.currentFrameTexture {
                     if let enc = cmdBuffer.makeRenderCommandEncoder(descriptor: descriptor) {
-                        // ASPECT RATIO — use core-provided aspect ratio from retro_system_av_info
-                        // when available (libretro uses <= 0 to signal "compute from base_width/base_height")
+                        // ASPECT RATIO — multi-tier fallback:
+                        // 1. Core-provided aspect ratio from retro_system_av_info (preferred for N64, PS1, etc.)
+                        // 2. Pixel dimensions from frame texture (frameW/frameH)
+                        // 3. System's known display aspect ratio (final fallback for consoles with fixed display output)
                         let viewWidth = view.drawableSize.width
                         let viewHeight = view.drawableSize.height
                         let isRotated = (runner.currentFrameRotation == 1 || runner.currentFrameRotation == 3)
                         let frameW = CGFloat(frameTex.width)
                         let frameH = CGFloat(frameTex.height)
-                        let targetAspect: CGFloat
+                        var targetAspect: CGFloat
                         
                         // Try core-provided aspect ratio first (preferred for N64, PS1, etc.)
                         let coreAspect = LibretroBridgeSwift.aspectRatio()
@@ -1434,6 +1436,20 @@ class StandaloneGameWindowController: NSWindowController, NSWindowDelegate, Obse
                         } else {
                             // Fall back to computing from pixel dimensions
                             targetAspect = isRotated ? (frameH / frameW) : (frameW / frameH)
+                        }
+                        
+                        // Final fallback: for known console systems, use the system's canonical display aspect ratio
+                        // to prevent incorrect rendering when the core reports wrong or missing aspect info.
+                        // This catches cases where PS1 cores report non-4:3 internal resolutions (e.g. 368x240).
+                        if let systemID = runner.rom?.systemID,
+                           let systemInfo = SystemDatabase.system(forID: systemID) {
+                            let systemAR = systemInfo.displayAspectRatio
+                            // If the computed aspect ratio deviates significantly from the system's known AR,
+                            // trust the system's known aspect ratio instead.
+                            if abs(targetAspect - systemAR) / systemAR > 0.15 { // more than 15% deviation
+                                LoggerService.debug(category: "Metal", "[Aspect Ratio] Core/pixel ratio \(String(format: "%.3f", targetAspect)) deviates >15% from system \(systemID) canonical ratio \(String(format: "%.3f", systemAR)). Using system ratio.")
+                                targetAspect = systemAR
+                            }
                         }
                         var drawWidth = viewWidth
                         var drawHeight = viewWidth / targetAspect

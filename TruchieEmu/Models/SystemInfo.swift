@@ -81,6 +81,28 @@ struct SystemInfo: Identifiable, Codable, Hashable {
     var defaultBoxType: BoxType = .vertical
     var displayInUI: Bool = true
 
+    /// The correct display aspect ratio for this system's output.
+    /// Used as a final fallback when the core either reports 0 or an incorrect aspect ratio.
+    /// Console systems that output to standard TVs should use 4:3.
+    var displayAspectRatio: CGFloat {
+        switch id {
+        case "psx", "ps1", "ps2":
+            // PlayStation family: 4:3 (original PS1/PS2 output to 4:3 CRTs)
+            return 4.0 / 3.0
+        case "n64":
+            // N64: 4:3 (native output was 4:3, widescreen was a hack)
+            return 4.0 / 3.0
+        case "saturn", "dreamcast":
+            // Sega Saturn/Dreamcast: 4:3
+            return 4.0 / 3.0
+        case "3do":
+            // 3DO: 4:3
+            return 4.0 / 3.0
+        default:
+            return 4.0 / 3.0
+        }
+    }
+    
     static let all: [SystemInfo] = SystemDatabase.systems
 
     func emuImage(size: Int) -> NSImage? {
