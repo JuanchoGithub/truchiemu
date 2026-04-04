@@ -323,7 +323,7 @@ struct LibretroDatGame {
 }
 
 /// Downloads and parses libretro-database sources: No-Intro `.dat` first, then other `.dat` trees, then compiled `rdb/` (RARCHDB + MessagePack).
-class LibretroDatabaseLibrary {
+actor LibretroDatabaseLibrary {
     static let shared = LibretroDatabaseLibrary()
 
     /// Game Boy and Game Boy Color sets overlap; we always merge both for CRC/name lookup.
