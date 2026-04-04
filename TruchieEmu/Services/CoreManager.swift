@@ -293,7 +293,11 @@ class CoreManager: ObservableObject {
 
     private func loadAvailableCores() {
         guard let data = defaults.data(forKey: availableCoresKey),
-              let saved = try? decoder.decode([RemoteCoreInfo].self, from: data) else { return }
+              var saved = try? decoder.decode([RemoteCoreInfo].self, from: data) else { return }
+        // Refresh systemIDs so updates to supportedSystems mappings are applied to cached data
+        for i in 0..<saved.count {
+            saved[i].systemIDs = CoreManager.supportedSystems(for: saved[i].coreID)
+        }
         availableCores = saved
     }
 
