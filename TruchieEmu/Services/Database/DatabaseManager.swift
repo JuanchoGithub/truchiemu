@@ -552,7 +552,7 @@ final class DatabaseManager {
     }
 
     private func _saveROMs(_ roms: [ROMRow]) {
-        guard db != nil else { return }
+        guard let db = db else { return }
 
         let sql = "INSERT OR REPLACE INTO roms (id, name, path, system_id, box_art_path, is_favorite, last_played, total_playtime, times_played, selected_core_id, custom_name, use_custom_core, metadata_json, is_bios, is_hidden, category, crc32, thumbnail_system_id, screenshot_paths_json, settings_json, is_identified) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)"
         
@@ -634,13 +634,18 @@ final class DatabaseManager {
 
     typealias LibraryFolderRow = (urlPath: String, bookmarkData: Data)
 
-    /// Save library folder bookmarks (upsert by url_path).
+    /// Save library folder bookmarks (full sync - replaces all existing folders).
     func saveLibraryFolders(_ folders: [LibraryFolderRow]) {
         queue.sync { _saveLibraryFolders(folders) }
     }
 
     private func _saveLibraryFolders(_ folders: [LibraryFolderRow]) {
-        guard db != nil else { return }
+        guard let db = db else { return }
+
+        // Delete all existing folders first, then insert the current set (full sync).
+        // This ensures removed folders are properly deleted from SQLite.
+        _execute(db: db, sql: "DELETE FROM library_folders", bindings: [])
+
         let sql = """
             INSERT INTO library_folders (url_path, bookmark_data)
             VALUES (?, ?)
@@ -839,7 +844,7 @@ final class DatabaseManager {
     }
 
     private func _upsertMetadataEntry(_ row: MetadataRowInt) {
-        guard db != nil else { return }
+        guard let db = db else { return }
         let sql = """
             INSERT INTO rom_metadata (path_key, crc32, title, year, developer, publisher, genre, players, description, rating, thumbnail_system_id, box_art_path, title_screen_path, screenshot_paths_json, custom_core_id)
             VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)

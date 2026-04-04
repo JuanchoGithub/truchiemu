@@ -146,6 +146,37 @@ struct LibraryFolderDatabaseTests {
         #expect(loaded.contains { $0.urlPath == "/Volumes/External/Games" })
         mgr.close()
     }
+
+    @Test("Save library folders syncs deletions — removed folders are not restored on reload")
+    func saveLibraryFoldersSyncsDeletions() async throws {
+        let mgr = makeManager()
+        let bookmarkData = Data([0x01, 0x02, 0x03, 0x04])
+        let allRows: [DatabaseManager.LibraryFolderRow] = [
+            (urlPath: "/Users/test/ROMs", bookmarkData: bookmarkData),
+            (urlPath: "/Volumes/External/Games", bookmarkData: bookmarkData),
+            (urlPath: "/Volumes/Backup/Games", bookmarkData: bookmarkData),
+        ]
+
+        mgr.saveLibraryFolders(allRows)
+        let loaded3 = mgr.loadLibraryFolders()
+        #expect(loaded3.count == 3)
+
+        // Simulate removing one folder — save only 2
+        let remainingRows: [DatabaseManager.LibraryFolderRow] = [
+            (urlPath: "/Users/test/ROMs", bookmarkData: bookmarkData),
+            (urlPath: "/Volumes/External/Games", bookmarkData: bookmarkData),
+        ]
+
+        mgr.saveLibraryFolders(remainingRows)
+        let loaded2 = mgr.loadLibraryFolders()
+
+        // The deleted folder should NOT be present
+        #expect(loaded2.count == 2)
+        #expect(loaded2.contains { $0.urlPath == "/Users/test/ROMs" })
+        #expect(loaded2.contains { $0.urlPath == "/Volumes/External/Games" })
+        #expect(!loaded2.contains { $0.urlPath == "/Volumes/Backup/Games" })
+        mgr.close()
+    }
 }
 
 struct UserDefaultsMigrationTests {
