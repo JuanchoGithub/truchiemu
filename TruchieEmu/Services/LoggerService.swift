@@ -68,7 +68,7 @@ final class LoggerService: @unchecked Sendable {
     
     @Published private(set) var currentLevel: LogLevel {
         didSet {
-            UserDefaults.standard.set(currentLevel.rawValue, forKey: "log_level")
+            AppSettings.set("log_level", value: currentLevel.rawValue)
         }
     }
     
@@ -93,7 +93,7 @@ final class LoggerService: @unchecked Sendable {
     
     private init() {
         // Load saved log level
-        let rawLevel = UserDefaults.standard.string(forKey: "log_level") ?? "none"
+        let rawLevel = AppSettings.get("log_level") ?? "none"
         self.currentLevel = LogLevel(rawValue: rawLevel) ?? .none
         
         // Create OS logger for system console

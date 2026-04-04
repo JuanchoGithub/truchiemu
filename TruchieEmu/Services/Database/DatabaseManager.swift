@@ -140,6 +140,30 @@ final class DatabaseManager {
             "thumbnail_use_head_check",
             "thumbnail_fallback_filename",
             "shaderWindowPosition",
+            // Core Manager
+            "cores_initial_fetch_done_v1",
+            // Bezel
+            "bezelStorageMode",
+            "bezelInitialSetupComplete",
+            "bezelLastPromptedLibraryCount",
+            // BoxArt / LaunchBox / Display
+            "thumbnail_server_url",
+            "thumbnail_priority_type",
+            "thumbnail_use_crc_matching",
+            "launchbox_use_for_boxart",
+            "launchbox_download_after_scan",
+            "launchbox_last_sync",
+            "gridColumns",
+            "lastLoadedCoreID",
+            "custom_log_folder_url",
+            // RetroAchievements
+            "ra_username",
+            "ra_token",
+            "ra_hardcore",
+            "ra_enabled",
+            // Controller
+            "controller_handedness",
+            "active_player_index",
         ]
 
         for key in simpleKeys {
@@ -174,6 +198,38 @@ final class DatabaseManager {
                         _execute(db: db, sql: "INSERT OR REPLACE INTO settings (key, value) VALUES (?, ?)", bindings: [key, value])
                     }
                     UserDefaults.standard.removeObject(forKey: key)
+                }
+            }
+        }
+
+        // Migrate complex data keys (stored as base64-prefixed strings)
+        let complexDataKeys = [
+            "BezelDownloadLog",
+            "game_categories_v1",
+            "controller_mappings_v2",
+            "keyboard_mapping_v1",
+            "cheats_v2",
+            "installed_cores_v2",
+            "available_cores_v1",
+            "screenscraper_credentials",
+            "cheatLastDownloadDate",
+            "controller_saved_configs",
+        ]
+        for key in complexDataKeys {
+            if let data = UserDefaults.standard.data(forKey: key) {
+                let alreadyExists: Bool = _query(db: db, sql: "SELECT 1 FROM settings WHERE key = ?", bindings: [key]) { _ in true }.first ?? false
+                if !alreadyExists {
+                    let b64 = data.base64EncodedString()
+                    _execute(db: db, sql: "INSERT OR REPLACE INTO settings (key, value) VALUES (?, ?)", bindings: [key, "_b64:\(b64)"])
+                    UserDefaults.standard.removeObject(forKey: key)
+                    logger.info("Migrated complex data: \(key)")
+                }
+            } else if let date = UserDefaults.standard.object(forKey: key) as? Date {
+                let alreadyExists: Bool = _query(db: db, sql: "SELECT 1 FROM settings WHERE key = ?", bindings: [key]) { _ in true }.first ?? false
+                if !alreadyExists {
+                    _execute(db: db, sql: "INSERT OR REPLACE INTO settings (key, value) VALUES (?, ?)", bindings: [key, String(date.timeIntervalSince1970)])
+                    UserDefaults.standard.removeObject(forKey: key)
+                    logger.info("Migrated date: \(key)")
                 }
             }
         }

@@ -158,10 +158,8 @@ struct BezelSettingsView: View {
                         }
                         storageManager.storageMode = .customFolder
                         storageManager.customFolderPath = url
-                        UserDefaults.standard.set(BezelStorageMode.customFolder.rawValue,
-                                                  forKey: BezelUserDefaultsKeys.storageMode)
-                        UserDefaults.standard.set(url.path,
-                                                  forKey: BezelUserDefaultsKeys.customFolderPath)
+                        AppSettings.set(BezelUserDefaultsKeys.storageMode, value: BezelStorageMode.customFolder.rawValue)
+                        AppSettings.set(BezelUserDefaultsKeys.customFolderPath, value: url.path)
                         try storageManager.ensureDirectoriesExist()
                     } catch {
                         LoggerService.debug(category: "Bezel", "Failed to migrate: \(error)")
@@ -185,8 +183,7 @@ struct BezelSettingsView: View {
                     }
                     
                     storageManager.storageMode = mode
-                    UserDefaults.standard.set(mode.rawValue,
-                                              forKey: BezelUserDefaultsKeys.storageMode)
+                    AppSettings.set(BezelUserDefaultsKeys.storageMode, value: mode.rawValue)
                     try storageManager.ensureDirectoriesExist()
                 } catch {
                     LoggerService.debug(category: "Bezel", "Failed to migrate: \(error)")

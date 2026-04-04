@@ -462,11 +462,11 @@ class CheatManager: ObservableObject {
     
     private func saveCheats() {
         guard let data = try? JSONEncoder().encode(allCheats) else { return }
-        UserDefaults.standard.set(data, forKey: saveKey)
+        AppSettings.setData(saveKey, value: data)
     }
     
     private func loadCheats() {
-        guard let data = UserDefaults.standard.data(forKey: saveKey),
+        guard let data = AppSettings.getData(saveKey),
               let decoded = try? JSONDecoder().decode([String: [Cheat]].self, from: data) else {
             return
         }

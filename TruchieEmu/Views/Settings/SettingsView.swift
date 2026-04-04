@@ -1005,8 +1005,8 @@ struct ControllerSettingsView: View {
     }
 
     private func loadSavedConfigs() {
-        let defaults = UserDefaults.standard
-        if let data = defaults.data(forKey: "controller_saved_configs"),
+        // Persist controller configs to AppSettings
+        if let data = AppSettings.getData("controller_saved_configs"),
            let configs = try? JSONDecoder().decode([String: ControllerMapping].self, from: data) {
             savedConfigs = configs
         }
@@ -1014,7 +1014,7 @@ struct ControllerSettingsView: View {
 
     private func saveConfigsToDisk() {
         if let data = try? JSONEncoder().encode(savedConfigs) {
-            UserDefaults.standard.set(data, forKey: "controller_saved_configs")
+            AppSettings.setData("controller_saved_configs", value: data)
         }
     }
 }
@@ -1636,14 +1636,14 @@ struct BoxArtSettingsView: View {
     @State private var saved = false
     @State private var thumbnailBaseURLString = ""
 
-    @AppStorage("thumbnail_use_libretro") private var useLibretroThumbnails = true
-    @AppStorage("thumbnail_server_url") private var thumbnailServerURLStorage = ""
-    @AppStorage("thumbnail_priority_type") private var thumbnailPriorityRaw = LibretroThumbnailPriority.boxart.rawValue
-    @AppStorage("thumbnail_use_crc_matching") private var useCRCMatching = true
-    @AppStorage("thumbnail_fallback_filename") private var fallbackFilename = true
-    @AppStorage("thumbnail_use_head_check") private var useHeadCheck = false
-    @AppStorage("launchbox_use_for_boxart") private var useLaunchBox = false
-    @AppStorage("launchbox_download_after_scan") private var launchBoxDownloadAfterScan = true
+    @State private var useLibretroThumbnails = true
+    @State private var thumbnailServerURLStorage = ""
+    @State private var thumbnailPriorityRaw = LibretroThumbnailPriority.boxart.rawValue
+    @State private var useCRCMatching = true
+    @State private var fallbackFilename = true
+    @State private var useHeadCheck = false
+    @State private var useLaunchBox = false
+    @State private var launchBoxDownloadAfterScan = true
 
     var body: some View {
         Form {
@@ -1696,19 +1696,38 @@ struct BoxArtSettingsView: View {
         .formStyle(.grouped)
         .onAppear {
             username = BoxArtService.shared.credentials?.username ?? ""
+            useLibretroThumbnails = BoxArtService.shared.useLibretroThumbnails
+            thumbnailServerURLStorage = BoxArtService.shared.thumbnailServerURL.absoluteString
+            thumbnailPriorityRaw = LibretroThumbnailPriority.allCases.firstIndex(where: { $0.rawValue == BoxArtService.shared.thumbnailPriority.rawValue }).map { String($0) } ?? LibretroThumbnailPriority.boxart.rawValue
+            useCRCMatching = BoxArtService.shared.useCRCMatchingForThumbnails
+            fallbackFilename = BoxArtService.shared.fallbackToFilenameForThumbnails
+            useHeadCheck = BoxArtService.shared.useHeadBeforeThumbnailDownload
+            useLaunchBox = LaunchBoxGamesDBService.shared.isEnabled
+            launchBoxDownloadAfterScan = LaunchBoxGamesDBService.shared.downloadAfterScan
             thumbnailBaseURLString = thumbnailServerURLStorage.isEmpty
                 ? LibretroThumbnailResolver.defaultBaseURL.absoluteString
                 : thumbnailServerURLStorage
         }
         .onChange(of: thumbnailBaseURLString) { newValue in
             thumbnailServerURLStorage = newValue.trimmingCharacters(in: .whitespacesAndNewlines)
+            if let url = URL(string: thumbnailServerURLStorage), url.scheme != nil {
+                BoxArtService.shared.thumbnailServerURL = url
+            }
+            AppSettings.set("thumbnail_server_url", value: thumbnailServerURLStorage)
         }
+        .onChange(of: useLibretroThumbnails) { BoxArtService.shared.useLibretroThumbnails = $0; AppSettings.setBool("thumbnail_use_libretro", value: $0) }
+        .onChange(of: thumbnailPriorityRaw) { if let p = LibretroThumbnailPriority(rawValue: $0), let idx = LibretroThumbnailPriority.allCases.firstIndex(where: { $0.rawValue == p.rawValue }) {  } }
+        .onChange(of: useCRCMatching) { BoxArtService.shared.useCRCMatchingForThumbnails = $0; AppSettings.setBool("thumbnail_use_crc_matching", value: $0) }
+        .onChange(of: fallbackFilename) { BoxArtService.shared.fallbackToFilenameForThumbnails = $0; AppSettings.setBool("thumbnail_fallback_filename", value: $0) }
+        .onChange(of: useHeadCheck) { BoxArtService.shared.useHeadBeforeThumbnailDownload = $0; AppSettings.setBool("thumbnail_use_head_check", value: $0) }
+        .onChange(of: useLaunchBox) { LaunchBoxGamesDBService.shared.isEnabled = $0; AppSettings.setBool("launchbox_use_for_boxart", value: $0) }
+        .onChange(of: launchBoxDownloadAfterScan) { LaunchBoxGamesDBService.shared.downloadAfterScan = $0; AppSettings.setBool("launchbox_download_after_scan", value: $0) }
     }
 }
 
 // MARK: - Display Settings
 struct DisplaySettingsView: View {
-    @AppStorage("display_default_shader_preset") private var selectedPresetID: String = "builtin-crt-classic"
+    @State private var selectedPresetID: String = "builtin-crt-classic"
     @State private var shaderWindowSettings: ShaderWindowSettings?
     @StateObject private var shaderManager = ShaderManager.shared
     
@@ -1763,6 +1782,9 @@ struct DisplaySettingsView: View {
         }
         .formStyle(.grouped)
         .navigationTitle("Display")
+        .onAppear {
+            selectedPresetID = AppSettings.get("display_default_shader_preset") ?? "builtin-crt-classic"
+        }
     }
     
     @MainActor
@@ -1815,9 +1837,9 @@ struct DisplaySettingsView: View {
 // MARK: - General Settings
 
 struct GeneralSettingsView: View {
-    @AppStorage("auto_save_on_exit") private var autoSaveOnExit = true
-    @AppStorage("auto_load_on_start") private var autoLoadOnStart = true
-    @AppStorage("compress_save_states") private var compressSaveStates = false
+    @State private var autoSaveOnExit = true
+    @State private var autoLoadOnStart = true
+    @State private var compressSaveStates = false
     
     var body: some View {
         Form {

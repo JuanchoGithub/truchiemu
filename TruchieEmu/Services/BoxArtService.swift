@@ -11,8 +11,6 @@ class BoxArtService: ObservableObject {
         let caches = FileManager.default.urls(for: .cachesDirectory, in: .userDomainMask).first!
         return caches.appendingPathComponent("TruchieEmu/BoxArt", isDirectory: true)
     }()
-
-    private let defaults = UserDefaults.standard
     private let credKey = "screenscraper_credentials"
 
     private let keyThumbnailBaseURL = "thumbnail_server_url"
@@ -25,44 +23,44 @@ class BoxArtService: ObservableObject {
     /// Libretro CDN base URL (default: https://thumbnails.libretro.com/)
     var thumbnailServerURL: URL {
         get {
-            if let s = defaults.string(forKey: keyThumbnailBaseURL), let u = URL(string: s), u.scheme != nil {
+            if let s = AppSettings.get(keyThumbnailBaseURL), let u = URL(string: s), u.scheme != nil {
                 return u
             }
             return LibretroThumbnailResolver.defaultBaseURL
         }
         set {
-            defaults.set(newValue.absoluteString, forKey: keyThumbnailBaseURL)
+            AppSettings.set(keyThumbnailBaseURL, value: newValue.absoluteString)
         }
     }
 
     var thumbnailPriority: LibretroThumbnailPriority {
         get {
-            let raw = defaults.string(forKey: keyThumbnailPriority) ?? LibretroThumbnailPriority.boxart.rawValue
+            let raw = AppSettings.get(keyThumbnailPriority) ?? LibretroThumbnailPriority.boxart.rawValue
             return LibretroThumbnailPriority(rawValue: raw) ?? .boxart
         }
         set {
-            defaults.set(newValue.rawValue, forKey: keyThumbnailPriority)
+            AppSettings.set(keyThumbnailPriority, value: newValue.rawValue)
         }
     }
 
     var useCRCMatchingForThumbnails: Bool {
-        get { defaults.object(forKey: keyUseCRCMatching) as? Bool ?? true }
-        set { defaults.set(newValue, forKey: keyUseCRCMatching) }
+        get { AppSettings.getBool(keyUseCRCMatching, defaultValue: true) }
+        set { AppSettings.setBool(keyUseCRCMatching, value: newValue) }
     }
 
     var fallbackToFilenameForThumbnails: Bool {
-        get { defaults.object(forKey: keyFallbackFilename) as? Bool ?? true }
-        set { defaults.set(newValue, forKey: keyFallbackFilename) }
+        get { AppSettings.getBool(keyFallbackFilename, defaultValue: true) }
+        set { AppSettings.setBool(keyFallbackFilename, value: newValue) }
     }
 
     var useLibretroThumbnails: Bool {
-        get { defaults.object(forKey: keyUseLibretroThumbnails) as? Bool ?? true }
-        set { defaults.set(newValue, forKey: keyUseLibretroThumbnails) }
+        get { AppSettings.getBool(keyUseLibretroThumbnails, defaultValue: true) }
+        set { AppSettings.setBool(keyUseLibretroThumbnails, value: newValue) }
     }
 
     var useHeadBeforeThumbnailDownload: Bool {
-        get { defaults.bool(forKey: keyHeadBeforeDownload) }
-        set { defaults.set(newValue, forKey: keyHeadBeforeDownload) }
+        get { AppSettings.getBool(keyHeadBeforeDownload, defaultValue: false) }
+        set { AppSettings.setBool(keyHeadBeforeDownload, value: newValue) }
     }
 
     private lazy var thumbnailURLSession: URLSession = {
@@ -89,12 +87,12 @@ class BoxArtService: ObservableObject {
     func saveCredentials(_ creds: ScreenScraperCredentials) {
         credentials = creds
         if let data = try? JSONEncoder().encode(creds) {
-            defaults.set(data, forKey: credKey)
+            AppSettings.setData(credKey, value: data)
         }
     }
 
     private func loadCredentials() {
-        guard let data = defaults.data(forKey: credKey),
+        guard let data = AppSettings.getData(credKey),
               let creds = try? JSONDecoder().decode(ScreenScraperCredentials.self, from: data) else { return }
         credentials = creds
     }

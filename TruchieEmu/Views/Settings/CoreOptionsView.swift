@@ -195,8 +195,8 @@ class CoreOptionsViewModel: ObservableObject {
     func updateValue(_ value: String, for key: String) {
         options[key]?.currentValue = value
         LibretroBridge.setOptionValue(value, forKey: key)
-        UserDefaults.standard.set(value, forKey: "coreopt_\(coreID)_\(key)")
-        if let coreID = UserDefaults.standard.string(forKey: "lastLoadedCoreID") { persistDefinitions(for: coreID) }
+        AppSettings.set("coreopt_\(coreID)_\(key)", value: value)
+        if let coreID = AppSettings.get("lastLoadedCoreID") { persistDefinitions(for: coreID) }
     }
 
     func resetAll() {
@@ -205,7 +205,7 @@ class CoreOptionsViewModel: ObservableObject {
             options[key]?.currentValue = defaultVal
             LibretroBridge.setOptionValue(defaultVal, forKey: key)
         }
-        if let coreID = UserDefaults.standard.string(forKey: "lastLoadedCoreID") { persistDefinitions(for: coreID) }
+        if let coreID = AppSettings.get("lastLoadedCoreID") { persistDefinitions(for: coreID) }
     }
     
     let coreID: String = ""

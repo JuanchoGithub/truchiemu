@@ -122,7 +122,7 @@ class CheatManagerService: ObservableObject {
             mergedCheats.append(contentsOf: cheatFile.cheats)
         }
         
-        // Priority 3: User-defined cheats (from UserDefaults)
+        // Priority 3: User-defined cheats (from AppSettings)
         let userCheats = allCheats[rom.path.path] ?? []
         let customCheats = userCheats.filter { $0.format == .raw && $0.description.contains("Custom") }
         mergedCheats.append(contentsOf: customCheats)
@@ -309,11 +309,11 @@ class CheatManagerService: ObservableObject {
     
     private func saveCheats() {
         guard let data = try? JSONEncoder().encode(allCheats) else { return }
-        UserDefaults.standard.set(data, forKey: saveKey)
+        AppSettings.setData(saveKey, value: data)
     }
     
     private func loadCheats() {
-        guard let data = UserDefaults.standard.data(forKey: saveKey),
+        guard let data = AppSettings.getData(saveKey),
               let decoded = try? JSONDecoder().decode([String: [Cheat]].self, from: data) else {
             return
         }

@@ -52,7 +52,7 @@ struct BezelDownloadLogEntry: Identifiable, Equatable, Codable {
     }
 }
 
-// MARK: - UserDefaults Keys for Download Log
+// MARK: - AppSettings Keys for Download Log
 
 enum BezelDownloadUserDefaultsKeys {
     static let downloadLog = "BezelDownloadLog"
@@ -113,16 +113,16 @@ class BezelDownloadProgress: ObservableObject {
         saveLog()
     }
     
-    /// Save download log to UserDefaults for persistence
+    /// Save download log to AppSettings for persistence
     private func saveLog() {
         if let encoded = try? JSONEncoder().encode(downloadLog) {
-            UserDefaults.standard.set(encoded, forKey: BezelDownloadUserDefaultsKeys.downloadLog)
+            AppSettings.setData(BezelDownloadUserDefaultsKeys.downloadLog, value: encoded)
         }
     }
     
-    /// Load download log from UserDefaults
+    /// Load download log from AppSettings
     private func loadPersistentLog() {
-        if let data = UserDefaults.standard.data(forKey: BezelDownloadUserDefaultsKeys.downloadLog),
+        if let data = AppSettings.getData(BezelDownloadUserDefaultsKeys.downloadLog),
            let entries = try? JSONDecoder().decode([BezelDownloadLogEntry].self, from: data) {
             // Only keep last 200 entries
             downloadLog = Array(entries.suffix(200))

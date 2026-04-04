@@ -38,11 +38,10 @@ class RetroAchievementsService: ObservableObject {
     // MARK: - Settings Persistence
     
     private func loadSettings() {
-        let defaults = UserDefaults.standard
-        username = defaults.string(forKey: "ra_username")
-        let token = defaults.string(forKey: "ra_token")
-        hardcoreMode = defaults.bool(forKey: "ra_hardcore")
-        isEnabled = defaults.bool(forKey: "ra_enabled")
+        username = AppSettings.get("ra_username")
+        let token = AppSettings.get("ra_token")
+        hardcoreMode = AppSettings.getBool("ra_hardcore", defaultValue: false)
+        isEnabled = AppSettings.getBool("ra_enabled", defaultValue: false)
         
         if let token = token, let username = username, !token.isEmpty {
             Task { await validateToken(token: token, username: username) }
@@ -50,20 +49,19 @@ class RetroAchievementsService: ObservableObject {
     }
     
     func saveSettings(username: String, token: String) {
-        let defaults = UserDefaults.standard
-        defaults.set(username, forKey: "ra_username")
-        defaults.set(token, forKey: "ra_token")
+        AppSettings.set("ra_username", value: username)
+        AppSettings.set("ra_token", value: token)
         self.username = username
     }
     
     func setHardcoreMode(_ enabled: Bool) {
         hardcoreMode = enabled
-        UserDefaults.standard.set(enabled, forKey: "ra_hardcore")
+        AppSettings.setBool("ra_hardcore", value: enabled)
     }
     
     func setEnabled(_ enabled: Bool) {
         isEnabled = enabled
-        UserDefaults.standard.set(enabled, forKey: "ra_enabled")
+        AppSettings.setBool("ra_enabled", value: enabled)
         if !enabled {
             currentGame = nil
         }

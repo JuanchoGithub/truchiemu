@@ -108,7 +108,7 @@ class ROMIdentifierService {
     }
 
     private static func currentEmulatorLanguage() -> EmulatorLanguage {
-        let raw = UserDefaults.standard.integer(forKey: "systemLanguage")
+        let raw = SystemPreferences.shared.systemLanguage.rawValue
         return EmulatorLanguage(rawValue: raw) ?? .english
     }
 

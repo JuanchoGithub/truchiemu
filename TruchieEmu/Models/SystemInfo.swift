@@ -424,7 +424,7 @@ class SystemPreferences: ObservableObject {
 
     func boxType(for systemID: String) -> BoxType {
         let key = "\(Self.keyBoxTypePrefix)\(systemID)"
-        let rawValue = AppSettings.get(key) ?? UserDefaults.standard.string(forKey: key)
+        let rawValue = AppSettings.get(key)
         if let rawValue = rawValue, let type = BoxType(rawValue: rawValue) {
             return type
         }
@@ -457,7 +457,7 @@ class SystemPreferences: ObservableObject {
 
     func preferredCoreID(for systemID: String) -> String? {
         let key = "\(Self.keyPreferredCorePrefix)\(systemID)"
-        return AppSettings.get(key) ?? UserDefaults.standard.string(forKey: key)
+        return AppSettings.get(key)
     }
 
     func setPreferredCoreID(_ coreID: String?, for systemID: String) {
@@ -467,7 +467,7 @@ class SystemPreferences: ObservableObject {
     }
 
     init() {
-        // Read from AppSettings (SQLite); UserDefaults fallback for edge cases
+        // Read from AppSettings (SQLite)
         self.showBiosFiles = AppSettings.getBool(Self.keyShowBiosFiles, defaultValue: false)
         let langRaw = Int(AppSettings.get(Self.keySystemLanguage) ?? "0") ?? 0
         self.systemLanguage = EmulatorLanguage(rawValue: langRaw) ?? .english

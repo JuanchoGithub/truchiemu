@@ -48,7 +48,7 @@ class CheatDownloadService: ObservableObject {
     @Published var downloadStatus: String = ""
     @Published var lastDownloadDate: Date? {
         didSet {
-            UserDefaults.standard.set(lastDownloadDate, forKey: "cheatLastDownloadDate")
+            AppSettings.setDate("cheatLastDownloadDate", value: lastDownloadDate ?? Date())
         }
     }
     
@@ -92,7 +92,7 @@ class CheatDownloadService: ObservableObject {
     }
     
     private func loadLastDownloadDate() {
-        lastDownloadDate = UserDefaults.standard.object(forKey: "cheatLastDownloadDate") as? Date
+        lastDownloadDate = AppSettings.getDate("cheatLastDownloadDate")
     }
     
     // MARK: - Public Methods
@@ -848,7 +848,7 @@ class CheatDownloadService: ObservableObject {
         if FileManager.default.fileExists(atPath: localCheatsDirectory.path) {
             try FileManager.default.removeItem(at: localCheatsDirectory)
             lastDownloadDate = nil
-            UserDefaults.standard.removeObject(forKey: "cheatLastDownloadDate")
+            AppSettings.removeObject(forKey: "cheatLastDownloadDate")
         }
     }
     

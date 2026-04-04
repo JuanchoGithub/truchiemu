@@ -12,7 +12,7 @@ final class LogManager: @unchecked Sendable {
     /// Default log file name
     static let defaultLogFileName = "TruchieEmu.log"
     
-    /// UserDefaults key for custom log folder URL
+    /// AppSettings key for custom log folder URL
     private static let customLogFolderKey = "custom_log_folder_url"
     
     // MARK: - Log File URL
@@ -52,7 +52,7 @@ final class LogManager: @unchecked Sendable {
     
     /// Get custom log folder URL if set by user.
     var customLogFolderURL: URL? {
-        guard let data = UserDefaults.standard.data(forKey: Self.customLogFolderKey) else { return nil }
+        guard let data = AppSettings.getData(Self.customLogFolderKey) else { return nil }
         var isStale = false
         return try? URL(resolvingBookmarkData: data, options: [], relativeTo: nil, bookmarkDataIsStale: &isStale)
     }
@@ -62,7 +62,7 @@ final class LogManager: @unchecked Sendable {
         do {
             _ = url.startAccessingSecurityScopedResource()
             let bookmarkData = try url.bookmarkData(options: .withSecurityScope)
-            UserDefaults.standard.set(bookmarkData, forKey: Self.customLogFolderKey)
+            AppSettings.setData(Self.customLogFolderKey, value: bookmarkData)
             LoggerService.shared.setLevel(LoggerService.shared.currentLevel) // Re-setup file logging
             LoggerService.info(category: "LogManager", "Log folder changed to \(url.path)")
         } catch {
@@ -72,7 +72,7 @@ final class LogManager: @unchecked Sendable {
     
     /// Reset to default log folder.
     func resetToDefaultLogFolder() {
-        UserDefaults.standard.removeObject(forKey: Self.customLogFolderKey)
+        AppSettings.removeObject(forKey: Self.customLogFolderKey)
         LoggerService.shared.setLevel(LoggerService.shared.currentLevel) // Re-setup file logging
         LoggerService.info(category: "LogManager", "Log folder reset to default")
     }

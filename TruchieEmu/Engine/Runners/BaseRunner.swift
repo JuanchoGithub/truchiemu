@@ -251,7 +251,7 @@ class EmulatorRunner: ObservableObject, @unchecked Sendable {
         let selectedLogLevel = Int32(SystemPreferences.shared.coreLogLevel.rawValue)
         
         // Track last loaded core so Options view knows which file to persist to
-        UserDefaults.standard.set(coreID, forKey: "lastLoadedCoreID")
+        AppSettings.set("lastLoadedCoreID", value: coreID)
         
         // Get the bundled slang shader directory path
         let shaderDir = Bundle.main.resourceURL?.appendingPathComponent("slang").path
@@ -299,7 +299,7 @@ class EmulatorRunner: ObservableObject, @unchecked Sendable {
         guard gameRom.systemID != nil else { return }
         
         // Store current core info
-        let coreID = UserDefaults.standard.string(forKey: "lastLoadedCoreID") ?? ""
+        let coreID = AppSettings.get("lastLoadedCoreID") ?? ""
         
         // Reset pause state
         isPaused = false
@@ -328,7 +328,7 @@ class EmulatorRunner: ObservableObject, @unchecked Sendable {
     
     /// Compression preference
     var compressSaveStates: Bool {
-        UserDefaults.standard.bool(forKey: "compress_save_states")
+        AppSettings.getBool("compress_save_states", defaultValue: false)
     }
     
     /// Save the current emulator state to the specified slot

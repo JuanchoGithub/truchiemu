@@ -335,7 +335,7 @@ struct SlotPickerView: View {
                         Button(action: {
                             selectedSlot = slot
                             onSlotSelect?(slot)
-                            UserDefaults.standard.set(slot, forKey: "selected_save_slot")
+                            AppSettings.setInt("selected_save_slot", value: slot)
                             dismiss()
                         }) {
                             HStack {
@@ -1106,7 +1106,7 @@ class StandaloneGameWindowController: NSWindowController, NSWindowDelegate, Obse
             }
         } else {
             // Auto-load from slot -1 after launch completes (if enabled)
-            let shouldAutoLoad = UserDefaults.standard.bool(forKey: "auto_load_on_start")
+            let shouldAutoLoad = AppSettings.getBool("auto_load_on_start", defaultValue: true)
             if shouldAutoLoad {
                 // Wait for emulation to stabilize
                 DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) { [weak self] in
@@ -1289,7 +1289,7 @@ class StandaloneGameWindowController: NSWindowController, NSWindowDelegate, Obse
         stopPlaytimeTracking()
         
         // Auto-save to slot -1 on exit if enabled
-        let shouldAutoSave = UserDefaults.standard.bool(forKey: "auto_save_on_exit")
+        let shouldAutoSave = AppSettings.getBool("auto_save_on_exit", defaultValue: true)
         if shouldAutoSave, let runner = runner {
             LoggerService.info(category: "SaveState", "Saving state on window close...")
             let success = runner.saveState(slot: -1)

@@ -59,18 +59,18 @@ class GameLauncher: ObservableObject {
             self.shaderPresetID = shaderPresetID ?? romShader
             
             // Resolve achievements
-            self.achievementsEnabled = achievementsEnabled ?? UserDefaults.standard.bool(forKey: "achievements_enabled")
+            self.achievementsEnabled = achievementsEnabled ?? AppSettings.getBool("achievements_enabled", defaultValue: false)
             self.hardcoreMode = hardcoreMode ?? false
             
             // Resolve cheats
-            self.cheatsEnabled = cheatsEnabled ?? UserDefaults.standard.bool(forKey: "cheats_enabled")
+            self.cheatsEnabled = cheatsEnabled ?? AppSettings.getBool("cheats_enabled", defaultValue: false)
             
             // Resolve core options
             self.coreOptions = coreOptions ?? CoreOptionsManager.shared.loadUserOverrides(for: coreID)
             
             // Resolve auto save/load
-            self.autoLoad = autoLoad ?? UserDefaults.standard.bool(forKey: "auto_load_on_start")
-            self.autoSave = autoSave ?? UserDefaults.standard.bool(forKey: "auto_save_on_exit")
+            self.autoLoad = autoLoad ?? AppSettings.getBool("auto_load_on_start", defaultValue: false)
+            self.autoSave = autoSave ?? AppSettings.getBool("auto_save_on_exit", defaultValue: true)
             
             // Resolve bezel
             self.bezelFileName = rom.settings.bezelFileName
@@ -189,11 +189,11 @@ class GameLauncher: ObservableObject {
         applyGBColorizationForROM(config.rom, coreID: config.coreID)
         
         // 3. Apply auto-load/save preferences
-        UserDefaults.standard.set(config.autoLoad, forKey: "auto_load_on_start")
-        UserDefaults.standard.set(config.autoSave, forKey: "auto_save_on_exit")
+        AppSettings.setBool("auto_load_on_start", value: config.autoLoad)
+        AppSettings.setBool("auto_save_on_exit", value: config.autoSave)
         
         // 4. Apply achievements setting
-        UserDefaults.standard.set(config.achievementsEnabled, forKey: "achievements_enabled")
+        AppSettings.setBool("achievements_enabled", value: config.achievementsEnabled)
         
         // 5. Apply hardcore mode
         if config.hardcoreMode != HardcoreModeManager.shared.isHardcoreActive {
@@ -201,7 +201,7 @@ class GameLauncher: ObservableObject {
         }
         
         // 6. Apply cheats setting
-        UserDefaults.standard.set(config.cheatsEnabled, forKey: "cheats_enabled")
+        AppSettings.setBool("cheats_enabled", value: config.cheatsEnabled)
     }
     
     // MARK: - MAME Frame Limiting

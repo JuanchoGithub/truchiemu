@@ -25,11 +25,10 @@ class KeyWindowPanel: NSPanel {
 @objc class ShaderWindowPosition: NSObject {
     static let shared = ShaderWindowPosition()
     
-    private let defaults = UserDefaults.standard
     private let positionKey = "shaderWindowPosition"
     
     var savedPosition: NSPoint? {
-        guard let data = defaults.data(forKey: positionKey),
+        guard let data = AppSettings.getData(positionKey),
               let dict = try? JSONSerialization.jsonObject(with: data) as? [String: Double] else {
             return nil
         }
@@ -39,7 +38,7 @@ class KeyWindowPanel: NSPanel {
     func savePosition(_ point: NSPoint) {
         let dict: [String: Double] = ["x": point.x, "y": point.y]
         if let data = try? JSONSerialization.data(withJSONObject: dict) {
-            defaults.set(data, forKey: positionKey)
+            AppSettings.setData(positionKey, value: data)
         }
     }
 }

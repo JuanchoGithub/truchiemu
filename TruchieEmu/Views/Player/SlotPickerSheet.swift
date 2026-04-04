@@ -52,8 +52,8 @@ struct SlotPickerSheet: View {
             
             // Compression toggle
             Toggle(isOn: Binding(
-                get: { UserDefaults.standard.bool(forKey: "compress_save_states") },
-                set: { UserDefaults.standard.set($0, forKey: "compress_save_states") }
+                get: { AppSettings.getBool("compress_save_states", defaultValue: false) },
+                set: { AppSettings.setBool("compress_save_states", value: $0) }
             )) {
                 HStack {
                     Image(systemName: "archivebox")

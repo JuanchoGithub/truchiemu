@@ -77,7 +77,7 @@ class LaunchBoxGamesDBService: ObservableObject {
 
     private init() {}
 
-    // MARK: - Settings (UserDefaults)
+    // MARK: - Settings (AppSettings)
 
     private let keyUseLaunchBox = "launchbox_use_for_boxart"
     private let keyDownloadBoxartAfterScan = "launchbox_download_after_scan"
@@ -87,13 +87,13 @@ class LaunchBoxGamesDBService: ObservableObject {
     @Published var syncStatus: String = ""
 
     var isEnabled: Bool {
-        get { UserDefaults.standard.object(forKey: keyUseLaunchBox) as? Bool ?? false }
-        set { UserDefaults.standard.set(newValue, forKey: keyUseLaunchBox) }
+        get { AppSettings.getBool(keyUseLaunchBox, defaultValue: false) }
+        set { AppSettings.setBool(keyUseLaunchBox, value: newValue) }
     }
 
     var downloadAfterScan: Bool {
-        get { UserDefaults.standard.object(forKey: keyDownloadBoxartAfterScan) as? Bool ?? true }
-        set { UserDefaults.standard.set(newValue, forKey: keyDownloadBoxartAfterScan) }
+        get { AppSettings.getBool(keyDownloadBoxartAfterScan, defaultValue: true) }
+        set { AppSettings.setBool(keyDownloadBoxartAfterScan, value: newValue) }
     }
 
     // MARK: - Primary: Fetch BoxArt for a ROM
@@ -520,18 +520,18 @@ class LaunchBoxGamesDBService: ObservableObject {
 
     /// Set enabled/disabled state and persist.
     func setEnabled(_ enabled: Bool) {
-        UserDefaults.standard.set(enabled, forKey: keyUseLaunchBox)
+        AppSettings.setBool(keyUseLaunchBox, value: enabled)
     }
 
-    /// Last sync date stored in UserDefaults.
+    /// Last sync date stored in SQLite settings.
     var lastSyncDate: Date? {
-        guard let interval = UserDefaults.standard.object(forKey: "launchbox_last_sync") as? TimeInterval else { return nil }
+        let interval = AppSettings.getDouble("launchbox_last_sync", defaultValue: 0); guard interval > 0 else { return nil }
         return Date(timeIntervalSince1970: interval)
     }
 
     /// Record the current sync time.
     func recordSyncDate() {
-        UserDefaults.standard.set(Date().timeIntervalSince1970, forKey: "launchbox_last_sync")
+        AppSettings.setDouble("launchbox_last_sync", value: Date().timeIntervalSince1970)
     }
 
     /// Fetch and apply metadata for a single ROM.

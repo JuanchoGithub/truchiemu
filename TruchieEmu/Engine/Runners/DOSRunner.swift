@@ -18,7 +18,7 @@ class DOSRunner: EmulatorRunner, @unchecked Sendable {
     /// CPU cycles setting for DOS emulation
     /// Values: "auto", "3000" (8088/XT), "8000" (286), "25000" (386), "max" (Pentium)
     private var cyclesSetting: String {
-        UserDefaults.standard.string(forKey: "dosbox_pure_cycles") ?? "auto"
+        AppSettings.get("dosbox_pure_cycles") ?? "auto"
     }
     
     /// Whether mouse mode is currently active (used by UI)
@@ -44,13 +44,13 @@ class DOSRunner: EmulatorRunner, @unchecked Sendable {
     private func configureCoreOptions() {
         // Set CPU cycles
         let cycles = cyclesSetting
-        UserDefaults.standard.set(cycles, forKey: "dosbox_pure_cycles")
+        AppSettings.set("dosbox_pure_cycles", value: cycles)
         
         // Enable auto-start menu for multi-executable games
-        UserDefaults.standard.set(true, forKey: "dosbox_pure_start_menu")
+        AppSettings.setBool("dosbox_pure_start_menu", value: true)
         
         // Enable mouse emulation by default
-        UserDefaults.standard.set(true, forKey: "dosbox_pure_mouse")
+        AppSettings.setBool("dosbox_pure_mouse", value: true)
     }
     
     // MARK: - Mouse Mode Toggle

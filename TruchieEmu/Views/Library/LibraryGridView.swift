@@ -124,7 +124,7 @@ struct LibraryGridView: View {
     @StateObject private var gameLauncher = GameLauncher.shared
 
     @State private var viewMode: ViewMode = .grid
-    @AppStorage("gridColumns") private var columnCount: Int = 4
+    @State private var columnCount: Int = 4
     @ObservedObject var prefs = SystemPreferences.shared
     @ObservedObject var boxArtService = BoxArtService.shared
     @State private var manualBoxArtSearchROM: ROM?
@@ -440,8 +440,12 @@ struct LibraryGridView: View {
             BoxArtPickerView(rom: rom)
         }
         .onAppear { 
+            columnCount = AppSettings.getInt("gridColumns", defaultValue: 4)
             updateColumns()
             continuousZoom = 1.0 - Double(columnCount - 1) / 7.0
+        }
+        .onDisappear {
+            AppSettings.setInt("gridColumns", value: columnCount)
         }
     }
 

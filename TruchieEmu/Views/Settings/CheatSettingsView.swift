@@ -236,7 +236,7 @@ struct CheatSettingsView: View {
                 StatCard(
                     icon: "wand.and.stars",
                     iconColor: .orange,
-                    value: "\(UserDefaults.standard.data(forKey: "cheats_v2") != nil ? "Yes" : "No")",
+                    value: "\(AppSettings.getData("cheats_v2") != nil ? "Yes" : "No")",
                     label: "Custom Cheats"
                 )
             }

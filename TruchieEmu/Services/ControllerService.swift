@@ -10,18 +10,16 @@ class ControllerService: ObservableObject {
 
     @Published var activePlayerIndex: Int = 0 {
         didSet {
-            defaults.set(activePlayerIndex, forKey: "active_player_index")
+            AppSettings.setInt("active_player_index", value: activePlayerIndex)
         }
     }
 
     /// Handedness preference: "right" (default) or "left"
     @Published var handedness: String {
         didSet {
-            defaults.set(handedness, forKey: "controller_handedness")
+            AppSettings.set("controller_handedness", value: handedness)
         }
     }
-
-    private let defaults = UserDefaults.standard
     private let mappingKey = "controller_mappings_v2"
     private let kbMappingKey = "keyboard_mapping_v1"
     private var savedMappings: [String: [String: ControllerMapping]] = [:]
@@ -29,8 +27,8 @@ class ControllerService: ObservableObject {
     private var cancellables = Set<AnyCancellable>()
 
     init() {
-        self.handedness = defaults.string(forKey: "controller_handedness") ?? "right"
-        self.activePlayerIndex = defaults.integer(forKey: "active_player_index")
+        self.handedness = AppSettings.get("controller_handedness") ?? "right"
+        self.activePlayerIndex = AppSettings.getInt("active_player_index", defaultValue: 0)
         loadMappings()
         setupControllerNotifications()
         refreshConnectedControllers()
@@ -87,23 +85,23 @@ class ControllerService: ObservableObject {
         all[systemID] = mapping
         keyboardMappings = all
         if let data = try? JSONEncoder().encode(all) {
-            defaults.set(data, forKey: kbMappingKey)
+            AppSettings.setData(kbMappingKey, value: data)
         }
     }
 
     private func saveMappings() {
         if let data = try? JSONEncoder().encode(savedMappings) {
-            defaults.set(data, forKey: mappingKey)
+            AppSettings.setData(mappingKey, value: data)
         }
     }
 
     private func loadMappings() {
-        if let data = defaults.data(forKey: mappingKey),
+        if let data = AppSettings.getData(mappingKey),
            let saved = try? JSONDecoder().decode([String: [String: ControllerMapping]].self, from: data) {
             savedMappings = saved
         }
         
-        if let data = defaults.data(forKey: kbMappingKey),
+        if let data = AppSettings.getData(kbMappingKey),
            let saved = try? JSONDecoder().decode([String: KeyboardMapping].self, from: data) {
             keyboardMappings = saved
         }

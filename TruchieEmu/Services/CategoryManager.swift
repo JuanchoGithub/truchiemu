@@ -5,8 +5,6 @@ import Combine
 @MainActor
 class CategoryManager: ObservableObject {
     @Published var categories: [GameCategory] = []
-    
-    private let defaults = UserDefaults.standard
     private let categoriesKey = "game_categories_v1"
     private let encoder = JSONEncoder()
     private let decoder = JSONDecoder()
@@ -98,7 +96,7 @@ class CategoryManager: ObservableObject {
     // MARK: - Persistence
     
     private func loadCategories() {
-        guard let data = defaults.data(forKey: categoriesKey),
+        guard let data = AppSettings.getData(categoriesKey),
               let saved = try? decoder.decode([GameCategory].self, from: data) else {
             return
         }
@@ -107,7 +105,7 @@ class CategoryManager: ObservableObject {
     
     private func saveCategories() {
         if let data = try? encoder.encode(categories) {
-            defaults.set(data, forKey: categoriesKey)
+            AppSettings.setData(categoriesKey, value: data)
         }
     }
 }

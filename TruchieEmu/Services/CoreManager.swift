@@ -15,8 +15,6 @@ class CoreManager: ObservableObject {
         let base = FileManager.default.urls(for: .applicationSupportDirectory, in: .userDomainMask).first!
         return base.appendingPathComponent("TruchieEmu/Cores", isDirectory: true)
     }()
-
-    private let defaults = UserDefaults.standard
     private let coresKey = "installed_cores_v2"
     private let availableCoresKey = "available_cores_v1"
     private let coresInitialFetchDoneKey = "cores_initial_fetch_done_v1"
@@ -34,7 +32,7 @@ class CoreManager: ObservableObject {
     /// Whether to trigger an automatic core list fetch from the buildbot. Returns true only on first launch with no cached data.
     var shouldAutoFetchCores: Bool {
         let hasCache = !availableCores.isEmpty
-        let hasBeenFetched = defaults.bool(forKey: coresInitialFetchDoneKey)
+        let hasBeenFetched = AppSettings.getBool(coresInitialFetchDoneKey, defaultValue: false)
         return !hasCache && !hasBeenFetched
     }
 
@@ -112,7 +110,7 @@ class CoreManager: ObservableObject {
         }
         availableCores = cores.sorted { $0.displayName < $1.displayName }
         saveAvailableCores()
-        defaults.set(true, forKey: coresInitialFetchDoneKey)
+        AppSettings.setBool(coresInitialFetchDoneKey, value: true)
     }
 
     // MARK: - Download (user must authorize via pendingDownload)
@@ -266,12 +264,12 @@ class CoreManager: ObservableObject {
 
     private func saveInstalledCores() {
         if let data = try? encoder.encode(installedCores) {
-            defaults.set(data, forKey: coresKey)
+            AppSettings.setData(coresKey, value: data)
         }
     }
 
     private func loadInstalledCores() {
-        guard let data = defaults.data(forKey: coresKey),
+        guard let data = AppSettings.getData(coresKey),
               var saved = try? decoder.decode([LibretroCore].self, from: data) else { return }
         
         // Migrate/Refresh systemIDs for installed cores and deduplicate versions
@@ -292,7 +290,7 @@ class CoreManager: ObservableObject {
     }
 
     private func loadAvailableCores() {
-        guard let data = defaults.data(forKey: availableCoresKey),
+        guard let data = AppSettings.getData(availableCoresKey),
               var saved = try? decoder.decode([RemoteCoreInfo].self, from: data) else { return }
         // Refresh systemIDs so updates to supportedSystems mappings are applied to cached data
         for i in 0..<saved.count {
@@ -303,7 +301,7 @@ class CoreManager: ObservableObject {
 
     private func saveAvailableCores() {
         if let data = try? encoder.encode(availableCores) {
-            defaults.set(data, forKey: availableCoresKey)
+            AppSettings.setData(availableCoresKey, value: data)
         }
     }
 

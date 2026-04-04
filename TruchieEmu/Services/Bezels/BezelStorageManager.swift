@@ -2,7 +2,7 @@ import Foundation
 import SwiftUI
 import AppKit
 
-/// UserDefaults keys for bezel storage configuration.
+/// AppSettings keys for bezel storage configuration.
 enum BezelUserDefaultsKeys {
     static let storageMode = "bezelStorageMode"
     static let customFolderPath = "bezelCustomFolderPath"
@@ -25,24 +25,22 @@ class BezelStorageManager: ObservableObject {
     
     private init() {
         // Load stored preferences
-        let modeRaw = UserDefaults.standard.string(forKey: BezelUserDefaultsKeys.storageMode) ?? ""
+        let modeRaw = AppSettings.get(BezelUserDefaultsKeys.storageMode) ?? ""
         self.storageMode = BezelStorageMode(rawValue: modeRaw) ?? .libraryRelative
         
-        if let pathString = UserDefaults.standard.string(forKey: BezelUserDefaultsKeys.customFolderPath) {
+        if let pathString = AppSettings.get(BezelUserDefaultsKeys.customFolderPath) {
             self.customFolderPath = URL(filePath: pathString)
         } else {
             self.customFolderPath = nil
         }
         
-        if let libPathString = UserDefaults.standard.string(forKey: BezelUserDefaultsKeys.libraryFolderPath) {
+        if let libPathString = AppSettings.get(BezelUserDefaultsKeys.libraryFolderPath) {
             self.libraryFolderPath = URL(filePath: libPathString)
         } else {
             self.libraryFolderPath = nil
         }
         
-        self.hasCompletedInitialSetup = UserDefaults.standard.bool(
-            forKey: BezelUserDefaultsKeys.initialSetupComplete
-        )
+        self.hasCompletedInitialSetup = AppSettings.getBool(BezelUserDefaultsKeys.initialSetupComplete, defaultValue: false)
     }
     
     // MARK: - Storage Resolution
@@ -73,7 +71,7 @@ class BezelStorageManager: ObservableObject {
     func setLibraryFolderPath(_ url: URL) {
         guard libraryFolderPath == nil else { return } // Only set once
         libraryFolderPath = url
-        UserDefaults.standard.set(url.path, forKey: BezelUserDefaultsKeys.libraryFolderPath)
+        AppSettings.set(BezelUserDefaultsKeys.libraryFolderPath, value: url.path)
         
         // Trigger storage mode prompt if not already set up
         if !hasCompletedInitialSetup {
@@ -155,8 +153,7 @@ class BezelStorageManager: ObservableObject {
         case .alertFirstButtonReturn:
             // Library folder (default)
             storageMode = .libraryRelative
-            UserDefaults.standard.set(BezelStorageMode.libraryRelative.rawValue, 
-                                      forKey: BezelUserDefaultsKeys.storageMode)
+            AppSettings.set(BezelUserDefaultsKeys.storageMode, value: BezelStorageMode.libraryRelative.rawValue)
             
         case .alertSecondButtonReturn:
             // Custom folder
@@ -169,33 +166,28 @@ class BezelStorageManager: ObservableObject {
             if panel.runModal() == .OK, let url = panel.url {
                 storageMode = .customFolder
                 customFolderPath = url
-                UserDefaults.standard.set(BezelStorageMode.customFolder.rawValue,
-                                          forKey: BezelUserDefaultsKeys.storageMode)
-                UserDefaults.standard.set(url.path,
-                                          forKey: BezelUserDefaultsKeys.customFolderPath)
+                AppSettings.set(BezelUserDefaultsKeys.storageMode, value: BezelStorageMode.customFolder.rawValue)
+                AppSettings.set(BezelUserDefaultsKeys.customFolderPath, value: url.path)
             } else {
                 // User cancelled, fall back to internal
                 storageMode = .internalManaged
-                UserDefaults.standard.set(BezelStorageMode.internalManaged.rawValue,
-                                          forKey: BezelUserDefaultsKeys.storageMode)
+                AppSettings.set(BezelUserDefaultsKeys.storageMode, value: BezelStorageMode.internalManaged.rawValue)
             }
             
         case .alertThirdButtonReturn:
             // Internal
             storageMode = .internalManaged
-            UserDefaults.standard.set(BezelStorageMode.internalManaged.rawValue,
-                                      forKey: BezelUserDefaultsKeys.storageMode)
+            AppSettings.set(BezelUserDefaultsKeys.storageMode, value: BezelStorageMode.internalManaged.rawValue)
             
         default:
             // Default to library relative
             storageMode = .libraryRelative
-            UserDefaults.standard.set(BezelStorageMode.libraryRelative.rawValue,
-                                      forKey: BezelUserDefaultsKeys.storageMode)
+            AppSettings.set(BezelUserDefaultsKeys.storageMode, value: BezelStorageMode.libraryRelative.rawValue)
         }
         
         // Mark setup as complete
         hasCompletedInitialSetup = true
-        UserDefaults.standard.set(true, forKey: BezelUserDefaultsKeys.initialSetupComplete)
+        AppSettings.setBool(BezelUserDefaultsKeys.initialSetupComplete, value: true)
         
         do {
             try ensureDirectoriesExist()
@@ -216,7 +208,7 @@ class BezelStorageManager: ObservableObject {
         guard libraryFolderCount > 1 else { return }
         
         // Check if we already prompted for this library count
-        let lastCount = UserDefaults.standard.integer(forKey: BezelUserDefaultsKeys.lastPromptedLibraryCount)
+        let lastCount = AppSettings.getInt(BezelUserDefaultsKeys.lastPromptedLibraryCount, defaultValue: 0)
         guard libraryFolderCount > lastCount else { return }
         
         let currentLocation = bezelRootDirectory.path
@@ -240,8 +232,7 @@ class BezelStorageManager: ObservableObject {
         switch response {
         case .alertFirstButtonReturn:
             // Keep current - update last prompted count
-            UserDefaults.standard.set(libraryFolderCount,
-                                      forKey: BezelUserDefaultsKeys.lastPromptedLibraryCount)
+            AppSettings.setInt(BezelUserDefaultsKeys.lastPromptedLibraryCount, value: libraryFolderCount)
             
         case .alertSecondButtonReturn:
             let panel = NSOpenPanel()
@@ -254,10 +245,8 @@ class BezelStorageManager: ObservableObject {
                 try? await migrateBezels(to: newURL)
                 storageMode = .customFolder
                 customFolderPath = newURL
-                UserDefaults.standard.set(BezelStorageMode.customFolder.rawValue,
-                                          forKey: BezelUserDefaultsKeys.storageMode)
-                UserDefaults.standard.set(newURL.path,
-                                          forKey: BezelUserDefaultsKeys.customFolderPath)
+                AppSettings.set(BezelUserDefaultsKeys.storageMode, value: BezelStorageMode.customFolder.rawValue)
+                AppSettings.set(BezelUserDefaultsKeys.customFolderPath, value: newURL.path)
             }
             
         case .alertThirdButtonReturn:
@@ -265,9 +254,8 @@ class BezelStorageManager: ObservableObject {
             try? await migrateBezels(to: internalDir)
             storageMode = .internalManaged
             customFolderPath = nil
-            UserDefaults.standard.set(BezelStorageMode.internalManaged.rawValue,
-                                      forKey: BezelUserDefaultsKeys.storageMode)
-            UserDefaults.standard.removeObject(forKey: BezelUserDefaultsKeys.customFolderPath)
+            AppSettings.set(BezelUserDefaultsKeys.storageMode, value: BezelStorageMode.internalManaged.rawValue)
+            AppSettings.removeObject(forKey: BezelUserDefaultsKeys.customFolderPath)
             
         default:
             break
@@ -429,16 +417,3 @@ class BezelStorageManager: ObservableObject {
     }
 }
 
-// MARK: - UserDefaults Extensions
-
-extension UserDefaults {
-    var bezelStorageMode: BezelStorageMode {
-        get {
-            let raw = string(forKey: BezelUserDefaultsKeys.storageMode)
-            return BezelStorageMode(rawValue: raw ?? "") ?? .libraryRelative
-        }
-        set {
-            set(newValue.rawValue, forKey: BezelUserDefaultsKeys.storageMode)
-        }
-    }
-}

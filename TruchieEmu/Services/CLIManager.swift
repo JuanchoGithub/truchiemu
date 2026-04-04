@@ -288,11 +288,11 @@ class CLIManager: ObservableObject {
         
         // Apply auto-load/save settings
         if options.autoLoad {
-            UserDefaults.standard.set(true, forKey: "auto_load_on_start")
+            AppSettings.setBool("auto_load_on_start", value: true)
             LoggerService.debug(category: "CLI", "Auto-load enabled")
         }
         if options.autoSave {
-            UserDefaults.standard.set(true, forKey: "auto_save_on_exit")
+            AppSettings.setBool("auto_save_on_exit", value: true)
             LoggerService.debug(category: "CLI", "Auto-save enabled")
         }
         
