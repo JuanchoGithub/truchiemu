@@ -1210,6 +1210,18 @@ static NSString * _Nullable g_optionsDylibPath = nil;
     return g_currentRotation;
 }
 
++ (float)aspectRatio {
+    if (g_instance) {
+        float ar = g_instance->_avInfo.geometry.aspect_ratio;
+        // When aspect_ratio is <= 0, libretro expects the frontend to compute it from base_width/base_height
+        if (ar <= 0.0f && g_instance->_avInfo.geometry.base_height > 0) {
+            ar = (float)g_instance->_avInfo.geometry.base_width / (float)g_instance->_avInfo.geometry.base_height;
+        }
+        return ar;
+    }
+    return 0.0f; // 0 signals: fall back to pixel dimensions
+}
+
 /* ── Core Options Accessors ── */
 static dispatch_queue_t g_optAccessQueue;
 static dispatch_once_t g_optAccessQueueOnce;

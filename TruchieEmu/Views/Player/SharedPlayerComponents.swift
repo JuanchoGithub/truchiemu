@@ -1417,18 +1417,23 @@ class StandaloneGameWindowController: NSWindowController, NSWindowDelegate, Obse
             if let pipeline = pipeline {
                 if let frameTex = runner.currentFrameTexture {
                     if let enc = cmdBuffer.makeRenderCommandEncoder(descriptor: descriptor) {
-                        // ASPECT RATIO — use actual game dimensions, accounting for rotation
+                        // ASPECT RATIO — use core-provided aspect ratio from retro_system_av_info
+                        // when available (libretro uses <= 0 to signal "compute from base_width/base_height")
                         let viewWidth = view.drawableSize.width
                         let viewHeight = view.drawableSize.height
                         let isRotated = (runner.currentFrameRotation == 1 || runner.currentFrameRotation == 3)
                         let frameW = CGFloat(frameTex.width)
                         let frameH = CGFloat(frameTex.height)
                         let targetAspect: CGFloat
-                        if isRotated {
-                            // For 90°/270° rotated games, swap width/height for display calculations
-                            targetAspect = frameH / frameW
+                        
+                        // Try core-provided aspect ratio first (preferred for N64, PS1, etc.)
+                        let coreAspect = LibretroBridgeSwift.aspectRatio()
+                        if coreAspect > 0.0 {
+                            // Core provided a valid aspect ratio — use it directly
+                            targetAspect = isRotated ? (1.0 / CGFloat(coreAspect)) : CGFloat(coreAspect)
                         } else {
-                            targetAspect = frameW / frameH
+                            // Fall back to computing from pixel dimensions
+                            targetAspect = isRotated ? (frameH / frameW) : (frameW / frameH)
                         }
                         var drawWidth = viewWidth
                         var drawHeight = viewWidth / targetAspect

@@ -34,6 +34,13 @@ class LibretroBridgeSwift {
         return Int(LibretroBridge.currentRotation())
     }
 
+    // MARK: - Geometry
+    /// Returns the core-provided display aspect ratio from retro_system_av_info.
+    /// Returns 0 when no core is loaded or the value should be computed from pixel dimensions.
+    static func aspectRatio() -> Float {
+        return LibretroBridge.aspectRatio()
+    }
+
     static func saveState() {
         LibretroBridge.saveState()
     }
