@@ -520,7 +520,7 @@ class ROMLibrary: ObservableObject {
 
     private func restoreLibraryAccess() {
         let folders = DatabaseManager.shared.loadLibraryFolders()
-        for (urlPath, bookmarkData) in folders {
+        for (_, bookmarkData) in folders {
             var stale = false
             if let url = try? URL(resolvingBookmarkData: bookmarkData, options: .withSecurityScope, relativeTo: nil, bookmarkDataIsStale: &stale) {
                 _ = url.startAccessingSecurityScopedResource()

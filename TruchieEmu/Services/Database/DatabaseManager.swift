@@ -175,7 +175,7 @@ final class DatabaseManager {
         guard openRc == SQLITE_OK, let backupDb = backupDb else { return }
         defer { sqlite3_close(backupDb) }
 
-        var backup: OpaquePointer? = sqlite3_backup_init(backupDb, "main", db, "main")
+        let backup: OpaquePointer? = sqlite3_backup_init(backupDb, "main", db, "main")
         guard let backup = backup else { return }
 
         let stepRc = sqlite3_backup_step(backup, -1)
@@ -233,7 +233,7 @@ final class DatabaseManager {
         case let d as Float:
             sqlite3_bind_double(stmt, idx, Double(d))
         case let data as Data:
-            data.withUnsafeBytes { ptr in
+            _ = data.withUnsafeBytes { ptr in
                 sqlite3_bind_blob(stmt, idx, ptr.baseAddress, Int32(data.count), SQLITE_TRANSIENT)
             }
         case is NSNull, .none:
@@ -291,7 +291,7 @@ final class DatabaseManager {
         queue.sync { () -> [T] in
             guard let db = db else { return [] }
             return _query(db: db, sql: sql, bindings: bindings, handler: handler)
-        } ?? []
+        }
     }
 
     private func _query<T>(db: OpaquePointer, sql: String, bindings: [Any?], handler: (OpaquePointer) -> T?) -> [T] {
@@ -476,7 +476,7 @@ final class DatabaseManager {
     }
 
     private func _saveROMs(_ roms: [ROMRow]) {
-        guard let db = db else { return }
+        guard db != nil else { return }
 
         let sql = "INSERT OR REPLACE INTO roms (id, name, path, system_id, box_art_path, is_favorite, last_played, total_playtime, times_played, selected_core_id, custom_name, use_custom_core, metadata_json, is_bios, is_hidden, category, crc32, thumbnail_system_id, screenshot_paths_json, settings_json, is_identified) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)"
         
@@ -564,7 +564,7 @@ final class DatabaseManager {
     }
 
     private func _saveLibraryFolders(_ folders: [LibraryFolderRow]) {
-        guard let db = db else { return }
+        guard db != nil else { return }
         let sql = """
             INSERT INTO library_folders (url_path, bookmark_data)
             VALUES (?, ?)
@@ -763,7 +763,7 @@ final class DatabaseManager {
     }
 
     private func _upsertMetadataEntry(_ row: MetadataRowInt) {
-        guard let db = db else { return }
+        guard db != nil else { return }
         let sql = """
             INSERT INTO rom_metadata (path_key, crc32, title, year, developer, publisher, genre, players, description, rating, thumbnail_system_id, box_art_path, title_screen_path, screenshot_paths_json, custom_core_id)
             VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)

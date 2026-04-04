@@ -58,7 +58,7 @@ final class MetadataSyncCoordinator: ObservableObject {
                 active += 1
             }
 
-            for await (ok, name) in group {
+            for await (_, name) in group {
                 active -= 1
                 completed += 1
                 let frac = Double(completed) / max(total, 1)
