@@ -357,7 +357,13 @@ struct LibraryGridView: View {
                 }
 
                 // Zoom slider
-                Slider(value: $continuousZoom, in: 0...1, step: 1.0/7.0)
+                Slider(value: Binding(
+                    get: { continuousZoom },
+                    set: { newValue in
+                        continuousZoom = newValue
+                        columnCount = max(1, min(8, Int(round((1.0 - newValue) * 7.0) + 1)))
+                    }
+                ), in: 0...1, step: 1.0/7.0)
                     .frame(width: 120)
                     .help("Zoom level")
 
