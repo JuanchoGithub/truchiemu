@@ -266,10 +266,9 @@ struct CoreDownloadSheet: View {
     }
 
     private var coreDetailsCard: some View {
-        let meta = selectedCoreEntry.metadata
         VStack(alignment: .leading, spacing: 8) {
-            if !meta.description.isEmpty {
-                Text(meta.description)
+            if !selectedCoreEntry.metadata.description.isEmpty {
+                Text(selectedCoreEntry.metadata.description)
                     .font(.callout).foregroundColor(.secondary)
                     .lineLimit(3)
             }
