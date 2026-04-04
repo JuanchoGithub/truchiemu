@@ -574,6 +574,16 @@ struct XBRZUniforms {
     var outputSize: SIMD4<Float>
 }
 
+/// Dot Matrix LCD uniforms (48 bytes) - matches DotMatrixLCDUniforms in all_shaders.metal
+struct DotMatrixLCDUniforms {
+    var dotOpacity: Float
+    var metallicIntensity: Float
+    var specularShininess: Float
+    var colorBoost: Float
+    var sourceSize: SIMD4<Float>
+    var outputSize: SIMD4<Float>
+}
+
 // Legacy alias for CRT passthrough
 typealias ShaderUniforms = CRTUniforms
 
@@ -1345,6 +1355,7 @@ class StandaloneGameWindowController: NSWindowController, NSWindowDelegate, Obse
             case "CRTTest": result = "fragmentCRTTest"
             case "LCDGrid": result = "fragmentLCDGrid"
             case "VibrantLCD": result = "fragmentVibrantLCD"
+            case "DotMatrixLCD": result = "fragmentDotMatrixLCD"
             case "EdgeSmooth": result = "fragmentEdgeSmooth"
             case "Composite": result = "fragmentComposite"
             case "Passthrough": result = "fragmentPassthrough"
@@ -1652,6 +1663,18 @@ class StandaloneGameWindowController: NSWindowController, NSWindowDelegate, Obse
                                 outputSize: SIMD4<Float>(vpW, vpH, 0.0, 0.0)
                             )
                             enc.setFragmentBytes(&u, length: MemoryLayout<HandheldLCDUniforms>.stride, index: 0)
+                        case "fragmentDotMatrixLCD":
+                            // Use preset defaults for all uniforms
+                            let colorB = getUniform("colorBoost", fallback: 1.0)
+                            var u = DotMatrixLCDUniforms(
+                                dotOpacity: getUniform("dotOpacity", fallback: 0.85),
+                                metallicIntensity: getUniform("metallicIntensity", fallback: 0.5),
+                                specularShininess: getUniform("specularShininess", fallback: 8.0),
+                                colorBoost: colorB,
+                                sourceSize: SIMD4<Float>(fw, fh, 1.0/fw, 1.0/fh),
+                                outputSize: SIMD4<Float>(vpW, vpH, 0.0, 0.0)
+                            )
+                            enc.setFragmentBytes(&u, length: MemoryLayout<DotMatrixLCDUniforms>.stride, index: 0)
                         default:
                             // Use preset defaults for unknown shaders
                             let colorB = getUniform("colorBoost", fallback: 1.0)
@@ -1714,7 +1737,7 @@ class StandaloneGameWindowController: NSWindowController, NSWindowDelegate, Obse
                 }
                 
                 // Try individual shader files as last resort
-                let shaderFiles = ["CRTFilter", "CRTTest", "LCDGrid", "VibrantLCD", "EdgeSmooth", "Composite", "Passthrough"]
+                let shaderFiles = ["CRTFilter", "CRTTest", "LCDGrid", "VibrantLCD", "DotMatrixLCD", "EdgeSmooth", "Composite", "Passthrough"]
                 for file in shaderFiles {
                     let filePath = (bundlePath as NSString).appendingPathComponent("\(file).metal")
                     if let source = try? String(contentsOfFile: filePath, encoding: .utf8) {

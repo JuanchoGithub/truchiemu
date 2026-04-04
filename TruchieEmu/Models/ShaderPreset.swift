@@ -184,6 +184,29 @@ extension ShaderPreset {
             description: "No post-processing. Integer-scaled raw pixels with nearest-neighbor filtering.",
             recommendedSystems: ["nes", "gb", "snes", "genesis", "scummvm"]
         ),
+        
+        // Dot Matrix LCD (Game Boy metallic dot-matrix with shiny grid)
+        ShaderPreset(
+            id: "builtin-dot-matrix",
+            name: "Dot Matrix LCD",
+            shaderType: .lcd,
+            passes: [
+                ShaderPass(
+                    shaderFile: "DotMatrixLCD",
+                    filter: .nearest,
+                    scaleX: 1.0, scaleY: 1.0,
+                    scaleTypeX: .viewport, scaleTypeY: .viewport
+                )
+            ],
+            globalUniforms: [
+                ShaderUniform(name: "dotOpacity", defaultValue: 0.85, minValue: 0.0, maxValue: 1.0),
+                ShaderUniform(name: "metallicIntensity", defaultValue: 0.5, minValue: 0.0, maxValue: 1.0),
+                ShaderUniform(name: "specularShininess", defaultValue: 8.0, minValue: 1.0, maxValue: 32.0),
+                ShaderUniform(name: "colorBoost", defaultValue: 1.1, minValue: 0.5, maxValue: 2.0),
+            ],
+            description: "Game Boy-style dot-matrix LCD with metallic grid, specular highlights, and shiny pixel separators.",
+            recommendedSystems: ["gb", "gbc", "gg", "sms"]
+        ),
     ]
     
     /// All available presets (built-in only)
