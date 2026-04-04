@@ -42,16 +42,21 @@ struct CoreDownloadSheet: View {
         }
     }
 
-    /// All cores for the target system — installed + downloadable, same logic as CorePickerView and SystemCoresView
+    /// All cores for the target system — installed + downloadable, same logic as CorePickerView.
+    /// Always includes the pending.coreInfo guaranteed minimum, even when availableCores
+    /// hasn't finished the async buildbot fetch and returns empty.
     private var allCoresForSystem: [CoreEntry] {
+        // Always seed with the pending core — it was the explicitly requested core.
+        var result: [CoreEntry] = [
+            CoreEntry(id: pending.coreInfo.coreID, kind: .downloadable(pending.coreInfo))
+        ]
+        var seenIDs: Set<String> = [pending.coreInfo.coreID]
+
         guard let sysID = pending.systemID,
               let system = SystemDatabase.system(forID: sysID) else {
-            return coreManager.availableCores
-                .filter { $0.systemIDs.contains { pending.coreInfo.systemIDs.contains($0) } }
-                .map { CoreEntry(id: $0.coreID, kind: .downloadable($0)) }
+            // No system match: just return the pending core seeded above.
+            return result
         }
-
-        var result: [CoreEntry] = []
         let recommendedOrder = ["mame2003_plus", "mame2010", "mame", "mame2003", "mame2000"]
 
         // Installed cores (matching Settings' installedCoresForSystem)
@@ -65,7 +70,10 @@ struct CoreDownloadSheet: View {
             return a.displayName < b.displayName
         }
         for core in sortedInstalled {
-            result.append(CoreEntry(id: core.id, kind: .installed(core)))
+            if !seenIDs.contains(core.id) {
+                result.append(CoreEntry(id: core.id, kind: .installed(core)))
+                seenIDs.insert(core.id)
+            }
         }
 
         // Downloadable cores not yet installed (matching Settings' coresForSystem minus installed)
@@ -73,6 +81,7 @@ struct CoreDownloadSheet: View {
         let downloadable = coreManager.availableCores.filter { remote in
             (remote.systemIDs.contains(system.id) || system.defaultCoreID == remote.coreID)
                 && !installedIDs.contains(remote.coreID)
+                && !seenIDs.contains(remote.coreID)
         }
         let sortedDownloadable = downloadable.sorted { a, b in
             let ai = recommendedOrder.firstIndex(of: a.coreID.replacingOccurrences(of: "_libretro", with: "")) ?? 999
