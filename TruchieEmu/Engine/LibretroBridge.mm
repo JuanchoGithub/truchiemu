@@ -291,6 +291,23 @@ static uintptr_t bridge_get_proc_address(const char *sym) {
 }
 
 // MARK: - C Callbacks
+
+// Core log callback mechanism: Swift sets this at startup to route libretro core logs
+// (e.g. LibretroDB, Bridge, Identify) through LoggerService for file persistence.
+typedef void (*CoreLogCallback)(const char *message, int level);
+static CoreLogCallback g_coreLogCallback = NULL;
+
+// Called from Swift at app startup to register the file logging callback.
+#ifdef __cplusplus
+extern "C" {
+#endif
+void RegisterCoreLogCallback(CoreLogCallback callback) {
+    g_coreLogCallback = callback;
+}
+#ifdef __cplusplus
+}
+#endif
+
 static void bridge_log_printf(enum retro_log_level level, const char *fmt, ...) {
     if (!fmt) return;
     va_list args;
@@ -303,7 +320,13 @@ static void bridge_log_printf(enum retro_log_level level, const char *fmt, ...) 
     if (format) {
         NSString *message = [[NSString alloc] initWithFormat:format arguments:args];
         if (message) {
-            // Mapping retro_log_level to our internal g_logLevel (0:Info, 1:Warn, 2:Error, 3:None)
+            // Map retro_log_level to numeric: 0=INFO, 1=DEBUG, 2=WARN, 3=ERROR
+            // Always forward to the Swift callback for file logging, regardless of g_logLevel
+            if (g_coreLogCallback) {
+                g_coreLogCallback(message.UTF8String, (int)level);
+            }
+            
+            // Also emit to console/NSLog based on filter level
             if (level >= RETRO_LOG_ERROR && g_logLevel <= 2) NSLog(@"[Core-ERR] %@", message);
             else if (level == RETRO_LOG_WARN && g_logLevel <= 1) NSLog(@"[Core-WRN] %@", message);
             else if (level <= RETRO_LOG_INFO && g_logLevel == 0) NSLog(@"[Core-INF] %@", message);

@@ -1,6 +1,29 @@
 import Foundation
 import os
 
+/// C-callable callback for routing libretro core logs into the file logger.
+/// Registered with LibretroBridge at startup so core-level logs (LibretroDB,
+/// Identify, Bridge, etc.) are written to TruchieEmu.log.
+private let g_coreLogCallback: @convention(c) (UnsafePointer<Int8>?, Int32)
+    -> Void = { message, level in
+    guard let cStr = message else { return }
+    let msg = String(cString: cStr)
+    let ts = ISO8601DateFormatter.string(from: Date(), timeZone: TimeZone.current)
+    let prefix: String
+    switch level {
+    case 3: prefix = "[Core-ERR]"   // RETRO_LOG_ERROR
+    case 2: prefix = "[Core-WRN]"   // RETRO_LOG_WARN
+    case 0: prefix = "[Core-INF]"   // RETRO_LOG_INFO
+    default: prefix = "[Core-DBG]"  // RETRO_LOG_DEBUG
+    }
+    // Always write to file (core logs are invaluable for debugging)
+    let formatted = "\(ts) \(prefix) \(msg)"
+    print(formatted)
+    LoggerService.shared.logFileQueue.async {
+        LoggerService.shared.writeToFile(formatted + "\n")
+    }
+}
+
 // MARK: - Log Level
 
 /// Log levels for the TruchieEmu logging system.
@@ -52,7 +75,7 @@ final class LoggerService: @unchecked Sendable {
     // MARK: - File Logging State
     
     private var logFileHandle: FileHandle?
-    private let logFileQueue = DispatchQueue(label: "com.truchiemu.logger", qos: .utility)
+    fileprivate let logFileQueue = DispatchQueue(label: "com.truchiemu.logger", qos: .utility)
     private let maxLogSizeBytes: Int64 = 5 * 1024 * 1024 // 5 MB
     private let maxLogAgeDays: Int = 7
     
@@ -78,6 +101,10 @@ final class LoggerService: @unchecked Sendable {
         
         // Initialize file logging
         setupFileLogging()
+        
+        // Register the C callback so libretro core logs (LibretroDB, Identify, Bridge, etc.)
+        // are routed through LoggerService and written to the log file.
+        RegisterCoreLogCallback(g_coreLogCallback)
     }
     
     // MARK: - Setup File Logging
@@ -179,6 +206,7 @@ final class LoggerService: @unchecked Sendable {
     static func extreme(category: String, _ message: String) {
         shared.log(.extreme, category: category, message: message)
     }
+    
     /// Log at WARNING level.
     static func warning(_ message: String) {
         let ts = ISO8601DateFormatter.string(from: Date(), timeZone: TimeZone.current)
@@ -188,6 +216,8 @@ final class LoggerService: @unchecked Sendable {
             shared.writeToFile(formatted + "\n")
         }
     }
+    
+    // MARK: - Core Log Bridge (exposed to C)
     
     /// Log at WARNING level with category.
     static func warning(category: String, _ message: String) {
@@ -237,7 +267,7 @@ final class LoggerService: @unchecked Sendable {
     
     // MARK: - File Writing
     
-    private func writeToFile(_ text: String) {
+    fileprivate func writeToFile(_ text: String) {
         guard let handle = logFileHandle else {
             print("[Logger] ERROR: writeToFile called but logFileHandle is nil")
             return
