@@ -1,12 +1,11 @@
 import Foundation
 import SQLite3
-import os.log
 
 /// Runs database schema migrations on first open.
 /// Migrations are executed in order and wrapped in transactions for atomicity.
 struct DatabaseMigrator {
 
-    private static let logger = Logger(subsystem: Bundle.main.bundleIdentifier ?? "TruchieEmu", category: "DBMigrator")
+    // All logging goes through LoggerService (file + console)
 
     /// All migrations in order. Add new ones here.
     private static let migrations: [(version: Int, block: (OpaquePointer) throws -> Void)] = [
@@ -16,16 +15,16 @@ struct DatabaseMigrator {
     /// Run all pending migrations on the given database handle.
     static func run(on db: OpaquePointer) {
         let currentVersion = currentVersion(db: db)
-        logger.info("Current schema version: \(currentVersion)")
-        logger.info("Target schema version: \(migrations.last?.version ?? 0)")
+        LoggerService.info(category: "DBMigrator", "Current schema version: \(currentVersion)")
+        LoggerService.info(category: "DBMigrator", "Target schema version: \(migrations.last?.version ?? 0)")
 
         for migration in migrations where migration.version > currentVersion {
-            logger.info("Running migration v\(migration.version)")
+            LoggerService.info(category: "DBMigrator", "Running migration v\(migration.version)")
             do {
                 // Each migration runs in its own transaction
                 let beginRc = runSQL(db, "BEGIN IMMEDIATE")
                 guard beginRc == SQLITE_OK else {
-                    logger.error("Failed to begin migration v\(migration.version) transaction")
+                    LoggerService.error(category: "DBMigrator", "Failed to begin migration v\(migration.version) transaction")
                     continue
                 }
 
@@ -38,17 +37,17 @@ struct DatabaseMigrator {
                 if updateRc == SQLITE_OK {
                     let commitRc = runSQL(db, "COMMIT")
                     if commitRc == SQLITE_OK {
-                        logger.info("Migration v\(migration.version) completed successfully")
+                        LoggerService.info(category: "DBMigrator", "Migration v\(migration.version) completed successfully")
                     } else {
-                        logger.error("Failed to commit migration v\(migration.version)")
+                        LoggerService.error(category: "DBMigrator", "Failed to commit migration v\(migration.version)")
                         _ = runSQL(db, "ROLLBACK")
                     }
                 } else {
-                    logger.error("Failed to update schema version for v\(migration.version)")
+                    LoggerService.error(category: "DBMigrator", "Failed to update schema version for v\(migration.version)")
                     _ = runSQL(db, "ROLLBACK")
                 }
             } catch {
-                logger.error("Migration v\(migration.version) failed: \(error.localizedDescription)")
+                LoggerService.error(category: "DBMigrator", "Migration v\(migration.version) failed: \(error.localizedDescription)")
                 _ = runSQL(db, "ROLLBACK")
             }
         }
@@ -91,8 +90,7 @@ struct DatabaseMigrator {
 /// Migrate UserDefaults -> SQLite for app settings, using the raw DB handle.
 /// This bypasses the queue sync to avoid deadlock when called from _open().
 private func migrateUserDefaultsToSQLite(on db: OpaquePointer) {
-    let logger = Logger(subsystem: Bundle.main.bundleIdentifier ?? "TruchieEmu", category: "UserDefaultsMigration")
-    logger.info("Starting UserDefaults -> SQLite migration for app settings")
+    LoggerService.info(category: "UserDefaultsMigration", "Starting UserDefaults -> SQLite migration for app settings")
 
     let simpleKeys: [String] = [
         "has_completed_onboarding", "has_completed_full_setup",
@@ -133,7 +131,7 @@ private func migrateUserDefaultsToSQLite(on db: OpaquePointer) {
     // Migrate CoreManager UserDefaults
     migrateCoreManagerUserDefaults(db)
 
-    logger.info("UserDefaults -> SQLite migration complete for app settings")
+    LoggerService.info(category: "UserDefaultsMigration", "UserDefaults -> SQLite migration complete for app settings")
 }
 
 private func settingExists(_ db: OpaquePointer, _ key: String) -> Bool {

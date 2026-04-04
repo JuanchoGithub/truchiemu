@@ -206,6 +206,26 @@ final class LoggerService: @unchecked Sendable {
     static func extreme(category: String, _ message: String) {
         shared.log(.extreme, category: category, message: message)
     }
+
+    /// Log at ERROR level (logged as .info to always appear, tagged with [ERROR]).
+    static func error(_ message: String) {
+        let ts = ISO8601DateFormatter.string(from: Date(), timeZone: TimeZone.current)
+        let formatted = "\(ts) [ERROR] [App] \(message)"
+        print(formatted)
+        shared.logFileQueue.async {
+            shared.writeToFile(formatted + "\n")
+        }
+    }
+
+    /// Log at ERROR level with a specific category (logged as .info to always appear, tagged with [ERROR]).
+    static func error(category: String, _ message: String) {
+        let ts = ISO8601DateFormatter.string(from: Date(), timeZone: TimeZone.current)
+        let formatted = "\(ts) [ERROR] [\(category)] \(message)"
+        print(formatted)
+        shared.logFileQueue.async {
+            shared.writeToFile(formatted + "\n")
+        }
+    }
     
     /// Log at WARNING level.
     static func warning(_ message: String) {

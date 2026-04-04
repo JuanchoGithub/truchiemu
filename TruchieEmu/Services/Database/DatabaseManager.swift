@@ -1,6 +1,5 @@
 import Foundation
 import SQLite3
-import os.log
 
 // MARK: - SQLite Constants
 /// SQLite destructor callback pointer for transient data.
@@ -63,7 +62,7 @@ final class DatabaseManager {
         return appSupport.appendingPathComponent("TruchieEmu/truchiemu.db", isDirectory: false)
     }
 
-    private let logger = Logger(subsystem: Bundle.main.bundleIdentifier ?? "TruchieEmu", category: "Database")
+    // All logging goes through LoggerService (file + console)
 
     // MARK: - Thread Safety
     // We use a serial dispatch queue for all operations. SQLite with WAL mode
@@ -93,13 +92,13 @@ final class DatabaseManager {
 
         if result != SQLITE_OK {
             let errMsg = sqlite3_errmsg(handle).flatMap { String(cString: $0) } ?? "Unknown error"
-            logger.error("Failed to open database: \(errMsg)")
+            LoggerService.error(category: "Database", "Failed to open database: \(errMsg)")
             sqlite3_close_v2(handle)
             // Try recovery from backup
             tryRecoverFromBackup()
         } else {
             db = handle
-            logger.info("Database opened at \(path)")
+            LoggerService.info(category: "Database", "Database opened at \(path)")
             setupDatabase()
             // Run schema migrations (this uses the db handle directly, no queue)
             DatabaseMigrator.run(on: db!)
@@ -176,15 +175,15 @@ final class DatabaseManager {
             if let str = UserDefaults.standard.string(forKey: key) {
                 _execute(db: db, sql: "INSERT OR REPLACE INTO settings (key, value) VALUES (?, ?)", bindings: [key, str])
                 UserDefaults.standard.removeObject(forKey: key)
-                logger.info("Migrated string: \(key) = \(str)")
+                LoggerService.info(category: "Database", "Migrated string: \(key) = \(str)")
             } else if let int = (UserDefaults.standard.object(forKey: key) as? NSNumber)?.intValue {
                 _execute(db: db, sql: "INSERT OR REPLACE INTO settings (key, value) VALUES (?, ?)", bindings: [key, String(int)])
                 UserDefaults.standard.removeObject(forKey: key)
-                logger.info("Migrated int: \(key) = \(int)")
+                LoggerService.info(category: "Database", "Migrated int: \(key) = \(int)")
             } else if let bool = UserDefaults.standard.object(forKey: key) as? Bool {
                 _execute(db: db, sql: "INSERT OR REPLACE INTO settings (key, value) VALUES (?, ?)", bindings: [key, bool ? "1" : "0"])
                 UserDefaults.standard.removeObject(forKey: key)
-                logger.info("Migrated bool: \(key) = \(bool)")
+                LoggerService.info(category: "Database", "Migrated bool: \(key) = \(bool)")
             }
         }
 
@@ -222,14 +221,14 @@ final class DatabaseManager {
                     let b64 = data.base64EncodedString()
                     _execute(db: db, sql: "INSERT OR REPLACE INTO settings (key, value) VALUES (?, ?)", bindings: [key, "_b64:\(b64)"])
                     UserDefaults.standard.removeObject(forKey: key)
-                    logger.info("Migrated complex data: \(key)")
+                    LoggerService.info(category: "Database", "Migrated complex data: \(key)")
                 }
             } else if let date = UserDefaults.standard.object(forKey: key) as? Date {
                 let alreadyExists: Bool = _query(db: db, sql: "SELECT 1 FROM settings WHERE key = ?", bindings: [key]) { _ in true }.first ?? false
                 if !alreadyExists {
                     _execute(db: db, sql: "INSERT OR REPLACE INTO settings (key, value) VALUES (?, ?)", bindings: [key, String(date.timeIntervalSince1970)])
                     UserDefaults.standard.removeObject(forKey: key)
-                    logger.info("Migrated date: \(key)")
+                    LoggerService.info(category: "Database", "Migrated date: \(key)")
                 }
             }
         }
@@ -240,15 +239,15 @@ final class DatabaseManager {
 
         // Enable WAL mode
         let rc1 = sqlite3_exec(db, "PRAGMA journal_mode = WAL", nil, nil, nil)
-        if rc1 == SQLITE_OK { logger.info("WAL mode enabled") }
+        if rc1 == SQLITE_OK { LoggerService.info(category: "Database", "WAL mode enabled") }
 
         // Enable foreign keys
         let rc2 = sqlite3_exec(db, "PRAGMA foreign_keys = ON", nil, nil, nil)
-        if rc2 == SQLITE_OK { logger.info("Foreign keys enabled") }
+        if rc2 == SQLITE_OK { LoggerService.info(category: "Database", "Foreign keys enabled") }
 
         // Set synchronous to NORMAL (good balance of performance and safety)
         let rc3 = sqlite3_exec(db, "PRAGMA synchronous = NORMAL", nil, nil, nil)
-        if rc3 != SQLITE_OK { logger.warning("Failed to set synchronous mode") }
+        if rc3 != SQLITE_OK { LoggerService.warning(category: "Database", "Failed to set synchronous mode") }
     }
 
     private func tryRecoverFromBackup() {
@@ -263,15 +262,15 @@ final class DatabaseManager {
             let rc = sqlite3_open_v2(databaseURL.path, &retryDB, SQLITE_OPEN_READWRITE | SQLITE_OPEN_WAL, nil)
             if rc == SQLITE_OK {
                 db = retryDB
-                logger.info("Database recovered from backup")
+                LoggerService.info(category: "Database", "Database recovered from backup")
                 setupDatabase()
                 DatabaseMigrator.run(on: db!)
             } else {
-                logger.error("Failed to open backup database")
+                LoggerService.error(category: "Database", "Failed to open backup database")
                 sqlite3_close_v2(retryDB)
             }
         } catch {
-            logger.error("Recovery from backup failed: \(error.localizedDescription)")
+            LoggerService.error(category: "Database", "Recovery from backup failed: \(error.localizedDescription)")
         }
     }
 
@@ -286,9 +285,9 @@ final class DatabaseManager {
 
         let rc = sqlite3_close_v2(db)
         if rc != SQLITE_OK {
-            logger.error("Failed to close database: \(sqliteErrorString(rc))")
+            LoggerService.error(category: "Database", "Failed to close database: \(sqliteErrorString(rc))")
         } else {
-            logger.info("Database closed")
+            LoggerService.info(category: "Database", "Database closed")
         }
         self.db = nil
     }
@@ -314,9 +313,9 @@ final class DatabaseManager {
         sqlite3_backup_finish(backup)
 
         if stepRc == SQLITE_OK {
-            logger.info("Database backup created")
+            LoggerService.info(category: "Database", "Database backup created")
         } else {
-            logger.warning("Backup failed with error \(stepRc)")
+            LoggerService.warning(category: "Database", "Backup failed with error \(stepRc)")
             try? fm.removeItem(at: backupURL)
         }
     }
@@ -343,7 +342,7 @@ final class DatabaseManager {
         var stmt: OpaquePointer?
         let rc = sqlite3_prepare_v2(db, sql, -1, &stmt, nil)
         guard rc == SQLITE_OK, let stmt = stmt else {
-            logger.error("Failed to prepare: \(sql) - \(sqliteErrorString(rc))")
+            LoggerService.error(category: "Database", "Failed to prepare: \(sql) - \(sqliteErrorString(rc))")
             return nil
         }
         return stmt
@@ -414,7 +413,7 @@ final class DatabaseManager {
         for (i, val) in bindings.enumerated() { bind(val, to: stmt, at: Int32(i)) }
         let rc = sqlite3_step(stmt)
         sqlite3_finalize(stmt)
-        if rc != SQLITE_DONE { logger.warning("Execute failed: \(sql) (\(sqliteErrorString(rc)))") }
+        if rc != SQLITE_DONE { LoggerService.warning(category: "Database", "Execute failed: \(sql) (\(sqliteErrorString(rc)))") }
     }
 
     // MARK: - Public API: Query
@@ -542,11 +541,11 @@ final class DatabaseManager {
                 try block()
                 let commitRc = sqlite3_exec(db, "COMMIT", nil, nil, nil)
                 if commitRc != SQLITE_OK {
-                    logger.error("Failed to commit: \(sqliteErrorString(commitRc))")
+                    LoggerService.error(category: "Database", "Failed to commit: \(sqliteErrorString(commitRc))")
                     _ = sqlite3_exec(db, "ROLLBACK", nil, nil, nil)
                 }
             } catch {
-                logger.error("Transaction rolled back: \(error.localizedDescription)")
+                LoggerService.error(category: "Database", "Transaction rolled back: \(error.localizedDescription)")
                 _ = sqlite3_exec(db, "ROLLBACK", nil, nil, nil)
             }
         }
@@ -643,7 +642,7 @@ final class DatabaseManager {
 
             let rc = sqlite3_step(stmt)
             if rc != SQLITE_DONE {
-                logger.warning("Failed to upsert ROM \(rom.name) at \(rom.path): \(sqliteErrorString(rc))")
+                LoggerService.warning(category: "Database", "Failed to upsert ROM \(rom.name) at \(rom.path): \(sqliteErrorString(rc))")
             }
         }
     }
@@ -717,7 +716,7 @@ final class DatabaseManager {
             sqlite3_bind_blob(stmt, 2, (folder.bookmarkData as NSData).bytes, Int32(folder.bookmarkData.count), SQLITE_TRANSIENT)
             let rc = sqlite3_step(stmt)
             if rc != SQLITE_DONE {
-                logger.warning("Failed to save library folder \(folder.urlPath): \(sqliteErrorString(rc))")
+                LoggerService.warning(category: "Database", "Failed to save library folder \(folder.urlPath): \(sqliteErrorString(rc))")
             }
         }
     }
@@ -749,7 +748,7 @@ final class DatabaseManager {
             sqlite3_bind_blob(stmt, 2, (placeholder as NSData).bytes, Int32(placeholder.count), SQLITE_TRANSIENT)
             let rc = sqlite3_step(stmt)
             if rc != SQLITE_DONE {
-                logger.warning("Failed to save library folder path \(path): \(sqliteErrorString(rc))")
+                LoggerService.warning(category: "Database", "Failed to save library folder path \(path): \(sqliteErrorString(rc))")
             }
         }
     }
@@ -758,13 +757,13 @@ final class DatabaseManager {
     func loadLibraryFolders() -> [(urlPath: String, bookmarkData: Data)] {
         queue.sync { () -> [(String, Data)] in
             guard let db = db else {
-                logger.error("loadLibraryFolders: database handle is nil")
+                LoggerService.error(category: "Database", "loadLibraryFolders: database handle is nil")
                 return []
             }
             let results = _query(db: db, sql: "SELECT url_path, bookmark_data FROM library_folders", bindings: []) { stmt in
                 return self.loadLibraryFolderRowFrom(stmt: stmt)
             }
-            logger.info("loadLibraryFolders: \(results.count) entries loaded, db handle valid")
+            LoggerService.info(category: "Database", "loadLibraryFolders: \(results.count) entries loaded, db handle valid")
             return results
         }
     }
@@ -775,12 +774,12 @@ final class DatabaseManager {
         let data = columnData(stmt: stmt, index: 1)
         if path == nil {
             let pathType = sqlite3_column_type(stmt, 0)
-            logger.warning("loadLibraryFolders: url_path is nil (columnType=\(pathType))")
+            LoggerService.warning(category: "Database", "loadLibraryFolders: url_path is nil (columnType=\(pathType))")
         }
         if data == nil {
             let dataType = sqlite3_column_type(stmt, 1)
             let dataLen = sqlite3_column_bytes(stmt, 1)
-            logger.warning("loadLibraryFolders: bookmark_data is nil or empty (columnType=\(dataType), bytes=\(dataLen))")
+            LoggerService.warning(category: "Database", "loadLibraryFolders: bookmark_data is nil or empty (columnType=\(dataType), bytes=\(dataLen))")
         }
         guard let path = path, let data = data else { return nil }
         return (path, data)
@@ -824,7 +823,7 @@ final class DatabaseManager {
             sqlite3_bind_double(stmt, 3, sig.modTime)
             let rc = sqlite3_step(stmt)
             if rc != SQLITE_DONE {
-                logger.warning("Failed to save file index entry for \(path): \(sqliteErrorString(rc))")
+                LoggerService.warning(category: "Database", "Failed to save file index entry for \(path): \(sqliteErrorString(rc))")
             }
         }
     }
@@ -886,7 +885,7 @@ final class DatabaseManager {
 
             let rc = sqlite3_step(stmt)
             if rc != SQLITE_DONE {
-                logger.warning("Migration: failed to insert ROM: \(sqliteErrorString(rc))")
+                LoggerService.warning(category: "Database", "Migration: failed to insert ROM: \(sqliteErrorString(rc))")
             }
         }
     }
@@ -997,7 +996,7 @@ final class DatabaseManager {
 
         let rc = sqlite3_step(stmt)
         if rc != SQLITE_DONE {
-            logger.warning("Failed to upsert metadata for \(row.pathKey)")
+            LoggerService.warning(category: "Database", "Failed to upsert metadata for \(row.pathKey)")
         }
     }
 

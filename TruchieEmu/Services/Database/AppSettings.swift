@@ -1,16 +1,15 @@
 import Foundation
-import os.log
 
 /// AppSettings provides a persistent key-value store backed by SQLite.
 /// This replaces UserDefaults for application data, ensuring durability especially during CLI launches.
 enum AppSettings {
     private static let db = DatabaseManager.shared
-    private static let logger = Logger(subsystem: Bundle.main.bundleIdentifier ?? "TruchieEmu", category: "AppSettings")
+    // All logging goes through LoggerService (file + console)
 
     // MARK: - One-time migration from UserDefaults to SQLite
 
     static func migrateAllUserDefaults() {
-        logger.info("Starting UserDefaults -> SQLite migration for app settings")
+        LoggerService.info(category: "AppSettings", "Starting UserDefaults -> SQLite migration for app settings")
 
         // Simple key-value settings (primitives)
         let simpleKeys: [String] = [
@@ -67,7 +66,7 @@ enum AppSettings {
         // Complex data types (stored as base64 in settings table)
         migrateComplexSettings()
 
-        logger.info("UserDefaults -> SQLite migration complete for app settings")
+        LoggerService.info(category: "AppSettings", "UserDefaults -> SQLite migration complete for app settings")
     }
 
     private static func migrateComplexSettings() {
@@ -97,32 +96,32 @@ enum AppSettings {
 
         if let str = UserDefaults.standard.string(forKey: key) {
             db.setSetting(key, value: str)
-            logger.info("Migrated string: \(key) = \(str)")
+            LoggerService.info(category: "AppSettings", "Migrated string: \(key) = \(str)")
         } else if UserDefaults.standard.object(forKey: key) != nil,
                   let int = (UserDefaults.standard.object(forKey: key) as? NSNumber)?.intValue {
             // Only migrate non-zero integers (UserDefaults defaults to 0 for missing keys)
             db.setSetting(key, value: String(int))
-            logger.info("Migrated int: \(key) = \(int)")
+            LoggerService.info(category: "AppSettings", "Migrated int: \(key) = \(int)")
         } else if UserDefaults.standard.object(forKey: key) != nil,
                   let bool = UserDefaults.standard.object(forKey: key) as? Bool {
             db.setBoolSetting(key, value: bool)
-            logger.info("Migrated bool: \(key) = \(bool)")
+            LoggerService.info(category: "AppSettings", "Migrated bool: \(key) = \(bool)")
         } else if let date = UserDefaults.standard.object(forKey: key) as? Date {
             let str = String(date.timeIntervalSince1970)
             db.setSetting(key, value: str)
-            logger.info("Migrated date: \(key)")
+            LoggerService.info(category: "AppSettings", "Migrated date: \(key)")
         } else if let data = UserDefaults.standard.data(forKey: key) {
             let b64 = data.base64EncodedString()
             db.setSetting(key, value: "_b64:\(b64)")
-            logger.info("Migrated data: \(key)")
+            LoggerService.info(category: "AppSettings", "Migrated data: \(key)")
         } else if let object = UserDefaults.standard.object(forKey: key) {
             // Try to encode as JSON if it's a property list type
             if let data = try? JSONSerialization.data(withJSONObject: object) {
                 let b64 = data.base64EncodedString()
                 db.setSetting(key, value: "_b64:\(b64)")
-                logger.info("Migrated plist object: \(key)")
+                LoggerService.info(category: "AppSettings", "Migrated plist object: \(key)")
             } else {
-                logger.warning("Cannot migrate key: \(key), type: \(type(of: object))")
+                LoggerService.warning(category: "AppSettings", "Cannot migrate key: \(key), type: \(type(of: object))")
                 return
             }
         } else {
@@ -140,24 +139,24 @@ enum AppSettings {
             let b64 = data.base64EncodedString()
             db.setSetting(key, value: "_b64:\(b64)")
             UserDefaults.standard.removeObject(forKey: key)
-            logger.info("Migrated complex data: \(key)")
+            LoggerService.info(category: "AppSettings", "Migrated complex data: \(key)")
         } else if let date = UserDefaults.standard.object(forKey: key) as? Date {
             let str = String(date.timeIntervalSince1970)
             db.setSetting(key, value: str)
             UserDefaults.standard.removeObject(forKey: key)
-            logger.info("Migrated date: \(key)")
+            LoggerService.info(category: "AppSettings", "Migrated date: \(key)")
         } else if let str = UserDefaults.standard.string(forKey: key) {
             db.setSetting(key, value: str)
             UserDefaults.standard.removeObject(forKey: key)
-            logger.info("Migrated string: \(key)")
+            LoggerService.info(category: "AppSettings", "Migrated string: \(key)")
         } else if let int = (UserDefaults.standard.object(forKey: key) as? NSNumber)?.intValue {
             db.setSetting(key, value: String(int))
             UserDefaults.standard.removeObject(forKey: key)
-            logger.info("Migrated int: \(key) = \(int)")
+            LoggerService.info(category: "AppSettings", "Migrated int: \(key) = \(int)")
         } else if let bool = UserDefaults.standard.object(forKey: key) as? Bool {
             db.setBoolSetting(key, value: bool)
             UserDefaults.standard.removeObject(forKey: key)
-            logger.info("Migrated bool: \(key) = \(bool)")
+            LoggerService.info(category: "AppSettings", "Migrated bool: \(key) = \(bool)")
         }
     }
 

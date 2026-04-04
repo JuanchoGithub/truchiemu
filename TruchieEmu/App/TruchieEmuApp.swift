@@ -8,6 +8,7 @@ struct TruchieEmuApp: App {
     // Open the database before any other component uses it.
     // This was the root cause of the blank state — the database was never opened.
     init() {
+        _ = LoggerService.shared
         DatabaseManager.shared.open()
     }
     
