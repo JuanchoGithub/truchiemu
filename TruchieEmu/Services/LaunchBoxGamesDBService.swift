@@ -399,7 +399,7 @@ class LaunchBoxGamesDBService: ObservableObject {
             BoxArtService.shared.isDownloadingBatch = true
         }
 
-        let maxConcurrent = 2 // Throttled for UI responsiveness
+        let maxConcurrent = 1 // Ultra-conservative for UI responsiveness
         var completed = 0
 
         await withTaskGroup(of: (ROM, URL?).self) { group in
@@ -432,8 +432,9 @@ class LaunchBoxGamesDBService: ObservableObject {
                 completed += 1
                 let label = "\(completedRom.displayName).png"
 
-                // Throttle: 300ms between requests to keep app responsive
-                try? await Task.sleep(nanoseconds: 300_000_000)
+                // Throttle: 750ms + yield between requests to keep app responsive
+                try? await Task.sleep(nanoseconds: 750_000_000)
+                await Task.yield()
 
                 await MainActor.run {
                     BoxArtService.shared.downloadedCount = completed
@@ -552,7 +553,7 @@ class LaunchBoxGamesDBService: ObservableObject {
         let total = allRoms.count
         guard total > 0 else { return }
 
-        let maxConcurrent = 2
+        let maxConcurrent = 1
         var completed = 0
 
         await withTaskGroup(of: (ROM, URL?).self) { group in
@@ -578,8 +579,9 @@ class LaunchBoxGamesDBService: ObservableObject {
                     updated.boxArtPath = savedURL
                     await MainActor.run { library.updateROM(updated) }
                 }
-                // Throttle: 300ms between requests to keep app responsive
-                try? await Task.sleep(nanoseconds: 300_000_000)
+                // Throttle: 750ms + yield between requests to keep app responsive
+                try? await Task.sleep(nanoseconds: 750_000_000)
+                await Task.yield()
 
                 onProgress(completed, total, completedRom.displayName)
                 if let next = iter.next() {

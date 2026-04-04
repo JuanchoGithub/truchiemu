@@ -257,7 +257,7 @@ class BoxArtService: ObservableObject {
         return http.statusCode
     }
 
-    /// Batch download from libretro CDN (throttled, 2 concurrent). Skips ROMs that already have cached art on disk.
+    /// Batch download from libretro CDN (throttled, 1 concurrent). Skips ROMs that already have cached art on disk.
     /// `onItemProgress` is invoked on the caller's executor after each finished download (`completed` 1...total).
     func batchDownloadBoxArtLibretro(
         for roms: [ROM],
@@ -280,7 +280,7 @@ class BoxArtService: ObservableObject {
             self.isDownloadingBatch = true
         }
 
-        let maxConcurrent = 2
+        let maxConcurrent = 1
         var completed = 0
         await withTaskGroup(of: (ROM, URL?).self) { group in
             var active = 0
@@ -314,6 +314,11 @@ class BoxArtService: ObservableObject {
                     }
                     active += 1
                 }
+
+                // Throttle: 500ms between each request to keep app responsive
+                try? await Task.sleep(nanoseconds: 500_000_000)
+                // Yield to give the MainActor runloop breathing room
+                await Task.yield()
             }
         }
 

@@ -26,6 +26,10 @@ final class LibraryAutomationCoordinator: ObservableObject {
 
         guard !needIdentify.isEmpty || !needArt.isEmpty else { return }
 
+        // Warm-up delay: let the UI settle after a library scan before starting background work
+        try? await Task.sleep(nanoseconds: 2_000_000_000)
+        await Task.yield()
+
         isActive = true
         defer {
             isActive = false
@@ -46,12 +50,17 @@ final class LibraryAutomationCoordinator: ObservableObject {
                 progress = done
                 statusLine = "Identifying games: \(Int(done * 100))% — Checking \(label)"
 
-                // Throttle: 300ms between identifications to keep UI responsive
-                try? await Task.sleep(nanoseconds: 300_000_000)
+                // Throttle: 500ms + yield between identifications to keep UI responsive
+                try? await Task.sleep(nanoseconds: 500_000_000)
+                await Task.yield()
             }
             progress = 1
             statusLine = "Identifying games: 100% — done"
         }
+
+        // Brief pause between phases to give the MainActor runloop time to process UI updates
+        try? await Task.sleep(nanoseconds: 500_000_000)
+        await Task.yield()
 
         // Phase 2: Box art downloads
         let artTargets = library.roms.filter { $0.needsAutomaticBoxArt }
@@ -69,6 +78,10 @@ final class LibraryAutomationCoordinator: ObservableObject {
             self.progress = frac
             self.statusLine = "Downloading box art: \(Int(frac * 100))% — \(fileLabel)"
         }
+
+        // Brief pause before LaunchBox phase
+        try? await Task.sleep(nanoseconds: 500_000_000)
+        await Task.yield()
 
         // After Libretro CDN, try LaunchBox GamesDB for remaining ROMs still missing art
         if LaunchBoxGamesDBService.shared.downloadAfterScan {
