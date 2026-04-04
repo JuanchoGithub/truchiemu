@@ -203,55 +203,92 @@ class GameLauncher: ObservableObject {
     // MARK: - Game Boy Colorization
     
     /// Apply GB colorization core options based on ROM settings.
-    /// This modifies the core options for the active core before game launch.
+    /// Supports both original Game Boy (gb) and Game Boy Color (gbc).
     private func applyGBColorizationForROM(_ rom: ROM, coreID: String) {
-        // Only apply for Game Boy (original DMG) system
-        guard rom.systemID == "gb" else { return }
+        guard rom.systemID == "gb" || rom.systemID == "gbc" else { return }
         
-        let enabled = rom.settings.gbColorizationEnabled
-        let mode = rom.settings.gbColorizationMode
-        LoggerService.debug(category: "GameLauncher", "GB Colorization: enabled=\(enabled), mode=\(mode) for \(rom.displayName) with core \(coreID)")
+        let settings = rom.settings
+        let mode = settings.gbColorizationMode
+        let colorCorrection = settings.gbColorCorrectionMode
+        let isGBCROM = rom.systemID == "gbc"
         
-        // Load existing overrides
         var overrides = CoreOptionsManager.shared.loadUserOverrides(for: coreID)
-        
-        // Determine the base option key(s) based on the core
         let coreBaseID = coreID.replacingOccurrences(of: "_libretro", with: "")
         
         if coreBaseID.contains("gambatte") {
-            // Gambatte: gambatte_gb_colorization (disabled/auto/GBC/SGB/internal/custom)
-            if enabled {
-                overrides["gambatte_gb_colorization"] = mode
-            } else {
-                overrides["gambatte_gb_colorization"] = "disabled"
-            }
+            applyGambatteOverrides(&overrides, settings: settings, mode: mode, colorCorrection: colorCorrection)
         } else if coreBaseID.contains("mgba") {
-            // mGBA: uses mgba_gb_model to determine colorization
-            // When set to "Game Boy Color", GB games get colored
-            if enabled {
-                overrides["mgba_gb_model"] = "Game Boy Color"
-            } else {
-                overrides["mgba_gb_model"] = "Game Boy"
-            }
+            applyMGBAOverrides(&overrides, settings: settings, mode: mode)
         } else if coreBaseID.contains("sameboy") {
-            // SameBoy: sameboy_model (Game Boy/Game Boy Color/Auto)
-            if enabled {
-                overrides["sameboy_model"] = "Game Boy Color"
-            } else {
-                overrides["sameboy_model"] = "Game Boy"
-            }
+            applySameBoyOverrides(&overrides, settings: settings, mode: mode, colorCorrection: colorCorrection, isGBCROM: isGBCROM)
         } else if coreBaseID.contains("gearboy") {
-            // Gearboy: gearboy_colorization
-            if enabled {
-                overrides["gearboy_colorization"] = "enabled"
-            } else {
-                overrides["gearboy_colorization"] = "disabled"
-            }
+            overrides["gearboy_colorization"] = settings.gbColorizationEnabled ? "enabled" : "disabled"
         }
         
-        // Save the overrides
         if !overrides.isEmpty {
             CoreOptionsManager.shared.saveOverride(for: coreID, values: overrides)
+        }
+    }
+    
+    private func applyGambatteOverrides(
+        _ overrides: inout [String: String],
+        settings: ROMSettings,
+        mode: String,
+        colorCorrection: String
+    ) {
+        let value = settings.gbColorizationEnabled ? mode : "disabled"
+        overrides["gambatte_gb_colorization"] = value
+        overrides["gambatte_gb_internal_palette"] = settings.gbInternalPalette
+        
+        switch colorCorrection {
+        case "gbc_only":
+            overrides["gambatte_gbc_color_correction"] = "GBC only"
+        case "always":
+            overrides["gambatte_gbc_color_correction"] = "always"
+        default:
+            overrides["gambatte_gbc_color_correction"] = "disabled"
+        }
+    }
+    
+    private func applyMGBAOverrides(
+        _ overrides: inout [String: String],
+        settings: ROMSettings,
+        mode: String
+    ) {
+        if !settings.gbColorizationEnabled {
+            overrides["mgba_gb_model"] = "Game Boy"
+        } else {
+            switch mode {
+            case "auto":  overrides["mgba_gb_model"] = "Autodetect"
+            case "gbc":   overrides["mgba_gb_model"] = "Game Boy Color"
+            case "sgb":   overrides["mgba_gb_model"] = "Super Game Boy"
+            default:      overrides["mgba_gb_model"] = "Game Boy Color"
+            }
+        }
+        overrides["mgba_sgb_borders"] = settings.gbSGBBordersEnabled ? "ON" : "OFF"
+    }
+    
+    private func applySameBoyOverrides(
+        _ overrides: inout [String: String],
+        settings: ROMSettings,
+        mode: String,
+        colorCorrection: String,
+        isGBCROM: Bool
+    ) {
+        if !settings.gbColorizationEnabled {
+            overrides["sameboy_model"] = "Game Boy"
+        } else {
+            switch mode {
+            case "auto":                           overrides["sameboy_model"] = "Auto"
+            case "gbc", "internal", "sgb", "custom": overrides["sameboy_model"] = "Game Boy Color"
+            default:                               overrides["sameboy_model"] = "Auto"
+            }
+        }
+        if isGBCROM {
+            switch colorCorrection {
+            case "disabled", "off": overrides["sameboy_color_correction_mode"] = "off"
+            default:                overrides["sameboy_color_correction_mode"] = "correct curves"
+            }
         }
     }
     

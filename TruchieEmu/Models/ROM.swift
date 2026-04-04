@@ -92,6 +92,20 @@ struct ROMSettings: Codable, Hashable {
     /// Maps to gambatte's gb_colorization, mGBA's model, sameboy's model
     var gbColorizationMode: String = "auto"
     
+    /// Internal palette selection for when colorization mode is "internal".
+    /// Used by Gambatte (gambatte_gb_internal_palette) and as fallback for other cores.
+    /// Defaults to "GB - DMG" (original green-tinted look).
+    var gbInternalPalette: String = "GB - DMG"
+    
+    /// Whether to show Super Game Boy borders for SGB-enhanced GB games.
+    /// Maps to mGBA's mgba_sgb_borders. Defaults to true.
+    var gbSGBBordersEnabled: Bool = true
+    
+    /// Color correction mode for Game Boy Color games.
+    /// Maps to gambatte's gbc_color_correction.
+    /// "gbc_only" (default) = only for GBC games, "always" = all games, "disabled" = off
+    var gbColorCorrectionMode: String = "gbc_only"
+    
     // Check if using legacy toggle-based shaders (for migration)
     var isLegacyShaderMode: Bool {
         return shaderPresetID.isEmpty

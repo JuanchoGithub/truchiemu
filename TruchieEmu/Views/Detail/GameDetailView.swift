@@ -184,6 +184,9 @@ struct GameDetailView: View {
     @State private var showImportCheatFile = false
     @State private var gbColorizationEnabled: Bool = true
     @State private var gbColorizationMode: String = "auto"
+    @State private var gbInternalPalette: String = "GB - DMG"
+    @State private var gbSGBBordersEnabled: Bool = true
+    @State private var gbColorCorrectionMode: String = "gbc_only"
 
     @State private var useCustomCore: Bool = false
     @State private var selectedCoreID: String? = nil
@@ -291,6 +294,9 @@ struct GameDetailView: View {
             selectedCoreID = currentROM.selectedCoreID ?? sysPrefs.preferredCoreID(for: currentROM.systemID ?? "") ?? system?.defaultCoreID
             gbColorizationEnabled = currentROM.settings.gbColorizationEnabled
             gbColorizationMode = currentROM.settings.gbColorizationMode
+            gbInternalPalette = currentROM.settings.gbInternalPalette
+            gbSGBBordersEnabled = currentROM.settings.gbSGBBordersEnabled
+            gbColorCorrectionMode = currentROM.settings.gbColorCorrectionMode
         }
         .onChange(of: currentROM.id) { _ in
             clearManualStatus()
@@ -744,7 +750,7 @@ struct GameDetailView: View {
             }
 
             // Game Boy Colorization (only for GB system)
-            if currentROM.systemID == "gb" {
+            if currentROM.systemID == "gb" || currentROM.systemID == "gbc" {
                 gbColorizationSection
             }
 
@@ -766,6 +772,7 @@ struct GameDetailView: View {
     private var gbColorizationSection: some View {
         ModernSectionCard(title: "Game Boy Colorization", icon: "paintpalette") {
             VStack(alignment: .leading, spacing: 12) {
+                // Enable/Disable Toggle
                 Toggle(isOn: Binding(
                     get: { gbColorizationEnabled },
                     set: { newValue in
@@ -785,36 +792,26 @@ struct GameDetailView: View {
                 if gbColorizationEnabled {
                     Divider().overlay(Color.white.opacity(0.08))
 
-                    HStack {
-                        Image(systemName: "eyedropper")
-                            .foregroundColor(.white.opacity(0.5))
-                        Text("Palette Mode")
-                            .foregroundColor(.white.opacity(0.5))
-                            .font(.caption)
+                    // Palette Mode Picker
+                    gbPaletteModeRow
 
-                        Spacer()
-
-                        Picker("Palette Mode", selection: Binding(
-                            get: { gbColorizationMode },
-                            set: { newValue in
-                                gbColorizationMode = newValue
-                                applyGBColorizationSettings()
-                            }
-                        )) {
-                            Text("Auto Select").tag("auto")
-                            Text("Game Boy Color").tag("gbc")
-                            Text("Super Game Boy").tag("sgb")
-                            Text("Game Boy Classic").tag("internal")
-                            Text("Custom Palettes").tag("custom")
-                        }
-                        .pickerStyle(.menu)
-                        .labelsHidden()
-                        .frame(width: 160)
+                    // Internal Palette Selector (shown when mode is "internal")
+                    if gbColorizationMode == "internal" {
+                        Divider().overlay(Color.white.opacity(0.08))
+                        gbInternalPaletteRow
                     }
+
+                    // SGB Borders toggle (mGBA core)
+                    Divider().overlay(Color.white.opacity(0.08))
+                    gbSGBBordersRow
+
+                    // Color Correction
+                    Divider().overlay(Color.white.opacity(0.08))
+                    gbColorCorrectionRow
 
                     Divider().overlay(Color.white.opacity(0.08))
 
-                    Text("Apply color palettes to original Game Boy (DMG) games. 'Auto' selects the best palette for each game.")
+                    Text("Apply color palettes to original Game Boy (DMG) games. 'Auto' selects the best palette for each game. 'Internal' uses a classic Game Boy or Super Game Boy palette.")
                         .font(.caption)
                         .foregroundColor(.white.opacity(0.4))
                         .lineSpacing(2)
@@ -830,12 +827,170 @@ struct GameDetailView: View {
         }
     }
 
+    // MARK: - GB Colorization Sub-Views
+
+    private var gbPaletteModeRow: some View {
+        HStack {
+            Image(systemName: "eyedropper")
+                .foregroundColor(.white.opacity(0.5))
+            Text("Palette Mode")
+                .foregroundColor(.white.opacity(0.5))
+                .font(.caption)
+
+            Spacer()
+
+            Picker("Palette Mode", selection: Binding(
+                get: { gbColorizationMode },
+                set: { newValue in
+                    gbColorizationMode = newValue
+                    applyGBColorizationSettings()
+                }
+            )) {
+                Text("Auto Select").tag("auto")
+                Text("Game Boy Color").tag("gbc")
+                Text("Super Game Boy").tag("sgb")
+                Text("Internal Palette").tag("internal")
+                Text("Custom Palettes").tag("custom")
+            }
+            .pickerStyle(.menu)
+            .labelsHidden()
+            .frame(width: 160)
+        }
+    }
+
+    private var gbInternalPaletteRow: some View {
+        HStack {
+            Image(systemName: "paintpalette")
+                .foregroundColor(.white.opacity(0.5))
+            Text("Internal Palette")
+                .foregroundColor(.white.opacity(0.5))
+                .font(.caption)
+
+            Spacer()
+
+            Picker("Internal Palette", selection: Binding(
+                get: { gbInternalPalette },
+                set: { newValue in
+                    gbInternalPalette = newValue
+                    applyGBColorizationSettings()
+                }
+            )) {
+                // GB palettes
+                Section(header: Text("Game Boy")) {
+                    Text("GB - DMG (Green)").tag("GB - DMG")
+                    Text("GB - Pocket").tag("GB - Pocket")
+                    Text("GB - Light").tag("GB - Light")
+                }
+                // GBC palettes
+                Section(header: Text("Game Boy Color")) {
+                    Text("GBC - Blue").tag("GBC - Blue")
+                    Text("GBC - Brown").tag("GBC - Brown")
+                    Text("GBC - Dark Blue").tag("GBC - Dark Blue")
+                    Text("GBC - Dark Brown").tag("GBC - Dark Brown")
+                    Text("GBC - Dark Green").tag("GBC - Dark Green")
+                    Text("GBC - Grayscale").tag("GBC - Grayscale")
+                    Text("GBC - Green").tag("GBC - Green")
+                    Text("GBC - Inverted").tag("GBC - Inverted")
+                    Text("GBC - Orange").tag("GBC - Orange")
+                    Text("GBC - Pastel Mix").tag("GBC - Pastel Mix")
+                    Text("GBC - Red").tag("GBC - Red")
+                    Text("GBC - Yellow").tag("GBC - Yellow")
+                }
+                // SGB palettes
+                Section(header: Text("Super Game Boy")) {
+                    Text("SGB - 1A").tag("SGB - 1A")
+                    Text("SGB - 1B").tag("SGB - 1B")
+                    Text("SGB - 2A").tag("SGB - 2A")
+                    Text("SGB - 2B").tag("SGB - 2B")
+                    Text("SGB - 3A").tag("SGB - 3A")
+                    Text("SGB - 3B").tag("SGB - 3B")
+                    Text("SGB - 4A").tag("SGB - 4A")
+                    Text("SGB - 4B").tag("SGB - 4B")
+                }
+                // Special palettes
+                Section(header: Text("Special")) {
+                    Text("Special 1").tag("Special 1")
+                    Text("Special 2").tag("Special 2")
+                    Text("Special 3").tag("Special 3")
+                }
+            }
+            .pickerStyle(.menu)
+            .labelsHidden()
+            .frame(width: 180)
+        }
+    }
+
+    private var gbSGBBordersRow: some View {
+        VStack(alignment: .leading, spacing: 4) {
+            HStack {
+                Image(systemName: "rectangle.on.rectangle")
+                    .foregroundColor(.white.opacity(0.5))
+                Text("Super Game Boy Borders")
+                    .foregroundColor(.white.opacity(0.5))
+                    .font(.caption)
+                Spacer()
+                Text("mGBA core")
+                    .foregroundColor(.white.opacity(0.3))
+                    .font(.caption2)
+            }
+            Text("Show decorative borders on SGB-enhanced games.")
+                .font(.caption2)
+                .foregroundColor(.white.opacity(0.3))
+                .padding(.leading, 24)
+            Toggle("", isOn: Binding(
+                get: { gbSGBBordersEnabled },
+                set: { newValue in
+                    gbSGBBordersEnabled = newValue
+                    applyGBColorizationSettings()
+                }
+            ))
+            .toggleStyle(SwitchToggleStyle())
+            .labelsHidden()
+        }
+    }
+
+    private var gbColorCorrectionRow: some View {
+        VStack(alignment: .leading, spacing: 4) {
+            HStack {
+                Image(systemName: "sun.max")
+                    .foregroundColor(.white.opacity(0.5))
+                Text("Color Correction")
+                    .foregroundColor(.white.opacity(0.5))
+                    .font(.caption)
+
+                Spacer()
+
+                Picker("Color Correction", selection: Binding(
+                    get: { gbColorCorrectionMode },
+                    set: { newValue in
+                        gbColorCorrectionMode = newValue
+                        applyGBColorizationSettings()
+                    }
+                )) {
+                    Text("GBC Games Only").tag("gbc_only")
+                    Text("Always").tag("always")
+                    Text("Disabled").tag("disabled")
+                }
+                .pickerStyle(.menu)
+                .labelsHidden()
+                .frame(width: 160)
+            }
+            Text("Match output colors to original Game Boy Color LCD.")
+                .font(.caption2)
+                .foregroundColor(.white.opacity(0.3))
+                .padding(.leading, 24)
+        }
+    }
+
     /// Apply GB colorization settings to the ROM and save
     private func applyGBColorizationSettings() {
-        guard currentROM.systemID == "gb" else { return }
+        guard currentROM.systemID == "gb" || currentROM.systemID == "gbc" else { return }
         var updated = currentROM
         updated.settings.gbColorizationEnabled = gbColorizationEnabled
         updated.settings.gbColorizationMode = gbColorizationMode
+        updated.settings.gbInternalPalette = gbInternalPalette
+        updated.settings.gbSGBBordersEnabled = gbSGBBordersEnabled
+        updated.settings.gbColorCorrectionMode = gbColorCorrectionMode
         library.updateROM(updated)
     }
 
