@@ -807,38 +807,37 @@ struct GameDetailView: View {
                     // Palette Mode Picker
                     gbPaletteModeRow
 
-                    // Note for non-Gambatte cores
-                    if !isGambatteCore {
+                    // Internal Palette Selector (always shown, disabled for non-Gambatte cores)
+                    if gbColorizationMode == "internal" {
                         Divider().overlay(Color.white.opacity(0.08))
-                        HStack(spacing: 8) {
-                            Image(systemName: "info.circle.fill")
-                                .foregroundColor(.blue.opacity(0.8))
-                            Text("Named palettes and color correction only work with the Gambatte core.")
-                                .font(.caption)
-                                .foregroundColor(.white.opacity(0.5))
-                                .lineLimit(2)
+                        if isGambatteCore {
+                            gbInternalPaletteRow
+                        } else {
+                            gbInternalPaletteRow
+                                .opacity(0.4)
+                                .disabled(true)
+                                .help("Gambatte core only — switch to gambatte_libretro to use named palettes")
                         }
                     }
 
-                    // Internal Palette Selector (shown when mode is "internal" AND Gambatte core)
-                    if gbColorizationMode == "internal" && isGambatteCore {
-                        Divider().overlay(Color.white.opacity(0.08))
-                        gbInternalPaletteRow
-                    }
-
-                    // SGB Borders toggle (mGBA core)
+                    // SGB Borders toggle (works with mGBA)
                     Divider().overlay(Color.white.opacity(0.08))
                     gbSGBBordersRow
 
-                    // Color Correction (Gambatte only)
+                    // Color Correction (always shown, disabled for non-Gambatte cores)
+                    Divider().overlay(Color.white.opacity(0.08))
                     if isGambatteCore {
-                        Divider().overlay(Color.white.opacity(0.08))
                         gbColorCorrectionRow
+                    } else {
+                        gbColorCorrectionRow
+                            .opacity(0.4)
+                            .disabled(true)
+                            .help("Gambatte core only — switch to gambatte_libretro to use color correction")
                     }
 
                     Divider().overlay(Color.white.opacity(0.08))
 
-                    Text("Apply color palettes to original Game Boy (DMG) games. 'Auto' selects the best palette for each game. 'Internal' uses a classic Game Boy or Super Game Boy palette.")
+                    Text("Apply color palettes to original Game Boy (DMG) games. 'Auto' selects the best palette for each game. 'Internal' uses a classic Game Boy or Super Game Boy palette. Named palettes and color correction require the Gambatte core.")
                         .font(.caption)
                         .foregroundColor(.white.opacity(0.4))
                         .lineSpacing(2)
