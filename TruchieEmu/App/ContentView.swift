@@ -75,6 +75,13 @@ struct ContentView: View {
         .sheet(item: $coreManager.pendingDownload) { pending in
             CoreDownloadSheet(pending: pending)
         }
+        .onAppear {
+            // After wizard completion, start on "All Games" until at least one game has been played.
+            let hasPlayedGames = library.roms.contains { $0.lastPlayed != nil || $0.timesPlayed > 0 }
+            if !hasPlayedGames {
+                selectedFilter = .all
+            }
+        }
     }
 
     /// Shows whichever background task is currently active (library automation takes precedence).
