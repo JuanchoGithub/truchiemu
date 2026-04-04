@@ -200,23 +200,70 @@ struct CoreDownloadSheet: View {
                 }
             }
 
-            Picker(selection: $selectedCoreID) {
-                ForEach(allCoresForSystem) { entry in
-                    Text(entry.displayName).tag(entry.id)
+            ForEach(allCoresForSystem) { entry in
+                Button {
+                    selectedCoreID = entry.id
+                } label: {
+                    HStack(spacing: 10) {
+                        if entry.id == selectedCoreID {
+                            Image(systemName: "checkmark.circle.fill")
+                                .foregroundColor(.purple)
+                        } else {
+                            Image(systemName: "circle")
+                                .foregroundColor(.secondary)
+                        }
+                        VStack(alignment: .leading, spacing: 2) {
+                            HStack {
+                                Text(entry.displayName)
+                                    .fontWeight(entry.id == selectedCoreID ? .semibold : .medium)
+                                if entry.metadata.version != "?" {
+                                    Text(entry.metadata.version)
+                                        .font(.caption)
+                                        .padding(.horizontal, 6)
+                                        .padding(.vertical, 1)
+                                        .background(Color.secondary.opacity(0.12))
+                                        .cornerRadius(4)
+                                }
+                                Spacer()
+                                if entry.isInstalled {
+                                    Text("Installed")
+                                        .font(.caption2)
+                                        .foregroundColor(.green)
+                                        .padding(.horizontal, 6)
+                                        .padding(.vertical, 1)
+                                        .background(Color.green.opacity(0.12))
+                                        .cornerRadius(4)
+                                } else {
+                                    Text("Download")
+                                        .font(.caption2)
+                                        .foregroundColor(.blue)
+                                        .padding(.horizontal, 6)
+                                        .padding(.vertical, 1)
+                                        .background(Color.blue.opacity(0.12))
+                                        .cornerRadius(4)
+                                }
+                            }
+                            Text(entry.metadata.description)
+                                .font(.caption)
+                                .foregroundColor(.secondary)
+                                .lineLimit(1)
+                        }
+                    }
+                    .padding(10)
+                    .frame(maxWidth: .infinity, alignment: .leading)
+                    .background(entry.id == selectedCoreID
+                        ? Color.accentColor.opacity(0.08)
+                        : Color.secondary.opacity(0.04))
+                    .cornerRadius(10)
+                    .overlay(
+                        RoundedRectangle(cornerRadius: 10)
+                            .stroke(entry.id == selectedCoreID
+                                ? Color.accentColor.opacity(0.4)
+                                : Color.clear, lineWidth: 1)
+                    )
                 }
-            } label: {
-                HStack(spacing: 8) {
-                    Image(systemName: "cpu").foregroundColor(.secondary)
-                    Text(selectedCoreEntry.displayName)
-                        .fontWeight(.medium)
-                    Spacer()
-                }
+                .buttonStyle(.plain)
             }
-            .pickerStyle(.menu)
-            .frame(maxWidth: .infinity)
-            .padding(12)
-            .background(Color.secondary.opacity(0.08))
-            .cornerRadius(10)
 
             Text(allCoresForSystem.count == 1
                 ? "\(allCoresForSystem.count) core available for this system"
