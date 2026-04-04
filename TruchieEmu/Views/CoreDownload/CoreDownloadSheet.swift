@@ -4,21 +4,24 @@ struct CoreDownloadSheet: View {
     @EnvironmentObject var coreManager: CoreManager
     @EnvironmentObject var library: ROMLibrary
     let pending: CoreManager.PendingCoreDownload
-    
+
     @State private var selectedCoreID: String
     @State private var isDownloading = false
     @State private var downloadError: String? = nil
-    
+
     init(pending: CoreManager.PendingCoreDownload) {
         self.pending = pending
         _selectedCoreID = State(initialValue: pending.coreInfo.coreID)
     }
-    
-    /// All cores that support the target system, sorted by preference
+
+    /// Cores for the target system — uses the exact same filtering as SystemCoresView in Settings
     private var availableCoresForSystem: [RemoteCoreInfo] {
-        let systemIDs = pending.systemID.map { [$0] } ?? pending.coreInfo.systemIDs
-        var cores = coreManager.availableCores.filter { remote in
-            !remote.coreID.isEmpty && systemIDs.contains { remote.systemIDs.contains($0) }
+        guard let sysID = pending.systemID,
+              let system = SystemDatabase.system(forID: sysID) else {
+            return coreManager.availableCores.filter { $0.systemIDs.contains { pending.coreInfo.systemIDs.contains($0) } }
+        }
+        var cores = coreManager.availableCores.filter { remoteCore in
+            remoteCore.systemIDs.contains(system.id) || system.defaultCoreID == remoteCore.coreID
         }
         let recommendedOrder = ["mame2003_plus", "mame2010", "mame", "mame2003", "mame2000"]
         cores.sort { a, b in
@@ -33,48 +36,54 @@ struct CoreDownloadSheet: View {
         }
         return cores
     }
-    
+
     private var selectedCoreInfo: RemoteCoreInfo? {
         coreManager.availableCores.first { $0.coreID == selectedCoreID }
             ?? pending.coreInfo
     }
-    
+
     private var hasMultipleCores: Bool {
         availableCoresForSystem.count > 1
     }
-    
+
+    /// The pending ROM looked up reliably by UUID
+    private var pendingROM: ROM? {
+        guard let id = pending.romID else { return nil }
+        return library.roms.first { $0.id == id }
+    }
+
     var body: some View {
         VStack(alignment: .leading, spacing: 20) {
             headerSection
-            
+
             Divider()
-            
-            if let romName = pending.romName {
-                romContextBox(romName: romName)
+
+            if pendingROM != nil {
+                romContextBox
             }
-            
+
             coreSelectionSection
-            
+
             if let info = selectedCoreInfo {
                 coreDetailsCard(info)
             }
-            
+
             if let err = downloadError {
                 Label(err, systemImage: "exclamationmark.triangle")
                     .foregroundColor(.red)
                     .font(.callout)
             }
-            
+
             Divider()
-            
+
             actionButtons
         }
         .padding(28)
         .frame(width: 500)
     }
-    
+
     // MARK: - Subviews
-    
+
     private var headerSection: some View {
         HStack(spacing: 16) {
             ZStack {
@@ -94,8 +103,8 @@ struct CoreDownloadSheet: View {
             }
         }
     }
-    
-    private func romContextBox(romName: String) -> some View {
+
+    private var romContextBox: some View {
         HStack(spacing: 10) {
             Image(systemName: "gamecontroller")
                 .foregroundColor(.secondary)
@@ -103,8 +112,14 @@ struct CoreDownloadSheet: View {
                 Text("Ready to launch")
                     .font(.caption)
                     .foregroundColor(.secondary)
-                Text(romName)
-                    .font(.body.weight(.medium))
+                if let rom = pendingROM {
+                    Text(rom.displayName)
+                        .font(.body.weight(.medium))
+                } else {
+                    Text("Unknown game")
+                        .font(.body.weight(.medium))
+                        .foregroundColor(.secondary)
+                }
             }
         }
         .padding(12)
@@ -112,7 +127,7 @@ struct CoreDownloadSheet: View {
         .background(Color.secondary.opacity(0.06))
         .cornerRadius(10)
     }
-    
+
     private var coreSelectionSection: some View {
         VStack(alignment: .leading, spacing: 8) {
             HStack {
@@ -140,7 +155,7 @@ struct CoreDownloadSheet: View {
                     .cornerRadius(6)
                 }
             }
-            
+
             if hasMultipleCores {
                 Menu {
                     ForEach(availableCoresForSystem, id: \.coreID) { core in
@@ -185,7 +200,7 @@ struct CoreDownloadSheet: View {
                     .cornerRadius(10)
                 }
                 .buttonStyle(.plain)
-                
+
                 Text("\(availableCoresForSystem.count) cores available for this system")
                     .font(.caption)
                     .foregroundColor(.secondary)
@@ -211,7 +226,7 @@ struct CoreDownloadSheet: View {
             }
         }
     }
-    
+
     @ViewBuilder
     private func coreDetailsCard(_ info: RemoteCoreInfo) -> some View {
         let meta = info.metadata
@@ -239,7 +254,7 @@ struct CoreDownloadSheet: View {
         .background(Color.secondary.opacity(0.05))
         .cornerRadius(12)
     }
-    
+
     private var actionButtons: some View {
         HStack {
             Button("Cancel") {
@@ -247,9 +262,9 @@ struct CoreDownloadSheet: View {
             }
             .keyboardShortcut(.cancelAction)
             .controlSize(.large)
-            
+
             Spacer()
-            
+
             if isDownloading {
                 ProgressView()
                     .scaleEffect(0.9)
@@ -262,7 +277,7 @@ struct CoreDownloadSheet: View {
                 } label: {
                     HStack(spacing: 6) {
                         Image(systemName: "arrow.down.circle")
-                        Text(pending.romName != nil ? "Download & Launch" : "Download & Install")
+                        Text(pendingROM != nil ? "Download & Launch" : "Download & Install")
                     }
                 }
                 .buttonStyle(.borderedProminent)
@@ -272,20 +287,19 @@ struct CoreDownloadSheet: View {
             }
         }
     }
-    
+
     // MARK: - Action
-    
+
     private func startDownload() {
         guard let info = selectedCoreInfo else { return }
         isDownloading = true
         downloadError = nil
-        
+
         Task {
-            let romName = pending.romName
             let slotToLoad = pending.slotToLoad
-            
+
             await coreManager.downloadCore(info)
-            
+
             guard coreManager.isInstalled(coreID: info.coreID) else {
                 await MainActor.run {
                     isDownloading = false
@@ -293,29 +307,24 @@ struct CoreDownloadSheet: View {
                 }
                 return
             }
-            
+
             await MainActor.run {
                 isDownloading = false
-                
-                if let romName = romName {
+
+                if let rom = pendingROM {
                     coreManager.pendingDownload = nil
-                    
-                    if let rom = library.roms.first(where: { $0.displayName == romName }) {
-                        gameLauncher.launchGame(
-                            rom: rom,
-                            coreID: selectedCoreID,
-                            slotToLoad: slotToLoad,
-                            library: library
-                        )
-                    } else {
-                        LoggerService.info(category: "CoreDownload", "Core installed but could not find ROM '\(romName)' in library to auto-launch.")
-                    }
+                    gameLauncher.launchGame(
+                        rom: rom,
+                        coreID: selectedCoreID,
+                        slotToLoad: slotToLoad,
+                        library: library
+                    )
                 } else {
                     coreManager.pendingDownload = nil
                 }
             }
         }
     }
-    
+
     @StateObject private var gameLauncher = GameLauncher.shared
 }

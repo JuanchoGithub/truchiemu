@@ -852,7 +852,7 @@ struct LibraryGridView: View {
         guard let cid = coreID else { return }
         
         if !coreManager.isInstalled(coreID: cid) {
-            coreManager.requestCoreDownload(for: cid, systemID: sysID)
+            coreManager.requestCoreDownload(for: cid, systemID: sysID, romID: rom.id, slotToLoad: nil)
             return
         }
 

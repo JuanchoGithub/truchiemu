@@ -119,39 +119,39 @@ class CoreManager: ObservableObject {
 
     struct PendingCoreDownload: Identifiable, Equatable {
         static func == (lhs: PendingCoreDownload, rhs: PendingCoreDownload) -> Bool {
-            lhs.coreInfo.coreID == rhs.coreInfo.coreID && lhs.romName == rhs.romName
+            lhs.coreInfo.coreID == rhs.coreInfo.coreID && lhs.romID == rhs.romID
         }
 
         var id: String { coreInfo.coreID }
         let coreInfo: RemoteCoreInfo
 
         // Launch context — when set, the game should be auto-launched after download
-        let romName: String?
+        let romID: UUID?
         let systemID: String?
         let slotToLoad: Int?
 
-        init(coreInfo: RemoteCoreInfo, romName: String? = nil, systemID: String? = nil, slotToLoad: Int? = nil) {
+        init(coreInfo: RemoteCoreInfo, romID: UUID? = nil, systemID: String? = nil, slotToLoad: Int? = nil) {
             self.coreInfo = coreInfo
-            self.romName = romName
+            self.romID = romID
             self.systemID = systemID
             self.slotToLoad = slotToLoad
         }
 
         /// Convenience: true when launch context is provided
-        var hasLaunchContext: Bool { romName != nil && systemID != nil }
+        var hasLaunchContext: Bool { romID != nil && systemID != nil }
     }
 
     func requestCoreDownload(
         for coreID: String,
         systemID: String? = nil,
-        romName: String? = nil,
+        romID: UUID? = nil,
         slotToLoad: Int? = nil
     ) {
         // Find in available list
         if let remote = availableCores.first(where: { $0.coreID == coreID }) {
             pendingDownload = PendingCoreDownload(
                 coreInfo: remote,
-                romName: romName,
+                romID: romID,
                 systemID: systemID,
                 slotToLoad: slotToLoad
             )
@@ -167,7 +167,7 @@ class CoreManager: ObservableObject {
                                       systemIDs: systemID.map { [$0] } ?? [], displayName: displayName)
             pendingDownload = PendingCoreDownload(
                 coreInfo: info,
-                romName: romName,
+                romID: romID,
                 systemID: systemID,
                 slotToLoad: slotToLoad
             )
@@ -308,7 +308,7 @@ class CoreManager: ObservableObject {
         
         // Hardcoded capabilities for common multi-system cores
         if coreID.contains("mgba") { ids += ["gba", "gb", "gbc"] }
-        if coreID.contains("mesen") { ids += ["nes", "snes", "gb"] }
+        if coreID.contains("mesen") { ids += ["nes", "snes", "gb", "gbc"] }
         if coreID.contains("genesis_plus_gx") { ids += ["genesis", "sms", "gamegear"] }
         if coreID.contains("snes9x") { ids += ["snes"] }
         if coreID.contains("mupen64plus") || coreID.contains("parallel_n64") { ids += ["n64"] }

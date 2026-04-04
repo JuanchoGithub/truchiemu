@@ -2365,7 +2365,7 @@ struct GameDetailView: View {
         }
         
         if !coreManager.isInstalled(coreID: cid) {
-            coreManager.requestCoreDownload(for: cid, systemID: sysID)
+            coreManager.requestCoreDownload(for: cid, systemID: sysID, romID: currentROM.id, slotToLoad: slotToLoad)
             isLaunchingGame = false
             return
         }
