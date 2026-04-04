@@ -538,24 +538,100 @@ class ROMLibrary: ObservableObject {
     }
 
     private func saveSecurityScopedBookmarks() {
-        let bookmarks: [(String, Data)] = libraryFolders.compactMap { url -> (String, Data)? in
+        var bookmarkRows: [(String, Data)] = []
+        var failedPaths: [String] = []
+        
+        for url in libraryFolders {
             _ = url.startAccessingSecurityScopedResource()
-            guard let data = try? url.bookmarkData(options: .withSecurityScope, includingResourceValuesForKeys: nil, relativeTo: nil) else { return nil }
-            return (url.path, data)
+            if let data = try? url.bookmarkData(options: .withSecurityScope, includingResourceValuesForKeys: nil, relativeTo: nil) {
+                bookmarkRows.append((url.path, data))
+            } else {
+                // Bookmark creation failed (can happen for raw path URLs or sandboxed dirs).
+                // Save the path directly so the folder persists across restarts.
+                LoggerService.warning(category: "ROMLibrary", "Bookmark creation failed for \(url.path), saving via path fallback")
+                failedPaths.append(url.path)
+            }
         }
-        DatabaseManager.shared.saveLibraryFolders(bookmarks)
+        
+        // For paths that failed security-scoped bookmark creation, try creating
+        // bookmarks WITHOUT the security scope option. These still resolve correctly
+        // on next launch and don't require sandbox entitlements.
+        var allRows: [(String, Data)] = bookmarkRows
+        for path in failedPaths {
+            let url = URL(fileURLWithPath: path)
+            if let data = try? url.bookmarkData(options: [], includingResourceValuesForKeys: nil, relativeTo: nil) {
+                allRows.append((path, data))
+            } else {
+                // Bookmark creation failed entirely — save raw path with minimal placeholder.
+                // Will be restored via raw path fallback on next launch.
+                LoggerService.warning(category: "ROMLibrary", "Bookmark creation failed completely for \(path)")
+                allRows.append((path, Data([0x00, 0x00, 0x00, 0x00])))
+            }
+        }
+        
+        // Save everything in one combined operation (saveLibraryFolders does a DELETE first,
+        // so we must include ALL folder data in a single call, otherwise we'd lose entries).
+        if !allRows.isEmpty {
+            let rows = allRows.map { DatabaseManager.LibraryFolderRow(urlPath: $0.0, bookmarkData: $0.1) }
+            DatabaseManager.shared.saveLibraryFolders(rows)
+        }
     }
 
     private func restoreLibraryAccess() {
         let folders = DatabaseManager.shared.loadLibraryFolders()
-        for (_, bookmarkData) in folders {
-            var stale = false
-            if let url = try? URL(resolvingBookmarkData: bookmarkData, options: .withSecurityScope, relativeTo: nil, bookmarkDataIsStale: &stale) {
-                _ = url.startAccessingSecurityScopedResource()
-                if !libraryFolders.contains(url) {
-                    libraryFolders.append(url)
+        
+        // If loadLibraryFolders() returned empty but DB has entries corrupted,
+        // try loading paths directly as a last resort.
+        if folders.isEmpty {
+            let rawPaths = DatabaseManager.shared.loadLibraryFolderPaths()
+            if !rawPaths.isEmpty {
+                LoggerService.warning(category: "ROMLibrary", "loadLibraryFolders returned 0; falling back to \(rawPaths.count) raw folder paths")
+                for path in rawPaths {
+                    let url = URL(fileURLWithPath: path)
+                    if FileManager.default.fileExists(atPath: path) {
+                        _ = url.startAccessingSecurityScopedResource()
+                        libraryFolders.append(url)
+                    }
                 }
             }
+            // Update onboarding flag since we found folders
+            if !libraryFolders.isEmpty {
+                hasCompletedOnboarding = true
+            }
+            return
+        }
+        
+        var resolvedURLs: [URL] = []
+        
+        for (urlPath, bookmarkData) in folders {
+            var stale = false
+            // Try resolving with security scope first
+            if let url = try? URL(resolvingBookmarkData: bookmarkData, options: .withSecurityScope, relativeTo: nil, bookmarkDataIsStale: &stale) {
+                _ = url.startAccessingSecurityScopedResource()
+                resolvedURLs.append(url)
+            } else {
+                // Try without security scope as fallback
+                if let url = try? URL(resolvingBookmarkData: bookmarkData, options: [], relativeTo: nil, bookmarkDataIsStale: &stale) {
+                    _ = url.startAccessingSecurityScopedResource()
+                    resolvedURLs.append(url)
+                } else {
+                    // Both resolution methods failed — raw path fallback
+                    LoggerService.warning(category: "ROMLibrary", "Bookmark failed to resolve for \(urlPath), using raw path")
+                    let fallbackURL = URL(fileURLWithPath: urlPath)
+                    if FileManager.default.fileExists(atPath: urlPath) {
+                        _ = fallbackURL.startAccessingSecurityScopedResource()
+                        resolvedURLs.append(fallbackURL)
+                    }
+                }
+            }
+        }
+        
+        libraryFolders = resolvedURLs
+        
+        // If some bookmarks failed, persist fresh bookmarks for the recovered folders
+        if resolvedURLs.count < folders.count {
+            LoggerService.warning(category: "ROMLibrary", "" + String(folders.count - resolvedURLs.count) + " bookmarks stale; persisting fresh bookmarks")
+            saveSecurityScopedBookmarks()
         }
     }
 

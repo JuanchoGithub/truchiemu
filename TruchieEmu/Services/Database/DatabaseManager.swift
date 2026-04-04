@@ -666,15 +666,78 @@ final class DatabaseManager {
         }
     }
 
+    /// Save library folder paths directly (with minimal dummy bookmark data).
+    /// Used as fallback when security-scoped bookmarks cannot be created (e.g., sandboxed URLs).
+    /// This ensures folder persistence even when bookmark creation fails.
+    func saveLibraryFolderPaths(_ paths: [String]) {
+        queue.sync { _saveLibraryFolderPaths(paths) }
+    }
+
+    private func _saveLibraryFolderPaths(_ paths: [String]) {
+        guard let db = db else { return }
+
+        // Check which paths are already in the database
+        _execute(db: db, sql: "DELETE FROM library_folders", bindings: [])
+
+        let sql = "INSERT OR REPLACE INTO library_folders (url_path, bookmark_data) VALUES (?, ?)"
+        guard let stmt = prepare(sql) else { return }
+        defer { sqlite3_finalize(stmt) }
+
+        // Create minimal placeholder bookmark data (4 bytes) so NOT NULL constraint is satisfied
+        let placeholder = Data([0x00, 0x00, 0x00, 0x00])
+
+        for path in paths {
+            sqlite3_reset(stmt)
+            sqlite3_clear_bindings(stmt)
+            sqlite3_bind_text(stmt, 1, (path as NSString).utf8String, -1, nil)
+            sqlite3_bind_blob(stmt, 2, (placeholder as NSData).bytes, Int32(placeholder.count), SQLITE_TRANSIENT)
+            let rc = sqlite3_step(stmt)
+            if rc != SQLITE_DONE {
+                logger.warning("Failed to save library folder path \(path): \(sqliteErrorString(rc))")
+            }
+        }
+    }
+
     /// Load all library folder bookmarks.
     func loadLibraryFolders() -> [(urlPath: String, bookmarkData: Data)] {
         queue.sync { () -> [(String, Data)] in
-            guard let db = db else { return [] }
-            return _query(db: db, sql: "SELECT url_path, bookmark_data FROM library_folders", bindings: []) { stmt in
-                guard let path = self.columnString(stmt: stmt, index: 0),
-                      let data = self.columnData(stmt: stmt, index: 1) else { return nil }
-                return (path, data)
+            guard let db = db else {
+                logger.error("loadLibraryFolders: database handle is nil")
+                return []
             }
+            let results = _query(db: db, sql: "SELECT url_path, bookmark_data FROM library_folders", bindings: []) { stmt in
+                return self.loadLibraryFolderRowFrom(stmt: stmt)
+            }
+            logger.info("loadLibraryFolders: \(results.count) entries loaded, db handle valid")
+            return results
+        }
+    }
+
+    /// Parse a single library_folders row from a SQLite statement.
+    private func loadLibraryFolderRowFrom(stmt: OpaquePointer) -> (String, Data)? {
+        let path = columnString(stmt: stmt, index: 0)
+        let data = columnData(stmt: stmt, index: 1)
+        if path == nil {
+            let pathType = sqlite3_column_type(stmt, 0)
+            logger.warning("loadLibraryFolders: url_path is nil (columnType=\(pathType))")
+        }
+        if data == nil {
+            let dataType = sqlite3_column_type(stmt, 1)
+            let dataLen = sqlite3_column_bytes(stmt, 1)
+            logger.warning("loadLibraryFolders: bookmark_data is nil or empty (columnType=\(dataType), bytes=\(dataLen))")
+        }
+        guard let path = path, let data = data else { return nil }
+        return (path, data)
+    }
+
+    /// Load library folder paths only (fallback when bookmark data is corrupted or unresolvable).
+    /// This enables recovery even when security-scoped bookmarks are stale.
+    func loadLibraryFolderPaths() -> [String] {
+        queue.sync { () -> [String] in
+            guard let db = db else { return [] }
+            return _query(db: db, sql: "SELECT url_path FROM library_folders", bindings: []) { stmt in
+                self.columnString(stmt: stmt, index: 0)
+            }.compactMap { $0 }
         }
     }
 
