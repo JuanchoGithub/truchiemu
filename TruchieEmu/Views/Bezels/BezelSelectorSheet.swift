@@ -480,8 +480,10 @@ struct BezelSelectorSheet: View {
         isLoadingRemote = true
         errorMessage = nil
         
+        LoggerService.info(category: "Bezel", "Loading online bezels for system: \(systemID)")
         do {
             let entries = try await bezelManager.getBezels(systemID: systemID)
+            LoggerService.info(category: "Bezel", "Loaded \(entries.count) bezel(s) for \(systemID) from The Bezel Project")
             // Update local URLs and download status
             remoteBezels = entries.map { entry in
                 let localURL = storageManager.bezelFilePath(systemID: systemID, gameName: entry.id)
@@ -496,6 +498,7 @@ struct BezelSelectorSheet: View {
                 return entry
             }
         } catch {
+            LoggerService.error(category: "Bezel", "Failed to load bezels for \(systemID): \(error.localizedDescription) (\(error))")
             errorMessage = error.localizedDescription
         }
         

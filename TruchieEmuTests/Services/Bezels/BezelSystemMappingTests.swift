@@ -21,37 +21,37 @@ final class BezelSystemMappingTests: XCTestCase {
     func testGenesisMapping() {
         let config = BezelSystemMapping.config(for: "genesis")
         XCTAssertNotNil(config, "Genesis should have a bezel config")
-        XCTAssertEqual(config?.bezelProjectName, "Sega-Mega-Drive")
+        XCTAssertEqual(config?.bezelProjectName, "MegaDrive")
     }
 
     func testMegadriveAlternateID() {
         let config = BezelSystemMapping.config(for: "megadrive")
-        XCTAssertNotNil(config, "megadrive should map to Sega-Mega-Drive")
-        XCTAssertEqual(config?.bezelProjectName, "Sega-Mega-Drive")
+        XCTAssertNotNil(config, "megadrive should map to MegaDrive")
+        XCTAssertEqual(config?.bezelProjectName, "MegaDrive")
     }
 
     func testMDAlternateID() {
         let config = BezelSystemMapping.config(for: "md")
-        XCTAssertNotNil(config, "md should map to Sega-Mega-Drive")
-        XCTAssertEqual(config?.bezelProjectName, "Sega-Mega-Drive")
+        XCTAssertNotNil(config, "md should map to MegaDrive")
+        XCTAssertEqual(config?.bezelProjectName, "MegaDrive")
     }
 
     func testGameBoyMapping() {
         let config = BezelSystemMapping.config(for: "gb")
         XCTAssertNotNil(config, "Game Boy should have a bezel config")
-        XCTAssertEqual(config?.bezelProjectName, "Game-Boy")
+        XCTAssertEqual(config?.bezelProjectName, "GB")
     }
 
     func testGameBoyColorMapping() {
         let config = BezelSystemMapping.config(for: "gbc")
         XCTAssertNotNil(config, "Game Boy Color should have a bezel config")
-        XCTAssertEqual(config?.bezelProjectName, "Game-Boy-Color")
+        XCTAssertEqual(config?.bezelProjectName, "GBC")
     }
 
     func testGameBoyAdvanceMapping() {
         let config = BezelSystemMapping.config(for: "gba")
         XCTAssertNotNil(config, "Game Boy Advance should have a bezel config")
-        XCTAssertEqual(config?.bezelProjectName, "Game-Boy-Advance")
+        XCTAssertEqual(config?.bezelProjectName, "GBA")
     }
 
     func testN64Mapping() {

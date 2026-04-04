@@ -9,51 +9,47 @@ enum BezelSystemMapping {
         "nes": BezelSystemConfig(systemID: "nes", bezelProjectName: "NES"),
         "snes": BezelSystemConfig(systemID: "snes", bezelProjectName: "SNES"),
         "n64": BezelSystemConfig(systemID: "n64", bezelProjectName: "N64"),
-        "gb": BezelSystemConfig(systemID: "gb", bezelProjectName: "Game-Boy"),
-        "gbc": BezelSystemConfig(systemID: "gbc", bezelProjectName: "Game-Boy-Color"),
-        "gba": BezelSystemConfig(systemID: "gba", bezelProjectName: "Game-Boy-Advance"),
-        "nds": BezelSystemConfig(systemID: "nds", bezelProjectName: "Nintendo-DS"),
-        "vb": BezelSystemConfig(systemID: "vb", bezelProjectName: "Virtual-Boy"),
+        "gb": BezelSystemConfig(systemID: "gb", bezelProjectName: "GB"),
+        "gbc": BezelSystemConfig(systemID: "gbc", bezelProjectName: "GBC"),
+        "gba": BezelSystemConfig(systemID: "gba", bezelProjectName: "GBA"),
+        "nds": BezelSystemConfig(systemID: "nds", bezelProjectName: "NDS"),
+        "vb": BezelSystemConfig(systemID: "vb", bezelProjectName: "Virtualboy"),
         
         // Sega consoles
-        "sms": BezelSystemConfig(systemID: "sms", bezelProjectName: "Sega-Master-System"),
-        "genesis": BezelSystemConfig(systemID: "genesis", bezelProjectName: "Sega-Mega-Drive"),
-        "megadrive": BezelSystemConfig(systemID: "genesis", bezelProjectName: "Sega-Mega-Drive"),
-        "segacd": BezelSystemConfig(systemID: "segacd", bezelProjectName: "Sega-CD"),
-        "gamegear": BezelSystemConfig(systemID: "gamegear", bezelProjectName: "Sega-Game-Gear"),
-        "saturn": BezelSystemConfig(systemID: "saturn", bezelProjectName: "Sega-Saturn"),
-        "dreamcast": BezelSystemConfig(systemID: "dreamcast", bezelProjectName: "Sega-Dreamcast"),
+        "sms": BezelSystemConfig(systemID: "sms", bezelProjectName: "MasterSystem"),
+        "genesis": BezelSystemConfig(systemID: "genesis", bezelProjectName: "MegaDrive"),
+        "megadrive": BezelSystemConfig(systemID: "genesis", bezelProjectName: "MegaDrive"),
+        "segacd": BezelSystemConfig(systemID: "segacd", bezelProjectName: "SegaCD"),
+        "gamegear": BezelSystemConfig(systemID: "gamegear", bezelProjectName: "GameGear"),
+        "saturn": BezelSystemConfig(systemID: "saturn", bezelProjectName: "Saturn"),
+        "dreamcast": BezelSystemConfig(systemID: "dreamcast", bezelProjectName: "Dreamcast"),
         
         // Sony consoles
-        "psx": BezelSystemConfig(systemID: "psx", bezelProjectName: "Sony-PlayStation"),
-        "ps2": BezelSystemConfig(systemID: "ps2", bezelProjectName: "Sony-PlayStation-2"),
-        "psp": BezelSystemConfig(systemID: "psp", bezelProjectName: "Sony-PSP"),
+        "psx": BezelSystemConfig(systemID: "psx", bezelProjectName: "PSX"),
+        "ps2": BezelSystemConfig(systemID: "ps2", bezelProjectName: "PS2"),
         
         // Atari consoles
-        "atari2600": BezelSystemConfig(systemID: "atari2600", bezelProjectName: "Atari-2600"),
-        "atari5200": BezelSystemConfig(systemID: "atari5200", bezelProjectName: "Atari-5200"),
-        "atari7800": BezelSystemConfig(systemID: "atari7800", bezelProjectName: "Atari-7800"),
-        "lynx": BezelSystemConfig(systemID: "lynx", bezelProjectName: "Atari-Lynx"),
-        "jaguar": BezelSystemConfig(systemID: "jaguar", bezelProjectName: "Atari-Jaguar"),
+        "atari2600": BezelSystemConfig(systemID: "atari2600", bezelProjectName: "Atari2600"),
+        "atari5200": BezelSystemConfig(systemID: "atari5200", bezelProjectName: "Atari5200"),
+        "atari7800": BezelSystemConfig(systemID: "atari7800", bezelProjectName: "Atari7800"),
+        "lynx": BezelSystemConfig(systemID: "lynx", bezelProjectName: "AtariLynx"),
+        "jaguar": BezelSystemConfig(systemID: "jaguar", bezelProjectName: "AtariJaguar"),
         
         // SNK / Neo Geo
-        "ngp": BezelSystemConfig(systemID: "ngp", bezelProjectName: "Neo-Geo-Pocket"),
-        "ngc": BezelSystemConfig(systemID: "ngp", bezelProjectName: "Neo-Geo-Pocket-Color"),
-        "neogeo": BezelSystemConfig(systemID: "neogeo", bezelProjectName: "SNK-Neo-Geo"),
+        "ngp": BezelSystemConfig(systemID: "ngp", bezelProjectName: "NGP"),
+        "ngc": BezelSystemConfig(systemID: "ngc", bezelProjectName: "NGPC"),
         
         // Other consoles
         "3do": BezelSystemConfig(systemID: "3do", bezelProjectName: "3DO"),
         
         // PC-Engine / TurboGrafx
-        "pce": BezelSystemConfig(systemID: "pce", bezelProjectName: "PC-Engine"),
-        "pcfx": BezelSystemConfig(systemID: "pcfx", bezelProjectName: "PC-FX"),
+        "pce": BezelSystemConfig(systemID: "pce", bezelProjectName: "PCEngine"),
+        "pcfx": BezelSystemConfig(systemID: "pcfx", bezelProjectName: "PCFX"),
         
         // Arcade
         "mame": BezelSystemConfig(systemID: "mame", bezelProjectName: "MAME"),
-        "fba": BezelSystemConfig(systemID: "fba", bezelProjectName: "FBNeo"),
         
         // Computers
-        "dos": BezelSystemConfig(systemID: "dos", bezelProjectName: "MS-DOS"),
     ]
     
     /// Get the bezel configuration for a system ID.
@@ -97,7 +93,7 @@ enum BezelSystemMapping {
         let encodedFilename = filename.addingPercentEncoding(
             withAllowedCharacters: .urlQueryAllowed
         ) ?? filename
-        let urlString = "https://raw.githubusercontent.com/thebezelproject/bezelproject-\(bezelProjectName)/master/overlays/GameBezels/\(bezelProjectName)/\(encodedFilename)"
+        let urlString = "https://raw.githubusercontent.com/thebezelproject/bezelproject-\(bezelProjectName)/master/retroarch/overlay/GameBezels/\(bezelProjectName)/\(encodedFilename)"
         return URL(string: urlString)
     }
 }
