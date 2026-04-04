@@ -22,6 +22,13 @@ final class MetadataSyncCoordinator: ObservableObject {
     /// Run after library update: sync LaunchBox metadata for ROMs that need it.
     /// Only runs when the feature is enabled in settings.
     func runAfterLibraryUpdate(library: ROMLibrary) async {
+        // Skip if any game is running — metadata syncing is network-heavy
+        // and degrades gameplay performance.
+        if RunningGamesTracker.shared.isGameRunning {
+            LoggerService.debug(category: "MetadataSync", "Skipping metadata sync — game is running")
+            return
+        }
+
         let launchbox = LaunchBoxGamesDBService.shared
         guard launchbox.isEnabled else { return }
 

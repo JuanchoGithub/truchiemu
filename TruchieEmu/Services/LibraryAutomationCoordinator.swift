@@ -20,6 +20,13 @@ final class LibraryAutomationCoordinator: ObservableObject {
     private init() {}
 
     func runAfterLibraryUpdate(library: ROMLibrary) async {
+        // Skip if any game is running — identification and box-art downloads
+        // are network- and I/O-heavy and degrade gameplay performance.
+        if RunningGamesTracker.shared.isGameRunning {
+            LoggerService.debug(category: "LibraryAutomation", "Skipping post-scan automation — game is running")
+            return
+        }
+
         let snapshot = library.roms
         let needIdentify = snapshot.filter { $0.needsAutomaticIdentification }
         let needArt = snapshot.filter { $0.needsAutomaticBoxArt }
@@ -29,6 +36,12 @@ final class LibraryAutomationCoordinator: ObservableObject {
         // Warm-up delay: let the UI settle after a library scan before starting background work
         try? await Task.sleep(nanoseconds: 2_000_000_000)
         await Task.yield()
+
+        // Re-check after the delay — a game may have launched during the warm-up.
+        if RunningGamesTracker.shared.isGameRunning {
+            LoggerService.debug(category: "LibraryAutomation", "Skipping post-scan automation (game started during warm-up)")
+            return
+        }
 
         isActive = true
         defer {

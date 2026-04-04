@@ -286,6 +286,13 @@ class ROMLibrary: ObservableObject {
     }
 
     func scanROMs(in folder: URL, runAutomationAfter: Bool = true) async {
+        // Pause scanning if a game is currently running — background I/O and
+        // network activity during gameplay degrade performance and cause lag.
+        if RunningGamesTracker.shared.isGameRunning {
+            LoggerService.debug(category: "ROMLibrary", "Deferring ROM scan — game is running")
+            return
+        }
+        
         isScanning = true
         scanProgress = 0
         scanCancellationToken.reset()
@@ -320,6 +327,13 @@ class ROMLibrary: ObservableObject {
         cleanupScummVMCaches()
         
         if runAutomationAfter {
+            // Only run post-scan automation when no game is running.
+            // These tasks (identification, box-art downloads, metadata sync) are
+            // network- and I/O-heavy and should not execute during gameplay.
+            guard !RunningGamesTracker.shared.isGameRunning else {
+                LoggerService.debug(category: "ROMLibrary", "Skipping post-scan automation — game is running")
+                return
+            }
             await LibraryAutomationCoordinator.shared.runAfterLibraryUpdate(library: self)
             await MetadataSyncCoordinator.shared.runAfterLibraryUpdate(library: self)
         }

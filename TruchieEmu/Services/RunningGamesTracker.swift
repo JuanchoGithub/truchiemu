@@ -2,13 +2,20 @@ import Foundation
 import AppKit
 import UserNotifications
 
-/// Tracks which games are currently running to prevent launching the same ROM twice.
+/// Tracks which games are currently running to prevent launching the same ROM twice,
+/// and provides a global signal to pause background activities during gameplay.
 @MainActor
 class RunningGamesTracker: ObservableObject {
     static let shared = RunningGamesTracker()
     
     /// Set of ROM paths that are currently running
     @Published private(set) var runningROMPaths: Set<String> = []
+    
+    /// Whether any game is currently running. Background activities like
+    /// ROM scanning and metadata downloads should pause while this is true.
+    var isGameRunning: Bool {
+        !runningROMPaths.isEmpty
+    }
     
     private init() {}
     
