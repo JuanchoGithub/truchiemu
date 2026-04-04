@@ -205,6 +205,18 @@ struct GameDetailView: View {
         SystemDatabase.displaySystem(forInternalID: currentROM.systemID ?? "")
     }
 
+    /// The effective core ID used to launch this ROM. Used by GB colorization UI.
+    private var activeCoreID: String? {
+        guard let sysID = currentROM.systemID, let sys = SystemDatabase.system(forID: sysID) else { return system?.defaultCoreID }
+        if currentROM.useCustomCore, let sel = currentROM.selectedCoreID { return sel }
+        return sysPrefs.preferredCoreID(for: sysID) ?? sys.defaultCoreID
+    }
+    
+    /// Returns true when the active core for this ROM is Gambatte (which supports named internal palettes and color correction).
+    private var isGambatteCore: Bool {
+        (activeCoreID ?? "").lowercased().contains("gambatte")
+    }
+
     private var installedCores: [LibretroCore] {
         guard let sysID = currentROM.systemID else { return [] }
         return coreManager.installedCores.filter { $0.systemIDs.contains(sysID) }
@@ -795,8 +807,21 @@ struct GameDetailView: View {
                     // Palette Mode Picker
                     gbPaletteModeRow
 
-                    // Internal Palette Selector (shown when mode is "internal")
-                    if gbColorizationMode == "internal" {
+                    // Note for non-Gambatte cores
+                    if !isGambatteCore {
+                        Divider().overlay(Color.white.opacity(0.08))
+                        HStack(spacing: 8) {
+                            Image(systemName: "info.circle.fill")
+                                .foregroundColor(.blue.opacity(0.8))
+                            Text("Named palettes and color correction only work with the Gambatte core.")
+                                .font(.caption)
+                                .foregroundColor(.white.opacity(0.5))
+                                .lineLimit(2)
+                        }
+                    }
+
+                    // Internal Palette Selector (shown when mode is "internal" AND Gambatte core)
+                    if gbColorizationMode == "internal" && isGambatteCore {
                         Divider().overlay(Color.white.opacity(0.08))
                         gbInternalPaletteRow
                     }
@@ -805,9 +830,11 @@ struct GameDetailView: View {
                     Divider().overlay(Color.white.opacity(0.08))
                     gbSGBBordersRow
 
-                    // Color Correction
-                    Divider().overlay(Color.white.opacity(0.08))
-                    gbColorCorrectionRow
+                    // Color Correction (Gambatte only)
+                    if isGambatteCore {
+                        Divider().overlay(Color.white.opacity(0.08))
+                        gbColorCorrectionRow
+                    }
 
                     Divider().overlay(Color.white.opacity(0.08))
 
