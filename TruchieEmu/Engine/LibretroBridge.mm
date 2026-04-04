@@ -407,6 +407,25 @@ static bool bridge_environment(unsigned cmd, void *data) {
                 if (strcmp(var->key, "mupen64plus-next-aspect") == 0)
                     { var->value = "4:3"; return true; }
                 
+                // ── MAME throttle/frame-limiting: enforce at the core level ──
+                // These are queried by MAME cores to decide if they should throttle execution
+                if (strcmp(var->key, "mame2003-plus-throttle") == 0)
+                    { var->value = "enabled"; return true; }
+                if (strcmp(var->key, "mame2003-plus-skip_disclaimer") == 0)
+                    { var->value = "enabled"; return true; }
+                if (strcmp(var->key, "mame2003-plus-skip_warnings") == 0)
+                    { var->value = "enabled"; return true; }
+                if (strcmp(var->key, "mame2010-throttle") == 0)
+                    { var->value = "enabled"; return true; }
+                if (strcmp(var->key, "mame2010-skip_disclaimer") == 0)
+                    { var->value = "enabled"; return true; }
+                if (strcmp(var->key, "mame2010-skip_warnings") == 0)
+                    { var->value = "enabled"; return true; }
+                if (strcmp(var->key, "mame-throttle") == 0)
+                    { var->value = "enabled"; return true; }
+                if (strcmp(var->key, "mame2000-throttle") == 0)
+                    { var->value = "enabled"; return true; }
+                
                 var->value = NULL;
             }
             return false;
@@ -708,6 +727,17 @@ static int16_t bridge_input_state(unsigned port, unsigned device, unsigned index
             NSLog(@"[Bridge-WRN] MAME FPS out of range: %.2f, clamping to 60", mameFps);
             _avInfo.timing.fps = 60.0;
         }
+        // Clamp sample rate too
+        if (mameSR < 8000.0 || mameSR > 192000.0) {
+            NSLog(@"[Bridge-WRN] MAME sample rate out of range: %.1f, clamping to 44100", mameSR);
+            _avInfo.timing.sample_rate = 44100.0;
+        }
+    }
+    
+    // Safety clamp for ALL cores: ensure FPS is never 0 or absurdly high
+    if (_avInfo.timing.fps <= 0.0 || _avInfo.timing.fps > 120.0) {
+        NSLog(@"[Bridge-WRN] Global FPS clamp: %.2f -> 60.0", _avInfo.timing.fps);
+        _avInfo.timing.fps = 60.0;
     }
     
     [self setupAudioWithSampleRate:sampleRate];
@@ -742,10 +772,11 @@ static int16_t bridge_input_state(unsigned port, unsigned device, unsigned index
                 size_t capacity = _audioBuffer->capacity();
                 float fillRatio = (float)availableSamples / (float)capacity;
 
-                // If buffer is >70% full, wait for it to drain before producing frames.
+                // If buffer is >50% full (lowered from 70%), wait for it to drain before producing frames.
                 // This is the key fpsync mechanism: audio buffer fill level is the
-                // primary pacing signal. Without this, retro_run() runs unbounded.
-                while (fillRatio > 0.70f && _running && !g_isPaused) {
+                // primary pacing signal. Without this, retro_run() runs unbounded at CPU speed.
+                // A lower threshold (50%) gives more consistent pacing with less jitter.
+                while (fillRatio > 0.50f && _running && !g_isPaused) {
                     [NSThread sleepForTimeInterval:0.0005];
                     availableSamples = _audioBuffer->available();
                     fillRatio = (float)availableSamples / (float)capacity;
