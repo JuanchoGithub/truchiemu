@@ -608,7 +608,7 @@ final class DatabaseManager {
     }
 
     private func _saveROMs(_ roms: [ROMRow]) {
-        guard let db = db else { return }
+        guard db != nil else { return }
 
         let sql = "INSERT OR REPLACE INTO roms (id, name, path, system_id, box_art_path, is_favorite, last_played, total_playtime, times_played, selected_core_id, custom_name, use_custom_core, metadata_json, is_bios, is_hidden, category, crc32, thumbnail_system_id, screenshot_paths_json, settings_json, is_identified) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)"
         
@@ -963,7 +963,6 @@ final class DatabaseManager {
     }
 
     private func _upsertMetadataEntry(_ row: MetadataRowInt) {
-        guard let db = db else { return }
         let sql = """
             INSERT INTO rom_metadata (path_key, crc32, title, year, developer, publisher, genre, players, description, rating, thumbnail_system_id, box_art_path, title_screen_path, screenshot_paths_json, custom_core_id)
             VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)

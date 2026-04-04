@@ -327,7 +327,7 @@ struct CoreDownloadSheet: View {
         downloadError = nil
 
         Task {
-            let slotToLoad = pending.slotToLoad
+            _ = pending.slotToLoad
             await coreManager.downloadCore(remote)
 
             guard coreManager.isInstalled(coreID: selectedCoreEntry.id) else {

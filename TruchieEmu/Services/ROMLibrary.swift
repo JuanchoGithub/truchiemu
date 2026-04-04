@@ -722,7 +722,6 @@ class ROMLibrary: ObservableObject {
     private func recoverFoldersFromExistingROMs() async {
         // Extract unique parent folder paths from existing ROMs
         var candidateFolders: [URL] = []
-        let appSupport = FileManager.default.urls(for: .applicationSupportDirectory, in: .userDomainMask).first!
         
         for rom in roms {
             let folder = rom.path.deletingLastPathComponent()

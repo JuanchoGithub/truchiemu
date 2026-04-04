@@ -1716,7 +1716,7 @@ struct BoxArtSettingsView: View {
             AppSettings.set("thumbnail_server_url", value: thumbnailServerURLStorage)
         }
         .onChange(of: useLibretroThumbnails) { BoxArtService.shared.useLibretroThumbnails = $0; AppSettings.setBool("thumbnail_use_libretro", value: $0) }
-        .onChange(of: thumbnailPriorityRaw) { if let p = LibretroThumbnailPriority(rawValue: $0), let idx = LibretroThumbnailPriority.allCases.firstIndex(where: { $0.rawValue == p.rawValue }) {  } }
+        .onChange(of: thumbnailPriorityRaw) { if let p = LibretroThumbnailPriority(rawValue: $0) { _ = BoxArtService.shared.thumbnailPriority = p }; AppSettings.set("thumbnail_priority", value: $0) }
         .onChange(of: useCRCMatching) { BoxArtService.shared.useCRCMatchingForThumbnails = $0; AppSettings.setBool("thumbnail_use_crc_matching", value: $0) }
         .onChange(of: fallbackFilename) { BoxArtService.shared.fallbackToFilenameForThumbnails = $0; AppSettings.setBool("thumbnail_fallback_filename", value: $0) }
         .onChange(of: useHeadCheck) { BoxArtService.shared.useHeadBeforeThumbnailDownload = $0; AppSettings.setBool("thumbnail_use_head_check", value: $0) }
