@@ -53,8 +53,8 @@ struct DatabaseMigrator {
             }
         }
 
-        // After all schema migrations, migrate UserDefaults to SQLite for settings
-        AppSettings.migrateAllUserDefaults()
+        // NOTE: UserDefaults migration is now handled by DatabaseManager._migrateUserDefaultsOnOpen()
+        // to avoid deadlock when called from within the database queue context.
     }
 
     static func currentVersion(db: OpaquePointer) -> Int {

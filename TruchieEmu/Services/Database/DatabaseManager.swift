@@ -101,7 +101,81 @@ final class DatabaseManager {
             db = handle
             logger.info("Database opened at \(path)")
             setupDatabase()
+            // Run schema migrations (this uses the db handle directly, no queue)
             DatabaseMigrator.run(on: db!)
+            // Run settings migration directly on the db handle to avoid deadlock
+            // (AppSettings.migrateAllUserDefaults would call queue.sync again)
+            _migrateUserDefaultsOnOpen()
+        }
+    }
+
+    /// Migrate UserDefaults settings to SQLite during open.
+    /// This runs within the queue context of _open(), so it uses _execute/_query directly
+    /// to avoid a deadlock from calling queue.sync reentrantly.
+    private func _migrateUserDefaultsOnOpen() {
+        guard let db = db else { return }
+
+        let simpleKeys = [
+            "has_completed_onboarding",
+            "has_completed_full_setup",
+            "logging_enabled",
+            "display_default_shader_preset",
+            "showBiosFiles",
+            "systemLanguage",
+            "coreLogLevel",
+            "autoLoadCheats",
+            "applyCheatsOnLaunch",
+            "showCheatNotifications",
+            "log_level",
+            "selected_save_slot",
+            "dosbox_pure_cycles",
+            "dosbox_pure_mouse",
+            "dosbox_pure_start_menu",
+            "auto_load_on_start",
+            "auto_save_on_exit",
+            "achievements_enabled",
+            "cheats_enabled",
+            "compress_save_states",
+            "thumbnail_use_libretro",
+            "thumbnail_use_head_check",
+            "thumbnail_fallback_filename",
+            "shaderWindowPosition",
+        ]
+
+        for key in simpleKeys {
+            // Check if UserDefaults has this key
+            guard UserDefaults.standard.object(forKey: key) != nil else { continue }
+            // Check if already in SQLite (avoid overwriting)
+            let alreadyExists: Bool = _query(db: db, sql: "SELECT 1 FROM settings WHERE key = ?", bindings: [key]) { _ in true }.first ?? false
+            if alreadyExists { continue }
+
+            if let str = UserDefaults.standard.string(forKey: key) {
+                _execute(db: db, sql: "INSERT OR REPLACE INTO settings (key, value) VALUES (?, ?)", bindings: [key, str])
+                UserDefaults.standard.removeObject(forKey: key)
+                logger.info("Migrated string: \(key) = \(str)")
+            } else if let int = (UserDefaults.standard.object(forKey: key) as? NSNumber)?.intValue {
+                _execute(db: db, sql: "INSERT OR REPLACE INTO settings (key, value) VALUES (?, ?)", bindings: [key, String(int)])
+                UserDefaults.standard.removeObject(forKey: key)
+                logger.info("Migrated int: \(key) = \(int)")
+            } else if let bool = UserDefaults.standard.object(forKey: key) as? Bool {
+                _execute(db: db, sql: "INSERT OR REPLACE INTO settings (key, value) VALUES (?, ?)", bindings: [key, bool ? "1" : "0"])
+                UserDefaults.standard.removeObject(forKey: key)
+                logger.info("Migrated bool: \(key) = \(bool)")
+            }
+        }
+
+        // Migrate pattern-based settings (preferredCore_, boxType_)
+        let allUserDefaults = UserDefaults.standard.dictionaryRepresentation()
+        for (key, _) in allUserDefaults {
+            if key.hasPrefix("preferredCore_") || key.hasPrefix("boxType_") {
+                let alreadyExists: Bool = _query(db: db, sql: "SELECT 1 FROM settings WHERE key = ?", bindings: [key]) { _ in true }.first ?? false
+                if !alreadyExists {
+                    if let value = UserDefaults.standard.string(forKey: key) {
+                        _execute(db: db, sql: "INSERT OR REPLACE INTO settings (key, value) VALUES (?, ?)", bindings: [key, value])
+                    }
+                    UserDefaults.standard.removeObject(forKey: key)
+                }
+            }
         }
     }
 

@@ -4,6 +4,13 @@ import AppKit
 @main
 struct TruchieEmuApp: App {
     @NSApplicationDelegateAdaptor(AppDelegate.self) var appDelegate
+    
+    // Open the database before any other component uses it.
+    // This was the root cause of the blank state — the database was never opened.
+    init() {
+        DatabaseManager.shared.open()
+    }
+    
     @StateObject private var library = ROMLibrary()
     @StateObject private var categoryManager = CategoryManager()
     @StateObject private var coreManager = CoreManager()
