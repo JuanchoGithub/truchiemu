@@ -280,12 +280,42 @@ class ROMLibrary: ObservableObject {
     func removeLibraryFolder(at index: Int) {
         guard index < libraryFolders.count else { return }
         let url = libraryFolders[index]
+        
+        // Build a proper prefix that won't false-match sibling folders
+        // e.g. "/ROMs" must NOT match "/ROMs2" — we append a trailing "/"
+        // so the prefix requires a path separator after the folder name.
+        let folderPath = url.path.hasSuffix("/") ? url.path : url.path + "/"
+        
+        // Count ROMs that will be removed before filtering
+        let removedROMs = roms.filter { $0.path.path.hasPrefix(folderPath) || $0.path.path == url.path }
+        let removedCount = removedROMs.count
+        
+        LoggerService.info(category: "ROMLibrary", "Removing library folder: \(url.path) (\(removedCount) ROM(s) will be purged)")
+        
         libraryFolders.remove(at: index)
         saveSecurityScopedBookmarks()
         
         // Remove ROMs that are descendants of this folder
-        let folderPath = url.path
-        roms.removeAll { $0.path.path.hasPrefix(folderPath) }
+        roms.removeAll { $0.path.path.hasPrefix(folderPath) || $0.path.path == url.path }
+        
+        // Clean up file index entries for removed ROMs
+        let removedPaths = Set(removedROMs.map { $0.path.path })
+        for path in removedPaths {
+            fileIndex.removeValue(forKey: path)
+        }
+        if !fileIndex.isEmpty {
+            saveFileIndexToStorage()
+        }
+        
+        // Clean up orphaned metadata entries from SQLite
+        if !removedROMs.isEmpty {
+            for rom in removedROMs {
+                let key = LibraryMetadataStore.pathKey(for: rom)
+                DatabaseManager.shared.deleteMetadataEntry(key)
+            }
+            LoggerService.info(category: "ROMLibrary", "Purged \(removedCount) ROM(s) and associated metadata")
+        }
+        
         updateCounts()
         saveROMsToDatabase()
         

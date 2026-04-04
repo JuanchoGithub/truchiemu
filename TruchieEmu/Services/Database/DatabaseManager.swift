@@ -1059,4 +1059,24 @@ final class DatabaseManager {
             }.first ?? 0
         }
     }
+
+    /// Delete a metadata entry by its path key.
+    func deleteMetadataEntry(_ pathKey: String) {
+        queue.sync { _deleteMetadataEntry(pathKey) }
+    }
+
+    private func _deleteMetadataEntry(_ pathKey: String) {
+        let sql = "DELETE FROM rom_metadata WHERE path_key = ?"
+        guard let stmt = prepare(sql) else { return }
+        defer { sqlite3_finalize(stmt) }
+
+        sqlite3_reset(stmt)
+        sqlite3_clear_bindings(stmt)
+        sqlite3_bind_text(stmt, 1, (pathKey as NSString).utf8String, -1, nil)
+
+        let rc = sqlite3_step(stmt)
+        if rc != SQLITE_DONE {
+            LoggerService.warning(category: "Database", "Failed to delete metadata for \(pathKey)")
+        }
+    }
 }
