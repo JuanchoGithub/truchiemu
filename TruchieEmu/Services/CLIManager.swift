@@ -82,6 +82,7 @@ class CLIManager: ObservableObject {
         var hardcoreMode = false
         var cheatsEnabled = false
         var coreOptions: [String: String] = [:]
+        var bezelFileName: String? = nil
         var autoLoad = false
         var autoSave = false
         var command: CLICommand = .none
@@ -154,6 +155,12 @@ class CLIManager: ObservableObject {
             case CLIArg.cheatsEnabled.rawValue:
                 cheatsEnabled = true
                 
+            case CLIArg.bezel.rawValue:
+                i += 1
+                if i < arguments.count {
+                    bezelFileName = arguments[i]
+                }
+                
             case CLIArg.coreOption.rawValue:
                 i += 1
                 if i < arguments.count {
@@ -207,6 +214,7 @@ class CLIManager: ObservableObject {
             achievementsEnabled: achievementsEnabled,
             hardcoreMode: hardcoreMode,
             cheatsEnabled: cheatsEnabled,
+            bezelFileName: bezelFileName,
             coreOptions: coreOptions,
             autoLoad: autoLoad,
             autoSave: autoSave,
@@ -280,6 +288,12 @@ class CLIManager: ObservableObject {
             LoggerService.debug(category: "CLI", "Applied shader preset: \(shaderPresetID)")
         }
         
+        // Apply bezel if specified
+        if let bezelFileName = options.bezelFileName {
+            rom.settings.bezelFileName = bezelFileName
+            LoggerService.debug(category: "CLI", "Applied bezel: \(bezelFileName)")
+        }
+        
         // Apply core options if specified
         if !options.coreOptions.isEmpty {
             CoreOptionsManager.shared.saveOverride(for: coreID, values: options.coreOptions)
@@ -294,6 +308,21 @@ class CLIManager: ObservableObject {
         if options.autoSave {
             AppSettings.setBool("auto_save_on_exit", value: true)
             LoggerService.debug(category: "CLI", "Auto-save enabled")
+        }
+        
+        // CRITICAL FIX: Apply achievements, hardcore, and cheats settings via AppSettings
+        // GameLauncher.LaunchConfig reads these from AppSettings, so we MUST set them here
+        if options.achievementsEnabled {
+            AppSettings.setBool("achievements_enabled", value: true)
+            LoggerService.debug(category: "CLI", "Achievements enabled")
+        }
+        if options.hardcoreMode {
+            AppSettings.setBool("hardcore_mode", value: true)
+            LoggerService.debug(category: "CLI", "Hardcore mode enabled")
+        }
+        if options.cheatsEnabled {
+            AppSettings.setBool("cheats_enabled", value: true)
+            LoggerService.debug(category: "CLI", "Cheats enabled")
         }
         
         // Handle headless mode
@@ -469,6 +498,7 @@ class CLIManager: ObservableObject {
           --achievements         Enable RetroAchievements
           --hardcore             Enable hardcore mode (with --achievements)
           --cheats               Load cheat files for the game
+          --bezel <filename>     Set bezel image file (or "none" to disable)
           --core-option <k=v>    Set core option (can be used multiple times)
           --auto-load            Auto-load last save state on start
           --auto-save            Auto-save on exit
@@ -493,6 +523,12 @@ class CLIManager: ObservableObject {
         
           # Launch with hardcore mode and cheats
           open -a TruchieEmu --args --launch ~/Roms/Mario.nes --achievements --hardcore --cheats
+
+          # Launch with custom bezel
+          open -a TruchieEmu --args --launch ~/Roms/Mario.nes --bezel "crt-curved.png"
+
+          # Launch with bezel disabled
+          open -a TruchieEmu --args --launch ~/Roms/Mario.nes --bezel none
         
           # Launch with core options
           open -a TruchieEmu --args --launch ~/Roms/Mario.nes --core-option "mupen64plus-cpucore=dynamic"

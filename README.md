@@ -47,7 +47,31 @@ open -a TruchieEmu --args --launch "/path/to/game.nes" --core fceumm
 
 # Launch and load from save slot 3
 open -a TruchieEmu --args --launch "/path/to/game.nes" --slot 3
-```
+
+# Launch with shader preset
+open -a TruchieEmu --args --launch "/path/to/game.nes" --shader builtin-crt-classic
+
+# Launch with custom shader uniforms
+open -a TruchieEmu --args --launch "/path/to/game.nes" --shader builtin-crt-classic --shader-uniform "barrelAmount=0.25" --shader-uniform "scanlineIntensity=0.5"
+
+# Launch with RetroAchievements (hardcore mode)
+open -a TruchieEmu --args --launch "/path/to/game.nes" --achievements --hardcore
+
+# Launch with cheats enabled
+open -a TruchieEmu --args --launch "/path/to/game.nes" --cheats
+
+# Launch with custom bezel
+open -a TruchieEmu --args --launch "/path/to/game.nes" --bezel "crt-curved.png"
+
+# Disable bezel
+open -a TruchieEmu --args --launch "/path/to/game.nes" --bezel none
+
+# Launch with core options
+open -a TruchieEmu --args --launch "/path/to/game.nes" --core-option "mupen64plus-cpucore=dynamic"
+
+# Launch with auto-load/save
+open -a TruchieEmu --args --launch "/path/to/game.nes" --auto-load --auto-save
+
 
 ### Info Commands
 
@@ -81,6 +105,15 @@ open -a TruchieEmu --args --launch "/path/to/game.nes" --headless --timeout 10
 | `--launch <path>` | Path to ROM file | `--launch ~/Roms/Mario.nes` |
 | `--core <id>` | Core to use | `--core fceumm` |
 | `--slot <0-9>` | Save slot to load | `--slot 3` |
+| `--shader <preset>` | Shader preset | `--shader builtin-crt-classic` |
+| `--shader-uniform <k=v>` | Shader uniform override | `--shader-uniform "barrelAmount=0.25"` |
+| `--achievements` | Enable RetroAchievements | `--achievements` |
+| `--hardcore` | Hardcore mode (with --achievements) | `--hardcore` |
+| `--cheats` | Load cheat files | `--cheats` |
+| `--bezel <file>` | Bezel image or "none" | `--bezel "crt.png"` |
+| `--core-option <k=v>` | Core option override | `--core-option "key=value"` |
+| `--auto-load` | Auto-load last save state | `--auto-load` |
+| `--auto-save` | Auto-save on exit | `--auto-save` |
 | `--headless` | Run without UI | `--headless` |
 | `--timeout <sec>` | Headless timeout | `--timeout 15` |
 | `--list-cores` | List available cores | |

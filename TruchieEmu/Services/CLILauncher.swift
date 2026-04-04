@@ -22,6 +22,9 @@ enum CLIArg: String {
     // Cheat options
     case cheatsEnabled = "--cheats"
     
+    // Bezel option
+    case bezel = "--bezel"
+    
     // Core options
     case coreOption = "--core-option"
     
@@ -58,6 +61,9 @@ struct CLILaunchOptions {
     // Cheat options
     let cheatsEnabled: Bool
     
+    // Bezel option
+    let bezelFileName: String?
+    
     // Core options (key=value pairs)
     let coreOptions: [String: String]
     
@@ -84,6 +90,7 @@ struct CLILaunchOptions {
         achievementsEnabled: Bool = false,
         hardcoreMode: Bool = false,
         cheatsEnabled: Bool = false,
+        bezelFileName: String? = nil,
         coreOptions: [String: String] = [:],
         autoLoad: Bool = false,
         autoSave: Bool = false,
@@ -99,6 +106,7 @@ struct CLILaunchOptions {
         self.achievementsEnabled = achievementsEnabled
         self.hardcoreMode = hardcoreMode
         self.cheatsEnabled = cheatsEnabled
+        self.bezelFileName = bezelFileName
         self.coreOptions = coreOptions
         self.autoLoad = autoLoad
         self.autoSave = autoSave
@@ -155,6 +163,7 @@ class CLILauncher {
         achievementsEnabled: Bool = false,
         hardcoreMode: Bool = false,
         cheatsEnabled: Bool = false,
+        bezelFileName: String? = nil,
         coreOptions: [String: String] = [:],
         autoLoad: Bool = false,
         autoSave: Bool = false,
@@ -171,6 +180,7 @@ class CLILauncher {
             achievementsEnabled: achievementsEnabled,
             hardcoreMode: hardcoreMode,
             cheatsEnabled: cheatsEnabled,
+            bezelFileName: bezelFileName,
             coreOptions: coreOptions,
             autoLoad: autoLoad,
             autoSave: autoSave,
@@ -203,6 +213,7 @@ class CLILauncher {
         achievementsEnabled: Bool = false,
         hardcoreMode: Bool = false,
         cheatsEnabled: Bool = false,
+        bezelFileName: String? = nil,
         coreOptions: [String: String] = [:],
         autoLoad: Bool = false,
         autoSave: Bool = false,
@@ -216,6 +227,7 @@ class CLILauncher {
             achievementsEnabled: achievementsEnabled,
             hardcoreMode: hardcoreMode,
             cheatsEnabled: cheatsEnabled,
+            bezelFileName: bezelFileName,
             coreOptions: coreOptions,
             autoLoad: autoLoad,
             autoSave: autoSave,
@@ -236,6 +248,7 @@ class CLILauncher {
         achievementsEnabled: Bool,
         hardcoreMode: Bool,
         cheatsEnabled: Bool,
+        bezelFileName: String?,
         coreOptions: [String: String],
         autoLoad: Bool,
         autoSave: Bool,
@@ -270,6 +283,10 @@ class CLILauncher {
         
         if cheatsEnabled {
             arguments.append("--cheats")
+        }
+        
+        if let bezelFileName = bezelFileName {
+            arguments.append(contentsOf: ["--bezel", bezelFileName])
         }
         
         for (key, value) in coreOptions {
