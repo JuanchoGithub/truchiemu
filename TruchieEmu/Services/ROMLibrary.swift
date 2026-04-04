@@ -80,6 +80,12 @@ class ROMLibrary: ObservableObject {
     private var fileIndex: [String: FileSignature] = [:]
 
     init() {
+        // 0. Open the SQLite database — this is the ROOT CAUSE of data loss on restart.
+        // The DatabaseManager singleton's `db` property is nil until open() is called.
+        // Without this, every SQLite write silently returns (guard db != nil) and
+        // every read returns empty, making the app lose all data on every launch.
+        DatabaseManager.shared.open()
+        
         // 1. Initialize required properties before using self
         self.hasCompletedOnboarding = DatabaseManager.shared.getBoolSetting("has_completed_onboarding", defaultValue: false)
         

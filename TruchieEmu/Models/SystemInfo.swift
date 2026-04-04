@@ -364,31 +364,42 @@ enum CoreLogLevel: Int, CaseIterable, Identifiable {
 class SystemPreferences: ObservableObject {
     static let shared = SystemPreferences()
     @Published var updateTrigger: Int = 0
-    
+
+    // MARK: - SQLite-backed Settings Keys
+
+    private static let keyShowBiosFiles = "showBiosFiles"
+    private static let keySystemLanguage = "systemLanguage"
+    private static let keyCoreLogLevel = "coreLogLevel"
+    private static let keyApplyCheatsOnLaunch = "applyCheatsOnLaunch"
+    private static let keyShowCheatNotifications = "showCheatNotifications"
+    private static let keyBoxTypePrefix = "boxType_"
+    private static let keyPreferredCorePrefix = "preferredCore_"
+
     /// Whether to show BIOS files in the game list (default: false)
     @Published var showBiosFiles: Bool = false {
         didSet {
-            UserDefaults.standard.set(showBiosFiles, forKey: "showBiosFiles")
+            AppSettings.setBool(Self.keyShowBiosFiles, value: showBiosFiles)
             updateTrigger += 1
         }
     }
-    
+
     @Published var systemLanguage: EmulatorLanguage = .english {
         didSet {
-            UserDefaults.standard.set(systemLanguage.rawValue, forKey: "systemLanguage")
+            AppSettings.set(Self.keySystemLanguage, value: String(systemLanguage.rawValue))
             updateTrigger += 1
         }
     }
-    
+
     @Published var coreLogLevel: CoreLogLevel = .warn {
         didSet {
-            UserDefaults.standard.set(coreLogLevel.rawValue, forKey: "coreLogLevel")
+            AppSettings.set(Self.keyCoreLogLevel, value: String(coreLogLevel.rawValue))
             updateTrigger += 1
         }
     }
-    
+
     func boxType(for systemID: String) -> BoxType {
-        let rawValue = UserDefaults.standard.string(forKey: "boxType_\(systemID)")
+        let key = "\(Self.keyBoxTypePrefix)\(systemID)"
+        let rawValue = AppSettings.get(key) ?? UserDefaults.standard.string(forKey: key)
         if let rawValue = rawValue, let type = BoxType(rawValue: rawValue) {
             return type
         }
@@ -398,42 +409,46 @@ class SystemPreferences: ObservableObject {
         }
         return .vertical
     }
-    
+
     func setBoxType(_ type: BoxType, for systemID: String) {
-        UserDefaults.standard.set(type.rawValue, forKey: "boxType_\(systemID)")
+        let key = "\(Self.keyBoxTypePrefix)\(systemID)"
+        AppSettings.set(key, value: type.rawValue)
         updateTrigger += 1
     }
 
     /// Whether to automatically apply enabled cheats on game launch (disabled by default)
     @Published var applyCheatsOnLaunch: Bool = false {
         didSet {
-            UserDefaults.standard.set(applyCheatsOnLaunch, forKey: "applyCheatsOnLaunch")
+            AppSettings.setBool(Self.keyApplyCheatsOnLaunch, value: applyCheatsOnLaunch)
         }
     }
-    
+
     /// Whether to show notifications when cheats are activated
     @Published var showCheatNotifications: Bool = true {
         didSet {
-            UserDefaults.standard.set(showCheatNotifications, forKey: "showCheatNotifications")
+            AppSettings.setBool(Self.keyShowCheatNotifications, value: showCheatNotifications)
         }
     }
-    
+
     func preferredCoreID(for systemID: String) -> String? {
-        UserDefaults.standard.string(forKey: "preferredCore_\(systemID)")
+        let key = "\(Self.keyPreferredCorePrefix)\(systemID)"
+        return AppSettings.get(key) ?? UserDefaults.standard.string(forKey: key)
     }
 
     func setPreferredCoreID(_ coreID: String?, for systemID: String) {
-        UserDefaults.standard.set(coreID, forKey: "preferredCore_\(systemID)")
+        let key = "\(Self.keyPreferredCorePrefix)\(systemID)"
+        AppSettings.set(key, value: coreID ?? "")
         updateTrigger += 1
     }
-    
+
     init() {
-        self.showBiosFiles = UserDefaults.standard.bool(forKey: "showBiosFiles")
-        let langRaw = UserDefaults.standard.integer(forKey: "systemLanguage")
+        // Read from AppSettings (SQLite); UserDefaults fallback for edge cases
+        self.showBiosFiles = AppSettings.getBool(Self.keyShowBiosFiles, defaultValue: false)
+        let langRaw = Int(AppSettings.get(Self.keySystemLanguage) ?? "0") ?? 0
         self.systemLanguage = EmulatorLanguage(rawValue: langRaw) ?? .english
-        let logRaw = UserDefaults.standard.object(forKey: "coreLogLevel") as? Int ?? CoreLogLevel.warn.rawValue
+        let logRaw = Int(AppSettings.get(Self.keyCoreLogLevel) ?? "0") ?? CoreLogLevel.warn.rawValue
         self.coreLogLevel = CoreLogLevel(rawValue: logRaw) ?? .warn
-        self.applyCheatsOnLaunch = UserDefaults.standard.object(forKey: "applyCheatsOnLaunch") as? Bool ?? false
-        self.showCheatNotifications = UserDefaults.standard.object(forKey: "showCheatNotifications") as? Bool ?? true
+        self.applyCheatsOnLaunch = AppSettings.getBool(Self.keyApplyCheatsOnLaunch, defaultValue: false)
+        self.showCheatNotifications = AppSettings.getBool(Self.keyShowCheatNotifications, defaultValue: true)
     }
 }
