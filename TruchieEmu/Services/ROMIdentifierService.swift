@@ -358,8 +358,12 @@ class ROMIdentifierService {
                 } else {
                     dataToHash = fullData
                 }
+            case "genesis", "sms", "gamegear", "32x", "sg1000":
+                // SMD files often have a 512-byte header that must be stripped for CRC to match
+                // No-Intro uses clean dumps without this header
+                dataToHash = stripGenesisHeaderIfNeeded(from: fullData)
             default:
-                // Full file (No-Intro uses clean dumps for SNES, Genesis, etc.)
+                // Full file (No-Intro uses clean dumps for SNES, etc.)
                 dataToHash = fullData
             }
 
@@ -368,6 +372,60 @@ class ROMIdentifierService {
             identifyLog.error("CRC read error: \(error.localizedDescription, privacy: .public)")
             return nil
         }
+    }
+
+    /// Strips the 512-byte header from SMD Genesis ROMs when present.
+    /// SMD files from early copiers (like Pro Action Replay/Game Doctor) often include
+    /// a 512-byte header that prevents CRC matching with No-Intro database.
+    /// Heuristic: If file size > 512 bytes and (size - 512) is a valid ROM size, strip the header.
+    private func stripGenesisHeaderIfNeeded(from data: Data) -> Data {
+        let fileSize = data.count
+
+        // If file is too small to have a header
+        guard fileSize > 512 else { return data }
+
+        // Check if file already has a valid ROM size (power of 2, or common ROM sizes)
+        // Valid Genesis ROM sizes are typically powers of 2: 128KB, 256KB, 512KB, 1MB, 2MB, 4MB
+        let validSizes = [
+            131072,    // 128 KB
+            262144,    // 256 KB
+            393216,    // 384 KB (some games)
+            524288,    // 512 KB
+            655360,    // 640 KB
+            786432,    // 768 KB
+            1048576,   // 1 MB
+            1310720,   // 1.25 MB
+            1572864,   // 1.5 MB
+            2097152,   // 2 MB
+            2621440,   // 2.5 MB
+            3145728,   // 3 MB
+            4194304,   // 4 MB
+        ]
+
+        // If current size is already valid, don't strip
+        if validSizes.contains(fileSize) || isPowerOfTwo(fileSize) {
+            return data
+        }
+
+        // Try stripping 512 bytes
+        let strippedSize = fileSize - 512
+
+        // Check if stripped size is valid
+        if validSizes.contains(strippedSize) || isPowerOfTwo(strippedSize) {
+            identifyLog.info("Stripped 512-byte SMD header from ROM (original: \(fileSize) bytes → stripped: \(strippedSize) bytes)")
+            return data.dropFirst(512)
+        }
+
+        // Also check for interleaved ROMs (common in Genesis):
+        // Some SMD files are interleaved with 512-byte header at specific patterns
+        // If stripping 512 doesn't yield valid size, return original
+        return data
+    }
+
+    /// Check if a number is a power of 2
+    private func isPowerOfTwo(_ n: Int) -> Bool {
+        guard n > 0 else { return false }
+        return (n & (n - 1)) == 0
     }
 }
 

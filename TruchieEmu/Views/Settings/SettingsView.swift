@@ -355,7 +355,8 @@ struct PrimaryFolderRow: View {
                                 folder: subfolder,
                                 parentPath: folder.url.path,
                                 isPrimary: subfolder.isPrimary,
-                                depth: 0
+                                depth: 0,
+                                onRebuild: onRebuild
                             )
                         }
                     }
@@ -422,6 +423,7 @@ struct SubfolderRow: View {
     let parentPath: String
     let isPrimary: Bool // true if this subfolder was independently added as primary
     let depth: Int // nesting depth for indentation
+    let onRebuild: (LibraryFolder) -> Void
     
     @EnvironmentObject var library: ROMLibrary
     @State private var showDeleteConfirmation = false
@@ -513,6 +515,14 @@ struct SubfolderRow: View {
                 .disabled(isScanning || library.isScanning)
                 .help("Refresh this subfolder")
                 
+                Button(action: { onRebuild(folder) }) {
+                    Label("Rebuild", systemImage: "gearshape.2")
+                }
+                .buttonStyle(.bordered)
+                .controlSize(.small)
+                .disabled(isScanning || library.isScanning)
+                .help("Rebuild: Choose what to rebuild for this subfolder")
+                
                 Button(role: .destructive) {
                     showDeleteConfirmation = true
                 } label: {
@@ -570,7 +580,8 @@ struct SubfolderRow: View {
                                 folder: subfolder,
                                 parentPath: folder.url.path,
                                 isPrimary: subfolder.isPrimary,
-                                depth: depth + 1
+                                depth: depth + 1,
+                                onRebuild: onRebuild
                             )
                         }
                     }
@@ -636,7 +647,7 @@ struct RebuildOptionsSheet: View {
                     .font(.title2)
                     .fontWeight(.semibold)
                 
-                Text("Choose what to rebuild for this folder and all its subfolders:")
+                Text("Choose what to rebuild for this folder:")
                     .font(.subheadline)
                     .foregroundColor(.secondary)
                 
@@ -711,7 +722,7 @@ struct RebuildOptionsSheet: View {
                 }
                 Button("Cancel", role: .cancel) {}
             } message: {
-                Text("This will \(selectedOption?.description.lowercased() ?? "") for '\(folder.url.lastPathComponent)' and all its subfolders.\n\nContinue?")
+                Text("This will \(selectedOption?.description.lowercased() ?? "") for '\(folder.url.lastPathComponent)'.\n\nContinue?")
             }
         }
     }

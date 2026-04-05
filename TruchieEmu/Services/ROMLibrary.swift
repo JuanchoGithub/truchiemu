@@ -1000,26 +1000,33 @@ class ROMLibrary: ObservableObject {
         await rescanLibrary(at: url)
     }
     
-    /// Rebuild folder with the specified option.
+    /// Refresh a specific folder without triggering library-wide post-scan automation.
+    /// Used by rebuildFolder to avoid processing unrelated ROMs.
+    @MainActor
+    private func refreshFolderWithoutAutomation(at url: URL) async {
+        LoggerService.info(category: "ROMLibrary", "Refreshing folder (no automation): \(url.path)")
+        await rescanLibraryInternal(at: url)
+    }
+    
+    /// Rebuild a specific folder only (does not cascade into subdirectories).
+    /// Only ROMs directly inside the folder are affected. Does NOT trigger library-wide automation.
     @MainActor
     func rebuildFolder(folder: LibraryFolder, option: RebuildOption) async {
         let folderURL = folder.url
         let folderPath = folderURL.path
         
-        // Build prefix for matching ROMs in this folder tree
-        let folderPathPrefix = folderPath.hasSuffix("/") ? folderPath : folderPath + "/"
-        
         switch option {
         case .refresh:
-            // Just scan for new/deleted ROMs
-            await refreshFolder(at: folderURL)
+            // Just scan for new/deleted ROMs in this folder only
+            LoggerService.info(category: "ROMLibrary", "Refreshing folder: \(folderPath)")
+            await refreshFolderWithoutAutomation(at: folderURL)
             
         case .idRebuild:
-            // Clear identification for all ROMs in this folder tree, then re-identify
+            // Clear identification for ROMs directly inside this folder only
             LoggerService.info(category: "ROMLibrary", "Rebuilding identification for folder: \(folderPath)")
             
             let romsToReidentify = roms.filter { rom in
-                rom.path.path == folderPath || rom.path.path.hasPrefix(folderPathPrefix)
+                rom.path.deletingLastPathComponent().path == folderPath
             }
             
             // Clear identification but keep the ROM
@@ -1033,16 +1040,15 @@ class ROMLibrary: ObservableObject {
                 updated.metadata?.developer = nil
                 updated.metadata?.genre = nil
                 updated.metadata?.description = nil
-                // Name stays as the ROM file name (displayName)
                 updateROM(updated)
             }
             
-            // Re-scan to get fresh ROM list
-            await refreshFolder(at: folderURL)
+            // Re-scan this folder (no library-wide automation)
+            await refreshFolderWithoutAutomation(at: folderURL)
             
-            // Re-identify all ROMs in the folder
+            // Re-identify only ROMs directly inside this folder
             let romsInFolder = roms.filter { rom in
-                rom.path.path == folderPath || rom.path.path.hasPrefix(folderPathPrefix)
+                rom.path.deletingLastPathComponent().path == folderPath
             }
             
             LoggerService.info(category: "ROMLibrary", "Re-identifying \(romsInFolder.count) ROM(s)")
@@ -1051,11 +1057,11 @@ class ROMLibrary: ObservableObject {
             }
             
         case .boxartRebuild:
-            // Clear boxart for all ROMs in this folder tree, then re-download
+            // Clear boxart for ROMs directly inside this folder only
             LoggerService.info(category: "ROMLibrary", "Rebuilding boxart for folder: \(folderPath)")
             
             let romsToReboxart = roms.filter { rom in
-                rom.path.path == folderPath || rom.path.path.hasPrefix(folderPathPrefix)
+                rom.path.deletingLastPathComponent().path == folderPath
             }
             
             // Clear boxart
@@ -1065,16 +1071,30 @@ class ROMLibrary: ObservableObject {
                 updateROM(updated)
             }
             
-            // Re-resolve boxart
-            await LibraryAutomationCoordinator.shared.runAfterLibraryUpdate(library: self)
+            // Re-download boxart ONLY for ROMs in this folder
+            let romsNeedingArt = roms.filter { rom in
+                rom.path.deletingLastPathComponent().path == folderPath && rom.needsAutomaticBoxArt
+            }
+            if !romsNeedingArt.isEmpty {
+                LoggerService.info(category: "ROMLibrary", "Downloading boxart for \(romsNeedingArt.count) ROM(s) in folder")
+                await BoxArtService.shared.batchDownloadBoxArtLibretro(for: romsNeedingArt, library: self) { _, _, _ in }
+                // Also try LaunchBox for remaining
+                let stillMissing = roms.filter { rom in
+                    rom.path.deletingLastPathComponent().path == folderPath &&
+                    (rom.boxArtPath == nil || !FileManager.default.fileExists(atPath: rom.boxArtPath!.path))
+                }
+                if !stillMissing.isEmpty && LaunchBoxGamesDBService.shared.downloadAfterScan {
+                    await LaunchBoxGamesDBService.shared.batchDownloadBoxArt(for: stillMissing, library: self) { _, _, _ in }
+                }
+            }
             
         case .everything:
             // Refresh + ID Rebuild + Boxart Rebuild
             LoggerService.info(category: "ROMLibrary", "Rebuilding everything for folder: \(folderPath)")
             
-            // Clear identification and boxart
+            // Clear identification and boxart for ROMs directly inside this folder only
             let romsToClear = roms.filter { rom in
-                rom.path.path == folderPath || rom.path.path.hasPrefix(folderPathPrefix)
+                rom.path.deletingLastPathComponent().path == folderPath
             }
             
             for rom in romsToClear {
@@ -1091,12 +1111,12 @@ class ROMLibrary: ObservableObject {
                 updateROM(updated)
             }
             
-            // Re-scan
-            await refreshFolder(at: folderURL)
+            // Re-scan (no library-wide automation)
+            await refreshFolderWithoutAutomation(at: folderURL)
             
-            // Re-identify
+            // Re-identify only ROMs directly inside this folder
             let romsInFolder = roms.filter { rom in
-                rom.path.path == folderPath || rom.path.path.hasPrefix(folderPathPrefix)
+                rom.path.deletingLastPathComponent().path == folderPath
             }
             
             LoggerService.info(category: "ROMLibrary", "Re-identifying \(romsInFolder.count) ROM(s)")
@@ -1104,8 +1124,21 @@ class ROMLibrary: ObservableObject {
                 _ = await identifyROM(rom)
             }
             
-            // Re-download boxart
-            await LibraryAutomationCoordinator.shared.runAfterLibraryUpdate(library: self)
+            // Re-download boxart ONLY for ROMs in this folder
+            let romsNeedingArt = roms.filter { rom in
+                rom.path.deletingLastPathComponent().path == folderPath && rom.needsAutomaticBoxArt
+            }
+            if !romsNeedingArt.isEmpty {
+                LoggerService.info(category: "ROMLibrary", "Downloading boxart for \(romsNeedingArt.count) ROM(s) in folder")
+                await BoxArtService.shared.batchDownloadBoxArtLibretro(for: romsNeedingArt, library: self) { _, _, _ in }
+                let stillMissing = roms.filter { rom in
+                    rom.path.deletingLastPathComponent().path == folderPath &&
+                    (rom.boxArtPath == nil || !FileManager.default.fileExists(atPath: rom.boxArtPath!.path))
+                }
+                if !stillMissing.isEmpty && LaunchBoxGamesDBService.shared.downloadAfterScan {
+                    await LaunchBoxGamesDBService.shared.batchDownloadBoxArt(for: stillMissing, library: self) { _, _, _ in }
+                }
+            }
         }
     }
 
@@ -1213,6 +1246,15 @@ class ROMLibrary: ObservableObject {
     }
 
     func rescanLibrary(at url: URL) async {
+        await rescanLibraryInternal(at: url)
+        await LibraryAutomationCoordinator.shared.runAfterLibraryUpdate(library: self)
+        await MetadataSyncCoordinator.shared.runAfterLibraryUpdate(library: self)
+    }
+    
+    /// Internal scan method — does NOT trigger library-wide post-scan automation.
+    /// Used by refreshFolderWithoutAutomation for targeted folder rebuilds.
+    @MainActor
+    private func rescanLibraryInternal(at url: URL) async {
         isScanning = true
         scanProgress = 0
         scanCancellationToken.reset()
@@ -1278,8 +1320,6 @@ class ROMLibrary: ObservableObject {
 
         isScanning = false
         cleanupScummVMCaches()
-        await LibraryAutomationCoordinator.shared.runAfterLibraryUpdate(library: self)
-        await MetadataSyncCoordinator.shared.runAfterLibraryUpdate(library: self)
     }
     
 }
