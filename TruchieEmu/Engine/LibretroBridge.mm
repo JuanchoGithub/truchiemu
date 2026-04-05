@@ -81,6 +81,7 @@ typedef void (^VideoFrameCallback)(const void *data, int width, int height, int 
     fn_retro_set_audio_sample_batch _retro_set_audio_sample_batch;
     fn_retro_set_input_poll _retro_set_input_poll;
     fn_retro_set_input_state _retro_set_input_state;
+    fn_retro_get_system_info _retro_get_system_info;
     fn_retro_load_game _retro_load_game;
     fn_retro_unload_game _retro_unload_game;
     fn_retro_run _retro_run;
@@ -167,7 +168,7 @@ static void initOptStorage() {
 
 /* Parse V2 definitions into the global dict.
  * Called from the C environment callback. */
-__attribute__((unused)) static void parseCoreOptionsV2(struct retro_core_options_v2 *opts) {
+static void parseCoreOptionsV2(struct retro_core_options_v2 *opts) {
     initOptStorage();
     [g_optValues removeAllObjects];
     
@@ -177,12 +178,18 @@ __attribute__((unused)) static void parseCoreOptionsV2(struct retro_core_options
     /* Parse categories */
     if (opts && opts->categories) {
         struct retro_core_option_v2_category *cat = opts->categories;
-        while (cat->key) {
-            cats[[NSString stringWithUTF8String:cat->key]] = @{
-                @"desc": cat->desc ? [NSString stringWithUTF8String:cat->desc] : @"",
-                @"info": cat->info ? [NSString stringWithUTF8String:cat->info] : @""
-            };
+        int catCount = 0;
+        while (cat->key && catCount < 256) {
+            @try {
+                cats[[NSString stringWithUTF8String:cat->key]] = @{
+                    @"desc": cat->desc ? [NSString stringWithUTF8String:cat->desc] : @"",
+                    @"info": cat->info ? [NSString stringWithUTF8String:cat->info] : @""
+                };
+            } @catch (NSException *exception) {
+                NSLog(@"[Bridge-WRN] Failed to parse category: %@", exception.reason);
+            }
             cat++;
+            catCount++;
         }
     }
     g_optCategories = [cats copy];
@@ -190,35 +197,49 @@ __attribute__((unused)) static void parseCoreOptionsV2(struct retro_core_options
     /* Parse definitions */
     if (opts && opts->definitions) {
         struct retro_core_option_v2_definition *def = opts->definitions;
-        while (def->key) {
-            NSString *key = [NSString stringWithUTF8String:def->key];
-            NSString *desc = [NSString stringWithUTF8String:(def->desc_categorized ?: def->desc)];
-            NSString *info = [NSString stringWithUTF8String:(def->info_categorized ?: def->info)];
-            NSString *catKey = def->category_key ? [NSString stringWithUTF8String:def->category_key] : nil;
-            NSString *defaultVal = def->default_value ? [NSString stringWithUTF8String:def->default_value] : @"";
-            
-            NSMutableArray *vals = [NSMutableArray array];
-            /* Parse possible values from fixed-size array */
-            for (int vi = 0; vi < RETRO_NUM_CORE_OPTION_VALUES_MAX && def->values[vi].value; vi++) {
-                NSString *vval = [NSString stringWithUTF8String:def->values[vi].value];
-                NSString *vlabel = def->values[vi].label
-                    ? [NSString stringWithUTF8String:def->values[vi].label]
-                    : vval;
-                [vals addObject:@{@"value": vval, @"label": vlabel}];
+        /* Safety limit to prevent infinite loops from corrupted data */
+        int defCount = 0;
+        while (def && def->key && defCount < 512) {
+            @try {
+                NSString *key = [NSString stringWithUTF8String:def->key];
+                NSString *desc = [NSString stringWithUTF8String:(def->desc_categorized ?: def->desc)];
+                NSString *info = [NSString stringWithUTF8String:(def->info_categorized ?: def->info)];
+                NSString *catKey = def->category_key ? [NSString stringWithUTF8String:def->category_key] : nil;
+                NSString *defaultVal = def->default_value ? [NSString stringWithUTF8String:def->default_value] : @"";
+                
+                /* Parse possible values - fixed-size array with safety check */
+                NSMutableArray *vals = [NSMutableArray array];
+                for (int vi = 0; vi < RETRO_NUM_CORE_OPTION_VALUES_MAX; vi++) {
+                    const char *valStr = def->values[vi].value;
+                    if (!valStr) break;
+                    
+                    @try {
+                        NSString *vval = [NSString stringWithUTF8String:valStr];
+                        NSString *vlabel = def->values[vi].label
+                            ? [NSString stringWithUTF8String:def->values[vi].label]
+                            : vval;
+                        [vals addObject:@{@"value": vval, @"label": vlabel}];
+                    } @catch (NSException *exception) {
+                        NSLog(@"[Bridge-WRN] Failed to parse option value: %@", exception.reason);
+                        break;
+                    }
+                }
+                
+                defs[key] = @{
+                    @"desc": desc ?: @"",
+                    @"info": info ?: @"",
+                    @"defaultValue": defaultVal,
+                    @"category": catKey ?: @"",
+                    @"values": [vals copy]
+                };
+                
+                /* Set initial value to default */
+                g_optValues[key] = defaultVal;
+            } @catch (NSException *exception) {
+                NSLog(@"[Bridge-WRN] Failed to parse option definition: %@", exception.reason);
             }
-            
-            defs[key] = @{
-                @"desc": desc ?: @"",
-                @"info": info ?: @"",
-                @"defaultValue": defaultVal,
-                @"category": catKey ?: @"",
-                @"values": [vals copy]
-            };
-            
-            /* Set initial value to default */
-            g_optValues[key] = defaultVal;
-            
             def++;
+            defCount++;
         }
     }
     g_optDefinitions = [defs copy];
@@ -233,33 +254,47 @@ __attribute__((unused)) static void parseCoreOptionsV1(struct retro_core_options
     
     if (opts && opts->definitions) {
         struct retro_core_option_definition *def = opts->definitions;
-        while (def && def->key) {
-            NSString *key = [NSString stringWithUTF8String:def->key];
-            NSString *desc = def->desc ? [NSString stringWithUTF8String:def->desc] : @"";
-            NSString *info = def->info ? [NSString stringWithUTF8String:def->info] : @"";
-            NSString *defaultVal = def->default_value ? [NSString stringWithUTF8String:def->default_value] : @"";
-            
-            NSMutableArray *vals = [NSMutableArray array];
-            /* Parse possible values from the fixed-size array */
-            for (int vi = 0; vi < RETRO_NUM_CORE_OPTION_VALUES_MAX && def->values[vi].value; vi++) {
-                NSString *vval = [NSString stringWithUTF8String:def->values[vi].value];
-                NSString *vlabel = def->values[vi].label
-                    ? [NSString stringWithUTF8String:def->values[vi].label]
-                    : vval;
-                [vals addObject:@{@"value": vval, @"label": vlabel}];
+        /* Safety limit to prevent infinite loops from corrupted data */
+        int defCount = 0;
+        while (def && def->key && defCount < 512) {
+            @try {
+                NSString *key = [NSString stringWithUTF8String:def->key];
+                NSString *desc = def->desc ? [NSString stringWithUTF8String:def->desc] : @"";
+                NSString *info = def->info ? [NSString stringWithUTF8String:def->info] : @"";
+                NSString *defaultVal = def->default_value ? [NSString stringWithUTF8String:def->default_value] : @"";
+                
+                NSMutableArray *vals = [NSMutableArray array];
+                /* Parse possible values from fixed-size array with safety check */
+                for (int vi = 0; vi < RETRO_NUM_CORE_OPTION_VALUES_MAX; vi++) {
+                    const char *valStr = def->values[vi].value;
+                    if (!valStr) break;
+                    
+                    @try {
+                        NSString *vval = [NSString stringWithUTF8String:valStr];
+                        NSString *vlabel = def->values[vi].label
+                            ? [NSString stringWithUTF8String:def->values[vi].label]
+                            : vval;
+                        [vals addObject:@{@"value": vval, @"label": vlabel}];
+                    } @catch (NSException *exception) {
+                        NSLog(@"[Bridge-WRN] Failed to parse option value: %@", exception.reason);
+                        break;
+                    }
+                }
+                
+                defs[key] = @{
+                    @"desc": desc,
+                    @"info": info,
+                    @"defaultValue": defaultVal,
+                    @"category": @"",
+                    @"values": [vals copy]
+                };
+                
+                g_optValues[key] = defaultVal;
+            } @catch (NSException *exception) {
+                NSLog(@"[Bridge-WRN] Failed to parse option definition: %@", exception.reason);
             }
-            
-            defs[key] = @{
-                @"desc": desc,
-                @"info": info,
-                @"defaultValue": defaultVal,
-                @"category": @"",
-                @"values": [vals copy]
-            };
-            
-            g_optValues[key] = defaultVal;
-            
             def++;
+            defCount++;
         }
     }
     g_optCategories = @{};
@@ -417,7 +452,7 @@ static bool bridge_environment(unsigned cmd, void *data) {
             }
             return true;
         case RETRO_ENVIRONMENT_GET_CORE_OPTIONS_VERSION:
-            if (data) *(unsigned *)data = 1;
+            if (data) *(unsigned *)data = 2;
             return true;
         case RETRO_ENVIRONMENT_GET_LANGUAGE:
             if (data) *(unsigned *)data = RETRO_LANGUAGE_ENGLISH;
@@ -466,13 +501,11 @@ static bool bridge_environment(unsigned cmd, void *data) {
                     { var->value = "enabled"; return true; }
                 
                 // ── Read from g_optValues (populated by SET_CORE_OPTIONS handlers) ──
-                // This is the critical link: cores query GET_VARIABLE to read option values,
-                // and we must return the user's override (or the default from g_optValues).
-                if (g_optValues) {
+                static __thread char g_varBuf[512];
+                if (g_optValues && g_optValues.count > 0) {
                     NSString *keyStr = [NSString stringWithUTF8String:var->key];
                     NSString *valStr = g_optValues[keyStr];
-                    if (valStr) {
-                        static __thread char g_varBuf[512];
+                    if (valStr && valStr.length > 0) {
                         strncpy(g_varBuf, valStr.UTF8String, sizeof(g_varBuf) - 1);
                         g_varBuf[sizeof(g_varBuf) - 1] = '\0';
                         var->value = g_varBuf;
@@ -480,6 +513,8 @@ static bool bridge_environment(unsigned cmd, void *data) {
                     }
                 }
                 
+                // Unknown variable: return false so the core uses its own internal defaults.
+                // Returning true with empty string causes crashes (e.g. picodrive_input: '').
                 var->value = NULL;
             }
             return false;
@@ -494,6 +529,11 @@ static bool bridge_environment(unsigned cmd, void *data) {
         case RETRO_ENVIRONMENT_SET_INPUT_DESCRIPTORS:
         case RETRO_ENVIRONMENT_SET_DISK_CONTROL_INTERFACE:
         case RETRO_ENVIRONMENT_SET_VARIABLES:          // core tells us what options exist — we acknowledge
+        case RETRO_ENVIRONMENT_SET_SERIALIZATION_QUIRKS:
+        case RETRO_ENVIRONMENT_SET_PERFORMANCE_LEVEL:
+        case RETRO_ENVIRONMENT_SET_CONTROLLER_INFO:
+        case RETRO_ENVIRONMENT_SET_CONTENT_INFO_OVERRIDE:
+        case RETRO_ENVIRONMENT_SET_SUBSYSTEM_INFO:
             return true;
         case RETRO_ENVIRONMENT_SET_CORE_OPTIONS: {
             if (data) parseCoreOptionsV1((struct retro_core_options *)data);
@@ -510,6 +550,7 @@ static bool bridge_environment(unsigned cmd, void *data) {
             return true;
         }
         case RETRO_ENVIRONMENT_SET_CORE_OPTIONS_V2: {
+            // Parse V2 options into g_optValues for core option persistence.
             if (data) parseCoreOptionsV2((struct retro_core_options_v2 *)data);
             applyPersistedOverrides();
             return true;
@@ -522,6 +563,13 @@ static bool bridge_environment(unsigned cmd, void *data) {
             applyPersistedOverrides();
             return true;
         }
+        case RETRO_ENVIRONMENT_GET_GAME_INFO_EXT:
+            // We don't support extended game info — return false so core
+            // falls back to the standard retro_game_info path.
+            return false;
+        case RETRO_ENVIRONMENT_SET_CORE_OPTIONS_DISPLAY:
+        case RETRO_ENVIRONMENT_SET_CORE_OPTIONS_UPDATE_DISPLAY_CALLBACK:
+            return true;
         case RETRO_ENVIRONMENT_SET_SUPPORT_NO_GAME:
             return true;
         case RETRO_ENVIRONMENT_SET_SYSTEM_AV_INFO:
@@ -574,11 +622,18 @@ static bool bridge_environment(unsigned cmd, void *data) {
         case RETRO_ENVIRONMENT_GET_PERF_INTERFACE:
         case RETRO_ENVIRONMENT_GET_RUMBLE_INTERFACE:
         case RETRO_ENVIRONMENT_GET_SENSOR_INTERFACE:
+        case RETRO_ENVIRONMENT_GET_VFS_INTERFACE:
+        case RETRO_ENVIRONMENT_GET_LED_INTERFACE:
+        case RETRO_ENVIRONMENT_GET_MIDI_INTERFACE:
+        case RETRO_ENVIRONMENT_GET_INPUT_BITMASKS:
             return false;
         case RETRO_ENVIRONMENT_GET_AUDIO_VIDEO_ENABLE:
             if (data) *(int*)data = 3; // Enable both
             return true;
         default: 
+            if (cmd < 1000) { // Avoid logging internal/private values unless needed
+                NSLog(@"[Bridge-WRN] Unhandled environment command: %u", cmd);
+            }
             return false;
     }
 }
@@ -741,6 +796,7 @@ static int16_t bridge_input_state(unsigned port, unsigned device, unsigned index
     LOAD_SYM(retro_set_audio_sample_batch)
     LOAD_SYM(retro_set_input_poll)
     LOAD_SYM(retro_set_input_state)
+    LOAD_SYM(retro_get_system_info)
     LOAD_SYM(retro_load_game)
     LOAD_SYM(retro_unload_game)
     LOAD_SYM(retro_run)
@@ -759,32 +815,57 @@ static int16_t bridge_input_state(unsigned port, unsigned device, unsigned index
 - (BOOL)launchROM:(NSString *)romPath videoCallback:(VideoFrameCallback)cb {
     _videoCallback = cb;
     _retainedRomPath = [romPath copy];
-    _retainedRomData = [[NSData alloc] initWithContentsOfFile:_retainedRomPath];
-    NSLog(@"[Bridge] Loading ROM: %@ (Size: %lu bytes)", _retainedRomPath, (unsigned long)_retainedRomData.length);
-
-
-    // ── MAME-only: detect MAME core for specific timing/pixel-format fixes ──
-    _isMameLaunch = (g_coreID && [[g_coreID lowercaseString] containsString:@"mame"]);
-    if (_isMameLaunch) {
-        // MAME cores use XRGB8888 by default but rarely send SET_PIXEL_FORMAT.
-        // Defaulting to 1 (XRGB8888) avoids the 0RGB1555 misinterpretation
-        // that causes scrambled/garbage colors and broken pitch calculations.
-        _pixelFormat = 1; // RETRO_PIXEL_FORMAT_XRGB8888
-        NSLog(@"[Bridge] MAME core detected ('%@'): pixel format forced to XRGB8888 (1)", g_coreID);
-    }
+    _retainedRomData = nil;
+    
+    // Setup callbacks before querying anything
     _retro_set_environment(bridge_environment);
     _retro_set_video_refresh(bridge_video_refresh);
     _retro_set_audio_sample(bridge_audio_sample);
     _retro_set_audio_sample_batch(bridge_audio_sample_batch);
     _retro_set_input_poll(bridge_input_poll);
     _retro_set_input_state(bridge_input_state);
+
+    // ── MAME-only: detect MAME core for specific timing/pixel-format fixes ──
+    _isMameLaunch = (g_coreID && [[g_coreID lowercaseString] containsString:@"mame"]);
+    if (_isMameLaunch) {
+        _pixelFormat = 1; // RETRO_PIXEL_FORMAT_XRGB8888
+        NSLog(@"[Bridge] MAME core detected ('%@'): pixel format forced to XRGB8888 (1)", g_coreID);
+    }
+    
+    // Query system info to check for need_fullpath
+    struct retro_system_info sysInfo = {0};
+    bool needsFullPath = false;
+    if (_retro_get_system_info) {
+        _retro_get_system_info(&sysInfo);
+        needsFullPath = sysInfo.need_fullpath;
+        NSLog(@"[Bridge] Core: %s (v%s), Extensions: %s, NeedFullPath: %d", 
+              sysInfo.library_name ? sysInfo.library_name : "Unknown", 
+              sysInfo.library_version ? sysInfo.library_version : "?.?", 
+              sysInfo.valid_extensions ? sysInfo.valid_extensions : "*",
+              needsFullPath);
+    }
+    
+    // Conditionally load ROM into memory
+    if (!needsFullPath) {
+        _retainedRomData = [[NSData alloc] initWithContentsOfFile:_retainedRomPath];
+        NSLog(@"[Bridge] Loaded ROM buffer (%lu bytes)", (unsigned long)_retainedRomData.length);
+    } else {
+        NSLog(@"[Bridge] Core sets need_fullpath=true. Skipping memory buffer load for path='%@'.", _retainedRomPath);
+    }
     
     _retro_init();
     
     struct retro_game_info gi = {0};
     gi.path = _retainedRomPath.UTF8String;
-    gi.data = _retainedRomData.bytes;
-    gi.size = _retainedRomData.length;
+    
+    if (needsFullPath) {
+        gi.data = NULL;
+        gi.size = 0;
+    } else {
+        gi.data = _retainedRomData.bytes;
+        gi.size = _retainedRomData.length;
+    }
+    
     gi.meta = NULL;
     
     if (!_retro_load_game) {
@@ -792,7 +873,24 @@ static int16_t bridge_input_state(unsigned port, unsigned device, unsigned index
         return NO;
     }
     
-    if (!_retro_load_game(&gi)) return NO;
+    if (!gi.data && !needsFullPath) {
+        NSLog(@"[Bridge-WRN] No data passed and need_fullpath=false. Core might fail if it expects ROM data.");
+    }
+    
+    NSLog(@"[Bridge] Calling retro_load_game with path='%s', size=%lu", gi.path ? gi.path : "(null)", (unsigned long)gi.size);
+    
+    @try {
+        if (!g_instance->_retro_load_game(&gi)) {
+            NSLog(@"[Bridge-ERR] retro_load_game returned NO (failed)");
+            return NO;
+        }
+    } @catch (NSException *exception) {
+        NSLog(@"[Bridge-ERR] retro_load_game crashed: %@", exception.reason);
+        return NO;
+    } @catch (...) {
+        NSLog(@"[Bridge-ERR] retro_load_game crashed with unknown exception");
+        return NO;
+    }
     
     // config A/V
     _retro_get_system_av_info(&_avInfo);
@@ -1192,11 +1290,9 @@ static int16_t bridge_input_state(unsigned port, unsigned device, unsigned index
     g_coreID = [coreID copy];
     g_shaderDir = [shaderDir copy];
     initOptStorage();
-    // Preserve g_optCategories (not affected by core swap)
-    // g_optDefinitions cleared when SET_CORE_OPTIONS fires
-    // Pre-load persisted overrides NOW so GET_VARIABLE returns them even before
-    // SET_CORE_OPTIONS_V2 fires (mGBA and other cores query early during load)
-    applyPersistedOverrides();
+    [g_optValues removeAllObjects];
+    g_optDefinitions = nil;
+    g_optCategories = nil;
 
     dispatch_async(g_bridgeQueue, ^{
         if (g_instance) {
