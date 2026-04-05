@@ -69,7 +69,15 @@ final class DatabaseManager {
     // handles concurrent reads efficiently, and this avoids race conditions.
     private let queue = DispatchQueue(label: "com.truchiemu.database", qos: .userInitiated)
 
-    private init() {}
+    /// Dispatch-specific key for detecting reentrant calls on the database queue.
+    /// This prevents deadlocks when code running on the queue calls back into
+    /// DatabaseManager methods that would otherwise do queue.sync (deadlock).
+    private static let reentrancyKey = DispatchSpecificKey<Bool>()
+
+    private init() {
+        // Set the reentrancy key on the queue so we can detect when we're already on it
+        queue.setSpecific(key: DatabaseManager.reentrancyKey, value: true)
+    }
 
     // MARK: - Connection Lifecycle
 
@@ -551,10 +559,22 @@ final class DatabaseManager {
         }
     }
 
+    /// Check if the current thread is executing on the database queue.
+    /// Uses DispatchQueue.getSpecific with a key set on the queue in init().
+    private func isCurrentOnDatabaseQueue() -> Bool {
+        return DispatchQueue.getSpecific(key: DatabaseManager.reentrancyKey) == true
+    }
+
     // MARK: - Convenience: Settings
 
     func getSetting(_ key: String) -> String? {
-        queue.sync { () -> String? in
+        if isCurrentOnDatabaseQueue() {
+            guard let db = db else { return nil }
+            return _query(db: db, sql: "SELECT value FROM settings WHERE key = ?", bindings: [key]) { stmt in
+                self.columnString(stmt: stmt, index: 0)
+            }.first
+        }
+        return queue.sync { () -> String? in
             guard let db = db else { return nil }
             return _query(db: db, sql: "SELECT value FROM settings WHERE key = ?", bindings: [key]) { stmt in
                 self.columnString(stmt: stmt, index: 0)
@@ -567,7 +587,13 @@ final class DatabaseManager {
     }
 
     func getBoolSetting(_ key: String, defaultValue: Bool) -> Bool {
-        queue.sync { () -> Bool in
+        if isCurrentOnDatabaseQueue() {
+            guard let db = db else { return defaultValue }
+            return _query(db: db, sql: "SELECT value FROM settings WHERE key = ?", bindings: [key]) { stmt in
+                self.columnString(stmt: stmt, index: 0)
+            }.first.map { $0 == "1" || $0.lowercased() == "true" } ?? defaultValue
+        }
+        return queue.sync { () -> Bool in
             guard let db = db else { return defaultValue }
             return _query(db: db, sql: "SELECT value FROM settings WHERE key = ?", bindings: [key]) { stmt in
                 self.columnString(stmt: stmt, index: 0)
@@ -655,7 +681,7 @@ final class DatabaseManager {
     }
 
     private func _deleteROMsByPath(_ paths: [String]) {
-        guard let db = db else { return }
+        guard db != nil else { return }
         guard !paths.isEmpty else { return }
 
         let sql = "DELETE FROM roms WHERE path = ?"

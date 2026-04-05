@@ -172,7 +172,7 @@ class ROMIdentifierService {
     }
 
     /// Compare No-Intro titles after stripping region/version parentheticals.
-    private static func normalizedComparableTitle(_ s: String) -> String {
+    fileprivate static func normalizedComparableTitle(_ s: String) -> String {
         let stripped = LibretroThumbnailResolver.stripParenthesesForFuzzyMatch(s)
         return stripped
             .lowercased()
@@ -406,24 +406,90 @@ actor LibretroDatabaseLibrary {
 
     /// Exact `.dat` basenames as in [libretro-database](https://github.com/libretro/libretro-database) (`metadat/no-intro`, `metadat/redump`, etc.).
     /// Use when `"\(manufacturer) - \(name).dat"` does not match upstream (short display names vs official No-Intro set names).
+    /// Mappings verified against actual GitHub repository filenames — see docs/LIBRETRO_DATABASE_NAMING_DICTIONARY.md.
     private static let libretroDatBasenameOverrides: [String: String] = [
+        // Nintendo (No-Intro)
+        "nes": "Nintendo - Nintendo Entertainment System.dat",
         "snes": "Nintendo - Super Nintendo Entertainment System.dat",
+        "n64": "Nintendo - Nintendo 64.dat",
+        "nds": "Nintendo - Nintendo DS.dat",
+        "ndsi": "Nintendo - Nintendo DSi.dat",
+        "gb": "Nintendo - Game Boy.dat",
+        "gbc": "Nintendo - Game Boy Color.dat",
+        "gba": "Nintendo - Game Boy Advance.dat",
+        "vb": "Nintendo - Virtual Boy.dat",
+        "fds": "Nintendo - Family Computer Disk System.dat",
+        "sufami": "Nintendo - Sufami Turbo.dat",
+        "satellaview": "Nintendo - Satellaview.dat",
+        "n64dd": "Nintendo - Nintendo 64DD.dat",
+        "pokemon_mini": "Nintendo - Pokemon Mini.dat",
+        "ereader": "Nintendo - e-Reader.dat",
+        // Sega (No-Intro)
         "genesis": "Sega - Mega Drive - Genesis.dat",
-        "pce": "NEC - PC Engine - TurboGrafx 16.dat",
         "sms": "Sega - Master System - Mark III.dat",
         "gamegear": "Sega - Game Gear.dat",
-        "saturn": "Sega - Saturn.dat",
         "32x": "Sega - 32X.dat",
+        "saturn": "Sega - Saturn.dat",
         "dreamcast": "Sega - Dreamcast.dat",
+        "sg1000": "Sega - SG-1000.dat",
+        "pico": "Sega - PICO.dat",
+        "beenab": "Sega - Beena.dat",
+        // Sony (Redump — files use Sony - not Sega convention)
+        "psx": "Sony - PlayStation.dat",
+        "ps2": "Sony - PlayStation 2.dat",
+        "psp": "Sony - PlayStation Portable.dat",
+        "ps3": "Sony - PlayStation 3.dat",
+        "psvita": "Sony - PlayStation Vita.dat",
+        // Atari (No-Intro)
         "atari2600": "Atari - 2600.dat",
         "atari5200": "Atari - 5200.dat",
         "atari7800": "Atari - 7800.dat",
         "lynx": "Atari - Lynx.dat",
-        "gb": "Nintendo - Game Boy.dat",
-        "gbc": "Nintendo - Game Boy Color.dat",
-        "gba": "Nintendo - Game Boy Advance.dat",
-        // libretro-database metadat/mame/MAME.dat
+        "jaguar": "Atari - Jaguar.dat",
+        "atari8": "Atari - 8-bit Family.dat",
+        "atarist": "Atari - ST.dat",
+        // Arcade
         "mame": "MAME.dat",
+        // SNK / Neo Geo (No-Intro)
+        "ngp": "SNK - Neo Geo Pocket.dat",
+        "ngc": "SNK - Neo Geo Pocket Color.dat",
+        // NEC (No-Intro)
+        "pce": "NEC - PC Engine - TurboGrafx 16.dat",
+        "supergrafx": "NEC - PC Engine SuperGrafx.dat",
+        "pc98": "NEC - PC-98.dat",
+        "pc88": "NEC - PC-8001 - PC-8801.dat",
+        "x1": "Sharp - X1.dat",
+        // Bandai / WonderSwan
+        "wonderswan": "Bandai - WonderSwan.dat",
+        "wswanc": "Bandai - WonderSwan Color.dat",
+        // Microsoft / Commodore / Sinclair
+        "c64": "Commodore - 64.dat",
+        "amiga": "Commodore - Amiga.dat",
+        "msx": "Microsoft - MSX.dat",
+        "msx2": "Microsoft - MSX2.dat",
+        "zx_spectrum": "Sinclair - ZX Spectrum +3.dat",
+        "x68000": "Sharp - X68000.dat",
+        // Nintendo (wii — Redump, 3ds — No-Intro)
+        "wii": "Nintendo - Wii.dat",
+        "3ds": "Nintendo - Nintendo 3DS.dat",
+        // Disc-based Redump systems (only in metadat/redump/)
+        "segacd": "Sega - Mega-CD - Sega CD.dat",
+        "pcecd": "NEC - PC Engine CD - TurboGrafx-CD.dat",
+        "pcfx": "NEC - PC-FX.dat",
+        "jaguar_cd": "Atari - Jaguar CD.dat",
+        "cd32": "Commodore - CD32.dat",
+        "cdtv": "Commodore - CDTV.dat",
+    ]
+
+    /// Systems whose DAT files only exist in Redump (not No-Intro). These are disc-based systems.
+    private static let redumpOnlySystems: Set<String> = [
+        "psx", "ps2", "psp", "psvita", "ps3",
+        "segacd", "pcecd",
+        "pcfx", "pc98",
+        "jaguar_cd",
+        "cd32", "cdtv",
+        "wii",
+        "gcn",
     ]
 
     /// [libretro-database `rdb/`](https://github.com/libretro/libretro-database/tree/master/rdb): `MAME.rdb` plus per-core `MAME *.rdb` files.
@@ -564,6 +630,42 @@ actor LibretroDatabaseLibrary {
         return nil
     }
     
+    /// Find all DAT entries that share the same base title as the given game name.
+    /// Strips region/variant tags (parentheticals) and matches on exact base title only.
+    /// Sequels (e.g. "Columns II") and different games (e.g. "Super Columns") are NOT matched.
+    func findVariantEntries(for gameName: String, systemID: String) async -> [String] {
+        guard let system = SystemDatabase.system(forID: systemID) else { return [] }
+        // Ensure db is loaded for this system
+        let fullDb = await fetchAndLoadDat(for: system)
+
+        // Compute the base title by stripping parentheticals
+        let baseTitle = ROMIdentifierService.normalizedComparableTitle(gameName)
+        guard baseTitle.count >= 2 else { return [] }
+
+        var variants: [String] = []
+        for (_, info) in fullDb {
+            let entryBase = ROMIdentifierService.normalizedComparableTitle(info.name)
+            // Exact match on base title only — "columns" != "columns ii", "super columns", etc.
+            if entryBase == baseTitle {
+                variants.append(info.name)
+            }
+        }
+        return variants
+    }
+
+    /// Fetch and load DAT by systemID only (convenience when SystemInfo is not available).
+    private func fetchAndLoadDat(forSystemID systemID: String) async -> [String: GameInfo] {
+        if let db = databases[systemID] {
+            return db
+        }
+        if systemID == "gb" || systemID == "gbc" {
+            if let merged = databases[LibretroDatabaseLibrary.gbFamilyCacheKey] {
+                return merged
+            }
+        }
+        return [:]
+    }
+
     /// Ensures we have the database locally, optionally downloading it from GitHub. Order: **No-Intro `.dat`** → **other `.dat` trees** → **`rdb/` RDB** (compiled libretrodb).
     /// For **Game Boy** and **Game Boy Color**, loads and merges **both** sets (mixed libraries).
     func fetchAndLoadDat(for system: SystemInfo) async -> [String: GameInfo] {

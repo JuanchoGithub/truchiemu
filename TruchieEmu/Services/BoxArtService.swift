@@ -59,7 +59,7 @@ class BoxArtService: ObservableObject {
     }
 
     var useHeadBeforeThumbnailDownload: Bool {
-        get { AppSettings.getBool(keyHeadBeforeDownload, defaultValue: false) }
+        get { AppSettings.getBool(keyHeadBeforeDownload, defaultValue: true) }
         set { AppSettings.setBool(keyHeadBeforeDownload, value: newValue) }
     }
 
@@ -219,6 +219,20 @@ class BoxArtService: ObservableObject {
             let (tmpURL, response) = try await sess.download(from: artURL)
             if let httpResponse = response as? HTTPURLResponse {
                 LoggerService.debug(category: "BoxArt", "downloadAndCache: HTTP status \(httpResponse.statusCode), MIME type: \(httpResponse.mimeType ?? "unknown"), Content-Length: \(httpResponse.expectedContentLength) bytes")
+
+                // Validate HTTP status code — reject non-2xx responses (e.g., 404 error pages saved as images)
+                guard (200...299).contains(httpResponse.statusCode) else {
+                    LoggerService.warning(category: "BoxArt", "downloadAndCache: HTTP \(httpResponse.statusCode) for '\(rom.name)' from \(artURL.absoluteString) — skipping save")
+                    return nil
+                }
+
+                // Validate content type — reject HTML responses that aren't images
+                let contentType = httpResponse.mimeType ?? ""
+                let validImageTypes = ["image/png", "image/jpeg", "image/jpg", "image/gif", "image/webp", "image/bmp"]
+                guard validImageTypes.contains(contentType.lowercased()) else {
+                    LoggerService.warning(category: "BoxArt", "downloadAndCache: non-image content type '\(contentType)' for '\(rom.name)' from \(artURL.absoluteString) — skipping save")
+                    return nil
+                }
             }
             try FileManager.default.moveItem(at: tmpURL, to: localURL)
             await ImageCache.shared.removeImage(for: localURL)
@@ -251,6 +265,21 @@ class BoxArtService: ObservableObject {
         }
         LoggerService.info(category: "BoxArt", "Libretro: resolved title = '\(gameTitle)'")
 
+        // Find known DAT variants for this game — real entries from the libretro database
+        // that share the same base title. These are tried BEFORE arbitrary suffix guessing.
+        let knownVariants: [String]
+        if useCRCMatchingForThumbnails, let romSystemID = rom.systemID {
+            LoggerService.debug(category: "BoxArt", "Libretro: querying DAT for known variants of '\(gameTitle)' in system '\(romSystemID)'")
+            knownVariants = await LibretroDatabaseLibrary.shared.findVariantEntries(for: gameTitle, systemID: romSystemID)
+            if knownVariants.isEmpty {
+                LoggerService.debug(category: "BoxArt", "Libretro: no additional DAT variants found for '\(gameTitle)'")
+            } else {
+                LoggerService.info(category: "BoxArt", "Libretro: found \(knownVariants.count) DAT variant(s) for '\(gameTitle)': \(knownVariants.joined(separator: ", "))")
+            }
+        } else {
+            knownVariants = []
+        }
+
         let localBoxArtDir = rom.path.deletingLastPathComponent().appendingPathComponent("boxart", isDirectory: true)
         LoggerService.info(category: "BoxArt", "Libretro: checking local boxart directory: \(localBoxArtDir.path)")
 
@@ -259,17 +288,24 @@ class BoxArtService: ObservableObject {
         for stem in [gameTitle, safeStem] where !stem.isEmpty {
             LoggerService.debug(category: "BoxArt", "Libretro: checking local thumbnail for stem '\(stem)' in \(localBoxArtDir.path)")
             if let local = LibretroThumbnailResolver.resolveLocalThumbnail(named: stem, in: localBoxArtDir) {
-                LoggerService.info(category: "BoxArt", "Libretro: using local boxart \(local.lastPathComponent) for '\(rom.name)' (local file path: \(local.path))")
-                return local
+                // Validate that the local file is actually a valid image, not a saved error page
+                if isValidImageFile(at: local) {
+                    LoggerService.info(category: "BoxArt", "Libretro: using local boxart \(local.lastPathComponent) for '\(rom.name)' (local file path: \(local.path))")
+                    return local
+                } else {
+                    LoggerService.warning(category: "BoxArt", "Libretro: local file \(local.lastPathComponent) is not a valid image (possibly a saved error page), removing it")
+                    try? FileManager.default.removeItem(at: local)
+                }
             }
         }
         LoggerService.debug(category: "BoxArt", "Libretro: no local thumbnails found in \(localBoxArtDir.lastPathComponent)")
 
-        LoggerService.info(category: "BoxArt", "Libretro: generating candidate URLs from CDN base \(thumbnailServerURL.absoluteString), folder '\(folder)', title '\(gameTitle)', priority=\(thumbnailPriority.rawValue)")
+        LoggerService.info(category: "BoxArt", "Libretro: generating candidate URLs from CDN base \(thumbnailServerURL.absoluteString), folder '\(folder)', title '\(gameTitle)', \(knownVariants.count) known variants, priority=\(thumbnailPriority.rawValue)")
         let candidates = LibretroThumbnailResolver.candidateURLs(
             base: thumbnailServerURL,
             systemFolder: folder,
             gameTitle: gameTitle,
+            knownVariants: knownVariants,
             priority: thumbnailPriority
         )
         LoggerService.info(category: "BoxArt", "Libretro: \(candidates.count) candidate URLs generated")
@@ -308,22 +344,114 @@ class BoxArtService: ObservableObject {
         return http.statusCode
     }
 
-    /// Batch download from libretro CDN (throttled, 1 concurrent). Skips ROMs that already have cached art on disk.
+    /// Validates that a file is actually a valid image by checking its magic bytes.
+    /// Returns false for HTML error pages, empty files, or non-image content.
+    private func isValidImageFile(at url: URL) -> Bool {
+        guard let data = try? Data(contentsOf: url), !data.isEmpty else {
+            return false
+        }
+
+        // Check for HTML content (common when 404 error pages are saved as images)
+        if let firstBytes = String(data: data.prefix(512), encoding: .utf8)?.lowercased(),
+           firstBytes.contains("<!doctype") || firstBytes.contains("<html") || firstBytes.contains("<!html") {
+            return false
+        }
+
+        // Check magic bytes for common image formats
+        if data.count < 2 { return false }
+
+        // PNG: 89 50 4E 47
+        if data.starts(with: [0x89, 0x50]) { return true }
+
+        // JPEG: FF D8 FF
+        if data.count >= 3 && data.starts(with: [0xFF, 0xD8, 0xFF]) { return true }
+
+        // GIF: 47 49 46 38
+        if data.count >= 4 && data.starts(with: [0x47, 0x49, 0x46, 0x38]) { return true }
+
+        // BMP: 42 4D
+        if data.starts(with: [0x42, 0x4D]) { return true }
+
+        // WebP: 52 49 46 46 ... 57 45 42 50
+        if data.count >= 12 && data.starts(with: [0x52, 0x49, 0x46, 0x46]) && data[8...11].elementsEqual([0x57, 0x45, 0x42, 0x50]) { return true }
+
+        // Fallback: check file extension as last resort
+        let imageExtensions = ["png", "jpg", "jpeg", "gif", "bmp", "webp"]
+        return imageExtensions.contains(url.pathExtension.lowercased())
+            && data.count > 100 // Reasonable minimum size for an actual image
+    }
+
+    // MARK: - Broken BoxArt Detection & Cleanup
+
+    /// Checks whether a ROM's boxart file exists but is not a valid image
+    /// (e.g. a saved HTML error page, empty file, or corrupted download).
+    func isBoxArtBroken(rom: ROM) -> Bool {
+        let path = rom.boxArtLocalPath
+        guard FileManager.default.fileExists(atPath: path.path) else { return false }
+        return !isValidImageFile(at: path)
+    }
+
+    /// Returns ROMs whose cached boxart exists but is not a valid image file.
+    func findBrokenBoxArts(in roms: [ROM]) -> [ROM] {
+        roms.filter { isBoxArtBroken(rom: $0) }
+    }
+
+    /// Remove broken boxart files from disk so they can be re-downloaded.
+    func cleanBrokenBoxArts(for roms: [ROM]) async -> [ROM] {
+        var cleaned: [ROM] = []
+        for rom in roms {
+            let path = rom.boxArtLocalPath
+            guard FileManager.default.fileExists(atPath: path.path) else { continue }
+            if !isValidImageFile(at: path) {
+                do {
+                    try FileManager.default.removeItem(at: path)
+                    LoggerService.info(category: "BoxArt", "Cleaned broken boxart for '\(rom.name)' at \(path.path)")
+                    cleaned.append(rom)
+                } catch {
+                    LoggerService.warning(category: "BoxArt", "Failed to clean broken boxart for '\(rom.name)': \(error.localizedDescription)")
+                }
+            }
+        }
+        return cleaned
+    }
+
+    /// Returns ROMs that either have no boxart file or have a broken (invalid) boxart file.
+    func romsNeedingBoxArt(in roms: [ROM]) -> [ROM] {
+        roms.filter { rom in
+            let path = rom.boxArtLocalPath
+            // No file at all
+            guard FileManager.default.fileExists(atPath: path.path) else { return true }
+            // File exists but is broken (not a valid image)
+            return !isValidImageFile(at: path)
+        }
+    }
+
+    /// Batch download from libretro CDN (throttled, 1 concurrent).
+    /// First cleans broken boxarts, then downloads for all ROMs missing valid art.
     /// `onItemProgress` is invoked on the caller's executor after each finished download (`completed` 1...total).
     func batchDownloadBoxArtLibretro(
         for roms: [ROM],
         library: ROMLibrary,
         onItemProgress: ((Int, Int, String) -> Void)? = nil
     ) async {
-        let missing = roms.filter { rom in
-            !FileManager.default.fileExists(atPath: rom.boxArtLocalPath.path)
+        // Step 1: Find and clean broken boxarts
+        let broken = findBrokenBoxArts(in: roms)
+        if !broken.isEmpty {
+            LoggerService.info(category: "BoxArt", "Found \(broken.count) broken boxart(s), cleaning before download…")
+            let cleaned = await cleanBrokenBoxArts(for: broken)
+            LoggerService.info(category: "BoxArt", "Cleaned \(cleaned.count) broken boxart(s)")
         }
-        guard !missing.isEmpty else {
-            LoggerService.debug(category: "BoxArt", "No ROMs missing boxart cache, skipping Libretro batch.")
+
+        // Step 2: Identify all ROMs needing boxart (missing + broken)
+        let needsArt = romsNeedingBoxArt(in: roms)
+        guard !needsArt.isEmpty else {
+            LoggerService.debug(category: "BoxArt", "No ROMs missing or with broken boxart cache, skipping Libretro batch.")
             return
         }
 
-        let total = missing.count
+        LoggerService.info(category: "BoxArt", "Starting Libretro batch for \(needsArt.count) ROM(s) needing boxart")
+
+        let total = needsArt.count
 
         await MainActor.run {
             self.downloadQueueCount = total
@@ -335,7 +463,7 @@ class BoxArtService: ObservableObject {
         var completed = 0
         await withTaskGroup(of: (ROM, URL?).self) { group in
             var active = 0
-            var iter = missing.makeIterator()
+            var iter = needsArt.makeIterator()
 
             while active < maxConcurrent, let rom = iter.next() {
                 group.addTask {
@@ -389,24 +517,33 @@ class BoxArtService: ObservableObject {
     }
     
     func batchDownloadBoxArtGoogle(for roms: [ROM], library: ROMLibrary) async {
-        let missingRoms = roms.filter { $0.boxArtPath == nil }
-        guard !missingRoms.isEmpty else { 
-            LoggerService.info(category: "BoxArt", "No ROMs missing boxart, skipping batch download.")
-            return 
+        // Clean broken boxarts first
+        let broken = findBrokenBoxArts(in: roms)
+        if !broken.isEmpty {
+            LoggerService.info(category: "BoxArt", "Found \(broken.count) broken boxart(s), cleaning before Google download...")
+            let cleaned = await cleanBrokenBoxArts(for: broken)
+            LoggerService.info(category: "BoxArt", "Cleaned \(cleaned.count) broken boxart(s)")
         }
-        
-        LoggerService.info(category: "BoxArt", "Starting batch boxart download for \(missingRoms.count) ROMs...")
-        
+
+        // Find all ROMs needing boxart (missing + broken)
+        let needsArt = romsNeedingBoxArt(in: roms)
+        guard !needsArt.isEmpty else {
+            LoggerService.info(category: "BoxArt", "No ROMs missing or with broken boxart, skipping Google batch download.")
+            return
+        }
+
+        LoggerService.info(category: "BoxArt", "Starting Google batch boxart download for \(needsArt.count) ROMs...")
+
         await MainActor.run {
-            self.downloadQueueCount = missingRoms.count
+            self.downloadQueueCount = needsArt.count
             self.downloadedCount = 0
             self.isDownloadingBatch = true
         }
-        
+
         let maxConcurrent = 2
         await withTaskGroup(of: (ROM, URL?).self) { group in
             var activeTasks = 0
-            var iterator = missingRoms.makeIterator()
+            var iterator = needsArt.makeIterator()
             
             while activeTasks < maxConcurrent, let rom = iterator.next() {
                 group.addTask {

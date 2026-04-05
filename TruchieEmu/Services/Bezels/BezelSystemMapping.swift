@@ -21,12 +21,17 @@ enum BezelSystemMapping {
         "megadrive": BezelSystemConfig(systemID: "genesis", bezelProjectName: "MegaDrive"),
         "segacd": BezelSystemConfig(systemID: "segacd", bezelProjectName: "SegaCD"),
         "gamegear": BezelSystemConfig(systemID: "gamegear", bezelProjectName: "GameGear"),
+        "32x": BezelSystemConfig(systemID: "32x", bezelProjectName: "Sega32X"),
         "saturn": BezelSystemConfig(systemID: "saturn", bezelProjectName: "Saturn"),
         "dreamcast": BezelSystemConfig(systemID: "dreamcast", bezelProjectName: "Dreamcast"),
+        "sg1000": BezelSystemConfig(systemID: "sg1000", bezelProjectName: "SG-1000"),
+        "naomi": BezelSystemConfig(systemID: "naomi", bezelProjectName: "Naomi"),
+        "atomiswave": BezelSystemConfig(systemID: "atomiswave", bezelProjectName: "Atomiswave"),
         
         // Sony consoles
         "psx": BezelSystemConfig(systemID: "psx", bezelProjectName: "PSX"),
         "ps2": BezelSystemConfig(systemID: "ps2", bezelProjectName: "PS2"),
+        "psp": BezelSystemConfig(systemID: "psp", bezelProjectName: "PSP"),
         
         // Atari consoles
         "atari2600": BezelSystemConfig(systemID: "atari2600", bezelProjectName: "Atari2600"),
@@ -34,6 +39,7 @@ enum BezelSystemMapping {
         "atari7800": BezelSystemConfig(systemID: "atari7800", bezelProjectName: "Atari7800"),
         "lynx": BezelSystemConfig(systemID: "lynx", bezelProjectName: "AtariLynx"),
         "jaguar": BezelSystemConfig(systemID: "jaguar", bezelProjectName: "AtariJaguar"),
+        "atarist": BezelSystemConfig(systemID: "atarist", bezelProjectName: "AtariST"),
         
         // SNK / Neo Geo
         "ngp": BezelSystemConfig(systemID: "ngp", bezelProjectName: "NGP"),
@@ -41,15 +47,39 @@ enum BezelSystemMapping {
         
         // Other consoles
         "3do": BezelSystemConfig(systemID: "3do", bezelProjectName: "3DO"),
+        "wii": BezelSystemConfig(systemID: "wii", bezelProjectName: "Wii"),
+        "3ds": BezelSystemConfig(systemID: "3ds", bezelProjectName: "N3DS"),
+        "gcn": BezelSystemConfig(systemID: "gcn", bezelProjectName: "GC"),
+        "colecovision": BezelSystemConfig(systemID: "colecovision", bezelProjectName: "ColecoVision"),
+        "wonderswan": BezelSystemConfig(systemID: "wonderswan", bezelProjectName: "WonderSwan"),
+        "wswanc": BezelSystemConfig(systemID: "wonderswan", bezelProjectName: "WonderSwan"),
         
         // PC-Engine / TurboGrafx
         "pce": BezelSystemConfig(systemID: "pce", bezelProjectName: "PCEngine"),
+        "pcecd": BezelSystemConfig(systemID: "pcecd", bezelProjectName: "PCE-CD"),
+        "supergrafx": BezelSystemConfig(systemID: "supergrafx", bezelProjectName: "SuperGrafx"),
         "pcfx": BezelSystemConfig(systemID: "pcfx", bezelProjectName: "PCFX"),
         
         // Arcade
         "mame": BezelSystemConfig(systemID: "mame", bezelProjectName: "MAME"),
         
         // Computers
+        "amiga": BezelSystemConfig(systemID: "amiga", bezelProjectName: "Amiga"),
+        "c64": BezelSystemConfig(systemID: "c64", bezelProjectName: "C64"),
+        "cd32": BezelSystemConfig(systemID: "cd32", bezelProjectName: "CD32"),
+        "cdtv": BezelSystemConfig(systemID: "cdtv", bezelProjectName: "CDTV"),
+        "msx": BezelSystemConfig(systemID: "msx", bezelProjectName: "MSX"),
+        "msx2": BezelSystemConfig(systemID: "msx2", bezelProjectName: "MSX2"),
+        "zx_spectrum": BezelSystemConfig(systemID: "zx_spectrum", bezelProjectName: "ZXSpectrum"),
+        "x68000": BezelSystemConfig(systemID: "x68000", bezelProjectName: "X68000"),
+        "scummvm": BezelSystemConfig(systemID: "scummvm", bezelProjectName: "ScummVM"),
+        
+        // Famicom aliases
+        "fds": BezelSystemConfig(systemID: "fds", bezelProjectName: "FDS"),
+        "fc": BezelSystemConfig(systemID: "nes", bezelProjectName: "Famicom"),
+        
+        // SFC alias
+        "sfc": BezelSystemConfig(systemID: "snes", bezelProjectName: "SFC")
     ]
     
     /// Get the bezel configuration for a system ID.
@@ -70,7 +100,7 @@ enum BezelSystemMapping {
         case "gg":
             return configurations["gamegear"]
         case "32x":
-            return configurations["genesis"] // 32X games use Genesis bezels
+            return configurations["32x"] // 32X has its own bezels (Sega32X)
         case "fc":
             return configurations["nes"]
         case "sfc":

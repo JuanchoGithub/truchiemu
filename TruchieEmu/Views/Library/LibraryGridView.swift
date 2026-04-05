@@ -439,6 +439,7 @@ struct LibraryGridView: View {
                             }
                         } label: {
                             Label("Download Missing Box Art", systemImage: "arrow.down.circle")
+                                .help("Cleans broken boxart and downloads missing art for all games")
                         }
                     } label: {
                         Image(systemName: "photo.stack")

@@ -426,21 +426,28 @@ class LaunchBoxGamesDBService: ObservableObject {
     // MARK: - Batch Download
 
     /// Batch download boxart from LaunchBox GamesDB for multiple ROMs.
+    /// First cleans broken boxarts, then downloads for all ROMs missing valid art.
     func batchDownloadBoxArt(for roms: [ROM], library: ROMLibrary, onItemProgress: ((Int, Int, String) -> Void)? = nil) async {
         guard isEnabled else { return }
 
-        let missing = roms.filter { rom in
-            let hasBoxart = rom.boxArtPath.map { FileManager.default.fileExists(atPath: $0.path) } ?? false
-            return !hasBoxart
+        // Clean broken boxarts first
+        let broken = BoxArtService.shared.findBrokenBoxArts(in: roms)
+        if !broken.isEmpty {
+            LoggerService.info(category: "LaunchBoxDB", "Found \(broken.count) broken boxart(s), cleaning before download...")
+            let cleaned = await BoxArtService.shared.cleanBrokenBoxArts(for: broken)
+            LoggerService.info(category: "LaunchBoxDB", "Cleaned \(cleaned.count) broken boxart(s)")
         }
 
-        guard !missing.isEmpty else {
-            LoggerService.info(category: "LaunchBoxDB", "No ROMs missing boxart, skipping LaunchBox batch.")
+        // Find all ROMs needing boxart (missing + broken)
+        let needsArt = BoxArtService.shared.romsNeedingBoxArt(in: roms)
+
+        guard !needsArt.isEmpty else {
+            LoggerService.info(category: "LaunchBoxDB", "No ROMs missing or with broken boxart, skipping LaunchBox batch.")
             return
         }
 
-        LoggerService.info(category: "LaunchBoxDB", "Starting LaunchBox batch for \(missing.count) ROMs...")
-        let total = missing.count
+        LoggerService.info(category: "LaunchBoxDB", "Starting LaunchBox batch for \(needsArt.count) ROMs...")
+        let total = needsArt.count
 
         await MainActor.run {
             BoxArtService.shared.downloadQueueCount = total
@@ -453,7 +460,7 @@ class LaunchBoxGamesDBService: ObservableObject {
 
         await withTaskGroup(of: (ROM, URL?).self) { group in
             var active = 0
-            var iter = missing.makeIterator()
+            var iter = needsArt.makeIterator()
 
             while active < maxConcurrent, let rom = iter.next() {
                 group.addTask { [weak self] in

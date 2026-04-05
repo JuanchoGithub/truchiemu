@@ -18,6 +18,7 @@ enum LibretroThumbnailResolver {
 
     static func libretroFolderName(forSystemID systemID: String) -> String? {
         let map: [String: String] = [
+            // Nintendo
             "nes": "Nintendo - Nintendo Entertainment System",
             "snes": "Nintendo - Super Nintendo Entertainment System",
             "n64": "Nintendo - Nintendo 64",
@@ -25,23 +26,32 @@ enum LibretroThumbnailResolver {
             "gb": "Nintendo - Game Boy",
             "gbc": "Nintendo - Game Boy Color",
             "nds": "Nintendo - Nintendo DS",
+            // Sega
             "genesis": "Sega - Mega Drive - Genesis",
             "sms": "Sega - Master System - Mark III",
             "gamegear": "Sega - Game Gear",
+            "32x": "Sega - 32X",
             "saturn": "Sega - Saturn",
             "dreamcast": "Sega - Dreamcast",
+            // Sony
             "psx": "Sony - PlayStation",
             "ps2": "Sony - PlayStation 2",
             "psp": "Sony - PlayStation Portable",
+            // Arcade
             "mame": "MAME",
             "fba": "FBNeo - Arcade Games",
+            // Atari
             "atari2600": "Atari - 2600",
             "atari5200": "Atari - 5200",
             "atari7800": "Atari - 7800",
             "lynx": "Atari - Lynx",
+            // SNK
             "ngp": "SNK - Neo Geo Pocket",
+            // NEC
             "pce": "NEC - PC Engine - TurboGrafx 16",
             "pcfx": "NEC - PC-FX",
+            // Other
+            "3do": "The 3DO Company - 3DO",
         ]
         let result = map[systemID.lowercased()]
         if let folder = result {
@@ -120,11 +130,37 @@ enum LibretroThumbnailResolver {
         }
     }
 
-    /// All CDN URLs to try for one resolved title (primary + safe + fuzzy boxart).
+    /// Common suffix variants that the Libretro CDN uses for boxart entries.
+    /// These are appended to the base title to match entries like "(Beta)" or "(Rev 1)".
+    private static let boxartSuffixVariants = [
+        " (Beta)",
+        " (Rev 1)",
+        " (Rev 2)",
+        " (Rev A)",
+        " (Rev B)",
+        " (v1.0)",
+        " (v1.1)",
+    ]
+
+    /// All CDN URLs to try for one resolved title (primary + safe + fuzzy + suffix variants).
+    /// Strategy: Named_Boxarts uses cleaned titles (no region tags), so we try the fuzzy/stripped
+    /// variant first for boxart before falling back to Named_Titles with the full tagged name.
     static func candidateURLs(
         base: URL,
         systemFolder: String,
         gameTitle: String,
+        priority: LibretroThumbnailPriority
+    ) -> [URL] {
+        return candidateURLs(base: base, systemFolder: systemFolder, gameTitle: gameTitle, knownVariants: [], priority: priority)
+    }
+
+    /// All CDN URLs to try, including known DAT variant names.
+    /// Known variants are tried BEFORE arbitrary suffix guessing to maximize match probability.
+    static func candidateURLs(
+        base: URL,
+        systemFolder: String,
+        gameTitle: String,
+        knownVariants: [String],
         priority: LibretroThumbnailPriority
     ) -> [URL] {
         let primary = gameTitle.trimmingCharacters(in: .whitespacesAndNewlines)
@@ -136,7 +172,7 @@ enum LibretroThumbnailResolver {
         let safe = libretroFilesystemSafeName(primary)
         let fuzzy = stripParenthesesForFuzzyMatch(primary)
 
-        LoggerService.debug(category: logCategory, "candidateURLs: primary='\(primary)', safe='\(safe)', fuzzy='\(fuzzy)', priority=\(priority.rawValue)")
+        LoggerService.debug(category: logCategory, "candidateURLs: primary='\(primary)', safe='\(safe)', fuzzy='\(fuzzy)', knownVariants=\(knownVariants.count), priority=\(priority.rawValue)")
 
         var urls: [URL] = []
         var seen = Set<URL>()
@@ -151,28 +187,69 @@ enum LibretroThumbnailResolver {
         let typeFolders = orderedThumbnailTypeFolders(priority: priority)
         LoggerService.debug(category: logCategory, "candidateURLs: typeFolders order = \(typeFolders.joined(separator: ", "))")
 
+        // Determine which folder is "first choice" for the given priority
+        let firstChoiceFolder = typeFolders.first ?? "Named_Boxarts"
+
+        // Build title variants for the primary folder
         var titleVariants: [String] = [primary]
         if safe != primary, !safe.isEmpty { titleVariants.append(safe) }
 
-        var urlCount = 0
+        // Step 1: For Named_Boxarts specifically, try the fuzzy (parenthesis-stripped) title FIRST.
+        // The Libretro CDN stores boxart under cleaned names (no region tags), so this has
+        // the highest chance of matching when the CRC-resolved title includes (USA, En) etc.
+        if firstChoiceFolder == "Named_Boxarts" && fuzzy != primary && !fuzzy.isEmpty {
+            LoggerService.debug(category: logCategory, "candidateURLs: Step 1 fuzzy boxart — '\(fuzzy)'")
+            appendUnique(buildThumbnailURL(base: base, systemFolder: systemFolder, typeFolder: "Named_Boxarts", fileName: "\(fuzzy).png"))
+            let fuzzySafe = libretroFilesystemSafeName(fuzzy)
+            if fuzzySafe != fuzzy {
+                LoggerService.debug(category: logCategory, "candidateURLs: Step 1 fuzzy boxart (safe) — '\(fuzzySafe)'")
+                appendUnique(buildThumbnailURL(base: base, systemFolder: systemFolder, typeFolder: "Named_Boxarts", fileName: "\(fuzzySafe).png"))
+            }
+        }
+
+        // Step 2: Try known DAT variant names BEFORE arbitrary suffix guessing.
+        // These are real entries from the libretro database, so they have the highest
+        // probability of matching actual CDN assets.
+        if firstChoiceFolder == "Named_Boxarts" && !knownVariants.isEmpty {
+            LoggerService.debug(category: logCategory, "candidateURLs: Step 2 trying \(knownVariants.count) known DAT variants for Named_Boxarts")
+            for variantName in knownVariants {
+                if variantName != primary {
+                    appendUnique(buildThumbnailURL(base: base, systemFolder: systemFolder, typeFolder: "Named_Boxarts", fileName: "\(variantName).png"))
+                    let variantSafe = libretroFilesystemSafeName(variantName)
+                    if variantSafe != variantName {
+                        appendUnique(buildThumbnailURL(base: base, systemFolder: systemFolder, typeFolder: "Named_Boxarts", fileName: "\(variantSafe).png"))
+                    }
+                }
+            }
+        }
+
+        // Step 3: For Named_Boxarts, try arbitrary suffix variants (Beta, Rev, etc.) as fallback.
+        if firstChoiceFolder == "Named_Boxarts" {
+            LoggerService.debug(category: logCategory, "candidateURLs: Step 3 trying arbitrary suffix variants for Named_Boxarts")
+            for suffix in boxartSuffixVariants {
+                appendUnique(buildThumbnailURL(base: base, systemFolder: systemFolder, typeFolder: "Named_Boxarts", fileName: "\(primary)\(suffix).png"))
+            }
+        }
+
+        // Step 4: Try primary title variants across all type folders in priority order
+        LoggerService.debug(category: logCategory, "candidateURLs: Step 4 trying primary variants across \(typeFolders.joined(separator: ", "))")
         for titleVariant in titleVariants {
             for folder in typeFolders {
                 appendUnique(buildThumbnailURL(base: base, systemFolder: systemFolder, typeFolder: folder, fileName: "\(titleVariant).png"))
-                urlCount += 1
             }
         }
 
-        if fuzzy != primary && fuzzy != safe && !fuzzy.isEmpty {
+        // Step 5: Fallback fuzzy for Named_Boxarts only if not already added in Step 1
+        // (handles the case where fuzzy == primary or priority is not boxart)
+        if firstChoiceFolder != "Named_Boxarts" && fuzzy != primary && fuzzy != safe && !fuzzy.isEmpty {
             appendUnique(buildThumbnailURL(base: base, systemFolder: systemFolder, typeFolder: "Named_Boxarts", fileName: "\(fuzzy).png"))
-            urlCount += 1
             let fuzzySafe = libretroFilesystemSafeName(fuzzy)
             if fuzzySafe != fuzzy {
                 appendUnique(buildThumbnailURL(base: base, systemFolder: systemFolder, typeFolder: "Named_Boxarts", fileName: "\(fuzzySafe).png"))
-                urlCount += 1
             }
         }
 
-        LoggerService.debug(category: logCategory, "candidateURLs: generated \(urls.count) unique URLs from \(urlCount) candidates (\(titleVariants.count) title variants × \(typeFolders.count) folders + fuzzy)")
+        LoggerService.debug(category: logCategory, "candidateURLs: generated \(urls.count) unique URLs (\(titleVariants.count) title variants × \(typeFolders.count) folders + \(knownVariants.count) known variants + suffixes)")
         return urls
     }
 

@@ -8,8 +8,8 @@ struct TruchieEmuApp: App {
     // Open the database before any other component uses it.
     // This was the root cause of the blank state — the database was never opened.
     init() {
-        _ = LoggerService.shared
         DatabaseManager.shared.open()
+        _ = LoggerService.shared
     }
     
     @StateObject private var library = ROMLibrary()
@@ -124,6 +124,11 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         if ProcessInfo.processInfo.arguments.contains("--launch") {
             NSApp.setActivationPolicy(.accessory)
         }
+        
+        // Prevent the game-info window from being restored on launch.
+        // macOS saves window state in NSQuitAlwaysKeepsWindows UserDefaults key.
+        // By removing the game-info window ID from the saved state, we prevent restoration.
+        clearGameInfoWindowState()
     }
     
     func applicationDidFinishLaunching(_ notification: Notification) {
@@ -134,6 +139,50 @@ class AppDelegate: NSObject, NSApplicationDelegate {
             NSApp.setActivationPolicy(.accessory)
         } else {
             LoggerService.info(category: "App", "Normal launch - app ready")
+        }
+        
+        // Close any game-info windows that may have slipped through restoration.
+        // This runs after windows are created to catch any that were already restored.
+        DispatchQueue.main.async {
+            self.closeRestoredGameInfoWindows()
+        }
+    }
+    
+    /// Remove any saved state for the game-info window to prevent restoration on launch.
+    /// Called during applicationWillFinishLaunching to clear UserDefaults before macOS restores windows.
+    private func clearGameInfoWindowState() {
+        // macOS stores window frame info under keys like "NSWindow Frame game-info:UUID"
+        let defaults = UserDefaults.standard
+        let keysToRemove = defaults.dictionaryRepresentation().keys.filter {
+            $0.hasPrefix("NSWindow Frame ") && ($0.contains("game-info") || $0.contains("GameInfoWindow"))
+        }
+        for key in keysToRemove {
+            defaults.removeObject(forKey: key)
+        }
+        
+        // NSQuitAlwaysKeepsWindows: boolean flags for each window to quit-and-restore behavior
+        if let quitInfo = defaults.dictionary(forKey: "NSQuitAlwaysKeepsWindows") as? [String: Bool] {
+            var mutableQuitInfo = quitInfo
+            let keysToClear = mutableQuitInfo.keys.filter {
+                $0.contains("game-info") || $0.contains("GameInfoWindow")
+            }
+            for key in keysToClear {
+                mutableQuitInfo.removeValue(forKey: key)
+            }
+            defaults.set(mutableQuitInfo, forKey: "NSQuitAlwaysKeepsWindows")
+        }
+    }
+    
+    /// Close any game-info windows that were restored despite UserDefaults cleanup.
+    private func closeRestoredGameInfoWindows() {
+        let gameInfoWindows = NSApp.windows.filter { window in
+            // Match by restoration class name or by checking if it's a game-info window
+            let className = String(describing: type(of: window))
+            return className.contains("game") || className.contains("GameInfo") ||
+                   window.representedURL?.lastPathComponent == "game-info"
+        }
+        for window in gameInfoWindows {
+            window.close()
         }
     }
 }
