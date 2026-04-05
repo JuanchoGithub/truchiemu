@@ -276,7 +276,7 @@ struct LibraryGridView: View {
     @StateObject private var gameLauncher = GameLauncher.shared
 
     @State private var viewMode: ViewMode = .grid
-    @State private var columnCount: Int = 4
+    @State private var columnCount: Int = 3
     @ObservedObject var prefs = SystemPreferences.shared
     @ObservedObject var boxArtService = BoxArtService.shared
     @State private var manualBoxArtSearchROM: ROM?
@@ -405,7 +405,14 @@ struct LibraryGridView: View {
                 } else if displayedROMs.isEmpty {
                     emptyState
                 } else if viewMode == .grid {
-                    gridView
+                    GeometryReader { geometry in
+                        gridView
+                            .onChange(of: geometry.size.width) { newWidth in
+                                gridWidth = newWidth
+                                updateColumns()
+                            }
+                    }
+                    .frame(minHeight: 0)
                 } else {
                     listView
                 }
@@ -655,11 +662,18 @@ struct LibraryGridView: View {
         // For macOS 13, users can use context menu or confirm delete action
     }
 
+    @State private var gridWidth: CGFloat = 800
+
     private func updateColumns() {
         // Card minimum width scales with zoom: 80px at min zoom to 280px at max zoom
         let minCardWidth: CGFloat = 80 + (continuousZoom * 200)
         // Spacing shrinks as cards get bigger
         let spacing: CGFloat = max(6, 16 - (continuousZoom * 8))
+        
+        // Calculate how many columns fit in the current grid width
+        let availableWidth = gridWidth - (gridPadding.leading + gridPadding.trailing)
+        let computedColumns = max(1, min(8, Int((availableWidth + spacing) / (minCardWidth + spacing))))
+        columnCount = computedColumns
         
         columns = Array(
             repeating: GridItem(.flexible(minimum: minCardWidth), spacing: spacing),
@@ -668,7 +682,7 @@ struct LibraryGridView: View {
     }
 
     private var gridView: some View {
-        ScrollView {
+        ScrollView(.vertical) {
             LazyVGrid(columns: columns, spacing: gridSpacing) {
                 ForEach(Array(displayedROMs.enumerated()), id: \.element.id) { index, rom in
                     let isSelected = selectedROMs.contains(rom.id) || selectedROM?.id == rom.id

@@ -101,6 +101,8 @@ struct ContentView: View {
                 selectedFilter = .all
             }
         }
+        // Set ideal window size so the window doesn't start stretched larger than needed
+        .frame(minWidth: 1000, idealWidth: 1200, minHeight: 650, idealHeight: 750)
     }
 
     /// Shows whichever background task is currently active (library automation takes precedence).
