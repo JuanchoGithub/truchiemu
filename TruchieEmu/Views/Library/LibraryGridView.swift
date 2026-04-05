@@ -1,6 +1,164 @@
 import SwiftUI
 import AppKit
 
+// MARK: - Grid Card Zoomable Box Art
+
+/// A zoomable box art view for use in grid cards.
+/// Shows a zoom button on hover that opens the full-screen zoomable view.
+struct GridCardBoxArtView: View {
+    let image: NSImage?
+    let placeholder: () -> AnyView
+    let aspectRatio: CGFloat
+    let isHovered: Bool
+    @State private var isPresented = false
+    
+    var body: some View {
+        ZStack {
+            Group {
+                if let img = image {
+                    Image(nsImage: img)
+                        .resizable()
+                        .aspectRatio(contentMode: .fit)
+                        .overlay(
+                            Color.white.opacity(isHovered ? 0.06 : 0)
+                                .animation(.easeOut(duration: 0.2), value: isHovered)
+                        )
+                } else {
+                    placeholder()
+                }
+            }
+            .animation(.easeOut(duration: 0.2), value: image)
+            
+            // Zoom button on hover
+            if isHovered, image != nil {
+                VStack {
+                    Spacer()
+                    HStack {
+                        Spacer()
+                        Button {
+                            isPresented = true
+                        } label: {
+                            Image(systemName: "arrow.up.left.and.arrow.down.right")
+                                .font(.system(size: 12))
+                                .foregroundColor(.white)
+                                .padding(6)
+                                .background(Color.black.opacity(0.6), in: Capsule())
+                        }
+                        .buttonStyle(.plain)
+                        .padding(8)
+                    }
+                }
+                .transition(.opacity)
+            }
+        }
+        .frame(maxWidth: .infinity)
+        .aspectRatio(aspectRatio, contentMode: .fit)
+        .clipShape(RoundedRectangle(cornerRadius: 8))
+        .sheet(isPresented: $isPresented) {
+            if let img = image {
+                GridCardZoomableFullScreenView(image: img)
+            }
+        }
+    }
+}
+
+// MARK: - Full Screen Zoomable Box Art View
+
+/// A full-screen sheet that shows a zoomable image with a close button.
+struct GridCardZoomableFullScreenView: View {
+    let image: NSImage
+    @Environment(\.dismiss) private var dismiss
+    @State private var showControls = true
+    @State private var scale: CGFloat = 1.0
+    @State private var lastScale: CGFloat = 1.0
+    @State private var offset: CGSize = .zero
+    @State private var lastOffset: CGSize = .zero
+    
+    var body: some View {
+        ZStack {
+            Color.black.ignoresSafeArea()
+            
+            Image(nsImage: image)
+                .resizable()
+                .aspectRatio(contentMode: .fit)
+                .scaleEffect(scale)
+                .offset(offset)
+                .gesture(
+                    MagnificationGesture()
+                        .onChanged { value in
+                            scale = min(max(1.0, lastScale * value), 5.0)
+                        }
+                        .onEnded { _ in
+                            if scale < 1.1 {
+                                withAnimation(.spring(response: 0.3, dampingFraction: 0.8)) {
+                                    scale = 1.0
+                                    offset = .zero
+                                    lastScale = 1.0
+                                    lastOffset = .zero
+                                }
+                            } else {
+                                lastScale = scale
+                            }
+                        }
+                )
+                .simultaneousGesture(
+                    DragGesture()
+                        .onChanged { value in
+                            guard scale > 1.0 else { return }
+                            offset = CGSize(
+                                width: lastOffset.width + value.translation.width,
+                                height: lastOffset.height + value.translation.height
+                            )
+                        }
+                        .onEnded { _ in
+                            lastOffset = offset
+                        }
+                )
+                .onTapGesture(count: 2) {
+                    withAnimation(.spring(response: 0.3, dampingFraction: 0.8)) {
+                        if scale > 1.0 {
+                            scale = 1.0
+                            offset = .zero
+                            lastScale = 1.0
+                            lastOffset = .zero
+                        } else {
+                            scale = 2.5
+                            lastScale = 2.5
+                        }
+                    }
+                }
+            
+            VStack {
+                HStack {
+                    Spacer()
+                    Button {
+                        dismiss()
+                    } label: {
+                        Image(systemName: "xmark.circle.fill")
+                            .font(.system(size: 32))
+                            .foregroundColor(.white)
+                            .shadow(radius: 4)
+                    }
+                    .buttonStyle(.plain)
+                    .padding()
+                    .opacity(showControls ? 1 : 0)
+                }
+                Spacer()
+                Text("Pinch to zoom")
+                    .font(.caption)
+                    .foregroundColor(.white.opacity(0.7))
+                    .padding(.bottom, 20)
+                    .opacity(showControls ? 1 : 0)
+            }
+        }
+        .onTapGesture {
+            withAnimation(.easeInOut(duration: 0.2)) {
+                showControls.toggle()
+            }
+        }
+    }
+}
+
 // MARK: - Game Filter Options
 
 /// Filter chips for refining the game library view
@@ -384,6 +542,7 @@ struct LibraryGridView: View {
                             set: { newValue in
                                 continuousZoom = newValue
                                 columnCount = max(1, min(8, Int(round((1.0 - newValue) * 7.0) + 1)))
+                                updateColumns()
                             }
                         ), in: 0...1, step: 1.0/7.0)
                             .padding(.horizontal, 8)
@@ -497,37 +656,49 @@ struct LibraryGridView: View {
     }
 
     private func updateColumns() {
-        columns = Array(repeating: GridItem(.flexible(), spacing: 16), count: columnCount)
+        // Card minimum width scales with zoom: 80px at min zoom to 280px at max zoom
+        let minCardWidth: CGFloat = 80 + (continuousZoom * 200)
+        // Spacing shrinks as cards get bigger
+        let spacing: CGFloat = max(6, 16 - (continuousZoom * 8))
+        
+        columns = Array(
+            repeating: GridItem(.flexible(minimum: minCardWidth), spacing: spacing),
+            count: columnCount
+        )
     }
 
     private var gridView: some View {
-        ScrollView {
-            LazyVGrid(columns: columns, spacing: 16) {
-                ForEach(Array(displayedROMs.enumerated()), id: \.element.id) { index, rom in
-                    let isSelected = selectedROMs.contains(rom.id) || selectedROM?.id == rom.id
-                    GameCardView(rom: rom, isSelected: isSelected, isMultiSelected: selectedROMs.contains(rom.id), zoomLevel: zoomLevel)
-                        .contentShape(Rectangle())
-                        .onTapGesture {
-                            handleTap(on: rom, at: index)
-                        }
-                        .simultaneousGesture(
-                            TapGesture(count: 2).onEnded {
-                                launchGame(rom)
+        GeometryReader { geometry in
+            ScrollView {
+                LazyVGrid(columns: columns, spacing: gridSpacing) {
+                    ForEach(Array(displayedROMs.enumerated()), id: \.element.id) { index, rom in
+                        let isSelected = selectedROMs.contains(rom.id) || selectedROM?.id == rom.id
+                        GameCardView(rom: rom, isSelected: isSelected, isMultiSelected: selectedROMs.contains(rom.id), zoomLevel: continuousZoom)
+                            .contentShape(Rectangle())
+                            .onTapGesture {
+                                handleTap(on: rom, at: index)
                             }
-                        )
-                        .contextMenu { contextMenu(for: rom) }
-                        .onDrag {
-                            let items = selectedROMs.contains(rom.id) || selectedROM?.id == rom.id
-                                ? selectedROMs.compactMap { id in displayedROMs.first(where: { $0.id == id }) }
-                                : [rom]
-                            draggedROMs = items
-                            dragState.startDrag(gameIDs: items.map { $0.id })
-                            let provider = NSItemProvider(object: NSString(string: items.map { $0.id.uuidString }.joined(separator: ",")))
-                            return provider
-                        }
+                            .simultaneousGesture(
+                                TapGesture(count: 2).onEnded {
+                                    launchGame(rom)
+                                }
+                            )
+                            .contextMenu { contextMenu(for: rom) }
+                            .onDrag {
+                                let items = selectedROMs.contains(rom.id) || selectedROM?.id == rom.id
+                                    ? selectedROMs.compactMap { id in displayedROMs.first(where: { $0.id == id }) }
+                                    : [rom]
+                                draggedROMs = items
+                                dragState.startDrag(gameIDs: items.map { $0.id })
+                                let provider = NSItemProvider(object: NSString(string: items.map { $0.id.uuidString }.joined(separator: ",")))
+                                return provider
+                            }
+                    }
                 }
+                .animation(.easeInOut(duration: 0.25), value: continuousZoom)
+                .padding(gridPadding)
+                .frame(maxWidth: geometry.size.width)
             }
-            .padding()
         }
         .gesture(
             MagnificationGesture()
@@ -535,18 +706,47 @@ struct LibraryGridView: View {
                     let scale = value / lastMagnification
                     let zoomDelta = (scale - 1.0) * 0.3
                     continuousZoom = max(0, min(1, continuousZoom + zoomDelta))
+                    updateColumns()
                     lastMagnification = value
                 }
                 .onEnded { _ in
+                    // Smooth snap to nearest column
                     let snapped = round(continuousZoom * 7.0) / 7.0
-                    continuousZoom = snapped
-                    columnCount = max(1, min(8, Int(round((1.0 - snapped) * 7.0) + 1)))
+                    withAnimation(.interpolatingSpring(stiffness: 120, damping: 18)) {
+                        continuousZoom = snapped
+                        columnCount = max(1, min(8, Int(round((1.0 - snapped) * 7.0) + 1)))
+                        updateColumns()
+                    }
                     lastMagnification = 1.0
                 }
         )
         .onDrop(of: [.url], isTargeted: nil) { items, location in
             return false
         }
+    }
+    
+    // MARK: - Zoom Calculations
+    
+    /// The scale factor applied to the entire grid content
+    private var gridScale: CGFloat {
+        // Base scale starts at 0.7 and goes up to 1.3
+        0.7 + (continuousZoom * 0.6)
+    }
+    
+    /// Dynamic spacing between grid items based on zoom
+    private var gridSpacing: CGFloat {
+        // Less spacing when zoomed in (cards are bigger)
+        8 + ((1.0 - continuousZoom) * 12)
+    }
+    
+    /// Horizontal padding adjusts with zoom to prevent edge clipping
+    private var horizontalPadding: CGFloat {
+        8 + ((1.0 - continuousZoom) * 12)
+    }
+    
+    /// Combined grid padding
+    private var gridPadding: EdgeInsets {
+        EdgeInsets(top: 12, leading: horizontalPadding, bottom: 12, trailing: horizontalPadding)
     }
     
     private func handleTap(on rom: ROM, at index: Int) {
@@ -1278,9 +1478,12 @@ struct GameCardView: View {
         .overlay(
             RoundedRectangle(cornerRadius: 12)
                 .stroke(isSelected ? Color.accentColor : Color.clear, lineWidth: 2)
-                .shadow(color: isHovered && !isSelected ? Color.accentColor.opacity(0.15) : .clear, radius: isHovered ? 8 : 0, y: 4)
         )
-        .scaleEffect(isHovered ? 1.02 : 1)
+        .shadow(
+            color: isHovered && !isSelected ? Color.accentColor.opacity(0.2) : .clear,
+            radius: isHovered ? 8 : 4,
+            y: isHovered ? 4 : 2
+        )
         .animation(.easeOut(duration: 0.15), value: isHovered)
         .animation(.easeOut(duration: 0.2), value: isSelected)
         .onHover { isHovered = $0 }
@@ -1296,23 +1499,13 @@ struct GameCardView: View {
     }
 
     private var artworkView: some View {
-        ZStack {
-            if let nsImage = image {
-                Image(nsImage: nsImage)
-                    .resizable()
-                    .aspectRatio(contentMode: .fit)
-                    .scaleEffect(isHovered ? 1.05 : 1)
-                    .animation(.easeOut(duration: 0.3), value: isHovered)
-            } else {
-                placeholderArt
-                    .scaleEffect(isHovered ? 1.02 : 1)
-                    .animation(.easeOut(duration: 0.3), value: isHovered)
-            }
-        }
-        .frame(maxWidth: .infinity)
-        .aspectRatio(boxType.aspectRatio, contentMode: .fit)
-        .clipShape(RoundedRectangle(cornerRadius: 8))
-        .shadow(color: .black.opacity(isHovered ? 0.4 : 0.3), radius: isHovered ? 10 : 6, x: 0, y: isHovered ? 5 : 3)
+        GridCardBoxArtView(
+            image: image,
+            placeholder: { AnyView(placeholderArt) },
+            aspectRatio: boxType.aspectRatio,
+            isHovered: isHovered
+        )
+        .shadow(color: Color.black.opacity(isHovered ? 0.4 : 0.3), radius: isHovered ? 10 : 6, x: 0, y: isHovered ? 5 : 3)
     }
 
     private var placeholderArt: some View {
