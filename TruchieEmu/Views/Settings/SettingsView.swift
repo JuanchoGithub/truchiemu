@@ -8,7 +8,7 @@ struct SettingsView: View {
     @EnvironmentObject var coreManager: CoreManager
     @EnvironmentObject var controllerService: ControllerService
 
-    private enum Page: Hashable { case general, library, cores, controllers, boxArt, metadata, display, cheats, bezels, retroAchievements, logging, about }
+    private enum Page: Hashable { case general, library, cores, controllers, boxArt, display, cheats, bezels, retroAchievements, logging, about }
     @State private var selectedPage: Page = .general
 
     var body: some View {
@@ -17,7 +17,6 @@ struct SettingsView: View {
                 sidebarItem(icon: "photo.stack.fill", label: "Box Art", page: .boxArt)
                 sidebarItem(icon: "wand.and.stars", label: "Cheats", page: .cheats)
                 sidebarItem(icon: "gamecontroller.fill", label: "Controllers", page: .controllers)
-                 sidebarItem(icon: "doc.plaintext", label: "Metadata", page: .metadata)
                 sidebarItem(icon: "cpu.fill", label: "Cores", page: .cores)
                 sidebarItem(icon: "rectangle.on.rectangle", label: "Bezels", page: .bezels)
                 sidebarItem(icon: "tv.fill", label: "Display", page: .display)
@@ -38,7 +37,6 @@ struct SettingsView: View {
                 case .cores:       CoreSettingsView()
                 case .controllers: ControllerSettingsView()
                 case .boxArt:      BoxArtSettingsView()
-                 case .metadata:    MetadataSettingsView()
                 case .display:     DisplaySettingsView()
                 case .cheats:      CheatSettingsView()
                 case .bezels:      BezelSettingsView()
@@ -1837,9 +1835,15 @@ struct DisplaySettingsView: View {
 // MARK: - General Settings
 
 struct GeneralSettingsView: View {
+    @EnvironmentObject var library: ROMLibrary
+    @StateObject private var launchboxService = LaunchBoxGamesDBService.shared
     @State private var autoSaveOnExit = true
     @State private var autoLoadOnStart = true
     @State private var compressSaveStates = false
+    @State private var showHiddenGamesCategory: Bool = true
+    @State private var launchboxEnabled: Bool = true
+    @State private var showSyncConfirmation = false
+    @State private var lastSyncText: String = "Never"
     
     var body: some View {
         Form {
@@ -1863,6 +1867,69 @@ struct GeneralSettingsView: View {
                 .padding(.top, 4)
             }
             
+            Section("Hidden Games") {
+                Toggle("Show \"Hidden Games\" category in sidebar", isOn: $showHiddenGamesCategory)
+                    .toggleStyle(.switch)
+                
+                Text("When disabled, hidden games will still exist but the category won't be visible in the sidebar.")
+                    .font(.caption)
+                    .foregroundColor(.secondary)
+            }
+            
+            Section("LaunchBox GamesDB") {
+                Toggle("Enable LaunchBox GamesDB", isOn: $launchboxEnabled)
+                    .toggleStyle(.switch)
+                
+                Text("Automatically fetch game metadata — descriptions, developer, publisher, genre, max players, cooperative play, and ESRB ratings.")
+                    .font(.caption)
+                    .foregroundColor(.secondary)
+                
+                HStack {
+                    Text("Last sync:")
+                    Spacer()
+                    if launchboxService.isSyncing {
+                        ProgressView()
+                            .controlSize(.small)
+                        Text("Syncing...")
+                            .font(.caption)
+                            .foregroundColor(.secondary)
+                    } else {
+                        Text(lastSyncText)
+                            .font(.caption)
+                            .foregroundColor(.secondary)
+                    }
+                }
+                
+                if launchboxService.isSyncing {
+                    VStack(spacing: 4) {
+                        ProgressView(value: launchboxService.syncProgress)
+                        Text(launchboxService.syncStatus)
+                            .font(.caption)
+                            .foregroundColor(.secondary)
+                    }
+                }
+                
+                Button("Sync All Games Now") {
+                    showSyncConfirmation = true
+                }
+                .disabled(launchboxService.isSyncing || !launchboxEnabled)
+                .confirmationDialog(
+                    "Sync All Games",
+                    isPresented: $showSyncConfirmation,
+                    titleVisibility: .visible
+                ) {
+                    Button("Start Sync") {
+                        Task {
+                            await launchboxService.batchSyncLibrary(library: library) { _, _, _ in }
+                            updateLastSyncText()
+                        }
+                    }
+                    Button("Cancel", role: .cancel) {}
+                } message: {
+                    Text("This will search the LaunchBox Games Database for all games in your library that are missing metadata. This may take a while depending on your library size.")
+                }
+            }
+            
             Section("Application") {
                 LabeledContent("Version") {
                     Text(Bundle.main.infoDictionary?["CFBundleShortVersionString"] as? String ?? "1.0.0")
@@ -1874,6 +1941,27 @@ struct GeneralSettingsView: View {
         }
         .formStyle(.grouped)
         .navigationTitle("General")
+        .onAppear {
+            showHiddenGamesCategory = AppSettings.getBool("showHiddenGamesCategory", defaultValue: true)
+            launchboxEnabled = launchboxService.isEnabled
+            updateLastSyncText()
+        }
+        .onChange(of: showHiddenGamesCategory) { newValue in
+            AppSettings.setBool("showHiddenGamesCategory", value: newValue)
+        }
+        .onChange(of: launchboxEnabled) { newValue in
+            launchboxService.setEnabled(newValue)
+        }
+    }
+    
+    private func updateLastSyncText() {
+        if let date = launchboxService.lastSyncDate {
+            let formatter = RelativeDateTimeFormatter()
+            formatter.unitsStyle = .full
+            lastSyncText = formatter.localizedString(for: date, relativeTo: Date())
+        } else {
+            lastSyncText = "Never"
+        }
     }
 }
 
