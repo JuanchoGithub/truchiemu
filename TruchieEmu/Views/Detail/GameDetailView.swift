@@ -1309,6 +1309,8 @@ struct GameDetailView: View {
                         tone: .warning
                     )
                     LoggerService.debug(category: "Identity", "Unknown game — CRC: \(crc)")
+                case .identificationCleared:
+                    showManualResult("Identification cleared — game will use ROM filename", tone: .success)
                 case .databaseUnavailable:
                     showManualResult(
                         "Identification database unavailable. Check your internet connection.",

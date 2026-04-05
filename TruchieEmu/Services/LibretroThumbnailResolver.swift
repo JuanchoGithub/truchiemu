@@ -124,6 +124,11 @@ enum LibretroThumbnailResolver {
         " (Rev B)",
         " (v1.0)",
         " (v1.1)",
+        // Common region variants (for number variants like "Ecco the Dolphin II")
+        " (USA)",
+        " (Europe)",
+        " (Japan)",
+        " (World)",
     ]
 
     /// All CDN URLs to try for one resolved title (primary + safe + fuzzy + suffix variants).
@@ -136,6 +141,14 @@ enum LibretroThumbnailResolver {
         priority: LibretroThumbnailPriority
     ) -> [URL] {
         return candidateURLs(base: base, systemFolder: systemFolder, gameTitle: gameTitle, knownVariants: [], priority: priority)
+    }
+
+    /// Generate Roman numeral and text number variants of a title for boxart matching.
+    /// E.g. "Ecco the Dolphin 2" → "Ecco the Dolphin II", "Ecco the Dolphin Two"
+    /// E.g. "Double Dragon 3" → "Double Dragon III", "Double Dragon Three"
+    /// Visible for testing.
+    static func numberVariants(of title: String) -> [String] {
+        ROMIdentifierService.romanNumeralVariants(of: title)
     }
 
     /// All CDN URLs to try, including known DAT variant names.
@@ -155,8 +168,9 @@ enum LibretroThumbnailResolver {
 
         let safe = libretroFilesystemSafeName(primary)
         let fuzzy = stripParenthesesForFuzzyMatch(primary)
+        let numberVariants = Self.numberVariants(of: primary)
 
-        LoggerService.debug(category: logCategory, "candidateURLs: primary='\(primary)', safe='\(safe)', fuzzy='\(fuzzy)', knownVariants=\(knownVariants.count), priority=\(priority.rawValue)")
+        LoggerService.debug(category: logCategory, "candidateURLs: primary='\(primary)', safe='\(safe)', fuzzy='\(fuzzy)', numberVariants=\(numberVariants.count), knownVariants=\(knownVariants.count), priority=\(priority.rawValue)")
 
         var urls: [URL] = []
         var seen = Set<URL>()
@@ -177,6 +191,28 @@ enum LibretroThumbnailResolver {
         // Build title variants for the primary folder
         var titleVariants: [String] = [primary]
         if safe != primary, !safe.isEmpty { titleVariants.append(safe) }
+        // Add number variants (II, Two, etc.) for titles with Arabic numerals
+        for variant in numberVariants {
+            if variant != primary && !titleVariants.contains(variant) {
+                titleVariants.append(variant)
+            }
+        }
+        // Add number variants of the fuzzy (parenthesis-stripped) title too
+        let fuzzyNumberVariants = Self.numberVariants(of: fuzzy)
+        for variant in fuzzyNumberVariants {
+            if variant != fuzzy && !titleVariants.contains(variant) {
+                titleVariants.append(variant)
+            }
+        }
+        // Also try with trailing number stripped (first-in-series case, e.g. "Ecco the Dolphin 1" → "Ecco the Dolphin")
+        for pat in [" 1$", " (?i:i)(?-i)$", " (?i:one)(?-i)$"] {
+            let stripped = primary.replacingOccurrences(of: pat, with: "", options: .regularExpression).trimmingCharacters(in: .whitespacesAndNewlines)
+            if stripped != primary && !stripped.isEmpty && !titleVariants.contains(stripped) {
+                titleVariants.append(stripped)
+            }
+        }
+
+        LoggerService.debug(category: logCategory, "candidateURLs: \(titleVariants.count) title variants to try")
 
         // Step 1: For Named_Boxarts specifically, try the fuzzy (parenthesis-stripped) title FIRST.
         // The Libretro CDN stores boxart under cleaned names (no region tags), so this has
@@ -191,11 +227,20 @@ enum LibretroThumbnailResolver {
             }
         }
 
-        // Step 2: Try known DAT variant names BEFORE arbitrary suffix guessing.
+        // Step 2: Try number variants (II, III, Two, etc.) for Named_Boxarts
+        if firstChoiceFolder == "Named_Boxarts" && !numberVariants.isEmpty {
+            LoggerService.debug(category: logCategory, "candidateURLs: Step 2 trying \(numberVariants.count) number variants for Named_Boxarts")
+            for variant in numberVariants {
+                LoggerService.debug(category: logCategory, "candidateURLs: Step 2 number variant — '\(variant)'")
+                appendUnique(buildThumbnailURL(base: base, systemFolder: systemFolder, typeFolder: "Named_Boxarts", fileName: "\(variant).png"))
+            }
+        }
+
+        // Step 3: Try known DAT variant names BEFORE arbitrary suffix guessing.
         // These are real entries from the libretro database, so they have the highest
         // probability of matching actual CDN assets.
         if firstChoiceFolder == "Named_Boxarts" && !knownVariants.isEmpty {
-            LoggerService.debug(category: logCategory, "candidateURLs: Step 2 trying \(knownVariants.count) known DAT variants for Named_Boxarts")
+            LoggerService.debug(category: logCategory, "candidateURLs: Step 3 trying \(knownVariants.count) known DAT variants for Named_Boxarts")
             for variantName in knownVariants {
                 if variantName != primary {
                     appendUnique(buildThumbnailURL(base: base, systemFolder: systemFolder, typeFolder: "Named_Boxarts", fileName: "\(variantName).png"))
@@ -207,23 +252,28 @@ enum LibretroThumbnailResolver {
             }
         }
 
-        // Step 3: For Named_Boxarts, try arbitrary suffix variants (Beta, Rev, etc.) as fallback.
+        // Step 4: For Named_Boxarts, try arbitrary suffix variants (Beta, Rev, etc.) as fallback.
+        // Also try suffixes on number variants (e.g. "Ecco the Dolphin II (Japan).png")
         if firstChoiceFolder == "Named_Boxarts" {
-            LoggerService.debug(category: logCategory, "candidateURLs: Step 3 trying arbitrary suffix variants for Named_Boxarts")
+            LoggerService.debug(category: logCategory, "candidateURLs: Step 4 trying arbitrary suffix variants for Named_Boxarts")
             for suffix in boxartSuffixVariants {
                 appendUnique(buildThumbnailURL(base: base, systemFolder: systemFolder, typeFolder: "Named_Boxarts", fileName: "\(primary)\(suffix).png"))
+                // Try suffixes on number variants too (e.g. "Ecco the Dolphin II (Japan).png")
+                for variant in numberVariants {
+                    appendUnique(buildThumbnailURL(base: base, systemFolder: systemFolder, typeFolder: "Named_Boxarts", fileName: "\(variant)\(suffix).png"))
+                }
             }
         }
 
-        // Step 4: Try primary title variants across all type folders in priority order
-        LoggerService.debug(category: logCategory, "candidateURLs: Step 4 trying primary variants across \(typeFolders.joined(separator: ", "))")
+        // Step 5: Try primary title variants (including number variants) across all type folders in priority order
+        LoggerService.debug(category: logCategory, "candidateURLs: Step 5 trying \(titleVariants.count) variants across \(typeFolders.joined(separator: ", "))")
         for titleVariant in titleVariants {
             for folder in typeFolders {
                 appendUnique(buildThumbnailURL(base: base, systemFolder: systemFolder, typeFolder: folder, fileName: "\(titleVariant).png"))
             }
         }
 
-        // Step 5: Fallback fuzzy for Named_Boxarts only if not already added in Step 1
+        // Step 6: Fallback fuzzy for Named_Boxarts only if not already added in Step 1
         // (handles the case where fuzzy == primary or priority is not boxart)
         if firstChoiceFolder != "Named_Boxarts" && fuzzy != primary && fuzzy != safe && !fuzzy.isEmpty {
             appendUnique(buildThumbnailURL(base: base, systemFolder: systemFolder, typeFolder: "Named_Boxarts", fileName: "\(fuzzy).png"))
@@ -233,7 +283,7 @@ enum LibretroThumbnailResolver {
             }
         }
 
-        LoggerService.debug(category: logCategory, "candidateURLs: generated \(urls.count) unique URLs (\(titleVariants.count) title variants × \(typeFolders.count) folders + \(knownVariants.count) known variants + suffixes)")
+        LoggerService.debug(category: logCategory, "candidateURLs: generated \(urls.count) unique URLs")
         return urls
     }
 

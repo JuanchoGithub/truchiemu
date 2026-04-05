@@ -578,13 +578,54 @@ class ROMLibrary: ObservableObject {
         case .crcNotInDatabase(let crc):
             var updated = working
             updated.crc32 = crc
+            // Clear metadata title so the ROM reverts to filename-based display name
+            // This prevents misidentified games from keeping wrong metadata
+            if updated.metadata?.title != nil {
+                LoggerService.info(category: "ROMLibrary", "Identification failed for '\(rom.displayName)' — clearing metadata title, will use ROM filename instead")
+                updated.metadata?.title = nil
+                updated.metadata?.year = nil
+                updated.metadata?.publisher = nil
+                updated.metadata?.developer = nil
+                updated.metadata?.genre = nil
+            }
             updateROM(updated)
-        default:
+        case .identificationCleared:
+            // User explicitly cleared identification — ROM reverts to filename
+            if working.metadata?.title != nil {
+                LoggerService.info(category: "ROMLibrary", "Identification cleared for '\(rom.displayName)' — reverting to ROM filename")
+                working.metadata?.title = nil
+                working.metadata?.year = nil
+                working.metadata?.publisher = nil
+                working.metadata?.developer = nil
+                working.metadata?.genre = nil
+                working.thumbnailLookupSystemID = nil
+                updateROM(working)
+            }
+        case .databaseUnavailable, .noSystem:
+            // Don't clear existing identification on database errors — just update CRC
             if working.crc32 != rom.crc32 {
                 updateROM(working)
             }
+        case .romReadFailed:
+            // No update needed — ROM is unreadable
+            break
         }
         return result
+    }
+
+    /// Explicitly clear any identification metadata for a ROM, reverting it to use the filename.
+    func clearIdentification(for rom: ROM) {
+        var updated = rom
+        if updated.metadata?.title != nil {
+            LoggerService.info(category: "ROMLibrary", "Clearing identification for '\(rom.displayName)' — reverting to ROM filename")
+            updated.metadata?.title = nil
+            updated.metadata?.year = nil
+            updated.metadata?.publisher = nil
+            updated.metadata?.developer = nil
+            updated.metadata?.genre = nil
+            updated.thumbnailLookupSystemID = nil
+            updateROM(updated)
+        }
     }
 
     private func updateGamesXML(for rom: ROM) {

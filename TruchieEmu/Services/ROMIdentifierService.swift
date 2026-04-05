@@ -46,6 +46,8 @@ enum ROMIdentifyResult: Equatable {
     /// ROM file could not be read (permissions, missing file, etc.).
     case romReadFailed(String)
     case noSystem
+    /// Explicit request to clear/remove any existing identification — the ROM should revert to filename-based display.
+    case identificationCleared
 }
 
 private let identifyLog = Logger(subsystem: Bundle.main.bundleIdentifier ?? "TruchieEmu", category: "ROMIdentify")
@@ -94,65 +96,43 @@ class ROMIdentifierService {
         guard let systemID = rom.systemID,
               let system = SystemDatabase.system(forID: systemID) else {
             identifyLog.warning("Identify: no system for ROM \(rom.path.lastPathComponent, privacy: .public)")
-            LoggerService.romIdentifyWarn("No system for ROM: \(rom.path.lastPathComponent) — path=\(rom.path.path)")
             return .noSystem
         }
 
-        LoggerService.info(category: "ROMIdentify", "Identify START: systemID=\(systemID), file=\(rom.path.lastPathComponent)")
-        LoggerService.romIdentify("Identify START: systemID=\(systemID), path=\(rom.path.path)")
-        identifyLog.info("Identify: start system=\(systemID, privacy: .public) file=\(rom.path.lastPathComponent, privacy: .public)")
+        identifyLog.info("Identify: START system=\(systemID, privacy: .public) file=\(rom.path.lastPathComponent, privacy: .public)")
 
-        LoggerService.debug(category: "ROMIdentify", "Fetching/loading DAT for system=\(systemID)")
         let db = await LibretroDatabaseLibrary.shared.fetchAndLoadDat(for: system)
         if db.isEmpty {
-            LoggerService.warning(category: "ROMIdentify", "Empty/missing database for system \(systemID)")
-            LoggerService.romIdentifyWarn("Empty database for system \(systemID)")
             identifyLog.error("Identify: empty database for system \(systemID, privacy: .public)")
             return .databaseUnavailable
         }
-        LoggerService.info(category: "ROMIdentify", "Database loaded for \(systemID): \(db.count) CRC entries")
-        LoggerService.romIdentify("Database loaded: \(db.count) CRC entries for \(systemID)")
-        identifyLog.info("Identify: database has \(db.count) CRC entries for lookup")
+        identifyLog.info("Identify: database loaded — \(db.count, privacy: .public) CRC entries for \(systemID, privacy: .public)")
 
-        LoggerService.debug(category: "ROMIdentify", "Computing CRC for \(rom.path.path)")
         guard let crc = computeCRC(for: rom.path, systemID: systemID) else {
-            LoggerService.error(category: "ROMIdentify", "CRC read failed for \(rom.path.path)")
-            LoggerService.romIdentifyError("CRC read failed for path=\(rom.path.path)")
             identifyLog.error("Identify: CRC read failed for \(rom.path.path, privacy: .public)")
             return .romReadFailed("Could not read the ROM file. If the library is on a removable drive or you moved files, re-add the folder in Settings.")
         }
 
         let key = crc.uppercased()
-        LoggerService.info(category: "ROMIdentify", "ROM CRC=\(key)")
-        LoggerService.romIdentify("ROM CRC=\(key)")
-        identifyLog.info("Identify: ROM CRC \(key, privacy: .public)")
+        identifyLog.info("Identify: ROM CRC=\(key, privacy: .public)")
 
         if let info = db[key] {
             if let thumb = info.thumbnailLookupSystemID, thumb != systemID {
-                LoggerService.info(category: "ROMIdentify", "CRC HIT: '\(info.name)' (thumbnail system override: \(thumb) — ROM system is \(systemID))")
-                LoggerService.romIdentify("CRC match → \(info.name) (thumbnails: use system \(thumb), ROM is \(systemID))")
-                identifyLog.info("Identify: CRC match → \(info.name, privacy: .public) (thumbnails: use system \(thumb, privacy: .public), ROM is \(systemID, privacy: .public))")
+                identifyLog.info("Identify: CRC HIT → \(info.name, privacy: .public) (thumbnails: use system \(thumb, privacy: .public), ROM is \(systemID, privacy: .public))")
             } else {
-                LoggerService.info(category: "ROMIdentify", "CRC HIT: '\(info.name)'")
-                LoggerService.romIdentify("CRC match → \(info.name)")
-                identifyLog.info("Identify: CRC match → \(info.name, privacy: .public)")
+                identifyLog.info("Identify: CRC HIT → \(info.name, privacy: .public)")
             }
             return .identified(info)
         }
 
-        LoggerService.debug(category: "ROMIdentify", "No CRC match for \(key), trying identifyByName...")
-        LoggerService.romIdentify("No CRC match for \(key), trying name match")
+        identifyLog.info("Identify: no CRC match for \(key, privacy: .public), falling back to name search...")
         let language = Self.currentEmulatorLanguage()
         if let byName = identifyByName(rom: rom, database: db, language: language) {
-            LoggerService.info(category: "ROMIdentify", "NAME MATCH: '\(byName.name)' (language=\(language.name))")
-            LoggerService.romIdentify("Filename match → \(byName.name) (language \(language.name))")
-            identifyLog.info("Identify: filename match → \(byName.name, privacy: .public) (language \(language.name, privacy: .public))")
+            identifyLog.info("Identify: NAME MATCH → \(byName.name, privacy: .public) (language=\(language.name, privacy: .public))")
             return .identifiedFromName(byName)
         }
 
-        LoggerService.info(category: "ROMIdentify", "NOT IDENTIFIED: CRC \(key) not in database and no filename match for system=\(systemID)")
-        LoggerService.romIdentify("CRC \(key) not in database and no filename match for \(systemID)")
-        identifyLog.notice("Identify: CRC \(key, privacy: .public) not in database and no filename match for \(systemID, privacy: .public)")
+        identifyLog.notice("Identify: NOT FOUND — CRC \(key, privacy: .public) not in database and name search found 0 matches for \(systemID, privacy: .public)")
         return .crcNotInDatabase(crc: key)
     }
 
@@ -364,7 +344,15 @@ class ROMIdentifierService {
         // Roman → Arabic
         for (r, a) in romanToArabic {
             let esc = NSRegularExpression.escapedPattern(for: r)
-            let p = "(?<![a-zA-Z])\\b" + esc + "\\b(?![a-zA-Z0-9])"
+            // For single-char romans (I, V, X), require that they're NOT followed by dash or apostrophe
+            // to avoid matching "X-Men", but still match "X" in standalone context like "Final Fantasy X"
+            let p: String
+            if r.count == 1 {
+                // Single-char: don't match if followed by dash or apostrophe (e.g. "X-Men", "I'll")
+                p = "(?<![a-zA-Z])\\b" + esc + "\\b(?![-'a-zA-Z0-9])"
+            } else {
+                p = "(?<![a-zA-Z])\\b" + esc + "\\b(?![a-zA-Z0-9])"
+            }
             let s = normalized.replacingOccurrences(of: p, with: String(a), options: .regularExpression)
             if s != normalized { variants.insert(s) }
         }
@@ -415,84 +403,143 @@ class ROMIdentifierService {
         var cleaned = LibretroThumbnailResolver.stripRomFilenameTags(stem)
         cleaned = LibretroThumbnailResolver.stripParenthesesForFuzzyMatch(cleaned)
         let queryBase = Self.normalizedComparableTitle(cleaned)
-        guard queryBase.count >= 2 else { return nil }
+        guard queryBase.count >= 2 else {
+            identifyLog.warning("Identify: name search skipped — queryBase='\(queryBase, privacy: .public)' too short (<2 chars)")
+            return nil
+        }
 
-        // --- pass 1: exact match on base query (normalizedComparableTitle strips parentheses) ---
+        identifyLog.info("Identify: name search START — file='\(stem, privacy: .public)', cleaned='\(cleaned, privacy: .public)', queryBase='\(queryBase, privacy: .public)'")
+        identifyLog.info("Identify: database has \(database.count, privacy: .public) entries to search")
+
+        // --- Pass 1: exact match on base query (normalizedComparableTitle strips parentheses) ---
+        identifyLog.info("Identify: PASS 1 — exact match on queryBase='\(queryBase, privacy: .public)' (normalizedComparableTitle)")
         var exact: [GameInfo] = []
+        var pass1Checked = 0
         for info in database.values {
             let datBase = Self.normalizedComparableTitle(info.name)
+            pass1Checked += 1
             if datBase == queryBase {
                 exact.append(info)
+                identifyLog.debug("Identify: PASS 1 matched → '\(info.name, privacy: .public)'")
             }
         }
+        if !exact.isEmpty {
+            identifyLog.info("Identify: PASS 1 FOUND \(exact.count) exact match(es)")
+        } else {
+            identifyLog.info("Identify: PASS 1 found 0 matches (checked \(pass1Checked, privacy: .public) entries)")
+        }
 
-        // --- pass 2: exact match on Roman-numeral / trailing-number variants ---
+        // --- Pass 2: exact match on Roman-numeral / trailing-number variants ---
         if exact.isEmpty {
-            for variant in Self.romanNumeralVariants(of: queryBase) {
-                for info in database.values {
-                    let datBase = Self.normalizedComparableTitle(info.name)
-                    if datBase == variant {
-                        exact.append(info)
+            let variants = Self.romanNumeralVariants(of: queryBase)
+            identifyLog.info("Identify: PASS 2 — number variants (\(variants.count, privacy: .public) variants generated)")
+            if !variants.isEmpty {
+                for variant in variants {
+                    identifyLog.debug("Identify: PASS 2 trying variant='\(variant, privacy: .public)'")
+                    var hit = false
+                    for info in database.values {
+                        let datBase = Self.normalizedComparableTitle(info.name)
+                        if datBase == variant {
+                            exact.append(info)
+                            identifyLog.info("Identify: PASS 2 matched variant='\(variant, privacy: .public)' → '\(info.name, privacy: .public)'")
+                            hit = true
+                        }
                     }
+                    if hit { break }
                 }
-                if !exact.isEmpty { break }
+            } else {
+                identifyLog.debug("Identify: PASS 2 skipped — no variants generated for queryBase='\(queryBase, privacy: .public)'")
+            }
+            if exact.isEmpty {
+                identifyLog.info("Identify: PASS 2 found 0 matches")
             }
         }
 
-        // --- pass 3: aggressive normalization — strip ALL tags including [brackets], {braces}, parentheses ---
+        // --- Pass 3: aggressive normalization — strip ALL tags including [brackets], {braces}, parentheses ---
         // This is the user-requested feature: strip (World), (USA), (Beta), etc. from both ROM name and DB entries
         if exact.isEmpty {
             let aggressiveQuery = Self.aggressivelyNormalizedTitle(stem)
+            identifyLog.info("Identify: PASS 3 — aggressive normalization")
+            identifyLog.info("Identify: PASS 3 query='\(stem, privacy: .public)' → '\(aggressiveQuery, privacy: .public)'")
             if !aggressiveQuery.isEmpty && aggressiveQuery.count >= 2 {
-                identifyLog.info("Identify: trying aggressive name match (all tags stripped) for '\(stem, privacy: .public)' → '\(aggressiveQuery, privacy: .public)'")
                 // Try exact aggressive match first
+                var pass3Checked = 0
                 for info in database.values {
                     let datAggressive = Self.aggressivelyNormalizedTitle(info.name)
+                    pass3Checked += 1
                     if datAggressive == aggressiveQuery {
                         exact.append(info)
+                        identifyLog.info("Identify: PASS 3 matched aggressive query → '\(info.name, privacy: .public)'")
                     }
                 }
                 // If no exact match, try with number variants (3 → III → three)
                 if exact.isEmpty {
                     let aggressiveVariants = Self.romanNumeralVariants(of: aggressiveQuery)
+                    identifyLog.debug("Identify: PASS 3 generated \(aggressiveVariants.count, privacy: .public) number variants for aggressive query='\(aggressiveQuery, privacy: .public)'")
                     for variant in aggressiveVariants {
+                        identifyLog.debug("Identify: PASS 3 trying aggressive variant='\(variant, privacy: .public)'")
                         for info in database.values {
                             let datAggressive = Self.aggressivelyNormalizedTitle(info.name)
                             if datAggressive == variant {
                                 exact.append(info)
+                                identifyLog.info("Identify: PASS 3 matched aggressive variant='\(variant, privacy: .public)' → '\(info.name, privacy: .public)'")
+                                break
                             }
                         }
                         if !exact.isEmpty { break }
                     }
                 }
-                if !exact.isEmpty {
-                    identifyLog.info("Identify: aggressive name match succeeded → '\(exact.first!.name, privacy: .public)'")
-                }
+            } else {
+                identifyLog.debug("Identify: PASS 3 skipped — aggressiveQuery too short or empty")
+            }
+            if exact.isEmpty {
+                identifyLog.info("Identify: PASS 3 found 0 matches")
             }
         }
 
-        // --- pass 4: substring / prefix containment (original fuzzy) ---
+        // --- Pass 4: substring / prefix containment (original fuzzy) ---
         // IMPORTANT: Avoid partial matches where the query has a number suffix that the DB entry lacks.
         // E.g., "double dragon 3" should NOT match "double dragon" just because one contains the other.
         // Only allow partial matches when the difference is a minor article/preposition like "the".
         var candidates = exact
         if candidates.isEmpty {
+            identifyLog.info("Identify: PASS 4 — substring/fuzzy matching (base query)")
+            var pass4BaseChecked = 0
+            var pass4BaseMatched = 0
             for info in database.values {
                 let datBase = Self.normalizedComparableTitle(info.name)
                 guard datBase.count >= 3, queryBase.count >= 3 else { continue }
+                pass4BaseChecked += 1
 
                 // Check if this would be a problematic partial match (query has trailing number)
                 let wouldBeBadPartialMatch = Self.isProblematicNumberSuffixPartialMatch(query: queryBase, candidate: datBase)
                 guard !wouldBeBadPartialMatch else { continue }
 
+                // Reject substring match when candidate is much shorter than query
+                // (e.g. "x-men" should NOT match "spiderman and x-men - arcade's revenge")
+                // Allow if query is at most 2x the length of candidate, or if match ratio is high
+                let lenRatio = Double(queryBase.count) / Double(datBase.count)
+                if queryBase.contains(datBase) && lenRatio > 1.5 {
+                    // Query contains candidate but candidate is much shorter → likely false positive
+                    // e.g. "x-men" (7) vs "spiderman and x-men..." (40) → ratio 5.7x → reject
+                    continue
+                }
+
                 if datBase.contains(queryBase) || queryBase.contains(datBase) {
                     candidates.append(info)
+                    pass4BaseMatched += 1
+                    identifyLog.debug("Identify: PASS 4 substring match → '\(info.name, privacy: .public)'")
                 }
             }
+            identifyLog.info("Identify: PASS 4 (base query) checked \(pass4BaseChecked, privacy: .public) entries, found \(pass4BaseMatched, privacy: .public) substring match(es)")
+
             // Final fallback: containment using Roman-numeral variants of the query
             if candidates.isEmpty {
-                for variant in Self.romanNumeralVariants(of: queryBase) {
+                let variants = Self.romanNumeralVariants(of: queryBase)
+                identifyLog.info("Identify: PASS 4 (Roman variants) — trying \(variants.count, privacy: .public) variants")
+                for variant in variants {
                     guard variant.count >= 3 else { continue }
+                    identifyLog.debug("Identify: PASS 4 trying Roman variant='\(variant, privacy: .public)'")
                     for info in database.values {
                         let datBase = Self.normalizedComparableTitle(info.name)
                         guard datBase.count >= 3 else { continue }
@@ -502,29 +549,45 @@ class ROMIdentifierService {
 
                         if datBase.contains(variant) || variant.contains(datBase) {
                             candidates.append(info)
+                            identifyLog.info("Identify: PASS 4 matched Roman variant='\(variant, privacy: .public)' → '\(info.name, privacy: .public)'")
+                            break
                         }
                     }
                     if !candidates.isEmpty { break }
                 }
+                if candidates.isEmpty {
+                    identifyLog.info("Identify: PASS 4 (Roman variants) found 0 matches")
+                }
             }
+
             // Last resort: aggressive substring match (with same number-suffix protection)
             if candidates.isEmpty {
                 let aggressiveQuery = Self.aggressivelyNormalizedTitle(stem)
                 if !aggressiveQuery.isEmpty && aggressiveQuery.count >= 3 {
+                    identifyLog.info("Identify: PASS 4 (last resort) — aggressive substring match")
+                    var pass4AggChecked = 0
+                    var pass4AggMatched = 0
                     for info in database.values {
                         let datAggressive = Self.aggressivelyNormalizedTitle(info.name)
                         guard datAggressive.count >= 3 else { continue }
+                        pass4AggChecked += 1
 
                         let wouldBeBadPartialMatch = Self.isProblematicNumberSuffixPartialMatch(query: aggressiveQuery, candidate: datAggressive)
                         guard !wouldBeBadPartialMatch else { continue }
 
                         if datAggressive.contains(aggressiveQuery) || aggressiveQuery.contains(datAggressive) {
                             candidates.append(info)
+                            pass4AggMatched += 1
+                            identifyLog.debug("Identify: PASS 4 aggressive substring match → '\(info.name, privacy: .public)'")
                         }
                     }
-                    if !candidates.isEmpty {
-                        identifyLog.info("Identify: aggressive substring match found \(candidates.count) candidates")
+                    if pass4AggMatched > 0 {
+                        identifyLog.info("Identify: PASS 4 (last resort) found \(pass4AggMatched) aggressive substring match(es)")
+                    } else {
+                        identifyLog.info("Identify: PASS 4 (last resort) found 0 matches (checked \(pass4AggChecked, privacy: .public) entries)")
                     }
+                } else {
+                    identifyLog.debug("Identify: PASS 4 (last resort) skipped — aggressiveQuery too short or empty")
                 }
             }
         }
