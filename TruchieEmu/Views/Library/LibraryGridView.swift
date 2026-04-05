@@ -668,51 +668,56 @@ struct LibraryGridView: View {
     }
 
     private var gridView: some View {
-        GeometryReader { geometry in
-            ScrollView {
-                LazyVGrid(columns: columns, spacing: gridSpacing) {
-                    ForEach(Array(displayedROMs.enumerated()), id: \.element.id) { index, rom in
-                        let isSelected = selectedROMs.contains(rom.id) || selectedROM?.id == rom.id
-                        GameCardView(rom: rom, isSelected: isSelected, isMultiSelected: selectedROMs.contains(rom.id), zoomLevel: continuousZoom)
-                            .contentShape(Rectangle())
-                            .onTapGesture {
-                                handleTap(on: rom, at: index)
+        ScrollView {
+            LazyVGrid(columns: columns, spacing: gridSpacing) {
+                ForEach(Array(displayedROMs.enumerated()), id: \.element.id) { index, rom in
+                    let isSelected = selectedROMs.contains(rom.id) || selectedROM?.id == rom.id
+                    GameCardView(rom: rom, isSelected: isSelected, isMultiSelected: selectedROMs.contains(rom.id), zoomLevel: continuousZoom)
+                        .contentShape(Rectangle())
+                        .onTapGesture {
+                            handleTap(on: rom, at: index)
+                        }
+                        .simultaneousGesture(
+                            TapGesture(count: 2).onEnded {
+                                launchGame(rom)
                             }
-                            .simultaneousGesture(
-                                TapGesture(count: 2).onEnded {
-                                    launchGame(rom)
-                                }
-                            )
-                            .contextMenu { contextMenu(for: rom) }
-                            .onDrag {
-                                let items = selectedROMs.contains(rom.id) || selectedROM?.id == rom.id
-                                    ? selectedROMs.compactMap { id in displayedROMs.first(where: { $0.id == id }) }
-                                    : [rom]
-                                draggedROMs = items
-                                dragState.startDrag(gameIDs: items.map { $0.id })
-                                let provider = NSItemProvider(object: NSString(string: items.map { $0.id.uuidString }.joined(separator: ",")))
-                                return provider
-                            }
-                    }
+                        )
+                        .contextMenu { contextMenu(for: rom) }
+                        .onDrag {
+                            let items = selectedROMs.contains(rom.id) || selectedROM?.id == rom.id
+                                ? selectedROMs.compactMap { id in displayedROMs.first(where: { $0.id == id }) }
+                                : [rom]
+                            draggedROMs = items
+                            dragState.startDrag(gameIDs: items.map { $0.id })
+                            let provider = NSItemProvider(object: NSString(string: items.map { $0.id.uuidString }.joined(separator: ",")))
+                            return provider
+                        }
                 }
-                .animation(.easeInOut(duration: 0.25), value: continuousZoom)
-                .padding(gridPadding)
-                .frame(maxWidth: geometry.size.width)
             }
+            .padding(gridPadding)
+            .animation(.none, value: continuousZoom) // No animation during live pinch for responsiveness
         }
+        .clipped() // Prevent content from drawing outside bounds (e.g., behind sidebar)
         .gesture(
             MagnificationGesture()
                 .onChanged { value in
+                    // Continuous zoom: adjust cards smoothly during pinch
                     let scale = value / lastMagnification
-                    let zoomDelta = (scale - 1.0) * 0.3
-                    continuousZoom = max(0, min(1, continuousZoom + zoomDelta))
-                    updateColumns()
+                    let zoomDelta = (scale - 1.0) * 0.15
+                    let newZoom = max(0, min(1, continuousZoom + zoomDelta))
+                    // Only update columns when zoom crosses a step boundary
+                    let newColumnCount = max(1, min(8, Int(round((1.0 - newZoom) * 7.0) + 1)))
+                    if newColumnCount != columnCount {
+                        columnCount = newColumnCount
+                        updateColumns()
+                    }
+                    continuousZoom = newZoom
                     lastMagnification = value
                 }
                 .onEnded { _ in
-                    // Smooth snap to nearest column
+                    // Smooth snap to nearest predefined step when pinch ends
                     let snapped = round(continuousZoom * 7.0) / 7.0
-                    withAnimation(.interpolatingSpring(stiffness: 120, damping: 18)) {
+                    withAnimation(.interpolatingSpring(stiffness: 150, damping: 20)) {
                         continuousZoom = snapped
                         columnCount = max(1, min(8, Int(round((1.0 - snapped) * 7.0) + 1)))
                         updateColumns()
