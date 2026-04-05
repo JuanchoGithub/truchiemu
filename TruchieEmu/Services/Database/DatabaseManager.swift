@@ -739,7 +739,12 @@ class DatabaseManager {
 
     // MARK: - Library Folder Persistence
 
-    typealias LibraryFolderRow = (urlPath: String, bookmarkData: Data)
+    /// Extended library folder row with subfolder tracking.
+    /// - urlPath: The filesystem path of the folder
+    /// - bookmarkData: Security-scoped bookmark data
+    /// - parentPath: Path of the parent folder (nil for top-level/primary folders)
+    /// - isPrimary: Whether this folder was explicitly added by the user
+    typealias LibraryFolderRow = (urlPath: String, bookmarkData: Data, parentPath: String?, isPrimary: Bool)
 
     /// Save library folder bookmarks (full sync - replaces all existing folders).
     func saveLibraryFolders(_ folders: [LibraryFolderRow]) {
@@ -754,9 +759,9 @@ class DatabaseManager {
         _execute(db: db, sql: "DELETE FROM library_folders", bindings: [])
 
         let sql = """
-            INSERT INTO library_folders (url_path, bookmark_data)
-            VALUES (?, ?)
-            ON CONFLICT(url_path) DO UPDATE SET bookmark_data = excluded.bookmark_data
+            INSERT INTO library_folders (url_path, bookmark_data, parent_path, is_primary)
+            VALUES (?, ?, ?, ?)
+            ON CONFLICT(url_path) DO UPDATE SET bookmark_data = excluded.bookmark_data, parent_path = excluded.parent_path, is_primary = excluded.is_primary
         """
         guard let stmt = prepare(sql) else { return }
         defer { sqlite3_finalize(stmt) }
@@ -766,6 +771,12 @@ class DatabaseManager {
             sqlite3_clear_bindings(stmt)
             sqlite3_bind_text(stmt, 1, (folder.urlPath as NSString).utf8String, -1, nil)
             sqlite3_bind_blob(stmt, 2, (folder.bookmarkData as NSData).bytes, Int32(folder.bookmarkData.count), SQLITE_TRANSIENT)
+            if let parentPath = folder.parentPath {
+                sqlite3_bind_text(stmt, 3, (parentPath as NSString).utf8String, -1, nil)
+            } else {
+                sqlite3_bind_null(stmt, 3)
+            }
+            sqlite3_bind_int64(stmt, 4, folder.isPrimary ? 1 : 0)
             let rc = sqlite3_step(stmt)
             if rc != SQLITE_DONE {
                 LoggerService.warning(category: "Database", "Failed to save library folder \(folder.urlPath): \(sqliteErrorString(rc))")
@@ -837,6 +848,20 @@ class DatabaseManager {
         return (path, data)
     }
 
+    /// Load all library folder entries with full subfolder tracking data.
+    func loadLibraryFolderEntries() -> [(urlPath: String, bookmarkData: Data, parentPath: String?, isPrimary: Bool)] {
+        queue.sync { () -> [(String, Data, String?, Bool)] in
+            guard let db = db else { return [] }
+            return _query(db: db, sql: "SELECT url_path, bookmark_data, parent_path, is_primary FROM library_folders", bindings: []) { stmt in
+                guard let path = self.columnString(stmt: stmt, index: 0),
+                      let data = self.columnData(stmt: stmt, index: 1) else { return nil }
+                let parentPath = self.columnString(stmt: stmt, index: 2)
+                let isPrimary = (self.columnInt64(stmt: stmt, index: 3) ?? 1) != 0
+                return (path, data, parentPath, isPrimary)
+            }
+        }
+    }
+
     /// Load library folder paths only (fallback when bookmark data is corrupted or unresolvable).
     /// This enables recovery even when security-scoped bookmarks are stale.
     func loadLibraryFolderPaths() -> [String] {
@@ -845,6 +870,131 @@ class DatabaseManager {
             return _query(db: db, sql: "SELECT url_path FROM library_folders", bindings: []) { stmt in
                 self.columnString(stmt: stmt, index: 0)
             }.compactMap { $0 }
+        }
+    }
+    
+    /// Remove a single library folder by its URL path (and optionally its subfolders).
+    /// - Parameters:
+    ///   - urlPath: The path of the folder to remove
+    ///   - removeSubfolders: If true, also remove all folders that have this folder as parent
+    func removeLibraryFolder(urlPath: String, removeSubfolders: Bool = true) {
+        queue.sync { _removeLibraryFolder(urlPath: urlPath, removeSubfolders: removeSubfolders) }
+    }
+    
+    private func _removeLibraryFolder(urlPath: String, removeSubfolders: Bool) {
+        let dbHandle = self.db
+        guard let dbHandle = dbHandle else { return }
+        
+        if removeSubfolders {
+            _ = _execute(db: dbHandle, sql: "DELETE FROM library_folders WHERE url_path = ? OR url_path LIKE ?", bindings: [urlPath, urlPath + "/%"])
+        } else {
+            _ = _execute(db: dbHandle, sql: "DELETE FROM library_folders WHERE url_path = ?", bindings: [urlPath])
+        }
+    }
+    
+    /// Get all primary folders (user-added, top-level folders)
+    func loadPrimaryFolders() -> [(urlPath: String, bookmarkData: Data)] {
+        queue.sync { () -> [(String, Data)] in
+            guard let db = db else { return [] }
+            return _query(db: db, sql: "SELECT url_path, bookmark_data FROM library_folders WHERE parent_path IS NULL AND is_primary = 1", bindings: []) { stmt in
+                guard let path = self.columnString(stmt: stmt, index: 0),
+                      let data = self.columnData(stmt: stmt, index: 1) else { return nil }
+                return (path, data)
+            }
+        }
+    }
+    
+    /// Get all subfolders of a given parent folder (up to 2 levels deep)
+    func loadSubfoldersOf(parentPath: String, maxDepth: Int = 2) -> [(urlPath: String, bookmarkData: Data, parentPath: String?, isPrimary: Bool)] {
+        queue.sync { () -> [(String, Data, String?, Bool)] in
+            guard let db = db else { return [] }
+            let prefix = parentPath.hasSuffix("/") ? parentPath : parentPath + "/"
+            return _query(db: db, sql: """
+                SELECT url_path, bookmark_data, parent_path, is_primary 
+                FROM library_folders 
+                WHERE url_path LIKE ? 
+                ORDER BY url_path
+            """, bindings: [prefix + "%"]) { stmt in
+                guard let path = self.columnString(stmt: stmt, index: 0),
+                      let data = self.columnData(stmt: stmt, index: 1) else { return nil }
+                let pPath = self.columnString(stmt: stmt, index: 2)
+                let isPrimary = (self.columnInt64(stmt: stmt, index: 3) ?? 0) != 0
+                // Calculate depth and filter to maxDepth
+                let depth = path.replacingOccurrences(of: prefix, with: "").components(separatedBy: "/").filter { !$0.isEmpty }.count
+                return depth <= maxDepth ? (path, data, pPath, isPrimary) : nil
+            }
+        }
+    }
+    
+    /// Upsert a single library folder entry (for adding individual subfolders as primary)
+    func upsertLibraryFolder(urlPath: String, bookmarkData: Data, parentPath: String? = nil, isPrimary: Bool = true) {
+        queue.sync {
+            _upsertLibraryFolder(urlPath: urlPath, bookmarkData: bookmarkData, parentPath: parentPath, isPrimary: isPrimary)
+        }
+    }
+    
+    private func _upsertLibraryFolder(urlPath: String, bookmarkData: Data, parentPath: String?, isPrimary: Bool) {
+        guard db != nil else { return }
+        
+        let sql = """
+            INSERT INTO library_folders (url_path, bookmark_data, parent_path, is_primary)
+            VALUES (?, ?, ?, ?)
+            ON CONFLICT(url_path) DO UPDATE SET bookmark_data = excluded.bookmark_data, parent_path = excluded.parent_path, is_primary = excluded.is_primary
+        """
+        guard let stmt = prepare(sql) else { return }
+        defer { sqlite3_finalize(stmt) }
+        
+        sqlite3_reset(stmt)
+        sqlite3_clear_bindings(stmt)
+        sqlite3_bind_text(stmt, 1, (urlPath as NSString).utf8String, -1, nil)
+        sqlite3_bind_blob(stmt, 2, (bookmarkData as NSData).bytes, Int32(bookmarkData.count), SQLITE_TRANSIENT)
+        if let parentPath = parentPath {
+            sqlite3_bind_text(stmt, 3, (parentPath as NSString).utf8String, -1, nil)
+        } else {
+            sqlite3_bind_null(stmt, 3)
+        }
+        sqlite3_bind_int64(stmt, 4, isPrimary ? 1 : 0)
+        
+        let rc = sqlite3_step(stmt)
+        if rc != SQLITE_DONE {
+            LoggerService.warning(category: "Database", "Failed to upsert library folder \(urlPath): \(sqliteErrorString(rc))")
+        }
+    }
+    
+    /// Mark a subfolder as primary (user explicitly added it independently)
+    func markFolderAsPrimary(urlPath: String, parentPath: String?) {
+        queue.sync {
+            _updateFolderPrimary(urlPath: urlPath, isPrimary: true)
+            // Also update the parent_path if provided
+            if let parentPath = parentPath {
+                _updateFolderParentPath(urlPath: urlPath, parentPath: parentPath)
+            }
+        }
+    }
+    
+    private func _updateFolderPrimary(urlPath: String, isPrimary: Bool) {
+        guard let dbHandle = self.db else { return }
+        _ = _execute(db: dbHandle, sql: "UPDATE library_folders SET is_primary = ? WHERE url_path = ?", bindings: [isPrimary ? 1 : 0, urlPath])
+    }
+    
+    private func _updateFolderParentPath(urlPath: String, parentPath: String) {
+        guard let dbHandle = self.db else { return }
+        _ = _execute(db: dbHandle, sql: "UPDATE library_folders SET parent_path = ? WHERE url_path = ?", bindings: [parentPath, urlPath])
+    }
+    
+    /// Check if a folder exists in the database
+    func folderExists(urlPath: String) -> Bool {
+        queue.sync { () -> Bool in
+            guard let db = db else { return false }
+            return _query(db: db, sql: "SELECT 1 FROM library_folders WHERE url_path = ?", bindings: [urlPath]) { _ in true }.first ?? false
+        }
+    }
+    
+    /// Check if a folder path is already stored as a primary folder
+    func isFolderPrimary(urlPath: String) -> Bool {
+        queue.sync { () -> Bool in
+            guard let db = db else { return false }
+            return _query(db: db, sql: "SELECT 1 FROM library_folders WHERE url_path = ? AND is_primary = 1", bindings: [urlPath]) { _ in true }.first ?? false
         }
     }
 

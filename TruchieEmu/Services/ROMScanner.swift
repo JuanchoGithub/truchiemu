@@ -68,8 +68,13 @@ actor ROMScanner {
             guard !ext.isEmpty else { continue }
 
             // Skip obviously non-ROM files
-            let skip = ["txt", "xml", "jpg", "jpeg", "png", "gif", "bmp", "pdf", "mp3", "mp4", "avi", "mkv", "nfo", "dat", "db", "json"]
+            let skip = ["txt", "xml", "jpg", "jpeg", "png", "gif", "bmp", "pdf", "mp3", "mp4", "avi", "mkv", "nfo", "dat", "db", "json",
+                        "py", "pyc", "pyo", "pyw", "dylib", "so", "app", "icns", "plist", "strings", "loc", "lproj", "nib", "xib",
+                        "md", "rmd", "html", "htm", "css", "js", "ts", "jsx", "tsx"]
             if skip.contains(ext) { continue }
+            
+            // Skip files inside .app bundles
+            if url.path.contains("/Contents/") || url.path.hasSuffix(".app") { continue }
 
             let system = identifySystem(url: url, extension: ext)
             let name = url.deletingPathExtension().lastPathComponent
@@ -624,8 +629,13 @@ actor ROMScanner {
             guard !ext.isEmpty else { continue }
 
             // Skip obviously non-ROM files
-            let skip = ["txt", "xml", "jpg", "jpeg", "png", "gif", "bmp", "pdf", "mp3", "mp4", "avi", "mkv", "nfo", "dat", "db", "json"]
+            let skip = ["txt", "xml", "jpg", "jpeg", "png", "gif", "bmp", "pdf", "mp3", "mp4", "avi", "mkv", "nfo", "dat", "db", "json",
+                        "py", "pyc", "pyo", "pyw", "dylib", "so", "app", "icns", "plist", "strings", "loc", "lproj", "nib", "xib",
+                        "md", "rmd", "html", "htm", "css", "js", "ts", "jsx", "tsx"]
             if skip.contains(ext) { continue }
+            
+            // Skip files inside .app bundles
+            if url.path.contains("/Contents/") || url.path.hasSuffix(".app") { continue }
 
             let system = identifySystem(url: url, extension: ext)
             let name = url.deletingPathExtension().lastPathComponent
@@ -657,6 +667,78 @@ actor ROMScanner {
         // Final progress update
         progress(1.0)
         return found
+    }
+
+    // MARK: - Folder Discovery
+    
+    /// Find all subfolders (up to maxDepth levels deep) that contain at least one file
+    /// that looks like it could be a ROM file.
+    /// This is used to discover subfolders when a user adds a parent folder.
+    func findFoldersWithROMs(baseURL: URL, maxDepth: Int) async -> [URL] {
+        var foldersWithROMs: [URL] = []
+        let fm = FileManager.default
+        
+        // Known extensions that indicate ROM files
+        let romExtensions = Set([
+            "nes", "sfc", "smc", "fig", "gb", "gbc", "gba", "md", "gen", "smd",
+            "sms", "gg", "sg", "n64", "z64", "v64", "nds", "3ds", "psx", "cue",
+            "bin", "iso", "img", "chd", "zip", "7z", "rom", "mgx", "st", "msa",
+            "pce", "sgx", "ngp", "ngc", "ws", "wsc", "vb", "col", "rom", "a26",
+            "a52", "a78", "lnx", "j64", "jag", "suf", "bs", "gcm", "rvz",
+            "dos", "dosz", "conf", "bat", "com", "exe", "sou", "000", "001",
+            "flac", "ogg", "wav", "scr", "dsk", "m3u"
+        ])
+        
+        // Skip non-ROM extensions
+        let skipExtensions = Set([
+            "txt", "xml", "jpg", "jpeg", "png", "gif", "bmp", "pdf", "mp3",
+            "mp4", "avi", "mkv", "nfo", "dat", "db", "json", "ico", "svg",
+            "html", "css", "js", "py", "pyc", "pyo", "md", "pdf", "doc", "docx"
+        ])
+        
+        guard let enumerator = fm.enumerator(
+            at: baseURL,
+            includingPropertiesForKeys: [.isDirectoryKey, .isRegularFileKey],
+            options: [.skipsHiddenFiles]
+        ) else { return [] }
+        
+        while let item = enumerator.nextObject() as? URL {
+            // Get resource values to determine if it's a directory or file
+            guard let resourceValues = try? item.resourceValues(forKeys: [.isDirectoryKey, .isRegularFileKey]) else { continue }
+            
+            if resourceValues.isDirectory == true {
+                // Calculate depth from base URL
+                let relativePath = item.path.replacingOccurrences(of: baseURL.path, with: "")
+                let segments = relativePath.components(separatedBy: "/").filter { !$0.isEmpty }
+                guard segments.count <= maxDepth else { continue }
+                
+                // Check if this folder contains ROM files (shallow check - only direct children)
+                var hasROMFiles = false
+                do {
+                    let contents = try fm.contentsOfDirectory(at: item, includingPropertiesForKeys: nil, options: .skipsHiddenFiles)
+                    for file in contents {
+                        let ext = file.pathExtension.lowercased()
+                        if romExtensions.contains(ext) && !skipExtensions.contains(ext) {
+                            hasROMFiles = true
+                            break
+                        }
+                        // For ZIP files, also count them as potential ROMs
+                        if ext == "zip" || ext == "7z" {
+                            hasROMFiles = true
+                            break
+                        }
+                    }
+                } catch {
+                    continue
+                }
+                
+                if hasROMFiles {
+                    foldersWithROMs.append(item)
+                }
+            }
+        }
+        
+        return foldersWithROMs.sorted { $0.path < $1.path }
     }
 
     private func loadFromGamesXML(at romURL: URL) -> ROMMetadata? {

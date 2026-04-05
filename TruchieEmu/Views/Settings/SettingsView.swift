@@ -70,7 +70,9 @@ struct SettingsView: View {
 // MARK: - Library Settings
 struct LibrarySettingsView: View {
     @EnvironmentObject var library: ROMLibrary
-    @State private var scanningFolders: Set<Int> = []
+    @State private var scanningFolders: Set<String> = []
+    @State private var showingRebuildSheet = false
+    @State private var rebuildTargetFolder: LibraryFolder?
     @ObservedObject var prefs = SystemPreferences.shared
 
     var body: some View {
@@ -114,7 +116,7 @@ struct LibrarySettingsView: View {
                         .controlSize(.small)
                     }
                     
-                    if library.libraryFolders.isEmpty {
+                    if library.primaryFolders.isEmpty {
                         VStack(spacing: 12) {
                             Image(systemName: "folder")
                                 .font(.system(size: 36))
@@ -133,18 +135,21 @@ struct LibrarySettingsView: View {
                         .cornerRadius(12)
                         .padding(.top, 12)
                     } else {
-                        VStack(spacing: 8) {
-                            ForEach(Array(library.libraryFolders.enumerated()), id: \.element) { index, folder in
-                                LibraryFolderRow(
+                        VStack(spacing: 12) {
+                            ForEach(library.primaryFolders) { folder in
+                                PrimaryFolderRow(
                                     folder: folder,
-                                    index: index,
-                                    isScanning: scanningFolders.contains(index)
+                                    isScanning: scanningFolders.contains(folder.url.path)
                                 ) {
                                     Task {
-                                        scanningFolders.insert(index)
-                                        await library.rescanLibrary(at: folder)
-                                        scanningFolders.remove(index)
+                                        scanningFolders.insert(folder.url.path)
+                                        await library.rescanLibrary(at: folder.url)
+                                        scanningFolders.remove(folder.url.path)
                                     }
+                                }
+                                onRebuild: { target in
+                                    rebuildTargetFolder = target
+                                    showingRebuildSheet = true
                                 }
                             }
                         }
@@ -163,9 +168,9 @@ struct LibrarySettingsView: View {
                             HStack {
                                 Image(systemName: "arrow.clockwise.circle.fill")
                                 VStack(alignment: .leading) {
-                                    Text("Full Library Rebuild")
+                                    Text("Full Library Rescan")
                                         .font(.body)
-                                    Text("Clear and rebuild all game data from folders")
+                                    Text("Scan all folders for new or removed games")
                                         .font(.caption)
                                         .foregroundColor(.secondary)
                                 }
@@ -186,7 +191,7 @@ struct LibrarySettingsView: View {
                             Text("Total Games: \(library.roms.count)")
                                 .font(.caption)
                                 .foregroundColor(.secondary)
-                            Text("Folders: \(library.libraryFolders.count)")
+                            Text("Primary Folders: \(library.primaryFolders.count)")
                                 .font(.caption)
                                 .foregroundColor(.secondary)
                         }
@@ -200,6 +205,11 @@ struct LibrarySettingsView: View {
             .padding()
         }
         .navigationTitle("Library")
+        .sheet(isPresented: $showingRebuildSheet) {
+            if let folder = rebuildTargetFolder {
+                RebuildOptionsSheet(folder: folder, library: library)
+            }
+        }
     }
     
     private func addLibraryFolder() {
@@ -208,7 +218,501 @@ struct LibrarySettingsView: View {
         panel.canChooseFiles = false
         panel.prompt = "Add Folder"
         if panel.runModal() == .OK, let url = panel.url {
-            library.addLibraryFolder(url: url)
+            library.addPrimaryFolder(url: url)
+        }
+    }
+}
+
+// MARK: - Primary Folder Row (with expandable subfolders)
+struct PrimaryFolderRow: View {
+    let folder: LibraryFolder
+    let isScanning: Bool
+    let onRescan: () -> Void
+    let onRebuild: (LibraryFolder) -> Void
+    
+    @EnvironmentObject var library: ROMLibrary
+    @State private var isExpanded = false
+    @State private var subfolders: [LibraryFolder] = []
+    @State private var isDiscovering = false
+    @State private var showDeleteConfirmation = false
+    @State private var discoverScanProgress: Double = 0
+    @State private var showDiscoverConfirmation = false
+    
+    private var romCount: Int {
+        let folderPath = folder.url.path
+        let prefix = folderPath.hasSuffix("/") ? folderPath : folderPath + "/"
+        return library.roms.filter { $0.path.path == folderPath || $0.path.path.hasPrefix(prefix) }.count
+    }
+    
+    var body: some View {
+        VStack(spacing: 0) {
+            // Primary folder row
+            HStack(spacing: 12) {
+                Button(action: {
+                    withAnimation {
+                        isExpanded.toggle()
+                        if isExpanded && subfolders.isEmpty {
+                            Task { await discoverSubfolders() }
+                        }
+                    }
+                }) {
+                    Image(systemName: isExpanded ? "chevron.down" : "chevron.right")
+                        .foregroundColor(.secondary)
+                        .frame(width: 16)
+                }
+                .buttonStyle(.plain)
+                
+                Image(systemName: "folder.fill")
+                    .foregroundColor(.purple)
+                    .font(.title3)
+                
+                VStack(alignment: .leading, spacing: 2) {
+                    Text(folder.url.path)
+                        .lineLimit(1)
+                        .truncationMode(.middle)
+                        .font(.body)
+                    Text("\(romCount) game\(romCount == 1 ? "" : "s")")
+                        .font(.caption)
+                        .foregroundColor(.secondary)
+                }
+                
+                Spacer()
+                
+                Button(action: onRescan) {
+                    if isScanning {
+                        HStack(spacing: 6) {
+                            ProgressView()
+                                .controlSize(.small)
+                            Text("Scanning...")
+                        }
+                    } else {
+                        Label("Refresh", systemImage: "arrow.clockwise")
+                    }
+                }
+                .buttonStyle(.bordered)
+                .controlSize(.small)
+                .disabled(isScanning || library.isScanning)
+                .help("Refresh: Check for new or deleted ROMs")
+                
+                Button(action: { onRebuild(folder) }) {
+                    Label("Rebuild", systemImage: "gearshape.2")
+                }
+                .buttonStyle(.bordered)
+                .controlSize(.small)
+                .disabled(isScanning || library.isScanning)
+                .help("Rebuild: Choose what to rebuild for this folder")
+                
+                Button(role: .destructive) {
+                    showDeleteConfirmation = true
+                } label: {
+                    Image(systemName: "trash")
+                }
+                .buttonStyle(.bordered)
+                .tint(.red.opacity(0.8))
+                .controlSize(.small)
+                .confirmationDialog(
+                    "Remove Folder",
+                    isPresented: $showDeleteConfirmation,
+                    titleVisibility: .visible
+                ) {
+                    Button("Remove", role: .destructive) {
+                        if let idx = library.primaryFolders.firstIndex(where: { $0.url.path == folder.url.path }) {
+                            library.removePrimaryFolder(at: idx)
+                        }
+                    }
+                    Button("Cancel", role: .cancel) {}
+                } message: {
+                    Text("Remove '\(folder.url.lastPathComponent)' from your library?\n\nThis will also remove all subfolders that were discovered from this folder and their ROMs.\n\nSubfolders that were independently added as primary folders will NOT be affected.")
+                }
+            }
+            .padding(.vertical, 8)
+            .padding(.horizontal, 12)
+            .background(.ultraThinMaterial)
+            .cornerRadius(10)
+            
+            // Subfolders (expanded)
+            if isExpanded {
+                VStack(spacing: 4) {
+                    if isDiscovering {
+                        HStack(spacing: 8) {
+                            ProgressView(value: discoverScanProgress)
+                                .progressViewStyle(.linear)
+                            Text("Discovering subfolders...")
+                                .font(.caption)
+                                .foregroundColor(.secondary)
+                        }
+                        .padding(.horizontal, 40)
+                        .padding(.vertical, 8)
+                    } else if subfolders.isEmpty {
+                        Text("No subfolders with ROMs found")
+                            .font(.caption)
+                            .foregroundColor(.secondary)
+                            .padding(.horizontal, 40)
+                            .padding(.vertical, 8)
+                    } else {
+                        ForEach(subfolders) { subfolder in
+                            SubfolderRow(
+                                folder: subfolder,
+                                parentPath: folder.url.path,
+                                isPrimary: subfolder.isPrimary,
+                                depth: 0
+                            )
+                        }
+                    }
+                    
+                    // Discover subfolders button
+                    Button(action: {
+                        Task { await discoverSubfolders() }
+                    }) {
+                        HStack {
+                            Image(systemName: "magnifyingglass")
+                            Text("Discover Subfolders")
+                        }
+                        .font(.caption)
+                    }
+                    .disabled(isDiscovering)
+                    .padding(.horizontal, 40)
+                    .padding(.bottom, 8)
+                }
+                .padding(.leading, 28)
+                .padding(.top, 4)
+            }
+        }
+    }
+    
+    @MainActor
+    private func discoverSubfolders() async {
+        isDiscovering = true
+        discoverScanProgress = 0
+        
+        // Only discover immediate children — let SubfolderRow discover its own nested children
+        withAnimation(.linear(duration: 0.5)) { discoverScanProgress = 0.3 }
+        let found = await library.discoverSubfoldersWithROMs(in: folder, maxDepth: 1)
+        withAnimation(.linear(duration: 0.5)) { discoverScanProgress = 0.7 }
+        
+        // Merge newly discovered with existing (keep ones that were promoted to primary)
+        var existingPaths = Set(subfolders.map { $0.url.path })
+        var newSubfolders = subfolders
+        
+        for subfolder in found {
+            if !existingPaths.contains(subfolder.url.path) {
+                newSubfolders.append(subfolder)
+                existingPaths.insert(subfolder.url.path)
+                
+                // Store this subfolder in the library
+                if library.subfolderMap[folder.url.path] == nil {
+                    library.subfolderMap[folder.url.path] = []
+                }
+                if !library.subfolderMap[folder.url.path]!.contains(where: { $0.url.path == subfolder.url.path }) {
+                    library.subfolderMap[folder.url.path]!.append(subfolder)
+                }
+            }
+        }
+        
+        // Only show immediate children (depth 1 from primary = depth 0 in our display)
+        subfolders = newSubfolders.filter { $0.depthFromPrimary == 1 }.sorted { $0.url.path < $1.url.path }
+        isDiscovering = false
+        discoverScanProgress = 1.0
+    }
+}
+
+// MARK: - Subfolder Row (recursive, supports sub-subfolders)
+struct SubfolderRow: View {
+    let folder: LibraryFolder
+    let parentPath: String
+    let isPrimary: Bool // true if this subfolder was independently added as primary
+    let depth: Int // nesting depth for indentation
+    
+    @EnvironmentObject var library: ROMLibrary
+    @State private var showDeleteConfirmation = false
+    @State private var isScanning = false
+    @State private var isExpanded = false
+    @State private var subfolders: [LibraryFolder] = []
+    @State private var isDiscovering = false
+    
+    private var romCount: Int {
+        let folderPath = folder.url.path
+        let prefix = folderPath.hasSuffix("/") ? folderPath : folderPath + "/"
+        return library.roms.filter { $0.path.path == folderPath || $0.path.path.hasPrefix(prefix) }.count
+    }
+    
+    /// Display as "relative/path (# games)"
+    private var compactPathDisplay: String {
+        let relative = relativePathDisplay
+        return "\(relative) (\(romCount) game\(romCount == 1 ? "" : "s"))"
+    }
+    
+    var body: some View {
+        VStack(spacing: 0) {
+            HStack(spacing: 12) {
+                // Expand chevron for sub-subfolders (depth < 2)
+                if folderHasChildren {
+                    Button(action: {
+                        withAnimation {
+                            isExpanded.toggle()
+                            if isExpanded && subfolders.isEmpty {
+                                Task { await discoverSubfolders() }
+                            }
+                        }
+                    }) {
+                        Image(systemName: isExpanded ? "chevron.down" : "chevron.right")
+                            .foregroundColor(.secondary)
+                            .frame(width: 16)
+                    }
+                    .buttonStyle(.plain)
+                } else {
+                    // Leaf node spacer
+                    Rectangle().fill(.clear).frame(width: 16)
+                }
+                
+                // Indent indicators - one line per depth level
+                ForEach(0..<depth, id: \.self) { _ in
+                    Rectangle()
+                        .fill(.secondary.opacity(0.3))
+                        .frame(width: 2)
+                        .padding(.horizontal, 4)
+                }
+                
+                Image(systemName: isPrimary ? "folder.fill.badge.plus" : "folder.fill")
+                    .foregroundColor(isPrimary ? .blue : .gray)
+                    .font(.caption)
+                    .frame(width: 16)
+                
+                VStack(alignment: .leading, spacing: 2) {
+                    HStack(spacing: 4) {
+                        Text(compactPathDisplay)
+                            .lineLimit(1)
+                            .truncationMode(.middle)
+                            .font(.subheadline)
+                        if isPrimary {
+                            Text("(Independent)")
+                                .font(.caption2)
+                                .foregroundColor(.blue)
+                        }
+                    }
+                }
+                
+                Spacer()
+                
+                Button(action: {
+                    Task {
+                        isScanning = true
+                        await library.refreshFolder(at: folder.url)
+                        isScanning = false
+                    }
+                }) {
+                    if isScanning {
+                        ProgressView()
+                            .controlSize(.small)
+                    } else {
+                        Label("Refresh", systemImage: "arrow.clockwise")
+                    }
+                }
+                .buttonStyle(.bordered)
+                .controlSize(.small)
+                .disabled(isScanning || library.isScanning)
+                .help("Refresh this subfolder")
+                
+                Button(role: .destructive) {
+                    showDeleteConfirmation = true
+                } label: {
+                    Image(systemName: "trash")
+                }
+                .buttonStyle(.bordered)
+                .tint(.red.opacity(0.8))
+                .controlSize(.small)
+                .disabled(folder.isPrimary)
+                .confirmationDialog(
+                    "Remove Subfolder",
+                    isPresented: $showDeleteConfirmation,
+                    titleVisibility: .visible
+                ) {
+                    Button("Remove", role: .destructive) {
+                        library.removeSubfolder(from: folder.parentPath ?? parentPath, subfolderPath: folder.url.path)
+                    }
+                    Button("Cancel", role: .cancel) {}
+                } message: {
+                    if folder.isPrimary {
+                        Text("This folder was independently added as a primary folder. Remove it from the primary folders list instead.")
+                    } else {
+                        let parentName = folder.parentPath.map { URL(fileURLWithPath: $0).lastPathComponent } ?? URL(fileURLWithPath: parentPath).lastPathComponent
+                        Text("Remove '\(folder.url.lastPathComponent)' subfolder from '\(parentName)'?\n\nROMs from this subfolder will be removed.")
+                    }
+                }
+            }
+            .padding(.vertical, 6)
+            .padding(.horizontal, 12)
+            .background(.regularMaterial.opacity(0.5))
+            .cornerRadius(8)
+            
+            // Sub-subfolders (expanded)
+            if isExpanded {
+                VStack(spacing: 4) {
+                    if isDiscovering {
+                        HStack(spacing: 8) {
+                            ProgressView()
+                                .controlSize(.small)
+                            Text("Discovering subfolders...")
+                                .font(.caption)
+                                .foregroundColor(.secondary)
+                        }
+                        .padding(.horizontal, 40)
+                        .padding(.vertical, 8)
+                    } else if subfolders.isEmpty {
+                        Text("No subfolders with ROMs found")
+                            .font(.caption)
+                            .foregroundColor(.secondary)
+                            .padding(.horizontal, 40)
+                            .padding(.vertical, 8)
+                    } else {
+                        ForEach(subfolders) { subfolder in
+                            SubfolderRow(
+                                folder: subfolder,
+                                parentPath: folder.url.path,
+                                isPrimary: subfolder.isPrimary,
+                                depth: depth + 1
+                            )
+                        }
+                    }
+                }
+                .padding(.leading, 28)
+                .padding(.top, 4)
+            }
+        }
+    }
+    
+    /// Whether this folder might have children (to show expand chevron)
+    private var folderHasChildren: Bool {
+        // Only allow expansion up to depth 2
+        guard depth < 2 else { return false }
+        // If already discovered children exist, show chevron
+        if !subfolders.isEmpty { return true }
+        // Otherwise show chevron optimistically (will discover on expand)
+        return true
+    }
+    
+    private var relativePathDisplay: String {
+        let components = folder.url.pathComponents
+        let parentURL = URL(fileURLWithPath: folder.parentPath ?? parentPath)
+        let parentComponents = parentURL.pathComponents
+        let relative = components.dropFirst(parentComponents.count)
+        return relative.joined(separator: " / ")
+    }
+    
+    @MainActor
+    private func discoverSubfolders() async {
+        isDiscovering = true
+        // Only discover immediate children of this folder
+        let found = await library.discoverSubfoldersWithROMsInFolder(folder: folder)
+        
+        var existingPaths = Set(subfolders.map { $0.url.path })
+        var newSubfolders = subfolders
+        
+        for subfolder in found {
+            if !existingPaths.contains(subfolder.url.path) {
+                newSubfolders.append(subfolder)
+                existingPaths.insert(subfolder.url.path)
+            }
+        }
+        
+        subfolders = newSubfolders.sorted { $0.url.path < $1.url.path }
+        isDiscovering = false
+    }
+}
+
+// MARK: - Rebuild Options Sheet
+struct RebuildOptionsSheet: View {
+    let folder: LibraryFolder
+    @ObservedObject var library: ROMLibrary
+    @Environment(\.dismiss) private var dismiss
+    @State private var selectedOption: RebuildOption? = nil
+    @State private var isRebuilding = false
+    @State private var showConfirmation = false
+    
+    var body: some View {
+        NavigationStack {
+            VStack(alignment: .leading, spacing: 20) {
+                Text("Rebuild: \(folder.url.lastPathComponent)")
+                    .font(.title2)
+                    .fontWeight(.semibold)
+                
+                Text("Choose what to rebuild for this folder and all its subfolders:")
+                    .font(.subheadline)
+                    .foregroundColor(.secondary)
+                
+                VStack(spacing: 12) {
+                    ForEach(RebuildOption.allCases) { option in
+                        Button(action: { selectedOption = option }) {
+                            HStack(spacing: 12) {
+                                Image(systemName: option.icon)
+                                    .font(.title2)
+                                    .frame(width: 24)
+                                    .foregroundColor(.primary)
+                                
+                                VStack(alignment: .leading, spacing: 2) {
+                                    Text(option.title)
+                                        .font(.body)
+                                        .fontWeight(selectedOption == option ? .semibold : .regular)
+                                    Text(option.description)
+                                        .font(.caption)
+                                        .foregroundColor(.secondary)
+                                }
+                                
+                                Spacer()
+                                
+                                if selectedOption == option {
+                                    Image(systemName: "checkmark.circle.fill")
+                                        .foregroundColor(.accentColor)
+                                }
+                            }
+                            .padding(12)
+                            .background(selectedOption == option ? Color.accentColor.opacity(0.1) : Color.clear)
+                            .cornerRadius(8)
+                        }
+                        .buttonStyle(.plain)
+                    }
+                }
+                
+                Divider()
+                
+                HStack {
+                    Button("Cancel") { dismiss() }
+                        .keyboardShortcut(.cancelAction)
+                    
+                    Spacer()
+                    
+                    Button(action: { showConfirmation = true }) {
+                        if isRebuilding {
+                            ProgressView()
+                                .controlSize(.small)
+                            Text("Rebuilding...")
+                        } else {
+                            Text("Apply")
+                        }
+                    }
+                    .buttonStyle(.borderedProminent)
+                    .disabled(selectedOption == nil || isRebuilding)
+                }
+            }
+            .padding()
+            .frame(width: 440, height: 420)
+            .confirmationDialog(
+                "Confirm Rebuild",
+                isPresented: $showConfirmation,
+                titleVisibility: .visible
+            ) {
+                Button("Rebuild", role: .destructive) {
+                    Task {
+                        isRebuilding = true
+                        await library.rebuildFolder(folder: folder, option: selectedOption!)
+                        isRebuilding = false
+                        dismiss()
+                    }
+                }
+                Button("Cancel", role: .cancel) {}
+            } message: {
+                Text("This will \(selectedOption?.description.lowercased() ?? "") for '\(folder.url.lastPathComponent)' and all its subfolders.\n\nContinue?")
+            }
         }
     }
 }

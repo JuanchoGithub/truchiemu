@@ -79,7 +79,9 @@ enum SchemaV1 {
             id INTEGER PRIMARY KEY AUTOINCREMENT,
             url_path TEXT NOT NULL UNIQUE,
             bookmark_data BLOB NOT NULL,
-            added_at INTEGER NOT NULL DEFAULT (strftime('%s','now'))
+            added_at INTEGER NOT NULL DEFAULT (strftime('%s','now')),
+            parent_path TEXT,
+            is_primary INTEGER NOT NULL DEFAULT 1
         )
     """
 
