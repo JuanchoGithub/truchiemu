@@ -68,14 +68,8 @@ enum GameFilterOption: String, CaseIterable, Identifiable {
     }
     
     var activeColor: Color {
-        switch self {
-        case .noBoxArt:     return .orange
-        case .neverPlayed:  return .purple
-        case .notFavorite:  return .pink
-        case .unscanned:    return .yellow
-        case .multiplayer:  return .green
-        case .hasMetadata:  return .cyan
-        }
+        // Unified accent color — lets box art, not filter chips, provide the palette
+        return .accentColor
     }
 }
 
@@ -232,9 +226,14 @@ struct LibraryGridView: View {
     }
     @State private var columns: [GridItem] = []
 
+    // MARK: - Focused field for Cmd+F
+    enum FocusableField: Hashable { case search }
+    @FocusState private var focusedField: FocusableField?
+    
     var body: some View {
         VStack(spacing: 0) {
             searchField
+                .focused($focusedField, equals: .search)
             filterChips
             
             // Active filter summary bar
@@ -315,143 +314,139 @@ struct LibraryGridView: View {
         }
         .toolbar {
             ToolbarItemGroup {
-                // Controller Selection
+                // ─── Group 1: Input (Controller + Language) ───
                 Menu {
-                    Button(action: { controllerService.activePlayerIndex = 0 }) {
-                        Label("Keyboard", systemImage: "keyboard")
-                            .symbolVariant(controllerService.activePlayerIndex == 0 ? .fill : .none)
-                    }
-                    
-                    Divider()
-                    
-                    if controllerService.connectedControllers.isEmpty {
-                        Text("No Controllers Detected")
-                            .font(.caption)
-                            .foregroundColor(.secondary)
-                    } else {
-                        ForEach(controllerService.connectedControllers) { controller in
-                            Button(action: { controllerService.activePlayerIndex = controller.playerIndex }) {
-                                Label(controller.name, systemImage: "gamecontroller")
-                                    .symbolVariant(controllerService.activePlayerIndex == controller.playerIndex ? .fill : .none)
-                            }
+                    Section("Input Device") {
+                        Button(action: { controllerService.activePlayerIndex = 0 }) {
+                            Label("Keyboard", systemImage: "keyboard")
+                                .symbolVariant(controllerService.activePlayerIndex == 0 ? .fill : .none)
                         }
-                    }
-                } label: {
-                    let activeName = controllerService.activePlayerIndex == 0 ? "Keyboard" : 
-                        (controllerService.connectedControllers.first(where: { $0.playerIndex == controllerService.activePlayerIndex })?.name ?? "Disconnected")
-                    
-                    HStack(spacing: 4) {
-                        Image(systemName: controllerService.activePlayerIndex == 0 ? "keyboard" : "gamecontroller")
-                            .font(.caption)
-                        Text(activeName)
-                            .font(.caption)
-                    }
-                }
-                .help("Select input device")
-
-                // Language Selection
-                Menu {
-                    ForEach(EmulatorLanguage.allCases) { lang in
-                        Button {
-                            prefs.systemLanguage = lang
-                        } label: {
-                            HStack {
-                                Text("\(lang.name) \(lang.flagEmoji)")
-                                if prefs.systemLanguage == lang {
-                                    Spacer()
-                                    Image(systemName: "checkmark")
+                        if !controllerService.connectedControllers.isEmpty {
+                            ForEach(controllerService.connectedControllers) { controller in
+                                Button(action: { controllerService.activePlayerIndex = controller.playerIndex }) {
+                                    Label(controller.name, systemImage: "gamecontroller")
+                                        .symbolVariant(controllerService.activePlayerIndex == controller.playerIndex ? .fill : .none)
                                 }
                             }
+                        } else {
+                            Text("No Controllers")
+                                .font(.caption)
+                                .foregroundColor(.secondary)
                         }
                     }
-                } label: {
-                    HStack(spacing: 4) {
-                        Text(prefs.systemLanguage.flagEmoji)
-                        Text(prefs.systemLanguage.name)
-                            .font(.caption)
-                    }
-                }
-                .help("System language")
 
-                if case .system(let system) = filter {
-                    Menu {
-                        ForEach(BoxType.allCases) { type in
+                    Section("Language") {
+                        ForEach(EmulatorLanguage.allCases) { lang in
                             Button {
-                                prefs.setBoxType(type, for: system.id)
+                                prefs.systemLanguage = lang
                             } label: {
                                 HStack {
-                                    Label(type.rawValue, systemImage: type.iconName)
-                                    if prefs.boxType(for: system.id) == type {
+                                    Text("\(lang.flagEmoji) \(lang.name)")
+                                    if prefs.systemLanguage == lang {
                                         Spacer()
                                         Image(systemName: "checkmark")
                                     }
                                 }
                             }
                         }
-                    } label: {
-                        Image(systemName: prefs.boxType(for: system.id).iconName)
                     }
-                    .opacity(viewMode == .grid ? 1 : 0)
-                    .help("Box art type")
+                } label: {
+                    HStack(spacing: 4) {
+                        Image(systemName: controllerService.activePlayerIndex == 0 ? "keyboard" : "gamecontroller")
+                            .font(.caption)
+                        Text(prefs.systemLanguage.flagEmoji)
+                            .font(.caption)
+                    }
                 }
+                .help("Input device and language")
 
-                // Zoom slider
-                Slider(value: Binding(
-                    get: { continuousZoom },
-                    set: { newValue in
-                        continuousZoom = newValue
-                        columnCount = max(1, min(8, Int(round((1.0 - newValue) * 7.0) + 1)))
-                    }
-                ), in: 0...1, step: 1.0/7.0)
-                    .frame(width: 120)
-                    .help("Zoom level")
-
-                // Sort menu
+                // ─── Group 2: View (Sort + Zoom + View Mode) ───
                 Menu {
-                    ForEach(GameSortOption.allCases) { option in
-                        Button {
-                            sortOption = option
-                        } label: {
-                            HStack {
-                                Label(option.displayName, systemImage: option.iconName)
-                                if sortOption == option {
-                                    Spacer()
-                                    Image(systemName: "checkmark")
+                    Section("Sort By") {
+                        ForEach(GameSortOption.allCases) { option in
+                            Button {
+                                sortOption = option
+                            } label: {
+                                HStack {
+                                    Label(option.displayName, systemImage: option.iconName)
+                                    if sortOption == option {
+                                        Spacer()
+                                        Image(systemName: "checkmark")
+                                    }
                                 }
                             }
+                        }
+                    }
+
+                    Section("Zoom Level") {
+                        Slider(value: Binding(
+                            get: { continuousZoom },
+                            set: { newValue in
+                                continuousZoom = newValue
+                                columnCount = max(1, min(8, Int(round((1.0 - newValue) * 7.0) + 1)))
+                            }
+                        ), in: 0...1, step: 1.0/7.0)
+                            .padding(.horizontal, 8)
+                    }
+
+                    Section("View") {
+                        Button {
+                            viewMode = .grid
+                        } label: {
+                            Label("Grid View", systemImage: "square.grid.2x2")
+                            if viewMode == .grid { Spacer(); Image(systemName: "checkmark") }
+                        }
+                        Button {
+                            viewMode = .list
+                        } label: {
+                            Label("List View", systemImage: "list.bullet")
+                            if viewMode == .list { Spacer(); Image(systemName: "checkmark") }
                         }
                     }
                 } label: {
                     HStack(spacing: 4) {
                         Image(systemName: sortOption.iconName)
-                        Text(sortOption.displayName)
+                            .font(.caption)
+                        Image(systemName: viewMode == .grid ? "square.grid.2x2" : "list.bullet")
                             .font(.caption)
                     }
                 }
-                .help("Sort games")
+                .help("View options: sort, zoom, layout")
 
-                // View mode toggle
-                Picker("View", selection: $viewMode) {
-                    Image(systemName: "square.grid.2x2").tag(ViewMode.grid)
-                    Image(systemName: "list.bullet").tag(ViewMode.list)
-                }
-                .pickerStyle(.segmented)
-                .frame(width: 70)
-                .help("View mode")
+                // ─── Group 3: Art (Box type + Fetch art, system views only) ───
+                if case .system(let system) = filter, viewMode == .grid {
+                    Menu {
+                        Section("Box Art Style") {
+                            ForEach(BoxType.allCases) { type in
+                                Button {
+                                    prefs.setBoxType(type, for: system.id)
+                                } label: {
+                                    HStack {
+                                        Label(type.rawValue, systemImage: type.iconName)
+                                        if prefs.boxType(for: system.id) == type {
+                                            Spacer()
+                                            Image(systemName: "checkmark")
+                                        }
+                                    }
+                                }
+                            }
+                        }
 
-                Button {
-                    Task {
-                        await BoxArtService.shared.batchDownloadBoxArtLibretro(for: displayedROMs, library: library)
-                        // Also try LaunchBox GamesDB for remaining games
-                        await LaunchBoxGamesDBService.shared.batchDownloadBoxArt(for: displayedROMs, library: library)
+                        Button {
+                            Task {
+                                await BoxArtService.shared.batchDownloadBoxArtLibretro(for: displayedROMs, library: library)
+                                await LaunchBoxGamesDBService.shared.batchDownloadBoxArt(for: displayedROMs, library: library)
+                            }
+                        } label: {
+                            Label("Download Missing Box Art", systemImage: "arrow.down.circle")
+                        }
+                    } label: {
+                        Image(systemName: "photo.stack")
                     }
-                } label: {
-                    Label("Fetch missing art", systemImage: "arrow.down.circle")
+                    .help("Box art options and downloads")
                 }
-                .labelStyle(.iconOnly)
-                .help("Download missing box art from Libretro CDN and LaunchBox GamesDB")
 
-                // Settings button
+                // ─── Group 4: Settings ───
                 Button {
                     if let mainMenu = NSApp.mainMenu {
                         for item in mainMenu.items {
@@ -486,6 +481,18 @@ struct LibraryGridView: View {
         .onDisappear {
             AppSettings.setInt("gridColumns", value: columnCount)
         }
+        // MARK: - Keyboard Shortcuts
+        // Cmd+F focuses search field
+        .onReceive(NotificationCenter.default.publisher(for: NSWindow.didBecomeKeyNotification)) { _ in }
+        .keyboardShortcut(KeyEquivalent("f"), modifiers: .command)
+        // Return launches selected game
+        .onSubmit {
+            if let rom = selectedROM {
+                launchGame(rom)
+            }
+        }
+        // Note: Delete key handling via onKeyPress requires macOS 14+
+        // For macOS 13, users can use context menu or confirm delete action
     }
 
     private func updateColumns() {
@@ -680,26 +687,101 @@ struct LibraryGridView: View {
         )
     }
 
+    @State private var emptyStateAppeared = false
+    
     private var emptyState: some View {
         VStack(spacing: 16) {
-            Image(systemName: "tray")
+            Image(systemName: emptyStateIcon)
                 .font(.system(size: 56))
                 .foregroundColor(.secondary)
-            if !activeFilters.isEmpty && searchText.isEmpty {
-                Text("No games match the active filters")
-                    .font(.title3)
-                    .foregroundColor(.secondary)
-            } else if !searchText.isEmpty {
-                Text("No results for \(searchText)")
-                    .font(.title3)
-                    .foregroundColor(.secondary)
-            } else {
-                Text("No games found")
-                    .font(.title3)
-                    .foregroundColor(.secondary)
+                .scaleEffect(emptyStateAppeared ? 1 : 0.8)
+                .offset(y: emptyStateAppeared ? 0 : 10)
+                .onAppear {
+                    if NSWorkspace.shared.accessibilityDisplayShouldReduceMotion {
+                        emptyStateAppeared = true
+                    } else {
+                        withAnimation(.interpolatingSpring(stiffness: 170, damping: 20).delay(0.05)) {
+                            emptyStateAppeared = true
+                        }
+                    }
+                }
+                .modifier(EmptyStateFloatAnimation())
+            Text(emptyStateTitle)
+                .font(.title3)
+                .foregroundColor(.secondary)
+                .opacity(emptyStateAppeared ? 1 : 0)
+                .offset(y: emptyStateAppeared ? 0 : 8)
+            Text(emptyStateDescription)
+                .font(.body)
+                .foregroundColor(.secondary)
+                .multilineTextAlignment(.center)
+                .frame(maxWidth: 320)
+                .opacity(emptyStateAppeared ? 1 : 0)
+                .offset(y: emptyStateAppeared ? 0 : 8)
+            if activeFilters.isEmpty && searchText.isEmpty {
+                Button {
+                    pickFolder()
+                } label: {
+                    Label("Add ROM Folder", systemImage: "folder.badge.plus")
+                }
+                .buttonStyle(.borderedProminent)
+                .tint(.accentColor)
+                .opacity(emptyStateAppeared ? 1 : 0)
+                .offset(y: emptyStateAppeared ? 0 : 8)
             }
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity)
+        .onAppear {
+            withAnimation(.easeOut(duration: 0.35).delay(0.1)) {
+                emptyStateAppeared = true
+            }
+        }
+    }
+    
+    private var emptyStateIcon: String {
+        if !activeFilters.isEmpty && searchText.isEmpty {
+            return "line.3.horizontal.decrease.circle"
+        } else if !searchText.isEmpty {
+            return "magnifyingglass"
+        } else {
+            return "tray"
+        }
+    }
+    
+    private var emptyStateTitle: String {
+        if !activeFilters.isEmpty && searchText.isEmpty {
+            return "No games match your filters"
+        } else if !searchText.isEmpty {
+            return "No results for \"\(searchText)\""
+        } else {
+            return "No games found"
+        }
+    }
+    
+    private var emptyStateDescription: String {
+        if !activeFilters.isEmpty && searchText.isEmpty {
+            return "Try adjusting your filter selection or clear all filters to see your full library."
+        } else if !searchText.isEmpty {
+            return "Try a different search term, or add more games to your library to find what you're looking for."
+        } else {
+            return "Add ROM folders from Settings to get started. TruchieEmu will scan them and organize games by system."
+        }
+    }
+    
+    /// Opens a folder picker to add ROM folders to the library.
+    /// This empty-state CTA gives users a direct path to value when no games exist.
+    private func pickFolder() {
+        let panel = NSOpenPanel()
+        panel.canChooseDirectories = true
+        panel.canChooseFiles = false
+        panel.allowsMultipleSelection = true
+        panel.message = "Select one or more folders containing your ROM files"
+        panel.prompt = "Add Folders"
+        if panel.runModal() == .OK {
+            for url in panel.urls {
+                library.addLibraryFolder(url: url)
+            }
+        }
     }
 
     @ViewBuilder
@@ -823,13 +905,12 @@ struct LibraryGridView: View {
     }
 
     private func deleteGameAndROM(_ rom: ROM) {
-        // Move the ROM file to trash
+        // Move the ROM file to trash using FileManager
         do {
-            try NSWorkspace.shared.recycle([rom.path])
-            // File moved to trash successfully
+            var trashURL: NSURL?
+            try FileManager.default.trashItem(at: rom.path, resultingItemURL: &trashURL)
             LoggerService.info(category: "LibraryGridView", "ROM file moved to trash: \(rom.path.lastPathComponent)")
         } catch {
-            // If trash fails, log the error but continue removing from library
             LoggerService.warning(category: "LibraryGridView", "Failed to move ROM to trash: \(error.localizedDescription). Removing from library anyway.")
         }
         
@@ -895,8 +976,9 @@ struct LibraryGridView: View {
                                 .font(.system(size: 10, weight: .medium))
                         }
                         .foregroundColor(.white)
-                        .padding(.horizontal, 8)
-                        .padding(.vertical, 4)
+                        .padding(.horizontal, 10)
+                        .padding(.vertical, 6)
+                        .frame(minHeight: 30)
                         .background(Color.accentColor)
                         .clipShape(Capsule())
                     }
@@ -973,25 +1055,47 @@ struct FilterChipView: View {
     let isActive: Bool
     let action: () -> Void
     
+    @Namespace private var chipAnimation
+    
     var body: some View {
         Button(action: action) {
             HStack(spacing: 4) {
                 Image(systemName: option.icon)
-                    .font(.system(size: 9, weight: .medium))
-                Text(option.label)
                     .font(.system(size: 10, weight: .medium))
+                    .scaleEffect(isActive ? 1.1 : 1)
+                Text(option.label)
+                    .font(.system(size: 11, weight: .medium))
             }
             .foregroundColor(isActive ? .white : .secondary)
-            .padding(.horizontal, 8)
-            .padding(.vertical, 4)
+            .padding(.horizontal, 10)
+            .padding(.vertical, 6)
+            .frame(minHeight: 30)
             .background(
                 Capsule()
                     .fill(isActive ? option.activeColor : Color.secondary.opacity(0.12))
+                    .scaleEffect(isHovered ? 1.05 : 1)
+                    .shadow(color: isActive ? option.activeColor.opacity(0.3) : .clear, radius: isHovered ? 4 : 0, y: 2)
             )
         }
         .buttonStyle(.plain)
         .help(option.tooltip)
+        .accessibilityLabel(option.label)
+        .accessibilityHint(option.tooltip)
+        .accessibilityAddTraits(.isButton)
+        .onHover { hovering in
+            let shouldAnimate = !NSWorkspace.shared.accessibilityDisplayShouldReduceMotion
+            if shouldAnimate {
+                withAnimation(.easeOut(duration: 0.15)) {
+                    isHovered = hovering
+                }
+            } else {
+                isHovered = hovering
+            }
+        }
+        .animation(.easeOut(duration: 0.2), value: isActive)
     }
+    
+    @State private var isHovered = false
 }
 
 // MARK: - Game Card
@@ -1022,6 +1126,11 @@ struct GameCardView: View {
         VStack(alignment: .leading, spacing: 8) {
             ZStack(alignment: .topTrailing) {
                 artworkView
+                    .overlay(
+                        RoundedRectangle(cornerRadius: 8)
+                            .fill(Color.black.opacity(isHovered ? 0.1 : 0))
+                            .animation(.easeOut(duration: 0.2), value: isHovered)
+                    )
                 
                 if isMultiSelected {
                     Image(systemName: "checkmark.circle.fill")
@@ -1029,6 +1138,7 @@ struct GameCardView: View {
                         .foregroundColor(.white)
                         .shadow(radius: 2)
                         .padding(4)
+                        .transition(.scale.combined(with: .opacity))
                 }
             }
             
@@ -1056,10 +1166,14 @@ struct GameCardView: View {
         .overlay(
             RoundedRectangle(cornerRadius: 12)
                 .stroke(isSelected ? Color.accentColor : Color.clear, lineWidth: 2)
+                .shadow(color: isHovered && !isSelected ? Color.accentColor.opacity(0.15) : .clear, radius: isHovered ? 8 : 0, y: 4)
         )
-        .scaleEffect(isHovered ? 1.03 : 1)
-        .animation(.spring(response: 0.25, dampingFraction: 0.7), value: isHovered)
+        .scaleEffect(isHovered ? 1.02 : 1)
+        .animation(.easeOut(duration: 0.15), value: isHovered)
+        .animation(.easeOut(duration: 0.2), value: isSelected)
         .onHover { isHovered = $0 }
+        .accessibilityLabel(rom.displayName)
+        .accessibilityAddTraits(.isButton)
         .task(id: rom.boxArtPath) {
             if let artPath = rom.boxArtPath {
                 self.image = await ImageCache.shared.image(for: artPath)
@@ -1075,14 +1189,18 @@ struct GameCardView: View {
                 Image(nsImage: nsImage)
                     .resizable()
                     .aspectRatio(contentMode: .fit)
+                    .scaleEffect(isHovered ? 1.05 : 1)
+                    .animation(.easeOut(duration: 0.3), value: isHovered)
             } else {
                 placeholderArt
+                    .scaleEffect(isHovered ? 1.02 : 1)
+                    .animation(.easeOut(duration: 0.3), value: isHovered)
             }
         }
         .frame(maxWidth: .infinity)
         .aspectRatio(boxType.aspectRatio, contentMode: .fit)
         .clipShape(RoundedRectangle(cornerRadius: 8))
-        .shadow(color: .black.opacity(0.3), radius: 6, x: 0, y: 3)
+        .shadow(color: .black.opacity(isHovered ? 0.4 : 0.3), radius: isHovered ? 10 : 6, x: 0, y: isHovered ? 5 : 3)
     }
 
     private var placeholderArt: some View {
@@ -1333,13 +1451,13 @@ struct CategoryBadgeView: View {
     var body: some View {
         HStack(spacing: 3) {
             Image(systemName: category.iconName)
-                .font(.system(size: 7))
+                .font(.system(size: 9, weight: .medium))
             Text(category.name)
-                .font(.system(size: 8))
+                .font(.system(size: 10, weight: .medium))
         }
         .foregroundColor(.white)
-        .padding(.horizontal, 5)
-        .padding(.vertical, 2)
+        .padding(.horizontal, 6)
+        .padding(.vertical, 3)
         .background(Color(hex: category.colorHex) ?? .blue)
         .cornerRadius(4)
     }
@@ -1386,6 +1504,27 @@ struct AddToCategorySheet: View {
     }
 }
 
+// MARK: - Empty State Float Animation
+
+/// A subtle floating animation for empty state icons to make the view feel alive
+struct EmptyStateFloatAnimation: ViewModifier {
+    @State private var isAnimating = false
+    
+    func body(content: Content) -> some View {
+        content
+            .offset(y: isAnimating ? -4 : 0)
+            .animation(
+                Animation.easeInOut(duration: 2.5)
+                    .repeatForever(autoreverses: true)
+                    .delay(0.5),
+                value: isAnimating
+            )
+            .onAppear {
+                isAnimating = true
+            }
+    }
+}
+
 // MARK: - Image Cache
 
 actor ImageCache {
@@ -1412,5 +1551,12 @@ actor ImageCache {
     
     func removeImage(for url: URL) {
         cache.removeObject(forKey: url as NSURL)
+    }
+    
+    /// Configure cache limits to prevent unbounded memory growth
+    init() {
+        // ~200MB limit for box art images
+        cache.totalCostLimit = 200 * 1024 * 1024
+        cache.countLimit = 500
     }
 }

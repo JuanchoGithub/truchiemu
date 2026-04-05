@@ -368,12 +368,15 @@ struct BezelBrowserView: View {
             Image(systemName: activeTab == .local ? "folder" : "cloud")
                 .font(.system(size: 48))
                 .foregroundColor(.secondary)
-            Text(activeTab == .local ? "No bezels downloaded yet" : "No bezels available")
+            Text(activeTab == .local ? "No bezels downloaded yet" : "No bezels found for \(systemName)")
                 .font(.headline)
-            Text(activeTab == .local ? "Download bezels from the Remote tab" : "Check your internet connection")
+            Text(activeTab == .local
+                  ? "Bezels add decorative frames around games. Browse the Available tab to download bezels for \(systemName)."
+                  : "No bezels are available for \(systemName) in The Bezel Project database. New bezels may be added in future updates.")
                 .font(.caption)
                 .foregroundColor(.secondary)
                 .multilineTextAlignment(.center)
+                .fixedSize(horizontal: false, vertical: true)
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity)
     }
@@ -383,13 +386,14 @@ struct BezelBrowserView: View {
             Image(systemName: "exclamationmark.triangle")
                 .font(.system(size: 48))
                 .foregroundColor(.orange)
-            Text("Unable to load bezels")
+            Text("Couldn't load bezels")
                 .font(.headline)
             Text(message)
                 .font(.caption)
                 .foregroundColor(.secondary)
                 .multilineTextAlignment(.center)
-            Button("Retry") {
+                .fixedSize(horizontal: false, vertical: true)
+            Button("Try Again") {
                 Task { await loadBezels() }
             }
             .buttonStyle(.borderedProminent)

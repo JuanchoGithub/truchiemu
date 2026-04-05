@@ -7,6 +7,11 @@ struct OnboardingView: View {
     @State private var selectedFolder: URL? = nil
     @State private var isScrapingSetupSkipped = false
 
+    @State private var logoAppeared = false
+    @State private var cardAppeared = false
+    
+    @State private var currentStepID = 0
+    
     var body: some View {
         ZStack {
             // Animated background
@@ -30,18 +35,24 @@ struct OnboardingView: View {
                             endPoint: .bottomTrailing
                         ))
                         .padding(.bottom, 8)
+                        .scaleEffect(logoAppeared ? 1 : 0.85)
+                        .opacity(logoAppeared ? 1 : 0)
 
                     Text("TruchieEmu")
                         .font(.system(size: 48, weight: .bold, design: .rounded))
                         .foregroundColor(.white)
+                        .opacity(logoAppeared ? 1 : 0)
+                        .offset(y: logoAppeared ? 0 : 10)
 
                     Text("A beautiful macOS emulation frontend")
                         .font(.title3)
                         .foregroundColor(.white.opacity(0.6))
+                        .opacity(logoAppeared ? 1 : 0)
+                        .offset(y: logoAppeared ? 0 : 8)
                 }
                 .padding(.bottom, 60)
 
-                // Step card
+                // Step card with animated transitions
                 ZStack {
                     RoundedRectangle(cornerRadius: 24)
                         .fill(.ultraThinMaterial)
@@ -49,22 +60,50 @@ struct OnboardingView: View {
                             RoundedRectangle(cornerRadius: 24)
                                 .stroke(Color.white.opacity(0.12), lineWidth: 1)
                         )
-
-                    Group {
+                    
+                    // Content with transitions
+                    ZStack {
                         if step == 0 {
                             stepChooseFolder
+                                .id("step0")
+                                .transition(.asymmetric(
+                                    insertion: .move(edge: .trailing).combined(with: .opacity),
+                                    removal: .move(edge: .leading).combined(with: .opacity)
+                                ))
                         } else {
                             stepFinish
+                                .id("step1")
+                                .transition(.asymmetric(
+                                    insertion: .move(edge: .trailing).combined(with: .opacity),
+                                    removal: .move(edge: .leading).combined(with: .opacity)
+                                ))
                         }
                     }
                     .padding(40)
                 }
                 .frame(width: 520)
                 .fixedSize(horizontal: false, vertical: true)
+                .opacity(cardAppeared ? 1 : 0)
+                .offset(y: cardAppeared ? 0 : 20)
+                .scaleEffect(cardAppeared ? 1 : 0.97)
 
                 Spacer()
             }
             .padding()
+        }
+        .onAppear {
+            withAnimation(.interpolatingSpring(stiffness: 170, damping: 20).delay(0.1)) {
+                logoAppeared = true
+            }
+            withAnimation(.easeOut(duration: 0.4).delay(0.25)) {
+                cardAppeared = true
+            }
+        }
+        .onChange(of: step) { _ in
+            // Animate step transitions
+            withAnimation(.easeInOut(duration: 0.3)) {
+                currentStepID = step
+            }
         }
     }
 

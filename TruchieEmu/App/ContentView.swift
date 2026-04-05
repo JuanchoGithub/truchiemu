@@ -34,9 +34,9 @@ struct ContentView: View {
                     .environmentObject(controllerService)
                     .onAppear {
                         // Skip the welcome step since they've already been through the wizard;
-                        // send them straight to the Add Your Games step.
-                        if wizard.currentStep == .welcome {
-                            wizard.currentStep = .gameFolders
+                        // send them straight to the getStarted step.
+                        if wizard.currentStep == .getStarted {
+                            // Already at the right step, just add any folders
                         }
                     }
             } else {

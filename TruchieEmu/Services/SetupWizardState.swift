@@ -11,48 +11,47 @@ final class SetupWizardState: ObservableObject {
     enum WizardStep: Int, CaseIterable, Identifiable {
         var id: Int { rawValue }
         
-        case welcome = 0
-        case gameFolders = 1
-        case bezels = 2
-        case cheats = 3
-        case achievements = 4
-        case logging = 5
-        case shaders = 6
-        case controllers = 7
-        case completion = 8
+        /// Phase 1: Welcome + Add game folders (combined)
+        case getStarted = 0
+        /// Phase 2: Bezels + Shaders (visual preferences)
+        case lookAndFeel = 1
+        /// Phase 3: Cheats + Achievements + Logging (optional features)
+        case optionalFeatures = 2
+        /// Phase 4: Completion
+        case completion = 3
         
         var title: String {
             switch self {
-            case .welcome: return "Welcome to TruchieEmu"
-            case .gameFolders: return "Add Your Games"
-            case .bezels: return "Bezels"
-            case .cheats: return "Cheats"
-            case .achievements: return "RetroAchievements"
-            case .logging: return "Logging"
-            case .shaders: return "Display & Shaders"
-            case .controllers: return "Controllers"
-            case .completion: return "All Set!"
+            case .getStarted: return "Get Started"
+            case .lookAndFeel: return "Look & Feel"
+            case .optionalFeatures: return "Optional Features"
+            case .completion: return "You're All Set"
             }
         }
         
         var icon: String {
             switch self {
-            case .welcome: return "hand.wave"
-            case .gameFolders: return "folder.badge.gearshape"
-            case .bezels: return "rectangle.on.rectangle"
-            case .cheats: return "wand.and.stars"
-            case .achievements: return "trophy"
-            case .logging: return "terminal"
-            case .shaders: return "tv"
-            case .controllers: return "gamecontroller"
+            case .getStarted: return "folder.badge.gearshape"
+            case .lookAndFeel: return "tv"
+            case .optionalFeatures: return "gearshape"
             case .completion: return "checkmark.circle.fill"
+            }
+        }
+        
+        /// Whether this step can be skipped
+        var canSkip: Bool {
+            switch self {
+            case .getStarted: return true
+            case .lookAndFeel: return true
+            case .optionalFeatures: return true
+            case .completion: return false
             }
         }
     }
     
     // MARK: - Published State
     
-    @Published var currentStep: WizardStep = .welcome
+    @Published var currentStep: WizardStep = .getStarted
     @Published var libraryFolders: [URL] = []
     @Published var downloadBezels: Bool = false
     @Published var downloadCheats: Bool = false

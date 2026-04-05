@@ -1,5 +1,32 @@
 import SwiftUI
 
+// MARK: - Recommendation Badge Component
+/// Shared badge for displaying core recommendations with a purple-to-cyan gradient.
+/// Extracted to avoid duplicating the same gradient across 4+ locations.
+struct CoreRecommendationBadge: View {
+    let text: String
+
+    var body: some View {
+        Text(text)
+            .font(.caption)
+            .fontWeight(.semibold)
+            .foregroundColor(.white)
+            .padding(.horizontal, 6)
+            .padding(.vertical, 2)
+            .background(CoreStyle.recommendationGradient)
+            .cornerRadius(6)
+    }
+}
+
+/// Shared design tokens for Core views
+enum CoreStyle {
+    static let recommendationGradient = LinearGradient(
+        colors: [.purple.opacity(0.8), .cyan.opacity(0.8)],
+        startPoint: .leading,
+        endPoint: .trailing
+    )
+}
+
 // MARK: - Core Picker View
 
 /// A view for selecting which core to use for a game.
@@ -150,20 +177,7 @@ struct CorePickerView: View {
                 
                 // Recommendation badge
                 if let rec = meta.recommendation {
-                    Text(rec)
-                        .font(.caption)
-                        .fontWeight(.semibold)
-                        .foregroundColor(.white)
-                        .padding(.horizontal, 8)
-                        .padding(.vertical, 3)
-                        .background(
-                            LinearGradient(
-                                colors: [.purple.opacity(0.8), .cyan.opacity(0.8)],
-                                startPoint: .leading,
-                                endPoint: .trailing
-                            )
-                        )
-                        .cornerRadius(6)
+                    CoreRecommendationBadge(text: rec)
                 }
             }
             
@@ -281,20 +295,7 @@ struct CoreRowView: View {
                     
                     // Recommendation badge
                     if let rec = core.metadata.recommendation {
-                        Text(rec)
-                            .font(.caption)
-                            .fontWeight(.semibold)
-                            .foregroundColor(.white)
-                            .padding(.horizontal, 6)
-                            .padding(.vertical, 2)
-                            .background(
-                                LinearGradient(
-                                    colors: [.purple.opacity(0.8), .cyan.opacity(0.8)],
-                                    startPoint: .leading,
-                                    endPoint: .trailing
-                                )
-                            )
-                            .cornerRadius(4)
+                        CoreRecommendationBadge(text: rec)
                     }
                     
                     if isDownloaded {
@@ -455,20 +456,7 @@ struct CoreSelectionSheet: View {
                             }
                             
                             if let rec = entry.metadata.recommendation {
-                                Text(rec)
-                                    .font(.caption)
-                                    .fontWeight(.semibold)
-                                    .foregroundColor(.white)
-                                    .padding(.horizontal, 6)
-                                    .padding(.vertical, 2)
-                                    .background(
-                                        LinearGradient(
-                                            colors: [.purple.opacity(0.8), .cyan.opacity(0.8)],
-                                            startPoint: .leading,
-                                            endPoint: .trailing
-                                        )
-                                    )
-                                    .cornerRadius(4)
+                                CoreRecommendationBadge(text: rec)
                             }
                         }
                         .padding()
@@ -537,20 +525,7 @@ struct SimpleCoreRow: View {
                 }
                 
                 if let rec = core.metadata.recommendation {
-                    Text(rec)
-                        .font(.caption)
-                        .fontWeight(.semibold)
-                        .foregroundColor(.white)
-                        .padding(.horizontal, 5)
-                        .padding(.vertical, 1)
-                        .background(
-                            LinearGradient(
-                                colors: [.purple.opacity(0.8), .cyan.opacity(0.8)],
-                                startPoint: .leading,
-                                endPoint: .trailing
-                            )
-                        )
-                        .cornerRadius(4)
+                    CoreRecommendationBadge(text: rec)
                 }
                 
                 Spacer()

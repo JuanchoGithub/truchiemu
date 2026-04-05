@@ -79,14 +79,14 @@ struct AchievementToastView: View {
     }
     
     private func animateIn() {
-        withAnimation(.spring(response: 0.4, dampingFraction: 0.7)) {
+        withAnimation(.interpolatingSpring(stiffness: 170, damping: 24)) {
             offset = 0
             opacity = 1
         }
     }
     
     private func dismiss() {
-        withAnimation(.easeOut(duration: 0.3)) {
+        withAnimation(.easeOut(duration: 0.25)) {
             offset = 300
             opacity = 0
         }

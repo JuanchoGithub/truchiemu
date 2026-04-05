@@ -14,7 +14,7 @@ struct CoreOptionsView: View {
                 if viewModel.sortedKeys.isEmpty, !viewModel.hasLoadedOnce {
                     VStack(spacing: 16) {
                         ProgressView()
-                        Text("Loading options…")
+                        Text("Loading core settings…")
                             .foregroundColor(.secondary)
                     }
                     .frame(maxWidth: .infinity, maxHeight: .infinity)
@@ -23,9 +23,9 @@ struct CoreOptionsView: View {
                         Image(systemName: "slider.vertical.3")
                             .font(.system(size: 48))
                             .foregroundColor(.secondary)
-                        Text("No options cached for this core.")
+                        Text("No settings cached for this core.")
                             .foregroundColor(.secondary)
-                        Text("Launch a game first, then the core's options will be saved for future access.")
+                        Text("Launch a game with this core first. Core settings are saved after you play, and will be available here for future adjustments.")
                             .font(.caption)
                             .foregroundColor(.secondary)
                             .multilineTextAlignment(.center)
@@ -51,7 +51,7 @@ struct CoreOptionsView: View {
                                 Button("Reset All to Defaults") { viewModel.resetAll() }
                                     .buttonStyle(.bordered)
                                     .controlSize(.small)
-                                Text("Changes apply to the core during gameplay.")
+                                Text("Changes take effect the next time you launch a game with this core.")
                                     .font(.caption)
                                     .foregroundColor(.secondary)
                                     .multilineTextAlignment(.center)
@@ -256,11 +256,11 @@ struct CoreOptionRow: View {
 
                     if option.isModified {
                         HStack {
-                            Text("Modified")
+                            Text("Changed from default")
                                 .font(.caption2)
                                 .foregroundColor(.orange)
                             Spacer()
-                            Button("Reset") {
+                            Button("Reset to Default") {
                                 selectedValue = option.defaultValue
                                 viewModel.updateValue(option.defaultValue, for: key)
                             }

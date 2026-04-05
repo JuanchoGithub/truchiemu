@@ -1,5 +1,58 @@
 import SwiftUI
 
+// MARK: - Light/Dark Theme Color Tokens
+
+/// Centralized color tokens for GameDetailView — works in both light and dark mode.
+/// Prevents hardcoded `.white.opacity(x)` colors that break in light mode.
+private struct ThemeColors {
+    let textPrimary: Color
+    let textSecondary: Color
+    let textTertiary: Color
+    let textMuted: Color
+    let divider: Color
+    let cardBackground: Color
+    let cardBackgroundSubtle: Color
+    let cardBorder: Color
+    let iconPrimary: Color
+    let iconSecondary: Color
+    let iconMuted: Color
+    let sidebarBackground: Color
+    let headerBackground: Color
+    let buttonBackground: Color
+    let pillBackground: Color
+    let pillBackgroundSubtle: Color
+    let slotBackground: Color
+    let slotBackgroundActive: Color
+    let statusBackground: Color
+    
+    init(colorScheme: ColorScheme) {
+        let isDark = colorScheme == .dark
+        textPrimary = isDark ? .white.opacity(0.85) : .primary
+        textSecondary = isDark ? .white.opacity(0.5) : .secondary
+        textTertiary = isDark ? .white.opacity(0.4) : .secondary.opacity(0.7)
+        textMuted = isDark ? .white.opacity(0.3) : .secondary.opacity(0.5)
+        divider = isDark ? .white.opacity(0.08) : .secondary.opacity(0.15)
+        cardBackground = isDark ? .white.opacity(0.06) : .secondary.opacity(0.05)
+        cardBackgroundSubtle = isDark ? .white.opacity(0.03) : .secondary.opacity(0.03)
+        cardBorder = isDark ? .white.opacity(0.1) : .secondary.opacity(0.12)
+        iconPrimary = isDark ? .white.opacity(0.7) : .secondary
+        iconSecondary = isDark ? .white.opacity(0.5) : .secondary
+        iconMuted = isDark ? .white.opacity(0.3) : .secondary.opacity(0.5)
+        sidebarBackground = isDark ? .white.opacity(0.03) : .secondary.opacity(0.03)
+        headerBackground = isDark ? .black.opacity(0.5) : .secondary.opacity(0.08)
+        buttonBackground = isDark ? .white.opacity(0.1) : .secondary.opacity(0.12)
+        pillBackground = isDark ? .white.opacity(0.1) : .secondary.opacity(0.1)
+        pillBackgroundSubtle = isDark ? .white.opacity(0.06) : .secondary.opacity(0.06)
+        slotBackground = isDark ? .white.opacity(0.05) : .secondary.opacity(0.04)
+        slotBackgroundActive = isDark ? .blue.opacity(0.2) : .blue.opacity(0.1)
+        statusBackground = isDark ? .black.opacity(0.5) : .secondary.opacity(0.08)
+    }
+    
+    static func `for`(_ colorScheme: ColorScheme) -> ThemeColors {
+        ThemeColors(colorScheme: colorScheme)
+    }
+}
+
 // MARK: - Manual Status Tone
 
 private enum ManualStatusTone: Equatable {
@@ -48,6 +101,47 @@ enum DetailSection: String, CaseIterable {
     case cheats = "Cheats"
     case core = "Core"
     case achievements = "Achievements"
+    
+    /// Plain-language description of what each section does, shown as tooltip
+    var helpText: String {
+        switch self {
+        case .gameInfo:
+            return "View game details, metadata, and metadata identification tools"
+        case .shader:
+            return "Customize visual effects like CRT filters and screen smoothing"
+        case .bezels:
+            return "Browse and apply decorative bezel artwork around the game screen"
+        case .controls:
+            return "View and customize keyboard and controller button mappings"
+        case .savedStates:
+            return "Manage save states created during gameplay — load or delete saves"
+        case .cheats:
+            return "Download, enable, and manage cheat codes for this game"
+        case .core:
+            return "Choose which emulation engine to use for this game or system"
+        case .achievements:
+            return "View RetroAchievements — earn points by completing in-game challenges"
+        }
+    }
+    
+    /// SF Symbol icon for the section header (larger)
+    var headerIcon: String {
+        return sectionIcon
+    }
+    
+    /// SF Symbol icon used in sidebar navigation
+    var sectionIcon: String {
+        switch self {
+        case .gameInfo: return "info.circle"
+        case .shader: return "display"
+        case .bezels: return "picture.inset.filled"
+        case .controls: return "gamecontroller"
+        case .savedStates: return "externaldrive"
+        case .cheats: return "wand.and.stars"
+        case .core: return "cpu"
+        case .achievements: return "trophy"
+        }
+    }
 }
 
 // MARK: - Modern Section Card Component (Non-collapsible)
@@ -58,7 +152,9 @@ struct ModernSectionCard<Content: View>: View {
     var badge: String? = nil
     var showHeader: Bool = true
     @ViewBuilder let content: Content
-
+    
+    @Environment(\.colorScheme) private var colorScheme
+    
     init(
         title: String? = nil,
         icon: String? = nil,
@@ -72,6 +168,34 @@ struct ModernSectionCard<Content: View>: View {
         self.showHeader = showHeader
         self.content = content()
     }
+    
+    private var sectionTitleColor: Color {
+        colorScheme == .dark ? .white.opacity(0.6) : .primary.opacity(0.6)
+    }
+    
+    private var sectionIconColor: Color {
+        colorScheme == .dark ? .white.opacity(0.7) : .secondary
+    }
+    
+    private var dividerColor: Color {
+        colorScheme == .dark ? Color.white.opacity(0.1) : Color.secondary.opacity(0.2)
+    }
+    
+    private var cardBackground: Color {
+        colorScheme == .dark ? Color.white.opacity(0.06) : .secondary.opacity(0.05)
+    }
+    
+    private var cardBorder: Color {
+        colorScheme == .dark ? Color.white.opacity(0.1) : .secondary.opacity(0.15)
+    }
+    
+    /// Accent badge color — adapts for light mode readability
+    private var badgeBackground: Color {
+        colorScheme == .dark ? Color.blue.opacity(0.3) : .blue.opacity(0.15)
+    }
+    private var badgeForeground: Color {
+        colorScheme == .dark ? .white : .blue
+    }
 
     var body: some View {
         VStack(spacing: 0) {
@@ -79,13 +203,13 @@ struct ModernSectionCard<Content: View>: View {
                 HStack(spacing: 10) {
                     if let icon = icon {
                         Image(systemName: icon)
-                            .foregroundColor(.white.opacity(0.7))
+                            .foregroundColor(sectionIconColor)
                             .font(.body)
                     }
                     Text(title)
                         .font(.subheadline)
                         .fontWeight(.semibold)
-                        .foregroundColor(.white.opacity(0.6))
+                        .foregroundColor(sectionTitleColor)
                         .textCase(.uppercase)
                         .tracking(0.5)
                     if let badge = badge {
@@ -94,8 +218,8 @@ struct ModernSectionCard<Content: View>: View {
                             .fontWeight(.semibold)
                             .padding(.horizontal, 8)
                             .padding(.vertical, 3)
-                            .background(Color.blue.opacity(0.3))
-                            .foregroundColor(.white)
+                            .background(badgeBackground)
+                            .foregroundColor(badgeForeground)
                             .cornerRadius(6)
                     }
                     Spacer()
@@ -103,7 +227,7 @@ struct ModernSectionCard<Content: View>: View {
                 
                 Divider()
                     .padding(.vertical, 10)
-                    .overlay(Color.white.opacity(0.1))
+                    .overlay(dividerColor)
             }
 
             content
@@ -111,10 +235,10 @@ struct ModernSectionCard<Content: View>: View {
         .padding(16)
         .background(
             RoundedRectangle(cornerRadius: 12)
-                .fill(Color.white.opacity(0.06))
+                .fill(cardBackground)
                 .overlay(
                     RoundedRectangle(cornerRadius: 12)
-                        .stroke(Color.white.opacity(0.1), lineWidth: 1)
+                        .stroke(cardBorder, lineWidth: 1)
                 )
         )
     }
@@ -127,18 +251,32 @@ struct MetadataRow: View {
     let value: String
     var isMonospaced: Bool = false
     var copyAction: (() -> Void)? = nil
+    
+    @Environment(\.colorScheme) private var colorScheme
+    
+    private var labelColor: Color {
+        colorScheme == .dark ? .white.opacity(0.4) : .secondary
+    }
+    
+    private var valueColor: Color {
+        colorScheme == .dark ? .white.opacity(0.85) : .primary
+    }
+    
+    private var copyButtonColor: Color {
+        colorScheme == .dark ? .white.opacity(0.4) : .secondary
+    }
 
     var body: some View {
         HStack(alignment: .top, spacing: 16) {
             Text(label.uppercased())
                 .font(.caption)
                 .fontWeight(.medium)
-                .foregroundColor(.white.opacity(0.4))
+                .foregroundColor(labelColor)
                 .frame(width: 100, alignment: .leading)
             
             Text(value)
                 .font(.body)
-                .foregroundColor(.white.opacity(0.85))
+                .foregroundColor(valueColor)
                 .lineLimit(2)
                 .truncationMode(.middle)
                 .font(isMonospaced ? .body.monospaced() : .body)
@@ -148,7 +286,7 @@ struct MetadataRow: View {
             if copyAction != nil {
                 Button(action: copyAction!) {
                     Image(systemName: "doc.on.doc")
-                        .foregroundColor(.white.opacity(0.4))
+                        .foregroundColor(copyButtonColor)
                         .font(.caption)
                 }
                 .buttonStyle(.plain)
@@ -166,7 +304,26 @@ struct GameDetailView: View {
     @EnvironmentObject var controllerService: ControllerService
     @ObservedObject var sysPrefs = SystemPreferences.shared
     @Environment(\.dismiss) var dismiss
+    @Environment(\.colorScheme) private var colorScheme
     var rom: ROM
+    
+    /// Theme-aware color tokens for this view
+    private var t: ThemeColors { ThemeColors.for(colorScheme) }
+    
+    /// Text color that adapts for light/dark mode
+    private var textColor: Color { colorScheme == .dark ? .white : .primary }
+    private var secondaryTextColor: Color { colorScheme == .dark ? .white.opacity(0.7) : .secondary }
+    private var tertiaryTextColor: Color { colorScheme == .dark ? .white.opacity(0.5) : .secondary }
+    private var mutedTextColor: Color { colorScheme == .dark ? .white.opacity(0.4) : .secondary.opacity(0.7) }
+    private var subtleColor: Color { colorScheme == .dark ? .white.opacity(0.3) : .secondary.opacity(0.5) }
+    private var iconColor: Color { colorScheme == .dark ? .white.opacity(0.5) : .secondary }
+    private var mutedIconColor: Color { colorScheme == .dark ? .white.opacity(0.3) : .secondary.opacity(0.5) }
+    private var dividerColor: Color { colorScheme == .dark ? .white.opacity(0.08) : .secondary.opacity(0.15) }
+    private var cardBgColor: Color { colorScheme == .dark ? .white.opacity(0.06) : .secondary.opacity(0.05) }
+    private var subtleBgColor: Color { colorScheme == .dark ? .white.opacity(0.03) : .secondary.opacity(0.03) }
+    private var buttonBgColor: Color { colorScheme == .dark ? .white.opacity(0.1) : .secondary.opacity(0.12) }
+    private var subtleButtonBgColor: Color { colorScheme == .dark ? .white.opacity(0.06) : .secondary.opacity(0.06) }
+    private var pillBgColor: Color { colorScheme == .dark ? .white.opacity(0.1) : .secondary.opacity(0.1) }
 
     // Section state
     @StateObject private var saveStateManager = SaveStateManager()
@@ -256,7 +413,7 @@ struct GameDetailView: View {
                 compactHeaderSection
                 
                 Divider()
-                    .overlay(Color.white.opacity(0.1))
+                    .overlay(dividerColor)
 
                 // Sidebar + Content layout
                 HStack(spacing: 0) {
@@ -264,7 +421,7 @@ struct GameDetailView: View {
                     sidebarNavigation
 
                     Divider()
-                        .overlay(Color.white.opacity(0.1))
+                        .overlay(dividerColor)
 
                     // Main content area - fill remaining space
                     ScrollView {
@@ -390,14 +547,11 @@ struct GameDetailView: View {
         .frame(width: 180)
         .padding(.vertical, 12)
         .padding(.horizontal, 8)
-        .background(
-            Color.white.opacity(0.03)
-        )
+        .background(t.sidebarBackground)
     }
 
     private func sidebarItem(for section: DetailSection) -> some View {
         let isSelected = selectedSection == section
-        let icon = sectionIcon(for: section)
         let showAchievements = achievementsService.isEnabled
 
         // Skip achievements if disabled
@@ -412,13 +566,13 @@ struct GameDetailView: View {
                 }
             } label: {
                 HStack(spacing: 10) {
-                    Image(systemName: icon)
+                    Image(systemName: section.sectionIcon)
                         .frame(width: 18)
                         .font(.body)
-                        .foregroundColor(isSelected ? .blue : .white.opacity(0.5))
+                        .foregroundColor(isSelected ? .blue : t.iconSecondary)
                     Text(section.rawValue)
                         .lineLimit(1)
-                        .foregroundColor(isSelected ? .white : .white.opacity(0.6))
+                        .foregroundColor(isSelected ? t.textPrimary : t.textSecondary)
                         .fontWeight(isSelected ? .medium : .regular)
                     Spacer()
                 }
@@ -426,28 +580,18 @@ struct GameDetailView: View {
                 .padding(.vertical, 8)
             }
             .buttonStyle(.plain)
+            .help(section.helpText)
             .background(
-                isSelected ? 
+                isSelected ?
                     AnyView(
                         RoundedRectangle(cornerRadius: 8)
                             .fill(Color.blue.opacity(0.2))
-                    ) : 
+                    ) :
                     AnyView(Color.clear)
             )
+            .accessibilityAddTraits(.isButton)
+            .accessibilityElement(children: .combine)
         )
-    }
-
-    private func sectionIcon(for section: DetailSection) -> String {
-        switch section {
-        case .gameInfo: return "info.circle"
-        case .shader: return "display"
-        case .bezels: return "rectangle.on.rectangle"
-        case .controls: return "gamecontroller"
-        case .savedStates: return "externaldrive"
-        case .cheats: return "wand.and.stars"
-        case .core: return "chip"
-        case .achievements: return "trophy"
-        }
     }
 
     // MARK: - Data Loading
@@ -548,7 +692,7 @@ struct GameDetailView: View {
         .background(Color.black.opacity(0.5))
         .overlay(alignment: .top) {
             Divider()
-                .overlay(Color.white.opacity(0.1))
+                .overlay(dividerColor)
         }
     }
 
@@ -586,15 +730,15 @@ struct GameDetailView: View {
                             library.updateROM(updated)
                         }
                     ))
-                    .font(.system(size: 24, weight: .bold))
-                    .foregroundColor(.white)
+                    .font(.title.bold())
+                    .foregroundColor(t.textPrimary)
                     .textFieldStyle(.plain)
                     
                     if let year = currentROM.metadata?.year {
                         Text("(\(year))")
                             .font(.title3)
                             .fontWeight(.medium)
-                            .foregroundColor(.white.opacity(0.5))
+                            .foregroundColor(t.textSecondary)
                     }
                     
                     Spacer()
@@ -612,11 +756,11 @@ struct GameDetailView: View {
                         Text(sys.name)
                             .font(.caption)
                             .fontWeight(.medium)
-                            .foregroundColor(.white.opacity(0.7))
+                            .foregroundColor(t.textSecondary)
                     }
                     .padding(.horizontal, 10)
                     .padding(.vertical, 4)
-                    .background(Color.white.opacity(0.08))
+                    .background(t.pillBackgroundSubtle)
                     .cornerRadius(6)
                 }
                 
@@ -686,13 +830,13 @@ struct GameDetailView: View {
             // Metadata card
             ModernSectionCard(showHeader: false) {
                 VStack(alignment: .leading, spacing: 14) {
-                    MetadataRow(label: "System", value: system?.name ?? currentROM.systemID ?? "Unknown")
+                    MetadataRow(label: "System", value: system?.name ?? currentROM.systemID ?? "Not identified")
                     
-                    Divider().overlay(Color.white.opacity(0.08))
+                    Divider().overlay(dividerColor)
                     
                     MetadataRow(label: "File Name", value: currentROM.path.lastPathComponent)
                     
-                    Divider().overlay(Color.white.opacity(0.08))
+                    Divider().overlay(dividerColor)
                     
                     MetadataRow(
                         label: "Path",
@@ -704,12 +848,12 @@ struct GameDetailView: View {
                     )
                     
                     if let size = fileSize {
-                        Divider().overlay(Color.white.opacity(0.08))
+                        Divider().overlay(dividerColor)
                         MetadataRow(label: "File Size", value: size)
                     }
 
                     if let crc = crcHash {
-                        Divider().overlay(Color.white.opacity(0.08))
+                        Divider().overlay(dividerColor)
                         MetadataRow(
                             label: "CRC32",
                             value: crc,
@@ -724,31 +868,31 @@ struct GameDetailView: View {
                     // Additional metadata
                     if let meta = currentROM.metadata {
                         if let original = meta.title, currentROM.customName != nil {
-                            Divider().overlay(Color.white.opacity(0.08))
+                            Divider().overlay(dividerColor)
                             MetadataRow(label: "Original Name", value: original)
                         }
                         if let dev = meta.developer {
-                            Divider().overlay(Color.white.opacity(0.08))
+                            Divider().overlay(dividerColor)
                             MetadataRow(label: "Developer", value: dev)
                         }
                         if let pub = meta.publisher {
-                            Divider().overlay(Color.white.opacity(0.08))
+                            Divider().overlay(dividerColor)
                             MetadataRow(label: "Publisher", value: pub)
                         }
                         if let genre = meta.genre {
-                            Divider().overlay(Color.white.opacity(0.08))
+                            Divider().overlay(dividerColor)
                             MetadataRow(label: "Genre", value: genre)
                         }
                         if let players = meta.players {
-                            Divider().overlay(Color.white.opacity(0.08))
+                            Divider().overlay(dividerColor)
                             MetadataRow(label: "Players", value: String(players))
                         }
                         if let coop = meta.cooperative {
-                            Divider().overlay(Color.white.opacity(0.08))
+                            Divider().overlay(dividerColor)
                             MetadataRow(label: "Co-op", value: coop ? "Yes" : "No")
                         }
                         if let esrb = meta.esrbRating {
-                            Divider().overlay(Color.white.opacity(0.08))
+                            Divider().overlay(dividerColor)
                             HStack(alignment: .top, spacing: 16) {
                                 Text("ESRB".uppercased())
                                     .font(.caption)
@@ -824,7 +968,7 @@ struct GameDetailView: View {
                     }
                 }
 
-                Divider().overlay(Color.white.opacity(0.08))
+                Divider().overlay(dividerColor)
 
                 // Apply to system toggle
                 Toggle(isOn: $infoApplyCoreToSystem) {
@@ -849,7 +993,7 @@ struct GameDetailView: View {
                         .lineSpacing(2)
                 }
 
-                Divider().overlay(Color.white.opacity(0.08))
+                Divider().overlay(dividerColor)
 
                 // Apply button
                 HStack {
@@ -927,14 +1071,14 @@ struct GameDetailView: View {
                 .toggleStyle(SwitchToggleStyle())
 
                 if gbColorizationEnabled {
-                    Divider().overlay(Color.white.opacity(0.08))
+                    Divider().overlay(dividerColor)
 
                     // Palette Mode Picker
                     gbPaletteModeRow
 
                     // Internal Palette Selector (always shown, disabled for non-Gambatte cores)
                     if gbColorizationMode == "internal" {
-                        Divider().overlay(Color.white.opacity(0.08))
+                        Divider().overlay(dividerColor)
                         if isGambatteCore {
                             gbInternalPaletteRow
                         } else {
@@ -946,11 +1090,11 @@ struct GameDetailView: View {
                     }
 
                     // SGB Borders toggle (works with mGBA)
-                    Divider().overlay(Color.white.opacity(0.08))
+                    Divider().overlay(dividerColor)
                     gbSGBBordersRow
 
                     // Color Correction (always shown, disabled for non-Gambatte cores)
-                    Divider().overlay(Color.white.opacity(0.08))
+                    Divider().overlay(dividerColor)
                     if isGambatteCore {
                         gbColorCorrectionRow
                     } else {
@@ -960,14 +1104,14 @@ struct GameDetailView: View {
                             .help("Gambatte core only — switch to gambatte_libretro to use color correction")
                     }
 
-                    Divider().overlay(Color.white.opacity(0.08))
+                    Divider().overlay(dividerColor)
 
                     Text("Apply color palettes to original Game Boy (DMG) games. 'Auto' selects the best palette for each game. 'Internal' uses a classic Game Boy or Super Game Boy palette. Named palettes and color correction require the Gambatte core.")
                         .font(.caption)
                         .foregroundColor(.white.opacity(0.4))
                         .lineSpacing(2)
                 } else {
-                    Divider().overlay(Color.white.opacity(0.08))
+                    Divider().overlay(dividerColor)
 
                     Text("Games will display in classic Game Boy monochrome (green-tinted).")
                         .font(.caption)
@@ -1152,26 +1296,27 @@ struct GameDetailView: View {
                 let result = await library.identifyROM(currentROM)
                 switch result {
                 case .identified(let info):
-                    showManualResult("Matched by CRC: \(info.name)", tone: .success)
+                    showManualResult("Found: \(info.name)", tone: .success)
                 case .identifiedFromName(let info):
                     showManualResult(
-                        "No CRC match — matched by filename using your UI language for region preference: \(info.name)",
+                        "Found: \(info.name) (matched by filename)",
                         tone: .success
                     )
                 case .crcNotInDatabase(let crc):
                     showManualResult(
-                        "No DAT entry for CRC \(crc), and no No-Intro title matched this filename.",
+                        "Couldn't identify this game. Try downloading metadata manually.",
                         tone: .warning
                     )
+                    LoggerService.debug(category: "Identity", "Unknown game — CRC: \(crc)")
                 case .databaseUnavailable:
                     showManualResult(
-                        "Could not load the No-Intro DAT. Go online once or add a .dat file.",
+                        "Identification database unavailable. Check your internet connection.",
                         tone: .error
                     )
                 case .romReadFailed(let reason):
-                    showManualResult(reason, tone: .error)
+                    showManualResult("Could not read this game: \(reason)", tone: .error)
                 case .noSystem:
-                    showManualResult("This ROM has no system assigned.", tone: .error)
+                    showManualResult("Cannot identify — system is not set for this file.", tone: .error)
                 }
             }
         } label: {
@@ -1186,7 +1331,7 @@ struct GameDetailView: View {
             .foregroundColor(.white.opacity(0.8))
             .padding(.horizontal, 14)
             .padding(.vertical, 8)
-            .background(Color.white.opacity(0.1))
+            .background(buttonBgColor)
             .cornerRadius(20)
         }
         .buttonStyle(.plain)
@@ -1226,7 +1371,7 @@ struct GameDetailView: View {
                         .padding(.vertical, 6)
                         .padding(.horizontal, 12)
                         .frame(maxWidth: .infinity)
-                        .background(Color.white.opacity(0.06))
+                        .background(subtleButtonBgColor)
                         .cornerRadius(8)
                         .overlay(
                             RoundedRectangle(cornerRadius: 8)
@@ -1240,7 +1385,7 @@ struct GameDetailView: View {
                     .padding(.vertical, 6)
                     .padding(.horizontal, 12)
                     .frame(maxWidth: .infinity)
-                    .background(Color.white.opacity(0.06))
+                    .background(subtleButtonBgColor)
                     .cornerRadius(8)
             case .result(let msg, let tone):
                 Button {
@@ -1285,7 +1430,7 @@ struct GameDetailView: View {
         if success {
             await MainActor.run { fetchMetadataStatus = .result("Metadata updated", tone: .success) }
         } else {
-            await MainActor.run { fetchMetadataStatus = .result("No metadata found", tone: .warning) }
+            await MainActor.run { fetchMetadataStatus = .result("No metadata found in the database. Try identifying this game first.", tone: .warning) }
         }
     }
 
@@ -1303,7 +1448,7 @@ struct GameDetailView: View {
                     .foregroundColor(.white.opacity(0.8))
                     .padding(.horizontal, 14)
                     .padding(.vertical, 8)
-                    .background(Color.white.opacity(0.1))
+                    .background(buttonBgColor)
                     .cornerRadius(20)
                 }
                 .buttonStyle(.plain)
@@ -1317,7 +1462,7 @@ struct GameDetailView: View {
                 }
                 .padding(.horizontal, 14)
                 .padding(.vertical, 8)
-                .background(Color.white.opacity(0.1))
+                .background(buttonBgColor)
                 .cornerRadius(20)
             case .result(let msg, let tone):
                 Button {
@@ -1361,7 +1506,7 @@ struct GameDetailView: View {
             
             await MainActor.run { fetchBoxArtStatus = .result("Art found", tone: .success) }
         } else {
-            await MainActor.run { fetchBoxArtStatus = .result("No art found", tone: .warning) }
+            await MainActor.run { fetchBoxArtStatus = .result("No cover art found for this game. You can manually search using the Box Art picker.", tone: .warning) }
         }
     }
 
@@ -1420,7 +1565,7 @@ struct GameDetailView: View {
                     .cornerRadius(8)
                 }
 
-                Divider().overlay(Color.white.opacity(0.08))
+                Divider().overlay(dividerColor)
 
                 // Quick preset buttons
                 VStack(spacing: 6) {
@@ -1465,7 +1610,7 @@ struct GameDetailView: View {
                     }
                 }
 
-                Divider().overlay(Color.white.opacity(0.08))
+                Divider().overlay(dividerColor)
 
                 // Reset to system default button
                 HStack {
@@ -1484,7 +1629,7 @@ struct GameDetailView: View {
                     .foregroundColor(.white)
                     .padding(.horizontal, 12)
                     .padding(.vertical, 6)
-                    .background(Color.white.opacity(0.1))
+                    .background(buttonBgColor)
                     .cornerRadius(6)
                     .disabled(!isShaderCustomized)
                 }
@@ -1594,11 +1739,11 @@ struct GameDetailView: View {
                     }
                     .frame(maxWidth: .infinity)
                     .padding(.vertical, 16)
-                    .background(Color.white.opacity(0.03))
+                    .background(subtleBgColor)
                     .cornerRadius(8)
                 }
 
-                Divider().overlay(Color.white.opacity(0.08))
+                Divider().overlay(dividerColor)
 
                 // Current bezel display and actions
                 HStack {
@@ -1624,7 +1769,7 @@ struct GameDetailView: View {
                     .cornerRadius(8)
                 }
 
-                Divider().overlay(Color.white.opacity(0.08))
+                Divider().overlay(dividerColor)
 
                 // Bezel options
                 VStack(spacing: 8) {
@@ -1642,7 +1787,7 @@ struct GameDetailView: View {
                         }
                         .padding(.vertical, 6)
                         .padding(.horizontal, 10)
-                        .background(Color.white.opacity(0.1))
+                        .background(buttonBgColor)
                         .cornerRadius(6)
                     }
                     .buttonStyle(.plain)
@@ -1661,13 +1806,13 @@ struct GameDetailView: View {
                         }
                         .padding(.vertical, 6)
                         .padding(.horizontal, 10)
-                        .background(Color.white.opacity(0.1))
+                        .background(buttonBgColor)
                         .cornerRadius(6)
                     }
                     .buttonStyle(.plain)
                 }
 
-                Divider().overlay(Color.white.opacity(0.08))
+                Divider().overlay(dividerColor)
 
                 // Info text
                 Text("Bezels are pre-downloaded before gameplay. Browse available bezels from The Bezel Project or import your own.")
@@ -1680,11 +1825,11 @@ struct GameDetailView: View {
         }
     }
 
-    /// Get the current bezel display text.
+    /// Get the current bezel display text — shown as a badge in the section header.
     private var currentBezelStatusText: String {
         let bezelFileName = currentROM.settings.bezelFileName
         if bezelFileName == "none" {
-            return "Disabled"
+            return "Off"
         } else if bezelFileName.isEmpty {
             return "Auto"
         } else {
@@ -1692,13 +1837,13 @@ struct GameDetailView: View {
         }
     }
 
-    /// Get the current bezel display name.
+    /// Get the current bezel display name — shown under "Current Bezel" heading.
     private var currentBezelDisplayName: String {
         let bezelFileName = currentROM.settings.bezelFileName
         if bezelFileName == "none" {
-            return "Bezels disabled"
+            return "Bezels are disabled"
         } else if bezelFileName.isEmpty {
-            return "Auto-detected (if available)"
+            return "Automatically matched by game name"
         } else {
             return bezelFileName.replacingOccurrences(of: ".png", with: "")
                 .replacingOccurrences(of: "_", with: " ")
@@ -1883,11 +2028,11 @@ struct GameDetailView: View {
                         Spacer()
                     }
                     .padding(12)
-                    .background(Color.white.opacity(0.05))
+                    .background(cardBgColor)
                     .cornerRadius(8)
                 }
 
-                Divider().overlay(Color.white.opacity(0.08))
+                Divider().overlay(dividerColor)
 
                 // Reset to system defaults
                 HStack {
@@ -1906,7 +2051,7 @@ struct GameDetailView: View {
                     .foregroundColor(.white)
                     .padding(.horizontal, 12)
                     .padding(.vertical, 6)
-                    .background(Color.white.opacity(0.1))
+                    .background(buttonBgColor)
                     .cornerRadius(6)
                 }
             }
@@ -1977,7 +2122,7 @@ struct GameDetailView: View {
                 }
 
                 if !existingSlots.isEmpty {
-                    Divider().overlay(Color.white.opacity(0.08))
+                    Divider().overlay(dividerColor)
 
                     // Summary
                     HStack {
@@ -2050,7 +2195,7 @@ struct GameDetailView: View {
                         .buttonStyle(.plain)
                     }
                     .padding(8)
-                    .background(Color.white.opacity(0.05))
+                    .background(cardBgColor)
                     .cornerRadius(6)
                 }
 
@@ -2146,7 +2291,7 @@ struct GameDetailView: View {
                     }
                 }
 
-                Divider().overlay(Color.white.opacity(0.08))
+                Divider().overlay(dividerColor)
 
                 // Search field (when cheats are available)
                 if !cheatsList.isEmpty {
@@ -2170,7 +2315,7 @@ struct GameDetailView: View {
                         }
                     }
                     .padding(6)
-                    .background(Color.white.opacity(0.05))
+                    .background(cardBgColor)
                     .cornerRadius(5)
                 }
 
@@ -2216,7 +2361,7 @@ struct GameDetailView: View {
                             .padding(.vertical, 4)
                     }
                     
-                    Divider().overlay(Color.white.opacity(0.08))
+                    Divider().overlay(dividerColor)
                     
                     // Quick toggle all button
                     HStack {
@@ -2244,7 +2389,7 @@ struct GameDetailView: View {
                     }
                 }
 
-                Divider().overlay(Color.white.opacity(0.08))
+                Divider().overlay(dividerColor)
 
                 // Link to cheat settings
                 Button {
@@ -2352,7 +2497,7 @@ struct GameDetailView: View {
                     }
                 }
 
-                Divider().overlay(Color.white.opacity(0.08))
+                Divider().overlay(dividerColor)
 
                 // Apply to system toggle
                 Toggle(isOn: $applyCoreToSystem) {
@@ -2377,7 +2522,7 @@ struct GameDetailView: View {
                         .lineSpacing(2)
                 }
 
-                Divider().overlay(Color.white.opacity(0.08))
+                Divider().overlay(dividerColor)
 
                 // Apply button
                 HStack {
@@ -2505,7 +2650,7 @@ struct GameDetailView: View {
                             .frame(width: 100)
                     }
 
-                    Divider().overlay(Color.white.opacity(0.08))
+                    Divider().overlay(dividerColor)
 
                     // Achievement list (limited display)
                     ScrollView(.horizontal, showsIndicators: false) {
@@ -2661,7 +2806,12 @@ struct ModernSaveStateSlotView: View {
     var onLaunchSlot: (Int) -> Void = { _ in }
     @State private var thumbnail: NSImage?
     @State private var showPlayButton = false
+    @Environment(\.colorScheme) private var colorScheme
     
+    private var slotBgColor: Color {
+        colorScheme == .dark ? .white.opacity(0.05) : .secondary.opacity(0.04)
+    }
+
     var body: some View {
         VStack(spacing: 6) {
             ZStack {
@@ -2674,7 +2824,7 @@ struct ModernSaveStateSlotView: View {
                             .clipped()
                     } else {
                         Rectangle()
-                            .fill(Color.white.opacity(0.05))
+                            .fill(slotBgColor)
                             .overlay(
                                 Image(systemName: slot.exists ? "externaldrive.fill" : "externaldrive")
                                     .font(.system(size: 20))
@@ -2833,6 +2983,10 @@ struct CheatListRowView: View {
     let cheat: Cheat
     let isOn: Bool
     var onToggle: () -> Void
+    @Environment(\.colorScheme) private var colorScheme
+    
+    private var cheatButtonBg: Color { colorScheme == .dark ? .white.opacity(0.1) : .secondary.opacity(0.12) }
+    private var cheatRowBg: Color { colorScheme == .dark ? .white.opacity(0.03) : .secondary.opacity(0.03) }
     
     var body: some View {
         HStack(alignment: .top, spacing: 10) {
@@ -2860,13 +3014,13 @@ struct CheatListRowView: View {
                 .font(.caption2)
                 .padding(.horizontal, 6)
                 .padding(.vertical, 2)
-                .background(Color.white.opacity(0.1))
+                .background(cheatButtonBg)
                 .foregroundColor(.white.opacity(0.6))
                 .cornerRadius(4)
         }
         .padding(.vertical, 6)
         .padding(.horizontal, 8)
-        .background(Color.white.opacity(0.03))
+        .background(cheatRowBg)
         .cornerRadius(6)
     }
 }

@@ -121,10 +121,11 @@ struct LibrarySettingsView: View {
                                 .foregroundColor(.secondary)
                             Text("No library folders added yet")
                                 .foregroundColor(.secondary)
-                            Text("Add a folder containing your ROM files to get started.")
+                            Text("Add folders containing your ROM files. TruchieEmu will scan them and organize games by console system.")
                                 .font(.caption)
                                 .foregroundColor(.secondary)
                                 .multilineTextAlignment(.center)
+                                .fixedSize(horizontal: false, vertical: true)
                         }
                         .frame(maxWidth: .infinity)
                         .padding(.vertical, 24)

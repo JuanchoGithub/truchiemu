@@ -51,7 +51,7 @@ struct RetroAchievementsSettingsView: View {
                         } else {
                             HStack(spacing: 4) {
                                 Circle().fill(.secondary).frame(width: 8, height: 8)
-                                Text("Not Connected")
+                                Text("Sign in required")
                                     .font(.caption)
                                     .foregroundColor(.secondary)
                             }

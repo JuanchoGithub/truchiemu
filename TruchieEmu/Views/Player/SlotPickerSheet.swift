@@ -36,13 +36,13 @@ struct SlotPickerSheet: View {
                 if runner.supportsSaveStates {
                     Image(systemName: "checkmark.circle.fill")
                         .foregroundColor(.green)
-                    Text("Save States Supported")
+                    Text("Save states available")
                         .font(.caption)
                         .foregroundColor(.green)
                 } else {
                     Image(systemName: "exclamationmark.circle.fill")
                         .foregroundColor(.red)
-                    Text("Not Supported")
+                    Text("This core doesn't support save states. Use the game's built-in save feature instead.")
                         .font(.caption)
                         .foregroundColor(.red)
                 }
@@ -57,7 +57,12 @@ struct SlotPickerSheet: View {
             )) {
                 HStack {
                     Image(systemName: "archivebox")
-                    Text("Compress Save States")
+                    VStack(alignment: .leading, spacing: 1) {
+                        Text("Compress Save States")
+                        Text("Reduces disk space but may take slightly longer to save and load.")
+                            .font(.caption2)
+                            .foregroundColor(.secondary.opacity(0.8))
+                    }
                 }
                 .font(.caption)
             }
@@ -67,18 +72,24 @@ struct SlotPickerSheet: View {
             // Slot grid or unsupported message
             if runner.supportsSaveStates {
                 slotsGrid
-            } else {
-                VStack {
-                    Spacer()
-                    Image(systemName: "exclamationmark.triangle")
-                        .font(.system(size: 48))
-                        .foregroundColor(.secondary)
-                    Text("Save states are not supported for this core")
-                        .font(.headline)
-                    Spacer()
+                } else {
+                    VStack {
+                        Spacer()
+                        Image(systemName: "exclamationmark.triangle")
+                            .font(.system(size: 48))
+                            .foregroundColor(.secondary)
+                        Text("Save states unavailable")
+                            .font(.headline)
+                        Text("This emulation core doesn't support save states. Try using the game's built-in save feature instead, or check if a different core supports this feature.")
+                            .font(.caption)
+                            .foregroundColor(.secondary)
+                            .multilineTextAlignment(.center)
+                            .fixedSize(horizontal: false, vertical: true)
+                            .padding(.horizontal)
+                        Spacer()
+                    }
+                    .padding(40)
                 }
-                .padding(40)
-            }
             
             Divider()
             
@@ -87,12 +98,14 @@ struct SlotPickerSheet: View {
                 Button(action: { runner.previousSlot(); showSlotPicker = false }) {
                     Label("Previous Slot", systemImage: "minus.circle")
                 }
+                .help("Switch to slot \(max(0, runner.currentSlot - 1))")
                 
                 Spacer()
                 
                 Button(action: { runner.nextSlot(); showSlotPicker = false }) {
                     Label("Next Slot", systemImage: "plus.circle")
                 }
+                .help("Switch to slot \(min(9, runner.currentSlot + 1))")
             }
             .padding()
         }
@@ -219,9 +232,9 @@ struct SlotCardView: View {
                                 Image(systemName: slotInfo?.exists == true ? "square.and.arrow.down" : "plus.circle")
                                     .font(.system(size: 24))
                                     .foregroundColor(.secondary)
-                                Text(slotInfo?.exists == true ? "No Preview" : "Empty")
-                                    .font(.caption2)
-                                    .foregroundColor(.secondary)
+                     Text(slotInfo?.exists == true ? "Preview unavailable" : "No save in this slot")
+                         .font(.caption2)
+                         .foregroundColor(.secondary)
                             }
                         )
                 }
