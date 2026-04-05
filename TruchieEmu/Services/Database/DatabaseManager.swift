@@ -53,7 +53,7 @@ private func sqliteErrorString(_ code: Int32) -> String {
 
 // MARK: - Database Manager
 
-final class DatabaseManager {
+class DatabaseManager {
     static let shared = DatabaseManager()
 
     private var db: OpaquePointer?
@@ -74,7 +74,7 @@ final class DatabaseManager {
     /// DatabaseManager methods that would otherwise do queue.sync (deadlock).
     private static let reentrancyKey = DispatchSpecificKey<Bool>()
 
-    private init() {
+    init() {
         // Set the reentrancy key on the queue so we can detect when we're already on it
         queue.setSpecific(key: DatabaseManager.reentrancyKey, value: true)
     }

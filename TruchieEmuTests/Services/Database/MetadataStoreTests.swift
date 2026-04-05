@@ -86,7 +86,7 @@ enum TestUtilities {
             thumbnailSystemID: record.thumbnailLookupSystemID,
             boxArtPath: record.boxArtPath,
             titleScreenPath: record.titleScreenPath,
-            screenshotPathsJSON: record.screenshotPaths.isEmpty ? nil : try? JSONEncoder().encode(record.screenshotPaths).flatMap { String(data: $0, encoding: .utf8) },
+            screenshotPathsJSON: record.screenshotPaths.isEmpty ? nil : (try? JSONEncoder().encode(record.screenshotPaths)).flatMap { String(data: $0, encoding: .utf8) },
             customCoreID: record.customCoreID
         )
     }

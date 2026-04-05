@@ -1,3 +1,4 @@
+import SQLite3
 import Foundation
 import Testing
 @testable import TruchieEmu
@@ -183,7 +184,7 @@ final class TestableDatabaseManager: DatabaseManager {
     private var _db: OpaquePointer?
     private let tempURL: URL
 
-    init() {
+    override init() {
         let tempDir = FileManager.default.temporaryDirectory.appendingPathComponent("TruchieEmuTests_\(UUID().uuidString)")
         try? FileManager.default.createDirectory(at: tempDir, withIntermediateDirectories: true)
         tempURL = tempDir.appendingPathComponent("test.db")
