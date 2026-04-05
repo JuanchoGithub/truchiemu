@@ -62,6 +62,7 @@ struct SystemSidebarView: View {
                 }
             }
             
+            // Categories section
             Section("Categories") {
                 ForEach(categoryManager.categories) { category in
                     categoryRow(category: category)
@@ -81,6 +82,17 @@ struct SystemSidebarView: View {
                     }
                 }
                 .buttonStyle(.plain)
+            }
+            
+            // Hidden Games section — shown only when there are hidden games
+            // and the user hasn't disabled it in settings
+            let hiddenCount = library.romCounts["hidden"] ?? 0
+            let showHiddenCategory = AppSettings.getBool("showHiddenGamesCategory", defaultValue: true)
+            if hiddenCount > 0 && showHiddenCategory {
+                Section("Hidden Games") {
+                    sidebarRow(icon: "eye.slash", label: "Hidden", count: hiddenCount, tint: .gray, filter: .hidden)
+                        .tag(LibraryFilter.hidden)
+                }
             }
         }
         .listStyle(.sidebar)
@@ -376,6 +388,7 @@ enum LibraryFilter: Hashable, Identifiable {
     case recent
     case system(SystemInfo)
     case category(String) // category ID
+    case hidden
     
     var id: String {
         switch self {
@@ -384,6 +397,7 @@ enum LibraryFilter: Hashable, Identifiable {
         case .recent: return "recent"
         case .system(let system): return "system-\(system.id)"
         case .category(let id): return "category-\(id)"
+        case .hidden: return "hidden"
         }
     }
 }

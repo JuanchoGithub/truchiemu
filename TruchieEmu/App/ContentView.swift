@@ -120,6 +120,7 @@ struct ContentView: View {
                 return category.name
             }
             return "Category"
+        case .hidden: return "Hidden Games"
         }
     }
 }

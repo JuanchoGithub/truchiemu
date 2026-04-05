@@ -6,10 +6,46 @@ struct MetadataSettingsView: View {
     @State private var isEnabled: Bool = true
     @State private var showSyncConfirmation = false
     @State private var lastSyncText: String = "Never"
+    @State private var showHiddenGamesCategory: Bool = true
     
     var body: some View {
         ScrollView {
             VStack(alignment: .leading, spacing: 24) {
+                // Hidden Games Category Section
+                VStack(alignment: .leading, spacing: 12) {
+                    HStack {
+                        Label("Hidden Games", systemImage: "eye.slash")
+                            .font(.headline)
+                        Spacer()
+                        Toggle("", isOn: $showHiddenGamesCategory)
+                            .labelsHidden()
+                            .onChange(of: showHiddenGamesCategory) { newValue in
+                                AppSettings.setBool("showHiddenGamesCategory", value: newValue)
+                            }
+                    }
+                    
+                    VStack(spacing: 0) {
+                        VStack(alignment: .leading, spacing: 8) {
+                            Text("Show the \"Hidden Games\" category in the sidebar")
+                                .font(.subheadline)
+                                .foregroundColor(.white.opacity(0.7))
+                                .fixedSize(horizontal: false, vertical: true)
+                            
+                            Text("When disabled, hidden games will still exist but the category won't be visible in the sidebar, even if you have hidden games.")
+                                .font(.caption)
+                                .foregroundColor(.secondary)
+                                .fixedSize(horizontal: false, vertical: true)
+                        }
+                        .padding(.vertical, 8)
+                        .padding(.horizontal, 12)
+                    }
+                    .background(.ultraThinMaterial)
+                    .cornerRadius(12)
+                    .padding(.top, 4)
+                }
+
+                Divider()
+
                 // LaunchBox GamesDB Section
                 VStack(alignment: .leading, spacing: 12) {
                     HStack {
@@ -130,6 +166,7 @@ struct MetadataSettingsView: View {
         .navigationTitle("Metadata")
         .onAppear {
             isEnabled = launchboxService.isEnabled
+            showHiddenGamesCategory = AppSettings.getBool("showHiddenGamesCategory", defaultValue: true)
             updateLastSyncText()
         }
     }

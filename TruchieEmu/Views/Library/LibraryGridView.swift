@@ -129,6 +129,10 @@ struct LibraryGridView: View {
     @ObservedObject var boxArtService = BoxArtService.shared
     @State private var manualBoxArtSearchROM: ROM?
     
+    // Delete/hide game states
+    @State private var gameToDelete: ROM?
+    @State private var showDeleteConfirmation = false
+    
     // Smooth pinch-to-zoom state
     @State private var continuousZoom: Double = 0.5
     @State private var lastMagnification: Double = 1.0
@@ -150,20 +154,22 @@ struct LibraryGridView: View {
         let base: [ROM]
         switch filter {
         case .all:
-            base = library.roms
+            base = library.roms.filter { !$0.isHidden }
         case .favorites:
-            base = library.roms.filter { $0.isFavorite }
+            base = library.roms.filter { $0.isFavorite && !$0.isHidden }
         case .recent:
-            base = library.roms.filter { $0.lastPlayed != nil }
+            base = library.roms.filter { $0.lastPlayed != nil && !$0.isHidden }
         case .system(let system):
             let systemIDs = SystemDatabase.allInternalIDs(forDisplayID: system.id)
-            base = library.roms.filter { systemIDs.contains($0.systemID ?? "") }
+            base = library.roms.filter { systemIDs.contains($0.systemID ?? "") && !$0.isHidden }
         case .category(let categoryID):
-            base = categoryManager.gamesInCategory(categoryID: categoryID, fromROMs: library.roms)
+            base = categoryManager.gamesInCategory(categoryID: categoryID, fromROMs: library.roms).filter { !$0.isHidden }
+        case .hidden:
+            base = library.roms.filter { $0.isHidden }
         }
 
-        // Filter out BIOS files unless "Show BIOS Files" is enabled
-        var filtered = prefs.showBiosFiles ? base : base.filter { !$0.isHidden }
+        // Apply filter chips
+        var filtered = base
 
         // Apply filter chips
         if !activeFilters.isEmpty {
@@ -272,6 +278,39 @@ struct LibraryGridView: View {
             }
             Button("Cancel", role: .cancel) {
                 renamingROM = nil
+            }
+        }
+        .confirmationDialog(
+            "Delete Game: \(gameToDelete?.displayName ?? "")",
+            isPresented: $showDeleteConfirmation,
+            titleVisibility: .visible
+        ) {
+            Button("Move ROM File to Trash & Remove from Library", role: .destructive) {
+                if let rom = gameToDelete {
+                    deleteGameAndROM(rom)
+                }
+                gameToDelete = nil
+            }
+            Button("Hide from Library Only", role: .destructive) {
+                if let rom = gameToDelete {
+                    hideGame(rom)
+                }
+                gameToDelete = nil
+            }
+            Button("Cancel", role: .cancel) {
+                gameToDelete = nil
+            }
+        } message: {
+            if let rom = gameToDelete {
+                Text("""
+                This will remove \"\(rom.displayName)\" from your library.
+
+                • "Move ROM File to Trash & Remove from Library" — The game file (\(rom.path.lastPathComponent)) will be moved to your system Trash, and the game will be removed from your library.
+
+                • "Hide from Library Only" — The game will be hidden from your library view, but the ROM file will remain on disk. You can unhide it later from the Hidden Games section.
+
+                You can restore the ROM file from Trash if you change your mind.
+                """)
             }
         }
         .toolbar {
@@ -749,6 +788,65 @@ struct LibraryGridView: View {
         }
         Button("Reveal in Finder") {
             NSWorkspace.shared.selectFile(rom.path.path, inFileViewerRootedAtPath: "")
+        }
+        
+        Divider()
+        if rom.isHidden {
+            Button("Unhide Game") {
+                unhideGame(rom)
+            }
+        } else {
+            Button("Hide Game") {
+                hideGame(rom)
+            }
+            Button(role: .destructive) {
+                gameToDelete = rom
+                showDeleteConfirmation = true
+            } label: {
+                Label("Delete Game...", systemImage: "trash")
+            }
+        }
+    }
+
+    // MARK: - Delete/Hide Game Actions
+
+    private func hideGame(_ rom: ROM) {
+        var updated = rom
+        updated.isHidden = true
+        library.updateROM(updated)
+    }
+
+    private func unhideGame(_ rom: ROM) {
+        var updated = rom
+        updated.isHidden = false
+        library.updateROM(updated)
+    }
+
+    private func deleteGameAndROM(_ rom: ROM) {
+        // Move the ROM file to trash
+        do {
+            try NSWorkspace.shared.recycle([rom.path])
+            // File moved to trash successfully
+            LoggerService.info(category: "LibraryGridView", "ROM file moved to trash: \(rom.path.lastPathComponent)")
+        } catch {
+            // If trash fails, log the error but continue removing from library
+            LoggerService.warning(category: "LibraryGridView", "Failed to move ROM to trash: \(error.localizedDescription). Removing from library anyway.")
+        }
+        
+        // Remove the ROM from the library
+        removeROMFromLibrary(rom)
+    }
+
+    private func removeROMFromLibrary(_ rom: ROM) {
+        library.roms.removeAll { $0.id == rom.id }
+        LibraryMetadataStore.shared.deleteMetadata(for: rom)
+        DatabaseManager.shared.deleteROMsByPath([rom.path.path])
+        library.updateCounts()
+        library.saveROMsToDatabase()
+
+        // If this ROM was selected, deselect it
+        if selectedROM?.id == rom.id {
+            selectedROM = nil
         }
     }
 

@@ -276,4 +276,12 @@ final class LibraryMetadataStore: ObservableObject {
         }
         objectWillChange.send()
     }
+
+    // MARK: - Deletion
+
+    func deleteMetadata(for rom: ROM) {
+        let key = Self.pathKey(for: rom)
+        entries.removeValue(forKey: key)
+        DatabaseManager.shared.deleteMetadataEntry(key)
+    }
 }

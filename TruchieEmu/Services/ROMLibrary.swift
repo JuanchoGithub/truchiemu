@@ -239,15 +239,16 @@ class ROMLibrary: ObservableObject {
 
     // MARK: - Counts
 
-    private func updateCounts() {
+    func updateCounts() {
         var counts: [String: Int] = [:]
-        counts["all"] = roms.count
-        counts["favorites"] = roms.filter { $0.isFavorite }.count
-        counts["recent"] = roms.filter { $0.lastPlayed != nil }.count
+        counts["all"] = roms.filter { !$0.isHidden }.count
+        counts["favorites"] = roms.filter { $0.isFavorite && !$0.isHidden }.count
+        counts["recent"] = roms.filter { $0.lastPlayed != nil && !$0.isHidden }.count
+        counts["hidden"] = roms.filter { $0.isHidden }.count
         
         let grouped = Dictionary(grouping: roms) { $0.systemID ?? "unknown" }
         for (sysID, list) in grouped {
-            counts[sysID] = list.count
+            counts[sysID] = list.filter { !$0.isHidden }.count
         }
         self.romCounts = counts
         self.lastChangeDate = Date()
@@ -531,7 +532,7 @@ class ROMLibrary: ObservableObject {
     // MARK: - SQLite Persistence
 
     /// Persist the current ROMs array to the SQLite database.
-    private func saveROMsToDatabase() {
+    func saveROMsToDatabase() {
         // We do a bulk upsert — this is fast enough for typical library sizes.
         // For very large libraries (10k+ ROMs), could diff and only update changed rows.
         let romRows: [(id: String, name: String, path: String, systemID: String?, boxArtPath: String?, isFavorite: Bool, lastPlayed: Double?, totalPlaytime: Double, timesPlayed: Int, selectedCoreID: String?, customName: String?, useCustomCore: Bool, metadataJSON: String?, isBios: Bool, isHidden: Bool, category: String, crc32: String?, thumbnailSystemID: String?, screenshotPathsJSON: String?, settingsJSON: String?, isIdentified: Bool)] = roms.map { rom in
