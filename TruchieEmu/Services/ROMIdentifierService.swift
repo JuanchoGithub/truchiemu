@@ -171,8 +171,87 @@ class ROMIdentifierService {
         return EmulatorLanguage(rawValue: raw) ?? .english
     }
 
+    // Common ROM tags that appear in parentheses — used for aggressive stripping during name matching.
+    // These cover region, version, revision, and other common No-Intro/Romset tags.
+    private static let commonRomTags: Set<String> = [
+        // Regions
+        "(world)", "(usa)", "(europe)", "(japan)", "(korea)", "(china)", "(brazil)", "(australia)",
+        "(canada)", "(france)", "(germany)", "(spain)", "(italy)", "(netherlands)", "(sweden)",
+        "(denmark)", "(norway)", "(finland)", "(russia)", "(portugal)", "(greece)", "(turkey)",
+        "(hong kong)", "(taiwan)", "(singapore)", "(mexico)", "(argentina)", "(chile)", "(colombia)",
+        "(eu)", "(jp)", "(us)", "(uk)", "(kr)", "(cn)", "(br)", "(au)", "(ca)", "(fr)", "(de)",
+        "(es)", "(it)", "(nl)", "(se)", "(dk)", "(no)", "(fi)", "(ru)", "(pt)", "(gr)", "(tr)",
+        "(hk)", "(tw)", "(sg)", "(mx)", "(ar)", "(cl)", "(co)",
+        // Languages
+        "(en)", "(ja)", "(fr)", "(de)", "(es)", "(it)", "(nl)", "(pt)", "(ru)", "(ko)", "(zh)",
+        "(sv)", "(da)", "(no)", "(fi)", "(pl)", "(cs)", "(hu)", "(el)", "(tr)", "(ar)", "(he)",
+        "(en,fr)", "(en,ja)", "(en,de)", "(en,es)", "(en,fr,de,es,it)", "(en,fr,de,es,it,pt,da,se)",
+        "(en,fr,de,es,it,nl,sv,da,fi)", "(ja,en)", "(fr,en)", "(de,en)", "(es,en)", "(pt,en)",
+        "(en,fr,de)", "(en,fr,de,es)", "(en,fr,de,es,it,pt)", "(pt,br)", "(ru,pl)", "(zh,en)",
+        "(ko,en)", "(ja,en,fr,de,es,it)", "(multi)", "(multilanguage)", "(multi-lang)", "(multi-5)",
+        "(multi-6)", "(multi-7)", "(multi-8)", "(lang-5)", "(lang-6)", "(lang-7)", "(lang-8)",
+        // Version/Revision
+        "(beta)", "(alpha)", "(demo)", "(proto)", "(prototype)", "(sample)", "(rev a)", "(rev b)",
+        "(rev c)", "(rev d)", "(rev e)", "(rev f)", "(rev g)", "(rev h)", "(rev i)", "(rev j)",
+        "(rev k)", "(rev l)", "(rev m)", "(rev n)", "(rev 1)", "(rev 2)", "(rev 3)", "(rev 4)",
+        "(rev 5)", "(rev 6)", "(rev 7)", "(rev 8)", "(rev 9)", "(revision 1)", "(revision 2)",
+        "(v1.0)", "(v1.1)", "(v1.2)", "(v1.3)", "(v1.4)", "(v2.0)", "(v2.1)", "(version 1)",
+        "(version 2)", "(unl)", "(unlicensed)", "(alt)", "(alternative)", "(aftermarket)",
+        "(homebrew)", "(hack)", "(translated)", "(translation)", "(patched)", "(fixed)",
+        // Special
+        "(enabling chip)", "(sufami)", "(satellaview)", "(bs)", "(event)", "(kiosk)", "(test)",
+        "(debug)", "(debug version)", "(debug mode)", "(crc bad)", "(bad dump)", "(alt 1)",
+        "(alt 2)", "(alt 3)", "(o)", "(!)", "[!]", "[b]", "[f]", "[h]", "[t]", "[x]",
+        "(disc 1)", "(disc 2)", "(disc 3)", "(disc 4)", "(side a)", "(side b)", "(cart)",
+        "(3m)", "(5m)", "(6m)", "(7.5m)", "(8m)", "(9m)", "(11m)", "(12m)", "(16m)",
+        "(24m)", "(32m)", "(48m)", "(64m)", "(128m)",
+    ]
+
+    /// Aggressively normalize a title for name matching by stripping ALL parenthetical tags
+    /// and common ROM release tags, then lowercasing and collapsing whitespace.
+    /// This is more aggressive than normalizedComparableTitle and is used as a last resort
+    /// when CRC matching fails.
+    /// Visible for testing.
+    static func aggressivelyNormalizedTitle(_ s: String) -> String {
+        // First use the existing parenthesis stripping
+        var result = LibretroThumbnailResolver.stripParenthesesForFuzzyMatch(s)
+        
+        // Additionally strip known tags that might appear in brackets
+        while let r = result.range(of: "\\[([^\\]]*)\\]", options: .regularExpression) {
+            result.removeSubrange(r)
+        }
+        
+        // Also strip curly braces tags {like these}
+        while let r = result.range(of: "\\{([^\\}]*)\\}", options: .regularExpression) {
+            result.removeSubrange(r)
+        }
+        
+        // Handle common parenthetical patterns that might remain (strip at word boundaries)
+        // This catches things like " (World)" that might be at the start or middle
+        result = result.replacingOccurrences(
+            of: "\\s*\\([^)]*\\)\\s*",
+            with: " ",
+            options: .regularExpression
+        )
+        
+        // Remove any remaining bracket content
+        result = result.replacingOccurrences(
+            of: "\\s*\\[[^\\]]*\\]\\s*",
+            with: " ",
+            options: .regularExpression
+        )
+        
+        return result
+            .lowercased()
+            .replacingOccurrences(of: "  +", with: " ", options: .regularExpression)
+            .trimmingCharacters(in: .whitespacesAndNewlines)
+            .trimmingCharacters(in: CharacterSet(charactersIn: "-_."))
+            .trimmingCharacters(in: .whitespacesAndNewlines)
+    }
+
     /// Compare No-Intro titles after stripping region/version parentheticals.
-    fileprivate static func normalizedComparableTitle(_ s: String) -> String {
+    /// Visible for testing.
+    static func normalizedComparableTitle(_ s: String) -> String {
         let stripped = LibretroThumbnailResolver.stripParenthesesForFuzzyMatch(s)
         return stripped
             .lowercased()
@@ -183,7 +262,8 @@ class ROMIdentifierService {
     /// Heuristic: No-Intro DATs use `description` as the game title and `name` as
     /// an internal ROM filename.  ScummVM/MAME DATs use `name` as the title and
     /// `description` as a long prose paragraph.  Pick whichever looks like a real title.
-    fileprivate static func titleFromDatGame(name: String, description: String) -> String {
+    /// Visible for testing.
+    static func titleFromDatGame(name: String, description: String) -> String {
         guard !description.isEmpty else { return name }
         // Long descriptions are prose paragraphs → use `name` (ScummVM / MAME style)
         if description.count > 150 { return name }
@@ -218,14 +298,18 @@ class ROMIdentifierService {
         return 15
     }
 
-    // MARK: – Roman-numeral variant generation
+    // MARK: – Number variant generation (Arabic, Roman, and text numbers)
     // Produces alternate forms of a normalised title where standalone Arabic
-    // numerals 1-19 are replaced with their Roman equivalent, and vice versa.
-    // Also strips a trailing " 1" or " i" because many ROM sets omit the
-    // number for the first entry in a series (Road Rash 1 → Road Rash).
-    private static func romanNumeralVariants(of normalized: String) -> [String] {
+    // numerals 1-19 are replaced with their Roman equivalent AND text number
+    // equivalent (e.g., "3" → "III" → "three"), and vice versa.
+    // This ensures "Double Dragon 3" matches "Double Dragon III" or "Double Dragon Three".
+    // Also strips a trailing number variant for first-game-in-series edge cases.
+    /// Visible for testing.
+    static func romanNumeralVariants(of normalized: String) -> [String] {
         guard normalized.count >= 2 else { return [] }
         var variants: Set<String> = []
+
+        // Arabic ↔ Roman ↔ Text number mappings
         let arabicToRoman: [Int: String] = [
             1: "I",   2: "II",   3: "III",   4: "IV",
             5: "V",   6: "VI",   7: "VII",   8: "VIII",
@@ -233,6 +317,15 @@ class ROMIdentifierService {
             13: "XIII", 14: "XIV", 15: "XV",
             16: "XVI",  17: "XVII", 18: "XVIII", 19: "XIX",
         ]
+        let arabicToText: [Int: String] = [
+            1: "one",   2: "two",   3: "three",  4: "four",
+            5: "five",  6: "six",   7: "seven",  8: "eight",
+            9: "nine",  10: "ten",  11: "eleven", 12: "twelve",
+            13: "thirteen", 14: "fourteen", 15: "fifteen",
+            16: "sixteen", 17: "seventeen", 18: "eighteen", 19: "nineteen",
+        ]
+
+        // Build Roman → Arabic lookup
         let romanToArabic: [String: Int] = {
             var d: [String: Int] = [:]
             for (a, r) in arabicToRoman {
@@ -241,12 +334,33 @@ class ROMIdentifierService {
             }
             return d
         }()
-        // Arabic → Roman  (word-boundary match: not preceded by a letter, not followed by one)
+
+        // Build text → Arabic lookup
+        let textToArabic: [String: Int] = {
+            var d: [String: Int] = [:]
+            for (a, t) in arabicToText {
+                d[t] = a
+                // Also add capitalized versions
+                let capitalized = t.prefix(1).uppercased() + t.dropFirst()
+                d[capitalized] = a
+            }
+            return d
+        }()
+
+        // Arabic → Roman
         for (a, r) in arabicToRoman {
             let p = "(?<![a-zA-Z])\\b" + String(a) + "\\b(?![a-zA-Z0-9])"
             let s = normalized.replacingOccurrences(of: p, with: r, options: .regularExpression)
             if s != normalized { variants.insert(s) }
         }
+
+        // Arabic → Text number
+        for (a, t) in arabicToText {
+            let p = "(?<![a-zA-Z])\\b" + String(a) + "\\b(?![a-zA-Z0-9])"
+            let s = normalized.replacingOccurrences(of: p, with: t, options: .regularExpression)
+            if s != normalized { variants.insert(s) }
+        }
+
         // Roman → Arabic
         for (r, a) in romanToArabic {
             let esc = NSRegularExpression.escapedPattern(for: r)
@@ -254,12 +368,45 @@ class ROMIdentifierService {
             let s = normalized.replacingOccurrences(of: p, with: String(a), options: .regularExpression)
             if s != normalized { variants.insert(s) }
         }
-        // Strip trailing " 1" or " i" for first-game-in-series
+
+        // Roman → Text number (Roman → Arabic → Text)
+        for (r, a) in romanToArabic {
+            if let textForm = arabicToText[a] {
+                let esc = NSRegularExpression.escapedPattern(for: r)
+                let p = "(?<![a-zA-Z])\\b" + esc + "\\b(?![a-zA-Z0-9])"
+                let s = normalized.replacingOccurrences(of: p, with: textForm, options: .regularExpression)
+                if s != normalized { variants.insert(s) }
+            }
+        }
+
+        // Text number → Arabic
+        for (t, a) in textToArabic {
+            let esc = NSRegularExpression.escapedPattern(for: t)
+            let p = "(?<![a-zA-Z])\\b" + esc + "\\b(?![a-zA-Z0-9])"
+            let s = normalized.replacingOccurrences(of: p, with: String(a), options: .regularExpression)
+            if s != normalized { variants.insert(s) }
+        }
+
+        // Text number → Roman (Text → Arabic → Roman)
+        for (t, a) in textToArabic {
+            if let romanForm = arabicToRoman[a] {
+                let esc = NSRegularExpression.escapedPattern(for: t)
+                let p = "(?<![a-zA-Z])\\b" + esc + "\\b(?![a-zA-Z0-9])"
+                let s = normalized.replacingOccurrences(of: p, with: romanForm, options: .regularExpression)
+                if s != normalized { variants.insert(s) }
+            }
+        }
+
+        // Strip trailing number variants for first-game-in-series edge cases
+        // E.g., "Ecco the Dolphin 1" → "Ecco the Dolphin", " Ecco the Dolphin I" → "Ecco the Dolphin"
+        // This handles cases where the user's file has the number but the DB entry doesn't.
         let t = normalized.trimmingCharacters(in: .whitespaces)
-        for pat in [" 1$", " i$"] {
+        // Case-insensitive patterns for 1, I, one
+        for pat in [" 1$", " (?i:i)(?-i)$", " (?i:one)(?-i)$"] {
             let s = t.replacingOccurrences(of: pat, with: "", options: .regularExpression).trimmingCharacters(in: .whitespaces)
             if s != t && s.count >= 2 { variants.insert(s) }
         }
+
         return Array(variants)
     }
 
@@ -270,7 +417,7 @@ class ROMIdentifierService {
         let queryBase = Self.normalizedComparableTitle(cleaned)
         guard queryBase.count >= 2 else { return nil }
 
-        // --- pass 1: exact match on base query ---
+        // --- pass 1: exact match on base query (normalizedComparableTitle strips parentheses) ---
         var exact: [GameInfo] = []
         for info in database.values {
             let datBase = Self.normalizedComparableTitle(info.name)
@@ -292,12 +439,52 @@ class ROMIdentifierService {
             }
         }
 
-        // --- pass 3: substring / prefix containment (original fuzzy) ---
+        // --- pass 3: aggressive normalization — strip ALL tags including [brackets], {braces}, parentheses ---
+        // This is the user-requested feature: strip (World), (USA), (Beta), etc. from both ROM name and DB entries
+        if exact.isEmpty {
+            let aggressiveQuery = Self.aggressivelyNormalizedTitle(stem)
+            if !aggressiveQuery.isEmpty && aggressiveQuery.count >= 2 {
+                identifyLog.info("Identify: trying aggressive name match (all tags stripped) for '\(stem, privacy: .public)' → '\(aggressiveQuery, privacy: .public)'")
+                // Try exact aggressive match first
+                for info in database.values {
+                    let datAggressive = Self.aggressivelyNormalizedTitle(info.name)
+                    if datAggressive == aggressiveQuery {
+                        exact.append(info)
+                    }
+                }
+                // If no exact match, try with number variants (3 → III → three)
+                if exact.isEmpty {
+                    let aggressiveVariants = Self.romanNumeralVariants(of: aggressiveQuery)
+                    for variant in aggressiveVariants {
+                        for info in database.values {
+                            let datAggressive = Self.aggressivelyNormalizedTitle(info.name)
+                            if datAggressive == variant {
+                                exact.append(info)
+                            }
+                        }
+                        if !exact.isEmpty { break }
+                    }
+                }
+                if !exact.isEmpty {
+                    identifyLog.info("Identify: aggressive name match succeeded → '\(exact.first!.name, privacy: .public)'")
+                }
+            }
+        }
+
+        // --- pass 4: substring / prefix containment (original fuzzy) ---
+        // IMPORTANT: Avoid partial matches where the query has a number suffix that the DB entry lacks.
+        // E.g., "double dragon 3" should NOT match "double dragon" just because one contains the other.
+        // Only allow partial matches when the difference is a minor article/preposition like "the".
         var candidates = exact
         if candidates.isEmpty {
             for info in database.values {
                 let datBase = Self.normalizedComparableTitle(info.name)
                 guard datBase.count >= 3, queryBase.count >= 3 else { continue }
+
+                // Check if this would be a problematic partial match (query has trailing number)
+                let wouldBeBadPartialMatch = Self.isProblematicNumberSuffixPartialMatch(query: queryBase, candidate: datBase)
+                guard !wouldBeBadPartialMatch else { continue }
+
                 if datBase.contains(queryBase) || queryBase.contains(datBase) {
                     candidates.append(info)
                 }
@@ -309,11 +496,35 @@ class ROMIdentifierService {
                     for info in database.values {
                         let datBase = Self.normalizedComparableTitle(info.name)
                         guard datBase.count >= 3 else { continue }
+
+                        let wouldBeBadPartialMatch = Self.isProblematicNumberSuffixPartialMatch(query: variant, candidate: datBase)
+                        guard !wouldBeBadPartialMatch else { continue }
+
                         if datBase.contains(variant) || variant.contains(datBase) {
                             candidates.append(info)
                         }
                     }
                     if !candidates.isEmpty { break }
+                }
+            }
+            // Last resort: aggressive substring match (with same number-suffix protection)
+            if candidates.isEmpty {
+                let aggressiveQuery = Self.aggressivelyNormalizedTitle(stem)
+                if !aggressiveQuery.isEmpty && aggressiveQuery.count >= 3 {
+                    for info in database.values {
+                        let datAggressive = Self.aggressivelyNormalizedTitle(info.name)
+                        guard datAggressive.count >= 3 else { continue }
+
+                        let wouldBeBadPartialMatch = Self.isProblematicNumberSuffixPartialMatch(query: aggressiveQuery, candidate: datAggressive)
+                        guard !wouldBeBadPartialMatch else { continue }
+
+                        if datAggressive.contains(aggressiveQuery) || aggressiveQuery.contains(datAggressive) {
+                            candidates.append(info)
+                        }
+                    }
+                    if !candidates.isEmpty {
+                        identifyLog.info("Identify: aggressive substring match found \(candidates.count) candidates")
+                    }
                 }
             }
         }
@@ -426,6 +637,88 @@ class ROMIdentifierService {
     private func isPowerOfTwo(_ n: Int) -> Bool {
         guard n > 0 else { return false }
         return (n & (n - 1)) == 0
+    }
+
+    // MARK: - Partial match protection
+
+    /// Numbers as text forms (1-19)
+    private static let numberWords: Set<String> = [
+        "one", "two", "three", "four", "five", "six", "seven", "eight", "nine", "ten",
+        "eleven", "twelve", "thirteen", "fourteen", "fifteen", "sixteen", "seventeen", "eighteen", "nineteen",
+    ]
+
+    /// Roman numeral patterns (1-19)
+    private static let romanNumeralPatterns: Set<String> = [
+        "i", "ii", "iii", "iv", "v", "vi", "vii", "viii", "ix", "x",
+        "xi", "xii", "xiii", "xiv", "xv", "xvi", "xvii", "xviii", "xix",
+    ]
+
+    /// Regex pattern that matches a trailing number suffix (Arabic, Roman, or text)
+    private static let trailingNumberSuffixPattern = try! NSRegularExpression(
+        pattern: "\\s+(\\d+|[ivxIVX]+|one|two|three|four|five|six|seven|eight|nine|ten|eleven|twelve|thirteen|fourteen|fifteen|sixteen|seventeen|eighteen|nineteen)$",
+        options: .caseInsensitive
+    )
+
+    /// Detects problematic partial matches where the query has a number suffix but the candidate doesn't.
+    /// E.g., query="double dragon 3" should NOT match candidate="double dragon" (different game!)
+    /// But query="the double dragon" CAN match candidate="double dragon" (article difference is OK).
+    ///
+    /// Returns `true` if this would be a bad match that should be skipped.
+    static func isProblematicNumberSuffixPartialMatch(query: String, candidate: String) -> Bool {
+        // Only relevant when query contains candidate or vice versa (partial match scenario)
+        guard query != candidate else { return false }
+
+        let queryLower = query.lowercased()
+        let candidateLower = candidate.lowercased()
+
+        // Determine which is longer (the one with the extra suffix)
+        let longer: String
+        let shorter: String
+        if queryLower.count > candidateLower.count {
+            longer = queryLower
+            shorter = candidateLower
+        } else {
+            longer = candidateLower
+            shorter = queryLower
+        }
+
+        // Only proceed if the longer contains the shorter as a substring
+        guard longer.contains(shorter) else { return false }
+
+        // Check if the longer has a trailing number suffix that the shorter lacks
+        let hasTrailingNumberSuffix = trailingNumberSuffixPattern.firstMatch(
+            in: longer,
+            range: NSRange(longer.startIndex..., in: longer)
+        ) != nil
+
+        if hasTrailingNumberSuffix {
+            // The difference is a number — this is a problematic match
+            // E.g., "double dragon 3" vs "double dragon" → BAD
+            return true
+        }
+
+        // Check if the difference is just a minor article/preposition (acceptable)
+        // Extract what the longer has extra beyond the shorter
+        let extraPart = longer.replacingOccurrences(of: shorter, with: "")
+            .trimmingCharacters(in: .whitespaces)
+
+        // Allow if the extra is only minor articles/prepositions
+        let acceptedArticles: Set<String> = [
+            "the", "a", "an", "of", "and", "le", "la", "les", "el", "de", "del",
+            "los", "las", "il", "un", "une",
+        ]
+
+        // Split extra into words and check if they're all articles
+        let extraWords = extraPart.lowercased()
+            .components(separatedBy: .whitespaces)
+            .filter { !$0.isEmpty }
+
+        if extraWords.allSatisfy({ acceptedArticles.contains($0) }) {
+            return false  // Only articles differ → OK to match
+        }
+
+        // There's a substantive difference that's not a number suffix → use normal matching
+        return false
     }
 }
 

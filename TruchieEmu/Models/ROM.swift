@@ -33,7 +33,10 @@ struct ROM: Identifiable, Codable, Hashable {
     var settings: ROMSettings = ROMSettings()
 
     // Derived
-    var displayName: String { customName ?? metadata?.title ?? name }
+    var displayName: String {
+        let baseName = customName ?? metadata?.title ?? name
+        return GameNameFormatter.stripTags(baseName)
+    }
     var fileExtension: String { path.pathExtension.lowercased() }
 
     /// Post-scan automation: fetch No-Intro title when missing.

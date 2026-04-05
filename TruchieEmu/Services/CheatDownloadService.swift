@@ -344,6 +344,7 @@ class CheatDownloadService: ObservableObject {
     func findCheatsForROM(_ rom: ROM) -> [CheatFile] {
         let romFilename = rom.path.deletingPathExtension().lastPathComponent
         var foundFiles: [CheatFile] = []
+        let romNormalizedKey = GameNameFormatter.normalizedComparisonKey(romFilename)
         
         // Search in downloaded cheats directory
         let romCheatsDirName = romFilename
@@ -355,10 +356,18 @@ class CheatDownloadService: ObservableObject {
             options: [.skipsHiddenFiles]
         ) {
             for case let fileURL as URL in enumerator {
-                let filename = fileURL.deletingPathExtension().lastPathComponent.lowercased()
+                let filename = fileURL.deletingPathExtension().lastPathComponent
+                let filenameLower = filename.lowercased()
+                let fileNormalizedKey = GameNameFormatter.normalizedComparisonKey(filename)
                 let romFilenameLower = romFilename.lowercased()
                 
-                if filename == romFilenameLower || romCheatsDirName.contains(filename) {
+                // Match by exact, contains, or space-removed comparison
+                let isMatch = filenameLower == romFilenameLower ||
+                              romCheatsDirName.lowercased().contains(filenameLower) ||
+                              filenameLower.contains(romFilenameLower) ||
+                              fileNormalizedKey == romNormalizedKey
+                
+                if isMatch {
                     if let cheats = CheatParser.parseChtFile(url: fileURL) {
                         let cheatFile = CheatFile(
                             romPath: rom.path.path,
@@ -913,7 +922,7 @@ class CheatDownloadService: ObservableObject {
     }
     
     /// Find a matching cheat file for a given ROM filename.
-    /// Looks for exact match first, then partial matches.
+    /// Looks for exact match first, then partial matches, then space-removed matches.
     private func findMatchingCheatFile(in contents: [GitHubContent], romFilename: String) -> GitHubContent? {
         let chtFiles = contents.filter { $0.type == .file && $0.name.hasSuffix(".cht") }
         
@@ -951,6 +960,18 @@ class CheatDownloadService: ObservableObject {
                     cheatDownloadLog.info("Found partial match: \(file.name) for \(romFilename)")
                     return file
                 }
+            }
+        }
+        
+        // 4. Check for match with spaces removed (e.g., "ShadowRun" vs "Shadow Run")
+        let romNoSpaces = GameNameFormatter.normalizedComparisonKey(romFilenameNoBracket)
+        for file in chtFiles {
+            let fileBaseName = String(file.name.dropLast(4)).lowercased() // Remove ".cht"
+            let fileNoBracket = removeBracketsAndParentheses(fileBaseName)
+            let fileNoSpaces = GameNameFormatter.normalizedComparisonKey(fileNoBracket)
+            if fileNoSpaces == romNoSpaces {
+                cheatDownloadLog.info("Found match (spaces removed): \(file.name) for \(romFilename)")
+                return file
             }
         }
         

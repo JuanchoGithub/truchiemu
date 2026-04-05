@@ -280,11 +280,9 @@ class BezelManager: ObservableObject {
         return nil // Not found in repository
     }
     
-    /// Normalize a game name for matching (lowercase, remove special chars, collapse spaces).
+    /// Normalize a game name for matching (lowercase, remove special chars, remove spaces for matching variants like "ShadowRun" vs "Shadow Run").
     private func normalizeGameNameForMatch(_ name: String) -> String {
-        return cleanGameName(name)
-            .lowercased()
-            .trimmingCharacters(in: .whitespacesAndNewlines)
+        return GameNameFormatter.normalizedComparisonKey(cleanGameName(name))
     }
     
     // MARK: - Manifest Management

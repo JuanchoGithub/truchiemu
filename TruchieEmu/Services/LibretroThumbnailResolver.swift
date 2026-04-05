@@ -76,31 +76,15 @@ enum LibretroThumbnailResolver {
         return result.trimmingCharacters(in: .whitespacesAndNewlines)
     }
 
-    /// Tier 2: strip `[tags]` and trailing `(Region)` / `(En,Fr)`-style parentheticals from a ROM filename stem.
+    /// Strip tags from a ROM filename stem for display. Delegates to GameNameFormatter.
     static func stripRomFilenameTags(_ filenameStem: String) -> String {
-        var s = filenameStem
-        while let r = s.range(of: "\\[[^\\]]+\\]", options: .regularExpression) {
-            s.removeSubrange(r)
-        }
-        s = s.replacingOccurrences(of: "  +", with: " ", options: .regularExpression)
-        var prev = ""
-        while prev != s {
-            prev = s
-            if let r = s.range(of: "\\([^\\)]+\\) *$", options: .regularExpression) {
-                s.removeSubrange(r)
-            }
-        }
-        return s.trimmingCharacters(in: .whitespacesAndNewlines)
+        GameNameFormatter.stripTags(filenameStem)
     }
 
     /// Fuzzy fallback: remove all `( … )` segments for a second pass on Named_Boxarts.
+    /// Delegates to GameNameFormatter for consistency.
     static func stripParenthesesForFuzzyMatch(_ name: String) -> String {
-        var s = name
-        while let r = s.range(of: "\\([^\\)]+\\)", options: .regularExpression) {
-            s.removeSubrange(r)
-        }
-        return s.replacingOccurrences(of: "  +", with: " ", options: .regularExpression)
-            .trimmingCharacters(in: .whitespacesAndNewlines)
+        GameNameFormatter.removeParentheses(name)
     }
 
     static func buildThumbnailURL(

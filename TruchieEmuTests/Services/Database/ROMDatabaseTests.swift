@@ -134,8 +134,8 @@ struct LibraryFolderDatabaseTests {
         let mgr = makeManager()
         let bookmarkData = Data([0x01, 0x02, 0x03, 0x04])
         let rows: [DatabaseManager.LibraryFolderRow] = [
-            (urlPath: "/Users/test/ROMs", bookmarkData: bookmarkData),
-            (urlPath: "/Volumes/External/Games", bookmarkData: bookmarkData),
+            (urlPath: "/Users/test/ROMs", bookmarkData: bookmarkData, parentPath: nil, isPrimary: false),
+            (urlPath: "/Volumes/External/Games", bookmarkData: bookmarkData, parentPath: nil, isPrimary: false),
         ]
 
         mgr.saveLibraryFolders(rows)
@@ -152,9 +152,9 @@ struct LibraryFolderDatabaseTests {
         let mgr = makeManager()
         let bookmarkData = Data([0x01, 0x02, 0x03, 0x04])
         let allRows: [DatabaseManager.LibraryFolderRow] = [
-            (urlPath: "/Users/test/ROMs", bookmarkData: bookmarkData),
-            (urlPath: "/Volumes/External/Games", bookmarkData: bookmarkData),
-            (urlPath: "/Volumes/Backup/Games", bookmarkData: bookmarkData),
+            (urlPath: "/Users/test/ROMs", bookmarkData: bookmarkData, parentPath: nil, isPrimary: false),
+            (urlPath: "/Volumes/External/Games", bookmarkData: bookmarkData, parentPath: nil, isPrimary: false),
+            (urlPath: "/Volumes/Backup/Games", bookmarkData: bookmarkData, parentPath: nil, isPrimary: false),
         ]
 
         mgr.saveLibraryFolders(allRows)
@@ -163,8 +163,8 @@ struct LibraryFolderDatabaseTests {
 
         // Simulate removing one folder — save only 2
         let remainingRows: [DatabaseManager.LibraryFolderRow] = [
-            (urlPath: "/Users/test/ROMs", bookmarkData: bookmarkData),
-            (urlPath: "/Volumes/External/Games", bookmarkData: bookmarkData),
+            (urlPath: "/Users/test/ROMs", bookmarkData: bookmarkData, parentPath: nil, isPrimary: false),
+            (urlPath: "/Volumes/External/Games", bookmarkData: bookmarkData, parentPath: nil, isPrimary: false),
         ]
 
         mgr.saveLibraryFolders(remainingRows)

@@ -281,6 +281,10 @@ struct LibraryGridView: View {
     @ObservedObject var boxArtService = BoxArtService.shared
     @State private var manualBoxArtSearchROM: ROM?
     
+    /// Refresh token — changes when box art is updated elsewhere (e.g., game info page)
+    /// to force the grid view to reload images
+    @State private var gridRefreshToken = UUID()
+    
     // Delete/hide game states
     @State private var gameToDelete: ROM?
     @State private var showDeleteConfirmation = false
@@ -648,6 +652,13 @@ struct LibraryGridView: View {
         .onDisappear {
             AppSettings.setInt("gridColumns", value: columnCount)
         }
+        // Refresh grid when box art is updated from elsewhere (e.g., game info page)
+        .onChange(of: boxArtService.boxArtUpdated) { _ in
+            // Update the refresh token to force all GameCardViews to reload their images
+            gridRefreshToken = UUID()
+            // Clear the image cache so fresh images are loaded from disk
+            Task { await ImageCache.shared.clear() }
+        }
         // MARK: - Keyboard Shortcuts
         // Cmd+F focuses search field
         .onReceive(NotificationCenter.default.publisher(for: NSWindow.didBecomeKeyNotification)) { _ in }
@@ -686,7 +697,7 @@ struct LibraryGridView: View {
             LazyVGrid(columns: columns, spacing: gridSpacing) {
                 ForEach(Array(displayedROMs.enumerated()), id: \.element.id) { index, rom in
                     let isSelected = selectedROMs.contains(rom.id) || selectedROM?.id == rom.id
-                    GameCardView(rom: rom, isSelected: isSelected, isMultiSelected: selectedROMs.contains(rom.id), zoomLevel: continuousZoom)
+                    GameCardView(rom: rom, isSelected: isSelected, isMultiSelected: selectedROMs.contains(rom.id), zoomLevel: continuousZoom, gridRefreshToken: gridRefreshToken)
                         .contentShape(Rectangle())
                         .onTapGesture {
                             handleTap(on: rom, at: index)
@@ -1436,6 +1447,7 @@ struct GameCardView: View {
     let isSelected: Bool
     let isMultiSelected: Bool
     let zoomLevel: Double
+    var gridRefreshToken: UUID = UUID()
     @State private var isHovered = false
     @State private var image: NSImage?
     @ObservedObject var prefs = SystemPreferences.shared
@@ -1508,7 +1520,7 @@ struct GameCardView: View {
         .onHover { isHovered = $0 }
         .accessibilityLabel(rom.displayName)
         .accessibilityAddTraits(.isButton)
-        .task(id: rom.boxArtPath) {
+        .task(id: "\(rom.boxArtPath?.path ?? "")-\(gridRefreshToken)") {
             if let artPath = rom.boxArtPath {
                 self.image = await ImageCache.shared.image(for: artPath)
             } else {

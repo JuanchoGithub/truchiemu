@@ -86,6 +86,10 @@ struct BoxArtPickerView: View {
                 
                 updated.boxArtPath = localURL
                 library.updateROM(updated)
+                
+                // Signal the grid view to refresh
+                BoxArtService.shared.signalBoxArtUpdated(for: rom.id)
+                
                 dismiss()
             }
         }

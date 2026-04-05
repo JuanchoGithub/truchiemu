@@ -15,22 +15,8 @@ struct BezelEntry: Identifiable, Codable, Equatable, Hashable {
     
     /// Human-readable display name (filename without extension, cleaned up)
     var displayName: String {
-        id.replacingOccurrences(of: " (USA)", with: "")
-            .replacingOccurrences(of: " (Japan)", with: "")
-            .replacingOccurrences(of: " (Europe)", with: "")
-            .replacingOccurrences(of: " (World)", with: "")
-            .replacingOccurrences(of: " (UK)", with: "")
-            .replacingOccurrences(of: " (France)", with: "")
-            .replacingOccurrences(of: " (Germany)", with: "")
-            .replacingOccurrences(of: " (Spain)", with: "")
-            .replacingOccurrences(of: " (Italy)", with: "")
-            .replacingOccurrences(of: " (Brazil)", with: "")
-            .replacingOccurrences(of: " (Korea)", with: "")
-            .replacingOccurrences(of: " (China)", with: "")
-            .replacingOccurrences(of: " (Australia)", with: "")
-            .replacingOccurrences(of: " (En,Ja)", with: "")
-            .replacingOccurrences(of: " (En)", with: "")
-            .replacingOccurrences(of: "_", with: " ")
+        let stripped = GameNameFormatter.stripTags(id)
+        return stripped.replacingOccurrences(of: "_", with: " ")
     }
     
     /// URL for thumbnail preview (uses GitHub's raw URL)

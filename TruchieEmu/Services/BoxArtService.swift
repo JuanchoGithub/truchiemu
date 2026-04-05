@@ -6,6 +6,9 @@ class BoxArtService: ObservableObject {
     static let shared = BoxArtService()
 
     @Published var credentials: ScreenScraperCredentials? = nil
+    
+    /// Updated whenever box art is fetched or changed — observe this to trigger UI refresh
+    @Published var boxArtUpdated: UUID = UUID()
 
     private let cacheBase: URL = {
         let caches = FileManager.default.urls(for: .cachesDirectory, in: .userDomainMask).first!
@@ -502,6 +505,9 @@ class BoxArtService: ObservableObject {
         }
 
         await MainActor.run { self.isDownloadingBatch = false }
+        
+        // Signal the grid view to refresh — some boxart may have been updated
+        signalBoxArtUpdated(for: UUID())
     }
 
     // MARK: - Google Image Search Fallback
@@ -710,6 +716,19 @@ class BoxArtService: ObservableObject {
         }
         
         return candidates
+    }
+
+    // MARK: - Refresh Signal
+
+    /// Call this after successfully fetching or changing box art for a specific game.
+    /// Observers (like LibraryGridView) can use this to force a UI refresh.
+    func signalBoxArtUpdated(for romID: UUID) {
+        // Clear the image cache for this ROM's boxart so the grid picks up the new image
+        Task {
+            await ImageCache.shared.clear()
+        }
+        // Toggle the UUID to trigger SwiftUI's @Published change detection
+        boxArtUpdated = UUID()
     }
 
     // MARK: - ScreenScraper System ID mapping
