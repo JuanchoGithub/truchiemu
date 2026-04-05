@@ -100,25 +100,39 @@ class BoxArtService: ObservableObject {
     // MARK: - Art Fetching
 
     func fetchBoxArt(for rom: ROM) async -> URL? {
+        LoggerService.info(category: "BoxArt", "Starting boxart search for '\(rom.name)' (systemID: \(rom.systemID ?? "unknown"))")
+        LoggerService.debug(category: "BoxArt", "ROM path: \(rom.path.path)")
+        LoggerService.debug(category: "BoxArt", "Boxart local path would be: \(rom.boxArtLocalPath.path)")
+        LoggerService.debug(category: "BoxArt", "Settings: useLibretro=\(useLibretroThumbnails), useCRC=\(useCRCMatchingForThumbnails), fallbackFilename=\(fallbackToFilenameForThumbnails)")
+
         // 1. Libretro Thumbnails CDN (primary)
-        if useLibretroThumbnails,
-           let lib = await fetchBoxArtLibretro(for: rom) {
-            return lib
+        if useLibretroThumbnails {
+            LoggerService.info(category: "BoxArt", "Step 1/3: Trying Libretro Thumbnails CDN")
+            if let lib = await fetchBoxArtLibretro(for: rom) {
+                LoggerService.info(category: "BoxArt", "Step 1/3: Libretro Thumbnails SUCCESS — found and cached boxart for '\(rom.name)'")
+                return lib
+            }
+            LoggerService.debug(category: "BoxArt", "Step 1/3: Libretro Thumbnails returned no result")
+        } else {
+            LoggerService.debug(category: "BoxArt", "Step 1/3: Libretro Thumbnails DISABLED in settings, skipping")
         }
 
         // 2. ScreenScraper (if credentials configured)
         if let creds = credentials {
+            LoggerService.info(category: "BoxArt", "Step 2/3: ScreenScraper credentials configured, trying...")
             let systemID = rom.systemID ?? ""
             let ssSystemID = screenScraperSystemID(for: systemID)
 
-            LoggerService.debug(category: "BoxArt", "Searching ScreenScraper for \(rom.name)...")
+            LoggerService.debug(category: "BoxArt", "ScreenScraper: systemID=\(systemID), mapped ssSystemID=\(ssSystemID)")
 
             let query = rom.displayName.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed) ?? ""
             var urlStr = "https://www.screenscraper.fr/api2/jeuRecherche.php"
             urlStr += "?devid=truchiemu&devpassword=truchiemu_dev"
-            urlStr += "&ssid=\(creds.username)&sspassword=\(creds.password)"
+            urlStr += "&ssid=\(creds.username)&sspassword=***"
             urlStr += "&softname=TruchieEmu&output=json"
             urlStr += "&systemeid=\(ssSystemID)&romnom=\(query)"
+
+            LoggerService.info(category: "BoxArt", "ScreenScraper: fetching \(urlStr)")
 
             if let url = URL(string: urlStr),
                let (data, _) = try? await URLSession.shared.data(from: url),
@@ -129,19 +143,28 @@ class BoxArtService: ObservableObject {
                 let box = medias.first(where: { ($0["type"] as? String) == "box-2D" })
                 if let urlString = box?["url"] as? String,
                    let artURL = URL(string: urlString) {
-                    LoggerService.debug(category: "BoxArt", "Found ScreenScraper boxart for \(rom.name)")
+                    LoggerService.info(category: "BoxArt", "ScreenScraper: found boxart URL: \(artURL.absoluteString)")
                     return await downloadAndCache(artURL: artURL, for: rom)
+                } else {
+                    LoggerService.debug(category: "BoxArt", "ScreenScraper: JSON response had no box-2D media")
                 }
+            } else {
+                LoggerService.debug(category: "BoxArt", "ScreenScraper: request failed or JSON parse error")
             }
-            LoggerService.debug(category: "BoxArt", "ScreenScraper no result for \(rom.name)")
+            LoggerService.debug(category: "BoxArt", "ScreenScraper: no result for \(rom.name)")
+        } else {
+            LoggerService.debug(category: "BoxArt", "Step 2/3: ScreenScraper — no credentials configured, skipping")
         }
 
         // 3. LaunchBox GamesDB (third-party fallback)
+        LoggerService.info(category: "BoxArt", "Step 3/3: Trying LaunchBox GamesDB")
         if let launchBoxArt = await LaunchBoxGamesDBService.shared.fetchBoxArt(for: rom) {
-            LoggerService.debug(category: "BoxArt", "Found LaunchBox boxart for \(rom.name)")
+            LoggerService.info(category: "BoxArt", "Step 3/3: LaunchBox GamesDB SUCCESS — found boxart for '\(rom.name)'")
             return launchBoxArt
         }
+        LoggerService.debug(category: "BoxArt", "Step 3/3: LaunchBox GamesDB returned no result")
 
+        LoggerService.info(category: "BoxArt", "Boxart search COMPLETE — no boxart found for '\(rom.name)'")
         return nil
     }
 
@@ -178,21 +201,31 @@ class BoxArtService: ObservableObject {
         let sess = session ?? URLSession.shared
         let localURL = rom.boxArtLocalPath
         let folder = localURL.deletingLastPathComponent()
+
+        LoggerService.debug(category: "BoxArt", "downloadAndCache: downloading from \(artURL.absoluteString)")
+        LoggerService.debug(category: "BoxArt", "downloadAndCache: target local folder = \(folder.path)")
+        LoggerService.debug(category: "BoxArt", "downloadAndCache: target local file = \(localURL.path)")
         
         try? FileManager.default.createDirectory(at: folder, withIntermediateDirectories: true)
+        LoggerService.debug(category: "BoxArt", "downloadAndCache: ensured folder exists: \(folder.path)")
 
         if FileManager.default.fileExists(atPath: localURL.path) {
+            LoggerService.debug(category: "BoxArt", "downloadAndCache: removing existing file at \(localURL.path)")
             try? FileManager.default.removeItem(at: localURL)
         }
 
         do {
-            let (tmpURL, _) = try await sess.download(from: artURL)
+            LoggerService.debug(category: "BoxArt", "downloadAndCache: starting download from \(artURL.absoluteString)")
+            let (tmpURL, response) = try await sess.download(from: artURL)
+            if let httpResponse = response as? HTTPURLResponse {
+                LoggerService.debug(category: "BoxArt", "downloadAndCache: HTTP status \(httpResponse.statusCode), MIME type: \(httpResponse.mimeType ?? "unknown"), Content-Length: \(httpResponse.expectedContentLength) bytes")
+            }
             try FileManager.default.moveItem(at: tmpURL, to: localURL)
             await ImageCache.shared.removeImage(for: localURL)
-            LoggerService.debug(category: "BoxArt", "Successfully cached boxart for \(rom.name) at \(localURL.lastPathComponent)")
+            LoggerService.info(category: "BoxArt", "downloadAndCache: successfully cached boxart for '\(rom.name)' at \(localURL.path)")
             return localURL
         } catch {
-            LoggerService.debug(category: "BoxArt", "Error downloading boxart for \(rom.name): \(error.localizedDescription)")
+            LoggerService.warning(category: "BoxArt", "downloadAndCache: error downloading boxart for '\(rom.name)' from \(artURL.absoluteString): \(error.localizedDescription)")
             return nil
         }
     }
@@ -200,48 +233,68 @@ class BoxArtService: ObservableObject {
     // MARK: - Libretro thumbnails CDN
 
     func fetchBoxArtLibretro(for rom: ROM) async -> URL? {
+        LoggerService.info(category: "BoxArt", "Libretro: determining thumbnail system ID for '\(rom.name)'")
         guard let sysID = LibretroThumbnailResolver.effectiveThumbnailSystemID(for: rom),
               let folder = LibretroThumbnailResolver.libretroFolderName(forSystemID: sysID) else {
+            LoggerService.warning(category: "BoxArt", "Libretro: could not resolve system ID or folder for '\(rom.name)' (systemID: \(rom.systemID ?? "nil"))")
             return nil
         }
 
+        LoggerService.info(category: "BoxArt", "Libretro: resolving game title (useCRC=\(useCRCMatchingForThumbnails), fallbackFilename=\(fallbackToFilenameForThumbnails))")
         guard let gameTitle = await LibretroThumbnailResolver.resolveGameTitle(
             for: rom,
             useCRC: useCRCMatchingForThumbnails,
             fallbackFilename: fallbackToFilenameForThumbnails
         ), !gameTitle.isEmpty else {
-            LoggerService.debug(category: "BoxArt", "Libretro thumbnails: could not resolve title for \(rom.name)")
+            LoggerService.debug(category: "BoxArt", "Libretro: could not resolve title for '\(rom.name)'")
             return nil
         }
+        LoggerService.info(category: "BoxArt", "Libretro: resolved title = '\(gameTitle)'")
 
         let localBoxArtDir = rom.path.deletingLastPathComponent().appendingPathComponent("boxart", isDirectory: true)
+        LoggerService.info(category: "BoxArt", "Libretro: checking local boxart directory: \(localBoxArtDir.path)")
+
         let safeStem = LibretroThumbnailResolver.libretroFilesystemSafeName(gameTitle)
+        LoggerService.debug(category: "BoxArt", "Libretro: filesystem-safe stem = '\(safeStem)'")
         for stem in [gameTitle, safeStem] where !stem.isEmpty {
+            LoggerService.debug(category: "BoxArt", "Libretro: checking local thumbnail for stem '\(stem)' in \(localBoxArtDir.path)")
             if let local = LibretroThumbnailResolver.resolveLocalThumbnail(named: stem, in: localBoxArtDir) {
-                LoggerService.debug(category: "BoxArt", "Using local boxart \(local.lastPathComponent) for \(rom.name)")
+                LoggerService.info(category: "BoxArt", "Libretro: using local boxart \(local.lastPathComponent) for '\(rom.name)' (local file path: \(local.path))")
                 return local
             }
         }
+        LoggerService.debug(category: "BoxArt", "Libretro: no local thumbnails found in \(localBoxArtDir.lastPathComponent)")
 
+        LoggerService.info(category: "BoxArt", "Libretro: generating candidate URLs from CDN base \(thumbnailServerURL.absoluteString), folder '\(folder)', title '\(gameTitle)', priority=\(thumbnailPriority.rawValue)")
         let candidates = LibretroThumbnailResolver.candidateURLs(
             base: thumbnailServerURL,
             systemFolder: folder,
             gameTitle: gameTitle,
             priority: thumbnailPriority
         )
+        LoggerService.info(category: "BoxArt", "Libretro: \(candidates.count) candidate URLs generated")
 
+        var attemptNum = 0
         for url in candidates {
+            attemptNum += 1
+            LoggerService.debug(category: "BoxArt", "Libretro: attempting URL #\(attemptNum)/\(candidates.count): \(url.absoluteString)")
             if useHeadBeforeThumbnailDownload {
+                LoggerService.extreme(category: "BoxArt", "Libretro: HEAD check on \(url.absoluteString)")
                 guard await httpStatus(for: url, method: "HEAD", session: thumbnailURLSession) == 200 else {
+                    LoggerService.extreme(category: "BoxArt", "Libretro: HEAD check failed (non-200) for \(url.absoluteString)")
                     continue
                 }
+                LoggerService.extreme(category: "BoxArt", "Libretro: HEAD check passed for \(url.absoluteString)")
             }
             if let saved = await downloadAndCache(artURL: url, for: rom, session: thumbnailURLSession) {
+                LoggerService.info(category: "BoxArt", "Libretro: SUCCESS downloading and caching boxart from \(url.absoluteString) → saved to \(saved.path)")
                 return saved
+            } else {
+                LoggerService.debug(category: "BoxArt", "Libretro: download/caching failed for \(url.absoluteString)")
             }
         }
 
-        LoggerService.debug(category: "BoxArt", "Libretro thumbnails: no asset found for \(rom.name) (\(gameTitle))")
+        LoggerService.info(category: "BoxArt", "Libretro: no asset found for '\(rom.name)' after checking \(candidates.count) URLs (resolved title: '\(gameTitle)')")
         return nil
     }
 
@@ -328,6 +381,12 @@ class BoxArtService: ObservableObject {
     @Published var isDownloadingBatch = false
     @Published var downloadedCount = 0
     @Published var downloadQueueCount = 0
+    
+    /// Computed progress value (0...1) for the batch download
+    var downloadProgress: Double {
+        guard downloadQueueCount > 0 else { return 0 }
+        return Double(downloadedCount) / Double(downloadQueueCount)
+    }
     
     func batchDownloadBoxArtGoogle(for roms: [ROM], library: ROMLibrary) async {
         let missingRoms = roms.filter { $0.boxArtPath == nil }

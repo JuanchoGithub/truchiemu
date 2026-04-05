@@ -71,6 +71,7 @@ targets:
         buildPhase: sources
       - path: TruchieEmu/Views
       - path: TruchieEmu/Views/Shaders
+      - path: TruchieEmu/Utilities
 
     preBuildScripts: []
 

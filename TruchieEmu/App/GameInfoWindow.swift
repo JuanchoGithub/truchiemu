@@ -4,23 +4,48 @@ import SwiftUI
 struct GameInfoWindow: View {
     @EnvironmentObject var library: ROMLibrary
     let romID: UUID?
+    @Environment(\.colorScheme) private var colorScheme
     
     var body: some View {
         Group {
             if let rom = library.roms.first(where: { $0.id == romID }) {
                 GameDetailView(rom: rom)
             } else {
-                VStack(spacing: 16) {
-                    Image(systemName: "exclamationmark.circle")
-                        .font(.system(size: 48))
+                VStack(spacing: 24) {
+                    Image(systemName: "gamecontroller")
+                        .font(.system(size: 64, weight: .light))
+                        .foregroundStyle(LinearGradient(
+                            colors: [.purple.opacity(0.85), .cyan.opacity(0.85)],
+                            startPoint: .leading,
+                            endPoint: .trailing
+                        ))
+                        .scaleEffect(appeared ? 1 : 0.8)
+                        .opacity(appeared ? 1 : 0)
+                    
+                    Text("Game Not Found")
+                        .font(.title2)
+                        .fontWeight(.semibold)
                         .foregroundColor(.secondary)
-                    Text("Game not found")
-                        .font(.title3)
+                        .opacity(appeared ? 1 : 0)
+                    
+                    Text("This game may have been removed from your library or the file path could have changed.")
+                        .font(.body)
                         .foregroundColor(.secondary)
+                        .multilineTextAlignment(.center)
+                        .frame(maxWidth: 360)
+                        .opacity(appeared ? 1 : 0)
                 }
                 .frame(maxWidth: .infinity, maxHeight: .infinity)
+                .onAppear {
+                    withAnimation(.interpolatingSpring(stiffness: 200, damping: 25).delay(0.1)) {
+                        appeared = true
+                    }
+                }
             }
         }
         .frame(minWidth: 900, minHeight: 700)
+        .background(colorScheme == .dark ? Color(white: 0.06) : Color(white: 0.94))
     }
+    
+    @State private var appeared = false
 }

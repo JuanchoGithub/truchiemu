@@ -44,6 +44,7 @@
 		5D044254D97EF1A2198DC22C /* CheatManagerService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2E5CF9A3D4671251F618EA57 /* CheatManagerService.swift */; };
 		5FFDEBF8550AFB751087D5F7 /* SharedPlayerComponents.swift in Sources */ = {isa = PBXBuildFile; fileRef = D88D96DF545C1C1905F21A6C /* SharedPlayerComponents.swift */; };
 		69C5F4C099C331E5E4BE4DCB /* SaveStateManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 67828B9B95A21FE57196B832 /* SaveStateManager.swift */; };
+		6D0A2EF10F72FAB3F7E86C75 /* ConfettiView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2E5866BCD171AD2667DA9188 /* ConfettiView.swift */; };
 		6F744ECC857F8807BD5BF1AA /* OnboardingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = BB27DEA4536CF36FCD8394F2 /* OnboardingView.swift */; };
 		6FB1D226C4D500CE962038FE /* DatabaseMigrator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7EF726A2A318CEA62AF78AB2 /* DatabaseMigrator.swift */; };
 		71B49A85A5A4F01FC962FEEE /* CorePickerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2509BE73DFA2ACCF17CAA8DD /* CorePickerView.swift */; };
@@ -92,6 +93,7 @@
 		E870DB3A767A66FA7166E4BD /* BezelSelectorSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = EAE67E62E85282D55D114D49 /* BezelSelectorSheet.swift */; };
 		EACA95E35BCDF368B91F18EC /* SNESRunner.swift in Sources */ = {isa = PBXBuildFile; fileRef = 514B30B47B86FD0161D5DD71 /* SNESRunner.swift */; };
 		EB09150FA54012709F80A41E /* AppSettings.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84CDFB9678E661461EC9191E /* AppSettings.swift */; };
+		EB54086B1C1430F2BDD68CA0 /* LaunchBoxGameMetadata.swift in Sources */ = {isa = PBXBuildFile; fileRef = DC76C12B188BD3512C51A51F /* LaunchBoxGameMetadata.swift */; };
 		EC8FCCD2DB45AA136AEE82C6 /* GameInfoWindow.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3C280DAAB43D202DBEEA100A /* GameInfoWindow.swift */; };
 		EE160B3D7565B6301E7474B3 /* LibretroCore.swift in Sources */ = {isa = PBXBuildFile; fileRef = E35518FB34DEB243BF979DE0 /* LibretroCore.swift */; };
 		F017645B40D693F252D1A0CB /* AchievementListView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D9EAD70473602ACB00FE54F /* AchievementListView.swift */; };
@@ -136,6 +138,7 @@
 		29AA23F97722816919BB9A98 /* libretro.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = libretro.h; sourceTree = "<group>"; };
 		2A348F996E22D8E72782CE2B /* TruchieEmuApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TruchieEmuApp.swift; sourceTree = "<group>"; };
 		2D9EAD70473602ACB00FE54F /* AchievementListView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AchievementListView.swift; sourceTree = "<group>"; };
+		2E5866BCD171AD2667DA9188 /* ConfettiView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConfettiView.swift; sourceTree = "<group>"; };
 		2E5CF9A3D4671251F618EA57 /* CheatManagerService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CheatManagerService.swift; sourceTree = "<group>"; };
 		2F02B2718F34118A171C7103 /* CRTFilter.metal */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.metal; path = CRTFilter.metal; sourceTree = "<group>"; };
 		31472C6AA70EE71CBF6669A8 /* ShaderPresetPickerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShaderPresetPickerView.swift; sourceTree = "<group>"; };
@@ -208,6 +211,7 @@
 		D88D96DF545C1C1905F21A6C /* SharedPlayerComponents.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SharedPlayerComponents.swift; sourceTree = "<group>"; };
 		DAD4BAC83053A0F149602D6D /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
 		DB9293E37E0A331CD54CDBF3 /* CheatManagerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CheatManagerView.swift; sourceTree = "<group>"; };
+		DC76C12B188BD3512C51A51F /* LaunchBoxGameMetadata.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LaunchBoxGameMetadata.swift; sourceTree = "<group>"; };
 		E35518FB34DEB243BF979DE0 /* LibretroCore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LibretroCore.swift; sourceTree = "<group>"; };
 		E85C7A0C40C8A384AA47160D /* ShaderPreset.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShaderPreset.swift; sourceTree = "<group>"; };
 		E86D4B032CD724A2520F4EF5 /* CoreDownloadSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CoreDownloadSheet.swift; sourceTree = "<group>"; };
@@ -258,6 +262,7 @@
 				58DECDD14D2EF32E5076893B /* Models */,
 				22252D163B158EFEB49A0DAF /* Services */,
 				0DAE1ECDADDA76B1C01813C4 /* Shaders */,
+				5FD821B288CE5C724F30E07C /* Utilities */,
 				BD0AC71C3B8CE60EEEDFAAEC /* Views */,
 			);
 			path = TruchieEmu;
@@ -386,6 +391,7 @@
 				C818FB0D70AE32972B1C5458 /* Cheat.swift */,
 				88CE9892979FB7B724F9F25B /* CoreOption.swift */,
 				A5DBDEA905A82BDEF2D0FF92 /* GameCategory.swift */,
+				DC76C12B188BD3512C51A51F /* LaunchBoxGameMetadata.swift */,
 				6A44B2F841BBDAD4B6D2DAA0 /* LibraryMetadataStore.swift */,
 				E35518FB34DEB243BF979DE0 /* LibretroCore.swift */,
 				FA471582BD64CAFD5D7353DA /* ROM.swift */,
@@ -393,6 +399,14 @@
 				ACC34ADA0917BCC91FAA1989 /* SystemInfo.swift */,
 			);
 			path = Models;
+			sourceTree = "<group>";
+		};
+		5FD821B288CE5C724F30E07C /* Utilities */ = {
+			isa = PBXGroup;
+			children = (
+				2E5866BCD171AD2667DA9188 /* ConfettiView.swift */,
+			);
+			path = Utilities;
 			sourceTree = "<group>";
 		};
 		73C7F441286CE6892F0B3412 /* TruchieEmuTests */ = {
@@ -630,6 +644,7 @@
 				FFBB71BB1E6660833F75F2C1 /* CheatManagerView.swift in Sources */,
 				E31C6BB9549D14BAAB7259D7 /* CheatParser.swift in Sources */,
 				F15802B871B1B524941360A4 /* CheatSettingsView.swift in Sources */,
+				6D0A2EF10F72FAB3F7E86C75 /* ConfettiView.swift in Sources */,
 				4CFD764CC4B9F8C057BC0E10 /* ContentView.swift in Sources */,
 				C9B9D094E83252DCCF416DA4 /* ControllerService.swift in Sources */,
 				9CBCACA409FDC46E119C5F02 /* CoreDownloadSheet.swift in Sources */,
@@ -649,6 +664,7 @@
 				EC8FCCD2DB45AA136AEE82C6 /* GameInfoWindow.swift in Sources */,
 				2C90FACC3F4A1834DEBA87F2 /* GameLauncher.swift in Sources */,
 				43C778A329E437002D224F79 /* HardcoreModeManager.swift in Sources */,
+				EB54086B1C1430F2BDD68CA0 /* LaunchBoxGameMetadata.swift in Sources */,
 				BEB2E809BAB983CF0E071449 /* LaunchBoxGamesDBService.swift in Sources */,
 				AA0B53183BF112AB49210A6D /* LibraryAutomationCoordinator.swift in Sources */,
 				F78B007ED4F76DEFC5324B2F /* LibraryGridView.swift in Sources */,

@@ -7,6 +7,7 @@ import SwiftUI
 struct CheatManagerView: View {
     let rom: ROM
     @Environment(\.dismiss) var dismiss
+    @Environment(\.colorScheme) private var colorScheme
     @StateObject private var cheatManager = CheatManager.shared
     @State private var showAddCheatWindow = false
     @State private var showImportFile = false
@@ -15,21 +16,17 @@ struct CheatManagerView: View {
     
     private var filteredCheats: [Cheat] {
         var cheats = cheatManager.cheats(for: rom)
-        
         if !searchText.isEmpty {
             cheats = cheats.filter { cheat in
                 cheat.displayName.localizedCaseInsensitiveContains(searchText) ||
                 cheat.code.localizedCaseInsensitiveContains(searchText)
             }
         }
-        
         if let category = selectedCategory {
-            // Filter by category (based on description keywords)
             cheats = cheats.filter { cheat in
                 categoryMatches(cheat.description, category: category)
             }
         }
-        
         return cheats
     }
     
@@ -39,127 +36,95 @@ struct CheatManagerView: View {
     
     var body: some View {
         VStack(spacing: 0) {
-            // Header with title and close button
             HStack {
-                VStack(alignment: .leading, spacing: 4) {
-                    Text("Cheats for \(rom.displayName)")
-                        .font(.headline)
-                    Text("\(enabledCount) of \(cheatManager.cheats(for: rom).count) cheats enabled")
-                        .font(.caption)
-                        .foregroundColor(.secondary)
-                }
+                Label("Cheats", systemImage: "wand.and.stars")
+                    .font(.title3)
+                    .fontWeight(.semibold)
                 Spacer()
-                Button {
-                    dismiss()
-                } label: {
-                    Image(systemName: "xmark.circle.fill")
-                        .font(.title3)
+                VStack(alignment: .trailing, spacing: 1) {
+                    Text("\(enabledCount) of \(cheatManager.cheats(for: rom).count)")
+                        .font(.caption)
+                        .fontWeight(.medium)
+                        .foregroundColor(.green)
+                    Text("enabled")
+                        .font(.caption2)
                         .foregroundColor(.secondary)
                 }
-                .help("Close")
+                Button { dismiss() } label: {
+                    Image(systemName: "xmark.circle.fill")
+                        .foregroundColor(.secondary)
+                }
+                .buttonStyle(.plain)
             }
-            .padding()
+            .padding(.horizontal, 16)
+            .padding(.vertical, 12)
             
             Divider()
             
-            // Category filter
             ScrollView(.horizontal, showsIndicators: false) {
-                HStack(spacing: 8) {
+                HStack(spacing: 6) {
                     Button(action: { selectedCategory = nil }) {
-                        Text("All")
-                            .font(.caption)
-                            .padding(.horizontal, 12)
-                            .padding(.vertical, 6)
-                            .background(selectedCategory == nil ? Color.accentColor : Color.secondary.opacity(0.2))
-                            .foregroundColor(selectedCategory == nil ? .white : .primary)
-                            .cornerRadius(8)
+                        HStack(spacing: 4) {
+                            Image(systemName: "square.grid.2x2").font(.caption2)
+                            Text("All").font(.caption)
+                        }
+                        .padding(.horizontal, 10)
+                        .padding(.vertical, 6)
+                        .background(selectedCategory == nil ? Color.blue.opacity(0.85) : Color.secondary.opacity(0.1))
+                        .foregroundColor(selectedCategory == nil ? .white : .primary)
+                        .cornerRadius(12)
                     }
+                    .buttonStyle(.plain)
                     
                     ForEach(CheatCategory.allCases, id: \.self) { category in
                         Button(action: { selectedCategory = category }) {
-                            Label(category.displayName, systemImage: category.icon)
-                                .font(.caption)
-                                .padding(.horizontal, 12)
-                                .padding(.vertical, 6)
-                                .background(selectedCategory == category ? Color.accentColor : Color.secondary.opacity(0.2))
-                                .foregroundColor(selectedCategory == category ? .white : .primary)
-                                .cornerRadius(8)
+                            HStack(spacing: 4) {
+                                Image(systemName: category.icon).font(.caption2)
+                                Text(category.displayName).font(.caption)
+                            }
+                            .padding(.horizontal, 10)
+                            .padding(.vertical, 6)
+                            .background(selectedCategory == category ? Color.blue.opacity(0.85) : Color.secondary.opacity(0.1))
+                            .foregroundColor(selectedCategory == category ? .white : .primary)
+                            .cornerRadius(12)
                         }
+                        .buttonStyle(.plain)
                     }
                 }
-                .padding(.horizontal)
+                .padding(.horizontal, 16)
                 .padding(.vertical, 8)
             }
             
             Divider()
             
             // Search
-            HStack {
-                Image(systemName: "magnifyingglass")
-                    .foregroundColor(.secondary)
-                TextField("Search cheats...", text: $searchText)
-                    .textFieldStyle(.plain)
+            HStack(spacing: 6) {
+                Image(systemName: "magnifyingglass").foregroundColor(.secondary).font(.footnote)
+                TextField("Search cheats...", text: $searchText).textFieldStyle(.plain).font(.body)
                 if !searchText.isEmpty {
-                    Button(action: { searchText = "" }) {
-                        Image(systemName: "xmark.circle.fill")
-                            .foregroundColor(.secondary)
-                    }
-                    .buttonStyle(.plain)
+                    Button(action: { searchText = "" }) { Image(systemName: "xmark.circle.fill").foregroundColor(.secondary).font(.footnote) }
+                        .buttonStyle(.plain)
                 }
             }
-            .padding(8)
-            .background(Color.secondary.opacity(0.1))
-            .cornerRadius(8)
-            .padding(.horizontal)
-            .padding(.vertical, 8)
-            
-            Divider()
-            
-            // Action buttons row
-            HStack(spacing: 8) {
-                Button {
-                    showAddCheatWindow = true
-                } label: {
-                    Label("Add Cheat", systemImage: "plus")
-                        .padding(.horizontal, 12)
-                        .padding(.vertical, 6)
-                }
-                .help("Add custom cheat code")
-                
-                Button {
-                    showImportFile = true
-                } label: {
-                    Label("Import File", systemImage: "square.and.arrow.down")
-                        .padding(.horizontal, 12)
-                        .padding(.vertical, 6)
-                }
-                .help("Import .cht file")
-                
-                Spacer()
-            }
-            .padding(.horizontal)
-            .padding(.vertical, 8)
+            .padding(.horizontal, 10)
+            .padding(.vertical, 7)
+            .background(RoundedRectangle(cornerRadius: 8).fill(Color.secondary.opacity(0.05)))
+            .padding(.horizontal, 16)
+            .padding(.vertical, 6)
             
             Divider()
             
             // Cheat list
             if filteredCheats.isEmpty {
-                VStack(spacing: 12) {
-                    Image(systemName: "wand.and.stars")
-                        .font(.system(size: 40))
-                        .foregroundColor(.secondary)
-                    Text(searchText.isEmpty ? "No cheats available" : "No matching cheats")
-                        .foregroundColor(.secondary)
-                    if searchText.isEmpty {
-                        Text("Import a .cht file or add custom codes")
-                            .font(.caption)
-                            .foregroundColor(.secondary)
-                    }
+                VStack(spacing: 10) {
+                    Image(systemName: "wand.and.stars").font(.system(size: 36)).foregroundColor(.secondary)
+                    Text(searchText.isEmpty ? "No cheats available" : "No matching cheats").foregroundColor(.secondary)
+                    if searchText.isEmpty { Text("Import a .cht file or add custom codes").font(.caption).foregroundColor(.secondary) }
                 }
                 .frame(maxWidth: .infinity, maxHeight: .infinity)
             } else {
                 ScrollView {
-                    LazyVStack(spacing: 8) {
+                    LazyVStack(spacing: 6) {
                         ForEach(filteredCheats) { cheat in
                             CheatRowView(cheat: cheat, rom: rom)
                         }
@@ -168,71 +133,37 @@ struct CheatManagerView: View {
                 }
             }
             
-            // Apply button
             if enabledCount > 0 {
                 Divider()
                 Button(action: applyCheats) {
-                    Label("Apply Cheats", systemImage: "checkmark.circle.fill")
-                        .frame(maxWidth: .infinity)
-                        .padding()
+                    Label("Apply Cheats", systemImage: "checkmark.circle.fill").frame(maxWidth: .infinity).padding()
                 }
                 .buttonStyle(.borderedProminent)
                 .padding()
             }
         }
-        .sheet(isPresented: $showAddCheatWindow) {
-            AddCheatWindow(rom: rom)
-                .frame(minWidth: 500, minHeight: 400)
-        }
-        .fileImporter(
-            isPresented: $showImportFile,
-            allowedContentTypes: [.item],
-            allowsMultipleSelection: false
-        ) { result in
-            switch result {
-            case .success(let urls):
-                if let url = urls.first {
-                    Task {
-                        await cheatManager.importChtFile(url, for: rom)
-                    }
-                }
-            case .failure(let error):
-                LoggerService.debug(category: "Cheats", "File import error: \(error)")
-            }
+        .sheet(isPresented: $showAddCheatWindow) { AddCheatWindow(rom: rom).frame(minWidth: 500, minHeight: 400) }
+        .fileImporter(isPresented: $showImportFile, allowedContentTypes: [.item], allowsMultipleSelection: false) { result in
+            if case .success(let urls) = result, let url = urls.first { Task { await cheatManager.importChtFile(url, for: rom) } }
         }
     }
     
     private func applyCheats() {
         let cheats = cheatManager.cheats(for: rom).filter { $0.enabled }
-        let cheatData = cheats.map { cheat in
-            [
-                "index": cheat.index,
-                "code": cheat.code,
-                "enabled": cheat.enabled
-            ] as [String: Any]
-        }
+        let cheatData = cheats.map { cheat in ["index": cheat.index, "code": cheat.code, "enabled": cheat.enabled] as [String: Any] }
         LibretroBridge.applyCheats(cheatData)
     }
     
-    private func categoryMatches(_ description: String, category: CheatCategory) -> Bool {
-        let lower = description.lowercased()
+    private func categoryMatches(_ desc: String, category: CheatCategory) -> Bool {
+        let l = desc.lowercased()
         switch category {
-        case .gameplay:
-            return lower.contains("life") || lower.contains("health") || lower.contains("energy") ||
-                   lower.contains("infinite") || lower.contains("invincib") || lower.contains("speed")
-        case .items:
-            return lower.contains("weapon") || lower.contains("ammo") || lower.contains("gold") ||
-                   lower.contains("money") || lower.contains("item") || lower.contains("power")
-        case .debug:
-            return lower.contains("debug") || lower.contains("level") || lower.contains("stage") ||
-                   lower.contains("select") || lower.contains("test")
-        case .custom:
-            return false // Custom cheats are user-defined
+        case .gameplay: return l.contains("life") || l.contains("health") || l.contains("energy") || l.contains("infinite") || l.contains("invincib") || l.contains("speed")
+        case .items: return l.contains("weapon") || l.contains("ammo") || l.contains("gold") || l.contains("money") || l.contains("item") || l.contains("power")
+        case .debug: return l.contains("debug") || l.contains("level") || l.contains("stage") || l.contains("select") || l.contains("test")
+        case .custom: return false
         }
     }
 }
-
-// MARK: - Cheat Row View
 
 struct CheatRowView: View {
     let cheat: Cheat
@@ -241,46 +172,30 @@ struct CheatRowView: View {
     
     var body: some View {
         HStack(spacing: 12) {
-            Toggle(isOn: Binding(
-                get: { cheat.enabled },
-                set: { newValue in
-                    var updated = cheat
-                    updated.enabled = newValue
-                    cheatManager.updateCheat(updated, for: rom)
-                }
-            )) {
-                VStack(alignment: .leading, spacing: 4) {
-                    Text(cheat.displayName)
-                        .font(.body)
-                    Text(cheat.codePreview)
-                        .font(.system(.caption, design: .monospaced))
-                        .foregroundColor(.secondary)
+            Toggle(isOn: Binding(get: { cheat.enabled }, set: { newValue in
+                var updated = cheat; updated.enabled = newValue
+                cheatManager.updateCheat(updated, for: rom)
+            })) {
+                VStack(alignment: .leading, spacing: 3) {
+                    Text(cheat.displayName).font(.subheadline).fontWeight(.medium)
+                    Text(cheat.codePreview).font(.system(.caption, design: .monospaced)).foregroundColor(.secondary)
                 }
             }
             .toggleStyle(.switch)
-            
             Spacer()
-            
-            // Format badge
             Text(cheat.format.displayName)
-                .font(.caption2)
-                .padding(.horizontal, 6)
-                .padding(.vertical, 2)
-                .background(Color.secondary.opacity(0.2))
-                .cornerRadius(4)
+                .font(.caption2).fontWeight(.medium).padding(.horizontal, 6).padding(.vertical, 2)
+                .background(Color.secondary.opacity(0.1)).cornerRadius(8)
         }
-        .padding(.horizontal, 12)
-        .padding(.vertical, 8)
-        .background(Color.secondary.opacity(0.05))
-        .cornerRadius(8)
+        .padding(.horizontal, 12).padding(.vertical, 6)
+        .background(Color.secondary.opacity(0.03)).cornerRadius(8)
     }
 }
-
-// MARK: - Add Cheat Window
 
 struct AddCheatWindow: View {
     let rom: ROM
     @Environment(\.dismiss) private var dismiss
+    @Environment(\.colorScheme) private var colorScheme
     @StateObject private var cheatManager = CheatManager.shared
     @State private var description = ""
     @State private var code = ""
@@ -288,97 +203,39 @@ struct AddCheatWindow: View {
     @State private var errorMessage: String?
     
     var body: some View {
-        VStack(spacing: 0) {
-            // Header with close button
-            HStack {
-                Text("Add Custom Cheat")
-                    .font(.headline)
-                Spacer()
-                Button {
-                    dismiss()
-                } label: {
-                    Image(systemName: "xmark.circle.fill")
-                        .font(.title3)
-                        .foregroundColor(.secondary)
-                }
-            }
-            .padding()
-            
-            Divider()
-            
-            // Form content
+        NavigationStack {
             Form {
                 Section("Cheat Details") {
                     TextField("Description (e.g., Infinite Lives)", text: $description)
-                    TextField("Code (e.g., 7E0DBE05)", text: $code)
-                        .font(.system(.body, design: .monospaced))
-                    Picker("Format", selection: $format) {
-                        ForEach(CheatFormat.allCases, id: \.self) { format in
-                            Text(format.displayName).tag(format)
-                        }
-                    }
+                    TextField("Code (e.g., 7E0DBE05)", text: $code).font(.system(.body, design: .monospaced))
+                    Picker("Format", selection: $format) { ForEach(CheatFormat.allCases, id: \.self) { f in Text(f.displayName).tag(f) } }
                 }
-                
                 Section("Example") {
-                    Text(format.example)
-                        .font(.system(.body, design: .monospaced))
-                        .foregroundColor(.secondary)
-                        .textSelection(.enabled)
+                    Text(format.example).font(.system(.body, design: .monospaced)).foregroundColor(.secondary).textSelection(.enabled)
                 }
-                
                 if let error = errorMessage {
-                    Section("Error") {
-                        Text(error)
-                            .foregroundColor(.red)
-                    }
+                    Section("Error") { Label(error, systemImage: "exclamationmark.triangle.fill").foregroundColor(.red) }
                 }
             }
             .formStyle(.grouped)
-            
-            // Action buttons
-            HStack {
-                Spacer()
-                Button("Cancel") {
-                    dismiss()
+            .navigationTitle("Add Custom Cheat")
+            .toolbar {
+                ToolbarItem(placement: .cancellationAction) { Button("Cancel") { dismiss() } }
+                ToolbarItem(placement: .confirmationAction) {
+                    Button("Add Cheat") { addCheat() }.disabled(code.trimmingCharacters(in: .whitespaces).isEmpty)
                 }
-                .keyboardShortcut(.escape, modifiers: .command)
-                
-                Button("Add Cheat") {
-                    addCheat()
-                }
-                .keyboardShortcut(.return, modifiers: .command)
-                .disabled(code.trimmingCharacters(in: .whitespaces).isEmpty)
-                .buttonStyle(.borderedProminent)
             }
-            .padding()
         }
-        .frame(minWidth: 450, minHeight: 400)
+        .frame(width: 500, height: 450)
     }
     
     private func addCheat() {
         let trimmedCode = code.trimmingCharacters(in: .whitespacesAndNewlines)
         let trimmedDesc = description.trimmingCharacters(in: .whitespacesAndNewlines)
-        
-        guard !trimmedCode.isEmpty else {
-            errorMessage = "Code cannot be empty"
-            return
-        }
-        
-        // Validate format
+        guard !trimmedCode.isEmpty else { errorMessage = "Code cannot be empty"; return }
         let detectedFormat = CheatParser.detectFormat(trimmedCode)
-        if detectedFormat != format && format != .raw {
-            errorMessage = "Code format doesn't match. Detected: \(detectedFormat.displayName)"
-            return
-        }
-        
-        let cheat = Cheat(
-            index: cheatManager.cheats(for: rom).count,
-            description: trimmedDesc.isEmpty ? "Custom Cheat" : trimmedDesc,
-            code: trimmedCode,
-            enabled: true,
-            format: format
-        )
-        
+        if detectedFormat != format && format != .raw { errorMessage = "Code format doesn't match. Detected: \(detectedFormat.displayName)"; return }
+        let cheat = Cheat(index: cheatManager.cheats(for: rom).count, description: trimmedDesc.isEmpty ? "Custom Cheat" : trimmedDesc, code: trimmedCode, enabled: true, format: format)
         cheatManager.addCheat(cheat, for: rom)
         dismiss()
     }
@@ -389,87 +246,42 @@ struct AddCheatWindow: View {
 /// Manages cheat state for all games.
 class CheatManager: ObservableObject {
     static let shared = CheatManager()
-    
-    @Published private var allCheats: [String: [Cheat]] = [:]  // keyed by ROM path
-    
+    @Published private var allCheats: [String: [Cheat]] = [:]
     private let saveKey = "cheats"
+    init() { loadCheats() }
     
-    init() {
-        loadCheats()
-    }
-    
-    func cheats(for rom: ROM) -> [Cheat] {
-        return allCheats[rom.path.path] ?? []
-    }
+    func cheats(for rom: ROM) -> [Cheat] { allCheats[rom.path.path] ?? [] }
     
     func updateCheat(_ cheat: Cheat, for rom: ROM) {
         var cheats = allCheats[rom.path.path] ?? []
-        if let index = cheats.firstIndex(where: { $0.id == cheat.id }) {
-            cheats[index] = cheat
-        } else {
-            cheats.append(cheat)
-        }
-        allCheats[rom.path.path] = cheats
-        saveCheats()
+        if let index = cheats.firstIndex(where: { $0.id == cheat.id }) { cheats[index] = cheat } else { cheats.append(cheat) }
+        allCheats[rom.path.path] = cheats; saveCheats()
     }
     
     func addCheat(_ cheat: Cheat, for rom: ROM) {
-        var cheats = allCheats[rom.path.path] ?? []
-        cheats.append(cheat)
-        allCheats[rom.path.path] = cheats
-        saveCheats()
+        var cheats = allCheats[rom.path.path] ?? []; cheats.append(cheat)
+        allCheats[rom.path.path] = cheats; saveCheats()
     }
     
     func removeCheat(_ cheat: Cheat, for rom: ROM) {
         var cheats = allCheats[rom.path.path] ?? []
         cheats.removeAll { $0.id == cheat.id }
-        allCheats[rom.path.path] = cheats
-        saveCheats()
+        allCheats[rom.path.path] = cheats; saveCheats()
     }
     
-    @MainActor
-    func importChtFile(_ url: URL, for rom: ROM) async {
-        // Access security-scoped resource
+    @MainActor func importChtFile(_ url: URL, for rom: ROM) async {
         let accessed = url.startAccessingSecurityScopedResource()
-        defer {
-            if accessed { url.stopAccessingSecurityScopedResource() }
-        }
-        
-        guard let cheats = CheatParser.parseChtFile(url: url) else {
-            LoggerService.debug(category: "Cheats", "Failed to parse cheat file: \(url.path)")
-            return
-        }
-        
-        // Merge with existing cheats (update by index)
+        defer { if accessed { url.stopAccessingSecurityScopedResource() } }
+        guard let cheats = CheatParser.parseChtFile(url: url) else { LoggerService.debug(category: "Cheats", "Failed to parse cheat file: \(url.path)"); return }
         var existing = allCheats[rom.path.path] ?? []
         for newCheat in cheats {
-            if let index = existing.firstIndex(where: { $0.index == newCheat.index }) {
-                existing[index] = newCheat
-            } else {
-                existing.append(newCheat)
-            }
+            if let index = existing.firstIndex(where: { $0.index == newCheat.index }) { existing[index] = newCheat } else { existing.append(newCheat) }
         }
-        allCheats[rom.path.path] = existing
-        saveCheats()
+        allCheats[rom.path.path] = existing; saveCheats()
     }
     
-    func clearCheats(for rom: ROM) {
-        allCheats[rom.path.path] = nil
-        saveCheats()
-    }
+    func clearCheats(for rom: ROM) { allCheats[rom.path.path] = nil; saveCheats() }
     
-    // MARK: - Persistence
-    
-    private func saveCheats() {
-        guard let data = try? JSONEncoder().encode(allCheats) else { return }
-        AppSettings.setData(saveKey, value: data)
-    }
-    
-    private func loadCheats() {
-        guard let data = AppSettings.getData(saveKey),
-              let decoded = try? JSONDecoder().decode([String: [Cheat]].self, from: data) else {
-            return
-        }
-        allCheats = decoded
-    }
+    private func saveCheats() { guard let data = try? JSONEncoder().encode(allCheats) else { return }; AppSettings.setData(saveKey, value: data) }
+    private func loadCheats() { guard let data = AppSettings.getData(saveKey), let decoded = try? JSONDecoder().decode([String: [Cheat]].self, from: data) else { return }; allCheats = decoded }
 }

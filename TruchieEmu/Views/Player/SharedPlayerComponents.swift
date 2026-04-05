@@ -251,12 +251,10 @@ struct GameOverlayToolbar: View {
 struct ToolbarButtonStyle: ButtonStyle {
     func makeBody(configuration: Configuration) -> some View {
         configuration.label
-            .opacity(configuration.isPressed ? 0.7 : 1.0)
-            .background(
-                RoundedRectangle(cornerRadius: 8)
-                    .fill(configuration.isPressed ? Color.white.opacity(0.25) : Color.white.opacity(0.15))
-            )
+            .opacity(configuration.isPressed ? 0.6 : 1.0)
+            .scaleEffect(configuration.isPressed ? 0.95 : 1.0)
             .contentShape(Rectangle())
+            .animation(.easeOut(duration: 0.1), value: configuration.isPressed)
     }
 }
 
@@ -274,11 +272,19 @@ struct ToolbarButton: View {
                     .font(.system(size: 16, weight: .semibold))
                 Text(label)
                     .font(.system(size: 10, weight: .medium))
+                    .lineLimit(1)
             }
-            .frame(minWidth: 50)
+            .padding(.horizontal, 10)
+            .padding(.vertical, 6)
+            .foregroundColor(danger ? .red.opacity(0.9) : .white.opacity(0.9))
+            .background(
+                RoundedRectangle(cornerRadius: 8)
+                    .fill(danger ? Color.red.opacity(0.15) : Color.white.opacity(0.1))
+            )
+            .contentShape(Rectangle())
         }
         .buttonStyle(ToolbarButtonStyle())
-        .foregroundColor(danger ? .red : .white)
+        .buttonStyle(.plain)
     }
 }
 

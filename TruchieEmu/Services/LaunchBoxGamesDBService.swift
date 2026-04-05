@@ -106,26 +106,40 @@ class LaunchBoxGamesDBService: ObservableObject {
             return nil
         }
 
+        LoggerService.info(category: "LaunchBoxDB", "Starting LaunchBox search for '\(rom.name)' (systemID: \(rom.systemID ?? "unknown"))")
+
         var titleToSearch = ""
         if let crcName = rom.metadata?.title?.trimmingCharacters(in: .whitespacesAndNewlines),
            !crcName.isEmpty {
             titleToSearch = crcName
+            LoggerService.debug(category: "LaunchBoxDB", "Using CRC-identified title: '\(titleToSearch)'")
         } else {
             let stem = rom.path.deletingPathExtension().lastPathComponent
             titleToSearch = LibretroThumbnailResolver.stripRomFilenameTags(stem)
+            LoggerService.debug(category: "LaunchBoxDB", "Using filename-derived title: '\(titleToSearch)' (orig stem: '\(stem)')")
         }
 
-        guard !titleToSearch.isEmpty else { return nil }
+        guard !titleToSearch.isEmpty else {
+            LoggerService.debug(category: "LaunchBoxDB", "Empty title after processing, aborting search")
+            return nil
+        }
 
         let platformName = rom.systemID.flatMap { LaunchBoxPlatformMapper.launchBoxPlatformName(for: $0) }
-
-        LoggerService.debug(category: "LaunchBoxDB", "Searching for '\(titleToSearch)' [\(platformName ?? "any")]")
+        LoggerService.info(category: "LaunchBoxDB", "Searching for '\(titleToSearch)' on platform [\(platformName ?? "any")]")
 
         // Try direct game search page
+        LoggerService.debug(category: "LaunchBoxDB", "Step 1: Web search for games")
         let results = await searchGamesWeb(title: titleToSearch, platformName: platformName)
+        LoggerService.debug(category: "LaunchBoxDB", "Web search returned \(results.count) results")
+        for (idx, result) in results.enumerated() {
+            LoggerService.debug(category: "LaunchBoxDB", "  Result #\(idx+1): title='\(result.title)', gameId=\(result.gameId), boxartURL=\(result.boxartURL?.absoluteString ?? "nil")")
+        }
+
         for result in results {
             if let boxartURL = result.boxartURL {
+                LoggerService.debug(category: "LaunchBoxDB", "Attempting to download boxart from \(boxartURL.absoluteString)")
                 if let cached = await downloadAndCache(artURL: boxartURL, for: rom) {
+                    LoggerService.info(category: "LaunchBoxDB", "SUCCESS: cached boxart from search results")
                     return cached
                 }
             }
@@ -133,7 +147,9 @@ class LaunchBoxGamesDBService: ObservableObject {
 
         // Try detail pages if search results had no direct boxart
         if let firstGame = results.first {
+            LoggerService.debug(category: "LaunchBoxDB", "Step 2: Checking detail page for gameId=\(firstGame.gameId)")
             if let detailBoxart = await fetchBoxArtFromDetailWeb(gameId: firstGame.gameId, rom: rom) {
+                LoggerService.info(category: "LaunchBoxDB", "SUCCESS: found boxart from detail page gameId=\(firstGame.gameId)")
                 return detailBoxart
             }
         }
@@ -141,21 +157,29 @@ class LaunchBoxGamesDBService: ObservableObject {
         // Try alternate title variants
         let alternateTitle = Self.cleanAlternateTitle(titleToSearch)
         if alternateTitle != titleToSearch {
+            LoggerService.info(category: "LaunchBoxDB", "Trying alternate title: '\(alternateTitle)'")
             let altResults = await searchGamesWeb(title: alternateTitle, platformName: platformName)
+            LoggerService.debug(category: "LaunchBoxDB", "Alternate search returned \(altResults.count) results")
             for result in altResults {
                 if let boxartURL = result.boxartURL {
                     if let cached = await downloadAndCache(artURL: boxartURL, for: rom) {
+                        LoggerService.info(category: "LaunchBoxDB", "SUCCESS: found boxart from alternate title search")
                         return cached
                     }
                 }
             }
             if let firstGame = altResults.first {
+                LoggerService.debug(category: "LaunchBoxDB", "Checking detail page for alternate result gameId=\(firstGame.gameId)")
                 if let detailBoxart = await fetchBoxArtFromDetailWeb(gameId: firstGame.gameId, rom: rom) {
+                    LoggerService.info(category: "LaunchBoxDB", "SUCCESS: found boxart from alternate detail page gameId=\(firstGame.gameId)")
                     return detailBoxart
                 }
             }
+        } else {
+            LoggerService.debug(category: "LaunchBoxDB", "No alternate title variant (cleaned title same as original)")
         }
 
+        LoggerService.info(category: "LaunchBoxDB", "LaunchBox search COMPLETE — no boxart found for '\(rom.name)'")
         return nil
     }
 
@@ -185,23 +209,31 @@ class LaunchBoxGamesDBService: ObservableObject {
             components?.queryItems?.append(URLQueryItem(name: "platformId", value: platform))
         }
 
-        guard let url = components?.url else { return [] }
+        guard let url = components?.url else {
+            LoggerService.debug(category: "LaunchBoxDB", "searchGamesWeb: failed to construct URL for title='\(title)', platform=\(platformName ?? "nil")")
+            return []
+        }
+
+        LoggerService.debug(category: "LaunchBoxDB", "searchGamesWeb: fetching \(url.absoluteString)")
 
         do {
             let (data, response) = try await urlSession.data(from: url)
             guard let httpResponse = response as? HTTPURLResponse, httpResponse.statusCode == 200,
                   let html = String(data: data, encoding: .utf8) else {
+                let statusCode = (response as? HTTPURLResponse)?.statusCode ?? -1
+                LoggerService.debug(category: "LaunchBoxDB", "searchGamesWeb: response status \(statusCode) or encoding error for \(url.absoluteString)")
                 return []
             }
 
             results = parseGameSearchResults(html)
-            LoggerService.debug(category: "LaunchBoxDB", "Found \(results.count) web results for '\(title)'")
+            LoggerService.debug(category: "LaunchBoxDB", "searchGamesWeb: parsed \(results.count) results from \(results.count > 0 ? "first" : "no") page for '\(title)'")
         } catch {
-            LoggerService.debug(category: "LaunchBoxDB", "Web search error: \(error.localizedDescription)")
+            LoggerService.warning(category: "LaunchBoxDB", "searchGamesWeb: network error for \(url.absoluteString): \(error.localizedDescription)")
         }
 
         // Retry without platform if nothing found
         if results.isEmpty && platformName != nil {
+            LoggerService.debug(category: "LaunchBoxDB", "searchGamesWeb: no results with platform, retrying without platform filter")
             results = await searchGamesWeb(title: title, platformName: nil)
         }
 
@@ -277,6 +309,8 @@ class LaunchBoxGamesDBService: ObservableObject {
             .appendingPathComponent("details")
             .appendingPathComponent(String(gameId))
 
+        LoggerService.debug(category: "LaunchBoxDB", "fetchBoxArtFromDetailWeb: fetching \(url.absoluteString)")
+
         do {
             var request = URLRequest(url: url)
             request.addValue("text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8", forHTTPHeaderField: "Accept")
@@ -284,15 +318,22 @@ class LaunchBoxGamesDBService: ObservableObject {
             let (data, response) = try await urlSession.data(for: request)
             guard let httpResponse = response as? HTTPURLResponse, httpResponse.statusCode == 200,
                   let html = String(data: data, encoding: .utf8) else {
+                let statusCode = (response as? HTTPURLResponse)?.statusCode ?? -1
+                LoggerService.debug(category: "LaunchBoxDB", "fetchBoxArtFromDetailWeb: response status \(statusCode) or encoding error for \(url.absoluteString)")
                 return nil
             }
 
+            LoggerService.debug(category: "LaunchBoxDB", "fetchBoxArtFromDetailWeb: page received (\(data.count) bytes), scanning for boxart images")
+
             // Extract images from detail page
             if let boxartURL = extractBoxartFromDetailHTML(html) {
+                LoggerService.debug(category: "LaunchBoxDB", "fetchBoxArtFromDetailWeb: found boxart URL in detail page HTML")
                 return await downloadAndCache(artURL: boxartURL, for: rom)
+            } else {
+                LoggerService.debug(category: "LaunchBoxDB", "fetchBoxArtFromDetailWeb: no boxart images found in detail page HTML")
             }
         } catch {
-            LoggerService.debug(category: "LaunchBoxDB", "Detail page error for game \(gameId): \(error.localizedDescription)")
+            LoggerService.warning(category: "LaunchBoxDB", "fetchBoxArtFromDetailWeb: network error for game \(gameId): \(error.localizedDescription)")
         }
         return nil
     }
@@ -340,19 +381,26 @@ class LaunchBoxGamesDBService: ObservableObject {
         let localURL = rom.boxArtLocalPath
         let folder = localURL.deletingLastPathComponent()
 
+        LoggerService.debug(category: "LaunchBoxDB", "downloadAndCache: downloading \(artURL.absoluteString) → target \(localURL.path)")
+
         try? FileManager.default.createDirectory(at: folder, withIntermediateDirectories: true)
+        LoggerService.debug(category: "LaunchBoxDB", "downloadAndCache: ensured folder \(folder.path)")
 
         if FileManager.default.fileExists(atPath: localURL.path) {
+            LoggerService.debug(category: "LaunchBoxDB", "downloadAndCache: removing existing file at \(localURL.path)")
             try? FileManager.default.removeItem(at: localURL)
         }
 
         do {
+            LoggerService.debug(category: "LaunchBoxDB", "downloadAndCache: starting download")
             let (tmpURL, response) = try await urlSession.download(from: artURL)
 
             // Verify it is actually an image
             if let httpResponse = response as? HTTPURLResponse {
-                if let mimeType = httpResponse.mimeType, !mimeType.hasPrefix("image/") {
-                    LoggerService.debug(category: "LaunchBoxDB", "Downloaded non-image: \(mimeType)")
+                let mimeType = httpResponse.mimeType ?? "unknown"
+                LoggerService.debug(category: "LaunchBoxDB", "downloadAndCache: HTTP \(httpResponse.statusCode), MIME type: \(mimeType), size: \(httpResponse.expectedContentLength) bytes")
+                if !mimeType.hasPrefix("image/") {
+                    LoggerService.debug(category: "LaunchBoxDB", "downloadAndCache: skipping non-image content type '\(mimeType)'")
                     try? FileManager.default.removeItem(at: tmpURL)
                     return nil
                 }
@@ -362,14 +410,15 @@ class LaunchBoxGamesDBService: ObservableObject {
             if NSImage(contentsOf: tmpURL) != nil {
                 try FileManager.default.moveItem(at: tmpURL, to: localURL)
                 await ImageCache.shared.removeImage(for: localURL)
-                LoggerService.debug(category: "LaunchBoxDB", "Cached LaunchBox boxart for '\(rom.name)'")
+                LoggerService.info(category: "LaunchBoxDB", "downloadAndCache: successfully cached boxart for '\(rom.name)' at \(localURL.path)")
                 return localURL
             } else {
+                LoggerService.debug(category: "LaunchBoxDB", "downloadAndCache: downloaded file is not a valid image")
                 try? FileManager.default.removeItem(at: tmpURL)
                 return nil
             }
         } catch {
-            LoggerService.debug(category: "LaunchBoxDB", "Download error for '\(rom.name)': \(error.localizedDescription)")
+            LoggerService.warning(category: "LaunchBoxDB", "downloadAndCache: error downloading from \(artURL.absoluteString): \(error.localizedDescription)")
             return nil
         }
     }

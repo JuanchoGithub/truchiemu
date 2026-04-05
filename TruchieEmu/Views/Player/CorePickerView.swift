@@ -21,7 +21,7 @@ struct CoreRecommendationBadge: View {
 /// Shared design tokens for Core views
 enum CoreStyle {
     static let recommendationGradient = LinearGradient(
-        colors: [.purple.opacity(0.8), .cyan.opacity(0.8)],
+        colors: [.purple.opacity(0.85), .cyan.opacity(0.85)],
         startPoint: .leading,
         endPoint: .trailing
     )

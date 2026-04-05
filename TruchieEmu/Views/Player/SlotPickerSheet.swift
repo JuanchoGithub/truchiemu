@@ -3,207 +3,152 @@ import SwiftUI
 // MARK: - Slot Picker Sheet
 
 /// Sheet that shows all save slots (0-9) with thumbnails and info
-/// Allows user to save, load, or delete from any slot
 struct SlotPickerSheet: View {
     @ObservedObject var runner: EmulatorRunner
     @Binding var showSlotPicker: Bool
     @State private var slotInfoList: [SlotInfo] = []
     @State private var slotThumbnails: [Int: NSImage] = [:]
+    @Environment(\.colorScheme) private var colorScheme
     
     var body: some View {
         VStack(spacing: 0) {
-            // Header
             HStack {
-                Text("Save State Slots")
-                    .font(.title2)
-                    .fontWeight(.bold)
+                Label("Save State Slots", systemImage: "externaldrive")
+                    .font(.title3)
+                    .fontWeight(.semibold)
                 Spacer()
-                Button("Close") {
-                    showSlotPicker = false
+                Button(action: { showSlotPicker = false }) {
+                    Image(systemName: "xmark.circle.fill")
+                        .foregroundColor(.secondary)
                 }
-                .keyboardShortcut(.escape, modifiers: [])
+                .buttonStyle(.plain)
             }
-            .padding()
+            .padding(.horizontal, 16)
+            .padding(.vertical, 12)
             
             Divider()
             
-            // Current slot indicator
-            HStack {
-                Text("Current Slot: \(runner.currentSlot)")
-                    .font(.caption)
-                    .foregroundColor(.secondary)
+            HStack(spacing: 8) {
+                HStack(spacing: 4) {
+                    Image(systemName: "number.circle.fill").foregroundColor(.blue)
+                    Text("Slot \(runner.currentSlot)")
+                        .font(.subheadline)
+                        .fontWeight(.medium)
+                }
+                .padding(.horizontal, 10)
+                .padding(.vertical, 4)
+                .background(Color.blue.opacity(0.1))
+                .cornerRadius(12)
+                
                 Spacer()
+                
                 if runner.supportsSaveStates {
-                    Image(systemName: "checkmark.circle.fill")
-                        .foregroundColor(.green)
-                    Text("Save states available")
+                    Label("Available", systemImage: "checkmark.circle.fill")
                         .font(.caption)
                         .foregroundColor(.green)
                 } else {
-                    Image(systemName: "exclamationmark.circle.fill")
-                        .foregroundColor(.red)
-                    Text("This core doesn't support save states. Use the game's built-in save feature instead.")
+                    Label("Unavailable", systemImage: "exclamationmark.circle.fill")
                         .font(.caption)
-                        .foregroundColor(.red)
+                        .foregroundColor(.orange)
                 }
             }
-            .padding(.horizontal)
+            .padding(.horizontal, 16)
             .padding(.bottom, 8)
             
-            // Compression toggle
             Toggle(isOn: Binding(
                 get: { AppSettings.getBool("compress_save_states", defaultValue: false) },
                 set: { AppSettings.setBool("compress_save_states", value: $0) }
             )) {
-                HStack {
-                    Image(systemName: "archivebox")
-                    VStack(alignment: .leading, spacing: 1) {
-                        Text("Compress Save States")
+                HStack(spacing: 6) {
+                    Image(systemName: "archivebox").foregroundColor(.secondary)
+                    VStack(alignment: .leading, spacing: 2) {
+                        Text("Compress Save States").font(.subheadline)
                         Text("Reduces disk space but may take slightly longer to save and load.")
-                            .font(.caption2)
-                            .foregroundColor(.secondary.opacity(0.8))
-                    }
-                }
-                .font(.caption)
-            }
-            .padding(.horizontal)
-            .padding(.bottom, 4)
-            
-            // Slot grid or unsupported message
-            if runner.supportsSaveStates {
-                slotsGrid
-                } else {
-                    VStack {
-                        Spacer()
-                        Image(systemName: "exclamationmark.triangle")
-                            .font(.system(size: 48))
-                            .foregroundColor(.secondary)
-                        Text("Save states unavailable")
-                            .font(.headline)
-                        Text("This emulation core doesn't support save states. Try using the game's built-in save feature instead, or check if a different core supports this feature.")
                             .font(.caption)
                             .foregroundColor(.secondary)
-                            .multilineTextAlignment(.center)
-                            .fixedSize(horizontal: false, vertical: true)
-                            .padding(.horizontal)
-                        Spacer()
                     }
-                    .padding(40)
                 }
+            }
+            .padding(.horizontal, 16)
+            .padding(.bottom, 6)
             
             Divider()
             
-            // Footer actions
+            if runner.supportsSaveStates {
+                slotsGrid
+            } else {
+                VStack(spacing: 16) {
+                    Spacer()
+                    Image(systemName: "exclamationmark.triangle")
+                        .font(.system(size: 48))
+                        .foregroundColor(.secondary)
+                    Text("Save states unavailable")
+                        .font(.headline)
+                    Text("This emulation core doesn't support save states. Try using the game's built-in save feature instead.")
+                        .font(.caption).foregroundColor(.secondary)
+                        .multilineTextAlignment(.center)
+                        .padding(.horizontal)
+                    Spacer()
+                }
+                .padding(40)
+            }
+            
+            Divider()
+            
             HStack {
                 Button(action: { runner.previousSlot(); showSlotPicker = false }) {
-                    Label("Previous Slot", systemImage: "minus.circle")
+                    Label("Previous", systemImage: "minus.circle").font(.subheadline)
                 }
-                .help("Switch to slot \(max(0, runner.currentSlot - 1))")
+                .buttonStyle(.bordered)
                 
                 Spacer()
                 
                 Button(action: { runner.nextSlot(); showSlotPicker = false }) {
-                    Label("Next Slot", systemImage: "plus.circle")
+                    Label("Next", systemImage: "plus.circle").font(.subheadline)
                 }
-                .help("Switch to slot \(min(9, runner.currentSlot + 1))")
+                .buttonStyle(.bordered)
             }
-            .padding()
+            .padding(.horizontal, 16)
+            .padding(.vertical, 10)
         }
         .frame(minWidth: 600, minHeight: 400)
-        .onAppear {
-            refreshSlotInfo()
-            loadThumbnails()
-        }
+        .onAppear { refreshSlotInfo(); loadThumbnails() }
     }
-    
-    // MARK: - Slot Grid View
     
     @ViewBuilder
     var slotsGrid: some View {
         ScrollView {
-            LazyVGrid(
-                columns: Array(repeating: GridItem(.flexible(), spacing: 12), count: 5),
-                spacing: 12
-            ) {
+            LazyVGrid(columns: Array(repeating: GridItem(.flexible(), spacing: 12), count: 5), spacing: 12) {
                 ForEach(0..<10) { slot in
-                    SlotCardView(
-                        slot: slot,
-                        slotInfo: slotInfo(for: slot),
-                        thumbnail: slotThumbnails[slot],
-                        isCurrentSlot: slot == runner.currentSlot,
-                        onSave: { saveToSlot(slot) },
-                        onLoad: { loadFromSlot(slot) },
-                        onDelete: { deleteFromSlot(slot) }
-                    )
+                    SlotCardView(slot: slot, slotInfo: slotInfo(for: slot), thumbnail: slotThumbnails[slot], isCurrentSlot: slot == runner.currentSlot, onSave: { saveToSlot(slot) }, onLoad: { loadFromSlot(slot) }, onDelete: { deleteFromSlot(slot) })
                 }
             }
             .padding()
         }
     }
     
-    // MARK: - Helpers
-    
-    private func slotInfo(for slot: Int) -> SlotInfo? {
-        slotInfoList.first { $0.id == slot }
-    }
-    
-    private func refreshSlotInfo() {
-        guard let rom = runner.rom else { return }
-        let systemID = rom.systemID ?? "default"
-        slotInfoList = runner.saveManager.allSlotInfo(gameName: rom.displayName, systemID: systemID)
-    }
-    
+    private func slotInfo(for slot: Int) -> SlotInfo? { slotInfoList.first { $0.id == slot } }
+    private func refreshSlotInfo() { guard let rom = runner.rom else { return }; slotInfoList = runner.saveManager.allSlotInfo(gameName: rom.displayName, systemID: rom.systemID ?? "default") }
     private func loadThumbnails() {
         guard let rom = runner.rom else { return }
         let systemID = rom.systemID ?? "default"
-        
         for slot in 0..<10 {
-            if let thumbnail = runner.saveManager.loadThumbnail(
-                gameName: rom.displayName,
-                systemID: systemID,
-                slot: slot
-            ) {
+            if let thumbnail = runner.saveManager.loadThumbnail(gameName: rom.displayName, systemID: systemID, slot: slot) {
                 slotThumbnails[slot] = thumbnail
             }
         }
     }
-    
-    private func saveToSlot(_ slot: Int) {
-        let success = runner.saveState(slot: slot)
-        if success {
-            refreshSlotInfo()
-            loadThumbnails()
-        }
-    }
-    
-    private func loadFromSlot(_ slot: Int) {
-        let success = runner.loadState(slot: slot)
-        if success {
-            showSlotPicker = false
-        }
-    }
-    
+    private func saveToSlot(_ slot: Int) { let success = runner.saveState(slot: slot); if success { refreshSlotInfo(); loadThumbnails() } }
+    private func loadFromSlot(_ slot: Int) { let success = runner.loadState(slot: slot); if success { showSlotPicker = false } }
     private func deleteFromSlot(_ slot: Int) {
         guard let rom = runner.rom else { return }
-        let systemID = rom.systemID ?? "default"
-        
         do {
-            try runner.saveManager.deleteState(
-                gameName: rom.displayName,
-                systemID: systemID,
-                slot: slot
-            )
-            slotThumbnails[slot] = nil
-            refreshSlotInfo()
-        } catch {
-            LoggerService.debug(category: "SaveState", "Error deleting state: \(error)")
-        }
+            try runner.saveManager.deleteState(gameName: rom.displayName, systemID: rom.systemID ?? "default", slot: slot)
+            slotThumbnails[slot] = nil; refreshSlotInfo()
+        } catch { LoggerService.debug(category: "SaveState", "Error deleting state: \(error)") }
     }
 }
 
-// MARK: - Slot Card View
-
-/// Individual slot card showing thumbnail, slot number, and actions
 struct SlotCardView: View {
     let slot: Int
     let slotInfo: SlotInfo?
@@ -215,97 +160,43 @@ struct SlotCardView: View {
     
     var body: some View {
         VStack(spacing: 4) {
-            // Thumbnail area
             ZStack {
                 if let thumbnail = thumbnail {
-                    Image(nsImage: thumbnail)
-                        .resizable()
-                        .aspectRatio(contentMode: .fill)
-                        .frame(height: 80)
-                        .clipped()
+                    Image(nsImage: thumbnail).resizable().aspectRatio(contentMode: .fill).frame(height: 80).clipped()
                 } else {
-                    Rectangle()
-                        .fill(Color.gray.opacity(0.2))
-                        .frame(height: 80)
-                        .overlay(
-                            VStack {
-                                Image(systemName: slotInfo?.exists == true ? "square.and.arrow.down" : "plus.circle")
-                                    .font(.system(size: 24))
-                                    .foregroundColor(.secondary)
-                     Text(slotInfo?.exists == true ? "Preview unavailable" : "No save in this slot")
-                         .font(.caption2)
-                         .foregroundColor(.secondary)
-                            }
-                        )
+                    Rectangle().fill(Color.gray.opacity(0.15)).frame(height: 80)
+                        .overlay(VStack {
+                            Image(systemName: slotInfo?.exists == true ? "square.and.arrow.down" : "plus.circle")
+                                .font(.system(size: 24)).foregroundColor(.secondary)
+                            Text(slotInfo?.exists == true ? "Preview unavailable" : "No save in this slot")
+                                .font(.caption2).foregroundColor(.secondary)
+                        })
                 }
-                
-                // Current slot indicator
                 if isCurrentSlot {
-                    VStack {
-                        HStack {
-                            Image(systemName: "chevron.right.circle.fill")
-                                .foregroundColor(.blue)
-                                .font(.caption)
-                            Spacer()
-                        }
-                        Spacer()
-                    }
-                    .padding(4)
+                    VStack { HStack { Image(systemName: "chevron.right.circle.fill").foregroundColor(.blue).font(.caption); Spacer() }; Spacer() }
+                        .padding(4)
                 }
             }
             .cornerRadius(6)
-            .overlay(
-                RoundedRectangle(cornerRadius: 6)
-                    .stroke(isCurrentSlot ? Color.blue : Color.gray.opacity(0.3), lineWidth: 2)
-            )
+            .overlay(RoundedRectangle(cornerRadius: 6).stroke(isCurrentSlot ? Color.blue : Color.gray.opacity(0.25), lineWidth: 1.5))
             
-            // Slot label
             HStack {
-                Text("Slot \(slot)")
-                    .font(.caption)
-                    .fontWeight(isCurrentSlot ? .bold : .medium)
-                    .foregroundColor(isCurrentSlot ? .blue : .primary)
-                
+                Text("Slot \(slot)").font(.caption).fontWeight(isCurrentSlot ? .bold : .medium).foregroundColor(isCurrentSlot ? .blue : .primary)
                 Spacer()
-                
-                if slotInfo?.exists == true {
-                    Image(systemName: "checkmark.circle.fill")
-                        .font(.caption)
-                        .foregroundColor(.green)
-                }
+                if slotInfo?.exists == true { Image(systemName: "checkmark.circle.fill").font(.caption).foregroundColor(.green) }
             }
             
-            // File size
             if let info = slotInfo, info.exists, let size = info.fileSize {
-                Text(size.formattedByteSize)
-                    .font(.caption2)
-                    .foregroundColor(.secondary)
+                Text(size.formattedByteSize).font(.caption2).foregroundColor(.secondary)
             }
             
-            // Action buttons
             HStack(spacing: 4) {
-                Button(action: onSave) {
-                    Image(systemName: "square.and.arrow.down")
-                        .font(.caption)
-                }
-                .buttonStyle(.borderless)
-                .help("Save to Slot \(slot)")
-                
-                Button(action: onLoad) {
-                    Image(systemName: "square.and.arrow.up")
-                        .font(.caption)
-                }
-                .buttonStyle(.borderless)
-                .disabled(slotInfo?.exists != true)
-                .help("Load from Slot \(slot)")
-                
-                Button(action: onDelete) {
-                    Image(systemName: "trash")
-                        .font(.caption)
-                }
-                .buttonStyle(.borderless)
-                .disabled(slotInfo?.exists != true)
-                .help("Delete Slot \(slot)")
+                Button(action: onSave) { Image(systemName: "square.and.arrow.down").font(.caption) }
+                    .buttonStyle(.borderless).help("Save to Slot \(slot)")
+                Button(action: onLoad) { Image(systemName: "square.and.arrow.up").font(.caption) }
+                    .buttonStyle(.borderless).disabled(slotInfo?.exists != true).help("Load from Slot \(slot)")
+                Button(action: onDelete) { Image(systemName: "trash").font(.caption) }
+                    .buttonStyle(.borderless).disabled(slotInfo?.exists != true).help("Delete Slot \(slot)")
             }
             .foregroundColor(.secondary)
         }

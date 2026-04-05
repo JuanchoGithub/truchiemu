@@ -653,12 +653,73 @@ struct LibraryGridView: View {
         1.0 - Double(columnCount - 1) / 7.0
     }
 
+    @State private var scanningMessageIndex = 0
+    
+    private var scanningMessages: [String] {
+        [
+            "Scanning your ROM library…",
+            "Identifying classic games…",
+            "Building your game shelf…",
+            "Fetching box art references…",
+            "Organizing by platform…",
+            "Almost ready to play…"
+        ]
+    }
+    
     private var scanningOverlay: some View {
         VStack(spacing: 20) {
+            ZStack {
+                // Animated pulse ring
+                Circle()
+                    .stroke(Color.accentColor.opacity(0.3), lineWidth: 2)
+                    .frame(width: 60, height: 60)
+                    .scaleEffect(1.0 + library.scanProgress * 0.5)
+                    .opacity(1.0 - library.scanProgress * 0.8)
+                
+                Circle()
+                    .stroke(Color.accentColor.opacity(0.2), lineWidth: 1)
+                    .frame(width: 60, height: 60)
+                    .scaleEffect(1.0 + library.scanProgress * 0.3)
+                    .opacity(0.5)
+                
+                // Controller icon
+                Image(systemName: "arcade.stick")
+                    .font(.system(size: 28))
+                    .foregroundStyle(
+                        LinearGradient(
+                            colors: [.purple, .cyan],
+                            startPoint: .topLeading,
+                            endPoint: .bottomTrailing
+                        )
+                    )
+            }
+            .modifier(ScanningPulseAnimation())
+            
             ProgressView(value: library.scanProgress)
                 .frame(width: 280)
-            Text("Scanning your ROM library…")
-                .foregroundColor(.secondary)
+            
+            Group {
+                Text(scanningMessages[scanningMessageIndex])
+                    .foregroundColor(.secondary)
+                    .contentTransition(.numericText())
+            }
+            .font(.body)
+            .onReceive(Timer.publish(every: 3, on: .main, in: .common).autoconnect()) { _ in
+                if library.isScanning {
+                    withAnimation(.easeInOut(duration: 0.3)) {
+                        scanningMessageIndex = (scanningMessageIndex + 1) % scanningMessages.count
+                    }
+                }
+            }
+            
+            // Fun stats during scan
+            if library.roms.count > 0 {
+                Text("\(library.roms.count) game\(library.roms.count == 1 ? "" : "s") found so far")
+                    .font(.caption)
+                    .foregroundColor(.secondary)
+                    .contentTransition(.numericText())
+            }
+            
             Button(role: .cancel) {
                 library.stopScan()
             } label: {
@@ -670,13 +731,51 @@ struct LibraryGridView: View {
         .frame(maxWidth: .infinity, maxHeight: .infinity)
     }
 
+    @State private var boxArtMessageIndex = 0
+    
+    private var boxArtMessages: [String] {
+        [
+            "Fetching box art…",
+            "Dressing up your games…",
+            "Making your library pretty…",
+            "Finding cover art gems…",
+            "Wrapping ROMs in beautiful cases…"
+        ]
+    }
+    
     private var downloadingArtOverlay: some View {
         HStack(spacing: 12) {
-            ProgressView()
-                .controlSize(.small)
-            Text("Downloading Box Art… \(boxArtService.downloadedCount) / \(boxArtService.downloadQueueCount)")
-                .font(.caption)
-                .foregroundColor(.secondary)
+            // Animated book icon
+            ZStack {
+                Circle()
+                    .stroke(Color.accentColor.opacity(0.3), lineWidth: 1.5)
+                    .frame(width: 20, height: 20)
+                    .scaleEffect(1.0 + boxArtService.downloadProgress * 0.2)
+                    .opacity(1.0 - boxArtService.downloadProgress * 0.5)
+                
+                Image(systemName: "book.fill")
+                    .font(.system(size: 10))
+                    .foregroundStyle(
+                        LinearGradient(
+                            colors: [.purple, .cyan],
+                            startPoint: .topLeading,
+                            endPoint: .bottomTrailing
+                        )
+                    )
+            }
+            .modifier(BoxArtPulseAnimation())
+            
+            VStack(alignment: .leading, spacing: 2) {
+                Text(boxArtMessages[boxArtMessageIndex])
+                    .font(.caption)
+                    .fontWeight(.medium)
+                    .foregroundColor(.primary)
+                    .contentTransition(.numericText())
+                
+                Text("\(boxArtService.downloadedCount) / \(boxArtService.downloadQueueCount) covers downloaded")
+                    .font(.caption2)
+                    .foregroundColor(.secondary)
+            }
         }
         .padding(.horizontal, 16)
         .padding(.vertical, 10)
@@ -685,6 +784,18 @@ struct LibraryGridView: View {
                 .fill(.regularMaterial)
                 .shadow(color: .black.opacity(0.15), radius: 8, y: 4)
         )
+        .onReceive(Timer.publish(every: 4, on: .main, in: .common).autoconnect()) { _ in
+            if boxArtService.isDownloadingBatch {
+                withAnimation(.easeInOut(duration: 0.3)) {
+                    boxArtMessageIndex = (boxArtMessageIndex + 1) % boxArtMessages.count
+                }
+            }
+        }
+        .onChange(of: boxArtService.isDownloadingBatch) { isDownloading in
+            if isDownloading {
+                boxArtMessageIndex = 0
+            }
+        }
     }
 
     @State private var emptyStateAppeared = false
@@ -752,19 +863,19 @@ struct LibraryGridView: View {
         if !activeFilters.isEmpty && searchText.isEmpty {
             return "No games match your filters"
         } else if !searchText.isEmpty {
-            return "No results for \"\(searchText)\""
+            return "Nothing matching \"\(searchText)\""
         } else {
-            return "No games found"
+            return "Your gaming shelf is empty"
         }
     }
     
     private var emptyStateDescription: String {
         if !activeFilters.isEmpty && searchText.isEmpty {
-            return "Try adjusting your filter selection or clear all filters to see your full library."
+            return "Try loosening your filters to rediscover some games."
         } else if !searchText.isEmpty {
-            return "Try a different search term, or add more games to your library to find what you're looking for."
+            return "That title might be hiding under a different name. Try a different search."
         } else {
-            return "Add ROM folders from Settings to get started. TruchieEmu will scan them and organize games by system."
+            return "Add a folder of ROMs and TruchieEmu will organize your collection by system, complete with box art."
         }
     }
     
@@ -1501,6 +1612,46 @@ struct AddToCategorySheet: View {
             }
         }
         .frame(width: 300, height: 300)
+    }
+}
+
+// MARK: - Box Art Pulse Animation
+
+/// A subtle pulse animation for the box art download icon
+struct BoxArtPulseAnimation: ViewModifier {
+    @State private var isAnimating = false
+    
+    func body(content: Content) -> some View {
+        content
+            .scaleEffect(isAnimating ? 1.15 : 1)
+            .animation(
+                Animation.easeInOut(duration: 1.2)
+                    .repeatForever(autoreverses: true),
+                value: isAnimating
+            )
+            .onAppear {
+                isAnimating = true
+            }
+    }
+}
+
+// MARK: - Scanning Pulse Animation
+
+/// A subtle pulse animation for the scanning overlay icon
+struct ScanningPulseAnimation: ViewModifier {
+    @State private var isAnimating = false
+    
+    func body(content: Content) -> some View {
+        content
+            .scaleEffect(isAnimating ? 1.08 : 1)
+            .animation(
+                Animation.easeInOut(duration: 1.5)
+                    .repeatForever(autoreverses: true),
+                value: isAnimating
+            )
+            .onAppear {
+                isAnimating = true
+            }
     }
 }
 

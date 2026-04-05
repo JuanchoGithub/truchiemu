@@ -51,6 +51,42 @@ enum ROMIdentifyResult: Equatable {
 private let identifyLog = Logger(subsystem: Bundle.main.bundleIdentifier ?? "TruchieEmu", category: "ROMIdentify")
 private let databaseLog = Logger(subsystem: Bundle.main.bundleIdentifier ?? "TruchieEmu", category: "LibretroDB")
 
+// MARK: - LoggerService bridging helpers for ROMIdentify / LibretroDB
+// These use the public LoggerService API (info/debug/warning/error) so they
+// are always written to the log file regardless of the user's log level setting.
+extension LoggerService {
+    /// Always-log for ROM identification (bypasses log-level gating).
+    static func romIdentify(_ message: String) {
+        // Use info() which always logs (goes to file + print + OSLog)
+        info(category: "ROMIdentify", message)
+    }
+
+    /// Always-log for libretro database operations (bypasses log-level gating).
+    static func libretroDB(_ message: String) {
+        info(category: "LibretroDB", message)
+    }
+
+    /// Warning-level for ROM identify (always written to file via warning())
+    static func romIdentifyWarn(_ message: String) {
+        warning(category: "ROMIdentify", message)
+    }
+
+    /// Error-level for ROM identify (always written to file via error())
+    static func romIdentifyError(_ message: String) {
+        error(category: "ROMIdentify", message)
+    }
+
+    /// Warning-level for libretro DB (always written to file)
+    static func libretroDBWarn(_ message: String) {
+        warning(category: "LibretroDB", message)
+    }
+
+    /// Error-level for libretro DB (always written to file)
+    static func libretroDBError(_ message: String) {
+        error(category: "LibretroDB", message)
+    }
+}
+
 class ROMIdentifierService {
     static let shared = ROMIdentifierService()
 
@@ -58,41 +94,64 @@ class ROMIdentifierService {
         guard let systemID = rom.systemID,
               let system = SystemDatabase.system(forID: systemID) else {
             identifyLog.warning("Identify: no system for ROM \(rom.path.lastPathComponent, privacy: .public)")
+            LoggerService.romIdentifyWarn("No system for ROM: \(rom.path.lastPathComponent) — path=\(rom.path.path)")
             return .noSystem
         }
 
+        LoggerService.info(category: "ROMIdentify", "Identify START: systemID=\(systemID), file=\(rom.path.lastPathComponent)")
+        LoggerService.romIdentify("Identify START: systemID=\(systemID), path=\(rom.path.path)")
         identifyLog.info("Identify: start system=\(systemID, privacy: .public) file=\(rom.path.lastPathComponent, privacy: .public)")
 
+        LoggerService.debug(category: "ROMIdentify", "Fetching/loading DAT for system=\(systemID)")
         let db = await LibretroDatabaseLibrary.shared.fetchAndLoadDat(for: system)
         if db.isEmpty {
+            LoggerService.warning(category: "ROMIdentify", "Empty/missing database for system \(systemID)")
+            LoggerService.romIdentifyWarn("Empty database for system \(systemID)")
             identifyLog.error("Identify: empty database for system \(systemID, privacy: .public)")
             return .databaseUnavailable
         }
+        LoggerService.info(category: "ROMIdentify", "Database loaded for \(systemID): \(db.count) CRC entries")
+        LoggerService.romIdentify("Database loaded: \(db.count) CRC entries for \(systemID)")
         identifyLog.info("Identify: database has \(db.count) CRC entries for lookup")
 
+        LoggerService.debug(category: "ROMIdentify", "Computing CRC for \(rom.path.path)")
         guard let crc = computeCRC(for: rom.path, systemID: systemID) else {
+            LoggerService.error(category: "ROMIdentify", "CRC read failed for \(rom.path.path)")
+            LoggerService.romIdentifyError("CRC read failed for path=\(rom.path.path)")
             identifyLog.error("Identify: CRC read failed for \(rom.path.path, privacy: .public)")
             return .romReadFailed("Could not read the ROM file. If the library is on a removable drive or you moved files, re-add the folder in Settings.")
         }
 
         let key = crc.uppercased()
+        LoggerService.info(category: "ROMIdentify", "ROM CRC=\(key)")
+        LoggerService.romIdentify("ROM CRC=\(key)")
         identifyLog.info("Identify: ROM CRC \(key, privacy: .public)")
 
         if let info = db[key] {
             if let thumb = info.thumbnailLookupSystemID, thumb != systemID {
+                LoggerService.info(category: "ROMIdentify", "CRC HIT: '\(info.name)' (thumbnail system override: \(thumb) — ROM system is \(systemID))")
+                LoggerService.romIdentify("CRC match → \(info.name) (thumbnails: use system \(thumb), ROM is \(systemID))")
                 identifyLog.info("Identify: CRC match → \(info.name, privacy: .public) (thumbnails: use system \(thumb, privacy: .public), ROM is \(systemID, privacy: .public))")
             } else {
+                LoggerService.info(category: "ROMIdentify", "CRC HIT: '\(info.name)'")
+                LoggerService.romIdentify("CRC match → \(info.name)")
                 identifyLog.info("Identify: CRC match → \(info.name, privacy: .public)")
             }
             return .identified(info)
         }
 
+        LoggerService.debug(category: "ROMIdentify", "No CRC match for \(key), trying identifyByName...")
+        LoggerService.romIdentify("No CRC match for \(key), trying name match")
         let language = Self.currentEmulatorLanguage()
         if let byName = identifyByName(rom: rom, database: db, language: language) {
+            LoggerService.info(category: "ROMIdentify", "NAME MATCH: '\(byName.name)' (language=\(language.name))")
+            LoggerService.romIdentify("Filename match → \(byName.name) (language \(language.name))")
             identifyLog.info("Identify: filename match → \(byName.name, privacy: .public) (language \(language.name, privacy: .public))")
             return .identifiedFromName(byName)
         }
 
+        LoggerService.info(category: "ROMIdentify", "NOT IDENTIFIED: CRC \(key) not in database and no filename match for system=\(systemID)")
+        LoggerService.romIdentify("CRC \(key) not in database and no filename match for \(systemID)")
         identifyLog.notice("Identify: CRC \(key, privacy: .public) not in database and no filename match for \(systemID, privacy: .public)")
         return .crcNotInDatabase(crc: key)
     }
@@ -435,7 +494,13 @@ actor LibretroDatabaseLibrary {
     
     /// Parses a ClrMamePro formatted DAT file into a dictionary grouped by CRC.
     func parseDat(contentsOf url: URL) -> [String: GameInfo] {
-        guard let lines = try? String(contentsOf: url).components(separatedBy: .newlines) else { return [:] }
+        LoggerService.libretroDB("Parsing DAT file: \(url.path)")
+        guard let lines = try? String(contentsOf: url).components(separatedBy: .newlines) else {
+            LoggerService.libretroDBWarn("Failed to read DAT file: \(url.path)")
+            return [:]
+        }
+        
+        LoggerService.libretroDB("DAT file has \(lines.count) lines")
         
         var database: [String: GameInfo] = [:]
         var currentGame: LibretroDatGame?
@@ -486,6 +551,7 @@ actor LibretroDatabaseLibrary {
             }
         }
         
+        LoggerService.libretroDB("Parsed DAT \(url.lastPathComponent) → \(database.count) CRC entries")
         databaseLog.info("Parsed DAT \(url.lastPathComponent, privacy: .public) → \(database.count) CRC entries")
         return database
     }
@@ -501,23 +567,35 @@ actor LibretroDatabaseLibrary {
     /// Ensures we have the database locally, optionally downloading it from GitHub. Order: **No-Intro `.dat`** → **other `.dat` trees** → **`rdb/` RDB** (compiled libretrodb).
     /// For **Game Boy** and **Game Boy Color**, loads and merges **both** sets (mixed libraries).
     func fetchAndLoadDat(for system: SystemInfo) async -> [String: GameInfo] {
+        LoggerService.info(category: "LibretroDB", "fetchAndLoadDat() called for systemID=\(system.id)")
+        LoggerService.libretroDB("fetchAndLoadDat called for systemID=\(system.id) (displayName=\(system.name))")
+
         if Self.isGbFamily(system.id) {
+            LoggerService.libretroDB("GB family detected (systemID=\(system.id)), checking merged cache")
             if let merged = databases[Self.gbFamilyCacheKey] {
                 databaseLog.info("LibretroDB: cache hit merged Game Boy + Game Boy Color (\(merged.count) CRC entries)")
+                LoggerService.info(category: "LibretroDB", "CACHE HIT: merged GB+GBC (\(merged.count) CRC entries)")
+                LoggerService.libretroDB("Cache hit: merged GB+GBC (\(merged.count) CRC entries)")
                 return merged
             }
+            LoggerService.libretroDB("GB+GBC cache MISS, loading both databases and merging")
             let partnerID = system.id == "gb" ? "gbc" : "gb"
             guard let partner = SystemDatabase.system(forID: partnerID) else {
+                LoggerService.libretroDBError("GB family merge failed — missing partner system \(partnerID)")
                 databaseLog.error("LibretroDB: GB family merge failed — missing partner system \(partnerID, privacy: .public)")
                 return await loadSingleSystemDatabase(for: system)
             }
 
+            LoggerService.debug(category: "LibretroDB", "Loading primary system \(system.id), then partner \(partnerID)")
             databaseLog.info("LibretroDB: Game Boy family — loading \(system.id, privacy: .public) then \(partnerID, privacy: .public), then merging")
+            LoggerService.libretroDB("Loading primary \(system.id) then partner \(partnerID), then merging")
 
             let primary = await loadSingleSystemDatabase(for: system)
+            LoggerService.libretroDB("Primary \(system.id) → \(primary.count) CRC entries")
             databaseLog.info("LibretroDB: primary \(system.id, privacy: .public) → \(primary.count) CRC entries")
 
             let secondary = await loadSingleSystemDatabase(for: partner)
+            LoggerService.libretroDB("Partner \(partnerID) → \(secondary.count) CRC entries")
             databaseLog.info("LibretroDB: partner \(partnerID, privacy: .public) → \(secondary.count) CRC entries")
 
             var merged: [String: GameInfo] = [:]
@@ -532,7 +610,9 @@ actor LibretroDatabaseLibrary {
                     merged[crc] = Self.tagGameInfo(info, thumbnailLookupSystemID: partner.id)
                 }
             }
+            LoggerService.libretroDB("Merged GB+GBC → \(merged.count) unique CRCs (overlap=\(overlap)))")
             databaseLog.info("LibretroDB: merged GB+GBC → \(merged.count) unique CRCs (\(overlap) CRCs present in both sets; primary \(system.id, privacy: .public) wins on overlap); entries tagged for thumbnail CDN folder")
+            LoggerService.info(category: "LibretroDB", "Merged GB+GBC → \(merged.count) unique CRCs (\(overlap) overlapping)")
 
             databases[Self.gbFamilyCacheKey] = merged
             databases["gb"] = merged
@@ -540,11 +620,16 @@ actor LibretroDatabaseLibrary {
             return merged
         }
 
+        // Non-GB-family systems
         if let db = databases[system.id] {
+            LoggerService.info(category: "LibretroDB", "CACHE HIT: \(system.id) (\(db.count) CRC entries)")
+            LoggerService.libretroDB("Cache hit: \(system.id) (\(db.count) CRC entries)")
             databaseLog.info("LibretroDB: cache hit \(system.id, privacy: .public) (\(db.count) CRC entries)")
             return db
         }
 
+        LoggerService.info(category: "LibretroDB", "Cache MISS for \(system.id), loading...")
+        LoggerService.libretroDB("Cache miss for \(system.id), calling loadSingleSystemDatabase")
         let loaded = await loadSingleSystemDatabase(for: system)
         databases[system.id] = loaded
         return loaded
@@ -552,48 +637,82 @@ actor LibretroDatabaseLibrary {
 
     /// One libretro system: local DAT → No-Intro DAT → other DAT trees → RDB (no GB/GBC merge).
     private func loadSingleSystemDatabase(for system: SystemInfo) async -> [String: GameInfo] {
+        LoggerService.info(category: "LibretroDB", "loadSingleSystemDatabase: loading database for systemID='\(system.id)' (\(system.name))")
+        LoggerService.libretroDB("loadSingleSystemDatabase called for systemID=\(system.id) name=\(system.name)")
+
         let appSupport = FileManager.default.urls(for: .applicationSupportDirectory, in: .userDomainMask).first!
         let datsDir = appSupport.appendingPathComponent("TruchieEmu/Dats", isDirectory: true)
         let rdbDir = appSupport.appendingPathComponent("TruchieEmu/Rdb", isDirectory: true)
         try? FileManager.default.createDirectory(at: datsDir, withIntermediateDirectories: true)
         try? FileManager.default.createDirectory(at: rdbDir, withIntermediateDirectories: true)
 
+        LoggerService.libretroDB("DATs directory: \(datsDir.path)")
+        LoggerService.libretroDB("RDBs directory: \(rdbDir.path)")
+
         let localNames = datBasenamesToTry(for: system)
         let baseUrl = "https://raw.githubusercontent.com/libretro/libretro-database/master/"
 
+        LoggerService.info(category: "LibretroDB", "Step 1/4: Scanning local DATs in \(datsDir.path)")
+        LoggerService.libretroDB("=== STEP 1: Scanning local DATs ===")
+        LoggerService.libretroDB("Trying DAT filenames: \(localNames.joined(separator: ", "))")
         databaseLog.info("LibretroDB: [\(system.id, privacy: .public)] Step 1 — scan local DATs in \(datsDir.path, privacy: .public)")
+
         for fileName in localNames {
             let localUrl = datsDir.appendingPathComponent(fileName)
             if FileManager.default.fileExists(atPath: localUrl.path) {
+                LoggerService.libretroDB("Found local DAT file: \(localUrl.path)")
                 let db = parseDat(contentsOf: localUrl)
                 if db.isEmpty {
+                    LoggerService.libretroDBWarn("Local DAT \(fileName) exists but parsed 0 entries — continuing")
                     databaseLog.info("LibretroDB: [\(system.id, privacy: .public)] local DAT \(fileName, privacy: .public) exists but parsed 0 entries — continuing")
                 } else {
+                    LoggerService.info(category: "LibretroDB", "Step 1: FOUND local DAT \(fileName) with \(db.count) entries")
+                    LoggerService.libretroDB("Local DAT \(fileName) OK — \(db.count) CRC entries")
                     databaseLog.info("LibretroDB: [\(system.id, privacy: .public)] using local DAT \(fileName, privacy: .public) (\(db.count) entries)")
                     return db
                 }
             } else {
+                LoggerService.debug(category: "LibretroDB", "Local DAT not found: \(localUrl.path)")
+                LoggerService.libretroDB("Local DAT not found: \(localUrl.path)")
                 databaseLog.info("LibretroDB: [\(system.id, privacy: .public)] no local file \(fileName, privacy: .public)")
             }
         }
+        LoggerService.libretroDB("Step 1 complete: no usable local DAT found")
 
+        LoggerService.info(category: "LibretroDB", "Step 2/4: Downloading No-Intro DAT")
+        LoggerService.libretroDB("=== STEP 2: Downloading No-Intro DAT (metadat/no-intro) ===")
         databaseLog.info("LibretroDB: [\(system.id, privacy: .public)] Step 2 — download No-Intro DAT (metadat/no-intro)")
         let noIntroOnly = ["metadat/no-intro"]
         if let db = await downloadDatRemote(systemID: system.id, names: localNames, remotePaths: noIntroOnly, datsDir: datsDir, baseUrl: baseUrl) {
+            LoggerService.info(category: "LibretroDB", "Step 2: SUCCESS — downloaded No-Intro DAT with \(db.count) entries")
+            LoggerService.libretroDB("No-Intro DAT download OK — \(db.count) CRC entries")
             return db
         }
+        LoggerService.libretroDB("Step 2 complete: No-Intro DAT not found or failed")
 
+        LoggerService.info(category: "LibretroDB", "Step 3/4: Downloading other DAT trees")
+        LoggerService.libretroDB("=== STEP 3: Downloading other DAT trees ===")
         databaseLog.info("LibretroDB: [\(system.id, privacy: .public)] Step 3 — download other DAT trees (redump, mame, …)")
         let otherDatPaths = ["metadat/redump", "metadat/mame", "metadat/fba", "metadat/fbneo-split", "dat"]
         if let db = await downloadDatRemote(systemID: system.id, names: localNames, remotePaths: otherDatPaths, datsDir: datsDir, baseUrl: baseUrl) {
+            LoggerService.info(category: "LibretroDB", "Step 3: SUCCESS — downloaded DAT with \(db.count) entries")
+            LoggerService.libretroDB("Other DAT download OK — \(db.count) CRC entries")
             return db
         }
+        LoggerService.libretroDB("Step 3 complete: other DAT trees not found or failed")
 
+        LoggerService.info(category: "LibretroDB", "Step 4/4: Loading RDB")
+        LoggerService.libretroDB("=== STEP 4: Loading RDB (local then remote) ===")
         databaseLog.info("LibretroDB: [\(system.id, privacy: .public)] Step 4 — load RDB (local cache then rdb/ on GitHub)")
         if let db = await downloadRdbRemote(systemID: system.id, names: rdbBasenamesToTry(for: system), rdbDir: rdbDir, baseUrl: baseUrl) {
+            LoggerService.info(category: "LibretroDB", "Step 4: SUCCESS — loaded RDB with \(db.count) entries")
+            LoggerService.libretroDB("RDB load OK — \(db.count) CRC entries")
             return db
         }
+        LoggerService.libretroDB("Step 4 complete: RDB not found or failed")
 
+        LoggerService.warning(category: "LibretroDB", "ALL STEPS FAILED: No usable DAT or RDB found for systemID='\(system.id)' (tried: \(localNames.joined(separator: ", ")))")
+        LoggerService.libretroDBError("=== FAILED === No usable DAT or RDB for systemID=\(system.id) (tried: \(localNames.joined(separator: ", ")))")
         databaseLog.error("LibretroDB: [\(system.id, privacy: .public)] Step 5 — FAILED — no usable DAT or RDB (tried DAT names: \(localNames.joined(separator: ", "), privacy: .public))")
         return [:]
     }

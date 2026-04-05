@@ -4,6 +4,7 @@ import SwiftUI
 
 /// A toast notification displayed when an achievement is unlocked.
 /// Appears as a slide-in banner with the achievement badge, title, and points.
+/// Triggers confetti celebration for rare achievements (10+ points).
 struct AchievementToastView: View {
     let achievement: Achievement
     @Binding var isPresented: Bool
@@ -11,6 +12,11 @@ struct AchievementToastView: View {
     @State private var offset: CGFloat = 300
     @State private var opacity: Double = 0
     @State private var badgeImage: NSImage?
+    @State private var showConfetti = false
+    
+    var isRareAchievement: Bool {
+        achievement.points >= 10
+    }
     
     var body: some View {
         HStack(spacing: 16) {
@@ -67,9 +73,21 @@ struct AchievementToastView: View {
         .shadow(color: .black.opacity(0.3), radius: 10, x: 0, y: 5)
         .offset(y: offset)
         .opacity(opacity)
+        .overlay {
+            if showConfetti {
+                ConfettiView(particleCount: 60) {
+                    showConfetti = false
+                }
+            }
+        }
         .onAppear {
             loadBadge()
             animateIn()
+            
+            // Trigger confetti for rare achievements
+            if isRareAchievement {
+                showConfetti = true
+            }
             
             // Auto-dismiss after 5 seconds
             DispatchQueue.main.asyncAfter(deadline: .now() + 5) {

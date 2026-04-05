@@ -46,45 +46,50 @@ struct ContentView: View {
     }
 
     private var mainInterface: some View {
-        VStack(spacing: 0) {
-            NavigationSplitView {
-                SystemSidebarView(
-                    selectedFilter: $selectedFilter,
-                    showCreateCategorySheet: $showCreateCategorySheet,
-                    editingCategory: $editingCategory
-                )
-            } detail: {
-                LibraryGridView(
-                    showCreateCategorySheet: $showCreateCategorySheet,
-                    filter: selectedFilter,
-                    selectedROM: $selectedROM,
-                    searchText: $searchText
-                )
-                .navigationTitle(navigationTitle)
-            }
-            .navigationSplitViewStyle(.balanced)
-            .sheet(isPresented: $showCreateCategorySheet) {
-                CreateCategorySheet()
-            }
-            .sheet(item: $editingCategory) { category in
-                EditCategorySheet(category: category)
-            }
-
-            // Status bar for library automation or metadata sync
-            if let activeStatus = activeBackgroundTask {
-                VStack(alignment: .leading, spacing: 6) {
-                    ProgressView(value: activeStatus.progress)
-                        .progressViewStyle(.linear)
-                    Text(activeStatus.statusLine)
-                        .font(.caption)
-                        .foregroundStyle(.secondary)
-                        .lineLimit(2)
+        ZStack {
+            VStack(spacing: 0) {
+                NavigationSplitView {
+                    SystemSidebarView(
+                        selectedFilter: $selectedFilter,
+                        showCreateCategorySheet: $showCreateCategorySheet,
+                        editingCategory: $editingCategory
+                    )
+                } detail: {
+                    LibraryGridView(
+                        showCreateCategorySheet: $showCreateCategorySheet,
+                        filter: selectedFilter,
+                        selectedROM: $selectedROM,
+                        searchText: $searchText
+                    )
+                    .navigationTitle(navigationTitle)
                 }
-                .padding(.horizontal, 12)
-                .padding(.vertical, 8)
-                .frame(maxWidth: .infinity, alignment: .leading)
-                .background(.bar)
+                .navigationSplitViewStyle(.balanced)
+                .sheet(isPresented: $showCreateCategorySheet) {
+                    CreateCategorySheet()
+                }
+                .sheet(item: $editingCategory) { category in
+                    EditCategorySheet(category: category)
+                }
+
+                // Status bar for library automation or metadata sync
+                if let activeStatus = activeBackgroundTask {
+                    VStack(alignment: .leading, spacing: 6) {
+                        ProgressView(value: activeStatus.progress)
+                            .progressViewStyle(.linear)
+                        Text(activeStatus.statusLine)
+                            .font(.caption)
+                            .foregroundStyle(.secondary)
+                            .lineLimit(2)
+                    }
+                    .padding(.horizontal, 12)
+                    .padding(.vertical, 8)
+                    .frame(maxWidth: .infinity, alignment: .leading)
+                    .background(.bar)
+                }
             }
+            
+            // Confetti overlay for celebration moments
+            ConfettiOverlay()
         }
         .sheet(item: $coreManager.pendingDownload) { pending in
             CoreDownloadSheet(pending: pending)
