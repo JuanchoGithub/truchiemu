@@ -913,10 +913,17 @@ class BoxArtService: ObservableObject {
 
     /// Call this after successfully fetching or changing box art for a specific game.
     /// Observers (like LibraryGridView) can use this to force a UI refresh.
-    func signalBoxArtUpdated(for romID: UUID) {
-        // Clear the image cache for this ROM's boxart so the grid picks up the new image
-        Task {
-            await ImageCache.shared.clear()
+    /// - Parameters:
+    ///   - romID: The ROM's UUID (used by observers for identification)
+    ///   - boxArtURL: The new box art file URL (for scoped cache invalidation)
+    func signalBoxArtUpdated(for romID: UUID, boxArtURL: URL? = nil) {
+        // Scoped cache invalidation — only remove the specific ROM's cached images
+        // instead of nuking the entire cache (which causes scroll jank on all visible cards)
+        if let url = boxArtURL {
+            Task {
+                await ImageCache.shared.removeImage(for: url)
+                await ImageCache.shared.removeThumbnail(for: url)
+            }
         }
         // Toggle the UUID to trigger SwiftUI's @Published change detection
         boxArtUpdated = UUID()

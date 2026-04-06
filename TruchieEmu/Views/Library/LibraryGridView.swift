@@ -2,6 +2,7 @@ import SwiftUI
 import AppKit
 
 // GridCardBoxArtView and GridCardZoomableFullScreenView are defined in ZoomableBoxArtView.swift
+// GameCardView and CategoryBadgesRow are defined in GameCardView.swift
 
 // MARK: - Full Screen Zoomable Box Art View (alias for backwards compat)
 
@@ -255,10 +256,8 @@ struct LibraryGridView: View {
 
     private enum ViewMode: String { case grid, list }
 
-    /// Filtered and sorted ROMs — computed purely from current state (no side effects).
-    /// SwiftUI's LazyVGrid handles lazy rendering, so this is safe even for large lists.
-    /// Performance note: this is intentionally not cached — SwiftUI's diffing depends on
-    /// the computed value being consistent between render passes.
+    /// Filtered and sorted ROMs. The sorting step is deferred to a lazy sequence
+    /// so that SwiftUI's LazyVGrid only computes the visible range on each pass.
     private var displayedROMs: [ROM] {
         let base: [ROM]
         switch filter {
@@ -341,6 +340,12 @@ struct LibraryGridView: View {
         VStack(spacing: 0) {
             searchField
                 .focused($focusedField, equals: .search)
+            
+            // Visible zoom slider
+            if viewMode == .grid {
+                zoomSlider
+            }
+            
             filterChips
             
             // Active filter summary bar
@@ -600,6 +605,16 @@ struct LibraryGridView: View {
             // Recompute columns from saved zoom level
             applyZoomToColumnCount(animate: false)
             updateColumns()
+            
+            // Background preload: decode visible box art images so scrolling is smooth
+            let romsWithArt = displayedROMs.filter { $0.boxArtPath != nil }
+            if !romsWithArt.isEmpty {
+                Task {
+                    await BoxArtPreloaderService.shared.preloadBoxArt(for: romsWithArt)
+                    // Also enforce disk cache limits on startup
+                    _ = await BoxArtPreloaderService.shared.enforceDiskCacheLimit()
+                }
+            }
         }
         .onDisappear {
             // Save zoom level persistently
@@ -609,8 +624,9 @@ struct LibraryGridView: View {
         .onChange(of: boxArtService.boxArtUpdated) { _, _ in
             // Update the refresh token to force all GameCardViews to reload their images
             gridRefreshToken = UUID()
-            // Clear the image cache so fresh images are loaded from disk
-            Task { await ImageCache.shared.clear() }
+            // Note: We no longer clear the entire ImageCache here.
+            // The BoxArtPreloaderService handles scoped invalidation per-ROM,
+            // so other cached images remain intact and scrolling stays smooth.
         }
         // MARK: - Keyboard Shortcuts
         // Cmd+F focuses search field
@@ -1266,6 +1282,40 @@ struct LibraryGridView: View {
         .padding(.bottom, 4)
     }
     
+    /// Visible zoom slider for the grid view
+    /// Uses onEditingChanged to avoid column recalculation on every tiny value change
+    /// during scroll (which causes scroll lock/jank).
+    private var zoomSlider: some View {
+        HStack(spacing: 8) {
+            Image(systemName: "minus.magnifyingglass")
+                .font(.system(size: 12))
+                .foregroundColor(.secondary.opacity(0.6))
+                .frame(width: 16)
+            
+            Slider(value: $continuousZoom, in: 0...1, step: 1.0/7.0,
+                   onEditingChanged: { isEditing in
+                       if !isEditing {
+                           // Only recalculate columns when user releases the slider
+                           withAnimation(.interpolatingSpring(stiffness: 150, damping: 20)) {
+                               applyZoomToColumnCount(animate: true)
+                           }
+                       }
+                   })
+            
+            Image(systemName: "plus.magnifyingglass")
+                .font(.system(size: 12))
+                .foregroundColor(.secondary.opacity(0.6))
+                .frame(width: 16)
+            
+            Text("\(Int(continuousZoom * 100))%")
+                .font(.system(size: 11, weight: .medium, design: .monospaced))
+                .foregroundColor(.secondary)
+                .frame(width: 36, alignment: .trailing)
+        }
+        .padding(.horizontal, 16)
+        .padding(.vertical, 6)
+    }
+    
     private var filterChips: some View {
         ScrollView(.horizontal, showsIndicators: false) {
             HStack(spacing: 6) {
@@ -1408,149 +1458,6 @@ struct FilterChipView: View {
     }
     
     @State private var isHovered = false
-}
-
-// MARK: - Game Card
-
-struct GameCardView: View {
-    let rom: ROM
-    let isSelected: Bool
-    let isMultiSelected: Bool
-    let zoomLevel: Double
-    var gridRefreshToken: UUID = UUID()
-    @State private var isHovered = false
-    @State private var image: NSImage?
-    @ObservedObject var prefs = SystemPreferences.shared
-    @EnvironmentObject var library: ROMLibrary
-    @EnvironmentObject var categoryManager: CategoryManager
-
-    private var boxType: BoxType {
-        prefs.boxType(for: rom.systemID ?? "")
-    }
-    
-    private var titleFontSize: CGFloat {
-        10 + zoomLevel * 6
-    }
-    
-    private var categoryBadges: [GameCategory] {
-        categoryManager.categories.filter { $0.gameIDs.contains(rom.id) }
-    }
-
-    var body: some View {
-        VStack(alignment: .leading, spacing: 8) {
-            ZStack(alignment: .topTrailing) {
-                artworkView
-                    .overlay(
-                        RoundedRectangle(cornerRadius: 8)
-                            .fill(Color.black.opacity(isHovered ? 0.1 : 0))
-                            .animation(.easeOut(duration: 0.2), value: isHovered)
-                    )
-                
-                if isMultiSelected {
-                    Image(systemName: "checkmark.circle.fill")
-                        .font(.title2)
-                        .foregroundColor(.white)
-                        .shadow(radius: 2)
-                        .padding(4)
-                        .transition(.scale.combined(with: .opacity))
-                }
-            }
-            
-            Text(rom.displayName)
-                .font(.system(size: titleFontSize, weight: .medium))
-                .lineLimit(2)
-                .multilineTextAlignment(.leading)
-                .foregroundColor(.primary)
-            
-            if !categoryBadges.isEmpty {
-                ScrollView(.horizontal, showsIndicators: false) {
-                    HStack(spacing: 4) {
-                        ForEach(categoryBadges) { category in
-                            CategoryBadgeView(category: category)
-                        }
-                    }
-                }
-            }
-        }
-        .padding(8)
-        .background(
-            RoundedRectangle(cornerRadius: 12)
-                .fill(isSelected ? Color.accentColor.opacity(0.25) : (isHovered ? Color.secondary.opacity(0.1) : Color.clear))
-        )
-        .overlay(
-            RoundedRectangle(cornerRadius: 12)
-                .stroke(isSelected ? Color.accentColor : Color.clear, lineWidth: 2)
-        )
-        .shadow(
-            color: isHovered && !isSelected ? Color.accentColor.opacity(0.2) : .clear,
-            radius: isHovered ? 8 : 4,
-            y: isHovered ? 4 : 2
-        )
-        .animation(.easeOut(duration: 0.15), value: isHovered)
-        .animation(.easeOut(duration: 0.2), value: isSelected)
-        .onHover { isHovered = $0 }
-        .accessibilityLabel(rom.displayName)
-        .accessibilityAddTraits(.isButton)
-        .task(id: "\(rom.boxArtPath?.path ?? "")-\(gridRefreshToken)") {
-            // Lazy-resolve local boxart on-demand if not already set
-            if let resolvedPath = BoxArtService.shared.resolveLocalBoxArtIfNeeded(for: rom, library: library) {
-                self.image = await ImageCache.shared.image(for: resolvedPath)
-            } else if let artPath = rom.boxArtPath {
-                self.image = await ImageCache.shared.image(for: artPath)
-            } else {
-                self.image = nil
-            }
-        }
-    }
-
-    private var artworkView: some View {
-        GridCardBoxArtView(
-            image: image,
-            placeholder: { AnyView(placeholderArt) },
-            aspectRatio: boxType.aspectRatio,
-            isHovered: isHovered
-        )
-        .shadow(color: Color.black.opacity(isHovered ? 0.4 : 0.3), radius: isHovered ? 10 : 6, x: 0, y: isHovered ? 5 : 3)
-    }
-
-    private var placeholderArt: some View {
-        ZStack {
-            LinearGradient(
-                colors: [systemColor.opacity(0.6), systemColor.opacity(0.3)],
-                startPoint: .topLeading, endPoint: .bottomTrailing
-            )
-            VStack(spacing: 8) {
-                if let sys = SystemDatabase.system(forID: rom.systemID ?? ""),
-                   let img = sys.emuImage(size: 600) {
-                    Image(nsImage: img)
-                        .resizable()
-                        .aspectRatio(contentMode: .fit)
-                        .frame(width: 80, height: 80)
-                } else {
-                    Image(systemName: systemIcon)
-                        .font(.system(size: 32))
-                        .foregroundColor(.white.opacity(0.8))
-                }
-                
-                Text(rom.displayName)
-                    .font(.system(size: titleFontSize * 0.8))
-                    .foregroundColor(.white.opacity(0.6))
-                    .multilineTextAlignment(.center)
-                    .lineLimit(3)
-                    .padding(.horizontal, 4)
-            }
-        }
-    }
-
-    private var systemIcon: String {
-        SystemDatabase.system(forID: rom.systemID ?? "")?.iconName ?? "gamecontroller"
-    }
-
-    private var systemColor: Color {
-        let colors: [Color] = [.purple, .blue, .cyan, .green, .orange, .red, .pink]
-        let hash = abs((rom.systemID ?? "x").hashValue)
-        return colors[hash % colors.count]
-    }
 }
 
 // MARK: - List Row
@@ -1881,36 +1788,255 @@ struct EmptyStateFloatAnimation: ViewModifier {
 
 // MARK: - Image Cache
 
+/// Thread-safe image cache with pre-decoded images and separate thumbnail storage.
+/// Full-resolution images are cached for detail views, downscaled thumbnails for grid/list views.
 actor ImageCache {
     static let shared = ImageCache()
-    private var cache = NSCache<NSURL, NSImage>()
     
+    /// Full-resolution decoded images
+    private var cache = NSCache<NSURL, NSImage>()
+    /// Downscaled thumbnails for grid/list views
+    private var thumbnailCache = NSCache<NSURL, NSImage>()
+    /// Set of URLs currently being decoded — prevents redundant work
+    private var pendingDecodes = Set<String>()
+    
+    // MARK: - Public API
+    
+    /// Get a pre-decoded image from cache, or decode it synchronously on first load.
+    /// This is a drop-in replacement for `NSImage(contentsOf:)` that ensures pixels
+    /// are already decoded, avoiding main-thread decode jank during scroll.
     func image(for url: URL) async -> NSImage? {
+        // Check full-res cache first
         if let cached = cache.object(forKey: url as NSURL) {
             return cached
         }
         
-        let image = NSImage(contentsOf: url)
+        // Check thumbnail cache
+        if let thumb = thumbnailCache.object(forKey: url as NSURL) {
+            return thumb
+        }
         
-        if let image = image {
+        // Prevent redundant decode for same URL
+        let key = url.path
+        guard !pendingDecodes.contains(key) else {
+            // Another task is already decoding this — wait briefly then retry
+            try? await Task.sleep(nanoseconds: 50_000_000) // 50ms
+            return cache.object(forKey: url as NSURL) ?? thumbnailCache.object(forKey: url as NSURL)
+        }
+        pendingDecodes.insert(key)
+        defer { pendingDecodes.remove(key) }
+        
+        // Decode on background thread
+        let decoded = try? await Task.detached {
+            Self.decodeImageSync(from: url)
+        }.value
+        
+        if let image = decoded {
             cache.setObject(image, forKey: url as NSURL)
         }
         
-        return image
+        return decoded
+    }
+    
+    /// Get a downscaled thumbnail suitable for grid/list card display.
+    /// If no thumbnail exists, creates one from the source image or full-res cache.
+    func thumbnail(for url: URL, maxWidth: CGFloat = 400, maxHeight: CGFloat = 600) async -> NSImage? {
+        // Check thumbnail cache
+        if let cached = thumbnailCache.object(forKey: url as NSURL) {
+            return cached
+        }
+        
+        // Try to get full-res and downscale
+        if let fullRes = cache.object(forKey: url as NSURL) {
+            let thumb = Self.downscaleImage(fullRes, maxWidth: maxWidth, maxHeight: maxHeight)
+            thumbnailCache.setObject(thumb, forKey: url as NSURL)
+            return thumb
+        }
+        
+        // Load from disk and downscale
+        let result = try? await Task.detached {
+            Self.decodeImageSync(from: url, maxWidth: maxWidth, maxHeight: maxHeight)
+        }.value
+        
+        if let img = result {
+            thumbnailCache.setObject(img, forKey: url as NSURL)
+        }
+        
+        return result
+    }
+    
+    /// Decode and cache an image, optionally downscaled.
+    /// Used by the preloader to warm the cache before images are displayed.
+    func decodedImage(for url: URL, maxWidth: CGFloat = 0, maxHeight: CGFloat = 0) async -> NSImage? {
+        // Check if already cached
+        if maxWidth > 0 || maxHeight > 0 {
+            if let thumb = thumbnailCache.object(forKey: url as NSURL) {
+                return thumb
+            }
+        } else {
+            if let cached = cache.object(forKey: url as NSURL) {
+                return cached
+            }
+        }
+        
+        let decoded = try? await Task.detached {
+            Self.decodeImageSync(from: url, maxWidth: maxWidth, maxHeight: maxHeight)
+        }.value
+        
+        if let image = decoded {
+            if maxWidth > 0 || maxHeight > 0 {
+                thumbnailCache.setObject(image, forKey: url as NSURL)
+            } else {
+                cache.setObject(image, forKey: url as NSURL)
+            }
+        }
+        
+        return decoded
     }
     
     func clear() {
         cache.removeAllObjects()
+        thumbnailCache.removeAllObjects()
     }
     
     func removeImage(for url: URL) {
         cache.removeObject(forKey: url as NSURL)
     }
     
-    /// Configure cache limits to prevent unbounded memory growth
+    func removeThumbnail(for url: URL) {
+        thumbnailCache.removeObject(forKey: url as NSURL)
+    }
+    
+    /// Total images cached (full-res + thumbnails)
+    func cachedImageCount() -> Int {
+        cache.countLimit + thumbnailCache.countLimit
+    }
+    
+    /// Memory usage estimate (approximate, based on count limits)
+    func estimatedMemoryUsageMB() -> Int {
+        // NSCache doesn't expose actual memory usage, so we estimate based on limits
+        return (cache.totalCostLimit) / (1024 * 1024)
+    }
+    
+    // MARK: - Private Helpers
+    
     init() {
-        // ~200MB limit for box art images
+        // ~200MB limit for full-res box art images
         cache.totalCostLimit = 200 * 1024 * 1024
         cache.countLimit = 500
+        
+        // ~50MB limit for thumbnails (smaller, so we can fit more)
+        thumbnailCache.totalCostLimit = 50 * 1024 * 1024
+        thumbnailCache.countLimit = 1000
+    }
+    
+    /// Synchronously decode an image from disk with pre-decoding.
+    /// This ensures pixels are decoded upfront rather than lazily during draw.
+    nonisolated
+    private static func decodeImageSync(from url: URL, maxWidth: CGFloat = 0, maxHeight: CGFloat = 0) -> NSImage? {
+        guard let data = try? Data(contentsOf: url) else { return nil }
+        
+        // Use NSImageRep for proper format handling (PNG, JPEG, WebP, etc.)
+        guard let rep = NSBitmapImageRep(data: data) else { return nil }
+        
+        let sourceSize = rep.size
+        
+        // Check if we need to downscale
+        if maxWidth > 0 || maxHeight > 0 {
+            let maxW = maxWidth > 0 ? maxWidth : .greatestFiniteMagnitude
+            let maxH = maxHeight > 0 ? maxHeight : .greatestFiniteMagnitude
+            
+            var targetSize = sourceSize
+            if targetSize.width > maxW || targetSize.height > maxH {
+                let scale = min(maxW / targetSize.width, maxH / targetSize.height)
+                targetSize = CGSize(width: targetSize.width * scale, height: targetSize.height * scale)
+            }
+            
+            // Downscale using CoreGraphics for quality
+            guard let cgImage = rep.cgImage else {
+                let image = NSImage(size: sourceSize)
+                image.addRepresentation(rep)
+                return image
+            }
+            
+            let targetWidth = Int(targetSize.width)
+            let targetHeight = Int(targetSize.height)
+            guard targetWidth > 0, targetHeight > 0 else { return nil }
+            
+            let colorSpace = CGColorSpaceCreateDeviceRGB()
+            let context = CGContext(
+                data: nil,
+                width: targetWidth,
+                height: targetHeight,
+                bitsPerComponent: 8,
+                bytesPerRow: 0,
+                space: colorSpace,
+                bitmapInfo: CGImageAlphaInfo.premultipliedLast.rawValue
+            )
+            
+            context?.interpolationQuality = .high
+            context?.draw(cgImage, in: CGRect(x: 0, y: 0, width: targetWidth, height: targetHeight))
+            
+            guard let downscaledCG = context?.makeImage() else { return nil }
+            let downscaledRep = NSBitmapImageRep(cgImage: downscaledCG)
+            
+            let image = NSImage(size: targetSize)
+            image.addRepresentation(downscaledRep)
+            return image
+        }
+        
+        // Full resolution — pre-decode to avoid lazy draw overhead
+        guard let cgImage = rep.cgImage else {
+            let image = NSImage(size: sourceSize)
+            image.addRepresentation(rep)
+            return image
+        }
+        
+        let image = NSImage(cgImage: cgImage, size: sourceSize)
+        return image
+    }
+    
+    /// Downscale an NSImage to fit within the given bounds
+    nonisolated
+    private static func downscaleImage(_ image: NSImage, maxWidth: CGFloat, maxHeight: CGFloat) -> NSImage {
+        let sourceSize = image.size
+        
+        // Check if downscale is needed
+        if sourceSize.width <= maxWidth && sourceSize.height <= maxHeight {
+            return image
+        }
+        
+        let scale = min(maxWidth / sourceSize.width, maxHeight / sourceSize.height)
+        let targetSize = CGSize(width: sourceSize.width * scale, height: sourceSize.height * scale)
+        
+        // Create a downscaled representation
+        let imageRep = NSBitmapImageRep(
+            bitmapDataPlanes: nil,
+            pixelsWide: Int(targetSize.width),
+            pixelsHigh: Int(targetSize.height),
+            bitsPerSample: 8,
+            samplesPerPixel: 4,
+            hasAlpha: true,
+            isPlanar: false,
+            colorSpaceName: .deviceRGB,
+            bytesPerRow: 0,
+            bitsPerPixel: 0
+        )
+        
+        guard let rep = imageRep else { return image }
+        
+        NSGraphicsContext.saveGraphicsState()
+        NSGraphicsContext.current = NSGraphicsContext(bitmapImageRep: rep)
+        image.draw(in: NSRect(origin: .zero, size: targetSize),
+                   from: .zero,
+                   operation: .copy,
+                   fraction: 1.0,
+                   respectFlipped: true,
+                   hints: [NSImageRep.HintKey.interpolation: NSNumber(value: NSImageInterpolation.high.rawValue)])
+        NSGraphicsContext.restoreGraphicsState()
+        
+        let downscaledImage = NSImage(size: targetSize)
+        downscaledImage.addRepresentation(rep)
+        return downscaledImage
     }
 }

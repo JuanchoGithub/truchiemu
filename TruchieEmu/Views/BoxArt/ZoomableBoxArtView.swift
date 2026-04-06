@@ -92,7 +92,6 @@ struct ZoomableBoxArtView: View {
     }
     
     private func snapScale(_ scale: CGFloat) -> CGFloat {
-        // Snap to nice zoom levels
         let levels: [CGFloat] = [1.0, 1.5, 2.0, 2.5, 3.0, 4.0, 5.0]
         let closest = levels.min(by: { abs($0 - scale) < abs($1 - scale) }) ?? 1.0
         return closest
@@ -104,13 +103,10 @@ struct ZoomableBoxArtView: View {
             lastOffset = .zero
             return
         }
-        
         let imageWidth = size.width * scale
         let imageHeight = size.height * scale
-        
         let maxOffsetX = max(0, (imageWidth - size.width) / 2)
         let maxOffsetY = max(0, (imageHeight - size.height) / 2)
-        
         offset = CGSize(
             width: max(-maxOffsetX, min(maxOffsetX, offset.width)),
             height: max(-maxOffsetY, min(maxOffsetY, offset.height))
@@ -122,38 +118,28 @@ struct ZoomableBoxArtView: View {
 // MARK: - Zoomable Image with Modal Presentation
 
 /// A button that shows a small image and opens a full-screen zoomable view when tapped.
-/// Used in the game detail header for the box art.
 struct ZoomableBoxArtButton: View {
     let image: NSImage?
     let placeholder: () -> AnyView
     @State private var isPresented = false
     
     var body: some View {
-        Button {
-            isPresented = true
-        } label: {
+        Button { isPresented = true } label: {
             Group {
                 if let img = image {
-                    Image(nsImage: img)
-                        .resizable()
-                        .aspectRatio(contentMode: .fit)
-                } else {
-                    placeholder()
-                }
+                    Image(nsImage: img).resizable().aspectRatio(contentMode: .fit)
+                } else { placeholder() }
             }
         }
         .buttonStyle(.plain)
         .sheet(isPresented: $isPresented) {
-            if let img = image {
-                ZoomableBoxArtFullScreenView(image: img)
-            }
+            if let img = image { ZoomableBoxArtFullScreenView(image: img) }
         }
     }
 }
 
 // MARK: - Full Screen Zoomable View (Sheet)
 
-/// A full-screen sheet that shows a zoomable image with a close button.
 struct ZoomableBoxArtFullScreenView: View {
     let image: NSImage
     @Environment(\.dismiss) private var dismiss
@@ -161,47 +147,27 @@ struct ZoomableBoxArtFullScreenView: View {
     
     var body: some View {
         ZStack {
-            // Dark background
             Color.black.ignoresSafeArea()
-            
-            // Zoomable image
-            ZoomableBoxArtView(
-                image: image,
-                maxSize: fullScreenSize
-            )
-            .ignoresSafeArea()
-            
-            // Close button (fades out when zoomed)
+            ZoomableBoxArtView(image: image, maxSize: fullScreenSize)
+                .ignoresSafeArea()
             VStack {
                 HStack {
                     Spacer()
-                    Button {
-                        dismiss()
-                    } label: {
+                    Button { dismiss() } label: {
                         Image(systemName: "xmark.circle.fill")
                             .font(.system(size: 32))
                             .foregroundColor(.white)
                             .shadow(radius: 4)
-                    }
-                    .buttonStyle(.plain)
-                    .padding()
-                    .opacity(showControls ? 1 : 0)
+                    }.buttonStyle(.plain).padding()
+                        .opacity(showControls ? 1 : 0)
                 }
-                
                 Spacer()
-                
-                // Hint text
                 Text("Pinch to zoom • Double-tap to zoom in/out")
-                    .font(.caption)
-                    .foregroundColor(.white.opacity(0.7))
-                    .padding(.bottom, 20)
-                    .opacity(showControls ? 1 : 0)
+                    .font(.caption).foregroundColor(.white.opacity(0.7))
+                    .padding(.bottom, 20).opacity(showControls ? 1 : 0)
             }
-        }
-        .onTapGesture(count: 2) {
-            withAnimation(.easeInOut(duration: 0.2)) {
-                showControls.toggle()
-            }
+        }.onTapGesture {
+            withAnimation(.easeInOut(duration: 0.2)) { showControls.toggle() }
         }
     }
     
@@ -209,7 +175,6 @@ struct ZoomableBoxArtFullScreenView: View {
 #if os(iOS)
         return CGSize(width: UIScreen.main.bounds.width, height: UIScreen.main.bounds.height)
 #else
-        // Use a large default size on macOS
         return CGSize(width: 1920, height: 1080)
 #endif
     }
@@ -217,8 +182,6 @@ struct ZoomableBoxArtFullScreenView: View {
 
 // MARK: - Grid Card Zoomable Box Art
 
-/// A zoomable box art view for use in grid cards.
-/// Shows a zoom button on hover that opens the full-screen zoomable view.
 struct GridCardBoxArtView: View {
     let image: NSImage?
     let placeholder: () -> AnyView
@@ -227,50 +190,52 @@ struct GridCardBoxArtView: View {
     @State private var isPresented = false
     
     var body: some View {
-        ZStack {
-            Group {
-                if let img = image {
-                    Image(nsImage: img)
-                        .resizable()
-                        .aspectRatio(contentMode: .fit)
-                        .scaleEffect(isHovered ? 1.05 : 1)
-                        .animation(.easeOut(duration: 0.3), value: isHovered)
-                } else {
-                    placeholder()
-                        .scaleEffect(isHovered ? 1.02 : 1)
-                        .animation(.easeOut(duration: 0.3), value: isHovered)
-                }
-            }
-            
-            // Zoom button on hover
-            if isHovered, image != nil {
-                VStack {
-                    Spacer()
-                    HStack {
-                        Spacer()
-                        Button {
-                            isPresented = true
-                        } label: {
-                            Image(systemName: "arrow.up.left.and.arrow.down.right")
-                                .font(.system(size: 12))
-                                .foregroundColor(.white)
-                                .padding(6)
-                                .background(Color.black.opacity(0.6), in: Capsule())
+        GeometryReader { geometry in
+            // Compute a fixed height from width and the box aspect ratio
+            let height = geometry.size.width / aspectRatio
+            ZStack(alignment: .topTrailing) {
+                artworkContent
+                    .frame(width: max(1, geometry.size.width), height: max(1, height))
+                    .clipShape(RoundedRectangle(cornerRadius: 8))
+                
+                if isHovered, image != nil {
+                    VStack {
+                        HStack {
+                            Spacer()
+                            Button { isPresented = true } label: {
+                                Image(systemName: "arrow.up.left.and.arrow.down.right")
+                                    .font(.system(size: 12))
+                                    .foregroundColor(.white)
+                                    .padding(4)
+                                    .background(Color.black.opacity(0.6), in: Capsule())
+                            }.buttonStyle(.plain)
                         }
-                        .buttonStyle(.plain)
-                        .padding(8)
-                    }
+                        Spacer()
+                    }.transition(.opacity)
                 }
-                .transition(.opacity)
             }
         }
         .frame(maxWidth: .infinity)
         .aspectRatio(aspectRatio, contentMode: .fit)
-        .clipShape(RoundedRectangle(cornerRadius: 8))
         .sheet(isPresented: $isPresented) {
-            if let img = image {
-                ZoomableBoxArtFullScreenView(image: img)
-            }
+            if let img = image { ZoomableBoxArtFullScreenView(image: img) }
+        }
+    }
+    
+    @ViewBuilder
+    private var artworkContent: some View {
+        if let img = image {
+            // scaledToFit preserves the image's natural aspect ratio within the
+            // computed frame (which matches the placeholder's aspectRatio-driven size)
+            Image(nsImage: img)
+                .resizable()
+                .scaledToFit()
+                .scaleEffect(isHovered ? 1.05 : 1)
+                .animation(.easeOut(duration: 0.3), value: isHovered)
+        } else {
+            placeholder()
+                .scaleEffect(isHovered ? 1.02 : 1)
+                .animation(.easeOut(duration: 0.3), value: isHovered)
         }
     }
 }

@@ -113,84 +113,26 @@ struct SystemSidebarView: View {
 
     @ViewBuilder
     private func sidebarRow(icon: String, label: String, system: SystemInfo? = nil, count: Int, tint: Color = .accentColor, filter: LibraryFilter) -> some View {
-        HStack {
-            if let sys = system, let img = sys.emuImage(size: 132) {
-                Image(nsImage: img)
-                    .resizable()
-                    .aspectRatio(contentMode: .fit)
-                    .frame(width: 22, height: 22)
-            } else {
-                Image(systemName: icon)
-                    .foregroundColor(tint)
-                    .frame(width: 18)
-            }
-            Text(label)
-                .lineLimit(1)
-            Spacer()
-            Text("\(count)")
-                .font(.caption)
-                .foregroundColor(.secondary)
-                .padding(.horizontal, 6)
-                .padding(.vertical, 2)
-                .background(Color.secondary.opacity(0.15))
-                .cornerRadius(6)
-        }
-        .contentShape(Rectangle())
-        .gesture(
-            DragGesture(minimumDistance: 0)
-                .onChanged { _ in
-                    LoggerService.info(category: "Sidebar", "🔄 User clicked system in sidebar: \(system?.name ?? "unknown") (id=\(system?.id ?? "nil"))")
-                    selectedFilter = filter
-                }
-        )
+        SidebarRowButton(icon: icon, label: label, system: system, count: count, tint: tint, filter: filter, selectedFilter: $selectedFilter)
     }
 
     @StateObject private var dragState = GameDragState.shared
     
+    @State private var hoveredCategoryID: String? = nil
+    
     @ViewBuilder
     private func categoryRow(category: GameCategory) -> some View {
         let count = categoryManager.gamesInCategory(categoryID: category.id, fromROMs: library.roms).count
+        let isSelected = selectedFilter.id == LibraryFilter.category(category.id).id
         
-        HStack {
-            Image(systemName: category.iconName)
-                .foregroundColor(Color(hex: category.colorHex) ?? .blue)
-                .frame(width: 18)
-            Text(category.name)
-                .lineLimit(1)
-            Spacer()
-            Text("\(count)")
-                .font(.caption)
-                .foregroundColor(.secondary)
-                .padding(.horizontal, 6)
-                .padding(.vertical, 2)
-                .background(Color.secondary.opacity(0.15))
-                .cornerRadius(6)
-        }
-        .contentShape(Rectangle())
-        .gesture(
-            DragGesture(minimumDistance: 0)
-                .onChanged { _ in
-                    selectedFilter = .category(category.id)
-                }
+        CategoryRowButton(
+            category: category,
+            count: count,
+            isSelected: isSelected,
+            selectedFilter: $selectedFilter,
+            handleDropOnCategory: handleDropOnCategory,
+            showEditCategorySheet: showEditCategorySheet
         )
-        .onDrop(of: [.plainText], isTargeted: nil) { items in
-            handleDropOnCategory(items: items, categoryID: category.id)
-        }
-        .contextMenu {
-            Button {
-                showEditCategorySheet(category: category)
-            } label: {
-                Label("Edit Category", systemImage: "pencil")
-            }
-            Button(role: .destructive) {
-                categoryManager.deleteCategory(id: category.id)
-                if case .category(let catID) = selectedFilter, catID == category.id {
-                    selectedFilter = .all
-                }
-            } label: {
-                Label("Delete Category", systemImage: "trash")
-            }
-        }
     }
     
     private func handleDropOnCategory(items: [NSItemProvider], categoryID: String) -> Bool {

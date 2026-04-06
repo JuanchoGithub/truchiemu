@@ -1,6 +1,6 @@
 import Foundation
 
-struct ROM: Identifiable, Codable, Hashable {
+struct ROM: Identifiable, Codable, Hashable, Sendable {
     var id: UUID = UUID()
     var name: String
     var path: URL
@@ -31,7 +31,7 @@ struct ROM: Identifiable, Codable, Hashable {
     /// Array of screenshot image paths for the game
     var screenshotPaths: [URL] = []
     var settings: ROMSettings = ROMSettings()
-
+    
     // Derived
     var displayName: String {
         let baseName = customName ?? metadata?.title ?? displayNameFromROM()
@@ -43,21 +43,21 @@ struct ROM: Identifiable, Codable, Hashable {
         path.deletingPathExtension().lastPathComponent
     }
     var fileExtension: String { path.pathExtension.lowercased() }
-
+    
     /// Post-scan automation: fetch No-Intro title when missing.
     var needsAutomaticIdentification: Bool {
         if customName != nil { return false }
         let title = metadata?.title?.trimmingCharacters(in: .whitespacesAndNewlines) ?? ""
         return title.isEmpty
     }
-
+    
     /// Post-scan automation: fetch art when no file on disk yet.
     var needsAutomaticBoxArt: Bool {
         let fm = FileManager.default
         if let p = boxArtPath, fm.fileExists(atPath: p.path) { return false }
         return !fm.fileExists(atPath: boxArtLocalPath.path)
     }
-
+    
     // Persistent storage paths
     var boxArtLocalPath: URL {
         path.deletingLastPathComponent()
@@ -100,57 +100,59 @@ struct ROMSettings: Codable, Hashable {
     /// Maps to gambatte's gb_colorization, mGBA's model, sameboy's model
     var gbColorizationMode: String = "auto"
     
-    /// Internal palette selection for when colorization mode is "internal".
-    /// Used by Gambatte (gambatte_gb_internal_palette) and as fallback for other cores.
-    /// Defaults to "GB - DMG" (original green-tinted look).
+    /// Which internal palette to use when mode is "internal".
     var gbInternalPalette: String = "GB - DMG"
     
-    /// Whether to show Super Game Boy borders for SGB-enhanced GB games.
-    /// Maps to mGBA's mgba_sgb_borders. Defaults to true.
+    /// Whether to use SGB borders when a Super Game Boy enhanced game is detected.
+    /// Works with mGBA's "GB: Borders" option.
     var gbSGBBordersEnabled: Bool = true
     
-    /// Color correction mode for Game Boy Color games.
-    /// Maps to gambatte's gbc_color_correction.
-    /// "gbc_only" (default) = only for GBC games, "always" = all games, "disabled" = off
+    /// Color correction (Gambatte core only).
     var gbColorCorrectionMode: String = "gbc_only"
-    
-    // Check if using legacy toggle-based shaders (for migration)
-    var isLegacyShaderMode: Bool {
-        return shaderPresetID.isEmpty
-    }
-    
-    /// Migrate from legacy toggle-based shaders to preset system
-    mutating func migrateFromLegacyShaders() {
-        guard isLegacyShaderMode else { return }
-        
-        if crtEnabled || scanlinesEnabled || barrelEnabled || phosphorEnabled {
-            // User had custom CRT settings - use CRT Classic preset
-            shaderPresetID = "builtin-crt-classic"
-        } else {
-            // No shaders enabled - use raw pixels
-            shaderPresetID = "builtin-none"
-        }
-    }
-    
-    /// Migrate legacy bezelStyle to bezelFileName
-    mutating func migrateFromLegacyBezels() {
-        // Legacy bezelStyle only had simple styles, no specific bezel assignment
-        // This is a no-op since we're moving to per-game bezel selection
-        // The bezelStyle value is kept for backward compatibility but not used for new bezel system
-    }
 }
 
 struct ROMMetadata: Codable, Hashable {
-    var title: String?
-    var year: String?
-    var developer: String?
-    var publisher: String?
     var genre: String?
-    var players: Int?
+    var publisher: String?
+    var developer: String?
     var description: String?
-    var rating: Double?
-    /// Whether the game supports cooperative (co-op) play.
-    var cooperative: Bool?
-    /// ESRB rating (e.g. "E", "E10+", "T", "M", "AO", "RP").
+    var title: String?
+    var releaseDate: String?
+    var players: Int = 1
+    var year: String?
+    
+    // ESRB & other ratings
     var esrbRating: String?
+    var cooperative: Bool = false
+}
+
+// MARK: - ROM Category Enum
+
+extension ROM {
+    enum Category: String, Codable, Hashable {
+        case game = "game"
+        case bios = "bios"
+        case system = "system"
+        case homebrew = "homebrew"
+        case demo = "demo"
+        case prototype = "prototype"
+        case translation = "translation"
+        case hack = "hack"
+        case unlicensed = "unlicensed"
+        case pirate = "pirate"
+        case afterMarket = "aftermarket"
+        case betaPrototype = "beta"
+        case testProgram = "test_program"
+        case debugMode = "debug"
+        case sample = "sample"
+        
+        var isPlayable: Bool {
+            switch self {
+            case .game, .homebrew, .hack, .translation, .unlicensed, .demo, .afterMarket:
+                return true
+            default:
+                return false
+            }
+        }
+    }
 }

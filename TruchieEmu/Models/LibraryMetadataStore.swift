@@ -43,7 +43,7 @@ struct ROMMetadataRecord: Codable, Hashable {
         genre = rom.metadata?.genre
         players = rom.metadata?.players
         description = rom.metadata?.description
-        rating = rom.metadata?.rating
+        // rating field removed from ROMMetadata
         cooperative = rom.metadata?.cooperative
         esrbRating = rom.metadata?.esrbRating
         thumbnailLookupSystemID = rom.thumbnailLookupSystemID
@@ -63,7 +63,7 @@ struct ROMMetadataRecord: Codable, Hashable {
         if let genre { meta.genre = genre }
         if let players { meta.players = players }
         if let description { meta.description = description }
-        if let rating { meta.rating = rating }
+        // rating field removed from ROMMetadata
         if let cooperative { meta.cooperative = cooperative }
         if let esrbRating { meta.esrbRating = esrbRating }
         r.metadata = meta

@@ -567,30 +567,25 @@ struct GameDetailView: View {
             } label: {
                 HStack(spacing: 10) {
                     Image(systemName: section.sectionIcon)
-                        .frame(width: 18)
-                        .font(.body)
-                        .foregroundColor(isSelected ? .blue : t.iconSecondary)
+                        .font(.system(size: 15, weight: .medium))
+                        .frame(width: 20, height: 20)
+                        .foregroundColor(isSelected ? .blue : t.iconPrimary)
                     Text(section.rawValue)
                         .lineLimit(1)
                         .foregroundColor(isSelected ? t.textPrimary : t.textSecondary)
                         .fontWeight(isSelected ? .medium : .regular)
                     Spacer()
                 }
-                .padding(.horizontal, 12)
-                .padding(.vertical, 8)
+                .padding(.horizontal, 10)
+                .padding(.vertical, 7)
+                .contentShape(Rectangle())
             }
             .buttonStyle(.plain)
             .help(section.helpText)
             .background(
-                isSelected ?
-                    AnyView(
-                        RoundedRectangle(cornerRadius: 8)
-                            .fill(Color.blue.opacity(0.2))
-                    ) :
-                    AnyView(Color.clear)
+                RoundedRectangle(cornerRadius: 6)
+                    .fill(isSelected ? Color.blue.opacity(0.2) : .clear)
             )
-            .accessibilityAddTraits(.isButton)
-            .accessibilityElement(children: .combine)
         )
     }
 
@@ -887,14 +882,10 @@ struct GameDetailView: View {
                             Divider().overlay(dividerColor)
                             MetadataRow(label: "Genre", value: genre)
                         }
-                        if let players = meta.players {
-                            Divider().overlay(dividerColor)
-                            MetadataRow(label: "Players", value: String(players))
-                        }
-                        if let coop = meta.cooperative {
-                            Divider().overlay(dividerColor)
-                            MetadataRow(label: "Co-op", value: coop ? "Yes" : "No")
-                        }
+                        Divider().overlay(dividerColor)
+                        MetadataRow(label: "Players", value: String(meta.players))
+                        Divider().overlay(dividerColor)
+                        MetadataRow(label: "Co-op", value: meta.cooperative ? "Yes" : "No")
                         if let esrb = meta.esrbRating {
                             Divider().overlay(dividerColor)
                             HStack(alignment: .top, spacing: 16) {
