@@ -633,18 +633,19 @@ struct LibraryGridView: View {
     @State private var gridWidth: CGFloat = 800
 
     private func updateColumns() {
-        // Card minimum width scales with zoom: 80px at min zoom to 280px at max zoom
-        let minCardWidth: CGFloat = 80 + (continuousZoom * 200)
+        // Card width must be fixed for all columns to ensure uniform card sizes.
+        // Using the same value for min and max prevents columns from stretching independently.
+        let cardWidth: CGFloat = 80 + (continuousZoom * 200)
         // Spacing shrinks as cards get bigger
         let spacing: CGFloat = max(6, 16 - (continuousZoom * 8))
         
         // Calculate how many columns fit in the current grid width
         let availableWidth = gridWidth - (gridPadding.leading + gridPadding.trailing)
-        let computedColumns = max(1, min(8, Int((availableWidth + spacing) / (minCardWidth + spacing))))
+        let computedColumns = max(1, min(8, Int((availableWidth + spacing) / (cardWidth + spacing))))
         columnCount = computedColumns
         
         columns = Array(
-            repeating: GridItem(.flexible(minimum: minCardWidth), spacing: spacing),
+            repeating: GridItem(.flexible(minimum: cardWidth, maximum: cardWidth), spacing: spacing),
             count: columnCount
         )
     }

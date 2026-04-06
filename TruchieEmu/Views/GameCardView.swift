@@ -94,17 +94,20 @@ struct GameCardView: View {
     }
 
     private var artworkView: some View {
-        ZStack {
-            if let nsImage = image {
-                Image(nsImage: nsImage)
-                    .resizable()
-                    .aspectRatio(contentMode: .fit)
-                    .scaleEffect(isHovered ? 1.05 : 1)
-                    .animation(.easeOut(duration: 0.3), value: isHovered)
-            } else {
-                placeholderArt
-                    .scaleEffect(isHovered ? 1.02 : 1)
-                    .animation(.easeOut(duration: 0.3), value: isHovered)
+        GeometryReader { geometry in
+            ZStack {
+                if let nsImage = image {
+                    Image(nsImage: nsImage)
+                        .resizable()
+                        .scaledToFit()
+                        .frame(width: geometry.size.width, height: geometry.size.height)
+                        .scaleEffect(isHovered ? 1.05 : 1)
+                        .animation(.easeOut(duration: 0.3), value: isHovered)
+                } else {
+                    placeholderArt
+                        .scaleEffect(isHovered ? 1.02 : 1)
+                        .animation(.easeOut(duration: 0.3), value: isHovered)
+                }
             }
         }
         .frame(maxWidth: .infinity)
