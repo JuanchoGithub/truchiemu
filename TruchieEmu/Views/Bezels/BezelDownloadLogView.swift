@@ -46,7 +46,7 @@ struct BezelDownloadLogView: View {
                     .onAppear {
                         lastCount = logEntries.count
                     }
-                    .onChange(of: logEntries.count) { newCount in
+                    .onChange(of: logEntries.count) { _, newCount in
                         // Auto-scroll to bottom when new entries are added
                         if newCount > lastCount, let lastId = logEntries.last?.id {
                             withAnimation {

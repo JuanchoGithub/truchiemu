@@ -22,12 +22,12 @@ class ControllerService: ObservableObject {
     }
     private let mappingKey = "controller_mappings_v2"
     private let kbMappingKey = "keyboard_mapping_v1"
-    private var savedMappings: [String: [String: ControllerMapping]] = [:]
+    private var savedMappings: [String: [String: ControllerGamepadMapping]] = [:]
 
     private var cancellables = Set<AnyCancellable>()
 
     init() {
-        self.handedness = AppSettings.get("controller_handedness") ?? "right"
+        self.handedness = AppSettings.get("controller_handedness", type: String.self) ?? "right"
         self.activePlayerIndex = AppSettings.getInt("active_player_index", defaultValue: 0)
         loadMappings()
         setupControllerNotifications()
@@ -50,7 +50,7 @@ class ControllerService: ObservableObject {
         var players: [PlayerController] = []
         for (index, gc) in GCController.controllers().prefix(4).enumerated() {
             let vendorName = gc.vendorName ?? "Unknown Controller"
-            let mapping = savedMappings[vendorName]?["default"] ?? ControllerMapping.defaults(for: vendorName, systemID: "default", handedness: handedness)
+            let mapping = savedMappings[vendorName]?["default"] ?? ControllerGamepadMapping.defaults(for: vendorName, systemID: "default", handedness: handedness)
             players.append(PlayerController(
                 playerIndex: index + 1,
                 gcController: gc,
@@ -62,7 +62,7 @@ class ControllerService: ObservableObject {
 
     // MARK: - Mappings
 
-    func updateMapping(for vendorName: String, systemID: String, mapping: ControllerMapping) {
+    func updateMapping(for vendorName: String, systemID: String, mapping: ControllerGamepadMapping) {
         if savedMappings[vendorName] == nil { savedMappings[vendorName] = [:] }
         savedMappings[vendorName]?[systemID] = mapping
         
@@ -70,14 +70,14 @@ class ControllerService: ObservableObject {
         saveMappings()
     }
     
-    func mapping(for vendorName: String, systemID: String) -> ControllerMapping {
+    func mapping(for vendorName: String, systemID: String) -> ControllerGamepadMapping {
         if let systemMapping = savedMappings[vendorName]?[systemID] {
             return systemMapping
         }
         if let global = savedMappings[vendorName]?["default"] {
             return global
         }
-        return ControllerMapping.defaults(for: vendorName, systemID: systemID, handedness: handedness)
+        return ControllerGamepadMapping.defaults(for: vendorName, systemID: systemID, handedness: handedness)
     }
 
     func updateKeyboardMapping(_ mapping: KeyboardMapping, for systemID: String) {
@@ -97,7 +97,7 @@ class ControllerService: ObservableObject {
 
     private func loadMappings() {
         if let data = AppSettings.getData(mappingKey),
-           let saved = try? JSONDecoder().decode([String: [String: ControllerMapping]].self, from: data) {
+           let saved = try? JSONDecoder().decode([String: [String: ControllerGamepadMapping]].self, from: data) {
             savedMappings = saved
         }
         
@@ -120,19 +120,19 @@ struct PlayerController: Identifiable {
     var id: Int { playerIndex }
     var playerIndex: Int
     var gcController: GCController?
-    var mapping: ControllerMapping
+    var mapping: ControllerGamepadMapping
 
     var name: String { gcController?.vendorName ?? "Player \(playerIndex)" }
     var isConnected: Bool { gcController != nil }
 }
 
-struct ControllerMapping: Codable {
+struct ControllerGamepadMapping: Codable {
     var vendorName: String
     var buttons: [RetroButton: GCButtonMapping]
 
-    static func defaults(for vendorName: String, systemID: String, handedness: String = "right") -> ControllerMapping {
+    static func defaults(for vendorName: String, systemID: String, handedness: String = "right") -> ControllerGamepadMapping {
         let isLeftHanded = handedness == "left"
-        var mapping = ControllerMapping(vendorName: vendorName, buttons: [:])
+        var mapping = ControllerGamepadMapping(vendorName: vendorName, buttons: [:])
         
         // Get the available buttons for this system
         let availableButtons = RetroButton.availableButtons(for: systemID)

@@ -1,5 +1,6 @@
 import Foundation
 import AppKit
+import SwiftData
 
 // MARK: - Download Log Entry
 
@@ -165,38 +166,40 @@ class BezelAPIService: ObservableObject {
     
     /// Fetch the manifest (list of available bezels) from GitHub API for a system.
     /// Uses the Git Trees API to get ALL files without pagination limits.
+    /// Integrates with ResourceCacheInterceptor for cache-first fetching with ETag support.
     func fetchManifest(systemID: String) async throws -> [BezelEntry] {
         guard let config = BezelSystemMapping.config(for: systemID) else {
             throw BezelError.systemNotSupported(systemID)
         }
         
         let url = config.treesAPIURL
+        let cacheKey = ResourceCacheEntry.makeBezelManifestKey(systemID: systemID)
         
-        var request = URLRequest(url: url)
-        request.setValue("application/vnd.github.v3+json", forHTTPHeaderField: "Accept")
-        request.setValue("TruchieEmu/1.0", forHTTPHeaderField: "User-Agent")
+        // Try cache first (check if we have a cached manifest that's not stale)
+        if let manifest = cachedManifest(systemID: systemID), !manifest.isStale {
+            LoggerService.info(category: "BezelAPI", "Using cached manifest for \(systemID)")
+            return updateLocalURLs(manifest.entries, systemID: systemID)
+        }
         
+        // Use ResourceCacheInterceptor for cache-first fetch with ETag/304 support
+        let data: Data
         do {
-            let (data, response) = try await urlSession.data(for: request)
-            
-            if let httpResponse = response as? HTTPURLResponse {
-                switch httpResponse.statusCode {
-                case 200:
-                    break // OK
-                case 403:
-                    throw BezelError.apiRateLimited
-                case 404:
-                    throw BezelError.systemNotFound(systemID)
-                default:
-                    throw BezelError.apiError(httpResponse.statusCode)
-                }
-            }
+            let result = try await ResourceCacheInterceptor.shared.fetchWithCache(
+                url: url,
+                type: .bezelManifest,
+                cacheKey: cacheKey,
+                expiry: .short  // 1 hour — directory listings change rarely
+            )
+            data = result.data
             
             // Parse Git Trees API response
             guard let json = try JSONSerialization.jsonObject(with: data) as? [String: Any],
                   let tree = json["tree"] as? [[String: Any]] else {
                 throw BezelError.parseError
             }
+            
+            // Extract SHA for change detection
+            _ = json["sha"] as? String ?? ""
             
             var entries: [BezelEntry] = []
             let bezelPath = config.bezelDirectoryPath
@@ -245,8 +248,43 @@ class BezelAPIService: ObservableObject {
             // Cache the manifest
             try cacheManifest(entries, for: systemID)
             
+            // Also record in dat_ingestion table for tracking bezel manifest freshness
+            let context = SwiftDataContainer.shared.mainContext
+            let cacheRepo = ResourceCacheRepository(context: context)
+            if cacheRepo.getEntry(cacheKey: cacheKey) != nil {
+                let descriptor = FetchDescriptor<DATIngestionEntry>(
+                    predicate: #Predicate<DATIngestionEntry> { $0.systemID == systemID && $0.sourceName == "bezel-project" }
+                )
+                if let existing = try? context.fetch(descriptor).first {
+                    existing.entriesFound = entries.count
+                    existing.entriesIngested = entries.count
+                    existing.ingestionStatus = "success"
+                    existing.ingestedAt = Date()
+                    existing.durationMs = 0
+                } else {
+                    let model = DATIngestionEntry(
+                        systemID: systemID,
+                        sourceName: "bezel-project",
+                        entriesFound: entries.count,
+                        entriesIngested: entries.count,
+                        ingestionStatus: "success",
+                        durationMs: 0,
+                        ingestedAt: Date()
+                    )
+                    context.insert(model)
+                }
+                try? context.save()
+            }
+            
             return entries
             
+        } catch is ResourceCacheInterceptorError {
+            // Interceptor failed — try cached manifest as fallback even if stale
+            if let manifest = cachedManifest(systemID: systemID) {
+                LoggerService.warning(category: "BezelAPI", "Network fetch failed, using stale cached manifest for \(systemID)")
+                return updateLocalURLs(manifest.entries, systemID: systemID)
+            }
+            throw BezelError.networkError(NSError(domain: "BezelAPIService", code: -1, userInfo: [NSLocalizedDescriptionKey: "Failed to fetch manifest and no cached version available"]))
         } catch let bezelError as BezelError {
             throw bezelError
         } catch {

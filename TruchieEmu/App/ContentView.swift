@@ -18,27 +18,13 @@ struct ContentView: View {
 
     var body: some View {
         Group {
-            if !library.hasCompletedOnboarding {
+            if !library.hasCompletedOnboarding && !wizard.hasCompletedWizard {
                 // Show the setup wizard for first-time users
                 SetupWizardView(wizard: wizard)
                     .environmentObject(library)
                     .environmentObject(categoryManager)
                     .environmentObject(coreManager)
                     .environmentObject(controllerService)
-            } else if library.roms.isEmpty {
-                // Wizard was completed but no games found - guide user to add games
-                SetupWizardView(wizard: wizard)
-                    .environmentObject(library)
-                    .environmentObject(categoryManager)
-                    .environmentObject(coreManager)
-                    .environmentObject(controllerService)
-                    .onAppear {
-                        // Skip the welcome step since they've already been through the wizard;
-                        // send them straight to the getStarted step.
-                        if wizard.currentStep == .getStarted {
-                            // Already at the right step, just add any folders
-                        }
-                    }
             } else {
                 mainInterface
             }
@@ -93,6 +79,11 @@ struct ContentView: View {
         }
         .sheet(item: $coreManager.pendingDownload) { pending in
             CoreDownloadSheet(pending: pending)
+        }
+        .task {
+            // Initialize the ROM library asynchronously after the view appears.
+            // This defers expensive database loads to after the UI is visible.
+            library.initializeIfNeeded()
         }
         .onAppear {
             // After wizard completion, start on All Games until at least one game has been played.

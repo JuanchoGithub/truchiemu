@@ -196,7 +196,7 @@ class CoreOptionsViewModel: ObservableObject {
         options[key]?.currentValue = value
         LibretroBridge.setOptionValue(value, forKey: key)
         AppSettings.set("coreopt_\(coreID)_\(key)", value: value)
-        if let coreID = AppSettings.get("lastLoadedCoreID") { persistDefinitions(for: coreID) }
+        if let coreID = AppSettings.get("lastLoadedCoreID", type: String.self) { persistDefinitions(for: coreID) }
     }
 
     func resetAll() {
@@ -205,7 +205,7 @@ class CoreOptionsViewModel: ObservableObject {
             options[key]?.currentValue = defaultVal
             LibretroBridge.setOptionValue(defaultVal, forKey: key)
         }
-        if let coreID = AppSettings.get("lastLoadedCoreID") { persistDefinitions(for: coreID) }
+        if let coreID = AppSettings.get("lastLoadedCoreID", type: String.self) { persistDefinitions(for: coreID) }
     }
     
     let coreID: String = ""
@@ -241,7 +241,7 @@ struct CoreOptionRow: View {
                         }
                         .pickerStyle(.menu)
                         .labelsHidden()
-                        .onChange(of: selectedValue) { newValue in
+                        .onChange(of: selectedValue) { _, newValue in
                             viewModel.updateValue(newValue, for: key)
                         }
                     } else {

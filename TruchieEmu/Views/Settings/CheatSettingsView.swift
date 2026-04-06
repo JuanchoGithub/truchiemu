@@ -376,7 +376,7 @@ struct DownloadLogView: View {
                         LogEntryRow(entry: entry)
                     }
                 }
-                .onChange(of: logEntries.count) { _ in
+                .onChange(of: logEntries.count) { _, _ in
                     // Auto-scroll to bottom when new entries are added
                     if let lastId = logEntries.last?.id {
                         withAnimation {

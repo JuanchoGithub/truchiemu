@@ -155,4 +155,68 @@ final class ROMIdentifierServiceTests: XCTestCase {
         let result = ROMIdentifierService.aggressivelyNormalizedTitle("Double Dragon {hack}")
         XCTAssertEqual(result, "double dragon")
     }
+
+    // MARK: - Article Reformatting Tests
+
+    func testMoveArticleToEnd_MovesA() {
+        let result = ROMIdentifierService.moveArticleToEnd("A Dinosaur's Tale")
+        XCTAssertEqual(result, "dinosaur's tale, A", "Should move 'A' to the end")
+    }
+
+    func testMoveArticleToEnd_MovesAn() {
+        let result = ROMIdentifierService.moveArticleToEnd("An American Tail")
+        XCTAssertEqual(result, "american tail, An", "Should move 'An' to the end")
+    }
+
+    func testMoveArticleToEnd_MovesThe() {
+        let result = ROMIdentifierService.moveArticleToEnd("The Legend of Zelda")
+        XCTAssertEqual(result, "legend of zelda, The", "Should move 'The' to the end")
+    }
+
+    func testMoveArticleToEnd_NoArticle() {
+        let result = ROMIdentifierService.moveArticleToEnd("Double Dragon")
+        XCTAssertNil(result, "Should return nil when no leading article")
+    }
+
+    func testMoveArticleToEnd_CaseInsensitive() {
+        let result = ROMIdentifierService.moveArticleToEnd("a dinosaur's tale")
+        XCTAssertEqual(result, "dinosaur's tale, A", "Should handle lowercase article")
+    }
+
+    func testArticleVariants_ForwardAndBackward() {
+        // "a dinosaur's tale" → "dinosaur's tale, A" (article is capitalized)
+        let forward = ROMIdentifierService.articleVariants(of: "a dinosaur's tale")
+        XCTAssertTrue(forward.contains("dinosaur's tale, A"), "Should generate article-moved-to-end variant (capitalized)")
+
+        // "dinosaur's tale, a" → "a dinosaur's tale"
+        let backward = ROMIdentifierService.articleVariants(of: "dinosaur's tale, a")
+        XCTAssertTrue(backward.contains("a dinosaur's tale"), "Should generate article-moved-to-front variant")
+    }
+
+    func testArticleVariants_The() {
+        let forward = ROMIdentifierService.articleVariants(of: "the legend of zelda")
+        XCTAssertTrue(forward.contains("legend of zelda, The"), "Should move 'the' to end")
+
+        let backward = ROMIdentifierService.articleVariants(of: "legend of zelda, the")
+        XCTAssertTrue(backward.contains("the legend of zelda"), "Should move 'the' to front")
+    }
+
+    func testArticleVariants_NoArticle() {
+        let variants = ROMIdentifierService.articleVariants(of: "double dragon")
+        XCTAssertTrue(variants.isEmpty, "Should return empty for titles without articles")
+    }
+
+    func testArticleVariant_MatchesDatabaseEntry() {
+        // Simulate: ROM file = "A Dinosaur's Tale.smd", DB entry = "Dinosaur's Tale, A (USA)"
+        let romQuery = ROMIdentifierService.normalizedComparableTitle("A Dinosaur's Tale")
+        let dbEntry = ROMIdentifierService.normalizedComparableTitle("Dinosaur's Tale, A (USA)")
+
+        // Direct match should fail
+        XCTAssertNotEqual(romQuery, dbEntry, "Direct normalized comparison should not match")
+
+        // But with article variant, it should match (after lowercasing for comparison)
+        let articleVariants = ROMIdentifierService.articleVariants(of: romQuery)
+        let lowercasedVariants = articleVariants.map { $0.lowercased() }
+        XCTAssertTrue(lowercasedVariants.contains(dbEntry), "Article variant (lowercased) should match DB entry")
+    }
 }

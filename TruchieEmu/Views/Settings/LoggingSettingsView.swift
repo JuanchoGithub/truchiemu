@@ -22,7 +22,7 @@ struct LoggingSettingsView: View {
                                 Text(level.description).tag(level)
                             }
                         }
-                        .onChange(of: viewModel.selectedLevel) { newValue in
+                        .onChange(of: viewModel.selectedLevel) { _, newValue in
                             LoggerService.shared.setLevel(newValue)
                         }
                         .pickerStyle(.segmented)
@@ -274,7 +274,10 @@ final class LoggingSettingsViewModel: ObservableObject {
     private var refreshTimer: Timer?
     
     init() {
-        selectedLevel = LoggerService.shared.currentLevel
+        // Default to INFO log level instead of NONE
+        let rawLevel = AppSettings.get("log_level", type: String.self) ?? "info"
+        selectedLevel = LogLevel(rawValue: rawLevel) ?? .info
+        LoggerService.shared.setLevel(selectedLevel)
         refreshInfo()
     }
     

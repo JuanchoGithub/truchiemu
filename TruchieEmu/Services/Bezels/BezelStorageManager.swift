@@ -25,16 +25,16 @@ class BezelStorageManager: ObservableObject {
     
     private init() {
         // Load stored preferences
-        let modeRaw = AppSettings.get(BezelUserDefaultsKeys.storageMode) ?? ""
+        let modeRaw = AppSettings.get(BezelUserDefaultsKeys.storageMode, type: String.self) ?? ""
         self.storageMode = BezelStorageMode(rawValue: modeRaw) ?? .libraryRelative
         
-        if let pathString = AppSettings.get(BezelUserDefaultsKeys.customFolderPath) {
+        if let pathString = AppSettings.get(BezelUserDefaultsKeys.customFolderPath, type: String.self) {
             self.customFolderPath = URL(filePath: pathString)
         } else {
             self.customFolderPath = nil
         }
         
-        if let libPathString = AppSettings.get(BezelUserDefaultsKeys.libraryFolderPath) {
+        if let libPathString = AppSettings.get(BezelUserDefaultsKeys.libraryFolderPath, type: String.self) {
             self.libraryFolderPath = URL(filePath: libPathString)
         } else {
             self.libraryFolderPath = nil
@@ -255,7 +255,7 @@ class BezelStorageManager: ObservableObject {
             storageMode = .internalManaged
             customFolderPath = nil
             AppSettings.set(BezelUserDefaultsKeys.storageMode, value: BezelStorageMode.internalManaged.rawValue)
-            AppSettings.removeObject(forKey: BezelUserDefaultsKeys.customFolderPath)
+            AppSettings.removeObject(BezelUserDefaultsKeys.customFolderPath)
             
         default:
             break

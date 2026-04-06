@@ -92,9 +92,9 @@ final class LoggerService: @unchecked Sendable {
     // MARK: - Init
     
     private init() {
-        // Load saved log level
-        let rawLevel = AppSettings.get("log_level") ?? "none"
-        self.currentLevel = LogLevel(rawValue: rawLevel) ?? .none
+        // Load saved log level (default to DEBUG for better troubleshooting)
+        let rawLevel = AppSettings.get("log_level", type: String.self) ?? "debug"
+        self.currentLevel = LogLevel(rawValue: rawLevel) ?? .debug
         
         // Create OS logger for system console
         self.osLogger = OSLog(subsystem: Bundle.main.bundleIdentifier ?? "com.truchiemu", category: "TruchieEmu")
@@ -120,26 +120,30 @@ final class LoggerService: @unchecked Sendable {
         logFileHandle = nil
         
         let logURL = LogManager.shared.currentLogURL
-        print("[Logger] Setting up file logging at: \(logURL.path)")
+        let ts = ISO8601DateFormatter.string(from: Date(), timeZone: TimeZone.current)
+        
+        // Use os_log for setup messages so they go to system console, and also format for file
+        let tsMsg = "\(ts) [SETUP] [Logger] Setting up file logging at: \(logURL.path)"
+        print(tsMsg)
         
         do {
             // Ensure directory exists
             let directoryURL = logURL.deletingLastPathComponent()
             if !FileManager.default.fileExists(atPath: directoryURL.path) {
-                print("[Logger] Creating directory: \(directoryURL.path)")
+                print("\(ts) [SETUP] [Logger] Creating directory: \(directoryURL.path)")
                 try FileManager.default.createDirectory(at: directoryURL, withIntermediateDirectories: true)
             }
             
             // Open file for appending
             if !FileManager.default.fileExists(atPath: logURL.path) {
-                print("[Logger] Creating log file at: \(logURL.path)")
+                print("\(ts) [SETUP] [Logger] Creating log file at: \(logURL.path)")
                 FileManager.default.createFile(atPath: logURL.path, contents: nil)
             }
             
             logFileHandle = try FileHandle(forWritingTo: logURL)
             logFileHandle?.seekToEndOfFile()
             
-            print("[Logger] File handle opened successfully, log file ready")
+            print("\(ts) [SETUP] [Logger] File handle opened successfully, log file ready")
             
             // Write start marker directly (not through writeToFile to avoid recursion)
             let startMarker = "// Logging started at \(dateFormatter.string(from: Date())) //\n"
@@ -153,11 +157,11 @@ final class LoggerService: @unchecked Sendable {
                 logFileHandle?.write(data)
             }
             logFileHandle?.synchronizeFile()
-            print("[Logger] Start markers written successfully")
+            print("\(ts) [SETUP] [Logger] Start markers written successfully")
             
         } catch {
-            print("[Logger] ERROR setting up file logging: \(error.localizedDescription)")
-            print("[Logger] Log URL: \(logURL.path)")
+            print("\(ts) [SETUP] [ERROR] [Logger] ERROR setting up file logging: \(error.localizedDescription)")
+            print("\(ts) [SETUP] [ERROR] [Logger] Log URL: \(logURL.path)")
         }
     }
     
@@ -289,27 +293,56 @@ final class LoggerService: @unchecked Sendable {
     
     fileprivate func writeToFile(_ text: String) {
         guard let handle = logFileHandle else {
-            print("[Logger] ERROR: writeToFile called but logFileHandle is nil")
             return
         }
         
         guard let data = text.data(using: .utf8) else {
-            print("[Logger] ERROR: failed to convert text to UTF-8 data")
             return
         }
         
         // Check file size and trim if needed
-        checkAndTrimLogFile(handle: handle)
-        
-        // Append data
-        handle.seekToEndOfFile()
+        do {
+            try handle.seekToEnd()
+        } catch {
+            // File handle is stale (file was deleted/rotated), reopen it
+            _rebuildFileHandle()
+            guard let freshHandle = logFileHandle else { return }
+            do {
+                try freshHandle.seekToEnd()
+                freshHandle.write(data)
+            } catch {}
+            return
+        }
         handle.write(data)
+    }
+    
+    /// Rebuild the file handle if it becomes stale (e.g., after file deletion).
+    private func _rebuildFileHandle() {
+        logFileHandle?.closeFile()
+        logFileHandle = nil
+        let logURL = LogManager.shared.currentLogURL
+        do {
+            if !FileManager.default.fileExists(atPath: logURL.path) {
+                FileManager.default.createFile(atPath: logURL.path, contents: nil)
+            }
+            logFileHandle = try FileHandle(forWritingTo: logURL)
+            try logFileHandle?.seekToEnd()
+        } catch {
+            // If reopening fails, leave handle as nil; writeToFile will be a no-op
+        }
     }
     
     private func checkAndTrimLogFile(handle: FileHandle) {
         // Check file size
-        handle.seekToEndOfFile()
-        let currentSize = handle.offsetInFile
+        let currentSize: UInt64
+        do {
+            try handle.seekToEnd()
+            currentSize = try handle.offset()
+        } catch {
+            // File handle is stale
+            _rebuildFileHandle()
+            return
+        }
         
         if currentSize >= maxLogSizeBytes {
             rotateLogFile()

@@ -125,7 +125,7 @@ struct ZoomableBoxArtView: View {
 /// Used in the game detail header for the box art.
 struct ZoomableBoxArtButton: View {
     let image: NSImage?
-    let placeholder: () -> some View
+    let placeholder: () -> AnyView
     @State private var isPresented = false
     
     var body: some View {
@@ -221,7 +221,7 @@ struct ZoomableBoxArtFullScreenView: View {
 /// Shows a zoom button on hover that opens the full-screen zoomable view.
 struct GridCardBoxArtView: View {
     let image: NSImage?
-    let placeholder: () -> some View
+    let placeholder: () -> AnyView
     let aspectRatio: CGFloat
     let isHovered: Bool
     @State private var isPresented = false

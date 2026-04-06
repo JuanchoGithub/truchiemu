@@ -1,7 +1,4 @@
 import Foundation
-import os.log
-
-private let raLog = Logger(subsystem: Bundle.main.bundleIdentifier ?? "TruchieEmu", category: "RetroAchievements")
 
 // MARK: - RetroAchievements Service
 
@@ -38,8 +35,8 @@ class RetroAchievementsService: ObservableObject {
     // MARK: - Settings Persistence
     
     private func loadSettings() {
-        username = AppSettings.get("ra_username")
-        let token = AppSettings.get("ra_token")
+        username = AppSettings.get("ra_username", type: String.self)
+        let token = AppSettings.get("ra_token", type: String.self)
         hardcoreMode = AppSettings.getBool("ra_hardcore", defaultValue: false)
         isEnabled = AppSettings.getBool("ra_enabled", defaultValue: false)
         
@@ -78,10 +75,10 @@ class RetroAchievementsService: ObservableObject {
             await MainActor.run {
                 self.isLoggedIn = true
                 self.userInfo = response
-                raLog.info("RetroAchievements token validated for \(username)")
+                LoggerService.info(category: "RetroAchievements", "RetroAchievements token validated for \(username)")
             }
         } catch {
-            raLog.error("Token validation failed: \(error.localizedDescription)")
+            LoggerService.error(category: "RetroAchievements", "Token validation failed: \(error.localizedDescription)")
             await MainActor.run {
                 self.isLoggedIn = false
             }
@@ -120,7 +117,7 @@ class RetroAchievementsService: ObservableObject {
                 self.username = username
                 saveSettings(username: username, token: token)
             }
-            raLog.info("Login successful for \(username)")
+            LoggerService.info(category: "RetroAchievements", "Login successful for \(username)")
             return token
         } else {
             let error = json?["Error"] as? String ?? "Unknown error"
@@ -138,7 +135,7 @@ class RetroAchievementsService: ObservableObject {
         // First, get game ID from hash
         let gameID = try await resolveHash(hash: hash)
         guard let gameID = gameID else {
-            raLog.info("Game not recognized by RetroAchievements")
+            LoggerService.info(category: "RetroAchievements", "Game not recognized by RetroAchievements")
             return nil
         }
         
@@ -214,7 +211,7 @@ class RetroAchievementsService: ObservableObject {
             throw RAError.networkError
         }
         
-        raLog.info("Achievement \(id) unlocked (hardcore: \(hardcore))")
+        LoggerService.info(category: "RetroAchievements", "Achievement \(id) unlocked (hardcore: \(hardcore))")
         
         // Update local state
         await MainActor.run {
@@ -287,7 +284,7 @@ class RetroAchievementsService: ObservableObject {
             throw RAError.networkError
         }
         
-        raLog.info("Leaderboard \(leaderboardID) score submitted: \(score)")
+        LoggerService.info(category: "RetroAchievements", "Leaderboard \(leaderboardID) score submitted: \(score)")
     }
     
     // MARK: - Rich Presence
@@ -314,7 +311,7 @@ class RetroAchievementsService: ObservableObject {
                 self.richPresence = message
             }
         } catch {
-            raLog.error("Failed to update rich presence: \(error.localizedDescription)")
+            LoggerService.error(category: "RetroAchievements", "Failed to update rich presence: \(error.localizedDescription)")
         }
     }
     

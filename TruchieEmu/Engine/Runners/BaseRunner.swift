@@ -299,7 +299,7 @@ class EmulatorRunner: ObservableObject, @unchecked Sendable {
         guard gameRom.systemID != nil else { return }
         
         // Store current core info
-        let coreID = AppSettings.get("lastLoadedCoreID") ?? ""
+        let coreID = AppSettings.get("lastLoadedCoreID", type: String.self) ?? ""
         
         // Reset pause state
         isPaused = false
@@ -607,7 +607,7 @@ class EmulatorRunner: ObservableObject, @unchecked Sendable {
               let controller = player.gcController else { return }
         
         let sysID = rom?.systemID ?? "default"
-        let mapping = ControllerService.shared.mapping(for: controller.vendorName ?? "Unknown", systemID: sysID)
+        let mapping = ControllerService.shared.mapping(for: controller.vendorName ?? "Unknown", systemID: sysID) as ControllerGamepadMapping
         
         LoggerService.debug(category: "Runner", "Hooking gamepad: \(controller.vendorName ?? "Unknown") for system: \(sysID)")
         self.hookedController = controller
@@ -629,7 +629,7 @@ class EmulatorRunner: ObservableObject, @unchecked Sendable {
         }
     }
 
-    private func updateGamepadButton(_ element: GCControllerElement, in mapping: ControllerMapping) {
+    private func updateGamepadButton(_ element: GCControllerElement, in mapping: ControllerGamepadMapping) {
         let name = element.localizedName ?? ""
         for (btn, btnMapping) in mapping.buttons {
             if btnMapping.gcElementName == name {

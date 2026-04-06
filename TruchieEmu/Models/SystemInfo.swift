@@ -390,7 +390,7 @@ class SystemPreferences: ObservableObject {
     static let shared = SystemPreferences()
     @Published var updateTrigger: Int = 0
 
-    // MARK: - SQLite-backed Settings Keys
+    // MARK: - Settings Keys
 
     private static let keyShowBiosFiles = "showBiosFiles"
     private static let keySystemLanguage = "systemLanguage"
@@ -424,7 +424,7 @@ class SystemPreferences: ObservableObject {
 
     func boxType(for systemID: String) -> BoxType {
         let key = "\(Self.keyBoxTypePrefix)\(systemID)"
-        let rawValue = AppSettings.get(key)
+        let rawValue = AppSettings.get(key, type: String.self)
         if let rawValue = rawValue, let type = BoxType(rawValue: rawValue) {
             return type
         }
@@ -457,7 +457,7 @@ class SystemPreferences: ObservableObject {
 
     func preferredCoreID(for systemID: String) -> String? {
         let key = "\(Self.keyPreferredCorePrefix)\(systemID)"
-        return AppSettings.get(key)
+        return AppSettings.get(key, type: String.self)
     }
 
     func setPreferredCoreID(_ coreID: String?, for systemID: String) {
@@ -467,11 +467,11 @@ class SystemPreferences: ObservableObject {
     }
 
     init() {
-        // Read from AppSettings (SQLite)
+        // Read from AppSettings
         self.showBiosFiles = AppSettings.getBool(Self.keyShowBiosFiles, defaultValue: false)
-        let langRaw = Int(AppSettings.get(Self.keySystemLanguage) ?? "0") ?? 0
+        let langRaw = Int(AppSettings.get(Self.keySystemLanguage, type: String.self) ?? "0") ?? 0
         self.systemLanguage = EmulatorLanguage(rawValue: langRaw) ?? .english
-        let logRaw = Int(AppSettings.get(Self.keyCoreLogLevel) ?? "0") ?? CoreLogLevel.warn.rawValue
+        let logRaw = Int(AppSettings.get(Self.keyCoreLogLevel, type: String.self) ?? "0") ?? CoreLogLevel.warn.rawValue
         self.coreLogLevel = CoreLogLevel(rawValue: logRaw) ?? .warn
         self.applyCheatsOnLaunch = AppSettings.getBool(Self.keyApplyCheatsOnLaunch, defaultValue: false)
         self.showCheatNotifications = AppSettings.getBool(Self.keyShowCheatNotifications, defaultValue: true)

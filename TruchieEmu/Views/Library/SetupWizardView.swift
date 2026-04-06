@@ -134,47 +134,49 @@ struct SetupWizardView: View {
     private func finishSetup() {
         wizard.hasCompletedWizard = true
         library.hasCompletedOnboarding = true
+        UserDefaults.standard.set(true, forKey: "has_completed_onboarding")
         
         AppSettings.setBool("logging_enabled", value: wizard.loggingEnabled)
         AppSettings.set("display_default_shader_preset", value: wizard.selectedShaderPresetID)
         
+        // Add library folders (each triggers its own scan via addPrimaryFolder)
         for folder in wizard.libraryFolders {
             library.addLibraryFolder(url: folder)
         }
         
-        Task {
-            for folder in wizard.libraryFolders {
-                await library.scanROMs(in: folder, runAutomationAfter: false)
-            }
-            
-            Task {
-                await LibraryAutomationCoordinator.shared.runAfterLibraryUpdate(library: library)
-            }
-            
-            if wizard.downloadBezels || wizard.downloadCheats {
-                let downloadBezels = wizard.downloadBezels
-                let downloadCheats = wizard.downloadCheats
-                await Task.detached(priority: .utility) {
+        // Capture main actor-isolated values before entering detached task
+        let downloadBezels = wizard.downloadBezels
+        let downloadCheats = wizard.downloadCheats
+        let achievementsEnabled = wizard.achievementsEnabled
+        let achievementsUsername = wizard.achievementsUsername
+        let achievementsPassword = wizard.achievementsPassword
+        
+        // Kick off background tasks without blocking the UI
+        Task.detached(priority: .utility) {
+            // Download bezels and cheats in parallel if requested
+            if downloadBezels || downloadCheats {
+                await withTaskGroup(of: Void.self) { group in
                     if downloadBezels {
-                        _ = await BezelAPIService.shared.downloadAllSystems()
+                        group.addTask { _ = await BezelAPIService.shared.downloadAllSystems() }
                     }
                     if downloadCheats {
-                        _ = await CheatDownloadService.shared.downloadAllCheats()
+                        group.addTask { _ = await CheatDownloadService.shared.downloadAllCheats() }
                     }
-                }.value
+                }
             }
             
-            if wizard.achievementsEnabled && !wizard.achievementsUsername.isEmpty && !wizard.achievementsPassword.isEmpty {
+            // RetroAchievements login
+            if achievementsEnabled && !achievementsUsername.isEmpty && !achievementsPassword.isEmpty {
                 do {
                     let token = try await RetroAchievementsService.shared.login(
-                        username: wizard.achievementsUsername,
-                        password: wizard.achievementsPassword
+                        username: achievementsUsername,
+                        password: achievementsPassword
                     )
-                    RetroAchievementsService.shared.saveSettings(
-                        username: wizard.achievementsUsername,
+                    await RetroAchievementsService.shared.saveSettings(
+                        username: achievementsUsername,
                         token: token
                     )
-                    RetroAchievementsService.shared.setEnabled(true)
+                    await RetroAchievementsService.shared.setEnabled(true)
                 } catch {
                     LoggerService.info(category: "Wizard", "Achievements login failed: \(error.localizedDescription)")
                 }
@@ -504,7 +506,7 @@ extension SetupWizardView {
                 wizard.updateDetectedGames(from: library.roms)
             }
         }
-        .onChange(of: library.lastChangeDate) { _ in
+        .onChange(of: library.lastChangeDate) { _, _ in
             if !library.roms.isEmpty {
                 Task { wizard.updateDetectedGames(from: library.roms) }
             }

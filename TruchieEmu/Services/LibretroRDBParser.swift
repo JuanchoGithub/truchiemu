@@ -1,21 +1,19 @@
 import Foundation
-import os.log
 
 /// Parses Libretro `.rdb` files (RARCHDB header + MessagePack documents). Used when ClrMamePro `.dat` is missing or empty.
 /// Format reference: RetroArch `libretro-db/libretrodb.c`, `rmsgpack.c`.
 enum LibretroRDBParser {
 
     private static let magic = Data("RARCHDB\0".utf8)
-    private static let log = Logger(subsystem: Bundle.main.bundleIdentifier ?? "TruchieEmu", category: "LibretroDB")
 
     /// Builds a CRC32 (hex, uppercase) → `GameInfo` map from an RDB file body.
     static func buildCRCIndex(data: Data) -> [String: GameInfo] {
         guard data.count > 16 else {
-            log.info("LibretroDB RDB: skip — file too short (\(data.count) bytes)")
+            LoggerService.info(category: "LibretroDB", "LibretroDB RDB: skip — file too short (\(data.count) bytes)")
             return [:]
         }
         guard data.prefix(magic.count) == magic else {
-            log.info("LibretroDB RDB: skip — not RARCHDB magic")
+            LoggerService.info(category: "LibretroDB", "LibretroDB RDB: skip — not RARCHDB magic")
             return [:]
         }
 
@@ -24,7 +22,7 @@ enum LibretroRDBParser {
             ? Int(data.subdata(in: 8..<16).withUnsafeBytes { UInt64(bigEndian: $0.load(as: UInt64.self)) })
             : data.count
         guard metaOffset >= 16 else {
-            log.info("LibretroDB RDB: skip — invalid metadata offset \(metaOffset)")
+            LoggerService.info(category: "LibretroDB", "LibretroDB RDB: skip — invalid metadata offset \(metaOffset)")
             return [:]
         }
 
@@ -37,7 +35,7 @@ enum LibretroRDBParser {
             do {
                 v = try reader.readValue()
             } catch {
-                log.info("LibretroDB RDB: MessagePack parse stopped at offset \(idx): \(String(describing: error))")
+                LoggerService.info(category: "LibretroDB", "LibretroDB RDB: MessagePack parse stopped at offset \(idx): \(String(describing: error))")
                 break
             }
             idx = reader.index
@@ -107,10 +105,10 @@ enum LibretroRDBParser {
         }
 
         if out.isEmpty {
-            log.info("LibretroDB RDB: parsed 0 CRC entries (metadata range \(metaOffset) bytes)")
+            LoggerService.info(category: "LibretroDB", "LibretroDB RDB: parsed 0 CRC entries (metadata range \(metaOffset) bytes)")
         } else {
             let enriched = out.filter { $0.value.year != nil || $0.value.genre != nil || $0.value.developer != nil || $0.value.publisher != nil }.count
-            log.info("LibretroDB RDB: parsed \(out.count) CRC entries (MessagePack), \(enriched) with metadata beyond name/CRC")
+            LoggerService.info(category: "LibretroDB", "LibretroDB RDB: parsed \(out.count) CRC entries (MessagePack), \(enriched) with metadata beyond name/CRC")
         }
         return out
     }

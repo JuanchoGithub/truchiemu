@@ -34,8 +34,13 @@ struct ROM: Identifiable, Codable, Hashable {
 
     // Derived
     var displayName: String {
-        let baseName = customName ?? metadata?.title ?? name
+        let baseName = customName ?? metadata?.title ?? displayNameFromROM()
         return GameNameFormatter.stripTags(baseName)
+    }
+    
+    /// Returns the ROM filename without extension as a fallback display name.
+    private func displayNameFromROM() -> String {
+        path.deletingPathExtension().lastPathComponent
     }
     var fileExtension: String { path.pathExtension.lowercased() }
 
@@ -57,7 +62,7 @@ struct ROM: Identifiable, Codable, Hashable {
     var boxArtLocalPath: URL {
         path.deletingLastPathComponent()
             .appendingPathComponent("boxart")
-            .appendingPathComponent("\(name)_boxart.jpg")
+            .appendingPathComponent("\(path.lastPathComponent)_boxart.png")
     }
     
     var infoLocalPath: URL {

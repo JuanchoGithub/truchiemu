@@ -2,7 +2,7 @@ name: TruchieEmu
 options:
   bundleIdPrefix: com.truchiemu
   deploymentTarget:
-    macOS: "13.0"
+    macOS: "14.0"
   createIntermediateGroups: true
   xcodeVersion: "15"
 schemes:
@@ -19,7 +19,10 @@ targets:
   TruchieEmu:
     type: application
     platform: macOS
-    deploymentTarget: "13.0"
+    deploymentTarget: "14.0"
+
+    frameworks:
+      - SwiftData
 
     info:
       path: TruchieEmu/Resources/Info.plist
@@ -48,19 +51,20 @@ targets:
         GCC_C_LANGUAGE_STANDARD: gnu17
         CLANG_CXX_LANGUAGE_STANDARD: gnu++17
         CLANG_CXX_LIBRARY: libc++
-        MACOSX_DEPLOYMENT_TARGET: "13.0"
+        MACOSX_DEPLOYMENT_TARGET: "14.0"
         ARCHS: "$(ARCHS_STANDARD)"
         CODE_SIGN_ENTITLEMENTS: TruchieEmu/Resources/TruchieEmu.entitlements
         CODE_SIGN_STYLE: Automatic
         ENABLE_HARDENED_RUNTIME: NO
         SWIFT_VERSION: "5.9"
-        OTHER_LDFLAGS: "-framework Metal -framework MetalKit -framework GameController -framework AVFoundation -framework WebKit -framework OpenGL"
+        OTHER_LDFLAGS: "-framework Metal -framework MetalKit -framework GameController -framework AVFoundation -framework WebKit -framework OpenGL -framework SwiftData"
 
     sources:
       - path: TruchieEmu/App
         excludes:
           - "*.DS_Store"
       - path: TruchieEmu/Models
+        type: group
       - path: TruchieEmu/Services
       - path: TruchieEmu/Engine
       - path: TruchieEmu/Shaders
@@ -78,7 +82,10 @@ targets:
   TruchieEmuTests:
     type: bundle.unit-test
     platform: macOS
-    deploymentTarget: "13.0"
+    deploymentTarget: "14.0"
+
+    frameworks:
+      - SwiftData
 
     settings:
       base:

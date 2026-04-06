@@ -18,7 +18,7 @@ class DOSRunner: EmulatorRunner, @unchecked Sendable {
     /// CPU cycles setting for DOS emulation
     /// Values: "auto", "3000" (8088/XT), "8000" (286), "25000" (386), "max" (Pentium)
     private var cyclesSetting: String {
-        AppSettings.get("dosbox_pure_cycles") ?? "auto"
+        AppSettings.get("dosbox_pure_cycles", type: String.self) ?? "auto"
     }
     
     /// Whether mouse mode is currently active (used by UI)

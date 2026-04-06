@@ -72,7 +72,7 @@ struct LibrarySettingsView: View {
     @EnvironmentObject var library: ROMLibrary
     @State private var scanningFolders: Set<String> = []
     @State private var showingRebuildSheet = false
-    @State private var rebuildTargetFolder: LibraryFolder?
+    @State private var rebuildTargetFolder: ROMLibraryFolder?
     @ObservedObject var prefs = SystemPreferences.shared
 
     var body: some View {
@@ -225,14 +225,14 @@ struct LibrarySettingsView: View {
 
 // MARK: - Primary Folder Row (with expandable subfolders)
 struct PrimaryFolderRow: View {
-    let folder: LibraryFolder
+    let folder: ROMLibraryFolder
     let isScanning: Bool
     let onRescan: () -> Void
-    let onRebuild: (LibraryFolder) -> Void
+    let onRebuild: (ROMLibraryFolder) -> Void
     
     @EnvironmentObject var library: ROMLibrary
     @State private var isExpanded = false
-    @State private var subfolders: [LibraryFolder] = []
+    @State private var subfolders: [ROMLibraryFolder] = []
     @State private var isDiscovering = false
     @State private var showDeleteConfirmation = false
     @State private var discoverScanProgress: Double = 0
@@ -419,17 +419,17 @@ struct PrimaryFolderRow: View {
 
 // MARK: - Subfolder Row (recursive, supports sub-subfolders)
 struct SubfolderRow: View {
-    let folder: LibraryFolder
+    let folder: ROMLibraryFolder
     let parentPath: String
     let isPrimary: Bool // true if this subfolder was independently added as primary
     let depth: Int // nesting depth for indentation
-    let onRebuild: (LibraryFolder) -> Void
+    let onRebuild: (ROMLibraryFolder) -> Void
     
     @EnvironmentObject var library: ROMLibrary
     @State private var showDeleteConfirmation = false
     @State private var isScanning = false
     @State private var isExpanded = false
-    @State private var subfolders: [LibraryFolder] = []
+    @State private var subfolders: [ROMLibraryFolder] = []
     @State private var isDiscovering = false
     
     private var romCount: Int {
@@ -633,7 +633,7 @@ struct SubfolderRow: View {
 
 // MARK: - Rebuild Options Sheet
 struct RebuildOptionsSheet: View {
-    let folder: LibraryFolder
+    let folder: ROMLibraryFolder
     @ObservedObject var library: ROMLibrary
     @Environment(\.dismiss) private var dismiss
     @State private var selectedOption: RebuildOption? = nil
@@ -1318,7 +1318,7 @@ struct ControllerSettingsView: View {
     @State private var selectedPlayer: Int = 1
     @State private var selectedSystemID: String = "default"
     @State private var configName: String = ""
-    @State private var savedConfigs: [String: ControllerMapping] = [:]
+    @State private var savedConfigs: [String: ControllerGamepadMapping] = [:]
     @State private var leftColumnWidth: CGFloat = 340
     @State private var showDeleteConfirmation = false
 
@@ -1387,7 +1387,7 @@ struct ControllerSettingsView: View {
                         Button("Back to Default") {
                             if let player = controllerService.connectedControllers.first(where: { $0.playerIndex == selectedPlayer }) {
                                 let vendorName = player.gcController?.vendorName ?? "Unknown"
-                                let defaults = ControllerMapping.defaults(for: vendorName, systemID: selectedSystemID, handedness: controllerService.handedness)
+                                let defaults = ControllerGamepadMapping.defaults(for: vendorName, systemID: selectedSystemID, handedness: controllerService.handedness)
                                 controllerService.updateMapping(for: vendorName, systemID: selectedSystemID, mapping: defaults)
                             }
                         }
@@ -1521,7 +1521,7 @@ struct ControllerSettingsView: View {
     private func loadSavedConfigs() {
         // Persist controller configs to AppSettings
         if let data = AppSettings.getData("controller_saved_configs"),
-           let configs = try? JSONDecoder().decode([String: ControllerMapping].self, from: data) {
+           let configs = try? JSONDecoder().decode([String: ControllerGamepadMapping].self, from: data) {
             savedConfigs = configs
         }
     }
@@ -1607,7 +1607,7 @@ struct ButtonMappingList: View {
     let player: PlayerController
     let controllerService: ControllerService
     @State private var listeningFor: RetroButton? = nil
-    @State private var currentMapping: ControllerMapping
+    @State private var currentMapping: ControllerGamepadMapping
     
     init(systemID: String, player: PlayerController, controllerService: ControllerService) {
         self.systemID = systemID
@@ -1733,7 +1733,7 @@ struct ControllerMappingDetail: View {
     let player: PlayerController
     let systemID: String
     @State private var listeningFor: RetroButton? = nil
-    @State private var mapping: ControllerMapping
+    @State private var mapping: ControllerGamepadMapping
 
     init(player: PlayerController, systemID: String) {
         self.player = player
@@ -2152,7 +2152,7 @@ struct BoxArtSettingsView: View {
 
     @State private var useLibretroThumbnails = true
     @State private var thumbnailServerURLStorage = ""
-    @State private var thumbnailPriorityRaw = LibretroThumbnailPriority.boxart.rawValue
+    @State private var thumbnailPriorityRaw = ""
     @State private var useCRCMatching = true
     @State private var fallbackFilename = true
     @State private var useHeadCheck = false
@@ -2212,7 +2212,8 @@ struct BoxArtSettingsView: View {
             username = BoxArtService.shared.credentials?.username ?? ""
             useLibretroThumbnails = BoxArtService.shared.useLibretroThumbnails
             thumbnailServerURLStorage = BoxArtService.shared.thumbnailServerURL.absoluteString
-            thumbnailPriorityRaw = LibretroThumbnailPriority.allCases.firstIndex(where: { $0.rawValue == BoxArtService.shared.thumbnailPriority.rawValue }).map { String($0) } ?? LibretroThumbnailPriority.boxart.rawValue
+            // Use rawValue directly (e.g., "boxart") to match the Picker tags
+            thumbnailPriorityRaw = BoxArtService.shared.thumbnailPriority.rawValue
             useCRCMatching = BoxArtService.shared.useCRCMatchingForThumbnails
             fallbackFilename = BoxArtService.shared.fallbackToFilenameForThumbnails
             useHeadCheck = BoxArtService.shared.useHeadBeforeThumbnailDownload
@@ -2222,20 +2223,25 @@ struct BoxArtSettingsView: View {
                 ? LibretroThumbnailResolver.defaultBaseURL.absoluteString
                 : thumbnailServerURLStorage
         }
-        .onChange(of: thumbnailBaseURLString) { newValue in
+        .onChange(of: thumbnailBaseURLString) { _, newValue in
             thumbnailServerURLStorage = newValue.trimmingCharacters(in: .whitespacesAndNewlines)
             if let url = URL(string: thumbnailServerURLStorage), url.scheme != nil {
                 BoxArtService.shared.thumbnailServerURL = url
             }
             AppSettings.set("thumbnail_server_url", value: thumbnailServerURLStorage)
         }
-        .onChange(of: useLibretroThumbnails) { BoxArtService.shared.useLibretroThumbnails = $0; AppSettings.setBool("thumbnail_use_libretro", value: $0) }
-        .onChange(of: thumbnailPriorityRaw) { if let p = LibretroThumbnailPriority(rawValue: $0) { _ = BoxArtService.shared.thumbnailPriority = p }; AppSettings.set("thumbnail_priority", value: $0) }
-        .onChange(of: useCRCMatching) { BoxArtService.shared.useCRCMatchingForThumbnails = $0; AppSettings.setBool("thumbnail_use_crc_matching", value: $0) }
-        .onChange(of: fallbackFilename) { BoxArtService.shared.fallbackToFilenameForThumbnails = $0; AppSettings.setBool("thumbnail_fallback_filename", value: $0) }
-        .onChange(of: useHeadCheck) { BoxArtService.shared.useHeadBeforeThumbnailDownload = $0; AppSettings.setBool("thumbnail_use_head_check", value: $0) }
-        .onChange(of: useLaunchBox) { LaunchBoxGamesDBService.shared.isEnabled = $0; AppSettings.setBool("launchbox_use_for_boxart", value: $0) }
-        .onChange(of: launchBoxDownloadAfterScan) { LaunchBoxGamesDBService.shared.downloadAfterScan = $0; AppSettings.setBool("launchbox_download_after_scan", value: $0) }
+        .onChange(of: useLibretroThumbnails) { _, newVal in BoxArtService.shared.useLibretroThumbnails = newVal; AppSettings.setBool("thumbnail_use_libretro", value: newVal) }
+        .onChange(of: thumbnailPriorityRaw) { _, newValue in
+            if let p = LibretroThumbnailPriority(rawValue: newValue) {
+                BoxArtService.shared.thumbnailPriority = p
+                AppSettings.set("thumbnail_priority", value: newValue)
+            }
+        }
+        .onChange(of: useCRCMatching) { _, newVal in BoxArtService.shared.useCRCMatchingForThumbnails = newVal; AppSettings.setBool("thumbnail_use_crc_matching", value: newVal) }
+        .onChange(of: fallbackFilename) { _, newVal in BoxArtService.shared.fallbackToFilenameForThumbnails = newVal; AppSettings.setBool("thumbnail_fallback_filename", value: newVal) }
+        .onChange(of: useHeadCheck) { _, newVal in BoxArtService.shared.useHeadBeforeThumbnailDownload = newVal; AppSettings.setBool("thumbnail_use_head_check", value: newVal) }
+        .onChange(of: useLaunchBox) { _, newVal in LaunchBoxGamesDBService.shared.isEnabled = newVal; AppSettings.setBool("launchbox_use_for_boxart", value: newVal) }
+        .onChange(of: launchBoxDownloadAfterScan) { _, newVal in LaunchBoxGamesDBService.shared.downloadAfterScan = newVal; AppSettings.setBool("launchbox_download_after_scan", value: newVal) }
     }
 }
 
@@ -2297,7 +2303,7 @@ struct DisplaySettingsView: View {
         .formStyle(.grouped)
         .navigationTitle("Display")
         .onAppear {
-            selectedPresetID = AppSettings.get("display_default_shader_preset") ?? "builtin-crt-classic"
+            selectedPresetID = AppSettings.get("display_default_shader_preset", type: String.self) ?? "builtin-crt-classic"
         }
     }
     
@@ -2353,9 +2359,9 @@ struct DisplaySettingsView: View {
 struct GeneralSettingsView: View {
     @EnvironmentObject var library: ROMLibrary
     @StateObject private var launchboxService = LaunchBoxGamesDBService.shared
-    @State private var autoSaveOnExit = true
-    @State private var autoLoadOnStart = true
-    @State private var compressSaveStates = false
+    @State private var autoSaveOnExit = false
+    @State private var autoLoadOnStart = false
+    @State private var compressSaveStates = true
     @State private var showHiddenGamesCategory: Bool = true
     @State private var launchboxEnabled: Bool = true
     @State private var showSyncConfirmation = false
@@ -2460,13 +2466,25 @@ struct GeneralSettingsView: View {
         .onAppear {
             showHiddenGamesCategory = AppSettings.getBool("showHiddenGamesCategory", defaultValue: true)
             launchboxEnabled = launchboxService.isEnabled
+            autoSaveOnExit = AppSettings.getBool("saveState_autoSaveOnExit", defaultValue: false)
+            autoLoadOnStart = AppSettings.getBool("saveState_autoLoadOnStart", defaultValue: false)
+            compressSaveStates = AppSettings.getBool("saveState_compress", defaultValue: true)
             updateLastSyncText()
         }
-        .onChange(of: showHiddenGamesCategory) { newValue in
+        .onChange(of: showHiddenGamesCategory) { _, newValue in
             AppSettings.setBool("showHiddenGamesCategory", value: newValue)
         }
-        .onChange(of: launchboxEnabled) { newValue in
+        .onChange(of: launchboxEnabled) { _, newValue in
             launchboxService.setEnabled(newValue)
+        }
+        .onChange(of: autoSaveOnExit) { _, newValue in
+            AppSettings.setBool("saveState_autoSaveOnExit", value: newValue)
+        }
+        .onChange(of: autoLoadOnStart) { _, newValue in
+            AppSettings.setBool("saveState_autoLoadOnStart", value: newValue)
+        }
+        .onChange(of: compressSaveStates) { _, newValue in
+            AppSettings.setBool("saveState_compress", value: newValue)
         }
     }
     
@@ -2686,7 +2704,11 @@ struct DependencySection<Content: View>: View {
     
     var body: some View {
         VStack(alignment: .leading, spacing: 0) {
-            Button(action: { isExpanded.toggle() }) {
+            Button(action: {
+                withAnimation(.easeInOut(duration: 0.2)) {
+                    isExpanded.toggle()
+                }
+            }) {
                 HStack {
                     Image(systemName: isExpanded ? "chevron.down" : "chevron.right")
                         .font(.caption)
@@ -2706,6 +2728,7 @@ struct DependencySection<Content: View>: View {
                 }
                 .padding(.top, 8)
                 .padding(.leading, 20)
+                .transition(.opacity)
             }
         }
     }

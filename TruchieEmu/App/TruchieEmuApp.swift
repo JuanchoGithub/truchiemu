@@ -5,10 +5,10 @@ import AppKit
 struct TruchieEmuApp: App {
     @NSApplicationDelegateAdaptor(AppDelegate.self) var appDelegate
     
-    // Open the database before any other component uses it.
-    // This was the root cause of the blank state — the database was never opened.
+    // SwiftData container manages all persistence.
+    // The container handles one-time migration on first launch.
     init() {
-        DatabaseManager.shared.open()
+        _ = SwiftDataContainer.shared
         _ = LoggerService.shared
     }
     
@@ -23,6 +23,106 @@ struct TruchieEmuApp: App {
     
     private var isCLILaunch: Bool {
         ProcessInfo.processInfo.arguments.contains("--launch")
+    }
+    
+    var body: some Scene {
+        WindowGroup {
+            ContentWithPrepopulationView()
+                .environmentObject(library)
+                .environmentObject(categoryManager)
+                .environmentObject(coreManager)
+                .environmentObject(controllerService)
+                .environmentObject(LibraryAutomationCoordinator.shared)
+        }
+        .windowStyle(.hiddenTitleBar)
+        .windowToolbarStyle(.unified(showsTitle: false))
+        .commands {
+            if !isCLILaunch {
+                CommandGroup(replacing: .newItem) {}
+                CommandMenu("Library") {
+                    Button("Rescan Library") {
+                        Task { await library.fullRescan() }
+                    }
+                    .keyboardShortcut("R", modifiers: [.command, .shift])
+                    .disabled(library.romFolderURL == nil || library.isScanning)
+                }
+            }
+        }
+        
+        WindowGroup(id: "game-info", for: UUID.self) { $romID in
+            GameInfoWindow(romID: romID ?? UUID())
+                .environmentObject(library)
+                .environmentObject(categoryManager)
+                .environmentObject(coreManager)
+                .environmentObject(controllerService)
+        }
+        
+        Settings {
+            SettingsView()
+                .environmentObject(library)
+                .environmentObject(categoryManager)
+                .environmentObject(coreManager)
+                .environmentObject(controllerService)
+        }
+    }
+}
+
+/// Wrapper view that runs first-run DAT pre-population before showing content.
+/// Checks the prepopulation flag synchronously to avoid showing the loading view
+/// on subsequent launches.
+struct ContentWithPrepopulationView: View {
+    @State private var isPrepopulated: Bool
+    @State private var isRunningPrepopulation = false
+    
+    @EnvironmentObject var library: ROMLibrary
+    
+    init() {
+        // Check synchronously so we skip the loading view on subsequent launches
+        _isPrepopulated = State(initialValue: AppSettings.getBool("dat_prepopulation_done_v1", defaultValue: false))
+    }
+    
+    var body: some View {
+        Group {
+            if isPrepopulated {
+                ContentView()
+                    .environmentObject(library)
+            } else {
+                ProgressView("Initializing game database…")
+                    .frame(width: 200)
+                    .task {
+                        await performPrepopulation()
+                    }
+            }
+        }
+    }
+    
+    private func performPrepopulation() async {
+        guard !isPrepopulated else { return }
+        isRunningPrepopulation = true
+        
+        // Attempt pre-population, but always proceed regardless of success.
+        _ = await DATPrepopulationService.ensureDATsArePopulated()
+        
+        isRunningPrepopulation = false
+        isPrepopulated = true
+    }
+}
+
+struct TruchieEmuApp_WindowsOnly: App {
+    @NSApplicationDelegateAdaptor(AppDelegate.self) var appDelegate
+    
+    @StateObject private var library = ROMLibrary()
+    @StateObject private var categoryManager = CategoryManager()
+    @StateObject private var coreManager = CoreManager()
+    @StateObject private var controllerService = ControllerService.shared
+    
+    private var isCLILaunch: Bool {
+        ProcessInfo.processInfo.arguments.contains("--launch")
+    }
+    
+    init() {
+        _ = SwiftDataContainer.shared
+        _ = LoggerService.shared
     }
     
     var body: some Scene {
@@ -56,9 +156,7 @@ struct TruchieEmuApp: App {
                 CommandGroup(replacing: .newItem) {}
                 CommandMenu("Library") {
                     Button("Rescan Library") {
-                        if let url = library.romFolderURL {
-                            Task { await library.rescanLibrary(at: url) }
-                        }
+                        Task { await library.fullRescan() }
                     }
                     .keyboardShortcut("R", modifiers: [.command, .shift])
                     .disabled(library.romFolderURL == nil || library.isScanning)

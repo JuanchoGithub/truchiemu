@@ -139,6 +139,7 @@ struct SystemSidebarView: View {
         .gesture(
             DragGesture(minimumDistance: 0)
                 .onChanged { _ in
+                    LoggerService.info(category: "Sidebar", "🔄 User clicked system in sidebar: \(system?.name ?? "unknown") (id=\(system?.id ?? "nil"))")
                     selectedFilter = filter
                 }
         )

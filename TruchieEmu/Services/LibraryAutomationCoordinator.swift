@@ -28,8 +28,24 @@ final class LibraryAutomationCoordinator: ObservableObject {
         }
 
         let snapshot = library.roms
-        let needIdentify = snapshot.filter { $0.needsAutomaticIdentification }
-        let needArt = snapshot.filter { $0.needsAutomaticBoxArt }
+
+        // Phase 0: Scan for pre-existing local boxart in /boxart subfolders
+        // This populates boxArtPath for ROMs that have local artwork but haven't
+        // been downloaded by the app yet (e.g., user-provided boxart files)
+        let romsToCheck = snapshot.filter { $0.boxArtPath == nil }
+        LoggerService.info(category: "LibraryAutomation", "📼 Checking \(romsToCheck.count) ROM(s) for local boxart in /boxart folders...")
+        let romsWithLocalArt = BoxArtService.shared.resolveLocalBoxArtBatch(for: romsToCheck)
+        if !romsWithLocalArt.isEmpty {
+            LoggerService.info(category: "LibraryAutomation", "✅ Found local boxart for \(romsWithLocalArt.count) ROM(s)")
+            for rom in romsWithLocalArt {
+                library.updateROM(rom)
+            }
+        } else {
+            LoggerService.info(category: "LibraryAutomation", "No local boxart found in scanned ROMs")
+        }
+
+        let needIdentify = library.roms.filter { $0.needsAutomaticIdentification }
+        let needArt = library.roms.filter { $0.needsAutomaticBoxArt }
 
         guard !needIdentify.isEmpty || !needArt.isEmpty else { return }
 
@@ -69,6 +85,11 @@ final class LibraryAutomationCoordinator: ObservableObject {
             }
             progress = 1
             statusLine = "Identifying games: 100% — done"
+
+            // Flush all in-memory metadata changes to SwiftData in a single batch.
+            // This replaces the previous per-ROM save (which saved all 4248 ROMs each time).
+            LibraryMetadataStore.shared.flushToSwiftData()
+            library.saveROMsToDatabase()
         }
 
         // Brief pause between phases to give the MainActor runloop time to process UI updates

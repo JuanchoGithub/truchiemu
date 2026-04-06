@@ -1,5 +1,6 @@
 import Foundation
 import AppKit
+import SwiftData
 
 // MARK: - LaunchBox GamesDB Platform Mapping
 
@@ -196,6 +197,7 @@ class LaunchBoxGamesDBService: ObservableObject {
     // MARK: - Web Search
 
     /// Search LaunchBox GamesDB web interface for games.
+    /// Integrates with ResourceCacheInterceptor for cache-first fetching.
     private func searchGamesWeb(title: String, platformName: String?) async -> [LaunchBoxGameResult] {
         var results: [LaunchBoxGameResult] = []
 
@@ -214,21 +216,67 @@ class LaunchBoxGamesDBService: ObservableObject {
             return []
         }
 
+        // Check cache for this search query
+        let cacheKey: String
+        if let platform = platformName {
+            cacheKey = ResourceCacheEntry.makeLaunchBoxSearchKey(platform: platform, query: title)
+        } else {
+            cacheKey = ResourceCacheEntry.makeLaunchBoxSearchKey(platform: "any", query: title)
+        }
+
+        // Try cached result first (if we stored a miss with 404, don't retry)
+        let cacheRepo = ResourceCacheRepository(context: SwiftDataContainer.shared.mainContext)
+        if let cachedEntry = cacheRepo.getEntry(cacheKey: cacheKey) {
+            if cachedEntry.responseStatus == 404 {
+                LoggerService.debug(category: "LaunchBoxDB", "searchGamesWeb: cached 404 for '\(title)', skipping")
+                return []
+            }
+            // If we have cached HTML, use it
+            if let localPath = cachedEntry.localPath,
+               let cachedHTML = try? String(contentsOfFile: localPath, encoding: .utf8) {
+                results = parseGameSearchResults(cachedHTML)
+                if !results.isEmpty {
+                    LoggerService.debug(category: "LaunchBoxDB", "searchGamesWeb: using cached HTML results for '\(title)'")
+                    return results
+                }
+            }
+        }
+
         LoggerService.debug(category: "LaunchBoxDB", "searchGamesWeb: fetching \(url.absoluteString)")
 
         do {
-            let (data, response) = try await urlSession.data(from: url)
-            guard let httpResponse = response as? HTTPURLResponse, httpResponse.statusCode == 200,
-                  let html = String(data: data, encoding: .utf8) else {
-                let statusCode = (response as? HTTPURLResponse)?.statusCode ?? -1
-                LoggerService.debug(category: "LaunchBoxDB", "searchGamesWeb: response status \(statusCode) or encoding error for \(url.absoluteString)")
+            let result = try await ResourceCacheInterceptor.shared.fetchWithCache(
+                url: url,
+                type: .apiResponse,
+                cacheKey: cacheKey,
+                expiry: .medium  // 24 hours for search results
+            )
+
+            guard let html = String(data: result.data, encoding: .utf8) else {
+                LoggerService.debug(category: "LaunchBoxDB", "searchGamesWeb: encoding error for \(url.absoluteString)")
                 return []
             }
 
             results = parseGameSearchResults(html)
-            LoggerService.debug(category: "LaunchBoxDB", "searchGamesWeb: parsed \(results.count) results from \(results.count > 0 ? "first" : "no") page for '\(title)'")
+            LoggerService.debug(category: "LaunchBoxDB", "searchGamesWeb: parsed \(results.count) results for '\(title)'")
+
+            // Store parsed HTML in cache
+            if !results.isEmpty {
+                cacheRepo.recordHit(cacheKey: cacheKey)
+            }
+        } catch is ResourceCacheInterceptorError {
+            LoggerService.warning(category: "LaunchBoxDB", "searchGamesWeb: cache/network error for \(url.absoluteString), trying fallback")
+            // Fallback to direct URLSession for backward compatibility
+            do {
+                let (data, _) = try await URLSession.shared.data(from: url)
+                if let html = String(data: data, encoding: .utf8) {
+                    results = parseGameSearchResults(html)
+                }
+            } catch {
+                LoggerService.warning(category: "LaunchBoxDB", "searchGamesWeb: fallback also failed for \(url.absoluteString)")
+            }
         } catch {
-            LoggerService.warning(category: "LaunchBoxDB", "searchGamesWeb: network error for \(url.absoluteString): \(error.localizedDescription)")
+            LoggerService.warning(category: "LaunchBoxDB", "searchGamesWeb: unexpected error for \(url.absoluteString)")
         }
 
         // Retry without platform if nothing found
@@ -579,7 +627,7 @@ class LaunchBoxGamesDBService: ObservableObject {
         AppSettings.setBool(keyUseLaunchBox, value: enabled)
     }
 
-    /// Last sync date stored in SQLite settings.
+    /// Last sync date stored in app settings.
     var lastSyncDate: Date? {
         let interval = AppSettings.getDouble("launchbox_last_sync", defaultValue: 0); guard interval > 0 else { return nil }
         return Date(timeIntervalSince1970: interval)

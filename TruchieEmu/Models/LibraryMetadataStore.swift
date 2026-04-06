@@ -1,6 +1,7 @@
 import Foundation
+import SwiftData
 
-/// Single-file library metadata (migrated to SQLite rom_metadata table).
+/// Single-file library metadata (migrated to SwiftData ROMMetadataEntry).
 struct ROMLibraryMetadataFile: Codable {
     var version: Int = 1
     /// Key: standardized filesystem path to the ROM file.
@@ -80,29 +81,37 @@ struct ROMMetadataRecord: Codable, Hashable {
     }
 }
 
-// MARK: - DatabaseManager.MetadataRowInt helpers
+// MARK: - SwiftData helpers
 
-extension DatabaseManager.MetadataRowInt {
-    init(pathKey: String, record: ROMMetadataRecord) {
-        self.pathKey = pathKey
-        self.crc32 = record.crc32
-        self.title = record.title
-        self.year = record.year
-        self.developer = record.developer
-        self.publisher = record.publisher
-        self.genre = record.genre
-        self.players = record.players
-        self.description = record.description
-        self.rating = record.rating
-        self.thumbnailSystemID = record.thumbnailLookupSystemID
-        self.boxArtPath = record.boxArtPath
-        self.titleScreenPath = record.titleScreenPath
-        if !record.screenshotPaths.isEmpty,           let data = try? JSONEncoder().encode(record.screenshotPaths),           let str = String(data: data, encoding: .utf8) {
-            self.screenshotPathsJSON = str
+extension ROMMetadataEntry {
+    static func from(pathKey: String, record: ROMMetadataRecord) -> ROMMetadataEntry {
+        let screenshotJSON: String?
+        if !record.screenshotPaths.isEmpty,
+           let data = try? JSONEncoder().encode(record.screenshotPaths),
+           let str = String(data: data, encoding: .utf8) {
+            screenshotJSON = str
         } else {
-            self.screenshotPathsJSON = nil
+            screenshotJSON = nil
         }
-        self.customCoreID = record.customCoreID
+        return ROMMetadataEntry(
+            pathKey: pathKey,
+            crc32: record.crc32,
+            title: record.title,
+            year: record.year,
+            developer: record.developer,
+            publisher: record.publisher,
+            genre: record.genre,
+            players: record.players,
+            gameDescription: record.description,
+            rating: record.rating,
+            cooperative: record.cooperative,
+            esrbRating: record.esrbRating,
+            thumbnailSystemID: record.thumbnailLookupSystemID,
+            boxArtPath: record.boxArtPath,
+            titleScreenPath: record.titleScreenPath,
+            screenshotPathsJSON: screenshotJSON,
+            customCoreID: record.customCoreID
+        )
     }
 
     func toRecord() -> ROMMetadataRecord {
@@ -114,13 +123,17 @@ extension DatabaseManager.MetadataRowInt {
         record.publisher = publisher
         record.genre = genre
         record.players = players
-        record.description = description
+        record.description = gameDescription
         record.rating = rating
+        record.cooperative = cooperative
+        record.esrbRating = esrbRating
         record.thumbnailLookupSystemID = thumbnailSystemID
         record.boxArtPath = boxArtPath
         record.titleScreenPath = titleScreenPath
         record.customCoreID = customCoreID
-        if let json = screenshotPathsJSON,           let data = json.data(using: .utf8),           let paths = try? JSONDecoder().decode([String].self, from: data) {
+        if let json = screenshotPathsJSON,
+           let data = json.data(using: .utf8),
+           let paths = try? JSONDecoder().decode([String].self, from: data) {
             record.screenshotPaths = paths
         }
         return record
@@ -134,6 +147,10 @@ final class LibraryMetadataStore: ObservableObject {
     // MARK: - In-memory cache
 
     private var entries: [String: ROMMetadataRecord] = [:]
+    private let context: ModelContext
+
+    /// Track which entries have been modified in memory but not yet flushed to SwiftData.
+    private var dirtyKeys: Set<String> = []
 
     private let encoder: JSONEncoder = {
         let e = JSONEncoder()
@@ -150,34 +167,37 @@ final class LibraryMetadataStore: ObservableObject {
     }
 
     private init() {
-        migrateLegacyJSONToSQLite()
-        loadChildrenFromSQLite()
+        self.context = SwiftDataContainer.shared.mainContext
+        migrateLegacyJSONToSwiftData()
+        loadChildrenFromSwiftData()
     }
 
-    private func migrateLegacyJSONToSQLite() {
+    private func migrateLegacyJSONToSwiftData() {
         guard FileManager.default.fileExists(atPath: legacyFileURL.path) else { return }
-        // Check if we already migrated (no entries in SQLite for this)
-        let existingCount = DatabaseManager.shared.metadataEntryCount()
+        // Check if we already migrated
+        let descriptor = FetchDescriptor<ROMMetadataEntry>()
+        let existingCount = (try? context.fetchCount(descriptor)) ?? 0
         guard existingCount == 0 else {
-            LoggerService.info(category: "MetadataStore", "SQLite already has metadata entries, skipping JSON migration")
-            // Still rename the JSON file if it exists to avoid double-migration attempt
+            LoggerService.info(category: "MetadataStore", "SwiftData already has metadata entries, skipping JSON migration")
             let migratedURL = legacyFileURL.appendingPathExtension("migrated")
             try? FileManager.default.moveItem(at: legacyFileURL, to: migratedURL)
             return
         }
 
-        LoggerService.info(category: "MetadataStore", "Migrating library_metadata.json to SQLite")
+        LoggerService.info(category: "MetadataStore", "Migrating library_metadata.json to SwiftData")
         do {
             let rawData = try Data(contentsOf: legacyFileURL)
             let file = try decoder.decode(ROMLibraryMetadataFile.self, from: rawData)
 
             if !file.entries.isEmpty {
-                let rows = file.entries.map { DatabaseManager.MetadataRowInt(pathKey: $0.key, record: $0.value) }
-                DatabaseManager.shared.bulkUpsertMetadataEntries(rows)
-                LoggerService.info(category: "MetadataStore", "Migrated \(rows.count) metadata entries to SQLite")
+                for (key, record) in file.entries {
+                    let entry = ROMMetadataEntry.from(pathKey: key, record: record)
+                    context.insert(entry)
+                }
+                try context.save()
+                LoggerService.info(category: "MetadataStore", "Migrated \(file.entries.count) metadata entries to SwiftData")
             }
 
-            // Rename the old file
             let migratedURL = legacyFileURL.appendingPathExtension("migrated")
             try FileManager.default.moveItem(at: legacyFileURL, to: migratedURL)
         } catch {
@@ -185,22 +205,65 @@ final class LibraryMetadataStore: ObservableObject {
         }
     }
 
-    private func loadChildrenFromSQLite() {
-        let rows = DatabaseManager.shared.loadAllMetadataEntries()
-        for row in rows {
-            entries[row.pathKey] = row.toRecord()
+    private func loadChildrenFromSwiftData() {
+        let descriptor = FetchDescriptor<ROMMetadataEntry>()
+        do {
+            let loaded = try context.fetch(descriptor)
+            for entry in loaded {
+                entries[entry.pathKey] = entry.toRecord()
+            }
+            LoggerService.info(category: "MetadataStore", "Loaded \(loaded.count) metadata entries from SwiftData")
+        } catch {
+            LoggerService.error(category: "MetadataStore", "Failed to load metadata: \(error.localizedDescription)")
         }
-        LoggerService.info(category: "MetadataStore", "Loaded \(rows.count) metadata entries from SQLite")
     }
 
     static func pathKey(for rom: ROM) -> String {
         rom.path.standardizedFileURL.path
     }
 
-    /// Flush entire cache to SQLite (used on init after sidecar migration and after bulk operations).
-    private func flushAllToSQLite() {
-        let rows = entries.map { DatabaseManager.MetadataRowInt(pathKey: $0.key, record: $0.value) }
-        DatabaseManager.shared.bulkUpsertMetadataEntries(rows)
+    /// Flush entire cache to SwiftData (used on init after sidecar migration).
+    private func flushAllToSwiftData() {
+        do {
+            let descriptor = FetchDescriptor<ROMMetadataEntry>()
+            let existing = try context.fetch(descriptor)
+            let existingMap = Dictionary(uniqueKeysWithValues: existing.map { ($0.pathKey, $0) })
+
+            for (key, record) in entries {
+                if let model = existingMap[key] {
+                    updateEntryFromRecord(model, record)
+                } else {
+                    let entry = ROMMetadataEntry.from(pathKey: key, record: record)
+                    context.insert(entry)
+                }
+            }
+            try context.save()
+        } catch {
+            LoggerService.error(category: "MetadataStore", "Failed to flush metadata: \(error.localizedDescription)")
+        }
+    }
+
+    private func updateEntryFromRecord(_ entry: ROMMetadataEntry, _ record: ROMMetadataRecord) {
+        entry.crc32 = record.crc32
+        entry.title = record.title
+        entry.year = record.year
+        entry.developer = record.developer
+        entry.publisher = record.publisher
+        entry.genre = record.genre
+        entry.players = record.players
+        entry.gameDescription = record.description
+        entry.rating = record.rating
+        entry.cooperative = record.cooperative
+        entry.esrbRating = record.esrbRating
+        entry.thumbnailSystemID = record.thumbnailLookupSystemID
+        entry.boxArtPath = record.boxArtPath
+        entry.titleScreenPath = record.titleScreenPath
+        entry.customCoreID = record.customCoreID
+        if !record.screenshotPaths.isEmpty,
+           let data = try? JSONEncoder().encode(record.screenshotPaths),
+           let str = String(data: data, encoding: .utf8) {
+            entry.screenshotPathsJSON = str
+        }
     }
 
     func mergedROM(_ rom: ROM) -> ROM {
@@ -221,10 +284,60 @@ final class LibraryMetadataStore: ObservableObject {
         }
 
         entries[key] = rec
-
-        // Upsert single row to SQLite
-        DatabaseManager.shared.upsertMetadataEntry(DatabaseManager.MetadataRowInt(pathKey: key, record: rec))
+        dirtyKeys.insert(key)
         objectWillChange.send()
+    }
+
+    /// Flush only dirty entries to SwiftData. More efficient than flushAllToSwiftData()
+    /// when only a subset of ROMs have been modified.
+    func flushDirtyToSwiftData() {
+        guard !dirtyKeys.isEmpty else { return }
+        let keysToFlush = dirtyKeys
+        dirtyKeys.removeAll()
+
+        do {
+            let descriptor = FetchDescriptor<ROMMetadataEntry>()
+            let existing = try context.fetch(descriptor)
+            let existingMap = Dictionary(uniqueKeysWithValues: existing.map { ($0.pathKey, $0) })
+
+            for key in keysToFlush {
+                guard let record = entries[key] else { continue }
+                if let model = existingMap[key] {
+                    updateEntryFromRecord(model, record)
+                } else {
+                    let entry = ROMMetadataEntry.from(pathKey: key, record: record)
+                    context.insert(entry)
+                }
+            }
+            try context.save()
+        } catch {
+            LoggerService.error(category: "MetadataStore", "Failed to flush dirty metadata: \(error.localizedDescription)")
+        }
+    }
+
+    /// Batch flush all in-memory entries to SwiftData.
+    /// Call this after a batch operation (e.g., scan, import) instead of per-ROM persist().
+    func flushToSwiftData() {
+        guard !entries.isEmpty else { return }
+        flushAllToSwiftData()
+    }
+
+    private func upsertMetadataEntry(key: String, record: ROMMetadataRecord) {
+        let descriptor = FetchDescriptor<ROMMetadataEntry>(
+            predicate: #Predicate { $0.pathKey == key }
+        )
+        do {
+            let results = try context.fetch(descriptor)
+            if let existing = results.first {
+                updateEntryFromRecord(existing, record)
+            } else {
+                let entry = ROMMetadataEntry.from(pathKey: key, record: record)
+                context.insert(entry)
+            }
+            try context.save()
+        } catch {
+            LoggerService.error(category: "MetadataStore", "Failed to persist metadata: \(error.localizedDescription)")
+        }
     }
 
     private func importLegacySidecarJSON(roms: [ROM]) {
@@ -235,11 +348,9 @@ final class LibraryMetadataStore: ObservableObject {
             guard let jsonData = try? Data(contentsOf: rom.infoLocalPath),
                   let meta = try? decoder.decode(ROMMetadata.self, from: jsonData) else { continue }
             var r = rom
-            if r.metadata == nil { r.metadata = meta } else {
-                r.metadata = meta
-            }
+            r.metadata = meta
             entries[key] = ROMMetadataRecord(from: r)
-            DatabaseManager.shared.upsertMetadataEntry(DatabaseManager.MetadataRowInt(pathKey: key, record: ROMMetadataRecord(from: r)))
+            upsertMetadataEntry(key: key, record: ROMMetadataRecord(from: r))
             any = true
         }
         if any { objectWillChange.send() }
@@ -263,8 +374,7 @@ final class LibraryMetadataStore: ObservableObject {
             entries[key] = ROMMetadataRecord(from: rom)
         }
         entries[key]?.customCoreID = coreID
-        let row = DatabaseManager.MetadataRowInt(pathKey: key, record: entries[key]!)
-        DatabaseManager.shared.upsertMetadataEntry(row)
+        upsertMetadataEntry(key: key, record: entries[key]!)
         objectWillChange.send()
     }
 
@@ -272,7 +382,7 @@ final class LibraryMetadataStore: ObservableObject {
         let key = Self.pathKey(for: rom)
         entries[key]?.customCoreID = nil
         if let rec = entries[key] {
-            DatabaseManager.shared.upsertMetadataEntry(DatabaseManager.MetadataRowInt(pathKey: key, record: rec))
+            upsertMetadataEntry(key: key, record: rec)
         }
         objectWillChange.send()
     }
@@ -280,8 +390,25 @@ final class LibraryMetadataStore: ObservableObject {
     // MARK: - Deletion
 
     func deleteMetadata(for rom: ROM) {
-        let key = Self.pathKey(for: rom)
+        deleteMetadataEntry(Self.pathKey(for: rom))
+    }
+
+    /// Delete a metadata entry by its path key.
+    func deleteMetadataEntry(_ key: String) {
         entries.removeValue(forKey: key)
-        DatabaseManager.shared.deleteMetadataEntry(key)
+        let descriptor = FetchDescriptor<ROMMetadataEntry>(
+            predicate: #Predicate { $0.pathKey == key }
+        )
+        do {
+            let results = try context.fetch(descriptor)
+            for entry in results {
+                context.delete(entry)
+            }
+            if !results.isEmpty {
+                try context.save()
+            }
+        } catch {
+            LoggerService.error(category: "MetadataStore", "Failed to delete metadata: \(error.localizedDescription)")
+        }
     }
 }

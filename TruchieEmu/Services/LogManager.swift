@@ -72,7 +72,7 @@ final class LogManager: @unchecked Sendable {
     
     /// Reset to default log folder.
     func resetToDefaultLogFolder() {
-        AppSettings.removeObject(forKey: Self.customLogFolderKey)
+        AppSettings.removeObject(Self.customLogFolderKey)
         LoggerService.shared.setLevel(LoggerService.shared.currentLevel) // Re-setup file logging
         LoggerService.info(category: "LogManager", "Log folder reset to default")
     }

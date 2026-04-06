@@ -1,68 +1,9 @@
 import SwiftUI
 import AppKit
 
-// MARK: - Grid Card Zoomable Box Art
+// GridCardBoxArtView and GridCardZoomableFullScreenView are defined in ZoomableBoxArtView.swift
 
-/// A zoomable box art view for use in grid cards.
-/// Shows a zoom button on hover that opens the full-screen zoomable view.
-struct GridCardBoxArtView: View {
-    let image: NSImage?
-    let placeholder: () -> AnyView
-    let aspectRatio: CGFloat
-    let isHovered: Bool
-    @State private var isPresented = false
-    
-    var body: some View {
-        ZStack {
-            Group {
-                if let img = image {
-                    Image(nsImage: img)
-                        .resizable()
-                        .aspectRatio(contentMode: .fit)
-                        .overlay(
-                            Color.white.opacity(isHovered ? 0.06 : 0)
-                                .animation(.easeOut(duration: 0.2), value: isHovered)
-                        )
-                } else {
-                    placeholder()
-                }
-            }
-            .animation(.easeOut(duration: 0.2), value: image)
-            
-            // Zoom button on hover
-            if isHovered, image != nil {
-                VStack {
-                    Spacer()
-                    HStack {
-                        Spacer()
-                        Button {
-                            isPresented = true
-                        } label: {
-                            Image(systemName: "arrow.up.left.and.arrow.down.right")
-                                .font(.system(size: 12))
-                                .foregroundColor(.white)
-                                .padding(6)
-                                .background(Color.black.opacity(0.6), in: Capsule())
-                        }
-                        .buttonStyle(.plain)
-                        .padding(8)
-                    }
-                }
-                .transition(.opacity)
-            }
-        }
-        .frame(maxWidth: .infinity)
-        .aspectRatio(aspectRatio, contentMode: .fit)
-        .clipShape(RoundedRectangle(cornerRadius: 8))
-        .sheet(isPresented: $isPresented) {
-            if let img = image {
-                GridCardZoomableFullScreenView(image: img)
-            }
-        }
-    }
-}
-
-// MARK: - Full Screen Zoomable Box Art View
+// MARK: - Full Screen Zoomable Box Art View (alias for backwards compat)
 
 /// A full-screen sheet that shows a zoomable image with a close button.
 struct GridCardZoomableFullScreenView: View {
@@ -276,7 +217,11 @@ struct LibraryGridView: View {
     @StateObject private var gameLauncher = GameLauncher.shared
 
     @State private var viewMode: ViewMode = .grid
-    @State private var columnCount: Int = 3
+    @State private var columnCount: Int = {
+        let zoom = AppSettings.getDouble("gridZoomLevel", defaultValue: 0.0)
+        let effectiveZoom = zoom != 0.0 ? zoom : 0.5
+        return max(1, min(8, Int(round((1.0 - effectiveZoom) * 7.0) + 1)))
+    }()
     @ObservedObject var prefs = SystemPreferences.shared
     @ObservedObject var boxArtService = BoxArtService.shared
     @State private var manualBoxArtSearchROM: ROM?
@@ -290,7 +235,11 @@ struct LibraryGridView: View {
     @State private var showDeleteConfirmation = false
     
     // Smooth pinch-to-zoom state
-    @State private var continuousZoom: Double = 0.5
+    @State private var continuousZoom: Double = {
+        // Read saved zoom level at init time
+        let saved = AppSettings.getDouble("gridZoomLevel", defaultValue: 0.0)
+        return saved != 0.0 ? saved : 0.5
+    }()
     @State private var lastMagnification: Double = 1.0
     
     // Multi-select state
@@ -306,6 +255,10 @@ struct LibraryGridView: View {
 
     private enum ViewMode: String { case grid, list }
 
+    /// Filtered and sorted ROMs — computed purely from current state (no side effects).
+    /// SwiftUI's LazyVGrid handles lazy rendering, so this is safe even for large lists.
+    /// Performance note: this is intentionally not cached — SwiftUI's diffing depends on
+    /// the computed value being consistent between render passes.
     private var displayedROMs: [ROM] {
         let base: [ROM]
         switch filter {
@@ -324,24 +277,18 @@ struct LibraryGridView: View {
             base = library.roms.filter { $0.isHidden }
         }
 
-        // Apply filter chips
         var filtered = base
-
-        // Apply filter chips
         if !activeFilters.isEmpty {
             filtered = filtered.filter { rom in
                 for rawValue in activeFilters {
                     if let option = GameFilterOption(rawValue: rawValue) {
-                        if !option.matches(rom) {
-                            return false
-                        }
+                        if !option.matches(rom) { return false }
                     }
                 }
                 return true
             }
         }
 
-        // Apply search text filter
         if !searchText.isEmpty {
             let searchTerms = searchText.split(separator: " ")
             filtered = filtered.filter { rom in
@@ -351,9 +298,7 @@ struct LibraryGridView: View {
             }
         }
 
-        // Apply sort
-        let sorted = applySorting(to: filtered)
-        return sorted
+        return applySorting(to: filtered)
     }
 
     private func applySorting(to roms: [ROM]) -> [ROM] {
@@ -411,7 +356,7 @@ struct LibraryGridView: View {
                 } else if viewMode == .grid {
                     GeometryReader { geometry in
                         gridView
-                            .onChange(of: geometry.size.width) { newWidth in
+                            .onChange(of: geometry.size.width) { _, newWidth in
                                 gridWidth = newWidth
                                 updateColumns()
                             }
@@ -548,15 +493,22 @@ struct LibraryGridView: View {
                     }
 
                     Section("Zoom Level") {
-                        Slider(value: Binding(
-                            get: { continuousZoom },
-                            set: { newValue in
-                                continuousZoom = newValue
-                                columnCount = max(1, min(8, Int(round((1.0 - newValue) * 7.0) + 1)))
-                                updateColumns()
-                            }
-                        ), in: 0...1, step: 1.0/7.0)
-                            .padding(.horizontal, 8)
+                        HStack {
+                            Image(systemName: "minus.magnifyingglass")
+                                .font(.caption)
+                                .foregroundColor(.secondary)
+                            Slider(value: Binding(
+                                get: { continuousZoom },
+                                set: { newValue in
+                                    continuousZoom = newValue
+                                    applyZoomToColumnCount(animate: false)
+                                }
+                            ), in: 0...1)
+                                .padding(.horizontal, 2)
+                            Image(systemName: "plus.magnifyingglass")
+                                .font(.caption)
+                                .foregroundColor(.secondary)
+                        }
                     }
 
                     Section("View") {
@@ -645,15 +597,16 @@ struct LibraryGridView: View {
             BoxArtPickerView(rom: rom)
         }
         .onAppear { 
-            columnCount = AppSettings.getInt("gridColumns", defaultValue: 4)
+            // Recompute columns from saved zoom level
+            applyZoomToColumnCount(animate: false)
             updateColumns()
-            continuousZoom = 1.0 - Double(columnCount - 1) / 7.0
         }
         .onDisappear {
-            AppSettings.setInt("gridColumns", value: columnCount)
+            // Save zoom level persistently
+            AppSettings.setDouble("gridZoomLevel", value: continuousZoom)
         }
         // Refresh grid when box art is updated from elsewhere (e.g., game info page)
-        .onChange(of: boxArtService.boxArtUpdated) { _ in
+        .onChange(of: boxArtService.boxArtUpdated) { _, _ in
             // Update the refresh token to force all GameCardViews to reload their images
             gridRefreshToken = UUID()
             // Clear the image cache so fresh images are loaded from disk
@@ -881,7 +834,23 @@ struct LibraryGridView: View {
     }
 
     private var zoomLevel: Double {
-        1.0 - Double(columnCount - 1) / 7.0
+        continuousZoom
+    }
+    
+    /// Applies the current continuousZoom value to columnCount and updates the grid.
+    /// Shared between slider, pinch gesture, and onAppear restoration.
+    private func applyZoomToColumnCount(animate: Bool = false) {
+        let newColumnCount = max(1, min(8, Int(round((1.0 - continuousZoom) * 7.0) + 1)))
+        if newColumnCount != columnCount {
+            columnCount = newColumnCount
+            if animate {
+                withAnimation(.interpolatingSpring(stiffness: 150, damping: 20)) {
+                    updateColumns()
+                }
+            } else {
+                updateColumns()
+            }
+        }
     }
 
     @State private var scanningMessageIndex = 0
@@ -1022,7 +991,7 @@ struct LibraryGridView: View {
                 }
             }
         }
-        .onChange(of: boxArtService.isDownloadingBatch) { isDownloading in
+        .onChange(of: boxArtService.isDownloadingBatch) { _, isDownloading in
             if isDownloading {
                 boxArtMessageIndex = 0
             }
@@ -1263,7 +1232,8 @@ struct LibraryGridView: View {
     private func removeROMFromLibrary(_ rom: ROM) {
         library.roms.removeAll { $0.id == rom.id }
         LibraryMetadataStore.shared.deleteMetadata(for: rom)
-        DatabaseManager.shared.deleteROMsByPath([rom.path.path])
+        let repo = ROMRepository(context: SwiftDataContainer.shared.mainContext)
+        repo.deleteROMsByPath([rom.path.path])
         library.updateCounts()
         library.saveROMsToDatabase()
 
@@ -1451,6 +1421,7 @@ struct GameCardView: View {
     @State private var isHovered = false
     @State private var image: NSImage?
     @ObservedObject var prefs = SystemPreferences.shared
+    @EnvironmentObject var library: ROMLibrary
     @EnvironmentObject var categoryManager: CategoryManager
 
     private var boxType: BoxType {
@@ -1521,7 +1492,10 @@ struct GameCardView: View {
         .accessibilityLabel(rom.displayName)
         .accessibilityAddTraits(.isButton)
         .task(id: "\(rom.boxArtPath?.path ?? "")-\(gridRefreshToken)") {
-            if let artPath = rom.boxArtPath {
+            // Lazy-resolve local boxart on-demand if not already set
+            if let resolvedPath = BoxArtService.shared.resolveLocalBoxArtIfNeeded(for: rom, library: library) {
+                self.image = await ImageCache.shared.image(for: resolvedPath)
+            } else if let artPath = rom.boxArtPath {
                 self.image = await ImageCache.shared.image(for: artPath)
             } else {
                 self.image = nil
@@ -1586,6 +1560,7 @@ struct GameListRowView: View {
     let isSelected: Bool
     let zoomLevel: Double
     @State private var thumb: NSImage?
+    @EnvironmentObject var library: ROMLibrary
     @EnvironmentObject var categoryManager: CategoryManager
     
     private var titleFontSize: CGFloat {
@@ -1748,7 +1723,10 @@ struct GameListRowView: View {
                 .stroke(isSelected ? Color.accentColor.opacity(0.5) : Color.clear, lineWidth: 1.5)
         )
         .task(id: rom.boxArtPath) {
-            if let artPath = rom.boxArtPath {
+            // Lazy-resolve local boxart on-demand if not already set
+            if let resolvedPath = BoxArtService.shared.resolveLocalBoxArtIfNeeded(for: rom, library: library) {
+                self.thumb = await ImageCache.shared.image(for: resolvedPath)
+            } else if let artPath = rom.boxArtPath {
                 self.thumb = await ImageCache.shared.image(for: artPath)
             } else {
                 self.thumb = nil

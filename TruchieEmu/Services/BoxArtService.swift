@@ -1,5 +1,6 @@
 import Foundation
 import Combine
+import SwiftData
 
 @MainActor
 class BoxArtService: ObservableObject {
@@ -16,6 +17,10 @@ class BoxArtService: ObservableObject {
     }()
     private let credKey = "screenscraper_credentials"
 
+    private var cacheRepo: ResourceCacheRepository {
+        ResourceCacheRepository(context: SwiftDataContainer.shared.mainContext)
+    }
+
     private let keyThumbnailBaseURL = "thumbnail_server_url"
     private let keyThumbnailPriority = "thumbnail_priority_type"
     private let keyUseCRCMatching = "thumbnail_use_crc_matching"
@@ -26,7 +31,7 @@ class BoxArtService: ObservableObject {
     /// Libretro CDN base URL (default: https://thumbnails.libretro.com/)
     var thumbnailServerURL: URL {
         get {
-            if let s = AppSettings.get(keyThumbnailBaseURL), let u = URL(string: s), u.scheme != nil {
+            if let s = AppSettings.get(keyThumbnailBaseURL, type: String.self), let u = URL(string: s), u.scheme != nil {
                 return u
             }
             return LibretroThumbnailResolver.defaultBaseURL
@@ -38,7 +43,7 @@ class BoxArtService: ObservableObject {
 
     var thumbnailPriority: LibretroThumbnailPriority {
         get {
-            let raw = AppSettings.get(keyThumbnailPriority) ?? LibretroThumbnailPriority.boxart.rawValue
+            let raw = AppSettings.get(keyThumbnailPriority, type: String.self) ?? LibretroThumbnailPriority.boxart.rawValue
             return LibretroThumbnailPriority(rawValue: raw) ?? .boxart
         }
         set {
@@ -98,6 +103,139 @@ class BoxArtService: ObservableObject {
         guard let data = AppSettings.getData(credKey),
               let creds = try? JSONDecoder().decode(ScreenScraperCredentials.self, from: data) else { return }
         credentials = creds
+    }
+
+    // MARK: - Local BoxArt Resolution
+
+    /// Lazily resolves local boxart for a single ROM on-demand.
+    /// If boxart is found, updates the ROM's boxArtPath and persists the change.
+    /// Returns the resolved URL, or nil if not found.
+    /// This is the preferred method for UI-driven lazy loading — call it per-ROM when the card appears.
+    @MainActor
+    func resolveLocalBoxArtIfNeeded(for rom: ROM, library: ROMLibrary) -> URL? {
+        // Already resolved — skip
+        if rom.boxArtPath != nil {
+            LoggerService.debug(category: "BoxArt", "Lazy-resolve skipped — boxart already set for '\(rom.displayName)'")
+            return rom.boxArtPath
+        }
+
+        LoggerService.info(category: "BoxArt", "Lazy-resolving local boxart for '\(rom.displayName)' (system: \(rom.systemID ?? "unknown"))")
+        
+        // Check if local boxart exists without persisting first
+        if let localURL = resolveLocalBoxArt(for: rom) {
+            var updated = rom
+            updated.boxArtPath = localURL
+            library.updateROM(updated)
+            LoggerService.info(category: "BoxArt", "✅ Local boxart found: \(localURL.lastPathComponent) for '\(rom.displayName)'")
+            return localURL
+        }
+        LoggerService.debug(category: "BoxArt", "No local boxart found for '\(rom.displayName)'")
+        return nil
+    }
+
+    /// Scans the local /boxart subfolder for an existing image matching this ROM.
+    /// The boxart file must be named `<romfile>_boxart.png` (e.g., `Super Mario.nes_boxart.png`).
+    /// Returns the local file URL if found, nil otherwise. Does NOT download from CDN.
+    func resolveLocalBoxArt(for rom: ROM) -> URL? {
+        let localBoxArtDir = rom.path.deletingLastPathComponent().appendingPathComponent("boxart", isDirectory: true)
+        let imageExtensions = ["png", "jpg", "jpeg", "webp", "gif", "bmp"]
+        
+        // Build candidate names using the <romfile>_boxart convention:
+        // 1. Full ROM filename with extension + "_boxart" — e.g., "Super Mario.nes_boxart"
+        // 2. ROM filename without extension + "_boxart" — e.g., "Super Mario_boxart"
+        // 3. ROM full name as stored in the database + "_boxart"
+        // 4. Sanitized version with common tags stripped + "_boxart"
+        var candidateStems: [String] = []
+        
+        // Primary: full ROM filename with extension (e.g., "Super Mario.nes_boxart")
+        let romFileName = rom.path.lastPathComponent
+        candidateStems.append("\(romFileName)_boxart")
+        
+        // Secondary: ROM filename without extension (e.g., "Super Mario_boxart")
+        let romFileStem = rom.path.deletingPathExtension().lastPathComponent
+        candidateStems.append("\(romFileStem)_boxart")
+        
+        // Tertiary: if rom.name differs from the filename stem, also try it
+        if rom.name != romFileStem && !rom.name.isEmpty {
+            candidateStems.append("\(rom.name)_boxart")
+        }
+        
+        // Also try sanitized/deslugged version of the filename
+        let sanitized = romFileStem
+            .replacingOccurrences(of: " \\(.*?\\)", with: "", options: .regularExpression)
+            .replacingOccurrences(of: " \\[.*?\\]", with: "", options: .regularExpression)
+            .trimmingCharacters(in: .whitespacesAndNewlines)
+        if sanitized != romFileStem && !sanitized.isEmpty {
+            candidateStems.append("\(sanitized)_boxart")
+        }
+        
+        // Deduplicate while preserving order
+        var seen = Set<String>()
+        let uniqueStems = candidateStems.filter { stem in
+            let normalized = stem.lowercased()
+            if seen.contains(normalized) { return false }
+            seen.insert(normalized)
+            return true
+        }
+        
+        // Check each candidate stem against all image extensions
+        for stem in uniqueStems {
+            for ext in imageExtensions {
+                let candidate = localBoxArtDir.appendingPathComponent("\(stem).\(ext)")
+                if FileManager.default.fileExists(atPath: candidate.path), isValidImageFile(at: candidate) {
+                    LoggerService.info(category: "BoxArt", "Found local boxart '\(candidate.lastPathComponent)' for '\(rom.displayName)' (stem='\(stem)', ext=\(ext))")
+                    return candidate
+                }
+            }
+        }
+        
+        // Fallback: check the app's own naming convention (boxArtLocalPath)
+        if FileManager.default.fileExists(atPath: rom.boxArtLocalPath.path), isValidImageFile(at: rom.boxArtLocalPath) {
+            LoggerService.info(category: "BoxArt", "Found local boxart '\(rom.boxArtLocalPath.lastPathComponent)' for '\(rom.displayName)'")
+            return rom.boxArtLocalPath
+        }
+        
+        // If we got here, no boxart found — log what we looked for
+        let dirExists = FileManager.default.fileExists(atPath: localBoxArtDir.path)
+        if dirExists {
+            LoggerService.debug(category: "BoxArt", "No boxart found in '\(localBoxArtDir.path)' for '\(rom.displayName)' (tried stems: \(uniqueStems.joined(separator: ", ")))")
+        } else {
+            LoggerService.debug(category: "BoxArt", "Boxart directory does not exist: '\(localBoxArtDir.path)' for '\(rom.displayName)'")
+        }
+
+        return nil
+    }
+
+    /// Resolves local boxart for a batch of ROMs. Returns ROMs that had local boxart found.
+    /// Thread-safe: can be called from background tasks.
+    func resolveLocalBoxArtBatch(for roms: [ROM]) -> [ROM] {
+        var found: [ROM] = []
+        for rom in roms {
+            if let localURL = resolveLocalBoxArt(for: rom) {
+                var updated = rom
+                updated.boxArtPath = localURL
+                found.append(updated)
+            }
+        }
+        return found
+    }
+
+    /// Resolves local boxart for all ROMs in the library that don't already have a boxArtPath set.
+    /// Updates the library and triggers a UI refresh signal. Call from MainActor.
+    func resolveAllLocalBoxArtAndPersist(library: ROMLibrary) {
+        let romsWithoutArt = library.roms.filter { $0.boxArtPath == nil }
+        guard !romsWithoutArt.isEmpty else { return }
+
+        LoggerService.info(category: "BoxArt", "Scanning \(romsWithoutArt.count) ROM(s) for local boxart in /boxart folders...")
+        let found = resolveLocalBoxArtBatch(for: romsWithoutArt)
+
+        if !found.isEmpty {
+            LoggerService.info(category: "BoxArt", "Found local boxart for \(found.count) ROM(s)")
+            for rom in found {
+                library.updateROM(rom)
+            }
+            signalBoxArtUpdated(for: UUID())
+        }
     }
 
     // MARK: - Art Fetching
@@ -316,20 +454,73 @@ class BoxArtService: ObservableObject {
         var attemptNum = 0
         for url in candidates {
             attemptNum += 1
+            
+            // Check cache for previous resolution result for this URL
+            let romPathKey = rom.path.deletingPathExtension().lastPathComponent
+            let source = "libretro"
+            if let cached = cacheRepo.getBoxArtResolution(
+                romPathKey: romPathKey,
+                source: source
+            ) {
+                // If this exact URL was already tried and failed, skip it
+                if cached.resolvedURL == url.absoluteString && !cached.isValid && cached.httpStatus != 0 {
+                    LoggerService.debug(category: "BoxArt", "Libretro: skipping previously failed URL (cached 404/miss): \(url.absoluteString)")
+                    continue
+                }
+                // If succeeded and file exists locally, return it
+                if cached.isValid, FileManager.default.fileExists(atPath: cached.resolvedURL) {
+                    LoggerService.info(category: "BoxArt", "Libretro: using cached resolution (hit) for \(rom.name)")
+                    return URL(fileURLWithPath: cached.resolvedURL)
+                }
+            }
+            
             LoggerService.debug(category: "BoxArt", "Libretro: attempting URL #\(attemptNum)/\(candidates.count): \(url.absoluteString)")
+            
+            var headStatusCode = -1
             if useHeadBeforeThumbnailDownload {
                 LoggerService.extreme(category: "BoxArt", "Libretro: HEAD check on \(url.absoluteString)")
-                guard await httpStatus(for: url, method: "HEAD", session: thumbnailURLSession) == 200 else {
+                headStatusCode = await httpStatus(for: url, method: "HEAD", session: thumbnailURLSession)
+                guard headStatusCode == 200 else {
                     LoggerService.extreme(category: "BoxArt", "Libretro: HEAD check failed (non-200) for \(url.absoluteString)")
+                    // Cache the 404 result
+                    cacheRepo.storeBoxArtResolution(
+                        romPathKey: romPathKey,
+                        systemID: sysID,
+                        gameTitle: gameTitle,
+                        resolvedURL: url.absoluteString,
+                        source: source,
+                        httpStatus: headStatusCode,
+                        isValid: false
+                    )
                     continue
                 }
                 LoggerService.extreme(category: "BoxArt", "Libretro: HEAD check passed for \(url.absoluteString)")
             }
+            
             if let saved = await downloadAndCache(artURL: url, for: rom, session: thumbnailURLSession) {
                 LoggerService.info(category: "BoxArt", "Libretro: SUCCESS downloading and caching boxart from \(url.absoluteString) → saved to \(saved.path)")
+                cacheRepo.storeBoxArtResolution(
+                    romPathKey: romPathKey,
+                    systemID: sysID,
+                    gameTitle: gameTitle,
+                    resolvedURL: saved.path,
+                    source: source,
+                    httpStatus: 200,
+                    isValid: true
+                )
                 return saved
             } else {
                 LoggerService.debug(category: "BoxArt", "Libretro: download/caching failed for \(url.absoluteString)")
+                // Cache the miss
+                cacheRepo.storeBoxArtResolution(
+                    romPathKey: romPathKey,
+                    systemID: sysID,
+                    gameTitle: gameTitle,
+                    resolvedURL: url.absoluteString,
+                    source: source,
+                    httpStatus: headStatusCode == -1 ? 0 : headStatusCode,
+                    isValid: false
+                )
             }
         }
 

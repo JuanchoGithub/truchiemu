@@ -2110,7 +2110,7 @@ struct InlineCheatRowView: View {
                         .foregroundColor(.secondary)
                 }
             }
-            .onChange(of: isOn) { newValue in
+            .onChange(of: isOn) { _, newValue in
                 onToggle(newValue)
             }
             .toggleStyle(.switch)

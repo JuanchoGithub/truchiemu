@@ -1,7 +1,4 @@
 import Foundation
-import os.log
-
-private let cheatLog = Logger(subsystem: Bundle.main.bundleIdentifier ?? "TruchieEmu", category: "CheatParser")
 
 // MARK: - Cheat Parser
 
@@ -26,10 +23,10 @@ class CheatParser {
         do {
             let content = try String(contentsOf: url, encoding: .utf8)
             let result = parseChtContent(content)
-            cheatLog.info("parseChtFile: read \(content.count) bytes, parsed \(result.count) cheats from \(url.lastPathComponent)")
+            LoggerService.info(category: "CheatParser", "parseChtFile: read \(content.count) bytes, parsed \(result.count) cheats from \(url.lastPathComponent)")
             return result
         } catch {
-            cheatLog.error("Failed to read cheat file \(url.path): \(error.localizedDescription)")
+            LoggerService.error(category: "CheatParser", "Failed to read cheat file \(url.path): \(error.localizedDescription)")
             return nil
         }
     }
@@ -51,7 +48,7 @@ class CheatParser {
             }
         }
         
-        cheatLog.info("parseChtContent: found cheatCount=\(cheatCount) from \(lines.count) lines")
+        LoggerService.info(category: "CheatParser", "parseChtContent: found cheatCount=\(cheatCount) from \(lines.count) lines")
         
         // Second pass: parse individual cheats
         for i in 0..<cheatCount {
@@ -83,7 +80,7 @@ class CheatParser {
             }
         }
         
-        cheatLog.info("Parsed \(cheats.count) cheats from .cht content")
+        LoggerService.info(category: "CheatParser", "Parsed \(cheats.count) cheats from .cht content")
         return cheats
     }
     

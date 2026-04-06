@@ -475,7 +475,7 @@ struct GameDetailView: View {
             gbSGBBordersEnabled = currentROM.settings.gbSGBBordersEnabled
             gbColorCorrectionMode = currentROM.settings.gbColorCorrectionMode
         }
-        .onChange(of: currentROM.id) { _ in
+        .onChange(of: currentROM.id) { _, _ in
             clearManualStatus()
             loadSlotInfo()
             loadAchievements()
@@ -491,9 +491,9 @@ struct GameDetailView: View {
                 crcHash = crc
             }
         }
-        .onChange(of: currentROM.boxArtPath) { _ in loadBoxArt() }
-        .onChange(of: currentROM.screenshotPaths) { _ in loadScreenshots() }
-        .onChange(of: library.bezelUpdateToken) { _ in
+        .onChange(of: currentROM.boxArtPath) { _, _ in loadBoxArt() }
+        .onChange(of: currentROM.screenshotPaths) { _, _ in loadScreenshots() }
+        .onChange(of: library.bezelUpdateToken) { _, _ in
             Task { await loadCurrentBezelImage() }
         }
         .sheet(isPresented: $showBoxArtPicker) {
@@ -640,7 +640,10 @@ struct GameDetailView: View {
     }
 
     private func loadBoxArt() {
-        if let path = currentROM.boxArtPath {
+        // Lazy-resolve local boxart on-demand if not already set
+        if let resolvedPath = BoxArtService.shared.resolveLocalBoxArtIfNeeded(for: currentROM, library: library) {
+            boxArtImage = NSImage(contentsOf: resolvedPath)
+        } else if let path = currentROM.boxArtPath {
             boxArtImage = NSImage(contentsOf: path)
         } else {
             boxArtImage = nil
@@ -963,7 +966,7 @@ struct GameDetailView: View {
                         .pickerStyle(.menu)
                         .labelsHidden()
                         .frame(width: 220)
-                        .onChange(of: infoCoreID) { _ in
+                        .onChange(of: infoCoreID) { _, _ in
                             // Update the label to show override vs system default
                         }
                     }
@@ -2423,7 +2426,7 @@ struct GameDetailView: View {
                 updateCheatCounts()
             }
         }
-        .onChange(of: currentROM.id) { _ in
+        .onChange(of: currentROM.id) { _, _ in
             updateCheatCounts()
             loadCheatsList()
             if cheatsList.isEmpty {
@@ -2906,7 +2909,7 @@ struct ModernSaveStateSlotView: View {
                 }
         )
         // Dismiss play button when tapping elsewhere
-        .onChange(of: showPlayButton) { _ in
+        .onChange(of: showPlayButton) { _, _ in
             if showPlayButton {
                 // Auto-dismiss after 5 seconds
                 DispatchQueue.main.asyncAfter(deadline: .now() + 5) {
@@ -3195,7 +3198,7 @@ struct CoreVersionPickerView: View {
                 }
             }
             .pickerStyle(.menu)
-            .onChange(of: selectedTag) { tag in
+            .onChange(of: selectedTag) { _, tag in
                 guard let tag else { return }
                 coreManager.setActiveVersion(coreID: core.id, tag: tag)
             }

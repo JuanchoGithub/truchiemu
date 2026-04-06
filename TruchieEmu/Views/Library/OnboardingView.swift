@@ -99,7 +99,7 @@ struct OnboardingView: View {
                 cardAppeared = true
             }
         }
-        .onChange(of: step) { _ in
+        .onChange(of: step) { _, _ in
             // Animate step transitions
             withAnimation(.easeInOut(duration: 0.3)) {
                 currentStepID = step

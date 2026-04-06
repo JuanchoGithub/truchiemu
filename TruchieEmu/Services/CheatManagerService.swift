@@ -1,7 +1,4 @@
 import Foundation
-import os.log
-
-private let cheatManagerLog = Logger(subsystem: Bundle.main.bundleIdentifier ?? "TruchieEmu", category: "CheatManagerService")
 
 // MARK: - Cheat Manager Service
 
@@ -62,7 +59,7 @@ class CheatManagerService: ObservableObject {
         }
         allCheats[rom.path.path] = cheats
         saveCheats()
-        cheatManagerLog.info("Updated cheat: \(cheat.displayName) for \(rom.displayName)")
+        LoggerService.info(category: "CheatManagerService", "Updated cheat: \(cheat.displayName) for \(rom.displayName)")
     }
     
     /// Toggle a cheat's enabled state
@@ -78,7 +75,7 @@ class CheatManagerService: ObservableObject {
         cheats.append(cheat)
         allCheats[rom.path.path] = cheats
         saveCheats()
-        cheatManagerLog.info("Added cheat: \(cheat.displayName) for \(rom.displayName)")
+        LoggerService.info(category: "CheatManagerService", "Added cheat: \(cheat.displayName) for \(rom.displayName)")
     }
     
     /// Remove a cheat from a ROM
@@ -87,7 +84,7 @@ class CheatManagerService: ObservableObject {
         cheats.removeAll { $0.id == cheat.id }
         allCheats[rom.path.path] = cheats
         saveCheats()
-        cheatManagerLog.info("Removed cheat: \(cheat.displayName) from \(rom.displayName)")
+        LoggerService.info(category: "CheatManagerService", "Removed cheat: \(cheat.displayName) from \(rom.displayName)")
     }
     
     /// Enable all cheats for a ROM
@@ -133,7 +130,7 @@ class CheatManagerService: ObservableObject {
         allCheats[rom.path.path] = mergedCheats
         
         isLoading = false
-        cheatManagerLog.info("Loaded \(mergedCheats.count) cheats for ROM: \(rom.displayName)")
+        LoggerService.info(category: "CheatManagerService", "Loaded \(mergedCheats.count) cheats for ROM: \(rom.displayName)")
     }
     
     /// Import a .cht file for a ROM
@@ -145,7 +142,7 @@ class CheatManagerService: ObservableObject {
         }
         
         guard let cheats = CheatParser.parseChtFile(url: url) else {
-            cheatManagerLog.error("Failed to parse cheat file: \(url.path)")
+            LoggerService.error(category: "CheatManagerService", "Failed to parse cheat file: \(url.path)")
             return false
         }
         
@@ -170,7 +167,7 @@ class CheatManagerService: ObservableObject {
         allCheats[rom.path.path] = existing
         saveCheats()
         
-        cheatManagerLog.info("Imported cheats: \(addedCount) added, \(updatedCount) updated")
+        LoggerService.info(category: "CheatManagerService", "Imported cheats: \(addedCount) added, \(updatedCount) updated")
         return true
     }
     
@@ -221,7 +218,7 @@ class CheatManagerService: ObservableObject {
             try content.write(to: url, atomically: true, encoding: .utf8)
             return true
         } catch {
-            cheatManagerLog.error("Failed to export cheats: \(error.localizedDescription)")
+            LoggerService.error(category: "CheatManagerService", "Failed to export cheats: \(error.localizedDescription)")
             return false
         }
     }
@@ -318,6 +315,6 @@ class CheatManagerService: ObservableObject {
             return
         }
         self.allCheats = decoded
-        cheatManagerLog.info("Loaded \(self.allCheats.count) ROM cheat configurations")
+        LoggerService.info(category: "CheatManagerService", "Loaded \(self.allCheats.count) ROM cheat configurations")
     }
 }

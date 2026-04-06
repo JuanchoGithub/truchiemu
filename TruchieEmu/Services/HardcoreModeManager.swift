@@ -1,8 +1,5 @@
 import Foundation
 import SwiftUI
-import os.log
-
-private let hardcoreLog = Logger(subsystem: Bundle.main.bundleIdentifier ?? "TruchieEmu", category: "HardcoreMode")
 
 // MARK: - Hardcore Mode Manager
 
@@ -45,7 +42,7 @@ class HardcoreModeManager: ObservableObject {
     /// Attempt to use save states. Returns false if hardcore mode blocks it.
     func attemptSaveState() -> Bool {
         guard !areSaveStatesBlocked else {
-            hardcoreLog.warning("Save state blocked by hardcore mode")
+            LoggerService.warning(category: "HardcoreMode", "Save state blocked by hardcore mode")
             return false
         }
         return true
@@ -54,7 +51,7 @@ class HardcoreModeManager: ObservableObject {
     /// Attempt to use rewind. Returns false if hardcore mode blocks it.
     func attemptRewind() -> Bool {
         guard !isRewindBlocked else {
-            hardcoreLog.warning("Rewind blocked by hardcore mode")
+            LoggerService.warning(category: "HardcoreMode", "Rewind blocked by hardcore mode")
             return false
         }
         return true
@@ -63,7 +60,7 @@ class HardcoreModeManager: ObservableObject {
     /// Attempt to use slow motion. Returns false if hardcore mode blocks it.
     func attemptSlowMotion() -> Bool {
         guard !isSlowMotionBlocked else {
-            hardcoreLog.warning("Slow motion blocked by hardcore mode")
+            LoggerService.warning(category: "HardcoreMode", "Slow motion blocked by hardcore mode")
             return false
         }
         return true
@@ -72,7 +69,7 @@ class HardcoreModeManager: ObservableObject {
     /// Attempt to use cheats. Returns false if hardcore mode blocks it.
     func attemptUseCheats() -> Bool {
         guard !areCheatsBlocked else {
-            hardcoreLog.warning("Cheats blocked by hardcore mode")
+            LoggerService.warning(category: "HardcoreMode", "Cheats blocked by hardcore mode")
             return false
         }
         return true
@@ -85,13 +82,13 @@ class HardcoreModeManager: ObservableObject {
     func disqualifyHardcore(reason: String) {
         guard isHardcoreActive else { return }
         
-        hardcoreLog.warning("Hardcore disqualified: \(reason)")
+        LoggerService.warning(category: "HardcoreMode", "Hardcore disqualified: \(reason)")
         
         // Disable hardcore mode
         RetroAchievementsService.shared.setHardcoreMode(false)
         
         // Show notification
-        hardcoreLog.warning("Hardcore mode disabled: \(reason)")
+        LoggerService.warning(category: "HardcoreMode", "Hardcore mode disabled: \(reason)")
     }
     
     /// Get a user-friendly message about blocked features

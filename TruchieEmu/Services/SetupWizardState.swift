@@ -202,42 +202,6 @@ final class SetupWizardState: ObservableObject {
         LoggerService.info(category: "Wizard", "Cheat download complete.")
     }
     
-    // MARK: - Apply Settings & Complete
-    
-    func applySettings(to library: ROMLibrary) async {
-        // Add all library folders (addLibraryFolder handles persistence + scanning)
-        for folder in libraryFolders {
-            library.addLibraryFolder(url: folder)
-        }
-        library.hasCompletedOnboarding = true
-        
-        // Apply logging via SQLite
-        AppSettings.setBool("logging_enabled", value: loggingEnabled)
-        
-        // Apply shader preset via SQLite
-        AppSettings.set("display_default_shader_preset", value: selectedShaderPresetID)
-        
-        // Apply achievements
-        if achievementsEnabled && !achievementsUsername.isEmpty && !achievementsPassword.isEmpty {
-            do {
-                let token = try await RetroAchievementsService.shared.login(
-                    username: achievementsUsername,
-                    password: achievementsPassword
-                )
-                RetroAchievementsService.shared.saveSettings(
-                    username: achievementsUsername,
-                    token: token
-                )
-                RetroAchievementsService.shared.setEnabled(true)
-            } catch {
-                LoggerService.info(category: "Wizard", "Achievements login failed: \(error.localizedDescription)")
-            }
-        }
-        
-        // Mark as completed
-        hasCompletedWizard = true
-    }
-    
     private func isInternalPath(_ url: URL) -> Bool {
         let appSupport = FileManager.default.urls(for: .applicationSupportDirectory, in: .userDomainMask).first!
         return url.path.hasPrefix(appSupport.appendingPathComponent("TruchieEmu").path)

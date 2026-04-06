@@ -1,7 +1,4 @@
 import Foundation
-import os.log
-
-private let cheatLoaderLog = Logger(subsystem: Bundle.main.bundleIdentifier ?? "TruchieEmu", category: "CheatAutoLoader")
 
 // MARK: - Cheat Auto-Loader
 
@@ -57,7 +54,7 @@ class CheatAutoLoader {
             names.append(displayName)
         }
         
-        cheatLoaderLog.info("Possible cheat filenames: \(names)")
+        LoggerService.info(category: "CheatAutoLoader", "Possible cheat filenames: \(names)")
         return names
     }
     
@@ -74,9 +71,9 @@ class CheatAutoLoader {
             for name in names {
                 let chtPath = directory.appendingPathComponent("\(name).cht")
                 let exists = FileManager.default.fileExists(atPath: chtPath.path)
-                cheatLoaderLog.info("\(label) '\(name)': \(chtPath.path) \(exists ? "EXISTS" : "not found")")
+                LoggerService.info(category: "CheatAutoLoader", "\(label) '\(name)': \(chtPath.path) \(exists ? "EXISTS" : "not found")")
                 if exists, let cheats = loadCheatFile(chtPath, source: source) {
-                    cheatLoaderLog.info("Found cheats via \(label) '\(name)': \(chtPath.path)")
+                    LoggerService.info(category: "CheatAutoLoader", "Found cheats via \(label) '\(name)': \(chtPath.path)")
                     return cheats
                 }
             }
@@ -88,9 +85,9 @@ class CheatAutoLoader {
         for name in possibleNames {
             let chtPath = romFolder.appendingPathComponent("\(name).cht")
             let exists = FileManager.default.fileExists(atPath: chtPath.path)
-            cheatLoaderLog.info("P1 ROM folder '\(name)': \(chtPath.path) \(exists ? "EXISTS" : "not found")")
+            LoggerService.info(category: "CheatAutoLoader", "P1 ROM folder '\(name)': \(chtPath.path) \(exists ? "EXISTS" : "not found")")
             if exists, let cheats = loadCheatFile(chtPath, source: .autoDetected) {
-                cheatLoaderLog.info("Found cheats in ROM folder: \(chtPath.path)")
+                LoggerService.info(category: "CheatAutoLoader", "Found cheats in ROM folder: \(chtPath.path)")
                 allCheats.append(contentsOf: cheats)
                 break
             }
@@ -121,7 +118,7 @@ class CheatAutoLoader {
         // Merge duplicates (prefer later sources)
         allCheats = mergeCheats(allCheats)
         
-        cheatLoaderLog.info("Loaded \(allCheats.count) cheats for \(rom.displayName) [systemID=\(systemID), names=\(possibleNames)]")
+        LoggerService.info(category: "CheatAutoLoader", "Loaded \(allCheats.count) cheats for \(rom.displayName) [systemID=\(systemID), names=\(possibleNames)]")
         
         return allCheats
     }
@@ -133,7 +130,7 @@ class CheatAutoLoader {
         }
         
         guard let cheats = CheatParser.parseChtFile(url: url) else {
-            cheatLoaderLog.error("Failed to parse cheat file: \(url.path)")
+            LoggerService.error(category: "CheatAutoLoader", "Failed to parse cheat file: \(url.path)")
             return nil
         }
         
@@ -176,9 +173,9 @@ class CheatAutoLoader {
             if !FileManager.default.fileExists(atPath: dir.path, isDirectory: &isDir) || !isDir.boolValue {
                 do {
                     try FileManager.default.createDirectory(at: dir, withIntermediateDirectories: true)
-                    cheatLoaderLog.info("Created cheat directory: \(dir.path)")
+                    LoggerService.info(category: "CheatAutoLoader", "Created cheat directory: \(dir.path)")
                 } catch {
-                    cheatLoaderLog.error("Failed to create cheat directory: \(dir.path) - \(error.localizedDescription)")
+                    LoggerService.error(category: "CheatAutoLoader", "Failed to create cheat directory: \(dir.path) - \(error.localizedDescription)")
                 }
             }
         }

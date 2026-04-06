@@ -51,7 +51,6 @@ enum ROMIdentifyResult: Equatable {
 }
 
 private let identifyLog = Logger(subsystem: Bundle.main.bundleIdentifier ?? "TruchieEmu", category: "ROMIdentify")
-private let databaseLog = Logger(subsystem: Bundle.main.bundleIdentifier ?? "TruchieEmu", category: "LibretroDB")
 
 // MARK: - LoggerService bridging helpers for ROMIdentify / LibretroDB
 // These use the public LoggerService API (info/debug/warning/error) so they
@@ -1032,7 +1031,6 @@ actor LibretroDatabaseLibrary {
         }
         
         LoggerService.libretroDB("Parsed DAT \(url.lastPathComponent) → \(database.count) CRC entries")
-        databaseLog.info("Parsed DAT \(url.lastPathComponent, privacy: .public) → \(database.count) CRC entries")
         return database
     }
     
@@ -1089,7 +1087,6 @@ actor LibretroDatabaseLibrary {
         if Self.isGbFamily(system.id) {
             LoggerService.libretroDB("GB family detected (systemID=\(system.id)), checking merged cache")
             if let merged = databases[Self.gbFamilyCacheKey] {
-                databaseLog.info("LibretroDB: cache hit merged Game Boy + Game Boy Color (\(merged.count) CRC entries)")
                 LoggerService.info(category: "LibretroDB", "CACHE HIT: merged GB+GBC (\(merged.count) CRC entries)")
                 LoggerService.libretroDB("Cache hit: merged GB+GBC (\(merged.count) CRC entries)")
                 return merged
@@ -1098,21 +1095,17 @@ actor LibretroDatabaseLibrary {
             let partnerID = system.id == "gb" ? "gbc" : "gb"
             guard let partner = SystemDatabase.system(forID: partnerID) else {
                 LoggerService.libretroDBError("GB family merge failed — missing partner system \(partnerID)")
-                databaseLog.error("LibretroDB: GB family merge failed — missing partner system \(partnerID, privacy: .public)")
                 return await loadSingleSystemDatabase(for: system)
             }
 
             LoggerService.debug(category: "LibretroDB", "Loading primary system \(system.id), then partner \(partnerID)")
-            databaseLog.info("LibretroDB: Game Boy family — loading \(system.id, privacy: .public) then \(partnerID, privacy: .public), then merging")
             LoggerService.libretroDB("Loading primary \(system.id) then partner \(partnerID), then merging")
 
             let primary = await loadSingleSystemDatabase(for: system)
             LoggerService.libretroDB("Primary \(system.id) → \(primary.count) CRC entries")
-            databaseLog.info("LibretroDB: primary \(system.id, privacy: .public) → \(primary.count) CRC entries")
 
             let secondary = await loadSingleSystemDatabase(for: partner)
             LoggerService.libretroDB("Partner \(partnerID) → \(secondary.count) CRC entries")
-            databaseLog.info("LibretroDB: partner \(partnerID, privacy: .public) → \(secondary.count) CRC entries")
 
             var merged: [String: GameInfo] = [:]
             for (crc, info) in primary {
@@ -1127,7 +1120,6 @@ actor LibretroDatabaseLibrary {
                 }
             }
             LoggerService.libretroDB("Merged GB+GBC → \(merged.count) unique CRCs (overlap=\(overlap)))")
-            databaseLog.info("LibretroDB: merged GB+GBC → \(merged.count) unique CRCs (\(overlap) CRCs present in both sets; primary \(system.id, privacy: .public) wins on overlap); entries tagged for thumbnail CDN folder")
             LoggerService.info(category: "LibretroDB", "Merged GB+GBC → \(merged.count) unique CRCs (\(overlap) overlapping)")
 
             databases[Self.gbFamilyCacheKey] = merged
@@ -1140,7 +1132,6 @@ actor LibretroDatabaseLibrary {
         if let db = databases[system.id] {
             LoggerService.info(category: "LibretroDB", "CACHE HIT: \(system.id) (\(db.count) CRC entries)")
             LoggerService.libretroDB("Cache hit: \(system.id) (\(db.count) CRC entries)")
-            databaseLog.info("LibretroDB: cache hit \(system.id, privacy: .public) (\(db.count) CRC entries)")
             return db
         }
 
@@ -1171,7 +1162,6 @@ actor LibretroDatabaseLibrary {
         LoggerService.info(category: "LibretroDB", "Step 1/4: Scanning local DATs in \(datsDir.path)")
         LoggerService.libretroDB("=== STEP 1: Scanning local DATs ===")
         LoggerService.libretroDB("Trying DAT filenames: \(localNames.joined(separator: ", "))")
-        databaseLog.info("LibretroDB: [\(system.id, privacy: .public)] Step 1 — scan local DATs in \(datsDir.path, privacy: .public)")
 
         for fileName in localNames {
             let localUrl = datsDir.appendingPathComponent(fileName)
@@ -1180,24 +1170,20 @@ actor LibretroDatabaseLibrary {
                 let db = parseDat(contentsOf: localUrl)
                 if db.isEmpty {
                     LoggerService.libretroDBWarn("Local DAT \(fileName) exists but parsed 0 entries — continuing")
-                    databaseLog.info("LibretroDB: [\(system.id, privacy: .public)] local DAT \(fileName, privacy: .public) exists but parsed 0 entries — continuing")
                 } else {
                     LoggerService.info(category: "LibretroDB", "Step 1: FOUND local DAT \(fileName) with \(db.count) entries")
                     LoggerService.libretroDB("Local DAT \(fileName) OK — \(db.count) CRC entries")
-                    databaseLog.info("LibretroDB: [\(system.id, privacy: .public)] using local DAT \(fileName, privacy: .public) (\(db.count) entries)")
                     return db
                 }
             } else {
                 LoggerService.debug(category: "LibretroDB", "Local DAT not found: \(localUrl.path)")
                 LoggerService.libretroDB("Local DAT not found: \(localUrl.path)")
-                databaseLog.info("LibretroDB: [\(system.id, privacy: .public)] no local file \(fileName, privacy: .public)")
             }
         }
         LoggerService.libretroDB("Step 1 complete: no usable local DAT found")
 
         LoggerService.info(category: "LibretroDB", "Step 2/4: Downloading No-Intro DAT")
         LoggerService.libretroDB("=== STEP 2: Downloading No-Intro DAT (metadat/no-intro) ===")
-        databaseLog.info("LibretroDB: [\(system.id, privacy: .public)] Step 2 — download No-Intro DAT (metadat/no-intro)")
         let noIntroOnly = ["metadat/no-intro"]
         if let db = await downloadDatRemote(systemID: system.id, names: localNames, remotePaths: noIntroOnly, datsDir: datsDir, baseUrl: baseUrl) {
             LoggerService.info(category: "LibretroDB", "Step 2: SUCCESS — downloaded No-Intro DAT with \(db.count) entries")
@@ -1208,7 +1194,6 @@ actor LibretroDatabaseLibrary {
 
         LoggerService.info(category: "LibretroDB", "Step 3/4: Downloading other DAT trees")
         LoggerService.libretroDB("=== STEP 3: Downloading other DAT trees ===")
-        databaseLog.info("LibretroDB: [\(system.id, privacy: .public)] Step 3 — download other DAT trees (redump, mame, …)")
         let otherDatPaths = ["metadat/redump", "metadat/mame", "metadat/fba", "metadat/fbneo-split", "dat"]
         if let db = await downloadDatRemote(systemID: system.id, names: localNames, remotePaths: otherDatPaths, datsDir: datsDir, baseUrl: baseUrl) {
             LoggerService.info(category: "LibretroDB", "Step 3: SUCCESS — downloaded DAT with \(db.count) entries")
@@ -1219,7 +1204,6 @@ actor LibretroDatabaseLibrary {
 
         LoggerService.info(category: "LibretroDB", "Step 4/4: Loading RDB")
         LoggerService.libretroDB("=== STEP 4: Loading RDB (local then remote) ===")
-        databaseLog.info("LibretroDB: [\(system.id, privacy: .public)] Step 4 — load RDB (local cache then rdb/ on GitHub)")
         if let db = await downloadRdbRemote(systemID: system.id, names: rdbBasenamesToTry(for: system), rdbDir: rdbDir, baseUrl: baseUrl) {
             LoggerService.info(category: "LibretroDB", "Step 4: SUCCESS — loaded RDB with \(db.count) entries")
             LoggerService.libretroDB("RDB load OK — \(db.count) CRC entries")
@@ -1229,45 +1213,35 @@ actor LibretroDatabaseLibrary {
 
         LoggerService.warning(category: "LibretroDB", "ALL STEPS FAILED: No usable DAT or RDB found for systemID='\(system.id)' (tried: \(localNames.joined(separator: ", ")))")
         LoggerService.libretroDBError("=== FAILED === No usable DAT or RDB for systemID=\(system.id) (tried: \(localNames.joined(separator: ", ")))")
-        databaseLog.error("LibretroDB: [\(system.id, privacy: .public)] Step 5 — FAILED — no usable DAT or RDB (tried DAT names: \(localNames.joined(separator: ", "), privacy: .public))")
         return [:]
     }
 
     private func downloadDatRemote(systemID: String, names: [String], remotePaths: [String], datsDir: URL, baseUrl: String) async -> [String: GameInfo]? {
         for fileName in names {
             guard let encodedFile = fileName.addingPercentEncoding(withAllowedCharacters: .urlPathAllowed) else {
-                databaseLog.info("LibretroDB: [\(systemID, privacy: .public)] skip DAT (bad encoding): \(fileName, privacy: .public)")
                 continue
             }
             for path in remotePaths {
                 let checkUrlStr = baseUrl + path + "/" + encodedFile
                 guard let checkUrl = URL(string: checkUrlStr) else {
-                    databaseLog.info("LibretroDB: [\(systemID, privacy: .public)] bad URL for \(fileName, privacy: .public)")
                     continue
                 }
-                databaseLog.info("LibretroDB: [\(systemID, privacy: .public)] GET DAT \(checkUrlStr, privacy: .public)")
                 guard let data = try? await URLSession.shared.data(from: checkUrl).0 else {
-                    databaseLog.info("LibretroDB: [\(systemID, privacy: .public)] GET failed (no data) \(checkUrlStr, privacy: .public)")
                     continue
                 }
                 guard data.count > 100 else {
-                    databaseLog.info("LibretroDB: [\(systemID, privacy: .public)] response too small (\(data.count) bytes) \(checkUrlStr, privacy: .public)")
                     continue
                 }
                 guard let stringContent = String(data: data, encoding: .utf8),
                       stringContent.contains("game (") || stringContent.contains("machine (") else {
-                    databaseLog.info("LibretroDB: [\(systemID, privacy: .public)] not a ClrMamePro DAT (no game/machine blocks) \(checkUrlStr, privacy: .public)")
                     continue
                 }
                 let localUrl = datsDir.appendingPathComponent(fileName)
                 try? data.write(to: localUrl)
-                databaseLog.info("LibretroDB: [\(systemID, privacy: .public)] saved DAT \(localUrl.lastPathComponent, privacy: .public) (\(data.count) bytes)")
                 let db = parseDat(contentsOf: localUrl)
                 if !db.isEmpty {
-                    databaseLog.info("LibretroDB: [\(systemID, privacy: .public)] DAT OK → \(db.count) CRC entries from \(fileName, privacy: .public)")
                     return db
                 }
-                databaseLog.info("LibretroDB: [\(systemID, privacy: .public)] parsed 0 entries from \(fileName, privacy: .public)")
             }
         }
         return nil
@@ -1279,41 +1253,31 @@ actor LibretroDatabaseLibrary {
             if FileManager.default.fileExists(atPath: localUrl.path),
                let data = try? Data(contentsOf: localUrl),
                data.count > 32 {
-                databaseLog.info("LibretroDB: [\(systemID, privacy: .public)] read local RDB \(fileName, privacy: .public) (\(data.count) bytes)")
                 let db = LibretroRDBParser.buildCRCIndex(data: data)
                 if !db.isEmpty {
-                    databaseLog.info("LibretroDB: [\(systemID, privacy: .public)] RDB OK (local) → \(db.count) CRC entries")
                     return db
                 }
-                databaseLog.info("LibretroDB: [\(systemID, privacy: .public)] local RDB \(fileName, privacy: .public) parsed 0 entries")
             }
         }
         for fileName in names {
             guard let encoded = fileName.addingPercentEncoding(withAllowedCharacters: .urlPathAllowed) else { continue }
             let checkUrlStr = baseUrl + "rdb/" + encoded
             guard let checkUrl = URL(string: checkUrlStr) else { continue }
-            databaseLog.info("LibretroDB: [\(systemID, privacy: .public)] GET RDB \(checkUrlStr, privacy: .public)")
             guard let data = try? await URLSession.shared.data(from: checkUrl).0 else {
-                databaseLog.info("LibretroDB: [\(systemID, privacy: .public)] GET failed (no data) \(checkUrlStr, privacy: .public)")
                 continue
             }
             guard data.count > 100 else {
-                databaseLog.info("LibretroDB: [\(systemID, privacy: .public)] RDB response too small (\(data.count) bytes) \(checkUrlStr, privacy: .public)")
                 continue
             }
             guard data.starts(with: Data("RARCHDB\0".utf8)) else {
-                databaseLog.info("LibretroDB: [\(systemID, privacy: .public)] not RARCHDB magic \(checkUrlStr, privacy: .public)")
                 continue
             }
             let localUrl = rdbDir.appendingPathComponent(fileName)
             try? data.write(to: localUrl)
-            databaseLog.info("LibretroDB: [\(systemID, privacy: .public)] saved RDB \(localUrl.lastPathComponent, privacy: .public) (\(data.count) bytes)")
             let db = LibretroRDBParser.buildCRCIndex(data: data)
             if !db.isEmpty {
-                databaseLog.info("LibretroDB: [\(systemID, privacy: .public)] RDB OK (remote) → \(db.count) CRC entries")
                 return db
             }
-            databaseLog.info("LibretroDB: [\(systemID, privacy: .public)] RDB parsed 0 entries \(fileName, privacy: .public)")
         }
         return nil
     }

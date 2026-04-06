@@ -1,5 +1,10 @@
 import Foundation
 
+/// Logger for ROMScanner - routes through LoggerService for timestamped file logging.
+private enum ROMScannerLog {
+    static func debug(_ message: String) { LoggerService.debug(category: "ROMScanner", message) }
+}
+
 actor ROMScanner {
 
     // Cancellation flag
@@ -179,7 +184,7 @@ actor ROMScanner {
             // Read cue and find first file
             let referenced = getReferencedFiles(in: url)
             if let firstBin = referenced.first {
-                debugPrint("Checking bin found in cue: \(firstBin.path)")
+                LoggerService.debug(category: "ROMScanner", "Checking bin found in cue: \(firstBin.path)")
                 return peekHeader(url: firstBin)
             }
         } else {
