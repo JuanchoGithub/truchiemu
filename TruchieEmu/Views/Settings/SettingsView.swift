@@ -655,72 +655,71 @@ struct RebuildOptionsSheet: View {
     @State private var showConfirmation = false
     
     var body: some View {
-        NavigationStack {
-            VStack(alignment: .leading, spacing: 20) {
-                Text("Rebuild: \(folder.url.lastPathComponent)")
-                    .font(.title2)
-                    .fontWeight(.semibold)
-                
-                Text("Choose what to rebuild for this folder:")
-                    .font(.subheadline)
-                    .foregroundColor(.secondary)
-                
-                VStack(spacing: 12) {
-                    ForEach(RebuildOption.allCases) { option in
-                        Button(action: { selectedOption = option }) {
-                            HStack(spacing: 12) {
-                                Image(systemName: option.icon)
-                                    .font(.title2)
-                                    .frame(width: 24)
-                                    .foregroundColor(.primary)
-                                
-                                VStack(alignment: .leading, spacing: 2) {
-                                    Text(option.title)
-                                        .font(.body)
-                                        .fontWeight(selectedOption == option ? .semibold : .regular)
-                                    Text(option.description)
-                                        .font(.caption)
-                                        .foregroundColor(.secondary)
-                                }
-                                
-                                Spacer()
-                                
-                                if selectedOption == option {
-                                    Image(systemName: "checkmark.circle.fill")
-                                        .foregroundColor(.accentColor)
-                                }
+        VStack(alignment: .leading, spacing: 20) {
+            Text("Rebuild: \(folder.url.lastPathComponent)")
+                .font(.title2)
+                .fontWeight(.semibold)
+            
+            Text("Choose what to rebuild for this folder:")
+                .font(.subheadline)
+                .foregroundColor(.secondary)
+            
+            VStack(spacing: 12) {
+                ForEach(RebuildOption.allCases) { option in
+                    Button(action: { selectedOption = option }) {
+                        HStack(spacing: 12) {
+                            Image(systemName: option.icon)
+                                .font(.title2)
+                                .frame(width: 24)
+                                .foregroundColor(.primary)
+                            
+                            VStack(alignment: .leading, spacing: 2) {
+                                Text(option.title)
+                                    .font(.body)
+                                    .fontWeight(selectedOption == option ? .semibold : .regular)
+                                Text(option.description)
+                                    .font(.caption)
+                                    .foregroundColor(.secondary)
                             }
-                            .padding(12)
-                            .background(selectedOption == option ? Color.accentColor.opacity(0.1) : Color.clear)
-                            .cornerRadius(8)
+                            
+                            Spacer()
+                            
+                            if selectedOption == option {
+                                Image(systemName: "checkmark.circle.fill")
+                                    .foregroundColor(.accentColor)
+                            }
                         }
-                        .buttonStyle(.plain)
+                        .padding(12)
+                        .background(selectedOption == option ? Color.accentColor.opacity(0.1) : Color.clear)
+                        .cornerRadius(8)
                     }
-                }
-                
-                Divider()
-                
-                HStack {
-                    Button("Cancel") { dismiss() }
-                        .keyboardShortcut(.cancelAction)
-                    
-                    Spacer()
-                    
-                    Button(action: { showConfirmation = true }) {
-                        if isRebuilding {
-                            ProgressView()
-                                .controlSize(.small)
-                            Text("Rebuilding...")
-                        } else {
-                            Text("Apply")
-                        }
-                    }
-                    .buttonStyle(.borderedProminent)
-                    .disabled(selectedOption == nil || isRebuilding)
+                    .buttonStyle(.plain)
                 }
             }
-            .padding()
-            .frame(width: 440, height: 420)
+            
+            Divider()
+            
+            HStack {
+                Button("Cancel") { dismiss() }
+                    .keyboardShortcut(.cancelAction)
+                
+                Spacer()
+                
+                Button(action: { showConfirmation = true }) {
+                    if isRebuilding {
+                        ProgressView()
+                            .controlSize(.small)
+                        Text("Rebuilding...")
+                    } else {
+                        Text("Apply")
+                    }
+                }
+                .buttonStyle(.borderedProminent)
+                .disabled(selectedOption == nil || isRebuilding)
+            }
+        }
+        .padding()
+        .frame(width: 440, height: 420)
             .confirmationDialog(
                 "Confirm Rebuild",
                 isPresented: $showConfirmation,
@@ -738,7 +737,6 @@ struct RebuildOptionsSheet: View {
             } message: {
                 Text("This will \(selectedOption?.description.lowercased() ?? "") for '\(folder.url.lastPathComponent)'.\n\nContinue?")
             }
-        }
     }
 }
 

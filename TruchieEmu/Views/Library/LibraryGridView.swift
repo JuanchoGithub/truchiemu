@@ -268,10 +268,18 @@ struct LibraryGridView: View {
             let systemIDs = SystemDatabase.allInternalIDs(forDisplayID: system.id)
             var systemRoms = library.roms.filter { systemIDs.contains($0.systemID ?? "") && !$0.isHidden }
             
-            // For MAME, show games (type="game") and unknown entries (nil), hide BIOS/device/mechanical
+            // For MAME, show only runnable/playable games
             if system.id == "mame" {
+                // First filter: hide BIOS/device/mechanical entries
                 systemRoms = systemRoms.filter { rom in
                     rom.mameRomType == "game" || rom.mameRomType == nil
+                }
+                // Second filter: if we have XML-based runnable data, further filter to only runnable games
+                let runnableSet = MAMEDependencyService.shared.rachableShortNamesForCurrentCores
+                if !runnableSet.isEmpty {
+                    systemRoms = systemRoms.filter { rom in
+                        runnableSet.contains(rom.path.lastPathComponent.replacingOccurrences(of: ".zip", with: "").lowercased())
+                    }
                 }
             }
             

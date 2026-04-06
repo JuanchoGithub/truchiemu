@@ -11,10 +11,8 @@ struct TruchieEmuApp: App {
         _ = SwiftDataContainer.shared
         _ = LoggerService.shared
         
-        // Load MAME lookup dictionary into memory for fast lookups
-        Task {
-            await MAMEImportService.shared.loadLookupDictionary()
-        }
+        // Load MAME lookup dictionary into memory during the content initialization task
+        // The ContentWithPrepopulationView ensures this completes before showing content
     }
     
     @StateObject private var library = ROMLibrary()
@@ -97,11 +95,12 @@ struct TruchieEmuApp: App {
     }
 }
 
-/// Wrapper view that runs first-run DAT pre-population before showing content.
+/// Wrapper view that runs first-run DAT pre-population and MAME lookup loading before showing content.
 /// Checks the prepopulation flag synchronously to avoid showing the loading view
 /// on subsequent launches.
 struct ContentWithPrepopulationView: View {
     @State private var isPrepopulated: Bool
+    @State private var isMameDictionaryLoaded: Bool
     @State private var isRunningPrepopulation = false
     
     @EnvironmentObject var library: ROMLibrary
@@ -109,32 +108,47 @@ struct ContentWithPrepopulationView: View {
     init() {
         // Check synchronously so we skip the loading view on subsequent launches
         _isPrepopulated = State(initialValue: AppSettings.getBool("dat_prepopulation_done_v1", defaultValue: false))
+        // Check if MAME dictionary has already been loaded
+        _isMameDictionaryLoaded = State(initialValue: MAMEImportService.isLookupLoaded())
+    }
+    
+    /// Whether we need to show the loading view
+    private var needsLoading: Bool {
+        !isPrepopulated || !isMameDictionaryLoaded
     }
     
     var body: some View {
         Group {
-            if isPrepopulated {
+            if !needsLoading {
                 ContentView()
                     .environmentObject(library)
             } else {
                 ProgressView("Initializing game database…")
                     .frame(width: 200)
                     .task {
-                        await performPrepopulation()
+                        await performInitialization()
                     }
             }
         }
     }
     
-    private func performPrepopulation() async {
-        guard !isPrepopulated else { return }
-        isRunningPrepopulation = true
+    private func performInitialization() async {
+        // Load MAME lookup dictionary first (needed for game identification and naming)
+        if !isMameDictionaryLoaded {
+            await MAMEImportService.shared.loadLookupDictionary()
+            isMameDictionaryLoaded = true
+        }
         
-        // Attempt pre-population, but always proceed regardless of success.
-        _ = await DATPrepopulationService.ensureDATsArePopulated()
+        // Retry any previously-failed MAME dependency fetches
+        await MAMEDependencyService.shared.retryFailedFetches()
         
-        isRunningPrepopulation = false
-        isPrepopulated = true
+        // Then perform DAT pre-population if needed
+        if !isPrepopulated {
+            isRunningPrepopulation = true
+            _ = await DATPrepopulationService.ensureDATsArePopulated()
+            isRunningPrepopulation = false
+            isPrepopulated = true
+        }
     }
 }
 

@@ -8,6 +8,8 @@ struct CoreDownloadSheet: View {
     @State private var selectedCoreID: String
     @State private var isDownloading = false
     @State private var downloadError: String? = nil
+    @State private var isFetchingMAMEDeps = false
+    @State private var mameDepsError: String? = nil
 
     init(pending: CoreManager.PendingCoreDownload) {
         self.pending = pending
@@ -181,6 +183,80 @@ struct CoreDownloadSheet: View {
         .cornerRadius(10)
     }
 
+    /// A single core selection button view
+    private func coreButton(for entry: CoreEntry) -> some View {
+        Button {
+            selectedCoreID = entry.id
+        } label: {
+            HStack(spacing: 10) {
+                if entry.id == selectedCoreID {
+                    Image(systemName: "checkmark.circle.fill")
+                        .foregroundColor(.purple)
+                } else {
+                    Image(systemName: "circle")
+                        .foregroundColor(.secondary)
+                }
+                VStack(alignment: .leading, spacing: 2) {
+                    HStack {
+                        Text(entry.displayName)
+                            .fontWeight(entry.id == selectedCoreID ? .semibold : .medium)
+                        if entry.metadata.version != "?" {
+                            Text(entry.metadata.version)
+                                .font(.caption)
+                                .padding(.horizontal, 6)
+                                .padding(.vertical, 1)
+                                .background(Color.secondary.opacity(0.12))
+                                .cornerRadius(4)
+                        }
+                        Spacer()
+                        if entry.isInstalled {
+                            Text("Installed")
+                                .font(.caption2)
+                                .foregroundColor(.green)
+                                .padding(.horizontal, 6)
+                                .padding(.vertical, 1)
+                                .background(Color.green.opacity(0.12))
+                                .cornerRadius(4)
+                        } else {
+                            Text("Download")
+                                .font(.caption2)
+                                .foregroundColor(.blue)
+                                .padding(.horizontal, 6)
+                                .padding(.vertical, 1)
+                                .background(Color.blue.opacity(0.12))
+                                .cornerRadius(4)
+                        }
+                    }
+                    Text(entry.metadata.description)
+                        .font(.caption)
+                        .foregroundColor(.secondary)
+                        .lineLimit(1)
+                }
+            }
+            .padding(10)
+            .frame(maxWidth: .infinity, alignment: .leading)
+            .background(entry.id == selectedCoreID
+                ? Color.accentColor.opacity(0.08)
+                : Color.secondary.opacity(0.04))
+            .cornerRadius(10)
+            .overlay(
+                RoundedRectangle(cornerRadius: 10)
+                    .stroke(entry.id == selectedCoreID
+                        ? Color.accentColor.opacity(0.4)
+                        : Color.clear, lineWidth: 1)
+            )
+        }
+        .buttonStyle(.plain)
+    }
+
+    /// Max height to show 4 cores before scrolling (each button is ~60px + 8px spacing)
+    private var maxCoreListHeight: CGFloat {
+        let itemHeight: CGFloat = 68
+        let spacing: CGFloat = 8
+        let count = min(allCoresForSystem.count, 4)
+        return CGFloat(count) * itemHeight + CGFloat(count - 1) * spacing
+    }
+
     private var coreSelectionSection: some View {
         VStack(alignment: .leading, spacing: 8) {
             HStack {
@@ -209,70 +285,17 @@ struct CoreDownloadSheet: View {
                 }
             }
 
-            ForEach(allCoresForSystem) { entry in
-                Button {
-                    selectedCoreID = entry.id
-                } label: {
-                    HStack(spacing: 10) {
-                        if entry.id == selectedCoreID {
-                            Image(systemName: "checkmark.circle.fill")
-                                .foregroundColor(.purple)
-                        } else {
-                            Image(systemName: "circle")
-                                .foregroundColor(.secondary)
-                        }
-                        VStack(alignment: .leading, spacing: 2) {
-                            HStack {
-                                Text(entry.displayName)
-                                    .fontWeight(entry.id == selectedCoreID ? .semibold : .medium)
-                                if entry.metadata.version != "?" {
-                                    Text(entry.metadata.version)
-                                        .font(.caption)
-                                        .padding(.horizontal, 6)
-                                        .padding(.vertical, 1)
-                                        .background(Color.secondary.opacity(0.12))
-                                        .cornerRadius(4)
-                                }
-                                Spacer()
-                                if entry.isInstalled {
-                                    Text("Installed")
-                                        .font(.caption2)
-                                        .foregroundColor(.green)
-                                        .padding(.horizontal, 6)
-                                        .padding(.vertical, 1)
-                                        .background(Color.green.opacity(0.12))
-                                        .cornerRadius(4)
-                                } else {
-                                    Text("Download")
-                                        .font(.caption2)
-                                        .foregroundColor(.blue)
-                                        .padding(.horizontal, 6)
-                                        .padding(.vertical, 1)
-                                        .background(Color.blue.opacity(0.12))
-                                        .cornerRadius(4)
-                                }
-                            }
-                            Text(entry.metadata.description)
-                                .font(.caption)
-                                .foregroundColor(.secondary)
-                                .lineLimit(1)
-                        }
+            ScrollView {
+                VStack(alignment: .leading, spacing: 8) {
+                    ForEach(allCoresForSystem) { entry in
+                        coreButton(for: entry)
                     }
-                    .padding(10)
-                    .frame(maxWidth: .infinity, alignment: .leading)
-                    .background(entry.id == selectedCoreID
-                        ? Color.accentColor.opacity(0.08)
-                        : Color.secondary.opacity(0.04))
-                    .cornerRadius(10)
-                    .overlay(
-                        RoundedRectangle(cornerRadius: 10)
-                            .stroke(entry.id == selectedCoreID
-                                ? Color.accentColor.opacity(0.4)
-                                : Color.clear, lineWidth: 1)
-                    )
                 }
-                .buttonStyle(.plain)
             }
+            .frame(maxWidth: .infinity)
+            .frame(height: allCoresForSystem.count <= 4 ? nil : maxCoreListHeight)
+            .background(Color.secondary.opacity(0.02))
+            .cornerRadius(8)
 
             Text(allCoresForSystem.count == 1
                 ? "\(allCoresForSystem.count) core available for this system"
@@ -341,10 +364,36 @@ struct CoreDownloadSheet: View {
         guard let remote = selectedCoreEntry.remoteInfo else { return }
         isDownloading = true
         downloadError = nil
+        isFetchingMAMEDeps = false
+        mameDepsError = nil
 
         Task {
             _ = pending.slotToLoad
+
+            // For MAME cores, fetch dependency XML in parallel with core download
+            let isMAME = MAMEDependencyService.isMAMECore(selectedCoreEntry.id)
+            if isMAME {
+                await MainActor.run { isFetchingMAMEDeps = true }
+            }
+
+            // Fetch MAME dependencies in parallel with core download
+            async let depsTask: () = {
+                do {
+                    try await MAMEDependencyService.shared.fetchAndParseDependencies(for: selectedCoreEntry.id)
+                } catch {
+                    await MainActor.run {
+                        mameDepsError = error.localizedDescription
+                    }
+                }
+            }()
+
+            // Download the core
             await coreManager.downloadCore(remote)
+
+            if isMAME {
+                _ = await depsTask
+                await MainActor.run { isFetchingMAMEDeps = false }
+            }
 
             guard coreManager.isInstalled(coreID: selectedCoreEntry.id) else {
                 await MainActor.run {

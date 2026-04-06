@@ -36,7 +36,18 @@ struct ROM: Identifiable, Codable, Hashable, Sendable {
     
     // Derived
     var displayName: String {
-        let baseName = customName ?? metadata?.title ?? displayNameFromROM()
+        // If custom name is set, use it
+        if let custom = customName {
+            return GameNameFormatter.stripTags(custom)
+        }
+        
+        // For MAME games, try to get the human-readable description from the lookup database
+        if let mameEntry = MAMEImportService.lookup(shortName: shortNameForMAME) {
+            return GameNameFormatter.stripTags(mameEntry.description)
+        }
+        
+        // Fall back to metadata title or filename
+        let baseName = metadata?.title ?? displayNameFromROM()
         return GameNameFormatter.stripTags(baseName)
     }
     
@@ -126,6 +137,26 @@ struct ROMMetadata: Codable, Hashable {
     // ESRB & other ratings
     var esrbRating: String?
     var cooperative: Bool = false
+}
+
+// MARK: - MAME Helpers
+
+extension ROM {
+    /// Get the MAME short name from the ROM.
+    /// Falls back to filename without extension.
+    var shortNameForMAME: String {
+        // Always use filename without extension — this is the canonical MAME short name
+        filenameWithoutExtension
+    }
+    
+    /// Get filename without extension and lowercase.
+    var filenameWithoutExtension: String {
+        let name = path.lastPathComponent
+            .replacingOccurrences(of: ".zip", with: "")
+            .replacingOccurrences(of: ".7z", with: "")
+            .replacingOccurrences(of: ".rom", with: "")
+        return name.lowercased()
+    }
 }
 
 // MARK: - ROM Category Enum

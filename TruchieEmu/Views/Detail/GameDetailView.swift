@@ -134,7 +134,7 @@ enum DetailSection: String, CaseIterable {
         switch self {
         case .gameInfo: return "info.circle"
         case .shader: return "display"
-        case .bezels: return "picture.inset.filled"
+        case .bezels: return "photo.on.rectangle.angled"
         case .controls: return "gamecontroller"
         case .savedStates: return "externaldrive"
         case .cheats: return "wand.and.stars"
@@ -913,6 +913,12 @@ struct GameDetailView: View {
 
             // Core selection (Game Info quick access)
             coreInfoSection
+            
+            // MAME dependency status (only for MAME games)
+            if currentROM.systemID == "mame" || currentROM.systemID == "arcade" {
+                MAMEDependencyStatusView(rom: currentROM, coreID: activeCoreID)
+            }
+            
             // Game Boy Colorization (only for GB system)
             if currentROM.systemID == "gb" || currentROM.systemID == "gbc" {
                 gbColorizationSection

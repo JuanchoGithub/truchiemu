@@ -98,6 +98,28 @@ class ROMIdentifierService {
             return .noSystem
         }
 
+        // MAME games are already identified by the ROMScanner via MAMEImportService.lookup().
+        // The No-Intro DAT (MAME.dat) uses CRCs for standard ROM sets — most MAME ROMs
+        // (variants, hacks, bootlegs) will have CRCs not in that database. Skipping CRC-based
+        // identification for MAME avoids false "not identified" messages.
+        if systemID == "mame" {
+            let shortName = rom.path.deletingPathExtension().lastPathComponent.lowercased()
+            if let mameEntry = MAMEImportService.lookup(shortName: shortName), mameEntry.isPlayableGame {
+                identifyLog.info("Identify: MAME game already identified via bundled database → \(mameEntry.description, privacy: .public)")
+                // Return the MAME entry info so the UI doesn't show "not identified"
+                return .identified(GameInfo(
+                    name: mameEntry.description,
+                    year: mameEntry.year,
+                    publisher: mameEntry.manufacturer,
+                    developer: mameEntry.manufacturer,
+                    genre: nil,
+                    crc: "",
+                    thumbnailLookupSystemID: nil
+                ))
+            }
+            // Not in MAME database either — proceed with normal flow
+        }
+
         identifyLog.info("Identify: START system=\(systemID, privacy: .public) file=\(rom.path.lastPathComponent, privacy: .public)")
 
         let db = await LibretroDatabaseLibrary.shared.fetchAndLoadDat(for: system)

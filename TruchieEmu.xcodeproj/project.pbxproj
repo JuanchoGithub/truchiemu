@@ -52,6 +52,10 @@
 		71B49A85A5A4F01FC962FEEE /* CorePickerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2509BE73DFA2ACCF17CAA8DD /* CorePickerView.swift */; };
 		785352A1776D2F26AE6E9BDA /* CLILauncher.swift in Sources */ = {isa = PBXBuildFile; fileRef = C8CF37F3EE97D10E700B56DF /* CLILauncher.swift */; };
 		7BCABE033C966C00D3C37B3D /* MAMEImportService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 879AF000B232F5CE2F035410 /* MAMEImportService.swift */; };
+		D1E2F3A4B5C6D7E8F9A0B1C2 /* MAMEModels.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1B2C3D4E5F6A7B8C9D0E1F2 /* MAMEModels.swift */; };
+		E2F3A4B5C6D7E8F9A0B1C2D3 /* MAMEDependencyService.swift in Sources */ = {isa = PBXBuildFile; fileRef = B2C3D4E5F6A7B8C9D0E1F2A3 /* MAMEDependencyService.swift */; };
+		F3A4B5C6D7E8F9A0B1C2D3E4 /* MAMEMissingROMsAlert.swift in Sources */ = {isa = PBXBuildFile; fileRef = C3D4E5F6A7B8C9D0E1F2A3B4 /* MAMEMissingROMsAlert.swift */; };
+		A4B5C6D7E8F9A0B1C2D3E4F5 /* MAMEDependencyStatusView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D4E5F6A7B8C9D0E1F2A3B4C5 /* MAMEDependencyStatusView.swift */; };
 		828668B6C4FA339C93E5B005 /* MAMEVerificationService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 44FC722B1D6DC0867DBB5777 /* MAMEVerificationService.swift */; };
 		82B1A3EA975F48157E1FDACE /* SidebarRowButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 60BB5F4BA1A30F9A52DB839A /* SidebarRowButton.swift */; };
 		8406C90890303236B45F5FE2 /* SystemSidebarView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F0ECEE62736D1B11B66E5CED /* SystemSidebarView.swift */; };
@@ -210,6 +214,10 @@
 		7F988F08EFDCA767E62683C4 /* GameNameFormatterTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GameNameFormatterTests.swift; sourceTree = "<group>"; };
 		81440507D3F6155A9AC60E31 /* NESRunner.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NESRunner.swift; sourceTree = "<group>"; };
 		824B99AA8F4D46E6A5E01A05 /* GameLauncher.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GameLauncher.swift; sourceTree = "<group>"; };
+		A1B2C3D4E5F6A7B8C9D0E1F2 /* MAMEModels.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MAMEModels.swift; sourceTree = "<group>"; };
+		B2C3D4E5F6A7B8C9D0E1F2A3 /* MAMEDependencyService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MAMEDependencyService.swift; sourceTree = "<group>"; };
+		C3D4E5F6A7B8C9D0E1F2A3B4 /* MAMEMissingROMsAlert.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MAMEMissingROMsAlert.swift; sourceTree = "<group>"; };
+		D4E5F6A7B8C9D0E1F2A3B4C5 /* MAMEDependencyStatusView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MAMEDependencyStatusView.swift; sourceTree = "<group>"; };
 		879AF000B232F5CE2F035410 /* MAMEImportService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MAMEImportService.swift; sourceTree = "<group>"; };
 		88C3C353EBC5C164CD49BB6A /* LaunchBoxGamesDBService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LaunchBoxGamesDBService.swift; sourceTree = "<group>"; };
 		88CE9892979FB7B724F9F25B /* CoreOption.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CoreOption.swift; sourceTree = "<group>"; };
@@ -347,6 +355,8 @@
 				F306F0B7FE1B38A2A9EA5989 /* LoggerService.swift */,
 				A3E6537CAC4420826C1A50C4 /* LogManager.swift */,
 				879AF000B232F5CE2F035410 /* MAMEImportService.swift */,
+				B2C3D4E5F6A7B8C9D0E1F2A3 /* MAMEDependencyService.swift */,
+				A1B2C3D4E5F6A7B8C9D0E1F2 /* MAMEModels.swift */,
 				44FC722B1D6DC0867DBB5777 /* MAMEVerificationService.swift */,
 				194776DC27A94907F479FEA5 /* MetadataSyncCoordinator.swift */,
 				746A411A79F40382E1D204CC /* ResourceCacheInterceptor.swift */,
@@ -573,8 +583,18 @@
 				47CBF2ADC9FFD0C267CB6239 /* Player */,
 				49F1461080903BC32A7BB44B /* Settings */,
 				E2677C6594356F9F2E613AD9 /* Shaders */,
+				2A3B4C5D6E7F8A9B0C1D2E3F /* MAME */,
 			);
 			path = Views;
+			sourceTree = "<group>";
+		};
+		2A3B4C5D6E7F8A9B0C1D2E3F /* MAME */ = {
+			isa = PBXGroup;
+			children = (
+				C3D4E5F6A7B8C9D0E1F2A3B4 /* MAMEMissingROMsAlert.swift */,
+				D4E5F6A7B8C9D0E1F2A3B4C5 /* MAMEDependencyStatusView.swift */,
+			);
+			path = MAME;
 			sourceTree = "<group>";
 		};
 		D414975E3ECEDF8E738599C0 /* scripts */ = {
@@ -791,6 +811,10 @@
 				3407D4D1297B8DA39CE0A93D /* LoggerService.swift in Sources */,
 				2F8441505DD14F2DC1B83795 /* LoggingSettingsView.swift in Sources */,
 				7BCABE033C966C00D3C37B3D /* MAMEImportService.swift in Sources */,
+				E2F3A4B5C6D7E8F9A0B1C2D3 /* MAMEDependencyService.swift in Sources */,
+				D1E2F3A4B5C6D7E8F9A0B1C2 /* MAMEModels.swift in Sources */,
+				F3A4B5C6D7E8F9A0B1C2D3E4 /* MAMEMissingROMsAlert.swift in Sources */,
+				A4B5C6D7E8F9A0B1C2D3E4F5 /* MAMEDependencyStatusView.swift in Sources */,
 				84554DDDD852F8442674710D /* MAMERomEntry.swift in Sources */,
 				8E1051B46E85462915FC5FDC /* MAMEVerificationRecord.swift in Sources */,
 				828668B6C4FA339C93E5B005 /* MAMEVerificationService.swift in Sources */,

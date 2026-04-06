@@ -94,6 +94,7 @@ class GameLauncher: ObservableObject {
         slotToLoad: Int? = nil,
         library: ROMLibrary? = nil,
         shaderUniformOverrides: [String: Float] = [:],
+        checkMAMEDeps: Bool = true,
         completion: ((StandaloneGameWindowController?) -> Void)? = nil
     ) -> StandaloneGameWindowController? {
         // Check if already launching
@@ -107,6 +108,19 @@ class GameLauncher: ObservableObject {
             RunningGamesTracker.shared.notifyDuplicateLaunch(romName: rom.displayName)
             completion?(nil)
             return nil
+        }
+        
+        // MAME dependency check
+        if checkMAMEDeps && MAMEDependencyService.isMAMECore(coreID) {
+            let checkResult = checkMAMEDependencies(rom: rom, coreID: coreID)
+            if case .missingFiles(let gameName, let missing, let romsDir) = checkResult {
+                LoggerService.info(category: "GameLauncher", "MAME ROM missing files for \(gameName): \(missing.map(\.sourceZIP))")
+                showMAMEMissingFilesAlert(gameName: gameName, missing: missing, romsDirectory: romsDir)
+                isLaunching = false
+                currentLaunchROM = nil
+                completion?(nil)
+                return nil
+            }
         }
         
         isLaunching = true
@@ -351,6 +365,24 @@ class GameLauncher: ObservableObject {
             case "disabled", "off": overrides["sameboy_color_correction_mode"] = "off"
             default:                overrides["sameboy_color_correction_mode"] = "correct curves"
             }
+        }
+    }
+    
+    // MARK: - MAME Missing Files Alert
+    
+    /// Show an alert when MAME ROM files are missing.
+    private func showMAMEMissingFilesAlert(gameName: String, missing: [MissingROMItem], romsDirectory: URL) {
+        let alert = NSAlert()
+        alert.alertStyle = .warning
+        alert.messageText = "Missing ROM Files"
+        alert.informativeText = "\"\(gameName)\" requires additional ROM files to run.\n\nMissing files:\n\(missing.map { $0.sourceZIP }.joined(separator: "\n"))"
+        
+        alert.addButton(withTitle: "Open ROMs Folder")
+        alert.addButton(withTitle: "Cancel")
+        
+        let response = alert.runModal()
+        if response == .alertFirstButtonReturn {
+            NSWorkspace.shared.open(romsDirectory)
         }
     }
     
