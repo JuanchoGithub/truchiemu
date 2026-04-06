@@ -268,10 +268,10 @@ struct LibraryGridView: View {
             let systemIDs = SystemDatabase.allInternalIDs(forDisplayID: system.id)
             var systemRoms = library.roms.filter { systemIDs.contains($0.systemID ?? "") && !$0.isHidden }
             
-            // For MAME, only show actual games (hide BIOS, device, mechanical, unknown)
+            // For MAME, show games (type="game") and unknown entries (nil), hide BIOS/device/mechanical
             if system.id == "mame" {
                 systemRoms = systemRoms.filter { rom in
-                    rom.mameRomType == "game"
+                    rom.mameRomType == "game" || rom.mameRomType == nil
                 }
             }
             

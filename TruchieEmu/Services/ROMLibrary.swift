@@ -229,17 +229,17 @@ class ROMLibrary: ObservableObject {
         counts["recent"] = roms.filter { $0.lastPlayed != nil && !$0.isHidden }.count
         counts["hidden"] = roms.filter { $0.isHidden }.count
 
-        // Count MAME non-game files separately
+        // Count MAME non-game files separately (BIOS, device, mechanical only - not unknown)
         counts["mameNonGames"] = roms.filter { rom in
-            rom.systemID == "mame" && rom.mameRomType != "game"
+            rom.systemID == "mame" && rom.mameRomType != nil && rom.mameRomType != "game"
         }.count
 
         let grouped = Dictionary(grouping: roms) { $0.systemID ?? "unknown" }
         for (sysID, list) in grouped {
             var visible = list.filter { !$0.isHidden }
-            // For MAME, only count actual games (not BIOS, device, mechanical, unknown)
+            // For MAME, count games (type="game") and unknown entries (nil)
             if sysID == "mame" {
-                visible = visible.filter { $0.mameRomType == "game" }
+                visible = visible.filter { $0.mameRomType == "game" || $0.mameRomType == nil }
             }
             counts[sysID] = visible.count
         }
@@ -602,7 +602,7 @@ class ROMLibrary: ObservableObject {
         
         // Use the non-isolated static lookup for thread-safe access
         guard let mameEntry = MAMEImportService.lookup(shortName: shortName) else {
-            rom.isHidden = true
+            // Not found in database - don't hide it, might still be a valid game
             rom.mameRomType = nil
             return
         }

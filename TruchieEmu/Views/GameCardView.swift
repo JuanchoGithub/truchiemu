@@ -22,6 +22,11 @@ struct GameCardView: View {
         10 + zoomLevel * 6
     }
 
+    /// Approximate line height for the title font (font size + leading)
+    private var titleLineHeight: CGFloat {
+        titleFontSize * 1.2
+    }
+
     private var categoryBadges: [GameCategory] {
         categoryManager.categories.filter { $0.gameIDs.contains(rom.id) }
     }
@@ -95,6 +100,7 @@ struct GameCardView: View {
                     .lineLimit(2)
                     .multilineTextAlignment(.leading)
                     .foregroundColor(titleColor)
+                    .frame(minHeight: titleLineHeight * 2, alignment: .top)
 
                 if isHiddenItem, let mameType = rom.mameRomType {
                     HStack(spacing: 4) {
