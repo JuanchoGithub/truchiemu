@@ -266,11 +266,25 @@ struct LibraryGridView: View {
             base = library.roms.filter { $0.lastPlayed != nil && !$0.isHidden }
         case .system(let system):
             let systemIDs = SystemDatabase.allInternalIDs(forDisplayID: system.id)
-            base = library.roms.filter { systemIDs.contains($0.systemID ?? "") && !$0.isHidden }
+            var systemRoms = library.roms.filter { systemIDs.contains($0.systemID ?? "") && !$0.isHidden }
+            
+            // For MAME, only show actual games (hide BIOS, device, mechanical, unknown)
+            if system.id == "mame" {
+                systemRoms = systemRoms.filter { rom in
+                    rom.mameRomType == "game"
+                }
+            }
+            
+            base = systemRoms
         case .category(let categoryID):
             base = categoryManager.gamesInCategory(categoryID: categoryID, fromROMs: library.roms).filter { !$0.isHidden }
         case .hidden:
             base = library.roms.filter { $0.isHidden }
+        case .mameNonGames:
+            // Show MAME files that are not games (BIOS, device, mechanical, unknown) with grayish styling
+            base = library.roms.filter { rom in
+                rom.systemID == "mame" && rom.mameRomType != "game"
+            }
         }
 
         var filtered = base

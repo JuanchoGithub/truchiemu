@@ -26,9 +26,49 @@ struct GameCardView: View {
         categoryManager.categories.filter { $0.gameIDs.contains(rom.id) }
     }
 
+    /// Whether this ROM is hidden (e.g., MAME BIOS, device, mechanical)
+    private var isHiddenItem: Bool {
+        rom.isHidden
+    }
+
+    // MARK: - Computed styling helpers (break up complex expressions for compiler)
+
+    private var artworkGrayscale: Double {
+        isHiddenItem ? 0.85 : (isHovered ? 0.05 : 0)
+    }
+
+    private var artworkOpacity: Double {
+        isHiddenItem ? 0.55 : 1
+    }
+
+    private var cardBackground: Color {
+        if isSelected { return Color.accentColor.opacity(0.25) }
+        if isHiddenItem { return Color.gray.opacity(0.08) }
+        return isHovered ? Color.secondary.opacity(0.1) : .clear
+    }
+
+    private var cardStrokeColor: Color {
+        if isSelected { return Color.accentColor }
+        if isHiddenItem { return Color.gray.opacity(0.3) }
+        return .clear
+    }
+
+    private var cardStrokeWidth: CGFloat {
+        isHiddenItem ? 1 : 2
+    }
+
+    private var shadowColor: Color {
+        if isHiddenItem { return .clear }
+        if isHovered && !isSelected { return Color.accentColor.opacity(0.2) }
+        return .clear
+    }
+
+    private var titleColor: Color {
+        isHiddenItem ? .gray : .primary
+    }
+
     var body: some View {
         VStack(alignment: .leading, spacing: 8) {
-            // Artwork area
             ZStack(alignment: .topTrailing) {
                 artworkView
                     .clipped()
@@ -36,6 +76,8 @@ struct GameCardView: View {
                         RoundedRectangle(cornerRadius: 8)
                             .fill(Color.black.opacity(isHovered ? 0.1 : 0))
                     )
+                    .grayscale(artworkGrayscale)
+                    .opacity(artworkOpacity)
 
                 if isMultiSelected {
                     Image(systemName: "checkmark.circle.fill")
@@ -47,14 +89,25 @@ struct GameCardView: View {
                 }
             }
 
-            // Title area
-            Text(rom.displayName)
-                .font(.system(size: titleFontSize, weight: .medium))
-                .lineLimit(2)
-                .multilineTextAlignment(.leading)
-                .foregroundColor(.primary)
+            VStack(alignment: .leading, spacing: 4) {
+                Text(rom.displayName)
+                    .font(.system(size: titleFontSize, weight: .medium))
+                    .lineLimit(2)
+                    .multilineTextAlignment(.leading)
+                    .foregroundColor(titleColor)
 
-            // Category badges
+                if isHiddenItem, let mameType = rom.mameRomType {
+                    HStack(spacing: 4) {
+                        Image(systemName: "eye.slash")
+                            .font(.system(size: 9))
+                            .foregroundColor(.gray)
+                        Text(mameType.capitalized)
+                            .font(.system(size: 9))
+                            .foregroundColor(.gray)
+                    }
+                }
+            }
+
             if !categoryBadges.isEmpty {
                 CategoryBadgesRow(badges: categoryBadges)
             }
@@ -62,17 +115,13 @@ struct GameCardView: View {
         .padding(8)
         .background(
             RoundedRectangle(cornerRadius: 12)
-                .fill(isSelected ? Color.accentColor.opacity(0.25) : (isHovered ? Color.secondary.opacity(0.1) : Color.clear))
+                .fill(cardBackground)
         )
         .overlay(
             RoundedRectangle(cornerRadius: 12)
-                .stroke(isSelected ? Color.accentColor : Color.clear, lineWidth: 2)
+                .stroke(cardStrokeColor, lineWidth: cardStrokeWidth)
         )
-        .shadow(
-            color: isHovered && !isSelected ? Color.accentColor.opacity(0.2) : .clear,
-            radius: isHovered ? 8 : 4,
-            y: isHovered ? 4 : 2
-        )
+        .shadow(color: shadowColor, radius: isHovered ? 8 : 4, y: isHovered ? 4 : 2)
         .clipped()
         .onHover { isHovered = $0 }
         .accessibilityLabel(rom.displayName)

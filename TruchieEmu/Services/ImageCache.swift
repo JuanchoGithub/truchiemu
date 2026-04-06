@@ -21,7 +21,7 @@ actor ImageCache {
         }
         
         // Load from disk on background thread
-        let result = try? await Task.detached {
+        let result = await Task.detached {
             NSImage(contentsOf: url)
         }.value
         
@@ -41,7 +41,7 @@ actor ImageCache {
         }
         
         // Load from disk on background thread
-        let result = try? await Task.detached {
+        let result = await Task.detached {
             NSImage(contentsOf: url)
         }.value
         
@@ -60,7 +60,7 @@ actor ImageCache {
         }
         
         // Load from disk on background thread
-        let result = try? await Task.detached {
+        let result = await Task.detached {
             NSImage(contentsOf: url)
         }.value
         

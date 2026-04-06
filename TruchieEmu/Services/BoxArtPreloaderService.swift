@@ -125,7 +125,6 @@ class BoxArtPreloaderService: ObservableObject {
             await withTaskGroup(of: (URL, NSImage?).self) { group in
                 for rom in batch {
                     guard let artPath = rom.boxArtPath else { continue }
-                    let cacheKey = artPath.path
                     
                     // Check if we have a pre-decoded thumbnail on disk first
                     if let thumb = Self.loadThumbnail(at: artPath) {

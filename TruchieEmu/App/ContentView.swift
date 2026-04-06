@@ -129,6 +129,7 @@ struct ContentView: View {
             }
             return "Category"
         case .hidden: return "Hidden Games"
+        case .mameNonGames: return "Hidden MAME Files"
         }
     }
     
@@ -152,6 +153,10 @@ struct ContentView: View {
             currentROMs = categoryManager.gamesInCategory(categoryID: id, fromROMs: library.roms)
         case .hidden:
             currentROMs = library.roms.filter { $0.isHidden }
+        case .mameNonGames:
+            currentROMs = library.roms.filter { rom in
+                rom.systemID == "mame" && rom.mameRomType != "game"
+            }
         }
         
         let currentWithArt = currentROMs.filter { $0.boxArtPath != nil }

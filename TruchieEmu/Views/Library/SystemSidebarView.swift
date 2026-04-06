@@ -94,6 +94,17 @@ struct SystemSidebarView: View {
                         .tag(LibraryFilter.hidden)
                 }
             }
+
+            // Hidden MAME Files section — separate from general hidden games
+            // Only shown when enabled in settings
+            let mameNonGamesCount = library.romCounts["mameNonGames"] ?? 0
+            let showHiddenMAME = SystemPreferences.shared.showHiddenMAMEFiles
+            if mameNonGamesCount > 0 && showHiddenMAME {
+                Section("MAME Files") {
+                    sidebarRow(icon: "doc.badge.gearshape", label: "Hidden MAME Files", count: mameNonGamesCount, tint: .gray, filter: .mameNonGames)
+                        .tag(LibraryFilter.mameNonGames)
+                }
+            }
         }
         .listStyle(.sidebar)
         .scrollContentBackground(.hidden)
@@ -332,6 +343,7 @@ enum LibraryFilter: Hashable, Identifiable {
     case system(SystemInfo)
     case category(String) // category ID
     case hidden
+    case mameNonGames // MAME BIOS, device, mechanical, unknown
     
     var id: String {
         switch self {
@@ -341,6 +353,7 @@ enum LibraryFilter: Hashable, Identifiable {
         case .system(let system): return "system-\(system.id)"
         case .category(let id): return "category-\(id)"
         case .hidden: return "hidden"
+        case .mameNonGames: return "mame-non-games"
         }
     }
 }

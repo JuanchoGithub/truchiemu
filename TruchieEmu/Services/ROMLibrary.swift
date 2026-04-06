@@ -228,8 +228,21 @@ class ROMLibrary: ObservableObject {
         counts["favorites"] = roms.filter { $0.isFavorite && !$0.isHidden }.count
         counts["recent"] = roms.filter { $0.lastPlayed != nil && !$0.isHidden }.count
         counts["hidden"] = roms.filter { $0.isHidden }.count
+
+        // Count MAME non-game files separately
+        counts["mameNonGames"] = roms.filter { rom in
+            rom.systemID == "mame" && rom.mameRomType != "game"
+        }.count
+
         let grouped = Dictionary(grouping: roms) { $0.systemID ?? "unknown" }
-        for (sysID, list) in grouped { counts[sysID] = list.filter { !$0.isHidden }.count }
+        for (sysID, list) in grouped {
+            var visible = list.filter { !$0.isHidden }
+            // For MAME, only count actual games (not BIOS, device, mechanical, unknown)
+            if sysID == "mame" {
+                visible = visible.filter { $0.mameRomType == "game" }
+            }
+            counts[sysID] = visible.count
+        }
         self.romCounts = counts
         self.lastChangeDate = Date()
     }
@@ -406,6 +419,11 @@ class ROMLibrary: ObservableObject {
                 biosCount += 1
             }
 
+            // MAME ROM Detection - hide non-game types
+            if rom.systemID == "mame" {
+                applyMAMEIdentificationInline(to: &rom, url: url)
+            }
+
             romFoundCount += 1
             accumulatedROMs.append(rom)
 
@@ -576,6 +594,41 @@ class ROMLibrary: ObservableObject {
         if data.count >= 0x9318 + ps1Magic.count,
            let str = String(data: data[0x9318..<0x9318 + ps1Magic.count], encoding: .ascii), str.contains(ps1Magic) { return "psx" }
         return nil
+    }
+
+    /// Apply MAME identification inline during scanning (synchronous lookup).
+    private func applyMAMEIdentificationInline(to rom: inout ROM, url: URL) {
+        let shortName = url.deletingPathExtension().lastPathComponent.lowercased()
+        
+        // Use the non-isolated static lookup for thread-safe access
+        guard let mameEntry = MAMEImportService.lookup(shortName: shortName) else {
+            rom.isHidden = true
+            rom.mameRomType = nil
+            return
+        }
+        
+        rom.mameRomType = mameEntry.type
+        
+        if mameEntry.isPlayableGame {
+            rom.name = mameEntry.description
+            rom.isHidden = false
+            rom.category = "game"
+            
+            if rom.metadata == nil {
+                rom.metadata = ROMMetadata()
+            }
+            rom.metadata?.title = mameEntry.description
+            rom.metadata?.year = mameEntry.year
+            rom.metadata?.developer = mameEntry.manufacturer
+            rom.metadata?.publisher = mameEntry.manufacturer
+            if let players = mameEntry.players {
+                rom.metadata?.players = players
+            }
+        } else {
+            rom.isHidden = true
+            rom.isBios = true
+            rom.category = "bios"
+        }
     }
 
     /// Identify archive type inline.

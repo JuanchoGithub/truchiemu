@@ -149,7 +149,10 @@ actor ROMScanner {
         let shortName = url.deletingPathExtension().lastPathComponent.lowercased()
         
         guard let mameEntry = MAMEImportService.lookup(shortName: shortName) else {
-            // Not found in MAME database - keep visible but mark as unidentified
+            // Not found in MAME database - mark as hidden to avoid showing unknown ROMs
+            // Users can unhide them later if they want
+            rom.isHidden = true
+            rom.mameRomType = nil
             return
         }
         

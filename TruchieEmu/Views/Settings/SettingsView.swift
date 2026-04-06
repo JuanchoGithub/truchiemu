@@ -97,6 +97,20 @@ struct LibrarySettingsView: View {
                         }
                         .padding(.vertical, 8)
                         .padding(.horizontal, 12)
+
+                        Divider()
+
+                        Toggle(isOn: $prefs.showHiddenMAMEFiles) {
+                            VStack(alignment: .leading, spacing: 2) {
+                                Text("Show Hidden MAME Files")
+                                    .font(.body)
+                                Text("When enabled, a 'Hidden MAME Files' section appears in the sidebar for BIOS, device, and unknown MAME entries")
+                                    .font(.caption)
+                                    .foregroundColor(.secondary)
+                            }
+                        }
+                        .padding(.vertical, 8)
+                        .padding(.horizontal, 12)
                     }
                     .background(.ultraThinMaterial)
                     .cornerRadius(12)

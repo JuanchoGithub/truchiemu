@@ -393,6 +393,7 @@ class SystemPreferences: ObservableObject {
     // MARK: - Settings Keys
 
     private static let keyShowBiosFiles = "showBiosFiles"
+    private static let keyShowHiddenMAMEFiles = "showHiddenMAMEFiles"
     private static let keySystemLanguage = "systemLanguage"
     private static let keyCoreLogLevel = "coreLogLevel"
     private static let keyApplyCheatsOnLaunch = "applyCheatsOnLaunch"
@@ -404,6 +405,14 @@ class SystemPreferences: ObservableObject {
     @Published var showBiosFiles: Bool = false {
         didSet {
             AppSettings.setBool(Self.keyShowBiosFiles, value: showBiosFiles)
+            updateTrigger += 1
+        }
+    }
+
+    /// Whether to show hidden MAME files (BIOS, device, mechanical, unknown) in a separate sidebar section (default: false)
+    @Published var showHiddenMAMEFiles: Bool = false {
+        didSet {
+            AppSettings.setBool(Self.keyShowHiddenMAMEFiles, value: showHiddenMAMEFiles)
             updateTrigger += 1
         }
     }
@@ -469,6 +478,7 @@ class SystemPreferences: ObservableObject {
     init() {
         // Read from AppSettings
         self.showBiosFiles = AppSettings.getBool(Self.keyShowBiosFiles, defaultValue: false)
+        self.showHiddenMAMEFiles = AppSettings.getBool(Self.keyShowHiddenMAMEFiles, defaultValue: false)
         let langRaw = Int(AppSettings.get(Self.keySystemLanguage, type: String.self) ?? "0") ?? 0
         self.systemLanguage = EmulatorLanguage(rawValue: langRaw) ?? .english
         let logRaw = Int(AppSettings.get(Self.keyCoreLogLevel, type: String.self) ?? "0") ?? CoreLogLevel.warn.rawValue
