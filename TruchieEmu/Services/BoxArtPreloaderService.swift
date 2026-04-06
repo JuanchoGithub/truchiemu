@@ -4,13 +4,20 @@ import AppKit
 
 /// Background service that preloads and decodes box art images for efficient grid display.
 /// Handles pre-warming the image cache, LRU disk cache management, and scoped invalidation.
+///
+/// ## Persistent Thumbnail Cache
+/// Downscaled thumbnails are serialized to disk in `TruchieEmu/ThumbnailCache`. On each launch,
+/// these pre-decoded thumbnails are loaded directly into the NSCache so images appear instantly
+/// without re-reading and rescaling the original box art files.
 @MainActor
 class BoxArtPreloaderService: ObservableObject {
     static let shared = BoxArtPreloaderService()
     
     /// Configuration for the preloader
     struct Config {
-        /// Maximum disk cache size in bytes (default: 500MB)
+        /// Maximum persistent thumbnail cache size in bytes (default: 300MB)
+        var maxThumbnailCacheBytes: Int
+        /// Maximum disk cache size in bytes for box art originals (default: 500MB)
         var maxDiskCacheBytes: Int
         /// Number of images to preload in background batch
         var preloadBatchSize: Int
@@ -22,9 +29,10 @@ class BoxArtPreloaderService: ObservableObject {
         var thumbnailMaxHeight: CGFloat
         
         static let `default` = Config(
-            maxDiskCacheBytes: 500 * 1024 * 1024,  // 500MB
-            preloadBatchSize: 20,
-            preloadBatchDelay: 50_000_000,  // 50ms
+            maxThumbnailCacheBytes: 500 * 1024 * 1024,  // 500MB (increased from 300MB)
+            maxDiskCacheBytes: 1000 * 1024 * 1024,  // 1GB (increased from 500MB)
+            preloadBatchSize: 50, // increased from 20
+            preloadBatchDelay: 10_000_000,  // 10ms (decreased from 50ms)
             thumbnailMaxWidth: 400,
             thumbnailMaxHeight: 600
         )
@@ -37,10 +45,61 @@ class BoxArtPreloaderService: ObservableObject {
     
     var config: Config = .default
     
+    /// Cache directory for serialized NSImage thumbnails (persists across launches)
+    nonisolated
+    static var thumbnailCacheURL: URL {
+        let appSupport = FileManager.default.urls(for: .applicationSupportDirectory, in: .userDomainMask).first!
+        return appSupport.appendingPathComponent("TruchieEmu/ThumbnailCache", isDirectory: true)
+    }
+    
+    // MARK: - Thumbnail Persistence
+    
+    /// Save a thumbnail to the persistent disk cache.
+    nonisolated
+    static func storeThumbnail(_ image: NSImage, for url: URL) {
+        let key = url.path
+        let cacheDir = Self.thumbnailCacheURL
+        try? FileManager.default.createDirectory(at: cacheDir, withIntermediateDirectories: true)
+        let safeKey = key.replacingOccurrences(of: "/", with: "_").replacingOccurrences(of: ":", with: "_")
+        let fileURL = cacheDir.appendingPathComponent("\(safeKey).tiff")
+        guard let tiff = image.tiffRepresentation else { return }
+        try? tiff.write(to: fileURL, options: .atomic)
+    }
+    
+    /// Load a thumbnail from the persistent disk cache. Returns nil if not cached.
+    nonisolated
+    static func loadThumbnail(at url: URL) -> NSImage? {
+        let key = url.path
+        let safeKey = key.replacingOccurrences(of: "/", with: "_").replacingOccurrences(of: ":", with: "_")
+        let fileURL = Self.thumbnailCacheURL.appendingPathComponent("\(safeKey).tiff")
+        guard let data = try? Data(contentsOf: fileURL),
+              let rep = NSBitmapImageRep(data: data) else { return nil }
+        
+        // Ensure pixels are pre-decoded from TIFF to avoid lazy draw jank
+        guard let cgImage = rep.cgImage else {
+            let image = NSImage(size: rep.size)
+            image.addRepresentation(rep)
+            return image
+        }
+        
+        return NSImage(cgImage: cgImage, size: rep.size)
+    }
+    
+    /// Check if a thumbnail exists for the given URL.
+    nonisolated
+    static func hasThumbnail(at url: URL) -> Bool {
+        let key = url.path
+        let safeKey = key.replacingOccurrences(of: "/", with: "_").replacingOccurrences(of: ":", with: "_")
+        let fileURL = Self.thumbnailCacheURL.appendingPathComponent("\(safeKey).tiff")
+        return FileManager.default.fileExists(atPath: fileURL.path)
+    }
+    
     // MARK: - Preload ROMs into Image Cache
     
     /// Preload box art for a set of ROMs into the decoded image cache.
     /// Runs in background batches to avoid blocking the main thread.
+    /// If a pre-decoded thumbnail exists on disk, it is loaded instantly; otherwise
+    /// the original image is decoded and downscaled, then saved to the persistent cache.
     func preloadBoxArt(for roms: [ROM]) async {
         guard !roms.isEmpty else { return }
         
@@ -66,8 +125,20 @@ class BoxArtPreloaderService: ObservableObject {
             await withTaskGroup(of: (URL, NSImage?).self) { group in
                 for rom in batch {
                     guard let artPath = rom.boxArtPath else { continue }
+                    let cacheKey = artPath.path
+                    
+                    // Check if we have a pre-decoded thumbnail on disk first
+                    if let thumb = Self.loadThumbnail(at: artPath) {
+                        await ImageCache.shared.cacheThumbnail(thumb, for: artPath)
+                        continue
+                    }
+                    
                     group.addTask {
                         let image = await ImageCache.shared.decodedImage(for: artPath, maxWidth: self.config.thumbnailMaxWidth, maxHeight: self.config.thumbnailMaxHeight)
+                        // Save to persistent thumbnail cache for next launch
+                        if let img = image {
+                            Self.storeThumbnail(img, for: artPath)
+                        }
                         return (artPath, image)
                     }
                 }

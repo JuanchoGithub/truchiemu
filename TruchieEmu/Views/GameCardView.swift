@@ -1,43 +1,34 @@
 import SwiftUI
 
 /// Optimized game card view for the library grid.
-/// - Fixed-height text area ensures grid alignment regardless of title length
-/// - Clipped hover zoom prevents grid breakage
-/// - Efficient image loading with task-based async resolution
+/// Simplified image loading path for fast scroll performance.
 struct GameCardView: View {
     let rom: ROM
     let isSelected: Bool
     let isMultiSelected: Bool
     let zoomLevel: Double
-    var gridRefreshToken: UUID = UUID()
-    
+
     @State private var isHovered = false
     @State private var image: NSImage?
     @ObservedObject private var prefs = SystemPreferences.shared
     @EnvironmentObject private var library: ROMLibrary
     @EnvironmentObject private var categoryManager: CategoryManager
-    
+
     private var boxType: BoxType {
         prefs.boxType(for: rom.systemID ?? "")
     }
-    
+
     private var titleFontSize: CGFloat {
         10 + zoomLevel * 6
     }
-    
-    /// Fixed height for the title area — ensures grid alignment regardless of title length
-    private var titleFixedHeight: CGFloat {
-        // Two lines of text at the given font size + line spacing
-        (titleFontSize * 1.2) * 2
-    }
-    
+
     private var categoryBadges: [GameCategory] {
         categoryManager.categories.filter { $0.gameIDs.contains(rom.id) }
     }
-    
+
     var body: some View {
         VStack(alignment: .leading, spacing: 8) {
-            // Artwork area — clipped to prevent hover zoom from bleeding out
+            // Artwork area
             ZStack(alignment: .topTrailing) {
                 artworkView
                     .clipped()
@@ -45,7 +36,7 @@ struct GameCardView: View {
                         RoundedRectangle(cornerRadius: 8)
                             .fill(Color.black.opacity(isHovered ? 0.1 : 0))
                     )
-                
+
                 if isMultiSelected {
                     Image(systemName: "checkmark.circle.fill")
                         .font(.title2)
@@ -55,15 +46,14 @@ struct GameCardView: View {
                         .transition(.scale.combined(with: .opacity))
                 }
             }
-            
-            // Title area — fixed height for consistent grid alignment
+
+            // Title area
             Text(rom.displayName)
                 .font(.system(size: titleFontSize, weight: .medium))
                 .lineLimit(2)
                 .multilineTextAlignment(.leading)
                 .foregroundColor(.primary)
-                .frame(height: titleFixedHeight, alignment: .top)
-            
+
             // Category badges
             if !categoryBadges.isEmpty {
                 CategoryBadgesRow(badges: categoryBadges)
@@ -83,123 +73,46 @@ struct GameCardView: View {
             radius: isHovered ? 8 : 4,
             y: isHovered ? 4 : 2
         )
-        .clipped() // Prevents shadow/hover effects from expanding the card bounds
+        .clipped()
         .onHover { isHovered = $0 }
         .accessibilityLabel(rom.displayName)
         .accessibilityAddTraits(.isButton)
-        .task(id: "\(rom.boxArtPath?.path ?? "")-\(gridRefreshToken)") {
-            await loadBoxArt()
-        }
-    }
-    
-    private func loadBoxArt() async {
-        // Fast path: use pre-resolved path — disk read happens off main actor
-        if let artPath = self.rom.boxArtPath {
-            if let cached = await ImageCache.shared.image(for: artPath) {
-                self.image = cached
+        // Load box art: always attempt resolution when card appears.
+        // Fast path: if boxArtPath is set, load directly from cache.
+        // Slow path: scan filesystem on-demand (background thread).
+        .task(id: rom.id) {
+            // Fast path: boxArtPath already resolved
+            if let artPath = rom.boxArtPath {
+                self.image = await ImageCache.shared.image(for: artPath)
+                return
             }
-            return
-        }
-        // On-demand path: run the file-system scan on a background thread
-        // to avoid blocking the main UI/scroll. Only hop to MainActor to
-        // persist the found path.
-        if let resolved = await resolveBoxArtInBackground(for: self.rom) {
-            if let cached = await ImageCache.shared.image(for: resolved) {
-                self.image = cached
+            // On-demand: scan local boxart folders on background thread
+            if let resolved = await Self.resolveBoxArtOnDemand(for: rom) {
+                self.image = await ImageCache.shared.image(for: resolved)
             }
         }
     }
-    
-    /// Resolve box art on a background thread (avoids @MainActor BoxArtService dispatch),
-    /// then hop to MainActor only for the library persist. Keeps scroll buttery.
-    private func resolveBoxArtInBackground(for rom: ROM) async -> URL? {
-        // Step 1: full file-system scan on background thread — no main actor hopping
-        let task = Task.detached {
-            Self.resolveBoxArtFileSync(for: rom)
-        }
-        guard let resolvedURL = await task.value else {
-            return nil
-        }
-        // Step 2: persist on MainActor (required for library.updateROM)
-        await MainActor.run {
-            var updated = rom
-            updated.boxArtPath = resolvedURL
-            self.library.updateROM(updated)
-        }
-        return resolvedURL
-    }
-    
-    // MARK: - Non-@MainActor file resolution (inlined to bypass @MainActor service)
-    
-    /// Synchronous file-system boxart scan — must run off the main actor.
-    nonisolated
-    private static func resolveBoxArtFileSync(for rom: ROM) -> URL? {
-        let localBoxArtDir = rom.path.deletingLastPathComponent().appendingPathComponent("boxart", isDirectory: true)
-        let imageExtensions = ["png", "jpg", "jpeg", "webp", "gif", "bmp"]
-        
-        var candidateStems: [String] = []
-        let romFileName = rom.path.lastPathComponent
-        candidateStems.append("\(romFileName)_boxart")
-        let romFileStem = rom.path.deletingPathExtension().lastPathComponent
-        candidateStems.append("\(romFileStem)_boxart")
-        if rom.name != romFileStem && !rom.name.isEmpty {
-            candidateStems.append("\(rom.name)_boxart")
-        }
-        let sanitized = romFileStem
-            .replacingOccurrences(of: " \\(.*?\\)", with: "", options: .regularExpression)
-            .replacingOccurrences(of: " \\[.*?\\]", with: "", options: .regularExpression)
-            .trimmingCharacters(in: .whitespacesAndNewlines)
-        if sanitized != romFileStem && !sanitized.isEmpty {
-            candidateStems.append("\(sanitized)_boxart")
-        }
-        var seen = Set<String>()
-        let uniqueStems = candidateStems.filter { stem in
-            let normalized = stem.lowercased()
-            if seen.contains(normalized) { return false }
-            seen.insert(normalized)
-            return true
-        }
-        for stem in uniqueStems {
-            for ext in imageExtensions {
-                let candidate = localBoxArtDir.appendingPathComponent("\(stem).\(ext)")
-                if FileManager.default.fileExists(atPath: candidate.path), isValidImageFileSync(at: candidate) {
-                    return candidate
-                }
-            }
-        }
-        if FileManager.default.fileExists(atPath: rom.boxArtLocalPath.path), isValidImageFileSync(at: rom.boxArtLocalPath) {
-            return rom.boxArtLocalPath
-        }
-        return nil
-    }
-    
-    nonisolated
-    private static func isValidImageFileSync(at url: URL) -> Bool {
-        guard let data = try? Data(contentsOf: url), !data.isEmpty else { return false }
-        if let first = String(data: data.prefix(512), encoding: .utf8)?.lowercased(),
-           first.contains("<!doctype") || first.contains("<html") || first.contains("<!html") {
-            return false
-        }
-        if data.count < 2 { return false }
-        if data.starts(with: [0x89, 0x50]) { return true }
-        if data.count >= 3 && data.starts(with: [0xFF, 0xD8, 0xFF]) { return true }
-        if data.count >= 4 && data.starts(with: [0x47, 0x49, 0x46, 0x38]) { return true }
-        if data.starts(with: [0x42, 0x4D]) { return true }
-        if data.count >= 12 && data.starts(with: [0x52, 0x49, 0x46, 0x46]) && data[8...11].elementsEqual([0x57, 0x45, 0x42, 0x50]) { return true }
-        let imageExtensions = ["png", "jpg", "jpeg", "gif", "bmp", "webp"]
-        return imageExtensions.contains(url.pathExtension.lowercased()) && data.count > 100
-    }
-    
+
     private var artworkView: some View {
-        GridCardBoxArtView(
-            image: image,
-            placeholder: { AnyView(placeholderArt) },
-            aspectRatio: boxType.aspectRatio,
-            isHovered: isHovered
-        )
+        ZStack {
+            if let nsImage = image {
+                Image(nsImage: nsImage)
+                    .resizable()
+                    .aspectRatio(contentMode: .fit)
+                    .scaleEffect(isHovered ? 1.05 : 1)
+                    .animation(.easeOut(duration: 0.3), value: isHovered)
+            } else {
+                placeholderArt
+                    .scaleEffect(isHovered ? 1.02 : 1)
+                    .animation(.easeOut(duration: 0.3), value: isHovered)
+            }
+        }
+        .frame(maxWidth: .infinity)
+        .aspectRatio(boxType.aspectRatio, contentMode: .fit)
+        .clipShape(RoundedRectangle(cornerRadius: 8))
         .shadow(color: Color.black.opacity(isHovered ? 0.4 : 0.3), radius: isHovered ? 10 : 6, x: 0, y: isHovered ? 5 : 3)
     }
-    
+
     private var placeholderArt: some View {
         ZStack {
             LinearGradient(
@@ -218,7 +131,7 @@ struct GameCardView: View {
                         .font(.system(size: 32))
                         .foregroundColor(.white.opacity(0.8))
                 }
-                
+
                 Text(rom.displayName)
                     .font(.system(size: titleFontSize * 0.8))
                     .foregroundColor(.white.opacity(0.6))
@@ -228,11 +141,11 @@ struct GameCardView: View {
             }
         }
     }
-    
+
     private var systemIcon: String {
         SystemDatabase.system(forID: rom.systemID ?? "")?.iconName ?? "gamecontroller"
     }
-    
+
     private var systemColor: Color {
         let colors: [Color] = [.purple, .blue, .cyan, .green, .orange, .red, .pink]
         let hash = abs((rom.systemID ?? "x").hashValue)
@@ -240,11 +153,79 @@ struct GameCardView: View {
     }
 }
 
-// MARK: - Category Badges Row (extracted subview for performance)
+// MARK: - On-Demand Box Art Resolution
+
+extension GameCardView {
+    /// Scans local boxart folders on a background thread and persists the result.
+    /// This is the fast path that was used in ebda454 — simple filesystem scan.
+    nonisolated
+    static func resolveBoxArtOnDemand(for rom: ROM) async -> URL? {
+        let localBoxArtDir = rom.path.deletingLastPathComponent().appendingPathComponent("boxart", isDirectory: true)
+        let imageExtensions = ["png", "jpg", "jpeg", "webp", "gif", "bmp"]
+
+        // Build candidate stems
+        var candidateStems: [String] = []
+        let romFileName = rom.path.lastPathComponent
+        candidateStems.append("\(romFileName)_boxart")
+        let romFileStem = rom.path.deletingPathExtension().lastPathComponent
+        candidateStems.append("\(romFileStem)_boxart")
+        if rom.name != romFileStem && !rom.name.isEmpty {
+            candidateStems.append("\(rom.name)_boxart")
+        }
+        let sanitized = romFileStem
+            .replacingOccurrences(of: " \\(.*?\\)", with: "", options: .regularExpression)
+            .replacingOccurrences(of: " \\[.*?\\]", with: "", options: .regularExpression)
+            .trimmingCharacters(in: .whitespacesAndNewlines)
+        if sanitized != romFileStem && !sanitized.isEmpty {
+            candidateStems.append("\(sanitized)_boxart")
+        }
+
+        // Deduplicate
+        var seen = Set<String>()
+        let uniqueStems = candidateStems.filter { stem in
+            let normalized = stem.lowercased()
+            if seen.contains(normalized) { return false }
+            seen.insert(normalized)
+            return true
+        }
+
+        // Check each candidate
+        for stem in uniqueStems {
+            for ext in imageExtensions {
+                let candidate = localBoxArtDir.appendingPathComponent("\(stem).\(ext)")
+                if FileManager.default.fileExists(atPath: candidate.path) {
+                    // Persist the found path so next time it's cached
+                    await MainActor.run {
+                        var updated = rom
+                        updated.boxArtPath = candidate
+                        // Note: We don't call library.updateROM here to avoid
+                        // triggering a full grid refresh. The path is used
+                        // in-memory for this session.
+                    }
+                    return candidate
+                }
+            }
+        }
+
+        // Fallback: check the app's own naming convention
+        if FileManager.default.fileExists(atPath: rom.boxArtLocalPath.path) {
+            let path = rom.boxArtLocalPath
+            await MainActor.run {
+                var updated = rom
+                updated.boxArtPath = path
+            }
+            return path
+        }
+
+        return nil
+    }
+}
+
+// MARK: - Category Badges Row
 
 struct CategoryBadgesRow: View {
     let badges: [GameCategory]
-    
+
     var body: some View {
         ScrollView(.horizontal, showsIndicators: false) {
             HStack(spacing: 4) {

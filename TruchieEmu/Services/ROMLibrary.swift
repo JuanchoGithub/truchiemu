@@ -151,6 +151,13 @@ class ROMLibrary: ObservableObject {
 
         loadFileIndexFromStorage()
         updateCounts()
+        
+        // Pre-warm the box art cache for the entire library immediately on launch.
+        // This ensures that when the user scrolls, images are already decoded and ready.
+        let romsForPreload = roms
+        Task {
+            await BoxArtPreloaderService.shared.preloadBoxArt(for: romsForPreload)
+        }
     }
 
     // MARK: - Legacy Migration
@@ -419,6 +426,12 @@ class ROMLibrary: ObservableObject {
             }
             await LibraryAutomationCoordinator.shared.runAfterLibraryUpdate(library: self)
             await MetadataSyncCoordinator.shared.runAfterLibraryUpdate(library: self)
+            
+            // Pre-warm the cache for newly discovered ROMs
+            let currentROMs = self.roms
+            Task {
+                await BoxArtPreloaderService.shared.preloadBoxArt(for: currentROMs)
+            }
         }
     }
 

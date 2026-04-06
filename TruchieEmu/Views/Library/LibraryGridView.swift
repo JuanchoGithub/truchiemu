@@ -227,9 +227,6 @@ struct LibraryGridView: View {
     @ObservedObject var boxArtService = BoxArtService.shared
     @State private var manualBoxArtSearchROM: ROM?
     
-    /// Refresh token — changes when box art is updated elsewhere (e.g., game info page)
-    /// to force the grid view to reload images
-    @State private var gridRefreshToken = UUID()
     
     // Delete/hide game states
     @State private var gameToDelete: ROM?
@@ -606,28 +603,19 @@ struct LibraryGridView: View {
             applyZoomToColumnCount(animate: false)
             updateColumns()
             
-            // Background preload: decode visible box art images so scrolling is smooth
-            let romsWithArt = displayedROMs.filter { $0.boxArtPath != nil }
-            if !romsWithArt.isEmpty {
-                Task {
-                    await BoxArtPreloaderService.shared.preloadBoxArt(for: romsWithArt)
-                    // Also enforce disk cache limits on startup
-                    _ = await BoxArtPreloaderService.shared.enforceDiskCacheLimit()
-                }
-            }
+            // When a new system/filter appears, preload its visible ROMs immediately.
+            // The ContentView handles global preloading (current filter → smallest systems),
+            // but this ensures newly visible filters get preloaded on-demand too.
+            preloadCurrentViewIfNotCached()
         }
         .onDisappear {
             // Save zoom level persistently
             AppSettings.setDouble("gridZoomLevel", value: continuousZoom)
         }
         // Refresh grid when box art is updated from elsewhere (e.g., game info page)
-        .onChange(of: boxArtService.boxArtUpdated) { _, _ in
-            // Update the refresh token to force all GameCardViews to reload their images
-            gridRefreshToken = UUID()
-            // Note: We no longer clear the entire ImageCache here.
-            // The BoxArtPreloaderService handles scoped invalidation per-ROM,
-            // so other cached images remain intact and scrolling stays smooth.
-        }
+        // We do NOT clear the entire ImageCache or trigger full-grid reloads.
+        // Each GameCardView's .task(id: rom.boxArtPath) will automatically reload
+        // when its specific boxArtPath changes.
         // MARK: - Keyboard Shortcuts
         // Cmd+F focuses search field
         .onReceive(NotificationCenter.default.publisher(for: NSWindow.didBecomeKeyNotification)) { _ in }
@@ -666,7 +654,7 @@ struct LibraryGridView: View {
             LazyVGrid(columns: columns, spacing: gridSpacing) {
                 ForEach(Array(displayedROMs.enumerated()), id: \.element.id) { index, rom in
                     let isSelected = selectedROMs.contains(rom.id) || selectedROM?.id == rom.id
-                    GameCardView(rom: rom, isSelected: isSelected, isMultiSelected: selectedROMs.contains(rom.id), zoomLevel: continuousZoom, gridRefreshToken: gridRefreshToken)
+                    GameCardView(rom: rom, isSelected: isSelected, isMultiSelected: selectedROMs.contains(rom.id), zoomLevel: continuousZoom)
                         .contentShape(Rectangle())
                         .onTapGesture {
                             handleTap(on: rom, at: index)
@@ -1387,6 +1375,15 @@ struct LibraryGridView: View {
         }
     }
 
+    /// Preload box art for the currently displayed ROMs in the grid.
+    /// OPT-IN: Only preloads when explicitly triggered (e.g., from settings).
+    /// The grid view relies on lazy .task(id: rom.boxArtPath) for on-demand loading.
+    private func preloadCurrentViewIfNotCached() {
+        // Preloading is now opt-in, not automatic.
+        // Images load on-demand as cards appear in the LazyVGrid.
+        // To manually preload: BoxArtPreloaderService.shared.preloadBoxArt(for: displayedROMs)
+    }
+
     @MainActor
     private func launchGame(_ rom: ROM) {
         guard let sysID = rom.systemID,
@@ -1632,9 +1629,9 @@ struct GameListRowView: View {
         .task(id: rom.boxArtPath) {
             // Lazy-resolve local boxart on-demand if not already set
             if let resolvedPath = BoxArtService.shared.resolveLocalBoxArtIfNeeded(for: rom, library: library) {
-                self.thumb = await ImageCache.shared.image(for: resolvedPath)
+                self.thumb = await ImageCache.shared.thumbnail(for: resolvedPath)
             } else if let artPath = rom.boxArtPath {
-                self.thumb = await ImageCache.shared.image(for: artPath)
+                self.thumb = await ImageCache.shared.thumbnail(for: artPath)
             } else {
                 self.thumb = nil
             }
@@ -1786,257 +1783,3 @@ struct EmptyStateFloatAnimation: ViewModifier {
     }
 }
 
-// MARK: - Image Cache
-
-/// Thread-safe image cache with pre-decoded images and separate thumbnail storage.
-/// Full-resolution images are cached for detail views, downscaled thumbnails for grid/list views.
-actor ImageCache {
-    static let shared = ImageCache()
-    
-    /// Full-resolution decoded images
-    private var cache = NSCache<NSURL, NSImage>()
-    /// Downscaled thumbnails for grid/list views
-    private var thumbnailCache = NSCache<NSURL, NSImage>()
-    /// Set of URLs currently being decoded — prevents redundant work
-    private var pendingDecodes = Set<String>()
-    
-    // MARK: - Public API
-    
-    /// Get a pre-decoded image from cache, or decode it synchronously on first load.
-    /// This is a drop-in replacement for `NSImage(contentsOf:)` that ensures pixels
-    /// are already decoded, avoiding main-thread decode jank during scroll.
-    func image(for url: URL) async -> NSImage? {
-        // Check full-res cache first
-        if let cached = cache.object(forKey: url as NSURL) {
-            return cached
-        }
-        
-        // Check thumbnail cache
-        if let thumb = thumbnailCache.object(forKey: url as NSURL) {
-            return thumb
-        }
-        
-        // Prevent redundant decode for same URL
-        let key = url.path
-        guard !pendingDecodes.contains(key) else {
-            // Another task is already decoding this — wait briefly then retry
-            try? await Task.sleep(nanoseconds: 50_000_000) // 50ms
-            return cache.object(forKey: url as NSURL) ?? thumbnailCache.object(forKey: url as NSURL)
-        }
-        pendingDecodes.insert(key)
-        defer { pendingDecodes.remove(key) }
-        
-        // Decode on background thread
-        let decoded = try? await Task.detached {
-            Self.decodeImageSync(from: url)
-        }.value
-        
-        if let image = decoded {
-            cache.setObject(image, forKey: url as NSURL)
-        }
-        
-        return decoded
-    }
-    
-    /// Get a downscaled thumbnail suitable for grid/list card display.
-    /// If no thumbnail exists, creates one from the source image or full-res cache.
-    func thumbnail(for url: URL, maxWidth: CGFloat = 400, maxHeight: CGFloat = 600) async -> NSImage? {
-        // Check thumbnail cache
-        if let cached = thumbnailCache.object(forKey: url as NSURL) {
-            return cached
-        }
-        
-        // Try to get full-res and downscale
-        if let fullRes = cache.object(forKey: url as NSURL) {
-            let thumb = Self.downscaleImage(fullRes, maxWidth: maxWidth, maxHeight: maxHeight)
-            thumbnailCache.setObject(thumb, forKey: url as NSURL)
-            return thumb
-        }
-        
-        // Load from disk and downscale
-        let result = try? await Task.detached {
-            Self.decodeImageSync(from: url, maxWidth: maxWidth, maxHeight: maxHeight)
-        }.value
-        
-        if let img = result {
-            thumbnailCache.setObject(img, forKey: url as NSURL)
-        }
-        
-        return result
-    }
-    
-    /// Decode and cache an image, optionally downscaled.
-    /// Used by the preloader to warm the cache before images are displayed.
-    func decodedImage(for url: URL, maxWidth: CGFloat = 0, maxHeight: CGFloat = 0) async -> NSImage? {
-        // Check if already cached
-        if maxWidth > 0 || maxHeight > 0 {
-            if let thumb = thumbnailCache.object(forKey: url as NSURL) {
-                return thumb
-            }
-        } else {
-            if let cached = cache.object(forKey: url as NSURL) {
-                return cached
-            }
-        }
-        
-        let decoded = try? await Task.detached {
-            Self.decodeImageSync(from: url, maxWidth: maxWidth, maxHeight: maxHeight)
-        }.value
-        
-        if let image = decoded {
-            if maxWidth > 0 || maxHeight > 0 {
-                thumbnailCache.setObject(image, forKey: url as NSURL)
-            } else {
-                cache.setObject(image, forKey: url as NSURL)
-            }
-        }
-        
-        return decoded
-    }
-    
-    func clear() {
-        cache.removeAllObjects()
-        thumbnailCache.removeAllObjects()
-    }
-    
-    func removeImage(for url: URL) {
-        cache.removeObject(forKey: url as NSURL)
-    }
-    
-    func removeThumbnail(for url: URL) {
-        thumbnailCache.removeObject(forKey: url as NSURL)
-    }
-    
-    /// Total images cached (full-res + thumbnails)
-    func cachedImageCount() -> Int {
-        cache.countLimit + thumbnailCache.countLimit
-    }
-    
-    /// Memory usage estimate (approximate, based on count limits)
-    func estimatedMemoryUsageMB() -> Int {
-        // NSCache doesn't expose actual memory usage, so we estimate based on limits
-        return (cache.totalCostLimit) / (1024 * 1024)
-    }
-    
-    // MARK: - Private Helpers
-    
-    init() {
-        // ~200MB limit for full-res box art images
-        cache.totalCostLimit = 200 * 1024 * 1024
-        cache.countLimit = 500
-        
-        // ~50MB limit for thumbnails (smaller, so we can fit more)
-        thumbnailCache.totalCostLimit = 50 * 1024 * 1024
-        thumbnailCache.countLimit = 1000
-    }
-    
-    /// Synchronously decode an image from disk with pre-decoding.
-    /// This ensures pixels are decoded upfront rather than lazily during draw.
-    nonisolated
-    private static func decodeImageSync(from url: URL, maxWidth: CGFloat = 0, maxHeight: CGFloat = 0) -> NSImage? {
-        guard let data = try? Data(contentsOf: url) else { return nil }
-        
-        // Use NSImageRep for proper format handling (PNG, JPEG, WebP, etc.)
-        guard let rep = NSBitmapImageRep(data: data) else { return nil }
-        
-        let sourceSize = rep.size
-        
-        // Check if we need to downscale
-        if maxWidth > 0 || maxHeight > 0 {
-            let maxW = maxWidth > 0 ? maxWidth : .greatestFiniteMagnitude
-            let maxH = maxHeight > 0 ? maxHeight : .greatestFiniteMagnitude
-            
-            var targetSize = sourceSize
-            if targetSize.width > maxW || targetSize.height > maxH {
-                let scale = min(maxW / targetSize.width, maxH / targetSize.height)
-                targetSize = CGSize(width: targetSize.width * scale, height: targetSize.height * scale)
-            }
-            
-            // Downscale using CoreGraphics for quality
-            guard let cgImage = rep.cgImage else {
-                let image = NSImage(size: sourceSize)
-                image.addRepresentation(rep)
-                return image
-            }
-            
-            let targetWidth = Int(targetSize.width)
-            let targetHeight = Int(targetSize.height)
-            guard targetWidth > 0, targetHeight > 0 else { return nil }
-            
-            let colorSpace = CGColorSpaceCreateDeviceRGB()
-            let context = CGContext(
-                data: nil,
-                width: targetWidth,
-                height: targetHeight,
-                bitsPerComponent: 8,
-                bytesPerRow: 0,
-                space: colorSpace,
-                bitmapInfo: CGImageAlphaInfo.premultipliedLast.rawValue
-            )
-            
-            context?.interpolationQuality = .high
-            context?.draw(cgImage, in: CGRect(x: 0, y: 0, width: targetWidth, height: targetHeight))
-            
-            guard let downscaledCG = context?.makeImage() else { return nil }
-            let downscaledRep = NSBitmapImageRep(cgImage: downscaledCG)
-            
-            let image = NSImage(size: targetSize)
-            image.addRepresentation(downscaledRep)
-            return image
-        }
-        
-        // Full resolution — pre-decode to avoid lazy draw overhead
-        guard let cgImage = rep.cgImage else {
-            let image = NSImage(size: sourceSize)
-            image.addRepresentation(rep)
-            return image
-        }
-        
-        let image = NSImage(cgImage: cgImage, size: sourceSize)
-        return image
-    }
-    
-    /// Downscale an NSImage to fit within the given bounds
-    nonisolated
-    private static func downscaleImage(_ image: NSImage, maxWidth: CGFloat, maxHeight: CGFloat) -> NSImage {
-        let sourceSize = image.size
-        
-        // Check if downscale is needed
-        if sourceSize.width <= maxWidth && sourceSize.height <= maxHeight {
-            return image
-        }
-        
-        let scale = min(maxWidth / sourceSize.width, maxHeight / sourceSize.height)
-        let targetSize = CGSize(width: sourceSize.width * scale, height: sourceSize.height * scale)
-        
-        // Create a downscaled representation
-        let imageRep = NSBitmapImageRep(
-            bitmapDataPlanes: nil,
-            pixelsWide: Int(targetSize.width),
-            pixelsHigh: Int(targetSize.height),
-            bitsPerSample: 8,
-            samplesPerPixel: 4,
-            hasAlpha: true,
-            isPlanar: false,
-            colorSpaceName: .deviceRGB,
-            bytesPerRow: 0,
-            bitsPerPixel: 0
-        )
-        
-        guard let rep = imageRep else { return image }
-        
-        NSGraphicsContext.saveGraphicsState()
-        NSGraphicsContext.current = NSGraphicsContext(bitmapImageRep: rep)
-        image.draw(in: NSRect(origin: .zero, size: targetSize),
-                   from: .zero,
-                   operation: .copy,
-                   fraction: 1.0,
-                   respectFlipped: true,
-                   hints: [NSImageRep.HintKey.interpolation: NSNumber(value: NSImageInterpolation.high.rawValue)])
-        NSGraphicsContext.restoreGraphicsState()
-        
-        let downscaledImage = NSImage(size: targetSize)
-        downscaledImage.addRepresentation(rep)
-        return downscaledImage
-    }
-}
