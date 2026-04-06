@@ -10,12 +10,18 @@ struct TruchieEmuApp: App {
     init() {
         _ = SwiftDataContainer.shared
         _ = LoggerService.shared
+        
+        // Load MAME lookup dictionary into memory for fast lookups
+        Task {
+            await MAMEImportService.shared.loadLookupDictionary()
+        }
     }
     
     @StateObject private var library = ROMLibrary()
     @StateObject private var categoryManager = CategoryManager()
     @StateObject private var coreManager = CoreManager()
     @StateObject private var controllerService = ControllerService.shared
+    @StateObject private var mameVerification = MAMEVerificationService.shared
     
     // NOTE: NSApp is NOT NOT available in init() for @main App structs.
     // Activation policy is set in AppDelegate.applicationWillFinishLaunching instead.
@@ -23,6 +29,21 @@ struct TruchieEmuApp: App {
     
     private var isCLILaunch: Bool {
         ProcessInfo.processInfo.arguments.contains("--launch")
+    }
+    
+    // MARK: - MAME Verification
+    
+    private func startMAMEVerificationIfNeeded() {
+        // Only start verification for MAME system ROMs
+        // Check if there are pending verifications
+        Task { @MainActor in
+            MAMEVerificationService.shared.updatePendingCount()
+            if MAMEVerificationService.shared.pendingCount > 0 {
+                // Get the model context from SwiftDataContainer
+                let modelContext = SwiftDataContainer.shared.container.mainContext
+                MAMEVerificationService.shared.startVerification(modelContext: modelContext)
+            }
+        }
     }
     
     var body: some Scene {
@@ -33,6 +54,15 @@ struct TruchieEmuApp: App {
                 .environmentObject(coreManager)
                 .environmentObject(controllerService)
                 .environmentObject(LibraryAutomationCoordinator.shared)
+                .environmentObject(mameVerification)
+                .onAppear {
+                    // Start MAME verification when app becomes idle
+                    startMAMEVerificationIfNeeded()
+                }
+                .onDisappear {
+                    // Pause verification when leaving the app
+                    MAMEVerificationService.shared.pause()
+                }
         }
         .windowStyle(.hiddenTitleBar)
         .windowToolbarStyle(.unified(showsTitle: false))

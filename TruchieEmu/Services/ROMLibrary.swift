@@ -309,6 +309,10 @@ class ROMLibrary: ObservableObject {
             return
         }
 
+        let scanStart = Date()
+        print("[ROMScanner] === SCAN STARTED: \(folder.path) ===")
+        LoggerService.info(category: "ROMLibrary", "=== SCAN STARTED: \(folder.path) ===")
+        
         isScanning = true
         scanProgress = 0
         scanCancellationToken.reset()
@@ -316,27 +320,48 @@ class ROMLibrary: ObservableObject {
 
         // Track total files found so we can estimate progress
         let fm = FileManager.default
+        let enumStart = Date()
         _ = fm.enumerator(at: folder, includingPropertiesForKeys: [.isRegularFileKey], options: [.skipsHiddenFiles])
 
         // Scan files incrementally: collect ROMs as we go
         var accumulatedROMs: [ROM] = []
         var scannedCount = 0
+        var skippedCount = 0
+        var romFoundCount = 0
 
         // Process files in batches to keep UI responsive
         let urls = collectFilesInFolder(folder: folder)
         let totalURLs = urls.count
+        let enumTime = Date().timeIntervalSince(enumStart)
+        print("[ROMScanner] Enumeration: \(totalURLs) files found in \(String(format: "%.2f", enumTime))s")
+        LoggerService.info(category: "ROMLibrary", "Enumeration: \(totalURLs) files found in \(String(format: "%.2f", enumTime))s")
 
         // Create a progress-aware file scanner
+        var zipCount = 0
+        var biosCount = 0
+        var identifyTimeTotal: TimeInterval = 0
+        
+        print("[ROMScanner] Processing \(totalURLs) files...")
+        LoggerService.info(category: "ROMLibrary", "Processing \(totalURLs) files...")
+        
         for url in urls {
             if scanCancellationToken.isCancelled { break }
 
             scannedCount += 1
-            let progress = Double(scannedCount) / max(Double(totalURLs), 1.0)
-
-            // Update progress on main thread
-            await MainActor.run {
-                self.scanProgress = progress
+            
+            // Log every 100 files and yield to run loop
+            if scannedCount % 100 == 0 {
+                let elapsed = Date().timeIntervalSince(scanStart)
+                let rate = Double(scannedCount) / max(elapsed, 0.001)
+                let msg = "Progress: \(scannedCount)/\(totalURLs) (\(String(format: "%.1f", rate)) files/sec, \(String(format: "%.1f", elapsed))s elapsed)"
+                print("[ROMScanner] \(msg)")
+                LoggerService.info(category: "ROMLibrary", msg)
+                // Yield to run loop every 100 files to keep UI responsive
+                try? await Task.sleep(nanoseconds: 1_000_000) // 1ms
             }
+            
+            let progress = Double(scannedCount) / max(Double(totalURLs), 1.0)
+            self.scanProgress = progress
 
             // Check if it's a ROM file
             guard (try? url.resourceValues(forKeys: [.isRegularFileKey]))?.isRegularFile == true else { continue }
@@ -347,14 +372,28 @@ class ROMLibrary: ObservableObject {
             let skip = ["txt", "xml", "jpg", "jpeg", "png", "gif", "bmp", "pdf", "mp3", "mp4", "avi", "mkv", "nfo", "dat", "db", "json",
                         "py", "pyc", "pyo", "pyw", "dylib", "so", "app", "icns", "plist", "strings", "loc", "lproj", "nib", "xib",
                         "md", "rmd", "html", "htm", "css", "js", "ts", "jsx", "tsx"]
-            if skip.contains(ext) { continue }
-            if url.path.contains("/Contents/") || url.path.hasSuffix(".app") { continue }
+            if skip.contains(ext) { 
+                skippedCount += 1
+                continue 
+            }
+            if url.path.contains("/Contents/") || url.path.hasSuffix(".app") { 
+                skippedCount += 1
+                continue 
+            }
 
             // Identify system and create ROM
+            let identifyStart = Date()
             let system = identifySystemForURL(url: url, extension: ext)
+            let identifyTime = Date().timeIntervalSince(identifyStart)
+            identifyTimeTotal += identifyTime
+            
+            if ext == "zip" || ext == "7z" { zipCount += 1 }
 
             // Skip if not a valid ROM system (e.g., BIOS files for unknown systems)
-            guard system != nil else { continue }
+            guard system != nil else { 
+                skippedCount += 1
+                continue 
+            }
 
             let name = url.deletingPathExtension().lastPathComponent
             var rom = ROM(id: UUID(), name: name, path: url, systemID: system?.id)
@@ -364,30 +403,35 @@ class ROMLibrary: ObservableObject {
                 rom.isBios = true
                 rom.isHidden = true
                 rom.category = "bios"
+                biosCount += 1
             }
 
+            romFoundCount += 1
             accumulatedROMs.append(rom)
 
             // Every 20 files scanned OR at the end, merge ROMs into the UI
             // This keeps the UI smooth without overwhelming it with individual updates
             if accumulatedROMs.count >= 20 || scannedCount == totalURLs {
-                await MainActor.run {
-                    // Add newly found ROMs to the main ROMs array
-                    let newROMs = accumulatedROMs.filter { newROM in
-                        !self.roms.contains(where: { $0.path.path == newROM.path.path })
-                    }.map { LibraryMetadataStore.shared.mergedROM($0) }
+                // Add newly found ROMs to the main ROMs array
+                let newROMs = accumulatedROMs.filter { newROM in
+                    !self.roms.contains(where: { $0.path.path == newROM.path.path })
+                }.map { LibraryMetadataStore.shared.mergedROM($0) }
 
-                    if !newROMs.isEmpty {
-                        withAnimation(.easeInOut(duration: 0.3)) {
-                            self.roms.append(contentsOf: newROMs)
-                            self.roms.sort { $0.displayName < $1.displayName }
-                        }
-                        self.updateCounts()
+                if !newROMs.isEmpty {
+                    withAnimation(.easeInOut(duration: 0.3)) {
+                        self.roms.append(contentsOf: newROMs)
+                        self.roms.sort { $0.displayName < $1.displayName }
                     }
+                    self.updateCounts()
                 }
                 accumulatedROMs.removeAll()
             }
         }
+        
+        let scanTime = Date().timeIntervalSince(scanStart)
+        print("[ROMScanner] === SCAN COMPLETE: \(romFoundCount) ROMs found, \(skippedCount) skipped, \(biosCount) BIOS in \(String(format: "%.2f", scanTime))s ===")
+        print("[ROMScanner] ZIPs: \(zipCount), Total identify time: \(String(format: "%.2f", identifyTimeTotal))s")
+        LoggerService.info(category: "ROMLibrary", "=== SCAN COMPLETE: \(romFoundCount) ROMs found, \(skippedCount) skipped, \(biosCount) BIOS in \(String(format: "%.2f", scanTime))s ===")
 
         // Final progress update
         await MainActor.run {

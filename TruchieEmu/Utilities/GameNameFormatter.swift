@@ -14,47 +14,28 @@ enum GameNameFormatter {
     ///   "Sonic the Hedgehog [!]" → "Sonic the Hedgehog"
     ///   "Mega Man 2 (Rev 1)" → "Mega Man 2"
     static func stripTags(_ name: String) -> String {
-        var result = name
-        
-        // Step 1: Remove all content within square brackets [like this]
-        result = removeBrackets(result)
-        
-        // Step 2: Remove all content within parentheses (like this)
-        result = removeParentheses(result)
-        
-        // Step 3: Clean up whitespace
-        result = cleanWhitespace(result)
-        
-        return result
+        // Optimized: Single pass regex to remove both square brackets and parentheses content
+        // This is much faster than multiple loops with subrange mutations.
+        let pattern = "\\s*(\\[[^\\]]*\\]|\\([^\\)]*\\))"
+        let stripped = name.replacingOccurrences(of: pattern, with: "", options: .regularExpression)
+        return cleanWhitespace(stripped)
     }
     
     /// Remove content within square brackets: [!], [b1], [f1], etc.
     static func removeBrackets(_ name: String) -> String {
-        var result = name
-        while let range = result.range(of: "\\s*\\[[^\\]]*\\]", options: .regularExpression) {
-            result.removeSubrange(range)
-        }
-        return result
+        return name.replacingOccurrences(of: "\\s*\\[[^\\]]*\\]", with: "", options: .regularExpression)
     }
     
     /// Remove content within parentheses: (USA), (World), (Rev 1), (En,Fr,De), etc.
     static func removeParentheses(_ name: String) -> String {
-        var result = name
-        while let range = result.range(of: "\\s*\\([^\\)]*\\)", options: .regularExpression) {
-            result.removeSubrange(range)
-        }
-        return result
+        return name.replacingOccurrences(of: "\\s*\\([^\\)]*\\)", with: "", options: .regularExpression)
     }
     
     /// Clean up extra whitespace left after tag removal.
     static func cleanWhitespace(_ name: String) -> String {
-        var result = name
-        // Replace multiple spaces with single space
-        result = result.replacingOccurrences(of: "  +", with: " ", options: .regularExpression)
-        // Replace multiple dashes/spaces combinations
-        result = result.replacingOccurrences(of: "\\s+-\\s+$", with: "", options: .regularExpression)
-        // Trim and clean
-        return result.trimmingCharacters(in: .whitespacesAndNewlines)
+        // Replace multiple spaces with single space and trim
+        return name.replacingOccurrences(of: "\\s+", with: " ", options: .regularExpression)
+                   .trimmingCharacters(in: .whitespacesAndNewlines)
     }
     
     /// Check if a name contains any tags that would be stripped.

@@ -21,10 +21,14 @@ actor ROMScanner {
     }
 
     func scan(folder: URL, cancellationToken: ScanCancellationToken? = nil, progress: @escaping (Double) -> Void) async -> [ROM] {
+        let scanStart = Date()
+        LoggerService.info(category: "ROMScanner", "=== SCAN STARTED: \(folder.path) ===")
+        
         resetCancellation()
         var found: [ROM] = []
         let fm = FileManager.default
 
+        let enumStart = Date()
         guard let enumerator = fm.enumerator(
             at: folder,
             includingPropertiesForKeys: [.isRegularFileKey],
@@ -32,8 +36,11 @@ actor ROMScanner {
         ) else { return [] }
 
         let allURLs = enumerator.allObjects.compactMap { $0 as? URL }
+        let enumTime = Date().timeIntervalSince(enumStart)
+        LoggerService.info(category: "ROMScanner", "Enumeration: \(allURLs.count) files found in \(String(format: "%.2f", enumTime))s")
         
         // --- NEW: Identify all referenced files to skip redundant entries (e.g., .bin files referenced by .cue) ---
+        let ignoredStart = Date()
         var ignoredURLs = Set<String>()
         for url in allURLs {
             let refs = getReferencedFiles(in: url)
@@ -41,6 +48,8 @@ actor ROMScanner {
                 ignoredURLs.insert(ref.standardized.path)
             }
         }
+        let ignoredTime = Date().timeIntervalSince(ignoredStart)
+        LoggerService.info(category: "ROMScanner", "Ignored files build: \(ignoredURLs.count) ignored in \(String(format: "%.2f", ignoredTime))s")
         // --- END ---
 
         let total = Double(allURLs.count)
@@ -49,6 +58,10 @@ actor ROMScanner {
         // Throttle progress updates (every 50ms)
         var lastProgressUpdate = DispatchTime.now()
         let throttleNanos: UInt64 = 50_000_000 // 50ms
+        
+        // Timing counters
+        var identifyTimeTotal: TimeInterval = 0
+        var zipCount = 0
 
         for url in allURLs {
             if isCancelled || (cancellationToken?.isCancelled ?? false) { break }
@@ -81,7 +94,13 @@ actor ROMScanner {
             // Skip files inside .app bundles
             if url.path.contains("/Contents/") || url.path.hasSuffix(".app") { continue }
 
+            let identifyStart = Date()
             let system = identifySystem(url: url, extension: ext)
+            let identifyTime = Date().timeIntervalSince(identifyStart)
+            identifyTimeTotal += identifyTime
+            
+            if ext == "zip" || ext == "7z" { zipCount += 1 }
+            
             let name = url.deletingPathExtension().lastPathComponent
 
             var rom = ROM(
@@ -98,6 +117,11 @@ actor ROMScanner {
                 rom.category = "bios"
             }
 
+            // MARK: - MAME ROM Identification
+            if system?.id == "mame" {
+                applyMAMEIdentification(to: &rom, url: url)
+            }
+
             rom.metadata = loadFromGamesXML(at: url)
             
             // Check for local boxart (skip for BIOS files)
@@ -110,7 +134,51 @@ actor ROMScanner {
 
         // Final progress update
         progress(1.0)
+        let scanTime = Date().timeIntervalSince(scanStart)
+        LoggerService.info(category: "ROMScanner", "=== SCAN COMPLETE: \(found.count) ROMs found in \(String(format: "%.2f", scanTime))s ===")
+        LoggerService.info(category: "ROMScanner", "Total identify time: \(String(format: "%.2f", identifyTimeTotal))s")
+        LoggerService.info(category: "ROMScanner", "ZIPs processed: \(zipCount)")
         return found
+    }
+
+    // MARK: - MAME ROM Identification
+
+    /// Apply MAME-specific identification using the bundled database.
+    /// This uses fast O(1) shortname lookup instead of slow CRC matching.
+    private func applyMAMEIdentification(to rom: inout ROM, url: URL) {
+        let shortName = url.deletingPathExtension().lastPathComponent.lowercased()
+        
+        guard let mameEntry = MAMEImportService.lookup(shortName: shortName) else {
+            // Not found in MAME database - keep visible but mark as unidentified
+            return
+        }
+        
+        // Found in database
+        rom.mameRomType = mameEntry.type
+        
+        if mameEntry.isPlayableGame {
+            // It's a playable game - use the proper description as the name
+            rom.name = mameEntry.description
+            rom.isHidden = false
+            rom.category = "game"
+            
+            // Set metadata from MAME database
+            if rom.metadata == nil {
+                rom.metadata = ROMMetadata()
+            }
+            rom.metadata?.title = mameEntry.description
+            rom.metadata?.year = mameEntry.year
+            rom.metadata?.developer = mameEntry.manufacturer
+            rom.metadata?.publisher = mameEntry.manufacturer
+            if let players = mameEntry.players {
+                rom.metadata?.players = players
+            }
+        } else {
+            // It's a BIOS, device, or mechanical ROM - hide it
+            rom.isHidden = true
+            rom.isBios = true
+            rom.category = "bios"
+        }
     }
 
     // New: Trigger DAT download for any newly discovered systems
@@ -366,15 +434,32 @@ actor ROMScanner {
             return SystemDatabase.system(forID: "32x")
         }
         
+        // TIER 1.5: MAME database lookup (fast O(1) shortname check)
+        let shortName = url.deletingPathExtension().lastPathComponent.lowercased()
+        if let mameEntry = MAMEImportService.lookup(shortName: shortName) {
+            // Found in MAME database
+            if mameEntry.isPlayableGame {
+                return SystemDatabase.system(forID: "mame")
+            } else {
+                // It's a BIOS, device, or mechanical ROM - hide it
+                return nil
+            }
+        }
+        
         // TIER 2: BIOS exclusion from scan results
         if KnownBIOS.isKnownBios(filename: url.lastPathComponent) {
             return nil  // BIOS files should be hidden
         }
 
-        // TIER 3: Content fingerprinting (peek inside ZIP)
+        // TIER 3: Content fingerprinting (peek inside ZIP) - EXPENSIVE
+        let fpStart = Date()
         if let detected = fingerprintArchive(url: url) {
+            let fpTime = Date().timeIntervalSince(fpStart)
+            LoggerService.info(category: "ROMScanner", "Fingerprint matched \(url.lastPathComponent) in \(String(format: "%.3f", fpTime))s")
             return detected
         }
+        let fpTime = Date().timeIntervalSince(fpStart)
+        LoggerService.info(category: "ROMScanner", "Fingerprint NO match for \(url.lastPathComponent) in \(String(format: "%.3f", fpTime))s")
 
         // TIER 4: Default to MAME for ambiguous ZIPs
         return SystemDatabase.system(forID: "mame")
@@ -591,6 +676,8 @@ actor ROMScanner {
 
     // Scan only specific URLs (for smart rescan)
     func scan(urls: [URL], progress: @escaping (Double) -> Void) async -> [ROM] {
+        let scanStart = Date()
+        LoggerService.info(category: "ROMScanner", "=== SCAN STARTED (URLs): \(urls.count) files ===")
         resetCancellation()
 
         var found: [ROM] = []
@@ -671,6 +758,8 @@ actor ROMScanner {
 
         // Final progress update
         progress(1.0)
+        let scanTime = Date().timeIntervalSince(scanStart)
+        LoggerService.info(category: "ROMScanner", "=== SCAN COMPLETE (URLs): \(found.count) ROMs found in \(String(format: "%.2f", scanTime))s ===")
         return found
     }
 

@@ -53,7 +53,11 @@ final class SwiftDataContainer: ObservableObject {
             ShaderPresetEntry.self,
             ResourceCacheEntryModel.self,
             DATIngestionEntry.self,
-            BoxArtResolutionEntry.self
+            BoxArtResolutionEntry.self,
+            // MAME ROM database and verification tracking
+            MAMERomEntry.self,
+            MAMEDatabaseInfo.self,
+            MAMEVerificationRecord.self
         ])
         
         let config = ModelConfiguration(

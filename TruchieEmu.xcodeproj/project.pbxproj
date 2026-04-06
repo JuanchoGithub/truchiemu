@@ -51,12 +51,16 @@
 		6F744ECC857F8807BD5BF1AA /* OnboardingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = BB27DEA4536CF36FCD8394F2 /* OnboardingView.swift */; };
 		71B49A85A5A4F01FC962FEEE /* CorePickerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2509BE73DFA2ACCF17CAA8DD /* CorePickerView.swift */; };
 		785352A1776D2F26AE6E9BDA /* CLILauncher.swift in Sources */ = {isa = PBXBuildFile; fileRef = C8CF37F3EE97D10E700B56DF /* CLILauncher.swift */; };
+		7BCABE033C966C00D3C37B3D /* MAMEImportService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 879AF000B232F5CE2F035410 /* MAMEImportService.swift */; };
+		828668B6C4FA339C93E5B005 /* MAMEVerificationService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 44FC722B1D6DC0867DBB5777 /* MAMEVerificationService.swift */; };
 		82B1A3EA975F48157E1FDACE /* SidebarRowButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 60BB5F4BA1A30F9A52DB839A /* SidebarRowButton.swift */; };
 		8406C90890303236B45F5FE2 /* SystemSidebarView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F0ECEE62736D1B11B66E5CED /* SystemSidebarView.swift */; };
+		84554DDDD852F8442674710D /* MAMERomEntry.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7D6D46D0F856BC93AFDD1A73 /* MAMERomEntry.swift */; };
 		85DCB8701ABFD43946F210E9 /* BezelSystemMapping.swift in Sources */ = {isa = PBXBuildFile; fileRef = 25381400F40B6B9F5699C25C /* BezelSystemMapping.swift */; };
 		889D5640E4056E730D0FAF6F /* GameDragState.swift in Sources */ = {isa = PBXBuildFile; fileRef = 02BBEDBAB8126B08C4C9D008 /* GameDragState.swift */; };
 		899F4D160E1258D6A3512441 /* BezelModels.swift in Sources */ = {isa = PBXBuildFile; fileRef = 64A688BC67EE841CEE4466D4 /* BezelModels.swift */; };
 		8D69C38D2C52B6392EC9C0AA /* CoreManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = C9D4F3329E4574FD30094324 /* CoreManager.swift */; };
+		8E1051B46E85462915FC5FDC /* MAMEVerificationRecord.swift in Sources */ = {isa = PBXBuildFile; fileRef = D54096F9DD108A5FCB06171C /* MAMEVerificationRecord.swift */; };
 		8EE995D174427204927B68F4 /* GameCategory.swift in Sources */ = {isa = PBXBuildFile; fileRef = A5DBDEA905A82BDEF2D0FF92 /* GameCategory.swift */; };
 		8F729FB157583DECC75B0124 /* ScummVMRunner.swift in Sources */ = {isa = PBXBuildFile; fileRef = C87485B36AA3B87BBC03C577 /* ScummVMRunner.swift */; };
 		8FD8E7C72CB64F4BF522DB48 /* BezelAPIServiceIntegrationTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9A57889A8837E10FEB44BCFD /* BezelAPIServiceIntegrationTests.swift */; };
@@ -118,6 +122,7 @@
 		F0C531CC9AE8E5F3501E703B /* ROMRepository.swift in Sources */ = {isa = PBXBuildFile; fileRef = DD7DD75048F4FE666F795285 /* ROMRepository.swift */; };
 		F0D6B9000421AB5BD7E85EC8 /* LogManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = A3E6537CAC4420826C1A50C4 /* LogManager.swift */; };
 		F15802B871B1B524941360A4 /* CheatSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8EAA8B5D7F9154D320382A23 /* CheatSettingsView.swift */; };
+		F1D62C5445CF2CB899702BDE /* mame_rom_data.json in Resources */ = {isa = PBXBuildFile; fileRef = 997C409A40BDE7CFE9393115 /* mame_rom_data.json */; };
 		F27EE6E590B48D9E91C8504F /* BoxArtPreloaderService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57E31A0548A2DE07AEC19A74 /* BoxArtPreloaderService.swift */; };
 		F3C6A31B44657B3FF9B89A4F /* ROMLibrary.swift in Sources */ = {isa = PBXBuildFile; fileRef = 35A5B2396F8000C8435A2E45 /* ROMLibrary.swift */; };
 		F48CB4CCF9EE1DD7C0865813 /* MetadataStoreTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = F51AA028B3B32973C35F470B /* MetadataStoreTests.swift */; };
@@ -172,6 +177,7 @@
 		3C280DAAB43D202DBEEA100A /* GameInfoWindow.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GameInfoWindow.swift; sourceTree = "<group>"; };
 		3DDFBB322B80263A8B7FC9A3 /* DatabaseManagerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DatabaseManagerTests.swift; sourceTree = "<group>"; };
 		429518CD364123358B2D8AEC /* BezelAPIService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BezelAPIService.swift; sourceTree = "<group>"; };
+		44FC722B1D6DC0867DBB5777 /* MAMEVerificationService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MAMEVerificationService.swift; sourceTree = "<group>"; };
 		482780863BA2AF1C5DA43B2F /* HardcoreModeManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HardcoreModeManager.swift; sourceTree = "<group>"; };
 		4F60AE4F947E2D693F0BE80A /* ResourceCacheModels.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ResourceCacheModels.swift; sourceTree = "<group>"; };
 		514B30B47B86FD0161D5DD71 /* SNESRunner.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SNESRunner.swift; sourceTree = "<group>"; };
@@ -199,10 +205,12 @@
 		7A96B3453958E60812D9DA1D /* ROMScanner.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ROMScanner.swift; sourceTree = "<group>"; };
 		7BA22E4A4F4049B056FF0A02 /* ResourceCacheManagerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ResourceCacheManagerTests.swift; sourceTree = "<group>"; };
 		7D4DE8B36744135985A50982 /* CLIManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CLIManager.swift; sourceTree = "<group>"; };
+		7D6D46D0F856BC93AFDD1A73 /* MAMERomEntry.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MAMERomEntry.swift; sourceTree = "<group>"; };
 		7DF10A2892C7DDEB5683637F /* CheatDownloadService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CheatDownloadService.swift; sourceTree = "<group>"; };
 		7F988F08EFDCA767E62683C4 /* GameNameFormatterTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GameNameFormatterTests.swift; sourceTree = "<group>"; };
 		81440507D3F6155A9AC60E31 /* NESRunner.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NESRunner.swift; sourceTree = "<group>"; };
 		824B99AA8F4D46E6A5E01A05 /* GameLauncher.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GameLauncher.swift; sourceTree = "<group>"; };
+		879AF000B232F5CE2F035410 /* MAMEImportService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MAMEImportService.swift; sourceTree = "<group>"; };
 		88C3C353EBC5C164CD49BB6A /* LaunchBoxGamesDBService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LaunchBoxGamesDBService.swift; sourceTree = "<group>"; };
 		88CE9892979FB7B724F9F25B /* CoreOption.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CoreOption.swift; sourceTree = "<group>"; };
 		8A47A2618C88081828F43315 /* LibretroThumbnailResolver.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LibretroThumbnailResolver.swift; sourceTree = "<group>"; };
@@ -213,6 +221,7 @@
 		956DCA694927003AFF28A1FA /* DATPrepopulationServiceTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DATPrepopulationServiceTests.swift; sourceTree = "<group>"; };
 		99510C445D5B9B6435F169A6 /* SystemControlsMappingView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SystemControlsMappingView.swift; sourceTree = "<group>"; };
 		99591C00996BDFB5DC9F6CD4 /* RetroAchievementsService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RetroAchievementsService.swift; sourceTree = "<group>"; };
+		997C409A40BDE7CFE9393115 /* mame_rom_data.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = mame_rom_data.json; sourceTree = "<group>"; };
 		9A57889A8837E10FEB44BCFD /* BezelAPIServiceIntegrationTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BezelAPIServiceIntegrationTests.swift; sourceTree = "<group>"; };
 		A3E6537CAC4420826C1A50C4 /* LogManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LogManager.swift; sourceTree = "<group>"; };
 		A4134F4B89D3CF5680BCEA25 /* CoreOptionsManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CoreOptionsManager.swift; sourceTree = "<group>"; };
@@ -243,6 +252,7 @@
 		D117D4363FBC8E02D7F7B049 /* CheatParser.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CheatParser.swift; sourceTree = "<group>"; };
 		D2741A6AD9158E9F4EBE44C4 /* BezelManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BezelManager.swift; sourceTree = "<group>"; };
 		D4BD45E407C6A4D3059F2996 /* N64Runner.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = N64Runner.swift; sourceTree = "<group>"; };
+		D54096F9DD108A5FCB06171C /* MAMEVerificationRecord.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MAMEVerificationRecord.swift; sourceTree = "<group>"; };
 		D57E42574E494390B161B243 /* LibretroBridge.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = LibretroBridge.h; sourceTree = "<group>"; };
 		D88D96DF545C1C1905F21A6C /* SharedPlayerComponents.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SharedPlayerComponents.swift; sourceTree = "<group>"; };
 		DAD4BAC83053A0F149602D6D /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
@@ -336,6 +346,8 @@
 				8A47A2618C88081828F43315 /* LibretroThumbnailResolver.swift */,
 				F306F0B7FE1B38A2A9EA5989 /* LoggerService.swift */,
 				A3E6537CAC4420826C1A50C4 /* LogManager.swift */,
+				879AF000B232F5CE2F035410 /* MAMEImportService.swift */,
+				44FC722B1D6DC0867DBB5777 /* MAMEVerificationService.swift */,
 				194776DC27A94907F479FEA5 /* MetadataSyncCoordinator.swift */,
 				746A411A79F40382E1D204CC /* ResourceCacheInterceptor.swift */,
 				99591C00996BDFB5DC9F6CD4 /* RetroAchievementsService.swift */,
@@ -439,6 +451,7 @@
 		51DCF45034CBD3ABFA194491 = {
 			isa = PBXGroup;
 			children = (
+				D414975E3ECEDF8E738599C0 /* scripts */,
 				1877F5A2D47F3BEBD4C9F107 /* TruchieEmu */,
 				73C7F441286CE6892F0B3412 /* TruchieEmuTests */,
 				898E3BAF8FE5EB5068391AB1 /* Products */,
@@ -456,6 +469,8 @@
 				DC76C12B188BD3512C51A51F /* LaunchBoxGameMetadata.swift */,
 				6A44B2F841BBDAD4B6D2DAA0 /* LibraryMetadataStore.swift */,
 				E35518FB34DEB243BF979DE0 /* LibretroCore.swift */,
+				7D6D46D0F856BC93AFDD1A73 /* MAMERomEntry.swift */,
+				D54096F9DD108A5FCB06171C /* MAMEVerificationRecord.swift */,
 				4F60AE4F947E2D693F0BE80A /* ResourceCacheModels.swift */,
 				FA471582BD64CAFD5D7353DA /* ROM.swift */,
 				E85C7A0C40C8A384AA47160D /* ShaderPreset.swift */,
@@ -505,6 +520,14 @@
 			path = Engine;
 			sourceTree = "<group>";
 		};
+		85D625ABC90C79FA5B3D9948 /* mame_lookup */ = {
+			isa = PBXGroup;
+			children = (
+				997C409A40BDE7CFE9393115 /* mame_rom_data.json */,
+			);
+			path = mame_lookup;
+			sourceTree = "<group>";
+		};
 		898E3BAF8FE5EB5068391AB1 /* Products */ = {
 			isa = PBXGroup;
 			children = (
@@ -552,6 +575,14 @@
 				E2677C6594356F9F2E613AD9 /* Shaders */,
 			);
 			path = Views;
+			sourceTree = "<group>";
+		};
+		D414975E3ECEDF8E738599C0 /* scripts */ = {
+			isa = PBXGroup;
+			children = (
+				85D625ABC90C79FA5B3D9948 /* mame_lookup */,
+			);
+			path = scripts;
 			sourceTree = "<group>";
 		};
 		E2677C6594356F9F2E613AD9 /* Shaders */ = {
@@ -626,6 +657,7 @@
 			buildConfigurationList = FC61AF2BB3ABF32D52509631 /* Build configuration list for PBXNativeTarget "TruchieEmu" */;
 			buildPhases = (
 				16A55D322B3BC741416F8011 /* Sources */,
+				72BEA9F28E3292A80ED17226 /* Resources */,
 			);
 			buildRules = (
 			);
@@ -671,6 +703,17 @@
 			);
 		};
 /* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		72BEA9F28E3292A80ED17226 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				F1D62C5445CF2CB899702BDE /* mame_rom_data.json in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
 		16A55D322B3BC741416F8011 /* Sources */ = {
@@ -747,6 +790,10 @@
 				F0D6B9000421AB5BD7E85EC8 /* LogManager.swift in Sources */,
 				3407D4D1297B8DA39CE0A93D /* LoggerService.swift in Sources */,
 				2F8441505DD14F2DC1B83795 /* LoggingSettingsView.swift in Sources */,
+				7BCABE033C966C00D3C37B3D /* MAMEImportService.swift in Sources */,
+				84554DDDD852F8442674710D /* MAMERomEntry.swift in Sources */,
+				8E1051B46E85462915FC5FDC /* MAMEVerificationRecord.swift in Sources */,
+				828668B6C4FA339C93E5B005 /* MAMEVerificationService.swift in Sources */,
 				4EA5799C1F93442DD8C0C6A8 /* MetadataSyncCoordinator.swift in Sources */,
 				236EFB0A130B6F76AC8713A5 /* N64Runner.swift in Sources */,
 				455AB80D7490B0717CBE94AD /* NESRunner.swift in Sources */,

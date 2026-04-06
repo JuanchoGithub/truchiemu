@@ -298,9 +298,16 @@ struct LibraryGridView: View {
     }
 
     private func applySorting(to roms: [ROM]) -> [ROM] {
+        guard !roms.isEmpty else { return [] }
+        
         switch sortOption {
         case .name:
-            return roms.sorted { $0.displayName.localizedCaseInsensitiveCompare($1.displayName) == .orderedAscending }
+            // Schwartzian transform: pre-compute display names once to avoid N log N regex stripping calls
+            return roms
+                .map { (rom: $0, key: $0.displayName) }
+                .sorted { $0.key.localizedCaseInsensitiveCompare($1.key) == .orderedAscending }
+                .map { $0.rom }
+                
         case .lastPlayed:
             return roms.sorted { a, b in
                 switch (a.lastPlayed, b.lastPlayed) {
@@ -314,17 +321,28 @@ struct LibraryGridView: View {
                     return dateA > dateB  // most recent first
                 }
             }
+            
         case .system:
-            return roms.sorted { a, b in
-                let sysNameA = SystemDatabase.displaySystem(forInternalID: a.systemID ?? "")?.name ?? "ZZZZ"
-                let sysNameB = SystemDatabase.displaySystem(forInternalID: b.systemID ?? "")?.name ?? "ZZZZ"
-                let sysCompare = sysNameA.localizedCaseInsensitiveCompare(sysNameB)
-                if sysCompare != .orderedSame {
-                    return sysCompare == .orderedAscending
-                }
-                // Secondary sort by game name within same system
-                return a.displayName.localizedCaseInsensitiveCompare(b.displayName) == .orderedAscending
+            // Schwartzian transform: pre-compute system names and display names
+            struct SortEntry {
+                let rom: ROM
+                let systemName: String
+                let displayName: String
             }
+            
+            return roms
+                .map { rom in
+                    let sysName = SystemDatabase.displaySystem(forInternalID: rom.systemID ?? "")?.name ?? "ZZZZ"
+                    return SortEntry(rom: rom, systemName: sysName, displayName: rom.displayName)
+                }
+                .sorted { a, b in
+                    let sysCompare = a.systemName.localizedCaseInsensitiveCompare(b.systemName)
+                    if sysCompare != .orderedSame {
+                        return sysCompare == .orderedAscending
+                    }
+                    return a.displayName.localizedCaseInsensitiveCompare(b.displayName) == .orderedAscending
+                }
+                .map { $0.rom }
         }
     }
     @State private var columns: [GridItem] = []

@@ -24,6 +24,8 @@ struct ROM: Identifiable, Codable, Hashable, Sendable {
     var isHidden: Bool = false
     /// Category: "game", "bios", "system"
     var category: String = "game"
+    /// MAME ROM type: "game", "bios", "device", "mechanical" (nil if not a MAME ROM)
+    var mameRomType: String?
     /// No-Intro / identification CRC32 (hex), persisted in library metadata file.
     var crc32: String?
     /// Libretro thumbnail CDN folder (`Nintendo - Game Boy` vs `GBC`) when identification matched a different DB (e.g. GB ROM in merged GB+GBC set).

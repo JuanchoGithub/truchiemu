@@ -65,6 +65,7 @@ targets:
           - "*.DS_Store"
       - path: TruchieEmu/Models
         type: group
+        buildPhase: sources
       - path: TruchieEmu/Services
       - path: TruchieEmu/Engine
       - path: TruchieEmu/Shaders
@@ -76,6 +77,9 @@ targets:
       - path: TruchieEmu/Views
       - path: TruchieEmu/Views/Shaders
       - path: TruchieEmu/Utilities
+      # MAME ROM database (bundled JSON)
+      - path: scripts/mame_lookup/mame_rom_data.json
+        buildPhase: resources
 
     preBuildScripts: []
 
