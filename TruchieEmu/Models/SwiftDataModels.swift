@@ -9,7 +9,7 @@ final class ROMEntry {
     var name: String
     var path: String
     var systemID: String?
-    var boxArtPath: String?
+    var hasBoxArt: Bool
     var isFavorite: Bool
     var lastPlayed: Date?
     var totalPlaytimeSeconds: Double
@@ -43,7 +43,7 @@ final class ROMEntry {
         name: String,
         path: URL,
         systemID: String? = nil,
-        boxArtPath: String? = nil,
+        hasBoxArt: Bool = false,
         isFavorite: Bool = false,
         lastPlayed: Date? = nil,
         totalPlaytimeSeconds: Double = 0.0,
@@ -65,7 +65,7 @@ final class ROMEntry {
         self.name = name
         self.path = path.path
         self.systemID = systemID
-        self.boxArtPath = boxArtPath
+        self.hasBoxArt = hasBoxArt
         self.isFavorite = isFavorite
         self.lastPlayed = lastPlayed
         self.totalPlaytimeSeconds = totalPlaytimeSeconds
@@ -102,7 +102,7 @@ final class ROMMetadataEntry {
     var cooperative: Bool?
     var esrbRating: String?
     var thumbnailSystemID: String?
-    var boxArtPath: String?
+    var hasBoxArt: Bool
     var titleScreenPath: String?
     var screenshotPathsJSON: String?
     var customCoreID: String?
@@ -124,7 +124,7 @@ final class ROMMetadataEntry {
         cooperative: Bool? = nil,
         esrbRating: String? = nil,
         thumbnailSystemID: String? = nil,
-        boxArtPath: String? = nil,
+        hasBoxArt: Bool = false,
         titleScreenPath: String? = nil,
         screenshotPathsJSON: String? = nil,
         customCoreID: String? = nil
@@ -142,7 +142,7 @@ final class ROMMetadataEntry {
         self.cooperative = cooperative
         self.esrbRating = esrbRating
         self.thumbnailSystemID = thumbnailSystemID
-        self.boxArtPath = boxArtPath
+        self.hasBoxArt = hasBoxArt
         self.titleScreenPath = titleScreenPath
         self.screenshotPathsJSON = screenshotPathsJSON
         self.customCoreID = customCoreID

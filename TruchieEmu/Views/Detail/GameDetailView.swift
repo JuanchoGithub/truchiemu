@@ -515,7 +515,7 @@ struct GameDetailView: View {
                 crcHash = crc
             }
         }
-        .onChange(of: currentROM.boxArtPath) { _, _ in loadBoxArt() }
+        .onChange(of: currentROM.hasBoxArt) { _, _ in loadBoxArt() }
         .onChange(of: currentROM.screenshotPaths) { _, _ in loadScreenshots() }
         .onChange(of: library.bezelUpdateToken) { _, _ in
             Task { await loadCurrentBezelImage() }
@@ -662,8 +662,8 @@ struct GameDetailView: View {
         // Lazy-resolve local boxart on-demand if not already set
         if let resolvedPath = BoxArtService.shared.resolveLocalBoxArtIfNeeded(for: currentROM, library: library) {
             boxArtImage = NSImage(contentsOf: resolvedPath)
-        } else if let path = currentROM.boxArtPath {
-            boxArtImage = NSImage(contentsOf: path)
+        } else if currentROM.hasBoxArt {
+            boxArtImage = NSImage(contentsOf: currentROM.boxArtLocalPath)
         } else {
             boxArtImage = nil
         }
@@ -1518,7 +1518,7 @@ struct GameDetailView: View {
         
         if let url = await BoxArtService.shared.fetchBoxArt(for: currentROM) {
             var u = currentROM
-            u.boxArtPath = url
+            u.hasBoxArt = true
             library.updateROM(u)
             loadBoxArt()
             

@@ -297,7 +297,6 @@ final class ROMRepository {
             name: rom.name,
             path: rom.path,
             systemID: rom.systemID,
-            boxArtPath: nil,
             isFavorite: rom.isFavorite,
             lastPlayed: rom.lastPlayed,
             totalPlaytimeSeconds: rom.totalPlaytimeSeconds,

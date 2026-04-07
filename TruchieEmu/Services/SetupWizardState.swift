@@ -151,8 +151,8 @@ final class SetupWizardState: ObservableObject {
         let limitedROMs = roms.prefix(50)
         for rom in limitedROMs {
             var boxArtImage: NSImage? = nil
-            if let artPath = rom.boxArtPath, fm.fileExists(atPath: artPath.path) {
-                boxArtImage = NSImage(contentsOf: artPath)
+            if rom.hasBoxArt {
+                boxArtImage = NSImage(contentsOf: rom.boxArtLocalPath)
             }
             
             let systemName = SystemDatabase.system(forID: rom.systemID ?? "")?.name ?? rom.systemID ?? "Unknown"

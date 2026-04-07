@@ -124,7 +124,8 @@ class BoxArtPreloaderService: ObservableObject {
             // Decode images for this batch in parallel on background threads
             await withTaskGroup(of: (URL, NSImage?).self) { group in
                 for rom in batch {
-                    guard let artPath = rom.boxArtPath else { continue }
+                    guard rom.hasBoxArt else { continue }
+                    let artPath = rom.boxArtLocalPath
                     
                     // Check if we have a pre-decoded thumbnail on disk first
                     if let thumb = Self.loadThumbnail(at: artPath) {
@@ -172,11 +173,10 @@ class BoxArtPreloaderService: ObservableObject {
     /// Call this instead of clear() when a single ROM's box art changes.
     func invalidateImage(for rom: ROM) {
         // Remove full-res from cache
-        if let url = rom.boxArtPath {
-            Task {
-                await ImageCache.shared.removeImage(for: url)
-                await ImageCache.shared.removeThumbnail(for: url)
-            }
+        let url = rom.boxArtLocalPath
+        Task {
+            await ImageCache.shared.removeImage(for: url)
+            await ImageCache.shared.removeThumbnail(for: url)
         }
     }
     

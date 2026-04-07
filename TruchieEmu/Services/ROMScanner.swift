@@ -126,7 +126,7 @@ actor ROMScanner {
             
             // Check for local boxart (skip for BIOS files)
             if !rom.isBios && fm.fileExists(atPath: rom.boxArtLocalPath.path) {
-                rom.boxArtPath = rom.boxArtLocalPath
+                rom.hasBoxArt = true
             }
 
             found.append(rom)
@@ -841,7 +841,7 @@ actor ROMScanner {
             
             // Check for local boxart (skip for BIOS files)
             if !rom.isBios && fm.fileExists(atPath: rom.boxArtLocalPath.path) {
-                rom.boxArtPath = rom.boxArtLocalPath
+                rom.hasBoxArt = true
             }
 
             found.append(rom)

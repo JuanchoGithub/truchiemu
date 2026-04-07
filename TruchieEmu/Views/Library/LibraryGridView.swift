@@ -148,11 +148,9 @@ enum GameFilterOption: String, CaseIterable, Identifiable {
     }
     
     func matches(_ rom: ROM) -> Bool {
-        let fm = FileManager.default
         switch self {
         case .noBoxArt:
-            if let p = rom.boxArtPath { return !fm.fileExists(atPath: p.path) }
-            return true
+            return !rom.hasBoxArt
         case .neverPlayed:
             return rom.lastPlayed == nil
         case .notFavorite:
@@ -642,8 +640,8 @@ struct LibraryGridView: View {
         }
         // Refresh grid when box art is updated from elsewhere (e.g., game info page)
         // We do NOT clear the entire ImageCache or trigger full-grid reloads.
-        // Each GameCardView's .task(id: rom.boxArtPath) will automatically reload
-        // when its specific boxArtPath changes.
+        // Each GameCardView's .task(id: rom.id) will automatically reload
+        // when its specific hasBoxArt changes.
         // MARK: - Keyboard Shortcuts
         // Cmd+F focuses search field
         .onReceive(NotificationCenter.default.publisher(for: NSWindow.didBecomeKeyNotification)) { _ in }
@@ -1450,7 +1448,7 @@ struct LibraryGridView: View {
 
     /// Preload box art for the currently displayed ROMs in the grid.
     /// OPT-IN: Only preloads when explicitly triggered (e.g., from settings).
-    /// The grid view relies on lazy .task(id: rom.boxArtPath) for on-demand loading.
+    /// The grid view relies on lazy .task(id: rom.id) for on-demand loading.
     private func preloadCurrentViewIfNotCached() {
         // Preloading is now opt-in, not automatic.
         // Images load on-demand as cards appear in the LazyVGrid.
@@ -1701,14 +1699,18 @@ struct GameListRowView: View {
             RoundedRectangle(cornerRadius: 8)
                 .stroke(isSelected ? Color.accentColor.opacity(0.5) : Color.clear, lineWidth: 1.5)
         )
-        .task(id: rom.boxArtPath) {
+        .task(id: rom.id) {
             // Lazy-resolve local boxart on-demand if not already set
-            if let resolvedPath = BoxArtService.shared.resolveLocalBoxArtIfNeeded(for: rom, library: library) {
-                self.thumb = await ImageCache.shared.thumbnail(for: resolvedPath)
-            } else if let artPath = rom.boxArtPath {
-                self.thumb = await ImageCache.shared.thumbnail(for: artPath)
+            if rom.hasBoxArt {
+                if let thumb = await ImageCache.shared.thumbnail(for: rom.boxArtLocalPath) {
+                    self.thumb = thumb
+                }
             } else {
-                self.thumb = nil
+                if let resolvedPath = BoxArtService.shared.resolveLocalBoxArtIfNeeded(for: rom, library: library) {
+                    self.thumb = await ImageCache.shared.thumbnail(for: resolvedPath)
+                } else {
+                    self.thumb = nil
+                }
             }
         }
     }

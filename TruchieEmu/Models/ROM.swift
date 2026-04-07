@@ -5,7 +5,7 @@ struct ROM: Identifiable, Codable, Hashable, Sendable {
     var name: String
     var path: URL
     var systemID: String?
-    var boxArtPath: URL?
+    var hasBoxArt: Bool = false
     var isFavorite: Bool = false
     var lastPlayed: Date?
     /// Total playtime across all sessions (in seconds)
@@ -66,16 +66,32 @@ struct ROM: Identifiable, Codable, Hashable, Sendable {
     
     /// Post-scan automation: fetch art when no file on disk yet.
     var needsAutomaticBoxArt: Bool {
-        let fm = FileManager.default
-        if let p = boxArtPath, fm.fileExists(atPath: p.path) { return false }
-        return !fm.fileExists(atPath: boxArtLocalPath.path)
+        return !hasBoxArt
     }
     
     // Persistent storage paths
     var boxArtLocalPath: URL {
-        path.deletingLastPathComponent()
+        let boxartDir = path.deletingLastPathComponent()
             .appendingPathComponent("boxart")
-            .appendingPathComponent("\(path.lastPathComponent)_boxart.png")
+        // Use filename without extension: "1942" not "1942.nes"
+        let romNameWithoutExt = path.deletingPathExtension().lastPathComponent
+        let baseName = "\(romNameWithoutExt)_boxart"
+        
+        // Check for .png first, then .jpg, then .jpeg
+        let pngPath = boxartDir.appendingPathComponent("\(baseName).png")
+        let jpgPath = boxartDir.appendingPathComponent("\(baseName).jpg")
+        let jpegPath = boxartDir.appendingPathComponent("\(baseName).jpeg")
+        
+        if FileManager.default.fileExists(atPath: pngPath.path) {
+            return pngPath
+        } else if FileManager.default.fileExists(atPath: jpgPath.path) {
+            return jpgPath
+        } else if FileManager.default.fileExists(atPath: jpegPath.path) {
+            return jpegPath
+        }
+        
+        // Default to .png for new downloads
+        return pngPath
     }
     
     var infoLocalPath: URL {

@@ -23,8 +23,8 @@ struct ROMMetadataRecord: Codable, Hashable {
     var esrbRating: String?
     /// Matches `ROM.thumbnailLookupSystemID` for Libretro CDN.
     var thumbnailLookupSystemID: String?
-    /// Cached box art path (usually beside the ROM).
-    var boxArtPath: String?
+    /// Whether this ROM has box art.
+    var hasBoxArt: Bool
     /// Reserved: title screen / Libretro Named_Titles.
     var titleScreenPath: String?
     /// Array of screenshot image paths for the game
@@ -32,7 +32,9 @@ struct ROMMetadataRecord: Codable, Hashable {
     /// Custom core ID selected by the user for this ROM.
     var customCoreID: String?
 
-    init() {}
+    init() {
+        hasBoxArt = false
+    }
 
     init(from rom: ROM) {
         crc32 = rom.crc32
@@ -47,7 +49,7 @@ struct ROMMetadataRecord: Codable, Hashable {
         cooperative = rom.metadata?.cooperative
         esrbRating = rom.metadata?.esrbRating
         thumbnailLookupSystemID = rom.thumbnailLookupSystemID
-        boxArtPath = rom.boxArtPath?.path
+        hasBoxArt = rom.hasBoxArt
         titleScreenPath = nil
         screenshotPaths = rom.screenshotPaths.map { $0.path }
     }
@@ -68,9 +70,7 @@ struct ROMMetadataRecord: Codable, Hashable {
         if let esrbRating { meta.esrbRating = esrbRating }
         r.metadata = meta
         if let t = thumbnailLookupSystemID { r.thumbnailLookupSystemID = t }
-        if let p = boxArtPath, FileManager.default.fileExists(atPath: p) {
-            r.boxArtPath = URL(fileURLWithPath: p)
-        }
+        r.hasBoxArt = hasBoxArt
         if !screenshotPaths.isEmpty {
             r.screenshotPaths = screenshotPaths.compactMap {
                 let url = URL(fileURLWithPath: $0)
@@ -107,7 +107,7 @@ extension ROMMetadataEntry {
             cooperative: record.cooperative,
             esrbRating: record.esrbRating,
             thumbnailSystemID: record.thumbnailLookupSystemID,
-            boxArtPath: record.boxArtPath,
+            hasBoxArt: record.hasBoxArt,
             titleScreenPath: record.titleScreenPath,
             screenshotPathsJSON: screenshotJSON,
             customCoreID: record.customCoreID
@@ -128,7 +128,7 @@ extension ROMMetadataEntry {
         record.cooperative = cooperative
         record.esrbRating = esrbRating
         record.thumbnailLookupSystemID = thumbnailSystemID
-        record.boxArtPath = boxArtPath
+        record.hasBoxArt = hasBoxArt
         record.titleScreenPath = titleScreenPath
         record.customCoreID = customCoreID
         if let json = screenshotPathsJSON,
@@ -256,7 +256,7 @@ final class LibraryMetadataStore: ObservableObject {
         entry.cooperative = record.cooperative
         entry.esrbRating = record.esrbRating
         entry.thumbnailSystemID = record.thumbnailLookupSystemID
-        entry.boxArtPath = record.boxArtPath
+        entry.hasBoxArt = record.hasBoxArt
         entry.titleScreenPath = record.titleScreenPath
         entry.customCoreID = record.customCoreID
         if !record.screenshotPaths.isEmpty,

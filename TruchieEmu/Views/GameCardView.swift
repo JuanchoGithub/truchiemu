@@ -146,25 +146,37 @@ struct GameCardView: View {
         .animation(.interpolatingSpring(stiffness: 200, damping: 25), value: isPressed)
         .accessibilityLabel(rom.displayName)
         .accessibilityAddTraits(.isButton)
-        // Load box art: always attempt resolution when card appears.
-        // Fast path: if boxArtPath is set, load directly from cache.
-        // Slow path: scan filesystem on-demand (background thread).
+        // Load box art: try multiple naming patterns via BoxArtService.
+        // Sets hasBoxArt based on whether the image loads successfully.
         .task(id: rom.id) {
-            let effectivePath: URL?
-            if let artPath = rom.boxArtPath {
-                effectivePath = artPath
-            } else {
-                effectivePath = await Self.resolveBoxArtOnDemand(for: rom)
+            // First try the deterministic path
+            var artPath = rom.boxArtLocalPath
+            
+            // If that file doesn't exist, try the multi-stem resolution
+            if !FileManager.default.fileExists(atPath: artPath.path) {
+                if let resolved = BoxArtService.shared.resolveLocalBoxArt(for: rom) {
+                    artPath = resolved
+                }
             }
 
-            if let path = effectivePath,
-               let img = await ImageCache.shared.image(for: path) {
+            if let img = await ImageCache.shared.image(for: artPath) {
                 self.image = img
-            } else {
                 await MainActor.run {
-                    var updated = rom
-                    updated.boxArtPath = nil
-                    library.updateROM(updated)
+                    if !rom.hasBoxArt {
+                        var updated = rom
+                        updated.hasBoxArt = true
+                        library.updateROM(updated)
+                    }
+                }
+            } else {
+                // Image not found or invalid — ensure hasBoxArt is false
+                await MainActor.run {
+                    if rom.hasBoxArt {
+                        var updated = rom
+                        updated.hasBoxArt = false
+                        library.updateROM(updated)
+                    }
+                    self.image = nil
                 }
             }
         }
@@ -236,67 +248,14 @@ struct GameCardView: View {
 // MARK: - On-Demand Box Art Resolution
 
 extension GameCardView {
-    /// Scans local boxart folders on a background thread and persists the result.
-    /// This is the fast path that was used in ebda454 — simple filesystem scan.
+    /// Checks the deterministic box art path for local existence.
+    /// Simplified since boxArtLocalPath is always computed the same way.
     nonisolated
     static func resolveBoxArtOnDemand(for rom: ROM) async -> URL? {
-        let localBoxArtDir = rom.path.deletingLastPathComponent().appendingPathComponent("boxart", isDirectory: true)
-        let imageExtensions = ["png", "jpg", "jpeg", "webp", "gif", "bmp"]
-
-        // Build candidate stems
-        var candidateStems: [String] = []
-        let romFileName = rom.path.lastPathComponent
-        candidateStems.append("\(romFileName)_boxart")
-        let romFileStem = rom.path.deletingPathExtension().lastPathComponent
-        candidateStems.append("\(romFileStem)_boxart")
-        if rom.name != romFileStem && !rom.name.isEmpty {
-            candidateStems.append("\(rom.name)_boxart")
+        let artPath = rom.boxArtLocalPath
+        if FileManager.default.fileExists(atPath: artPath.path) {
+            return artPath
         }
-        let sanitized = romFileStem
-            .replacingOccurrences(of: " \\(.*?\\)", with: "", options: .regularExpression)
-            .replacingOccurrences(of: " \\[.*?\\]", with: "", options: .regularExpression)
-            .trimmingCharacters(in: .whitespacesAndNewlines)
-        if sanitized != romFileStem && !sanitized.isEmpty {
-            candidateStems.append("\(sanitized)_boxart")
-        }
-
-        // Deduplicate
-        var seen = Set<String>()
-        let uniqueStems = candidateStems.filter { stem in
-            let normalized = stem.lowercased()
-            if seen.contains(normalized) { return false }
-            seen.insert(normalized)
-            return true
-        }
-
-        // Check each candidate
-        for stem in uniqueStems {
-            for ext in imageExtensions {
-                let candidate = localBoxArtDir.appendingPathComponent("\(stem).\(ext)")
-                if FileManager.default.fileExists(atPath: candidate.path) {
-                    // Persist the found path so next time it's cached
-                    await MainActor.run {
-                        var updated = rom
-                        updated.boxArtPath = candidate
-                        // Note: We don't call library.updateROM here to avoid
-                        // triggering a full grid refresh. The path is used
-                        // in-memory for this session.
-                    }
-                    return candidate
-                }
-            }
-        }
-
-        // Fallback: check the app's own naming convention
-        if FileManager.default.fileExists(atPath: rom.boxArtLocalPath.path) {
-            let path = rom.boxArtLocalPath
-            await MainActor.run {
-                var updated = rom
-                updated.boxArtPath = path
-            }
-            return path
-        }
-
         return nil
     }
 }

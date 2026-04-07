@@ -30,9 +30,9 @@ final class LibraryAutomationCoordinator: ObservableObject {
         let snapshot = library.roms
 
         // Phase 0: Scan for pre-existing local boxart in /boxart subfolders
-        // This populates boxArtPath for ROMs that have local artwork but haven't
+        // This populates hasBoxArt for ROMs that have local artwork but haven't
         // been downloaded by the app yet (e.g., user-provided boxart files)
-        let romsToCheck = snapshot.filter { $0.boxArtPath == nil }
+        let romsToCheck = snapshot.filter { !$0.hasBoxArt }
         LoggerService.info(category: "LibraryAutomation", "📼 Checking \(romsToCheck.count) ROM(s) for local boxart in /boxart folders...")
         let romsWithLocalArt = BoxArtService.shared.resolveLocalBoxArtBatch(for: romsToCheck)
         if !romsWithLocalArt.isEmpty {
@@ -120,8 +120,7 @@ final class LibraryAutomationCoordinator: ObservableObject {
         // After Libretro CDN, try LaunchBox GamesDB for remaining ROMs still missing art
         if LaunchBoxGamesDBService.shared.downloadAfterScan {
             let stillMissing = library.roms.filter { rom in
-                let hasBoxart = rom.boxArtPath.map { FileManager.default.fileExists(atPath: $0.path) } ?? false
-                return rom.needsAutomaticBoxArt && !hasBoxart
+                !rom.hasBoxArt
             }
             if !stillMissing.isEmpty {
                 statusLine = "Trying LaunchBox GamesDB for \(stillMissing.count) games…"

@@ -618,7 +618,6 @@ class CLIManager: ObservableObject {
             name: name,
             path: url,
             systemID: systemID,
-            boxArtPath: nil,
             isFavorite: false,
             lastPlayed: nil,
             selectedCoreID: nil,

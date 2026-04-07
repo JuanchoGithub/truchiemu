@@ -529,7 +529,7 @@ class LaunchBoxGamesDBService: ObservableObject {
                 var (completedRom, url) = result
 
                 if let savedURL = url {
-                    completedRom.boxArtPath = savedURL
+                    completedRom.hasBoxArt = true
                     await MainActor.run { library.updateROM(completedRom) }
                 }
 
@@ -643,7 +643,7 @@ class LaunchBoxGamesDBService: ObservableObject {
         guard let boxArtURL = await fetchBoxArt(for: rom) else { return false }
         await MainActor.run {
             var updated = rom
-            updated.boxArtPath = boxArtURL
+            updated.hasBoxArt = true
             library.updateROM(updated)
         }
         return true
@@ -680,7 +680,7 @@ class LaunchBoxGamesDBService: ObservableObject {
                 completed += 1
                 if let savedURL = url {
                     var updated = completedRom
-                    updated.boxArtPath = savedURL
+                    updated.hasBoxArt = true
                     await MainActor.run { library.updateROM(updated) }
                 }
                 // Throttle: 750ms + yield between requests to keep app responsive

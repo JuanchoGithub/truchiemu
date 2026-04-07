@@ -79,12 +79,12 @@ struct BoxArtPickerView: View {
                 var updated = rom
                 
                 // Force UI state change by removing and re-adding path
-                updated.boxArtPath = nil
+                updated.hasBoxArt = false
                 library.updateROM(updated)
                 
                 try? await Task.sleep(nanoseconds: 50_000_000)
                 
-                updated.boxArtPath = localURL
+                updated.hasBoxArt = true
                 library.updateROM(updated)
                 
                 // Signal the grid view to refresh

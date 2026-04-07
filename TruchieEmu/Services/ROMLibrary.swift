@@ -1091,7 +1091,7 @@ class ROMLibrary: ObservableObject {
     func rebuildLibrary(modes: Set<RebuildOption>) async {
         if modes.contains(.boxartRebuild) {
             for i in 0..<roms.count {
-                roms[i].boxArtPath = nil
+                roms[i].hasBoxArt = false
             }
         }
 

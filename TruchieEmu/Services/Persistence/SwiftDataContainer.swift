@@ -31,6 +31,31 @@ final class SwiftDataContainer: ObservableObject {
         migrationFlag?.hasMigrated ?? false
     }
     
+    // MARK: - Store Management
+    
+    /// Delete all SwiftData store files to force a fresh schema creation.
+    /// Used as a fallback when schema migration fails.
+    private static func deleteStoreFiles() {
+        let appSupport = FileManager.default.urls(for: .applicationSupportDirectory, in: .userDomainMask).first!
+        
+        let fileManager = FileManager.default
+        // SwiftData uses "default.store" as the default store name
+        let storeURL = appSupport.appendingPathComponent("default.store", isDirectory: true)
+        let walURL = appSupport.appendingPathComponent("default.store-wal")
+        let shmURL = appSupport.appendingPathComponent("default.store-shm")
+        
+        for url in [storeURL, walURL, shmURL] {
+            if fileManager.fileExists(atPath: url.path) {
+                do {
+                    try fileManager.removeItem(at: url)
+                    LoggerService.info(category: "SwiftDataContainer", "Deleted store file: \(url.lastPathComponent)")
+                } catch {
+                    LoggerService.warning(category: "SwiftDataContainer", "Failed to delete \(url.lastPathComponent): \(error.localizedDescription)")
+                }
+            }
+        }
+    }
+    
     // MARK: - Initialization (private)
     
     private init() {
@@ -70,8 +95,27 @@ final class SwiftDataContainer: ObservableObject {
             migrationFlag = PersistenceMigrationFlag()
             LoggerService.info(category: "SwiftDataContainer", "ModelContainer created successfully")
         } catch {
-            LoggerService.error(category: "SwiftDataContainer", "Failed to create ModelContainer: \(error.localizedDescription)")
-            fatalError("Unable to initialize SwiftData container: \(error)")
+            // If schema migration fails, delete the store file and try again
+            LoggerService.warning(category: "SwiftDataContainer", "Failed to create ModelContainer: \(error.localizedDescription). Attempting store reset…")
+            Self.deleteStoreFiles()
+            let retryConfig = ModelConfiguration(schema: schema, isStoredInMemoryOnly: false)
+            do {
+                container = try ModelContainer(for: schema, configurations: [retryConfig])
+                migrationFlag = PersistenceMigrationFlag()
+                LoggerService.info(category: "SwiftDataContainer", "ModelContainer recreated after store reset")
+            } catch {
+                // Last resort: in-memory only
+                LoggerService.warning(category: "SwiftDataContainer", "Persistent store still failed after reset, using in-memory fallback")
+                let fallbackConfig = ModelConfiguration(schema: schema, isStoredInMemoryOnly: true)
+                do {
+                    container = try ModelContainer(for: schema, configurations: [fallbackConfig])
+                    migrationFlag = PersistenceMigrationFlag()
+                    LoggerService.info(category: "SwiftDataContainer", "ModelContainer created with in-memory fallback")
+                } catch {
+                    LoggerService.error(category: "SwiftDataContainer", "Fatal: ModelContainer creation failed even with in-memory fallback: \(error.localizedDescription)")
+                    fatalError("Unable to initialize SwiftData container: \(error)")
+                }
+            }
         }
     }
     

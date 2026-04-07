@@ -108,23 +108,21 @@ class BoxArtService: ObservableObject {
     // MARK: - Local BoxArt Resolution
 
     /// Lazily resolves local boxart for a single ROM on-demand.
-    /// If boxart is found, updates the ROM's boxArtPath and persists the change.
+    /// If boxart is found, updates the ROM's hasBoxArt and persists the change.
     /// Returns the resolved URL, or nil if not found.
     /// This is the preferred method for UI-driven lazy loading — call it per-ROM when the card appears.
     @MainActor
     func resolveLocalBoxArtIfNeeded(for rom: ROM, library: ROMLibrary) -> URL? {
-        // Already resolved — skip
-        if rom.boxArtPath != nil {
+        if rom.hasBoxArt {
             LoggerService.debug(category: "BoxArt", "Lazy-resolve skipped — boxart already set for '\(rom.displayName)'")
-            return rom.boxArtPath
+            return rom.boxArtLocalPath
         }
 
         LoggerService.info(category: "BoxArt", "Lazy-resolving local boxart for '\(rom.displayName)' (system: \(rom.systemID ?? "unknown"))")
         
-        // Check if local boxart exists without persisting first
         if let localURL = resolveLocalBoxArt(for: rom) {
             var updated = rom
-            updated.boxArtPath = localURL
+            updated.hasBoxArt = true
             library.updateROM(updated)
             LoggerService.info(category: "BoxArt", "✅ Local boxart found: \(localURL.lastPathComponent) for '\(rom.displayName)'")
             return localURL
@@ -213,17 +211,17 @@ class BoxArtService: ObservableObject {
         for rom in roms {
             if let localURL = resolveLocalBoxArt(for: rom) {
                 var updated = rom
-                updated.boxArtPath = localURL
+                updated.hasBoxArt = true
                 found.append(updated)
             }
         }
         return found
     }
 
-    /// Resolves local boxart for all ROMs in the library that don't already have a boxArtPath set.
+    /// Resolves local boxart for all ROMs in the library that don't already have hasBoxArt set.
     /// Updates the library and triggers a UI refresh signal. Call from MainActor.
     func resolveAllLocalBoxArtAndPersist(library: ROMLibrary) {
-        let romsWithoutArt = library.roms.filter { $0.boxArtPath == nil }
+        let romsWithoutArt = library.roms.filter { !$0.hasBoxArt }
         guard !romsWithoutArt.isEmpty else { return }
 
         LoggerService.info(category: "BoxArt", "Scanning \(romsWithoutArt.count) ROM(s) for local boxart in /boxart folders...")
@@ -609,15 +607,9 @@ class BoxArtService: ObservableObject {
         return cleaned
     }
 
-    /// Returns ROMs that either have no boxart file or have a broken (invalid) boxart file.
+    /// Returns ROMs that don't have box art.
     func romsNeedingBoxArt(in roms: [ROM]) -> [ROM] {
-        roms.filter { rom in
-            let path = rom.boxArtLocalPath
-            // No file at all
-            guard FileManager.default.fileExists(atPath: path.path) else { return true }
-            // File exists but is broken (not a valid image)
-            return !isValidImageFile(at: path)
-        }
+        roms.filter { !$0.hasBoxArt }
     }
 
     /// Batch download from libretro CDN (throttled, 1 concurrent).
@@ -671,7 +663,7 @@ class BoxArtService: ObservableObject {
                 active -= 1
                 var (completedRom, url) = result
                 if let savedURL = url {
-                    completedRom.boxArtPath = savedURL
+                    completedRom.hasBoxArt = true
                     await MainActor.run { library.updateROM(completedRom) }
                 }
                 completed += 1
@@ -755,8 +747,7 @@ class BoxArtService: ObservableObject {
                 var (completedRom, url) = result
                 
                 if let savedURL = url {
-                    completedRom.boxArtPath = savedURL
-                    // Force an update to the reference type in the library to trigger redraw.
+                    completedRom.hasBoxArt = true
                     await MainActor.run { library.updateROM(completedRom) }
                 }
                 await MainActor.run { self.downloadedCount += 1 }
