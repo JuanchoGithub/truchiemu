@@ -926,7 +926,7 @@ struct LibraryGridView: View {
                     .font(.system(size: 28))
                     .foregroundStyle(
                         LinearGradient(
-                            colors: [.purple, .cyan],
+                            colors: [Color(red: 0.1, green: 0.6, blue: 0.35), Color(red: 0.15, green: 0.65, blue: 0.55)],
                             startPoint: .topLeading,
                             endPoint: .bottomTrailing
                         )
@@ -996,7 +996,7 @@ struct LibraryGridView: View {
                     .font(.system(size: 10))
                     .foregroundStyle(
                         LinearGradient(
-                            colors: [.purple, .cyan],
+                            colors: [Color(red: 0.1, green: 0.6, blue: 0.35), Color(red: 0.15, green: 0.65, blue: 0.55)],
                             startPoint: .topLeading,
                             endPoint: .bottomTrailing
                         )

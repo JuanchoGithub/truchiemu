@@ -30,7 +30,7 @@ struct OnboardingView: View {
                     Image(systemName: "arcade.stick")
                         .font(.system(size: 72, weight: .ultraLight))
                         .foregroundStyle(LinearGradient(
-                            colors: [.purple, .cyan],
+                            colors: [Color(red: 0.1, green: 0.6, blue: 0.35), Color(red: 0.15, green: 0.65, blue: 0.55)],
                             startPoint: .topLeading,
                             endPoint: .bottomTrailing
                         ))

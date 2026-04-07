@@ -653,7 +653,7 @@ struct BezelView: View {
                 .ignoresSafeArea()
             // Marquee strip
             VStack {
-                LinearGradient(colors: [.purple, .blue], startPoint: .leading, endPoint: .trailing)
+                LinearGradient(colors: [Color(red: 0.1, green: 0.6, blue: 0.35), Color(red: 0.15, green: 0.65, blue: 0.55)], startPoint: .leading, endPoint: .trailing)
                     .frame(height: 80)
                     .overlay(
                         Text("TRUCHIE EMU")

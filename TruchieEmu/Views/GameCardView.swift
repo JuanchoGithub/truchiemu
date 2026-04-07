@@ -9,6 +9,7 @@ struct GameCardView: View {
     let zoomLevel: Double
 
     @State private var isHovered = false
+    @State private var isPressed = false
     @State private var image: NSImage?
     @ObservedObject private var prefs = SystemPreferences.shared
     @EnvironmentObject private var library: ROMLibrary
@@ -127,23 +128,44 @@ struct GameCardView: View {
             RoundedRectangle(cornerRadius: 12)
                 .stroke(cardStrokeColor, lineWidth: cardStrokeWidth)
         )
-        .shadow(color: shadowColor, radius: isHovered ? 8 : 4, y: isHovered ? 4 : 2)
+        .shadow(
+            color: isHovered ? Color.accentColor.opacity(0.15) : Color.black.opacity(0.3),
+            radius: isHovered ? 12 : 6,
+            y: isHovered ? 8 : 3
+        )
+        .scaleEffect(isHovered ? 1.03 : 1.0)
+        .scaleEffect(isPressed ? 0.97 : 1.0)
         .clipped()
         .onHover { isHovered = $0 }
+        .simultaneousGesture(
+            DragGesture(minimumDistance: 0)
+                .onChanged { _ in isPressed = true }
+                .onEnded { _ in isPressed = false }
+        )
+        .animation(.interpolatingSpring(stiffness: 200, damping: 25), value: isHovered)
+        .animation(.interpolatingSpring(stiffness: 200, damping: 25), value: isPressed)
         .accessibilityLabel(rom.displayName)
         .accessibilityAddTraits(.isButton)
         // Load box art: always attempt resolution when card appears.
         // Fast path: if boxArtPath is set, load directly from cache.
         // Slow path: scan filesystem on-demand (background thread).
         .task(id: rom.id) {
-            // Fast path: boxArtPath already resolved
+            let effectivePath: URL?
             if let artPath = rom.boxArtPath {
-                self.image = await ImageCache.shared.image(for: artPath)
-                return
+                effectivePath = artPath
+            } else {
+                effectivePath = await Self.resolveBoxArtOnDemand(for: rom)
             }
-            // On-demand: scan local boxart folders on background thread
-            if let resolved = await Self.resolveBoxArtOnDemand(for: rom) {
-                self.image = await ImageCache.shared.image(for: resolved)
+
+            if let path = effectivePath,
+               let img = await ImageCache.shared.image(for: path) {
+                self.image = img
+            } else {
+                await MainActor.run {
+                    var updated = rom
+                    updated.boxArtPath = nil
+                    library.updateROM(updated)
+                }
             }
         }
     }
@@ -157,11 +179,11 @@ struct GameCardView: View {
                         .scaledToFit()
                         .frame(width: geometry.size.width, height: geometry.size.height)
                         .scaleEffect(isHovered ? 1.05 : 1)
-                        .animation(.easeOut(duration: 0.3), value: isHovered)
+                        .animation(.interpolatingSpring(stiffness: 200, damping: 25), value: isHovered)
                 } else {
                     placeholderArt
-                        .scaleEffect(isHovered ? 1.02 : 1)
-                        .animation(.easeOut(duration: 0.3), value: isHovered)
+                         .scaleEffect(isHovered ? 1.02 : 1)
+                         .animation(.interpolatingSpring(stiffness: 200, damping: 25), value: isHovered)
                 }
             }
         }

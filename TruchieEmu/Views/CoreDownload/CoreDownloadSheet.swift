@@ -158,11 +158,11 @@ struct CoreDownloadSheet: View {
         HStack(spacing: 16) {
             ZStack {
                 Circle()
-                    .fill(LinearGradient(colors: [.purple.opacity(0.2), .cyan.opacity(0.2)], startPoint: .topLeading, endPoint: .bottomTrailing))
+                    .fill(LinearGradient(colors: [Color(red: 0.1, green: 0.6, blue: 0.35).opacity(0.2), Color(red: 0.15, green: 0.65, blue: 0.55).opacity(0.2)], startPoint: .topLeading, endPoint: .bottomTrailing))
                     .frame(width: 56, height: 56)
                 Image(systemName: "cpu")
                     .font(.system(size: 26))
-                    .foregroundStyle(LinearGradient(colors: [.purple, .cyan], startPoint: .topLeading, endPoint: .bottomTrailing))
+                    .foregroundStyle(LinearGradient(colors: [Color(red: 0.1, green: 0.6, blue: 0.35), Color(red: 0.15, green: 0.65, blue: 0.55)], startPoint: .topLeading, endPoint: .bottomTrailing))
             }
             VStack(alignment: .leading, spacing: 2) {
                 Text("Emulator Core Required")
@@ -291,7 +291,7 @@ struct CoreDownloadSheet: View {
                     .padding(.vertical, 3)
                     .background(
                         LinearGradient(
-                            colors: [.purple.opacity(0.85), .cyan.opacity(0.85)],
+                            colors: [Color(red: 0.1, green: 0.6, blue: 0.35).opacity(0.85), Color(red: 0.15, green: 0.65, blue: 0.55).opacity(0.85)],
                             startPoint: .leading,
                             endPoint: .trailing
                         )

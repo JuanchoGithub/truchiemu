@@ -64,7 +64,7 @@ struct AchievementToastView: View {
         .frame(maxWidth: 380)
         .background(
             LinearGradient(
-                colors: [Color.purple.opacity(0.9), Color.blue.opacity(0.9)],
+                colors: [Color(red: 0.1, green: 0.6, blue: 0.35).opacity(0.9), Color(red: 0.15, green: 0.65, blue: 0.55).opacity(0.9)],
                 startPoint: .leading,
                 endPoint: .trailing
             )

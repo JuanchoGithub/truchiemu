@@ -392,22 +392,47 @@ enum AppPillStyle {
     }
 }
 
+// MARK: - Continuous Pulse Modifier
+
+/// Infinite pulsing animation for icons and decorative elements
+struct ContinuousPulse: ViewModifier {
+    @State private var isPulsing = false
+    var scaleRange: ClosedRange<Double> = 0.95...1.05
+    var duration: Double = 1.8
+    
+    func body(content: Content) -> some View {
+        content
+            .scaleEffect(isPulsing ? scaleRange.upperBound : scaleRange.lowerBound)
+            .onAppear {
+                withAnimation(.easeInOut(duration: duration).repeatForever(autoreverses: true)) {
+                    isPulsing = true
+                }
+            }
+    }
+}
+
 // MARK: - Gradient Assets
 
 enum AppGradients {
-    /// Purple to cyan accent gradient
+    /// Refined emerald-to-teal accent gradient
     static var accent: LinearGradient {
         LinearGradient(
-            colors: [.purple.opacity(0.85), .cyan.opacity(0.85)],
+            colors: [
+                Color(red: 0.1, green: 0.6, blue: 0.35).opacity(0.85),
+                Color(red: 0.15, green: 0.65, blue: 0.55).opacity(0.85)
+            ],
             startPoint: .leading,
             endPoint: .trailing
         )
     }
     
-    /// Warm sunset gradient for hero elements
+    /// Warm amber-to-orange gradient for hero elements
     static var warmAccent: LinearGradient {
         LinearGradient(
-            colors: [.orange.opacity(0.85), .pink.opacity(0.75)],
+            colors: [
+                Color(red: 0.85, green: 0.65, blue: 0.15).opacity(0.85),
+                Color(red: 0.9, green: 0.5, blue: 0.2).opacity(0.75)
+            ],
             startPoint: .leading,
             endPoint: .trailing
         )
@@ -496,7 +521,7 @@ struct AppToggleStyle: ToggleStyle {
     
     func makeBody(configuration: Configuration) -> some View {
         Button(action: {
-            withAnimation(.easeOut(duration: 0.2)) {
+            withAnimation(.interpolatingSpring(stiffness: 200, damping: 25)) {
                 configuration.isOn.toggle()
             }
         }) {
@@ -517,7 +542,7 @@ struct AppToggleStyle: ToggleStyle {
                         .frame(width: 20, height: 20)
                         .offset(x: configuration.isOn ? 8 : -8)
                 }
-                .animation(.easeInOut(duration: 0.2), value: configuration.isOn)
+                .animation(.interpolatingSpring(stiffness: 200, damping: 25), value: configuration.isOn)
             }
             .contentShape(Rectangle())
         }
@@ -580,7 +605,11 @@ struct AppEmptyState: View {
     let description: String
     var actionLabel: String?
     var action: (() -> Void)? = nil
-    @State private var appeared = false
+    @State private var iconAppeared = false
+    @State private var titleAppeared = false
+    @State private var descriptionAppeared = false
+    @State private var buttonAppeared = false
+    @State private var isPulsing = false
     @Environment(\.colorScheme) private var colorScheme
     
     var body: some View {
@@ -588,32 +617,51 @@ struct AppEmptyState: View {
             Image(systemName: icon)
                 .font(.system(size: 56))
                 .foregroundColor(AppColors.textMuted(colorScheme))
-                .scaleEffect(appeared ? 1 : 0.85)
-                .opacity(appeared ? 1 : 0)
+                .scaleEffect(isPulsing ? 1.05 : 0.95)
+                .opacity(iconAppeared ? 1 : 0)
             
             Text(title)
                 .font(.title3)
                 .fontWeight(.semibold)
                 .foregroundColor(AppColors.textSecondary(colorScheme))
-                .opacity(appeared ? 1 : 0)
+                .opacity(titleAppeared ? 1 : 0)
             
             Text(description)
                 .font(.body)
                 .foregroundColor(AppColors.textTertiary(colorScheme))
                 .multilineTextAlignment(.center)
                 .frame(maxWidth: 320)
-                .opacity(appeared ? 1 : 0)
+                .opacity(descriptionAppeared ? 1 : 0)
             
             if let actionLabel = actionLabel, let action = action {
                 Button(actionLabel, action: action)
                     .buttonStyle(AppPrimaryButtonStyle())
-                    .opacity(appeared ? 1 : 0)
+                    .opacity(buttonAppeared ? 1 : 0)
             }
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity)
         .onAppear {
-            withAnimation(AppAnimations.springGentle.delay(0.05)) {
-                appeared = true
+            // Staggered appearance: icon -> title -> description -> button
+            withAnimation(.interpolatingSpring(stiffness: 200, damping: 25)) {
+                iconAppeared = true
+                isPulsing = true
+            }
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+                withAnimation(.interpolatingSpring(stiffness: 200, damping: 25)) {
+                    titleAppeared = true
+                }
+            }
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.2) {
+                withAnimation(.interpolatingSpring(stiffness: 200, damping: 25)) {
+                    descriptionAppeared = true
+                }
+            }
+            if actionLabel != nil {
+                DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
+                    withAnimation(.interpolatingSpring(stiffness: 200, damping: 25)) {
+                        buttonAppeared = true
+                    }
+                }
             }
         }
     }
@@ -662,8 +710,10 @@ struct AppChip: View, Identifiable {
                 Capsule()
                     .fill(isSelected ? accent.opacity(0.85) : AppColors.cardBackgroundSubtle(colorScheme))
             )
+            .scaleEffect(isSelected ? 1.05 : 1.0)
         }
         .buttonStyle(.plain)
+        .animation(.interpolatingSpring(stiffness: 200, damping: 25), value: isSelected)
     }
 }
 

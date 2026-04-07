@@ -1936,7 +1936,7 @@ struct CompactStickView: View {
                 Rectangle().fill(.secondary.opacity(0.1)).frame(width: 1, height: 80)
 
                 Circle()
-                    .fill(LinearGradient(colors: [.purple, .blue], startPoint: .top, endPoint: .bottom))
+                    .fill(LinearGradient(colors: [Color(red: 0.1, green: 0.6, blue: 0.35), Color(red: 0.15, green: 0.65, blue: 0.55)], startPoint: .top, endPoint: .bottom))
                     .frame(width: 16, height: 16)
                     .offset(x: CGFloat(x * 34), y: CGFloat(y * -34))
                     .shadow(color: .purple.opacity(0.5), radius: 5)
@@ -1970,7 +1970,7 @@ struct StickTesterView: View {
                 Rectangle().fill(.secondary.opacity(0.1)).frame(width: 100, height: 1)
                 Rectangle().fill(.secondary.opacity(0.1)).frame(width: 1, height: 100)
                 
-                Circle().fill(LinearGradient(colors: [.purple, .blue], startPoint: .top, endPoint: .bottom))
+                Circle().fill(LinearGradient(colors: [Color(red: 0.1, green: 0.6, blue: 0.35), Color(red: 0.15, green: 0.65, blue: 0.55)], startPoint: .top, endPoint: .bottom))
                     .frame(width: 14, height: 14)
                     .offset(x: CGFloat(x * 43), y: CGFloat(y * -43))
                     .shadow(color: .purple.opacity(0.5), radius: 6)
@@ -2530,7 +2530,7 @@ struct AboutView: View {
                 VStack(spacing: 12) {
                     Image(systemName: "arcade.stick")
                         .font(.system(size: 60))
-                        .foregroundStyle(LinearGradient(colors: [.purple, .cyan], startPoint: .topLeading, endPoint: .bottomTrailing))
+                        .foregroundStyle(LinearGradient(colors: [Color(red: 0.1, green: 0.6, blue: 0.35), Color(red: 0.15, green: 0.65, blue: 0.55)], startPoint: .topLeading, endPoint: .bottomTrailing))
                     Text("TruchieEmu")
                         .font(.largeTitle.weight(.bold))
                     Text("A beautiful macOS libretro frontend")

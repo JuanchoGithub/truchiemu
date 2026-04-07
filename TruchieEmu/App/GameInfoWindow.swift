@@ -15,7 +15,7 @@ struct GameInfoWindow: View {
                     Image(systemName: "gamecontroller")
                         .font(.system(size: 64, weight: .light))
                         .foregroundStyle(LinearGradient(
-                            colors: [.purple.opacity(0.85), .cyan.opacity(0.85)],
+                            colors: [Color(red: 0.1, green: 0.6, blue: 0.35).opacity(0.85), Color(red: 0.15, green: 0.65, blue: 0.55).opacity(0.85)],
                             startPoint: .leading,
                             endPoint: .trailing
                         ))
