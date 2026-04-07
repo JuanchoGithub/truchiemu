@@ -7,12 +7,13 @@ struct SettingsView: View {
     @EnvironmentObject var library: ROMLibrary
     @EnvironmentObject var coreManager: CoreManager
     @EnvironmentObject var controllerService: ControllerService
-
+    
     private enum Page: Hashable { case general, library, cores, controllers, boxArt, display, cheats, bezels, retroAchievements, logging, about }
     @State private var selectedPage: Page = .general
-
+    
     var body: some View {
-        NavigationSplitView {
+        HStack(spacing: 0) {
+            // Custom sidebar (no NavigationSplitView = no toggle button)
             List(selection: $selectedPage) {
                 sidebarItem(icon: "photo.stack.fill", label: "Box Art", page: .boxArt)
                 sidebarItem(icon: "wand.and.stars", label: "Cheats", page: .cheats)
@@ -27,9 +28,12 @@ struct SettingsView: View {
                 sidebarItem(icon: "info.circle.fill", label: "About", page: .about)
             }
             .listStyle(.sidebar)
-            .frame(minWidth: 180)
+            .frame(width: 180)
             .scrollContentBackground(.hidden)
-        } detail: {
+            
+            Divider()
+            
+            // Content area
             Group {
                 switch selectedPage {
                 case .general:     GeneralSettingsView()
@@ -47,8 +51,7 @@ struct SettingsView: View {
             }
             .frame(minWidth: 550, minHeight: 420)
         }
-        .navigationSplitViewStyle(.prominentDetail)
-        // sidebarToggle hidden (toolbar(removing:) requires macOS 14+)
+        .frame(minWidth: 750, minHeight: 500)
     }
     
     private func sidebarItem(icon: String, label: String, page: Page) -> some View {
@@ -80,47 +83,53 @@ struct LibrarySettingsView: View {
             VStack(alignment: .leading, spacing: 24) {
                 // Display Options Section
                 VStack(alignment: .leading, spacing: 12) {
-                    HStack {
-                        Label("Display Options", systemImage: "eyeglasses")
+                    HStack(spacing: 8) {
+                        Image(systemName: "eyeglasses")
+                            .font(.body)
+                            .foregroundStyle(.secondary)
+                        Text("Display Options")
                             .font(.headline)
                     }
                     
                     VStack(spacing: 0) {
                         Toggle(isOn: $prefs.showBiosFiles) {
-                            VStack(alignment: .leading, spacing: 2) {
+                            VStack(alignment: .leading, spacing: 4) {
                                 Text("Show BIOS Files in Game List")
                                     .font(.body)
                                 Text("When enabled, BIOS files will appear alongside playable games")
                                     .font(.caption)
-                                    .foregroundColor(.secondary)
+                                    .foregroundStyle(.secondary)
                             }
                         }
                         .padding(.vertical, 8)
-                        .padding(.horizontal, 12)
 
                         Divider()
 
                         Toggle(isOn: $prefs.showHiddenMAMEFiles) {
-                            VStack(alignment: .leading, spacing: 2) {
+                            VStack(alignment: .leading, spacing: 4) {
                                 Text("Show Hidden MAME Files")
                                     .font(.body)
                                 Text("When enabled, a 'Hidden MAME Files' section appears in the sidebar for BIOS, device, and unknown MAME entries")
                                     .font(.caption)
-                                    .foregroundColor(.secondary)
+                                    .foregroundStyle(.secondary)
                             }
                         }
                         .padding(.vertical, 8)
-                        .padding(.horizontal, 12)
                     }
-                    .background(.ultraThinMaterial)
-                    .cornerRadius(12)
-                    .padding(.top, 4)
+                    .padding(16)
+                    .background(
+                        RoundedRectangle(cornerRadius: 12)
+                            .fill(Color(nsColor: .underPageBackgroundColor))
+                    )
                 }
                 
                 // Library Folders Section
                 VStack(alignment: .leading, spacing: 12) {
-                    HStack {
-                        Label("Library Folders", systemImage: "folder.fill")
+                    HStack(spacing: 8) {
+                        Image(systemName: "folder.fill")
+                            .font(.body)
+                            .foregroundStyle(.secondary)
+                        Text("Library Folders")
                             .font(.headline)
                         Spacer()
                         Button(action: addLibraryFolder) {
@@ -131,23 +140,16 @@ struct LibrarySettingsView: View {
                     }
                     
                     if library.primaryFolders.isEmpty {
-                        VStack(spacing: 12) {
-                            Image(systemName: "folder")
-                                .font(.system(size: 36))
-                                .foregroundColor(.secondary)
-                            Text("No library folders added yet")
-                                .foregroundColor(.secondary)
+                        ContentUnavailableView {
+                            Label("No Library Folders", systemImage: "folder")
+                        } description: {
                             Text("Add folders containing your ROM files. TruchieEmu will scan them and organize games by console system.")
-                                .font(.caption)
-                                .foregroundColor(.secondary)
-                                .multilineTextAlignment(.center)
-                                .fixedSize(horizontal: false, vertical: true)
                         }
-                        .frame(maxWidth: .infinity)
-                        .padding(.vertical, 24)
-                        .background(.ultraThinMaterial)
-                        .cornerRadius(12)
-                        .padding(.top, 12)
+                        .padding(16)
+                        .background(
+                            RoundedRectangle(cornerRadius: 12)
+                                .fill(Color(nsColor: .underPageBackgroundColor))
+                        )
                     } else {
                         VStack(spacing: 12) {
                             ForEach(library.primaryFolders) { folder in
@@ -168,26 +170,35 @@ struct LibrarySettingsView: View {
                                 )
                             }
                         }
+                        .padding(16)
+                        .background(
+                            RoundedRectangle(cornerRadius: 12)
+                                .fill(Color(nsColor: .underPageBackgroundColor))
+                        )
                     }
                 }
                 
                 // Maintenance Section
                 VStack(alignment: .leading, spacing: 12) {
-                    HStack {
-                        Label("Maintenance", systemImage: "wrench.and.screwdriver")
+                    HStack(spacing: 8) {
+                        Image(systemName: "wrench.and.screwdriver")
+                            .font(.body)
+                            .foregroundStyle(.secondary)
+                        Text("Maintenance")
                             .font(.headline)
                     }
                     
                     VStack(spacing: 0) {
                         Button(action: { Task { await library.fullRescan() } }) {
-                            HStack {
+                            HStack(spacing: 12) {
                                 Image(systemName: "arrow.clockwise.circle.fill")
-                                VStack(alignment: .leading) {
+                                    .foregroundStyle(Color.accentColor)
+                                VStack(alignment: .leading, spacing: 4) {
                                     Text("Full Library Rescan")
                                         .font(.body)
                                     Text("Scan all folders for new or removed games")
                                         .font(.caption)
-                                        .foregroundColor(.secondary)
+                                        .foregroundStyle(.secondary)
                                 }
                                 Spacer()
                                 if library.isScanning {
@@ -196,7 +207,6 @@ struct LibrarySettingsView: View {
                                 }
                             }
                             .padding(.vertical, 8)
-                            .padding(.horizontal, 12)
                         }
                         .buttonStyle(.plain)
                         
@@ -205,19 +215,21 @@ struct LibrarySettingsView: View {
                         VStack(alignment: .leading, spacing: 8) {
                             Text("Total Games: \(library.roms.count)")
                                 .font(.caption)
-                                .foregroundColor(.secondary)
+                                .foregroundStyle(.secondary)
                             Text("Primary Folders: \(library.primaryFolders.count)")
                                 .font(.caption)
-                                .foregroundColor(.secondary)
+                                .foregroundStyle(.secondary)
                         }
-                        .padding(.horizontal, 12)
                         .padding(.bottom, 8)
                     }
-                    .background(.ultraThinMaterial)
-                    .cornerRadius(12)
+                    .padding(16)
+                    .background(
+                        RoundedRectangle(cornerRadius: 12)
+                            .fill(Color(nsColor: .underPageBackgroundColor))
+                    )
                 }
             }
-            .padding()
+            .padding(16)
         }
         .navigationTitle("Library")
         .sheet(isPresented: $showingRebuildSheet) {
@@ -823,6 +835,7 @@ struct CoreSettingsView: View {
 
     @State private var selectedSystemID: String? = nil
     @State private var expandedCoreID: String? = nil
+    @State private var systemsPanelWidth: CGFloat = 250
 
     private var selectedSystem: SystemInfo? {
         if let id = selectedSystemID {
@@ -832,84 +845,80 @@ struct CoreSettingsView: View {
     }
 
     var body: some View {
-        VStack(alignment: .leading, spacing: 0) {
-            // System selection header - with proper top padding
-            VStack(alignment: .leading, spacing: 12) {
-                HStack(alignment: .center) {
-                    VStack(alignment: .leading, spacing: 4) {
-                        Text("TruchieEmu Settings")
-                            .font(.title2)
-                            .fontWeight(.semibold)
-                        Text("Select System")
-                            .font(.headline)
-                    }
+        VStack(spacing: 0) {
+            // Fetching indicator
+            if coreManager.isFetchingCoreList {
+                HStack(spacing: 8) {
+                    ProgressView()
+                        .controlSize(.small)
+                    Text("Fetching core list from buildbot...")
+                        .foregroundStyle(.secondary)
+                        .font(.caption)
                     Spacer()
                     Button("Refresh List") { Task { await coreManager.fetchAvailableCores() } }
                         .buttonStyle(.bordered)
                         .controlSize(.small)
                         .disabled(coreManager.isFetchingCoreList)
                 }
-                
-                if coreManager.isFetchingCoreList {
-                    HStack(spacing: 8) {
-                        ProgressView()
-                            .controlSize(.small)
-                        Text("Fetching core list from buildbot...")
-                            .foregroundColor(.secondary)
-                            .font(.caption)
-                    }
+                .padding(12)
+                .background(.ultraThinMaterial)
+            } else {
+                // Refresh button
+                HStack {
+                    Spacer()
+                    Button("Refresh List") { Task { await coreManager.fetchAvailableCores() } }
+                        .buttonStyle(.bordered)
+                        .controlSize(.small)
+                        .disabled(coreManager.isFetchingCoreList)
                 }
+                .padding(8)
             }
-            .padding(.horizontal, 16)
-            .padding(.top, 40)
-            .padding(.bottom, 12)
-
+            
             Divider()
             
-            HStack(spacing: 0) {
-                // System list (middle column)
-                VStack(spacing: 0) {
-                    Text("Systems")
-                        .font(.caption2)
-                        .fontWeight(.semibold)
-                        .foregroundColor(.secondary)
-                        .frame(maxWidth: .infinity, alignment: .leading)
-                        .padding(.horizontal, 12)
-                        .padding(.vertical, 8)
-                    
-                    List(selection: $selectedSystemID) {
-                        ForEach(SystemDatabase.systemsForDisplay.sorted(by: { $0.name < $1.name })) { sys in
-                            SystemRowView(system: sys, coreManager: coreManager)
-                                .tag(sys.id)
+            GeometryReader { geometry in
+                HStack(spacing: 0) {
+                    // System list (left column)
+                    VStack(spacing: 0) {
+                        Text("Systems")
+                            .font(.caption)
+                            .fontWeight(.semibold)
+                            .foregroundStyle(.secondary)
+                            .frame(maxWidth: .infinity, alignment: .leading)
+                            .padding(.horizontal, 8)
+                            .padding(.vertical, 6)
+                        
+                        List(selection: $selectedSystemID) {
+                            ForEach(SystemDatabase.systemsForDisplay.sorted(by: { $0.name < $1.name })) { sys in
+                                SystemRowView(system: sys, coreManager: coreManager)
+                                    .tag(sys.id)
+                            }
                         }
+                        .listStyle(.plain)
                     }
-                    .listStyle(.inset)
-                    .frame(minWidth: 220, maxWidth: 300)
-                }
-                .border(.separator, width: 0.5)
-                
-                Divider()
-                
-                // Cores list (right pane)
+                    .frame(width: systemsPanelWidth)
+                    .border(.separator, width: 0.5)
+                    
+                    // Draggable divider
+                    DraggableDivider(width: $systemsPanelWidth)
+                    
+                    // Cores list (right pane)
                 VStack(spacing: 0) {
                     if let system = selectedSystem {
                         Text(system.name)
-                            .font(.caption2)
+                            .font(.caption)
                             .fontWeight(.semibold)
-                            .foregroundColor(.secondary)
+                            .foregroundStyle(.secondary)
                             .frame(maxWidth: .infinity, alignment: .leading)
                             .padding(.horizontal, 12)
                             .padding(.vertical, 8)
                         
                         SystemCoresView(system: system, coreManager: coreManager)
                     } else {
-                        VStack(spacing: 12) {
-                            Image(systemName: "gamecontroller")
-                                .font(.system(size: 40))
-                                .foregroundColor(.secondary)
-                            Text("Select a system to see available cores")
-                                .foregroundColor(.secondary)
-                                .multilineTextAlignment(.center)
+                        ContentUnavailableView {
+                            Label("Select a System", systemImage: "gamecontroller")
+                        } description: {
+                            Text("Choose a system from the list to see available cores.")
                         }
                         .frame(maxWidth: .infinity, maxHeight: .infinity)
                     }
@@ -917,6 +926,7 @@ struct CoreSettingsView: View {
                 .frame(maxWidth: .infinity)
             }
             .frame(maxHeight: .infinity)
+            }
         }
         .clipped()
         .onAppear {
@@ -940,7 +950,20 @@ struct SystemRowView: View {
     var hasInstalled: Bool { installedCount > 0 }
     
     var body: some View {
-        HStack(spacing: 10) {
+        HStack(spacing: 8) {
+            // Green dot indicator for installed cores (before icon)
+            if hasInstalled {
+                Circle()
+                    .fill(.green)
+                    .frame(width: 8, height: 8)
+                    .fixedSize()
+            } else {
+                Circle()
+                    .fill(.clear)
+                    .frame(width: 8, height: 8)
+                    .fixedSize()
+            }
+            
             // System icon/image in uniform 32x32 container
             ZStack {
                 RoundedRectangle(cornerRadius: 6)
@@ -964,21 +987,12 @@ struct SystemRowView: View {
                 .font(.body)
                 .lineLimit(1)
                 .minimumScaleFactor(0.7)
-                .fixedSize(horizontal: true, vertical: false)
             
             Spacer()
-            
-            if hasInstalled {
-                Image(systemName: "checkmark.circle.fill")
-                    .foregroundColor(.green)
-                    .font(.caption)
-                    .frame(width: 16)
-                    .fixedSize()
-            }
         }
-        .padding(.vertical, 6)
-        .padding(.horizontal, 8)
-        .listRowInsets(EdgeInsets(top: 2, leading: 8, bottom: 2, trailing: 8))
+        .padding(.vertical, 2)
+        .padding(.horizontal, 4)
+        .listRowInsets(EdgeInsets(top: 0, leading: 4, bottom: 0, trailing: 4))
         .listRowSeparator(.hidden)
     }
 }
@@ -1335,26 +1349,38 @@ struct ControllerSettingsView: View {
     @State private var leftColumnWidth: CGFloat = 340
     @State private var showDeleteConfirmation = false
 
-
     @State private var activeTab = 0
 
     var body: some View {
-        TabView(selection: $activeTab) {
-            // Tab 1: Controllers
-            controllerTab
-                .tabItem {
-                    Label("Controllers", systemImage: "gamecontroller.fill")
-                }
-                .tag(0)
+        VStack(spacing: 12) {
+            // Segmented control for tab switching (inside content area)
+            Picker("Tab", selection: $activeTab) {
+                Text("Controllers").tag(0)
+                Text("Keyboard").tag(1)
+            }
+            .pickerStyle(.segmented)
+            .frame(maxWidth: 300)
 
-            // Tab 2: Keyboard
-            keyboardTab
-                .tabItem {
-                    Label("Keyboard", systemImage: "keyboard.fill")
+            // Tab content
+            Group {
+                if activeTab == 0 {
+                    controllerContent
+                } else {
+                    keyboardContent
                 }
-                .tag(1)
+            }
         }
-        .tabViewStyle(.automatic)
+    }
+
+    @ViewBuilder
+    private var controllerContent: some View {
+        controllerTab
+    }
+
+    @ViewBuilder
+    private var keyboardContent: some View {
+        KeyboardContentView()
+            .environmentObject(controllerService)
     }
 
     // MARK: - Controllers Tab
@@ -1491,14 +1517,6 @@ struct ControllerSettingsView: View {
                 loadSavedConfigs()
             }
         }
-
-    // MARK: - Keyboard Tab
-    @ViewBuilder
-    private var keyboardTab: some View {
-        KeyboardContentView()
-            .environmentObject(controllerService)
-    }
-
 
     private func playerMappingBinding(for btn: RetroButton, player: PlayerController) -> Binding<GCButtonMapping?> {
         Binding<GCButtonMapping?>(
@@ -2384,63 +2402,51 @@ struct GeneralSettingsView: View {
         Form {
             Section("Save States") {
                 Toggle("Auto-save on game exit", isOn: $autoSaveOnExit)
-                    .toggleStyle(.switch)
                 Toggle("Auto-load on game start", isOn: $autoLoadOnStart)
-                    .toggleStyle(.switch)
                 Toggle("Compress save states (LZ4)", isOn: $compressSaveStates)
-                    .toggleStyle(.switch)
                 
-                VStack(alignment: .leading, spacing: 8) {
-                    Text("Save states are stored in:")
-                        .font(.caption)
-                        .foregroundColor(.secondary)
+                LabeledContent("Save states location") {
                     Text("~/Library/Application Support/TruchieEmu/saves/states/")
-                        .font(.caption)
-                        .foregroundColor(.secondary)
+                        .font(.caption.monospaced())
                         .textSelection(.enabled)
                 }
-                .padding(.top, 4)
             }
             
             Section("Hidden Games") {
                 Toggle("Show \"Hidden Games\" category in sidebar", isOn: $showHiddenGamesCategory)
-                    .toggleStyle(.switch)
-                
                 Text("When disabled, hidden games will still exist but the category won't be visible in the sidebar.")
                     .font(.caption)
-                    .foregroundColor(.secondary)
+                    .foregroundStyle(.secondary)
             }
             
             Section("LaunchBox GamesDB") {
                 Toggle("Enable LaunchBox GamesDB", isOn: $launchboxEnabled)
-                    .toggleStyle(.switch)
-                
                 Text("Automatically fetch game metadata — descriptions, developer, publisher, genre, max players, cooperative play, and ESRB ratings.")
                     .font(.caption)
-                    .foregroundColor(.secondary)
+                    .foregroundStyle(.secondary)
                 
-                HStack {
-                    Text("Last sync:")
-                    Spacer()
+                LabeledContent("Last sync") {
                     if launchboxService.isSyncing {
-                        ProgressView()
-                            .controlSize(.small)
-                        Text("Syncing...")
-                            .font(.caption)
-                            .foregroundColor(.secondary)
+                        HStack(spacing: 8) {
+                            ProgressView()
+                                .controlSize(.small)
+                            Text("Syncing...")
+                                .font(.caption)
+                                .foregroundStyle(.secondary)
+                        }
                     } else {
                         Text(lastSyncText)
                             .font(.caption)
-                            .foregroundColor(.secondary)
+                            .foregroundStyle(.secondary)
                     }
                 }
                 
                 if launchboxService.isSyncing {
-                    VStack(spacing: 4) {
+                    VStack(spacing: 8) {
                         ProgressView(value: launchboxService.syncProgress)
                         Text(launchboxService.syncStatus)
                             .font(.caption)
-                            .foregroundColor(.secondary)
+                            .foregroundStyle(.secondary)
                     }
                 }
                 

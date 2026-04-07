@@ -667,6 +667,76 @@ struct AppChip: View, Identifiable {
     }
 }
 
+// MARK: - Settings Section Card
+
+/// A reusable card component for settings sections with consistent styling.
+/// Provides a titled container with proper spacing, padding, and background.
+struct SettingsSectionCard<Content: View>: View {
+    let title: String
+    let icon: String?
+    @ViewBuilder var content: Content
+    @Environment(\.colorScheme) private var colorScheme
+    
+    init(_ title: String, icon: String? = nil, @ViewBuilder content: () -> Content) {
+        self.title = title
+        self.icon = icon
+        self.content = content()
+    }
+    
+    var body: some View {
+        VStack(alignment: .leading, spacing: AppSpacing.lg) {
+            // Header
+            HStack(spacing: AppSpacing.sm) {
+                if let icon = icon {
+                    Image(systemName: icon)
+                        .font(.body)
+                        .foregroundStyle(.secondary)
+                }
+                Text(title)
+                    .font(.headline)
+            }
+            
+            // Content
+            content
+        }
+        .padding(AppSpacing.xl)
+        .background(
+            RoundedRectangle(cornerRadius: AppRadius.xl)
+                .fill(AppColors.cardBackgroundSubtle(colorScheme))
+        )
+    }
+}
+
+/// A settings row with a label and control, properly aligned.
+struct SettingsRow<Content: View>: View {
+    let label: String
+    let description: String?
+    @ViewBuilder var control: Content
+    
+    init(_ label: String, description: String? = nil, @ViewBuilder control: () -> Content) {
+        self.label = label
+        self.description = description
+        self.control = control()
+    }
+    
+    var body: some View {
+        HStack(alignment: .top, spacing: AppSpacing.xl) {
+            VStack(alignment: .leading, spacing: AppSpacing.xs) {
+                Text(label)
+                    .font(.body)
+                if let description = description {
+                    Text(description)
+                        .font(.caption)
+                        .foregroundStyle(.secondary)
+                }
+            }
+            Spacer()
+            control
+        }
+        .padding(.vertical, AppSpacing.sm)
+    }
+}
+
 // MARK: - Stat Card
 
 struct AppStatCard: View {

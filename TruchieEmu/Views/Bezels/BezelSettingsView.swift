@@ -378,21 +378,21 @@ struct BezelSettingsView: View {
                 .font(.headline)
             
             HStack(spacing: 16) {
-                StatCard(
+                bezelStatCard(
                     icon: "photo.on.rectangle",
                     iconColor: .blue,
                     value: "\(storageManager.downloadedBezelCount())",
                     label: "Downloaded Bezels"
                 )
                 
-                StatCard(
+                bezelStatCard(
                     icon: "externaldrive",
                     iconColor: .purple,
                     value: formatByteSize(storageManager.bezelStorageSize()),
                     label: "Storage Used"
                 )
                 
-                StatCard(
+                bezelStatCard(
                     icon: "gamecontroller",
                     iconColor: .orange,
                     value: "\(BezelSystemMapping.configurations.count)",
@@ -400,6 +400,33 @@ struct BezelSettingsView: View {
                 )
             }
         }
+    }
+    
+    private func bezelStatCard(icon: String, iconColor: Color, value: String, label: String) -> some View {
+        VStack(spacing: 8) {
+            Image(systemName: icon)
+                .font(.system(size: 20))
+                .foregroundColor(iconColor)
+            
+            Text(value)
+                .font(.headline)
+                .fontWeight(.bold)
+            
+            Text(label)
+                .font(.caption)
+                .foregroundStyle(.secondary)
+        }
+        .frame(maxWidth: .infinity)
+        .padding(.vertical, 12)
+        .padding(.horizontal, 8)
+        .background(
+            RoundedRectangle(cornerRadius: 10)
+                .fill(Color(nsColor: .controlBackgroundColor))
+                .overlay(
+                    RoundedRectangle(cornerRadius: 10)
+                        .stroke(Color.secondary.opacity(0.2), lineWidth: 1)
+                )
+        )
     }
     
     // MARK: - Actions Section

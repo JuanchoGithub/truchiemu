@@ -464,7 +464,23 @@ struct LibraryGridView: View {
             }
         }
         .toolbar {
+            ToolbarItem(placement: .navigation) {
+                Button {
+                    NSApp.sendAction(#selector(NSSplitViewController.toggleSidebar(_:)), to: nil, from: nil)
+                } label: {
+                    Image(systemName: "sidebar.left")
+                }
+                .help("Toggle Sidebar (⌘S)")
+            }
             ToolbarItemGroup {
+                // ─── Group 0: Library Actions ───
+                Button {
+                    pickFolder()
+                } label: {
+                    Image(systemName: "folder.badge.plus")
+                }
+                .help("Add ROM folder")
+
                 // ─── Group 1: Input (Controller + Language) ───
                 Menu {
                     Section("Input Device") {

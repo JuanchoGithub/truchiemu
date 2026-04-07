@@ -110,16 +110,7 @@ struct SystemSidebarView: View {
         .scrollContentBackground(.hidden)
         .background(.ultraThinMaterial)
         .frame(minWidth: 220, idealWidth: 240)
-        .toolbar {
-            ToolbarItem {
-                Button {
-                    pickFolder()
-                } label: {
-                    Image(systemName: "folder.badge.plus")
-                }
-                .help("Add ROM folder")
-            }
-        }
+        .navigationTitle("Library")
     }
 
     @ViewBuilder
@@ -153,15 +144,6 @@ struct SystemSidebarView: View {
         categoryManager.addGamesToCategory(gameIDs: dragState.draggedGameIDs, categoryID: categoryID)
         dragState.endDrag()
         return true
-    }
-    
-    private func pickFolder() {
-        let panel = NSOpenPanel()
-        panel.canChooseDirectories = true
-        panel.canChooseFiles = false
-        if panel.runModal() == .OK, let url = panel.url {
-            library.addLibraryFolder(url: url)
-        }
     }
     
     private func showEditCategorySheet(category: GameCategory) {

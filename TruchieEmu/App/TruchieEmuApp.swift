@@ -65,6 +65,7 @@ struct TruchieEmuApp: App {
         .windowStyle(.hiddenTitleBar)
         .windowToolbarStyle(.unified(showsTitle: false))
         .commands {
+            SidebarCommands()
             if !isCLILaunch {
                 CommandGroup(replacing: .newItem) {}
                 CommandMenu("Library") {

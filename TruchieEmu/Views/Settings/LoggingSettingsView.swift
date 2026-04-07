@@ -10,226 +10,263 @@ struct LoggingSettingsView: View {
         ScrollView {
             VStack(alignment: .leading, spacing: 24) {
                 // Log Level Section
-                VStack(alignment: .leading, spacing: 12) {
-                    HStack {
-                        Label("Log Level", systemImage: "slider.vertical.3")
-                            .font(.headline)
-                    }
-                    
-                    VStack(spacing: 0) {
-                        Picker("Log Level", selection: $viewModel.selectedLevel) {
-                            ForEach(LogLevel.allCases, id: \.self) { level in
-                                Text(level.description).tag(level)
-                            }
-                        }
-                        .onChange(of: viewModel.selectedLevel) { _, newValue in
-                            LoggerService.shared.setLevel(newValue)
-                        }
-                        .pickerStyle(.segmented)
-                        .padding(.vertical, 8)
-                        .padding(.horizontal, 12)
-                        
-                        Divider()
-                        
-                        VStack(alignment: .leading, spacing: 6) {
-                            logLevelDescription
-                        }
-                        .padding(.horizontal, 12)
-                        .padding(.bottom, 12)
-                        .padding(.top, 4)
-                    }
-                    .background(.ultraThinMaterial)
-                    .cornerRadius(12)
-                }
+                logLevelSection
                 
                 // Core Logging Section
-                VStack(alignment: .leading, spacing: 12) {
-                    HStack {
-                        Label("Core Logging Level", systemImage: "cpu")
-                            .font(.headline)
-                    }
-                    
-                    VStack(spacing: 0) {
-                        Picker("Core Log Level", selection: $viewModel.coreLogLevel) {
-                            ForEach(CoreLogLevel.allCases, id: \.self) { level in
-                                Text(level.name).tag(level)
-                            }
-                        }
-                        .pickerStyle(.segmented)
-                        .padding(.vertical, 8)
-                        .padding(.horizontal, 12)
-                        
-                        Divider()
-                        
-                        VStack(alignment: .leading, spacing: 6) {
-                            VStack(alignment: .leading, spacing: 4) {
-                                levelDescIcon("info.circle.fill", .blue, "Controls the verbosity of logs from the emulation core itself (libretro core)")
-                                levelDescIcon("doc.badge.gearshape", .purple, "Affects core-level debug output; set this alongside App Log Level for comprehensive troubleshooting")
-                            }
-                        }
-                        .padding(.horizontal, 12)
-                        .padding(.bottom, 12)
-                        .padding(.top, 4)
-                    }
-                    .background(.ultraThinMaterial)
-                    .cornerRadius(12)
-                }
+                coreLoggingSection
                 
                 // Log File Location Section
-                VStack(alignment: .leading, spacing: 12) {
-                    HStack {
-                        Label("Log File Location", systemImage: "folder.fill")
-                            .font(.headline)
-                        Spacer()
-                        
-                        Button(action: viewModel.changeLogFolder) {
-                            Label("Change...", systemImage: "folder.badge.plus")
-                        }
-                        .buttonStyle(.bordered)
-                        .controlSize(.small)
-                    }
-                    
-                    VStack(spacing: 0) {
-                        // Current path display
-                        HStack(alignment: .top, spacing: 8) {
-                            Image(systemName: "doc.fill")
-                                .foregroundColor(.secondary)
-                                .padding(.top, 2)
-                            VStack(alignment: .leading, spacing: 4) {
-                                Text(viewModel.currentLogFilePath)
-                                    .font(.system(.body, design: .monospaced))
-                                    .lineLimit(2)
-                                    .truncationMode(.middle)
-                                Text("File size: \(viewModel.currentLogFileSize) | Last modified: \(viewModel.currentLogFileAge)")
-                                    .font(.caption)
-                                    .foregroundColor(.secondary)
-                            }
-                        }
-                        .padding(.vertical, 8)
-                        .padding(.horizontal, 12)
-                        
-                        Divider()
-                        
-                        // Action buttons
-                        HStack(spacing: 12) {
-                            Button(action: viewModel.showLogInFinder) {
-                                Label("Show Log in Finder", systemImage: "folder")
-                            }
-                            .buttonStyle(.bordered)
-                            .controlSize(.small)
-                            
-                            if viewModel.hasCustomLogFolder {
-                                Button(action: viewModel.resetToDefaultFolder) {
-                                    Label("Reset to Default", systemImage: "arrow.uturn.backward")
-                                }
-                                .buttonStyle(.bordered)
-                                .controlSize(.small)
-                            }
-                        }
-                        .padding(.horizontal, 12)
-                        .padding(.vertical, 8)
-                        
-                        Divider()
-                        
-                        // Warning about custom location
-                        if viewModel.hasCustomLogFolder {
-                            VStack(alignment: .leading, spacing: 4) {
-                                HStack {
-                                    Image(systemName: "info.circle.fill")
-                                        .foregroundColor(.blue)
-                                    Text("Custom log location")
-                                        .font(.caption)
-                                        .fontWeight(.medium)
-                                }
-                                Text("Log files are being written to a custom location. Reset to default to use the standard Application Support folder.")
-                                    .font(.caption)
-                                    .foregroundColor(.secondary)
-                            }
-                            .padding(.horizontal, 12)
-                            .padding(.bottom, 8)
-                        }
-                    }
-                    .background(.ultraThinMaterial)
-                    .cornerRadius(12)
-                }
+                logFileSection
                 
                 // Log Maintenance Section
-                VStack(alignment: .leading, spacing: 12) {
-                    HStack {
-                        Label("Log Maintenance", systemImage: "trash")
-                            .font(.headline)
-                    }
-                    
-                    VStack(spacing: 0) {
-                        Button(action: viewModel.clearAllLogs) {
-                            HStack {
-                                Image(systemName: "trash.fill")
-                                    .foregroundColor(.red)
-                                VStack(alignment: .leading) {
-                                    Text("Clear All Logs")
-                                        .font(.body)
-                                    Text("Delete all log files including rotated archives")
-                                        .font(.caption)
-                                        .foregroundColor(.secondary)
-                                }
-                                Spacer()
-                            }
-                            .padding(.vertical, 8)
-                            .padding(.horizontal, 12)
-                        }
-                        .buttonStyle(.plain)
-                        
-                        Divider()
-                        
-                        Button(action: viewModel.trimOldLogs) {
-                            HStack {
-                                Image(systemName: "scissors")
-                                    .foregroundColor(.orange)
-                                VStack(alignment: .leading) {
-                                    Text("Trim Old Entries")
-                                        .font(.body)
-                                    Text("Remove log entries older than 7 days")
-                                        .font(.caption)
-                                        .foregroundColor(.secondary)
-                                }
-                                Spacer()
-                            }
-                            .padding(.vertical, 8)
-                            .padding(.horizontal, 12)
-                        }
-                        .buttonStyle(.plain)
-                        
-                        Divider()
-                        
-                        VStack(alignment: .leading, spacing: 8) {
-                            HStack {
-                                Text("Total log size (all files)")
-                                    .font(.caption)
-                                    .foregroundColor(.secondary)
-                                Spacer()
-                                Text(viewModel.totalLogFileSize)
-                                    .font(.caption)
-                                    .fontWeight(.medium)
-                                    .foregroundColor(.secondary)
-                            }
-                            Text("Maximum log size: 5 MB per file | Auto-rotation: enabled | Age limit: 7 days")
-                                .font(.caption)
-                                .foregroundColor(.secondary)
-                        }
-                        .padding(.horizontal, 12)
-                        .padding(.bottom, 8)
-                    }
-                    .background(.ultraThinMaterial)
-                    .cornerRadius(12)
-                }
+                logMaintenanceSection
             }
-            .padding()
+            .padding(16)
         }
         .navigationTitle("Logging")
         .onAppear {
             viewModel.refreshInfo()
         }
     }
+    
+    // MARK: - Log Level Section
+    
+    private var logLevelSection: some View {
+        VStack(alignment: .leading, spacing: 12) {
+            HStack(spacing: 8) {
+                Image(systemName: "slider.vertical.3")
+                    .font(.body)
+                    .foregroundStyle(.secondary)
+                Text("Log Level")
+                    .font(.headline)
+            }
+            
+            VStack(spacing: 0) {
+                Picker("Log Level", selection: $viewModel.selectedLevel) {
+                    ForEach(LogLevel.allCases, id: \.self) { level in
+                        Text(level.description).tag(level)
+                    }
+                }
+                .onChange(of: viewModel.selectedLevel) { _, newValue in
+                    LoggerService.shared.setLevel(newValue)
+                }
+                .pickerStyle(.segmented)
+                .padding(.vertical, 8)
+                
+                Divider()
+                
+                VStack(alignment: .leading, spacing: 8) {
+                    logLevelDescription
+                }
+                .padding(.top, 4)
+                .padding(.bottom, 8)
+            }
+            .padding(16)
+            .background(
+                RoundedRectangle(cornerRadius: 12)
+                    .fill(Color(nsColor: .underPageBackgroundColor))
+            )
+        }
+    }
+    
+    // MARK: - Core Logging Section
+    
+    private var coreLoggingSection: some View {
+        VStack(alignment: .leading, spacing: 12) {
+            HStack(spacing: 8) {
+                Image(systemName: "cpu")
+                    .font(.body)
+                    .foregroundStyle(.secondary)
+                Text("Core Logging Level")
+                    .font(.headline)
+            }
+            
+            VStack(spacing: 0) {
+                Picker("Core Log Level", selection: $viewModel.coreLogLevel) {
+                    ForEach(CoreLogLevel.allCases, id: \.self) { level in
+                        Text(level.name).tag(level)
+                    }
+                }
+                .pickerStyle(.segmented)
+                .padding(.vertical, 8)
+                
+                Divider()
+                
+                VStack(alignment: .leading, spacing: 8) {
+                    levelDescIcon("info.circle.fill", .blue, "Controls the verbosity of logs from the emulation core itself (libretro core)")
+                    levelDescIcon("doc.badge.gearshape", .purple, "Affects core-level debug output; set this alongside App Log Level for comprehensive troubleshooting")
+                }
+                .padding(.top, 4)
+                .padding(.bottom, 8)
+            }
+            .padding(16)
+            .background(
+                RoundedRectangle(cornerRadius: 12)
+                    .fill(Color(nsColor: .underPageBackgroundColor))
+            )
+        }
+    }
+    
+    // MARK: - Log File Location Section
+    
+    private var logFileSection: some View {
+        VStack(alignment: .leading, spacing: 12) {
+            HStack(spacing: 8) {
+                Image(systemName: "folder.fill")
+                    .font(.body)
+                    .foregroundStyle(.secondary)
+                Text("Log File Location")
+                    .font(.headline)
+            }
+            
+            VStack(spacing: 16) {
+                // Header with change button
+                HStack {
+                    Spacer()
+                    Button(action: viewModel.changeLogFolder) {
+                        Label("Change...", systemImage: "folder.badge.plus")
+                    }
+                    .buttonStyle(.bordered)
+                    .controlSize(.small)
+                }
+                
+                // Current path display
+                HStack(alignment: .top, spacing: 8) {
+                    Image(systemName: "doc.fill")
+                        .foregroundStyle(.secondary)
+                        .padding(.top, 4)
+                    VStack(alignment: .leading, spacing: 4) {
+                        Text(viewModel.currentLogFilePath)
+                            .font(.system(.body, design: .monospaced))
+                            .lineLimit(2)
+                            .truncationMode(.middle)
+                        Text("File size: \(viewModel.currentLogFileSize) | Last modified: \(viewModel.currentLogFileAge)")
+                            .font(.caption)
+                            .foregroundStyle(.secondary)
+                    }
+                }
+                
+                Divider()
+                
+                // Action buttons
+                HStack(spacing: 12) {
+                    Button(action: viewModel.showLogInFinder) {
+                        Label("Show Log in Finder", systemImage: "folder")
+                    }
+                    .buttonStyle(.bordered)
+                    .controlSize(.small)
+                    
+                    if viewModel.hasCustomLogFolder {
+                        Button(action: viewModel.resetToDefaultFolder) {
+                            Label("Reset to Default", systemImage: "arrow.uturn.backward")
+                        }
+                        .buttonStyle(.bordered)
+                        .controlSize(.small)
+                    }
+                }
+                
+                // Warning about custom location
+                if viewModel.hasCustomLogFolder {
+                    Divider()
+                    VStack(alignment: .leading, spacing: 4) {
+                        HStack(spacing: 4) {
+                            Image(systemName: "info.circle.fill")
+                                .foregroundStyle(.blue)
+                            Text("Custom log location")
+                                .font(.caption)
+                                .fontWeight(.medium)
+                        }
+                        Text("Log files are being written to a custom location. Reset to default to use the standard Application Support folder.")
+                            .font(.caption)
+                            .foregroundStyle(.secondary)
+                    }
+                }
+            }
+            .padding(16)
+            .background(
+                RoundedRectangle(cornerRadius: 12)
+                    .fill(Color(nsColor: .underPageBackgroundColor))
+            )
+        }
+    }
+    
+    // MARK: - Log Maintenance Section
+    
+    private var logMaintenanceSection: some View {
+        VStack(alignment: .leading, spacing: 12) {
+            HStack(spacing: 8) {
+                Image(systemName: "trash")
+                    .font(.body)
+                    .foregroundStyle(.secondary)
+                Text("Log Maintenance")
+                    .font(.headline)
+            }
+            
+            VStack(spacing: 0) {
+                Button(action: viewModel.clearAllLogs) {
+                    HStack(spacing: 12) {
+                        Image(systemName: "trash.fill")
+                            .foregroundStyle(.red)
+                        VStack(alignment: .leading, spacing: 4) {
+                            Text("Clear All Logs")
+                                .font(.body)
+                            Text("Delete all log files including rotated archives")
+                                .font(.caption)
+                                .foregroundStyle(.secondary)
+                        }
+                        Spacer()
+                    }
+                    .padding(.vertical, 8)
+                }
+                .buttonStyle(.plain)
+                
+                Divider()
+                
+                Button(action: viewModel.trimOldLogs) {
+                    HStack(spacing: 12) {
+                        Image(systemName: "scissors")
+                            .foregroundStyle(.orange)
+                        VStack(alignment: .leading, spacing: 4) {
+                            Text("Trim Old Entries")
+                                .font(.body)
+                            Text("Remove log entries older than 7 days")
+                                .font(.caption)
+                                .foregroundStyle(.secondary)
+                        }
+                        Spacer()
+                    }
+                    .padding(.vertical, 8)
+                }
+                .buttonStyle(.plain)
+                
+                Divider()
+                
+                VStack(alignment: .leading, spacing: 8) {
+                    HStack {
+                        Text("Total log size (all files)")
+                            .font(.caption)
+                            .foregroundStyle(.secondary)
+                        Spacer()
+                        Text(viewModel.totalLogFileSize)
+                            .font(.caption)
+                            .fontWeight(.medium)
+                            .foregroundStyle(.secondary)
+                    }
+                    Text("Maximum log size: 5 MB per file | Auto-rotation: enabled | Age limit: 7 days")
+                        .font(.caption)
+                        .foregroundStyle(.secondary)
+                }
+                .padding(.bottom, 8)
+            }
+            .padding(16)
+            .background(
+                RoundedRectangle(cornerRadius: 12)
+                    .fill(Color(nsColor: .underPageBackgroundColor))
+            )
+        }
+    }
+    
+    // MARK: - Helper Views
     
     private var logLevelDescription: some View {
         VStack(alignment: .leading, spacing: 4) {
@@ -249,11 +286,11 @@ struct LoggingSettingsView: View {
     private func levelDescIcon(_ icon: String, _ color: Color, _ text: String) -> some View {
         HStack(alignment: .top, spacing: 8) {
             Image(systemName: icon)
-                .foregroundColor(color)
-                .padding(.top, 2)
+                .foregroundStyle(color)
+                .padding(.top, 4)
             Text(text)
                 .font(.caption)
-                .foregroundColor(.secondary)
+                .foregroundStyle(.secondary)
         }
         .padding(.vertical, 4)
     }

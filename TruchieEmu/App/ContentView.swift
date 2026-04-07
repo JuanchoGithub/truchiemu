@@ -50,6 +50,7 @@ struct ContentView: View {
                     .navigationTitle(navigationTitle)
                 }
                 .navigationSplitViewStyle(.balanced)
+                .toolbar(removing: .sidebarToggle)
                 .sheet(isPresented: $showCreateCategorySheet) {
                     CreateCategorySheet()
                 }
