@@ -145,7 +145,31 @@ struct ShaderPreset: Codable, Hashable, Identifiable {
 extension ShaderPreset {
     /// All built-in shader presets
     static let builtinPresets: [ShaderPreset] = [
-        // CRT Shader (existing, enhanced)
+        // CRT Lottes (High Quality)
+        ShaderPreset(
+            id: "builtin-crt-lottes",
+            name: "CRT Lottes",
+            shaderType: .crt,
+            passes: [
+                ShaderPass(
+                    shaderFile: "LottesCRT",
+                    filter: .linear,
+                    scaleX: 1.0, scaleY: 1.0,
+                    scaleTypeX: .viewport, scaleTypeY: .viewport
+                )
+            ],
+            globalUniforms: [
+                ShaderUniform(name: "scanlineStrength", defaultValue: 0.5, minValue: 0.0, maxValue: 1.0),
+                ShaderUniform(name: "maskStrength", defaultValue: 0.3, minValue: 0.0, maxValue: 1.0),
+                ShaderUniform(name: "bloomAmount", defaultValue: 0.15, minValue: 0.0, maxValue: 1.0),
+                ShaderUniform(name: "curvatureAmount", defaultValue: 0.02, minValue: 0.0, maxValue: 0.1),
+                ShaderUniform(name: "colorBoost", defaultValue: 1.1, minValue: 0.5, maxValue: 2.0),
+            ],
+            description: "Advanced CRT simulation by Timothy Lottes. Featuring high-quality scanlines and mask.",
+            recommendedSystems: ["nes", "snes", "genesis", "psx", "arcade"]
+        ),
+        
+        // CRT Classic
         ShaderPreset(
             id: "builtin-crt-classic",
             name: "CRT Classic",
@@ -163,29 +187,56 @@ extension ShaderPreset {
                  ShaderUniform(name: "barrelAmount", defaultValue: 0.12, minValue: 0.0, maxValue: 0.5),
                  ShaderUniform(name: "colorBoost", defaultValue: 1.0, minValue: 0.5, maxValue: 2.0),
              ],
-            description: "Classic CRT scanlines with barrel distortion, phosphor mask, and vignette.",
+            description: "Classic CRT scanlines with barrel distortion and vignette.",
             recommendedSystems: ["nes", "snes", "genesis", "psx"]
         ),
-        
-        // No Filter (raw pixels)
+
+        // Sharp Bilinear (Clean & Sharp)
         ShaderPreset(
-            id: "builtin-none",
-            name: "No Shader",
-            shaderType: .custom,
+            id: "builtin-sharp-bilinear",
+            name: "Sharp Bilinear",
+            shaderType: .smoothing,
             passes: [
                 ShaderPass(
-                    shaderFile: "Passthrough",
+                    shaderFile: "SharpBilinear",
+                    filter: .linear,
+                    scaleX: 1.0, scaleY: 1.0,
+                    scaleTypeX: .viewport, scaleTypeY: .viewport
+                )
+            ],
+            globalUniforms: [
+                ShaderUniform(name: "sharpness", defaultValue: 0.8, minValue: 0.1, maxValue: 1.0),
+                ShaderUniform(name: "scanlineOpacity", defaultValue: 0.0, minValue: 0.0, maxValue: 1.0),
+                ShaderUniform(name: "colorBoost", defaultValue: 1.0, minValue: 0.5, maxValue: 2.0),
+            ],
+            description: "Crisp scaling that avoids shimmering. Ideal for modern displays.",
+            recommendedSystems: ["nes", "snes", "genesis", "gb", "gba"]
+        ),
+        
+        // LCD Grid (Classic Handheld)
+        ShaderPreset(
+            id: "builtin-lcd-grid",
+            name: "LCD Grid",
+            shaderType: .lcd,
+            passes: [
+                ShaderPass(
+                    shaderFile: "LCDGrid",
                     filter: .nearest,
                     scaleX: 1.0, scaleY: 1.0,
                     scaleTypeX: .viewport, scaleTypeY: .viewport
                 )
             ],
-            globalUniforms: [],
-            description: "No post-processing. Integer-scaled raw pixels with nearest-neighbor filtering.",
-            recommendedSystems: ["nes", "gb", "snes", "genesis", "scummvm"]
+            globalUniforms: [
+                ShaderUniform(name: "gridStrength", defaultValue: 0.4, minValue: 0.0, maxValue: 1.0),
+                ShaderUniform(name: "pixelSeparation", defaultValue: 0.05, minValue: 0.0, maxValue: 0.2),
+                ShaderUniform(name: "brightnessBoost", defaultValue: 1.2, minValue: 0.5, maxValue: 2.0),
+                ShaderUniform(name: "colorBoost", defaultValue: 1.0, minValue: 0.5, maxValue: 2.0),
+            ],
+            description: "Standard sub-pixel LCD grid for handheld consoles.",
+            recommendedSystems: ["gb", "gbc", "gg", "gba"]
         ),
-        
-        // Dot Matrix LCD (Game Boy metallic dot-matrix with shiny grid)
+
+        // Dot Matrix LCD (Game Boy metallic dot-matrix)
         ShaderPreset(
             id: "builtin-dot-matrix",
             name: "Dot Matrix LCD",
@@ -204,8 +255,70 @@ extension ShaderPreset {
                 ShaderUniform(name: "specularShininess", defaultValue: 8.0, minValue: 1.0, maxValue: 32.0),
                 ShaderUniform(name: "colorBoost", defaultValue: 1.1, minValue: 0.5, maxValue: 2.0),
             ],
-            description: "Game Boy-style dot-matrix LCD with metallic grid, specular highlights, and shiny pixel separators.",
+            description: "High-quality metallic dot-matrix LCD for Game Boy systems.",
             recommendedSystems: ["gb", "gbc", "gg", "sms"]
+        ),
+        
+        // Lite CRT (Fast & Clean)
+        ShaderPreset(
+            id: "builtin-lite-crt",
+            name: "Lite CRT",
+            shaderType: .crt,
+            passes: [
+                ShaderPass(
+                    shaderFile: "LiteCRT",
+                    filter: .linear,
+                    scaleX: 1.0, scaleY: 1.0,
+                    scaleTypeX: .viewport, scaleTypeY: .viewport
+                )
+            ],
+            globalUniforms: [
+                ShaderUniform(name: "scanlineIntensity", defaultValue: 0.3, minValue: 0.0, maxValue: 1.0),
+                ShaderUniform(name: "phosphorStrength", defaultValue: 0.2, minValue: 0.0, maxValue: 1.0),
+                ShaderUniform(name: "brightness", defaultValue: 1.1, minValue: 0.5, maxValue: 2.0),
+                ShaderUniform(name: "colorBoost", defaultValue: 1.0, minValue: 0.5, maxValue: 2.0),
+            ],
+            description: "Lightweight CRT effect with simple scanlines and phosphors.",
+            recommendedSystems: ["nes", "snes", "genesis"]
+        ),
+        
+        // Smooth Upscale (ScaleFX style)
+        ShaderPreset(
+            id: "builtin-smooth-upscale",
+            name: "Smooth Upscale",
+            shaderType: .smoothing,
+            passes: [
+                ShaderPass(
+                    shaderFile: "ScaleSmooth",
+                    filter: .linear,
+                    scaleX: 1.0, scaleY: 1.0,
+                    scaleTypeX: .viewport, scaleTypeY: .viewport
+                )
+            ],
+            globalUniforms: [
+                ShaderUniform(name: "smoothness", defaultValue: 1.0, minValue: 0.0, maxValue: 1.0),
+                ShaderUniform(name: "colorBoost", defaultValue: 1.0, minValue: 0.5, maxValue: 2.0),
+            ],
+            description: "High-quality pixel art upscaler that smooths edges while maintaining detail.",
+            recommendedSystems: ["nes", "snes", "gba", "arcade"]
+        ),
+
+        // No Filter (raw pixels)
+        ShaderPreset(
+            id: "builtin-none",
+            name: "No Shader",
+            shaderType: .custom,
+            passes: [
+                ShaderPass(
+                    shaderFile: "Passthrough",
+                    filter: .nearest,
+                    scaleX: 1.0, scaleY: 1.0,
+                    scaleTypeX: .viewport, scaleTypeY: .viewport
+                )
+            ],
+            globalUniforms: [],
+            description: "No post-processing. Integer-scaled raw pixels.",
+            recommendedSystems: ["nes", "gb", "snes", "genesis", "scummvm"]
         ),
     ]
     

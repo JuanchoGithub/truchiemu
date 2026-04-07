@@ -39,6 +39,20 @@ actor ROMScanner {
         let enumTime = Date().timeIntervalSince(enumStart)
         LoggerService.info(category: "ROMScanner", "Enumeration: \(allURLs.count) files found in \(String(format: "%.2f", enumTime))s")
         
+        // Split files: non-ZIPs first (fast), ZIPs last (slower due to fingerprinting)
+        var nonZipURLs: [URL] = []
+        var zipURLs: [URL] = []
+        for url in allURLs {
+            let ext = url.pathExtension.lowercased()
+            if ext == "zip" || ext == "7z" {
+                zipURLs.append(url)
+            } else {
+                nonZipURLs.append(url)
+            }
+        }
+        // Process non-ZIPs first, then ZIPs
+        let orderedURLs = nonZipURLs + zipURLs
+        
         // --- NEW: Identify all referenced files to skip redundant entries (e.g., .bin files referenced by .cue) ---
         let ignoredStart = Date()
         var ignoredURLs = Set<String>()
@@ -52,7 +66,7 @@ actor ROMScanner {
         LoggerService.info(category: "ROMScanner", "Ignored files build: \(ignoredURLs.count) ignored in \(String(format: "%.2f", ignoredTime))s")
         // --- END ---
 
-        let total = Double(allURLs.count)
+        let total = Double(orderedURLs.count)
         var processed = 0
 
         // Throttle progress updates (every 50ms)
@@ -62,8 +76,9 @@ actor ROMScanner {
         // Timing counters
         var identifyTimeTotal: TimeInterval = 0
         var zipCount = 0
+        var unknownCount = 0
 
-        for url in allURLs {
+        for url in orderedURLs {
             if isCancelled || (cancellationToken?.isCancelled ?? false) { break }
 
             processed += 1
@@ -80,16 +95,14 @@ actor ROMScanner {
                 progress(Double(processed) / max(total, 1))
             }
 
+            // Use cached isRegularFile from enumerator properties
             guard (try? url.resourceValues(forKeys: [.isRegularFileKey]))?.isRegularFile == true else { continue }
 
             let ext = url.pathExtension.lowercased()
             guard !ext.isEmpty else { continue }
 
-            // Skip obviously non-ROM files
-            let skip = ["txt", "xml", "jpg", "jpeg", "png", "gif", "bmp", "pdf", "mp3", "mp4", "avi", "mkv", "nfo", "dat", "db", "json",
-                        "py", "pyc", "pyo", "pyw", "dylib", "so", "app", "icns", "plist", "strings", "loc", "lproj", "nib", "xib",
-                        "md", "rmd", "html", "htm", "css", "js", "ts", "jsx", "tsx"]
-            if skip.contains(ext) { continue }
+            // Skip obviously non-ROM files (using static Set for O(1) lookup)
+            if Self.shouldSkipExtension(ext) { continue }
             
             // Skip files inside .app bundles
             if url.path.contains("/Contents/") || url.path.hasSuffix(".app") { continue }
@@ -109,6 +122,11 @@ actor ROMScanner {
                 path: url,
                 systemID: system?.id
             )
+
+            // Track unknown system files
+            if system?.id == "unknown" {
+                unknownCount += 1
+            }
 
             // MARK: - BIOS Detection
             if KnownBIOS.isKnownBios(filename: url.lastPathComponent) {
@@ -130,6 +148,10 @@ actor ROMScanner {
             }
 
             found.append(rom)
+        }
+        
+        if unknownCount > 0 {
+            LoggerService.info(category: "ROMScanner", "Unknown system files: \(unknownCount)")
         }
 
         // Final progress update
@@ -260,6 +282,19 @@ actor ROMScanner {
         }
     }
 
+    // MARK: - Non-ROM File Extensions (static Set for O(1) lookup)
+    
+    private static let nonROMExtensions: Set<String> = [
+        "txt", "xml", "jpg", "jpeg", "png", "gif", "bmp", "pdf", "mp3", "mp4", "avi", "mkv", "nfo", "dat", "db", "json",
+        "py", "pyc", "pyo", "pyw", "dylib", "so", "app", "icns", "plist", "strings", "loc", "lproj", "nib", "xib",
+        "md", "rmd", "html", "htm", "css", "js", "ts", "jsx", "tsx"
+    ]
+    
+    /// Returns true if this extension should be skipped during ROM scanning.
+    private static func shouldSkipExtension(_ ext: String) -> Bool {
+        nonROMExtensions.contains(ext)
+    }
+    
     // New: Trigger DAT download for any newly discovered systems
     func downloadDatsForDiscoveredSystems(_ systems: Set<String>) async {
         for sysID in systems {
@@ -514,7 +549,7 @@ actor ROMScanner {
             ROMScannerLog.debug("Archive '\(filename)' → TIER 1: matched by folder '\(parentName)' → scummvm")
             return SystemDatabase.system(forID: "scummvm")
         }
-        if parentName.contains("32x") || parentName.contains("genesis32x") {
+        if parentName.contains("32x") || parentName.contains("genesis32x") || parentName.contains("sega32x") {
             ROMScannerLog.debug("Archive '\(filename)' → TIER 1: matched by folder '\(parentName)' → 32x")
             return SystemDatabase.system(forID: "32x")
         }
@@ -551,9 +586,9 @@ actor ROMScanner {
         ROMScannerLog.debug("Archive '\(filename)' → TIER 3: fingerprint NO match in \(String(format: "%.3f", fpTime))s")
         LoggerService.info(category: "ROMScanner", "Fingerprint NO match for \(filename) in \(String(format: "%.3f", fpTime))s")
 
-        // TIER 4: Default to MAME for ambiguous ZIPs
-        ROMScannerLog.debug("Archive '\(filename)' → TIER 4: default fallback → mame (ambiguous ZIP, no other match found)")
-        return SystemDatabase.system(forID: "mame")
+        // TIER 4: Route to Unknown System for ambiguous ZIPs
+        ROMScannerLog.debug("Archive '\(filename)' → TIER 4: default fallback → unknown (ambiguous ZIP, no other match found)")
+        return SystemDatabase.system(forID: "unknown")
     }
     
     /// Multi-tier content fingerprinting for ZIP archives.

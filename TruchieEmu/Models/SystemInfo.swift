@@ -63,7 +63,8 @@ enum KnownBIOS {
     ]
     
     static func isKnownBios(filename: String) -> Bool {
-        let nameWithoutExt = URL(fileURLWithPath: filename).deletingPathExtension().lastPathComponent.lowercased()
+        // Pure string operation — no URL creation overhead
+        let nameWithoutExt = (filename as NSString).deletingPathExtension.lowercased()
         return mameFiles.contains(nameWithoutExt)
     }
 }
@@ -214,6 +215,7 @@ enum SystemDatabase {
         SystemInfo(id: "pcfx",         name: "PC-FX",                           manufacturer: "NEC",        extensions: ["cue", "toc"],                 defaultCoreID: "mednafen_pcfx_libretro",     iconName: "opticaldisc",    emuIconName: "PCFX",     year: "1994", sortOrder: 61, defaultBoxType: .landscape),
         SystemInfo(id: "scummvm",      name: "ScummVM",                         manufacturer: "Various",    extensions: ["zip", "scummvm"],             defaultCoreID: "scummvm_libretro",           iconName: "gamecontroller", emuIconName: "SCUMMVM", year: nil,    sortOrder: 75, defaultBoxType: .landscape),
         SystemInfo(id: "dos",          name: "MS-DOS",                          manufacturer: "Microsoft",  extensions: ["zip", "dosz", "conf", "exe", "bat", "iso", "img", "cue", "ins"], defaultCoreID: "dosbox_pure_libretro", iconName: "desktopcomputer", emuIconName: "DOS", year: "1981", sortOrder: 70, defaultBoxType: .landscape),
+        SystemInfo(id: "unknown",      name: "Unknown System",                  manufacturer: "Unknown",    extensions: ["*"],          defaultCoreID: nil,                        iconName: "questionmark.circle",   emuIconName: nil,    year: nil,    sortOrder: 99, defaultBoxType: .vertical),
     ]
 
 

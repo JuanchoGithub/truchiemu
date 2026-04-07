@@ -331,74 +331,49 @@ class ROMLibrary: ObservableObject {
         let enumStart = Date()
         _ = fm.enumerator(at: folder, includingPropertiesForKeys: [.isRegularFileKey], options: [.skipsHiddenFiles])
 
-        // Scan files incrementally: collect ROMs as we go
-        var accumulatedROMs: [ROM] = []
-        var scannedCount = 0
-        var skippedCount = 0
-        var romFoundCount = 0
-
-        // Process files in batches to keep UI responsive
+        // Collect ALL files first, then process
         let urls = collectFilesInFolder(folder: folder)
         let totalURLs = urls.count
         let enumTime = Date().timeIntervalSince(enumStart)
         LoggerService.info(category: "ROMLibrary", "Enumeration: \(totalURLs) files found in \(String(format: "%.2f", enumTime))s")
 
-        // Create a progress-aware file scanner
+        // Build a Set of existing ROM paths for O(1) deduplication
+        let existingROMPaths = Set(roms.map { $0.path.path })
+
+        var scannedCount = 0
+        var skippedCount = 0
+        var romFoundCount = 0
         var zipCount = 0
         var biosCount = 0
-        var identifyTimeTotal: TimeInterval = 0
+        var newROMs: [ROM] = []
         
-        LoggerService.info(category: "ROMLibrary", "Processing \(totalURLs) files...")
+        LoggerService.info(category: "ROMLibrary", "Processing \(totalURLs) files, \(existingROMPaths.count) already in library...")
         
         for url in urls {
             if scanCancellationToken.isCancelled { break }
 
             scannedCount += 1
             
-            // Log every 100 files and yield to run loop
+            // Update progress and log periodically
             if scannedCount % 100 == 0 {
                 let elapsed = Date().timeIntervalSince(scanStart)
                 let rate = Double(scannedCount) / max(elapsed, 0.001)
-                let msg = "Progress: \(scannedCount)/\(totalURLs) (\(String(format: "%.1f", rate)) files/sec, \(String(format: "%.1f", elapsed))s elapsed)"
-                LoggerService.info(category: "ROMLibrary", msg)
-                // Yield to run loop every 100 files to keep UI responsive
-                try? await Task.sleep(nanoseconds: 1_000_000) // 1ms
+                LoggerService.info(category: "ROMLibrary", "Progress: \(scannedCount)/\(totalURLs) (\(String(format: "%.1f", rate)) files/sec, \(String(format: "%.1f", elapsed))s elapsed)")
+                try? await Task.sleep(nanoseconds: 1_000_000) // 1ms yield
             }
             
-            let progress = Double(scannedCount) / max(Double(totalURLs), 1.0)
-            self.scanProgress = progress
-
-            // Check if it's a ROM file
-            guard (try? url.resourceValues(forKeys: [.isRegularFileKey]))?.isRegularFile == true else { continue }
+            self.scanProgress = Double(scannedCount) / max(Double(totalURLs), 1.0)
 
             let ext = url.pathExtension.lowercased()
             guard !ext.isEmpty else { continue }
+            if Self.shouldSkipExtension(ext) { skippedCount += 1; continue }
+            if url.path.contains("/Contents/") || url.path.hasSuffix(".app") { skippedCount += 1; continue }
 
-            let skip = ["txt", "xml", "jpg", "jpeg", "png", "gif", "bmp", "pdf", "mp3", "mp4", "avi", "mkv", "nfo", "dat", "db", "json",
-                        "py", "pyc", "pyo", "pyw", "dylib", "so", "app", "icns", "plist", "strings", "loc", "lproj", "nib", "xib",
-                        "md", "rmd", "html", "htm", "css", "js", "ts", "jsx", "tsx"]
-            if skip.contains(ext) { 
-                skippedCount += 1
-                continue 
-            }
-            if url.path.contains("/Contents/") || url.path.hasSuffix(".app") { 
-                skippedCount += 1
-                continue 
-            }
-
-            // Identify system and create ROM
-            let identifyStart = Date()
+            // Identify system
             let system = identifySystemForURL(url: url, extension: ext)
-            let identifyTime = Date().timeIntervalSince(identifyStart)
-            identifyTimeTotal += identifyTime
+            guard system != nil else { skippedCount += 1; continue }
             
             if ext == "zip" || ext == "7z" { zipCount += 1 }
-
-            // Skip if not a valid ROM system (e.g., BIOS files for unknown systems)
-            guard system != nil else { 
-                skippedCount += 1
-                continue 
-            }
 
             let name = url.deletingPathExtension().lastPathComponent
             var rom = ROM(id: UUID(), name: name, path: url, systemID: system?.id)
@@ -411,35 +386,29 @@ class ROMLibrary: ObservableObject {
                 biosCount += 1
             }
 
-            // MAME ROM Detection - hide non-game types
+            // MAME ROM Detection
             if rom.systemID == "mame" {
                 applyMAMEIdentificationInline(to: &rom, url: url)
             }
 
+            // Skip if this ROM path already exists in the library (O(1) Set lookup)
+            guard !existingROMPaths.contains(rom.path.path) else { continue }
+
             romFoundCount += 1
-            accumulatedROMs.append(rom)
-
-            // Every 20 files scanned OR at the end, merge ROMs into the UI
-            // This keeps the UI smooth without overwhelming it with individual updates
-            if accumulatedROMs.count >= 20 || scannedCount == totalURLs {
-                // Add newly found ROMs to the main ROMs array
-                let newROMs = accumulatedROMs.filter { newROM in
-                    !self.roms.contains(where: { $0.path.path == newROM.path.path })
-                }.map { LibraryMetadataStore.shared.mergedROM($0) }
-
-                if !newROMs.isEmpty {
-                    withAnimation(.easeInOut(duration: 0.3)) {
-                        self.roms.append(contentsOf: newROMs)
-                        self.roms.sort { $0.displayName < $1.displayName }
-                    }
-                    self.updateCounts()
-                }
-                accumulatedROMs.removeAll()
-            }
+            newROMs.append(rom)
         }
         
         let scanTime = Date().timeIntervalSince(scanStart)
-        LoggerService.info(category: "ROMLibrary", "=== SCAN COMPLETE: \(romFoundCount) ROMs found, \(skippedCount) skipped, \(biosCount) BIOS in \(String(format: "%.2f", scanTime))s ===")
+        LoggerService.info(category: "ROMLibrary", "=== SCAN COMPLETE: \(romFoundCount) new ROMs found, \(skippedCount) skipped, \(biosCount) BIOS in \(String(format: "%.2f", scanTime))s ===")
+        
+        // Batch merge metadata and add to UI ONCE (not per-batch)
+        if !newROMs.isEmpty {
+            let mergedROMs = newROMs.map { LibraryMetadataStore.shared.mergedROM($0) }
+            self.roms.append(contentsOf: mergedROMs)
+            // Sort once at the end
+            self.roms.sort { $0.displayName < $1.displayName }
+            self.updateCounts()
+        }
 
         // Final progress update
         await MainActor.run {
@@ -482,6 +451,7 @@ class ROMLibrary: ObservableObject {
     }
 
     /// Collect all files in a folder, sorted by path for consistent processing order.
+    /// Non-ZIP files come first (fast), ZIPs last (slower due to fingerprinting).
     private func collectFilesInFolder(folder: URL) -> [URL] {
         guard let enumerator = FileManager.default.enumerator(
             at: folder,
@@ -489,10 +459,23 @@ class ROMLibrary: ObservableObject {
             options: [.skipsHiddenFiles]
         ) else { return [] }
 
-        return enumerator.allObjects
+        let allFiles = enumerator.allObjects
             .compactMap { $0 as? URL }
             .filter { (try? $0.resourceValues(forKeys: [.isRegularFileKey]))?.isRegularFile == true }
-            .sorted { $0.path < $1.path }
+        
+        // Split: non-ZIPs first, ZIPs last
+        var nonZipFiles: [URL] = []
+        var zipFiles: [URL] = []
+        for url in allFiles {
+            let ext = url.pathExtension.lowercased()
+            if ext == "zip" || ext == "7z" {
+                zipFiles.append(url)
+            } else {
+                nonZipFiles.append(url)
+            }
+        }
+        
+        return (nonZipFiles + zipFiles).sorted { $0.path < $1.path }
     }
 
     /// Identify system for a single URL (non-async version for inline scanning).
@@ -514,6 +497,19 @@ class ROMLibrary: ObservableObject {
             }
         }
         return SystemDatabase.system(forExtension: ext)
+    }
+
+    // MARK: - Non-ROM File Extensions (static Set for O(1) lookup)
+    
+    private static let nonROMExtensions: Set<String> = [
+        "txt", "xml", "jpg", "jpeg", "png", "gif", "bmp", "pdf", "mp3", "mp4", "avi", "mkv", "nfo", "dat", "db", "json",
+        "py", "pyc", "pyo", "pyw", "dylib", "so", "app", "icns", "plist", "strings", "loc", "lproj", "nib", "xib",
+        "md", "rmd", "html", "htm", "css", "js", "ts", "jsx", "tsx"
+    ]
+    
+    /// Returns true if this extension should be skipped during ROM scanning.
+    private static func shouldSkipExtension(_ ext: String) -> Bool {
+        nonROMExtensions.contains(ext)
     }
 
     /// Detect system from filename hints.
@@ -656,8 +652,11 @@ class ROMLibrary: ObservableObject {
         if parentName.contains("scummvm") || parentName.contains("scumm") {
             return SystemDatabase.system(forID: "scummvm")
         }
+        if parentName.contains("32x") || parentName.contains("genesis32x") || parentName.contains("sega32x") {
+            return SystemDatabase.system(forID: "32x")
+        }
         if KnownBIOS.isKnownBios(filename: url.lastPathComponent) { return nil }
-        return SystemDatabase.system(forID: "mame")
+        return SystemDatabase.system(forID: "unknown")
     }
 
     private func cleanupScummVMCaches() {

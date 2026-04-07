@@ -4,7 +4,7 @@ import SwiftUI
 
 /// Centralized color tokens for GameDetailView — works in both light and dark mode.
 /// Prevents hardcoded `.white.opacity(x)` colors that break in light mode.
-private struct ThemeColors {
+struct ThemeColors {
     let textPrimary: Color
     let textSecondary: Color
     let textTertiary: Color
@@ -55,7 +55,7 @@ private struct ThemeColors {
 
 // MARK: - Manual Status Tone
 
-private enum ManualStatusTone: Equatable {
+enum ManualStatusTone: Equatable {
     case success, info, warning, error
 
     var iconName: String {
@@ -77,7 +77,7 @@ private enum ManualStatusTone: Equatable {
     }
 }
 
-private enum ManualActionStatus: Equatable {
+enum ManualActionStatus: Equatable {
     case hidden
     case working(String)
     case result(String, tone: ManualStatusTone)
@@ -800,6 +800,7 @@ struct GameDetailView: View {
                 // Clear box art (main image) - now zoomable
                 DetailBoxArtButton(
                     image: boxArtImage,
+                    rom: currentROM,
                     placeholder: { AnyView(placeholderArt) }
                 )
                 .frame(width: 110, height: 140)
@@ -3078,12 +3079,18 @@ struct CheatToggleStyle: ToggleStyle {
 
 struct DetailBoxArtButton: View {
     let image: NSImage?
+    let rom: ROM?
     let placeholder: () -> AnyView
     @State private var isPresented = false
+    @State private var showPicker = false
 
     var body: some View {
         Button {
-            isPresented = true
+            if image != nil {
+                isPresented = true
+            } else {
+                showPicker = true
+            }
         } label: {
             Group {
                 if let img = image {
@@ -3099,6 +3106,11 @@ struct DetailBoxArtButton: View {
         .sheet(isPresented: $isPresented) {
             if let img = image {
                 DetailZoomableFullScreenView(image: img)
+            }
+        }
+        .sheet(isPresented: $showPicker) {
+            if let rom = rom {
+                BoxArtPickerView(rom: rom)
             }
         }
     }
