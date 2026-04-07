@@ -59,25 +59,25 @@ final class MAMEImportService: ObservableObject {
     // MARK: - In-Memory Lookup Dictionary
     
     /// Load the bundled JSON into an in-memory dictionary for fast lookups.
-    /// This is called once at app launch and is much faster than querying SwiftData.
-    /// Now delegates to MAME2003PlusService for the new unified database format.
+    /// This is called on-demand when a MAME ROM is first encountered.
+    /// Uses the unified MAME database.
     func loadLookupDictionary() async {
         guard !isDictionaryLoaded else { return }
         
-        // Use the new MAME2003PlusService which loads the unified database
-        let mameService = MAME2003PlusService.shared
+        // Use the unified MAME database
+        let mameService = MAMEUnifiedService.shared
         
-        // Build lookup dictionary from the new service
+        // Build lookup dictionary from the unified service
         var dict: [String: MAMELookupEntry] = [:]
         for entry in mameService.allEntries {
             dict[entry.shortName] = MAMELookupEntry(
                 shortName: entry.shortName,
                 description: entry.description,
-                type: entry.isBIOS ? "bios" : (entry.runnable ? "game" : "driver"),
-                isRunnable: entry.runnable,
+                type: entry.isBIOS ? "bios" : (entry.isRunnableInAnyCore ? "game" : "driver"),
+                isRunnable: entry.isRunnableInAnyCore,
                 year: entry.year,
                 manufacturer: entry.manufacturer,
-                parentROM: entry.cloneOf ?? entry.romOf,
+                parentROM: nil,  // MAMEUnifiedEntry doesn't expose cloneOf/romOf directly
                 players: entry.players
             )
         }

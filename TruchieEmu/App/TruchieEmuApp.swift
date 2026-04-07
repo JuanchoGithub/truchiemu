@@ -11,8 +11,7 @@ struct TruchieEmuApp: App {
         _ = SwiftDataContainer.shared
         _ = LoggerService.shared
         
-        // Load MAME lookup dictionary into memory during the content initialization task
-        // The ContentWithPrepopulationView ensures this completes before showing content
+        // MAME dictionary loading is deferred to background tasks in ContentWithPrepopulationView
     }
     
     @StateObject private var library = ROMLibrary()
@@ -96,12 +95,12 @@ struct TruchieEmuApp: App {
     }
 }
 
-/// Wrapper view that runs first-run DAT pre-population and MAME lookup loading before showing content.
+/// Wrapper view that runs first-run DAT pre-population before showing content.
+/// MAME dictionary loading is deferred to lazy/on-demand loading.
 /// Checks the prepopulation flag synchronously to avoid showing the loading view
 /// on subsequent launches.
 struct ContentWithPrepopulationView: View {
     @State private var isPrepopulated: Bool
-    @State private var isMameDictionaryLoaded: Bool
     @State private var isRunningPrepopulation = false
     
     @EnvironmentObject var library: ROMLibrary
@@ -109,13 +108,11 @@ struct ContentWithPrepopulationView: View {
     init() {
         // Check synchronously so we skip the loading view on subsequent launches
         _isPrepopulated = State(initialValue: AppSettings.getBool("dat_prepopulation_done_v1", defaultValue: false))
-        // Check if MAME dictionary has already been loaded
-        _isMameDictionaryLoaded = State(initialValue: MAMEImportService.isLookupLoaded())
     }
     
     /// Whether we need to show the loading view
     private var needsLoading: Bool {
-        !isPrepopulated || !isMameDictionaryLoaded
+        !isPrepopulated
     }
     
     var body: some View {
@@ -134,16 +131,7 @@ struct ContentWithPrepopulationView: View {
     }
     
     private func performInitialization() async {
-        // Load MAME lookup dictionary first (needed for game identification and naming)
-        if !isMameDictionaryLoaded {
-            await MAMEImportService.shared.loadLookupDictionary()
-            isMameDictionaryLoaded = true
-        }
-        
-        // Retry any previously-failed MAME dependency fetches
-        await MAMEDependencyService.shared.retryFailedFetches()
-        
-        // Then perform DAT pre-population if needed
+        // Perform DAT pre-population if needed
         if !isPrepopulated {
             isRunningPrepopulation = true
             _ = await DATPrepopulationService.ensureDATsArePopulated()

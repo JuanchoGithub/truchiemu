@@ -152,12 +152,8 @@ class ROMLibrary: ObservableObject {
         loadFileIndexFromStorage()
         updateCounts()
         
-        // Pre-warm the box art cache for visible (non-hidden) ROMs immediately on launch.
-        // This ensures that when the user scrolls, images are already decoded and ready.
-        let romsForPreload = roms.filter { !$0.isHidden }
-        Task {
-            await BoxArtPreloaderService.shared.preloadBoxArt(for: romsForPreload)
-        }
+        // Box art images are now loaded on-demand via ImageCache as cards appear on screen.
+        // Startup preloading was removed because it was blocking the UI while reporting 0% cache hit rate.
     }
 
     // MARK: - Legacy Migration
@@ -482,12 +478,6 @@ class ROMLibrary: ObservableObject {
             }
             await LibraryAutomationCoordinator.shared.runAfterLibraryUpdate(library: self)
             await MetadataSyncCoordinator.shared.runAfterLibraryUpdate(library: self)
-            
-            // Pre-warm the cache for newly discovered ROMs
-            let currentROMs = self.roms
-            Task {
-                await BoxArtPreloaderService.shared.preloadBoxArt(for: currentROMs)
-            }
         }
     }
 

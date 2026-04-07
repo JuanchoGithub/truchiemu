@@ -2183,7 +2183,7 @@ struct BoxArtSettingsView: View {
 
     @State private var useLibretroThumbnails = true
     @State private var thumbnailServerURLStorage = ""
-    @State private var thumbnailPriorityRaw = ""
+    @State private var thumbnailPriorityRaw = "boxart"
     @State private var useCRCMatching = true
     @State private var fallbackFilename = true
     @State private var useHeadCheck = false
@@ -2619,7 +2619,7 @@ struct AboutView: View {
                         
                         DependencyGroup(
                             name: "Game Database (No-Intro, Redump, TOSEC)",
-                            url: "https://www.no-intro.org / https://redump.org / https://tosecdev.org",
+                            url: "https://www.no-intro.org",
                             license: "Various",
                             licenseURL: nil,
                             description: "Third-party ROM databases (No-Intro, Redump, TOSEC) included in the libretro database for game identification and naming. Each maintains its own licensing terms."
@@ -2766,9 +2766,11 @@ struct DependencyGroup: View {
             HStack(alignment: .firstTextBaseline, spacing: 6) {
                 Text(name)
                     .font(.subheadline.weight(.medium))
-                Link(destination: URL(string: url)!) {
-                    Image(systemName: "link")
-                        .font(.caption)
+                if let validURL = URL(string: url) {
+                    Link(destination: validURL) {
+                        Image(systemName: "link")
+                            .font(.caption)
+                    }
                 }
             }
             HStack(spacing: 4) {

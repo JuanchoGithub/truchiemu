@@ -173,32 +173,6 @@ enum GameFilterOption: String, CaseIterable, Identifiable {
     }
 }
 
-// MARK: - Sort Options
-
-/// Sort orders for the main game library list
-enum GameSortOption: String, CaseIterable, Identifiable {
-    case name       // A-Z alphabetical
-    case lastPlayed // Most recently played first
-    case system     // Grouped by system name, then alphabetical by game name
-    
-    var id: String { rawValue }
-    
-    var displayName: String {
-        switch self {
-        case .name: return "Name"
-        case .lastPlayed: return "Last Played"
-        case .system: return "System"
-        }
-    }
-    
-    var iconName: String {
-        switch self {
-        case .name: return "textformat"
-        case .lastPlayed: return "clock"
-        case .system: return "cpu"
-        }
-    }
-}
 
 
 struct LibraryGridView: View {
@@ -249,7 +223,7 @@ struct LibraryGridView: View {
     
     // Filter chips
     @State private var activeFilters: Set<String> = []
-    @State private var sortOption: GameSortOption = .name
+    @State private var sortByLastPlayed: Bool = false
 
     private enum ViewMode: String { case grid, list }
 
@@ -322,15 +296,7 @@ struct LibraryGridView: View {
     private func applySorting(to roms: [ROM]) -> [ROM] {
         guard !roms.isEmpty else { return [] }
         
-        switch sortOption {
-        case .name:
-            // Schwartzian transform: pre-compute display names once to avoid N log N regex stripping calls
-            return roms
-                .map { (rom: $0, key: $0.displayName) }
-                .sorted { $0.key.localizedCaseInsensitiveCompare($1.key) == .orderedAscending }
-                .map { $0.rom }
-                
-        case .lastPlayed:
+        if sortByLastPlayed {
             return roms.sorted { a, b in
                 switch (a.lastPlayed, b.lastPlayed) {
                 case (nil, nil):
@@ -343,31 +309,16 @@ struct LibraryGridView: View {
                     return dateA > dateB  // most recent first
                 }
             }
-            
-        case .system:
-            // Schwartzian transform: pre-compute system names and display names
-            struct SortEntry {
-                let rom: ROM
-                let systemName: String
-                let displayName: String
-            }
-            
+        } else {
+            // Schwartzian transform: pre-compute display names once to avoid N log N regex stripping calls
             return roms
-                .map { rom in
-                    let sysName = SystemDatabase.displaySystem(forInternalID: rom.systemID ?? "")?.name ?? "ZZZZ"
-                    return SortEntry(rom: rom, systemName: sysName, displayName: rom.displayName)
-                }
-                .sorted { a, b in
-                    let sysCompare = a.systemName.localizedCaseInsensitiveCompare(b.systemName)
-                    if sysCompare != .orderedSame {
-                        return sysCompare == .orderedAscending
-                    }
-                    return a.displayName.localizedCaseInsensitiveCompare(b.displayName) == .orderedAscending
-                }
+                .map { (rom: $0, key: $0.displayName) }
+                .sorted { $0.key.localizedCaseInsensitiveCompare($1.key) == .orderedAscending }
                 .map { $0.rom }
         }
     }
     @State private var columns: [GridItem] = []
+    @State private var lastSelectedFilterID: String? = nil
 
     // MARK: - Focused field for Cmd+F
     enum FocusableField: Hashable { case search }
@@ -391,14 +342,20 @@ struct LibraryGridView: View {
                 } else if displayedROMs.isEmpty {
                     emptyState
                 } else if viewMode == .grid {
-                    GeometryReader { geometry in
-                        gridView
-                            .onChange(of: geometry.size.width) { _, newWidth in
-                                gridWidth = newWidth
-                                updateColumns()
+                    gridView
+                        .background(
+                            GeometryReader { geometry in
+                                Color.clear
+                                    .onAppear {
+                                        gridWidth = geometry.size.width
+                                        updateColumns()
+                                    }
+                                    .onChange(of: geometry.size.width) { _, newWidth in
+                                        gridWidth = newWidth
+                                        updateColumns()
+                                    }
                             }
-                    }
-                    .frame(minHeight: 0)
+                        )
                 } else {
                     listView
                 }
@@ -527,122 +484,78 @@ struct LibraryGridView: View {
                 }
                 .help("Input device and language")
 
-                // ─── Group 2: View (Sort + Zoom + View Mode) ───
+                // ─── Group 2: View Mode (Segmented Picker) ───
+                Picker("View", selection: $viewMode) {
+                    Image(systemName: "square.grid.2x2").tag(ViewMode.grid)
+                    Image(systemName: "list.bullet").tag(ViewMode.list)
+                }
+                .pickerStyle(.segmented)
+                .frame(width: 80)
+                .help("Switch between grid and list view")
+
+                // ─── Group 4: Box Art (Merged menu) ───
                 Menu {
-                    Section("Sort By") {
-                        ForEach(GameSortOption.allCases) { option in
+                    Section("Box Art Style") {
+                        ForEach(BoxType.allCases) { type in
                             Button {
-                                sortOption = option
+                                if case .system(let system) = filter {
+                                    prefs.setBoxType(type, for: system.id)
+                                }
                             } label: {
                                 HStack {
-                                    Label(option.displayName, systemImage: option.iconName)
-                                    if sortOption == option {
+                                    Label(type.rawValue, systemImage: type.iconName)
+                                    if case .system(let system) = filter, prefs.boxType(for: system.id) == type {
                                         Spacer()
                                         Image(systemName: "checkmark")
                                     }
                                 }
                             }
+                            .disabled(!isSystemView)
                         }
                     }
-
-                    Section("View") {
+                    
+                    Divider()
+                    
+                    Section("Download") {
                         Button {
-                            viewMode = .grid
-                        } label: {
-                            Label("Grid View", systemImage: "square.grid.2x2")
-                            if viewMode == .grid { Spacer(); Image(systemName: "checkmark") }
-                        }
-                        Button {
-                            viewMode = .list
-                        } label: {
-                            Label("List View", systemImage: "list.bullet")
-                            if viewMode == .list { Spacer(); Image(systemName: "checkmark") }
-                        }
-                    }
-                } label: {
-                    HStack(spacing: 4) {
-                        Image(systemName: sortOption.iconName)
-                            .font(.caption)
-                        Image(systemName: viewMode == .grid ? "square.grid.2x2" : "list.bullet")
-                            .font(.caption)
-                    }
-                }
-                .help("View options: sort, layout")
-
-                // ─── Group 3: Art (Box type + Fetch art, system views only) ───
-                if case .system(let system) = filter, viewMode == .grid {
-                    Menu {
-                        Section("Box Art Style") {
-                            ForEach(BoxType.allCases) { type in
-                                Button {
-                                    prefs.setBoxType(type, for: system.id)
-                                } label: {
-                                    HStack {
-                                        Label(type.rawValue, systemImage: type.iconName)
-                                        if prefs.boxType(for: system.id) == type {
-                                            Spacer()
-                                            Image(systemName: "checkmark")
-                                        }
-                                    }
-                                }
+                            Task {
+                                let targetROMs = selectedROMs.isEmpty
+                                    ? displayedROMs
+                                    : displayedROMs.filter { selectedROMs.contains($0.id) || selectedROM?.id == $0.id }
+                                guard !targetROMs.isEmpty else { return }
+                                await BoxArtService.shared.batchDownloadBoxArtLibretro(for: targetROMs, library: library)
+                                await LaunchBoxGamesDBService.shared.batchDownloadBoxArt(for: targetROMs, library: library)
                             }
+                        } label: {
+                            Label(
+                                selectedROMs.isEmpty ? "Download Missing Box Art" : "Download Box Art for Selected (\(selectedROMs.count))",
+                                systemImage: "arrow.down.circle"
+                            )
                         }
-
+                        
+                        Button {
+                            Task {
+                                let romsNeedingArt = BoxArtService.shared.romsNeedingBoxArt(in: displayedROMs)
+                                guard !romsNeedingArt.isEmpty else { return }
+                                await BoxArtService.shared.batchDownloadBoxArtLibretro(for: romsNeedingArt, library: library)
+                            }
+                        } label: {
+                            Label("Download Missing Box Art Only", systemImage: "photo.badge.plus")
+                        }
+                        
                         Button {
                             Task {
                                 await BoxArtService.shared.batchDownloadBoxArtLibretro(for: displayedROMs, library: library)
                                 await LaunchBoxGamesDBService.shared.batchDownloadBoxArt(for: displayedROMs, library: library)
                             }
                         } label: {
-                            Label("Download Missing Box Art", systemImage: "arrow.down.circle")
-                                .help("Cleans broken boxart and downloads missing art for all games")
+                            Label("Download All Box Art", systemImage: "arrow.down.circle.fill")
                         }
-                    } label: {
-                        Image(systemName: "photo.stack")
-                    }
-                    .help("Box art options and downloads")
-                }
-
-                // ─── Group 4: Box Art Download ───
-                Menu {
-                    Button {
-                        Task {
-                            let targetROMs = selectedROMs.isEmpty
-                                ? displayedROMs
-                                : displayedROMs.filter { selectedROMs.contains($0.id) || selectedROM?.id == $0.id }
-                            guard !targetROMs.isEmpty else { return }
-                            await BoxArtService.shared.batchDownloadBoxArtLibretro(for: targetROMs, library: library)
-                            await LaunchBoxGamesDBService.shared.batchDownloadBoxArt(for: targetROMs, library: library)
-                        }
-                    } label: {
-                        Label(
-                            selectedROMs.isEmpty ? "Download Missing Box Art" : "Download Box Art for Selected (\(selectedROMs.count))",
-                            systemImage: "arrow.down.circle"
-                        )
-                    }
-                    
-                    Button {
-                        Task {
-                            let romsNeedingArt = BoxArtService.shared.romsNeedingBoxArt(in: displayedROMs)
-                            guard !romsNeedingArt.isEmpty else { return }
-                            await BoxArtService.shared.batchDownloadBoxArtLibretro(for: romsNeedingArt, library: library)
-                        }
-                    } label: {
-                        Label("Download Missing Box Art Only", systemImage: "photo.badge.plus")
-                    }
-                    
-                    Button {
-                        Task {
-                            await BoxArtService.shared.batchDownloadBoxArtLibretro(for: displayedROMs, library: library)
-                            await LaunchBoxGamesDBService.shared.batchDownloadBoxArt(for: displayedROMs, library: library)
-                        }
-                    } label: {
-                        Label("Download All Box Art", systemImage: "arrow.down.circle.fill")
                     }
                 } label: {
-                    Label("Box Art", systemImage: "photo.stack")
+                    Image(systemName: "photo.stack")
                 }
-                .help("Download box art for games")
+                .help("Box art options and downloads")
 
                 // ─── Group 5: Settings ───
                 Button {
@@ -670,34 +583,43 @@ struct LibraryGridView: View {
         }
         .toolbar {
             ToolbarItemGroup(placement: .automatic) {
-                // Zoom slider in the toolbar
-                if viewMode == .grid {
-                    HStack(spacing: 6) {
-                        Image(systemName: "minus.magnifyingglass")
-                            .font(.system(size: 10))
-                            .foregroundColor(.secondary.opacity(0.5))
-                            .frame(width: 14)
-                        
-                        Slider(value: $continuousZoom, in: 0...1, step: 1.0/7.0,
-                               onEditingChanged: { isEditing in
-                                   if !isEditing {
-                                       withAnimation(.interpolatingSpring(stiffness: 150, damping: 20)) {
-                                           applyZoomToColumnCount(animate: true)
-                                       }
+                // Zoom slider in the toolbar (always visible)
+                HStack(spacing: 6) {
+                    Image(systemName: "minus.magnifyingglass")
+                        .font(.system(size: 10))
+                        .foregroundColor(.secondary.opacity(0.5))
+                        .frame(width: 14)
+                    
+                    Slider(value: $continuousZoom, in: 0...1, step: 1.0/7.0,
+                           onEditingChanged: { isEditing in
+                               if viewMode == .grid, !isEditing {
+                                   // On release, snap to nearest step
+                                   withAnimation(.interpolatingSpring(stiffness: 150, damping: 20)) {
+                                       applyZoomToColumnCount(animate: true)
                                    }
-                               })
-                            .frame(width: 100)
-                        
-                        Image(systemName: "plus.magnifyingglass")
-                            .font(.system(size: 10))
-                            .foregroundColor(.secondary.opacity(0.5))
-                            .frame(width: 14)
-                        
-                        Text("\(Int(continuousZoom * 100))%")
-                            .font(.system(size: 10, weight: .medium, design: .monospaced))
-                            .foregroundColor(.secondary)
-                            .frame(width: 32, alignment: .trailing)
-                    }
+                               }
+                           })
+                           .onChange(of: continuousZoom) { _, newZoom in
+                               // Update columns in real-time during slider drag for smooth reflow
+                               if viewMode == .grid {
+                                   let newColumnCount = max(1, min(8, Int(round((1.0 - newZoom) * 7.0) + 1)))
+                                   if newColumnCount != columnCount {
+                                       columnCount = newColumnCount
+                                       updateColumns()
+                                   }
+                               }
+                           }
+                        .frame(width: 100)
+                    
+                    Image(systemName: "plus.magnifyingglass")
+                        .font(.system(size: 10))
+                        .foregroundColor(.secondary.opacity(0.5))
+                        .frame(width: 14)
+                    
+                    Text("\(Int(continuousZoom * 100))%")
+                        .font(.system(size: 10, weight: .medium, design: .monospaced))
+                        .foregroundColor(.secondary)
+                        .frame(width: 32, alignment: .trailing)
                 }
             }
         }
@@ -707,7 +629,7 @@ struct LibraryGridView: View {
         .onAppear { 
             // Recompute columns from saved zoom level
             applyZoomToColumnCount(animate: false)
-            updateColumns()
+            sortByLastPlayed = AppSettings.getBool("sortByLastPlayed", defaultValue: false)
             
             // When a new system/filter appears, preload its visible ROMs immediately.
             // The ContentView handles global preloading (current filter → smallest systems),
@@ -737,6 +659,12 @@ struct LibraryGridView: View {
     }
 
     @State private var gridWidth: CGFloat = 800
+
+    /// Whether the current filter is a system view (used to enable/disable box art style).
+    private var isSystemView: Bool {
+        if case .system = filter { return true }
+        return false
+    }
 
     private func updateColumns() {
         // Card width must be fixed for all columns to ensure uniform card sizes.
@@ -784,7 +712,7 @@ struct LibraryGridView: View {
                 }
             }
             .padding(gridPadding)
-            .animation(.none, value: continuousZoom) // No animation during live pinch for responsiveness
+            .animation(.none, value: continuousZoom) // No animation during live zoom for responsiveness
         }
         .clipped() // Prevent content from drawing outside bounds (e.g., behind sidebar)
         .gesture(
@@ -794,13 +722,13 @@ struct LibraryGridView: View {
                     let scale = value / lastMagnification
                     let zoomDelta = (scale - 1.0) * 0.15
                     let newZoom = max(0, min(1, continuousZoom + zoomDelta))
-                    // Only update columns when zoom crosses a step boundary
+                    continuousZoom = newZoom
+                    // Update columns in real-time for smooth reflow
                     let newColumnCount = max(1, min(8, Int(round((1.0 - newZoom) * 7.0) + 1)))
                     if newColumnCount != columnCount {
                         columnCount = newColumnCount
                         updateColumns()
                     }
-                    continuousZoom = newZoom
                     lastMagnification = value
                 }
                 .onEnded { _ in
@@ -1410,10 +1338,48 @@ struct LibraryGridView: View {
         .padding(.horizontal, 16)
         .padding(.vertical, 6)
     }
+    @State private var isSortHovered = false
     
     private var filterChips: some View {
         ScrollView(.horizontal, showsIndicators: false) {
             HStack(spacing: 6) {
+                // Last Played sort toggle chip
+                Button {
+                    sortByLastPlayed.toggle()
+                    AppSettings.setBool("sortByLastPlayed", value: sortByLastPlayed)
+                } label: {
+                    HStack(spacing: 4) {
+                        Image(systemName: sortByLastPlayed ? "clock.fill" : "clock")
+                            .font(.system(size: 10, weight: .medium))
+                            .scaleEffect(sortByLastPlayed ? 1.1 : 1)
+                        Text("Last Played")
+                            .font(.system(size: 11, weight: .medium))
+                    }
+                    .foregroundColor(sortByLastPlayed ? .white : .secondary)
+                    .padding(.horizontal, 10)
+                    .padding(.vertical, 6)
+                    .frame(minHeight: 30)
+                    .background(
+                        Capsule()
+                            .fill(sortByLastPlayed ? Color.orange : Color.secondary.opacity(0.12))
+                            .scaleEffect(isSortHovered ? 1.05 : 1)
+                            .shadow(color: sortByLastPlayed ? Color.orange.opacity(0.3) : .clear, radius: isSortHovered ? 4 : 0, y: 2)
+                    )
+                }
+                .buttonStyle(.plain)
+                .help(sortByLastPlayed ? "Sorting by Last Played — click to sort by Name" : "Sorting by Name — click to sort by Last Played")
+                .onHover { hovering in
+                    let shouldAnimate = !NSWorkspace.shared.accessibilityDisplayShouldReduceMotion
+                    if shouldAnimate {
+                        withAnimation(.easeOut(duration: 0.15)) {
+                            isSortHovered = hovering
+                        }
+                    } else {
+                        isSortHovered = hovering
+                    }
+                }
+                .animation(.easeOut(duration: 0.2), value: sortByLastPlayed)
+
                 ForEach(GameFilterOption.allCases) { option in
                     FilterChipView(
                         option: option,
@@ -1563,6 +1529,8 @@ struct FilterChipView: View {
     
     @State private var isHovered = false
 }
+
+// Note: isSortHovered is defined in LibraryGridView
 
 // MARK: - List Row
 

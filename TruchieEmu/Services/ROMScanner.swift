@@ -159,13 +159,7 @@ actor ROMScanner {
             return
         }
         
-        // Fallback to legacy MAME 2003-Plus database
-        if let mame2003Entry = MAME2003PlusService.shared.lookup(shortName: shortName) {
-            applyMAME2003PlusIdentification(to: &rom, entry: mame2003Entry, shortName: shortName)
-            return
-        }
-        
-        // Fallback to legacy MAMEImportService
+        // Fallback to legacy MAMEImportService (static lookup dictionary)
         if let mameEntry = MAMEImportService.lookup(shortName: shortName) {
             applyLegacyMAMEIdentification(to: &rom, entry: mameEntry, shortName: shortName)
             return
@@ -239,41 +233,6 @@ actor ROMScanner {
             rom.isHidden = true
             rom.category = "unplayable"
             ROMScannerLog.debug("MAME HIDE '\(shortName)' → '\(entry.description)' [MAME Unplayable, cores: \(entry.compatibleCores.isEmpty ? "none" : entry.compatibleCores.joined(separator: ", "))]")
-        }
-    }
-    
-    /// Apply identification using the MAME 2003-Plus database (legacy fallback).
-    private func applyMAME2003PlusIdentification(to rom: inout ROM, entry: MAME2003PlusEntry, shortName: String) {
-        rom.mameRomType = entry.isBIOS ? "bios" : (entry.runnable ? "game" : "unplayable")
-        
-        if entry.isBIOS {
-            rom.name = entry.description
-            rom.isHidden = false
-            rom.isBios = true
-            rom.category = "bios"
-            ROMScannerLog.debug("MAME 2003+ BIOS '\(shortName)' → '\(entry.description)' [core:mame2003_plus BIOS]")
-        } else if entry.runnable {
-            rom.name = entry.description
-            rom.isHidden = false
-            rom.category = "game"
-            ROMScannerLog.debug("MAME 2003+ SELECT '\(shortName)' → '\(entry.description)' [core:mame2003_plus compatible]")
-            
-            if rom.metadata == nil { rom.metadata = ROMMetadata() }
-            rom.metadata?.title = entry.description
-            rom.metadata?.year = entry.year
-            rom.metadata?.developer = entry.manufacturer
-            rom.metadata?.publisher = entry.manufacturer
-            if let players = entry.players { rom.metadata?.players = players }
-            
-            if entry.isVertical { rom.metadata?.orientation = "vertical" }
-            if let aspectX = entry.aspectX, let aspectY = entry.aspectY {
-                rom.metadata?.aspectX = aspectX
-                rom.metadata?.aspectY = aspectY
-            }
-        } else {
-            rom.isHidden = true
-            rom.category = "unplayable"
-            ROMScannerLog.debug("MAME 2003+ HIDE '\(shortName)' → '\(entry.description)' [MAME Unplayable]")
         }
     }
     
