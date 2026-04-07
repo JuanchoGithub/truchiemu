@@ -1140,7 +1140,85 @@ class ROMLibrary: ObservableObject {
     @MainActor
     func refreshFolder(at folderURL: URL) async {
         isScanning = true
-        await scanROMs(in: folderURL, runAutomationAfter: false)
+        scanCancellationToken.reset()
+
+        // Step 1: Collect all existing ROMs for this folder
+        let folderPath = folderURL.path
+        let folderPathPrefix = folderPath.hasSuffix("/") ? folderPath : folderPath + "/"
+        let existingROMsInFolder = roms.filter { rom in
+            rom.path.path == folderPath || rom.path.path.hasPrefix(folderPathPrefix)
+        }
+        let existingPathsInLibrary = Set(existingROMsInFolder.map { $0.path.path })
+
+        // Step 2: Lightweight scan — just file paths, NO identification
+        let scanner = ROMScanner()
+        let romFileURLs = await scanner.getROMFiles(in: folderURL) { progress in
+            DispatchQueue.main.async {
+                self.scanProgress = progress
+            }
+        }
+
+        // Step 3: Build set of physical paths found on disk
+        let scannedPaths = Set(romFileURLs.map { $0.path })
+
+        // Step 4: Find genuinely new files (on disk but NOT in library)
+        let newFileURLs = romFileURLs.filter { fileURL in
+            !existingPathsInLibrary.contains(fileURL.path)
+        }
+
+        // Step 5: Identify ONLY the new files
+        var newROMsToAdd: [ROM] = []
+        if !newFileURLs.isEmpty {
+            LoggerService.info(category: "ROMLibrary", "Refresh: Identifying \(newFileURLs.count) new ROM(s) in \(folderURL.lastPathComponent)")
+            newROMsToAdd = await scanner.scan(urls: newFileURLs) { _ in }
+                .map { LibraryMetadataStore.shared.mergedROM($0) }
+        }
+
+        // Step 6: Find ROMs to remove (in library but no longer on disk)
+        let deletedROMs = existingROMsInFolder.filter { rom in
+            !scannedPaths.contains(rom.path.path)
+        }
+
+        // Step 7: Apply additions
+        if !newROMsToAdd.isEmpty {
+            withAnimation(.easeInOut(duration: 0.3)) {
+                self.roms.append(contentsOf: newROMsToAdd)
+                self.roms.sort { $0.displayName < $1.displayName }
+            }
+            LoggerService.info(category: "ROMLibrary", "Refresh: Added \(newROMsToAdd.count) new ROM(s) to \(folderURL.lastPathComponent)")
+
+            // Persist new ROMs
+            repository.saveROMs(newROMsToAdd)
+        }
+
+        // Step 8: Apply deletions — only affects target folder
+        if !deletedROMs.isEmpty {
+            LoggerService.info(category: "ROMLibrary", "Refresh: Removing \(deletedROMs.count) ROM(s) no longer in \(folderURL.lastPathComponent)")
+            let deletedIDs = Set(deletedROMs.map { $0.id })
+            roms.removeAll { deletedIDs.contains($0.id) }
+
+            // Delete from SwiftData
+            repository.deleteROMsByPath(deletedROMs.map { $0.path.path })
+
+            // Delete metadata entries
+            for rom in deletedROMs {
+                let key = LibraryMetadataStore.pathKey(for: rom)
+                LibraryMetadataStore.shared.deleteMetadataEntry(key)
+            }
+
+            // Update file index
+            for path in Set(deletedROMs.map { $0.path.path }) {
+                fileIndex.removeValue(forKey: path)
+            }
+        }
+
+        // If nothing was added or removed, nothing was written — that's fine.
+        if newROMsToAdd.isEmpty && deletedROMs.isEmpty {
+            LoggerService.info(category: "ROMLibrary", "Refresh: No changes needed for \(folderURL.lastPathComponent)")
+        }
+
+        // Step 9: Final updates
+        updateCounts()
         isScanning = false
     }
 

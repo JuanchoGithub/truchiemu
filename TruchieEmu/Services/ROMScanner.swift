@@ -895,6 +895,89 @@ actor ROMScanner {
         return found
     }
 
+    // MARK: - Lightweight File Enumeration (for refresh)
+
+    /// Returns file URLs in a folder that look like ROM files (extension-based filtering only).
+    /// Performs NO system identification, MAME lookups, or metadata loading.
+    /// Intended for refresh operations that only need to compare file paths.
+    func getROMFiles(in folder: URL, progress: @escaping (Double) -> Void) async -> [URL] {
+        let scanStart = Date()
+        LoggerService.info(category: "ROMScanner", "=== LIGHTWEIGHT SCAN STARTED: \(folder.path) ===")
+
+        resetCancellation()
+        var found: [URL] = []
+        let fm = FileManager.default
+
+        guard let enumerator = fm.enumerator(
+            at: folder,
+            includingPropertiesForKeys: [.isRegularFileKey],
+            options: [.skipsHiddenFiles]
+        ) else {
+            LoggerService.info(category: "ROMScanner", "=== LIGHTWEIGHT SCAN COMPLETE: 0 files (enumerator failed) ===")
+            return []
+        }
+
+        let allURLs = enumerator.allObjects.compactMap { $0 as? URL }
+        let total = Double(allURLs.count)
+        var processed = 0
+
+        // Throttle progress updates (every 50ms)
+        var lastProgressUpdate = DispatchTime.now()
+        let throttleNanos: UInt64 = 50_000_000 // 50ms
+
+        // Build set of referenced files to skip (from .cue/.m3u containers)
+        let ignoredURLs = {
+            var ignored = Set<String>()
+            for url in allURLs {
+                let refs = getReferencedFiles(in: url)
+                for ref in refs {
+                    ignored.insert(ref.standardized.path)
+                }
+            }
+            return ignored
+        }()
+
+        for url in allURLs {
+            if isCancelled { break }
+
+            processed += 1
+
+            // Throttled progress update
+            let now = DispatchTime.now()
+            if now.uptimeNanoseconds - lastProgressUpdate.uptimeNanoseconds >= throttleNanos || processed == Int(total) {
+                lastProgressUpdate = now
+                progress(Double(processed) / max(total, 1))
+            }
+
+            // Skip referenced files
+            if ignoredURLs.contains(url.standardized.path) {
+                continue
+            }
+
+            guard (try? url.resourceValues(forKeys: [.isRegularFileKey]))?.isRegularFile == true else { continue }
+
+            let ext = url.pathExtension.lowercased()
+            guard !ext.isEmpty else { continue }
+
+            // Skip non-ROM extensions (same as full scan)
+            let skip = ["txt", "xml", "jpg", "jpeg", "png", "gif", "bmp", "pdf", "mp3", "mp4", "avi", "mkv", "nfo", "dat", "db", "json",
+                        "py", "pyc", "pyo", "pyw", "dylib", "so", "app", "icns", "plist", "strings", "loc", "lproj", "nib", "xib",
+                        "md", "rmd", "html", "htm", "css", "js", "ts", "jsx", "tsx"]
+            if skip.contains(ext) { continue }
+
+            // Skip files inside .app bundles
+            if url.path.contains("/Contents/") || url.path.hasSuffix(".app") { continue }
+
+            found.append(url)
+        }
+
+        // Final progress update
+        progress(1.0)
+        let scanTime = Date().timeIntervalSince(scanStart)
+        LoggerService.info(category: "ROMScanner", "=== LIGHTWEIGHT SCAN COMPLETE: \(found.count) ROM files found in \(String(format: "%.2f", scanTime))s ===")
+        return found
+    }
+
     // MARK: - Folder Discovery
     
     /// Find all subfolders (up to maxDepth levels deep) that contain at least one file

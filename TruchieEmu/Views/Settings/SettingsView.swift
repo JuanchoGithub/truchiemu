@@ -159,7 +159,7 @@ struct LibrarySettingsView: View {
                                     onRescan: {
                                         Task {
                                             scanningFolders.insert(folder.url.path)
-                                            await library.rescanLibrary(at: folder.url)
+                                            await library.refreshFolder(at: folder.url)
                                             scanningFolders.remove(folder.url.path)
                                         }
                                     },
