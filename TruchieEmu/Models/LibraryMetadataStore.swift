@@ -395,20 +395,34 @@ final class LibraryMetadataStore: ObservableObject {
 
     /// Delete a metadata entry by its path key.
     func deleteMetadataEntry(_ key: String) {
-        entries.removeValue(forKey: key)
-        let descriptor = FetchDescriptor<ROMMetadataEntry>(
-            predicate: #Predicate { $0.pathKey == key }
-        )
+        deleteMetadataEntries(Set([key]))
+    }
+
+    /// Delete multiple metadata entries by their path keys in a single batch.
+    /// This avoids the massive overhead of multiple context.save() calls.
+    func deleteMetadataEntries(_ keys: Set<String>) {
+        guard !keys.isEmpty else { return }
+        
+        for key in keys { entries.removeValue(forKey: key) }
+        
         do {
-            let results = try context.fetch(descriptor)
-            for entry in results {
-                context.delete(entry)
+            // Predicate with too many items can fail, so if keys.count is large, 
+            // fetch all and filter or chunk. Given metadata count is usually reachable,
+            // fetching all relevant items is safest and fastest.
+            let descriptor = FetchDescriptor<ROMMetadataEntry>()
+            let allItems = try context.fetch(descriptor)
+            let itemsToDelete = allItems.filter { keys.contains($0.pathKey) }
+            
+            for item in itemsToDelete {
+                context.delete(item)
             }
-            if !results.isEmpty {
+            
+            if !itemsToDelete.isEmpty {
                 try context.save()
+                LoggerService.info(category: "MetadataStore", "Deleted \(itemsToDelete.count) metadata entries in bulk.")
             }
         } catch {
-            LoggerService.error(category: "MetadataStore", "Failed to delete metadata: \(error.localizedDescription)")
+            LoggerService.error(category: "MetadataStore", "Failed to delete metadata entries: \(error.localizedDescription)")
         }
     }
 }

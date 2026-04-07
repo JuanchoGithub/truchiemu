@@ -88,27 +88,73 @@ final class ROMRepository {
         }
     }
 
-    /// Delete ROMs whose path starts with any of the given path prefixes.
-    /// Fetches all entries and filters in memory since hasPrefix is not supported in #Predicate.
-    func deleteROMsByPath(_ paths: [String]) {
-        guard !paths.isEmpty else { return }
+    /// Delete ROMs by their unique identifiers.
+    /// This is the most efficient way to delete specific entries when IDs are already known.
+    func deleteROMs(ids: [UUID]) {
+        guard !ids.isEmpty else { return }
         
+        let idSet = Set(ids)
         do {
-            let allDescriptor = FetchDescriptor<ROMEntry>()
-            let allEntries = try context.fetch(allDescriptor)
-            let entriesToDelete = allEntries.filter { entry in
-                paths.contains { entry.path.hasPrefix($0) }
-            }
+            // 1. Fetch all entries to delete
+            // Note: SwiftData #Predicate doesn't support Set.contains with 1000+ items well due to SQLite limits.
+            // We fetch all and filter in memory, which is O(N) where N is total ROMs, but avoids the O(N*M) complexity.
+            let descriptor = FetchDescriptor<ROMEntry>()
+            let allEntries = try context.fetch(descriptor)
+            let entriesToDelete = allEntries.filter { idSet.contains($0.id) }
+            
             let count = entriesToDelete.count
             for entry in entriesToDelete {
                 context.delete(entry)
             }
+            
             if count > 0 {
                 try context.save()
-                LoggerService.info(category: "ROMRepository", "Deleted \(count) ROM entries.")
+                LoggerService.info(category: "ROMRepository", "Deleted \(count) ROM entries by ID.")
             }
         } catch {
-            LoggerService.error(category: "ROMRepository", "Failed to delete ROMs: \(error.localizedDescription)")
+            LoggerService.error(category: "ROMRepository", "Failed to delete ROMs by ID: \(error.localizedDescription)")
+        }
+    }
+
+    /// Delete ROMs whose path starts with any of the given path prefixes.
+    /// Uses range-based fetching for common folder deletions to avoid fetching the entire database.
+    func deleteROMsByPath(_ paths: [String]) {
+        guard !paths.isEmpty else { return }
+        
+        do {
+            var entriesToDelete: [ROMEntry] = []
+            
+            // If we have just a few paths (e.g. folder removals), use efficient range queries.
+            if paths.count < 10 {
+                for path in paths {
+                    // range query: path >= folder && path < folder + "\u{FFFF}"
+                    let nextPath = path + "\u{FFFF}"
+                    let descriptor = FetchDescriptor<ROMEntry>(
+                        predicate: #Predicate<ROMEntry> { $0.path >= path && $0.path < nextPath }
+                    )
+                    entriesToDelete.append(contentsOf: try context.fetch(descriptor))
+                }
+            } else {
+                // Many paths: fall back to O(N) fetch + O(1) Set lookup
+                let pathSet = Set(paths)
+                let allDescriptor = FetchDescriptor<ROMEntry>()
+                let allEntries = try context.fetch(allDescriptor)
+                entriesToDelete = allEntries.filter { entry in
+                    pathSet.contains(entry.path) || paths.contains { entry.path.hasPrefix($0) }
+                }
+            }
+            
+            let count = entriesToDelete.count
+            for entry in entriesToDelete {
+                context.delete(entry)
+            }
+            
+            if count > 0 {
+                try context.save()
+                LoggerService.info(category: "ROMRepository", "Deleted \(count) ROM entries by path.")
+            }
+        } catch {
+            LoggerService.error(category: "ROMRepository", "Failed to delete ROMs by path: \(error.localizedDescription)")
         }
     }
 

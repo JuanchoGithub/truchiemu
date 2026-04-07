@@ -264,8 +264,9 @@ class ROMLibrary: ObservableObject {
         guard !orphans.isEmpty else { return }
 
         LoggerService.info(category: "ROMLibrary", "Found \(orphans.count) orphaned ROM(s). Purging.")
-        roms.removeAll { orphan in orphans.contains { $0.id == orphan.id } }
-        repository.deleteROMsByPath(orphans.map { $0.path.path })
+        let idsToPurge = orphans.map { $0.id }
+        roms.removeAll { orphan in idsToPurge.contains(orphan.id) }
+        repository.deleteROMs(ids: idsToPurge)
         saveROMsToDatabase()
     }
 
@@ -287,23 +288,25 @@ class ROMLibrary: ObservableObject {
 
         libraryFolders.remove(at: index)
         saveSecurityScopedBookmarks()
-        roms.removeAll { $0.path.path.hasPrefix(folderPath) || $0.path.path == url.path }
-        repository.deleteROMsByPath(removedROMs.map { $0.path.path })
+        
+        let removedIDs = removedROMs.map { $0.id }
+        roms.removeAll { removedIDs.contains($0.id) }
+        
+        // Use folder path for efficient range deletion in DB
+        repository.deleteROMsByPath([folderPath])
 
         if libraryFolders.isEmpty {
-            let orphanedROMs = roms
+            let orphanedIDs = roms.map { $0.id }
             roms.removeAll()
-            repository.deleteROMsByPath(orphanedROMs.map { $0.path.path })
+            repository.deleteROMs(ids: orphanedIDs)
             fileIndex.removeAll()
         } else {
             for path in Set(removedROMs.map { $0.path.path }) { fileIndex.removeValue(forKey: path) }
             if !fileIndex.isEmpty { saveFileIndexToStorage() }
         }
 
-        for rom in removedROMs {
-            let key = LibraryMetadataStore.pathKey(for: rom)
-            LibraryMetadataStore.shared.deleteMetadataEntry(key)
-        }
+        let metadataKeys = Set(removedROMs.map { LibraryMetadataStore.pathKey(for: $0) })
+        LibraryMetadataStore.shared.deleteMetadataEntries(metadataKeys)
 
         updateCounts()
         saveROMsToDatabase()
@@ -972,22 +975,23 @@ class ROMLibrary: ObservableObject {
         repository.removeLibraryFolder(urlPath: folderPath, removeSubfolders: true)
 
         if !removedROMs.isEmpty {
-            repository.deleteROMsByPath(removedROMs.map { $0.path.path })
+            // Efficiency: Pass the few folder paths to deleteROMsByPath instead of 4000 individual paths.
+            // This triggers range queries in the DB which are nearly instantaneous.
+            repository.deleteROMsByPath(pathsToRemove)
+            
             for path in Set(removedROMs.map { $0.path.path }) { fileIndex.removeValue(forKey: path) }
             if !fileIndex.isEmpty { saveFileIndexToStorage() }
-            for rom in removedROMs {
-                let key = LibraryMetadataStore.pathKey(for: rom)
-                LibraryMetadataStore.shared.deleteMetadataEntry(key)
-            }
+            let metadataKeys = Set(removedROMs.map { LibraryMetadataStore.pathKey(for: $0) })
+            LibraryMetadataStore.shared.deleteMetadataEntries(metadataKeys)
             LoggerService.info(category: "ROMLibrary", "Purged \(removedROMs.count) ROM(s)")
         }
 
         if primaryFolders.isEmpty && subfolderMap.isEmpty {
-            let orphanedROMs = roms
+            let orphanedIDs = roms.map { $0.id }
             roms.removeAll()
-            repository.deleteROMsByPath(orphanedROMs.map { $0.path.path })
+            repository.deleteROMs(ids: orphanedIDs)
             fileIndex.removeAll()
-            LoggerService.info(category: "ROMLibrary", "No primary folders remain. Purged \(orphanedROMs.count) ROM(s).")
+            LoggerService.info(category: "ROMLibrary", "No primary folders remain. Purged \(orphanedIDs.count) ROM(s).")
         }
 
         saveSecurityScopedBookmarks()
@@ -1014,9 +1018,8 @@ class ROMLibrary: ObservableObject {
         roms.removeAll { $0.path.path == subfolderPath || $0.path.path.hasPrefix(subfolderPathPrefix) }
         for path in Set(removedROMs.map { $0.path.path }) { fileIndex.removeValue(forKey: path) }
         if !fileIndex.isEmpty { saveFileIndexToStorage() }
-        for rom in removedROMs {
-            LibraryMetadataStore.shared.deleteMetadataEntry(LibraryMetadataStore.pathKey(for: rom))
-        }
+        let metadataKeys = Set(removedROMs.map { LibraryMetadataStore.pathKey(for: $0) })
+        LibraryMetadataStore.shared.deleteMetadataEntries(metadataKeys)
 
         repository.removeLibraryFolder(urlPath: subfolderPath, removeSubfolders: true)
         updateCounts()
@@ -1186,14 +1189,12 @@ class ROMLibrary: ObservableObject {
             let deletedIDs = Set(deletedROMs.map { $0.id })
             roms.removeAll { deletedIDs.contains($0.id) }
 
-            // Delete from SwiftData
-            repository.deleteROMsByPath(deletedROMs.map { $0.path.path })
+            // Delete from SwiftData using IDs for O(N) performance
+            repository.deleteROMs(ids: deletedROMs.map { $0.id })
 
-            // Delete metadata entries
-            for rom in deletedROMs {
-                let key = LibraryMetadataStore.pathKey(for: rom)
-                LibraryMetadataStore.shared.deleteMetadataEntry(key)
-            }
+            // Delete metadata entries in bulk
+            let metadataKeys = Set(deletedROMs.map { LibraryMetadataStore.pathKey(for: $0) })
+            LibraryMetadataStore.shared.deleteMetadataEntries(metadataKeys)
 
             // Update file index
             for path in Set(deletedROMs.map { $0.path.path }) {
