@@ -2,7 +2,6 @@ import XCTest
 @testable import TruchieEmu
 
 final class DATIngestionTrackerTests: XCTestCase {
-    var tracker: DATIngestionTracker!
     let testDBPath = URL(fileURLWithPath: NSTemporaryDirectory()).appendingPathComponent("test_dat_ingestion.sqlite")
 
     override func setUp() async throws {
@@ -11,7 +10,6 @@ final class DATIngestionTrackerTests: XCTestCase {
     }
 
     override func tearDown() async throws {
-        tracker?.close()
         try? FileManager.default.removeItem(at: testDBPath)
         try await super.tearDown()
     }

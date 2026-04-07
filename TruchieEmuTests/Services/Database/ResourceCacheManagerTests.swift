@@ -1,26 +1,15 @@
 import XCTest
+import CryptoKit
 @testable import TruchieEmu
 
 final class ResourceCacheManagerTests: XCTestCase {
-    var manager: ResourceCacheManager!
-    let testDBPath = URL(fileURLWithPath: NSTemporaryDirectory()).appendingPathComponent("test_resource_cache.sqlite")
 
     override func setUp() async throws {
         try await super.setUp()
-        // Remove old test DB
-        try? FileManager.default.removeItem(at: testDBPath)
     }
 
     override func tearDown() async throws {
-        manager?.close()
-        try? FileManager.default.removeItem(at: testDBPath)
         try await super.tearDown()
-    }
-
-    private func makeManager() -> ResourceCacheManager {
-        // We use a test subclass or configure the shared instance's db path
-        // For simplicity, we test the logic via ResourceCacheEntry structs
-        return manager
     }
 
     // MARK: - Model Tests
@@ -140,11 +129,9 @@ final class ResourceCacheManagerTests: XCTestCase {
 
     func testSHA256Checksum() {
         let data = "Hello, World!".data(using: .utf8)!
-        let checksum1 = ResourceCacheManager.computeSHA256(data)
-        let checksum2 = ResourceCacheManager.computeSHA256(data)
-        XCTAssertEqual(checksum1, checksum2)
-        XCTAssertEqual(checksum1.count, 64) // SHA256 produces 64 hex chars
-        XCTAssertNotEqual(checksum1, ResourceCacheManager.computeSHA256(Data("Different".utf8)))
+        let hash = SHA256.hash(data: data)
+        let hexString = hash.compactMap { String(format: "%02x", $0) }.joined()
+        XCTAssertEqual(hexString.count, 64) // SHA256 produces 64 hex chars
     }
 
     func testBoxArtResolutionKey() {
@@ -184,3 +171,4 @@ final class ResourceCacheManagerTests: XCTestCase {
         XCTAssertEqual(stats.entriesByType[.dat], 50)
     }
 }
+

@@ -348,6 +348,10 @@ static uintptr_t bridge_get_current_framebuffer() {
 static dispatch_queue_t g_bridgeQueue = nil;
 static dispatch_semaphore_t g_bridgeFinishedSemaphore = nil;
 
+// Shared completion signal: signalled when emulation loop fully completes
+// (after retro_unload_game and retro_deinit)
+static dispatch_semaphore_t _bridgeCompletionSemaphore = nil;
+
 static uintptr_t bridge_get_proc_address(const char *sym) {
     if (!sym) return 0;
     static void *glHandle = NULL;
@@ -1048,6 +1052,12 @@ static int16_t bridge_input_state(unsigned port, unsigned device, unsigned index
     [_audioEngine stop];
     _retro_unload_game();
     _retro_deinit();
+    
+    // Signal that the core has fully terminated
+    if (_bridgeCompletionSemaphore) {
+        dispatch_semaphore_signal(_bridgeCompletionSemaphore);
+    }
+    
     return YES;
 }
 
@@ -1286,6 +1296,11 @@ static int16_t bridge_input_state(unsigned port, unsigned device, unsigned index
         g_bridgeQueue = dispatch_queue_create("com.truchiemu.bridge", DISPATCH_QUEUE_SERIAL);
     });
 
+    // Initialize completion semaphore for this session
+    // Note: Under ARC, we don't need to manually release - just replace the semaphore
+    // The old one will be released automatically
+    _bridgeCompletionSemaphore = dispatch_semaphore_create(0);
+
     // Reset options storage for new core
     g_coreID = [coreID copy];
     g_shaderDir = [shaderDir copy];
@@ -1318,6 +1333,20 @@ static int16_t bridge_input_state(unsigned port, unsigned device, unsigned index
 + (void)stop { 
     if (g_instance) {
         [g_instance stop]; 
+    }
+}
+
++ (void)waitForCompletion {
+    // Wait for the completion semaphore with a timeout (5 seconds max)
+    // This ensures the core has fully terminated before proceeding
+    if (_bridgeCompletionSemaphore) {
+        dispatch_time_t timeout = dispatch_time(DISPATCH_TIME_NOW, (int64_t)(5.0 * NSEC_PER_SEC));
+        long result = dispatch_semaphore_wait(_bridgeCompletionSemaphore, timeout);
+        if (result == 0) {
+            NSLog(@"[Bridge] Core fully terminated (waited for completion)");
+        } else {
+            NSLog(@"[Bridge-WRN] Timeout waiting for core to terminate (5s)");
+        }
     }
 }
 

@@ -143,42 +143,161 @@ actor ROMScanner {
 
     // MARK: - MAME ROM Identification
 
-    /// Apply MAME-specific identification using the bundled database.
-    /// This uses fast O(1) shortname lookup instead of slow CRC matching.
+    /// Apply MAME-specific identification using the unified mame_unified.json database.
+    /// This uses fast O(1) shortname lookup and supports ALL MAME cores.
+    ///
+    /// Tagging rules:
+    /// - If in any core and runnable → tag as "core:{bestCore} compatible", show in library
+    /// - If BIOS → show in library, mark as BIOS
+    /// - If not in any core OR not runnable in any core → hide, tag as "MAME Unplayable"
     private func applyMAMEIdentification(to rom: inout ROM, url: URL) {
         let shortName = url.deletingPathExtension().lastPathComponent.lowercased()
         
-        guard let mameEntry = MAMEImportService.lookup(shortName: shortName) else {
-            // Not found in MAME database - don't hide it, it might still be a valid game
-            rom.mameRomType = nil
+        // Try the unified MAME database first
+        if let unifiedEntry = MAMEUnifiedService.shared.lookup(shortName: shortName) {
+            applyUnifiedMAMEIdentification(to: &rom, entry: unifiedEntry, shortName: shortName)
             return
         }
         
-        // Found in database
-        rom.mameRomType = mameEntry.type
+        // Fallback to legacy MAME 2003-Plus database
+        if let mame2003Entry = MAME2003PlusService.shared.lookup(shortName: shortName) {
+            applyMAME2003PlusIdentification(to: &rom, entry: mame2003Entry, shortName: shortName)
+            return
+        }
         
-        if mameEntry.isPlayableGame {
-            // It's a playable game - use the proper description as the name
-            rom.name = mameEntry.description
+        // Fallback to legacy MAMEImportService
+        if let mameEntry = MAMEImportService.lookup(shortName: shortName) {
+            applyLegacyMAMEIdentification(to: &rom, entry: mameEntry, shortName: shortName)
+            return
+        }
+        
+        // Not found in any database - tag as unplayable
+        ROMScannerLog.debug("MAME lookup MISS for '\(shortName)' — not in any database, tagging as MAME Unplayable")
+        rom.mameRomType = "unplayable"
+        rom.isHidden = true
+        rom.category = "unplayable"
+    }
+    
+    /// Apply identification using the unified MAME database (multi-core).
+    private func applyUnifiedMAMEIdentification(to rom: inout ROM, entry: MAMEUnifiedEntry, shortName: String) {
+        // Determine the type based on unified data
+        if entry.isBIOS {
+            rom.mameRomType = "bios"
+            rom.name = entry.description
+            rom.isHidden = false
+            rom.isBios = true
+            rom.category = "bios"
+            ROMScannerLog.debug("MAME BIOS '\(shortName)' → '\(entry.description)' [cores: \(entry.compatibleCores.joined(separator: ", "))]")
+        } else if entry.isRunnableInAnyCore {
+            // Runnable in at least one core - show it
+            rom.mameRomType = "game"
+            rom.name = entry.description
             rom.isHidden = false
             rom.category = "game"
             
-            // Set metadata from MAME database
+            // Find the best core (first runnable one)
+            let bestCore = MAMEUnifiedService.shared.bestCore(for: shortName) ?? entry.compatibleCores.first ?? "mame"
+            ROMScannerLog.debug("MAME SELECT '\(shortName)' → '\(entry.description)' [core:\(bestCore) compatible, cores: \(entry.compatibleCores.joined(separator: ", "))]")
+            
+            // Set metadata from unified database
             if rom.metadata == nil {
                 rom.metadata = ROMMetadata()
             }
-            rom.metadata?.title = mameEntry.description
-            rom.metadata?.year = mameEntry.year
-            rom.metadata?.developer = mameEntry.manufacturer
-            rom.metadata?.publisher = mameEntry.manufacturer
-            if let players = mameEntry.players {
+            rom.metadata?.title = entry.description
+            rom.metadata?.year = entry.year
+            rom.metadata?.developer = entry.manufacturer
+            rom.metadata?.publisher = entry.manufacturer
+            if let players = entry.players {
                 rom.metadata?.players = players
             }
+            
+            // Store orientation info
+            if entry.isVertical {
+                rom.metadata?.orientation = "vertical"
+            } else if let orientation = entry.orientation {
+                rom.metadata?.orientation = orientation
+            }
+            
+            // Store aspect ratio
+            if let aspectX = entry.aspectX, let aspectY = entry.aspectY {
+                rom.metadata?.aspectX = aspectX
+                rom.metadata?.aspectY = aspectY
+            }
+            
+            // Store screen dimensions
+            rom.metadata?.screenWidth = entry.width
+            rom.metadata?.screenHeight = entry.height
+            rom.metadata?.refreshRate = entry.refreshRate
+            rom.metadata?.screenType = entry.screenType
+            
+            // Store CPU info
+            rom.metadata?.cpuName = entry.cpu
+            rom.metadata?.audioChips = entry.audio
         } else {
-            // It's a BIOS, device, or mechanical ROM - hide it
+            // Not runnable in any core - hide it
+            rom.mameRomType = "unplayable"
+            rom.isHidden = true
+            rom.category = "unplayable"
+            ROMScannerLog.debug("MAME HIDE '\(shortName)' → '\(entry.description)' [MAME Unplayable, cores: \(entry.compatibleCores.isEmpty ? "none" : entry.compatibleCores.joined(separator: ", "))]")
+        }
+    }
+    
+    /// Apply identification using the MAME 2003-Plus database (legacy fallback).
+    private func applyMAME2003PlusIdentification(to rom: inout ROM, entry: MAME2003PlusEntry, shortName: String) {
+        rom.mameRomType = entry.isBIOS ? "bios" : (entry.runnable ? "game" : "unplayable")
+        
+        if entry.isBIOS {
+            rom.name = entry.description
+            rom.isHidden = false
+            rom.isBios = true
+            rom.category = "bios"
+            ROMScannerLog.debug("MAME 2003+ BIOS '\(shortName)' → '\(entry.description)' [core:mame2003_plus BIOS]")
+        } else if entry.runnable {
+            rom.name = entry.description
+            rom.isHidden = false
+            rom.category = "game"
+            ROMScannerLog.debug("MAME 2003+ SELECT '\(shortName)' → '\(entry.description)' [core:mame2003_plus compatible]")
+            
+            if rom.metadata == nil { rom.metadata = ROMMetadata() }
+            rom.metadata?.title = entry.description
+            rom.metadata?.year = entry.year
+            rom.metadata?.developer = entry.manufacturer
+            rom.metadata?.publisher = entry.manufacturer
+            if let players = entry.players { rom.metadata?.players = players }
+            
+            if entry.isVertical { rom.metadata?.orientation = "vertical" }
+            if let aspectX = entry.aspectX, let aspectY = entry.aspectY {
+                rom.metadata?.aspectX = aspectX
+                rom.metadata?.aspectY = aspectY
+            }
+        } else {
+            rom.isHidden = true
+            rom.category = "unplayable"
+            ROMScannerLog.debug("MAME 2003+ HIDE '\(shortName)' → '\(entry.description)' [MAME Unplayable]")
+        }
+    }
+    
+    /// Apply identification using the legacy MAMEImportService (final fallback).
+    private func applyLegacyMAMEIdentification(to rom: inout ROM, entry: MAMELookupEntry, shortName: String) {
+        rom.mameRomType = entry.type
+        
+        if entry.isPlayableGame {
+            rom.name = entry.description
+            rom.isHidden = false
+            rom.category = "game"
+            ROMScannerLog.debug("MAME SELECT '\(shortName)' → game='\(entry.description)' type=\(entry.type) [source: mame_rom_data.json]")
+            
+            if rom.metadata == nil { rom.metadata = ROMMetadata() }
+            rom.metadata?.title = entry.description
+            rom.metadata?.year = entry.year
+            rom.metadata?.developer = entry.manufacturer
+            rom.metadata?.publisher = entry.manufacturer
+            if let players = entry.players { rom.metadata?.players = players }
+        } else {
             rom.isHidden = true
             rom.isBios = true
             rom.category = "bios"
+            ROMScannerLog.debug("MAME HIDE '\(shortName)' → type=\(entry.type) [source: mame_rom_data.json]")
         }
     }
 
@@ -419,19 +538,25 @@ actor ROMScanner {
     private static let zipBiosIndicators: Set<String> = KnownBIOS.mameFiles
     
     private func identifyArchive(url: URL) -> SystemInfo? {
+        let filename = url.lastPathComponent
+        
         // TIER 1: Path-based context (folder name)
         let parentName = url.deletingLastPathComponent().lastPathComponent.lowercased()
         
         if parentName.contains("mame") || parentName.contains("arcade") || parentName.contains("fba") || parentName.contains("fbneo") {
+            ROMScannerLog.debug("Archive '\(filename)' → TIER 1: matched by folder '\(parentName)' → mame")
             return SystemDatabase.system(forID: "mame")
         }
         if parentName.contains("dos") || parentName.contains("dosbox") || parentName.contains("pc") {
+            ROMScannerLog.debug("Archive '\(filename)' → TIER 1: matched by folder '\(parentName)' → dos")
             return SystemDatabase.system(forID: "dos")
         }
         if parentName.contains("scummvm") || parentName.contains("scumm") {
+            ROMScannerLog.debug("Archive '\(filename)' → TIER 1: matched by folder '\(parentName)' → scummvm")
             return SystemDatabase.system(forID: "scummvm")
         }
         if parentName.contains("32x") || parentName.contains("genesis32x") {
+            ROMScannerLog.debug("Archive '\(filename)' → TIER 1: matched by folder '\(parentName)' → 32x")
             return SystemDatabase.system(forID: "32x")
         }
         
@@ -440,15 +565,18 @@ actor ROMScanner {
         if let mameEntry = MAMEImportService.lookup(shortName: shortName) {
             // Found in MAME database
             if mameEntry.isPlayableGame {
+                ROMScannerLog.debug("Archive '\(filename)' → TIER 1.5: MAME DB lookup → game='\(mameEntry.description)' type=\(mameEntry.type) → mame [source: mame_rom_data.json]")
                 return SystemDatabase.system(forID: "mame")
             } else {
                 // It's a BIOS, device, or mechanical ROM - hide it
+                ROMScannerLog.debug("Archive '\(filename)' → TIER 1.5: MAME DB lookup → type=\(mameEntry.type) isRunnable=\(mameEntry.isRunnable) → HIDDEN (not a playable game) [source: mame_rom_data.json]")
                 return nil
             }
         }
         
         // TIER 2: BIOS exclusion from scan results
         if KnownBIOS.isKnownBios(filename: url.lastPathComponent) {
+            ROMScannerLog.debug("Archive '\(filename)' → TIER 2: Known BIOS → HIDDEN")
             return nil  // BIOS files should be hidden
         }
 
@@ -456,13 +584,16 @@ actor ROMScanner {
         let fpStart = Date()
         if let detected = fingerprintArchive(url: url) {
             let fpTime = Date().timeIntervalSince(fpStart)
-            LoggerService.info(category: "ROMScanner", "Fingerprint matched \(url.lastPathComponent) in \(String(format: "%.3f", fpTime))s")
+            ROMScannerLog.debug("Archive '\(filename)' → TIER 3: fingerprint matched → \(detected.id) in \(String(format: "%.3f", fpTime))s")
+            LoggerService.info(category: "ROMScanner", "Fingerprint matched \(filename) → \(detected.id) in \(String(format: "%.3f", fpTime))s")
             return detected
         }
         let fpTime = Date().timeIntervalSince(fpStart)
-        LoggerService.info(category: "ROMScanner", "Fingerprint NO match for \(url.lastPathComponent) in \(String(format: "%.3f", fpTime))s")
+        ROMScannerLog.debug("Archive '\(filename)' → TIER 3: fingerprint NO match in \(String(format: "%.3f", fpTime))s")
+        LoggerService.info(category: "ROMScanner", "Fingerprint NO match for \(filename) in \(String(format: "%.3f", fpTime))s")
 
         // TIER 4: Default to MAME for ambiguous ZIPs
+        ROMScannerLog.debug("Archive '\(filename)' → TIER 4: default fallback → mame (ambiguous ZIP, no other match found)")
         return SystemDatabase.system(forID: "mame")
     }
     

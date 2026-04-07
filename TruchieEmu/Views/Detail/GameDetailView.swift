@@ -372,6 +372,30 @@ struct GameDetailView: View {
         if currentROM.useCustomCore, let sel = currentROM.selectedCoreID { return sel }
         return sysPrefs.preferredCoreID(for: sysID) ?? sys.defaultCoreID
     }
+
+    /// Game description from multiple sources: MAME database, ROM metadata, or Libretro DAT.
+    private var gameDescription: String? {
+        // 1. MAME games: use the MAME lookup database description
+        if currentROM.systemID == "mame" || currentROM.systemID == "arcade" {
+            let shortName = currentROM.shortNameForMAME
+            if let mameEntry = MAMEImportService.lookup(shortName: shortName) {
+                return mameEntry.description
+            }
+        }
+
+        // 2. ROM metadata description (from LaunchBox or manual identification)
+        if let desc = currentROM.metadata?.description, !desc.isEmpty {
+            return desc
+        }
+
+        // 3. Libretro DAT: for non-MAME games, try to find the game info via identification
+        // This is populated when the user identifies a game
+        if let info = currentROM.metadata?.title, let year = currentROM.metadata?.year {
+            return "\(info) (\(year))"
+        }
+
+        return nil
+    }
     
     /// Returns true when the active core for this ROM is Gambatte (which supports named internal palettes and color correction).
     private var isGambatteCore: Bool {
@@ -925,9 +949,9 @@ struct GameDetailView: View {
             }
 
             // Description card
-            if let desc = currentROM.metadata?.description {
+            if let description = gameDescription {
                 ModernSectionCard(showHeader: false) {
-                    Text(desc)
+                    Text(description)
                         .font(.body)
                         .foregroundColor(.white.opacity(0.7))
                         .lineSpacing(4)

@@ -1,6 +1,5 @@
 import Foundation
 import SwiftData
-import os.log
 
 /// Background service that verifies MAME ROMs by computing CRC32 of inner files.
 /// Runs when the app is idle, pauses when active, and resumes on next launch.
@@ -15,7 +14,6 @@ final class MAMEVerificationService: ObservableObject {
     @Published var currentROM: String?
     @Published var progressMessage: String = ""
     
-    private let log = Logger(subsystem: Bundle.main.bundleIdentifier ?? "TruchieEmu", category: "MAMEVerify")
     private var modelContext: ModelContext?
     private var isCancelled = false
     
@@ -34,7 +32,7 @@ final class MAMEVerificationService: ObservableObject {
         isPaused = false
         isCancelled = false
         
-        log.info("MAME verification started")
+        LoggerService.mameVerify("MAME verification started")
         
         Task {
             await runVerificationLoop()
@@ -45,14 +43,14 @@ final class MAMEVerificationService: ObservableObject {
     func pause() {
         guard isRunning else { return }
         isPaused = true
-        log.info("MAME verification paused")
+        LoggerService.mameVerify("MAME verification paused")
     }
     
     /// Resume verification after pause.
     func resume() {
         guard isRunning && isPaused else { return }
         isPaused = false
-        log.info("MAME verification resumed")
+        LoggerService.mameVerify("MAME verification resumed")
         
         Task {
             await runVerificationLoop()
@@ -65,7 +63,7 @@ final class MAMEVerificationService: ObservableObject {
         isRunning = false
         isPaused = false
         currentROM = nil
-        log.info("MAME verification stopped")
+        LoggerService.mameVerify("MAME verification stopped")
     }
     
     /// Get count of pending verifications.
@@ -78,7 +76,7 @@ final class MAMEVerificationService: ObservableObject {
             }
             pendingCount = try modelContext.fetchCount(descriptor)
         } catch {
-            log.error("Failed to count pending verifications: \(error.localizedDescription, privacy: .public)")
+            LoggerService.mameVerifyError("Failed to count pending verifications: \(error.localizedDescription)")
         }
     }
     
@@ -92,7 +90,7 @@ final class MAMEVerificationService: ObservableObject {
             guard pendingCount > 0 else {
                 progressMessage = "All ROMs verified"
                 isRunning = false
-                log.info("MAME verification complete - no pending ROMs")
+                LoggerService.mameVerify("MAME verification complete - no pending ROMs")
                 return
             }
             
@@ -128,7 +126,7 @@ final class MAMEVerificationService: ObservableObject {
             let results = try modelContext.fetch(descriptor)
             return results.first
         } catch {
-            log.error("Failed to fetch pending verification: \(error.localizedDescription, privacy: .public)")
+            LoggerService.mameVerifyError("Failed to fetch pending verification: \(error.localizedDescription)")
             return nil
         }
     }
@@ -161,11 +159,11 @@ final class MAMEVerificationService: ObservableObject {
         if let entry = mameService.lookup(shortName: record.shortName) {
             // Found in database - mark as verified
             record.markVerified(crc32: crcString, innerFiles: nil)
-            log.info("Verified: \(record.shortName) -> \(entry.description)")
+            LoggerService.mameVerify("Verified: \(record.shortName) -> \(entry.description)")
         } else {
             // Not in MAME database - this is not a MAME ROM
             record.markNotMame(crc32: crcString)
-            log.info("Not MAME: \(record.shortName)")
+            LoggerService.mameVerify("Not MAME: \(record.shortName)")
         }
         
         try? modelContext?.save()

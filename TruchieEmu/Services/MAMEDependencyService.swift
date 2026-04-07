@@ -1,6 +1,5 @@
 import Foundation
 import SwiftData
-import os.log
 
 // MARK: - XML Parser for MAME XML
 
@@ -278,7 +277,6 @@ final class MAMEDependencyService: ObservableObject {
         return base.appendingPathComponent("TruchieEmu/MAMEDeps", isDirectory: true)
     }
     
-    private let log = Logger(subsystem: Bundle.main.bundleIdentifier ?? "TruchieEmu", category: "MAMEDeps")
     
     /// UserDefaults key tracking cores whose XML fetch failed (for retry)
     private static let failedFetchKey = "MAMEDependencyService_failedFetchCores"
@@ -296,24 +294,46 @@ final class MAMEDependencyService: ObservableObject {
     // MARK: - Fetch & Parse
     
     /// Fetch and parse MAME XML dependencies for a core.
-    /// Call this when a core is downloaded.
-    /// Falls back to bundled JSON if fetch fails.
+    /// NOTE: Now uses the bundled mame_unified.json instead of runtime XML downloads.
+    /// The XML download logic is kept for backwards compatibility but is no longer the primary path.
+    @MainActor
     func fetchAndParseDependencies(for coreID: String) async throws {
+        try await fetchAndParseDependencies(for: coreID, forceRefresh: false)
+    }
+
+    /// Fetch and parse MAME XML dependencies for a core with optional cache bypass.
+    /// For all MAME cores, this now loads from the bundled unified database.
+    @MainActor
+    func fetchAndParseDependencies(for coreID: String, forceRefresh: Bool) async throws {
         let baseID = Self.baseCoreID(coreID)
+        
+        // For all known MAME cores, use the bundled unified database
+        if Self.isMAMECore(baseID) {
+            loadFromUnifiedDatabase(for: baseID)
+            return
+        }
+        
+        // For other MAME cores, fall back to XML download (legacy behavior)
         guard let xmlURLString = Self.xmlURLs[baseID] else {
             throw MAMEParserError.coreNotSupported(baseID)
         }
         
-        // Check cache first
-        if dependencyCache[baseID] != nil {
-            log.info("Dependencies already cached for \(baseID)")
+        // Check cache first (unless force refresh is requested)
+        if !forceRefresh, dependencyCache[baseID] != nil {
+            LoggerService.mameDeps("Dependencies already cached for \(baseID). Use forceRefresh=true to re-download.")
             return
+        }
+        
+        if forceRefresh {
+            LoggerService.mameDeps("Force refreshing dependencies for \(baseID)")
         }
         
         isFetching = true
         defer { isFetching = false }
         
-        log.info("Fetching MAME XML for \(baseID) from \(xmlURLString)")
+        let storagePath = storageURL.appendingPathComponent("\(baseID)_deps.json").path
+        LoggerService.mameDeps("Fetching MAME XML for \(baseID) from \(xmlURLString)")
+        LoggerService.mameDeps("Parsed dependencies will be stored at: \(storagePath)")
         
         do {
             guard let url = URL(string: xmlURLString) else {
@@ -369,19 +389,64 @@ final class MAMEDependencyService: ObservableObject {
             // Remove from failed fetch set since it succeeded
             clearFailedFetch(baseID)
             
-            log.info("Parsed \(db.games.count) game dependencies for \(baseID)")
+            LoggerService.mameDeps("Parsed \(db.games.count) game dependencies for \(baseID) → SUCCESS")
             
         } catch {
             // Record as failed for retry on next startup
             recordFailedFetch(baseID)
             
             // Fallback: try using bundled JSON if no cached database exists
-            log.warning("XML fetch failed for \(baseID): \(error.localizedDescription). Falling back to bundled database.")
+            LoggerService.mameDepsWarn("XML fetch FAILED for \(baseID): \(error.localizedDescription). Falling back to bundled database.")
             
             // The bundled fallback is already loaded in init() with coreID "mame_fallback"
             // For now, we just log the error. The game will still work but won't have
             // precise per-core dependency data.
         }
+    }
+    
+    /// Load dependencies for a specific core from the bundled unified database.
+    @MainActor
+    private func loadFromUnifiedDatabase(for baseID: String) {
+        // Check if already cached
+        if dependencyCache[baseID] != nil {
+            return
+        }
+        
+        let unifiedService = MAMEUnifiedService.shared
+        guard let db = unifiedService.database else {
+            LoggerService.mameDepsWarn("Unified database not loaded, falling back to legacy for \(baseID)")
+            return
+        }
+        
+        // Build a MAMEDependencyDB from the unified database, filtering for this specific core
+        var games: [String: MAMEGameDependencies] = [:]
+        for (shortName, entry) in db.games {
+            // Check if this game is in the requested core
+            guard entry.compatibleCores.contains(baseID) else { continue }
+            
+            // Get per-core dependency info
+            let coreDep = entry.coreDeps?[baseID]
+            
+            games[shortName] = MAMEGameDependencies(
+                description: entry.description,
+                isRunnable: coreDep?.runnable ?? false,
+                driverStatus: entry.driverStatus,
+                parentROM: coreDep?.cloneOf ?? entry.coreDeps?[baseID]?.cloneOf,
+                romOf: coreDep?.romOf,
+                sampleOf: coreDep?.sampleOf,
+                mergedROMs: coreDep?.mergedROMs
+            )
+        }
+        
+        let depDB = MAMEDependencyDB(
+            coreID: baseID,
+            version: "unified_\(baseID)",
+            fetchedAt: Date(),
+            games: games
+        )
+        
+        dependencyCache[baseID] = depDB
+        LoggerService.mameDeps("Loaded \(games.count) entries for \(baseID) from unified database")
     }
     
     // MARK: - Retry Failed Fetches
@@ -392,7 +457,7 @@ final class MAMEDependencyService: ObservableObject {
         guard !failed.contains(baseID) else { return }
         failed.append(baseID)
         AppSettings.set(Self.failedFetchKey, value: failed)
-        log.info("Recorded failed fetch for core: \(baseID)")
+        LoggerService.mameDeps("Recorded failed fetch for core: \(baseID)")
     }
     
     /// Clear a core from the failed fetch list.
@@ -413,7 +478,7 @@ final class MAMEDependencyService: ObservableObject {
         let failedCores = Self.failedFetchCores
         guard !failedCores.isEmpty else { return }
         
-        log.info("Retrying MAME dependency fetch for \(failedCores.count) core(s): \(failedCores)")
+        LoggerService.mameDeps("Retrying MAME dependency fetch for \(failedCores.count) core(s): \(failedCores)")
         
         let fullCoreIDs = failedCores.map { "\($0)_libretro" }
         for coreID in fullCoreIDs {
@@ -421,7 +486,7 @@ final class MAMEDependencyService: ObservableObject {
             do {
                 try await self.fetchAndParseDependencies(for: coreID)
             } catch {
-                log.warning("Retry fetch failed for \(coreID): \(error.localizedDescription)")
+                LoggerService.mameDepsWarn("Retry fetch failed for \(coreID): \(error.localizedDescription)")
             }
         }
     }
@@ -432,7 +497,7 @@ final class MAMEDependencyService: ObservableObject {
     func getRunnableGames(for coreID: String) -> [MAMEGameInfo] {
         let baseID = Self.baseCoreID(coreID)
         guard let db = dependencyCache[baseID] else {
-            log.warning("No dependency database for \(baseID)")
+            LoggerService.mameDepsWarn("No dependency database for \(baseID)")
             return []
         }
         return MAMEXMLParser.getRunnableGames(from: db)
@@ -480,9 +545,9 @@ final class MAMEDependencyService: ObservableObject {
         do {
             let data = try encoder.encode(db)
             try data.write(to: url)
-            log.info("Persisted dependency database for \(coreID)")
+            LoggerService.mameDeps("Persisted dependency database for \(coreID) → \(url.path)")
         } catch {
-            log.error("Failed to persist database for \(coreID): \(error.localizedDescription)")
+            LoggerService.mameDepsError("Failed to persist database for \(coreID): \(error.localizedDescription)")
         }
     }
     
@@ -499,12 +564,12 @@ final class MAMEDependencyService: ObservableObject {
                 let coreID = fileURL.deletingPathExtension().lastPathComponent.replacingOccurrences(of: "_deps", with: "")
                 dependencyCache[coreID] = db
             } catch {
-                log.warning("Failed to load cached database from \(fileURL.lastPathComponent): \(error.localizedDescription)")
+                LoggerService.mameDepsWarn("Failed to load cached database from \(fileURL.lastPathComponent): \(error.localizedDescription)")
             }
         }
         
         if !self.dependencyCache.isEmpty {
-            log.info("Loaded \(self.dependencyCache.count) cached MAME dependency databases")
+            LoggerService.mameDeps("Loaded \(self.dependencyCache.count) cached MAME dependency databases")
         }
     }
     
@@ -533,7 +598,7 @@ final class MAMEDependencyService: ObservableObject {
             }
         }
         
-        log.warning("No fallback MAME JSON found")
+        LoggerService.mameDepsWarn("No fallback MAME JSON found")
     }
     
     /// Parse the bundled JSON and add any cores that don't have cached databases.
@@ -542,7 +607,7 @@ final class MAMEDependencyService: ObservableObject {
             let data = try Data(contentsOf: url)
             guard let json = try JSONSerialization.jsonObject(with: data) as? [String: Any],
                   let roms = json["roms"] as? [String: Any] else {
-                log.error("Failed to parse fallback MAME JSON")
+                LoggerService.mameDepsError("Failed to parse fallback MAME JSON")
                 return
             }
             
@@ -570,10 +635,10 @@ final class MAMEDependencyService: ObservableObject {
                     games: games
                 )
                 dependencyCache[fallbackCoreID] = db
-                log.info("Loaded bundled MAME dependency database (\(games.count) entries)")
+                LoggerService.mameDeps("Loaded bundled MAME dependency database (\(games.count) entries)")
             }
         } catch {
-            log.error("Failed to load fallback MAME JSON: \(error.localizedDescription)")
+            LoggerService.mameDepsError("Failed to load fallback MAME JSON: \(error.localizedDescription)")
         }
     }
     
@@ -582,7 +647,39 @@ final class MAMEDependencyService: ObservableObject {
         let baseID = Self.baseCoreID(coreID)
         return dependencyCache[baseID] != nil
     }
-    
+
+    /// Look up a MAME game by shortName, preferring per-core dependency data
+    /// (from downloaded XML) over the bundled fallback JSON.
+    /// Returns a tuple with the description, type, isRunnable, parentROM, and the source.
+    func lookupGame(for coreID: String, shortName: String) -> (description: String, type: String, isPlayable: Bool, parent: String?, source: String)? {
+        let baseID = Self.baseCoreID(coreID)
+
+        // First: try per-core dependency database (downloaded XML)
+        if let db = dependencyCache[baseID],
+           let deps = db.games[shortName] {
+            return (
+                description: deps.description,
+                type: deps.isRunnable ? "game" : "driver",
+                isPlayable: deps.isRunnable,
+                parent: deps.parentROM,
+                source: "\(baseID)_deps.json"
+            )
+        }
+
+        // Fallback: try the bundled mame_rom_data.json via MAMEImportService
+        if let entry = MAMEImportService.lookup(shortName: shortName) {
+            return (
+                description: entry.description,
+                type: entry.type,
+                isPlayable: entry.isPlayableGame,
+                parent: entry.parentROM,
+                source: "mame_rom_data.json"
+            )
+        }
+
+        return nil
+    }
+
     /// Set of short names for all runnable games across all loaded cores.
     /// Used by the library view to filter MAME games to only playable ones.
     var rachableShortNamesForCurrentCores: Set<String> {

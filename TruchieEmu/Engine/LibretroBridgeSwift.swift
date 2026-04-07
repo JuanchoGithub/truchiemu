@@ -27,6 +27,12 @@ class LibretroBridgeSwift {
         LibretroBridge.stop()
     }
 
+    /// Waits for the core to fully terminate (after stop() is called).
+    /// Blocks until retro_unload_game and retro_deinit have completed, or times out after 5 seconds.
+    static func waitForCompletion() {
+        LibretroBridge.waitForCompletion()
+    }
+
     // MARK: - Rotation
     /// Returns the current rotation from the core: 0, 1, 2, or 3
     /// (representing 0, 90, 180, or 270 degrees clockwise)

@@ -16,10 +16,12 @@ final class DATPrepopulationServiceTests: XCTestCase {
         AppSettings.setBool(key, value: false)
     }
 
-    func testGetPopulatedSystemsEmptyWhenNoDatabase() {
+    func testGetPopulatedSystemsEmptyWhenNoDatabase() async throws {
         // When database doesn't exist, getPopulatedSystems should return empty
         // This is because the actual database won't exist in the test environment
-        let systems = DATPrepopulationService.getPopulatedSystems()
+        let systems = await MainActor.run {
+            DATPrepopulationService.getPopulatedSystems()
+        }
         // Could be empty or have systems from the shared DB
         // The test verifies it doesn't crash
         _ = systems.count

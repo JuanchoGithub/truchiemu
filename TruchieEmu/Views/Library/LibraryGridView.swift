@@ -378,11 +378,6 @@ struct LibraryGridView: View {
             searchField
                 .focused($focusedField, equals: .search)
             
-            // Visible zoom slider
-            if viewMode == .grid {
-                zoomSlider
-            }
-            
             filterChips
             
             // Active filter summary bar
@@ -534,25 +529,6 @@ struct LibraryGridView: View {
                         }
                     }
 
-                    Section("Zoom Level") {
-                        HStack {
-                            Image(systemName: "minus.magnifyingglass")
-                                .font(.caption)
-                                .foregroundColor(.secondary)
-                            Slider(value: Binding(
-                                get: { continuousZoom },
-                                set: { newValue in
-                                    continuousZoom = newValue
-                                    applyZoomToColumnCount(animate: false)
-                                }
-                            ), in: 0...1)
-                                .padding(.horizontal, 2)
-                            Image(systemName: "plus.magnifyingglass")
-                                .font(.caption)
-                                .foregroundColor(.secondary)
-                        }
-                    }
-
                     Section("View") {
                         Button {
                             viewMode = .grid
@@ -575,7 +551,7 @@ struct LibraryGridView: View {
                             .font(.caption)
                     }
                 }
-                .help("View options: sort, zoom, layout")
+                .help("View options: sort, layout")
 
                 // ─── Group 3: Art (Box type + Fetch art, system views only) ───
                 if case .system(let system) = filter, viewMode == .grid {
@@ -611,7 +587,48 @@ struct LibraryGridView: View {
                     .help("Box art options and downloads")
                 }
 
-                // ─── Group 4: Settings ───
+                // ─── Group 4: Box Art Download ───
+                Menu {
+                    Button {
+                        Task {
+                            let targetROMs = selectedROMs.isEmpty
+                                ? displayedROMs
+                                : displayedROMs.filter { selectedROMs.contains($0.id) || selectedROM?.id == $0.id }
+                            guard !targetROMs.isEmpty else { return }
+                            await BoxArtService.shared.batchDownloadBoxArtLibretro(for: targetROMs, library: library)
+                            await LaunchBoxGamesDBService.shared.batchDownloadBoxArt(for: targetROMs, library: library)
+                        }
+                    } label: {
+                        Label(
+                            selectedROMs.isEmpty ? "Download Missing Box Art" : "Download Box Art for Selected (\(selectedROMs.count))",
+                            systemImage: "arrow.down.circle"
+                        )
+                    }
+                    
+                    Button {
+                        Task {
+                            let romsNeedingArt = BoxArtService.shared.romsNeedingBoxArt(in: displayedROMs)
+                            guard !romsNeedingArt.isEmpty else { return }
+                            await BoxArtService.shared.batchDownloadBoxArtLibretro(for: romsNeedingArt, library: library)
+                        }
+                    } label: {
+                        Label("Download Missing Box Art Only", systemImage: "photo.badge.plus")
+                    }
+                    
+                    Button {
+                        Task {
+                            await BoxArtService.shared.batchDownloadBoxArtLibretro(for: displayedROMs, library: library)
+                            await LaunchBoxGamesDBService.shared.batchDownloadBoxArt(for: displayedROMs, library: library)
+                        }
+                    } label: {
+                        Label("Download All Box Art", systemImage: "arrow.down.circle.fill")
+                    }
+                } label: {
+                    Label("Box Art", systemImage: "photo.stack")
+                }
+                .help("Download box art for games")
+
+                // ─── Group 5: Settings ───
                 Button {
                     if let mainMenu = NSApp.mainMenu {
                         for item in mainMenu.items {
@@ -633,6 +650,39 @@ struct LibraryGridView: View {
                 }
                 .labelStyle(.iconOnly)
                 .help("Settings")
+            }
+        }
+        .toolbar {
+            ToolbarItemGroup(placement: .automatic) {
+                // Zoom slider in the toolbar
+                if viewMode == .grid {
+                    HStack(spacing: 6) {
+                        Image(systemName: "minus.magnifyingglass")
+                            .font(.system(size: 10))
+                            .foregroundColor(.secondary.opacity(0.5))
+                            .frame(width: 14)
+                        
+                        Slider(value: $continuousZoom, in: 0...1, step: 1.0/7.0,
+                               onEditingChanged: { isEditing in
+                                   if !isEditing {
+                                       withAnimation(.interpolatingSpring(stiffness: 150, damping: 20)) {
+                                           applyZoomToColumnCount(animate: true)
+                                       }
+                                   }
+                               })
+                            .frame(width: 100)
+                        
+                        Image(systemName: "plus.magnifyingglass")
+                            .font(.system(size: 10))
+                            .foregroundColor(.secondary.opacity(0.5))
+                            .frame(width: 14)
+                        
+                        Text("\(Int(continuousZoom * 100))%")
+                            .font(.system(size: 10, weight: .medium, design: .monospaced))
+                            .foregroundColor(.secondary)
+                            .frame(width: 32, alignment: .trailing)
+                    }
+                }
             }
         }
         .sheet(item: $manualBoxArtSearchROM) { rom in

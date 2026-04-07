@@ -270,10 +270,7 @@ final class LoggerService: @unchecked Sendable {
             self?.writeToFile(formatted + "\n")
         }
         
-        // Also use OS logger for INFO level (always visible in Console.app)
-        if level == .info {
-            os_log("%{public}@", log: osLogger, type: .info, message)
-        }
+        // Note: os_log removed — print + file logging is sufficient and avoids duplicate output
     }
     
     private func shouldLogLevel(_ level: LogLevel) -> Bool {

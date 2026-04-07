@@ -1,6 +1,5 @@
 import Foundation
 import SwiftData
-import os.log
 
 /// A single MAME ROM lookup entry (lightweight, for in-memory dictionary).
 struct MAMELookupEntry {
@@ -35,8 +34,6 @@ final class MAMEImportService: ObservableObject {
     private var lookupDictionary: [String: MAMELookupEntry] = [:]
     private var isDictionaryLoaded = false
     
-    private let log = Logger(subsystem: Bundle.main.bundleIdentifier ?? "TruchieEmu", category: "MAMEImport")
-    
     // MARK: - Non-isolated lookup (for use from actors like ROMScanner)
     
     /// Non-isolated lookup that can be called from any context.
@@ -63,46 +60,33 @@ final class MAMEImportService: ObservableObject {
     
     /// Load the bundled JSON into an in-memory dictionary for fast lookups.
     /// This is called once at app launch and is much faster than querying SwiftData.
+    /// Now delegates to MAME2003PlusService for the new unified database format.
     func loadLookupDictionary() async {
         guard !isDictionaryLoaded else { return }
         
-        guard let fileURL = findDatabaseFile() else {
-            log.warning("MAME database JSON not found")
-            return
+        // Use the new MAME2003PlusService which loads the unified database
+        let mameService = MAME2003PlusService.shared
+        
+        // Build lookup dictionary from the new service
+        var dict: [String: MAMELookupEntry] = [:]
+        for entry in mameService.allEntries {
+            dict[entry.shortName] = MAMELookupEntry(
+                shortName: entry.shortName,
+                description: entry.description,
+                type: entry.isBIOS ? "bios" : (entry.runnable ? "game" : "driver"),
+                isRunnable: entry.runnable,
+                year: entry.year,
+                manufacturer: entry.manufacturer,
+                parentROM: entry.cloneOf ?? entry.romOf,
+                players: entry.players
+            )
         }
         
-        do {
-            let data = try Data(contentsOf: fileURL)
-            guard let json = try JSONSerialization.jsonObject(with: data) as? [String: Any],
-                  let roms = json["roms"] as? [String: Any] else {
-                log.error("Failed to parse MAME database JSON")
-                return
-            }
-            
-            var dict: [String: MAMELookupEntry] = [:]
-            for (shortName, rawValue) in roms {
-                guard let entry = rawValue as? [String: Any] else { continue }
-                
-                dict[shortName] = MAMELookupEntry(
-                    shortName: shortName,
-                    description: entry["description"] as? String ?? shortName,
-                    type: entry["type"] as? String ?? "game",
-                    isRunnable: entry["isRunnable"] as? Bool ?? true,
-                    year: entry["year"] as? String,
-                    manufacturer: entry["manufacturer"] as? String,
-                    parentROM: entry["parent"] as? String,
-                    players: entry["players"] as? Int
-                )
-            }
-            
-            lookupDictionary = dict
-            isDictionaryLoaded = true
-            // Also populate the static dictionary for non-isolated access
-            Self._populateLookupDictionary(dict)
-            log.info("Loaded \(dict.count, privacy: .public) MAME ROM entries into memory")
-        } catch {
-            log.error("Failed to load MAME lookup dictionary: \(error.localizedDescription, privacy: .public)")
-        }
+        lookupDictionary = dict
+        isDictionaryLoaded = true
+        // Also populate the static dictionary for non-isolated access
+        Self._populateLookupDictionary(dict)
+        LoggerService.mameImport("Loaded \(dict.count) MAME ROM entries from unified database")
     }
     
     /// Look up a MAME ROM by its shortname (ZIP filename without extension).
@@ -188,7 +172,7 @@ final class MAMEImportService: ObservableObject {
             self.totalEntries = roms.count
             let total = Double(self.totalEntries)
             
-            log.info("Starting MAME ROM import: \(self.totalEntries, privacy: .public) entries from \(fileURL.lastPathComponent)")
+            LoggerService.mameImport("Starting MAME ROM import: \(self.totalEntries) entries from \(fileURL.lastPathComponent)")
             
             // Delete existing entries to avoid duplicates
             importStatus = "Clearing existing entries..."
@@ -265,12 +249,12 @@ final class MAMEImportService: ObservableObject {
                 total: self.totalEntries
             )
             
-            log.info("MAME ROM import complete: \(imported, privacy: .public) imported, \(skipped, privacy: .public) skipped, \(errors, privacy: .public) errors")
+            LoggerService.mameImport("MAME ROM import complete: \(imported) imported, \(skipped) skipped, \(errors) errors")
             
             return result
             
         } catch {
-            log.error("Import failed: \(error.localizedDescription, privacy: .public)")
+            LoggerService.mameImportError("Import failed: \(error.localizedDescription)")
             importStatus = "Failed: \(error.localizedDescription)"
             return .failure(error.localizedDescription)
         }
@@ -305,9 +289,9 @@ final class MAMEImportService: ObservableObject {
             }
             try? modelContext.save()
             
-            log.info("Deleted \(deleted, privacy: .public) existing MAME ROM entries")
+            LoggerService.mameImport("Deleted \(deleted) existing MAME ROM entries")
         } catch {
-            log.error("Failed to delete existing entries: \(error.localizedDescription, privacy: .public)")
+            LoggerService.mameImportError("Failed to delete existing entries: \(error.localizedDescription)")
         }
     }
     

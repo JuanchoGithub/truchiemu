@@ -275,6 +275,10 @@ class EmulatorRunner: ObservableObject, @unchecked Sendable {
         isRunning = false
         LibretroBridge.stop()
         
+        // Wait for the core to fully terminate (retro_unload_game + retro_deinit)
+        // This ensures the core is completely killed before proceeding
+        LibretroBridge.waitForCompletion()
+        
         hookedController?.extendedGamepad?.valueChangedHandler = nil
         hookedController = nil
     }

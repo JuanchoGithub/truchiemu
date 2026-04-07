@@ -89,23 +89,23 @@ final class ROMRepository {
     }
 
     /// Delete ROMs whose path starts with any of the given path prefixes.
+    /// Fetches all entries and filters in memory since hasPrefix is not supported in #Predicate.
     func deleteROMsByPath(_ paths: [String]) {
-        let descriptor = FetchDescriptor<ROMEntry>()
+        guard !paths.isEmpty else { return }
+        
         do {
-            let allEntries = try context.fetch(descriptor)
-            var deletedCount = 0
-
-            for entry in allEntries {
-                let shouldDelete = paths.contains { entry.path.hasPrefix($0) }
-                if shouldDelete {
-                    context.delete(entry)
-                    deletedCount += 1
-                }
+            let allDescriptor = FetchDescriptor<ROMEntry>()
+            let allEntries = try context.fetch(allDescriptor)
+            let entriesToDelete = allEntries.filter { entry in
+                paths.contains { entry.path.hasPrefix($0) }
             }
-
-            if deletedCount > 0 {
+            let count = entriesToDelete.count
+            for entry in entriesToDelete {
+                context.delete(entry)
+            }
+            if count > 0 {
                 try context.save()
-                LoggerService.info(category: "ROMRepository", "Deleted \(deletedCount) ROM entries.")
+                LoggerService.info(category: "ROMRepository", "Deleted \(count) ROM entries.")
             }
         } catch {
             LoggerService.error(category: "ROMRepository", "Failed to delete ROMs: \(error.localizedDescription)")

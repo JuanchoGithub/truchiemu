@@ -1,12 +1,6 @@
 import Foundation
 import SwiftData
-import os.log
 import CryptoKit
-
-private let cacheLog = Logger(
-    subsystem: Bundle.main.bundleIdentifier ?? "TruchieEmu",
-    category: "ResourceCacheRepository"
-)
 
 // MARK: - Resource Cache Repository
 

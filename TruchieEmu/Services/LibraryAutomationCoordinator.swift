@@ -44,8 +44,8 @@ final class LibraryAutomationCoordinator: ObservableObject {
             LoggerService.info(category: "LibraryAutomation", "No local boxart found in scanned ROMs")
         }
 
-        let needIdentify = library.roms.filter { $0.needsAutomaticIdentification }
-        let needArt = library.roms.filter { $0.needsAutomaticBoxArt }
+        let needIdentify = library.roms.filter { $0.needsAutomaticIdentification && !$0.isHidden }
+        let needArt = library.roms.filter { $0.needsAutomaticBoxArt && !$0.isHidden }
 
         guard !needIdentify.isEmpty || !needArt.isEmpty else { return }
 
@@ -96,8 +96,8 @@ final class LibraryAutomationCoordinator: ObservableObject {
         try? await Task.sleep(nanoseconds: 500_000_000)
         await Task.yield()
 
-        // Phase 2: Box art downloads
-        let artTargets = library.roms.filter { $0.needsAutomaticBoxArt }
+        // Phase 2: Box art downloads (skip hidden ROMs)
+        let artTargets = library.roms.filter { $0.needsAutomaticBoxArt && !$0.isHidden }
         guard !artTargets.isEmpty else { return }
 
         phase = .downloadingArt

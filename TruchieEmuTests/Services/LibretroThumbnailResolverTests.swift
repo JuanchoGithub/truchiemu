@@ -131,10 +131,16 @@ final class LibretroThumbnailResolverTests: XCTestCase {
         // Find the first URL that actually exists on the CDN
         var firstMatchURL: URL?
         for url in urls {
-            let status = await httpStatus(for: url)
-            if status == 200 {
-                firstMatchURL = url
-                break
+            var request = URLRequest(url: url)
+            request.httpMethod = "HEAD"
+            do {
+                let (_, response) = try await URLSession.shared.data(for: request)
+                if let httpResponse = response as? HTTPURLResponse, httpResponse.statusCode == 200 {
+                    firstMatchURL = url
+                    break
+                }
+            } catch {
+                continue
             }
         }
 
@@ -146,7 +152,7 @@ final class LibretroThumbnailResolverTests: XCTestCase {
 
         XCTAssertTrue(
             firstMatchURL.absoluteString.contains("Named_Boxarts"),
-            "First successful URL should be from Named_Boxarts, got: \(firstMatchURL!.absoluteString)"
+            "First successful URL should be from Named_Boxarts, got: \(firstMatchURL.absoluteString)"
         )
     }
 

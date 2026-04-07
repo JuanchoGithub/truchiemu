@@ -116,6 +116,17 @@ struct CoreDownloadSheet: View {
         return library.roms.first { $0.id == id }
     }
 
+    /// Returns the best installed core ID to auto-select, or falls back to the requested core.
+    /// Prefers cores in recommendation order (e.g. mame2003_plus → mame2010 → mame → …).
+    private var bestInstalledOrRequestedCoreID: String {
+        // Find the first installed core in the recommendation order
+        if let entry = allCoresForSystem.first(where: { $0.isInstalled }) {
+            return entry.id
+        }
+        // Fall back to the originally requested core
+        return pending.coreInfo.coreID
+    }
+
     var body: some View {
         VStack(alignment: .leading, spacing: 20) {
             headerSection
@@ -135,6 +146,10 @@ struct CoreDownloadSheet: View {
         }
         .padding(28)
         .frame(width: 500)
+        // Auto-select best installed core when the requested core isn't installed
+        .onAppear {
+            selectedCoreID = bestInstalledOrRequestedCoreID
+        }
     }
 
     // MARK: - Subviews

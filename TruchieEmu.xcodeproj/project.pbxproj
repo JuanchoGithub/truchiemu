@@ -138,6 +138,8 @@
 		FC2EA7938982440C4F5BA3D3 /* ShaderManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 055E2AC9E58C1AC87C32C168 /* ShaderManager.swift */; };
 		FC67BB50EE78744FF7A11536 /* EmptyDetailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = BCB346F2AEB7FDB0705ADC7C /* EmptyDetailView.swift */; };
 		FFBB71BB1E6660833F75F2C1 /* CheatManagerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB9293E37E0A331CD54CDBF3 /* CheatManagerView.swift */; };
+		FB63BC2254FC4EAA99F001DD354BDD2A /* MAME2003PlusService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 67CD2538461446C78FB49390C9D19553 /* MAME2003PlusService.swift */; };
+		36F62D1ED0E9422A9CC015B4586DB766 /* MAMEUnifiedService.swift in Sources */ = {isa = PBXBuildFile; fileRef = F29A65E3EE4144CB92523A24F8F264F7 /* MAMEUnifiedService.swift */; };
 		FFF54913367BDBC6C5B17D24 /* SwiftDataModels.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B1C41BC0003F4A32C3D176F /* SwiftDataModels.swift */; };
 /* End PBXBuildFile section */
 
@@ -288,6 +290,8 @@
 		FAB6045B123F3B9A7267B3B0 /* SetupWizardState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SetupWizardState.swift; sourceTree = "<group>"; };
 		FC2BC1B2F22591954A0E02B5 /* ROMIdentifierService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ROMIdentifierService.swift; sourceTree = "<group>"; };
 		FE38CA05EF2C2F6DCE855E6A /* DATPrepopulationService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DATPrepopulationService.swift; sourceTree = "<group>"; };
+		67CD2538461446C78FB49390C9D19553 /* MAME2003PlusService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MAME2003PlusService.swift; sourceTree = "<group>"; };
+		F29A65E3EE4144CB92523A24F8F264F7 /* MAMEUnifiedService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MAMEUnifiedService.swift; sourceTree = "<group>"; };
 		FEAB7F598545E0EC1ADC7095 /* CheatAutoLoader.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CheatAutoLoader.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -354,10 +358,12 @@
 				8A47A2618C88081828F43315 /* LibretroThumbnailResolver.swift */,
 				F306F0B7FE1B38A2A9EA5989 /* LoggerService.swift */,
 				A3E6537CAC4420826C1A50C4 /* LogManager.swift */,
+				67CD2538461446C78FB49390C9D19553 /* MAME2003PlusService.swift */,
 				879AF000B232F5CE2F035410 /* MAMEImportService.swift */,
 				B2C3D4E5F6A7B8C9D0E1F2A3 /* MAMEDependencyService.swift */,
 				A1B2C3D4E5F6A7B8C9D0E1F2 /* MAMEModels.swift */,
 				44FC722B1D6DC0867DBB5777 /* MAMEVerificationService.swift */,
+				F29A65E3EE4144CB92523A24F8F264F7 /* MAMEUnifiedService.swift */,
 				194776DC27A94907F479FEA5 /* MetadataSyncCoordinator.swift */,
 				746A411A79F40382E1D204CC /* ResourceCacheInterceptor.swift */,
 				99591C00996BDFB5DC9F6CD4 /* RetroAchievementsService.swift */,
@@ -810,10 +816,12 @@
 				F0D6B9000421AB5BD7E85EC8 /* LogManager.swift in Sources */,
 				3407D4D1297B8DA39CE0A93D /* LoggerService.swift in Sources */,
 				2F8441505DD14F2DC1B83795 /* LoggingSettingsView.swift in Sources */,
+				FB63BC2254FC4EAA99F001DD354BDD2A /* MAME2003PlusService.swift in Sources */,
 				7BCABE033C966C00D3C37B3D /* MAMEImportService.swift in Sources */,
 				E2F3A4B5C6D7E8F9A0B1C2D3 /* MAMEDependencyService.swift in Sources */,
 				D1E2F3A4B5C6D7E8F9A0B1C2 /* MAMEModels.swift in Sources */,
 				F3A4B5C6D7E8F9A0B1C2D3E4 /* MAMEMissingROMsAlert.swift in Sources */,
+				36F62D1ED0E9422A9CC015B4586DB766 /* MAMEUnifiedService.swift in Sources */,
 				A4B5C6D7E8F9A0B1C2D3E4F5 /* MAMEDependencyStatusView.swift in Sources */,
 				84554DDDD852F8442674710D /* MAMERomEntry.swift in Sources */,
 				8E1051B46E85462915FC5FDC /* MAMEVerificationRecord.swift in Sources */,

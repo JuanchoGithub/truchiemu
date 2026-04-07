@@ -153,18 +153,19 @@ struct LibrarySettingsView: View {
                             ForEach(library.primaryFolders) { folder in
                                 PrimaryFolderRow(
                                     folder: folder,
-                                    isScanning: scanningFolders.contains(folder.url.path)
-                                ) {
-                                    Task {
-                                        scanningFolders.insert(folder.url.path)
-                                        await library.rescanLibrary(at: folder.url)
-                                        scanningFolders.remove(folder.url.path)
+                                    isScanning: scanningFolders.contains(folder.url.path),
+                                    onRescan: {
+                                        Task {
+                                            scanningFolders.insert(folder.url.path)
+                                            await library.rescanLibrary(at: folder.url)
+                                            scanningFolders.remove(folder.url.path)
+                                        }
+                                    },
+                                    onRebuild: { target in
+                                        rebuildTargetFolder = target
+                                        showingRebuildSheet = true
                                     }
-                                }
-                                onRebuild: { target in
-                                    rebuildTargetFolder = target
-                                    showingRebuildSheet = true
-                                }
+                                )
                             }
                         }
                     }

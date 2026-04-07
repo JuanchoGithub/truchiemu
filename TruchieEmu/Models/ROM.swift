@@ -137,6 +137,28 @@ struct ROMMetadata: Codable, Hashable {
     // ESRB & other ratings
     var esrbRating: String?
     var cooperative: Bool = false
+    
+    // MAME 2003+ video/display metadata
+    /// Screen orientation: "vertical" or "horizontal"
+    var orientation: String?
+    /// Aspect ratio X component (e.g., 3 for 3:4 vertical, 4 for 4:3 horizontal)
+    var aspectX: Int?
+    /// Aspect ratio Y component
+    var aspectY: Int?
+    /// Native screen width in pixels
+    var screenWidth: Int?
+    /// Native screen height in pixels
+    var screenHeight: Int?
+    /// Refresh rate in Hz
+    var refreshRate: Double?
+    /// Screen type: "raster" or "vector"
+    var screenType: String?
+    /// CPU name
+    var cpuName: String?
+    /// CPU clock speed in Hz
+    var cpuClock: Double?
+    /// Audio chip names
+    var audioChips: [String]?
 }
 
 // MARK: - MAME Helpers

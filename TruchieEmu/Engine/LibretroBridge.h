@@ -11,6 +11,7 @@ NS_ASSUME_NONNULL_BEGIN
                      coreID:(NSString *)coreID;
 
 + (void)stop;
++ (void)waitForCompletion;
 + (void)saveState;
 + (void)setKeyState:(int)retroID pressed:(BOOL)pressed;
 + (void)setTurboState:(int)turboIdx active:(BOOL)active targetButton:(int)targetButton;

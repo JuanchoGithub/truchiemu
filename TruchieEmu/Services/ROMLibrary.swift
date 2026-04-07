@@ -152,9 +152,9 @@ class ROMLibrary: ObservableObject {
         loadFileIndexFromStorage()
         updateCounts()
         
-        // Pre-warm the box art cache for the entire library immediately on launch.
+        // Pre-warm the box art cache for visible (non-hidden) ROMs immediately on launch.
         // This ensures that when the user scrolls, images are already decoded and ready.
-        let romsForPreload = roms
+        let romsForPreload = roms.filter { !$0.isHidden }
         Task {
             await BoxArtPreloaderService.shared.preloadBoxArt(for: romsForPreload)
         }
@@ -323,7 +323,6 @@ class ROMLibrary: ObservableObject {
         }
 
         let scanStart = Date()
-        print("[ROMScanner] === SCAN STARTED: \(folder.path) ===")
         LoggerService.info(category: "ROMLibrary", "=== SCAN STARTED: \(folder.path) ===")
         
         isScanning = true
@@ -346,7 +345,6 @@ class ROMLibrary: ObservableObject {
         let urls = collectFilesInFolder(folder: folder)
         let totalURLs = urls.count
         let enumTime = Date().timeIntervalSince(enumStart)
-        print("[ROMScanner] Enumeration: \(totalURLs) files found in \(String(format: "%.2f", enumTime))s")
         LoggerService.info(category: "ROMLibrary", "Enumeration: \(totalURLs) files found in \(String(format: "%.2f", enumTime))s")
 
         // Create a progress-aware file scanner
@@ -354,7 +352,6 @@ class ROMLibrary: ObservableObject {
         var biosCount = 0
         var identifyTimeTotal: TimeInterval = 0
         
-        print("[ROMScanner] Processing \(totalURLs) files...")
         LoggerService.info(category: "ROMLibrary", "Processing \(totalURLs) files...")
         
         for url in urls {
@@ -367,7 +364,6 @@ class ROMLibrary: ObservableObject {
                 let elapsed = Date().timeIntervalSince(scanStart)
                 let rate = Double(scannedCount) / max(elapsed, 0.001)
                 let msg = "Progress: \(scannedCount)/\(totalURLs) (\(String(format: "%.1f", rate)) files/sec, \(String(format: "%.1f", elapsed))s elapsed)"
-                print("[ROMScanner] \(msg)")
                 LoggerService.info(category: "ROMLibrary", msg)
                 // Yield to run loop every 100 files to keep UI responsive
                 try? await Task.sleep(nanoseconds: 1_000_000) // 1ms
@@ -447,8 +443,6 @@ class ROMLibrary: ObservableObject {
         }
         
         let scanTime = Date().timeIntervalSince(scanStart)
-        print("[ROMScanner] === SCAN COMPLETE: \(romFoundCount) ROMs found, \(skippedCount) skipped, \(biosCount) BIOS in \(String(format: "%.2f", scanTime))s ===")
-        print("[ROMScanner] ZIPs: \(zipCount), Total identify time: \(String(format: "%.2f", identifyTimeTotal))s")
         LoggerService.info(category: "ROMLibrary", "=== SCAN COMPLETE: \(romFoundCount) ROMs found, \(skippedCount) skipped, \(biosCount) BIOS in \(String(format: "%.2f", scanTime))s ===")
 
         // Final progress update
@@ -596,38 +590,67 @@ class ROMLibrary: ObservableObject {
         return nil
     }
 
-    /// Apply MAME identification inline during scanning (synchronous lookup).
+    /// Apply MAME identification inline during scanning.
+    /// Prefers per-core dependency data (downloaded XML) over bundled fallback JSON.
     private func applyMAMEIdentificationInline(to rom: inout ROM, url: URL) {
         let shortName = url.deletingPathExtension().lastPathComponent.lowercased()
-        
-        // Use the non-isolated static lookup for thread-safe access
-        guard let mameEntry = MAMEImportService.lookup(shortName: shortName) else {
-            // Not found in database - don't hide it, might still be a valid game
+
+        // Prefer per-core deps if selectedCoreID exists and has cached data
+        var source = "mame_rom_data.json"
+        var description: String?
+        var isPlayable: Bool?
+        var type: String?
+        var parentROM: String?
+
+        if let coreID = rom.selectedCoreID {
+            if let lookup = MAMEDependencyService.shared.lookupGame(for: coreID, shortName: shortName) {
+                description = lookup.description
+                type = lookup.type
+                isPlayable = lookup.isPlayable
+                parentROM = lookup.parent
+                source = lookup.source
+            }
+        }
+
+        // Only use bundled fallback if per-core lookup returned nil
+        if description == nil {
+            if let entry = MAMEImportService.lookup(shortName: shortName) {
+                description = entry.description
+                type = entry.type
+                isPlayable = entry.isPlayableGame
+                parentROM = entry.parentROM
+                source = "mame_rom_data.json"
+            }
+        }
+
+        guard let description = description,
+              let type = type,
+              let isPlayable = isPlayable else {
+            LoggerService.debug(category: "ROMLibrary", "MAME lookup MISS for '\(shortName)' — hiding (not in any known database)")
             rom.mameRomType = nil
+            rom.isHidden = true
+            rom.isBios = true
+            rom.category = "bios"
             return
         }
-        
-        rom.mameRomType = mameEntry.type
-        
-        if mameEntry.isPlayableGame {
-            rom.name = mameEntry.description
+
+        rom.mameRomType = type
+
+        if isPlayable {
+            rom.name = description
             rom.isHidden = false
             rom.category = "game"
-            
+            LoggerService.debug(category: "ROMLibrary", "MAME SELECT '\(shortName)' → game='\(description)' type=\(type) parent=\(parentROM ?? "none") [source: \(source)]")
+
             if rom.metadata == nil {
                 rom.metadata = ROMMetadata()
             }
-            rom.metadata?.title = mameEntry.description
-            rom.metadata?.year = mameEntry.year
-            rom.metadata?.developer = mameEntry.manufacturer
-            rom.metadata?.publisher = mameEntry.manufacturer
-            if let players = mameEntry.players {
-                rom.metadata?.players = players
-            }
+            rom.metadata?.title = description
         } else {
             rom.isHidden = true
             rom.isBios = true
             rom.category = "bios"
+            LoggerService.debug(category: "ROMLibrary", "MAME HIDE '\(shortName)' → type=\(type) description='\(description)' [source: \(source)]")
         }
     }
 
