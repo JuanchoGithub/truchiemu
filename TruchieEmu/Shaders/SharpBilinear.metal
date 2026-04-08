@@ -23,7 +23,6 @@ fragment float4 fragmentSharpBilinear(VertexOut in [[stage_in]],
     constexpr sampler s_linear(filter::linear, address::clamp_to_edge);
     
     float2 texSize = u.sourceSize.xy;
-    float2 outSize = u.outputSize.xy;
     float2 uv = in.texCoord;
     
     // Calculate the target pixel coordinate

@@ -1517,7 +1517,7 @@ struct GameDetailView: View {
     private func fetchBoxArt() async {
         await MainActor.run { fetchBoxArtStatus = .working("Searching...") }
         
-        if let url = await BoxArtService.shared.fetchBoxArt(for: currentROM) {
+        if await BoxArtService.shared.fetchBoxArt(for: currentROM) != nil {
             var u = currentROM
             u.hasBoxArt = true
             library.updateROM(u)

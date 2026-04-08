@@ -132,7 +132,7 @@ struct ShaderSection: View {
 
     @MainActor
     private func presentShaderWindow() {
-        var settings = ShaderWindowSettings(
+        let settings = ShaderWindowSettings(
             shaderPresetID: rom.settings.shaderPresetID,
             uniformValues: extractUniformValues(from: rom.settings)
         )

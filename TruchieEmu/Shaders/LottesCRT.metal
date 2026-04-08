@@ -40,8 +40,6 @@ fragment float4 fragmentLottesCRT(VertexOut in [[stage_in]],
     
     // Scanline & Beam logic
     float2 pos = uv * u.sourceSize.xy;
-    float2 subpix = fract(pos);
-    
     // Sample with slight vertical blur for scanline weighting
     float4 color = tex.sample(s, uv);
     
@@ -51,7 +49,6 @@ fragment float4 fragmentLottesCRT(VertexOut in [[stage_in]],
     color.rgb *= beam;
     
     // Shadow Mask (Aperture Grille style)
-    float mask = 1.0;
     float maskPos = in.position.x;
     int m = int(maskPos) % 3;
     float3 maskColor = float3(1.0);

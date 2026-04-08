@@ -75,7 +75,7 @@ struct BoxArtPickerView: View {
 
     private func applyURL(_ url: URL) {
         Task {
-            if let localURL = await BoxArtService.shared.downloadAndCache(artURL: url, for: rom) {
+            if await BoxArtService.shared.downloadAndCache(artURL: url, for: rom) != nil {
                 var updated = rom
                 
                 // Force UI state change by removing and re-adding path
@@ -140,7 +140,7 @@ struct WebSearchView: NSViewRepresentable {
         }
     }
 
-    private static var urlQueryValueAllowed: CharacterSet = {
+    private static let urlQueryValueAllowed: CharacterSet = {
         var allowed = CharacterSet.urlQueryAllowed
         allowed.remove(charactersIn: "&+")
         return allowed

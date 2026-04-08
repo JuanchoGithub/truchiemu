@@ -144,7 +144,6 @@ final class SetupWizardState: ObservableObject {
     // MARK: - Update detected games from library
     
     func updateDetectedGames(from roms: [ROM]) {
-        let fm = FileManager.default
         var withBoxArt: [SetupWizardGameInfo] = []
         var allGames: [SetupWizardGameInfo] = []
         

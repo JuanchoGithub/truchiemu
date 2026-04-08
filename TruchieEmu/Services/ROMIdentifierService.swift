@@ -106,7 +106,7 @@ extension LoggerService {
     }
 }
 
-class ROMIdentifierService {
+final class ROMIdentifierService: Sendable {
     static let shared = ROMIdentifierService()
 
     func identify(rom: ROM) async -> ROMIdentifyResult {
@@ -163,7 +163,44 @@ class ROMIdentifierService {
         }
         LoggerService.romIdentify("Identify: database loaded — \(db.count) CRC entries for \(systemID)")
 
-        guard let crc = computeCRC(for: rom.path, systemID: systemID) else {
+        let romPath = rom.path
+        let fileSize = (try? FileManager.default.attributesOfItem(atPath: romPath.path)[.size] as? Int64) ?? 0
+        let isLargeFile = fileSize > 50 * 1024 * 1024 // > 50MB
+        
+        // Optimization: For Sony CD-based systems, try serial extraction (FASTEST)
+        if ["psx", "ps2", "psp"].contains(systemID) {
+            if let serial = await extractSonySerial(from: romPath) {
+                LoggerService.romIdentify("Identify: Checking database for serial '\(serial)'...")
+                let normalizedSerial = serial.replacingOccurrences(of: "-", with: "").replacingOccurrences(of: "_", with: "").replacingOccurrences(of: ".", with: "").lowercased()
+                
+                for info in db.values {
+                    let infoName = info.name.lowercased()
+                    // Many DATs include the serial in the title, e.g. "Game Name (USA) (SLUS-20071)"
+                    if infoName.contains(normalizedSerial) || infoName.contains(serial.lowercased()) {
+                        LoggerService.romIdentify("Identify: SUCCESS (Serial Path) → \(info.name) matched serial \(serial)")
+                        return .identified(info)
+                    }
+                }
+                LoggerService.romIdentify("Identify: Serial '\(serial)' not found in Libretro DB, falling back...")
+            }
+        }
+
+        // Optimization: For large files (ISOs, big ROMs), try name-based identification first.
+        // If we find an exact match by name, we can skip the multi-gigabyte CRC calculation.
+        if isLargeFile {
+            LoggerService.romIdentify("Identify: Large file detected (\(fileSize / 1024 / 1024)MB). Trying name-based search first...")
+            let language = Self.currentEmulatorLanguage()
+            if let byName = identifyByName(rom: rom, database: db, language: language) {
+                LoggerService.romIdentify("Identify: SUCCESS (Name Path) → \(byName.name) found by name, skipping CRC.")
+                return .identifiedFromName(byName)
+            }
+            LoggerService.romIdentify("Identify: Name-based search failed for large file, falling back to CRC hashing...")
+        }
+
+        // Perform heavy file I/O and hashing on a background thread to avoid blocking the MainActor.
+        guard let crc = await Task.detached(priority: .userInitiated, operation: {
+            self.computeCRC(for: romPath, systemID: systemID)
+        }).value else {
             LoggerService.romIdentifyError("Identify: CRC read failed for \(rom.path.path)")
             return .romReadFailed("Could not read the ROM file. If the library is on a removable drive or you moved files, re-add the folder in Settings.")
         }
@@ -271,7 +308,7 @@ class ROMIdentifierService {
         let lowercased = title.lowercased()
         for article in leadingArticles {
             if lowercased.hasPrefix(article) {
-                let articlePrefix = title.prefix(article.count)
+                _ = title.prefix(article.count)
                 let rest = title.dropFirst(article.count).trimmingCharacters(in: .whitespacesAndNewlines)
                 guard !rest.isEmpty else { return nil }
                 let capitalizedArticle = article.trimmingCharacters(in: .whitespaces).capitalized
@@ -503,6 +540,58 @@ class ROMIdentifierService {
         let extraWords = extraPart.lowercased().components(separatedBy: .whitespaces).filter { !$0.isEmpty }
         if extraWords.allSatisfy({ acceptedArticles.contains($0) }) { return false }
         return false
+    }
+    
+    // MARK: - Disc Serial Extraction
+    
+    /// Attempts to extract a PlayStation serial (PS1, PS2, PSP) from a disc image.
+    /// This is much faster than hashing a multi-GB ISO.
+    func extractSonySerial(from url: URL) async -> String? {
+        let romPath = url
+        return await Task.detached(priority: .userInitiated) {
+            let scoped = romPath.startAccessingSecurityScopedResource()
+            defer { if scoped { romPath.stopAccessingSecurityScopedResource() } }
+            
+            guard let fileHandle = try? FileHandle(forReadingFrom: romPath) else { return nil }
+            defer { try? fileHandle.close() }
+            
+            // We scan the first 2MB of the file for common Sony serial patterns.
+            // SYSTEM.CNF and PARAM.SFO are almost always located within the first 1-2MB of an ISO.
+            do {
+                if #available(macOS 10.15.4, *) {
+                    try fileHandle.seek(toOffset: 0)
+                    let data = try fileHandle.read(upToCount: 2048 * 1024) ?? Data() // Read 2MB
+                    
+                    if let string = String(data: data, encoding: .ascii) {
+                        // Pattern 1: PS1/PS2 executables in SYSTEM.CNF (e.g., SLUS_200.71;1)
+                        // Note: Some use _ and . while others use - and .
+                        let ps2Pattern = "[A-Z]{4}[_-][0-9]{3}[.][0-9]{2}"
+                        if let regex = try? NSRegularExpression(pattern: ps2Pattern, options: []),
+                           let match = regex.firstMatch(in: string, options: [], range: NSRange(location: 0, length: string.count)) {
+                            if let range = Range(match.range, in: string) {
+                                let serial = String(string[range]).replacingOccurrences(of: "_", with: "-")
+                                LoggerService.romIdentify("Found Sony serial candidate: \(serial)")
+                                return serial
+                            }
+                        }
+                        
+                        // Pattern 2: PSP PARAM.SFO (e.g., ULUS-10001)
+                        let pspPattern = "[A-Z]{4}-[0-9]{5}"
+                        if let regex = try? NSRegularExpression(pattern: pspPattern, options: []),
+                           let match = regex.firstMatch(in: string, options: [], range: NSRange(location: 0, length: string.count)) {
+                            if let range = Range(match.range, in: string) {
+                                let serial = String(string[range])
+                                LoggerService.romIdentify("Found PSP serial candidate: \(serial)")
+                                return serial
+                            }
+                        }
+                    }
+                }
+            } catch {
+                LoggerService.romIdentifyWarn("Error reading disc for serial: \(error.localizedDescription)")
+            }
+            return nil
+        }.value
     }
 }
 

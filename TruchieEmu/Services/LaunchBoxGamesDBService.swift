@@ -528,9 +528,9 @@ class LaunchBoxGamesDBService: ObservableObject {
                 active -= 1
                 var (completedRom, url) = result
 
-                if let savedURL = url {
+                if url != nil {
                     completedRom.hasBoxArt = true
-                    await MainActor.run { library.updateROM(completedRom) }
+                    await MainActor.run { library.updateROM(completedRom, persist: false) }
                 }
 
                 completed += 1
@@ -562,6 +562,7 @@ class LaunchBoxGamesDBService: ObservableObject {
         }
 
         await MainActor.run {
+            library.saveROMsToDatabase()
             BoxArtService.shared.isDownloadingBatch = false
         }
 
@@ -640,11 +641,11 @@ class LaunchBoxGamesDBService: ObservableObject {
 
     /// Fetch and apply metadata for a single ROM.
     func fetchAndApplyMetadata(for rom: ROM, library: ROMLibrary) async -> Bool {
-        guard let boxArtURL = await fetchBoxArt(for: rom) else { return false }
+        guard await fetchBoxArt(for: rom) != nil else { return false }
         await MainActor.run {
             var updated = rom
             updated.hasBoxArt = true
-            library.updateROM(updated)
+            library.updateROM(updated) // Persist: true is fine for single ROM fetch
         }
         return true
     }
@@ -678,10 +679,10 @@ class LaunchBoxGamesDBService: ObservableObject {
             for await (completedRom, url) in group {
                 active -= 1
                 completed += 1
-                if let savedURL = url {
+                if url != nil {
                     var updated = completedRom
                     updated.hasBoxArt = true
-                    await MainActor.run { library.updateROM(updated) }
+                    await MainActor.run { library.updateROM(updated, persist: false) }
                 }
                 // Throttle: 750ms + yield between requests to keep app responsive
                 try? await Task.sleep(nanoseconds: 750_000_000)
@@ -699,6 +700,7 @@ class LaunchBoxGamesDBService: ObservableObject {
                     active += 1
                 }
             }
+            await MainActor.run { library.saveROMsToDatabase() }
         }
 
         recordSyncDate()

@@ -19,7 +19,6 @@ fragment float4 fragmentDotMatrixLCD(VertexOut in [[stage_in]],
                                        constant DotMatrixLCDUniforms &u [[buffer(0)]]) {
     constexpr sampler s(filter::nearest, address::clamp_to_edge);
     float2 uv = in.texCoord;
-    float2 position = in.position.xy;
     float4 color = tex.sample(s, uv);
     
     // Scale position by source pixel size to get dot-level coordinates
@@ -38,8 +37,6 @@ fragment float4 fragmentDotMatrixLCD(VertexOut in [[stage_in]],
     // Metal grid between dots
     float gridLineX = smoothstep(0.42, 0.46, abs(dotCenter.x));
     float gridLineY = smoothstep(0.42, 0.46, abs(dotCenter.y));
-    float gridMask = max(gridLineX, gridLineY);
-    
     // Metallic sheen - directional highlight based on dot position
     float sheenAngle = fract(dotID.x * 0.31 + dotID.y * 0.17);
     float metallicSheen = pow(sheenAngle, 3.0) * u.metallicIntensity;

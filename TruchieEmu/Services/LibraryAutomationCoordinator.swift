@@ -31,15 +31,22 @@ final class LibraryAutomationCoordinator: ObservableObject {
 
         // Phase 0: Scan for pre-existing local boxart in /boxart subfolders
         // This populates hasBoxArt for ROMs that have local artwork but haven't
-        // been downloaded by the app yet (e.g., user-provided boxart files)
+        // been downloaded by the app yet (e.g., user-provided boxart files).
+        // Run on background pool to avoid blocking the MainActor with filesystem checks.
         let romsToCheck = snapshot.filter { !$0.hasBoxArt }
         LoggerService.info(category: "LibraryAutomation", "📼 Checking \(romsToCheck.count) ROM(s) for local boxart in /boxart folders...")
-        let romsWithLocalArt = BoxArtService.shared.resolveLocalBoxArtBatch(for: romsToCheck)
+        
+        let boxArtService = BoxArtService.shared
+        let romsWithLocalArt = await Task.detached(priority: .background) {
+            boxArtService.resolveLocalBoxArtBatch(for: romsToCheck)
+        }.value
+        
         if !romsWithLocalArt.isEmpty {
             LoggerService.info(category: "LibraryAutomation", "✅ Found local boxart for \(romsWithLocalArt.count) ROM(s)")
             for rom in romsWithLocalArt {
-                library.updateROM(rom)
+                library.updateROM(rom, persist: false)
             }
+            library.saveROMsToDatabase()
         } else {
             LoggerService.info(category: "LibraryAutomation", "No local boxart found in scanned ROMs")
         }
@@ -74,7 +81,7 @@ final class LibraryAutomationCoordinator: ObservableObject {
             for (idx, rom) in needIdentify.enumerated() {
                 let label = rom.path.lastPathComponent
                 let current = library.roms.first(where: { $0.id == rom.id }) ?? rom
-                _ = await library.identifyROM(current)
+                _ = await library.identifyROM(current, persist: false)
                 let done = Double(idx + 1) / max(total, 1)
                 progress = done
                 statusLine = "Identifying games: \(Int(done * 100))% — Checking \(label)"

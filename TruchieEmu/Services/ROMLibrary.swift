@@ -152,6 +152,12 @@ class ROMLibrary: ObservableObject {
         loadFileIndexFromStorage()
         updateCounts()
         
+        // Resume any pending identification or box art downloads from a previous session
+        Task {
+            await LibraryAutomationCoordinator.shared.runAfterLibraryUpdate(library: self)
+            await MetadataSyncCoordinator.shared.runAfterLibraryUpdate(library: self)
+        }
+        
         // Box art images are now loaded on-demand via ImageCache as cards appear on screen.
         // Startup preloading was removed because it was blocking the UI while reporting 0% cache hit rate.
     }
@@ -587,7 +593,7 @@ class ROMLibrary: ObservableObject {
 
     func stopScan() { scanCancellationToken.cancel(); isScanning = false }
 
-    func updateROM(_ rom: ROM) {
+    func updateROM(_ rom: ROM, persist: Bool = true) {
         if let idx = roms.firstIndex(where: { $0.id == rom.id }) {
             let oldBezel = roms[idx].settings.bezelFileName
             objectWillChange.send()
@@ -596,19 +602,23 @@ class ROMLibrary: ObservableObject {
             LibraryMetadataStore.shared.persist(rom: rom)
             updateGamesXML(for: rom)
             updateCounts()
-            // Persist this single ROM immediately — saves only one entry instead of all 4248.
-            saveSingleROM(rom)
+            
+            // Persist this single ROM immediately if requested.
+            // For batch operations, pass persist: false and call saveROMsToDatabase() at the end.
+            if persist {
+                saveSingleROM(rom)
+            }
         }
     }
 
     @discardableResult
-    func identifyROM(_ rom: ROM) async -> ROMIdentifyResult {
+    func identifyROM(_ rom: ROM, persist: Bool = true) async -> ROMIdentifyResult {
         var working = rom
         if let sid = rom.systemID,
            let c = ROMIdentifierService.shared.computeCRC(for: rom.path, systemID: sid) {
             working.crc32 = c
         }
-
+    
         let result = await ROMIdentifierService.shared.identify(rom: rom)
         switch result {
         case .identified(let info), .identifiedFromName(let info):
@@ -621,7 +631,7 @@ class ROMLibrary: ObservableObject {
             updated.metadata?.publisher = info.publisher
             updated.metadata?.developer = info.developer
             updated.metadata?.genre = info.genre
-            updateROM(updated)
+            updateROM(updated, persist: persist)
         case .crcNotInDatabase(let crc):
             var updated = working
             updated.crc32 = crc
@@ -633,7 +643,7 @@ class ROMLibrary: ObservableObject {
                 updated.metadata?.developer = nil
                 updated.metadata?.genre = nil
             }
-            updateROM(updated)
+            updateROM(updated, persist: persist)
         case .identificationCleared:
             if working.metadata?.title != nil {
                 LoggerService.info(category: "ROMLibrary", "Identification cleared — reverting to filename")
@@ -643,17 +653,17 @@ class ROMLibrary: ObservableObject {
                 working.metadata?.developer = nil
                 working.metadata?.genre = nil
                 working.thumbnailLookupSystemID = nil
-                updateROM(working)
+                updateROM(working, persist: persist)
             }
         case .databaseUnavailable, .noSystem:
-            if working.crc32 != rom.crc32 { updateROM(working) }
+            if working.crc32 != rom.crc32 { updateROM(working, persist: persist) }
         case .romReadFailed:
             break
         }
         return result
     }
 
-    func clearIdentification(for rom: ROM) {
+    func clearIdentification(for rom: ROM, persist: Bool = true) {
         var updated = rom
         if updated.metadata?.title != nil {
             LoggerService.info(category: "ROMLibrary", "Clearing identification for '\(rom.displayName)'")
@@ -663,7 +673,7 @@ class ROMLibrary: ObservableObject {
             updated.metadata?.developer = nil
             updated.metadata?.genre = nil
             updated.thumbnailLookupSystemID = nil
-            updateROM(updated)
+            updateROM(updated, persist: persist)
         }
     }
 

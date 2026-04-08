@@ -134,7 +134,7 @@ class BoxArtService: ObservableObject {
     /// Scans the local /boxart subfolder for an existing image matching this ROM.
     /// The boxart file must be named `<romfile>_boxart.png` (e.g., `Super Mario.nes_boxart.png`).
     /// Returns the local file URL if found, nil otherwise. Does NOT download from CDN.
-    func resolveLocalBoxArt(for rom: ROM) -> URL? {
+    nonisolated func resolveLocalBoxArt(for rom: ROM) -> URL? {
         let localBoxArtDir = rom.path.deletingLastPathComponent().appendingPathComponent("boxart", isDirectory: true)
         let imageExtensions = ["png", "jpg", "jpeg", "webp", "gif", "bmp"]
         
@@ -206,10 +206,10 @@ class BoxArtService: ObservableObject {
 
     /// Resolves local boxart for a batch of ROMs. Returns ROMs that had local boxart found.
     /// Thread-safe: can be called from background tasks.
-    func resolveLocalBoxArtBatch(for roms: [ROM]) -> [ROM] {
+    nonisolated func resolveLocalBoxArtBatch(for roms: [ROM]) -> [ROM] {
         var found: [ROM] = []
         for rom in roms {
-            if let localURL = resolveLocalBoxArt(for: rom) {
+            if resolveLocalBoxArt(for: rom) != nil {
                 var updated = rom
                 updated.hasBoxArt = true
                 found.append(updated)
@@ -230,8 +230,9 @@ class BoxArtService: ObservableObject {
         if !found.isEmpty {
             LoggerService.info(category: "BoxArt", "Found local boxart for \(found.count) ROM(s)")
             for rom in found {
-                library.updateROM(rom)
+                library.updateROM(rom, persist: false)
             }
+            library.saveROMsToDatabase()
             signalBoxArtUpdated(for: UUID())
         }
     }
@@ -546,7 +547,7 @@ class BoxArtService: ObservableObject {
 
     /// Validates that a file is actually a valid image by checking its magic bytes.
     /// Returns false for HTML error pages, empty files, or non-image content.
-    private func isValidImageFile(at url: URL) -> Bool {
+    nonisolated private func isValidImageFile(at url: URL) -> Bool {
         guard let data = try? Data(contentsOf: url), !data.isEmpty else {
             return false
         }
@@ -670,9 +671,9 @@ class BoxArtService: ObservableObject {
             for await result in group {
                 active -= 1
                 var (completedRom, url) = result
-                if let savedURL = url {
+                if url != nil {
                     completedRom.hasBoxArt = true
-                    await MainActor.run { library.updateROM(completedRom) }
+                    await MainActor.run { library.updateROM(completedRom, persist: false) }
                 }
                 completed += 1
                 let label = "\(completedRom.displayName).png"
@@ -695,7 +696,10 @@ class BoxArtService: ObservableObject {
             }
         }
 
-        await MainActor.run { self.isDownloadingBatch = false }
+        await MainActor.run { 
+            library.saveROMsToDatabase()
+            self.isDownloadingBatch = false 
+        }
         
         // Signal the grid view to refresh — some boxart may have been updated
         signalBoxArtUpdated(for: UUID())
@@ -754,9 +758,9 @@ class BoxArtService: ObservableObject {
                 activeTasks -= 1
                 var (completedRom, url) = result
                 
-                if let savedURL = url {
+                if url != nil {
                     completedRom.hasBoxArt = true
-                    await MainActor.run { library.updateROM(completedRom) }
+                    await MainActor.run { library.updateROM(completedRom, persist: false) }
                 }
                 await MainActor.run { self.downloadedCount += 1 }
                 
@@ -773,7 +777,10 @@ class BoxArtService: ObservableObject {
             }
         }
         
-        await MainActor.run { self.isDownloadingBatch = false }
+        await MainActor.run { 
+            library.saveROMsToDatabase()
+            self.isDownloadingBatch = false 
+        }
     }
     
     func fetchBoxArtGoogle(for rom: ROM) async -> URL? {

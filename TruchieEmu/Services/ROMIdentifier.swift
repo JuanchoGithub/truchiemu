@@ -38,8 +38,6 @@ enum ROMIdentifier {
     // MARK: - Archive Identification
 
     private static func identifyArchive(url: URL) -> SystemInfo? {
-        let filename = url.lastPathComponent
-
         // TIER 1: Path-based context (folder name)
         let parentName = url.deletingLastPathComponent().lastPathComponent.lowercased()
 
