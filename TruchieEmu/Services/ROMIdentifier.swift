@@ -9,6 +9,26 @@ enum ROMIdentifier {
     /// Identify the system for a given file URL.
     /// This is the single source of truth for ROM system identification.
     static func identifySystem(url: URL, extension ext: String) -> SystemInfo? {
+        // TIER 0: Strong path-based context (folder name)
+        let parentName = url.deletingLastPathComponent().lastPathComponent.lowercased()
+        let sysIDMap: [String: String] = [
+            "ps2": "ps2", "playstation2": "ps2", "playstation 2": "ps2",
+            "psp": "psp", "playstation portable": "psp",
+            "saturn": "saturn", "sega saturn": "saturn",
+            "dreamcast": "dreamcast", "sega dreamcast": "dreamcast",
+            "psx": "psx", "ps1": "psx", "playstation": "psx",
+            "3do": "3do",
+            "jaguar": "jaguar", "atari jaguar": "jaguar",
+            "gamecube": "gc", "gc": "gc"
+        ]
+        
+        // Exact match for common system folders
+        if let hardID = sysIDMap[parentName] {
+            if let system = SystemDatabase.system(forID: hardID) {
+                return system
+            }
+        }
+        
         // 1. For ZIP files, determine the system by inspecting content
         if ext == "zip" || ext == "7z" {
             return identifyArchive(url: url)
@@ -141,6 +161,9 @@ enum ROMIdentifier {
         let upper = filename.uppercased()
 
         // Explicit tags
+        if upper.contains("DC_BOOT") || upper.contains("DC_FLASH") {
+            return "dreamcast"
+        }
         if upper.contains("(PS1)") || upper.contains("[PS1]") || upper.contains("(PSX)") {
             return "psx"
         }

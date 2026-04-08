@@ -34,7 +34,7 @@ enum KnownBIOS {
         "eeprom", "f355dlx", "gaelco", "gaelco2", "gq863", "isgsm",
         "itoch3", "midssio", "nba99hsk", "nscd15", "ssv", "ym2608",
         "coh1000c", "coh3002c", "ym2413", "cchip", "sprc2kb", "segas16b",
-        "skimaxx", "cworld", "k054539", "n64sound",
+        "skimaxx", "cworld", "k054539", "n64sound", "dc_boot", "dc_flash",
         // Additional common BIOS
         "naomi", "hod2bios", "awbios", "cis4.5b", "cis4.5c",
         "gts1s", "gts1", "gts1h", "gts1a", "gts1b", "gts1c", "gts1d", "gts1e", "gts1f", "gts1g",
@@ -210,6 +210,7 @@ enum SystemDatabase {
         SystemInfo(id: "atari5200",    name: "Atari 5200",                      manufacturer: "Atari",      extensions: ["a52", "bin"],                 defaultCoreID: "a5200_libretro",             iconName: "gamecontroller", emuIconName: "ATARI5200", year: "1982", sortOrder: 41, defaultBoxType: .vertical),
         SystemInfo(id: "atari7800",    name: "Atari 7800",                      manufacturer: "Atari",      extensions: ["a78", "bin"],                 defaultCoreID: "prosystem_libretro",         iconName: "gamecontroller", emuIconName: "ATARI7800", year: "1986", sortOrder: 42, defaultBoxType: .vertical),
         SystemInfo(id: "lynx",         name: "Atari Lynx",                      manufacturer: "Atari",      extensions: ["lnx"],                        defaultCoreID: "handy_libretro",             iconName: "iphone.landscape", emuIconName: "LYNX",     year: "1989", sortOrder: 43, defaultBoxType: .vertical),
+        SystemInfo(id: "jaguar",       name: "Atari Jaguar",                    manufacturer: "Atari",      extensions: ["j64", "jag"],                 defaultCoreID: "virtualjaguar_libretro",     iconName: "gamecontroller", emuIconName: "JAGUAR",   year: "1993", sortOrder: 44, defaultBoxType: .vertical),
         SystemInfo(id: "ngp",          name: "Neo Geo Pocket",                  manufacturer: "SNK",        extensions: ["ngp", "ngc"],                 defaultCoreID: "mednafen_ngp_libretro",      iconName: "iphone",         emuIconName: "NGP",      year: "1998", sortOrder: 50, defaultBoxType: .vertical),
         SystemInfo(id: "pce",          name: "PC Engine / TurboGrafx-16",       manufacturer: "NEC",        extensions: ["pce", "cue"],                 defaultCoreID: "mednafen_pce_libretro",      iconName: "gamecontroller", emuIconName: "PCE",      year: "1987", sortOrder: 60, defaultBoxType: .landscape),
         SystemInfo(id: "pcfx",         name: "PC-FX",                           manufacturer: "NEC",        extensions: ["cue", "toc"],                 defaultCoreID: "mednafen_pcfx_libretro",     iconName: "opticaldisc",    emuIconName: "PCFX",     year: "1994", sortOrder: 61, defaultBoxType: .landscape),

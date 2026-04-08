@@ -425,14 +425,9 @@ static bool bridge_environment(unsigned cmd, void *data) {
             return true;
         case RETRO_ENVIRONMENT_GET_SYSTEM_DIRECTORY: {
             static char s_sysPath[1024];
-            NSString *path = nil;
-            if (g_instance && g_instance->_retainedRomPath) {
-                path = [g_instance->_retainedRomPath stringByDeletingLastPathComponent];
-            } else {
-                path = [NSSearchPathForDirectoriesInDomains(NSApplicationSupportDirectory, NSUserDomainMask, YES) firstObject];
-                path = [path stringByAppendingPathComponent:@"TruchieEmu/System"];
-                [[NSFileManager defaultManager] createDirectoryAtPath:path withIntermediateDirectories:YES attributes:nil error:nil];
-            }
+            NSString *path = [NSSearchPathForDirectoriesInDomains(NSApplicationSupportDirectory, NSUserDomainMask, YES) firstObject];
+            path = [path stringByAppendingPathComponent:@"TruchieEmu/System"];
+            [[NSFileManager defaultManager] createDirectoryAtPath:path withIntermediateDirectories:YES attributes:nil error:nil];
             strncpy(s_sysPath, path.UTF8String, sizeof(s_sysPath) - 1);
             if (data) *(const char **)data = s_sysPath;
             return true;
@@ -538,6 +533,13 @@ static bool bridge_environment(unsigned cmd, void *data) {
         case RETRO_ENVIRONMENT_SET_CONTROLLER_INFO:
         case RETRO_ENVIRONMENT_SET_CONTENT_INFO_OVERRIDE:
         case RETRO_ENVIRONMENT_SET_SUBSYSTEM_INFO:
+        case RETRO_ENVIRONMENT_SET_KEYBOARD_CALLBACK: // 12
+            return true;
+        case RETRO_ENVIRONMENT_GET_DISK_CONTROL_INTERFACE_VERSION: // 57
+            if (data) *(unsigned *)data = 1;
+            return true;
+        case RETRO_ENVIRONMENT_GET_PREFERRED_HW_RENDER: // 56
+            if (data) *(unsigned *)data = RETRO_HW_CONTEXT_OPENGL_CORE;
             return true;
         case RETRO_ENVIRONMENT_SET_CORE_OPTIONS: {
             if (data) parseCoreOptionsV1((struct retro_core_options *)data);
