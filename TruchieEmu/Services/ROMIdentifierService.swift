@@ -149,20 +149,6 @@ class ROMIdentifierService {
                 }
             }
             
-            // Fallback: legacy MAMEImportService (old format)
-            if let mameEntry = MAMEImportService.lookup(shortName: shortName), mameEntry.isPlayableGame {
-                LoggerService.romIdentify("Identify: MAME game identified via legacy bundled database → \(mameEntry.description)")
-                return .identified(GameInfo(
-                    name: mameEntry.description,
-                    year: mameEntry.year,
-                    publisher: mameEntry.manufacturer,
-                    developer: mameEntry.manufacturer,
-                    genre: nil,
-                    crc: "",
-                    thumbnailLookupSystemID: nil
-                ))
-            }
-            
             // Not in any MAME database — no point searching libretro DAT (bundled MAME DBs are more comprehensive)
             LoggerService.romIdentify("Identify: MAME game '\(shortName)' not in bundled database — hiding")
             return .crcNotInDatabase(crc: shortName)

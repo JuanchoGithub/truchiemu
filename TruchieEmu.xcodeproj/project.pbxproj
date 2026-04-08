@@ -113,6 +113,7 @@
 		CF0D01D75D00064F452B57C1 /* ImageCache.swift in Sources */ = {isa = PBXBuildFile; fileRef = C76E538AC13A32DE58CAFCB8 /* ImageCache.swift */; };
 		D02B80BF5046C50DD6849639 /* CoreOptionsManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = A4134F4B89D3CF5680BCEA25 /* CoreOptionsManager.swift */; };
 		D0C382CCE62AD453784ED800 /* ROMScanner.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7A96B3453958E60812D9DA1D /* ROMScanner.swift */; };
+		C89F9E78C49F471FAB36F17E /* ROMIdentifier.swift in Sources */ = {isa = PBXBuildFile; fileRef = C89F9E78C49F471FAB36F17F /* ROMIdentifier.swift */; };
 		D3DFF4B19710FC24B2FA821D /* BezelDownloadProgressTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 681D379EFFCD99F4BDE955CA /* BezelDownloadProgressTests.swift */; };
 		D501CF9374AEB1151D309853 /* SwiftDataContainer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B504A16AFFBFCF54BD0E4CB /* SwiftDataContainer.swift */; };
 		D7A2504994F1DE09E699F30F /* ROMIdentifierService.swift in Sources */ = {isa = PBXBuildFile; fileRef = FC2BC1B2F22591954A0E02B5 /* ROMIdentifierService.swift */; };
@@ -228,6 +229,7 @@
 		76F256846D9E636C7E11FB8B /* MAMEUnifiedService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MAMEUnifiedService.swift; sourceTree = "<group>"; };
 		79981162FE4F8B8B1624598B /* BezelManagerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BezelManagerTests.swift; sourceTree = "<group>"; };
 		7A96B3453958E60812D9DA1D /* ROMScanner.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ROMScanner.swift; sourceTree = "<group>"; };
+		C89F9E78C49F471FAB36F17F /* ROMIdentifier.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ROMIdentifier.swift; sourceTree = "<group>"; };
 		7BA22E4A4F4049B056FF0A02 /* ResourceCacheManagerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ResourceCacheManagerTests.swift; sourceTree = "<group>"; };
 		7D4DE8B36744135985A50982 /* CLIManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CLIManager.swift; sourceTree = "<group>"; };
 		7D6D46D0F856BC93AFDD1A73 /* MAMERomEntry.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MAMERomEntry.swift; sourceTree = "<group>"; };
@@ -397,6 +399,7 @@
 				FC2BC1B2F22591954A0E02B5 /* ROMIdentifierService.swift */,
 				35A5B2396F8000C8435A2E45 /* ROMLibrary.swift */,
 				7A96B3453958E60812D9DA1D /* ROMScanner.swift */,
+				C89F9E78C49F471FAB36F17F /* ROMIdentifier.swift */,
 				EAE090319110B0F262FC2BC2 /* RunningGamesTracker.swift */,
 				67828B9B95A21FE57196B832 /* SaveStateManager.swift */,
 				FAB6045B123F3B9A7267B3B0 /* SetupWizardState.swift */,
@@ -884,6 +887,7 @@
 				F3C6A31B44657B3FF9B89A4F /* ROMLibrary.swift in Sources */,
 				F0C531CC9AE8E5F3501E703B /* ROMRepository.swift in Sources */,
 				D0C382CCE62AD453784ED800 /* ROMScanner.swift in Sources */,
+				C89F9E78C49F471FAB36F17E /* ROMIdentifier.swift in Sources */,
 				C940EF25A43065B0025730BA /* ResourceCacheInterceptor.swift in Sources */,
 				6224A47EFF4D640CEED2929E /* ResourceCacheModels.swift in Sources */,
 				DBA355086BB7C0CC12EA76B3 /* ResourceCacheRepository.swift in Sources */,

@@ -41,9 +41,9 @@ struct ROM: Identifiable, Codable, Hashable, Sendable {
             return GameNameFormatter.stripTags(custom)
         }
         
-        // For MAME games, try to get the human-readable description from the lookup database
-        if let mameEntry = MAMEImportService.lookup(shortName: shortNameForMAME) {
-            return GameNameFormatter.stripTags(mameEntry.description)
+        // For MAME games, try to get the human-readable description from the unified database
+        if let unifiedEntry = MAMEUnifiedService.shared.lookup(shortName: shortNameForMAME) {
+            return GameNameFormatter.stripTags(unifiedEntry.description)
         }
         
         // Fall back to metadata title or filename

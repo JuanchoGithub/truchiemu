@@ -155,8 +155,7 @@ final class MAMEVerificationService: ObservableObject {
         let crcString = String(format: "%08X", computeCRC32(data))
         
         // Check if this shortname exists in the MAME database
-        let mameService = MAMEImportService.shared
-        if let entry = mameService.lookup(shortName: record.shortName) {
+        if let entry = MAMEUnifiedService.shared.lookup(shortName: record.shortName) {
             // Found in database - mark as verified
             record.markVerified(crc32: crcString, innerFiles: nil)
             LoggerService.mameVerify("Verified: \(record.shortName) -> \(entry.description)")

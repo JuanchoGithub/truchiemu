@@ -375,11 +375,11 @@ struct GameDetailView: View {
 
     /// Game description from multiple sources: MAME database, ROM metadata, or Libretro DAT.
     private var gameDescription: String? {
-        // 1. MAME games: use the MAME lookup database description
+        // 1. MAME games: use the unified MAME database description
         if currentROM.systemID == "mame" || currentROM.systemID == "arcade" {
             let shortName = currentROM.shortNameForMAME
-            if let mameEntry = MAMEImportService.lookup(shortName: shortName) {
-                return mameEntry.description
+            if let unifiedEntry = MAMEUnifiedService.shared.lookup(shortName: shortName) {
+                return unifiedEntry.description
             }
         }
 

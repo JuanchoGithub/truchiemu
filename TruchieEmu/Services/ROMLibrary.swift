@@ -481,25 +481,9 @@ class ROMLibrary: ObservableObject {
         return (nonZipFiles + zipFiles).sorted { $0.path < $1.path }
     }
 
-    /// Identify system for a single URL (non-async version for inline scanning).
+    /// Identify system for a single URL (delegates to shared ROMIdentifier).
     private func identifySystemForURL(url: URL, extension ext: String) -> SystemInfo? {
-        if ext == "zip" || ext == "7z" {
-            return identifyArchiveInline(url: url)
-        }
-        if let systemID = detectSystemFromFilenameInline(url.lastPathComponent) {
-            if let system = SystemDatabase.system(forID: systemID) {
-                return system
-            }
-        }
-        let ambiguous = ["cue", "bin", "iso", "img"]
-        if ambiguous.contains(ext) {
-            if let systemID = peekSystemIDInline(url: url) {
-                if let system = SystemDatabase.system(forID: systemID) {
-                    return system
-                }
-            }
-        }
-        return SystemDatabase.system(forExtension: ext)
+        ROMIdentifier.identifySystem(url: url, extension: ext)
     }
 
     // MARK: - Non-ROM File Extensions (static Set for O(1) lookup)
@@ -515,69 +499,6 @@ class ROMLibrary: ObservableObject {
         nonROMExtensions.contains(ext)
     }
 
-    /// Detect system from filename hints.
-    private func detectSystemFromFilenameInline(_ filename: String) -> String? {
-        let upper = filename.uppercased()
-        if upper.contains("(PS1)") || upper.contains("[PS1]") || upper.contains("(PSX)") { return "psx" }
-        if upper.contains("(SATURN)") || upper.contains("[SATURN]") { return "saturn" }
-        if upper.contains("(32X)") || upper.contains("[32X]") { return "32x" }
-        if upper.contains("(GENESIS)") || upper.contains("(MEGA DRIVE)") { return "genesis" }
-        let ps1Regex = try? NSRegularExpression(pattern: "(S[CL][EP][SM]|SCPH)-\\d{5}", options: [])
-        if let regex = ps1Regex, regex.firstMatch(in: upper, options: [], range: NSRange(location: 0, length: upper.count)) != nil {
-            return "psx"
-        }
-        return nil
-    }
-
-    /// Peek at file header for system identification.
-    private func peekSystemIDInline(url: URL) -> String? {
-        let ext = url.pathExtension.lowercased()
-        if ext == "cue" {
-            // Read cue and find first file
-            guard let content = try? String(contentsOf: url, encoding: .utf8) else { return nil }
-            let lines = content.components(separatedBy: .newlines)
-            for line in lines {
-                let trimmed = line.trimmingCharacters(in: .whitespaces)
-                if trimmed.uppercased().hasPrefix("FILE") {
-                    let scanner = Scanner(string: trimmed)
-                    _ = scanner.scanString("FILE")
-                    var filename: NSString?
-                    if scanner.scanString("\"") != nil {
-                        if let scanned = scanner.scanUpToString("\"") { filename = scanned as NSString }
-                    }
-                    if let name = filename as String? {
-                        let fileURL = url.deletingLastPathComponent().appendingPathComponent(name)
-                        return peekHeaderInline(url: fileURL)
-                    }
-                }
-            }
-            return nil
-        }
-        return peekHeaderInline(url: url)
-    }
-
-    /// Read file header for system identification.
-    private func peekHeaderInline(url: URL) -> String? {
-        guard FileManager.default.fileExists(atPath: url.path),
-              let data = try? Data(contentsOf: url, options: .mappedIfSafe) else { return nil }
-        let saturnMagic = "SEGA SEGASATURN"
-        if data.count >= saturnMagic.count,
-           let str = String(data: data.prefix(saturnMagic.count), encoding: .ascii),
-           str == saturnMagic { return "saturn" }
-        let _32xMagic = "SEGA 32X"
-        if data.count >= 0x100 + _32xMagic.count,
-           let str = String(data: data[0x100..<0x100 + _32xMagic.count], encoding: .ascii), str == _32xMagic { return "32x" }
-        if data.count >= 0x104 {
-            let slice = data[0x100..<0x104]
-            if let str = String(data: slice, encoding: .ascii), str == "SEGA" { return "genesis" }
-        }
-        let ps1Magic = "PLAYSTATION"
-        if data.count >= 0x8008 + ps1Magic.count,
-           let str = String(data: data[0x8008..<0x8008 + ps1Magic.count], encoding: .ascii), str.contains(ps1Magic) { return "psx" }
-        if data.count >= 0x9318 + ps1Magic.count,
-           let str = String(data: data[0x9318..<0x9318 + ps1Magic.count], encoding: .ascii), str.contains(ps1Magic) { return "psx" }
-        return nil
-    }
 
     /// Apply MAME identification inline during scanning.
     /// Prefers per-core dependency data (downloaded XML) over bundled fallback JSON.
@@ -603,12 +524,12 @@ class ROMLibrary: ObservableObject {
 
         // Only use bundled fallback if per-core lookup returned nil
         if description == nil {
-            if let entry = MAMEImportService.lookup(shortName: shortName) {
-                description = entry.description
-                type = entry.type
-                isPlayable = entry.isPlayableGame
-                parentROM = entry.parentROM
-                source = "mame_rom_data.json"
+            if let unifiedEntry = MAMEUnifiedService.shared.lookup(shortName: shortName) {
+                description = unifiedEntry.description
+                type = unifiedEntry.isBIOS ? "bios" : (unifiedEntry.isRunnableInAnyCore ? "game" : "unplayable")
+                isPlayable = unifiedEntry.isRunnableInAnyCore && !unifiedEntry.isBIOS
+                parentROM = nil
+                source = "mame_unified.json"
             }
         }
 
@@ -641,25 +562,6 @@ class ROMLibrary: ObservableObject {
             rom.category = "bios"
             LoggerService.debug(category: "ROMLibrary", "MAME HIDE '\(shortName)' → type=\(type) description='\(description)' [source: \(source)]")
         }
-    }
-
-    /// Identify archive type inline.
-    private func identifyArchiveInline(url: URL) -> SystemInfo? {
-        let parentName = url.deletingLastPathComponent().lastPathComponent.lowercased()
-        if parentName.contains("mame") || parentName.contains("arcade") || parentName.contains("fba") || parentName.contains("fbneo") {
-            return SystemDatabase.system(forID: "mame")
-        }
-        if parentName.contains("dos") || parentName.contains("dosbox") || parentName.contains("pc") {
-            return SystemDatabase.system(forID: "dos")
-        }
-        if parentName.contains("scummvm") || parentName.contains("scumm") {
-            return SystemDatabase.system(forID: "scummvm")
-        }
-        if parentName.contains("32x") || parentName.contains("genesis32x") || parentName.contains("sega32x") {
-            return SystemDatabase.system(forID: "32x")
-        }
-        if KnownBIOS.isKnownBios(filename: url.lastPathComponent) { return nil }
-        return SystemDatabase.system(forID: "unknown")
     }
 
     private func cleanupScummVMCaches() {

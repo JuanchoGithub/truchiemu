@@ -666,14 +666,14 @@ final class MAMEDependencyService: ObservableObject {
             )
         }
 
-        // Fallback: try the bundled mame_rom_data.json via MAMEImportService
-        if let entry = MAMEImportService.lookup(shortName: shortName) {
+        // Fallback: try the unified MAME database
+        if let unifiedEntry = MAMEUnifiedService.shared.lookup(shortName: shortName) {
             return (
-                description: entry.description,
-                type: entry.type,
-                isPlayable: entry.isPlayableGame,
-                parent: entry.parentROM,
-                source: "mame_rom_data.json"
+                description: unifiedEntry.description,
+                type: unifiedEntry.isBIOS ? "bios" : (unifiedEntry.isRunnableInAnyCore ? "game" : "unplayable"),
+                isPlayable: unifiedEntry.isRunnableInAnyCore && !unifiedEntry.isBIOS,
+                parent: nil,
+                source: "mame_unified.json"
             )
         }
 
