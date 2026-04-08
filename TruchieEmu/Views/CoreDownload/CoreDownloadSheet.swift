@@ -233,13 +233,23 @@ struct CoreDownloadSheet: View {
                                 .background(Color.green.opacity(0.12))
                                 .cornerRadius(4)
                         } else {
-                            Text("Download")
-                                .font(.caption2)
-                                .foregroundColor(.blue)
-                                .padding(.horizontal, 6)
-                                .padding(.vertical, 1)
-                                .background(Color.blue.opacity(0.12))
-                                .cornerRadius(4)
+                            if coreManager.availableCores.contains(where: { $0.coreID == entry.id }) {
+                                Text("Download")
+                                    .font(.caption2)
+                                    .foregroundColor(.blue)
+                                    .padding(.horizontal, 6)
+                                    .padding(.vertical, 1)
+                                    .background(Color.blue.opacity(0.12))
+                                    .cornerRadius(4)
+                            } else {
+                                Text("Unavailable for Mac")
+                                    .font(.caption2)
+                                    .foregroundColor(.red)
+                                    .padding(.horizontal, 6)
+                                    .padding(.vertical, 1)
+                                    .background(Color.red.opacity(0.12))
+                                    .cornerRadius(4)
+                            }
                         }
                     }
                     Text(entry.metadata.description)
@@ -351,18 +361,26 @@ struct CoreDownloadSheet: View {
                 ProgressView().scaleEffect(0.9).padding(.trailing, 6)
                 Text("Downloading core…").foregroundColor(.secondary)
             } else {
-                Button {
-                    startDownload()
-                } label: {
-                    HStack(spacing: 6) {
-                        Image(systemName: selectedCoreEntry.isInstalled ? "play.fill" : "arrow.down.circle")
-                        Text(pendingROM != nil ? "Download & Launch" : "Download & Install")
+                let isAvailable = selectedCoreEntry.isInstalled || coreManager.availableCores.contains(where: { $0.coreID == selectedCoreEntry.id })
+                
+                if !isAvailable {
+                    Link("Check Libretro Buildbot", destination: URL(string: "https://buildbot.libretro.com")!)
+                        .buttonStyle(.bordered)
+                        .controlSize(.large)
+                } else {
+                    Button {
+                        startDownload()
+                    } label: {
+                        HStack(spacing: 6) {
+                            Image(systemName: selectedCoreEntry.isInstalled ? "play.fill" : "arrow.down.circle")
+                            Text(pendingROM != nil && selectedCoreEntry.isInstalled ? "Launch" : "Download & Install")
+                        }
                     }
+                    .buttonStyle(.borderedProminent)
+                    .tint(selectedCoreEntry.isInstalled ? .green : .purple)
+                    .keyboardShortcut(.defaultAction)
+                    .controlSize(.large)
                 }
-                .buttonStyle(.borderedProminent)
-                .tint(selectedCoreEntry.isInstalled ? .green : .purple)
-                .keyboardShortcut(.defaultAction)
-                .controlSize(.large)
             }
         }
     }
