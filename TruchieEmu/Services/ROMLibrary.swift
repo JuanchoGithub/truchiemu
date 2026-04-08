@@ -600,13 +600,11 @@ class ROMLibrary: ObservableObject {
             roms[idx] = rom
             if oldBezel != rom.settings.bezelFileName { bezelUpdateToken += 1 }
             LibraryMetadataStore.shared.persist(rom: rom)
-            updateGamesXML(for: rom)
             updateCounts()
             
-            // Persist this single ROM immediately if requested.
-            // For batch operations, pass persist: false and call saveROMsToDatabase() at the end.
             if persist {
-                saveSingleROM(rom)
+                updateGamesXML(for: rom)
+                saveROMsToDatabase(only: [rom.id])
             }
         }
     }
@@ -614,7 +612,11 @@ class ROMLibrary: ObservableObject {
     @discardableResult
     func identifyROM(_ rom: ROM, preferNameMatch: Bool = true, persist: Bool = true) async -> ROMIdentifyResult {
         let result = await ROMIdentifierService.shared.identify(rom: rom, preferNameMatch: preferNameMatch)
-        
+        applyIdentificationResult(result, to: rom, persist: persist)
+        return result
+    }
+
+    func applyIdentificationResult(_ result: ROMIdentifyResult, to rom: ROM, persist: Bool = true) {
         switch result {
         case .identified(let info), .identifiedFromName(let info):
             var updated = rom
@@ -632,7 +634,6 @@ class ROMLibrary: ObservableObject {
             var updated = rom
             updated.crc32 = crc
             if updated.metadata?.title != nil {
-                LoggerService.info(category: "ROMLibrary", "Identification failed — using filename")
                 updated.metadata?.title = nil
                 updated.metadata?.year = nil
                 updated.metadata?.publisher = nil
@@ -644,7 +645,6 @@ class ROMLibrary: ObservableObject {
         case .identificationCleared:
             var updated = rom
             if updated.metadata?.title != nil {
-                LoggerService.info(category: "ROMLibrary", "Identification cleared — reverting to filename")
                 updated.metadata?.title = nil
                 updated.metadata?.year = nil
                 updated.metadata?.publisher = nil
@@ -655,13 +655,11 @@ class ROMLibrary: ObservableObject {
             }
             
         case .databaseUnavailable, .noSystem:
-            // No changes needed
             break
             
         case .romReadFailed:
             break
         }
-        return result
     }
 
     func clearIdentification(for rom: ROM, persist: Bool = true) {
@@ -732,8 +730,16 @@ class ROMLibrary: ObservableObject {
     // MARK: - SwiftData Persistence
 
     /// Bulk save all ROMs to the database. Use after scan/import operations.
-    func saveROMsToDatabase() {
-        repository.saveROMs(roms)
+    /// Bulk save ROMs to the database. If 'only' is nil, ALL ROMs in memory are synced.
+    /// To optimize post-scan saves, pass the IDs of newly identified/modified ROMs.
+    func saveROMsToDatabase(only ids: [UUID]? = nil) {
+        if let ids = ids {
+            let idSet = Set(ids)
+            let changed = roms.filter { idSet.contains($0.id) }
+            repository.saveROMs(changed)
+        } else {
+            repository.saveROMs(roms)
+        }
     }
 
     /// Save a single ROM to the database. Use for targeted user-initiated updates

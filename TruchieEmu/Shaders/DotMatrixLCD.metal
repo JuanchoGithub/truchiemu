@@ -35,8 +35,6 @@ fragment float4 fragmentDotMatrixLCD(VertexOut in [[stage_in]],
     float dotShape = 1.0 - smoothstep(0.35, 0.45, dotDist);
     
     // Metal grid between dots
-    float gridLineX = smoothstep(0.42, 0.46, abs(dotCenter.x));
-    float gridLineY = smoothstep(0.42, 0.46, abs(dotCenter.y));
     // Metallic sheen - directional highlight based on dot position
     float sheenAngle = fract(dotID.x * 0.31 + dotID.y * 0.17);
     float metallicSheen = pow(sheenAngle, 3.0) * u.metallicIntensity;

@@ -229,10 +229,11 @@ class BoxArtService: ObservableObject {
 
         if !found.isEmpty {
             LoggerService.info(category: "BoxArt", "Found local boxart for \(found.count) ROM(s)")
+            let modifiedIDs = found.map { $0.id }
             for rom in found {
                 library.updateROM(rom, persist: false)
             }
-            library.saveROMsToDatabase()
+            library.saveROMsToDatabase(only: modifiedIDs)
             signalBoxArtUpdated(for: UUID())
         }
     }
@@ -656,6 +657,8 @@ class BoxArtService: ObservableObject {
 
         let maxConcurrent = 1
         var completed = 0
+        var modifiedIDs: [UUID] = []
+        
         await withTaskGroup(of: (ROM, URL?).self) { group in
             var active = 0
             var iter = needsArt.makeIterator()
@@ -673,6 +676,7 @@ class BoxArtService: ObservableObject {
                 var (completedRom, url) = result
                 if url != nil {
                     completedRom.hasBoxArt = true
+                    modifiedIDs.append(completedRom.id)
                     await MainActor.run { library.updateROM(completedRom, persist: false) }
                 }
                 completed += 1
@@ -697,7 +701,7 @@ class BoxArtService: ObservableObject {
         }
 
         await MainActor.run { 
-            library.saveROMsToDatabase()
+            library.saveROMsToDatabase(only: modifiedIDs)
             self.isDownloadingBatch = false 
         }
         
@@ -742,6 +746,8 @@ class BoxArtService: ObservableObject {
         }
 
         let maxConcurrent = 2
+        var modifiedIDs: [UUID] = []
+        
         await withTaskGroup(of: (ROM, URL?).self) { group in
             var activeTasks = 0
             var iterator = needsArt.makeIterator()
@@ -760,6 +766,7 @@ class BoxArtService: ObservableObject {
                 
                 if url != nil {
                     completedRom.hasBoxArt = true
+                    modifiedIDs.append(completedRom.id)
                     await MainActor.run { library.updateROM(completedRom, persist: false) }
                 }
                 await MainActor.run { self.downloadedCount += 1 }
@@ -778,7 +785,7 @@ class BoxArtService: ObservableObject {
         }
         
         await MainActor.run { 
-            library.saveROMsToDatabase()
+            library.saveROMsToDatabase(only: modifiedIDs)
             self.isDownloadingBatch = false 
         }
     }

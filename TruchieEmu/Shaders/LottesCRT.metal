@@ -39,7 +39,6 @@ fragment float4 fragmentLottesCRT(VertexOut in [[stage_in]],
     }
     
     // Scanline & Beam logic
-    float2 pos = uv * u.sourceSize.xy;
     // Sample with slight vertical blur for scanline weighting
     float4 color = tex.sample(s, uv);
     

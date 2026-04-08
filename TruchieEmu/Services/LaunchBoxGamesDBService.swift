@@ -505,6 +505,7 @@ class LaunchBoxGamesDBService: ObservableObject {
 
         let maxConcurrent = 1 // Ultra-conservative for UI responsiveness
         var completed = 0
+        var modifiedIDs: [UUID] = []
 
         await withTaskGroup(of: (ROM, URL?).self) { group in
             var active = 0
@@ -530,6 +531,7 @@ class LaunchBoxGamesDBService: ObservableObject {
 
                 if url != nil {
                     completedRom.hasBoxArt = true
+                    modifiedIDs.append(completedRom.id)
                     await MainActor.run { library.updateROM(completedRom, persist: false) }
                 }
 
@@ -562,7 +564,7 @@ class LaunchBoxGamesDBService: ObservableObject {
         }
 
         await MainActor.run {
-            library.saveROMsToDatabase()
+            library.saveROMsToDatabase(only: modifiedIDs)
             BoxArtService.shared.isDownloadingBatch = false
         }
 
@@ -660,6 +662,7 @@ class LaunchBoxGamesDBService: ObservableObject {
 
         let maxConcurrent = 1
         var completed = 0
+        var modifiedIDs: [UUID] = []
 
         await withTaskGroup(of: (ROM, URL?).self) { group in
             var iter = allRoms.makeIterator()
@@ -682,6 +685,7 @@ class LaunchBoxGamesDBService: ObservableObject {
                 if url != nil {
                     var updated = completedRom
                     updated.hasBoxArt = true
+                    modifiedIDs.append(updated.id)
                     await MainActor.run { library.updateROM(updated, persist: false) }
                 }
                 // Throttle: 750ms + yield between requests to keep app responsive
@@ -700,7 +704,7 @@ class LaunchBoxGamesDBService: ObservableObject {
                     active += 1
                 }
             }
-            await MainActor.run { library.saveROMsToDatabase() }
+            await MainActor.run { library.saveROMsToDatabase(only: modifiedIDs) }
         }
 
         recordSyncDate()

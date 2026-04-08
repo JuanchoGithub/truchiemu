@@ -117,8 +117,33 @@ extension LoggerService {
     }
 }
 
-final class ROMIdentifierService: Sendable {
+final class SystemSearchIndex {
+    let exactMap: [String: [GameInfo]]
+    let aggressiveMap: [String: [GameInfo]]
+    let allEntries: [GameInfo]
+    
+    init(database: [String: GameInfo]) {
+        var exact: [String: [GameInfo]] = [:]
+        var aggressive: [String: [GameInfo]] = [:]
+        var all: [GameInfo] = []
+        
+        for info in database.values {
+            all.append(info)
+            let datBase = ROMIdentifierService.normalizedComparableTitle(info.name)
+            exact[datBase, default: []].append(info)
+            
+            let datAggressive = ROMIdentifierService.aggressivelyNormalizedTitle(info.name)
+            aggressive[datAggressive, default: []].append(info)
+        }
+        self.exactMap = exact
+        self.aggressiveMap = aggressive
+        self.allEntries = all
+    }
+}
+
+final class ROMIdentifierService: @unchecked Sendable {
     static let shared = ROMIdentifierService()
+    private let indexCache = NSCache<NSString, SystemSearchIndex>()
 
     func identify(rom: ROM, preferNameMatch: Bool = false) async -> ROMIdentifyResult {
         guard let systemID = rom.systemID,
@@ -206,7 +231,7 @@ final class ROMIdentifierService: Sendable {
                 LoggerService.romIdentify("Identify: SUCCESS (Name Path) → \(byName.name) found by name, skipping CRC.")
                 return .identifiedFromName(byName)
             }
-            LoggerService.romIdentify("Identify: Name-based search failed, falling back to CRC hashing...")
+            LoggerService.romIdentify("Identify: Name-based search failed for '\(rom.name)', falling back to CRC hashing...")
         }
 
         // PASS 3: CRC-based identification (Heavy)
@@ -384,39 +409,32 @@ final class ROMIdentifierService: Sendable {
             return nil
         }
 
-        LoggerService.romIdentify("Identify: name search START — file='\(stem)', cleaned='\(cleaned)', queryBase='\(queryBase)'")
-        LoggerService.romIdentify("Identify: database has \(database.count) entries to search")
-
-        LoggerService.romIdentify("Identify: PASS 1 — exact match on queryBase='\(queryBase)'")
-        var exact: [GameInfo] = []
-        var pass1Checked = 0
-        for info in database.values {
-            let datBase = Self.normalizedComparableTitle(info.name)
-            pass1Checked += 1
-            if datBase == queryBase {
-                exact.append(info)
-                if exact.count <= 3 {
-                    LoggerService.romIdentify("Identify: PASS 1 matched → '\(info.name)'")
-                }
-            }
+        let systemID = rom.systemID ?? "unknown"
+        let index: SystemSearchIndex
+        if let cached = indexCache.object(forKey: systemID as NSString) {
+            index = cached
+        } else {
+            index = SystemSearchIndex(database: database)
+            indexCache.setObject(index, forKey: systemID as NSString)
         }
-        if exact.count > 3 { LoggerService.romIdentify("Identify: PASS 1 matched \(exact.count - 3) more entry(ies)") }
+
+        // PASS 1: Exact normalized match (Dictionary lookup)
+        LoggerService.romIdentify("Identify: PASS 1 — exact match on queryBase='\(queryBase)'")
+        var exact: [GameInfo] = index.exactMap[queryBase] ?? []
         if !exact.isEmpty { LoggerService.romIdentify("Identify: PASS 1 FOUND \(exact.count) exact match(es)") }
-        else { LoggerService.romIdentify("Identify: PASS 1 found 0 matches (checked \(pass1Checked) entries)") }
 
         if exact.isEmpty {
             let variants = Self.romanNumeralVariants(of: queryBase)
             LoggerService.romIdentify("Identify: PASS 2 — number variants (\(variants.count) variants generated)")
             if !variants.isEmpty {
                 for variant in variants {
-                    LoggerService.romIdentify("Identify: PASS 2 trying variant='\(variant)'")
-                    var hit = false
-                    for info in database.values {
-                        if Self.normalizedComparableTitle(info.name) == variant { exact.append(info); LoggerService.romIdentify("Identify: PASS 2 matched variant='\(variant)' → '\(info.name)'"); hit = true }
+                    if let found = index.exactMap[variant] {
+                        exact.append(contentsOf: found)
+                        LoggerService.romIdentify("Identify: PASS 2 matched variant='\(variant)' → \(found.count) entries")
+                        break
                     }
-                    if hit { break }
                 }
-            } else { LoggerService.romIdentify("Identify: PASS 2 skipped — no variants generated") }
+            }
             if exact.isEmpty { LoggerService.romIdentify("Identify: PASS 2 found 0 matches") }
         }
 
@@ -425,80 +443,38 @@ final class ROMIdentifierService: Sendable {
             LoggerService.romIdentify("Identify: PASS 3 — aggressive normalization")
             LoggerService.romIdentify("Identify: PASS 3 query='\(stem)' → '\(aggressiveQuery)'")
             if !aggressiveQuery.isEmpty && aggressiveQuery.count >= 2 {
-                var pass3Checked = 0
-                for info in database.values { let datAggressive = Self.aggressivelyNormalizedTitle(info.name); pass3Checked += 1; if datAggressive == aggressiveQuery { exact.append(info); LoggerService.romIdentify("Identify: PASS 3 matched aggressive query → '\(info.name)'") } }
+                if let found = index.aggressiveMap[aggressiveQuery] {
+                    exact.append(contentsOf: found)
+                    LoggerService.romIdentify("Identify: PASS 3 matched aggressive query → \(found.count) entries")
+                }
+                
                 if exact.isEmpty {
                     let aggressiveVariants = Self.romanNumeralVariants(of: aggressiveQuery)
-                    LoggerService.romIdentify("Identify: PASS 3 generated \(aggressiveVariants.count) number variants for aggressive query='\(aggressiveQuery)'")
                     for variant in aggressiveVariants {
-                        LoggerService.romIdentify("Identify: PASS 3 trying aggressive variant='\(variant)'")
-                        for info in database.values { if Self.aggressivelyNormalizedTitle(info.name) == variant { exact.append(info); LoggerService.romIdentify("Identify: PASS 3 matched aggressive variant='\(variant)' → '\(info.name)'"); break } }; if !exact.isEmpty { break }
+                        if let found = index.aggressiveMap[variant] {
+                            exact.append(contentsOf: found)
+                            LoggerService.romIdentify("Identify: PASS 3 matched aggressive variant='\(variant)'")
+                            break
+                        }
                     }
                 }
-            } else { LoggerService.romIdentify("Identify: PASS 3 skipped — aggressiveQuery too short or empty") }
-            if exact.isEmpty { LoggerService.romIdentify("Identify: PASS 3 found 0 matches") }
+            }
         }
 
         var candidates = exact
         if candidates.isEmpty {
-            LoggerService.romIdentify("Identify: PASS 4 — substring/fuzzy matching (base query)")
-            var pass4BaseChecked = 0, pass4BaseMatched = 0
-            for info in database.values {
+            LoggerService.romIdentify("Identify: PASS 4 — substring/fuzzy matching")
+            var pass4Matched = 0
+            for info in index.allEntries {
                 let datBase = Self.normalizedComparableTitle(info.name)
                 guard datBase.count >= 3, queryBase.count >= 3 else { continue }
-                pass4BaseChecked += 1
                 if Self.isProblematicNumberSuffixPartialMatch(query: queryBase, candidate: datBase) { continue }
-                let lenRatio = Double(queryBase.count) / Double(datBase.count)
-                if queryBase.contains(datBase) && lenRatio > 1.5 { continue }
                 if datBase.contains(queryBase) || queryBase.contains(datBase) {
                     candidates.append(info)
-                    pass4BaseMatched += 1
-                    if pass4BaseMatched <= 3 {
-                        LoggerService.romIdentify("Identify: PASS 4 substring match → '\(info.name)'")
-                    }
+                    pass4Matched += 1
                 }
             }
-            if pass4BaseMatched > 3 { LoggerService.romIdentify("Identify: PASS 4 matched \(pass4BaseMatched - 3) more entry(ies)") }
-            LoggerService.romIdentify("Identify: PASS 4 (base query) checked \(pass4BaseChecked) entries, found \(pass4BaseMatched) substring match(es)")
-            if candidates.isEmpty {
-                let variants = Self.romanNumeralVariants(of: queryBase)
-                LoggerService.romIdentify("Identify: PASS 4 (Roman variants) — trying \(variants.count) variants")
-                for variant in variants {
-                    guard variant.count >= 3 else { continue }
-                    LoggerService.romIdentify("Identify: PASS 4 trying Roman variant='\(variant)'")
-                    for info in database.values {
-                        let datBase = Self.normalizedComparableTitle(info.name)
-                        guard datBase.count >= 3 else { continue }
-                        if Self.isProblematicNumberSuffixPartialMatch(query: variant, candidate: datBase) { continue }
-                        if datBase.contains(variant) || variant.contains(datBase) { candidates.append(info); LoggerService.romIdentify("Identify: PASS 4 matched Roman variant='\(variant)' → '\(info.name)'"); break }
-                    }
-                    if !candidates.isEmpty { break }
-                }
-                if candidates.isEmpty { LoggerService.romIdentify("Identify: PASS 4 (Roman variants) found 0 matches") }
-            }
-            if candidates.isEmpty {
-                let aggressiveQuery = Self.aggressivelyNormalizedTitle(stem)
-                if !aggressiveQuery.isEmpty && aggressiveQuery.count >= 3 {
-                    LoggerService.romIdentify("Identify: PASS 4 (last resort) — aggressive substring match")
-                    var pass4AggChecked = 0, pass4AggMatched = 0
-                    for info in database.values {
-                        let datAggressive = Self.aggressivelyNormalizedTitle(info.name)
-                        guard datAggressive.count >= 3 else { continue }
-                        pass4AggChecked += 1
-                        if Self.isProblematicNumberSuffixPartialMatch(query: aggressiveQuery, candidate: datAggressive) { continue }
-                        if datAggressive.contains(aggressiveQuery) || aggressiveQuery.contains(datAggressive) {
-                            candidates.append(info)
-                            pass4AggMatched += 1
-                            if pass4AggMatched <= 3 {
-                                LoggerService.romIdentify("Identify: PASS 4 aggressive substring match → '\(info.name)'")
-                            }
-                        }
-                    }
-                    if pass4AggMatched > 3 { LoggerService.romIdentify("Identify: PASS 4 matched \(pass4AggMatched - 3) more aggressive entries") }
-                    if pass4AggMatched > 0 { LoggerService.romIdentify("Identify: PASS 4 (last resort) found \(pass4AggMatched) aggressive substring match(es)") }
-                    else { LoggerService.romIdentify("Identify: PASS 4 (last resort) found 0 matches (checked \(pass4AggChecked) entries)") }
-                } else { LoggerService.romIdentify("Identify: PASS 4 (last resort) skipped — aggressiveQuery too short or empty") }
-            }
+            if pass4Matched > 0 { LoggerService.romIdentify("Identify: PASS 4 found \(pass4Matched) substring match(es)") }
         }
 
         guard !candidates.isEmpty else { return nil }

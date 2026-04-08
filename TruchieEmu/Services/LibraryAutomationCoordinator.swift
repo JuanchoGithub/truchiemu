@@ -27,30 +27,6 @@ final class LibraryAutomationCoordinator: ObservableObject {
             return
         }
 
-        let snapshot = library.roms
-
-        // Phase 0: Scan for pre-existing local boxart in /boxart subfolders
-        // This populates hasBoxArt for ROMs that have local artwork but haven't
-        // been downloaded by the app yet (e.g., user-provided boxart files).
-        // Run on background pool to avoid blocking the MainActor with filesystem checks.
-        let romsToCheck = snapshot.filter { !$0.hasBoxArt }
-        LoggerService.info(category: "LibraryAutomation", "📼 Checking \(romsToCheck.count) ROM(s) for local boxart in /boxart folders...")
-        
-        let boxArtService = BoxArtService.shared
-        let romsWithLocalArt = await Task.detached(priority: .background) {
-            boxArtService.resolveLocalBoxArtBatch(for: romsToCheck)
-        }.value
-        
-        if !romsWithLocalArt.isEmpty {
-            LoggerService.info(category: "LibraryAutomation", "✅ Found local boxart for \(romsWithLocalArt.count) ROM(s)")
-            for rom in romsWithLocalArt {
-                library.updateROM(rom, persist: false)
-            }
-            library.saveROMsToDatabase()
-        } else {
-            LoggerService.info(category: "LibraryAutomation", "No local boxart found in scanned ROMs")
-        }
-
         let needIdentify = library.roms.filter { $0.needsAutomaticIdentification && !$0.isHidden }
         let needArt = library.roms.filter { $0.needsAutomaticBoxArt && !$0.isHidden }
 
@@ -74,29 +50,65 @@ final class LibraryAutomationCoordinator: ObservableObject {
             statusLine = ""
         }
 
-        // Phase 1: Identification — throttled to keep UI responsive
+        // Phase 1: Identification — parallelized + grouped by system for maximum efficiency
         if !needIdentify.isEmpty {
             phase = .identifying
             let total = Double(needIdentify.count)
-            for (idx, rom) in needIdentify.enumerated() {
-                let label = rom.path.lastPathComponent
-                let current = library.roms.first(where: { $0.id == rom.id }) ?? rom
-                _ = await library.identifyROM(current, persist: false)
-                let done = Double(idx + 1) / max(total, 1)
-                progress = done
-                statusLine = "Identifying games: \(Int(done * 100))% — Checking \(label)"
-
-                // Throttle: 500ms + yield between identifications to keep UI responsive
-                try? await Task.sleep(nanoseconds: 500_000_000)
-                await Task.yield()
+            var completedCount = 0
+            
+            // Track which ROMs were actually modified/identified to avoid saving 4000+ records redundantly
+            var modifiedIDs: [UUID] = []
+            
+            // Grouping by system minimizes redundant DAT/Index loading across calls
+            let groupedRoms = Dictionary(grouping: needIdentify) { $0.systemID ?? "unknown" }
+            
+            // Process systems one by one to keep logging and progress logical
+            for (systemID, romsForSystem) in groupedRoms {
+                let systemName = SystemDatabase.system(forID: systemID)?.name ?? systemID
+                
+                // Process ROMs of the same system in parallel batches
+                let batchSize = 100
+                for i in stride(from: 0, to: romsForSystem.count, by: batchSize) {
+                    let batch = Array(romsForSystem[i..<min(i + batchSize, romsForSystem.count)])
+                    
+                    // Perform multi-ROM identification in background threads
+                    let identificationResults = await Task.detached(priority: .userInitiated) {
+                        await withTaskGroup(of: (UUID, ROMIdentifyResult).self) { group in
+                            for rom in batch {
+                                group.addTask {
+                                    let result = await ROMIdentifierService.shared.identify(rom: rom, preferNameMatch: true)
+                                    return (rom.id, result)
+                                }
+                            }
+                            var results: [(UUID, ROMIdentifyResult)] = []
+                            for await res in group { results.append(res) }
+                            return results
+                        }
+                    }.value
+                    
+                    // Apply all results to library once batch is ready
+                    for (romID, result) in identificationResults {
+                        if let current = library.roms.first(where: { $0.id == romID }) {
+                            library.applyIdentificationResult(result, to: current, persist: false)
+                            modifiedIDs.append(romID)
+                        }
+                        completedCount += 1
+                    }
+                    
+                    let done = Double(completedCount) / total
+                    progress = done
+                    statusLine = "Identifying \(systemName): \(Int(done * 100))%"
+                    
+                    await Task.yield()
+                }
             }
+            
             progress = 1
             statusLine = "Identifying games: 100% — done"
 
-            // Flush all in-memory metadata changes to SwiftData in a single batch.
-            // This replaces the previous per-ROM save (which saved all 4248 ROMs each time).
-            LibraryMetadataStore.shared.flushToSwiftData()
-            library.saveROMsToDatabase()
+            // Save ONLY the ROMs that were modified in this phase.
+            // This avoids a massive MainActor hang by saving 1000 items instead of 4250.
+            library.saveROMsToDatabase(only: modifiedIDs)
         }
 
         // Brief pause between phases to give the MainActor runloop time to process UI updates

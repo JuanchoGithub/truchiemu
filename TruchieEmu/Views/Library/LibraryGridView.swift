@@ -633,6 +633,12 @@ struct LibraryGridView: View {
             // The ContentView handles global preloading (current filter → smallest systems),
             // but this ensures newly visible filters get preloaded on-demand too.
             preloadCurrentViewIfNotCached()
+            
+            // Contextually resolve local boxarts for the current view
+            handleFilterChange(filter)
+        }
+        .onChange(of: filter) { _, newFilter in
+            handleFilterChange(newFilter)
         }
         .onDisappear {
             // Save zoom level persistently
@@ -1475,6 +1481,31 @@ struct LibraryGridView: View {
             coreID: cid,
             library: library
         )
+    }
+
+    private func handleFilterChange(_ filter: LibraryFilter) {
+        // Only run for specific categories or systems so we don't scan 4000 items at once
+        if case .system = filter {
+            let missingArt = displayedROMs.filter { !$0.hasBoxArt }
+            guard !missingArt.isEmpty else { return }
+            
+            let service = self.boxArtService
+            Task {
+                let resolved = await Task.detached(priority: .background) {
+                    return service.resolveLocalBoxArtBatch(for: missingArt)
+                }.value
+                
+                if !resolved.isEmpty {
+                    let modifiedIDs = resolved.map { $0.id }
+                    await MainActor.run {
+                        for rom in resolved {
+                            library.updateROM(rom, persist: false)
+                        }
+                        library.saveROMsToDatabase(only: modifiedIDs)
+                    }
+                }
+            }
+        }
     }
 }
 

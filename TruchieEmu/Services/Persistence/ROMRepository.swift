@@ -320,22 +320,25 @@ final class ROMRepository {
         )
     }
 
+    private static let sharedEncoder: JSONEncoder = {
+        let encoder = JSONEncoder()
+        encoder.outputFormatting = .sortedKeys
+        return encoder
+    }()
+
     /// Create a ROMEntry @Model from a ROM struct.
     private func romEntry(from rom: ROM) -> ROMEntry {
         let metadataJSON: String? = rom.metadata.flatMap {
-            let encoder = JSONEncoder()
-            return String(data: try! encoder.encode($0), encoding: .utf8)
+            return String(data: try! Self.sharedEncoder.encode($0), encoding: .utf8)
         }
 
         let screenshotPathsJSON: String? = {
             let paths = rom.screenshotPaths.map { $0.path }
-            let encoder = JSONEncoder()
-            return String(data: try! encoder.encode(paths), encoding: .utf8)
+            return String(data: try! Self.sharedEncoder.encode(paths), encoding: .utf8)
         }()
 
         let settingsJSON: String? = {
-            let encoder = JSONEncoder()
-            return String(data: try! encoder.encode(rom.settings), encoding: .utf8)
+            return String(data: try! Self.sharedEncoder.encode(rom.settings), encoding: .utf8)
         }()
 
         return ROMEntry(
@@ -364,37 +367,37 @@ final class ROMRepository {
 
     /// Update an existing ROMEntry with data from a ROM struct.
     private func updateROMEntry(_ entry: ROMEntry, from rom: ROM) {
-        entry.name = rom.name
-        entry.path = rom.path.path
-        entry.systemID = rom.systemID
-        entry.isFavorite = rom.isFavorite
-        entry.lastPlayed = rom.lastPlayed
-        entry.totalPlaytimeSeconds = rom.totalPlaytimeSeconds
-        entry.timesPlayed = rom.timesPlayed
-        entry.selectedCoreID = rom.selectedCoreID
-        entry.customName = rom.customName
-        entry.useCustomCore = rom.useCustomCore
-        entry.isBios = rom.isBios
-        entry.isHidden = rom.isHidden
-        entry.category = rom.category
-        entry.crc32 = rom.crc32
-        entry.thumbnailLookupSystemID = rom.thumbnailLookupSystemID
+        if entry.name != rom.name { entry.name = rom.name }
+        if entry.path != rom.path.path { entry.path = rom.path.path }
+        if entry.systemID != rom.systemID { entry.systemID = rom.systemID }
+        if entry.isFavorite != rom.isFavorite { entry.isFavorite = rom.isFavorite }
+        if entry.lastPlayed != rom.lastPlayed { entry.lastPlayed = rom.lastPlayed }
+        if entry.totalPlaytimeSeconds != rom.totalPlaytimeSeconds { entry.totalPlaytimeSeconds = rom.totalPlaytimeSeconds }
+        if entry.timesPlayed != rom.timesPlayed { entry.timesPlayed = rom.timesPlayed }
+        if entry.selectedCoreID != rom.selectedCoreID { entry.selectedCoreID = rom.selectedCoreID }
+        if entry.customName != rom.customName { entry.customName = rom.customName }
+        if entry.useCustomCore != rom.useCustomCore { entry.useCustomCore = rom.useCustomCore }
+        if entry.isBios != rom.isBios { entry.isBios = rom.isBios }
+        if entry.isHidden != rom.isHidden { entry.isHidden = rom.isHidden }
+        if entry.category != rom.category { entry.category = rom.category }
+        if entry.crc32 != rom.crc32 { entry.crc32 = rom.crc32 }
+        if entry.thumbnailLookupSystemID != rom.thumbnailLookupSystemID { entry.thumbnailLookupSystemID = rom.thumbnailLookupSystemID }
 
-        // Update JSON fields
-        entry.metadataJSON = rom.metadata.flatMap {
-            let encoder = JSONEncoder()
-            return String(data: try! encoder.encode($0), encoding: .utf8)
+        // Update JSON fields only if they changed
+        let newMetadataJSON: String? = rom.metadata.flatMap {
+            return String(data: try! Self.sharedEncoder.encode($0), encoding: .utf8)
         }
+        if entry.metadataJSON != newMetadataJSON { entry.metadataJSON = newMetadataJSON }
 
-        entry.screenshotPathsJSON = {
+        let newScreenshotPathsJSON: String? = {
             let paths = rom.screenshotPaths.map { $0.path }
-            let encoder = JSONEncoder()
-            return String(data: try! encoder.encode(paths), encoding: .utf8)
+            return String(data: try! Self.sharedEncoder.encode(paths), encoding: .utf8)
         }()
+        if entry.screenshotPathsJSON != newScreenshotPathsJSON { entry.screenshotPathsJSON = newScreenshotPathsJSON }
 
-        entry.settingsJSON = {
-            let encoder = JSONEncoder()
-            return String(data: try! encoder.encode(rom.settings), encoding: .utf8)
+        let newSettingsJSON: String? = {
+            return String(data: try! Self.sharedEncoder.encode(rom.settings), encoding: .utf8)
         }()
+        if entry.settingsJSON != newSettingsJSON { entry.settingsJSON = newSettingsJSON }
     }
 }
