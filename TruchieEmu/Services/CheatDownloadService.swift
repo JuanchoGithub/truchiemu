@@ -1089,35 +1089,9 @@ private struct GitHubContent: Decodable {
         }
     }
     
-    /// Helper to get url with a fallback default
-    var safeUrl: String {
-        url ?? ""
-    }
-    
-    /// Helper to get path with a fallback default
-    var safePath: String {
-        path ?? name
-    }
-}
-
-/// Git Trees API response model for recursive tree listing
-private struct GitTreesResponse: Decodable {
-    let sha: String?
-    let tree: [GitTreeItem]
-    let truncated: Bool
-    
-    enum CodingKeys: String, CodingKey {
-        case sha, tree, truncated
-    }
-}
-
-/// Individual item in a Git tree response
-private struct GitTreeItem: Decodable {
-    let path: String
-    let mode: String?
-    let type: String
-    let sha: String?
-    let size: Int?
+    // Safer accessors for optional fields used in logic
+    var safeUrl: String { url ?? "" }
+    var safePath: String { path ?? name }
 }
 
 /// Result of cheat download operation

@@ -57,6 +57,7 @@ enum ResourceType: String, Codable, Sendable {
     case apiResponse      // Generic API JSON responses (ScreenScraper, LaunchBox, etc.)
     case libretroDatFile  // Downloaded libretro-database .dat files for system identification
     case headCheck        // HEAD request results (cached 200/404)
+    case thumbnailManifest // libretro-thumbnails directory listing (Git tree)
 }
 
 // MARK: - Cache Expiry Policy
@@ -138,6 +139,11 @@ struct ResourceCacheEntry: Equatable, Sendable {
     /// Compute a cache key for a cheat manifest by system folder.
     static func makeCheatManifestKey(systemFolder: String) -> String {
         return "cheat_manifest_\(systemFolder)"
+    }
+
+    /// Compute a cache key for a thumbnail manifest by system repository.
+    static func makeThumbnailManifestKey(repoName: String) -> String {
+        return "thumbnail_manifest_\(repoName)"
     }
 
     /// Compute a cache key for LaunchBox search results.

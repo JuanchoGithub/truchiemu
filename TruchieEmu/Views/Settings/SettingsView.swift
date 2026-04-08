@@ -2237,6 +2237,55 @@ struct BoxArtSettingsView: View {
                 Label("Credentials saved!", systemImage: "checkmark.circle.fill")
                     .foregroundColor(.green)
             }
+
+            Section {
+                let manifestService = LibretroThumbnailManifestService.shared
+                VStack(alignment: .leading, spacing: 8) {
+                    HStack {
+                        VStack(alignment: .leading, spacing: 4) {
+                            Text("Asset Indexing")
+                                .font(.body)
+                            Text("Indexes help the app skip broken or missing URLs instantly.")
+                                .font(.caption)
+                                .foregroundStyle(.secondary)
+                        }
+                        Spacer()
+                        Button(action: {
+                            Task {
+                                await manifestService.refreshAllManifests()
+                            }
+                        }) {
+                            if manifestService.isRefreshing {
+                                HStack(spacing: 6) {
+                                    ProgressView()
+                                        .controlSize(.small)
+                                    Text("Indexing...")
+                                }
+                            } else {
+                                Label("Refresh Index", systemImage: "arrow.clockwise")
+                            }
+                        }
+                        .buttonStyle(.bordered)
+                        .disabled(manifestService.isRefreshing)
+                    }
+                    
+                    if manifestService.isRefreshing {
+                        VStack(alignment: .leading, spacing: 4) {
+                            ProgressView(value: manifestService.refreshProgress)
+                                .progressViewStyle(.linear)
+                            Text("Current: \(manifestService.currentRepoRefreshing)")
+                                .font(.caption2)
+                                .foregroundStyle(.secondary)
+                                .italic()
+                        }
+                        .padding(.top, 4)
+                    }
+                }
+            } header: {
+                Label("Performance & Indexing", systemImage: "bolt.fill")
+            } footer: {
+                Text("Refresh the index to sync with the latest Libretro repository listings. This significantly improves speed when browsing large libraries by eliminating 'blind' 404 checks.")
+            }
         }
         .formStyle(.grouped)
         .onAppear {

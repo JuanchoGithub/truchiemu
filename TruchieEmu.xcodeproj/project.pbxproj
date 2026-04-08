@@ -7,6 +7,9 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+A1B2C3D4E5F6000000000006 /* ThumbnailManifests in Resources */ = {isa = PBXBuildFile; fileRef = A1B2C3D4E5F6000000000005 /* ThumbnailManifests */; };
+A1B2C3D4E5F6000000000004 /* GitHubAPIModels.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1B2C3D4E5F6000000000003 /* GitHubAPIModels.swift */; };
+A1B2C3D4E5F6000000000002 /* LibretroThumbnailManifestService.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1B2C3D4E5F6000000000001 /* LibretroThumbnailManifestService.swift */; };
 		02BCE4E07716E5E5E5D94A21 /* SystemControlsMappingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 99510C445D5B9B6435F169A6 /* SystemControlsMappingView.swift */; };
 		030ABCBDBF36E85A49735248 /* DATIngestionTrackerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = CA2F6CC0B668CE9DBE156BF6 /* DATIngestionTrackerTests.swift */; };
 		08654A47A54E3D9112724620 /* DatabaseManagerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3DDFBB322B80263A8B7FC9A3 /* DatabaseManagerTests.swift */; };
@@ -166,6 +169,9 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+A1B2C3D4E5F6000000000005 /* ThumbnailManifests */ = {isa = PBXFileReference; lastKnownFileType = folder; name = ThumbnailManifests; path = Resources/ThumbnailManifests; sourceTree = "<group>"; };
+A1B2C3D4E5F6000000000003 /* GitHubAPIModels.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GitHubAPIModels.swift; sourceTree = "<group>"; };
+A1B2C3D4E5F6000000000001 /* LibretroThumbnailManifestService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LibretroThumbnailManifestService.swift; sourceTree = "<group>"; };
 		00BCE112C7493BEA7436F109 /* BoxArtPickerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BoxArtPickerView.swift; sourceTree = "<group>"; };
 		02BBEDBAB8126B08C4C9D008 /* GameDragState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GameDragState.swift; sourceTree = "<group>"; };
 		055E2AC9E58C1AC87C32C168 /* ShaderManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShaderManager.swift; sourceTree = "<group>"; };
@@ -351,6 +357,7 @@
 		1877F5A2D47F3BEBD4C9F107 /* TruchieEmu */ = {
 			isa = PBXGroup;
 			children = (
+A1B2C3D4E5F6000000000005 /* ThumbnailManifests */,
 				325C2DF7BFBE06CDBE6EF3A5 /* App */,
 				83304F5BB3B25877F8337BF8 /* Engine */,
 				58DECDD14D2EF32E5076893B /* Models */,
@@ -365,6 +372,7 @@
 		22252D163B158EFEB49A0DAF /* Services */ = {
 			isa = PBXGroup;
 			children = (
+A1B2C3D4E5F6000000000001 /* LibretroThumbnailManifestService.swift */,
 				57E31A0548A2DE07AEC19A74 /* BoxArtPreloaderService.swift */,
 				6DDE7FC6FAA1F8677EB963A1 /* BoxArtService.swift */,
 				571AFD6EF6839C2FBF185419 /* CategoryManager.swift */,
@@ -507,6 +515,7 @@
 		58DECDD14D2EF32E5076893B /* Models */ = {
 			isa = PBXGroup;
 			children = (
+A1B2C3D4E5F6000000000003 /* GitHubAPIModels.swift */,
 				5DE05F787C487A0BBA81DAB7 /* Achievement.swift */,
 				C818FB0D70AE32972B1C5458 /* Cheat.swift */,
 				88CE9892979FB7B724F9F25B /* CoreOption.swift */,
@@ -779,6 +788,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+A1B2C3D4E5F6000000000006 /* ThumbnailManifests in Resources */,
 				F1D62C5445CF2CB899702BDE /* mame_rom_data.json in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -790,6 +800,8 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+A1B2C3D4E5F6000000000004 /* GitHubAPIModels.swift in Sources */,
+A1B2C3D4E5F6000000000002 /* LibretroThumbnailManifestService.swift in Sources */,
 				E3AF0FC4B15408E1686E33C7 /* Achievement.swift in Sources */,
 				F017645B40D693F252D1A0CB /* AchievementListView.swift in Sources */,
 				F97B9EE26C8F47F9C0B54E1D /* AchievementToastView.swift in Sources */,

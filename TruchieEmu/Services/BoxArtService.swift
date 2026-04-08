@@ -472,6 +472,14 @@ class BoxArtService: ObservableObject {
                 }
             }
             
+            // Speed up: check GitHub Git tree manifest before hitting the CDN
+            // This avoids multiple HEAD requests for variants that don't exist.
+            let exists = await LibretroThumbnailManifestService.shared.existsInManifest(url: url, folderName: folder)
+            guard exists else {
+                LoggerService.extreme(category: "BoxArt", "Libretro: skipping URL #\(attemptNum) — confirmed miss via manifest: \(url.absoluteString)")
+                continue
+            }
+            
             LoggerService.debug(category: "BoxArt", "Libretro: attempting URL #\(attemptNum)/\(candidates.count): \(url.absoluteString)")
             
             var headStatusCode = -1
