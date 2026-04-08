@@ -1319,7 +1319,8 @@ struct GameDetailView: View {
         Button {
             Task {
                 manualActionStatus = .working("Identifying from No-Intro database…")
-                let result = await library.identifyROM(currentROM)
+                // Manual identification uses CRC first (preferNameMatch: false) for higher accuracy
+                let result = await library.identifyROM(currentROM, preferNameMatch: false)
                 switch result {
                 case .identified(let info):
                     showManualResult("Found: \(info.name)", tone: .success)

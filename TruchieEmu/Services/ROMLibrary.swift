@@ -612,17 +612,12 @@ class ROMLibrary: ObservableObject {
     }
 
     @discardableResult
-    func identifyROM(_ rom: ROM, persist: Bool = true) async -> ROMIdentifyResult {
-        var working = rom
-        if let sid = rom.systemID,
-           let c = ROMIdentifierService.shared.computeCRC(for: rom.path, systemID: sid) {
-            working.crc32 = c
-        }
-    
-        let result = await ROMIdentifierService.shared.identify(rom: rom)
+    func identifyROM(_ rom: ROM, preferNameMatch: Bool = true, persist: Bool = true) async -> ROMIdentifyResult {
+        let result = await ROMIdentifierService.shared.identify(rom: rom, preferNameMatch: preferNameMatch)
+        
         switch result {
         case .identified(let info), .identifiedFromName(let info):
-            var updated = working
+            var updated = rom
             updated.crc32 = info.crc
             updated.thumbnailLookupSystemID = info.thumbnailLookupSystemID
             if updated.metadata == nil { updated.metadata = ROMMetadata() }
@@ -632,8 +627,9 @@ class ROMLibrary: ObservableObject {
             updated.metadata?.developer = info.developer
             updated.metadata?.genre = info.genre
             updateROM(updated, persist: persist)
+            
         case .crcNotInDatabase(let crc):
-            var updated = working
+            var updated = rom
             updated.crc32 = crc
             if updated.metadata?.title != nil {
                 LoggerService.info(category: "ROMLibrary", "Identification failed — using filename")
@@ -644,19 +640,24 @@ class ROMLibrary: ObservableObject {
                 updated.metadata?.genre = nil
             }
             updateROM(updated, persist: persist)
+            
         case .identificationCleared:
-            if working.metadata?.title != nil {
+            var updated = rom
+            if updated.metadata?.title != nil {
                 LoggerService.info(category: "ROMLibrary", "Identification cleared — reverting to filename")
-                working.metadata?.title = nil
-                working.metadata?.year = nil
-                working.metadata?.publisher = nil
-                working.metadata?.developer = nil
-                working.metadata?.genre = nil
-                working.thumbnailLookupSystemID = nil
-                updateROM(working, persist: persist)
+                updated.metadata?.title = nil
+                updated.metadata?.year = nil
+                updated.metadata?.publisher = nil
+                updated.metadata?.developer = nil
+                updated.metadata?.genre = nil
+                updated.thumbnailLookupSystemID = nil
+                updateROM(updated, persist: persist)
             }
+            
         case .databaseUnavailable, .noSystem:
-            if working.crc32 != rom.crc32 { updateROM(working, persist: persist) }
+            // No changes needed
+            break
+            
         case .romReadFailed:
             break
         }

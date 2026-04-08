@@ -6,7 +6,7 @@ struct CRC32 {
         for i in 0..<256 {
             var crc = UInt32(i)
             for _ in 0..<8 {
-                crc = (crc & 1) != 0 ? (crc >> 1) ^ 0xEDB88320 : crc >> 1
+                crc = (crc >> 1) ^ ((crc & 1) != 0 ? 0xEDB88320 : 0)
             }
             table[i] = crc
         }
@@ -14,10 +14,21 @@ struct CRC32 {
     }()
 
     static func compute(_ data: Data) -> String {
-        var crc: UInt32 = 0xFFFFFFFF
-        for byte in data {
-            crc = (crc >> 8) ^ table[Int((crc ^ UInt32(byte)) & 0xFF)]
+        return finalize(update(crc: 0xFFFFFFFF, with: data))
+    }
+
+    static func update(crc: UInt32, with data: Data) -> UInt32 {
+        var currentCrc = crc
+        data.withUnsafeBytes { ptr in
+            guard let base = ptr.baseAddress?.assumingMemoryBound(to: UInt8.self) else { return }
+            for i in 0..<data.count {
+                currentCrc = (currentCrc >> 8) ^ table[Int((currentCrc ^ UInt32(base[i])) & 0xFF)]
+            }
         }
+        return currentCrc
+    }
+
+    static func finalize(_ crc: UInt32) -> String {
         return String(format: "%08X", crc ^ 0xFFFFFFFF)
     }
 }
@@ -109,7 +120,7 @@ extension LoggerService {
 final class ROMIdentifierService: Sendable {
     static let shared = ROMIdentifierService()
 
-    func identify(rom: ROM) async -> ROMIdentifyResult {
+    func identify(rom: ROM, preferNameMatch: Bool = false) async -> ROMIdentifyResult {
         guard let systemID = rom.systemID,
               let system = SystemDatabase.system(forID: systemID) else {
             LoggerService.romIdentifyWarn("Identify: no system for ROM \(rom.path.lastPathComponent)")
@@ -154,19 +165,19 @@ final class ROMIdentifierService: Sendable {
             return .crcNotInDatabase(crc: shortName)
         }
 
-        LoggerService.romIdentify("Identify: START system=\(systemID) file=\(rom.path.lastPathComponent)")
+        LoggerService.romIdentify("Identify: START system=\(systemID) file=\(rom.path.lastPathComponent) (preferNameMatch=\(preferNameMatch))")
 
         let db = await LibretroDatabaseLibrary.shared.fetchAndLoadDat(for: system)
         if db.isEmpty {
             LoggerService.romIdentifyError("Identify: empty database for system \(systemID)")
             return .databaseUnavailable
         }
-        LoggerService.romIdentify("Identify: database loaded — \(db.count) CRC entries for \(systemID)")
 
         let romPath = rom.path
         let fileSize = (try? FileManager.default.attributesOfItem(atPath: romPath.path)[.size] as? Int64) ?? 0
         let isLargeFile = fileSize > 50 * 1024 * 1024 // > 50MB
         
+        // PASS 1: Sony Serial Extraction (Fastest)
         // Optimization: For Sony CD-based systems, try serial extraction (FASTEST)
         if ["psx", "ps2", "psp"].contains(systemID) {
             if let serial = await extractSonySerial(from: romPath) {
@@ -185,18 +196,20 @@ final class ROMIdentifierService: Sendable {
             }
         }
 
-        // Optimization: For large files (ISOs, big ROMs), try name-based identification first.
-        // If we find an exact match by name, we can skip the multi-gigabyte CRC calculation.
-        if isLargeFile {
-            LoggerService.romIdentify("Identify: Large file detected (\(fileSize / 1024 / 1024)MB). Trying name-based search first...")
+        // PASS 2: Name-based identification
+        // Optimization: Try name-based search first if requested OR if file is large.
+        // If we find an exact match by name, we can skip the heavy CRC calculation.
+        if preferNameMatch || isLargeFile {
+            LoggerService.romIdentify("Identify: Attempting name-based search (preferNameMatch=\(preferNameMatch), isLargeFile=\(isLargeFile))...")
             let language = Self.currentEmulatorLanguage()
             if let byName = identifyByName(rom: rom, database: db, language: language) {
                 LoggerService.romIdentify("Identify: SUCCESS (Name Path) → \(byName.name) found by name, skipping CRC.")
                 return .identifiedFromName(byName)
             }
-            LoggerService.romIdentify("Identify: Name-based search failed for large file, falling back to CRC hashing...")
+            LoggerService.romIdentify("Identify: Name-based search failed, falling back to CRC hashing...")
         }
 
+        // PASS 3: CRC-based identification (Heavy)
         // Perform heavy file I/O and hashing on a background thread to avoid blocking the MainActor.
         guard let crc = await Task.detached(priority: .userInitiated, operation: {
             self.computeCRC(for: romPath, systemID: systemID)
@@ -217,11 +230,14 @@ final class ROMIdentifierService: Sendable {
             return .identified(info)
         }
 
-        LoggerService.romIdentify("Identify: no CRC match for \(key), falling back to name search...")
-        let language = Self.currentEmulatorLanguage()
-        if let byName = identifyByName(rom: rom, database: db, language: language) {
-            LoggerService.romIdentify("Identify: NAME MATCH → \(byName.name) (language=\(language.name))")
-            return .identifiedFromName(byName)
+        // PASS 4: Name-based fallback (if we haven't tried it yet)
+        if !preferNameMatch && !isLargeFile {
+            LoggerService.romIdentify("Identify: no CRC match for \(key), falling back to name search...")
+            let language = Self.currentEmulatorLanguage()
+            if let byName = identifyByName(rom: rom, database: db, language: language) {
+                LoggerService.romIdentify("Identify: NAME MATCH → \(byName.name) (language=\(language.name))")
+                return .identifiedFromName(byName)
+            }
         }
 
         LoggerService.romIdentifyWarn("Identify: NOT FOUND — CRC \(key) not in database and name search found 0 matches for \(systemID)")
@@ -507,20 +523,53 @@ final class ROMIdentifierService: Sendable {
     func computeCRC(for url: URL, systemID: String) -> String? {
         let scoped = url.startAccessingSecurityScopedResource()
         defer { if scoped { url.stopAccessingSecurityScopedResource() } }
+        
         do {
-            let fullData = try Data(contentsOf: url, options: .mappedIfSafe)
-            let dataToHash: Data
-            switch systemID {
-            case "nes":
-                if fullData.count >= 16 && fullData.prefix(4) == Data([0x4E, 0x45, 0x53, 0x1A]) { dataToHash = fullData.dropFirst(16) } else { dataToHash = fullData }
-            case "genesis", "sms", "gamegear", "32x", "sg1000":
-                dataToHash = stripGenesisHeaderIfNeeded(from: fullData)
-            default:
-                dataToHash = fullData
+            let fileHandle = try FileHandle(forReadingFrom: url)
+            defer { try? fileHandle.close() }
+            
+            var crc: UInt32 = 0xFFFFFFFF
+            let chunkSize = 1024 * 1024 // 1MB chunks
+            
+            // Header handling (optional but kept for compatibility with existing logic)
+            var offset: UInt64 = 0
+            if systemID == "nes" {
+                if let header = try? fileHandle.read(upToCount: 4), header == Data([0x4E, 0x45, 0x53, 0x1A]) {
+                    offset = 16
+                }
+            } else if ["genesis", "sms", "gamegear", "32x", "sg1000"].contains(systemID) {
+                // For Genesis, we need to decide if we strip the 512-byte header.
+                // The current logic reads the whole file to check the size. 
+                // We'll do a quick check here.
+                let attr = try FileManager.default.attributesOfItem(atPath: url.path)
+                let fileSize = attr[.size] as? UInt64 ?? 0
+                if fileSize > 512 {
+                    let validSizes: Set<UInt64> = [131072, 262144, 393216, 524288, 655360, 786432, 1048576, 1310720, 1572864, 2097152, 2621440, 3145728, 4194304]
+                    let isPowerOfTwo = (fileSize > 0) && (fileSize & (fileSize - 1) == 0)
+                    if !validSizes.contains(fileSize) && !isPowerOfTwo {
+                        let strippedSize = fileSize - 512
+                        let isStrippedPowerOfTwo = (strippedSize > 0) && (strippedSize & (strippedSize - 1) == 0)
+                        if validSizes.contains(strippedSize) || isStrippedPowerOfTwo {
+                            offset = 512
+                            LoggerService.romIdentify("Streaming: Stripping 512-byte header from \(systemID) ROM")
+                        }
+                    }
+                }
             }
-            return CRC32.compute(dataToHash)
+            
+            try fileHandle.seek(toOffset: offset)
+            
+            while true {
+                if let data = try fileHandle.read(upToCount: chunkSize), !data.isEmpty {
+                    crc = CRC32.update(crc: crc, with: data)
+                } else {
+                    break
+                }
+            }
+            
+            return CRC32.finalize(crc)
         } catch {
-            LoggerService.romIdentifyError("CRC read error: \(error.localizedDescription)")
+            LoggerService.romIdentifyError("CRC streaming error: \(error.localizedDescription)")
             return nil
         }
     }
