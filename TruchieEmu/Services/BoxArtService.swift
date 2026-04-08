@@ -123,7 +123,7 @@ class BoxArtService: ObservableObject {
         if let localURL = resolveLocalBoxArt(for: rom) {
             var updated = rom
             updated.hasBoxArt = true
-            library.updateROM(updated)
+            library.updateROM(updated, persist: false)
             LoggerService.info(category: "BoxArt", "✅ Local boxart found: \(localURL.lastPathComponent) for '\(rom.displayName)'")
             return localURL
         }
