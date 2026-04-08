@@ -1111,9 +1111,6 @@ static int16_t bridge_input_state(unsigned port, unsigned device,
     }
 
     // ── UNIFIED FRAME LOOP: audio-driven fpsync + accumulator ──
-    // This ensures rock-solid pacing for MAME and completely prevents Unbounded
-    // speedups/dropped sound on all other cores by tightly coupling timing back
-    // to the audio ring buffer output limits.
     @autoreleasepool {
       // PRE-RUN: check audio buffer fill and wait if needed
       size_t availableSamples = _audioBuffer->available();
@@ -1127,6 +1124,7 @@ static int16_t bridge_input_state(unsigned port, unsigned device,
         fillRatio = (float)availableSamples / (float)capacity;
       }
     }
+
     [_coreLock lock];
     if (_hwRenderEnabled && _glContext)
       CGLSetCurrentContext(_glContext);
@@ -1181,21 +1179,37 @@ static int16_t bridge_input_state(unsigned port, unsigned device,
     }
   }
 
+  // --- SHUTDOWN SEQUENCE ---
   [_audioEngine stop];
 
   [_coreLock lock];
   if (_hwRenderEnabled && _glContext)
     CGLSetCurrentContext(_glContext);
 
-  _retro_unload_game();
+  // Check if this is a PSP core to handle specific cleanup quirks
+  BOOL isPSP_Shutdown =
+      (g_coreID && [[g_coreID lowercaseString] containsString:@"ppsspp"]);
 
-  if (_hwRenderEnabled && _hw_callback.context_destroy) {
-    _hw_callback.context_destroy();
-    _hw_callback.context_destroy =
-        NULL; // Prevent dealloc from calling it again
+  // 1. Unload the game
+  // Note: PPSSPP destroys its internal GL objects here.
+  if (_retro_unload_game) {
+    _retro_unload_game();
   }
 
-  _retro_deinit();
+  // 2. Clean up HW Context
+  if (_hwRenderEnabled && _hw_callback.context_destroy) {
+    // Skip context_destroy for PSP to avoid a double-free crash
+    if (!isPSP_Shutdown) {
+      _hw_callback.context_destroy();
+    }
+    // Set to NULL so dealloc or other methods don't try to call it again
+    _hw_callback.context_destroy = NULL;
+  }
+
+  // 3. Final De-init
+  if (_retro_deinit) {
+    _retro_deinit();
+  }
 
   if (_hwRenderEnabled && _glContext)
     CGLSetCurrentContext(NULL);
@@ -1514,8 +1528,11 @@ static int16_t bridge_input_state(unsigned port, unsigned device,
     g_instance = nil;
   if (_glContext) {
     CGLSetCurrentContext(_glContext);
-    if (_hw_callback.context_destroy)
+    // Safety: only call if not already NULLed out by the shutdown loop
+    if (_hw_callback.context_destroy) {
       _hw_callback.context_destroy();
+      _hw_callback.context_destroy = NULL;
+    }
     if (_hwFBO) {
       glDeleteFramebuffers(1, &_hwFBO);
       _hwFBO = 0;
@@ -1537,13 +1554,12 @@ static int16_t bridge_input_state(unsigned port, unsigned device,
     free(_hwReadbackBuffer);
   if (_audioRenderScratch)
     free(_audioRenderScratch);
-  delete _audioBuffer;
-  _audioBuffer = nil;
+  if (_audioBuffer) {
+    delete _audioBuffer;
+    _audioBuffer = nil;
+  }
   if (_dlHandle)
     dlclose(_dlHandle);
-#if !__has_feature(objc_arc)
-  [super dealloc];
-#endif
 }
 
 @end
