@@ -144,8 +144,9 @@ class ROMLibrary: ObservableObject {
         updateCounts()
         
         Task {
-            await LibraryAutomationCoordinator.shared.runAfterLibraryUpdate(library: self)
-            await MetadataSyncCoordinator.shared.runAfterLibraryUpdate(library: self)
+            //Stop refreshing the library on every launch
+            //await LibraryAutomationCoordinator.shared.runAfterLibraryUpdate(library: self)
+            //await MetadataSyncCoordinator.shared.runAfterLibraryUpdate(library: self)
         }
     }
 
