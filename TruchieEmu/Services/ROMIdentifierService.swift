@@ -377,8 +377,14 @@ final class ROMIdentifierService: Sendable {
         for info in database.values {
             let datBase = Self.normalizedComparableTitle(info.name)
             pass1Checked += 1
-            if datBase == queryBase { exact.append(info); LoggerService.romIdentify("Identify: PASS 1 matched → '\(info.name)'") }
+            if datBase == queryBase {
+                exact.append(info)
+                if exact.count <= 3 {
+                    LoggerService.romIdentify("Identify: PASS 1 matched → '\(info.name)'")
+                }
+            }
         }
+        if exact.count > 3 { LoggerService.romIdentify("Identify: PASS 1 matched \(exact.count - 3) more entry(ies)") }
         if !exact.isEmpty { LoggerService.romIdentify("Identify: PASS 1 FOUND \(exact.count) exact match(es)") }
         else { LoggerService.romIdentify("Identify: PASS 1 found 0 matches (checked \(pass1Checked) entries)") }
 
@@ -428,8 +434,15 @@ final class ROMIdentifierService: Sendable {
                 if Self.isProblematicNumberSuffixPartialMatch(query: queryBase, candidate: datBase) { continue }
                 let lenRatio = Double(queryBase.count) / Double(datBase.count)
                 if queryBase.contains(datBase) && lenRatio > 1.5 { continue }
-                if datBase.contains(queryBase) || queryBase.contains(datBase) { candidates.append(info); pass4BaseMatched += 1; LoggerService.romIdentify("Identify: PASS 4 substring match → '\(info.name)'") }
+                if datBase.contains(queryBase) || queryBase.contains(datBase) {
+                    candidates.append(info)
+                    pass4BaseMatched += 1
+                    if pass4BaseMatched <= 3 {
+                        LoggerService.romIdentify("Identify: PASS 4 substring match → '\(info.name)'")
+                    }
+                }
             }
+            if pass4BaseMatched > 3 { LoggerService.romIdentify("Identify: PASS 4 matched \(pass4BaseMatched - 3) more entry(ies)") }
             LoggerService.romIdentify("Identify: PASS 4 (base query) checked \(pass4BaseChecked) entries, found \(pass4BaseMatched) substring match(es)")
             if candidates.isEmpty {
                 let variants = Self.romanNumeralVariants(of: queryBase)
@@ -457,8 +470,15 @@ final class ROMIdentifierService: Sendable {
                         guard datAggressive.count >= 3 else { continue }
                         pass4AggChecked += 1
                         if Self.isProblematicNumberSuffixPartialMatch(query: aggressiveQuery, candidate: datAggressive) { continue }
-                        if datAggressive.contains(aggressiveQuery) || aggressiveQuery.contains(datAggressive) { candidates.append(info); pass4AggMatched += 1; LoggerService.romIdentify("Identify: PASS 4 aggressive substring match → '\(info.name)'") }
+                        if datAggressive.contains(aggressiveQuery) || aggressiveQuery.contains(datAggressive) {
+                            candidates.append(info)
+                            pass4AggMatched += 1
+                            if pass4AggMatched <= 3 {
+                                LoggerService.romIdentify("Identify: PASS 4 aggressive substring match → '\(info.name)'")
+                            }
+                        }
                     }
+                    if pass4AggMatched > 3 { LoggerService.romIdentify("Identify: PASS 4 matched \(pass4AggMatched - 3) more aggressive entries") }
                     if pass4AggMatched > 0 { LoggerService.romIdentify("Identify: PASS 4 (last resort) found \(pass4AggMatched) aggressive substring match(es)") }
                     else { LoggerService.romIdentify("Identify: PASS 4 (last resort) found 0 matches (checked \(pass4AggChecked) entries)") }
                 } else { LoggerService.romIdentify("Identify: PASS 4 (last resort) skipped — aggressiveQuery too short or empty") }
@@ -708,15 +728,14 @@ actor LibretroDatabaseLibrary {
     }
 
     func fetchAndLoadDat(for system: SystemInfo) async -> [String: GameInfo] {
-        LoggerService.info(category: "LibretroDB", "fetchAndLoadDat() called for systemID=\(system.id)")
         LoggerService.libretroDB("fetchAndLoadDat called for systemID=\(system.id) (displayName=\(system.name))")
         if Self.isGbFamily(system.id) {
             LoggerService.libretroDB("GB family detected (systemID=\(system.id)), checking merged cache")
-            if let merged = databases[Self.gbFamilyCacheKey] { LoggerService.info(category: "LibretroDB", "CACHE HIT: merged GB+GBC (\(merged.count) CRC entries)"); LoggerService.libretroDB("Cache hit: merged GB+GBC (\(merged.count) CRC entries)"); return merged }
+            if let merged = databases[Self.gbFamilyCacheKey] { LoggerService.libretroDB("Cache hit: merged GB+GBC (\(merged.count) CRC entries)"); return merged }
             LoggerService.libretroDB("GB+GBC cache MISS, loading both databases and merging")
             let partnerID = system.id == "gb" ? "gbc" : "gb"
             guard let partner = SystemDatabase.system(forID: partnerID) else { LoggerService.libretroDBError("GB family merge failed — missing partner system \(partnerID)"); return await loadSingleSystemDatabase(for: system) }
-            LoggerService.debug(category: "LibretroDB", "Loading primary system \(system.id), then partner \(partnerID)")
+            LoggerService.libretroDB("Loading primary system \(system.id), then partner \(partnerID)")
             LoggerService.libretroDB("Loading primary \(system.id) then partner \(partnerID), then merging")
             let primary = await loadSingleSystemDatabase(for: system); LoggerService.libretroDB("Primary \(system.id) → \(primary.count) CRC entries")
             let secondary = await loadSingleSystemDatabase(for: partner); LoggerService.libretroDB("Partner \(partnerID) → \(secondary.count) CRC entries")
@@ -725,18 +744,16 @@ actor LibretroDatabaseLibrary {
             var overlap = 0
             for (crc, info) in secondary { if merged[crc] != nil { overlap += 1 } else { merged[crc] = Self.tagGameInfo(info, thumbnailLookupSystemID: partner.id) } }
             LoggerService.libretroDB("Merged GB+GBC → \(merged.count) unique CRCs (overlap=\(overlap)))")
-            LoggerService.info(category: "LibretroDB", "Merged GB+GBC → \(merged.count) unique CRCs (\(overlap) overlapping)")
+            LoggerService.libretroDB("Merged GB+GBC → \(merged.count) unique CRCs (\(overlap) overlapping)")
             databases[Self.gbFamilyCacheKey] = merged; databases["gb"] = merged; databases["gbc"] = merged
             return merged
         }
-        if let db = databases[system.id] { LoggerService.info(category: "LibretroDB", "CACHE HIT: \(system.id) (\(db.count) CRC entries)"); LoggerService.libretroDB("Cache hit: \(system.id) (\(db.count) CRC entries)"); return db }
-        LoggerService.info(category: "LibretroDB", "Cache MISS for \(system.id), loading...")
-        LoggerService.libretroDB("Cache miss for \(system.id), calling loadSingleSystemDatabase")
+        if let db = databases[system.id] { LoggerService.libretroDB("Cache hit: \(system.id) (\(db.count) CRC entries)"); return db }
+        LoggerService.libretroDB("Cache miss for \(system.id), loading...")
         let loaded = await loadSingleSystemDatabase(for: system); databases[system.id] = loaded; return loaded
     }
 
     private func loadSingleSystemDatabase(for system: SystemInfo) async -> [String: GameInfo] {
-        LoggerService.info(category: "LibretroDB", "loadSingleSystemDatabase: loading database for systemID='\(system.id)' (\(system.name))")
         LoggerService.libretroDB("loadSingleSystemDatabase called for systemID=\(system.id) name=\(system.name)")
         let appSupport = FileManager.default.urls(for: .applicationSupportDirectory, in: .userDomainMask).first!
         let datsDir = appSupport.appendingPathComponent("TruchieEmu/Dats", isDirectory: true)
@@ -755,23 +772,23 @@ actor LibretroDatabaseLibrary {
                 LoggerService.libretroDB("Found local DAT file: \(localUrl.path)")
                 let db = parseDat(contentsOf: localUrl)
                 if db.isEmpty { LoggerService.libretroDBWarn("Local DAT \(fileName) exists but parsed 0 entries — continuing") }
-                else { LoggerService.info(category: "LibretroDB", "Step 1: FOUND local DAT \(fileName) with \(db.count) entries"); LoggerService.libretroDB("Local DAT \(fileName) OK — \(db.count) CRC entries"); return db }
-            } else { LoggerService.debug(category: "LibretroDB", "Local DAT not found: \(localUrl.path)"); LoggerService.libretroDB("Local DAT not found: \(localUrl.path)") }
+                else { LoggerService.libretroDB("Step 1: FOUND local DAT \(fileName) with \(db.count) entries"); return db }
+            } else { LoggerService.libretroDB("Local DAT not found: \(localUrl.path)") }
         }
         LoggerService.libretroDB("Step 1 complete: no usable local DAT found")
         LoggerService.info(category: "LibretroDB", "Step 2/4: Downloading No-Intro DAT")
         LoggerService.libretroDB("=== STEP 2: Downloading No-Intro DAT (metadat/no-intro) ===")
         let noIntroOnly = ["metadat/no-intro"]
-        if let db = await downloadDatRemote(systemID: system.id, names: localNames, remotePaths: noIntroOnly, datsDir: datsDir, baseUrl: baseUrl) { LoggerService.info(category: "LibretroDB", "Step 2: SUCCESS — downloaded No-Intro DAT with \(db.count) entries"); LoggerService.libretroDB("No-Intro DAT download OK — \(db.count) CRC entries"); return db }
+        if let db = await downloadDatRemote(systemID: system.id, names: localNames, remotePaths: noIntroOnly, datsDir: datsDir, baseUrl: baseUrl) { LoggerService.libretroDB("Step 2: SUCCESS — downloaded No-Intro DAT with \(db.count) entries"); return db }
         LoggerService.libretroDB("Step 2 complete: No-Intro DAT not found or failed")
         LoggerService.info(category: "LibretroDB", "Step 3/4: Downloading other DAT trees")
         LoggerService.libretroDB("=== STEP 3: Downloading other DAT trees ===")
         let otherDatPaths = ["metadat/redump", "metadat/mame", "metadat/fba", "metadat/fbneo-split", "dat"]
-        if let db = await downloadDatRemote(systemID: system.id, names: localNames, remotePaths: otherDatPaths, datsDir: datsDir, baseUrl: baseUrl) { LoggerService.info(category: "LibretroDB", "Step 3: SUCCESS — downloaded DAT with \(db.count) entries"); LoggerService.libretroDB("Other DAT download OK — \(db.count) CRC entries"); return db }
+        if let db = await downloadDatRemote(systemID: system.id, names: localNames, remotePaths: otherDatPaths, datsDir: datsDir, baseUrl: baseUrl) { LoggerService.libretroDB("Step 3: SUCCESS — downloaded DAT with \(db.count) entries"); return db }
         LoggerService.libretroDB("Step 3 complete: other DAT trees not found or failed")
         LoggerService.info(category: "LibretroDB", "Step 4/4: Loading RDB")
         LoggerService.libretroDB("=== STEP 4: Loading RDB (local then remote) ===")
-        if let db = await downloadRdbRemote(systemID: system.id, names: rdbBasenamesToTry(for: system), rdbDir: rdbDir, baseUrl: baseUrl) { LoggerService.info(category: "LibretroDB", "Step 4: SUCCESS — loaded RDB with \(db.count) entries"); LoggerService.libretroDB("RDB load OK — \(db.count) CRC entries"); return db }
+        if let db = await downloadRdbRemote(systemID: system.id, names: rdbBasenamesToTry(for: system), rdbDir: rdbDir, baseUrl: baseUrl) { LoggerService.libretroDB("Step 4: SUCCESS — loaded RDB with \(db.count) entries"); return db }
         LoggerService.libretroDB("Step 4 complete: RDB not found or failed")
         LoggerService.warning(category: "LibretroDB", "ALL STEPS FAILED: No usable DAT or RDB found for systemID='\(system.id)' (tried: \(localNames.joined(separator: ", ")))")
         LoggerService.libretroDBError("=== FAILED === No usable DAT or RDB for systemID=\(system.id) (tried: \(localNames.joined(separator: ", ")))")
