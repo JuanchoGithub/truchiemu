@@ -6,8 +6,6 @@ enum ROMIdentifier {
 
     // MARK: - Public Entry Point
 
-    /// Identify the system for a given file URL.
-    /// This is the single source of truth for ROM system identification.
     static func identifySystem(url: URL, extension ext: String) -> SystemInfo? {
         // TIER 0: Strong path-based context (folder name)
         let parentName = url.deletingLastPathComponent().lastPathComponent.lowercased()
@@ -22,11 +20,8 @@ enum ROMIdentifier {
             "gamecube": "gc", "gc": "gc"
         ]
         
-        // Exact match for common system folders
-        if let hardID = sysIDMap[parentName] {
-            if let system = SystemDatabase.system(forID: hardID) {
-                return system
-            }
+        if let hardID = sysIDMap[parentName], let system = SystemDatabase.system(forID: hardID) {
+            return system
         }
         
         // 1. For ZIP files, determine the system by inspecting content
@@ -34,20 +29,16 @@ enum ROMIdentifier {
             return identifyArchive(url: url)
         }
 
-        // 2. Try to identify by filename hints (e.g. "(PS1)" or "SLES-00918")
-        if let systemID = detectSystemFromFilename(url.lastPathComponent) {
-            if let system = SystemDatabase.system(forID: systemID) {
-                return system
-            }
+        // 2. Try to identify by filename hints
+        if let systemID = detectSystemFromFilename(url.lastPathComponent), let system = SystemDatabase.system(forID: systemID) {
+            return system
         }
 
         // 3. For CD-based or ambiguous extensions, peek at the header
         let ambiguous = ["cue", "bin", "iso", "img"]
         if ambiguous.contains(ext) {
-            if let systemID = peekSystemID(url: url) {
-                if let system = SystemDatabase.system(forID: systemID) {
-                    return system
-                }
+            if let systemID = peekSystemID(url: url), let system = SystemDatabase.system(forID: systemID) {
+                return system
             }
         }
 
@@ -58,7 +49,6 @@ enum ROMIdentifier {
     // MARK: - Archive Identification
 
     private static func identifyArchive(url: URL) -> SystemInfo? {
-        // TIER 1: Path-based context (folder name)
         let parentName = url.deletingLastPathComponent().lastPathComponent.lowercased()
 
         if parentName.contains("mame") || parentName.contains("arcade") || parentName.contains("fba") || parentName.contains("fbneo") {
@@ -80,22 +70,18 @@ enum ROMIdentifier {
             if unifiedEntry.isRunnableInAnyCore && !unifiedEntry.isBIOS {
                 return SystemDatabase.system(forID: "mame")
             } else {
-                // It's a BIOS, device, or mechanical ROM — hide it
                 return nil
             }
         }
 
-        // TIER 2: BIOS exclusion from scan results
         if KnownBIOS.isKnownBios(filename: url.lastPathComponent) {
             return nil
         }
 
-        // TIER 3: Content fingerprinting (peek inside ZIP)
         if let detected = fingerprintArchive(url: url) {
             return detected
         }
 
-        // TIER 4: Route to Unknown System for ambiguous ZIPs
         return SystemDatabase.system(forID: "unknown")
     }
 
@@ -104,7 +90,6 @@ enum ROMIdentifier {
     private static func fingerprintArchive(url: URL) -> SystemInfo? {
         guard let files = peekInsideZipFiles(url: url) else { return nil }
 
-        // Check for console ROM extensions inside ZIP (these are compressed console ROMs)
         let consoleExts = ["32x", "nes", "sfc", "smc", "fig", "gb", "gbc", "gba", "md", "gen", "smd", "sms", "gg", "sg"]
         for file in files {
             let ext = URL(fileURLWithPath: file).pathExtension.lowercased()
@@ -113,33 +98,27 @@ enum ROMIdentifier {
             }
         }
 
-        // Check for DOS executables
         let dosInnerExtensions: Set<String> = ["exe", "com", "bat", "dos", "dosz", "conf", "ins"]
         if files.contains(where: { dosInnerExtensions.contains(URL(fileURLWithPath: $0).pathExtension.lowercased()) }) {
             return SystemDatabase.system(forID: "dos")
         }
 
-        // Check for ScummVM indicators
         let scummvmInnerExtensions: Set<String> = ["sou", "000", "001", "flac", "ogg", "wav"]
         let scummvmGameIndicators: Set<String> = [
             "HE", "MI", "SAM", "DAY", "DIG", "TENTACLE", "COMI", "MONKEY", "INDY",
             "MANIAC", "ZAK", "LOOM", "GROUSE", "FULLTHROTTLE", "CURSE", "GRIM",
             "ESCAPE", "BENEATH", "BEYOND", "LAURA", "DRACI"
         ]
+        
         for file in files {
             let fileURL = URL(fileURLWithPath: file)
             let ext = fileURL.pathExtension.lowercased()
             let nameWithoutExt = fileURL.deletingPathExtension().lastPathComponent.uppercased()
 
-            if scummvmInnerExtensions.contains(ext) {
-                return SystemDatabase.system(forID: "scummvm")
-            }
-            if scummvmGameIndicators.contains(where: { nameWithoutExt.contains($0) }) {
-                return SystemDatabase.system(forID: "scummvm")
-            }
+            if scummvmInnerExtensions.contains(ext) { return SystemDatabase.system(forID: "scummvm") }
+            if scummvmGameIndicators.contains(where: { nameWithoutExt.contains($0) }) { return SystemDatabase.system(forID: "scummvm") }
         }
 
-        // Check for MAME-style naming (short cryptic filenames, .bin/.rom files)
         let mameInnerExtensions: Set<String> = ["bin", "rom", "a", "b", "c", "d", "e", "f"]
         let mameStyleCount = files.filter { file in
             let fileURL = URL(fileURLWithPath: file)
@@ -148,10 +127,7 @@ enum ROMIdentifier {
             return (name.count <= 15 && ext.isEmpty) || ext == "bin" || ext == "rom" || mameInnerExtensions.contains(ext)
         }.count
 
-        if mameStyleCount > 1 {
-            return SystemDatabase.system(forID: "mame")
-        }
-
+        if mameStyleCount > 1 { return SystemDatabase.system(forID: "mame") }
         return nil
     }
 
@@ -159,40 +135,25 @@ enum ROMIdentifier {
 
     private static func detectSystemFromFilename(_ filename: String) -> String? {
         let upper = filename.uppercased()
+        if upper.contains("DC_BOOT") || upper.contains("DC_FLASH") { return "dreamcast" }
+        if upper.contains("(PS1)") || upper.contains("[PS1]") || upper.contains("(PSX)") { return "psx" }
+        if upper.contains("(SATURN)") || upper.contains("[SATURN]") { return "saturn" }
+        if upper.contains("(32X)") || upper.contains("[32X]") { return "32x" }
+        if upper.contains("(GENESIS)") || upper.contains("(MEGA DRIVE)") { return "genesis" }
 
-        // Explicit tags
-        if upper.contains("DC_BOOT") || upper.contains("DC_FLASH") {
-            return "dreamcast"
-        }
-        if upper.contains("(PS1)") || upper.contains("[PS1]") || upper.contains("(PSX)") {
-            return "psx"
-        }
-        if upper.contains("(SATURN)") || upper.contains("[SATURN]") {
-            return "saturn"
-        }
-        if upper.contains("(32X)") || upper.contains("[32X]") {
-            return "32x"
-        }
-        if upper.contains("(GENESIS)") || upper.contains("(MEGA DRIVE)") {
-            return "genesis"
-        }
-
-        // PS1 Serials: SCES, SLES, SLUS, SCUS, SLPS, SLPM, SCPH followed by 5 digits
         let ps1Regex = try? NSRegularExpression(pattern: "(S[CL][EP][SM]|SCPH)-\\d{5}", options: [])
         if let regex = ps1Regex, regex.firstMatch(in: upper, options: [], range: NSRange(location: 0, length: upper.count)) != nil {
             return "psx"
         }
-
         return nil
     }
 
-    // MARK: - Header Peeking
+    // MARK: - Fast Header Peeking
 
     private static func peekSystemID(url: URL) -> String? {
         let ext = url.pathExtension.lowercased()
 
         if ext == "cue" {
-            // Read cue and find first file
             guard let content = try? String(contentsOf: url, encoding: .utf8) else { return nil }
             let lines = content.components(separatedBy: .newlines)
             for line in lines {
@@ -202,9 +163,7 @@ enum ROMIdentifier {
                     _ = scanner.scanString("FILE")
                     var filename: NSString?
                     if scanner.scanString("\"") != nil {
-                        if let scanned = scanner.scanUpToString("\"") {
-                            filename = scanned as NSString
-                        }
+                        if let scanned = scanner.scanUpToString("\"") { filename = scanned as NSString }
                     }
                     if let name = filename as String? {
                         let fileURL = url.deletingLastPathComponent().appendingPathComponent(name)
@@ -218,55 +177,51 @@ enum ROMIdentifier {
         }
     }
 
+    /// Optimized: Uses FileHandle to instantly read only the tiny chunks of bytes needed instead of memory mapping large ISOs
     private static func peekHeader(url: URL) -> String? {
-        guard FileManager.default.fileExists(atPath: url.path) else { return nil }
-        guard let data = try? Data(contentsOf: url, options: .mappedIfSafe) else { return nil }
+        guard let handle = try? FileHandle(forReadingFrom: url) else { return nil }
+        defer { try? handle.close() }
 
-        // Sega Saturn (at 0x0) - "SEGA SEGASATURN"
-        let saturnMagic = "SEGA SEGASATURN"
-        if data.count >= saturnMagic.count,
-           let str = String(data: data.prefix(saturnMagic.count), encoding: .ascii),
-           str == saturnMagic {
-            return "saturn"
-        }
-
-        // Sega 32X (at 0x100) - "SEGA 32X"
-        let _32xMagic = "SEGA 32X"
-        if data.count >= 0x100 + _32xMagic.count,
-           let str = String(data: data[0x100..<0x100 + _32xMagic.count], encoding: .ascii),
-           str == _32xMagic {
-            return "32x"
-        }
-
-        // Sega Genesis (at 0x100) - "SEGA"
-        if data.count >= 0x104 {
-            let slice = data[0x100..<0x104]
-            if let str = String(data: slice, encoding: .ascii), str == "SEGA" {
-                return "genesis"
+        do {
+            // Check Saturn at 0x0
+            if let data = try handle.read(upToCount: 15), String(data: data, encoding: .ascii) == "SEGA SEGASATURN" {
+                return "saturn"
             }
-        }
 
-        // PS1 (at 0x8008 or 0x9318) - "PLAYSTATION"
-        let ps1Magic = "PLAYSTATION"
-        if data.count >= 0x8008 + ps1Magic.count,
-           let str = String(data: data[0x8008..<0x8008 + ps1Magic.count], encoding: .ascii),
-           str.contains(ps1Magic) {
-            return "psx"
-        }
-        if data.count >= 0x9318 + ps1Magic.count,
-           let str = String(data: data[0x9318..<0x9318 + ps1Magic.count], encoding: .ascii),
-           str.contains(ps1Magic) {
-            return "psx"
+            // Check 32X & Genesis at 0x100
+            try handle.seek(toOffset: 0x100)
+            if let data = try handle.read(upToCount: 8) {
+                if data.count >= 8, String(data: data, encoding: .ascii) == "SEGA 32X" { return "32x" }
+                if data.count >= 4, String(data: data.prefix(4), encoding: .ascii) == "SEGA" { return "genesis" }
+            }
+
+            // Check PS1 at 0x8008
+            try handle.seek(toOffset: 0x8008)
+            if let data = try handle.read(upToCount: 11), String(data: data, encoding: .ascii) == "PLAYSTATION" {
+                return "psx"
+            }
+
+            // Check PS1 alternate at 0x9318
+            try handle.seek(toOffset: 0x9318)
+            if let data = try handle.read(upToCount: 11), String(data: data, encoding: .ascii) == "PLAYSTATION" {
+                return "psx"
+            }
+        } catch {
+            return nil
         }
 
         return nil
     }
 
-    // MARK: - ZIP File Peeking
+    // MARK: - Fast ZIP Peeking
 
+    /// Optimized: Only loads the first 64KB of the ZIP into memory to scan Local File Headers. Extremely fast.
     private static func peekInsideZipFiles(url: URL) -> [String]? {
-        guard let data = try? Data(contentsOf: url, options: .mappedIfSafe),
-              data.count >= 30 else { return nil }
+        guard let handle = try? FileHandle(forReadingFrom: url) else { return nil }
+        defer { try? handle.close() }
+
+        // 64KB is generally enough to capture the local file headers for ROM contents without slowing down I/O
+        guard let data = try? handle.read(upToCount: 65536), data.count >= 30 else { return nil }
 
         func readLEUInt16(_ start: Int) -> UInt16? {
             guard start + 2 <= data.count else { return nil }
@@ -301,10 +256,8 @@ enum ROMIdentifier {
 
             guard offset + 30 + nameLen <= data.count else { break }
             let nameData = data[offset + 30 ..< offset + 30 + nameLen]
-            if let name = String(data: nameData, encoding: .utf8) {
-                if !name.hasSuffix("/") {
-                    filenames.append(name)
-                }
+            if let name = String(data: nameData, encoding: .utf8), !name.hasSuffix("/") {
+                filenames.append(name)
             }
 
             let next = offset + 30 + nameLen + extra + comp
@@ -315,7 +268,7 @@ enum ROMIdentifier {
         return filenames.isEmpty ? nil : filenames
     }
 
-    // MARK: - Referenced Files (for .cue/.m3u containers)
+    // MARK: - Container Logic
 
     static func getReferencedFiles(in url: URL) -> [URL] {
         let ext = url.pathExtension.lowercased()
@@ -331,9 +284,7 @@ enum ROMIdentifier {
                     _ = scanner.scanString("FILE")
                     var filename: NSString?
                     if scanner.scanString("\"") != nil {
-                        if let scanned = scanner.scanUpToString("\"") {
-                            filename = scanned as NSString
-                        }
+                        if let scanned = scanner.scanUpToString("\"") { filename = scanned as NSString }
                     } else {
                         var temp: String = ""
                         while !scanner.isAtEnd {
