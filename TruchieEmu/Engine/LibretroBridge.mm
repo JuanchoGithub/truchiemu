@@ -478,14 +478,24 @@ static bool bridge_environment(unsigned cmd, void *data) {
     return false;
 
   switch (cmd) {
+
+  // Add case 1: RETRO_ENVIRONMENT_SET_ROTATION
+  // To Fix Dreamcast issues
+  case RETRO_ENVIRONMENT_SET_ROTATION:
+    if (data)
+      g_currentRotation = *(const unsigned *)data;
+    return true;
+
   case RETRO_ENVIRONMENT_GET_LOG_INTERFACE:
     if (data)
       ((struct retro_log_interface *)data)->log = bridge_log_printf;
     return true;
+
   case RETRO_ENVIRONMENT_GET_CAN_DUPE:
     if (data)
       *(unsigned char *)data = 1;
     return true;
+
   case RETRO_ENVIRONMENT_GET_SYSTEM_DIRECTORY: {
     static char s_sysPath[1024];
     NSString *path = [NSSearchPathForDirectoriesInDomains(
@@ -515,6 +525,7 @@ static bool bridge_environment(unsigned cmd, void *data) {
       *(const char **)data = s_savePath;
     return true;
   }
+
   case RETRO_ENVIRONMENT_SET_PIXEL_FORMAT:
     if (data) {
       enum retro_pixel_format fmt = *(enum retro_pixel_format *)data;
@@ -523,23 +534,60 @@ static bool bridge_environment(unsigned cmd, void *data) {
       }
     }
     return true;
+
   case RETRO_ENVIRONMENT_GET_CORE_OPTIONS_VERSION:
     if (data)
       *(unsigned *)data = 2;
     return true;
+
   case RETRO_ENVIRONMENT_GET_LANGUAGE:
     if (data)
       *(unsigned *)data = RETRO_LANGUAGE_ENGLISH;
     return true;
+
   case RETRO_ENVIRONMENT_GET_VARIABLE: {
     struct retro_variable *var = (struct retro_variable *)data;
     if (var && var->key) {
+
+      // ─── HIGH PRIORITY FLYCAST OVERRIDES ───
+      // We force these regardless of saved settings to prevent the immediate
+      // crash.
+      if (strstr(var->key, "flycast_")) {
+        // 1. DISABLE THREADED RENDERING (Fixes the Thread 4 Deadlock)
+        if (strcmp(var->key, "flycast_threaded_rendering") == 0) {
+          var->value = "disabled";
+          NSLog(@"[Bridge-FIX] Flycast: Force Threaded Rendering = disabled");
+          return true;
+        }
+
+        // 2. FORCE INTERPRETER (Fixes the Thread 18 JIT Crash)
+        // Note: WinCE games like Sega Rally 2 REQUIRE the MMU.
+        // The ARM64 JIT + MMU is often unstable on M1/M2.
+        if (strcmp(var->key, "flycast_cpu_core") == 0) {
+          var->value = "interpreter";
+          NSLog(@"[Bridge-FIX] Flycast: Force CPU = interpreter");
+          return true;
+        }
+
+        // 3. ENABLE MMU (Required for Sega Rally 2 / WinCE)
+        if (strcmp(var->key, "flycast_mmu") == 0) {
+          var->value = "enabled";
+          return true;
+        }
+        // 4. ALPHA SORTING (Mac compatibility)
+        if (strcmp(var->key, "flycast_alpha_sorting") == 0) {
+          var->value = "per-triangle";
+          return true;
+        }
+      }
+
       // mupen64plus-next: force angrylion (software) RDP to avoid GL4.2+ DSA
       // requirement gliden64 requires glCreateTextures/glDispatchCompute etc.
       // (GL4.5) not available on macOS
 
       // CPU core: pure interpreter is safest on ARM64 macOS (no JIT
       // recompilation)
+      // --- MUPEN64 FIXES (Existing) ---
       if (strcmp(var->key, "mupen64plus-next-cpucore") == 0 ||
           strcmp(var->key, "mupen64plus-cpucore") == 0) {
         var->value = "pure_interpreter";
@@ -747,8 +795,11 @@ static bool bridge_environment(unsigned cmd, void *data) {
   case RETRO_ENVIRONMENT_GET_PERF_INTERFACE:
   case RETRO_ENVIRONMENT_GET_RUMBLE_INTERFACE:
   case RETRO_ENVIRONMENT_GET_SENSOR_INTERFACE:
-  case RETRO_ENVIRONMENT_GET_HW_RENDER_INTERFACE: // 58
+  // Update case 58: RETRO_ENVIRONMENT_GET_HW_RENDER_INTERFACE
+  // Fixes Dreamcast issues
+  case RETRO_ENVIRONMENT_GET_HW_RENDER_INTERFACE: {
     return false;
+  }
   case RETRO_ENVIRONMENT_GET_LED_INTERFACE:
   case RETRO_ENVIRONMENT_GET_MIDI_INTERFACE:
   case RETRO_ENVIRONMENT_GET_INPUT_BITMASKS:
