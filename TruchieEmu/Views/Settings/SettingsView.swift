@@ -1348,6 +1348,7 @@ struct ControllerSettingsView: View {
     @State private var savedConfigs: [String: ControllerGamepadMapping] = [:]
     @State private var leftColumnWidth: CGFloat = 340
     @State private var showDeleteConfirmation = false
+    @State private var resetTrigger = UUID()
 
     @State private var activeTab = 0
 
@@ -1426,13 +1427,21 @@ struct ControllerSettingsView: View {
                         Button("Back to Default") {
                             if let player = controllerService.connectedControllers.first(where: { $0.playerIndex == selectedPlayer }) {
                                 let vendorName = player.gcController?.vendorName ?? "Unknown"
-                                let defaults = ControllerGamepadMapping.defaults(for: vendorName, systemID: selectedSystemID, handedness: controllerService.handedness)
-                                controllerService.updateMapping(for: vendorName, systemID: selectedSystemID, mapping: defaults)
+                                
+                                if selectedSystemID == "default" {
+                                    // Hard reset the global default to factory settings
+                                    let defaults = ControllerGamepadMapping.defaults(for: vendorName, systemID: "default", handedness: controllerService.handedness)
+                                    controllerService.updateMapping(for: vendorName, systemID: "default", mapping: defaults)
+                                } else {
+                                    // Remove the system-specific override so it falls back to the "default" global config
+                                    controllerService.removeMapping(for: vendorName, systemID: selectedSystemID)
+                                }
+                                resetTrigger = UUID() // Force UI to rebuild with new mapping
                             }
                         }
                         .buttonStyle(.bordered)
                         .controlSize(.small)
-                    }
+    }
 
                     // Config name row: Load / Save / Delete / Config name
                     HStack(spacing: 6) {
@@ -1500,7 +1509,7 @@ struct ControllerSettingsView: View {
                         ButtonMappingList(systemID: selectedSystemID, player: player, controllerService: controllerService)
                             .frame(minWidth: 140)
                     }
-                    .id("\(selectedPlayer)-\(selectedSystemID)-\(leftColumnWidth)")
+                    .id("\(selectedPlayer)-\(selectedSystemID)-\(leftColumnWidth)-\(resetTrigger)")
                 } else {
                     VStack(spacing: 12) {
                         Image(systemName: "gamecontroller")
@@ -2086,7 +2095,7 @@ struct ControllerDrawingView: View {
 struct KeyboardContentView: View {
     @EnvironmentObject var controllerService: ControllerService
     @State private var listeningFor: RetroButton? = nil
-    @State private var selectedSystemID: String = "nes"
+    @State private var selectedSystemID: String = "default"
 
     var body: some View {
         VStack(alignment: .leading, spacing: 0) {
@@ -2105,7 +2114,13 @@ struct KeyboardContentView: View {
                 Spacer()
                 
                 Button("Reset to Defaults") {
-                    controllerService.updateKeyboardMapping(KeyboardMapping.defaults(for: selectedSystemID), for: selectedSystemID)
+                    if selectedSystemID == "default" {
+                        // Hard reset the global default to factory settings
+                        controllerService.updateKeyboardMapping(KeyboardMapping.defaults(for: "default"), for: "default")
+                    } else {
+                        // Remove the system-specific override so it falls back to the global "default"
+                        controllerService.removeKeyboardMapping(for: selectedSystemID)
+                    }
                 }
                 .buttonStyle(.bordered)
             }

@@ -89,6 +89,22 @@ class ControllerService: ObservableObject {
         }
     }
 
+    func removeMapping(for vendorName: String, systemID: String) {
+        savedMappings[vendorName]?.removeValue(forKey: systemID)
+        if savedMappings[vendorName]?.isEmpty == true {
+            savedMappings.removeValue(forKey: vendorName)
+        }
+        refreshConnectedControllers()
+        saveMappings()
+    }
+
+    func removeKeyboardMapping(for systemID: String) {
+        keyboardMappings.removeValue(forKey: systemID)
+        if let data = try? JSONEncoder().encode(keyboardMappings) {
+            AppSettings.setData(kbMappingKey, value: data)
+        }
+    }
+
     private func saveMappings() {
         if let data = try? JSONEncoder().encode(savedMappings) {
             AppSettings.setData(mappingKey, value: data)
