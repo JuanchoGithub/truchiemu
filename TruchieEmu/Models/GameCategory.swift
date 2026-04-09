@@ -43,8 +43,6 @@ struct GameCategory: Identifiable, Codable, Hashable, Equatable {
     static func defaults() -> [GameCategory] {
         [
             GameCategory(name: "Favorites", iconName: "heart.fill", colorHex: "FF2D55", sortOrder: 0),
-            GameCategory(name: "Playing Now", iconName: "play.circle.fill", colorHex: "34C759", sortOrder: 1),
-            GameCategory(name: "Bucket List", iconName: "star.fill", colorHex: "FFCC00", sortOrder: 2)
         ]
     }
     
