@@ -71,13 +71,21 @@ class ControllerService: ObservableObject {
     }
     
     func mapping(for vendorName: String, systemID: String) -> ControllerGamepadMapping {
+        // 1. Return the explicit system override if the user saved one
         if let systemMapping = savedMappings[vendorName]?[systemID] {
             return systemMapping
         }
-        if let global = savedMappings[vendorName]?["default"] {
-            return global
+        
+        // 2. Fetch the master Global configuration (or create it if it doesn't exist)
+        let globalMapping = savedMappings[vendorName]?["default"] 
+            ?? ControllerGamepadMapping.defaults(for: vendorName, systemID: "default", handedness: handedness)
+        
+        if systemID == "default" {
+            return globalMapping
         }
-        return ControllerGamepadMapping.defaults(for: vendorName, systemID: systemID, handedness: handedness)
+        
+        // 3. Dynamically translate the Global config into the Target system
+        return ControllerGamepadMapping.derived(from: globalMapping, for: systemID)
     }
 
     func updateKeyboardMapping(_ mapping: KeyboardMapping, for systemID: String) {
@@ -126,7 +134,21 @@ class ControllerService: ObservableObject {
     @Published var keyboardMappings: [String: KeyboardMapping] = [:]
     
     func keyboardMapping(for systemID: String) -> KeyboardMapping {
-        keyboardMappings[systemID] ?? KeyboardMapping.defaults(for: systemID, handedness: handedness)
+        // 1. Return explicit system override
+        if let systemMapping = keyboardMappings[systemID] {
+            return systemMapping
+        }
+        
+        // 2. Fetch master Global configuration
+        let globalMapping = keyboardMappings["default"] 
+            ?? KeyboardMapping.defaults(for: "default", handedness: handedness)
+            
+        if systemID == "default" {
+            return globalMapping
+        }
+        
+        // 3. Dynamically translate
+        return KeyboardMapping.derived(from: globalMapping, for: systemID)
     }
 }
 
@@ -149,12 +171,51 @@ struct ControllerGamepadMapping: Codable {
     static func defaults(for vendorName: String, systemID: String, handedness: String = "right") -> ControllerGamepadMapping {
         let isLeftHanded = handedness == "left"
         var mapping = ControllerGamepadMapping(vendorName: vendorName, buttons: [:])
-        
-        // Get the available buttons for this system
         let availableButtons = RetroButton.availableButtons(for: systemID)
         
-        // MARK: - NES and NES-style (8-bit era)
-        // Buttons: D-Pad, Start, Select, A, B (+ Turbo variants)
+        // --- MASTER TEMPLATE POPULATION (For "Global / Default") ---
+        if systemID == "default" {
+            // Standard D-Pad
+            mapping.buttons[.up] = GCButtonMapping(gcElementName: "D-pad Up", gcElementAlias: "Up")
+            mapping.buttons[.down] = GCButtonMapping(gcElementName: "D-pad Down", gcElementAlias: "Down")
+            mapping.buttons[.left] = GCButtonMapping(gcElementName: "D-pad Left", gcElementAlias: "Left")
+            mapping.buttons[.right] = GCButtonMapping(gcElementName: "D-pad Right", gcElementAlias: "Right")
+            
+            // Standard Face Buttons (MFi / Xbox / PS layout)
+            mapping.buttons[.a] = GCButtonMapping(gcElementName: "Button A", gcElementAlias: "A")
+            mapping.buttons[.b] = GCButtonMapping(gcElementName: "Button B", gcElementAlias: "B")
+            mapping.buttons[.x] = GCButtonMapping(gcElementName: "Button X", gcElementAlias: "X")
+            mapping.buttons[.y] = GCButtonMapping(gcElementName: "Button Y", gcElementAlias: "Y")
+            
+            // Shoulders & Triggers
+            mapping.buttons[.l1] = GCButtonMapping(gcElementName: "Left Shoulder", gcElementAlias: "L1")
+            mapping.buttons[.r1] = GCButtonMapping(gcElementName: "Right Shoulder", gcElementAlias: "R1")
+            mapping.buttons[.l2] = GCButtonMapping(gcElementName: "Left Trigger", gcElementAlias: "L2")
+            mapping.buttons[.r2] = GCButtonMapping(gcElementName: "Right Trigger", gcElementAlias: "R2")
+            
+            // Stick Clicks
+            mapping.buttons[.l3] = GCButtonMapping(gcElementName: "Left Thumbstick Button", gcElementAlias: "L3")
+            mapping.buttons[.r3] = GCButtonMapping(gcElementName: "Right Thumbstick Button", gcElementAlias: "R3")
+            
+            // System Buttons
+            mapping.buttons[.start] = GCButtonMapping(gcElementName: "Button Menu", gcElementAlias: "Menu")
+            mapping.buttons[.select] = GCButtonMapping(gcElementName: "Button Options", gcElementAlias: "Options")
+            
+            // Analog Stick Directions (Crucial for N64 derivation)
+            mapping.buttons[.lStickUp] = GCButtonMapping(gcElementName: "Left Thumbstick Up", gcElementAlias: "L Stick Up")
+            mapping.buttons[.lStickDown] = GCButtonMapping(gcElementName: "Left Thumbstick Down", gcElementAlias: "L Stick Down")
+            mapping.buttons[.lStickLeft] = GCButtonMapping(gcElementName: "Left Thumbstick Left", gcElementAlias: "L Stick Left")
+            mapping.buttons[.lStickRight] = GCButtonMapping(gcElementName: "Left Thumbstick Right", gcElementAlias: "L Stick Right")
+            
+            mapping.buttons[.rStickUp] = GCButtonMapping(gcElementName: "Right Thumbstick Up", gcElementAlias: "R Stick Up")
+            mapping.buttons[.rStickDown] = GCButtonMapping(gcElementName: "Right Thumbstick Down", gcElementAlias: "R Stick Down")
+            mapping.buttons[.rStickLeft] = GCButtonMapping(gcElementName: "Right Thumbstick Left", gcElementAlias: "R Stick Left")
+            mapping.buttons[.rStickRight] = GCButtonMapping(gcElementName: "Right Thumbstick Right", gcElementAlias: "R Stick Right")
+            
+            return mapping
+        }
+
+        // --- SPECIFIC SYSTEM LEGACY DEFAULTS (Keep your existing NES/SNES code below) ---
         if availableButtons.contains(.a) && availableButtons.contains(.b) && !availableButtons.contains(.x) {
             // NES Standard layout
             mapping.buttons[.up] = GCButtonMapping(gcElementName: "D-pad Up", gcElementAlias: "Up")
@@ -589,11 +650,32 @@ struct KeyboardMapping: Codable {
             }
             
         default:
-            // Generic/Default: Most common buttons
-            base[.a] = 6     // A
-            base[.b] = 7     // B
-            base[.x] = 8     // X
-            base[.y] = 9     // Y
+            // Generic/Default: Modern standard layout acting as the global template
+            // Note: D-Pad (Arrows) and Start/Select are already mapped at the top of this function.
+            
+            base[.a] = 6     // Z
+            base[.b] = 7     // X
+            base[.x] = 8     // C
+            base[.y] = 9     // V
+            
+            base[.l1] = 12   // Q
+            base[.r1] = 14   // E (Mac keycode 14)
+            base[.l2] = 18   // 1 (Number row)
+            base[.r2] = 20   // 3 (Number row)
+            base[.l3] = 19   // 2 (Number row)
+            base[.r3] = 21   // 4 (Number row)
+            
+            // Left Stick (Mapped to WASD to avoid conflict with D-Pad arrows)
+            base[.lStickUp] = 13    // W
+            base[.lStickDown] = 1   // S
+            base[.lStickLeft] = 0   // A
+            base[.lStickRight] = 2  // D
+            
+            // Right Stick (Mapped to IJKL)
+            base[.rStickUp] = 34    // I
+            base[.rStickDown] = 40  // K
+            base[.rStickLeft] = 38  // J
+            base[.rStickRight] = 37 // L
         }
         
         return KeyboardMapping(buttons: base)
@@ -800,7 +882,7 @@ enum RetroButton: String, Codable, CaseIterable {
             
         // MARK: - Default (fallback with most common buttons)
         default:
-            return[.up, .down, .left, .right, .a, .b, .x, .y, .l1, .r1, .l2, .r2, .start, .select, .lStickUp, .lStickDown, .lStickLeft, .lStickRight]
+            return[.up, .down, .left, .right, .a, .b, .x, .y, .l1, .r1, .l2, .r2, .l3, .r3, .start, .select, .lStickUp, .lStickDown, .lStickLeft, .lStickRight, .rStickUp, .rStickDown, .rStickLeft, .rStickRight]
         }
     }
     
@@ -928,5 +1010,112 @@ enum RetroButton: String, Codable, CaseIterable {
         case .turboY: return .y
         default: return nil
         }
+    }
+
+}
+// MARK: - Dynamic Global Translators
+
+extension ControllerGamepadMapping {
+    static func derived(from global: ControllerGamepadMapping, for systemID: String) -> ControllerGamepadMapping {
+        var mapping = ControllerGamepadMapping(vendorName: global.vendorName, buttons: [:])
+        let availableButtons = RetroButton.availableButtons(for: systemID)
+        
+        // Helper to map a target system button to a source global button
+        func map(_ target: RetroButton, to source: RetroButton) {
+            if availableButtons.contains(target), let globalBtn = global.buttons[source] {
+                mapping.buttons[target] = globalBtn
+            }
+        }
+
+        // 1. Map all 1:1 identical buttons first (e.g., A -> A, Start -> Start)
+        for btn in availableButtons {
+            if let globalBtn = global.buttons[btn] {
+                mapping.buttons[btn] = globalBtn
+            }
+        }
+
+        // 2. Apply system-specific logical overrides
+        switch systemID.lowercased() {
+        case "nes", "nes_turbo":
+            map(.turboA, to: .x)
+            map(.turboB, to: .y)
+            
+        case "n64":
+            map(.z, to: .l2) 
+            map(.a, to: .a) 
+            map(.b, to: .x) // Standard N64-to-modern mapping: B on X
+            // Map C-buttons to Right Stick
+            map(.cUp, to: .rStickUp)
+            map(.cDown, to: .rStickDown)
+            map(.cLeft, to: .rStickLeft)
+            map(.cRight, to: .rStickRight)
+            
+        case "genesis", "megadrive", "saturn", "32x":
+            // Map Sega 6-button layout to modern 4-face + shoulders
+            map(.a, to: .x)
+            map(.b, to: .a)
+            map(.c, to: .b)
+            map(.x, to: .l1)
+            map(.y, to: .y)
+            map(.z, to: .r1)
+            
+        case "mame", "fba", "arcade":
+            map(.coin1, to: .select)
+            map(.start1, to: .start)
+            map(.coin2, to: .l3)
+            map(.start2, to: .r3)
+            
+        default:
+            break
+        }
+        
+        return mapping
+    }
+}
+
+extension KeyboardMapping {
+    static func derived(from global: KeyboardMapping, for systemID: String) -> KeyboardMapping {
+        var mapping = KeyboardMapping(buttons: [:])
+        let availableButtons = RetroButton.availableButtons(for: systemID)
+        
+        func map(_ target: RetroButton, to source: RetroButton) {
+            if availableButtons.contains(target), let globalKey = global.buttons[source] {
+                mapping.buttons[target] = globalKey
+            }
+        }
+
+        for btn in availableButtons {
+            if let globalKey = global.buttons[btn] {
+                mapping.buttons[btn] = globalKey
+            }
+        }
+
+        switch systemID.lowercased() {
+        case "nes", "nes_turbo":
+            map(.turboA, to: .x)
+            map(.turboB, to: .y)
+        case "n64":
+            map(.z, to: .l2)
+            map(.cUp, to: .rStickUp)
+            map(.cDown, to: .rStickDown)
+            map(.cLeft, to: .rStickLeft)
+            map(.cRight, to: .rStickRight)
+        case "genesis", "megadrive", "saturn", "32x":
+            map(.a, to: .x)
+            map(.b, to: .a)
+            map(.c, to: .b)
+            map(.x, to: .l1)
+            map(.y, to: .y)
+            map(.z, to: .r1)
+        case "mame", "fba", "arcade":
+            map(.coin1, to: .select)
+            map(.start1, to: .start)
+            map(.coin2, to: .l3)
+            map(.start2, to: .r3)
+        default:
+            break
+        }
+        
+        return mapping
     }
 }
