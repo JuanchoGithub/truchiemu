@@ -7,11 +7,11 @@ struct BoxArtPickerView: View {
     @Environment(\.dismiss) private var dismiss
 
     @State private var searchText: String = ""
-    @State private var searchEngine: SearchEngine = .google
+    @State private var searchEngine: SearchEngine = .duckduckgo
 
     enum SearchEngine: String, CaseIterable {
-        case google = "Google"
         case duckduckgo = "DuckDuckGo"
+        case google = "Google"
     }
 
     var body: some View {
@@ -149,10 +149,10 @@ struct WebSearchView: NSViewRepresentable {
     private var targetURLString: String {
         let encodedQuery = query.addingPercentEncoding(withAllowedCharacters: Self.urlQueryValueAllowed) ?? ""
         switch engine {
-        case .google:
-            return "https://www.google.com/search?tbm=isch&q=\(encodedQuery)"
         case .duckduckgo:
             return "https://duckduckgo.com/?q=\(encodedQuery)&iax=images&ia=images"
+        case .google:
+            return "https://www.google.com/search?tbm=isch&q=\(encodedQuery)"
         }
     }
 
