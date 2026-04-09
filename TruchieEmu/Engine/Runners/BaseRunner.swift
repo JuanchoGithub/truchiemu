@@ -191,6 +191,7 @@ class EmulatorRunner: ObservableObject, @unchecked Sendable {
     @MainActor @Published var osdMessage: String?
     var undoBuffer: Data?
     
+    
     /// Whether the current core supports save states
     var supportsSaveStates: Bool {
         LibretroBridge.serializeSize() > 0
@@ -205,6 +206,7 @@ class EmulatorRunner: ObservableObject, @unchecked Sendable {
     private let textureLock = NSLock()
     @MainActor @Published var rom: ROM?
     var romPath: String = ""
+    private var analogButtonStates: [RetroButton: Float] = [:]
     
     /// Expose saveManager for UI access
     var saveManager: SaveStateManager { _saveManager }
@@ -638,17 +640,39 @@ class EmulatorRunner: ObservableObject, @unchecked Sendable {
         for (btn, btnMapping) in mapping.buttons {
             if btnMapping.gcElementName == name {
                 if let info = btn.analogInfo {
-                    // Handle Analog/Pseudo-Analog
-                    var val: Int32 = 0
+                    // 1. Extract the raw 0.0...1.0 analog value
+                    var value: Float = 0.0
                     if let stick = element as? GCControllerDirectionPad {
                         let axisVal = (info.id == 0) ? stick.xAxis.value : stick.yAxis.value
-                        val = Int32(axisVal * info.sign * 32767)
+                        value = abs(axisVal) // Fallback if a whole pad was mapped
                     } else if let btnElement = element as? GCControllerButtonInput {
-                        val = btnElement.isPressed ? Int32(info.sign * 32767) : 0
+                        value = btnElement.value // Preserves partial analog tilt
                     } else if let axisElement = element as? GCControllerAxisInput {
-                        val = Int32(axisElement.value * info.sign * 32767)
+                        value = abs(axisElement.value)
                     }
-                    LibretroBridge.setAnalogState(info.index, id: info.id, value: val)
+                    
+                    // 2. Save the state for this specific directional button
+                    analogButtonStates[btn] = value
+                    
+                    // 3. Aggregate all buttons mapped to this specific Axis (X or Y)
+                    var aggregatedAxisValue: Float = 0.0
+                    for (mappedBtn, _) in mapping.buttons {
+                        if let otherInfo = mappedBtn.analogInfo, 
+                           otherInfo.index == info.index, // Same stick (Left or Right)
+                           otherInfo.id == info.id {      // Same axis (X or Y)
+                            
+                            let btnState = analogButtonStates[mappedBtn] ?? 0.0
+                            aggregatedAxisValue += (btnState * otherInfo.sign)
+                        }
+                    }
+                    
+                    // 4. Clamp the final value to prevent overflow (-1.0 to 1.0)
+                    aggregatedAxisValue = max(-1.0, min(1.0, aggregatedAxisValue))
+                    
+                    // 5. Send the unified axis state to the Libretro core
+                    let retroValue = Int32(aggregatedAxisValue * 32767.0)
+                    LibretroBridge.setAnalogState(info.index, id: info.id, value: retroValue)
+                    
                 } else {
                     // Handle Digital
                     let retroID = btn.retroID
@@ -656,6 +680,9 @@ class EmulatorRunner: ObservableObject, @unchecked Sendable {
                         self.setKeyState(retroID: Int(retroID), pressed: btnElement.isPressed)
                     } else if let axisElement = element as? GCControllerAxisInput {
                         self.setKeyState(retroID: Int(retroID), pressed: abs(axisElement.value) > 0.5)
+                    } else if let dpad = element as? GCControllerDirectionPad {
+                        let isPressed = dpad.up.isPressed || dpad.down.isPressed || dpad.left.isPressed || dpad.right.isPressed
+                        self.setKeyState(retroID: Int(retroID), pressed: isPressed)
                     }
                 }
             }

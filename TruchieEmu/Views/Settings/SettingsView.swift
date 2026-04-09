@@ -1684,15 +1684,23 @@ struct ButtonMappingList: View {
         listeningFor = btn
         guard let gc = player.gcController else { return }
         gc.extendedGamepad?.valueChangedHandler = { [self] pad, element in
+            let threshold: Float = 0.5
+            
             if let dpad = element as? GCControllerDirectionPad {
-                if dpad.up.isPressed { capture(dpad.up) }
-                else if dpad.down.isPressed { capture(dpad.down) }
-                else if dpad.left.isPressed { capture(dpad.left) }
-                else if dpad.right.isPressed { capture(dpad.right) }
-            } else if let button = element as? GCControllerButtonInput, button.isPressed {
+                let up = dpad.up.value
+                let down = dpad.down.value
+                let left = dpad.left.value
+                let right = dpad.right.value
+                
+                let maxVal = max(max(up, down), max(left, right))
+                if maxVal > threshold {
+                    if maxVal == up { capture(dpad.up) }
+                    else if maxVal == down { capture(dpad.down) }
+                    else if maxVal == left { capture(dpad.left) }
+                    else if maxVal == right { capture(dpad.right) }
+                }
+            } else if let button = element as? GCControllerButtonInput, button.value > threshold {
                 capture(button)
-            } else if let axis = element as? GCControllerAxisInput, abs(axis.value) > 0.6 {
-                capture(axis)
             }
         }
     }
@@ -1700,7 +1708,8 @@ struct ButtonMappingList: View {
     private func capture(_ element: GCControllerElement) {
         let name = element.localizedName ?? "Button"
         DispatchQueue.main.async {
-            currentMapping.buttons[listeningFor!] = GCButtonMapping(gcElementName: name, gcElementAlias: name)
+            guard let btn = listeningFor else { return }
+            currentMapping.buttons[btn] = GCButtonMapping(gcElementName: name, gcElementAlias: name)
             listeningFor = nil
             stopListening()
             saveMapping()
@@ -1842,15 +1851,23 @@ struct ControllerMappingDetail: View {
     private func startListeningForButton(_ btn: RetroButton) {
         guard let gc = player.gcController else { return }
         gc.extendedGamepad?.valueChangedHandler = { [self] pad, element in
+            let threshold: Float = 0.5
+            
             if let dpad = element as? GCControllerDirectionPad {
-                if dpad.up.isPressed { captureMapping(dpad.up, for: btn) }
-                else if dpad.down.isPressed { captureMapping(dpad.down, for: btn) }
-                else if dpad.left.isPressed { captureMapping(dpad.left, for: btn) }
-                else if dpad.right.isPressed { captureMapping(dpad.right, for: btn) }
-            } else if let button = element as? GCControllerButtonInput, button.isPressed {
+                let up = dpad.up.value
+                let down = dpad.down.value
+                let left = dpad.left.value
+                let right = dpad.right.value
+                
+                let maxVal = max(max(up, down), max(left, right))
+                if maxVal > threshold {
+                    if maxVal == up { captureMapping(dpad.up, for: btn) }
+                    else if maxVal == down { captureMapping(dpad.down, for: btn) }
+                    else if maxVal == left { captureMapping(dpad.left, for: btn) }
+                    else if maxVal == right { captureMapping(dpad.right, for: btn) }
+                }
+            } else if let button = element as? GCControllerButtonInput, button.value > threshold {
                 captureMapping(button, for: btn)
-            } else if let axis = element as? GCControllerAxisInput, abs(axis.value) > 0.6 {
-                captureMapping(axis, for: btn)
             }
         }
     }
@@ -1858,6 +1875,7 @@ struct ControllerMappingDetail: View {
     private func captureMapping(_ element: GCControllerElement, for btn: RetroButton) {
         let name = element.localizedName ?? "Button"
         DispatchQueue.main.async {
+            guard listeningFor == btn else { return }
             mapping.buttons[btn] = GCButtonMapping(gcElementName: name, gcElementAlias: name)
             listeningFor = nil
             stopListening()

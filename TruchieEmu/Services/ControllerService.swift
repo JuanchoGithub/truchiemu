@@ -211,13 +211,25 @@ struct ControllerGamepadMapping: Codable {
         }
         
         // MARK: - Analog sticks (only for systems that support them)
-        if availableButtons.contains(.lStickX) {
-            mapping.buttons[.lStickX] = GCButtonMapping(gcElementName: "Left Stick", gcElementAlias: "L Stick X")
-            mapping.buttons[.lStickY] = GCButtonMapping(gcElementName: "Left Stick", gcElementAlias: "L Stick Y")
+        if availableButtons.contains(.lStickUp) {
+            mapping.buttons[.lStickUp] = GCButtonMapping(gcElementName: "Left Thumbstick Up", gcElementAlias: "L Stick Up")
+            mapping.buttons[.lStickDown] = GCButtonMapping(gcElementName: "Left Thumbstick Down", gcElementAlias: "L Stick Down")
+            mapping.buttons[.lStickLeft] = GCButtonMapping(gcElementName: "Left Thumbstick Left", gcElementAlias: "L Stick Left")
+            mapping.buttons[.lStickRight] = GCButtonMapping(gcElementName: "Left Thumbstick Right", gcElementAlias: "L Stick Right")
         }
-        if availableButtons.contains(.rStickX) {
-            mapping.buttons[.rStickX] = GCButtonMapping(gcElementName: "Right Stick", gcElementAlias: "R Stick X")
-            mapping.buttons[.rStickY] = GCButtonMapping(gcElementName: "Right Stick", gcElementAlias: "R Stick Y")
+        if availableButtons.contains(.rStickUp) {
+            mapping.buttons[.rStickUp] = GCButtonMapping(gcElementName: "Right Thumbstick Up", gcElementAlias: "R Stick Up")
+            mapping.buttons[.rStickDown] = GCButtonMapping(gcElementName: "Right Thumbstick Down", gcElementAlias: "R Stick Down")
+            mapping.buttons[.rStickLeft] = GCButtonMapping(gcElementName: "Right Thumbstick Left", gcElementAlias: "R Stick Left")
+            mapping.buttons[.rStickRight] = GCButtonMapping(gcElementName: "Right Thumbstick Right", gcElementAlias: "R Stick Right")
+        }
+        
+        // Thumbstick clicks
+        if availableButtons.contains(.l3) {
+            mapping.buttons[.l3] = GCButtonMapping(gcElementName: "Left Thumbstick Button", gcElementAlias: "L3")
+        }
+        if availableButtons.contains(.r3) {
+            mapping.buttons[.r3] = GCButtonMapping(gcElementName: "Right Thumbstick Button", gcElementAlias: "R3")
         }
         
         // N64 C-buttons
@@ -453,9 +465,10 @@ struct KeyboardMapping: Codable {
             base[.l2] = 1    // 1 (L Trigger)
             base[.r2] = 3    // 3 (R Trigger)
             // Analog stick support
-            base[.lStickX] = 123 // Left Arrow (secondary)
-            base[.lStickY] = 125 // Right Arrow
-            
+            base[.lStickUp] = 126 // Up Arrow
+            base[.lStickDown] = 125 // Down Arrow
+            base[.lStickLeft] = 123 // Left Arrow
+            base[.lStickRight] = 124 // Right Arrow            
         case "ps2":
             // PlayStation 2: Similar to PS1 + Analog
             base[.a] = 6     // A (Cross)
@@ -596,8 +609,9 @@ enum RetroButton: String, Codable, CaseIterable {
     case turboX, turboY
     
     // Analog sticks
-    case lStickX, lStickY, rStickX, rStickY
-    
+    case lStickUp, lStickDown, lStickLeft, lStickRight
+    case rStickUp, rStickDown, rStickLeft, rStickRight
+
     // N64 C buttons
     case cUp, cDown, cLeft, cRight
     
@@ -634,10 +648,14 @@ enum RetroButton: String, Codable, CaseIterable {
         case .coin2: return "Insert Coin 2"
         case .start1:return "1P Start"
         case .start2:return "2P Start"
-        case .lStickX:return "Left Stick X (Horizontal)"
-        case .lStickY:return "Left Stick Y (Vertical)"
-        case .rStickX:return "Right Stick X (Horizontal)"
-        case .rStickY:return "Right Stick Y (Vertical)"
+        case .lStickUp: return "Left Stick Up"
+        case .lStickDown: return "Left Stick Down"
+        case .lStickLeft: return "Left Stick Left"
+        case .lStickRight: return "Left Stick Right"
+        case .rStickUp: return "Right Stick Up"
+        case .rStickDown: return "Right Stick Down"
+        case .rStickLeft: return "Right Stick Left"
+        case .rStickRight: return "Right Stick Right"
         case .cUp:    return "C-Button Up"
         case .cDown:  return "C-Button Down"
         case .cLeft:  return "C-Button Left"
@@ -682,14 +700,14 @@ enum RetroButton: String, Codable, CaseIterable {
             
         // MARK: - N64
         case "n64":
-            return [.up, .down, .left, .right, .a, .b, .z, .l1, .r1, .start, .lStickX, .lStickY, .cUp, .cDown, .cLeft, .cRight]
+            return[.up, .down, .left, .right, .a, .b, .z, .l1, .r1, .start, .lStickUp, .lStickDown, .lStickLeft, .lStickRight, .cUp, .cDown, .cLeft, .cRight]
             
         // MARK: - Nintendo DS/3DS
         case "nds":
-            return [.up, .down, .left, .right, .a, .b, .x, .y, .l1, .r1, .start, .select]
+            return[.up, .down, .left, .right, .a, .b, .x, .y, .l1, .r1, .start, .select]
         case "3ds":
-            return [.up, .down, .left, .right, .a, .b, .x, .y, .l1, .r1, .l2, .r2, .start, .select, .lStickX, .lStickY]
-            
+            return[.up, .down, .left, .right, .a, .b, .x, .y, .l1, .r1, .l2, .r2, .start, .select, .lStickUp, .lStickDown, .lStickLeft, .lStickRight]            
+
         // MARK: - Sega Genesis/Mega Drive
         case "genesis", "megadrive":
             return [.up, .down, .left, .right, .a, .b, .c, .x, .y, .z, .start, .select]
@@ -710,24 +728,24 @@ enum RetroButton: String, Codable, CaseIterable {
             
         // MARK: - Dreamcast
         case "dreamcast":
-            return [.up, .down, .left, .right, .a, .b, .x, .y, .l1, .r1, .l2, .r2, .start, .select, .lStickX, .lStickY]
+            return[.up, .down, .left, .right, .a, .b, .x, .y, .l1, .r1, .l2, .r2, .start, .select, .lStickUp, .lStickDown, .lStickLeft, .lStickRight]
             
         // MARK: - PlayStation Family
         case "psx", "ps1":
-            return [.up, .down, .left, .right, .a, .b, .x, .y, .l1, .r1, .l2, .r2, .l3, .r3, .start, .select, .lStickX, .lStickY, .rStickX, .rStickY]
+            return[.up, .down, .left, .right, .a, .b, .x, .y, .l1, .r1, .l2, .r2, .l3, .r3, .start, .select, .lStickUp, .lStickDown, .lStickLeft, .lStickRight, .rStickUp, .rStickDown, .rStickLeft, .rStickRight]
         case "ps2":
-            return [.up, .down, .left, .right, .a, .b, .x, .y, .l1, .r1, .l2, .r2, .l3, .r3, .start, .select, .lStickX, .lStickY, .rStickX, .rStickY]
+            return[.up, .down, .left, .right, .a, .b, .x, .y, .l1, .r1, .l2, .r2, .l3, .r3, .start, .select, .lStickUp, .lStickDown, .lStickLeft, .lStickRight, .rStickUp, .rStickDown, .rStickLeft, .rStickRight]
         case "psp":
-            return [.up, .down, .left, .right, .a, .b, .x, .y, .l1, .r1, .start, .select, .lStickX, .lStickY]
+            return[.up, .down, .left, .right, .a, .b, .x, .y, .l1, .r1, .start, .select, .lStickUp, .lStickDown, .lStickLeft, .lStickRight]
             
         // MARK: - Nintendo Switch/Wii
         case "switch":
-            return [.up, .down, .left, .right, .a, .b, .x, .y, .l1, .r1, .l2, .r2, .lStickX, .lStickY, .rStickX, .rStickY, .start, .select]
+            return[.up, .down, .left, .right, .a, .b, .x, .y, .l1, .r1, .l2, .r2, .l3, .r3, .lStickUp, .lStickDown, .lStickLeft, .lStickRight, .rStickUp, .rStickDown, .rStickLeft, .rStickRight, .start, .select]
         case "wii":
-            return [.up, .down, .left, .right, .a, .b, .x, .y, .l1, .r1, .l2, .r2, .start, .select]
+            return[.up, .down, .left, .right, .a, .b, .x, .y, .l1, .r1, .l2, .r2, .start, .select]
         case "wiiu":
-            return [.up, .down, .left, .right, .a, .b, .x, .y, .l1, .r1, .l2, .r2, .lStickX, .lStickY, .rStickX, .rStickY, .start, .select]
-            
+            return[.up, .down, .left, .right, .a, .b, .x, .y, .l1, .r1, .l2, .r2, .l3, .r3, .lStickUp, .lStickDown, .lStickLeft, .lStickRight, .rStickUp, .rStickDown, .rStickLeft, .rStickRight, .start, .select]            
+
         // MARK: - Arcade
         case "mame", "fba", "arcade":
             return [.up, .down, .left, .right, .a, .b, .x, .y, .l1, .r1, .coin1, .coin2, .start1, .start2]
@@ -762,11 +780,11 @@ enum RetroButton: String, Codable, CaseIterable {
             
         // MARK: - DOSBox (requires full keyboard + mouse)
         case "dos":
-            return [.up, .down, .left, .right, .a, .b, .c, .x, .y, .z, .l1, .r1, .start, .select, .space, .pause, .lStickX, .lStickY, .mouseLeft, .mouseRight, .mouseX, .mouseY]
+            return[.up, .down, .left, .right, .a, .b, .c, .x, .y, .z, .l1, .r1, .start, .select, .space, .pause, .lStickUp, .lStickDown, .lStickLeft, .lStickRight, .mouseLeft, .mouseRight, .mouseX, .mouseY]
             
         // MARK: - Default (fallback with most common buttons)
         default:
-            return [.up, .down, .left, .right, .a, .b, .x, .y, .l1, .r1, .l2, .r2, .start, .select, .lStickX, .lStickY]
+            return[.up, .down, .left, .right, .a, .b, .x, .y, .l1, .r1, .l2, .r2, .start, .select, .lStickUp, .lStickDown, .lStickLeft, .lStickRight]
         }
     }
     
@@ -846,14 +864,15 @@ enum RetroButton: String, Codable, CaseIterable {
         case .mouseMiddle: return 2
         case .mouseX, .mouseY, .mouseScrollUp, .mouseScrollDown:
             return 0  // Mouse handled separately
-        case .space, .pause, .reset, .coin2, .start2, .lStickX, .lStickY, .rStickX, .rStickY, .c, .z:
+        case .space, .pause, .reset, .coin2, .start2, .lStickUp, .lStickDown, .lStickLeft, .lStickRight, .rStickUp, .rStickDown, .rStickLeft, .rStickRight, .c, .z:
             return 0
         }
     }
     
     /// Returns whether this button is an analog axis rather than a digital button
     var isAnalog: Bool {
-        return self == .lStickX || self == .lStickY || self == .rStickX || self == .rStickY ||
+        return self == .lStickUp || self == .lStickDown || self == .lStickLeft || self == .lStickRight ||
+               self == .rStickUp || self == .rStickDown || self == .rStickLeft || self == .rStickRight ||
                self == .cUp || self == .cDown || self == .cLeft || self == .cRight ||
                self == .mouseX || self == .mouseY
     }
@@ -861,10 +880,14 @@ enum RetroButton: String, Codable, CaseIterable {
     /// Returns analog axis information for libretro analog state
     var analogInfo: (index: Int32, id: Int32, sign: Float)? {
         switch self {
-        case .lStickX: return (0, 0, 1.0)
-        case .lStickY: return (0, 1, 1.0)
-        case .rStickX: return (1, 0, 1.0)
-        case .rStickY: return (1, 1, 1.0)
+        case .lStickUp:    return (0, 1, -1.0)
+        case .lStickDown:  return (0, 1, 1.0)
+        case .lStickLeft:  return (0, 0, -1.0)
+        case .lStickRight: return (0, 0, 1.0)
+        case .rStickUp:    return (1, 1, -1.0)
+        case .rStickDown:  return (1, 1, 1.0)
+        case .rStickLeft:  return (1, 0, -1.0)
+        case .rStickRight: return (1, 0, 1.0)
         case .cUp:     return (1, 1, -1.0)  // C-Up is negative Y axis on analog
         case .cDown:   return (1, 1, 1.0)
         case .cLeft:   return (1, 0, -1.0)  // C-Left is negative X axis on analog
