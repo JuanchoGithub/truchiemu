@@ -194,7 +194,7 @@ class EmulatorRunner: ObservableObject, @unchecked Sendable {
     
     /// Whether the current core supports save states
     var supportsSaveStates: Bool {
-        LibretroBridge.serializeSize() > 0
+        LibretroBridgeSwift.serializeSize() > 0
     }
     
     internal var device: MTLDevice? = MTLCreateSystemDefaultDevice()
@@ -259,13 +259,18 @@ class EmulatorRunner: ObservableObject, @unchecked Sendable {
         let shaderDir = Bundle.main.resourceURL?.appendingPathComponent("slang").path
         
         emulationQueue.async {
-            LibretroBridge.setLanguage(Int32(selectedLang))
-            LibretroBridge.setLogLevel(Int32(selectedLogLevel))
-            LibretroBridge.launch(withDylibPath: core, romPath: rom.path.path,
-                                  shaderDir: shaderDir,
-                                  videoCallback: { [weak self] data, width, height, pitch, format in
-                self?.updateFrame(data: data, width: Int(width), height: Int(height), pitch: Int(pitch), format: Int(format))
-            }, coreID: coreID)
+            LibretroBridgeSwift.setLanguage(selectedLang)
+            LibretroBridgeSwift.setLogLevel(Int(selectedLogLevel))
+            LibretroBridgeSwift.launch(
+                dylibPath: self.findCoreLib(coreID: coreID) ?? coreID, 
+                romPath: rom!.path.path,
+                coreID: coreID,
+                systemID: rom!.systemID,
+                shaderDir: shaderDir,
+                videoCallback: { [weak self] data, width, height, pitch, format in
+                    self?.updateFrame(data: data, width: width, height: height, pitch: pitch, format: format)
+                }
+            )
         }
     }
 
@@ -275,11 +280,11 @@ class EmulatorRunner: ObservableObject, @unchecked Sendable {
     func stop() {
         LoggerService.info(category: "Runner", "Stopping emulation thread")
         isRunning = false
-        LibretroBridge.stop()
+        LibretroBridgeSwift.stop()
         
         // Wait for the core to fully terminate (retro_unload_game + retro_deinit)
         // This ensures the core is completely killed before proceeding
-        LibretroBridge.waitForCompletion()
+        LibretroBridgeSwift.waitForCompletion()
         
         hookedController?.extendedGamepad?.valueChangedHandler = nil
         hookedController = nil
@@ -289,7 +294,7 @@ class EmulatorRunner: ObservableObject, @unchecked Sendable {
     @MainActor
     func togglePause() {
         isPaused.toggle()
-        LibretroBridge.setPaused(isPaused)
+        LibretroBridgeSwift.setPaused(isPaused)
         osdMessage = isPaused ? "Paused" : "Resumed"
         
         Task {
@@ -309,7 +314,7 @@ class EmulatorRunner: ObservableObject, @unchecked Sendable {
         
         // Reset pause state
         isPaused = false
-        LibretroBridge.setPaused(false)
+        LibretroBridgeSwift.setPaused(false)
         
         // Stop current game
         stop()
@@ -321,12 +326,16 @@ class EmulatorRunner: ObservableObject, @unchecked Sendable {
         isRunning = true
         let shaderDir = Bundle.main.resourceURL?.appendingPathComponent("slang").path
         emulationQueue.async {
-            LibretroBridge.launch(withDylibPath: self.findCoreLib(coreID: coreID) ?? coreID, 
-                                  romPath: gameRom.path.path,
-                                  shaderDir: shaderDir,
-                                  videoCallback: { [weak self] data, width, height, pitch, format in
-                self?.updateFrame(data: data, width: Int(width), height: Int(height), pitch: Int(pitch), format: Int(format))
-            }, coreID: coreID)
+            LibretroBridgeSwift.launch(
+                dylibPath: self.findCoreLib(coreID: coreID) ?? coreID, 
+                romPath: gameRom.path.path,
+                coreID: coreID,
+                systemID: gameRom.systemID,
+                shaderDir: shaderDir,
+                videoCallback: { [weak self] data, width, height, pitch, format in
+                    self?.updateFrame(data: data, width: width, height: height, pitch: pitch, format: format)
+                }
+            )
         }
     }
 
@@ -345,7 +354,7 @@ class EmulatorRunner: ObservableObject, @unchecked Sendable {
             return false
         }
         
-        guard let stateData = LibretroBridge.serializeState() else {
+        guard let stateData = LibretroBridgeSwift.serializeState() else {
             osdMessage = "Error: Serialization failed"
             return false
         }
@@ -417,7 +426,7 @@ class EmulatorRunner: ObservableObject, @unchecked Sendable {
         let stateURL = saveManager.statePath(gameName: gameRom.displayName, systemID: systemID, slot: slot)
         
         // Save current state as undo buffer before loading
-        undoBuffer = LibretroBridge.serializeState()
+        undoBuffer = LibretroBridgeSwift.serializeState()
         
         guard let fileData = try? Data(contentsOf: stateURL) else {
             osdMessage = "Error: State file not found"
@@ -433,7 +442,7 @@ class EmulatorRunner: ObservableObject, @unchecked Sendable {
             return false
         }
         
-        let success = LibretroBridge.unserializeState(actualData)
+        let success = LibretroBridgeSwift.unserializeState(actualData)
         if success {
             osdMessage = "Loaded \(slot == -1 ? "Auto" : "Slot \(slot)")"
             
@@ -466,7 +475,7 @@ class EmulatorRunner: ObservableObject, @unchecked Sendable {
             return false
         }
         
-        let success = LibretroBridge.unserializeState(actualData)
+        let success = LibretroBridgeSwift.unserializeState(actualData)
         if success {
             undoBuffer = nil
             osdMessage = "Undo successful"
@@ -523,7 +532,7 @@ class EmulatorRunner: ObservableObject, @unchecked Sendable {
     }
 
     func setKeyState(retroID: Int, pressed: Bool) {
-        LibretroBridge.setKeyState(Int32(retroID), pressed: pressed)
+        LibretroBridgeSwift.setKeyState(retroID: retroID, pressed: pressed)
     }
 
     func findCoreLib(coreID: String) -> String? {
@@ -574,7 +583,7 @@ class EmulatorRunner: ObservableObject, @unchecked Sendable {
                 self.hasLoggedFrame = true
                 self.isReadyForDisplay = true
                 // Read rotation from core on first frame
-                let rotation = LibretroBridge.currentRotation()
+                let rotation = LibretroBridgeSwift.currentRotation()
                 if self.currentFrameRotation != Int(rotation) {
                     self.currentFrameRotation = Int(rotation)
                     LoggerService.info(category: "Runner", "Frame rotation: \(rotation) (\(rotation * 90) deg CW)")
@@ -671,8 +680,7 @@ class EmulatorRunner: ObservableObject, @unchecked Sendable {
                     
                     // 5. Send the unified axis state to the Libretro core
                     let retroValue = Int32(aggregatedAxisValue * 32767.0)
-                    LibretroBridge.setAnalogState(info.index, id: info.id, value: retroValue)
-                    
+                    LibretroBridgeSwift.setAnalogState(Int(info.index), id: Int(info.id), value: retroValue)
                 } else {
                     // Handle Digital
                     let retroID = btn.retroID

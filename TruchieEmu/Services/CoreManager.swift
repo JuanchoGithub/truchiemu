@@ -307,7 +307,7 @@ class CoreManager: ObservableObject {
 
     static func supportedSystems(for coreID: String) -> [String] {
         var ids = SystemDatabase.systems.filter { $0.defaultCoreID == coreID }.map { $0.id }
-        
+        // FIXME: Remove all these hardcoded capabilities and use the SystemDatabase
         // Hardcoded capabilities for common multi-system cores
         if coreID.contains("mgba") { ids += ["gba", "gb", "gbc"] }
         if coreID.contains("mesen") { ids += ["nes", "snes", "gb", "gbc"] }

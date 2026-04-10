@@ -9,15 +9,33 @@ enum ROMIdentifier {
     static func identifySystem(url: URL, extension ext: String) -> SystemInfo? {
         // TIER 0: Strong path-based context (folder name)
         let parentName = url.deletingLastPathComponent().lastPathComponent.lowercased()
+        // FIXME: Add all the cores and potential path names, use SystemDatabase.systems to get all the systems
         let sysIDMap: [String: String] = [
             "ps2": "ps2", "playstation2": "ps2", "playstation 2": "ps2",
             "psp": "psp", "playstation portable": "psp",
             "saturn": "saturn", "sega saturn": "saturn",
             "dreamcast": "dreamcast", "sega dreamcast": "dreamcast",
-            "psx": "psx", "ps1": "psx", "playstation": "psx",
+            "psx": "psx", "ps1": "psx", "playstation": "psx", "playstation 1": "psx", 
             "3do": "3do",
             "jaguar": "jaguar", "atari jaguar": "jaguar",
-            "gamecube": "gc", "gc": "gc"
+            "gamecube": "gc", "gc": "gc",
+            "n64": "n64", "nintendo 64": "n64",
+            "nintendo": "nes", "famicom": "nes",
+            "family": "nes", "family game": "nes",
+            "sfc": "sfc", "super famicom": "sfc",
+            "super nintendo": "sfc", "super nintendo entertainment system": "sfc",
+            "gba": "gba", "game boy advance": "gba",
+            "gameboy": "gb", "game boy": "gb",
+            "gameboy color": "gbc", "game boy color": "gbc",
+            "ds": "nds", "nintendo ds": "nds",
+            "nintendo 3ds": "3ds", "3ds": "3ds",
+            "sega cd": "segacd", "sega genesis": "genesis",
+            "sega mega drive": "genesis", "mega drive": "genesis",
+            "sega master system": "sms", "master system": "sms",
+            "genesis": "genesis", "mame": "mame", "arcade": "mame",
+            "dos": "dos", "pc": "dos", "windows": "dos",
+            "scummvm": "scummvm", "scumm": "scummvm",
+            "32x": "32x", "sega 32x": "32x"
         ]
         
         if let hardID = sysIDMap[parentName], let system = SystemDatabase.system(forID: hardID) {
@@ -47,7 +65,7 @@ enum ROMIdentifier {
     }
 
     // MARK: - Archive Identification
-
+    // FIXME: This seems redundant with the parentName check in identifySystem
     private static func identifyArchive(url: URL) -> SystemInfo? {
         let parentName = url.deletingLastPathComponent().lastPathComponent.lowercased()
 
@@ -90,6 +108,7 @@ enum ROMIdentifier {
     private static func fingerprintArchive(url: URL) -> SystemInfo? {
         guard let files = peekInsideZipFiles(url: url) else { return nil }
 
+        // FIXME: Do not hardcode the console extensions, use the SystemDatabase
         let consoleExts = ["32x", "nes", "sfc", "smc", "fig", "gb", "gbc", "gba", "md", "gen", "smd", "sms", "gg", "sg"]
         for file in files {
             let ext = URL(fileURLWithPath: file).pathExtension.lowercased()
@@ -104,6 +123,7 @@ enum ROMIdentifier {
         }
 
         let scummvmInnerExtensions: Set<String> = ["sou", "000", "001", "flac", "ogg", "wav"]
+        // FIXME: The list is not complete, we should use the ScummVM database instead for quick name matching
         let scummvmGameIndicators: Set<String> = [
             "HE", "MI", "SAM", "DAY", "DIG", "TENTACLE", "COMI", "MONKEY", "INDY",
             "MANIAC", "ZAK", "LOOM", "GROUSE", "FULLTHROTTLE", "CURSE", "GRIM",
@@ -133,6 +153,7 @@ enum ROMIdentifier {
 
     // MARK: - Filename Detection
 
+    //FIXME: This seems redundant with the fingerprintArchive function
     private static func detectSystemFromFilename(_ filename: String) -> String? {
         let upper = filename.uppercased()
         if upper.contains("DC_BOOT") || upper.contains("DC_FLASH") { return "dreamcast" }

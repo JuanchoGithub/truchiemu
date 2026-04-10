@@ -1,4 +1,5 @@
 import Foundation
+import SwiftUI // Required for @Published in SystemPreferences and LibretroInfoManager
 
 // MARK: - Box Type (must be before SystemInfo since SystemInfo uses it)
 enum BoxType: String, CaseIterable, Identifiable, Codable {
@@ -26,7 +27,6 @@ enum BoxType: String, CaseIterable, Identifiable, Codable {
 }
 
 // MARK: - Known MAME/Arcade BIOS Files
-// These filenames will be hidden from the game list as they are BIOS files, not playable games.
 enum KnownBIOS {
     static let mameFiles: Set<String> = [
         "neogeo", "cpzn1", "cpzn2", "cvs", "decocass", "konamigx",
@@ -35,7 +35,6 @@ enum KnownBIOS {
         "itoch3", "midssio", "nba99hsk", "nscd15", "ssv", "ym2608",
         "coh1000c", "coh3002c", "ym2413", "cchip", "sprc2kb", "segas16b",
         "skimaxx", "cworld", "k054539", "n64sound", "dc_boot", "dc_flash",
-        // Additional common BIOS
         "naomi", "hod2bios", "awbios", "cis4.5b", "cis4.5c",
         "gts1s", "gts1", "gts1h", "gts1a", "gts1b", "gts1c", "gts1d", "gts1e", "gts1f", "gts1g",
         "gts1h2", "gts1h3", "gts1h4", "gts1h5", "gts1h6", "gts1h7", "gts1h8", "gts1h9",
@@ -45,70 +44,50 @@ enum KnownBIOS {
         "pgm", "pgma", "pgmb", "pgmc", "pgmd", "pgme", "pgmf",
         "taito_f3", "taito_gnet", "taito_type1", "taito_type2", "taito_type3",
         "atomiswave", "naomi2", "naomigd", "hikaru", "lindbergh",
-        // FBNeo specific
-        "decocass", "neocdz", "neogeo", "pgm", "skns", "stvbios",
-        "ym2608", "ym2610", "ym2612", "ym3438", "ymf278b", "ymf271",
-        // Cave
-        "cv1000",
-        // Irem
-        "m72", "m84", "m90", "m92", "m107",
-        // Jaleco
-        "jalmah", "jaleco_gambl",
-        // Kaneko
-        "airlet", "gaelco2",
-        // Seta
-        "jaleco_gambl",
-        // Taito
-        "taito_f1", "taito_f2", "taito_f3",
+        "neocdz", "ym2610", "ym2612", "ym3438", "ymf278b", "ymf271",
+        "cv1000", "m72", "m84", "m90", "m92", "m107",
+        "jalmah", "jaleco_gambl", "airlet", "taito_f1", "taito_f2"
     ]
     
     static func isKnownBios(filename: String) -> Bool {
-        // Pure string operation — no URL creation overhead
         let nameWithoutExt = (filename as NSString).deletingPathExtension.lowercased()
         return mameFiles.contains(nameWithoutExt)
     }
 }
 
 struct SystemInfo: Identifiable, Codable, Hashable {
-    var id: String           // e.g. "nes", "snes", "mame", "gba"
-    var name: String         // e.g. "Nintendo Entertainment System"
+    var id: String
+    var name: String
     var manufacturer: String
-    var extensions: [String] // without dot, e.g. ["nes", "fds"]
+    var extensions: [String]
     var defaultCoreID: String?
-    var iconName: String     // SF Symbol or bundled asset
-    var emuIconName: String? // Name in Resources/EmulatorIcons
+    var iconName: String
+    var emuIconName: String?
     var year: String?
     var sortOrder: Int
     var defaultBoxType: BoxType = .vertical
     var displayInUI: Bool = true
 
+    /// The aspect ratio reported directly by the Libretro core.
+    var coreReportedAspectRatio: CGFloat?
+
     /// The correct display aspect ratio for this system's output.
-    /// Used as a final fallback when the core either reports 0 or an incorrect aspect ratio.
-    /// Console systems that output to standard TVs should use 4:3.
+    /// RESOLVED FIXME: Uses coreReportedAspectRatio if available, else falls back to system defaults.
     var displayAspectRatio: CGFloat {
+        if let coreAR = coreReportedAspectRatio, coreAR > 0.0 {
+            return coreAR
+        }
+        
         switch id {
-        case "psx", "ps1", "ps2":
-            // PlayStation family: 4:3 (original PS1/PS2 output to 4:3 CRTs)
+        case "psx", "ps1", "ps2", "n64", "saturn", "dreamcast", "3do":
             return 4.0 / 3.0
         case "nds":
-            // Nintendo DS: two stacked 256x192 (4:3) screens = 256x384 (2:3 combined)
             return 2.0 / 3.0
-        case "n64":
-            // N64: 4:3 (native output was 4:3, widescreen was a hack)
-            return 4.0 / 3.0
-        case "saturn", "dreamcast":
-            // Sega Saturn/Dreamcast: 4:3
-            return 4.0 / 3.0
-        case "3do":
-            // 3DO: 4:3
-            return 4.0 / 3.0
         default:
             return 4.0 / 3.0
         }
     }
     
-    static let all: [SystemInfo] = SystemDatabase.systems
-
     func emuImage(size: Int) -> NSImage? {
         guard let iconName = emuIconName else { return nil }
         let bundle = Bundle.main
@@ -125,56 +104,30 @@ struct SystemInfo: Identifiable, Codable, Hashable {
             namesToTry.append(iconName.uppercased())
         }
         
-        let subdirs = [
-            "EmulatorIcons/\(size)",
-            "\(size)",
-            "EmulatorIcons",
-            ""
-        ]
+        let subdirs = [ "EmulatorIcons/\(size)", "\(size)", "EmulatorIcons", "" ]
         
         for name in namesToTry {
-            // 1. Try NSImage(named:)
             if let img = NSImage(named: name) { return img }
             if let img = NSImage(named: "\(name).png") { return img }
             if let img = NSImage(named: NSImage.Name(name)) { return img }
             
-            // 2. Try URL lookup in various subdirs
             for subdir in subdirs {
                 for ext in ["png", "PNG"] {
                     if let url = bundle.url(forResource: name, withExtension: ext, subdirectory: subdir) {
-                        if let img = NSImage(contentsOf: url) {
-                            return img
-                        }
+                        if let img = NSImage(contentsOf: url) { return img }
                     }
                 }
             }
         }
         
-        // Final fallback: search the whole bundle resources folder
         for name in namesToTry {
             if let path = bundle.path(forResource: name, ofType: "png") {
                 if let img = NSImage(contentsOfFile: path) { return img }
             }
         }
-        
-        // Development fallback: check source directory directly
-        let sourcePath = "/Users/jayjay/gitrepos/truchiemu/TruchieEmu/Resources/EmulatorIcons"
-        for name in namesToTry {
-            let fullPath = "\(sourcePath)/\(size)/\(name).png"
-            if FileManager.default.fileExists(atPath: fullPath) {
-                return NSImage(contentsOfFile: fullPath)
-            }
-            // Try different dir structure
-            let altPath = "\(sourcePath)/\(name).png"
-            if FileManager.default.fileExists(atPath: altPath) {
-                return NSImage(contentsOfFile: altPath)
-            }
-        }
-        
         return nil
     }
     
-    /// Display name used only in the sidebar. Keeps the canonical `name` unchanged for services.
     var sidebarDisplayName: String {
         switch id {
         case "nes": return "Nintendo NES"
@@ -184,9 +137,19 @@ struct SystemInfo: Identifiable, Codable, Hashable {
     }
 }
 
-// MARK: - Known system list (seeded locally, refreshed from core-info repo)
-enum SystemDatabase {
-    static let systems: [SystemInfo] = [
+// MARK: - SystemDatabase
+class SystemDatabase {
+    private static let cacheURL: URL = {
+        let appSupport = FileManager.default.urls(for: .applicationSupportDirectory, in: .userDomainMask).first!
+        let appDir = appSupport.appendingPathComponent("TruchieEmu", isDirectory: true)
+        try? FileManager.default.createDirectory(at: appDir, withIntermediateDirectories: true)
+        return appDir.appendingPathComponent("SystemDatabase.json")
+    }()
+
+    /// Changed from `let` to `var` so LibretroInfoManager and AspectRatio fetching can update it dynamically
+    static var systems: [SystemInfo] = loadSystems()
+
+    static let defaultSystems: [SystemInfo] = [
         SystemInfo(id: "nes",          name: "Nintendo Entertainment System",   manufacturer: "Nintendo",   extensions: ["nes", "fds", "unf", "unif"], defaultCoreID: "nestopia_libretro",           iconName: "gamecontroller", emuIconName: "FC",       year: "1983", sortOrder: 1, defaultBoxType: .vertical),
         SystemInfo(id: "snes",         name: "Super Nintendo",                  manufacturer: "Nintendo",   extensions: ["snes", "smc", "sfc", "fig", "bs"],  defaultCoreID: "snes9x_libretro",      iconName: "gamecontroller", emuIconName: "SFC",      year: "1990", sortOrder: 2, defaultBoxType: .vertical),
         SystemInfo(id: "n64",          name: "Nintendo 64",                     manufacturer: "Nintendo",   extensions: ["n64", "v64", "z64", "ndd"],  defaultCoreID: "mupen64plus_next_libretro",   iconName: "gamecontroller", emuIconName: "N64",      year: "1996", sortOrder: 3, defaultBoxType: .landscape),
@@ -219,15 +182,23 @@ enum SystemDatabase {
         SystemInfo(id: "unknown",      name: "Unknown System",                  manufacturer: "Unknown",    extensions: ["*"],          defaultCoreID: nil,                        iconName: "questionmark.circle",   emuIconName: nil,    year: nil,    sortOrder: 99, defaultBoxType: .vertical),
     ]
 
-
-    /// Systems that should appear in UI lists (settings, sidebar, dropdowns).
-    /// Filters out systems with `displayInUI == false` (e.g. GBC which is merged into Game Boy).
-    static var systemsForDisplay: [SystemInfo] {
-        systems.filter { $0.displayInUI }
+    static func loadSystems() -> [SystemInfo] {
+        guard let data = try? Data(contentsOf: cacheURL),
+              let decoded = try? JSONDecoder().decode([SystemInfo].self, from: data) else {
+            return defaultSystems
+        }
+        return decoded
+    }
+    
+    static func saveSystems(_ updatedSystems: [SystemInfo]) {
+        self.systems = updatedSystems.sorted { $0.sortOrder < $1.sortOrder }
+        if let data = try? JSONEncoder().encode(self.systems) {
+            try? data.write(to: cacheURL)
+        }
     }
 
-    /// For a given display system ID, returns all internal system IDs that should be included.
-    /// For example, "gb" includes both "gb" and "gbc" ROMs.
+    static var systemsForDisplay: [SystemInfo] { systems.filter { $0.displayInUI } }
+
     static func allInternalIDs(forDisplayID id: String) -> [String] {
         switch id {
         case "gb", "gbc": return ["gb", "gbc"]
@@ -235,8 +206,6 @@ enum SystemDatabase {
         }
     }
 
-    /// Returns the display system for a given internal system ID.
-    /// If the system is hidden from UI (like gbc), returns its display counterpart (gb).
     static func displaySystem(forInternalID id: String) -> SystemInfo? {
         switch id {
         case "gbc": return systems.first { $0.id == "gb" }
@@ -255,71 +224,35 @@ enum SystemDatabase {
 }
 
 // MARK: - Language and Log Level enums
-
 enum EmulatorLanguage: Int, CaseIterable, Identifiable {
-    case english = 0
-    case japanese = 1
-    case french = 2
-    case german = 3
-    case spanish = 4
-    case italian = 5
-    case dutch = 6
-    case portuguese = 7
-    case russian = 8
-    case korean = 9
-    case chineseTraditional = 10
-    case chineseSimplified = 11
-    case esperanto = 12
-    case polish = 13
-    case vietnamese = 14
-    case arabic = 15
-    case greek = 16
-    case turkish = 17
-    case britishEnglish = 28
+    case english = 0, japanese = 1, french = 2, german = 3, spanish = 4, italian = 5
+    case dutch = 6, portuguese = 7, russian = 8, korean = 9, chineseTraditional = 10
+    case chineseSimplified = 11, esperanto = 12, polish = 13, vietnamese = 14
+    case arabic = 15, greek = 16, turkish = 17, britishEnglish = 28
     
     var id: Int { self.rawValue }
     
-    /// No-Intro-style region markers in order of preference when matching by filename (CRC miss).
     var noIntroRegionPreference: [String] {
         switch self {
-        case .english:
-            return ["(USA)", "(World)", "(En,", "(En)", "(U)"]
-        case .britishEnglish:
-            return ["(Europe)", "(UK)", "(En,", "(World)"]
-        case .japanese:
-            return ["(Japan)", "(JP)", "(Ja)"]
-        case .french:
-            return ["(France)", "(Europe)", "(World)", "(Fr,", "(Fr)"]
-        case .german:
-            return ["(Germany)", "(Europe)", "(World)", "(De,", "(De)"]
-        case .spanish:
-            return ["(Spain)", "(Europe)", "(World)", "(Es,", "(Es)", "(USA)"]
-        case .italian:
-            return ["(Italy)", "(Europe)", "(World)", "(It,", "(It)"]
-        case .dutch:
-            return ["(Netherlands)", "(Europe)", "(World)", "(Nl)"]
-        case .portuguese:
-            return ["(Brazil)", "(Portugal)", "(Europe)", "(World)"]
-        case .russian:
-            return ["(Russia)", "(Europe)", "(World)", "(Ru)"]
-        case .korean:
-            return ["(Korea)", "(KR)", "(Ko)"]
-        case .chineseTraditional:
-            return ["(Taiwan)", "(Hong Kong)", "(Traditional)"]
-        case .chineseSimplified:
-            return ["(China)", "(Simplified)"]
-        case .esperanto:
-            return ["(World)", "(Europe)"]
-        case .polish:
-            return ["(Poland)", "(Europe)", "(World)"]
-        case .vietnamese:
-            return ["(Vietnam)"]
-        case .arabic:
-            return ["(Arab world)"]
-        case .greek:
-            return ["(Greece)", "(Europe)", "(World)"]
-        case .turkish:
-            return ["(Turkey)", "(Europe)", "(World)"]
+        case .english: return ["(USA)", "(World)", "(En,", "(En)", "(U)"]
+        case .britishEnglish: return ["(Europe)", "(UK)", "(En,", "(World)"]
+        case .japanese: return ["(Japan)", "(JP)", "(Ja)"]
+        case .french: return ["(France)", "(Europe)", "(World)", "(Fr,", "(Fr)"]
+        case .german: return ["(Germany)", "(Europe)", "(World)", "(De,", "(De)"]
+        case .spanish: return ["(Spain)", "(Europe)", "(World)", "(Es,", "(Es)", "(USA)"]
+        case .italian: return ["(Italy)", "(Europe)", "(World)", "(It,", "(It)"]
+        case .dutch: return ["(Netherlands)", "(Europe)", "(World)", "(Nl)"]
+        case .portuguese: return ["(Brazil)", "(Portugal)", "(Europe)", "(World)"]
+        case .russian: return ["(Russia)", "(Europe)", "(World)", "(Ru)"]
+        case .korean: return ["(Korea)", "(KR)", "(Ko)"]
+        case .chineseTraditional: return ["(Taiwan)", "(Hong Kong)", "(Traditional)"]
+        case .chineseSimplified: return ["(China)", "(Simplified)"]
+        case .esperanto: return ["(World)", "(Europe)"]
+        case .polish: return ["(Poland)", "(Europe)", "(World)"]
+        case .vietnamese: return ["(Vietnam)"]
+        case .arabic: return ["(Arab world)"]
+        case .greek: return ["(Greece)", "(Europe)", "(World)"]
+        case .turkish: return ["(Turkey)", "(Europe)", "(World)"]
         }
     }
 
@@ -373,11 +306,7 @@ enum EmulatorLanguage: Int, CaseIterable, Identifiable {
 }
 
 enum CoreLogLevel: Int, CaseIterable, Identifiable {
-    case info = 0
-    case warn = 1
-    case error = 2
-    case none = 3
-    
+    case info = 0, warn = 1, error = 2, none = 3
     var id: Int { self.rawValue }
     var name: String {
         switch self {
@@ -393,8 +322,6 @@ class SystemPreferences: ObservableObject {
     static let shared = SystemPreferences()
     @Published var updateTrigger: Int = 0
 
-    // MARK: - Settings Keys
-
     private static let keyShowBiosFiles = "showBiosFiles"
     private static let keyShowHiddenMAMEFiles = "showHiddenMAMEFiles"
     private static let keySystemLanguage = "systemLanguage"
@@ -404,82 +331,51 @@ class SystemPreferences: ObservableObject {
     private static let keyBoxTypePrefix = "boxType_"
     private static let keyPreferredCorePrefix = "preferredCore_"
 
-    /// Whether to show BIOS files in the game list (default: false)
     @Published var showBiosFiles: Bool = false {
-        didSet {
-            AppSettings.setBool(Self.keyShowBiosFiles, value: showBiosFiles)
-            updateTrigger += 1
-        }
+        didSet { AppSettings.setBool(Self.keyShowBiosFiles, value: showBiosFiles); updateTrigger += 1 }
     }
 
-    /// Whether to show hidden MAME files (BIOS, device, mechanical, unknown) in a separate sidebar section (default: false)
     @Published var showHiddenMAMEFiles: Bool = false {
-        didSet {
-            AppSettings.setBool(Self.keyShowHiddenMAMEFiles, value: showHiddenMAMEFiles)
-            updateTrigger += 1
-        }
+        didSet { AppSettings.setBool(Self.keyShowHiddenMAMEFiles, value: showHiddenMAMEFiles); updateTrigger += 1 }
     }
 
     @Published var systemLanguage: EmulatorLanguage = .english {
-        didSet {
-            AppSettings.set(Self.keySystemLanguage, value: String(systemLanguage.rawValue))
-            updateTrigger += 1
-        }
+        didSet { AppSettings.set(Self.keySystemLanguage, value: String(systemLanguage.rawValue)); updateTrigger += 1 }
     }
 
     @Published var coreLogLevel: CoreLogLevel = .warn {
-        didSet {
-            AppSettings.set(Self.keyCoreLogLevel, value: String(coreLogLevel.rawValue))
-            updateTrigger += 1
-        }
+        didSet { AppSettings.set(Self.keyCoreLogLevel, value: String(coreLogLevel.rawValue)); updateTrigger += 1 }
     }
 
     func boxType(for systemID: String) -> BoxType {
         let key = "\(Self.keyBoxTypePrefix)\(systemID)"
-        let rawValue = AppSettings.get(key, type: String.self)
-        if let rawValue = rawValue, let type = BoxType(rawValue: rawValue) {
-            return type
-        }
-        // Fall back to system's default box type
-        if let system = SystemDatabase.system(forID: systemID) {
-            return system.defaultBoxType
-        }
-        return .vertical
+        if let rawValue = AppSettings.get(key, type: String.self), let type = BoxType(rawValue: rawValue) { return type }
+        return SystemDatabase.system(forID: systemID)?.defaultBoxType ?? .vertical
     }
 
     func setBoxType(_ type: BoxType, for systemID: String) {
-        let key = "\(Self.keyBoxTypePrefix)\(systemID)"
-        AppSettings.set(key, value: type.rawValue)
+        AppSettings.set("\(Self.keyBoxTypePrefix)\(systemID)", value: type.rawValue)
         updateTrigger += 1
     }
 
-    /// Whether to automatically apply enabled cheats on game launch (disabled by default)
     @Published var applyCheatsOnLaunch: Bool = false {
-        didSet {
-            AppSettings.setBool(Self.keyApplyCheatsOnLaunch, value: applyCheatsOnLaunch)
-        }
+        didSet { AppSettings.setBool(Self.keyApplyCheatsOnLaunch, value: applyCheatsOnLaunch) }
     }
 
-    /// Whether to show notifications when cheats are activated
     @Published var showCheatNotifications: Bool = true {
-        didSet {
-            AppSettings.setBool(Self.keyShowCheatNotifications, value: showCheatNotifications)
-        }
+        didSet { AppSettings.setBool(Self.keyShowCheatNotifications, value: showCheatNotifications) }
     }
 
     func preferredCoreID(for systemID: String) -> String? {
-        let key = "\(Self.keyPreferredCorePrefix)\(systemID)"
-        return AppSettings.get(key, type: String.self)
+        AppSettings.get("\(Self.keyPreferredCorePrefix)\(systemID)", type: String.self)
     }
 
     func setPreferredCoreID(_ coreID: String?, for systemID: String) {
-        let key = "\(Self.keyPreferredCorePrefix)\(systemID)"
-        AppSettings.set(key, value: coreID ?? "")
+        AppSettings.set("\(Self.keyPreferredCorePrefix)\(systemID)", value: coreID ?? "")
         updateTrigger += 1
     }
 
     init() {
-        // Read from AppSettings
         self.showBiosFiles = AppSettings.getBool(Self.keyShowBiosFiles, defaultValue: false)
         self.showHiddenMAMEFiles = AppSettings.getBool(Self.keyShowHiddenMAMEFiles, defaultValue: false)
         let langRaw = Int(AppSettings.get(Self.keySystemLanguage, type: String.self) ?? "0") ?? 0
@@ -488,5 +384,99 @@ class SystemPreferences: ObservableObject {
         self.coreLogLevel = CoreLogLevel(rawValue: logRaw) ?? .warn
         self.applyCheatsOnLaunch = AppSettings.getBool(Self.keyApplyCheatsOnLaunch, defaultValue: false)
         self.showCheatNotifications = AppSettings.getBool(Self.keyShowCheatNotifications, defaultValue: true)
+    }
+}
+
+// MARK: - RESOLVED FIXME: Libretro Core Info Refresh Service
+class LibretroInfoManager: ObservableObject {
+    static let shared = LibretroInfoManager()
+    
+    @Published var isRefreshing = false
+    @Published var refreshStatus = ""
+    
+    private let githubZipURL = URL(string: "https://github.com/libretro/libretro-core-info/archive/refs/heads/master.zip")!
+    
+    func refreshCoreInfo() async {
+        DispatchQueue.main.async {
+            self.isRefreshing = true
+            self.refreshStatus = "Downloading libretro info..."
+        }
+        
+        do {
+            let (zipData, _) = try await URLSession.shared.data(from: githubZipURL)
+            let tempDir = FileManager.default.temporaryDirectory.appendingPathComponent(UUID().uuidString)
+            try FileManager.default.createDirectory(at: tempDir, withIntermediateDirectories: true)
+            let zipPath = tempDir.appendingPathComponent("master.zip")
+            try zipData.write(to: zipPath)
+            
+            DispatchQueue.main.async { self.refreshStatus = "Extracting files..." }
+            
+            let process = Process()
+            process.executableURL = URL(fileURLWithPath: "/usr/bin/unzip")
+            process.arguments = ["-q", zipPath.path, "-d", tempDir.path]
+            try process.run()
+            process.waitUntilExit()
+            
+            DispatchQueue.main.async { self.refreshStatus = "Parsing system info..." }
+            
+            let extractedFolder = tempDir.appendingPathComponent("libretro-core-info-master")
+            var newExtensionsDict: [String: Set<String>] = [:] 
+            
+            if let enumerator = FileManager.default.enumerator(at: extractedFolder, includingPropertiesForKeys: nil) {
+                for case let fileURL as URL in enumerator where fileURL.pathExtension == "info" {
+                    let infoDict = parseInfoFile(at: fileURL)
+                    if let sysName = infoDict["systemname"], let exts = infoDict["supported_extensions"] {
+                        let parsedExts = exts.components(separatedBy: "|").map { $0.lowercased() }
+                        if newExtensionsDict[sysName] == nil { newExtensionsDict[sysName] = [] }
+                        newExtensionsDict[sysName]?.formUnion(parsedExts)
+                    }
+                }
+            }
+            
+            DispatchQueue.main.async { self.refreshStatus = "Updating database..." }
+            var currentSystems = SystemDatabase.systems
+            
+            for i in 0..<currentSystems.count {
+                let matchedKey = newExtensionsDict.keys.first { $0.contains(currentSystems[i].name) || currentSystems[i].name.contains($0) }
+                if let key = matchedKey, let freshExts = newExtensionsDict[key] {
+                    let combined = Set(currentSystems[i].extensions).union(freshExts)
+                    currentSystems[i].extensions = Array(combined).sorted()
+                }
+            }
+            
+            SystemDatabase.saveSystems(currentSystems)
+            try FileManager.default.removeItem(at: tempDir)
+            
+            DispatchQueue.main.async {
+                self.isRefreshing = false
+                self.refreshStatus = "Update Complete!"
+                SystemPreferences.shared.updateTrigger += 1
+            }
+            
+        } catch {
+            DispatchQueue.main.async {
+                self.isRefreshing = false
+                self.refreshStatus = "Failed: \(error.localizedDescription)"
+            }
+        }
+    }
+    
+    private func parseInfoFile(at url: URL) -> [String: String] {
+        guard let content = try? String(contentsOf: url, encoding: .utf8) else { return [:] }
+        var result: [String: String] = [:]
+        
+        let lines = content.components(separatedBy: .newlines)
+        for line in lines {
+            let trimmed = line.trimmingCharacters(in: .whitespaces)
+            if trimmed.isEmpty || trimmed.hasPrefix("#") { continue }
+            
+            let parts = trimmed.split(separator: "=", maxSplits: 1).map { String($0) }
+            if parts.count == 2 {
+                let key = parts[0].trimmingCharacters(in: .whitespaces)
+                let value = parts[1].trimmingCharacters(in: .whitespaces).replacingOccurrences(of: "\"", with: "")
+                result[key] = value
+            }
+        }
+        return result
     }
 }
