@@ -7,9 +7,6 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-A1B2C3D4E5F6000000000006 /* ThumbnailManifests in Resources */ = {isa = PBXBuildFile; fileRef = A1B2C3D4E5F6000000000005 /* ThumbnailManifests */; };
-A1B2C3D4E5F6000000000004 /* GitHubAPIModels.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1B2C3D4E5F6000000000003 /* GitHubAPIModels.swift */; };
-A1B2C3D4E5F6000000000002 /* LibretroThumbnailManifestService.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1B2C3D4E5F6000000000001 /* LibretroThumbnailManifestService.swift */; };
 		02BCE4E07716E5E5E5D94A21 /* SystemControlsMappingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 99510C445D5B9B6435F169A6 /* SystemControlsMappingView.swift */; };
 		030ABCBDBF36E85A49735248 /* DATIngestionTrackerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = CA2F6CC0B668CE9DBE156BF6 /* DATIngestionTrackerTests.swift */; };
 		08654A47A54E3D9112724620 /* DatabaseManagerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3DDFBB322B80263A8B7FC9A3 /* DatabaseManagerTests.swift */; };
@@ -86,6 +83,9 @@ A1B2C3D4E5F6000000000002 /* LibretroThumbnailManifestService.swift in Sources */
 		A00192372A0183EF4772CACF /* CategoryManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 571AFD6EF6839C2FBF185419 /* CategoryManager.swift */; };
 		A0DE5B81F27E19D49BD7E620 /* GameDBRepository.swift in Sources */ = {isa = PBXBuildFile; fileRef = 59EC65D8F98B1A8F4FF56A51 /* GameDBRepository.swift */; };
 		A1632ED514C07772E28CB97D /* ZoomableBoxArtView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1C53A5F4CC172C8B0CCBABE5 /* ZoomableBoxArtView.swift */; };
+		A1B2C3D4E5F6000000000002 /* LibretroThumbnailManifestService.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1B2C3D4E5F6000000000001 /* LibretroThumbnailManifestService.swift */; };
+		A1B2C3D4E5F6000000000004 /* GitHubAPIModels.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1B2C3D4E5F6000000000003 /* GitHubAPIModels.swift */; };
+		A1B2C3D4E5F6000000000006 /* ThumbnailManifests in Resources */ = {isa = PBXBuildFile; fileRef = A1B2C3D4E5F6000000000005 /* ThumbnailManifests */; };
 		A2E8895528D33C9C62CD7E70 /* LibretroRDBParser.swift in Sources */ = {isa = PBXBuildFile; fileRef = AD6D8A426A0F0B5278A2061D /* LibretroRDBParser.swift */; };
 		A58FDFAC497AD46C53D234BE /* BezelSelectorWindow.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6FC6B9BA043D75E9DC8B7710 /* BezelSelectorWindow.swift */; };
 		A62A82DD470DD8861DF3384C /* BezelSystemMappingTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = BD7CD170E8F21A7C11AA8A96 /* BezelSystemMappingTests.swift */; };
@@ -108,6 +108,7 @@ A1B2C3D4E5F6000000000002 /* LibretroThumbnailManifestService.swift in Sources */
 		C0ECA92ACA4223EB7B1275FB /* LiteCRT.metal in Sources */ = {isa = PBXBuildFile; fileRef = 43D1886C073CD8586F00A47E /* LiteCRT.metal */; };
 		C1A4A19926D1834FC8C42E3D /* Cheat.swift in Sources */ = {isa = PBXBuildFile; fileRef = C818FB0D70AE32972B1C5458 /* Cheat.swift */; };
 		C38B17EB3AAF9406947383F9 /* MAMEUnifiedService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 76F256846D9E636C7E11FB8B /* MAMEUnifiedService.swift */; };
+		C89F9E78C49F471FAB36F17E /* ROMIdentifier.swift in Sources */ = {isa = PBXBuildFile; fileRef = C89F9E78C49F471FAB36F17F /* ROMIdentifier.swift */; };
 		C940EF25A43065B0025730BA /* ResourceCacheInterceptor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 746A411A79F40382E1D204CC /* ResourceCacheInterceptor.swift */; };
 		C99B75B6B31091E08C1F162A /* ROM.swift in Sources */ = {isa = PBXBuildFile; fileRef = FA471582BD64CAFD5D7353DA /* ROM.swift */; };
 		C9B9D094E83252DCCF416DA4 /* ControllerService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 93D8EB529663CB9A8702FAD3 /* ControllerService.swift */; };
@@ -116,7 +117,6 @@ A1B2C3D4E5F6000000000002 /* LibretroThumbnailManifestService.swift in Sources */
 		CF0D01D75D00064F452B57C1 /* ImageCache.swift in Sources */ = {isa = PBXBuildFile; fileRef = C76E538AC13A32DE58CAFCB8 /* ImageCache.swift */; };
 		D02B80BF5046C50DD6849639 /* CoreOptionsManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = A4134F4B89D3CF5680BCEA25 /* CoreOptionsManager.swift */; };
 		D0C382CCE62AD453784ED800 /* ROMScanner.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7A96B3453958E60812D9DA1D /* ROMScanner.swift */; };
-		C89F9E78C49F471FAB36F17E /* ROMIdentifier.swift in Sources */ = {isa = PBXBuildFile; fileRef = C89F9E78C49F471FAB36F17F /* ROMIdentifier.swift */; };
 		D3DFF4B19710FC24B2FA821D /* BezelDownloadProgressTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 681D379EFFCD99F4BDE955CA /* BezelDownloadProgressTests.swift */; };
 		D501CF9374AEB1151D309853 /* SwiftDataContainer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B504A16AFFBFCF54BD0E4CB /* SwiftDataContainer.swift */; };
 		D7A2504994F1DE09E699F30F /* ROMIdentifierService.swift in Sources */ = {isa = PBXBuildFile; fileRef = FC2BC1B2F22591954A0E02B5 /* ROMIdentifierService.swift */; };
@@ -169,9 +169,6 @@ A1B2C3D4E5F6000000000002 /* LibretroThumbnailManifestService.swift in Sources */
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
-A1B2C3D4E5F6000000000005 /* ThumbnailManifests */ = {isa = PBXFileReference; lastKnownFileType = folder; name = ThumbnailManifests; path = Resources/ThumbnailManifests; sourceTree = "<group>"; };
-A1B2C3D4E5F6000000000003 /* GitHubAPIModels.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GitHubAPIModels.swift; sourceTree = "<group>"; };
-A1B2C3D4E5F6000000000001 /* LibretroThumbnailManifestService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LibretroThumbnailManifestService.swift; sourceTree = "<group>"; };
 		00BCE112C7493BEA7436F109 /* BoxArtPickerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BoxArtPickerView.swift; sourceTree = "<group>"; };
 		02BBEDBAB8126B08C4C9D008 /* GameDragState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GameDragState.swift; sourceTree = "<group>"; };
 		055E2AC9E58C1AC87C32C168 /* ShaderManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShaderManager.swift; sourceTree = "<group>"; };
@@ -235,7 +232,6 @@ A1B2C3D4E5F6000000000001 /* LibretroThumbnailManifestService.swift */ = {isa = P
 		76F256846D9E636C7E11FB8B /* MAMEUnifiedService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MAMEUnifiedService.swift; sourceTree = "<group>"; };
 		79981162FE4F8B8B1624598B /* BezelManagerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BezelManagerTests.swift; sourceTree = "<group>"; };
 		7A96B3453958E60812D9DA1D /* ROMScanner.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ROMScanner.swift; sourceTree = "<group>"; };
-		C89F9E78C49F471FAB36F17F /* ROMIdentifier.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ROMIdentifier.swift; sourceTree = "<group>"; };
 		7BA22E4A4F4049B056FF0A02 /* ResourceCacheManagerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ResourceCacheManagerTests.swift; sourceTree = "<group>"; };
 		7D4DE8B36744135985A50982 /* CLIManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CLIManager.swift; sourceTree = "<group>"; };
 		7D6D46D0F856BC93AFDD1A73 /* MAMERomEntry.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MAMERomEntry.swift; sourceTree = "<group>"; };
@@ -260,6 +256,9 @@ A1B2C3D4E5F6000000000001 /* LibretroThumbnailManifestService.swift */ = {isa = P
 		997C409A40BDE7CFE9393115 /* mame_rom_data.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = mame_rom_data.json; sourceTree = "<group>"; };
 		9A57889A8837E10FEB44BCFD /* BezelAPIServiceIntegrationTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BezelAPIServiceIntegrationTests.swift; sourceTree = "<group>"; };
 		A0DF88772F69F68614866F7E /* SavedStatesSection.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SavedStatesSection.swift; sourceTree = "<group>"; };
+		A1B2C3D4E5F6000000000001 /* LibretroThumbnailManifestService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LibretroThumbnailManifestService.swift; sourceTree = "<group>"; };
+		A1B2C3D4E5F6000000000003 /* GitHubAPIModels.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GitHubAPIModels.swift; sourceTree = "<group>"; };
+		A1B2C3D4E5F6000000000005 /* ThumbnailManifests */ = {isa = PBXFileReference; lastKnownFileType = folder; name = ThumbnailManifests; path = Resources/ThumbnailManifests; sourceTree = "<group>"; };
 		A3E6537CAC4420826C1A50C4 /* LogManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LogManager.swift; sourceTree = "<group>"; };
 		A4134F4B89D3CF5680BCEA25 /* CoreOptionsManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CoreOptionsManager.swift; sourceTree = "<group>"; };
 		A5DBDEA905A82BDEF2D0FF92 /* GameCategory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GameCategory.swift; sourceTree = "<group>"; };
@@ -284,6 +283,7 @@ A1B2C3D4E5F6000000000001 /* LibretroThumbnailManifestService.swift */ = {isa = P
 		C76E538AC13A32DE58CAFCB8 /* ImageCache.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImageCache.swift; sourceTree = "<group>"; };
 		C818FB0D70AE32972B1C5458 /* Cheat.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Cheat.swift; sourceTree = "<group>"; };
 		C87485B36AA3B87BBC03C577 /* ScummVMRunner.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScummVMRunner.swift; sourceTree = "<group>"; };
+		C89F9E78C49F471FAB36F17F /* ROMIdentifier.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ROMIdentifier.swift; sourceTree = "<group>"; };
 		C8CF37F3EE97D10E700B56DF /* CLILauncher.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CLILauncher.swift; sourceTree = "<group>"; };
 		C9687B623BF31DEC24CB1B16 /* MAMEDependencyService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MAMEDependencyService.swift; sourceTree = "<group>"; };
 		C9D4F3329E4574FD30094324 /* CoreManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CoreManager.swift; sourceTree = "<group>"; };
@@ -357,7 +357,7 @@ A1B2C3D4E5F6000000000001 /* LibretroThumbnailManifestService.swift */ = {isa = P
 		1877F5A2D47F3BEBD4C9F107 /* TruchieEmu */ = {
 			isa = PBXGroup;
 			children = (
-A1B2C3D4E5F6000000000005 /* ThumbnailManifests */,
+				A1B2C3D4E5F6000000000005 /* ThumbnailManifests */,
 				325C2DF7BFBE06CDBE6EF3A5 /* App */,
 				83304F5BB3B25877F8337BF8 /* Engine */,
 				58DECDD14D2EF32E5076893B /* Models */,
@@ -372,7 +372,7 @@ A1B2C3D4E5F6000000000005 /* ThumbnailManifests */,
 		22252D163B158EFEB49A0DAF /* Services */ = {
 			isa = PBXGroup;
 			children = (
-A1B2C3D4E5F6000000000001 /* LibretroThumbnailManifestService.swift */,
+				A1B2C3D4E5F6000000000001 /* LibretroThumbnailManifestService.swift */,
 				57E31A0548A2DE07AEC19A74 /* BoxArtPreloaderService.swift */,
 				6DDE7FC6FAA1F8677EB963A1 /* BoxArtService.swift */,
 				571AFD6EF6839C2FBF185419 /* CategoryManager.swift */,
@@ -515,7 +515,7 @@ A1B2C3D4E5F6000000000001 /* LibretroThumbnailManifestService.swift */,
 		58DECDD14D2EF32E5076893B /* Models */ = {
 			isa = PBXGroup;
 			children = (
-A1B2C3D4E5F6000000000003 /* GitHubAPIModels.swift */,
+				A1B2C3D4E5F6000000000003 /* GitHubAPIModels.swift */,
 				5DE05F787C487A0BBA81DAB7 /* Achievement.swift */,
 				C818FB0D70AE32972B1C5458 /* Cheat.swift */,
 				88CE9892979FB7B724F9F25B /* CoreOption.swift */,
@@ -788,7 +788,7 @@ A1B2C3D4E5F6000000000003 /* GitHubAPIModels.swift */,
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-A1B2C3D4E5F6000000000006 /* ThumbnailManifests in Resources */,
+				A1B2C3D4E5F6000000000006 /* ThumbnailManifests in Resources */,
 				F1D62C5445CF2CB899702BDE /* mame_rom_data.json in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -800,8 +800,8 @@ A1B2C3D4E5F6000000000006 /* ThumbnailManifests in Resources */,
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-A1B2C3D4E5F6000000000004 /* GitHubAPIModels.swift in Sources */,
-A1B2C3D4E5F6000000000002 /* LibretroThumbnailManifestService.swift in Sources */,
+				A1B2C3D4E5F6000000000004 /* GitHubAPIModels.swift in Sources */,
+				A1B2C3D4E5F6000000000002 /* LibretroThumbnailManifestService.swift in Sources */,
 				E3AF0FC4B15408E1686E33C7 /* Achievement.swift in Sources */,
 				F017645B40D693F252D1A0CB /* AchievementListView.swift in Sources */,
 				F97B9EE26C8F47F9C0B54E1D /* AchievementToastView.swift in Sources */,
@@ -1050,7 +1050,22 @@ A1B2C3D4E5F6000000000002 /* LibretroThumbnailManifestService.swift in Sources */
 					"@executable_path/../Frameworks",
 				);
 				MACOSX_DEPLOYMENT_TARGET = 14.0;
-				OTHER_LDFLAGS = "-framework Metal -framework MetalKit -framework GameController -framework AVFoundation -framework WebKit -framework OpenGL -framework SwiftData";
+				OTHER_LDFLAGS = (
+					"-framework",
+					Metal,
+					"-framework",
+					MetalKit,
+					"-framework",
+					GameController,
+					"-framework",
+					AVFoundation,
+					"-framework",
+					WebKit,
+					"-framework",
+					OpenGL,
+					"-framework",
+					SwiftData,
+				);
 				PRODUCT_BUNDLE_IDENTIFIER = com.truchiemu.app;
 				PRODUCT_NAME = TruchieEmu;
 				SDKROOT = macosx;
@@ -1174,7 +1189,22 @@ A1B2C3D4E5F6000000000002 /* LibretroThumbnailManifestService.swift in Sources */
 					"@executable_path/../Frameworks",
 				);
 				MACOSX_DEPLOYMENT_TARGET = 14.0;
-				OTHER_LDFLAGS = "-framework Metal -framework MetalKit -framework GameController -framework AVFoundation -framework WebKit -framework OpenGL -framework SwiftData";
+				OTHER_LDFLAGS = (
+					"-framework",
+					Metal,
+					"-framework",
+					MetalKit,
+					"-framework",
+					GameController,
+					"-framework",
+					AVFoundation,
+					"-framework",
+					WebKit,
+					"-framework",
+					OpenGL,
+					"-framework",
+					SwiftData,
+				);
 				PRODUCT_BUNDLE_IDENTIFIER = com.truchiemu.app;
 				PRODUCT_NAME = TruchieEmu;
 				SDKROOT = macosx;
