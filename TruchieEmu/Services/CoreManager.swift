@@ -296,6 +296,7 @@ class CoreManager: ObservableObject {
         if let data = try? encoder.encode(installedCores) {
             AppSettings.setData(coresKey, value: data)
             LoggerService.debug(category: "CoreManager", "Installed cores saved: \(installedCores)")
+            objectWillChange.send() 
         }
     }
 
@@ -344,15 +345,16 @@ class CoreManager: ObservableObject {
     static func supportedSystems(for coreID: String) -> [String] {
         // 1. Get systems that explicitly list this core as their 'defaultCoreID'
         var ids = SystemDatabase.systems.filter { $0.defaultCoreID == coreID }.map { $0.id }
+
+        // 2. Dynamic map lookup
+        // Instead of stripping, try both the full coreID and the stripped version
+        let strippedID = coreID.replacingOccurrences(of: "_libretro", with: "")
         
-        // 2. Check our dynamic map (built from the Libretro .info files)
-        let coreIDNormalized = coreID.replacingOccurrences(of: "_libretro", with: "")
-        if let dynamicIDs = LibretroInfoManager.coreToSystemMap[coreIDNormalized] {
-            ids.append(contentsOf: dynamicIDs)
-        }
-        
-        // 3. Fallback/Safety: Hardcoded MAME alias if still needed
-        if coreID.contains("mame") { ids.append("mame") }
+        // Try the lookup with the full ID first, then the stripped one
+        let dynamicIDs = LibretroInfoManager.coreToSystemMap[coreID] ?? 
+                        LibretroInfoManager.coreToSystemMap[strippedID] ?? []
+                        
+        ids.append(contentsOf: dynamicIDs)
         
         // Return unique results
         return Array(Set(ids))
@@ -442,4 +444,5 @@ class CoreManager: ObservableObject {
         self.loadAvailableCores()
         SystemPreferences.shared.updateTrigger += 1
     }
+
 }

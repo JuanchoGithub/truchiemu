@@ -923,6 +923,7 @@ struct CoreSettingsView: View {
                             .padding(.vertical, 8)
                         
                         SystemCoresView(system: system, coreManager: coreManager)
+                            .id(coreManager.installedCores.count + coreManager.availableCores.count) 
                     } else {
                         ContentUnavailableView {
                             Label("Select a System", systemImage: "gamecontroller")
@@ -1014,9 +1015,12 @@ struct SystemCoresView: View {
 
     var coresForSystem: [RemoteCoreInfo] {
         coreManager.availableCores.filter { remoteCore in
-            remoteCore.systemIDs.contains(system.id) || system.defaultCoreID == remoteCore.coreID
-        }
+            // Normalize all core system IDs before comparing
+            let normalizedCoreIDs = remoteCore.systemIDs.map { SystemDatabase.normalizeSystemID($0) }
+            
+            return normalizedCoreIDs.contains(system.id) || system.defaultCoreID == remoteCore.coreID
     }
+}
     
     var installedCoresForSystem: [LibretroCore] {
         coreManager.installedCores.filter { core in

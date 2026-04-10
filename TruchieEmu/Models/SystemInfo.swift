@@ -167,7 +167,7 @@ class SystemDatabase {
         SystemInfo(id: "saturn",       name: "Sega Saturn",                     manufacturer: "Sega",       extensions: ["cue", "toc", "m3u"],          defaultCoreID: "mednafen_saturn_libretro",   iconName: "opticaldisc",    emuIconName: "SATURN",   year: "1994", sortOrder: 13, defaultBoxType: .landscape),
         SystemInfo(id: "3do",          name: "3DO",                             manufacturer: "Panasonic",  extensions: ["iso", "bin", "cue", "chd"],   defaultCoreID: "opera_libretro",             iconName: "opticaldisc",    emuIconName: "3DO",      year: "1993", sortOrder: 16, defaultBoxType: .landscape),
         SystemInfo(id: "dreamcast",    name: "Sega Dreamcast",                  manufacturer: "Sega",       extensions: ["cdi", "gdi", "chd"],          defaultCoreID: "flycast_libretro",           iconName: "opticaldisc",    emuIconName: "DC",       year: "1998", sortOrder: 14, defaultBoxType: .landscape),
-        SystemInfo(id: "ps2",          name: "PlayStation 2",                   manufacturer: "Sony",       extensions: ["iso", "chd"],                 defaultCoreID: "pcsx2_libretro",             iconName: "opticaldisc",    emuIconName: "PS",       year: "2000", sortOrder: 21, defaultBoxType: .landscape),
+        SystemInfo(id: "ps2",          name: "PlayStation 2",                   manufacturer: "Sony",       extensions: ["iso", "chd"],                 defaultCoreID: "play_libretro",             iconName: "opticaldisc",    emuIconName: "PS",       year: "2000", sortOrder: 21, defaultBoxType: .landscape),
         SystemInfo(id: "psp",          name: "PlayStation Portable",            manufacturer: "Sony",       extensions: ["iso", "cso", "pbp"],          defaultCoreID: "ppsspp_libretro",            iconName: "ipad.landscape", emuIconName: "PSP",      year: "2004", sortOrder: 22, defaultBoxType: .landscape),
         SystemInfo(id: "mame",         name: "Arcade (MAME)",                   manufacturer: "Various",    extensions: ["zip", "7z"],                  defaultCoreID: "mame2003_plus_libretro",     iconName: "arcade.stick",   emuIconName: "MAME",     year: nil,    sortOrder: 30, defaultBoxType: .vertical),
         SystemInfo(id: "fba",          name: "Arcade (FinalBurn Neo)",          manufacturer: "Various",    extensions: ["zip", "7z"],                  defaultCoreID: "fbneo_libretro",             iconName: "arcade.stick",   emuIconName: "FBNEO",    year: nil,    sortOrder: 31, defaultBoxType: .vertical),
@@ -392,6 +392,106 @@ class SystemPreferences: ObservableObject {
     }
 }
 
+extension SystemDatabase {
+    static func normalizeSystemID(_ libretroID: String) -> String {
+        switch libretroID {
+        case "2048": return "2048"
+        case "32x": return "32x"
+        case "3do": return "3do"
+        case "3ds": return "3ds"
+        case "anarch": return "anarch"
+        case "apple_ii": return "apple_ii"
+        case "arcadia": return "arcadia"
+        case "arduboy": return "arduboy"
+        case "atari_2600": return "atari2600"
+        case "atari_5200": return "atari5200"
+        case "atari_7800": return "atari7800"
+        case "atari_lynx": return "lynx"
+        case "atari_st": return "atari_st"
+        case "bbcmicro": return "bbcmicro"
+        case "bomberman": return "bomberman"
+        case "cdi": return "cdi"
+        case "chailove": return "chailove"
+        case "chip_8": return "chip_8"
+        case "colecovision": return "colecovision"
+        case "commodore_64": return "commodore_64"
+        case "commodore_amiga": return "commodore_amiga"
+        case "commodore_c128": return "commodore_c128"
+        case "commodore_c64": return "commodore_c64"
+        case "commodore_c64_supercpu": return "commodore_c64_supercpu"
+        case "commodore_cbm2": return "commodore_cbm2"
+        case "commodore_cbm5x0": return "commodore_cbm5x0"
+        case "commodore_pet": return "commodore_pet"
+        case "commodore_plus4": return "commodore_plus4"
+        case "commodore_vic20": return "commodore_vic20"
+        case "cpc": return "cpc"
+        case "craft": return "craft"
+        case "dice": return "dice"
+        case "dinothawr": return "dinothawr"
+        case "doom": return "doom"
+        case "doom_3": return "doom_3"
+        case "dos": return "dos"
+        case "dreamcast": return "dreamcast"
+        case "ep128": return "ep128"
+        case "epochcv": return "epochcv"
+        case "fb_alpha": return "fba"
+        case "gam4980": return "gam4980"
+        case "game_boy": return "gb"
+        case "game_boy_advance": return "gba"
+        case "game_music": return "game_music"
+        case "gamecube": return "gamecube"
+        case "gamegear": return "gamegear"
+        case "gba": return "gba"
+        case "gong": return "gong"
+        case "intellivision": return "intellivision"
+        case "J2ME": return "J2ME"
+        case "jaguar": return "jaguar"
+        case "jollycv": return "jollycv"
+        case "jumpnbump": return "jumpnbump"
+        case "laserdisc": return "laserdisc"
+        case "lowresnx": return "lowresnx"
+        case "mac68k": return "mac68k"
+        case "mame": return "mame"
+        case "master_system": return "sms"
+        case "mega_drive": return "genesis"
+        case "mega_duck": return "mega_duck"
+        case "msx": return "msx"
+        case "music": return "music"
+        case "n64": return "n64"
+        case "nds": return "nds"
+        case "neo_geo_pocket": return "ngp"
+        case "neogeo": return "neogeo"
+        case "nes": return "nes"
+        case "nxengine": return "nxengine"
+        case "odyssey2": return "odyssey2"
+        case "p2000t": return "p2000t"
+        case "pc_88": return "pc_88"
+        case "pc_98": return "pc_98"
+        case "pc_engine": return "pce"
+        case "pcfx": return "pcfx"
+        case "pcxt": return "pcxt"
+        case "pico8": return "pico8"
+        case "playstation": return "psx"
+        case "playstation_portable": return "psp"
+        case "playstation2": return "ps2"
+        case "pokemon_mini": return "pokemon_mini"
+        case "quake_1": return "quake_1"
+        case "quake_2": return "quake_2"
+        case "quake_3": return "quake_3"
+        case "rs": return "rs"
+        case "scummvm": return "scummvm"
+        case "sega_saturn": return "saturn"
+        case "sharp_x1": return "sharp_x1"
+        case "sharp_x68000": return "sharp_x68000"
+        case "super_nes": return "snes"
+        case "nintendo_nes": return "nes"
+        case "nintendo_64": return "n64"
+        case "sega_genesis": return "genesis" 
+        default: return libretroID
+        }
+    }
+}
+
 // MARK: - RESOLVED FIXME: Libretro Core Info Refresh Service
 class LibretroInfoManager: ObservableObject {
     static let shared = LibretroInfoManager()
@@ -448,7 +548,8 @@ class LibretroInfoManager: ObservableObject {
                     // 1. Handle System/Core Mapping (The new part)
                     if let sysIDString = infoDict["systemid"] { 
                         let coreID = fileURL.deletingPathExtension().lastPathComponent // e.g., "snes9x"
-                        let ids = sysIDString.components(separatedBy: "|")
+                        // Split, normalize, and put back into a Set
+                        let ids = sysIDString.components(separatedBy: "|").map { SystemDatabase.normalizeSystemID($0) }
                         LibretroInfoManager.coreToSystemMap[coreID] = Set(ids)
                         LoggerService.debug(category: "LibretroInfoManager", "Mapped core \(coreID) to systems: \(ids)")
                     }
