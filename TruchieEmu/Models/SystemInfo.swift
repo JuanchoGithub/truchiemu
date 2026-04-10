@@ -401,13 +401,15 @@ class LibretroInfoManager: ObservableObject {
             self.isRefreshing = true
             self.refreshStatus = "Downloading libretro info..."
         }
-        
+        LoggerService.info(category: "LibretroInfoManager", "Starting libretro info refresh")
         do {
             let (zipData, _) = try await URLSession.shared.data(from: githubZipURL)
+            LoggerService.info(category: "LibretroInfoManager", "Downloading libretro info from \(githubZipURL)")
             let tempDir = FileManager.default.temporaryDirectory.appendingPathComponent(UUID().uuidString)
             try FileManager.default.createDirectory(at: tempDir, withIntermediateDirectories: true)
             let zipPath = tempDir.appendingPathComponent("master.zip")
             try zipData.write(to: zipPath)
+            LoggerService.debug(category: "LibretroInfoManager", "Downloaded libretro info to \(zipPath)")
             
             DispatchQueue.main.async { self.refreshStatus = "Extracting files..." }
             
@@ -416,14 +418,16 @@ class LibretroInfoManager: ObservableObject {
             process.arguments = ["-q", zipPath.path, "-d", tempDir.path]
             try process.run()
             process.waitUntilExit()
+            LoggerService.debug(category: "LibretroInfoManager", "Extracted libretro info to \(tempDir)")
             
             DispatchQueue.main.async { self.refreshStatus = "Parsing system info..." }
             
             let extractedFolder = tempDir.appendingPathComponent("libretro-core-info-master")
             var newExtensionsDict: [String: Set<String>] = [:] 
-            
+            LoggerService.debug(category: "LibretroInfoManager", "Parsing system info from \(extractedFolder)")
             if let enumerator = FileManager.default.enumerator(at: extractedFolder, includingPropertiesForKeys: nil) {
                 for case let fileURL as URL in enumerator where fileURL.pathExtension == "info" {
+                    LoggerService.debug(category: "LibretroInfoManager", "Parsing system info from \(fileURL)")
                     let infoDict = parseInfoFile(at: fileURL)
                     if let sysName = infoDict["systemname"], let exts = infoDict["supported_extensions"] {
                         let parsedExts = exts.components(separatedBy: "|").map { $0.lowercased() }
@@ -432,28 +436,35 @@ class LibretroInfoManager: ObservableObject {
                     }
                 }
             }
-            
+
             DispatchQueue.main.async { self.refreshStatus = "Updating database..." }
+            LoggerService.debug(category: "LibretroInfoManager", "Updating database...")
             var currentSystems = SystemDatabase.systems
             
             for i in 0..<currentSystems.count {
                 let matchedKey = newExtensionsDict.keys.first { $0.contains(currentSystems[i].name) || currentSystems[i].name.contains($0) }
+                LoggerService.debug(category: "LibretroInfoManager", "Matched key: \(matchedKey)")
                 if let key = matchedKey, let freshExts = newExtensionsDict[key] {
                     let combined = Set(currentSystems[i].extensions).union(freshExts)
                     currentSystems[i].extensions = Array(combined).sorted()
+                    LoggerService.debug(category: "LibretroInfoManager", "Updated extensions for \(currentSystems[i].name): \(currentSystems[i].extensions)")
                 }
             }
             
             SystemDatabase.saveSystems(currentSystems)
+            LoggerService.debug(category: "LibretroInfoManager", "Saved systems to database")
             try FileManager.default.removeItem(at: tempDir)
+            LoggerService.debug(category: "LibretroInfoManager", "Removed temporary directory")
             
             DispatchQueue.main.async {
+                LoggerService.info(category: "LibretroInfoManager", "Update Complete!")
                 self.isRefreshing = false
                 self.refreshStatus = "Update Complete!"
                 SystemPreferences.shared.updateTrigger += 1
             }
             
         } catch {
+            LoggerService.error(category: "LibretroInfoManager", "Failed to refresh libretro info: \(error.localizedDescription)")
             DispatchQueue.main.async {
                 self.isRefreshing = false
                 self.refreshStatus = "Failed: \(error.localizedDescription)"
@@ -462,6 +473,7 @@ class LibretroInfoManager: ObservableObject {
     }
     
     private func parseInfoFile(at url: URL) -> [String: String] {
+        LoggerService.debug(category: "LibretroInfoManager", "Parsing system info from \(url)")
         guard let content = try? String(contentsOf: url, encoding: .utf8) else { return [:] }
         var result: [String: String] = [:]
         
@@ -475,8 +487,10 @@ class LibretroInfoManager: ObservableObject {
                 let key = parts[0].trimmingCharacters(in: .whitespaces)
                 let value = parts[1].trimmingCharacters(in: .whitespaces).replacingOccurrences(of: "\"", with: "")
                 result[key] = value
+                LoggerService.debug(category: "LibretroInfoManager", "Parsed key: \(key), value: \(value)")
             }
         }
+        LoggerService.debug(category: "LibretroInfoManager", "Parsed system info: \(result)")
         return result
     }
 }

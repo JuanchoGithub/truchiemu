@@ -854,11 +854,7 @@ struct CoreSettingsView: View {
                     Text("Fetching core list from buildbot...")
                         .foregroundStyle(.secondary)
                         .font(.caption)
-                    Spacer()
-                    Button("Refresh List") { Task { await coreManager.fetchAvailableCores() } }
-                        .buttonStyle(.bordered)
-                        .controlSize(.small)
-                        .disabled(coreManager.isFetchingCoreList)
+
                 }
                 .padding(12)
                 .background(.ultraThinMaterial)
@@ -866,10 +862,23 @@ struct CoreSettingsView: View {
                 // Refresh button
                 HStack {
                     Spacer()
-                    Button("Refresh List") { Task { await coreManager.fetchAvailableCores() } }
-                        .buttonStyle(.bordered)
-                        .controlSize(.small)
-                        .disabled(coreManager.isFetchingCoreList)
+                    Button {
+                        LoggerService.info(category: "SettingsView", "Refreshing systems and cores...")
+                        Task { await coreManager.performFullSystemUpdate() }
+                    } label: {
+                        HStack {
+                            if coreManager.isFetchingCoreList || LibretroInfoManager.shared.isRefreshing {
+                                ProgressView().controlSize(.small)
+                                Text("Updating Systems & Cores...")
+                            } else {
+                                Image(systemName: "arrow.triangle.2.circlepath")
+                                Text("Check for Updates")
+                            }
+                        }
+                    }
+                    .buttonStyle(.bordered)
+                    .controlSize(.small)
+                    .disabled(coreManager.isFetchingCoreList || LibretroInfoManager.shared.isRefreshing)
                 }
                 .padding(8)
             }
