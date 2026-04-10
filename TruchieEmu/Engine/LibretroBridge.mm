@@ -1529,8 +1529,10 @@ static int16_t bridge_input_state(unsigned port, unsigned device,
   uint32_t *pixels = (uint32_t *)_hwReadbackBuffer;
   BOOL isPSP =
       (g_coreID && [[g_coreID lowercaseString] containsString:@"ppsspp"]);
+  BOOL isPS2 = (g_coreID &&
+                [[g_coreID lowercaseString] containsString:@"play_libretro"]);
 
-  if (isPSP) {
+  if (isPSP || isPS2) {
     // --- PSP FIX: BOTH FLIPS REQUIRED ---
 
     // 1. Vertical Flip (Fixes the "Upside Down" issue)
@@ -1555,7 +1557,6 @@ static int16_t bridge_input_state(unsigned port, unsigned device,
       }
     }
     */
-
   } else if (!_hw_callback.bottom_left_origin) {
     // --- STANDARD CORE FIX (N64, etc.): Vertical Flip only ---
     for (int y = 0; y < h / 2; y++) {
