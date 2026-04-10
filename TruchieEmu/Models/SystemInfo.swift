@@ -337,27 +337,22 @@ class SystemPreferences: ObservableObject {
 
     @Published var showBiosFiles: Bool = false {
         didSet { AppSettings.setBool(Self.keyShowBiosFiles, value: showBiosFiles); updateTrigger += 1 }
-        LoggerService.debug(category: "SystemPreferences", "Show BIOS files: \(showBiosFiles)")
     }
 
     @Published var showHiddenMAMEFiles: Bool = false {
         didSet { AppSettings.setBool(Self.keyShowHiddenMAMEFiles, value: showHiddenMAMEFiles); updateTrigger += 1 }
-            LoggerService.debug(category: "SystemPreferences", "Show hidden MAME files: \(showHiddenMAMEFiles)")
     }
 
     @Published var systemLanguage: EmulatorLanguage = .english {
         didSet { AppSettings.set(Self.keySystemLanguage, value: String(systemLanguage.rawValue)); updateTrigger += 1 }
-        LoggerService.debug(category: "SystemPreferences", "System language: \(systemLanguage)")
     }
 
     @Published var coreLogLevel: CoreLogLevel = .warn {
         didSet { AppSettings.set(Self.keyCoreLogLevel, value: String(coreLogLevel.rawValue)); updateTrigger += 1 }
-        LoggerService.debug(category: "SystemPreferences", "Core log level: \(coreLogLevel)")
     }
 
     func boxType(for systemID: String) -> BoxType {
         let key = "\(Self.keyBoxTypePrefix)\(systemID)"
-        LoggerService.debug(category: "SystemPreferences", "Box type for \(systemID): \(key)")
         if let rawValue = AppSettings.get(key, type: String.self), let type = BoxType(rawValue: rawValue) { return type }
         return SystemDatabase.system(forID: systemID)?.defaultBoxType ?? .vertical
     }
@@ -369,17 +364,14 @@ class SystemPreferences: ObservableObject {
 
     @Published var applyCheatsOnLaunch: Bool = false {
         didSet { AppSettings.setBool(Self.keyApplyCheatsOnLaunch, value: applyCheatsOnLaunch) }
-        LoggerService.debug(category: "SystemPreferences", "Apply cheats on launch: \(applyCheatsOnLaunch)")
     }
 
     @Published var showCheatNotifications: Bool = true {
         didSet { AppSettings.setBool(Self.keyShowCheatNotifications, value: showCheatNotifications) }
-        LoggerService.debug(category: "SystemPreferences", "Show cheat notifications: \(showCheatNotifications)")
     }
 
     func preferredCoreID(for systemID: String) -> String? {
         AppSettings.get("\(Self.keyPreferredCorePrefix)\(systemID)", type: String.self)
-        LoggerService.debug(category: "SystemPreferences", "Get Preferred core ID for \(systemID): \(coreID)")
     }
 
     func setPreferredCoreID(_ coreID: String?, for systemID: String) {

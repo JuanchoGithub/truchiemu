@@ -172,7 +172,7 @@ static NSDictionary<NSString *, NSDictionary *> *g_optCategories = nil;
 
 static void initOptStorage() {
   if (!g_optValues) {
-    g_optValues =[NSMutableDictionary dictionary];
+    g_optValues = [NSMutableDictionary dictionary];
   }
 }
 
@@ -192,8 +192,8 @@ static void parseCoreOptionsV2(struct retro_core_options_v2 *opts) {
     while (cat->key && catCount < 256) {
       @try {
         cats[[NSString stringWithUTF8String:cat->key]] = @{
-          @"desc" : cat->desc ?[NSString stringWithUTF8String:cat->desc] : @"",
-          @"info" : cat->info ?[NSString stringWithUTF8String:cat->info] : @""
+          @"desc" : cat->desc ? [NSString stringWithUTF8String:cat->desc] : @"",
+          @"info" : cat->info ? [NSString stringWithUTF8String:cat->info] : @""
         };
       } @catch (NSException *exception) {
         NSLog(@"[Bridge-WRN] Failed to parse category: %@", exception.reason);
@@ -211,10 +211,10 @@ static void parseCoreOptionsV2(struct retro_core_options_v2 *opts) {
     int defCount = 0;
     while (def && def->key && defCount < 512) {
       @try {
-        NSString *key =[NSString stringWithUTF8String:def->key];
-        NSString *desc =[NSString
+        NSString *key = [NSString stringWithUTF8String:def->key];
+        NSString *desc = [NSString
             stringWithUTF8String:(def->desc_categorized ?: def->desc)];
-        NSString *info =[NSString
+        NSString *info = [NSString
             stringWithUTF8String:(def->info_categorized ?: def->info)];
         NSString *catKey =
             def->category_key
@@ -222,7 +222,7 @@ static void parseCoreOptionsV2(struct retro_core_options_v2 *opts) {
                 : nil;
         NSString *defaultVal =
             def->default_value
-                ?[NSString stringWithUTF8String:def->default_value]
+                ? [NSString stringWithUTF8String:def->default_value]
                 : @"";
 
         /* Parse possible values - fixed-size array with safety check */
@@ -237,7 +237,8 @@ static void parseCoreOptionsV2(struct retro_core_options_v2 *opts) {
             NSString *vlabel =
                 def->values[vi].label
                     ? [NSString stringWithUTF8String:def->values[vi].label]
-                    : vval;[vals addObject:@{@"value" : vval, @"label" : vlabel}];
+                    : vval;
+            [vals addObject:@{@"value" : vval, @"label" : vlabel}];
           } @catch (NSException *exception) {
             NSLog(@"[Bridge-WRN] Failed to parse option value: %@",
                   exception.reason);
@@ -272,7 +273,7 @@ parseCoreOptionsV1(struct retro_core_options *opts) {
   initOptStorage();
   [g_optValues removeAllObjects];
 
-  NSMutableDictionary *defs =[NSMutableDictionary dictionary];
+  NSMutableDictionary *defs = [NSMutableDictionary dictionary];
 
   if (opts && opts->definitions) {
     struct retro_core_option_definition *def = opts->definitions;
@@ -287,7 +288,7 @@ parseCoreOptionsV1(struct retro_core_options *opts) {
             def->info ? [NSString stringWithUTF8String:def->info] : @"";
         NSString *defaultVal =
             def->default_value
-                ?[NSString stringWithUTF8String:def->default_value]
+                ? [NSString stringWithUTF8String:def->default_value]
                 : @"";
 
         NSMutableArray *vals = [NSMutableArray array];
@@ -301,8 +302,9 @@ parseCoreOptionsV1(struct retro_core_options *opts) {
             NSString *vval = [NSString stringWithUTF8String:valStr];
             NSString *vlabel =
                 def->values[vi].label
-                    ?[NSString stringWithUTF8String:def->values[vi].label]
-                    : vval;[vals addObject:@{@"value" : vval, @"label" : vlabel}];
+                    ? [NSString stringWithUTF8String:def->values[vi].label]
+                    : vval;
+            [vals addObject:@{@"value" : vval, @"label" : vlabel}];
           } @catch (NSException *exception) {
             NSLog(@"[Bridge-WRN] Failed to parse option value: %@",
                   exception.reason);
@@ -328,7 +330,7 @@ parseCoreOptionsV1(struct retro_core_options *opts) {
     }
   }
   g_optCategories = @{};
-  g_optDefinitions =[defs copy];
+  g_optDefinitions = [defs copy];
 }
 
 /* Load persisted overrides from .cfg file into g_optValues.
@@ -339,15 +341,17 @@ static void applyPersistedOverrides() {
     return;
 
   NSString *configName = [NSString stringWithFormat:@"%@.cfg", g_coreID];
-  NSString *appSupport =[NSSearchPathForDirectoriesInDomains(
+  NSString *appSupport = [NSSearchPathForDirectoriesInDomains(
       NSApplicationSupportDirectory, NSUserDomainMask, YES) firstObject];
-  NSString *optionsDir =[appSupport stringByAppendingPathComponent:@"TruchieEmu/CoreOptions"];
-  NSString *configPath =[optionsDir stringByAppendingPathComponent:configName];
+  NSString *optionsDir =
+      [appSupport stringByAppendingPathComponent:@"TruchieEmu/CoreOptions"];
+  NSString *configPath = [optionsDir stringByAppendingPathComponent:configName];
 
   if (![[NSFileManager defaultManager] fileExistsAtPath:configPath])
     return;
 
-  NSString *fileContent =[NSString stringWithContentsOfFile:configPath
+  NSString *fileContent =
+      [NSString stringWithContentsOfFile:configPath
                                 encoding:NSUTF8StringEncoding
                                    error:nil];
   if (!fileContent)
@@ -358,7 +362,7 @@ static void applyPersistedOverrides() {
                                                newlineCharacterSet]];
 
   for (NSString *line in allLines) {
-    NSString *trimmed =[line
+    NSString *trimmed = [line
         stringByTrimmingCharactersInSet:[NSCharacterSet
                                             whitespaceAndNewlineCharacterSet]];
     if (trimmed.length == 0 || [trimmed hasPrefix:@"#"])
@@ -378,7 +382,7 @@ static void applyPersistedOverrides() {
 
     // Strip surrounding quotes
     if ([val hasPrefix:@"\""] && [val hasSuffix:@"\""]) {
-      val =[val substringWithRange:NSMakeRange(1, val.length - 2)];
+      val = [val substringWithRange:NSMakeRange(1, val.length - 2)];
     }
     if (g_optValues && key.length > 0) {
       g_optValues[key] = val;
@@ -494,7 +498,7 @@ static bool bridge_environment(unsigned cmd, void *data) {
 
   case RETRO_ENVIRONMENT_GET_SYSTEM_DIRECTORY: {
     static char s_sysPath[1024];
-    NSString *path =[NSSearchPathForDirectoriesInDomains(
+    NSString *path = [NSSearchPathForDirectoriesInDomains(
         NSApplicationSupportDirectory, NSUserDomainMask, YES) firstObject];
     path = [path stringByAppendingPathComponent:@"TruchieEmu/System"];
     [[NSFileManager defaultManager] createDirectoryAtPath:path
@@ -508,7 +512,7 @@ static bool bridge_environment(unsigned cmd, void *data) {
   }
   case RETRO_ENVIRONMENT_GET_SAVE_DIRECTORY: {
     static char s_savePath[1024];
-    NSString *path =[NSSearchPathForDirectoriesInDomains(
+    NSString *path = [NSSearchPathForDirectoriesInDomains(
         NSApplicationSupportDirectory, NSUserDomainMask, YES) firstObject];
     path = [path stringByAppendingPathComponent:@"TruchieEmu"];
     [[NSFileManager defaultManager] createDirectoryAtPath:path
@@ -648,7 +652,7 @@ static bool bridge_environment(unsigned cmd, void *data) {
       // ── Read from g_optValues (populated by SET_CORE_OPTIONS handlers) ──
       static __thread char g_varBuf[512];
       if (g_optValues && g_optValues.count > 0) {
-        NSString *keyStr =[NSString stringWithUTF8String:var->key];
+        NSString *keyStr = [NSString stringWithUTF8String:var->key];
         NSString *valStr = g_optValues[keyStr];
         if (valStr && valStr.length > 0) {
           strncpy(g_varBuf, valStr.UTF8String, sizeof(g_varBuf) - 1);
@@ -820,12 +824,13 @@ static void bridge_video_refresh(const void *data, unsigned width,
     const void *finalData = data;
     int format = [g_instance pixelFormat];
     if (data == RETRO_HW_FRAME_BUFFER_VALID) {
-      finalData =[g_instance readHWRenderedPixels:width height:height];
+      finalData = [g_instance readHWRenderedPixels:width height:height];
       pitch = width * 4;                    // RGBA8888 for GL readback
       format = RETRO_PIXEL_FORMAT_XRGB8888; // glReadPixels with GL_BGRA +
                                             // UNSIGNED_INT_8_8_8_8_REV produces
                                             // 32-bit data
-    }[g_instance handleVideoData:finalData
+    }
+    [g_instance handleVideoData:finalData
                           width:width
                          height:height
                           pitch:(int)pitch
@@ -896,7 +901,7 @@ static int16_t bridge_input_state(unsigned port, unsigned device,
 @implementation LibretroBridgeImpl
 
 - (instancetype)init {
-  if (self =[super init]) {
+  if (self = [super init]) {
     _coreLock = [[NSLock alloc] init];
     _audioBuffer = new AudioRingBuffer(
         32768); // ~185ms buffer at 44.1kHz stereo to ensure low latency
@@ -964,7 +969,8 @@ static int16_t bridge_input_state(unsigned port, unsigned device,
         return noErr;
       }];
 
-  [_audioEngine attachNode:_audioSourceNode];[_audioEngine connect:_audioSourceNode
+  [_audioEngine attachNode:_audioSourceNode];
+  [_audioEngine connect:_audioSourceNode
                      to:_audioEngine.mainMixerNode
                  format:format];
 }
@@ -1135,9 +1141,11 @@ static int16_t bridge_input_state(unsigned port, unsigned device,
   if (_avInfo.timing.fps <= 0.0 || _avInfo.timing.fps > 120.0) {
     NSLog(@"[Bridge-WRN] Global FPS clamp: %.2f -> 60.0", _avInfo.timing.fps);
     _avInfo.timing.fps = 60.0;
-  }[self setupAudioWithSampleRate:sampleRate];
+  }
+  [self setupAudioWithSampleRate:sampleRate];
 
-  NSError *err;[_audioEngine startAndReturnError:&err];
+  NSError *err;
+  [_audioEngine startAndReturnError:&err];
 
   _saveStatePath = [romPath stringByAppendingString:@".state"];
 
@@ -1160,7 +1168,8 @@ static int16_t bridge_input_state(unsigned port, unsigned device,
       float fillRatio = (float)availableSamples / (float)capacity;
 
       // Wait if the buffer is > 50% full (pacing safety)
-      while (fillRatio > 0.50f && _running && !g_isPaused) {[NSThread sleepForTimeInterval:0.001];
+      while (fillRatio > 0.50f && _running && !g_isPaused) {
+        [NSThread sleepForTimeInterval:0.001];
         availableSamples = _audioBuffer->available();
         fillRatio = (float)availableSamples / (float)capacity;
       }
@@ -1280,7 +1289,7 @@ static int16_t bridge_input_state(unsigned port, unsigned device,
   NSData *data = nil;
   if (buf) {
     if (_retro_serialize(buf, _cachedSerializeSize)) {
-      data =[NSData dataWithBytesNoCopy:buf
+      data = [NSData dataWithBytesNoCopy:buf
                                   length:_cachedSerializeSize
                             freeWhenDone:YES];
     } else {
@@ -1289,13 +1298,15 @@ static int16_t bridge_input_state(unsigned port, unsigned device,
   }
 
   if (_hwRenderEnabled && _glContext)
-    CGLSetCurrentContext(NULL);[_coreLock unlock];
+    CGLSetCurrentContext(NULL);
+  [_coreLock unlock];
   return data;
 }
 
 - (BOOL)unserializeState:(NSData *)data {
   if (!data || !_retro_unserialize)
-    return NO;[_coreLock lock];
+    return NO;
+  [_coreLock lock];
   if (_hwRenderEnabled && _glContext)
     CGLSetCurrentContext(_glContext);
 
@@ -1319,7 +1330,7 @@ static int16_t bridge_input_state(unsigned port, unsigned device,
   void *buf = malloc(_cachedSerializeSize);
   if (buf) {
     if (_retro_serialize(buf, _cachedSerializeSize)) {
-      NSData *data =[NSData dataWithBytesNoCopy:buf
+      NSData *data = [NSData dataWithBytesNoCopy:buf
                                           length:_cachedSerializeSize];
       [data writeToFile:_saveStatePath atomically:YES];
     } else {
@@ -1629,7 +1640,8 @@ static int16_t bridge_input_state(unsigned port, unsigned device,
 
   dispatch_async(g_bridgeQueue, ^{
     if (g_instance) {
-      NSLog(@"[Bridge] Signalling previous instance to stop...");[g_instance stop];
+      NSLog(@"[Bridge] Signalling previous instance to stop...");
+      [g_instance stop];
     }
 
     LibretroBridgeImpl *newInst = [[LibretroBridgeImpl alloc] init];
@@ -1669,10 +1681,11 @@ static int16_t bridge_input_state(unsigned port, unsigned device,
 }
 
 + (void)saveState {
-  if (g_instance)[g_instance saveState];
+  if (g_instance)
+    [g_instance saveState];
 }
 + (NSData *)serializeState {
-  return g_instance ?[g_instance serializeState] : nil;
+  return g_instance ? [g_instance serializeState] : nil;
 }
 + (BOOL)unserializeState:(NSData *)data {
   return g_instance ? [g_instance unserializeState:data] : NO;
@@ -1685,10 +1698,12 @@ static int16_t bridge_input_state(unsigned port, unsigned device,
     [g_instance setKeyState:rid pressed:p];
 }
 + (void)setTurboState:(int)idx active:(BOOL)active targetButton:(int)targetIdx {
-  if (g_instance)[g_instance setTurboState:idx active:active targetButton:targetIdx];
+  if (g_instance)
+    [g_instance setTurboState:idx active:active targetButton:targetIdx];
 }
 + (void)setAnalogState:(int)idx id:(int)id value:(int)v {
-  if (g_instance)[g_instance setAnalogState:idx id:id value:v];
+  if (g_instance)
+    [g_instance setAnalogState:idx id:id value:v];
 }
 + (void)setLanguage:(int)language {
   g_selectedLanguage = language;
@@ -1710,7 +1725,7 @@ static NSString *_Nullable g_optionsDylibPath = nil;
 + (void)loadCoreForOptions:(NSString *)dylibPath coreID:(NSString *)coreID {
   g_loadingForOptions = YES;
   g_coreID = [coreID copy];
-  g_optionsDylibPath =[dylibPath copy];
+  g_optionsDylibPath = [dylibPath copy];
   g_optValues = nil;
   g_optDefinitions = nil;
   g_optCategories = nil;
@@ -1722,7 +1737,7 @@ static NSString *_Nullable g_optionsDylibPath = nil;
     NSLog(@"[Bridge] Failed to load core for options at %@", dylibPath);
     g_optCategories = @{};
     g_optDefinitions = @{};
-    g_optValues =[NSMutableDictionary dictionary];
+    g_optValues = [NSMutableDictionary dictionary];
     g_instance = nil;
     g_loadingForOptions = NO;
     return;
@@ -1920,7 +1935,7 @@ static dispatch_once_t g_optAccessQueueOnce;
     if (g_optDefinitions && g_optValues) {
       NSMutableDictionary *combined = [NSMutableDictionary dictionary];
       for (NSString *key in g_optDefinitions) {
-        NSMutableDictionary *entry =[NSMutableDictionary
+        NSMutableDictionary *entry = [NSMutableDictionary
             dictionaryWithDictionary:g_optDefinitions[key]];
         entry[@"currentValue"] = g_optValues[key] ?: g_optDefinitions[key][@"defaultValue"] ?: @"";
         combined[key] = [entry copy];
@@ -1950,7 +1965,8 @@ static dispatch_once_t g_optAccessQueueOnce;
     NSLog(@"[Bridge] Cheat not supported by this core");
     return;
   }
-  const char *codeStr = code.UTF8String;[g_instance->_coreLock lock];
+  const char *codeStr = code.UTF8String;
+  [g_instance->_coreLock lock];
   g_instance->_retro_cheat_set(index, enabled, codeStr);
   [g_instance->_coreLock unlock];
   NSLog(@"[Bridge] Cheat %d %s: %@", index, enabled ? "enabled" : "disabled",
@@ -1989,11 +2005,13 @@ static dispatch_once_t g_optAccessQueueOnce;
 + (void *)getMemoryData:(unsigned)type size:(size_t *)size {
   if (!g_instance || !g_instance->_retro_get_memory_data) {
     return NULL;
-  }[g_instance->_coreLock lock];
+  }
+  [g_instance->_coreLock lock];
   void *data = g_instance->_retro_get_memory_data(type);
   if (size && g_instance->_retro_get_memory_size) {
     *size = g_instance->_retro_get_memory_size(type);
-  }[g_instance->_coreLock unlock];
+  }
+  [g_instance->_coreLock unlock];
   return data;
 }
 

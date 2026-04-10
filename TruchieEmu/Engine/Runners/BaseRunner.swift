@@ -28,7 +28,7 @@ func NSImageFromMTLTexture(_ texture: MTLTexture) -> NSImage? {
         // 8-bit grayscale fallback
         bytesPerPixel = 1
     default:
-        LoggerService.debug(category: "Renderer", "Unsupported pixel format: \(texture.pixelFormat.rawValue)")
+        LoggerService.error(category: "Renderer", "Unsupported pixel format: \(texture.pixelFormat.rawValue)")
         return nil
     }
     

@@ -328,7 +328,7 @@ class CoreManager: ObservableObject {
         // Refresh systemIDs so updates to supportedSystems mappings are applied to cached data
         LoggerService.debug(category: "CoreManager", "Loading available cores")
         for i in 0..<saved.count {
-            LoggerService.debug(category: "CoreManager", "Loading available core: \(saved[i].coreID)")
+            LoggerService.debug(category: "CoreManager", "Loading available core: \(saved[i].coreID) for system: \(saved[i].systemIDs)")
             saved[i].systemIDs = CoreManager.supportedSystems(for: saved[i].coreID)
         }
         availableCores = saved
@@ -439,6 +439,7 @@ class CoreManager: ObservableObject {
         LoggerService.debug(category: "CoreManager", "Full System Update Complete!")
     
         // Trigger a UI refresh if your views are observing SystemPreferences
+        self.loadAvailableCores()
         SystemPreferences.shared.updateTrigger += 1
     }
 }

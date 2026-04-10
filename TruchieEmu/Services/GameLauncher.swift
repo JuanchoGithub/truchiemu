@@ -49,6 +49,7 @@ class GameLauncher: ObservableObject {
             autoLoad: Bool? = nil,
             autoSave: Bool? = nil
         ) {
+            LoggerService.debug(category: "GameLauncher", "Creating launch configuration for ROM: \(rom.displayName)")
             self.rom = rom
             self.coreID = coreID
             self.slotToLoad = slotToLoad
@@ -56,24 +57,32 @@ class GameLauncher: ObservableObject {
             
             // Resolve shader preset
             let romShader = rom.settings.shaderPresetID.isEmpty ? "builtin-crt-classic" : rom.settings.shaderPresetID
+            LoggerService.extreme(category: "GameLauncher", "Resolved shader preset: \(romShader)")
             self.shaderPresetID = shaderPresetID ?? romShader
             
             // Resolve achievements
             self.achievementsEnabled = achievementsEnabled ?? AppSettings.getBool("achievements_enabled", defaultValue: false)
+            LoggerService.extreme(category: "GameLauncher", "Resolved achievements enabled: \(self.achievementsEnabled)")
             self.hardcoreMode = hardcoreMode ?? false
+            LoggerService.extreme(category: "GameLauncher", "Resolved hardcore mode: \(self.hardcoreMode)")
             
             // Resolve cheats
             self.cheatsEnabled = cheatsEnabled ?? AppSettings.getBool("cheats_enabled", defaultValue: false)
+            LoggerService.extreme(category: "GameLauncher", "Resolved cheats enabled: \(self.cheatsEnabled)")
             
             // Resolve core options
             self.coreOptions = coreOptions ?? CoreOptionsManager.shared.loadUserOverrides(for: coreID)
+            LoggerService.extreme(category: "GameLauncher", "Resolved core options: \(self.coreOptions)")
             
             // Resolve auto save/load
             self.autoLoad = autoLoad ?? AppSettings.getBool("auto_load_on_start", defaultValue: false)
+            LoggerService.extreme(category: "GameLauncher", "Resolved auto load: \(self.autoLoad)")
             self.autoSave = autoSave ?? AppSettings.getBool("auto_save_on_exit", defaultValue: true)
+            LoggerService.extreme(category: "GameLauncher", "Resolved auto save: \(self.autoSave)")
             
             // Resolve bezel
             self.bezelFileName = rom.settings.bezelFileName
+            LoggerService.extreme(category: "GameLauncher", "Resolved bezel file name: \(self.bezelFileName)")
         }
     }
     
@@ -98,19 +107,23 @@ class GameLauncher: ObservableObject {
         completion: ((StandaloneGameWindowController?) -> Void)? = nil
     ) -> StandaloneGameWindowController? {
         // Check if already launching
+        LoggerService.extreme(category: "GameLauncher", "Checking if already launching")
         guard !isLaunching else {
-            LoggerService.debug(category: "GameLauncher", "Already launching, ignoring duplicate request")
+            LoggerService.extreme(category: "GameLauncher", "Already launching, ignoring duplicate request")
             return nil
         }
         
         // Check if this ROM is already running
+        LoggerService.extreme(category: "GameLauncher", "Checking if ROM is already running")
         if RunningGamesTracker.shared.isRunning(romPath: rom.path.path) {
             RunningGamesTracker.shared.notifyDuplicateLaunch(romName: rom.displayName)
             completion?(nil)
+            LoggerService.extreme(category: "GameLauncher", "ROM is already running, ignoring duplicate request")
             return nil
         }
         
         // MAME dependency check
+        LoggerService.extreme(category: "GameLauncher", "Checking MAME dependencies")
         if checkMAMEDeps && MAMEDependencyService.isMAMECore(coreID) {
             let checkResult = checkMAMEDependencies(rom: rom, coreID: coreID)
             if case .missingFiles(let gameName, let missing, let romsDir) = checkResult {
@@ -137,13 +150,13 @@ class GameLauncher: ObservableObject {
         let systemID = rom.systemID ?? "default"
         
         LoggerService.info(category: "GameLauncher", "Launching game: \(rom.displayName)")
-        LoggerService.info(category: "GameLauncher", "ROM path: \(rom.path.path)")
-        LoggerService.info(category: "GameLauncher", "Core: \(coreID), System: \(systemID), Slot: \(slotToLoad.map { "\($0)" } ?? "none")")
-        LoggerService.info(category: "GameLauncher", "Shader: \(config.shaderPresetID), Uniform overrides: \(config.shaderUniformOverrides.count)")
-        LoggerService.info(category: "GameLauncher", "Bezel: \(config.bezelFileName.isEmpty ? "auto-match" : (config.bezelFileName == "none" ? "disabled" : config.bezelFileName))")
-        LoggerService.info(category: "GameLauncher", "Achievements: \(config.achievementsEnabled), Hardcore: \(config.hardcoreMode)")
-        LoggerService.info(category: "GameLauncher", "Cheats: \(config.cheatsEnabled), Core options: \(config.coreOptions.count) override(s)")
-        LoggerService.info(category: "GameLauncher", "Auto-load: \(config.autoLoad), Auto-save: \(config.autoSave)")
+        LoggerService.debug(category: "GameLauncher", "ROM path: \(rom.path.path)")
+        LoggerService.debug(category: "GameLauncher", "Core: \(coreID), System: \(systemID), Slot: \(slotToLoad.map { "\($0)" } ?? "none")")
+        LoggerService.debug(category: "GameLauncher", "Shader: \(config.shaderPresetID), Uniform overrides: \(config.shaderUniformOverrides.count)")
+        LoggerService.debug(category: "GameLauncher", "Bezel: \(config.bezelFileName.isEmpty ? "auto-match" : (config.bezelFileName == "none" ? "disabled" : config.bezelFileName))")
+        LoggerService.debug(category: "GameLauncher", "Achievements: \(config.achievementsEnabled), Hardcore: \(config.hardcoreMode)")
+        LoggerService.debug(category: "GameLauncher", "Cheats: \(config.cheatsEnabled), Core options: \(config.coreOptions.count) override(s)")
+        LoggerService.debug(category: "GameLauncher", "Auto-load: \(config.autoLoad), Auto-save: \(config.autoSave)")
         
         // Apply all settings
         applyLaunchConfiguration(config)
@@ -166,7 +179,7 @@ class GameLauncher: ObservableObject {
         isLaunching = false
         currentLaunchROM = nil
         
-        LoggerService.info(category: "GameLauncher", "Launch complete: \(rom.displayName)")
+        LoggerService.debug(category: "GameLauncher", "Launch complete: \(rom.displayName)")
         completion?(controller)
         return controller
     }
@@ -376,6 +389,7 @@ class GameLauncher: ObservableObject {
         alert.alertStyle = .warning
         alert.messageText = "Missing ROM Files"
         alert.informativeText = "\"\(gameName)\" requires additional ROM files to run.\n\nMissing files:\n\(missing.map { $0.sourceZIP }.joined(separator: "\n"))"
+        LoggerService.error(category: "GameLauncher", "Missing ROM files for \(gameName): \(missing.map { $0.sourceZIP }.joined(separator: ", "))")
         
         alert.addButton(withTitle: "Open ROMs Folder")
         alert.addButton(withTitle: "Cancel")
