@@ -467,7 +467,11 @@ struct CRTUniforms {
     var barrelAmount: Float
     var colorBoost: Float
     var time: Float
-}
+    var bleedAmount: Float
+    var texSizeX: Float
+    var texSizeY: Float
+    var padding: Float
+};
 
 /// Dot Matrix LCD uniforms (48 bytes) - matches DotMatrixLCDUniforms in DotMatrixLCD.metal
 struct DotMatrixLCDUniforms {
@@ -1451,15 +1455,21 @@ class StandaloneGameWindowController: NSWindowController, NSWindowDelegate, Obse
                         switch fragmentName {
                         case "fragmentCRT", "fragmentPassthrough":
                             // Use preset defaults for all uniforms - no ROMSettings fallback
-                            let scanInt = getUniform("scanlineIntensity", fallback: 0.35)
-                            let barrelAmt = getUniform("barrelAmount", fallback: 0.12)
-                            let colorB = getUniform("colorBoost", fallback: 1.0)
+                            // Genesis bleeding is quite noticeable.
+                            let scanInt = getUniform("scanlineIntensity", fallback: 0.6) 
+                            let bleed = getUniform("bleedAmount", fallback: 0.8) // Increase this to 0.8+
+                            let barrelAmt = getUniform("barrelAmount", fallback: 0.05)
+                            let colorB = getUniform("colorBoost", fallback: 1.1)
                             LoggerService.extreme(category: "Shaders", "scanInt=\(scanInt) barrelAmt=\(barrelAmt) colorBoost=\(colorB)")
                             var u = CRTUniforms(
                                 scanlineIntensity: scanInt,
                                 barrelAmount: barrelAmt,
                                 colorBoost: colorB,
-                                time: time
+                                time: time,
+                                bleedAmount: getUniform("bleedAmount", fallback: 0.0),
+                                texSizeX: Float(frameTex.width),
+                                texSizeY: Float(frameTex.height),
+                                padding: 0.0
                             )
                             enc.setFragmentBytes(&u, length: MemoryLayout<CRTUniforms>.stride, index: 0)
                         case "fragmentDotMatrixLCD":
@@ -1533,7 +1543,11 @@ class StandaloneGameWindowController: NSWindowController, NSWindowDelegate, Obse
                                 scanlineIntensity: 0.0,
                                 barrelAmount: 0.0,
                                 colorBoost: colorB,
-                                time: time
+                                time: time,
+                                bleedAmount: getUniform("bleedAmount", fallback: 0.0),
+                                texSizeX: Float(frameTex.width),
+                                texSizeY: Float(frameTex.height),
+                                padding: 0.0
                             )
                             enc.setFragmentBytes(&u, length: MemoryLayout<CRTUniforms>.stride, index: 0)
                         }

@@ -93,8 +93,8 @@ final class LoggerService: @unchecked Sendable {
     
     private init() {
         // Load saved log level (default to DEBUG for better troubleshooting)
-        let rawLevel = AppSettings.get("log_level", type: String.self) ?? "debug"
-        self.currentLevel = LogLevel(rawValue: rawLevel) ?? .debug
+        let rawLevel = AppSettings.get("log_level", type: String.self) ?? "info"
+        self.currentLevel = LogLevel(rawValue: rawLevel) ?? .info
         
         // Create OS logger for system console
         self.osLogger = OSLog(subsystem: Bundle.main.bundleIdentifier ?? "com.truchiemu", category: "TruchieEmu")
