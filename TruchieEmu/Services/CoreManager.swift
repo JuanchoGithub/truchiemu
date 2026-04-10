@@ -45,6 +45,7 @@ class CoreManager: ObservableObject {
         try? FileManager.default.createDirectory(at: appSupportURL, withIntermediateDirectories: true)
         loadInstalledCores()
         loadAvailableCores()
+        LibretroInfoManager.loadMappings()
     }
 
     // MARK: - Core List
@@ -305,7 +306,6 @@ class CoreManager: ObservableObject {
         // Migrate/Refresh systemIDs for installed cores and deduplicate versions
         LoggerService.debug(category: "CoreManager", "Loading installed cores")
         for i in 0..<saved.count {
-            LoggerService.debug(category: "CoreManager", "Loading installed core: \(saved[i].id)")
             saved[i].systemIDs = CoreManager.supportedSystems(for: saved[i].id)
             
             // Fix existing data corruption: ensure each version has a unique path
@@ -314,7 +314,7 @@ class CoreManager: ObservableObject {
                 let path = v.dylibPath.path
                 if seenPaths.contains(path) { return false }
                 seenPaths.insert(path)
-                LoggerService.debug(category: "CoreManager", "Loading installed core version: \(v.tag)")
+                LoggerService.debug(category: "CoreManager", "Loading installed core \(saved[i].id) version: \(v.tag)")
                 return true
             }
         }
@@ -342,22 +342,19 @@ class CoreManager: ObservableObject {
     }
 
     static func supportedSystems(for coreID: String) -> [String] {
+        // 1. Get systems that explicitly list this core as their 'defaultCoreID'
         var ids = SystemDatabase.systems.filter { $0.defaultCoreID == coreID }.map { $0.id }
-        // FIXME: Remove all these hardcoded capabilities and use the SystemDatabase
-        // Hardcoded capabilities for common multi-system cores
-        if coreID.contains("mgba") { ids += ["gba", "gb", "gbc"] }
-        if coreID.contains("mesen") { ids += ["nes", "snes", "gb", "gbc"] }
-        if coreID.contains("genesis_plus_gx") { ids += ["genesis", "sms", "gamegear"] }
-        if coreID.contains("snes9x") { ids += ["snes"] }
-        if coreID.contains("mupen64plus") || coreID.contains("parallel_n64") { ids += ["n64"] }
-        if coreID.contains("picodrive") { ids += ["genesis", "sms", "gamegear", "32x"] }
-        if coreID.contains("mednafen_psx") { ids += ["psx"] }
-        if coreID.contains("dosbox_pure") { ids += ["dos"] }
-        // MAME: map ALL MAME variants to the "mame" system
-        // Available: mame2000, mame2003, mame2003_plus, mame2010, mame (current)
-        if coreID.contains("mame") { ids += ["mame"] }
         
-        LoggerService.debug(category: "CoreManager", "Supported systems for core \(coreID): \(ids)")
+        // 2. Check our dynamic map (built from the Libretro .info files)
+        let coreIDNormalized = coreID.replacingOccurrences(of: "_libretro", with: "")
+        if let dynamicIDs = LibretroInfoManager.coreToSystemMap[coreIDNormalized] {
+            ids.append(contentsOf: dynamicIDs)
+        }
+        
+        // 3. Fallback/Safety: Hardcoded MAME alias if still needed
+        if coreID.contains("mame") { ids.append("mame") }
+        
+        // Return unique results
         return Array(Set(ids))
     }
 

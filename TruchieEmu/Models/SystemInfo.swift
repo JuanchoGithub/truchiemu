@@ -89,6 +89,7 @@ struct SystemInfo: Identifiable, Codable, Hashable {
     }
     
     func emuImage(size: Int) -> NSImage? {
+        LoggerService.extreme(category: "SystemInfo", "Loading emu image for system: \(id)")
         guard let iconName = emuIconName else { return nil }
         let bundle = Bundle.main
         let is132 = size == 132
@@ -121,6 +122,7 @@ struct SystemInfo: Identifiable, Codable, Hashable {
         }
         
         for name in namesToTry {
+            LoggerService.extreme(category: "SystemInfo", "Loading emu image for system: \(id) with name: \(name)")
             if let path = bundle.path(forResource: name, ofType: "png") {
                 if let img = NSImage(contentsOfFile: path) { return img }
             }
@@ -183,6 +185,7 @@ class SystemDatabase {
     ]
 
     static func loadSystems() -> [SystemInfo] {
+        LoggerService.debug(category: "SystemDatabase", "Loading systems")
         guard let data = try? Data(contentsOf: cacheURL),
               let decoded = try? JSONDecoder().decode([SystemInfo].self, from: data) else {
             return defaultSystems
@@ -191,6 +194,7 @@ class SystemDatabase {
     }
     
     static func saveSystems(_ updatedSystems: [SystemInfo]) {
+        LoggerService.debug(category: "SystemDatabase", "Saving systems")
         self.systems = updatedSystems.sorted { $0.sortOrder < $1.sortOrder }
         if let data = try? JSONEncoder().encode(self.systems) {
             try? data.write(to: cacheURL)
@@ -333,22 +337,27 @@ class SystemPreferences: ObservableObject {
 
     @Published var showBiosFiles: Bool = false {
         didSet { AppSettings.setBool(Self.keyShowBiosFiles, value: showBiosFiles); updateTrigger += 1 }
+        LoggerService.debug(category: "SystemPreferences", "Show BIOS files: \(showBiosFiles)")
     }
 
     @Published var showHiddenMAMEFiles: Bool = false {
         didSet { AppSettings.setBool(Self.keyShowHiddenMAMEFiles, value: showHiddenMAMEFiles); updateTrigger += 1 }
+            LoggerService.debug(category: "SystemPreferences", "Show hidden MAME files: \(showHiddenMAMEFiles)")
     }
 
     @Published var systemLanguage: EmulatorLanguage = .english {
         didSet { AppSettings.set(Self.keySystemLanguage, value: String(systemLanguage.rawValue)); updateTrigger += 1 }
+        LoggerService.debug(category: "SystemPreferences", "System language: \(systemLanguage)")
     }
 
     @Published var coreLogLevel: CoreLogLevel = .warn {
         didSet { AppSettings.set(Self.keyCoreLogLevel, value: String(coreLogLevel.rawValue)); updateTrigger += 1 }
+        LoggerService.debug(category: "SystemPreferences", "Core log level: \(coreLogLevel)")
     }
 
     func boxType(for systemID: String) -> BoxType {
         let key = "\(Self.keyBoxTypePrefix)\(systemID)"
+        LoggerService.debug(category: "SystemPreferences", "Box type for \(systemID): \(key)")
         if let rawValue = AppSettings.get(key, type: String.self), let type = BoxType(rawValue: rawValue) { return type }
         return SystemDatabase.system(forID: systemID)?.defaultBoxType ?? .vertical
     }
@@ -360,19 +369,23 @@ class SystemPreferences: ObservableObject {
 
     @Published var applyCheatsOnLaunch: Bool = false {
         didSet { AppSettings.setBool(Self.keyApplyCheatsOnLaunch, value: applyCheatsOnLaunch) }
+        LoggerService.debug(category: "SystemPreferences", "Apply cheats on launch: \(applyCheatsOnLaunch)")
     }
 
     @Published var showCheatNotifications: Bool = true {
         didSet { AppSettings.setBool(Self.keyShowCheatNotifications, value: showCheatNotifications) }
+        LoggerService.debug(category: "SystemPreferences", "Show cheat notifications: \(showCheatNotifications)")
     }
 
     func preferredCoreID(for systemID: String) -> String? {
         AppSettings.get("\(Self.keyPreferredCorePrefix)\(systemID)", type: String.self)
+        LoggerService.debug(category: "SystemPreferences", "Get Preferred core ID for \(systemID): \(coreID)")
     }
 
     func setPreferredCoreID(_ coreID: String?, for systemID: String) {
         AppSettings.set("\(Self.keyPreferredCorePrefix)\(systemID)", value: coreID ?? "")
         updateTrigger += 1
+        LoggerService.debug(category: "SystemPreferences", "Set Preferred core ID for \(systemID): \(coreID)")
     }
 
     init() {
@@ -394,6 +407,17 @@ class LibretroInfoManager: ObservableObject {
     @Published var isRefreshing = false
     @Published var refreshStatus = ""
     
+    // Add a static dictionary to act as our "Source of Truth"
+    static var coreToSystemMap: [String: Set<String>] = [:]
+    // Add a helper to save/load this mapping (like you did for SystemDatabase)
+
+    static func saveMappings() {
+        if let data = try? JSONEncoder().encode(coreToSystemMap.mapValues { Array($0) }) {
+            try? data.write(to: mapURL)
+            LoggerService.debug(category: "LibretroInfoManager", "Saved core-to-system mappings")
+        }
+    }
+
     private let githubZipURL = URL(string: "https://github.com/libretro/libretro-core-info/archive/refs/heads/master.zip")!
     
     func refreshCoreInfo() async {
@@ -401,7 +425,6 @@ class LibretroInfoManager: ObservableObject {
             self.isRefreshing = true
             self.refreshStatus = "Downloading libretro info..."
         }
-        LoggerService.info(category: "LibretroInfoManager", "Starting libretro info refresh")
         do {
             let (zipData, _) = try await URLSession.shared.data(from: githubZipURL)
             LoggerService.info(category: "LibretroInfoManager", "Downloading libretro info from \(githubZipURL)")
@@ -429,10 +452,21 @@ class LibretroInfoManager: ObservableObject {
                 for case let fileURL as URL in enumerator where fileURL.pathExtension == "info" {
                     LoggerService.debug(category: "LibretroInfoManager", "Parsing system info from \(fileURL)")
                     let infoDict = parseInfoFile(at: fileURL)
+
+                    // 1. Handle System/Core Mapping (The new part)
+                    if let sysIDString = infoDict["systemid"] { 
+                        let coreID = fileURL.deletingPathExtension().lastPathComponent // e.g., "snes9x"
+                        let ids = sysIDString.components(separatedBy: "|")
+                        LibretroInfoManager.coreToSystemMap[coreID] = Set(ids)
+                        LoggerService.debug(category: "LibretroInfoManager", "Mapped core \(coreID) to systems: \(ids)")
+                    }
+
+                    // 2. Handle File Extensions (Your existing part)
                     if let sysName = infoDict["systemname"], let exts = infoDict["supported_extensions"] {
                         let parsedExts = exts.components(separatedBy: "|").map { $0.lowercased() }
                         if newExtensionsDict[sysName] == nil { newExtensionsDict[sysName] = [] }
                         newExtensionsDict[sysName]?.formUnion(parsedExts)
+                        LoggerService.debug(category: "LibretroInfoManager", "Mapped extensions for system \(sysName): \(parsedExts)")
                     }
                 }
             }
@@ -471,6 +505,18 @@ class LibretroInfoManager: ObservableObject {
             }
         }
     }
+
+    private static let mapURL: URL = {
+        let appSupport = FileManager.default.urls(for: .applicationSupportDirectory, in: .userDomainMask).first!
+        return appSupport.appendingPathComponent("TruchieEmu/CoreSystemMappings.json")
+    }()
+
+    static func loadMappings() {
+        if let data = try? Data(contentsOf: mapURL),
+        let decoded = try? JSONDecoder().decode([String: [String]].self, from: data) {
+            coreToSystemMap = decoded.mapValues { Set($0) }
+        }
+    }
     
     private func parseInfoFile(at url: URL) -> [String: String] {
         LoggerService.debug(category: "LibretroInfoManager", "Parsing system info from \(url)")
@@ -487,6 +533,10 @@ class LibretroInfoManager: ObservableObject {
                 let key = parts[0].trimmingCharacters(in: .whitespaces)
                 let value = parts[1].trimmingCharacters(in: .whitespaces).replacingOccurrences(of: "\"", with: "")
                 result[key] = value
+                if key == "supported_systems" || key == "systemid" {
+                    // value is often "nes|snes|gameboy"
+                    result["systemid"] = value 
+                }
                 LoggerService.debug(category: "LibretroInfoManager", "Parsed key: \(key), value: \(value)")
             }
         }
