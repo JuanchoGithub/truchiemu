@@ -263,9 +263,9 @@ class EmulatorRunner: ObservableObject, @unchecked Sendable {
             LibretroBridgeSwift.setLogLevel(Int(selectedLogLevel))
             LibretroBridgeSwift.launch(
                 dylibPath: self.findCoreLib(coreID: coreID) ?? coreID, 
-                romPath: rom!.path.path,
+                romPath: self.rom!.path.path,
                 coreID: coreID,
-                systemID: rom!.systemID,
+                systemID: self.rom!.systemID,
                 shaderDir: shaderDir,
                 videoCallback: { [weak self] data, width, height, pitch, format in
                     self?.updateFrame(data: data, width: width, height: height, pitch: pitch, format: format)
