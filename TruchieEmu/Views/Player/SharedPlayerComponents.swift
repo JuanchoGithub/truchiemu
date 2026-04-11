@@ -1579,12 +1579,12 @@ class StandaloneGameWindowController: NSWindowController, NSWindowDelegate, Obse
         private func loadShaderLibrary(device: MTLDevice) -> MTLLibrary? {
             // Try to load pre-compiled metallib from bundle
             if let url = Bundle.main.url(forResource: "default", withExtension: "metallib") {
+                LoggerService.info(category: "Shaders", "Found metallib at: \(url)")
                 do {
                     let library = try device.makeLibrary(URL: url)
-                    LoggerService.info(category: "Shaders", "Loaded metallib with functions: \(library.functionNames.joined(separator: ", "))")
                     return library
                 } catch {
-                    LoggerService.debug(category: "Shaders", "Failed to load metallib: \(error)")
+                    LoggerService.error(category: "Shaders", "Failed to load metallib: \(error)")
                 }
             }
             
