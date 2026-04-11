@@ -1056,7 +1056,7 @@ class StandaloneGameWindowController: NSWindowController, NSWindowDelegate, Obse
             }
         } else {
             // Auto-load from slot -1 after launch completes (if enabled)
-            let shouldAutoLoad = AppSettings.getBool("auto_load_on_start", defaultValue: true)
+            let shouldAutoLoad = AppSettings.getBool("saveState_autoLoadOnStart", defaultValue: true)
             if shouldAutoLoad {
                 // Wait for emulation to stabilize
                 DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) { [weak self] in
@@ -1237,16 +1237,15 @@ class StandaloneGameWindowController: NSWindowController, NSWindowDelegate, Obse
     func windowWillClose(_ notification: Notification) {
         // Stop playtime tracking immediately so no more time accumulates
         stopPlaytimeTracking()
+
+        // 1. Check the setting (Default to false for safety)
+        let shouldAutoSave = AppSettings.getBool("saveState_autoSaveOnExit", defaultValue: false)
         
-        // Auto-save to slot -1 on exit if enabled
-        let shouldAutoSave = AppSettings.getBool("auto_save_on_exit", defaultValue: true)
-        if shouldAutoSave, let runner = runner {
-            LoggerService.info(category: "SaveState", "Saving state on window close...")
-            let success = runner.saveState(slot: -1)
-            if success {
-                LoggerService.info(category: "SaveState", "Successfully saved auto-save state")
-            } else {
-                LoggerService.debug(category: "SaveState", "Failed to save auto-save state")
+        if shouldAutoSave {
+            if let runner = runner {
+                LoggerService.info(category: "SaveState", "Auto-saving on window close...")
+                // We call this BEFORE runner.stop() to ensure the core is still active
+                _ = runner.saveState(slot: -1)
             }
         }
         runner?.stop()

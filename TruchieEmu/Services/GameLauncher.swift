@@ -75,9 +75,9 @@ class GameLauncher: ObservableObject {
             LoggerService.extreme(category: "GameLauncher", "Resolved core options: \(self.coreOptions)")
             
             // Resolve auto save/load
-            self.autoLoad = autoLoad ?? AppSettings.getBool("auto_load_on_start", defaultValue: false)
+            self.autoLoad = autoLoad ?? AppSettings.getBool("saveState_autoLoadOnStart", defaultValue: false)
             LoggerService.extreme(category: "GameLauncher", "Resolved auto load: \(self.autoLoad)")
-            self.autoSave = autoSave ?? AppSettings.getBool("auto_save_on_exit", defaultValue: true)
+            self.autoSave = autoSave ?? AppSettings.getBool("saveState_autoSaveOnExit", defaultValue: false)
             LoggerService.extreme(category: "GameLauncher", "Resolved auto save: \(self.autoSave)")
             
             // Resolve bezel
@@ -216,8 +216,8 @@ class GameLauncher: ObservableObject {
         applyGBColorizationForROM(config.rom, coreID: config.coreID)
         
         // 3. Apply auto-load/save preferences
-        AppSettings.setBool("auto_load_on_start", value: config.autoLoad)
-        AppSettings.setBool("auto_save_on_exit", value: config.autoSave)
+        AppSettings.setBool("saveState_autoLoadOnStart", value: config.autoLoad)
+        AppSettings.setBool("saveState_autoSaveOnExit", value: config.autoSave)
         
         // 4. Apply achievements setting
         AppSettings.setBool("achievements_enabled", value: config.achievementsEnabled)

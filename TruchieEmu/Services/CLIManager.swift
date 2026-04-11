@@ -302,26 +302,26 @@ class CLIManager: ObservableObject {
         
         // Apply auto-load/save settings
         if options.autoLoad {
-            AppSettings.setBool("auto_load_on_start", value: true)
+            AppSettings.setBool("saveState_autoLoadOnStart", value: false)
             LoggerService.debug(category: "CLI", "Auto-load enabled")
         }
         if options.autoSave {
-            AppSettings.setBool("auto_save_on_exit", value: true)
+            AppSettings.setBool("saveState_autoSaveOnExit", value: false)
             LoggerService.debug(category: "CLI", "Auto-save enabled")
         }
         
         // CRITICAL FIX: Apply achievements, hardcore, and cheats settings via AppSettings
         // GameLauncher.LaunchConfig reads these from AppSettings, so we MUST set them here
         if options.achievementsEnabled {
-            AppSettings.setBool("achievements_enabled", value: true)
+            AppSettings.setBool("achievements_enabled", value: false)
             LoggerService.debug(category: "CLI", "Achievements enabled")
         }
         if options.hardcoreMode {
-            AppSettings.setBool("hardcore_mode", value: true)
+            AppSettings.setBool("hardcore_mode", value: false)
             LoggerService.debug(category: "CLI", "Hardcore mode enabled")
         }
         if options.cheatsEnabled {
-            AppSettings.setBool("cheats_enabled", value: true)
+            AppSettings.setBool("cheats_enabled", value: false)
             LoggerService.debug(category: "CLI", "Cheats enabled")
         }
         

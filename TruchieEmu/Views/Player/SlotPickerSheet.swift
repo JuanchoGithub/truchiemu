@@ -56,8 +56,8 @@ struct SlotPickerSheet: View {
             .padding(.bottom, 8)
             
             Toggle(isOn: Binding(
-                get: { AppSettings.getBool("compress_save_states", defaultValue: false) },
-                set: { AppSettings.setBool("compress_save_states", value: $0) }
+                get: { AppSettings.getBool("saveState_compress", defaultValue: false) },
+                set: { AppSettings.setBool("saveState_compress", value: $0) }
             )) {
                 HStack(spacing: 6) {
                     Image(systemName: "archivebox").foregroundColor(.secondary)

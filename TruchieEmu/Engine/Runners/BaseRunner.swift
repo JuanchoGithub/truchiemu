@@ -343,7 +343,7 @@ class EmulatorRunner: ObservableObject, @unchecked Sendable {
     
     /// Compression preference
     var compressSaveStates: Bool {
-        AppSettings.getBool("compress_save_states", defaultValue: false)
+        AppSettings.getBool("saveState_compress", defaultValue: false)
     }
     
     /// Save the current emulator state to the specified slot
@@ -388,7 +388,7 @@ class EmulatorRunner: ObservableObject, @unchecked Sendable {
                     LoggerService.debug(category: "SaveState", "Captured thumbnail: \(nsImage.size.width)x\(nsImage.size.height)")
                     saveManager.saveThumbnail(nsImage, gameName: gameRom.displayName, systemID: systemID, slot: slot)
                 } else {
-                    LoggerService.info(category: "SaveState", "ERROR: NSImageFromMTLTexture returned nil")
+                    LoggerService.error(category: "SaveState", "ERROR: NSImageFromMTLTexture returned nil")
                 }
             } else {
                 LoggerService.debug(category: "SaveState", "WARNING: currentFrameTexture is nil, cannot capture thumbnail")

@@ -17,7 +17,6 @@
 		16CB7D18289AA9EDAD125F1D /* GameCardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = CC21247C777B18987224E8A7 /* GameCardView.swift */; };
 		18B5A011C25087D7501BA0B4 /* ShaderSection.swift in Sources */ = {isa = PBXBuildFile; fileRef = 56A702E2CACC5FDF780FD52F /* ShaderSection.swift */; };
 		1A35E4BC913F2B92D6C21A1D /* BaseRunner.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2039A7902CA4B44A7D4CA878 /* BaseRunner.swift */; };
-		1A364756DE475BC985F79341 /* EmulatorView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1DD9E5B55884D34FCDA03196 /* EmulatorView.swift */; };
 		21F5365057B92ADB3B89C036 /* LCDGrid.metal in Sources */ = {isa = PBXBuildFile; fileRef = 7F559B83E48D1A47C6F37BC6 /* LCDGrid.metal */; };
 		236EFB0A130B6F76AC8713A5 /* N64Runner.swift in Sources */ = {isa = PBXBuildFile; fileRef = D4BD45E407C6A4D3059F2996 /* N64Runner.swift */; };
 		2426F4E6C399C0218826CFF6 /* ShaderPreset.swift in Sources */ = {isa = PBXBuildFile; fileRef = E85C7A0C40C8A384AA47160D /* ShaderPreset.swift */; };
@@ -179,7 +178,6 @@
 		19EC93357FB106505B7E3B49 /* BezelWindowSizingTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BezelWindowSizingTests.swift; sourceTree = "<group>"; };
 		1B07E7146789A12D6E627BD9 /* BezelBackgroundView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BezelBackgroundView.swift; sourceTree = "<group>"; };
 		1C53A5F4CC172C8B0CCBABE5 /* ZoomableBoxArtView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ZoomableBoxArtView.swift; sourceTree = "<group>"; };
-		1DD9E5B55884D34FCDA03196 /* EmulatorView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EmulatorView.swift; sourceTree = "<group>"; };
 		2039A7902CA4B44A7D4CA878 /* BaseRunner.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BaseRunner.swift; sourceTree = "<group>"; };
 		2509BE73DFA2ACCF17CAA8DD /* CorePickerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CorePickerView.swift; sourceTree = "<group>"; };
 		25381400F40B6B9F5699C25C /* BezelSystemMapping.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BezelSystemMapping.swift; sourceTree = "<group>"; };
@@ -462,7 +460,6 @@
 				1B07E7146789A12D6E627BD9 /* BezelBackgroundView.swift */,
 				DB9293E37E0A331CD54CDBF3 /* CheatManagerView.swift */,
 				2509BE73DFA2ACCF17CAA8DD /* CorePickerView.swift */,
-				1DD9E5B55884D34FCDA03196 /* EmulatorView.swift */,
 				D88D96DF545C1C1905F21A6C /* SharedPlayerComponents.swift */,
 				F92119B38E7206704F501F92 /* SlotPickerSheet.swift */,
 			);
@@ -851,7 +848,6 @@
 				DDAC0689F34313CEF845E3FC /* DOSRunner.swift in Sources */,
 				F151DC383F7138A47F18FE8B /* DotMatrixLCD.metal in Sources */,
 				FC67BB50EE78744FF7A11536 /* EmptyDetailView.swift in Sources */,
-				1A364756DE475BC985F79341 /* EmulatorView.swift in Sources */,
 				16CB7D18289AA9EDAD125F1D /* GameCardView.swift in Sources */,
 				8EE995D174427204927B68F4 /* GameCategory.swift in Sources */,
 				BAF59C4E886296719DE9D28F /* GameDBLookupResult.swift in Sources */,
