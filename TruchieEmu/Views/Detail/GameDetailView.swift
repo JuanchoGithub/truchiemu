@@ -77,10 +77,12 @@ enum ManualStatusTone: Equatable {
     }
 }
 
+
+
 enum ManualActionStatus: Equatable {
     case hidden
     case working(String)
-    case result(String, tone: ManualStatusTone)
+    case result(String, tone: ManualStatusTone)//, canUndo: Bool = false)
 
     var isVisible: Bool {
         switch self {
@@ -245,12 +247,14 @@ struct ModernSectionCard<Content: View>: View {
 }
 
 // MARK: - Metadata Row Component
+// MARK: - Metadata Row Component
 
 struct MetadataRow: View {
     let label: String
     let value: String
     var isMonospaced: Bool = false
     var copyAction: (() -> Void)? = nil
+    var useNameAction: (() -> Void)? = nil
     
     @Environment(\.colorScheme) private var colorScheme
     
@@ -283,21 +287,32 @@ struct MetadataRow: View {
             
             Spacer()
             
-            if copyAction != nil {
-                Button(action: copyAction!) {
-                    Image(systemName: "doc.on.doc")
-                        .foregroundColor(copyButtonColor)
-                        .font(.caption)
+            HStack(spacing: 12) {
+                if let useNameAction = useNameAction {
+                    Button(action: useNameAction) {
+                        Image(systemName: "pencil")
+                            .foregroundColor(copyButtonColor)
+                            .font(.caption)
+                    }
+                    .buttonStyle(.plain)
+                    .help("Use as game title")
                 }
-                .buttonStyle(.plain)
-                .help("Copy")
+                
+                if let copyAction = copyAction {
+                    Button(action: copyAction) {
+                        Image(systemName: "doc.on.doc")
+                            .foregroundColor(copyButtonColor)
+                            .font(.caption)
+                    }
+                    .buttonStyle(.plain)
+                    .help("Copy")
+                }
             }
         }
     }
 }
 
 // MARK: - Game Detail View
-
 struct GameDetailView: View {
     @EnvironmentObject var library: ROMLibrary
     @EnvironmentObject var coreManager: CoreManager
@@ -357,6 +372,7 @@ struct GameDetailView: View {
     @State private var shaderWindowSettings: ShaderWindowSettings?
     @State private var selectedSection: DetailSection = .gameInfo
     @State private var bezelSelectorWindowController: BezelSelectorWindowController?
+    @State private var localTitle: String = ""
 
     private var currentROM: ROM {
         library.roms.first { $0.id == rom.id } ?? rom
@@ -744,17 +760,24 @@ struct GameDetailView: View {
             VStack(alignment: .leading, spacing: 12) {
                 // Game title with year
                 HStack(alignment: .firstTextBaseline, spacing: 10) {
-                    TextField("Game Title", text: Binding(
-                        get: { currentROM.customName ?? currentROM.metadata?.title ?? currentROM.name },
-                        set: { newName in
-                            var updated = currentROM
-                            updated.customName = newName.isEmpty ? nil : newName
-                            library.updateROM(updated)
-                        }
-                    ))
+                    TextField("Game Title", text: $localTitle, onCommit: {
+                        // Only update the database when the user presses Enter
+                        var updated = currentROM
+                        let trimmed = localTitle.trimmingCharacters(in: .whitespaces)
+                        updated.customName = trimmed.isEmpty ? nil : trimmed
+                        library.updateROM(updated)
+                    })
                     .font(.title.bold())
                     .foregroundColor(t.textPrimary)
                     .textFieldStyle(.plain)
+                    .onAppear {
+                        // Initialize the local state once when the view appears
+                        localTitle = currentROM.customName ?? currentROM.metadata?.title ?? currentROM.name
+                    }
+                    .onChange(of: currentROM.id) { _, _ in
+                        // Reset local state when the ROM changes
+                        localTitle = currentROM.customName ?? currentROM.metadata?.title ?? currentROM.name
+                    }
                     
                     if let year = currentROM.metadata?.year {
                         Text("(\(year))")
