@@ -232,7 +232,9 @@ class EmulatorRunner: ObservableObject, @unchecked Sendable {
     @MainActor
     func launch(rom: ROM, coreID: String) {
         guard let core = findCoreLib(coreID: coreID) else {
-            LoggerService.info(category: "Runner", "Core dylib not found: \(coreID)")
+            LoggerService.error(category: "Runner", "Core dylib not found: \(coreID)")
+            isRunning = false
+            self.stop()
             return
         }
         

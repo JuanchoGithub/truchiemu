@@ -832,10 +832,13 @@ struct LibraryFolderRow: View {
 // MARK: - Cores
 struct CoreSettingsView: View {
     @EnvironmentObject var coreManager: CoreManager
+    @ObservedObject private var prefs = SystemPreferences.shared 
 
     @State private var selectedSystemID: String? = nil
     @State private var expandedCoreID: String? = nil
     @State private var systemsPanelWidth: CGFloat = 250
+    
+    @State private var searchText: String = ""
 
     private var selectedSystem: SystemInfo? {
         if let id = selectedSystemID {
@@ -844,24 +847,87 @@ struct CoreSettingsView: View {
         return nil
     }
 
+    var sortedSystems: [SystemInfo] {
+        let _ = prefs.updateTrigger // Subscribes to database updates
+
+        // 1. Start with the base list
+        var filteredList = SystemDatabase.systemsForDisplay
+        
+        // 2. Apply Fuzzy Search Filter
+        if !searchText.isEmpty {
+            filteredList = filteredList.filter { sys in
+                if sys.name.fuzzyMatch(searchText) || sys.id.fuzzyMatch(searchText) || sys.manufacturer.fuzzyMatch(searchText) {
+                    return true
+                }
+                
+                let matchingCores = coreManager.availableCores.filter { remoteCore in
+                    let normalizedIDs = remoteCore.systemIDs.map { SystemDatabase.normalizeSystemID($0) }
+                    return normalizedIDs.contains(sys.id) || sys.defaultCoreID == remoteCore.coreID
+                }
+                
+                return matchingCores.contains { core in
+                    core.displayName.fuzzyMatch(searchText) || core.coreID.fuzzyMatch(searchText)
+                }
+            }
+        }
+
+        // 3. Sort Results (Installed Cores First -> Alphabetical)
+        return filteredList.sorted { sysA, sysB in
+            let aHasInstalled = coreManager.installedCores.contains { core in
+                core.systemIDs.contains(sysA.id) || sysA.defaultCoreID == core.id
+            }
+            let bHasInstalled = coreManager.installedCores.contains { core in
+                core.systemIDs.contains(sysB.id) || sysB.defaultCoreID == core.id
+            }
+            
+            if aHasInstalled != bHasInstalled {
+                return aHasInstalled
+            }
+            
+            return sysA.name.localizedCaseInsensitiveCompare(sysB.name) == .orderedAscending
+        }
+    }
+
     var body: some View {
         VStack(spacing: 0) {
-            // Fetching indicator
-            if coreManager.isFetchingCoreList {
-                HStack(spacing: 8) {
-                    ProgressView()
-                        .controlSize(.small)
-                    Text("Fetching core list from buildbot...")
-                        .foregroundStyle(.secondary)
-                        .font(.caption)
-
-                }
-                .padding(12)
-                .background(.ultraThinMaterial)
-            } else {
-                // Refresh button
+            
+            // 🔥 NEW: Unified Top Toolbar Area
+            HStack {
+                // Search Bar (Left)
                 HStack {
-                    Spacer()
+                    Image(systemName: "magnifyingglass")
+                        .foregroundColor(.secondary)
+                    
+                    TextField("Search systems or cores...", text: $searchText)
+                        .textFieldStyle(.plain)
+                        .autocorrectionDisabled()
+                    
+                    if !searchText.isEmpty {
+                        Button(action: { searchText = "" }) {
+                            Image(systemName: "xmark.circle.fill")
+                                .foregroundColor(.secondary)
+                        }
+                        .buttonStyle(.plain)
+                    }
+                }
+                .padding(6)
+                .background(Color.secondary.opacity(0.1))
+                .cornerRadius(8)
+                .frame(width: 250) // Standard macOS search bar width
+                
+                Spacer()
+                
+                // Fetching Indicator OR Refresh Button (Right)
+                if coreManager.isFetchingCoreList {
+                    HStack(spacing: 8) {
+                        ProgressView()
+                            .controlSize(.small)
+                        Text("Fetching core list from buildbot...")
+                            .foregroundStyle(.secondary)
+                            .font(.caption)
+                    }
+                    .padding(.trailing, 8)
+                } else {
                     Button {
                         LoggerService.info(category: "SettingsView", "Refreshing systems and cores...")
                         Task { await coreManager.performFullSystemUpdate() }
@@ -880,8 +946,9 @@ struct CoreSettingsView: View {
                     .controlSize(.small)
                     .disabled(coreManager.isFetchingCoreList || LibretroInfoManager.shared.isRefreshing)
                 }
-                .padding(8)
             }
+            .padding(8)
+            .background(.ultraThinMaterial) // Makes the header bar look clean and native
             
             Divider()
             
@@ -895,10 +962,11 @@ struct CoreSettingsView: View {
                             .foregroundStyle(.secondary)
                             .frame(maxWidth: .infinity, alignment: .leading)
                             .padding(.horizontal, 8)
-                            .padding(.vertical, 6)
+                            .padding(.top, 8)
+                            .padding(.bottom, 4)
                         
                         List(selection: $selectedSystemID) {
-                            ForEach(SystemDatabase.systemsForDisplay.sorted(by: { $0.name < $1.name })) { sys in
+                            ForEach(sortedSystems) { sys in
                                 SystemRowView(system: sys, coreManager: coreManager)
                                     .tag(sys.id)
                             }
@@ -912,30 +980,30 @@ struct CoreSettingsView: View {
                     DraggableDivider(width: $systemsPanelWidth)
                     
                     // Cores list (right pane)
-                VStack(spacing: 0) {
-                    if let system = selectedSystem {
-                        Text(system.name)
-                            .font(.caption)
-                            .fontWeight(.semibold)
-                            .foregroundStyle(.secondary)
-                            .frame(maxWidth: .infinity, alignment: .leading)
-                            .padding(.horizontal, 12)
-                            .padding(.vertical, 8)
-                        
-                        SystemCoresView(system: system, coreManager: coreManager)
-                            .id(coreManager.installedCores.count + coreManager.availableCores.count) 
-                    } else {
-                        ContentUnavailableView {
-                            Label("Select a System", systemImage: "gamecontroller")
-                        } description: {
-                            Text("Choose a system from the list to see available cores.")
+                    VStack(spacing: 0) {
+                        if let system = selectedSystem {
+                            Text(system.name)
+                                .font(.caption)
+                                .fontWeight(.semibold)
+                                .foregroundStyle(.secondary)
+                                .frame(maxWidth: .infinity, alignment: .leading)
+                                .padding(.horizontal, 12)
+                                .padding(.vertical, 8)
+                            
+                            SystemCoresView(system: system, coreManager: coreManager)
+                                .id(coreManager.installedCores.count + coreManager.availableCores.count) 
+                        } else {
+                            ContentUnavailableView {
+                                Label("Select a System", systemImage: "gamecontroller")
+                            } description: {
+                                Text("Choose a system from the list to see available cores.")
+                            }
+                            .frame(maxWidth: .infinity, maxHeight: .infinity)
                         }
-                        .frame(maxWidth: .infinity, maxHeight: .infinity)
                     }
+                    .frame(maxWidth: .infinity)
                 }
-                .frame(maxWidth: .infinity)
-            }
-            .frame(maxHeight: .infinity)
+                .frame(maxHeight: .infinity)
             }
         }
         .clipped()
@@ -946,7 +1014,6 @@ struct CoreSettingsView: View {
         }
     }
 }
-
 struct SystemRowView: View {
     let system: SystemInfo
     @ObservedObject var coreManager: CoreManager
@@ -1304,7 +1371,7 @@ struct DownloadableCoreRowView: View {
     var body: some View {
         HStack(spacing: 12) {
             // Icon in fixed container
-            Image(systemName: "cpu.badge.plus")
+            Image(systemName: "cpu")
                 .foregroundColor(.orange)
                 .font(.system(size: 16, weight: .medium))
                 .frame(width: 24, height: 24)
@@ -2888,5 +2955,27 @@ struct DependencyGroup: View {
                 .font(.caption)
                 .fixedSize(horizontal: false, vertical: true)
         }
+    }
+}
+
+// MARK: - Fuzzy Search Helper
+extension String {
+    func fuzzyMatch(_ query: String) -> Bool {
+        if query.isEmpty { return true }
+        let lowerString = self.localizedLowercase
+        let lowerQuery = query.localizedLowercase
+        
+        var stringIndex = lowerString.startIndex
+        var queryIndex = lowerQuery.startIndex
+        
+        while stringIndex < lowerString.endIndex && queryIndex < lowerQuery.endIndex {
+            if lowerString[stringIndex] == lowerQuery[queryIndex] {
+                queryIndex = lowerQuery.index(after: queryIndex)
+            }
+            stringIndex = lowerString.index(after: stringIndex)
+        }
+        
+        // If we reached the end of the query, it means all characters were found in order
+        return queryIndex == lowerQuery.endIndex
     }
 }

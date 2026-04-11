@@ -14,7 +14,7 @@ struct CoreSection: View {
     private var sysPrefs = SystemPreferences.shared
 
     var body: some View {
-        ModernSectionCard(title: "Core", icon: "chip") {
+        ModernSectionCard(title: "Core", icon: "cpu") {
             VStack(alignment: .leading, spacing: 12) {
                 HStack {
                     Image(systemName: "cpu")

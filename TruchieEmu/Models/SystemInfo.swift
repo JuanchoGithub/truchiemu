@@ -169,7 +169,7 @@ class SystemDatabase {
         SystemInfo(id: "dreamcast",    name: "Sega Dreamcast",                  manufacturer: "Sega",       extensions: ["cdi", "gdi", "chd"],          defaultCoreID: "flycast_libretro",           iconName: "opticaldisc",    emuIconName: "DC",       year: "1998", sortOrder: 14, defaultBoxType: .landscape),
         SystemInfo(id: "ps2",          name: "PlayStation 2",                   manufacturer: "Sony",       extensions: ["iso", "chd"],                 defaultCoreID: "play_libretro",             iconName: "opticaldisc",    emuIconName: "PS",       year: "2000", sortOrder: 21, defaultBoxType: .landscape),
         SystemInfo(id: "psp",          name: "PlayStation Portable",            manufacturer: "Sony",       extensions: ["iso", "cso", "pbp"],          defaultCoreID: "ppsspp_libretro",            iconName: "ipad.landscape", emuIconName: "PSP",      year: "2004", sortOrder: 22, defaultBoxType: .landscape),
-        SystemInfo(id: "mame",         name: "Arcade (MAME)",                   manufacturer: "Various",    extensions: ["zip", "7z"],                  defaultCoreID: "mame2003_plus_libretro",     iconName: "arcade.stick",   emuIconName: "MAME",     year: nil,    sortOrder: 30, defaultBoxType: .vertical),
+        SystemInfo(id: "mame",         name: "Arcade (MAME)",                   manufacturer: "Various",    extensions: ["zip", "7z"],                  defaultCoreID: "mame2010_libretro",     iconName: "arcade.stick",   emuIconName: "MAME",     year: nil,    sortOrder: 30, defaultBoxType: .vertical),
         SystemInfo(id: "fba",          name: "Arcade (FinalBurn Neo)",          manufacturer: "Various",    extensions: ["zip", "7z"],                  defaultCoreID: "fbneo_libretro",             iconName: "arcade.stick",   emuIconName: "FBNEO",    year: nil,    sortOrder: 31, defaultBoxType: .vertical),
         SystemInfo(id: "atari2600",    name: "Atari 2600",                      manufacturer: "Atari",      extensions: ["a26", "bin"],                 defaultCoreID: "stella_libretro",            iconName: "gamecontroller", emuIconName: "ATARI2600", year: "1977", sortOrder: 40, defaultBoxType: .vertical),
         SystemInfo(id: "atari5200",    name: "Atari 5200",                      manufacturer: "Atari",      extensions: ["a52", "bin"],                 defaultCoreID: "a5200_libretro",             iconName: "gamecontroller", emuIconName: "ATARI5200", year: "1982", sortOrder: 41, defaultBoxType: .vertical),
@@ -537,50 +537,95 @@ class LibretroInfoManager: ObservableObject {
             
             DispatchQueue.main.async { self.refreshStatus = "Parsing system info..." }
             
-            let extractedFolder = tempDir.appendingPathComponent("libretro-core-info-master")
+let extractedFolder = tempDir.appendingPathComponent("libretro-core-info-master")
             var newExtensionsDict: [String: Set<String>] = [:] 
+            
+            // 🔥 NEW: Track names and manufacturers for newly discovered systems
+            var systemNamesFromInfo:[String: String] = [:]
+            var systemMfgFromInfo: [String: String] = [:]
+            
             LoggerService.debug(category: "LibretroInfoManager", "Parsing system info from \(extractedFolder)")
             if let enumerator = FileManager.default.enumerator(at: extractedFolder, includingPropertiesForKeys: nil) {
                 for case let fileURL as URL in enumerator where fileURL.pathExtension == "info" {
-                    LoggerService.debug(category: "LibretroInfoManager", "Parsing system info from \(fileURL)")
                     let infoDict = parseInfoFile(at: fileURL)
 
-                    // 1. Handle System/Core Mapping (The new part)
+                    // 1. Handle System/Core Mapping & Discovery
                     if let sysIDString = infoDict["systemid"] { 
-                        let coreID = fileURL.deletingPathExtension().lastPathComponent // e.g., "snes9x"
-                        // Split, normalize, and put back into a Set
+                        let coreID = fileURL.deletingPathExtension().lastPathComponent 
                         let ids = sysIDString.components(separatedBy: "|").map { SystemDatabase.normalizeSystemID($0) }
                         LibretroInfoManager.coreToSystemMap[coreID] = Set(ids)
-                        LoggerService.debug(category: "LibretroInfoManager", "Mapped core \(coreID) to systems: \(ids)")
+                        
+                        // Extract human-readable names and manufacturer
+                        let names = infoDict["systemname"]?.components(separatedBy: "|") ?? []
+                        let mfg = infoDict["manufacturer"] ?? "Various"
+                        
+                        for (index, id) in ids.enumerated() {
+                            if systemNamesFromInfo[id] == nil {
+                                if index < names.count {
+                                    systemNamesFromInfo[id] = names[index]
+                                } else if let firstName = names.first {
+                                    systemNamesFromInfo[id] = firstName
+                                } else {
+                                    systemNamesFromInfo[id] = id.capitalized
+                                }
+                            }
+                            if systemMfgFromInfo[id] == nil {
+                                systemMfgFromInfo[id] = mfg
+                            }
+                        }
                     }
 
-                    // 2. Handle File Extensions (Your existing part)
+                    // 2. Handle File Extensions
                     if let sysName = infoDict["systemname"], let exts = infoDict["supported_extensions"] {
                         let parsedExts = exts.components(separatedBy: "|").map { $0.lowercased() }
                         if newExtensionsDict[sysName] == nil { newExtensionsDict[sysName] = [] }
                         newExtensionsDict[sysName]?.formUnion(parsedExts)
-                        LoggerService.debug(category: "LibretroInfoManager", "Mapped extensions for system \(sysName): \(parsedExts)")
                     }
                 }
             }
 
             DispatchQueue.main.async { self.refreshStatus = "Updating database..." }
             LoggerService.debug(category: "LibretroInfoManager", "Updating database...")
-            var currentSystems = SystemDatabase.systems
             
+            var currentSystems = SystemDatabase.systems
+            let existingIDs = Set(currentSystems.map { $0.id })
+            
+            // 🔥 INJECT NEWLY DISCOVERED SYSTEMS INTO THE DATABASE
+            for (id, name) in systemNamesFromInfo {
+                if !existingIDs.contains(id) && id != "unknown" {
+                    let newSystem = SystemInfo(
+                        id: id,
+                        name: name,
+                        manufacturer: systemMfgFromInfo[id] ?? "Various",
+                        extensions:[],
+                        defaultCoreID: nil,
+                        iconName: "gamecontroller", 
+                        emuIconName: nil,
+                        year: nil,
+                        sortOrder: 80, // Place after main hardcoded systems
+                        defaultBoxType: .landscape,
+                        displayInUI: true
+                    )
+                    currentSystems.append(newSystem)
+                    LoggerService.debug(category: "LibretroInfoManager", "Dynamically added new system: \(name) (\(id))")
+                }
+            }
+            
+            // Update extensions for ALL systems (including the newly injected ones)
             for i in 0..<currentSystems.count {
                 let matchedKey = newExtensionsDict.keys.first { $0.contains(currentSystems[i].name) || currentSystems[i].name.contains($0) }
-                LoggerService.debug(category: "LibretroInfoManager", "Matched key: \(matchedKey)")
                 if let key = matchedKey, let freshExts = newExtensionsDict[key] {
                     let combined = Set(currentSystems[i].extensions).union(freshExts)
                     currentSystems[i].extensions = Array(combined).sorted()
-                    LoggerService.debug(category: "LibretroInfoManager", "Updated extensions for \(currentSystems[i].name): \(currentSystems[i].extensions)")
                 }
             }
             
             SystemDatabase.saveSystems(currentSystems)
+            LibretroInfoManager.saveMappings() // The fix from the previous step!
+            
             LoggerService.debug(category: "LibretroInfoManager", "Saved systems to database")
             try FileManager.default.removeItem(at: tempDir)
+            
             LoggerService.debug(category: "LibretroInfoManager", "Removed temporary directory")
             
             DispatchQueue.main.async {

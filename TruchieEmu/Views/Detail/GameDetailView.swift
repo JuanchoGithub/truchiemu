@@ -965,7 +965,7 @@ struct GameDetailView: View {
     // MARK: - Core Info Section (Game Info quick access)
 
     private var coreInfoSection: some View {
-        ModernSectionCard(title: "Core", icon: "chip") {
+        ModernSectionCard(title: "Core", icon: "cpu") {
             VStack(alignment: .leading, spacing: 12) {
                 // Core picker row
                 HStack {
@@ -2500,7 +2500,7 @@ struct GameDetailView: View {
     // MARK: - Section: Core
 
     private var coreSection: some View {
-        ModernSectionCard(title: "Core", icon: "chip") {
+        ModernSectionCard(title: "Core", icon: "cpu") {
             VStack(alignment: .leading, spacing: 12) {
                 // Core picker row
                 HStack {

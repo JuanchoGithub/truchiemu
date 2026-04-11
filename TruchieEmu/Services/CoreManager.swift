@@ -43,10 +43,13 @@ class CoreManager: ObservableObject {
 
     init() {
         try? FileManager.default.createDirectory(at: appSupportURL, withIntermediateDirectories: true)
+        
+        // ✅ MUST LOAD FIRST so the cores know which systems they belong to!
+        LibretroInfoManager.loadMappings() 
+        
         loadInstalledCores()
         loadAvailableCores()
-        LibretroInfoManager.loadMappings()
-    }
+    }   
 
     // MARK: - Core List
 
@@ -288,6 +291,8 @@ class CoreManager: ObservableObject {
         installedCores.removeAll { $0.id == core.id }
         saveInstalledCores()
         LoggerService.debug(category: "CoreManager", "Core removed from list: \(core.id)")
+        // Instantly fallback any systems that were relying on this deleted core
+        repairPreferredCores()
     }
 
     // MARK: - Persistence
@@ -300,27 +305,102 @@ class CoreManager: ObservableObject {
         }
     }
 
-    private func loadInstalledCores() {
+    private func repairPreferredCores() {
+        for system in SystemDatabase.systems {
+            // Find all currently installed cores that support this system
+            let validCoresForSystem = installedCores.filter { 
+                $0.systemIDs.contains(system.id) || $0.id == system.defaultCoreID 
+            }
+            
+            // Get current preference (handle potential empty string from AppSettings)
+            var currentPref = SystemPreferences.shared.preferredCoreID(for: system.id)
+            if currentPref?.isEmpty == true { currentPref = nil }
+            
+            // 1. If NO cores are installed for this system, wipe any dangling preference.
+            if validCoresForSystem.isEmpty {
+                if currentPref != nil {
+                    SystemPreferences.shared.setPreferredCoreID(nil, for: system.id)
+                }
+                continue
+            }
+            
+            let isPrefInstalled = validCoresForSystem.contains { $0.id == currentPref }
+            let isDefaultInstalled = validCoresForSystem.contains { $0.id == system.defaultCoreID }
+            
+            // 2. If the user's preferred core is still installed, we are good. Do nothing.
+            if let _ = currentPref, isPrefInstalled { continue }
+            
+            // 3. If there's no custom preference and the factory default is installed, we are good.
+            if currentPref == nil && isDefaultInstalled { continue }
+            
+            // 4. We need to auto-assign a new core!
+            if isDefaultInstalled {
+                // The custom preferred core was deleted, but the factory default is still here. 
+                // Clear the preference so it naturally falls back to default.
+                SystemPreferences.shared.setPreferredCoreID(nil, for: system.id)
+                LoggerService.warning(category: "CoreManager", "Preferred core for \(system.name) was missing. Reset to factory default: \(system.defaultCoreID ?? "None")")
+            } else {
+                // Neither the preferred nor the factory default are installed. 
+                // Auto-assign the first available core alphabetically.
+                if let fallback = validCoresForSystem.sorted(by: { $0.displayName < $1.displayName }).first {
+                    SystemPreferences.shared.setPreferredCoreID(fallback.id, for: system.id)
+                    LoggerService.error(category: "CoreManager", "Default core for \(system.name) missing. Auto-assigned to fallback: \(fallback.id).")
+                }
+            }
+        }
+    }
+
+private func loadInstalledCores() {
         guard let data = AppSettings.getData(coresKey),
               var saved = try? decoder.decode([LibretroCore].self, from: data) else { return }
         
-        // Migrate/Refresh systemIDs for installed cores and deduplicate versions
         LoggerService.debug(category: "CoreManager", "Loading installed cores")
+        
+        var cacheNeedsRepair = false
+        var validCores: [LibretroCore] = []
+        
         for i in 0..<saved.count {
             saved[i].systemIDs = CoreManager.supportedSystems(for: saved[i].id)
             
-            // Fix existing data corruption: ensure each version has a unique path
+            let originalVersionCount = saved[i].installedVersions.count
             var seenPaths = Set<String>()
+            
             saved[i].installedVersions = saved[i].installedVersions.filter { v in
                 let path = v.dylibPath.path
                 if seenPaths.contains(path) { return false }
                 seenPaths.insert(path)
-                LoggerService.debug(category: "CoreManager", "Loading installed core \(saved[i].id) version: \(v.tag)")
+                
+                if !FileManager.default.fileExists(atPath: path) {
+                    LoggerService.debug(category: "CoreManager", "Missing core file removed from cache: \(path)")
+                    return false
+                }
+                
                 return true
+            }
+            
+            if saved[i].installedVersions.count != originalVersionCount { cacheNeedsRepair = true }
+            
+            if !saved[i].installedVersions.isEmpty {
+                if saved[i].isDownloading {
+                    saved[i].isDownloading = false
+                    cacheNeedsRepair = true
+                }
+                validCores.append(saved[i])
+            } else {
+                LoggerService.debug(category: "CoreManager", "Core \(saved[i].id) has no valid files left. Removing from installed list.")
+                cacheNeedsRepair = true
             }
         }
         
-        installedCores = saved
+        installedCores = validCores
+        
+        if cacheNeedsRepair {
+            LoggerService.error(category: "CoreManager", "Core cache repaired due to missing files on disk.")
+            saveInstalledCores()
+        }
+        
+        // ✅ ADD THIS: Clean up any dangling preferences based on what is actually installed
+        repairPreferredCores()
     }
 
     private func loadAvailableCores() {

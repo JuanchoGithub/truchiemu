@@ -983,6 +983,20 @@ class StandaloneGameWindowController: NSWindowController, NSWindowDelegate, Obse
         // Launch the game
         runner?.launch(rom: rom, coreID: coreID)
         
+        // Check if runner is running
+        if !(runner?.isRunning ?? false) {
+            LoggerService.error(category: "Runner", "Runner is not running after launch")
+            // Show error message and close window
+            DispatchQueue.main.async {
+                let alert = NSAlert()
+                alert.messageText = "Error"
+                alert.informativeText = "Game could not be loaded, check the logs."
+                alert.runModal()
+                self.window?.close()
+            }
+            return
+        }
+        
         // Load and optionally apply cheats after core is up
         autoLoadAndApplyCheats(for: rom)
         
