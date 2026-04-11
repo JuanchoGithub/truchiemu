@@ -1136,11 +1136,12 @@ class StandaloneGameWindowController: NSWindowController, NSWindowDelegate, Obse
     /// Called after the emulator core has started.
     private func autoLoadAndApplyCheats(for rom: ROM) {
         // Always load cheats so they appear in the manager
-        CheatManagerService.shared.loadCheatsForROM(rom)
-        
-        // Apply enabled cheats only if the setting is on
-        guard SystemPreferences.shared.applyCheatsOnLaunch else { return }
-        
+        if AppSettings.getBool("applyCheatsOnLaunch", defaultValue: false) {
+            CheatManagerService.shared.loadCheatsForROM(rom)
+        } else {
+            return
+        }
+
         let enabledCheats = CheatManagerService.shared.enabledCheats(for: rom)
         guard !enabledCheats.isEmpty else { return }
         

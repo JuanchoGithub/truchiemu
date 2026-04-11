@@ -2,8 +2,23 @@ import Foundation
 
 class LibretroBridgeSwift {
     
-    // MARK: - Launch & Lifecycle
+    // MARK: - Logging Integration
     
+    static func registerCoreLogger(logger: @escaping (String, Int) -> Void) {
+        // Because it is a + (class method) in Obj-C, 
+        // we call it on the class name in Swift.
+        LibretroBridge.registerCoreLogger { messagePtr, level in
+            if let message = String(validatingUTF8: messagePtr) {
+                logger(message, Int(level))
+            } else {
+                logger("Malformed UTF8 string from core", Int(level))
+            }
+        }
+    }
+
+
+    // MARK: - Launch & Lifecycle
+
     static func launch(dylibPath: String, romPath: String, coreID: String, systemID: String? = nil,
                        shaderDir: String? = nil,
                        videoCallback: @escaping (UnsafeRawPointer?, Int, Int, Int, Int) -> Void) {

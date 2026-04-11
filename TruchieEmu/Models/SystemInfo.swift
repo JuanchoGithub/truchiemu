@@ -363,7 +363,7 @@ class SystemPreferences: ObservableObject {
     }
 
     @Published var applyCheatsOnLaunch: Bool = false {
-        didSet { AppSettings.setBool(Self.keyApplyCheatsOnLaunch, value: applyCheatsOnLaunch) }
+        didSet { AppSettings.setBool(Self.keyApplyCheatsOnLaunch, value: applyCheatsOnLaunch)}
     }
 
     @Published var showCheatNotifications: Bool = true {

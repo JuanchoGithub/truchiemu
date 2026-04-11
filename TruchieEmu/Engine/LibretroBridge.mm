@@ -10,6 +10,51 @@
 #import <dlfcn.h>
 #include <mach/mach_time.h>
 
+// 1. Change the global variable to hold a block instead of a raw C function
+// pointer
+static CoreLoggerBlock g_swiftLoggerBlock = nil;
+
+// 1. Define a standard C function signature
+typedef void (*LogFunc)(const char *, int);
+
+// 2. Create a "No-Op" function (does absolutely nothing)
+static void no_op_log(const char *msg, int level) {
+  // Empty. The compiler can often optimize this away entirely.
+}
+
+// 3. The actual function that calls your Swift block
+static void swift_logger_wrapper(const char *msg, int level) {
+  if (g_swiftLoggerBlock) {
+    g_swiftLoggerBlock(msg, level);
+  }
+}
+
+// 4. A global function pointer
+static LogFunc g_active_log_func = no_op_log;
+
+// Update your log function to use the block correctly
+static void bridge_log_printf(enum retro_log_level level, const char *fmt,
+                              ...) {
+  if (!fmt)
+    return;
+  va_list args;
+  va_start(args, fmt);
+
+  // Create the message string
+  NSString *format = [[NSString alloc] initWithUTF8String:fmt];
+  if (!format)
+    format = [[NSString alloc] initWithCString:fmt
+                                      encoding:NSASCIIStringEncoding];
+
+  if (format) {
+    NSString *message = [[NSString alloc] initWithFormat:format arguments:args];
+    if (message) {
+      g_swiftLoggerBlock(message.UTF8String, (int)level);
+    }
+  }
+  va_end(args);
+}
+
 // MARK: - Simple Ring Buffer for Audio
 class AudioRingBuffer {
 public:
@@ -196,7 +241,8 @@ static void parseCoreOptionsV2(struct retro_core_options_v2 *opts) {
           @"info" : cat->info ? [NSString stringWithUTF8String:cat->info] : @""
         };
       } @catch (NSException *exception) {
-        NSLog(@"[Bridge-WRN] Failed to parse category: %@", exception.reason);
+        bridge_log_printf(RETRO_LOG_WARN, " Failed to parse category: %s",
+                          exception.reason);
       }
       cat++;
       catCount++;
@@ -240,8 +286,9 @@ static void parseCoreOptionsV2(struct retro_core_options_v2 *opts) {
                     : vval;
             [vals addObject:@{@"value" : vval, @"label" : vlabel}];
           } @catch (NSException *exception) {
-            NSLog(@"[Bridge-WRN] Failed to parse option value: %@",
-                  exception.reason);
+            bridge_log_printf(RETRO_LOG_ERROR,
+                              "Failed to parse option value: %s",
+                              exception.reason);
             break;
           }
         }
@@ -257,8 +304,9 @@ static void parseCoreOptionsV2(struct retro_core_options_v2 *opts) {
         /* Set initial value to default */
         g_optValues[key] = defaultVal;
       } @catch (NSException *exception) {
-        NSLog(@"[Bridge-WRN] Failed to parse option definition: %@",
-              exception.reason);
+        bridge_log_printf(RETRO_LOG_ERROR,
+                          "Failed to parse option definition: %s",
+                          exception.reason);
       }
       def++;
       defCount++;
@@ -306,8 +354,9 @@ parseCoreOptionsV1(struct retro_core_options *opts) {
                     : vval;
             [vals addObject:@{@"value" : vval, @"label" : vlabel}];
           } @catch (NSException *exception) {
-            NSLog(@"[Bridge-WRN] Failed to parse option value: %@",
-                  exception.reason);
+            bridge_log_printf(RETRO_LOG_ERROR,
+                              "Failed to parse option value: %s",
+                              exception.reason);
             break;
           }
         }
@@ -322,8 +371,9 @@ parseCoreOptionsV1(struct retro_core_options *opts) {
 
         g_optValues[key] = defaultVal;
       } @catch (NSException *exception) {
-        NSLog(@"[Bridge-WRN] Failed to parse option definition: %@",
-              exception.reason);
+        bridge_log_printf(RETRO_LOG_ERROR,
+                          "Failed to parse option definition: %s",
+                          exception.reason);
       }
       def++;
       defCount++;
@@ -386,7 +436,8 @@ static void applyPersistedOverrides() {
     }
     if (g_optValues && key.length > 0) {
       g_optValues[key] = val;
-      NSLog(@"[Bridge-OPT] Override from .cfg: %@ = %@", key, val);
+      bridge_log_printf(RETRO_LOG_INFO, "Override from .cfg: %s = %s",
+                        key.UTF8String, val.UTF8String);
     }
   }
 }
@@ -438,40 +489,6 @@ void RegisterCoreLogCallback(CoreLogCallback callback) {
 #ifdef __cplusplus
 }
 #endif
-
-static void bridge_log_printf(enum retro_log_level level, const char *fmt,
-                              ...) {
-  if (!fmt)
-    return;
-  va_list args;
-  va_start(args, fmt);
-  NSString *format = [[NSString alloc] initWithUTF8String:fmt];
-  if (!format) {
-    // Fallback for non-UTF8 or malformed strings
-    format = [[NSString alloc] initWithCString:fmt
-                                      encoding:NSASCIIStringEncoding];
-  }
-  if (format) {
-    NSString *message = [[NSString alloc] initWithFormat:format arguments:args];
-    if (message) {
-      // Map retro_log_level to numeric: 0=INFO, 1=DEBUG, 2=WARN, 3=ERROR
-      // Always forward to the Swift callback for file logging, regardless of
-      // g_logLevel
-      if (g_coreLogCallback) {
-        g_coreLogCallback(message.UTF8String, (int)level);
-      }
-
-      // Also emit to console/NSLog based on filter level
-      if (level >= RETRO_LOG_ERROR && g_logLevel <= 2)
-        NSLog(@"[Core-ERR] %@", message);
-      else if (level == RETRO_LOG_WARN && g_logLevel <= 1)
-        NSLog(@"[Core-WRN] %@", message);
-      else if (level <= RETRO_LOG_INFO && g_logLevel == 0)
-        NSLog(@"[Core-INF] %@", message);
-    }
-  }
-  va_end(args);
-}
 
 static bool bridge_environment(unsigned cmd, void *data) {
   if (!g_instance)
@@ -556,7 +573,8 @@ static bool bridge_environment(unsigned cmd, void *data) {
         // 1. DISABLE THREADED RENDERING (Fixes the Thread 4 Deadlock)
         if (strcmp(var->key, "flycast_threaded_rendering") == 0) {
           var->value = "disabled";
-          NSLog(@"[Bridge-FIX] Flycast: Force Threaded Rendering = disabled");
+          bridge_log_printf(RETRO_LOG_INFO,
+                            "Flycast: Force Threaded Rendering = disabled");
           return true;
         }
 
@@ -565,7 +583,7 @@ static bool bridge_environment(unsigned cmd, void *data) {
         // The ARM64 JIT + MMU is often unstable on M1/M2.
         if (strcmp(var->key, "flycast_cpu_core") == 0) {
           var->value = "interpreter";
-          NSLog(@"[Bridge-FIX] Flycast: Force CPU = interpreter");
+          bridge_log_printf(RETRO_LOG_INFO, "Flycast: Force CPU = interpreter");
           return true;
         }
 
@@ -673,8 +691,8 @@ static bool bridge_environment(unsigned cmd, void *data) {
     if (data && g_instance) {
       struct retro_game_geometry *geo = (struct retro_game_geometry *)data;
       g_instance->_avInfo.geometry = *geo;
-      NSLog(@"[Bridge] Core updated geometry: %ux%u", geo->base_width,
-            geo->base_height);
+      bridge_log_printf(RETRO_LOG_DEBUG, "Core updated geometry: %ux%u",
+                        geo->base_width, geo->base_height);
     }
     return true;
   case RETRO_ENVIRONMENT_SET_INPUT_DESCRIPTORS:
@@ -749,11 +767,13 @@ static bool bridge_environment(unsigned cmd, void *data) {
       if (fps > 10.0 && fps < 120.0) {
         g_instance->_avInfo.timing.fps = fps;
       } else if (fps > 0.0) {
-        NSLog(@"[Bridge-WRN] Suspicious FPS value: %f, clamping to 60", fps);
+        bridge_log_printf(RETRO_LOG_WARN,
+                          "Suspicious FPS value: %f, clamping to 60", fps);
         g_instance->_avInfo.timing.fps = 60.0;
       } else {
-        NSLog(@"[Bridge-WRN] Invalid FPS value: %f, keeping current (was %f)",
-              fps, g_instance->_avInfo.timing.fps);
+        bridge_log_printf(RETRO_LOG_WARN,
+                          "Invalid FPS value: %f, keeping current (was %f)",
+                          fps, g_instance->_avInfo.timing.fps);
         // Keep existing FPS if it's valid, otherwise use 60
         if (g_instance->_avInfo.timing.fps <= 0.0) {
           g_instance->_avInfo.timing.fps = 60.0;
@@ -763,19 +783,22 @@ static bool bridge_environment(unsigned cmd, void *data) {
       if (sampleRate > 8000.0 && sampleRate < 192000.0) {
         g_instance->_avInfo.timing.sample_rate = sampleRate;
       } else if (sampleRate > 0.0) {
-        NSLog(@"[Bridge-WRN] Suspicious sample rate: %f, keeping current",
-              sampleRate);
+        bridge_log_printf(RETRO_LOG_WARN,
+                          "Suspicious sample rate: %f, keeping current",
+                          sampleRate);
       } else {
-        NSLog(@"[Bridge-WRN] Invalid sample rate: %f, keeping current",
-              sampleRate);
+        bridge_log_printf(RETRO_LOG_WARN,
+                          "Invalid sample rate: %f, keeping current",
+                          sampleRate);
       }
 
       // Update geometry
       g_instance->_avInfo.geometry = info->geometry;
 
-      NSLog(@"[Bridge] Core updated A/V info: FPS=%.2f SampleRate=%.1f",
-            g_instance->_avInfo.timing.fps,
-            g_instance->_avInfo.timing.sample_rate);
+      bridge_log_printf(RETRO_LOG_DEBUG,
+                        "Core updated A/V info: FPS=%.2f SampleRate=%.1f",
+                        g_instance->_avInfo.timing.fps,
+                        g_instance->_avInfo.timing.sample_rate);
     }
     return true;
   case RETRO_ENVIRONMENT_GET_VARIABLE_UPDATE: // has anything changed? → no,
@@ -810,7 +833,8 @@ static bool bridge_environment(unsigned cmd, void *data) {
     return true;
   default:
     if (cmd < 1000) { // Avoid logging internal/private values unless needed
-      NSLog(@"[Bridge-WRN] Unhandled environment command: %u", cmd);
+      bridge_log_printf(RETRO_LOG_ERROR, "Unhandled environment command: %u",
+                        cmd);
     }
     return false;
   }
@@ -978,7 +1002,8 @@ static int16_t bridge_input_state(unsigned port, unsigned device,
 - (BOOL)loadDylib:(NSString *)path {
   _dlHandle = dlopen(path.UTF8String, RTLD_LAZY);
   if (!_dlHandle) {
-    NSLog(@"[Bridge-ERR] Could not dlopen core at %@: %s", path, dlerror());
+    bridge_log_printf(RETRO_LOG_ERROR, "Could not dlopen core at %s: %s",
+                      path.UTF8String, dlerror());
     return NO;
   }
 
@@ -988,7 +1013,7 @@ static int16_t bridge_input_state(unsigned port, unsigned device,
   if (!_##name &&                                                              \
       (strcmp(#name, "retro_init") == 0 || strcmp(#name, "retro_run") == 0 ||  \
        strcmp(#name, "retro_load_game") == 0))                                 \
-    NSLog(@"[Bridge-WRN] Could not find symbol %s", #name);
+    bridge_log_printf(RETRO_LOG_WARN, "Could not find symbol %s", #name);
 
   LOAD_SYM(retro_init)
   LOAD_SYM(retro_deinit)
@@ -1032,9 +1057,10 @@ static int16_t bridge_input_state(unsigned port, unsigned device,
       (g_coreID && [[g_coreID lowercaseString] containsString:@"mame"]);
   if (_isMameLaunch) {
     _pixelFormat = 1; // RETRO_PIXEL_FORMAT_XRGB8888
-    NSLog(@"[Bridge] MAME core detected ('%@'): pixel format forced to "
-          @"XRGB8888 (1)",
-          g_coreID);
+    bridge_log_printf(
+        RETRO_LOG_DEBUG,
+        "MAME core detected ('%s'): pixel format forced to XRGB8888 (1)",
+        g_coreID);
   }
 
   // Query system info to check for need_fullpath
@@ -1043,22 +1069,24 @@ static int16_t bridge_input_state(unsigned port, unsigned device,
   if (_retro_get_system_info) {
     _retro_get_system_info(&sysInfo);
     needsFullPath = sysInfo.need_fullpath;
-    NSLog(@"[Bridge] Core: %s (v%s), Extensions: %s, NeedFullPath: %d",
-          sysInfo.library_name ? sysInfo.library_name : "Unknown",
-          sysInfo.library_version ? sysInfo.library_version : "?.?",
-          sysInfo.valid_extensions ? sysInfo.valid_extensions : "*",
-          needsFullPath);
+    bridge_log_printf(RETRO_LOG_DEBUG,
+                      "Core: %s (v%s), Extensions: %s, NeedFullPath: %d",
+                      sysInfo.library_name ? sysInfo.library_name : "Unknown",
+                      sysInfo.library_version ? sysInfo.library_version : "?.?",
+                      sysInfo.valid_extensions ? sysInfo.valid_extensions : "*",
+                      needsFullPath);
   }
 
   // Conditionally load ROM into memory
   if (!needsFullPath) {
     _retainedRomData = [[NSData alloc] initWithContentsOfFile:_retainedRomPath];
-    NSLog(@"[Bridge] Loaded ROM buffer (%lu bytes)",
-          (unsigned long)_retainedRomData.length);
+    bridge_log_printf(RETRO_LOG_DEBUG, "Loaded ROM buffer (%lu bytes)",
+                      (unsigned long)_retainedRomData.length);
   } else {
-    NSLog(@"[Bridge] Core sets need_fullpath=true. Skipping memory buffer load "
-          @"for path='%@'.",
-          _retainedRomPath);
+    bridge_log_printf(RETRO_LOG_DEBUG,
+                      "Core sets need_fullpath=true. Skipping memory buffer "
+                      "load for path='%@'.",
+                      _retainedRomPath);
   }
 
   _retro_init();
@@ -1077,28 +1105,33 @@ static int16_t bridge_input_state(unsigned port, unsigned device,
   gi.meta = NULL;
 
   if (!_retro_load_game) {
-    NSLog(@"[Bridge-ERR] retro_load_game is NULL!");
+    bridge_log_printf(RETRO_LOG_ERROR, "retro_load_game is NULL!");
     return NO;
   }
 
   if (!gi.data && !needsFullPath) {
-    NSLog(@"[Bridge-WRN] No data passed and need_fullpath=false. Core might "
-          @"fail if it expects ROM data.");
+    bridge_log_printf(RETRO_LOG_WARN,
+                      "No data passed and need_fullpath=false. Core might fail "
+                      "if it expects ROM data.");
   }
 
-  NSLog(@"[Bridge] Calling retro_load_game with path='%s', size=%lu",
-        gi.path ? gi.path : "(null)", (unsigned long)gi.size);
+  bridge_log_printf(RETRO_LOG_DEBUG,
+                    "Calling retro_load_game with path='%s', size=%lu",
+                    gi.path ? gi.path : "(null)", (unsigned long)gi.size);
 
   @try {
     if (!g_instance->_retro_load_game(&gi)) {
-      NSLog(@"[Bridge-ERR] retro_load_game returned NO (failed)");
+      bridge_log_printf(RETRO_LOG_ERROR,
+                        "retro_load_game returned NO (failed)");
       return NO;
     }
   } @catch (NSException *exception) {
-    NSLog(@"[Bridge-ERR] retro_load_game crashed: %@", exception.reason);
+    bridge_log_printf(RETRO_LOG_ERROR, "retro_load_game crashed: %@",
+                      exception.reason);
     return NO;
   } @catch (...) {
-    NSLog(@"[Bridge-ERR] retro_load_game crashed with unknown exception");
+    bridge_log_printf(RETRO_LOG_ERROR,
+                      "retro_load_game crashed with unknown exception");
     return NO;
   }
 
@@ -1106,7 +1139,8 @@ static int16_t bridge_input_state(unsigned port, unsigned device,
   // configurations ──
   [_coreLock lock];
   if (_hwRenderEnabled && _hw_callback.context_reset) {
-    NSLog(@"[Bridge] Calling Core's context_reset() after retro_load_game");
+    bridge_log_printf(RETRO_LOG_DEBUG,
+                      "Calling Core's context_reset() after retro_load_game");
     if (_glContext)
       CGLSetCurrentContext(_glContext);
     _hw_callback.context_reset();
@@ -1127,19 +1161,22 @@ static int16_t bridge_input_state(unsigned port, unsigned device,
   double sampleRate =
       _avInfo.timing.sample_rate > 0 ? _avInfo.timing.sample_rate : 44100.0;
   double fps = _avInfo.timing.fps > 0 ? _avInfo.timing.fps : 60.0;
-  NSLog(@"[Bridge] Core A/V Info: SampleRate=%.1f FPS=%.2f", sampleRate, fps);
+  bridge_log_printf(RETRO_LOG_DEBUG, "Core A/V Info: SampleRate=%.1f FPS=%.2f",
+                    sampleRate, fps);
 
   // Clamp sample rate
   if (sampleRate < 8000.0 || sampleRate > 192000.0) {
-    NSLog(@"[Bridge-WRN] Sample rate out of range: %.1f, clamping to 44100",
-          sampleRate);
+    bridge_log_printf(RETRO_LOG_WARN,
+                      "Sample rate out of range: %.1f, clamping to 44100",
+                      sampleRate);
     sampleRate = 44100.0;
     _avInfo.timing.sample_rate = sampleRate;
   }
 
   // Safety clamp for ALL cores: ensure FPS is never 0 or absurdly high
   if (_avInfo.timing.fps <= 0.0 || _avInfo.timing.fps > 120.0) {
-    NSLog(@"[Bridge-WRN] Global FPS clamp: %.2f -> 60.0", _avInfo.timing.fps);
+    bridge_log_printf(RETRO_LOG_WARN, "Global FPS clamp: %.2f -> 60.0",
+                      _avInfo.timing.fps);
     _avInfo.timing.fps = 60.0;
   }
   [self setupAudioWithSampleRate:sampleRate];
@@ -1412,10 +1449,11 @@ static int16_t bridge_input_state(unsigned port, unsigned device,
     profile = (CGLPixelFormatAttribute)kCGLOGLPVersion_3_2_Core;
   }
 
-  NSLog(@"[Bridge] Creating OpenGL context type %d (Profile: %d, Depth: %d, "
-        @"Stencil: %d)",
-        _hw_callback.context_type, (int)profile, _hw_callback.depth,
-        _hw_callback.stencil);
+  bridge_log_printf(
+      RETRO_LOG_DEBUG,
+      "Creating OpenGL context type %d (Profile: %d, Depth: %d, Stencil: %d)",
+      _hw_callback.context_type, (int)profile, _hw_callback.depth,
+      _hw_callback.stencil);
 
   CGLPixelFormatAttribute attrs[20];
   int i = 0;
@@ -1434,15 +1472,16 @@ static int16_t bridge_input_state(unsigned port, unsigned device,
   GLint num;
   CGLError err = CGLChoosePixelFormat(attrs, &pix, &num);
   if (err != kCGLNoError || !pix) {
-    NSLog(@"[Bridge] ERROR: Could not choose Pixel Format for GL (err=%d)",
-          (int)err);
+    bridge_log_printf(RETRO_LOG_ERROR,
+                      "Could not choose Pixel Format for GL (err=%d)",
+                      (int)err);
     return;
   }
   CGLCreateContext(pix, NULL, &_glContext);
   CGLDestroyPixelFormat(pix);
 
   if (!_glContext) {
-    NSLog(@"[Bridge] ERROR: Could not create GL Context");
+    bridge_log_printf(RETRO_LOG_ERROR, "Could not create GL Context");
     return;
   }
 
@@ -1471,10 +1510,11 @@ static int16_t bridge_input_state(unsigned port, unsigned device,
 
   GLenum status = glCheckFramebufferStatus(GL_FRAMEBUFFER);
   if (status != GL_FRAMEBUFFER_COMPLETE) {
-    NSLog(@"[Bridge] ERROR: FBO incomplete (status=0x%x)", status);
+    bridge_log_printf(RETRO_LOG_ERROR, "FBO incomplete (status=0x%x)", status);
   } else {
-    NSLog(@"[Bridge] FBO %u created (%dx%d) – ready for core", _hwFBO,
-          _fboWidth, _fboHeight);
+    bridge_log_printf(RETRO_LOG_DEBUG,
+                      "FBO %u created (%dx%d) – ready for core", _hwFBO,
+                      _fboWidth, _fboHeight);
     g_hwFBO = _hwFBO; // expose to bridge_get_current_framebuffer
   }
 
@@ -1615,6 +1655,19 @@ static int16_t bridge_input_state(unsigned port, unsigned device,
 @end
 
 @implementation LibretroBridge
+
+// 2. Implement the registration function
+// Ensure it has the '+' and matches the header name exactly
+// 5. Update the registration
++ (void)registerCoreLogger:(CoreLoggerBlock)block {
+  g_swiftLoggerBlock = block;
+  if (block) {
+    g_active_log_func = swift_logger_wrapper;
+  } else {
+    g_active_log_func = no_op_log;
+  }
+}
+
 + (void)launchWithDylibPath:(NSString *)dylib
                     romPath:(NSString *)rom
                   shaderDir:(NSString *)shaderDir
@@ -1627,11 +1680,11 @@ static int16_t bridge_input_state(unsigned port, unsigned device,
   });
 
   // Initialize completion semaphore for this session
-  // Note: Under ARC, we don't need to manually release - just replace the
-  // semaphore The old one will be released automatically
   _bridgeCompletionSemaphore = dispatch_semaphore_create(0);
 
-  // Reset options storage for new core
+  // 1. PREPARE ENVIRONMENT (Keep this!)
+  // These must happen on the calling thread to ensure the next core
+  // gets the correct IDs immediately.
   g_coreID = [coreID copy];
   g_shaderDir = [shaderDir copy];
   initOptStorage();
@@ -1639,24 +1692,38 @@ static int16_t bridge_input_state(unsigned port, unsigned device,
   g_optDefinitions = nil;
   g_optCategories = nil;
 
+  // 2. EXECUTE CORE ON BACKGROUND QUEUE
   dispatch_async(g_bridgeQueue, ^{
-    if (g_instance) {
-      NSLog(@"[Bridge] Signalling previous instance to stop...");
-      [g_instance stop];
-    }
+    // Capture the old instance to shut it down safely
+    LibretroBridgeImpl *oldInst = g_instance;
 
+    // Initialize the new instance
     LibretroBridgeImpl *newInst = [[LibretroBridgeImpl alloc] init];
+
+    // ATOMIC SWAP: Update the global pointer immediately
     g_instance = newInst;
 
-    NSLog(@"[Bridge] Starting new core session: %@", dylib.lastPathComponent);
+    // If there was an old instance running, tell it to stop
+    if (oldInst) {
+      bridge_log_printf(RETRO_LOG_INFO,
+                        "Signalling previous instance to stop...");
+      [oldInst stop];
+    }
+
+    bridge_log_printf(RETRO_LOG_INFO, "Starting new core session: %@",
+                      dylib.lastPathComponent);
+
     if ([newInst loadDylib:dylib]) {
       [newInst launchROM:rom videoCallback:cb];
     }
 
+    // Only nullify if another thread hasn't already replaced us
     if (g_instance == newInst) {
       g_instance = nil;
     }
-    NSLog(@"[Bridge] Core session finished.");
+
+    // FIX: Use the Swift logger for the finish message
+    bridge_log_printf(RETRO_LOG_INFO, "Core session finished.");
   });
 }
 
@@ -1674,9 +1741,11 @@ static int16_t bridge_input_state(unsigned port, unsigned device,
         dispatch_time(DISPATCH_TIME_NOW, (int64_t)(5.0 * NSEC_PER_SEC));
     long result = dispatch_semaphore_wait(_bridgeCompletionSemaphore, timeout);
     if (result == 0) {
-      NSLog(@"[Bridge] Core fully terminated (waited for completion)");
+      bridge_log_printf(RETRO_LOG_DEBUG,
+                        "Core fully terminated (waited for completion)");
     } else {
-      NSLog(@"[Bridge-WRN] Timeout waiting for core to terminate (5s)");
+      bridge_log_printf(RETRO_LOG_ERROR,
+                        "Timeout waiting for core to terminate (5s)");
     }
   }
 }
@@ -1735,7 +1804,8 @@ static NSString *_Nullable g_optionsDylibPath = nil;
   g_instance = impl;
 
   if (![impl loadDylib:dylibPath]) {
-    NSLog(@"[Bridge] Failed to load core for options at %@", dylibPath);
+    bridge_log_printf(RETRO_LOG_ERROR, "Failed to load core for options at %@",
+                      dylibPath);
     g_optCategories = @{};
     g_optDefinitions = @{};
     g_optValues = [NSMutableDictionary dictionary];
@@ -1767,7 +1837,8 @@ static NSString *_Nullable g_optionsDylibPath = nil;
     struct retro_game_info gi;
     memset(&gi, 0, sizeof(gi));
     if (impl->_retro_load_game(&gi)) {
-      NSLog(@"[Bridge] Core initialized with no content. Options available.");
+      bridge_log_printf(RETRO_LOG_INFO,
+                        "Core initialized with no content. Options available.");
       [impl->_coreLock lock];
       if (impl->_hwRenderEnabled && impl->_hw_callback.context_reset) {
         if (impl->_glContext)
@@ -1778,16 +1849,19 @@ static NSString *_Nullable g_optionsDylibPath = nil;
         CGLSetCurrentContext(NULL);
       [impl->_coreLock unlock];
     } else {
-      NSLog(@"[Bridge] Core does not support no-game mode. Options will be "
-            @"empty.");
+      bridge_log_printf(
+          RETRO_LOG_WARN,
+          "Core does not support no-game mode. Options will be empty.");
     }
   } else {
-    NSLog(@"[Bridge] Core does not advertise no-game support. Attempting "
-          @"no-content init anyway...");
+    bridge_log_printf(RETRO_LOG_WARN,
+                      "Core does not advertise no-game support. Attempting "
+                      "no-content init anyway...");
     struct retro_game_info gi;
     memset(&gi, 0, sizeof(gi));
     if (impl->_retro_load_game(&gi)) {
-      NSLog(@"[Bridge] Core loaded with no content successfully.");
+      bridge_log_printf(RETRO_LOG_WARN,
+                        "Core loaded with no content successfully.");
       [impl->_coreLock lock];
       if (impl->_hwRenderEnabled && impl->_hw_callback.context_reset) {
         if (impl->_glContext)
@@ -1798,7 +1872,7 @@ static NSString *_Nullable g_optionsDylibPath = nil;
         CGLSetCurrentContext(NULL);
       [impl->_coreLock unlock];
     } else {
-      NSLog(@"[Bridge] Core rejected no-content load.");
+      bridge_log_printf(RETRO_LOG_ERROR, "Core rejected no-content load.");
     }
   }
 
@@ -1834,8 +1908,8 @@ static NSString *_Nullable g_optionsDylibPath = nil;
   g_instance = nil;
   g_loadingForOptions = NO;
 
-  NSLog(@"[Bridge] Core options loaded: %lu definitions",
-        (unsigned long)g_optDefinitions.count);
+  bridge_log_printf(RETRO_LOG_DEBUG, "Core options loaded: %lu definitions",
+                    (unsigned long)g_optDefinitions.count);
 }
 
 + (BOOL)isCoreLoadedForOptions {
@@ -1963,15 +2037,15 @@ static dispatch_once_t g_optAccessQueueOnce;
 /* ── Cheat Management ── */
 + (void)setCheatEnabled:(int)index code:(NSString *)code enabled:(BOOL)enabled {
   if (!g_instance || !g_instance->_retro_cheat_set) {
-    NSLog(@"[Bridge] Cheat not supported by this core");
+    bridge_log_printf(RETRO_LOG_WARN, "Cheat not supported by this core");
     return;
   }
   const char *codeStr = code.UTF8String;
   [g_instance->_coreLock lock];
   g_instance->_retro_cheat_set(index, enabled, codeStr);
   [g_instance->_coreLock unlock];
-  NSLog(@"[Bridge] Cheat %d %s: %@", index, enabled ? "enabled" : "disabled",
-        code);
+  bridge_log_printf(RETRO_LOG_DEBUG, "Cheat %d %s: %@", index,
+                    enabled ? "enabled" : "disabled", code);
 }
 
 + (void)resetCheats {
@@ -1981,7 +2055,7 @@ static dispatch_once_t g_optAccessQueueOnce;
   [g_instance->_coreLock lock];
   g_instance->_retro_cheat_reset();
   [g_instance->_coreLock unlock];
-  NSLog(@"[Bridge] Cheats reset");
+  bridge_log_printf(RETRO_LOG_DEBUG, "Cheats reset");
 }
 
 + (void)applyCheats:(NSArray<NSDictionary *> *)cheats {
@@ -2071,12 +2145,15 @@ static dispatch_once_t g_optAccessQueueOnce;
 
         if (address < memSize) {
           ram[address] = value;
-          NSLog(@"[Bridge] Direct memory write: 0x%06X = 0x%02X", address,
-                value);
+          bridge_log_printf(RETRO_LOG_DEBUG,
+                            "Direct memory write: 0x%06X = "
+                            "0x%02X",
+                            address, value);
         } else {
-          NSLog(@"[Bridge] Direct memory write: address 0x%06X out of range "
-                @"(size: %zu)",
-                address, memSize);
+          bridge_log_printf(RETRO_LOG_ERROR,
+                            "Direct memory write: address 0x%06X out of range "
+                            "(size: %zu)",
+                            address, memSize);
         }
       }
     }

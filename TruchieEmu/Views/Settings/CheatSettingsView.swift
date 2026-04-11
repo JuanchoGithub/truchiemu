@@ -200,6 +200,9 @@ struct CheatSettingsView: View {
                     }
                 }
                 .padding(.vertical, 8)
+                .onChange(of: prefs.applyCheatsOnLaunch) { 
+                    AppSettings.setBool("applyCheatsOnLaunch", value: prefs.applyCheatsOnLaunch)
+                }
                 
                 Divider()
                 
@@ -213,6 +216,9 @@ struct CheatSettingsView: View {
                     }
                 }
                 .padding(.vertical, 8)
+                .onChange(of: prefs.showCheatNotifications) {
+                    AppSettings.setBool("showCheatNotifications", value: prefs.showCheatNotifications)
+                }   
             }
         }
         .padding(16)
@@ -380,7 +386,7 @@ struct CheatSettingsView: View {
         let cheatsDir = FileManager.default.urls(for: .applicationSupportDirectory, in: .userDomainMask).first!
             .appendingPathComponent("TruchieEmu/cheats_downloaded")
         
-        NSWorkspace.shared.selectFile(nil, inFileViewerRootedAtPath: cheatsDir.path)
+        NSWorkspace.shared.selectFile(cheatsDir.path, inFileViewerRootedAtPath: cheatsDir.path)
     }
 }
 

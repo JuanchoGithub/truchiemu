@@ -12,6 +12,21 @@ struct TruchieEmuApp: App {
         _ = LoggerService.shared
         
         // MAME dictionary loading is deferred to background tasks in ContentWithPrepopulationView
+            // 1. Connect the Bridge to your existing LoggerService
+        LibretroBridgeSwift.registerCoreLogger { message, level in
+            let category = "LibretroCore"
+            switch level {
+            case 0: // INFO
+                LoggerService.info(category: category, message)
+            case 1: // WARN
+                LoggerService.info(category: category, message)
+            case 2: // ERROR
+                LoggerService.error(category: category, message)
+            default:
+                LoggerService.debug(category: category, message)
+            }
+        }
+
     }
     
     @StateObject private var library = ROMLibrary()
