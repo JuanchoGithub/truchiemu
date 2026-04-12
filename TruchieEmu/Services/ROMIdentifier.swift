@@ -224,35 +224,26 @@ enum ROMIdentifier {
         defer { try? handle.close() }
 
         do {
-            // Check Saturn at 0x0
-            if let data = try handle.read(upToCount: 15), String(data: data, encoding: .ascii) == "SEGA SEGASATURN" {
-                LoggerService.debug(category: "ROMIdentifier", "Saturn header match for \(url.lastPathComponent)")
-                return "saturn"
-            }
-
-            // Check 32X & Genesis at 0x100
-            try handle.seek(toOffset: 0x100)
-            if let data = try handle.read(upToCount: 8) {
-                if data.count >= 8, String(data: data, encoding: .ascii) == "SEGA 32X" { 
-                    LoggerService.debug(category: "ROMIdentifier", "32X header match for \(url.lastPathComponent)")
-                    return "32x" 
+            let systems = SystemDatabase.loadsystemsROMFindInfo()
+            
+            for system in systems {
+                for magicHeader in system.magicHeaders {
+                    // Always seek before reading
+                    try handle.seek(toOffset: magicHeader.offset)
+                    
+                    // Convert [UInt8] to Data for comparison
+                    let expectedData = Data(magicHeader.bytes.utf8)
+                    
+                    // Read the exact amount of bytes required
+                    if let data = try handle.read(upToCount: magicHeader.bytes.count), data == expectedData {
+                        LoggerService.debug(category: "ROMIdentifier", "Magic header match for \(url.lastPathComponent): \(system.id)")
+                        return system.id
                     }
-                if data.count >= 4, String(data: data.prefix(4), encoding: .ascii) == "SEGA" { 
-                    LoggerService.debug(category: "ROMIdentifier", "Genesis header match for \(url.lastPathComponent)")
-                    return "genesis" 
-                }
-            }
-
-            // Check PS1 at 0x8008 or 0x9318
-            let ps1Offsets: [UInt64] = [0x8008, 0x9318]
-            for offset in ps1Offsets {
-                try handle.seek(toOffset: offset)
-                if let data = try handle.read(upToCount: 11), String(data: data, encoding: .ascii) == "PLAYSTATION" {
-                    LoggerService.debug(category: "ROMIdentifier", "PS1 header match for \(url.lastPathComponent)")
-                    return "psx"
                 }
             }
         } catch {
+            // Log the error if necessary
+            LoggerService.error(category: "ROMIdentifier", "Error peeking header: \(error)")
             return nil
         }
         return nil
