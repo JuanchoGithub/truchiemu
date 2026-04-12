@@ -1419,11 +1419,18 @@ class StandaloneGameWindowController: NSWindowController, NSWindowDelegate, Obse
                         if let systemID = runner.rom?.systemID,
                            let systemInfo = SystemDatabase.system(forID: systemID) {
                             let systemAR = systemInfo.displayAspectRatio
+
                             // If the computed aspect ratio deviates significantly from the system's known AR,
                             // trust the system's known aspect ratio instead.
-                            if abs(targetAspect - systemAR) / systemAR > 0.15 { // more than 15% deviation
-                                LoggerService.debug(category: "Metal", "[Aspect Ratio] Core/pixel ratio \(String(format: "%.3f", targetAspect)) deviates >15% from system \(systemID) canonical ratio \(String(format: "%.3f", systemAR)). Using system ratio.")
-                                targetAspect = systemAR
+                            //if abs(targetAspect - systemAR) / systemAR > 0.15 { // more than 15% deviation
+                            //    LoggerService.debug(category: "Metal", "[Aspect Ratio] Core/pixel ratio \(String(format: "%.3f", targetAspect)) deviates >15% from system \(systemID) canonical ratio \(String(format: "%.3f", systemAR)). Using system ratio.")
+                                //targetAspect = systemAR
+                            //}
+                            //If the aspect ratio is wider than the Macbook screen, force it to 16:10
+                            // FIXME: this should be an option in settings
+                            if targetAspect > 1.7 {
+                                targetAspect = 1.6
+                                LoggerService.debug(category: "Metal", "[Aspect Ratio] Core/pixel ratio \(String(format: "%.3f", targetAspect)) is wider than the macbook screen. Forcing aspect ratio to 16:10")
                             }
                         }
                         var drawWidth = viewWidth

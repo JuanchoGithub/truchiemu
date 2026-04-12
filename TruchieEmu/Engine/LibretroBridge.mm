@@ -14,6 +14,11 @@
 // pointer
 static CoreLoggerBlock g_swiftLoggerBlock = nil;
 
+// for dolphin_libretro
+#ifndef RETRO_DEVICE_WIIMOTE_CC
+#define RETRO_DEVICE_WIIMOTE_CC 513
+#endif
+
 // 1. Define a standard C function signature
 typedef void (*LogFunc)(const char *, int);
 
@@ -119,6 +124,7 @@ typedef void (^VideoFrameCallback)(const void *data, int width, int height,
 @interface LibretroBridgeImpl : NSObject {
 @public
   void *_dlHandle;
+  fn_retro_set_controller_port_device _retro_set_controller_port_device;
   fn_retro_init _retro_init;
   fn_retro_deinit _retro_deinit;
   fn_retro_set_environment _retro_set_environment;
@@ -599,6 +605,24 @@ static bool bridge_environment(unsigned cmd, void *data) {
         }
       }
 
+      // dolphin_libretro
+      if (strcmp(var->key, "dolphin_gfx_backend") == 0) {
+        var->value = "OGL";
+        return true;
+      }
+
+      // These are known Dolphin core options that control buffer behavior
+      if (strcmp(var->key, "dolphin_vertex_rounding") == 0) {
+        var->value = "disabled";
+        return true;
+      }
+
+      // Force basic uniform management in Dolphin
+      if (strcmp(var->key, "dolphin_fastmem") == 0) {
+        var->value = "enabled";
+        return true;
+      }
+
       // mupen64plus-next: force angrylion (software) RDP to avoid GL4.2+ DSA
       // requirement gliden64 requires glCreateTextures/glDispatchCompute etc.
       // (GL4.5) not available on macOS
@@ -924,6 +948,16 @@ static int16_t bridge_input_state(unsigned port, unsigned device,
 
 @implementation LibretroBridgeImpl
 
+// Add this method to your @implementation LibretroBridgeImpl for dolphon
+- (void)setControllerPortDevice:(unsigned)port device:(unsigned)device {
+  // You need a function pointer to retro_set_controller_port_device
+  // If you didn't load this symbol in loadDylib, add it to the struct
+  // and the LOAD_SYM macro.
+  if (_retro_set_controller_port_device) {
+    _retro_set_controller_port_device(port, device);
+    bridge_log_printf(RETRO_LOG_INFO, "Set port %u to device %u", port, device);
+  }
+}
 - (instancetype)init {
   if (self = [super init]) {
     _coreLock = [[NSLock alloc] init];
@@ -1015,6 +1049,7 @@ static int16_t bridge_input_state(unsigned port, unsigned device,
        strcmp(#name, "retro_load_game") == 0))                                 \
     bridge_log_printf(RETRO_LOG_WARN, "Could not find symbol %s", #name);
 
+  LOAD_SYM(retro_set_controller_port_device)
   LOAD_SYM(retro_init)
   LOAD_SYM(retro_deinit)
   LOAD_SYM(retro_set_environment)
@@ -1134,6 +1169,12 @@ static int16_t bridge_input_state(unsigned port, unsigned device,
                       "retro_load_game crashed with unknown exception");
     return NO;
   }
+  // FORCE THE CONTROLLER TYPE HERE
+  // You need the specific integer constant that represents
+  // "Classic Controller" for the dolphin core.
+  // This is often specific to the core's implementation.
+  unsigned device_type = 513; // Example: This constant varies by core.
+  [self setControllerPortDevice:0 device:device_type];
 
   // ── Notify the core that the hardware context is ready & fetch safe
   // configurations ──
@@ -1146,11 +1187,10 @@ static int16_t bridge_input_state(unsigned port, unsigned device,
     _hw_callback.context_reset();
   }
 
-  if (_retro_serialize_size) {
-    _cachedSerializeSize = _retro_serialize_size();
-  } else {
-    _cachedSerializeSize = 0;
-  }
+  // --- PROPOSED FIX ---
+  // Initialize to 0. We will lazily update this the first time we
+  // actually need to save a state, or after the first frame runs.
+  _cachedSerializeSize = 0;
 
   if (_hwRenderEnabled && _glContext)
     CGLSetCurrentContext(NULL);
@@ -1315,6 +1355,11 @@ static int16_t bridge_input_state(unsigned port, unsigned device,
 }
 
 - (NSData *)serializeState {
+  // Update size if it was never set or is currently 0
+  if (_cachedSerializeSize == 0 && _retro_serialize_size) {
+    _cachedSerializeSize = _retro_serialize_size();
+  }
+
   if (!_cachedSerializeSize || !_retro_serialize)
     return nil;
 
@@ -1443,11 +1488,13 @@ static int16_t bridge_input_state(unsigned port, unsigned device,
   _hw_callback.get_proc_address = bridge_get_proc_address;
   _hw_callback.get_current_framebuffer = bridge_get_current_framebuffer;
 
+  // CGLPixelFormatAttribute profile =
+  // (CGLPixelFormatAttribute)kCGLOGLPVersion_Legacy;
+
+  // if (_hw_callback.context_type == RETRO_HW_CONTEXT_OPENGL_CORE) {
   CGLPixelFormatAttribute profile =
-      (CGLPixelFormatAttribute)kCGLOGLPVersion_Legacy;
-  if (_hw_callback.context_type == RETRO_HW_CONTEXT_OPENGL_CORE) {
-    profile = (CGLPixelFormatAttribute)kCGLOGLPVersion_3_2_Core;
-  }
+      (CGLPixelFormatAttribute)kCGLOGLPVersion_3_2_Core;
+  //}
 
   bridge_log_printf(
       RETRO_LOG_DEBUG,
@@ -1571,9 +1618,11 @@ static int16_t bridge_input_state(unsigned port, unsigned device,
       (g_coreID && [[g_coreID lowercaseString] containsString:@"ppsspp"]);
   BOOL isPS2 = (g_coreID &&
                 [[g_coreID lowercaseString] containsString:@"play_libretro"]);
+  BOOL isDolphin =
+      (g_coreID && [[g_coreID lowercaseString] containsString:@"dolphin"]);
 
-  if (isPSP || isPS2) {
-    // --- PSP FIX: BOTH FLIPS REQUIRED ---
+  if (isPSP || isPS2 || isDolphin) {
+    // --- FIX: Vertical FLIP REQUIRED ONLY ---
 
     // 1. Vertical Flip (Fixes the "Upside Down" issue)
     for (int y = 0; y < h / 2; y++) {
@@ -1608,6 +1657,13 @@ static int16_t bridge_input_state(unsigned port, unsigned device,
         rowBottom[x] = tmp;
       }
     }
+  }
+
+  if (isDolphin && _retro_set_controller_port_device) {
+    // Only apply the Classic Controller override for Dolphin
+    _retro_set_controller_port_device(0, 513); // 513 = Classic Controller
+    bridge_log_printf(RETRO_LOG_INFO,
+                      "Dolphin: Forced Port 0 to Classic Controller.");
   }
 
   return _hwReadbackBuffer;
