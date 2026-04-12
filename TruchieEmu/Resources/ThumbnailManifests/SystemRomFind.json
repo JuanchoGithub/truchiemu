@@ -1,0 +1,241 @@
+{
+    "systems": [
+        {
+            "id": "psx",
+            "pathKeywords": [
+                "ps1",
+                "psx",
+                "playstation",
+                "playstation 1"
+            ],
+            "extensions": [
+                "cue",
+                "iso",
+                "bin",
+                "pbp",
+                "chd",
+                "m3u"
+            ],
+            "magicHeaders": [
+                {
+                    "offset": 0,
+                    "bytes": "PLAYSTATION"
+                },
+                {
+                    "offset": 0,
+                    "bytes": "SCEx"
+                }
+            ],
+            "filenamePatterns": [
+                "(?i)\\(disc\\s?\\d+\\)",
+                "(?i)\\(track\\s?\\d+\\)"
+            ]
+        },
+        {
+            "id": "ps2",
+            "pathKeywords": [
+                "ps2",
+                "playstation 2",
+                "psx2"
+            ],
+            "extensions": [
+                "cue",
+                "iso",
+                "bin",
+                "chd",
+                "m3u"
+            ],
+            "magicHeaders": [
+                {
+                    "offset": 0,
+                    "bytes": "SLUS"
+                },
+                {
+                    "offset": 0,
+                    "bytes": "SLPM"
+                },
+                {
+                    "offset": 0,
+                    "bytes": "SCED"
+                },
+                {
+                    "offset": 0,
+                    "bytes": "SCES"
+                },
+                {
+                    "offset": 0,
+                    "bytes": "SLKA"
+                }
+            ],
+            "filenamePatterns": [
+                "(?i)\\(disc\\s?\\d+\\)"
+            ]
+        },
+        {
+            "id": "saturn",
+            "pathKeywords": [
+                "saturn",
+                "sega saturn"
+            ],
+            "extensions": [
+                "cue",
+                "iso",
+                "bin",
+                "chd"
+            ],
+            "magicHeaders": [
+                {
+                    "offset": 0,
+                    "bytes": "SEGA SEGASATURN"
+                },
+                {
+                    "offset": 0,
+                    "bytes": "SEGA SEGASATURN "
+                }
+            ],
+            "filenamePatterns": [
+                "(?i)\\(disc\\s?\\d+\\)"
+            ]
+        },
+        {
+            "id": "segacd",
+            "pathKeywords": [
+                "segacd",
+                "megacd",
+                "sega cd",
+                "mega cd"
+            ],
+            "extensions": [
+                "cue",
+                "iso",
+                "bin",
+                "chd"
+            ],
+            "magicHeaders": [
+                {
+                    "offset": 0,
+                    "bytes": "SEGA SEGACD"
+                },
+                {
+                    "offset": 0,
+                    "bytes": "SEGA DISC"
+                }
+            ],
+            "filenamePatterns": []
+        },
+        {
+            "id": "dreamcast",
+            "pathKeywords": [
+                "dreamcast",
+                "dc"
+            ],
+            "extensions": [
+                "cue",
+                "gdi",
+                "chd",
+                "bin",
+                "iso"
+            ],
+            "magicHeaders": [
+                {
+                    "offset": 0,
+                    "bytes": "SEGA SEGAKATANA"
+                },
+                {
+                    "offset": 0,
+                    "bytes": "SEGAKATANA"
+                }
+            ],
+            "filenamePatterns": [
+                "(?i)disc\\s?\\d"
+            ]
+        },
+        {
+            "id": "pcenginecd",
+            "pathKeywords": [
+                "pcecd",
+                "tg16cd",
+                "pc engine cd",
+                "turbografx cd",
+                "pcengine cd"
+            ],
+            "extensions": [
+                "cue",
+                "iso",
+                "bin",
+                "chd"
+            ],
+            "magicHeaders": [
+                {
+                    "offset": 0,
+                    "bytes": "PC ENGINE"
+                },
+                {
+                    "offset": 32769,
+                    "bytes": "CD001"
+                }
+            ],
+            "filenamePatterns": []
+        },
+        {
+            "id": "nes",
+            "pathKeywords": [
+                "nes",
+                "nintendo",
+                "famicom"
+            ],
+            "extensions": [
+                "nes",
+                "fds"
+            ],
+            "magicHeaders": [
+                {
+                    "offset": 0,
+                    "bytes": "NES"
+                }
+            ],
+            "filenamePatterns": []
+        },
+        {
+            "id": "snes",
+            "pathKeywords": [
+                "snes",
+                "supernintendo",
+                "sfc"
+            ],
+            "extensions": [
+                "smc",
+                "sfc"
+            ],
+            "magicHeaders": [],
+            "filenamePatterns": []
+        },
+        {
+            "id": "gba",
+            "pathKeywords": [
+                "gba",
+                "gameboyadvance",
+                "game boy advance"
+            ],
+            "extensions": [
+                "gba"
+            ],
+            "magicHeaders": [],
+            "filenamePatterns": []
+        },
+        {
+            "id": "n64",
+            "pathKeywords": [
+                "n64",
+                "nintendo 64"
+            ],
+            "extensions": [
+                "n64",
+                "z64",
+                "v64"
+            ],
+            "magicHeaders": [],
+            "filenamePatterns": []
+        }
+    ]
+}
