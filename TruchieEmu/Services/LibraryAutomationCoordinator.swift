@@ -19,16 +19,23 @@ final class LibraryAutomationCoordinator: ObservableObject {
 
     private init() {}
 
-    func runAfterLibraryUpdate(library: ROMLibrary) async {
+    func runAfterLibraryUpdate(library: ROMLibrary, targetROMs: [ROM]? = nil) async {
         // Skip if any game is running — identification and box-art downloads
         // are network- and I/O-heavy and degrade gameplay performance.
+        
+        // 1. Create a list to track ROMs modified in this batch
+        var batchModifiedROMs: [ROM] = []
+
+        // If targetROMs is provided, use it. Otherwise, fallback to full library.
+        let scope = targetROMs ?? library.roms
+        
         if RunningGamesTracker.shared.isGameRunning {
             LoggerService.debug(category: "LibraryAutomation", "Skipping post-scan automation — game is running")
             return
         }
 
-        let needIdentify = library.roms.filter { $0.needsAutomaticIdentification && !$0.isHidden }
-        let needArt = library.roms.filter { $0.needsAutomaticBoxArt && !$0.isHidden }
+        let needIdentify = scope.filter { $0.needsAutomaticIdentification && !$0.isHidden }
+        let needArt = scope.filter { $0.needsAutomaticBoxArt && !$0.isHidden }
 
         guard !needIdentify.isEmpty || !needArt.isEmpty else { return }
 
@@ -86,13 +93,21 @@ final class LibraryAutomationCoordinator: ObservableObject {
                         }
                     }.value
                     
-                    // Apply all results to library once batch is ready
+
+                    // 1. Create a quick-lookup map for the current batch
+                    let batchLookup = Dictionary(uniqueKeysWithValues: batch.map { ($0.id, $0) })
+
+                    // 2. Apply all results to library once batch is ready
                     for (romID, result) in identificationResults {
-                        if let current = library.roms.first(where: { $0.id == romID }) {
-                            library.applyIdentificationResult(result, to: current, persist: false)
-                            modifiedIDs.append(romID)
+                        // Instant lookup (O(1)) instead of scanning the entire library array (O(n))
+                        if let current = batchLookup[romID] { 
+                            // Capture the returned updated ROM
+                            if let updated = library.applyIdentificationResult(result, to: current, persist: false, silent: true) {
+                                batchModifiedROMs.append(updated)
+                                modifiedIDs.append(romID)
+                            }
+                            completedCount += 1
                         }
-                        completedCount += 1
                     }
                     
                     let done = Double(completedCount) / total
@@ -116,7 +131,7 @@ final class LibraryAutomationCoordinator: ObservableObject {
         await Task.yield()
 
         // Phase 2: Box art downloads (skip hidden ROMs)
-        let artTargets = library.roms.filter { $0.needsAutomaticBoxArt && !$0.isHidden }
+        let artTargets = scope.filter { $0.needsAutomaticBoxArt && !$0.isHidden }
         guard !artTargets.isEmpty else { return }
 
         phase = .downloadingArt
@@ -138,7 +153,7 @@ final class LibraryAutomationCoordinator: ObservableObject {
 
         // After Libretro CDN, try LaunchBox GamesDB for remaining ROMs still missing art
         if LaunchBoxGamesDBService.shared.downloadAfterScan {
-            let stillMissing = library.roms.filter { rom in
+            let stillMissing = scope.filter { rom in
                 !rom.hasBoxArt
             }
             if !stillMissing.isEmpty {

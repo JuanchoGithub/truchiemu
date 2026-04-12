@@ -55,6 +55,21 @@ enum KnownBIOS {
     }
 }
 
+struct systemsROMFindInfo: Identifiable, Codable, Hashable {
+    let id: String
+    let pathKeywords: [String]
+    let extensions: [String]
+    let magicHeaders: [MagicHeader]
+    let filenamePatterns: [String]
+}
+
+struct MagicHeader: Codable, Hashable {
+    let offset: UInt64
+    let bytes: String
+    
+    var data: Data? { bytes.data(using: .utf8) }
+}
+
 struct SystemInfo: Identifiable, Codable, Hashable {
     var id: String
     var name: String
@@ -141,6 +156,16 @@ struct SystemInfo: Identifiable, Codable, Hashable {
 
 // MARK: - SystemDatabase
 class SystemDatabase {
+    static var systems: [SystemInfo] = loadSystems()
+
+
+    static func loadsystemsROMFindInfo() -> [systemsROMFindInfo] {
+        guard let url = Bundle.main.url(forResource: "SystemRomFind", withExtension: "json"),
+              let data = try? Data(contentsOf: url),
+              let systems = try? JSONDecoder().decode([systemsROMFindInfo].self, from: data) else { return [] }
+        return systems
+    }
+
     private static let cacheURL: URL = {
         let appSupport = FileManager.default.urls(for: .applicationSupportDirectory, in: .userDomainMask).first!
         let appDir = appSupport.appendingPathComponent("TruchieEmu", isDirectory: true)
@@ -148,49 +173,11 @@ class SystemDatabase {
         return appDir.appendingPathComponent("SystemDatabase.json")
     }()
 
-    /// Changed from `let` to `var` so LibretroInfoManager and AspectRatio fetching can update it dynamically
-    static var systems: [SystemInfo] = loadSystems()
-
-    static let defaultSystems: [SystemInfo] = [
-        SystemInfo(id: "nes",          name: "Nintendo Entertainment System",   manufacturer: "Nintendo",   extensions: ["nes", "fds", "unf", "unif"], defaultCoreID: "nestopia_libretro",           iconName: "gamecontroller", emuIconName: "FC",       year: "1983", sortOrder: 1, defaultBoxType: .vertical),
-        SystemInfo(id: "snes",         name: "Super Nintendo",                  manufacturer: "Nintendo",   extensions: ["snes", "smc", "sfc", "fig", "bs"],  defaultCoreID: "snes9x_libretro",      iconName: "gamecontroller", emuIconName: "SFC",      year: "1990", sortOrder: 2, defaultBoxType: .vertical),
-        SystemInfo(id: "n64",          name: "Nintendo 64",                     manufacturer: "Nintendo",   extensions: ["n64", "v64", "z64", "ndd"],  defaultCoreID: "mupen64plus_next_libretro",   iconName: "gamecontroller", emuIconName: "N64",      year: "1996", sortOrder: 3, defaultBoxType: .landscape),
-        SystemInfo(id: "psx",          name: "PlayStation",                     manufacturer: "Sony",       extensions: ["cue", "toc", "m3u", "pbp"],   defaultCoreID: "mednafen_psx_libretro",      iconName: "opticaldisc",    emuIconName: "PS",       year: "1994", sortOrder: 20, defaultBoxType: .landscape),
-        SystemInfo(id: "gba",          name: "Game Boy Advance",                manufacturer: "Nintendo",   extensions: ["gba"],                        defaultCoreID: "mgba_libretro",              iconName: "iphone",         emuIconName: "GBA",      year: "2001", sortOrder: 4, defaultBoxType: .vertical),
-        SystemInfo(id: "gb",           name: "Game Boy",                        manufacturer: "Nintendo",   extensions: ["gb"],                         defaultCoreID: "mgba_libretro",              iconName: "iphone",         emuIconName: "GB",       year: "1989", sortOrder: 5, defaultBoxType: .vertical),
-        SystemInfo(id: "gbc",          name: "Game Boy Color",                  manufacturer: "Nintendo",   extensions: ["gbc"],                        defaultCoreID: "mgba_libretro",              iconName: "iphone",         emuIconName: "GBC",      year: "1998", sortOrder: 6, defaultBoxType: .vertical, displayInUI: false),
-        SystemInfo(id: "nds",          name: "Nintendo DS",                     manufacturer: "Nintendo",   extensions: ["nds", "dsi"],                 defaultCoreID: "desmume_libretro",           iconName: "ipad",           emuIconName: "NDS",      year: "2004", sortOrder: 7, defaultBoxType: .landscape),
-        SystemInfo(id: "genesis",      name: "Sega Genesis / Mega Drive",       manufacturer: "Sega",       extensions: ["md", "gen", "bin", "smd"],    defaultCoreID: "genesis_plus_gx_libretro",   iconName: "gamecontroller.fill", emuIconName: "MD",  year: "1988", sortOrder: 10, defaultBoxType: .vertical),
-        SystemInfo(id: "sms",          name: "Sega Master System",              manufacturer: "Sega",       extensions: ["sms"],                        defaultCoreID: "genesis_plus_gx_libretro",   iconName: "gamecontroller.fill", emuIconName: "MS",  year: "1985", sortOrder: 11, defaultBoxType: .vertical),
-        SystemInfo(id: "gamegear",     name: "Sega Game Gear",                  manufacturer: "Sega",       extensions: ["gg"],                         defaultCoreID: "genesis_plus_gx_libretro",   iconName: "iphone",         emuIconName: "GG",       year: "1990", sortOrder: 12, defaultBoxType: .vertical),
-        SystemInfo(id: "32x",          name: "Sega 32X",                        manufacturer: "Sega",       extensions: ["32x", "smd", "bin", "md"],     defaultCoreID: "picodrive_libretro",         iconName: "gamecontroller.fill", emuIconName: "32X",  year: "1994", sortOrder: 15, defaultBoxType: .vertical),
-        SystemInfo(id: "saturn",       name: "Sega Saturn",                     manufacturer: "Sega",       extensions: ["cue", "toc", "m3u"],          defaultCoreID: "mednafen_saturn_libretro",   iconName: "opticaldisc",    emuIconName: "SATURN",   year: "1994", sortOrder: 13, defaultBoxType: .landscape),
-        SystemInfo(id: "3do",          name: "3DO",                             manufacturer: "Panasonic",  extensions: ["iso", "bin", "cue", "chd"],   defaultCoreID: "opera_libretro",             iconName: "opticaldisc",    emuIconName: "3DO",      year: "1993", sortOrder: 16, defaultBoxType: .landscape),
-        SystemInfo(id: "dreamcast",    name: "Sega Dreamcast",                  manufacturer: "Sega",       extensions: ["cdi", "gdi", "chd"],          defaultCoreID: "flycast_libretro",           iconName: "opticaldisc",    emuIconName: "DC",       year: "1998", sortOrder: 14, defaultBoxType: .landscape),
-        SystemInfo(id: "ps2",          name: "PlayStation 2",                   manufacturer: "Sony",       extensions: ["iso", "chd"],                 defaultCoreID: "play_libretro",             iconName: "opticaldisc",    emuIconName: "PS",       year: "2000", sortOrder: 21, defaultBoxType: .landscape),
-        SystemInfo(id: "psp",          name: "PlayStation Portable",            manufacturer: "Sony",       extensions: ["iso", "cso", "pbp"],          defaultCoreID: "ppsspp_libretro",            iconName: "ipad.landscape", emuIconName: "PSP",      year: "2004", sortOrder: 22, defaultBoxType: .landscape),
-        SystemInfo(id: "mame",         name: "Arcade (MAME)",                   manufacturer: "Various",    extensions: ["zip", "7z"],                  defaultCoreID: "mame2010_libretro",     iconName: "arcade.stick",   emuIconName: "MAME",     year: nil,    sortOrder: 30, defaultBoxType: .vertical),
-        SystemInfo(id: "fba",          name: "Arcade (FinalBurn Neo)",          manufacturer: "Various",    extensions: ["zip", "7z"],                  defaultCoreID: "fbneo_libretro",             iconName: "arcade.stick",   emuIconName: "FBNEO",    year: nil,    sortOrder: 31, defaultBoxType: .vertical),
-        SystemInfo(id: "atari2600",    name: "Atari 2600",                      manufacturer: "Atari",      extensions: ["a26", "bin"],                 defaultCoreID: "stella_libretro",            iconName: "gamecontroller", emuIconName: "ATARI2600", year: "1977", sortOrder: 40, defaultBoxType: .vertical),
-        SystemInfo(id: "atari5200",    name: "Atari 5200",                      manufacturer: "Atari",      extensions: ["a52", "bin"],                 defaultCoreID: "a5200_libretro",             iconName: "gamecontroller", emuIconName: "ATARI5200", year: "1982", sortOrder: 41, defaultBoxType: .vertical),
-        SystemInfo(id: "atari7800",    name: "Atari 7800",                      manufacturer: "Atari",      extensions: ["a78", "bin"],                 defaultCoreID: "prosystem_libretro",         iconName: "gamecontroller", emuIconName: "ATARI7800", year: "1986", sortOrder: 42, defaultBoxType: .vertical),
-        SystemInfo(id: "lynx",         name: "Atari Lynx",                      manufacturer: "Atari",      extensions: ["lnx"],                        defaultCoreID: "handy_libretro",             iconName: "iphone.landscape", emuIconName: "LYNX",     year: "1989", sortOrder: 43, defaultBoxType: .vertical),
-        SystemInfo(id: "jaguar",       name: "Atari Jaguar",                    manufacturer: "Atari",      extensions: ["j64", "jag"],                 defaultCoreID: "virtualjaguar_libretro",     iconName: "gamecontroller", emuIconName: "JAGUAR",   year: "1993", sortOrder: 44, defaultBoxType: .vertical),
-        SystemInfo(id: "ngp",          name: "Neo Geo Pocket",                  manufacturer: "SNK",        extensions: ["ngp", "ngc"],                 defaultCoreID: "mednafen_ngp_libretro",      iconName: "iphone",         emuIconName: "NGP",      year: "1998", sortOrder: 50, defaultBoxType: .vertical),
-        SystemInfo(id: "pce",          name: "PC Engine / TurboGrafx-16",       manufacturer: "NEC",        extensions: ["pce", "cue"],                 defaultCoreID: "mednafen_pce_libretro",      iconName: "gamecontroller", emuIconName: "PCE",      year: "1987", sortOrder: 60, defaultBoxType: .landscape),
-        SystemInfo(id: "pcfx",         name: "PC-FX",                           manufacturer: "NEC",        extensions: ["cue", "toc"],                 defaultCoreID: "mednafen_pcfx_libretro",     iconName: "opticaldisc",    emuIconName: "PCFX",     year: "1994", sortOrder: 61, defaultBoxType: .landscape),
-        SystemInfo(id: "scummvm",      name: "ScummVM",                         manufacturer: "Various",    extensions: ["zip", "scummvm"],             defaultCoreID: "scummvm_libretro",           iconName: "gamecontroller", emuIconName: "SCUMMVM", year: nil,    sortOrder: 75, defaultBoxType: .landscape),
-        SystemInfo(id: "dos",          name: "MS-DOS",                          manufacturer: "Microsoft",  extensions: ["zip", "dosz", "conf", "exe", "bat", "iso", "img", "cue", "ins"], defaultCoreID: "dosbox_pure_libretro", iconName: "desktopcomputer", emuIconName: "DOS", year: "1981", sortOrder: 70, defaultBoxType: .landscape),
-        SystemInfo(id: "unknown",      name: "Unknown System",                  manufacturer: "Unknown",    extensions: ["*"],          defaultCoreID: nil,                        iconName: "questionmark.circle",   emuIconName: nil,    year: nil,    sortOrder: 99, defaultBoxType: .vertical),
-    ]
-
+    //SystemDatabase.json is an xcode app resource, load it here
     static func loadSystems() -> [SystemInfo] {
-        LoggerService.debug(category: "SystemDatabase", "Loading systems")
-        guard let data = try? Data(contentsOf: cacheURL),
-              let decoded = try? JSONDecoder().decode([SystemInfo].self, from: data) else {
-            return defaultSystems
-        }
-        return decoded
+        guard let data = try? Data(contentsOf: cacheURL) else { return [] }
+        guard let systems = try? JSONDecoder().decode([SystemInfo].self, from: data) else { return [] }
+        return systems
     }
     
     static func saveSystems(_ updatedSystems: [SystemInfo]) {
@@ -229,57 +216,31 @@ class SystemDatabase {
 
 // MARK: - Language and Log Level enums
 enum EmulatorLanguage: Int, CaseIterable, Identifiable {
-    case english = 0, japanese = 1, french = 2, german = 3, spanish = 4, italian = 5
-    case dutch = 6, portuguese = 7, russian = 8, korean = 9, chineseTraditional = 10
-    case chineseSimplified = 11, esperanto = 12, polish = 13, vietnamese = 14
-    case arabic = 15, greek = 16, turkish = 17, britishEnglish = 28
+    case english = 0, japanese = 1, german = 2, spanish = 3, italian = 4
+    case portuguese = 6, britishEnglish = 7
     
     var id: Int { self.rawValue }
     
     var noIntroRegionPreference: [String] {
         switch self {
+        case .spanish: return ["(Spain)", "(Europe)", "(World)", "(Es,", "(Es)", "(USA)"]
         case .english: return ["(USA)", "(World)", "(En,", "(En)", "(U)"]
         case .britishEnglish: return ["(Europe)", "(UK)", "(En,", "(World)"]
-        case .japanese: return ["(Japan)", "(JP)", "(Ja)"]
-        case .french: return ["(France)", "(Europe)", "(World)", "(Fr,", "(Fr)"]
         case .german: return ["(Germany)", "(Europe)", "(World)", "(De,", "(De)"]
-        case .spanish: return ["(Spain)", "(Europe)", "(World)", "(Es,", "(Es)", "(USA)"]
         case .italian: return ["(Italy)", "(Europe)", "(World)", "(It,", "(It)"]
-        case .dutch: return ["(Netherlands)", "(Europe)", "(World)", "(Nl)"]
         case .portuguese: return ["(Brazil)", "(Portugal)", "(Europe)", "(World)"]
-        case .russian: return ["(Russia)", "(Europe)", "(World)", "(Ru)"]
-        case .korean: return ["(Korea)", "(KR)", "(Ko)"]
-        case .chineseTraditional: return ["(Taiwan)", "(Hong Kong)", "(Traditional)"]
-        case .chineseSimplified: return ["(China)", "(Simplified)"]
-        case .esperanto: return ["(World)", "(Europe)"]
-        case .polish: return ["(Poland)", "(Europe)", "(World)"]
-        case .vietnamese: return ["(Vietnam)"]
-        case .arabic: return ["(Arab world)"]
-        case .greek: return ["(Greece)", "(Europe)", "(World)"]
-        case .turkish: return ["(Turkey)", "(Europe)", "(World)"]
+        case .japanese: return ["(Japan)", "(JP)", "(Ja)"]
         }
     }
 
     var flagEmoji: String {
         switch self {
+        case .spanish: return "🇦🇷"
         case .english: return "🇺🇸"
         case .japanese: return "🇯🇵"
-        case .french: return "🇫🇷"
         case .german: return "🇩🇪"
-        case .spanish: return "🇪🇸"
         case .italian: return "🇮🇹"
-        case .dutch: return "🇳🇱"
         case .portuguese: return "🇧🇷"
-        case .russian: return "🇷🇺"
-        case .korean: return "🇰🇷"
-        case .chineseTraditional: return "🇹🇼"
-        case .chineseSimplified: return "🇨🇳"
-        case .esperanto: return "🌍"
-        case .polish: return "🇵🇱"
-        case .vietnamese: return "🇻🇳"
-        case .arabic: return "🇸🇦"
-        case .greek: return "🇬🇷"
-        case .turkish: return "🇹🇷"
         case .britishEnglish: return "🇬🇧"
         }
     }
@@ -288,22 +249,10 @@ enum EmulatorLanguage: Int, CaseIterable, Identifiable {
         switch self {
         case .english: return "English"
         case .japanese: return "Japanese"
-        case .french: return "French"
         case .german: return "German"
         case .spanish: return "Spanish"
         case .italian: return "Italian"
-        case .dutch: return "Dutch"
         case .portuguese: return "Portuguese"
-        case .russian: return "Russian"
-        case .korean: return "Korean"
-        case .chineseTraditional: return "Chinese (Trad)"
-        case .chineseSimplified: return "Chinese (Simp)"
-        case .esperanto: return "Esperanto"
-        case .polish: return "Polish"
-        case .vietnamese: return "Vietnamese"
-        case .arabic: return "Arabic"
-        case .greek: return "Greek"
-        case .turkish: return "Turkish"
         case .britishEnglish: return "British English"
         }
     }
@@ -377,7 +326,7 @@ class SystemPreferences: ObservableObject {
     func setPreferredCoreID(_ coreID: String?, for systemID: String) {
         AppSettings.set("\(Self.keyPreferredCorePrefix)\(systemID)", value: coreID ?? "")
         updateTrigger += 1
-        LoggerService.debug(category: "SystemPreferences", "Set Preferred core ID for \(systemID): \(coreID)")
+        LoggerService.debug(category: "SystemPreferences", "Set Preferred core ID for \(systemID): \(coreID ?? "unknown")")
     }
 
     init() {
@@ -393,96 +342,25 @@ class SystemPreferences: ObservableObject {
 }
 
 extension SystemDatabase {
+    // FIXME: Add all the systems from systems dynamically here using this schema (already in the json)
+    // But for that we need to check since these are used across the app already
     static func normalizeSystemID(_ libretroID: String) -> String {
         switch libretroID {
-        case "2048": return "2048"
-        case "32x": return "32x"
-        case "3do": return "3do"
-        case "3ds": return "3ds"
-        case "anarch": return "anarch"
-        case "apple_ii": return "apple_ii"
-        case "arcadia": return "arcadia"
-        case "arduboy": return "arduboy"
         case "atari_2600": return "atari2600"
         case "atari_5200": return "atari5200"
         case "atari_7800": return "atari7800"
         case "atari_lynx": return "lynx"
-        case "atari_st": return "atari_st"
-        case "bbcmicro": return "bbcmicro"
-        case "bomberman": return "bomberman"
-        case "cdi": return "cdi"
-        case "chailove": return "chailove"
-        case "chip_8": return "chip_8"
-        case "colecovision": return "colecovision"
-        case "commodore_64": return "commodore_64"
-        case "commodore_amiga": return "commodore_amiga"
-        case "commodore_c128": return "commodore_c128"
-        case "commodore_c64": return "commodore_c64"
-        case "commodore_c64_supercpu": return "commodore_c64_supercpu"
-        case "commodore_cbm2": return "commodore_cbm2"
-        case "commodore_cbm5x0": return "commodore_cbm5x0"
-        case "commodore_pet": return "commodore_pet"
-        case "commodore_plus4": return "commodore_plus4"
-        case "commodore_vic20": return "commodore_vic20"
-        case "cpc": return "cpc"
-        case "craft": return "craft"
-        case "dice": return "dice"
-        case "dinothawr": return "dinothawr"
-        case "doom": return "doom"
-        case "doom_3": return "doom_3"
-        case "dos": return "dos"
-        case "dreamcast": return "dreamcast"
-        case "ep128": return "ep128"
-        case "epochcv": return "epochcv"
         case "fb_alpha": return "fba"
-        case "gam4980": return "gam4980"
         case "game_boy": return "gb"
         case "game_boy_advance": return "gba"
-        case "game_music": return "game_music"
-        case "gamecube": return "gamecube"
-        case "gamegear": return "gamegear"
-        case "gba": return "gba"
-        case "gong": return "gong"
-        case "intellivision": return "intellivision"
-        case "J2ME": return "J2ME"
-        case "jaguar": return "jaguar"
-        case "jollycv": return "jollycv"
-        case "jumpnbump": return "jumpnbump"
-        case "laserdisc": return "laserdisc"
-        case "lowresnx": return "lowresnx"
-        case "mac68k": return "mac68k"
-        case "mame": return "mame"
         case "master_system": return "sms"
         case "mega_drive": return "genesis"
-        case "mega_duck": return "mega_duck"
-        case "msx": return "msx"
-        case "music": return "music"
-        case "n64": return "n64"
-        case "nds": return "nds"
         case "neo_geo_pocket": return "ngp"
-        case "neogeo": return "neogeo"
-        case "nes": return "nes"
-        case "nxengine": return "nxengine"
-        case "odyssey2": return "odyssey2"
-        case "p2000t": return "p2000t"
-        case "pc_88": return "pc_88"
-        case "pc_98": return "pc_98"
         case "pc_engine": return "pce"
-        case "pcfx": return "pcfx"
-        case "pcxt": return "pcxt"
-        case "pico8": return "pico8"
         case "playstation": return "psx"
         case "playstation_portable": return "psp"
         case "playstation2": return "ps2"
-        case "pokemon_mini": return "pokemon_mini"
-        case "quake_1": return "quake_1"
-        case "quake_2": return "quake_2"
-        case "quake_3": return "quake_3"
-        case "rs": return "rs"
-        case "scummvm": return "scummvm"
         case "sega_saturn": return "saturn"
-        case "sharp_x1": return "sharp_x1"
-        case "sharp_x68000": return "sharp_x68000"
         case "super_nes": return "snes"
         case "nintendo_nes": return "nes"
         case "nintendo_64": return "n64"
@@ -492,7 +370,7 @@ extension SystemDatabase {
     }
 }
 
-// MARK: - RESOLVED FIXME: Libretro Core Info Refresh Service
+// MARK: - Libretro Core Info Refresh Service
 class LibretroInfoManager: ObservableObject {
     static let shared = LibretroInfoManager()
     

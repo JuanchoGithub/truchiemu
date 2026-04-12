@@ -456,20 +456,14 @@ actor ROMScanner {
         LoggerService.info(category: "ROMScanner", "=== LIGHTWEIGHT SCAN COMPLETE: \(found.count) ROM files found in \(String(format: "%.2f", Date().timeIntervalSince(scanStart)))s ===")
         return found
     }
+    // get a distinct list from all the extensions from all the systems in SystemDatabase.systems
+    let romExtensions = Set(SystemDatabase.systems.flatMap { $0.extensions })
 
     func findFoldersWithROMs(baseURL: URL, maxDepth: Int) async -> [URL] {
         var foldersWithROMs: [URL] = []
         let fm = FileManager.default
         
-        let romExtensions = Set([
-            "nes", "sfc", "smc", "fig", "gb", "gbc", "gba", "md", "gen", "smd",
-            "sms", "gg", "sg", "n64", "z64", "v64", "nds", "3ds", "psx", "cue",
-            "bin", "iso", "img", "chd", "zip", "7z", "rom", "mgx", "st", "msa",
-            "pce", "sgx", "ngp", "ngc", "ws", "wsc", "vb", "col", "rom", "a26",
-            "a52", "a78", "lnx", "j64", "jag", "suf", "bs", "gcm", "rvz",
-            "dos", "dosz", "conf", "bat", "com", "exe", "sou", "000", "001",
-            "flac", "ogg", "wav", "scr", "dsk", "m3u"
-        ])
+        self.romExtensions
         
         guard let enumerator = fm.enumerator(
             at: baseURL,

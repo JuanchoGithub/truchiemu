@@ -75,6 +75,8 @@ enum RebuildOption: String, CaseIterable, Identifiable {
 @MainActor
 class ROMLibrary: ObservableObject {
 
+    var lastAddedROMs: [ROM] = []
+
     // MARK: - Path Validation
 
     private var appInternalPath: String {
@@ -134,21 +136,58 @@ class ROMLibrary: ObservableObject {
         initializeLibrary()
     }
 
-    private func initializeLibrary() {
-        migrateLegacyUserDefaultsToSwiftData()
-        restoreLibraryAccess()
-        loadROMsFromRepository()
-        roms = roms.map { LibraryMetadataStore.shared.mergedROM($0) }
-        purgeROMsOutsideLibraryFolders()
-        loadFileIndexFromStorage()
-        updateCounts()
+    func restoreLibraryAccess() {
+        let savedFolders = repository.loadPrimaryFolders()
+        if savedFolders.isEmpty {
+            libraryFolders = []
+            primaryFolders = []
+            subfolderMap = [:]
+            return
+        }
         
-        Task {
-            //Stop refreshing the library on every launch
-            //await LibraryAutomationCoordinator.shared.runAfterLibraryUpdate(library: self)
-            //await MetadataSyncCoordinator.shared.runAfterLibraryUpdate(library: self)
+        libraryFolders = savedFolders.compactMap {
+            var stale = false
+            return try? URL(resolvingBookmarkData: $0.1, options: .withSecurityScope, bookmarkDataIsStale: &stale)
+        }
+        
+        primaryFolders = savedFolders.map { ROMLibraryFolder(url: URL(fileURLWithPath: $0.0), parentPath: $0.2, isPrimary: $0.3) }
+        for primary in primaryFolders {
+            subfolderMap[primary.url.path] = repository.loadSubfolders(parentPath: primary.url.path).map {
+                ROMLibraryFolder(url: URL(fileURLWithPath: $0.0), parentPath: $0.2, isPrimary: $0.3)
+            }
         }
     }
+
+    private func loadROMsFromRepository() { roms = repository.allROMs() }
+
+    func saveROMsToDatabase(only ids: [UUID]? = nil) {
+        if let ids = ids {
+            let idSet = Set(ids)
+            repository.saveROMs(roms.filter { idSet.contains($0.id) })
+        } else { repository.saveROMs(roms) }
+    }
+
+
+    private func purgeROMsOutsideLibraryFolders() {
+        let validPaths = primaryFolders.map { $0.url.path } + subfolderMap.values.flatMap { $0.map { $0.url.path } }
+        guard !validPaths.isEmpty else {
+            if !roms.isEmpty { roms.removeAll(); repository.deleteROMsByPath(roms.map{$0.path.path}); fileIndex.removeAll() }
+            return
+        }
+
+        let orphans = roms.filter { rom in
+            let romPath = rom.path.path
+            return !validPaths.contains { romPath == $0 || romPath.hasPrefix($0.hasSuffix("/") ? $0 : $0 + "/") }
+        }
+        guard !orphans.isEmpty else { return }
+
+        let idsToPurge = orphans.map { $0.id }
+        roms.removeAll { idsToPurge.contains($0.id) }
+        repository.deleteROMs(ids: idsToPurge)
+        saveROMsToDatabase()
+    }
+
+
 
     // MARK: - Legacy Migration & Purges
     
@@ -180,41 +219,46 @@ class ROMLibrary: ObservableObject {
         }
     }
 
-    func updateCounts() {
-        var counts: [String: Int] = [:]
-        counts["all"] = roms.filter { !$0.isHidden }.count
-        counts["favorites"] = roms.filter { $0.isFavorite && !$0.isHidden }.count
-        counts["recent"] = roms.filter { $0.lastPlayed != nil && !$0.isHidden }.count
-        counts["hidden"] = roms.filter { $0.isHidden }.count
-        counts["mameNonGames"] = roms.filter { $0.systemID == "mame" && $0.mameRomType != nil && $0.mameRomType != "game" }.count
 
-        let grouped = Dictionary(grouping: roms) { $0.systemID ?? "unknown" }
-        for (sysID, list) in grouped {
-            var visible = list.filter { !$0.isHidden }
-            if sysID == "mame" { visible = visible.filter { $0.mameRomType == "game" || $0.mameRomType == nil } }
-            counts[sysID] = visible.count
-        }
-        self.romCounts = counts
-        self.lastChangeDate = Date()
-    }
+    // 2. The new "Incremental" one (Used for adding new ROMs)
+    func updateCounts(for newROMs: [ROM]? = nil) {
+        if let roms = newROMs { 
+            
+            // Perform incremental updates on your dictionary
+            for rom in roms where !rom.isHidden {
+                romCounts["all", default: 0] += 1
+                if rom.isFavorite { romCounts["favorites", default: 0] += 1 }
+                if rom.lastPlayed != nil { romCounts["recent", default: 0] += 1 }
+                
+                let sysID = rom.systemID ?? "unknown"
+                if sysID == "mame" {
+                    if rom.mameRomType == "game" || rom.mameRomType == nil {
+                        romCounts[sysID, default: 0] += 1
+                    }
+                } else {
+                    romCounts[sysID, default: 0] += 1
+                }
+            }
+            // If we have no ROMs, just do a full update
+        } else {
+            var counts: [String: Int] = [:]
+            counts["all"] = roms.filter { !$0.isHidden }.count
+            counts["favorites"] = roms.filter { $0.isFavorite && !$0.isHidden }.count
+            counts["recent"] = roms.filter { $0.lastPlayed != nil && !$0.isHidden }.count
+            counts["hidden"] = roms.filter { $0.isHidden }.count
+            counts["mameNonGames"] = roms.filter { $0.systemID == "mame" && $0.mameRomType != nil && $0.mameRomType != "game" }.count
 
-    private func purgeROMsOutsideLibraryFolders() {
-        let validPaths = primaryFolders.map { $0.url.path } + subfolderMap.values.flatMap { $0.map { $0.url.path } }
-        guard !validPaths.isEmpty else {
-            if !roms.isEmpty { roms.removeAll(); repository.deleteROMsByPath(roms.map{$0.path.path}); fileIndex.removeAll() }
+            let grouped = Dictionary(grouping: roms) { $0.systemID ?? "unknown" }
+            for (sysID, list) in grouped {
+                var visible = list.filter { !$0.isHidden }
+                if sysID == "mame" { visible = visible.filter { $0.mameRomType == "game" || $0.mameRomType == nil } }
+                counts[sysID] = visible.count
+            }
+            self.romCounts = counts
             return
         }
-
-        let orphans = roms.filter { rom in
-            let romPath = rom.path.path
-            return !validPaths.contains { romPath == $0 || romPath.hasPrefix($0.hasSuffix("/") ? $0 : $0 + "/") }
-        }
-        guard !orphans.isEmpty else { return }
-
-        let idsToPurge = orphans.map { $0.id }
-        roms.removeAll { idsToPurge.contains($0.id) }
-        repository.deleteROMs(ids: idsToPurge)
-        saveROMsToDatabase()
+        self.lastChangeDate = Date()
+        self.updateCounts() 
     }
 
     // MARK: - Onboarding & Library Folders
@@ -266,41 +310,47 @@ class ROMLibrary: ObservableObject {
         scanProgress = 0
         scanCancellationToken.reset()
         
-        // Let the highly optimized, concurrent ROMScanner do the heavy lifting safely off the main thread
+        // 1. Scan the folder
         let scanner = ROMScanner()
         let scannedROMs = await scanner.scan(folder: folder, cancellationToken: scanCancellationToken) { progress in
             Task { @MainActor in self.scanProgress = progress }
         }
 
-        // Fast O(1) duplicate prevention
+        // 2. Identify new items (Fast O(1) duplicate prevention)
         let existingROMPaths = Set(roms.map { $0.path.path })
-        var newROMs: [ROM] = []
+        let newROMs = scannedROMs.filter { !existingROMPaths.contains($0.path.path) }
         
-        for var rom in scannedROMs {
-            if !existingROMPaths.contains(rom.path.path) {
-                // Apply the extra core-specific MAME logic specific to ROMLibrary
+        if !newROMs.isEmpty {
+            var processedROMs: [ROM] = []
+            
+            // 3. Process only the new items
+            for var rom in newROMs {
                 if rom.systemID == "mame" {
                     self.applyMAMEIdentificationInline(to: &rom, url: rom.path)
                 }
-                newROMs.append(rom)
+                // Add metadata merging
+                let merged = LibraryMetadataStore.shared.mergedROM(rom)
+                processedROMs.append(merged)
             }
-        }
-        
-        LoggerService.info(category: "ROMLibrary", "Scan extracted \(newROMs.count) totally new ROMs in \(String(format: "%.2f", Date().timeIntervalSince(scanStart)))s")
-        
-        // Batch Add and Persist
-        if !newROMs.isEmpty {
-            let mergedROMs = newROMs.map { LibraryMetadataStore.shared.mergedROM($0) }
-            self.roms.append(contentsOf: mergedROMs)
+
+            // 4. Update UI state incrementally
+            self.roms.append(contentsOf: processedROMs)
+            self.lastAddedROMs = processedROMs
             self.roms.sort { $0.displayName < $1.displayName }
-            self.updateCounts()
-
-            for rom in mergedROMs { LibraryMetadataStore.shared.persist(rom: rom) }
+            self.updateCounts(for: processedROMs) // Uses your new incremental method
+            
+            // 5. Persist only the new items
+            repository.saveROMs(processedROMs)
+            for rom in processedROMs { 
+                LoggerService.debug(category: "ROMLibrary", "Persisting new ROM: \(rom.displayName)")
+                LibraryMetadataStore.shared.persist(rom: rom) 
+            }
             LibraryMetadataStore.shared.flushToSwiftData()
-            saveROMsToDatabase(only: mergedROMs.map { $0.id })
+            
+            LoggerService.info(category: "ROMLibrary", "Scan extracted \(newROMs.count) new ROMs in \(String(format: "%.2f", Date().timeIntervalSince(scanStart)))s")
         }
 
-        // Start DAT downloads for any newly discovered systems
+        // 6. Post-scan tasks (only for new systems)
         let detectedSystems = Set(scannedROMs.compactMap { $0.systemID })
         Task { await scanner.downloadDatsForDiscoveredSystems(detectedSystems) }
 
@@ -308,10 +358,13 @@ class ROMLibrary: ObservableObject {
         isScanning = false
         cleanupScummVMCaches()
 
+        // 7. Automation
         if runAutomationAfter {
             guard !RunningGamesTracker.shared.isGameRunning else { return }
-            await LibraryAutomationCoordinator.shared.runAfterLibraryUpdate(library: self)
-            await MetadataSyncCoordinator.shared.runAfterLibraryUpdate(library: self)
+            // NOTE: If these coordinators perform global scans, you should check 
+            // if they can be made to only target the 'newROMs' or 'folder'
+            await LibraryAutomationCoordinator.shared.runAfterLibraryUpdate(library: self, targetROMs: self.lastAddedROMs)
+            await MetadataSyncCoordinator.shared.runAfterLibraryUpdate(library: self, targetROMs: self.lastAddedROMs)
         }
     }
 
@@ -384,15 +437,18 @@ class ROMLibrary: ObservableObject {
 
     func stopScan() { scanCancellationToken.cancel(); isScanning = false }
 
-    func updateROM(_ rom: ROM, persist: Bool = true) {
+    func updateROM(_ rom: ROM, persist: Bool = true, silent: Bool = false) {
         if let idx = roms.firstIndex(where: { $0.id == rom.id }) {
             let oldBezel = roms[idx].settings.bezelFileName
-            objectWillChange.send()
+            
+            // Only send updates if not silent
+            if !silent { objectWillChange.send() }
             roms[idx] = rom
             if oldBezel != rom.settings.bezelFileName { bezelUpdateToken += 1 }
             LibraryMetadataStore.shared.persist(rom: rom)
-            updateCounts()
             
+            // Only update counts if not silent
+            if !silent { updateCounts() }
             if persist {
                 updateGamesXML(for: rom)
                 saveROMsToDatabase(only: [rom.id])
@@ -407,34 +463,39 @@ class ROMLibrary: ObservableObject {
         return result
     }
 
-    func applyIdentificationResult(_ result: ROMIdentifyResult, to rom: ROM, persist: Bool = true) {
+    func applyIdentificationResult(_ result: ROMIdentifyResult, to rom: ROM, persist: Bool = true, silent: Bool = false) -> ROM? {
         switch result {
-        case .identified(let info), .identifiedFromName(let info):
-            var updated = rom; updated.crc32 = info.crc; updated.thumbnailLookupSystemID = info.thumbnailLookupSystemID
-            if updated.metadata == nil { updated.metadata = ROMMetadata() }
-            updated.metadata?.title = info.name; updated.metadata?.year = info.year
-            updated.metadata?.publisher = info.publisher; updated.metadata?.developer = info.developer; updated.metadata?.genre = info.genre
-            updateROM(updated, persist: persist)
+            case .identified(let info), .identifiedFromName(let info):
+                var updated = rom; updated.crc32 = info.crc; updated.thumbnailLookupSystemID = info.thumbnailLookupSystemID
+                if updated.metadata == nil { updated.metadata = ROMMetadata() }
+                updated.metadata?.title = info.name; updated.metadata?.year = info.year
+                updated.metadata?.publisher = info.publisher; updated.metadata?.developer = info.developer; updated.metadata?.genre = info.genre
+                updateROM(updated, persist: persist, silent: silent)
+                return updated
+                
+            case .crcNotInDatabase(let crc):
+                var updated = rom; updated.crc32 = crc
+                if updated.metadata?.title != nil {
+                    updated.metadata?.title = nil; updated.metadata?.year = nil
+                    updated.metadata?.publisher = nil; updated.metadata?.developer = nil; updated.metadata?.genre = nil
+                }
+                updateROM(updated, persist: persist, silent: silent)
+                return updated
+                
+            case .identificationCleared:
+                var updated = rom
+                if updated.metadata?.title != nil {
+                    updated.metadata?.title = nil; updated.metadata?.year = nil
+                    updated.metadata?.publisher = nil; updated.metadata?.developer = nil; updated.metadata?.genre = nil
+                    updated.thumbnailLookupSystemID = nil
+                    updateROM(updated, persist: persist, silent: silent)
+                    return updated
+                }
             
-        case .crcNotInDatabase(let crc):
-            var updated = rom; updated.crc32 = crc
-            if updated.metadata?.title != nil {
-                updated.metadata?.title = nil; updated.metadata?.year = nil
-                updated.metadata?.publisher = nil; updated.metadata?.developer = nil; updated.metadata?.genre = nil
-            }
-            updateROM(updated, persist: persist)
-            
-        case .identificationCleared:
-            var updated = rom
-            if updated.metadata?.title != nil {
-                updated.metadata?.title = nil; updated.metadata?.year = nil
-                updated.metadata?.publisher = nil; updated.metadata?.developer = nil; updated.metadata?.genre = nil
-                updated.thumbnailLookupSystemID = nil
-                updateROM(updated, persist: persist)
-            }
-            
-        case .databaseUnavailable, .noSystem, .romReadFailed: break
+            case .databaseUnavailable, .noSystem, .romReadFailed: 
+                return nil
         }
+        return nil
     }
 
     func clearIdentification(for rom: ROM, persist: Bool = true) {
@@ -484,15 +545,45 @@ class ROMLibrary: ObservableObject {
 
     // MARK: - SwiftData Persistence
 
-    func saveROMsToDatabase(only ids: [UUID]? = nil) {
-        if let ids = ids {
-            let idSet = Set(ids)
-            repository.saveROMs(roms.filter { idSet.contains($0.id) })
-        } else { repository.saveROMs(roms) }
-    }
     func saveSingleROM(_ rom: ROM) { repository.saveROM(rom) }
-    private func loadROMsFromRepository() { roms = repository.allROMs() }
 
+
+
+    // 1. Used only when adding a single folder
+    func saveSingleLibraryFolderBookmark(_ folder: ROMLibraryFolder) {
+        _ = folder.url.startAccessingSecurityScopedResource()
+        if let data = try? folder.url.bookmarkData(options: .withSecurityScope, includingResourceValuesForKeys: nil, relativeTo: nil) {
+            // Send only this one row to the repository
+            repository.saveLibraryFolders([(folder.url.path, data, folder.parentPath, folder.isPrimary)])
+        }
+    }
+
+    // 2. Used only if you need to perform a full sync (e.g., after removing a folder)
+    private func saveAllLibraryFolders() {
+        var rows: [(String, Data, String?, Bool)] = []
+        
+        // Flatten your folders into the rows array
+        for folder in primaryFolders {
+            if let data = getBookmarkData(for: folder.url) {
+                rows.append((folder.url.path, data, nil, true))
+            }
+        }
+        for subfolders in subfolderMap.values {
+            for sub in subfolders where sub.isPrimary {
+                if let data = getBookmarkData(for: sub.url) {
+                    rows.append((sub.url.path, data, sub.parentPath, true))
+                }
+            }
+        }
+        repository.saveLibraryFolders(rows)
+    }
+
+    // Helper to keep code clean
+    private func getBookmarkData(for url: URL) -> Data? {
+        _ = url.startAccessingSecurityScopedResource()
+        return try? url.bookmarkData(options: .withSecurityScope, includingResourceValuesForKeys: nil, relativeTo: nil)
+    }
+    
     private func saveSecurityScopedBookmarks() {
         var rows: [(String, Data, String?, Bool)] = []
         for folder in primaryFolders {
@@ -531,18 +622,20 @@ class ROMLibrary: ObservableObject {
         guard !isInternalPath(url), !url.path.isEmpty, !isExcludedLibraryPath(url) else { return }
         guard !primaryFolders.contains(where: { $0.url.path == url.path }) else { return }
 
-        let parent = subfolderMap.first { $0.value.contains(where: { $0.url.path == url.path }) }?.key
-        let folder = ROMLibraryFolder(url: url, parentPath: parent, isPrimary: true)
+        let folder = ROMLibraryFolder(url: url, parentPath: nil, isPrimary: true)
         primaryFolders.append(folder)
 
-        if let oldParentPath = parent {
-            repository.markFolderAsPrimary(urlPath: url.path, parentPath: oldParentPath)
-            if let idx = subfolderMap[oldParentPath]?.firstIndex(where: { $0.url.path == url.path }) { subfolderMap[oldParentPath]?[idx] = folder }
-        }
-
         if !libraryFolders.contains(url) { libraryFolders.append(url) }
-        saveSecurityScopedBookmarks()
-        if scanAfter { Task { await scanROMs(in: url) } }
+        
+        // Save only this bookmark
+        saveSingleLibraryFolderBookmark(folder)
+
+        // Trigger an incremental scan for ONLY this folder
+        if scanAfter { 
+            Task { 
+                await scanROMs(in: url, runAutomationAfter: true) 
+            } 
+        }
     }
 
     @MainActor func removePrimaryFolder(at index: Int) {
@@ -587,27 +680,7 @@ class ROMLibrary: ObservableObject {
         }
     }
 
-    func restoreLibraryAccess() {
-        let savedFolders = repository.loadPrimaryFolders()
-        if savedFolders.isEmpty {
-            libraryFolders = []
-            primaryFolders = []
-            subfolderMap = [:]
-            return
-        }
-        
-        libraryFolders = savedFolders.compactMap {
-            var stale = false
-            return try? URL(resolvingBookmarkData: $0.1, options: .withSecurityScope, bookmarkDataIsStale: &stale)
-        }
-        
-        primaryFolders = savedFolders.map { ROMLibraryFolder(url: URL(fileURLWithPath: $0.0), parentPath: $0.2, isPrimary: $0.3) }
-        for primary in primaryFolders {
-            subfolderMap[primary.url.path] = repository.loadSubfolders(parentPath: primary.url.path).map {
-                ROMLibraryFolder(url: URL(fileURLWithPath: $0.0), parentPath: $0.2, isPrimary: $0.3)
-            }
-        }
-    }
+
 
     // MARK: - File Index & Rebuild
 
@@ -674,4 +747,21 @@ class ROMLibrary: ObservableObject {
     }
 
     @MainActor func rebuildFolder(folder: ROMLibraryFolder, option: RebuildOption) async { await rebuildLibrary(modes: [option]) }
+
+    private func initializeLibrary() {
+        migrateLegacyUserDefaultsToSwiftData()
+        restoreLibraryAccess()
+        loadROMsFromRepository()
+        roms = roms.map { LibraryMetadataStore.shared.mergedROM($0) }
+        purgeROMsOutsideLibraryFolders()
+        loadFileIndexFromStorage()
+        updateCounts()
+        
+        Task {
+            //Stop refreshing the library on every launch
+            //await LibraryAutomationCoordinator.shared.runAfterLibraryUpdate(library: self)
+            //await MetadataSyncCoordinator.shared.runAfterLibraryUpdate(library: self)
+        }
+    }
+
 }

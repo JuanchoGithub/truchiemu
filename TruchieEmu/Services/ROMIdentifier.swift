@@ -1,106 +1,135 @@
 import Foundation
 
 /// Shared ROM system identification utility that both ROMScanner and ROMLibrary use.
-/// This eliminates duplicated logic between the two scanning paths.
+/// Uses a weighted scoring system to determine the most likely system based on 
+/// Magic Headers, Unique Extensions, Filename Patterns, and Path Context.
 enum ROMIdentifier {
 
     // MARK: - Public Entry Point
 
     static func identifySystem(url: URL, extension ext: String) -> SystemInfo? {
-        // TIER 0: Strong path-based context (folder name)
+        let filename = url.lastPathComponent.lowercased()
         let parentName = url.deletingLastPathComponent().lastPathComponent.lowercased()
-        // FIXME: Add all the cores and potential path names, use SystemDatabase.systems to get all the systems
-        let sysIDMap: [String: String] = [
-            "ps2": "ps2", "playstation2": "ps2", "playstation 2": "ps2",
-            "psp": "psp", "playstation portable": "psp",
-            "saturn": "saturn", "sega saturn": "saturn",
-            "dreamcast": "dreamcast", "sega dreamcast": "dreamcast",
-            "psx": "psx", "ps1": "psx", "playstation": "psx", "playstation 1": "psx", 
-            "3do": "3do",
-            "jaguar": "jaguar", "atari jaguar": "jaguar",
-            "gamecube": "gc", "gc": "gc",
-            "n64": "n64", "nintendo 64": "n64",
-            "nintendo": "nes", "famicom": "nes",
-            "family": "nes", "family game": "nes",
-            "sfc": "sfc", "super famicom": "sfc",
-            "super nintendo": "sfc", "super nintendo entertainment system": "sfc",
-            "gba": "gba", "game boy advance": "gba",
-            "gameboy": "gb", "game boy": "gb",
-            "gameboy color": "gbc", "game boy color": "gbc",
-            "ds": "nds", "nintendo ds": "nds",
-            "nintendo 3ds": "3ds", "3ds": "3ds",
-            "sega cd": "segacd", "sega genesis": "genesis",
-            "sega mega drive": "genesis", "mega drive": "genesis",
-            "sega master system": "sms", "master system": "sms",
-            "genesis": "genesis", "mame": "mame", "arcade": "mame",
-            "dos": "dos", "pc": "dos", "windows": "dos",
-            "scummvm": "scummvm", "scumm": "scummvm",
-            "32x": "32x", "sega 32x": "32x"
-        ]
+        let extLower = ext.lowercased()
         
-        if let hardID = sysIDMap[parentName], let system = SystemDatabase.system(forID: hardID) {
-            return system
-        }
-        
-        // 1. For ZIP files, determine the system by inspecting content
-        if ext == "zip" || ext == "7z" {
-            return identifyArchive(url: url)
-        }
+        // Dictionary to track potential matches: [SystemID: ConfidenceScore]
+        var candidates: [String: Int] = [:]
 
-        // 2. Try to identify by filename hints
-        if let systemID = detectSystemFromFilename(url.lastPathComponent), let system = SystemDatabase.system(forID: systemID) {
-            return system
-        }
-
-        // 3. For CD-based or ambiguous extensions, peek at the header
+        // --- TIER 1: Magic Headers (Highest Confidence: 100 pts) ---
+        // We check headers for ambiguous extensions (ISO, BIN, CUE, etc.)
         let ambiguous = ["cue", "bin", "iso", "img"]
-        if ambiguous.contains(ext) {
-            if let systemID = peekSystemID(url: url), let system = SystemDatabase.system(forID: systemID) {
-                return system
+        if ambiguous.contains(extLower) {
+            if let headerID = peekSystemID(url: url) {
+                candidates[headerID, default: 0] += 100
+                LoggerService.debug(category: "ROMIdentifier", "Magic Header match for \(url.lastPathComponent): \(headerID)")
             }
         }
 
-        // 4. Fallback to extension matching
-        return SystemDatabase.system(forExtension: ext)
+        // --- TIER 2: Archive Analysis (High Confidence: 90 pts) ---
+        if extLower == "zip" || extLower == "7z" {
+            if let archiveSystem = identifyArchive(url: url) {
+                candidates[archiveSystem.id, default: 0] += 90
+                LoggerService.debug(category: "ROMIdentifier", "Archive match for \(url.lastPathComponent): \(archiveSystem.id)")
+            }
+        }
+
+        // --- TIER 3: Iterative Scoring via SystemDatabase ---
+        // We loop through all known systems to accumulate scores based on metadata
+        let allSystems: [systemsROMFindInfo] = SystemDatabase.loadsystemsROMFindInfo()
+        
+        for system in allSystems {
+            // 1. Extension Matching (Weights: 80 for unique, 40 for shared)
+            if system.extensions.contains(extLower) {
+                let isUnique = allSystems.filter { $0.extensions.contains(extLower) }.count == 1
+                candidates[system.id, default: 0] += isUnique ? 80 : 40
+            }
+            
+            // 2. Path Contextual Matching
+            // Instead of relying on a pre-defined list, let's treat the folder 
+            // name as a direct match for the System ID itself (Weight: 70)
+            if parentName == system.id.lowercased() {
+                candidates[system.id, default: 0] += 70
+                LoggerService.debug(category: "ROMIdentifier", "Folder name matches System ID: \(system.id)")
+            } else {
+                // Fallback to checking keywords if the folder name isn't an exact ID match
+                for keyword in system.pathKeywords {
+                    if parentName.contains(keyword.lowercased()) {
+                        LoggerService.debug(category: "ROMIdentifier", "Path keyword match for \(url.lastPathComponent): \(system.id)")
+                        candidates[system.id, default: 0] += 30
+                        break
+                    }
+                }
+            }
+            
+            // 3. Filename Pattern Matching (Weight: 50)
+            for pattern in system.filenamePatterns {
+                if filename.contains(pattern.lowercased()) {
+                    LoggerService.debug(category: "ROMIdentifier", "Filename pattern match for \(url.lastPathComponent): \(system.id)")
+                    candidates[system.id, default: 0] += 50
+                    break 
+                }
+            }
+        }
+
+        // --- TIER 4: MAME Lookup (Specialized: 90 pts) ---
+        let shortName = url.deletingPathExtension().lastPathComponent.lowercased()
+        if let mameEntry = MAMEUnifiedService.shared.lookup(shortName: shortName), 
+           mameEntry.isRunnableInAnyCore && !mameEntry.isBIOS {
+            candidates["mame", default: 0] += 90
+            LoggerService.debug(category: "ROMIdentifier", "MAME lookup match for \(url.lastPathComponent): \(mameEntry.shortName)")
+        }
+
+        // --- FINAL DECISION ---
+        // Sort candidates by score descending
+        let sortedCandidates = candidates.sorted { $0.value > $1.value }
+        
+        if let winner = sortedCandidates.first, winner.value >= 30 {
+            // If we found a high-confidence match, return it
+            LoggerService.debug(category: "ROMIdentifier", "High confidence match for \(url.lastPathComponent): \(winner.key) with score \(winner.value)")
+            return SystemDatabase.system(forID: winner.key)
+        }
+
+        // NEW FALLBACK: Check if the parent folder name is a valid System ID
+        if let folderSystem = SystemDatabase.system(forID: parentName) {
+            LoggerService.debug(category: "ROMIdentifier", "No scoring match, but folder name '\(parentName)' is a valid System ID.")
+            return folderSystem
+        }
+
+        // Fallback: If no high-confidence match, try the standard extension lookup
+        LoggerService.debug(category: "ROMIdentifier", "No high confidence match for \(url.lastPathComponent), trying standard extension lookup")
+        return SystemDatabase.system(forExtension: extLower)
     }
 
     // MARK: - Archive Identification
-    // FIXME: This seems redundant with the parentName check in identifySystem
+
     private static func identifyArchive(url: URL) -> SystemInfo? {
         let parentName = url.deletingLastPathComponent().lastPathComponent.lowercased()
 
+        // Quick Path Check for Archives
         if parentName.contains("mame") || parentName.contains("arcade") || parentName.contains("fba") || parentName.contains("fbneo") {
+            LoggerService.debug(category: "ROMIdentifier", "Archive path match for \(url.lastPathComponent): mame")
             return SystemDatabase.system(forID: "mame")
         }
         if parentName.contains("dos") || parentName.contains("dosbox") || parentName.contains("pc") {
+            LoggerService.debug(category: "ROMIdentifier", "Archive path match for \(url.lastPathComponent): dos")
             return SystemDatabase.system(forID: "dos")
         }
         if parentName.contains("scummvm") || parentName.contains("scumm") {
+            LoggerService.debug(category: "ROMIdentifier", "Archive path match for \(url.lastPathComponent): scummvm")
             return SystemDatabase.system(forID: "scummvm")
         }
         if parentName.contains("32x") || parentName.contains("genesis32x") || parentName.contains("sega32x") {
+            LoggerService.debug(category: "ROMIdentifier", "Archive path match for \(url.lastPathComponent): 32x")
             return SystemDatabase.system(forID: "32x")
         }
 
-        // TIER 1.5: MAME database lookup (fast O(1) shortname check)
-        let shortName = url.deletingPathExtension().lastPathComponent.lowercased()
-        if let unifiedEntry = MAMEUnifiedService.shared.lookup(shortName: shortName) {
-            if unifiedEntry.isRunnableInAnyCore && !unifiedEntry.isBIOS {
-                return SystemDatabase.system(forID: "mame")
-            } else {
-                return nil
-            }
-        }
-
         if KnownBIOS.isKnownBios(filename: url.lastPathComponent) {
+            LoggerService.debug(category: "ROMIdentifier", "Archive path match for \(url.lastPathComponent): BIOS")
             return nil
         }
 
-        if let detected = fingerprintArchive(url: url) {
-            return detected
-        }
-
-        return SystemDatabase.system(forID: "unknown")
+        // Deep inspection of archive contents
+        return fingerprintArchive(url: url)
     }
 
     // MARK: - Content Fingerprinting
@@ -108,22 +137,22 @@ enum ROMIdentifier {
     private static func fingerprintArchive(url: URL) -> SystemInfo? {
         guard let files = peekInsideZipFiles(url: url) else { return nil }
 
-        // FIXME: Do not hardcode the console extensions, use the SystemDatabase
-        let consoleExts = ["32x", "nes", "sfc", "smc", "fig", "gb", "gbc", "gba", "md", "gen", "smd", "sms", "gg", "sg"]
+        let systemDB = SystemDatabase.loadSystems()
+        let consoleExts = Set(systemDB.flatMap { $0.extensions })
+        
         for file in files {
-            let ext = URL(fileURLWithPath: file).pathExtension.lowercased()
-            if consoleExts.contains(ext), let system = SystemDatabase.system(forExtension: ext) {
-                return system
+            let fileExt = URL(fileURLWithPath: file).pathExtension.lowercased()
+            // find the extension using the unique list from consoleExts
+            if consoleExts.contains(fileExt) {
+                if let system = systemDB.first(where: { $0.extensions.contains(fileExt) }) {
+                    LoggerService.debug(category: "ROMIdentifier", "Archive file extension match for \(url.lastPathComponent): \(system.id)")
+                    return system
+                }
             }
         }
 
-        let dosInnerExtensions: Set<String> = ["exe", "com", "bat", "dos", "dosz", "conf", "ins"]
-        if files.contains(where: { dosInnerExtensions.contains(URL(fileURLWithPath: $0).pathExtension.lowercased()) }) {
-            return SystemDatabase.system(forID: "dos")
-        }
-
+        // ScummVM Specific Detection
         let scummvmInnerExtensions: Set<String> = ["sou", "000", "001", "flac", "ogg", "wav"]
-        // FIXME: The list is not complete, we should use the ScummVM database instead for quick name matching
         let scummvmGameIndicators: Set<String> = [
             "HE", "MI", "SAM", "DAY", "DIG", "TENTACLE", "COMI", "MONKEY", "INDY",
             "MANIAC", "ZAK", "LOOM", "GROUSE", "FULLTHROTTLE", "CURSE", "GRIM",
@@ -135,37 +164,28 @@ enum ROMIdentifier {
             let ext = fileURL.pathExtension.lowercased()
             let nameWithoutExt = fileURL.deletingPathExtension().lastPathComponent.uppercased()
 
-            if scummvmInnerExtensions.contains(ext) { return SystemDatabase.system(forID: "scummvm") }
-            if scummvmGameIndicators.contains(where: { nameWithoutExt.contains($0) }) { return SystemDatabase.system(forID: "scummvm") }
+            if scummvmInnerExtensions.contains(ext) { 
+                LoggerService.debug(category: "ROMIdentifier", "Archive file extension match for \(url.lastPathComponent): scummvm")
+                return SystemDatabase.system(forID: "scummvm") 
+            }
+            if scummvmGameIndicators.contains(where: { nameWithoutExt.contains($0) }) { 
+                LoggerService.debug(category: "ROMIdentifier", "Archive file name match for \(url.lastPathComponent): scummvm")
+                return SystemDatabase.system(forID: "scummvm") 
+            }
         }
 
+        // MAME Style Detection (lots of tiny files, often no extension)
         let mameInnerExtensions: Set<String> = ["bin", "rom", "a", "b", "c", "d", "e", "f"]
         let mameStyleCount = files.filter { file in
             let fileURL = URL(fileURLWithPath: file)
             let name = fileURL.deletingPathExtension().lastPathComponent
             let ext = fileURL.pathExtension.lowercased()
+            LoggerService.debug(category: "ROMIdentifier", "Archive file extension match for \(url.lastPathComponent): \(ext)")
             return (name.count <= 15 && ext.isEmpty) || ext == "bin" || ext == "rom" || mameInnerExtensions.contains(ext)
         }.count
 
         if mameStyleCount > 1 { return SystemDatabase.system(forID: "mame") }
-        return nil
-    }
-
-    // MARK: - Filename Detection
-
-    //FIXME: This seems redundant with the fingerprintArchive function
-    private static func detectSystemFromFilename(_ filename: String) -> String? {
-        let upper = filename.uppercased()
-        if upper.contains("DC_BOOT") || upper.contains("DC_FLASH") { return "dreamcast" }
-        if upper.contains("(PS1)") || upper.contains("[PS1]") || upper.contains("(PSX)") { return "psx" }
-        if upper.contains("(SATURN)") || upper.contains("[SATURN]") { return "saturn" }
-        if upper.contains("(32X)") || upper.contains("[32X]") { return "32x" }
-        if upper.contains("(GENESIS)") || upper.contains("(MEGA DRIVE)") { return "genesis" }
-
-        let ps1Regex = try? NSRegularExpression(pattern: "(S[CL][EP][SM]|SCPH)-\\d{5}", options: [])
-        if let regex = ps1Regex, regex.firstMatch(in: upper, options: [], range: NSRange(location: 0, length: upper.count)) != nil {
-            return "psx"
-        }
+        
         return nil
     }
 
@@ -194,11 +214,11 @@ enum ROMIdentifier {
             }
             return nil
         } else {
+            LoggerService.debug(category: "ROMIdentifier", "Checking file header for \(url.lastPathComponent),")
             return peekHeader(url: url)
         }
     }
 
-    /// Optimized: Uses FileHandle to instantly read only the tiny chunks of bytes needed instead of memory mapping large ISOs
     private static func peekHeader(url: URL) -> String? {
         guard let handle = try? FileHandle(forReadingFrom: url) else { return nil }
         defer { try? handle.close() }
@@ -206,48 +226,51 @@ enum ROMIdentifier {
         do {
             // Check Saturn at 0x0
             if let data = try handle.read(upToCount: 15), String(data: data, encoding: .ascii) == "SEGA SEGASATURN" {
+                LoggerService.debug(category: "ROMIdentifier", "Saturn header match for \(url.lastPathComponent)")
                 return "saturn"
             }
 
             // Check 32X & Genesis at 0x100
             try handle.seek(toOffset: 0x100)
             if let data = try handle.read(upToCount: 8) {
-                if data.count >= 8, String(data: data, encoding: .ascii) == "SEGA 32X" { return "32x" }
-                if data.count >= 4, String(data: data.prefix(4), encoding: .ascii) == "SEGA" { return "genesis" }
+                if data.count >= 8, String(data: data, encoding: .ascii) == "SEGA 32X" { 
+                    LoggerService.debug(category: "ROMIdentifier", "32X header match for \(url.lastPathComponent)")
+                    return "32x" 
+                    }
+                if data.count >= 4, String(data: data.prefix(4), encoding: .ascii) == "SEGA" { 
+                    LoggerService.debug(category: "ROMIdentifier", "Genesis header match for \(url.lastPathComponent)")
+                    return "genesis" 
+                }
             }
 
-            // Check PS1 at 0x8008
-            try handle.seek(toOffset: 0x8008)
-            if let data = try handle.read(upToCount: 11), String(data: data, encoding: .ascii) == "PLAYSTATION" {
-                return "psx"
-            }
-
-            // Check PS1 alternate at 0x9318
-            try handle.seek(toOffset: 0x9318)
-            if let data = try handle.read(upToCount: 11), String(data: data, encoding: .ascii) == "PLAYSTATION" {
-                return "psx"
+            // Check PS1 at 0x8008 or 0x9318
+            let ps1Offsets: [UInt64] = [0x8008, 0x9318]
+            for offset in ps1Offsets {
+                try handle.seek(toOffset: offset)
+                if let data = try handle.read(upToCount: 11), String(data: data, encoding: .ascii) == "PLAYSTATION" {
+                    LoggerService.debug(category: "ROMIdentifier", "PS1 header match for \(url.lastPathComponent)")
+                    return "psx"
+                }
             }
         } catch {
             return nil
         }
-
         return nil
     }
 
     // MARK: - Fast ZIP Peeking
 
-    /// Optimized: Only loads the first 64KB of the ZIP into memory to scan Local File Headers. Extremely fast.
     private static func peekInsideZipFiles(url: URL) -> [String]? {
         guard let handle = try? FileHandle(forReadingFrom: url) else { return nil }
         defer { try? handle.close() }
 
-        // 64KB is generally enough to capture the local file headers for ROM contents without slowing down I/O
         guard let data = try? handle.read(upToCount: 65536), data.count >= 30 else { return nil }
 
         func readLEUInt16(_ start: Int) -> UInt16? {
             guard start + 2 <= data.count else { return nil }
             var value: UInt16 = 0
             for i in 0..<2 { value |= UInt16(data[start + i]) << (8 * i) }
+            LoggerService.extreme(category: "ROMIdentifier", "Read LE UInt16 at offset \(start): \(value)")
             return value
         }
 
@@ -255,6 +278,7 @@ enum ROMIdentifier {
             guard start + 4 <= data.count else { return nil }
             var value: UInt32 = 0
             for i in 0..<4 { value |= UInt32(data[start + i]) << (8 * i) }
+            LoggerService.extreme(category: "ROMIdentifier", "Read LE UInt32 at offset \(start): \(value)")
             return value
         }
 
@@ -278,6 +302,7 @@ enum ROMIdentifier {
             guard offset + 30 + nameLen <= data.count else { break }
             let nameData = data[offset + 30 ..< offset + 30 + nameLen]
             if let name = String(data: nameData, encoding: .utf8), !name.hasSuffix("/") {
+                LoggerService.extreme(category: "ROMIdentifier", "Read filename at offset \(offset + 30): \(name)")
                 filenames.append(name)
             }
 
@@ -286,6 +311,7 @@ enum ROMIdentifier {
             offset = next
         }
 
+        LoggerService.extreme(category: "ROMIdentifier", "Read filenames: \(filenames)")
         return filenames.isEmpty ? nil : filenames
     }
 
