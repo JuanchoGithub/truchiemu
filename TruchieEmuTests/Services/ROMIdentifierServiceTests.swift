@@ -219,4 +219,37 @@ final class ROMIdentifierServiceTests: XCTestCase {
         let lowercasedVariants = articleVariants.map { $0.lowercased() }
         XCTAssertTrue(lowercasedVariants.contains(dbEntry), "Article variant (lowercased) should match DB entry")
     }
+
+    func testROMScannerIdentifiesSystemsInDownloadsRoms() async throws {
+        let scanner = ROMScanner()
+        let romsFolder = URL(fileURLWithPath: "/Users/jayjay/Downloads/roms")
+        let reportURL = URL(fileURLWithPath: "/Users/jayjay/Downloads/rom_identification_report.txt")
+        
+        // Scan the folder
+        let roms = await scanner.scan(folder: romsFolder) { _ in }
+        
+        // Create report content
+        var reportLines = ["ROM Identification Report", "Generated on: \(Date())", ""]
+        for rom in roms {
+            let system = rom.systemID ?? "unknown"
+            reportLines.append("[\(system)] \(rom.path.path)")
+        }
+        
+        // Write to file
+        let reportContent = reportLines.joined(separator: "\n")
+        try reportContent.write(to: reportURL, atomically: true, encoding: .utf8)
+        
+        // Assertions
+        XCTAssertFalse(roms.isEmpty, "Should have found some ROMs in /Users/jayjay/Downloads/roms")
+        
+        let identifiedROMs = roms.filter { 
+            guard let sysID = $0.systemID else { return false }
+            return sysID != "unknown" 
+        }
+        
+        XCTAssertFalse(identifiedROMs.isEmpty, "Should have identified at least one ROM system")
+        
+        let systems = Set(identifiedROMs.compactMap { $0.systemID })
+        XCTAssertGreaterThan(systems.count, 0, "Should have identified at least one system")
+    }
 }

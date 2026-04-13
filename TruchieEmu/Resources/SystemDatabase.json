@@ -2,6 +2,27 @@
     {
         "year": "1983",
         "id": "nes",
+        "magicHeaders": [
+            {
+                "offset": 0,
+                "bytes": "NES\\x1A"
+            },
+            {
+                "offset": 0,
+                "bytes": "4E 45 53 1A"
+            }
+        ],
+        "pathKeywords": [
+            "nes",
+            "nintendo",
+            "famicom",
+            "fc",
+            "nintendo entertainment system",
+            "family computer",
+            "family",
+            "family game",
+            "nintendo nes"
+        ],
         "sortOrder": 1,
         "displayInUI": true,
         "name": "Nintendo Entertainment System",
@@ -37,6 +58,21 @@
     {
         "year": "1990",
         "id": "snes",
+        "magicHeaders": [
+            {
+                "offset": 0,
+                "bytes": "SNES\\x1A"
+            },
+            {
+                "offset": 32704,
+                "bytes": null 
+            },
+            {
+                "offset": 32704,
+                "bytes": null,
+                "minFileSize": 32768
+            }
+        ],
         "sortOrder": 2,
         "displayInUI": true,
         "name": "Super Nintendo",
@@ -86,6 +122,26 @@
     {
         "year": "2001",
         "id": "gba",
+        "magicHeaders": [
+            {
+                "offset": 0,
+                "bytes": "AGB\\x1A"
+            },
+            {
+                "offset": 0,
+                "bytes": "GBAX\\x1A"
+            },
+            {   
+                "offset": 4, 
+                "bytes": "24 FF AE 51 69 9A A2 21 3D 84 82 0A 84 E4 09 AD 11 24 8B 98 06 4F 9E 08 21 67 03 24" 
+            }
+        ],
+        "pathKeywords": [
+            "gba",
+            "game boy advance",
+            "gameboy advance",
+            "nintendo gba"
+        ],
         "sortOrder": 4,
         "displayInUI": true,
         "name": "Game Boy Advance",
@@ -109,6 +165,28 @@
     {
         "year": "1989",
         "id": "gb",
+        "magicHeaders": [
+            {
+                "offset": 0,
+                "bytes": "GB\\x1A"
+            },
+            {
+                "offset": 0,
+                "bytes": "GBX\\x1A"
+            },
+            {
+                "offset": 260, 
+                "bytes": "CE ED 66 66 CC 0D 00 0B 03 73 00 83 00 0C 00 0D 00 08 11 1F 88 89 00 0E DC CC 6E E6 DD DD D9 99 BB BB 67 63 6E 0E EC CC DD DC 99 9F BB B9 33 3E" 
+            }
+        ],
+        "pathKeywords": [
+            "gb",
+            "game boy",
+            "nintendo gb",
+            "gbc",
+            "game boy color",
+            "gameboy color"
+        ],
         "sortOrder": 5,
         "displayInUI": true,
         "name": "Game Boy",
@@ -167,6 +245,26 @@
     {
         "year": "2004",
         "id": "nds",
+        "magicHeaders": [
+            {
+                "offset": 0,
+                "bytes": "Nintendo DS"
+            },
+            {
+                "offset": 0,
+                "bytes": "NTR\\x1A"
+            },
+            { 
+                "offset": 12, 
+                "bytes": "NTR-" 
+                }
+        ],
+        "pathKeywords": [
+            "nds",
+            "nintendo ds",
+            "dsi",
+            "ids"
+        ],
         "sortOrder": 7,
         "displayInUI": true,
         "name": "Nintendo DS",
@@ -186,6 +284,30 @@
     {
         "year": "1988",
         "id": "genesis",
+        "pathKeywords": [
+            "genesis",
+            "mega drive",
+            "sega genesis",
+            "sega mega drive",
+            "md",
+            "gen",
+            "sega",
+            "segacd",
+            "megacd",
+            "sega cd",
+            "mega cd"
+        ],
+        "magicHeaders": [
+            {
+                "offset": 0,
+                "bytes": "SEGA SEGACD"
+            },
+            {
+                "offset": 256,
+                "bytes": "SEGA"
+            }
+        ],
+        "filenamePatterns": [],
         "sortOrder": 10,
         "displayInUI": true,
         "name": "Sega Genesis \/ Mega Drive",
@@ -209,6 +331,16 @@
     {
         "year": "1985",
         "id": "sms",
+        "magicHeaders": [
+            {
+                "offset": 32752,
+                "bytes": "TMR SEGA"
+            },
+            {
+                "offset": 0,
+                "bytes": "TMR SEGA "
+            }
+        ],
         "sortOrder": 11,
         "displayInUI": true,
         "name": "Sega Master System",
@@ -242,6 +374,19 @@
     {
         "year": "1994",
         "id": "saturn",
+        "pathKeywords": [
+            "saturn",
+            "sega saturn"
+        ],
+        "magicHeaders": [
+            {
+                "offset": 0,
+                "bytes": "SEGA SEGASATURN"
+            }
+        ],
+        "filenamePatterns": [
+            "(?i)\\(disc\\s?\\d+\\)"
+        ],
         "sortOrder": 13,
         "displayInUI": true,
         "name": "Sega Saturn",
@@ -327,6 +472,22 @@
     {
         "year": "1994",
         "id": "psx",
+        "pathKeywords": [
+            "ps1",
+            "psx",
+            "playstation",
+            "playstation 1"
+        ],
+        "magicHeaders": [
+            {
+                "offset": 0,
+                "bytes": "PS-X EXE"
+            }
+        ],
+        "filenamePatterns": [
+            "(?i)\\(disc\\s?\\d+\\)",
+            "(?i)\\(track\\s?\\d+\\)"
+        ],
         "sortOrder": 20,
         "displayInUI": true,
         "name": "PlayStation",
@@ -365,6 +526,36 @@
     {
         "year": "2000",
         "id": "ps2",
+        "pathKeywords": [
+            "ps2",
+            "playstation 2",
+            "psx2"
+        ],
+        "magicHeaders": [
+            {
+                "offset": 0,
+                "bytes": "SLUS"
+            },
+            {
+                "offset": 0,
+                "bytes": "SLPM"
+            },
+            {
+                "offset": 0,
+                "bytes": "SCED"
+            },
+            {
+                "offset": 0,
+                "bytes": "SCES"
+            },
+            {
+                "offset": 0,
+                "bytes": "SLKA"
+            }
+        ],
+        "filenamePatterns": [
+            "(?i)\\(disc\\s?\\d+\\)"
+        ],
         "sortOrder": 21,
         "displayInUI": true,
         "name": "PlayStation 2",
@@ -576,6 +767,25 @@
     {
         "year": "1987",
         "id": "pce",
+        "pathKeywords": [
+            "pcecd",
+            "tg16cd",
+            "pc engine cd",
+            "turbografx cd",
+            "pcengine cd"
+        ],
+        
+        "magicHeaders": [
+            {
+                "offset": 0,
+                "bytes": "PC ENGINE"
+            },
+            {
+                "offset": 32769,
+                "bytes": "CD001"
+            }
+        ],
+        "filenamePatterns": [],
         "sortOrder": 60,
         "displayInUI": true,
         "name": "PC Engine \/ TurboGrafx-16",
@@ -1917,6 +2127,21 @@
     {
         "displayInUI": true,
         "id": "3ds",
+        "magicHeaders": [
+            { 
+                "offset": 256, 
+                "bytes": "NCSD" 
+            },
+            { 
+                "offset": 512, 
+                "bytes": "NCCH" 
+            }
+        ],
+        "pathKeywords": [
+            "3ds",
+            "3dsx",
+            "nintendo 3ds"
+        ],
         "name": "3DS",
         "extensions": [
             "3ds",
@@ -2178,6 +2403,25 @@
     {
         "displayInUI": true,
         "id": "gamecube",
+        "pathKeywords": [
+            "gamecube",
+            "gc",
+            "nintendo gamecube",
+            "cube"
+        ],
+        "magicHeaders": [
+            {
+                "offset": 0,
+                "bytes": "CISO"
+            },
+            {
+                "offset": 32769,
+                "bytes": "CD001"
+            }
+        ],
+        "filenamePatterns": [
+            "(?i)\\(disc\\s?\\d+\\)"
+        ],
         "name": "GameCube \/ Wii",
         "extensions": [
             "ciso",

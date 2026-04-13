@@ -12,7 +12,6 @@ final class ROMDatabaseTests: XCTestCase {
             name: "Super Mario Bros",
             path: URL(fileURLWithPath: "/Users/test/ROMs/SMB.nes"),
             systemID: "nes",
-            boxArtPath: nil,
             isFavorite: true,
             lastPlayed: nil,
             totalPlaytimeSeconds: 3600.0,
@@ -44,7 +43,7 @@ final class ROMDatabaseTests: XCTestCase {
         let id = UUID()
         let rom = ROM(
             id: id, name: "Game1", path: URL(fileURLWithPath: "/path/game1.nes"), systemID: "nes",
-            boxArtPath: nil, isFavorite: false, lastPlayed: nil, totalPlaytimeSeconds: 0,
+            isFavorite: false, lastPlayed: nil, totalPlaytimeSeconds: 0,
             timesPlayed: 0, selectedCoreID: nil, customName: nil, useCustomCore: false,
             metadata: nil, isBios: false, isHidden: false, category: "game",
             crc32: nil, thumbnailLookupSystemID: nil, screenshotPaths: [],
@@ -63,7 +62,7 @@ final class ROMDatabaseTests: XCTestCase {
     func testROMWithOptionalFieldsRoundTrips() async throws {
         let rom = ROM(
             id: UUID(), name: "Minimal", path: URL(fileURLWithPath: "/path/min.rom"),
-            systemID: nil, boxArtPath: nil, isFavorite: false, lastPlayed: nil,
+            systemID: nil, isFavorite: false, lastPlayed: nil,
             totalPlaytimeSeconds: 0, timesPlayed: 0, selectedCoreID: nil, customName: nil,
             useCustomCore: false, metadata: nil, isBios: false, isHidden: false,
             category: "game", crc32: nil, thumbnailLookupSystemID: nil,
@@ -71,7 +70,6 @@ final class ROMDatabaseTests: XCTestCase {
         )
 
         XCTAssertNil(rom.systemID)
-        XCTAssertNil(rom.boxArtPath)
         XCTAssertNil(rom.metadata)
     }
 }
@@ -119,7 +117,7 @@ final class UserDefaultsMigrationTests: XCTestCase {
         // Simulate existing UserDefaults data
         let testROMs: [ROM] = [
             ROM(id: UUID(), name: "Test1.nes", path: URL(fileURLWithPath: "/roms/test1.nes"),
-                systemID: "nes", boxArtPath: nil, isFavorite: false, lastPlayed: nil,
+                systemID: "nes", isFavorite: false, lastPlayed: nil,
                 totalPlaytimeSeconds: 0, timesPlayed: 0, selectedCoreID: nil,
                 customName: nil, useCustomCore: false, metadata: nil, isBios: false,
                 isHidden: false, category: "game", crc32: nil,
@@ -137,7 +135,7 @@ final class UserDefaultsMigrationTests: XCTestCase {
         let romRows = testROMs.map { rom in
             (
                 rom.id.uuidString, rom.name, rom.path.path,
-                rom.systemID, rom.boxArtPath?.path, rom.isFavorite,
+                rom.systemID, rom.boxArtLocalPath.path, rom.isFavorite,
                 rom.lastPlayed?.timeIntervalSince1970, rom.totalPlaytimeSeconds,
                 rom.timesPlayed, rom.selectedCoreID, rom.customName,
                 rom.useCustomCore, nil as String?, rom.isBios, rom.isHidden,

@@ -55,24 +55,21 @@ enum KnownBIOS {
     }
 }
 
-struct systemsROMFindInfo: Identifiable, Codable, Hashable {
-    let id: String
-    let pathKeywords: [String]
-    let extensions: [String]
-    let magicHeaders: [MagicHeader]
-    let filenamePatterns: [String]
-}
-
 struct MagicHeader: Codable, Hashable {
     let offset: UInt64
-    let bytes: String
+    let bytes: String? // Changed to optional to allow 'null' in JSON
     
-    var data: Data? { bytes.data(using: .utf8) }
+    var data: Data? {
+        guard let bytes = bytes else { return nil }
+        return bytes.data(using: .utf8)
+    }
 }
-
 struct SystemInfo: Identifiable, Codable, Hashable {
     var id: String
     var name: String
+    let pathKeywords: [String]
+    let magicHeaders: [MagicHeader]
+    let filenamePatterns: [String]
     var manufacturer: String
     var extensions: [String]
     var defaultCoreID: String?
@@ -83,11 +80,9 @@ struct SystemInfo: Identifiable, Codable, Hashable {
     var defaultBoxType: BoxType = .vertical
     var displayInUI: Bool = true
 
-    /// The aspect ratio reported directly by the Libretro core.
     var coreReportedAspectRatio: CGFloat?
 
     /// The correct display aspect ratio for this system's output.
-    /// RESOLVED FIXME: Uses coreReportedAspectRatio if available, else falls back to system defaults.
     var displayAspectRatio: CGFloat {
         if let coreAR = coreReportedAspectRatio, coreAR > 0.0 {
             return coreAR
@@ -103,6 +98,55 @@ struct SystemInfo: Identifiable, Codable, Hashable {
         }
     }
     
+    // Explicit CodingKeys ensure both custom Decoding and automatic Encoding work perfectly
+    enum CodingKeys: String, CodingKey {
+        case id, name, pathKeywords, magicHeaders, filenamePatterns, manufacturer
+        case extensions, defaultCoreID, iconName, emuIconName, year, sortOrder
+        case defaultBoxType, displayInUI, coreReportedAspectRatio
+    }
+    
+    // Custom Decoder to handle missing JSON fields safely
+    init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        
+        id = try container.decode(String.self, forKey: .id)
+        name = try container.decode(String.self, forKey: .name)
+        
+        // FIX: Explicitly using [String]() and[MagicHeader]() so the compiler never gets confused
+        pathKeywords = try container.decodeIfPresent([String].self, forKey: .pathKeywords) ?? [String]()
+        magicHeaders = try container.decodeIfPresent([MagicHeader].self, forKey: .magicHeaders) ?? [MagicHeader]()
+        filenamePatterns = try container.decodeIfPresent([String].self, forKey: .filenamePatterns) ?? [String]()
+        extensions = try container.decodeIfPresent([String].self, forKey: .extensions) ?? [String]()
+        
+        manufacturer = try container.decodeIfPresent(String.self, forKey: .manufacturer) ?? "Unknown"
+        defaultCoreID = try container.decodeIfPresent(String.self, forKey: .defaultCoreID)
+        iconName = try container.decodeIfPresent(String.self, forKey: .iconName) ?? "gamecontroller"
+        emuIconName = try container.decodeIfPresent(String.self, forKey: .emuIconName)
+        year = try container.decodeIfPresent(String.self, forKey: .year)
+        sortOrder = try container.decodeIfPresent(Int.self, forKey: .sortOrder) ?? 99
+        defaultBoxType = try container.decodeIfPresent(BoxType.self, forKey: .defaultBoxType) ?? .vertical
+        displayInUI = try container.decodeIfPresent(Bool.self, forKey: .displayInUI) ?? true
+        coreReportedAspectRatio = try container.decodeIfPresent(CGFloat.self, forKey: .coreReportedAspectRatio)
+    }
+
+    // Keep the standard init so LibretroInfoManager can still create objects dynamically
+    init(id: String, name: String, pathKeywords: [String], magicHeaders:[MagicHeader], filenamePatterns: [String], manufacturer: String, extensions: [String], defaultCoreID: String?, iconName: String, emuIconName: String?, year: String?, sortOrder: Int, defaultBoxType: BoxType, displayInUI: Bool) {
+        self.id = id
+        self.name = name
+        self.pathKeywords = pathKeywords
+        self.magicHeaders = magicHeaders
+        self.filenamePatterns = filenamePatterns
+        self.manufacturer = manufacturer
+        self.extensions = extensions
+        self.defaultCoreID = defaultCoreID
+        self.iconName = iconName
+        self.emuIconName = emuIconName
+        self.year = year
+        self.sortOrder = sortOrder
+        self.defaultBoxType = defaultBoxType
+        self.displayInUI = displayInUI
+    }
+
     func emuImage(size: Int) -> NSImage? {
         LoggerService.extreme(category: "SystemInfo", "Loading emu image for system: \(id)")
         guard let iconName = emuIconName else { return nil }
@@ -128,7 +172,7 @@ struct SystemInfo: Identifiable, Codable, Hashable {
             if let img = NSImage(named: NSImage.Name(name)) { return img }
             
             for subdir in subdirs {
-                for ext in ["png", "PNG"] {
+                for ext in["png", "PNG"] {
                     if let url = bundle.url(forResource: name, withExtension: ext, subdirectory: subdir) {
                         if let img = NSImage(contentsOf: url) { return img }
                     }
@@ -152,19 +196,9 @@ struct SystemInfo: Identifiable, Codable, Hashable {
         default: return name
         }
     }
-}
-
-// MARK: - SystemDatabase
+}// MARK: - SystemDatabase
 class SystemDatabase {
     static var systems: [SystemInfo] = loadSystems()
-
-
-    static func loadsystemsROMFindInfo() -> [systemsROMFindInfo] {
-        guard let url = Bundle.main.url(forResource: "SystemRomFind", withExtension: "json"),
-              let data = try? Data(contentsOf: url),
-              let systems = try? JSONDecoder().decode([systemsROMFindInfo].self, from: data) else { return [] }
-        return systems
-    }
 
     private static let cacheURL: URL = {
         let appSupport = FileManager.default.urls(for: .applicationSupportDirectory, in: .userDomainMask).first!
@@ -173,11 +207,78 @@ class SystemDatabase {
         return appDir.appendingPathComponent("SystemDatabase.json")
     }()
 
-    //SystemDatabase.json is an xcode app resource, load it here
     static func loadSystems() -> [SystemInfo] {
-        guard let data = try? Data(contentsOf: cacheURL) else { return [] }
-        guard let systems = try? JSONDecoder().decode([SystemInfo].self, from: data) else { return [] }
-        return systems
+        // 1. Load the BASE systems from the App Bundle (Source of Truth for hardcoded data)
+        var bundledSystems: [String: SystemInfo] = [:]
+        if let bundleURL = Bundle.main.url(forResource: "SystemDatabase", withExtension: "json") {
+            do {
+                let data = try Data(contentsOf: bundleURL)
+                let parsedBundle = try JSONDecoder().decode([SystemInfo].self, from: data)
+                for sys in parsedBundle {
+                    bundledSystems[sys.id] = sys
+                }
+                LoggerService.debug(category: "SystemDatabase", "✅ SUCCESS: Loaded \(bundledSystems.count) systems from Xcode Bundle! from \(bundleURL)")
+            } catch DecodingError.dataCorrupted(let context) {
+                LoggerService.error(category: "SystemDatabase", "🚨 JSON SYNTAX ERROR: \(context.debugDescription)")
+            } catch DecodingError.keyNotFound(let key, let context) {
+                LoggerService.error(category: "SystemDatabase", "🚨 JSON MISSING KEY: '\(key.stringValue)' not found. \(context.debugDescription)")
+            } catch DecodingError.typeMismatch(let type, let context) {
+                LoggerService.error(category: "SystemDatabase", "🚨 JSON TYPE MISMATCH: Expected \(type) but found something else. \(context.debugDescription)")
+            } catch {
+                LoggerService.error(category: "SystemDatabase", "🚨 OTHER JSON ERROR: \(error.localizedDescription)")
+            }
+        } else {
+            LoggerService.error(category: "SystemDatabase", "🚨 FILE NOT FOUND: SystemDatabase.json is NOT in the App Bundle!, path: \(cacheURL)")
+        }
+
+        // 2. Load the CACHED systems (Libretro discoveries, user preferences)
+        var cachedSystems: [String: SystemInfo] = [:]
+        if let data = try? Data(contentsOf: cacheURL),
+        let parsedCache = try? JSONDecoder().decode([SystemInfo].self, from: data) {
+            for sys in parsedCache {
+                cachedSystems[sys.id] = sys
+            }
+        }
+
+        // 3. MERGE THEM
+        var finalSystems: [SystemInfo] = []
+        var processedIDs = Set<String>()
+
+        // Phase A: Use Bundled data as the foundation
+        for (id, bundleSys) in bundledSystems {
+            processedIDs.insert(id)
+            
+            if let cacheSys = cachedSystems[id] {
+                // MERGE: Take the important bundled data, but keep cached dynamic changes
+                var mergedSys = bundleSys
+                
+                // Union the extensions (Bundle + Libretro discoveries)
+                let combinedExtensions = Set(bundleSys.extensions).union(cacheSys.extensions)
+                mergedSys.extensions = Array(combinedExtensions).sorted()
+                
+                // Preserve user states from cache (if they hid a system in the UI, respect it)
+                mergedSys.displayInUI = cacheSys.displayInUI
+                
+                // If the cache dynamically found a better year or manufacturer, you COULD 
+                // merge it here, but typically you want your Bundle to win.
+                
+                finalSystems.append(mergedSys)
+            } else {
+                // Found in bundle, but not in cache yet (brand new install or you added a new system)
+                finalSystems.append(bundleSys)
+            }
+        }
+
+        // Phase B: Add dynamically discovered systems that aren't in your bundle
+        for (id, cacheSys) in cachedSystems {
+            if !processedIDs.contains(id) {
+                // This is a system exclusively found by Libretro (like your '32x' before you added it to JSON)
+                finalSystems.append(cacheSys)
+            }
+        }
+
+        // 4. Return sorted by your defined order
+        return finalSystems.sorted { $0.sortOrder < $1.sortOrder }
     }
     
     static func saveSystems(_ updatedSystems: [SystemInfo]) {
@@ -474,6 +575,9 @@ let extractedFolder = tempDir.appendingPathComponent("libretro-core-info-master"
                     let newSystem = SystemInfo(
                         id: id,
                         name: name,
+                        pathKeywords: [],
+                        magicHeaders: [],
+                        filenamePatterns: [],
                         manufacturer: systemMfgFromInfo[id] ?? "Various",
                         extensions:[],
                         defaultCoreID: nil,

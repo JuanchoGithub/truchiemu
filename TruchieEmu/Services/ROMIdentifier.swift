@@ -5,99 +5,160 @@ import Foundation
 /// Magic Headers, Unique Extensions, Filename Patterns, and Path Context.
 enum ROMIdentifier {
 
+    // MARK: - Private Properties
+
+    private static let cachedSystems:[SystemInfo] = {
+        let systems = SystemDatabase.systems
+        return systems.isEmpty ? SystemDatabase.loadSystems() : systems
+    }()
+
+    private static func normalize(extension ext: String) -> String {
+        return ext.lowercased().replacingOccurrences(of: ".", with: "").trimmingCharacters(in: .whitespacesAndNewlines)
+    }
+
+    /// Cached set of extensions that are shared by more than one system.
+    private static let ambiguousExtensions: Set<String> = {
+        let counts = cachedSystems.flatMap { $0.extensions }.reduce(into: [String: Int]()) { counts, ext in
+            counts[normalize(extension: ext), default: 0] += 1
+        }
+        return Set(counts.filter { $0.value > 1 }.map { $0.key })
+    }()
+
     // MARK: - Public Entry Point
 
     static func identifySystem(url: URL, extension ext: String) -> SystemInfo? {
         let filename = url.lastPathComponent.lowercased()
-        let parentName = url.deletingLastPathComponent().lastPathComponent.lowercased()
-        let extLower = ext.lowercased()
+        let extLower = normalize(extension: ext)
+        
+        // Get all parent folder names for path context
+        let parentNames = url.deletingLastPathComponent().pathComponents.map { $0.lowercased() }
+        LoggerService.debug(category: "ROMIdentifier", "Analyzing \(filename) (ext: \(extLower)) with parents: \(parentNames)")
         
         // Dictionary to track potential matches: [SystemID: ConfidenceScore]
         var candidates: [String: Int] = [:]
 
-        // --- TIER 1: Magic Headers (Highest Confidence: 100 pts) ---
-        // We check headers for ambiguous extensions (ISO, BIN, CUE, etc.)
-        let ambiguous = ["cue", "bin", "iso", "img"]
-        if ambiguous.contains(extLower) {
-            if let headerID = peekSystemID(url: url) {
+        // 1. Magic Headers (Highest Confidence: 100 pts)
+        let ambiguousSystems = cachedSystems.filter { system in 
+            system.extensions.contains { normalize(extension: $0) == extLower }
+        }
+        let isAmbiguous = ambiguousSystems.count > 1
+        LoggerService.debug(category: "ROMIdentifier", "Extension for file \(filename): '\(extLower)' is \(isAmbiguous ? "ambiguous" : "unique") with \(ambiguousSystems.count) matching systems: \(ambiguousSystems.map { $0.id })")
+        if isAmbiguous {
+            if let headerID = peekSystemID(url: url, systems: ambiguousSystems) {
                 candidates[headerID, default: 0] += 100
-                LoggerService.debug(category: "ROMIdentifier", "Magic Header match for \(url.lastPathComponent): \(headerID)")
+                LoggerService.debug(category: "ROMIdentifier", "Magic Header match for \(filename): \(headerID)")
             }
+        } else {
+            LoggerService.debug(category: "ROMIdentifier", "Skipping magic header check for \(filename) due to unique extension '\(extLower)'")
         }
 
-        // --- TIER 2: Archive Analysis (High Confidence: 90 pts) ---
-        if extLower == "zip" || extLower == "7z" {
+        // 2. Archive Analysis (High Confidence: 90 pts)
+        let archiveFormats = ["zip", "7z"]
+        if archiveFormats.contains(extLower) {
             if let archiveSystem = identifyArchive(url: url) {
                 candidates[archiveSystem.id, default: 0] += 90
-                LoggerService.debug(category: "ROMIdentifier", "Archive match for \(url.lastPathComponent): \(archiveSystem.id)")
+                LoggerService.debug(category: "ROMIdentifier", "Archive match for \(filename): \(archiveSystem.id)")
             }
+        } else {
+            LoggerService.debug(category: "ROMIdentifier", "Skipping archive analysis for \(filename) since it's not a recognized archive (\(archiveFormats.joined(separator: ", "))) format ('\(extLower)')")
         }
 
-        // --- TIER 3: Iterative Scoring via SystemDatabase ---
-        // We loop through all known systems to accumulate scores based on metadata
-        let allSystems: [systemsROMFindInfo] = SystemDatabase.loadsystemsROMFindInfo()
+        // 3. Metadata Scoring (Extension & Path)
+        scoreByMetadata(url: url, extLower: extLower, parentNames: parentNames, candidates: &candidates)
+
+        // 4. MAME Lookup (Specialized: 90 pts)
+        scoreByMAME(url: url, candidates: &candidates)
+
+        // --- FINAL DECISION ---
+        let sortedCandidates = candidates.sorted { $0.value > $1.value }
+        LoggerService.debug(category: "ROMIdentifier", "Candidate scores for \(filename): \(sortedCandidates)")
         
-        for system in allSystems {
-            // 1. Extension Matching (Weights: 80 for unique, 40 for shared)
-            if system.extensions.contains(extLower) {
-                let isUnique = allSystems.filter { $0.extensions.contains(extLower) }.count == 1
-                candidates[system.id, default: 0] += isUnique ? 80 : 40
-            }
-            
-            // 2. Path Contextual Matching
-            // Instead of relying on a pre-defined list, let's treat the folder 
-            // name as a direct match for the System ID itself (Weight: 70)
-            if parentName == system.id.lowercased() {
-                candidates[system.id, default: 0] += 70
-                LoggerService.debug(category: "ROMIdentifier", "Folder name matches System ID: \(system.id)")
-            } else {
-                // Fallback to checking keywords if the folder name isn't an exact ID match
-                for keyword in system.pathKeywords {
-                    if parentName.contains(keyword.lowercased()) {
-                        LoggerService.debug(category: "ROMIdentifier", "Path keyword match for \(url.lastPathComponent): \(system.id)")
-                        candidates[system.id, default: 0] += 30
-                        break
-                    }
-                }
-            }
-            
-            // 3. Filename Pattern Matching (Weight: 50)
-            for pattern in system.filenamePatterns {
-                if filename.contains(pattern.lowercased()) {
-                    LoggerService.debug(category: "ROMIdentifier", "Filename pattern match for \(url.lastPathComponent): \(system.id)")
-                    candidates[system.id, default: 0] += 50
-                    break 
-                }
-            }
+        if let winner = sortedCandidates.first, winner.value >= 30 {
+            LoggerService.debug(category: "ROMIdentifier", "High confidence match for \(filename): \(winner.key) (\(winner.value) pts)")
+            return cachedSystems.first { $0.id == winner.key } ?? SystemDatabase.system(forID: winner.key)
         }
 
-        // --- TIER 4: MAME Lookup (Specialized: 90 pts) ---
+        // Fallback 1: Check if any parent folder name is a valid System ID
+        if let folderSystem = parentNames.lazy.compactMap({ name in cachedSystems.first(where: { $0.id.lowercased() == name }) }).first {
+            LoggerService.debug(category: "ROMIdentifier", "Fallback: Folder name match for \(filename): \(folderSystem.id)")
+            return folderSystem
+        }
+
+        // Fallback 2: Standard extension lookup
+        LoggerService.debug(category: "ROMIdentifier", "Fallback: Standard extension lookup for \(filename)")
+        return cachedSystems.first { system in
+            system.extensions.contains { normalize(extension: $0) == extLower }
+        } ?? SystemDatabase.system(forExtension: extLower)
+    }
+
+    // MARK: - Scoring Methods
+private static func scoreByMetadata(url: URL, extLower: String, parentNames: [String], candidates: inout [String: Int]) {
+        let allSystems = cachedSystems
+        
+        // A. Extension Matching
+        let systemsWithExt = allSystems.filter { system in 
+            system.extensions.contains { normalize(extension: $0) == extLower } 
+        }
+        let isUniqueExt = systemsWithExt.count == 1
+        LoggerService.debug(category: "ROMIdentifier", "File \(url.lastPathComponent): extension '\(extLower)' matches \(systemsWithExt.count) systems: \(systemsWithExt.map { $0.id })")
+        
+        for system in systemsWithExt {
+            candidates[system.id, default: 0] += isUniqueExt ? 80 : 40
+        }
+
+        // B. Path Contextual Matching
+        for system in allSystems {
+            var pathScore = 0
+            
+            for parentName in parentNames {
+                // Normalize parent by stripping spaces and common separators
+                let normalizedParent = parentName.replacingOccurrences(of: " ", with: "")
+                                                 .replacingOccurrences(of: "-", with: "")
+                                                 .replacingOccurrences(of: "_", with: "")
+                
+                let exactMatch = system.pathKeywords.contains { keyword in
+                    let normalizedKeyword = keyword.lowercased()
+                        .replacingOccurrences(of: " ", with: "")
+                        .replacingOccurrences(of: "-", with: "")
+                        .replacingOccurrences(of: "_", with: "")
+                    return normalizedKeyword == normalizedParent
+                }
+                
+                let substringMatch = system.pathKeywords.contains { keyword in
+                    let normalizedKeyword = keyword.lowercased()
+                        .replacingOccurrences(of: " ", with: "")
+                        .replacingOccurrences(of: "-", with: "")
+                        .replacingOccurrences(of: "_", with: "")
+                    return !normalizedKeyword.isEmpty && normalizedParent.contains(normalizedKeyword)
+                }
+                
+                // Strong match: Parent name matches System ID or is an exact keyword
+                if system.id.lowercased() == parentName || exactMatch {
+                    pathScore += 70
+                    LoggerService.debug(category: "ROMIdentifier", "Strong path match for \(url.lastPathComponent): \(system.id) (parent: \(parentName))")
+                } 
+                // Weaker match: Parent name contains the keyword as a substring
+                else if substringMatch {
+                    pathScore += 30
+                    LoggerService.debug(category: "ROMIdentifier", "Weak path match for \(url.lastPathComponent): \(system.id) (parent: \(parentName))")
+                }
+            }
+            
+            if pathScore > 0 {
+                candidates[system.id, default: 0] += pathScore
+                LoggerService.debug(category: "ROMIdentifier", "Total path score for \(url.lastPathComponent) and system \(system.id): \(pathScore) pts")
+            }
+        }
+    }
+
+    private static func scoreByMAME(url: URL, candidates: inout [String: Int]) {
         let shortName = url.deletingPathExtension().lastPathComponent.lowercased()
+        LoggerService.debug(category: "ROMIdentifier", "Performing MAME lookup for \(url.lastPathComponent) with short name: \(shortName)")
         if let mameEntry = MAMEUnifiedService.shared.lookup(shortName: shortName), 
            mameEntry.isRunnableInAnyCore && !mameEntry.isBIOS {
             candidates["mame", default: 0] += 90
             LoggerService.debug(category: "ROMIdentifier", "MAME lookup match for \(url.lastPathComponent): \(mameEntry.shortName)")
         }
-
-        // --- FINAL DECISION ---
-        // Sort candidates by score descending
-        let sortedCandidates = candidates.sorted { $0.value > $1.value }
-        
-        if let winner = sortedCandidates.first, winner.value >= 30 {
-            // If we found a high-confidence match, return it
-            LoggerService.debug(category: "ROMIdentifier", "High confidence match for \(url.lastPathComponent): \(winner.key) with score \(winner.value)")
-            return SystemDatabase.system(forID: winner.key)
-        }
-
-        // NEW FALLBACK: Check if the parent folder name is a valid System ID
-        if let folderSystem = SystemDatabase.system(forID: parentName) {
-            LoggerService.debug(category: "ROMIdentifier", "No scoring match, but folder name '\(parentName)' is a valid System ID.")
-            return folderSystem
-        }
-
-        // Fallback: If no high-confidence match, try the standard extension lookup
-        LoggerService.debug(category: "ROMIdentifier", "No high confidence match for \(url.lastPathComponent), trying standard extension lookup")
-        return SystemDatabase.system(forExtension: extLower)
     }
 
     // MARK: - Archive Identification
@@ -191,8 +252,9 @@ enum ROMIdentifier {
 
     // MARK: - Fast Header Peeking
 
-    private static func peekSystemID(url: URL) -> String? {
+    private static func peekSystemID(url: URL, systems: [SystemInfo]) -> String? {
         let ext = url.pathExtension.lowercased()
+        LoggerService.debug(category: "ROMIdentifier", "Attempting to peek header for \(url.lastPathComponent) with extension: \(ext)")
 
         if ext == "cue" {
             guard let content = try? String(contentsOf: url, encoding: .utf8) else { return nil }
@@ -208,45 +270,125 @@ enum ROMIdentifier {
                     }
                     if let name = filename as String? {
                         let fileURL = url.deletingLastPathComponent().appendingPathComponent(name)
-                        return peekHeader(url: fileURL)
+                        LoggerService.debug(category: "ROMIdentifier", "Found a .cue file. Checking file header for \(fileURL.lastPathComponent) from CUE sheet,")
+                        return peekHeader(url: fileURL, systems: systems)
                     }
                 }
             }
             return nil
         } else {
             LoggerService.debug(category: "ROMIdentifier", "Checking file header for \(url.lastPathComponent),")
-            return peekHeader(url: url)
+            return peekHeader(url: url, systems: systems)
         }
     }
 
-    private static func peekHeader(url: URL) -> String? {
+    // MARK: - Improved Header Peeking
+
+    private static func peekHeader(url: URL, systems: [SystemInfo]) -> String? {
+        LoggerService.debug(category: "ROMIdentifier", "Peeking header for \(url.lastPathComponent)")
         guard let handle = try? FileHandle(forReadingFrom: url) else { return nil }
+        LoggerService.debug(category: "ROMIdentifier", "Successfully opened file handle for \(url.lastPathComponent)")
         defer { try? handle.close() }
+        LoggerService.debug(category: "ROMIdentifier", "Starting magic header checks for \(url.lastPathComponent) against \(systems.count) systems")
 
         do {
-            let systems = SystemDatabase.loadsystemsROMFindInfo()
-            
+            LoggerService.debug(category: "ROMIdentifier", "Checking magic headers for \(url.lastPathComponent) against \(systems.count) candi date systems")
             for system in systems {
-                for magicHeader in system.magicHeaders {
-                    // Always seek before reading
-                    try handle.seek(toOffset: magicHeader.offset)
+                LoggerService.debug(category: "ROMIdentifier", "Evaluating system \(system) for file \(url.lastPathComponent)")
+                if system.magicHeaders.isEmpty {
+                    LoggerService.debug(category: "ROMIdentifier", "For \(url.lastPathComponent): System \(system.id) has no magic headers defined \(system.magicHeaders). Skipping.")
+                    continue
+                } else {
+                    LoggerService.debug(category: "ROMIdentifier", "For \(url.lastPathComponent): System \(system.id) has \(system.magicHeaders.count) magic headers to check.")
+                }
+                // what if system does not have magicHeaders or is nul?
+                let magicHeaders = system.magicHeaders
+
+                if magicHeaders.isEmpty {
+                    LoggerService.debug(category: "ROMIdentifier", "For \(url.lastPathComponent): System \(system.id) has no magic headers defined. Skipping.")
+                    continue
+                }
+                for magicHeader in magicHeaders {
+                    LoggerService.debug(category: "ROMIdentifier", "Checking magic header for system \(system.id) at offset \(magicHeader.offset) and bytes: \(magicHeader.bytes ?? "nil") in file \(url.lastPathComponent)")
+                    // 1. Convert the JSON string into actual raw bytes
+                    let headerBytes = magicHeader.bytes
+                    let offset = magicHeader.offset 
                     
-                    // Convert [UInt8] to Data for comparison
-                    let expectedData = Data(magicHeader.bytes.utf8)
+                    let expectedData = parseHeaderBytes(headerBytes ?? "", url.lastPathComponent ?? "")
+                    LoggerService.debug(category: "ROMIdentifier", "For \(url.lastPathComponent): Parsed magic header bytes for system \(system.id) at offset \(offset): \(expectedData as NSData)")
+                    if expectedData.isEmpty { continue }
+
+                    // 2. Seek to the offset
+                    try handle.seek(toOffset: UInt64(offset))
+                    LoggerService.debug(category: "ROMIdentifier", "For \(url.lastPathComponent): Seeking to offset \(offset) for system \(system.id) in file \(url.lastPathComponent)")
                     
-                    // Read the exact amount of bytes required
-                    if let data = try handle.read(upToCount: magicHeader.bytes.count), data == expectedData {
-                        LoggerService.debug(category: "ROMIdentifier", "Magic header match for \(url.lastPathComponent): \(system.id)")
+                    // 3. Read exactly the number of bytes needed
+                    let data = try handle.read(upToCount: expectedData.count) ?? Data()
+                    LoggerService.debug(category: "ROMIdentifier", "For \(url.lastPathComponent): Read data at offset \(offset) for system \(system.id) in file \(url.lastPathComponent): \(data as NSData) vs expected: \(expectedData as NSData)")
+                    if data == expectedData {
+                        LoggerService.debug(category: "ROMIdentifier", "For \(url.lastPathComponent): Magic header match for \(url.lastPathComponent): \(system.id)")
                         return system.id
+                    } else {
+                        LoggerService.debug(category: "ROMIdentifier", "For \(url.lastPathComponent): No match at offset \(offset) for system \(system.id) in file \(url.lastPathComponent). Read data: \(data as NSData), expected: \(expectedData as NSData)")
                     }
                 }
             }
         } catch {
-            // Log the error if necessary
-            LoggerService.error(category: "ROMIdentifier", "Error peeking header: \(error)")
+            LoggerService.error(category: "ROMIdentifier", "Error peeking header for file \(url.lastPathComponent): \(error)")
             return nil
         }
         return nil
+    }
+
+    /// Converts a variety of string formats into actual Data
+    /// Supports: 
+    /// - Hex strings: "24 FF AE"
+    /// - Escaped strings: "AGB\x1A"
+    /// - Plain strings: "GBAX"
+    private static func parseHeaderBytes(_ input: String, _ fileURL: String) -> Data {
+        // Case 1: It's a Hex String (contains spaces or is purely hex characters)
+        // Check if it looks like "AA BB CC" or "AABBCC"
+        let hexPattern = "^[0-9A-Fa-f\\s]+$"
+        LoggerService.debug(category: "ROMIdentifier", "For \(fileURL): Parsing magic header string: '\(input)'")
+        if input.range(of: hexPattern, options: .regularExpression) != nil && input.contains(" ") {
+            let hexComponents = input.components(separatedBy: .whitespaces).filter { !$0.isEmpty }
+            var data = Data()
+            for hex in hexComponents {
+                if let byte = UInt8(hex, radix: 16) {
+                    data.append(byte)
+                }
+            }
+            LoggerService.debug(category: "ROMIdentifier", "For \(fileURL): Parsed hex string \(input) into data: \(data as NSData)")
+            return data
+        }
+
+        // Case 2: It contains escaped hex characters like \x1A
+        // We need to manually parse these if the JSON parser didn't do it automatically
+        if input.contains("\\x") {
+            var data = Data()
+            let components = input.components(separatedBy: "\\x")
+            
+            // The first component is the "prefix" string (e.g., "AGB")
+            if let prefixData = components[0].data(using: .utf8) {
+                data.append(prefixData)
+            }
+            
+            // Subsequent components are the hex values (e.g., "1A")
+            for i in 1..<components.count {
+                // The component might have trailing text if it wasn't just the hex
+                // We split by non-hex characters to isolate the two digits
+                let hexPart = components[i].prefix(2) 
+                if let byte = UInt8(hexPart, radix: 16) {
+                    data.append(byte)
+                }
+            }
+            LoggerService.debug(category: "ROMIdentifier", "For \(fileURL): Parsed escaped hex string \(input) into data: \(data as NSData)")
+            return data
+        }
+        let data = input.data(using: .utf8) ?? Data()
+        LoggerService.debug(category: "ROMIdentifier", "For \(fileURL): Treating magic header \(data as NSData) as plain text: '\(input)'")
+        // Case 3: It's a standard literal string
+        return data
     }
 
     // MARK: - Fast ZIP Peeking
