@@ -1651,8 +1651,10 @@ static int16_t bridge_input_state(unsigned port, unsigned device,
       (g_coreID && [[g_coreID lowercaseString] containsString:@"dolphin"]);
   BOOL isDOSBox =
       (g_coreID && [[g_coreID lowercaseString] containsString:@"dosbox"]);
+  BOOL isDreamcast =
+      (g_coreID && [[g_coreID lowercaseString] containsString:@"flycast"]);
 
-  if (isPSP || isPS2 || isDolphin || isDOSBox) {
+  if (isPSP || isPS2 || isDolphin || isDOSBox || isDreamcast) {
     // --- FIX: Vertical FLIP REQUIRED ONLY ---
 
     // 1. Vertical Flip (Fixes the "Upside Down" issue)

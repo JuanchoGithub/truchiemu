@@ -1,209 +1,85 @@
-# TruchieEmu
+# TruchieEmu 🕹️
 
-A macOS emulator built with SwiftUI that supports multiple retro gaming systems using libretro cores.
+**The ultimate retro gaming experience, beautifully reimagined for macOS.**
 
-## Features
+TruchieEmu is a modern, high-performance emulator built from the ground up with SwiftUI. It brings your favorite classic consoles to life with a stunning interface, immersive visuals, and effortless library management.
 
-- **Multi-System Support**: NES, SNES, N64, GBA, Genesis, DOS, ScummVM, and more
-- **Modern UI**: Clean SwiftUI interface with box art, game details, and library management
-- **Save States**: Slot-based save/load with auto-save on exit
-- **Shader System**: CRT, LCD, and custom Metal shaders
-- **Controller Support**: Full gamepad mapping with per-system configurations
-- **RetroAchievements**: Optional achievement tracking
-- **CLI Launching**: Launch games from terminal or scripts
+---
 
-## Installation
+## ✨ The TruchieEmu Experience
 
-1. Clone the repository:
+### 🎨 Beautifully Designed
+Forget clunky, outdated menus. TruchieEmu features a polished, native macOS interface. Browse your collection with high-quality box art, detailed game information, and a seamless, modern navigation experience.
+
+### 📺 Immersive Visuals
+Relive the golden age of gaming with advanced Metal-powered shaders. Whether you want the warm glow of a classic CRT, the sharp look of an LCD, or custom scanline effects, TruchieEmu makes every pixel feel authentic.
+
+### 🚀 Effortless Setup
+Getting started is a breeze. Our guided setup wizard walks you through your first launch, and our automated library services handle the heavy lifting—syncing metadata and downloading beautiful box art for your entire collection.
+
+### 🏆 RetroAchievements
+Take your nostalgia to the next level. TruchieEmu supports RetroAchievements, allowing you to earn trophies and compete for glory while playing the classics.
+
+### ✨ Pure Delight
+Every interaction is designed to be smooth and joyful. From polished transitions to celebratory confetti moments, TruchieEmu brings a touch of magic to your retro gaming sessions.
+
+---
+
+## 🛠️ Key Features
+
+- **Multi-System Powerhouse**: One app, countless classics. Support for NES, SNES, N64, GBA, Genesis, DOS, ScummVM, and more.
+- **Seamless Library Management**: Organize your games into custom categories and enjoy a clutter-free experience.
+- **Advanced Save States**: Never lose your progress with intuitive, slot-based save and load functionality.
+- **Pro-Grade Controller Support**: Full gamepad mapping with per-system configurations for a true console feel.
+- **Customizable Visuals**: Fine-tune your experience with custom shaders and bezel support.
+
+---
+
+## 🎮 Supported Systems
+
+| System | Supported Formats |
+| :--- | :--- |
+| **NES** | `.nes`, `.fds`, `.unf`, `.unif` |
+| **SNES** | `.snes`, `.smc`, `.sfc`, `.fig`, `.bs` |
+| **N64** | `.n64`, `.v64`, `.z64`, `.ndd` |
+| **GBA** | `.gba` |
+| **Genesis** | `.md`, `.gen`, `.bin`, `.smd` |
+| **DOS** | `.zip`, `.dosz`, `.conf`, `.exe`, `.bat`, `.iso`, `.img` |
+| **ScummVM** | `.zip`, `.scummvm` |
+
+---
+
+## 🚀 Getting Started
+
+1. **Download & Install**: [Insert download link or instructions here]
+2. **Run the Setup Wizard**: Follow the on-screen instructions to configure your library.
+3. **Add Your Games**: Simply drag and drop your ROM files into the app to begin your journey.
+4. **Start Playing**: Pick a game, choose your favorite shader, and enjoy!
+
+---
+
+## 🛠️ For Developers
+
+If you want to build TruchieEmu from source:
+
+1. **Clone the repository**:
    ```bash
    git clone https://github.com/JuanchoGithub/truchiemu.git
    cd truchiemu
    ```
 
-2. Generate the Xcode project (requires xcodegen):
+2. **Generate the project**:
    ```bash
    xcodegen generate
    ```
 
-3. Open and build in Xcode:
+3. **Build in Xcode**:
    ```bash
    open TruchieEmu.xcodeproj
    ```
 
-4. Download cores via the app's Core Download sheet
+---
 
-## CLI Usage
-
-TruchieEmu can be launched and controlled via command-line arguments. This enables launching games from terminal, automated testing, and integration with external launchers.
-
-### Launch a Game
-
-```bash
-# Launch with auto-detected core
-open -a TruchieEmu --args --launch "/path/to/game.nes"
-
-# Launch with specific core
-open -a TruchieEmu --args --launch "/path/to/game.nes" --core fceumm
-
-# Launch and load from save slot 3
-open -a TruchieEmu --args --launch "/path/to/game.nes" --slot 3
-
-# Launch with shader preset
-open -a TruchieEmu --args --launch "/path/to/game.nes" --shader builtin-crt-classic
-
-# Launch with custom shader uniforms
-open -a TruchieEmu --args --launch "/path/to/game.nes" --shader builtin-crt-classic --shader-uniform "barrelAmount=0.25" --shader-uniform "scanlineIntensity=0.5"
-
-# Launch with RetroAchievements (hardcore mode)
-open -a TruchieEmu --args --launch "/path/to/game.nes" --achievements --hardcore
-
-# Launch with cheats enabled
-open -a TruchieEmu --args --launch "/path/to/game.nes" --cheats
-
-# Launch with custom bezel
-open -a TruchieEmu --args --launch "/path/to/game.nes" --bezel "crt-curved.png"
-
-# Disable bezel
-open -a TruchieEmu --args --launch "/path/to/game.nes" --bezel none
-
-# Launch with core options
-open -a TruchieEmu --args --launch "/path/to/game.nes" --core-option "mupen64plus-cpucore=dynamic"
-
-# Launch with auto-load/save
-open -a TruchieEmu --args --launch "/path/to/game.nes" --auto-load --auto-save
-
-
-### Info Commands
-
-```bash
-# List all available cores
-open -a TruchieEmu --args --list-cores
-
-# List supported systems
-open -a TruchieEmu --args --list-systems
-
-# Show help
-open -a TruchieEmu --args --help
-
-# Show version
-open -a TruchieEmu --args --version
-```
-
-### Headless Mode (for Testing)
-
-```bash
-# Launch without UI, auto-exit after rendering frames
-open -a TruchieEmu --args --launch "/path/to/game.nes" --headless --timeout 10
-
-# Returns exit code 0 if frames rendered, 1 if timeout
-```
-
-### CLI Arguments Reference
-
-| Argument | Description | Example |
-|----------|-------------|---------|
-| `--launch <path>` | Path to ROM file | `--launch ~/Roms/Mario.nes` |
-| `--core <id>` | Core to use | `--core fceumm` |
-| `--slot <0-9>` | Save slot to load | `--slot 3` |
-| `--shader <preset>` | Shader preset | `--shader builtin-crt-classic` |
-| `--shader-uniform <k=v>` | Shader uniform override | `--shader-uniform "barrelAmount=0.25"` |
-| `--achievements` | Enable RetroAchievements | `--achievements` |
-| `--hardcore` | Hardcore mode (with --achievements) | `--hardcore` |
-| `--cheats` | Load cheat files | `--cheats` |
-| `--bezel <file>` | Bezel image or "none" | `--bezel "crt.png"` |
-| `--core-option <k=v>` | Core option override | `--core-option "key=value"` |
-| `--auto-load` | Auto-load last save state | `--auto-load` |
-| `--auto-save` | Auto-save on exit | `--auto-save` |
-| `--headless` | Run without UI | `--headless` |
-| `--timeout <sec>` | Headless timeout | `--timeout 15` |
-| `--list-cores` | List available cores | |
-| `--list-systems` | List supported systems | |
-| `--help` | Show help message | |
-| `--version` | Show version | |
-
-### Test Script
-
-A test script is included for automated game testing:
-
-```bash
-# Make executable (first time only)
-chmod +x scripts/test_game.sh
-
-# Test a game
-./scripts/test_game.sh ~/Roms/Mario.nes
-
-# Test with specific core
-./scripts/test_game.sh ~/Roms/Mario.nes fceumm
-
-# Test with custom timeout
-./scripts/test_game.sh ~/Roms/Mario.nes fceumm 15
-```
-
-### Programmatic Usage (Swift)
-
-```swift
-// Launch a game from within your Swift code
-CLILauncher.shared.launchGame(
-    romPath: "/path/to/game.nes",
-    coreID: "fceumm",
-    slot: 3
-)
-
-// Launch headless for testing
-let process = CLILauncher.shared.launchGameDirect(
-    romPath: "/path/to/game.nes",
-    coreID: "fceumm",
-    headless: true
-)
-```
-
-## Supported Systems
-
-| System | Extensions | Default Core |
-|--------|------------|--------------|
-| NES | nes, fds, unf, unif | nestopia_libretro |
-| SNES | snes, smc, sfc, fig, bs | snes9x_libretro |
-| N64 | n64, v64, z64, ndd | mupen64plus_next_libretro |
-| GBA | gba | mgba_libretro |
-| Genesis | md, gen, bin, smd | genesis_plus_gx_libretro |
-| DOS | zip, dosz, conf, exe, bat, iso, img | dosbox_pure_libretro |
-| ScummVM | zip, scummvm | scummvm_libretro |
-
-## Project Structure
-
-```
-TruchieEmu/
-├── App/                    # App entry point and main views
-├── Engine/                 # Libretro bridge and emulation runners
-│   ├── Runners/           # System-specific runners (NES, SNES, N64, etc.)
-│   └── LibretroBridge.mm  # Objective-C++ bridge to libretro API
-├── Models/                 # Data models (ROM, Core, etc.)
-├── Services/               # Business logic services
-│   ├── CLILauncher.swift  # CLI game launching utility
-│   ├── CLIManager.swift   # CLI command routing and parsing
-│   ├── CoreManager.swift  # Core download and management
-│   └── ROMLibrary.swift   # ROM scanning and library management
-├── Views/                  # SwiftUI views
-├── Shaders/                # Metal shaders
-└── Resources/              # Assets and entitlements
-```
-
-## Troubleshooting
-
-### Game doesn't launch
-- Verify ROM file exists and is accessible
-- Check that the core is installed: `--list-cores`
-- Ensure core is downloaded via the app's Core Download sheet
-
-### Headless mode times out
-- Increase timeout: `--timeout 30`
-- Verify core is properly installed
-- Check console logs for errors
-
-### Wrong core selected
-- Specify core explicitly: `--core <core_id>`
-- Check available cores: `--list-cores`
-
-## License
+## 📜 License
 
 © 2026 TruchieEmu
