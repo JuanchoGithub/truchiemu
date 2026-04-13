@@ -1,5 +1,7 @@
 # TruchieEmu 🕹️
 
+<img width="1112" height="814" alt="Captura de pantalla 2026-04-13 a la(s) 12 20 57 a  m" src="https://github.com/user-attachments/assets/3a61adcc-a9c8-469d-a9c7-b2a3249f82df" />
+
 **The ultimate retro gaming experience, beautifully reimagined for macOS.**
 
 TruchieEmu is a modern, high-performance emulator built from the ground up with SwiftUI. It brings your favorite classic consoles to life with a stunning interface, immersive visuals, and effortless library management.
@@ -11,17 +13,26 @@ TruchieEmu is a modern, high-performance emulator built from the ground up with 
 ### 🎨 Beautifully Designed
 Forget clunky, outdated menus. TruchieEmu features a polished, native macOS interface. Browse your collection with high-quality box art, detailed game information, and a seamless, modern navigation experience.
 
+<img width="1112" height="814" alt="Captura de pantalla 2026-04-13 a la(s) 12 20 22 a  m" src="https://github.com/user-attachments/assets/45cdd5d0-1898-4ba2-afd4-0e3d9857757c" />
+
+
 ### 📺 Immersive Visuals
 Relive the golden age of gaming with advanced Metal-powered shaders. Whether you want the warm glow of a classic CRT, the sharp look of an LCD, or custom scanline effects, TruchieEmu makes every pixel feel authentic.
 
+<img width="1112" height="814" alt="Captura de pantalla 2026-04-13 a la(s) 12 22 41 a  m" src="https://github.com/user-attachments/assets/b68a47cd-e09e-4c22-a5ac-baec4d0c9b2a" />
+
 ### 🚀 Effortless Setup
 Getting started is a breeze. Our guided setup wizard walks you through your first launch, and our automated library services handle the heavy lifting—syncing metadata and downloading beautiful box art for your entire collection.
+
+<img width="1012" height="644" alt="Captura de pantalla 2026-04-13 a la(s) 12 21 43 a  m" src="https://github.com/user-attachments/assets/ad5d22f4-812f-4794-abbf-254c26c8fa10" />
 
 ### 🏆 RetroAchievements
 Take your nostalgia to the next level. TruchieEmu supports RetroAchievements, allowing you to earn trophies and compete for glory while playing the classics.
 
 ### ✨ Pure Delight
 Every interaction is designed to be smooth and joyful. From polished transitions to celebratory confetti moments, TruchieEmu brings a touch of magic to your retro gaming sessions.
+
+<img width="1136" height="866" alt="Captura de pantalla 2026-04-13 a la(s) 12 22 24 a  m" src="https://github.com/user-attachments/assets/a2a0f14a-f867-45dd-8c61-c9750e1f9231" />
 
 ---
 
@@ -36,16 +47,10 @@ Every interaction is designed to be smooth and joyful. From polished transitions
 ---
 
 ## 🎮 Supported Systems
+Basically everything that LibRetro supports, should be supported by TruchiEmu.
+Some cores might be a little bit trickier (Dreamcast I hate you) than others, but most should work.
 
-| System | Supported Formats |
-| :--- | :--- |
-| **NES** | `.nes`, `.fds`, `.unf`, `.unif` |
-| **SNES** | `.snes`, `.smc`, `.sfc`, `.fig`, `.bs` |
-| **N64** | `.n64`, `.v64`, `.z64`, `.ndd` |
-| **GBA** | `.gba` |
-| **Genesis** | `.md`, `.gen`, `.bin`, `.smd` |
-| **DOS** | `.zip`, `.dosz`, `.conf`, `.exe`, `.bat`, `.iso`, `.img` |
-| **ScummVM** | `.zip`, `.scummvm` |
+In this initial version, DOSBOX and SCUMMVM do not capture the mouse/keyboard yet, so they work, but you cannot play yet.
 
 ---
 
@@ -81,5 +86,12 @@ If you want to build TruchieEmu from source:
 ---
 
 ## 📜 License
+MIT, etc, thanks to LibRetro and a countless other teams around the web.
 
 © 2026 TruchieEmu
+
+Now for some more images:
+
+<img width="1112" height="814" alt="Captura de pantalla 2026-04-13 a la(s) 12 25 05 a  m" src="https://github.com/user-attachments/assets/b681a4a5-0caf-4ea6-8c4e-c954bd6b50df" />
+
+<img width="1453" height="866" alt="Captura de pantalla 2026-04-13 a la(s) 12 23 19 a  m" src="https://github.com/user-attachments/assets/c2f845a9-81d5-4a56-9719-2acfdbce3a79" />
