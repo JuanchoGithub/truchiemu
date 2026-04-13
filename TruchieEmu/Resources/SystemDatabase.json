@@ -132,8 +132,8 @@
                 "bytes": "GBAX\\x1A"
             },
             {   
-                "offset": 4, 
-                "bytes": "24 FF AE 51 69 9A A2 21 3D 84 82 0A 84 E4 09 AD 11 24 8B 98 06 4F 9E 08 21 67 03 24" 
+                "offset": 192, 
+                "bytes": "24 FF AE 51" 
             }
         ],
         "pathKeywords": [
@@ -176,7 +176,7 @@
             },
             {
                 "offset": 260, 
-                "bytes": "CE ED 66 66 CC 0D 00 0B 03 73 00 83 00 0C 00 0D 00 08 11 1F 88 89 00 0E DC CC 6E E6 DD DD D9 99 BB BB 67 63 6E 0E EC CC DD DC 99 9F BB B9 33 3E" 
+                "bytes": "CE ED 66 66" 
             }
         ],
         "pathKeywords": [
@@ -217,6 +217,12 @@
     {
         "year": "1998",
         "id": "gbc",
+        "magicHeaders": [
+            {
+                "offset": 260, 
+                "bytes": "CE ED 66 66" 
+            }
+        ],
         "sortOrder": 6,
         "displayInUI": false,
         "name": "Game Boy Color",
@@ -284,6 +290,12 @@
     {
         "year": "1988",
         "id": "genesis",
+        "magicHeaders": [
+            {
+                "offset": 256,
+                "bytes": "53 45 47 41"
+            }
+        ],
         "pathKeywords": [
             "genesis",
             "mega drive",
@@ -436,6 +448,12 @@
     {
         "year": "1994",
         "id": "32x",
+        "magicHeaders": [
+            {
+                "offset": 0,
+                "bytes": "53 45 47 41"
+            }
+        ],
         "sortOrder": 15,
         "displayInUI": true,
         "name": "Sega 32X",
@@ -482,7 +500,12 @@
             {
                 "offset": 0,
                 "bytes": "PS-X EXE"
+            },
+            {
+                "offset": 0,
+                "bytes": "7F 45 4C 46"
             }
+
         ],
         "filenamePatterns": [
             "(?i)\\(disc\\s?\\d+\\)",
@@ -551,7 +574,12 @@
             {
                 "offset": 0,
                 "bytes": "SLKA"
+            },
+            {
+                "offset": 0,
+                "bytes": "7F 45 4C 46"
             }
+
         ],
         "filenamePatterns": [
             "(?i)\\(disc\\s?\\d+\\)"
@@ -594,6 +622,12 @@
     {
         "year": "2004",
         "id": "psp",
+        "magicHeaders": [
+                {
+                    "offset": 0,
+                    "bytes": "00 50 42 50"
+                }
+            ],
         "sortOrder": 22,
         "displayInUI": true,
         "name": "PlayStation Portable",
@@ -1739,6 +1773,11 @@
     {
         "displayInUI": true,
         "id": "neogeo",
+        "pathKeywords": [
+            "neogeo",
+            "neo geo",
+            "ng"
+        ],
         "name": "Neo Geo",
         "extensions": [
             "7z",
@@ -2409,16 +2448,7 @@
             "nintendo gamecube",
             "cube"
         ],
-        "magicHeaders": [
-            {
-                "offset": 0,
-                "bytes": "CISO"
-            },
-            {
-                "offset": 32769,
-                "bytes": "CD001"
-            }
-        ],
+        "magicHeaders": [],
         "filenamePatterns": [
             "(?i)\\(disc\\s?\\d+\\)"
         ],

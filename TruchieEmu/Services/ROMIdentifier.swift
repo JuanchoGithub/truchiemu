@@ -65,13 +65,34 @@ enum ROMIdentifier {
 
         // 3. Metadata Scoring (Extension & Path)
         scoreByMetadata(url: url, extLower: extLower, parentNames: parentNames, candidates: &candidates)
+        
+        //3.5 CD-based System Detection (PS1/PS2) via SYSTEM.CNF
+        if ["bin", "iso", "img", "cue"].contains(extLower) {
+            LoggerService.debug(category: "ROMIdentifier", "File \(filename) has CD-based extension '\(extLower)', attempting disc-based system identification")
+            identifyDiscSystem(url: url, candidates: &candidates)
+        } else {
+            LoggerService.debug(category: "ROMIdentifier", "Skipping disc-based system identification for \(filename) since it's not a CD-based extension")
+        }
 
         // 4. MAME Lookup (Specialized: 90 pts)
-        scoreByMAME(url: url, candidates: &candidates)
+        if extLower == "zip" {
+            scoreByMAME(url: url, candidates: &candidates)
+        } else {
+            LoggerService.debug(category: "ROMIdentifier", "Skipping MAME lookup for \(filename) since it's not a ZIP archive (extension: '\(extLower)')")
+        }
 
         // --- FINAL DECISION ---
-        let sortedCandidates = candidates.sorted { $0.value > $1.value }
+        var sortedCandidates = candidates.sorted { $0.value > $1.value }
         LoggerService.debug(category: "ROMIdentifier", "Candidate scores for \(filename): \(sortedCandidates)")
+
+        //if the order of candidates is MAME then NeoGeo, choose NeoGeo
+        if sortedCandidates.first?.key == "mame", let second = sortedCandidates.dropFirst().first, second.key == "neogeo" {
+            // swap scores to prefer Neo Geo
+            candidates["neogeo", default: 0] += candidates["mame", default: 0] + 10 // give Neo Geo a boost over MAME
+            sortedCandidates = candidates.sorted { $0.value > $1.value }
+            LoggerService.debug(category: "ROMIdentifier", "Adjusting scores for \(filename) to prefer Neo Geo over MAME when both are present, new scores: \(sortedCandidates)")
+        }
+
         
         if let winner = sortedCandidates.first, winner.value >= 30 {
             LoggerService.debug(category: "ROMIdentifier", "High confidence match for \(filename): \(winner.key) (\(winner.value) pts)")
@@ -90,6 +111,114 @@ enum ROMIdentifier {
             system.extensions.contains { normalize(extension: $0) == extLower }
         } ?? SystemDatabase.system(forExtension: extLower)
     }
+
+// MARK: - ISO Scanning for CD-based Systems
+struct ISOScanner {
+    
+    /// Reads the ISO and attempts to locate and extract the content of "SYSTEM.CNF"
+    static func extractSystemConfig(from url: URL) -> String? {
+        guard let fileHandle = try? FileHandle(forReadingFrom: url) else { return nil }
+        defer { try? fileHandle.close() }
+        
+        // ISO9660 Directory Records start after the Primary Volume Descriptor.
+        // For most PS1/PS2 images, we can scan the first 1MB for the "SYSTEM.CNF" filename.
+        // It's a crude but highly effective "cheat" method.
+        let scanRange = 1_024 * 1_024 // 1MB scan
+        guard let data = try? fileHandle.read(upToCount: scanRange) else { return nil }
+        
+        let targetName = "SYSTEM.CNF;1".data(using: .ascii)!
+        
+        // Search for the filename string in the raw data
+        guard let range = data.range(of: targetName) else {
+            LoggerService.debug(category: "ROMIdentifier", "SYSTEM.CNF not found in first 1MB of ISO \(url.lastPathComponent)")
+            return nil
+        }
+        
+        // The Directory Record contains the Logical Block Number (LBN) 
+        // where the file starts. In ISO9660, the LBN is at a specific offset 
+        // relative to the filename.
+        let lbnOffset = range.lowerBound - 10
+        guard lbnOffset > 0 else { return nil }
+        
+        // Extract the 4-byte LBN (Little Endian)
+        let lbnData = data.subdata(in: lbnOffset..<lbnOffset+4)
+        let lbn = lbnData.withUnsafeBytes { $0.load(as: UInt32.self) }
+        
+        // The ISO9660 block size is 2048 bytes
+        let fileOffset = UInt64(lbn) * 2048
+        
+        // Seek to that offset and read the file
+        try? fileHandle.seek(toOffset: fileOffset)
+        guard let fileData = try? fileHandle.read(upToCount: 2048) else { return nil }
+        LoggerService.debug(category: "ROMIdentifier", "Extracted SYSTEM.CNF from ISO \(url.lastPathComponent) at offset \(fileOffset), file data: \(fileData)")
+        return String(data: fileData, encoding: .ascii)
+    }
+}
+
+static func identifyDiscSystem(url: URL, candidates: inout [String: Int]) -> String? {
+    LoggerService.debug(category: "ROMIdentifier", "Attempting disc-based system identification for \(url.lastPathComponent)")
+    guard let config = ISOScanner.extractSystemConfig(from: url) else {
+        // If SYSTEM.CNF is missing, check for PARAM.SFO (PSP)
+        if hasPSPParameterFile(url: url) { 
+            LoggerService.debug(category: "ROMIdentifier", "PARAM.SFO found in ISO \(url.lastPathComponent) without SYSTEM.CNF, strongly indicating PSP")
+            candidates["psp", default: 0] += 100
+            return "psp" 
+        }
+        return nil
+    }
+    
+    // hardcoded for PS1 and PS2
+    if config.contains("BOOT2") {
+        LoggerService.debug(category: "ROMIdentifier", "Identified SYSTEM.CNF with BOOT2 for \(url.lastPathComponent), strongly indicating PS2 -> \(config)")
+        candidates["ps2", default: 0] += 100
+        return "ps2"
+    } else if config.contains("BOOT") {
+        LoggerService.debug(category: "ROMIdentifier", "Identified SYSTEM.CNF with BOOT for \(url.lastPathComponent), strongly indicating PS1 (but could be PS2) -> \(config)")
+        candidates["ps1", default: 0] += 70
+        candidates["psx", default: 0] += 70
+        return "psx"
+    }
+    LoggerService.debug(category: "ROMIdentifier", "SYSTEM.CNF found in \(url.lastPathComponent) but no clear BOOT indicators. Unable to confidently identify system.")
+    return nil
+}
+
+/// Checks for a PSP "PARAM.SFO" file within an ISO/Disc image
+private static func hasPSPParameterFile(url: URL) -> Bool {
+    LoggerService.debug(category: "ROMIdentifier", "Checking for PARAM.SFO in ISO \(url.lastPathComponent) to identify potential PSP disc image")
+    guard let fileHandle = try? FileHandle(forReadingFrom: url) else { return false }
+    defer { try? fileHandle.close() }
+    
+    // PARAM.SFO is a small file usually located in the PSP_GAME folder.
+    // Reading the first 500KB is usually enough to find the directory entry.
+    guard let data = try? fileHandle.read(upToCount: 500_000) else { return false }
+    
+    // 1. Search for the string "PARAM.SFO" in the directory records
+    let targetName = "PARAM.SFO".data(using: .ascii)!
+    guard let range = data.range(of: targetName) else {
+        LoggerService.debug(category: "ROMIdentifier", "PARAM.SFO not found in ISO \(url.lastPathComponent)")
+        return false
+    }
+    
+    // 2. ISO9660 Directory record logic:
+    // The LBN (Logical Block Number) is located 10 bytes before the filename.
+    let lbnOffset = range.lowerBound - 10
+    guard lbnOffset > 0 && lbnOffset + 4 < data.count else { return false }
+    
+    let lbn = data.subdata(in: lbnOffset..<lbnOffset+4).withUnsafeBytes { $0.load(as: UInt32.self) }
+    
+    // 3. Seek to the block (LBN * 2048) and verify the file starts with "\0PSF"
+    let fileOffset = UInt64(lbn) * 2048
+    try? fileHandle.seek(toOffset: fileOffset)
+    
+    if let header = try? fileHandle.read(upToCount: 4) {
+        // Verify "\0PSF" (00 50 53 46)
+        LoggerService.debug(category: "ROMIdentifier", "Checking PARAM.SFO header in ISO \(url.lastPathComponent) at offset \(fileOffset)")
+        let pspMagic: [UInt8] = [0x00, 0x50, 0x53, 0x46]
+        return Array(header) == pspMagic
+    }
+    
+    return false
+}
 
     // MARK: - Scoring Methods
 private static func scoreByMetadata(url: URL, extLower: String, parentNames: [String], candidates: inout [String: Int]) {
@@ -190,62 +319,67 @@ private static func scoreByMetadata(url: URL, extLower: String, parentNames: [St
         }
 
         // Deep inspection of archive contents
-        return fingerprintArchive(url: url)
+        //return fingerprintArchive(url: url)
+        return nil
     }
 
     // MARK: - Content Fingerprinting
 
     private static func fingerprintArchive(url: URL) -> SystemInfo? {
         guard let files = peekInsideZipFiles(url: url) else { return nil }
-
-        let systemDB = SystemDatabase.loadSystems()
-        let consoleExts = Set(systemDB.flatMap { $0.extensions })
         
+        // 1. Scoring Registry
+        var scores: [String: Int] = [:]
+        
+        let systemDB = SystemDatabase.loadSystems()
+        
+        // 2. Analyze files
         for file in files {
-            let fileExt = URL(fileURLWithPath: file).pathExtension.lowercased()
-            // find the extension using the unique list from consoleExts
-            if consoleExts.contains(fileExt) {
-                if let system = systemDB.first(where: { $0.extensions.contains(fileExt) }) {
-                    LoggerService.debug(category: "ROMIdentifier", "Archive file extension match for \(url.lastPathComponent): \(system.id)")
-                    return system
+            let fileURL = URL(fileURLWithPath: file)
+            let ext = fileURL.pathExtension.lowercased()
+            let fileName = fileURL.lastPathComponent.uppercased()
+            
+            // --- System Extension/ID Scoring ---
+            for system in systemDB {
+                // Strong match: Specific unique extensions (e.g., .smc, .fds) get higher weight than generic ones (.bin)
+                if system.extensions.contains(ext) {
+                    let weight = (ext == "bin" || ext == "rom") ? 1 : 3
+                    scores[system.id, default: 0] += weight
                 }
             }
+            
+            // --- ScummVM Structural Analysis ---
+            if ["sou", "000", "001", "flac", "ogg"].contains(ext) {
+                scores["scummvm", default: 0] += 10
+            }
         }
-
-        // ScummVM Specific Detection
-        let scummvmInnerExtensions: Set<String> = ["sou", "000", "001", "flac", "ogg", "wav"]
-        let scummvmGameIndicators: Set<String> = [
-            "HE", "MI", "SAM", "DAY", "DIG", "TENTACLE", "COMI", "MONKEY", "INDY",
-            "MANIAC", "ZAK", "LOOM", "GROUSE", "FULLTHROTTLE", "CURSE", "GRIM",
-            "ESCAPE", "BENEATH", "BEYOND", "LAURA", "DRACI"
-        ]
         
+        // 3. Structural Heuristics (The "Not just an extension" checks)
+        
+        // MAME: High file count + low extension diversity/common ROM extensions
+        let mameRelevantFiles = files.filter { 
+            let ext = URL(fileURLWithPath: $0).pathExtension.lowercased()
+            return ext == "bin" || ext == "rom" || ext.isEmpty
+        }
+        if mameRelevantFiles.count > 3 {
+            scores["mame", default: 0] += 8
+        }
+        
+        // ScummVM: Known indicator keywords
+        let scummvmGameIndicators = ["HE", "MI", "SAM", "DAY", "DIG", "COMI", "MONKEY"]
         for file in files {
-            let fileURL = URL(fileURLWithPath: file)
-            let ext = fileURL.pathExtension.lowercased()
-            let nameWithoutExt = fileURL.deletingPathExtension().lastPathComponent.uppercased()
-
-            if scummvmInnerExtensions.contains(ext) { 
-                LoggerService.debug(category: "ROMIdentifier", "Archive file extension match for \(url.lastPathComponent): scummvm")
-                return SystemDatabase.system(forID: "scummvm") 
-            }
-            if scummvmGameIndicators.contains(where: { nameWithoutExt.contains($0) }) { 
-                LoggerService.debug(category: "ROMIdentifier", "Archive file name match for \(url.lastPathComponent): scummvm")
-                return SystemDatabase.system(forID: "scummvm") 
+            let name = URL(fileURLWithPath: file).deletingPathExtension().lastPathComponent.uppercased()
+            if scummvmGameIndicators.contains(where: { name.contains($0) }) {
+                scores["scummvm", default: 0] += 5
             }
         }
 
-        // MAME Style Detection (lots of tiny files, often no extension)
-        let mameInnerExtensions: Set<String> = ["bin", "rom", "a", "b", "c", "d", "e", "f"]
-        let mameStyleCount = files.filter { file in
-            let fileURL = URL(fileURLWithPath: file)
-            let name = fileURL.deletingPathExtension().lastPathComponent
-            let ext = fileURL.pathExtension.lowercased()
-            LoggerService.debug(category: "ROMIdentifier", "Archive file extension match for \(url.lastPathComponent): \(ext)")
-            return (name.count <= 15 && ext.isEmpty) || ext == "bin" || ext == "rom" || mameInnerExtensions.contains(ext)
-        }.count
-
-        if mameStyleCount > 1 { return SystemDatabase.system(forID: "mame") }
+        // 4. Resolve Winner
+        // Sort by score descending and ensure we meet a minimum confidence threshold
+        if let bestMatch = scores.sorted(by: { $0.value > $1.value }).first, bestMatch.value >= 3 {
+            LoggerService.debug(category: "ROMIdentifier", "Archive \(url.lastPathComponent) identified as \(bestMatch.key) (Score: \(bestMatch.value))")
+            return SystemDatabase.system(forID: bestMatch.key)
+        }
         
         return nil
     }
