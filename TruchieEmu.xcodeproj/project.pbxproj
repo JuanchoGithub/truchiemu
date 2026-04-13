@@ -125,6 +125,7 @@
 		DA7B953D862BCA9932664C99 /* RunningGamesTracker.swift in Sources */ = {isa = PBXBuildFile; fileRef = EAE090319110B0F262FC2BC2 /* RunningGamesTracker.swift */; };
 		DBA355086BB7C0CC12EA76B3 /* ResourceCacheRepository.swift in Sources */ = {isa = PBXBuildFile; fileRef = BDB20047AD50ACDD07213C8B /* ResourceCacheRepository.swift */; };
 		DDAC0689F34313CEF845E3FC /* DOSRunner.swift in Sources */ = {isa = PBXBuildFile; fileRef = E87593F08B97B23BA2CAC02A /* DOSRunner.swift */; };
+		DDD7A0432F8C8F12002E26DB /* Asset.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = DDD7A0422F8C8F12002E26DB /* Asset.xcassets */; };
 		E05CB54B2368ED8F5003136D /* MAMEModels.swift in Sources */ = {isa = PBXBuildFile; fileRef = BA50A4BA7CA5DC3C5FCB550D /* MAMEModels.swift */; };
 		E31C6BB9549D14BAAB7259D7 /* CheatParser.swift in Sources */ = {isa = PBXBuildFile; fileRef = D117D4363FBC8E02D7F7B049 /* CheatParser.swift */; };
 		E36F364A38437CEB07D7D7C8 /* BezelBackgroundView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1B07E7146789A12D6E627BD9 /* BezelBackgroundView.swift */; };
@@ -298,6 +299,7 @@
 		DB9293E37E0A331CD54CDBF3 /* CheatManagerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CheatManagerView.swift; sourceTree = "<group>"; };
 		DC76C12B188BD3512C51A51F /* LaunchBoxGameMetadata.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LaunchBoxGameMetadata.swift; sourceTree = "<group>"; };
 		DD7DD75048F4FE666F795285 /* ROMRepository.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ROMRepository.swift; sourceTree = "<group>"; };
+		DDD7A0422F8C8F12002E26DB /* Asset.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Asset.xcassets; sourceTree = "<group>"; };
 		E35518FB34DEB243BF979DE0 /* LibretroCore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LibretroCore.swift; sourceTree = "<group>"; };
 		E3CF8589B867729FD91E572B /* GameDBLookupResult.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GameDBLookupResult.swift; sourceTree = "<group>"; };
 		E85C7A0C40C8A384AA47160D /* ShaderPreset.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShaderPreset.swift; sourceTree = "<group>"; };
@@ -502,6 +504,7 @@
 		51DCF45034CBD3ABFA194491 = {
 			isa = PBXGroup;
 			children = (
+				DDD7A0422F8C8F12002E26DB /* Asset.xcassets */,
 				D414975E3ECEDF8E738599C0 /* scripts */,
 				1877F5A2D47F3BEBD4C9F107 /* TruchieEmu */,
 				73C7F441286CE6892F0B3412 /* TruchieEmuTests */,
@@ -785,6 +788,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				DDD7A0432F8C8F12002E26DB /* Asset.xcassets in Resources */,
 				A1B2C3D4E5F6000000000006 /* ThumbnailManifests in Resources */,
 				F1D62C5445CF2CB899702BDE /* mame_rom_data.json in Resources */,
 			);
@@ -1032,6 +1036,7 @@
 			buildSettings = {
 				ARCHS = "$(ARCHS_STANDARD)";
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_INCLUDE_ALL_APPICON_ASSETS = YES;
 				AUTOMATION_APPLE_EVENTS = NO;
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++17";
 				CLANG_CXX_LIBRARY = "libc++";
@@ -1039,6 +1044,7 @@
 				CODE_SIGN_ENTITLEMENTS = TruchieEmu/Resources/TruchieEmu.entitlements;
 				CODE_SIGN_STYLE = Automatic;
 				COMBINE_HIDPI_IMAGES = YES;
+				CURRENT_PROJECT_VERSION = 1337;
 				ENABLE_HARDENED_RUNTIME = YES;
 				ENABLE_RESOURCE_ACCESS_AUDIO_INPUT = NO;
 				ENABLE_RESOURCE_ACCESS_CALENDARS = NO;
@@ -1048,11 +1054,13 @@
 				ENABLE_RESOURCE_ACCESS_PHOTO_LIBRARY = NO;
 				GCC_C_LANGUAGE_STANDARD = gnu17;
 				INFOPLIST_FILE = TruchieEmu/Resources/Info.plist;
+				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.games";
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/../Frameworks",
 				);
 				MACOSX_DEPLOYMENT_TARGET = 14.0;
+				MARKETING_VERSION = 0.7;
 				OTHER_LDFLAGS = (
 					"-framework",
 					Metal,
@@ -1184,20 +1192,24 @@
 			buildSettings = {
 				ARCHS = "$(ARCHS_STANDARD)";
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_INCLUDE_ALL_APPICON_ASSETS = YES;
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++17";
 				CLANG_CXX_LIBRARY = "libc++";
 				CLANG_ENABLE_OBJC_ARC = YES;
 				CODE_SIGN_ENTITLEMENTS = TruchieEmu/Resources/TruchieEmu.entitlements;
 				CODE_SIGN_STYLE = Automatic;
 				COMBINE_HIDPI_IMAGES = YES;
+				CURRENT_PROJECT_VERSION = 1337;
 				ENABLE_HARDENED_RUNTIME = NO;
 				GCC_C_LANGUAGE_STANDARD = gnu17;
 				INFOPLIST_FILE = TruchieEmu/Resources/Info.plist;
+				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.games";
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/../Frameworks",
 				);
 				MACOSX_DEPLOYMENT_TARGET = 14.0;
+				MARKETING_VERSION = 0.7;
 				OTHER_LDFLAGS = (
 					"-framework",
 					Metal,
