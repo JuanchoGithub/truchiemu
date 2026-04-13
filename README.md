@@ -1,4 +1,4 @@
-# TruchieEmu 🕹️
+# TruchiEmu 🕹️
 
 <img width="1112" height="814" alt="Captura de pantalla 2026-04-13 a la(s) 12 20 57 a  m" src="https://github.com/user-attachments/assets/3a61adcc-a9c8-469d-a9c7-b2a3249f82df" />
 
