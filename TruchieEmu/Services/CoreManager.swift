@@ -4,6 +4,154 @@ import Darwin
 import AppKit
 import SwiftData
 
+
+class BiosDownloader {
+    
+    // The path inside the ZIP: dolphin-master/Data/Sys/
+
+    //create a distributor function that will call the appropriate download function based on the coreID
+    func downloadAndExtractBios(for coreID: String, completion: @escaping (Result<Void, Error>) -> Void) {
+        if coreID == "dolphin_libretro" {
+            downloadAndExtractDolphinBios(completion: completion)
+        }
+    }
+
+    func deleteCore(coreID: String) {
+        if coreID == "dolphin_libretro" {
+            deleteDolphinBios(coreID: coreID)
+        }
+    }
+
+    func deleteDolphinBios(coreID: String) {
+        let fileManager = FileManager.default
+        let tempDir = fileManager.temporaryDirectory.appendingPathComponent(UUID().uuidString)
+        let zipFileLocation = tempDir.appendingPathComponent("repo.zip")
+        let destinationFolder = getAppSupportDirectory().appendingPathComponent("System/dolphin-emu/Sys")
+        //delete the destination folder
+        try? fileManager.removeItem(at: destinationFolder)
+        LoggerService.debug(category: "CoreManager", "Deleted support Sys folder for: \(coreID) at \(destinationFolder)")
+        //delete the zip file
+        try? fileManager.removeItem(at: zipFileLocation)
+        LoggerService.debug(category: "CoreManager", "Deleted zip file for: \(coreID) at \(zipFileLocation)")
+    }
+    
+    func downloadAndExtractDolphinBios(completion: @escaping (Result<Void, Error>) -> Void) {
+        let repoZipURL = URL(string: "https://github.com/dolphin-emu/dolphin/archive/refs/heads/master.zip")!
+        let targetSubPath = "dolphin-master/Data/Sys"
+        let fileManager = FileManager.default
+        
+        // 1. Setup Paths
+        let tempDir = fileManager.temporaryDirectory.appendingPathComponent(UUID().uuidString)
+        let zipFileLocation = tempDir.appendingPathComponent("repo.zip")
+        let destinationFolder = getAppSupportDirectory().appendingPathComponent("System/dolphin-emu/Sys")
+        
+        do {
+            try fileManager.createDirectory(at: tempDir, withIntermediateDirectories: true)
+            
+            // 2. Download the Zip file
+            LoggerService.debug(category: "CoreManager", "Downloading repository...")
+            let semaphore = DispatchSemaphore(value: 0)
+            var downloadError: Error?
+            
+            let task = URLSession.shared.downloadTask(with: repoZipURL) { localURL, _, error in
+                if let error = error {
+                    downloadError = error
+                } else if let localURL = localURL {
+                    do {
+                        // Move downloaded file to our controlled temp location
+                        if fileManager.fileExists(atPath: zipFileLocation.path) {
+                            try fileManager.removeItem(at: zipFileLocation)
+                        }
+                        try fileManager.moveItem(at: localURL, to: zipFileLocation)
+                    } catch {
+                        downloadError = error
+                    }
+                }
+                semaphore.signal()
+            }
+            task.resume()
+            semaphore.wait()
+            
+            if let error = downloadError {
+                completion(.failure(error))
+                return
+            }
+            
+            // 3. Use the system 'unzip' utility
+            LoggerService.debug(category: "CoreManager", "Running system unzip...")
+            try runUnzip(zipPath: zipFileLocation.path, destination: tempDir.path)
+            
+            // 4. Move files from the specific subfolder to the destination
+            LoggerService.debug(category: "CoreManager", "Moving files to application support...")
+            try moveSysFiles(from: tempDir.appendingPathComponent(targetSubPath), to: destinationFolder)
+            
+            // 5. Cleanup
+            try? fileManager.removeItem(at: tempDir)
+            
+            LoggerService.debug(category: "CoreManager", "Finished successfully.")
+            completion(.success(()))
+            
+        } catch {
+            LoggerService.error(category: "CoreManager", "Failed to download and extract BIOS: \(error)")
+            completion(.failure(error))
+        }
+    }
+    
+    /// Executes the shell command: unzip <path> -d <destination>
+    private func runUnzip(zipPath: String, destination: String) throws {
+        let process = Process()
+        let pipe = Pipe()
+        
+        process.executableURL = URL(fileURLWithPath: "/usr/bin/unzip")
+        process.arguments = [zipPath, "-d", destination]
+        process.standardError = pipe // Capture errors
+        
+        try process.run()
+        process.waitUntilExit()
+        
+        if process.terminationStatus != 0 {
+            let data = pipe.fileHandleForReading.readDataToEndOfFile()
+            let errorMsg = String(data: data, encoding: .utf8) ?? "Unknown unzip error"
+            LoggerService.error(category: "CoreManager", "Unzip error: \(errorMsg)")
+            throw NSError(domain: "UnzipError", code: Int(process.terminationStatus), userInfo: [NSLocalizedDescriptionKey: errorMsg])
+        }
+    }
+    
+    private func moveSysFiles(from source: URL, to destination: URL) throws {
+        let fileManager = FileManager.default
+        
+        // Ensure destination exists
+        if !fileManager.fileExists(atPath: destination.path) {
+            LoggerService.debug(category: "CoreManager", "Creating destination directory: \(destination)")
+            try fileManager.createDirectory(at: destination, withIntermediateDirectories: true)
+        }
+        
+        // Check if the extracted subfolder actually exists
+        guard fileManager.fileExists(atPath: source.path) else {
+            LoggerService.error(category: "CoreManager", "Subfolder \(source.lastPathComponent) not found in ZIP")
+            throw NSError(domain: "FileSystemError", code: 404, userInfo: [NSLocalizedDescriptionKey: "Subfolder \(source.lastPathComponent) not found in ZIP"])
+        }
+        
+        let files = try fileManager.contentsOfDirectory(at: source, includingPropertiesForKeys: nil)
+        
+        for fileURL in files {
+            let targetURL = destination.appendingPathComponent(fileURL.lastPathComponent)
+            
+            if fileManager.fileExists(atPath: targetURL.path) {
+                try fileManager.removeItem(at: targetURL)
+            }
+            try fileManager.moveItem(at: fileURL, to: targetURL)
+            LoggerService.debug(category: "CoreManager", "Moved file: \(fileURL.lastPathComponent)")
+        }
+    }
+    
+    private func getAppSupportDirectory() -> URL {
+        let paths = FileManager.default.urls(for: .applicationSupportDirectory, in: .userDomainMask)
+        LoggerService.debug(category: "CoreManager", "Application support directory: \(paths[0])")
+        return paths[0].appendingPathComponent("TruchieEmu")
+    }
+}
+
 @MainActor
 class CoreManager: ObservableObject {
     static let shared = CoreManager()
@@ -158,6 +306,7 @@ class CoreManager: ObservableObject {
         slotToLoad: Int? = nil
     ) {
         LoggerService.debug(category: "CoreManager", "Requesting core download for: \(coreID)")
+
         // Find in available list
         if let remote = availableCores.first(where: { $0.coreID == coreID }) {
             LoggerService.debug(category: "CoreManager", "Found remote core: \(remote)")
@@ -190,7 +339,18 @@ class CoreManager: ObservableObject {
 
     func downloadCore(_ info: RemoteCoreInfo) async {
         LoggerService.debug(category: "CoreManager", "Starting download: \(info.coreID) from \(info.downloadURL)")
-        
+
+        let BiosDownloaderService = BiosDownloader()
+        BiosDownloaderService.downloadAndExtractBios(for: info.coreID) { result in
+            switch result {
+                case .success(_):
+                    LoggerService.debug(category: "CoreManager", "BIOS for \(info.coreID) downloaded successfully")
+                case .failure(let error):
+                    LoggerService.error(category: "CoreManager", "BIOS for \(info.coreID) download failed: \(error)")
+            }
+        }
+
+
         // Mark as downloading
         if let idx = installedCores.firstIndex(where: { $0.id == info.coreID }) {
             LoggerService.debug(category: "CoreManager", "Found installed core: \(info.coreID)")
@@ -293,6 +453,8 @@ class CoreManager: ObservableObject {
         LoggerService.debug(category: "CoreManager", "Core removed from list: \(core.id)")
         // Instantly fallback any systems that were relying on this deleted core
         repairPreferredCores()
+        let biosDownloaderService = BiosDownloader()
+        biosDownloaderService.deleteCore(coreID: core.id)
     }
 
     // MARK: - Persistence

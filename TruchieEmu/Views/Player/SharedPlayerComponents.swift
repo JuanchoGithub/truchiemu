@@ -1307,7 +1307,7 @@ class StandaloneGameWindowController: NSWindowController, NSWindowDelegate, Obse
 
         private func getFragmentFunctionName() -> String {
             let preset = ShaderManager.shared.activePreset
-            LoggerService.debug(category: "Shaders", "Active shader preset: \(preset.id) - \(preset.name)")
+            LoggerService.extreme(category: "Shaders", "Active shader preset: \(preset.id) - \(preset.name)")
             guard let firstPass = preset.passes.first,
                   let shaderFile = firstPass.shaderFile.components(separatedBy: ".").first else {
                 LoggerService.debug(category: "Shaders", "No passes found, falling back to fragmentPassthrough")
@@ -1325,7 +1325,7 @@ class StandaloneGameWindowController: NSWindowController, NSWindowDelegate, Obse
             case "Passthrough": result = "fragmentPassthrough"
             default: result = "fragment" + shaderFile
             }
-            LoggerService.debug(category: "Shaders", "ShaderFile: '\(shaderFile)' -> Fragment: '\(result)'")
+            LoggerService.extreme(category: "Shaders", "ShaderFile: '\(shaderFile)' -> Fragment: '\(result)'")
             return result
         }
 

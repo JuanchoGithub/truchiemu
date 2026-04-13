@@ -736,7 +736,8 @@ static bool bridge_environment(unsigned cmd, void *data) {
     return true;
   case RETRO_ENVIRONMENT_GET_PREFERRED_HW_RENDER: // 56
     if (data)
-      *(unsigned *)data = RETRO_HW_CONTEXT_OPENGL;
+      *(unsigned *)data =
+          RETRO_HW_CONTEXT_OPENGL_CORE; // <-- Tell Dolphin to use modern GL
     return true;
   case RETRO_ENVIRONMENT_SET_CORE_OPTIONS: {
     if (data)
@@ -1169,11 +1170,28 @@ static int16_t bridge_input_state(unsigned port, unsigned device,
                       "retro_load_game crashed with unknown exception");
     return NO;
   }
-  // FORCE THE CONTROLLER TYPE HERE
-  // You need the specific integer constant that represents
-  // "Classic Controller" for the dolphin core.
-  // This is often specific to the core's implementation.
-  unsigned device_type = 513; // Example: This constant varies by core.
+  // Set controller type ONCE during load based on the console type
+  unsigned device_type =
+      1; // Default to RETRO_DEVICE_JOYPAD (Standard Gamepad / GameCube)
+
+  if (g_coreID && [[g_coreID lowercaseString] containsString:@"dolphin"]) {
+    // Check file extension to see if it's a Wii game
+    NSString *ext = [_retainedRomPath.pathExtension lowercaseString];
+    if ([ext isEqualToString:@"wbfs"] || [ext isEqualToString:@"wad"] ||
+        [ext isEqualToString:@"wia"] || [ext isEqualToString:@"rvz"]) {
+
+      // It's a Wii game, use Wiimote / Classic Controller
+      device_type = 513;
+      bridge_log_printf(
+          RETRO_LOG_INFO,
+          "Wii game detected. Setting controller to Classic Controller (513).");
+    } else {
+      // It's a GameCube game (.iso, .gcm)
+      bridge_log_printf(
+          RETRO_LOG_INFO,
+          "GameCube game detected. Setting controller to Standard Joypad (1).");
+    }
+  }
   [self setControllerPortDevice:0 device:device_type];
 
   // ── Notify the core that the hardware context is ready & fetch safe
@@ -1491,10 +1509,14 @@ static int16_t bridge_input_state(unsigned port, unsigned device,
   // CGLPixelFormatAttribute profile =
   // (CGLPixelFormatAttribute)kCGLOGLPVersion_Legacy;
 
-  // if (_hw_callback.context_type == RETRO_HW_CONTEXT_OPENGL_CORE) {
   CGLPixelFormatAttribute profile =
-      (CGLPixelFormatAttribute)kCGLOGLPVersion_3_2_Core;
-  //}
+      (CGLPixelFormatAttribute)kCGLOGLPVersion_Legacy;
+
+  // Respect the context requested by the core
+  if (_hw_callback.context_type == RETRO_HW_CONTEXT_OPENGL_CORE ||
+      _hw_callback.version_major >= 3) {
+    profile = (CGLPixelFormatAttribute)kCGLOGLPVersion_3_2_Core;
+  }
 
   bridge_log_printf(
       RETRO_LOG_DEBUG,
@@ -1657,13 +1679,6 @@ static int16_t bridge_input_state(unsigned port, unsigned device,
         rowBottom[x] = tmp;
       }
     }
-  }
-
-  if (isDolphin && _retro_set_controller_port_device) {
-    // Only apply the Classic Controller override for Dolphin
-    _retro_set_controller_port_device(0, 513); // 513 = Classic Controller
-    bridge_log_printf(RETRO_LOG_INFO,
-                      "Dolphin: Forced Port 0 to Classic Controller.");
   }
 
   return _hwReadbackBuffer;

@@ -102,17 +102,17 @@ class LibretroBridgeSwift {
     // MARK: - Input
     
     static func setKeyState(retroID: Int, pressed: Bool) {
-        LoggerService.debug(category: "LibretroBridge", "Setting key state: \(retroID) = \(pressed)")
+        LoggerService.extreme(category: "LibretroBridge", "Setting key state: \(retroID) = \(pressed)")
         LibretroBridge.setKeyState(Int32(retroID), pressed: pressed)
     }
 
     static func setTurboState(turboIdx: Int, active: Bool, targetButton: Int) {
-        LoggerService.debug(category: "LibretroBridge", "Setting turbo state: \(turboIdx) = \(active) = \(targetButton)")
+        LoggerService.extreme(category: "LibretroBridge", "Setting turbo state: \(turboIdx) = \(active) = \(targetButton)")
         LibretroBridge.setTurboState(Int32(turboIdx), active: active, targetButton: Int32(targetButton))
     }
 
     static func setAnalogState(_ index: Int, id: Int, value: Int32) {
-        LoggerService.debug(category: "LibretroBridge", "Setting analog state: \(index) = \(id) = \(value)")
+        LoggerService.extreme(category: "LibretroBridge", "Setting analog state: \(index) = \(id) = \(value)")
         LibretroBridge.setAnalogState(Int32(index), id: Int32(id), value: value)
     }
 
@@ -120,12 +120,12 @@ class LibretroBridgeSwift {
     
     static func currentRotation() -> Int {
         var rotation = LibretroBridge.currentRotation()
-        LoggerService.debug(category: "LibretroBridge", "Getting current rotation: \(rotation)")
+        LoggerService.extreme(category: "LibretroBridge", "Getting current rotation: \(rotation)")
         return Int(rotation)
     }
 
     static func aspectRatio() -> Float {
-        LoggerService.debug(category: "LibretroBridge", "Getting aspect ratio")
+        LoggerService.extreme(category: "LibretroBridge", "Getting aspect ratio")
         return LibretroBridge.aspectRatio()
     }
 
