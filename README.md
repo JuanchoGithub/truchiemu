@@ -19,7 +19,7 @@ Forget clunky, outdated menus. TruchieEmu features a polished, native macOS inte
 ### 📺 Immersive Visuals
 Relive the golden age of gaming with advanced Metal-powered shaders. Whether you want the warm glow of a classic CRT, the sharp look of an LCD, or custom scanline effects, TruchieEmu makes every pixel feel authentic.
 
-<img width="1112" height="814" alt="Captura de pantalla 2026-04-13 a la(s) 12 22 41 a  m" src="https://github.com/user-attachments/assets/b68a47cd-e09e-4c22-a5ac-baec4d0c9b2a" />
+<img width="1136" height="866" alt="Captura de pantalla 2026-04-13 a la(s) 12 22 24 a  m" src="https://github.com/user-attachments/assets/a2a0f14a-f867-45dd-8c61-c9750e1f9231" />
 
 ### 🚀 Effortless Setup
 Getting started is a breeze. Our guided setup wizard walks you through your first launch, and our automated library services handle the heavy lifting—syncing metadata and downloading beautiful box art for your entire collection.
@@ -32,7 +32,7 @@ Take your nostalgia to the next level. TruchieEmu supports RetroAchievements, al
 ### ✨ Pure Delight
 Every interaction is designed to be smooth and joyful. From polished transitions to celebratory confetti moments, TruchieEmu brings a touch of magic to your retro gaming sessions.
 
-<img width="1136" height="866" alt="Captura de pantalla 2026-04-13 a la(s) 12 22 24 a  m" src="https://github.com/user-attachments/assets/a2a0f14a-f867-45dd-8c61-c9750e1f9231" />
+<img width="1112" height="814" alt="Captura de pantalla 2026-04-13 a la(s) 12 22 41 a  m" src="https://github.com/user-attachments/assets/b68a47cd-e09e-4c22-a5ac-baec4d0c9b2a" />
 
 ---
 
