@@ -1430,7 +1430,7 @@ class StandaloneGameWindowController: NSWindowController, NSWindowDelegate, Obse
                             // FIXME: this should be an option in settings
                             if targetAspect > 1.7 {
                                 targetAspect = 1.6
-                                LoggerService.debug(category: "Metal", "[Aspect Ratio] Core/pixel ratio \(String(format: "%.3f", targetAspect)) is wider than the macbook screen. Forcing aspect ratio to 16:10")
+                                LoggerService.extreme(category: "Metal", "[Aspect Ratio] Core/pixel ratio \(String(format: "%.3f", targetAspect)) is wider than the macbook screen. Forcing aspect ratio to 16:10")
                             }
                         }
                         var drawWidth = viewWidth

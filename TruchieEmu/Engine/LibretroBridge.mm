@@ -612,7 +612,6 @@ static bool bridge_environment(unsigned cmd, void *data) {
           return true;
         }
       }
-
       // dolphin_libretro
       if (strcmp(var->key, "dolphin_gfx_backend") == 0) {
         var->value = "OGL";
@@ -1564,15 +1563,8 @@ static int16_t bridge_input_state(unsigned port, unsigned device,
 
   CGLSetCurrentContext(_glContext);
 
-  // ── FIX FOR APPLE SILICON OPENGL CORE PROFILE CRASH ──
-  // Apple's OpenGL drivers strictly require a VAO to be bound.
-  // We bind a global dummy VAO so cores that forget to bind one don't instantly
-  // crash.
-  GLuint dummyVAO;
-  glGenVertexArraysAPPLE(1, &dummyVAO);
-  glBindVertexArrayAPPLE(dummyVAO);
-
   // ── Create a real FBO for the core to render into ──────────────────────
+  // Use 640x480 as a safe default; some cores will call SET_GEOMETRY later.
   _fboWidth = 640;
   _fboHeight = 480;
 
@@ -1657,8 +1649,10 @@ static int16_t bridge_input_state(unsigned port, unsigned device,
                 [[g_coreID lowercaseString] containsString:@"play_libretro"]);
   BOOL isDolphin =
       (g_coreID && [[g_coreID lowercaseString] containsString:@"dolphin"]);
+  BOOL isDOSBox =
+      (g_coreID && [[g_coreID lowercaseString] containsString:@"dosbox"]);
 
-  if (isPSP || isPS2 || isDolphin) {
+  if (isPSP || isPS2 || isDolphin || isDOSBox) {
     // --- FIX: Vertical FLIP REQUIRED ONLY ---
 
     // 1. Vertical Flip (Fixes the "Upside Down" issue)
