@@ -573,34 +573,42 @@ static bool bridge_environment(unsigned cmd, void *data) {
     if (var && var->key) {
 
       // ─── HIGH PRIORITY FLYCAST OVERRIDES ───
-      // We force these regardless of saved settings to prevent the immediate
-      // crash.
-      if (strstr(var->key, "flycast_")) {
-        // 1. DISABLE THREADED RENDERING (Fixes the Thread 4 Deadlock)
-        if (strcmp(var->key, "flycast_threaded_rendering") == 0) {
+      // Check for both modern "flycast_" and legacy "reicast_" prefixes
+      if (strstr(var->key, "flycast_") || strstr(var->key, "reicast_")) {
+
+        // 1. DISABLE THREADED RENDERING (Fixes OpenGL Context Race Crash)
+        if (strstr(var->key, "threaded_rendering") != NULL) {
           var->value = "disabled";
-          bridge_log_printf(RETRO_LOG_INFO,
-                            "Flycast: Force Threaded Rendering = disabled");
+          bridge_log_printf(RETRO_LOG_INFO, "Flycast Override: %s = %s",
+                            var->key, var->value);
           return true;
         }
 
-        // 2. FORCE INTERPRETER (Fixes the Thread 18 JIT Crash)
-        // Note: WinCE games like Sega Rally 2 REQUIRE the MMU.
-        // The ARM64 JIT + MMU is often unstable on M1/M2.
-        if (strcmp(var->key, "flycast_cpu_core") == 0) {
+        // 2. FORCE INTERPRETER (Fixes Apple Silicon ARM64 JIT Crash)
+        // Check for BOTH "cpu_core" and "cpu_mode" to cover all Flycast
+        // versions!
+        if (strstr(var->key, "cpu_core") != NULL ||
+            strstr(var->key, "cpu_mode") != NULL) {
           var->value = "interpreter";
-          bridge_log_printf(RETRO_LOG_INFO, "Flycast: Force CPU = interpreter");
+          bridge_log_printf(RETRO_LOG_INFO, "Flycast Override: %s = %s",
+                            var->key, var->value);
           return true;
         }
 
-        // 3. ENABLE MMU (Required for Sega Rally 2 / WinCE)
-        if (strcmp(var->key, "flycast_mmu") == 0) {
+        // 3. ENABLE MMU (Required for WinCE games like Sega Rally 2)
+        if (strstr(var->key, "mmu") != NULL) {
           var->value = "enabled";
+          bridge_log_printf(RETRO_LOG_INFO, "Flycast Override: %s = %s",
+                            var->key, var->value);
           return true;
         }
-        // 4. ALPHA SORTING (Mac compatibility)
-        if (strcmp(var->key, "flycast_alpha_sorting") == 0) {
+
+        // 4. ALPHA SORTING (Disables OIT / Per-Pixel which crashes Apple
+        // OpenGL 4.1)
+        if (strstr(var->key, "alpha_sorting") != NULL) {
           var->value = "per-triangle";
+          bridge_log_printf(RETRO_LOG_INFO, "Flycast Override: %s = %s",
+                            var->key, var->value);
           return true;
         }
       }
@@ -1556,8 +1564,15 @@ static int16_t bridge_input_state(unsigned port, unsigned device,
 
   CGLSetCurrentContext(_glContext);
 
+  // ── FIX FOR APPLE SILICON OPENGL CORE PROFILE CRASH ──
+  // Apple's OpenGL drivers strictly require a VAO to be bound.
+  // We bind a global dummy VAO so cores that forget to bind one don't instantly
+  // crash.
+  GLuint dummyVAO;
+  glGenVertexArraysAPPLE(1, &dummyVAO);
+  glBindVertexArrayAPPLE(dummyVAO);
+
   // ── Create a real FBO for the core to render into ──────────────────────
-  // Use 640x480 as a safe default; some cores will call SET_GEOMETRY later.
   _fboWidth = 640;
   _fboHeight = 480;
 

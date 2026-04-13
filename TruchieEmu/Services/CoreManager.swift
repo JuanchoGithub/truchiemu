@@ -571,7 +571,7 @@ private func loadInstalledCores() {
         // Refresh systemIDs so updates to supportedSystems mappings are applied to cached data
         LoggerService.debug(category: "CoreManager", "Loading available cores")
         for i in 0..<saved.count {
-            LoggerService.debug(category: "CoreManager", "Loading available core: \(saved[i].coreID) for system: \(saved[i].systemIDs)")
+            LoggerService.extreme(category: "CoreManager", "Loading available core: \(saved[i].coreID) for system: \(saved[i].systemIDs)")
             saved[i].systemIDs = CoreManager.supportedSystems(for: saved[i].coreID)
         }
         availableCores = saved
