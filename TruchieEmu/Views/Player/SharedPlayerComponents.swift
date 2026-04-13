@@ -1031,8 +1031,18 @@ class StandaloneGameWindowController: NSWindowController, NSWindowDelegate, Obse
                 timer.invalidate()
                 if !isReady {
                     LoggerService.info(category: "Runner", "Timeout waiting for first frame, showing window anyway")
+                    // Dont show window, terminate the emulation instead
+                    self.window?.close()
+                    self.runner?.stop()
+                    self.runner = nil
+                    //Show error message
+                    let alert = NSAlert()
+                    alert.messageText = "Error"
+                    alert.informativeText = "Game could not be launched"
+                    alert.runModal()
+                } else {
+                    self.showWindowAndLoadSlot(slotToLoad: slotToLoad, rom: rom)
                 }
-                self.showWindowAndLoadSlot(slotToLoad: slotToLoad, rom: rom)
             }
         }
     }

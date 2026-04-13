@@ -1804,6 +1804,7 @@ static int16_t bridge_input_state(unsigned port, unsigned device,
 
     // FIX: Use the Swift logger for the finish message
     bridge_log_printf(RETRO_LOG_INFO, "Core session finished.");
+    dispatch_semaphore_signal(_bridgeCompletionSemaphore);
   });
 }
 
