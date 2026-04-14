@@ -122,241 +122,6 @@
 		D992F811F8E06415C23F897C /* BezelsSection.swift in Sources */ = {isa = PBXBuildFile; fileRef = B286AEB9B77657F1BFA3B9EA /* BezelsSection.swift */; };
 		DA7B953D862BCA9932664C99 /* RunningGamesTracker.swift in Sources */ = {isa = PBXBuildFile; fileRef = EAE090319110B0F262FC2BC2 /* RunningGamesTracker.swift */; };
 		DBA355086BB7C0CC12EA76B3 /* ResourceCacheRepository.swift in Sources */ = {isa = PBXBuildFile; fileRef = BDB20047AD50ACDD07213C8B /* ResourceCacheRepository.swift */; };
-		DDA58E1C2F8DA29300A9BEE9 /* arduboy@132w.png in Resources */ = {isa = PBXBuildFile; fileRef = DDA58D5B2F8DA29300A9BEE9 /* arduboy@132w.png */; };
-		DDA58E1D2F8DA29300A9BEE9 /* TIC.png in Resources */ = {isa = PBXBuildFile; fileRef = DDA58DFE2F8DA29300A9BEE9 /* TIC.png */; };
-		DDA58E1E2F8DA29300A9BEE9 /* psp@132w.png in Resources */ = {isa = PBXBuildFile; fileRef = DDA58D8A2F8DA29300A9BEE9 /* psp@132w.png */; };
-		DDA58E1F2F8DA29300A9BEE9 /* MSX.png in Resources */ = {isa = PBXBuildFile; fileRef = DDA58DD62F8DA29300A9BEE9 /* MSX.png */; };
-		DDA58E202F8DA29300A9BEE9 /* 3ds.ico in Resources */ = {isa = PBXBuildFile; fileRef = DDA58D362F8DA29300A9BEE9 /* 3ds.ico */; };
-		DDA58E212F8DA29300A9BEE9 /* ports@132w.png in Resources */ = {isa = PBXBuildFile; fileRef = DDA58D882F8DA29300A9BEE9 /* ports@132w.png */; };
-		DDA58E222F8DA29300A9BEE9 /* appIcon128.jpg in Resources */ = {isa = PBXBuildFile; fileRef = DDA58D2D2F8DA29300A9BEE9 /* appIcon128.jpg */; };
-		DDA58E232F8DA29300A9BEE9 /* xbox.ico in Resources */ = {isa = PBXBuildFile; fileRef = DDA58D532F8DA29300A9BEE9 /* xbox.ico */; };
-		DDA58E242F8DA29300A9BEE9 /* easyrpg@132w.png in Resources */ = {isa = PBXBuildFile; fileRef = DDA58D692F8DA29300A9BEE9 /* easyrpg@132w.png */; };
-		DDA58E252F8DA29300A9BEE9 /* gg@132w.png in Resources */ = {isa = PBXBuildFile; fileRef = DDA58D712F8DA29300A9BEE9 /* gg@132w.png */; };
-		DDA58E262F8DA29300A9BEE9 /* sms.ico in Resources */ = {isa = PBXBuildFile; fileRef = DDA58D4C2F8DA29300A9BEE9 /* sms.ico */; };
-		DDA58E272F8DA29300A9BEE9 /* INTELLIVISION.png in Resources */ = {isa = PBXBuildFile; fileRef = DDA58DCB2F8DA29300A9BEE9 /* INTELLIVISION.png */; };
-		DDA58E282F8DA29300A9BEE9 /* NTbe4.jpg in Resources */ = {isa = PBXBuildFile; fileRef = DDA58D332F8DA29300A9BEE9 /* NTbe4.jpg */; };
-		DDA58E292F8DA29300A9BEE9 /* appIcon64.jpg in Resources */ = {isa = PBXBuildFile; fileRef = DDA58D2C2F8DA29300A9BEE9 /* appIcon64.jpg */; };
-		DDA58E2A2F8DA29300A9BEE9 /* wiiu.ico in Resources */ = {isa = PBXBuildFile; fileRef = DDA58D522F8DA29300A9BEE9 /* wiiu.ico */; };
-		DDA58E2B2F8DA29300A9BEE9 /* NGP.png in Resources */ = {isa = PBXBuildFile; fileRef = DDA58DDF2F8DA29300A9BEE9 /* NGP.png */; };
-		DDA58E2C2F8DA29300A9BEE9 /* appIcon16.jpg in Resources */ = {isa = PBXBuildFile; fileRef = DDA58D2A2F8DA29300A9BEE9 /* appIcon16.jpg */; };
-		DDA58E2D2F8DA29300A9BEE9 /* pcecd@132w.png in Resources */ = {isa = PBXBuildFile; fileRef = DDA58D852F8DA29300A9BEE9 /* pcecd@132w.png */; };
-		DDA58E2E2F8DA29300A9BEE9 /* wolf@132w.png in Resources */ = {isa = PBXBuildFile; fileRef = DDA58D992F8DA29300A9BEE9 /* wolf@132w.png */; };
-		DDA58E2F2F8DA29300A9BEE9 /* ffplay@132w.png in Resources */ = {isa = PBXBuildFile; fileRef = DDA58D6D2F8DA29300A9BEE9 /* ffplay@132w.png */; };
-		DDA58E302F8DA29300A9BEE9 /* itv@132w.png in Resources */ = {isa = PBXBuildFile; fileRef = DDA58D732F8DA29300A9BEE9 /* itv@132w.png */; };
-		DDA58E312F8DA29300A9BEE9 /* ATARI800.png in Resources */ = {isa = PBXBuildFile; fileRef = DDA58DA62F8DA29300A9BEE9 /* ATARI800.png */; };
-		DDA58E322F8DA29300A9BEE9 /* gc.ico in Resources */ = {isa = PBXBuildFile; fileRef = DDA58D3E2F8DA29300A9BEE9 /* gc.ico */; };
-		DDA58E332F8DA29300A9BEE9 /* megaduck@132w.png in Resources */ = {isa = PBXBuildFile; fileRef = DDA58D772F8DA29300A9BEE9 /* megaduck@132w.png */; };
-		DDA58E342F8DA29300A9BEE9 /* WS.png in Resources */ = {isa = PBXBuildFile; fileRef = DDA58E092F8DA29300A9BEE9 /* WS.png */; };
-		DDA58E352F8DA29300A9BEE9 /* GB.png in Resources */ = {isa = PBXBuildFile; fileRef = DDA58DC62F8DA29300A9BEE9 /* GB.png */; };
-		DDA58E362F8DA29300A9BEE9 /* snes.ico in Resources */ = {isa = PBXBuildFile; fileRef = DDA58D4D2F8DA29300A9BEE9 /* snes.ico */; };
-		DDA58E372F8DA29300A9BEE9 /* vdp@132w.png in Resources */ = {isa = PBXBuildFile; fileRef = DDA58D972F8DA29300A9BEE9 /* vdp@132w.png */; };
-		DDA58E382F8DA29300A9BEE9 /* wii.ico in Resources */ = {isa = PBXBuildFile; fileRef = DDA58D502F8DA29300A9BEE9 /* wii.ico */; };
-		DDA58E392F8DA29300A9BEE9 /* CPS1.png in Resources */ = {isa = PBXBuildFile; fileRef = DDA58DB82F8DA29300A9BEE9 /* CPS1.png */; };
-		DDA58E3A2F8DA29300A9BEE9 /* ARCADE.png in Resources */ = {isa = PBXBuildFile; fileRef = DDA58DA32F8DA29300A9BEE9 /* ARCADE.png */; };
-		DDA58E3B2F8DA29300A9BEE9 /* PC98.png in Resources */ = {isa = PBXBuildFile; fileRef = DDA58DE42F8DA29300A9BEE9 /* PC98.png */; };
-		DDA58E3C2F8DA29300A9BEE9 /* PSP.png in Resources */ = {isa = PBXBuildFile; fileRef = DDA58DED2F8DA29300A9BEE9 /* PSP.png */; };
-		DDA58E3D2F8DA29300A9BEE9 /* ATARI2600.png in Resources */ = {isa = PBXBuildFile; fileRef = DDA58DA82F8DA29300A9BEE9 /* ATARI2600.png */; };
-		DDA58E3E2F8DA29300A9BEE9 /* MS.png in Resources */ = {isa = PBXBuildFile; fileRef = DDA58DD52F8DA29300A9BEE9 /* MS.png */; };
-		DDA58E3F2F8DA29300A9BEE9 /* Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = DDA58E162F8DA29300A9BEE9 /* Info.plist */; };
-		DDA58E402F8DA29300A9BEE9 /* ms@132w.png in Resources */ = {isa = PBXBuildFile; fileRef = DDA58D782F8DA29300A9BEE9 /* ms@132w.png */; };
-		DDA58E412F8DA29300A9BEE9 /* SUPERVISION-alt.png in Resources */ = {isa = PBXBuildFile; fileRef = DDA58DFB2F8DA29300A9BEE9 /* SUPERVISION-alt.png */; };
-		DDA58E422F8DA29300A9BEE9 /* CPC.png in Resources */ = {isa = PBXBuildFile; fileRef = DDA58DB42F8DA29300A9BEE9 /* CPC.png */; };
-		DDA58E432F8DA29300A9BEE9 /* POKEMINI.png in Resources */ = {isa = PBXBuildFile; fileRef = DDA58DEA2F8DA29300A9BEE9 /* POKEMINI.png */; };
-		DDA58E442F8DA29300A9BEE9 /* GBC.png in Resources */ = {isa = PBXBuildFile; fileRef = DDA58DC82F8DA29300A9BEE9 /* GBC.png */; };
-		DDA58E452F8DA29300A9BEE9 /* AMIGACDTV.png in Resources */ = {isa = PBXBuildFile; fileRef = DDA58DA22F8DA29300A9BEE9 /* AMIGACDTV.png */; };
-		DDA58E462F8DA29300A9BEE9 /* ATOMISWAVE.png in Resources */ = {isa = PBXBuildFile; fileRef = DDA58DAC2F8DA29300A9BEE9 /* ATOMISWAVE.png */; };
-		DDA58E472F8DA29300A9BEE9 /* segasgone@132w.png in Resources */ = {isa = PBXBuildFile; fileRef = DDA58D8F2F8DA29300A9BEE9 /* segasgone@132w.png */; };
-		DDA58E482F8DA29300A9BEE9 /* PS.png in Resources */ = {isa = PBXBuildFile; fileRef = DDA58DEC2F8DA29300A9BEE9 /* PS.png */; };
-		DDA58E492F8DA29300A9BEE9 /* lynx@132w.png in Resources */ = {isa = PBXBuildFile; fileRef = DDA58D742F8DA29300A9BEE9 /* lynx@132w.png */; };
-		DDA58E4A2F8DA29300A9BEE9 /* scummvm@132w.png in Resources */ = {isa = PBXBuildFile; fileRef = DDA58D8D2F8DA29300A9BEE9 /* scummvm@132w.png */; };
-		DDA58E4B2F8DA29300A9BEE9 /* COLSGM.png in Resources */ = {isa = PBXBuildFile; fileRef = DDA58DB32F8DA29300A9BEE9 /* COLSGM.png */; };
-		DDA58E4C2F8DA29300A9BEE9 /* MAME2010.png in Resources */ = {isa = PBXBuildFile; fileRef = DDA58DD12F8DA29300A9BEE9 /* MAME2010.png */; };
-		DDA58E4D2F8DA29300A9BEE9 /* dreamcast.ico in Resources */ = {isa = PBXBuildFile; fileRef = DDA58D392F8DA29300A9BEE9 /* dreamcast.ico */; };
-		DDA58E4E2F8DA29300A9BEE9 /* gw@132w.png in Resources */ = {isa = PBXBuildFile; fileRef = DDA58D722F8DA29300A9BEE9 /* gw@132w.png */; };
-		DDA58E4F2F8DA29300A9BEE9 /* sfc@132w.png in Resources */ = {isa = PBXBuildFile; fileRef = DDA58D902F8DA29300A9BEE9 /* sfc@132w.png */; };
-		DDA58E502F8DA29300A9BEE9 /* ATARI5200.png in Resources */ = {isa = PBXBuildFile; fileRef = DDA58DA92F8DA29300A9BEE9 /* ATARI5200.png */; };
-		DDA58E512F8DA29300A9BEE9 /* PANASONIC.png in Resources */ = {isa = PBXBuildFile; fileRef = DDA58DE22F8DA29300A9BEE9 /* PANASONIC.png */; };
-		DDA58E522F8DA29300A9BEE9 /* gamegear.ico in Resources */ = {isa = PBXBuildFile; fileRef = DDA58D3A2F8DA29300A9BEE9 /* gamegear.ico */; };
-		DDA58E532F8DA29300A9BEE9 /* AMIGACD.png in Resources */ = {isa = PBXBuildFile; fileRef = DDA58DA12F8DA29300A9BEE9 /* AMIGACD.png */; };
-		DDA58E542F8DA29300A9BEE9 /* atarist@132w.png in Resources */ = {isa = PBXBuildFile; fileRef = DDA58D5E2F8DA29300A9BEE9 /* atarist@132w.png */; };
-		DDA58E552F8DA29300A9BEE9 /* Sega_-_Mega_Drive_-_Genesis.json in Resources */ = {isa = PBXBuildFile; fileRef = DDA58E132F8DA29300A9BEE9 /* Sega_-_Mega_Drive_-_Genesis.json */; };
-		DDA58E562F8DA29300A9BEE9 /* SFC.png in Resources */ = {isa = PBXBuildFile; fileRef = DDA58DF42F8DA29300A9BEE9 /* SFC.png */; };
-		DDA58E572F8DA29300A9BEE9 /* SEGA32X.png in Resources */ = {isa = PBXBuildFile; fileRef = DDA58DF22F8DA29300A9BEE9 /* SEGA32X.png */; };
-		DDA58E582F8DA29300A9BEE9 /* PCECD.png in Resources */ = {isa = PBXBuildFile; fileRef = DDA58DE62F8DA29300A9BEE9 /* PCECD.png */; };
-		DDA58E592F8DA29300A9BEE9 /* ps3.ico in Resources */ = {isa = PBXBuildFile; fileRef = DDA58D472F8DA29300A9BEE9 /* ps3.ico */; };
-		DDA58E5A2F8DA29300A9BEE9 /* pico@132w.png in Resources */ = {isa = PBXBuildFile; fileRef = DDA58D862F8DA29300A9BEE9 /* pico@132w.png */; };
-		DDA58E5B2F8DA29300A9BEE9 /* PALMOS.png in Resources */ = {isa = PBXBuildFile; fileRef = DDA58DE12F8DA29300A9BEE9 /* PALMOS.png */; };
-		DDA58E5C2F8DA29300A9BEE9 /* mame_2003_plus.json in Resources */ = {isa = PBXBuildFile; fileRef = DDA58E172F8DA29300A9BEE9 /* mame_2003_plus.json */; };
-		DDA58E5D2F8DA29300A9BEE9 /* ws@132w.png in Resources */ = {isa = PBXBuildFile; fileRef = DDA58D9A2F8DA29300A9BEE9 /* ws@132w.png */; };
-		DDA58E5E2F8DA29300A9BEE9 /* x68000@132w.png in Resources */ = {isa = PBXBuildFile; fileRef = DDA58D9C2F8DA29300A9BEE9 /* x68000@132w.png */; };
-		DDA58E5F2F8DA29300A9BEE9 /* msx@132w.png in Resources */ = {isa = PBXBuildFile; fileRef = DDA58D7B2F8DA29300A9BEE9 /* msx@132w.png */; };
-		DDA58E602F8DA29300A9BEE9 /* CAVESTORY.png in Resources */ = {isa = PBXBuildFile; fileRef = DDA58DAF2F8DA29300A9BEE9 /* CAVESTORY.png */; };
-		DDA58E612F8DA29300A9BEE9 /* wsc@132w.png in Resources */ = {isa = PBXBuildFile; fileRef = DDA58D9B2F8DA29300A9BEE9 /* wsc@132w.png */; };
-		DDA58E622F8DA29300A9BEE9 /* SCUMMVM.png in Resources */ = {isa = PBXBuildFile; fileRef = DDA58DF12F8DA29300A9BEE9 /* SCUMMVM.png */; };
-		DDA58E632F8DA29300A9BEE9 /* atari2600.ico in Resources */ = {isa = PBXBuildFile; fileRef = DDA58D372F8DA29300A9BEE9 /* atari2600.ico */; };
-		DDA58E642F8DA29300A9BEE9 /* Nintendo_-_Nintendo_Entertainment_System.json in Resources */ = {isa = PBXBuildFile; fileRef = DDA58E112F8DA29300A9BEE9 /* Nintendo_-_Nintendo_Entertainment_System.json */; };
-		DDA58E652F8DA29300A9BEE9 /* sgb@132w.png in Resources */ = {isa = PBXBuildFile; fileRef = DDA58D912F8DA29300A9BEE9 /* sgb@132w.png */; };
-		DDA58E662F8DA29300A9BEE9 /* wii classic ico.ico in Resources */ = {isa = PBXBuildFile; fileRef = DDA58D512F8DA29300A9BEE9 /* wii classic ico.ico */; };
-		DDA58E672F8DA29300A9BEE9 /* CHAILOVE.png in Resources */ = {isa = PBXBuildFile; fileRef = DDA58DB02F8DA29300A9BEE9 /* CHAILOVE.png */; };
-		DDA58E682F8DA29300A9BEE9 /* j7C3Q.jpg in Resources */ = {isa = PBXBuildFile; fileRef = DDA58D322F8DA29300A9BEE9 /* j7C3Q.jpg */; };
-		DDA58E692F8DA29300A9BEE9 /* neogeo@132w.png in Resources */ = {isa = PBXBuildFile; fileRef = DDA58D7F2F8DA29300A9BEE9 /* neogeo@132w.png */; };
-		DDA58E6A2F8DA29300A9BEE9 /* ngpc@132w.png in Resources */ = {isa = PBXBuildFile; fileRef = DDA58D812F8DA29300A9BEE9 /* ngpc@132w.png */; };
-		DDA58E6B2F8DA29300A9BEE9 /* LYNX.png in Resources */ = {isa = PBXBuildFile; fileRef = DDA58DCE2F8DA29300A9BEE9 /* LYNX.png */; };
-		DDA58E6C2F8DA29300A9BEE9 /* VMAC.png in Resources */ = {isa = PBXBuildFile; fileRef = DDA58E082F8DA29300A9BEE9 /* VMAC.png */; };
-		DDA58E6D2F8DA29300A9BEE9 /* ENTERPRISE.png in Resources */ = {isa = PBXBuildFile; fileRef = DDA58DC12F8DA29300A9BEE9 /* ENTERPRISE.png */; };
-		DDA58E6E2F8DA29300A9BEE9 /* Sony_-_PlayStation.json in Resources */ = {isa = PBXBuildFile; fileRef = DDA58E142F8DA29300A9BEE9 /* Sony_-_PlayStation.json */; };
-		DDA58E6F2F8DA29300A9BEE9 /* neocd@132w.png in Resources */ = {isa = PBXBuildFile; fileRef = DDA58D7E2F8DA29300A9BEE9 /* neocd@132w.png */; };
-		DDA58E702F8DA29300A9BEE9 /* VIDEOPAC-alt.png in Resources */ = {isa = PBXBuildFile; fileRef = DDA58E052F8DA29300A9BEE9 /* VIDEOPAC-alt.png */; };
-		DDA58E712F8DA29300A9BEE9 /* satella@132w.png in Resources */ = {isa = PBXBuildFile; fileRef = DDA58D8C2F8DA29300A9BEE9 /* satella@132w.png */; };
-		DDA58E722F8DA29300A9BEE9 /* ADVMAME.png in Resources */ = {isa = PBXBuildFile; fileRef = DDA58D9F2F8DA29300A9BEE9 /* ADVMAME.png */; };
-		DDA58E732F8DA29300A9BEE9 /* nes.ico in Resources */ = {isa = PBXBuildFile; fileRef = DDA58D432F8DA29300A9BEE9 /* nes.ico */; };
-		DDA58E742F8DA29300A9BEE9 /* CPLUS4.png in Resources */ = {isa = PBXBuildFile; fileRef = DDA58DB72F8DA29300A9BEE9 /* CPLUS4.png */; };
-		DDA58E752F8DA29300A9BEE9 /* PGM.png in Resources */ = {isa = PBXBuildFile; fileRef = DDA58DE82F8DA29300A9BEE9 /* PGM.png */; };
-		DDA58E762F8DA29300A9BEE9 /* ATARI800-alt.png in Resources */ = {isa = PBXBuildFile; fileRef = DDA58DA72F8DA29300A9BEE9 /* ATARI800-alt.png */; };
-		DDA58E772F8DA29300A9BEE9 /* virtualboy.ico in Resources */ = {isa = PBXBuildFile; fileRef = DDA58D4F2F8DA29300A9BEE9 /* virtualboy.ico */; };
-		DDA58E782F8DA29300A9BEE9 /* dos@132w.png in Resources */ = {isa = PBXBuildFile; fileRef = DDA58D682F8DA29300A9BEE9 /* dos@132w.png */; };
-		DDA58E792F8DA29300A9BEE9 /* ARCADE_FBNEO.png in Resources */ = {isa = PBXBuildFile; fileRef = DDA58DA42F8DA29300A9BEE9 /* ARCADE_FBNEO.png */; };
-		DDA58E7A2F8DA29300A9BEE9 /* psp.ico in Resources */ = {isa = PBXBuildFile; fileRef = DDA58D482F8DA29300A9BEE9 /* psp.ico */; };
-		DDA58E7B2F8DA29300A9BEE9 /* atari800@132w.png in Resources */ = {isa = PBXBuildFile; fileRef = DDA58D5D2F8DA29300A9BEE9 /* atari800@132w.png */; };
-		DDA58E7C2F8DA29300A9BEE9 /* atari@132w.png in Resources */ = {isa = PBXBuildFile; fileRef = DDA58D5C2F8DA29300A9BEE9 /* atari@132w.png */; };
-		DDA58E7D2F8DA29300A9BEE9 /* Nintendo_-_Super_Nintendo_Entertainment_System.json in Resources */ = {isa = PBXBuildFile; fileRef = DDA58E122F8DA29300A9BEE9 /* Nintendo_-_Super_Nintendo_Entertainment_System.json */; };
-		DDA58E7E2F8DA29300A9BEE9 /* PICO.png in Resources */ = {isa = PBXBuildFile; fileRef = DDA58DE92F8DA29300A9BEE9 /* PICO.png */; };
-		DDA58E7F2F8DA29300A9BEE9 /* appIcon32.jpg in Resources */ = {isa = PBXBuildFile; fileRef = DDA58D2B2F8DA29300A9BEE9 /* appIcon32.jpg */; };
-		DDA58E802F8DA29300A9BEE9 /* 5200@132w.png in Resources */ = {isa = PBXBuildFile; fileRef = DDA58D572F8DA29300A9BEE9 /* 5200@132w.png */; };
-		DDA58E812F8DA29300A9BEE9 /* 7vYdW.jpg in Resources */ = {isa = PBXBuildFile; fileRef = DDA58D292F8DA29300A9BEE9 /* 7vYdW.jpg */; };
-		DDA58E822F8DA29300A9BEE9 /* sgfx@132w.png in Resources */ = {isa = PBXBuildFile; fileRef = DDA58D922F8DA29300A9BEE9 /* sgfx@132w.png */; };
-		DDA58E832F8DA29300A9BEE9 /* gba@132w.png in Resources */ = {isa = PBXBuildFile; fileRef = DDA58D6F2F8DA29300A9BEE9 /* gba@132w.png */; };
-		DDA58E842F8DA29300A9BEE9 /* n64.ico in Resources */ = {isa = PBXBuildFile; fileRef = DDA58D412F8DA29300A9BEE9 /* n64.ico */; };
-		DDA58E852F8DA29300A9BEE9 /* MAME2003PLUS.png in Resources */ = {isa = PBXBuildFile; fileRef = DDA58DD02F8DA29300A9BEE9 /* MAME2003PLUS.png */; };
-		DDA58E862F8DA29300A9BEE9 /* ngage.ico in Resources */ = {isa = PBXBuildFile; fileRef = DDA58D442F8DA29300A9BEE9 /* ngage.ico */; };
-		DDA58E872F8DA29300A9BEE9 /* nds.ico in Resources */ = {isa = PBXBuildFile; fileRef = DDA58D422F8DA29300A9BEE9 /* nds.ico */; };
-		DDA58E882F8DA29300A9BEE9 /* PC88.png in Resources */ = {isa = PBXBuildFile; fileRef = DDA58DE32F8DA29300A9BEE9 /* PC88.png */; };
-		DDA58E892F8DA29300A9BEE9 /* ATARIST.png in Resources */ = {isa = PBXBuildFile; fileRef = DDA58DAB2F8DA29300A9BEE9 /* ATARIST.png */; };
-		DDA58E8A2F8DA29300A9BEE9 /* GW.png in Resources */ = {isa = PBXBuildFile; fileRef = DDA58DCA2F8DA29300A9BEE9 /* GW.png */; };
-		DDA58E8B2F8DA29300A9BEE9 /* c64@132w.png in Resources */ = {isa = PBXBuildFile; fileRef = DDA58D5F2F8DA29300A9BEE9 /* c64@132w.png */; };
-		DDA58E8C2F8DA29300A9BEE9 /* MD.png in Resources */ = {isa = PBXBuildFile; fileRef = DDA58DD22F8DA29300A9BEE9 /* MD.png */; };
-		DDA58E8D2F8DA29300A9BEE9 /* xbox360.ico in Resources */ = {isa = PBXBuildFile; fileRef = DDA58D542F8DA29300A9BEE9 /* xbox360.ico */; };
-		DDA58E8E2F8DA29300A9BEE9 /* SATELLAVIEW.png in Resources */ = {isa = PBXBuildFile; fileRef = DDA58DEF2F8DA29300A9BEE9 /* SATELLAVIEW.png */; };
-		DDA58E8F2F8DA29300A9BEE9 /* COLECO.png in Resources */ = {isa = PBXBuildFile; fileRef = DDA58DB22F8DA29300A9BEE9 /* COLECO.png */; };
-		DDA58E902F8DA29300A9BEE9 /* N64DD.png in Resources */ = {isa = PBXBuildFile; fileRef = DDA58DD92F8DA29300A9BEE9 /* N64DD.png */; };
-		DDA58E912F8DA29300A9BEE9 /* supervision@132w.png in Resources */ = {isa = PBXBuildFile; fileRef = DDA58D942F8DA29300A9BEE9 /* supervision@132w.png */; };
-		DDA58E922F8DA29300A9BEE9 /* md@132w.png in Resources */ = {isa = PBXBuildFile; fileRef = DDA58D762F8DA29300A9BEE9 /* md@132w.png */; };
-		DDA58E932F8DA29300A9BEE9 /* SATURN.png in Resources */ = {isa = PBXBuildFile; fileRef = DDA58DF02F8DA29300A9BEE9 /* SATURN.png */; };
-		DDA58E942F8DA29300A9BEE9 /* Sega Saturn Analog ico.ico in Resources */ = {isa = PBXBuildFile; fileRef = DDA58D4B2F8DA29300A9BEE9 /* Sega Saturn Analog ico.ico */; };
-		DDA58E952F8DA29300A9BEE9 /* LUTRO.png in Resources */ = {isa = PBXBuildFile; fileRef = DDA58DCD2F8DA29300A9BEE9 /* LUTRO.png */; };
-		DDA58E962F8DA29300A9BEE9 /* GBA.png in Resources */ = {isa = PBXBuildFile; fileRef = DDA58DC72F8DA29300A9BEE9 /* GBA.png */; };
-		DDA58E972F8DA29300A9BEE9 /* aWw6r.jpg in Resources */ = {isa = PBXBuildFile; fileRef = DDA58D312F8DA29300A9BEE9 /* aWw6r.jpg */; };
-		DDA58E982F8DA29300A9BEE9 /* CPS2.png in Resources */ = {isa = PBXBuildFile; fileRef = DDA58DB92F8DA29300A9BEE9 /* CPS2.png */; };
-		DDA58E992F8DA29300A9BEE9 /* NEOCD.png in Resources */ = {isa = PBXBuildFile; fileRef = DDA58DDC2F8DA29300A9BEE9 /* NEOCD.png */; };
-		DDA58E9A2F8DA29300A9BEE9 /* appIcon512.jpg in Resources */ = {isa = PBXBuildFile; fileRef = DDA58D2F2F8DA29300A9BEE9 /* appIcon512.jpg */; };
-		DDA58E9B2F8DA29300A9BEE9 /* fds@132w.png in Resources */ = {isa = PBXBuildFile; fileRef = DDA58D6C2F8DA29300A9BEE9 /* fds@132w.png */; };
-		DDA58E9C2F8DA29300A9BEE9 /* WSC.png in Resources */ = {isa = PBXBuildFile; fileRef = DDA58E0A2F8DA29300A9BEE9 /* WSC.png */; };
-		DDA58E9D2F8DA29300A9BEE9 /* switch.ico in Resources */ = {isa = PBXBuildFile; fileRef = DDA58D4E2F8DA29300A9BEE9 /* switch.ico */; };
-		DDA58E9E2F8DA29300A9BEE9 /* mame@132w.png in Resources */ = {isa = PBXBuildFile; fileRef = DDA58D752F8DA29300A9BEE9 /* mame@132w.png */; };
-		DDA58E9F2F8DA29300A9BEE9 /* SystemDatabase.json in Resources */ = {isa = PBXBuildFile; fileRef = DDA58E192F8DA29300A9BEE9 /* SystemDatabase.json */; };
-		DDA58EA02F8DA29300A9BEE9 /* amiga@132w.png in Resources */ = {isa = PBXBuildFile; fileRef = DDA58D592F8DA29300A9BEE9 /* amiga@132w.png */; };
-		DDA58EA12F8DA29300A9BEE9 /* gba.ico in Resources */ = {isa = PBXBuildFile; fileRef = DDA58D3C2F8DA29300A9BEE9 /* gba.ico */; };
-		DDA58EA22F8DA29300A9BEE9 /* VECTREX.png in Resources */ = {isa = PBXBuildFile; fileRef = DDA58E022F8DA29300A9BEE9 /* VECTREX.png */; };
-		DDA58EA32F8DA29300A9BEE9 /* VIDEOTON.png in Resources */ = {isa = PBXBuildFile; fileRef = DDA58E072F8DA29300A9BEE9 /* VIDEOTON.png */; };
-		DDA58EA42F8DA29300A9BEE9 /* ps@132w.png in Resources */ = {isa = PBXBuildFile; fileRef = DDA58D892F8DA29300A9BEE9 /* ps@132w.png */; };
-		DDA58EA52F8DA29300A9BEE9 /* ngp@132w.png in Resources */ = {isa = PBXBuildFile; fileRef = DDA58D802F8DA29300A9BEE9 /* ngp@132w.png */; };
-		DDA58EA62F8DA29300A9BEE9 /* gb.ico in Resources */ = {isa = PBXBuildFile; fileRef = DDA58D3B2F8DA29300A9BEE9 /* gb.ico */; };
-		DDA58EA72F8DA29300A9BEE9 /* gbc.ico in Resources */ = {isa = PBXBuildFile; fileRef = DDA58D3D2F8DA29300A9BEE9 /* gbc.ico */; };
-		DDA58EA82F8DA29300A9BEE9 /* DOOM.png in Resources */ = {isa = PBXBuildFile; fileRef = DDA58DBE2F8DA29300A9BEE9 /* DOOM.png */; };
-		DDA58EA92F8DA29300A9BEE9 /* ATARI7800.png in Resources */ = {isa = PBXBuildFile; fileRef = DDA58DAA2F8DA29300A9BEE9 /* ATARI7800.png */; };
-		DDA58EAA2F8DA29300A9BEE9 /* SUPERVISION.png in Resources */ = {isa = PBXBuildFile; fileRef = DDA58DFA2F8DA29300A9BEE9 /* SUPERVISION.png */; };
-		DDA58EAB2F8DA29300A9BEE9 /* doom@132w.png in Resources */ = {isa = PBXBuildFile; fileRef = DDA58D672F8DA29300A9BEE9 /* doom@132w.png */; };
-		DDA58EAC2F8DA29300A9BEE9 /* pce@132w.png in Resources */ = {isa = PBXBuildFile; fileRef = DDA58D842F8DA29300A9BEE9 /* pce@132w.png */; };
-		DDA58EAD2F8DA29300A9BEE9 /* OPENBOR.png in Resources */ = {isa = PBXBuildFile; fileRef = DDA58DE02F8DA29300A9BEE9 /* OPENBOR.png */; };
-		DDA58EAE2F8DA29300A9BEE9 /* SEGACD.png in Resources */ = {isa = PBXBuildFile; fileRef = DDA58DF32F8DA29300A9BEE9 /* SEGACD.png */; };
-		DDA58EAF2F8DA29300A9BEE9 /* appIcon1024.jpg in Resources */ = {isa = PBXBuildFile; fileRef = DDA58D302F8DA29300A9BEE9 /* appIcon1024.jpg */; };
-		DDA58EB02F8DA29300A9BEE9 /* SUFAMI.png in Resources */ = {isa = PBXBuildFile; fileRef = DDA58DF92F8DA29300A9BEE9 /* SUFAMI.png */; };
-		DDA58EB12F8DA29300A9BEE9 /* TYRQUAKE.png in Resources */ = {isa = PBXBuildFile; fileRef = DDA58DFF2F8DA29300A9BEE9 /* TYRQUAKE.png */; };
-		DDA58EB22F8DA29300A9BEE9 /* FLASHBACK.png in Resources */ = {isa = PBXBuildFile; fileRef = DDA58DC52F8DA29300A9BEE9 /* FLASHBACK.png */; };
-		DDA58EB32F8DA29300A9BEE9 /* THOMSON.png in Resources */ = {isa = PBXBuildFile; fileRef = DDA58DFC2F8DA29300A9BEE9 /* THOMSON.png */; };
-		DDA58EB42F8DA29300A9BEE9 /* PCE.png in Resources */ = {isa = PBXBuildFile; fileRef = DDA58DE52F8DA29300A9BEE9 /* PCE.png */; };
-		DDA58EB52F8DA29300A9BEE9 /* ps2.ico in Resources */ = {isa = PBXBuildFile; fileRef = DDA58D462F8DA29300A9BEE9 /* ps2.ico */; };
-		DDA58EB62F8DA29300A9BEE9 /* SEtBX.jpg in Resources */ = {isa = PBXBuildFile; fileRef = DDA58D342F8DA29300A9BEE9 /* SEtBX.jpg */; };
-		DDA58EB72F8DA29300A9BEE9 /* ody@132w.png in Resources */ = {isa = PBXBuildFile; fileRef = DDA58D822F8DA29300A9BEE9 /* ody@132w.png */; };
-		DDA58EB82F8DA29300A9BEE9 /* CPS3.png in Resources */ = {isa = PBXBuildFile; fileRef = DDA58DBA2F8DA29300A9BEE9 /* CPS3.png */; };
-		DDA58EB92F8DA29300A9BEE9 /* MDMSU.png in Resources */ = {isa = PBXBuildFile; fileRef = DDA58DD32F8DA29300A9BEE9 /* MDMSU.png */; };
-		DDA58EBA2F8DA29300A9BEE9 /* CPET.png in Resources */ = {isa = PBXBuildFile; fileRef = DDA58DB62F8DA29300A9BEE9 /* CPET.png */; };
-		DDA58EBB2F8DA29300A9BEE9 /* X68000.png in Resources */ = {isa = PBXBuildFile; fileRef = DDA58E0C2F8DA29300A9BEE9 /* X68000.png */; };
-		DDA58EBC2F8DA29300A9BEE9 /* VIDEOPAC.png in Resources */ = {isa = PBXBuildFile; fileRef = DDA58E042F8DA29300A9BEE9 /* VIDEOPAC.png */; };
-		DDA58EBD2F8DA29300A9BEE9 /* FBNEO.png in Resources */ = {isa = PBXBuildFile; fileRef = DDA58DC22F8DA29300A9BEE9 /* FBNEO.png */; };
-		DDA58EBE2F8DA29300A9BEE9 /* SG1000.png in Resources */ = {isa = PBXBuildFile; fileRef = DDA58DF72F8DA29300A9BEE9 /* SG1000.png */; };
-		DDA58EBF2F8DA29300A9BEE9 /* atari5200.ico in Resources */ = {isa = PBXBuildFile; fileRef = DDA58D382F8DA29300A9BEE9 /* atari5200.ico */; };
-		DDA58EC02F8DA29300A9BEE9 /* quake@132w.png in Resources */ = {isa = PBXBuildFile; fileRef = DDA58D8B2F8DA29300A9BEE9 /* quake@132w.png */; };
-		DDA58EC12F8DA29300A9BEE9 /* NDS.png in Resources */ = {isa = PBXBuildFile; fileRef = DDA58DDB2F8DA29300A9BEE9 /* NDS.png */; };
-		DDA58EC22F8DA29300A9BEE9 /* C64.png in Resources */ = {isa = PBXBuildFile; fileRef = DDA58DAD2F8DA29300A9BEE9 /* C64.png */; };
-		DDA58EC32F8DA29300A9BEE9 /* VIC20.png in Resources */ = {isa = PBXBuildFile; fileRef = DDA58E032F8DA29300A9BEE9 /* VIC20.png */; };
-		DDA58EC42F8DA29300A9BEE9 /* UZEBOX.png in Resources */ = {isa = PBXBuildFile; fileRef = DDA58E002F8DA29300A9BEE9 /* UZEBOX.png */; };
-		DDA58EC52F8DA29300A9BEE9 /* FDS.png in Resources */ = {isa = PBXBuildFile; fileRef = DDA58DC42F8DA29300A9BEE9 /* FDS.png */; };
-		DDA58EC62F8DA29300A9BEE9 /* nds@132w.png in Resources */ = {isa = PBXBuildFile; fileRef = DDA58D7D2F8DA29300A9BEE9 /* nds@132w.png */; };
-		DDA58EC72F8DA29300A9BEE9 /* cps3@132w.png in Resources */ = {isa = PBXBuildFile; fileRef = DDA58D652F8DA29300A9BEE9 /* cps3@132w.png */; };
-		DDA58EC82F8DA29300A9BEE9 /* SFX.png in Resources */ = {isa = PBXBuildFile; fileRef = DDA58DF62F8DA29300A9BEE9 /* SFX.png */; };
-		DDA58EC92F8DA29300A9BEE9 /* 32X@132w.png in Resources */ = {isa = PBXBuildFile; fileRef = DDA58D562F8DA29300A9BEE9 /* 32X@132w.png */; };
-		DDA58ECA2F8DA29300A9BEE9 /* ARDUBOY.png in Resources */ = {isa = PBXBuildFile; fileRef = DDA58DA52F8DA29300A9BEE9 /* ARDUBOY.png */; };
-		DDA58ECB2F8DA29300A9BEE9 /* DOS.png in Resources */ = {isa = PBXBuildFile; fileRef = DDA58DBF2F8DA29300A9BEE9 /* DOS.png */; };
-		DDA58ECC2F8DA29300A9BEE9 /* cpc@132w.png in Resources */ = {isa = PBXBuildFile; fileRef = DDA58D622F8DA29300A9BEE9 /* cpc@132w.png */; };
-		DDA58ECD2F8DA29300A9BEE9 /* CHANNELF.png in Resources */ = {isa = PBXBuildFile; fileRef = DDA58DB12F8DA29300A9BEE9 /* CHANNELF.png */; };
-		DDA58ECE2F8DA29300A9BEE9 /* cpc-alt.png in Resources */ = {isa = PBXBuildFile; fileRef = DDA58DB52F8DA29300A9BEE9 /* cpc-alt.png */; };
-		DDA58ECF2F8DA29300A9BEE9 /* DC.png in Resources */ = {isa = PBXBuildFile; fileRef = DDA58DBC2F8DA29300A9BEE9 /* DC.png */; };
-		DDA58ED02F8DA29300A9BEE9 /* EASYRPG.png in Resources */ = {isa = PBXBuildFile; fileRef = DDA58DC02F8DA29300A9BEE9 /* EASYRPG.png */; };
-		DDA58ED12F8DA29300A9BEE9 /* poke@132w.png in Resources */ = {isa = PBXBuildFile; fileRef = DDA58D872F8DA29300A9BEE9 /* poke@132w.png */; };
-		DDA58ED22F8DA29300A9BEE9 /* DAPHNE.png in Resources */ = {isa = PBXBuildFile; fileRef = DDA58DBB2F8DA29300A9BEE9 /* DAPHNE.png */; };
-		DDA58ED32F8DA29300A9BEE9 /* AMIGA.png in Resources */ = {isa = PBXBuildFile; fileRef = DDA58DA02F8DA29300A9BEE9 /* AMIGA.png */; };
-		DDA58ED42F8DA29300A9BEE9 /* PSPMINIS.png in Resources */ = {isa = PBXBuildFile; fileRef = DDA58DEE2F8DA29300A9BEE9 /* PSPMINIS.png */; };
-		DDA58ED52F8DA29300A9BEE9 /* MEGADUCK.png in Resources */ = {isa = PBXBuildFile; fileRef = DDA58DD42F8DA29300A9BEE9 /* MEGADUCK.png */; };
-		DDA58ED62F8DA29300A9BEE9 /* gbc@132w.png in Resources */ = {isa = PBXBuildFile; fileRef = DDA58D702F8DA29300A9BEE9 /* gbc@132w.png */; };
-		DDA58ED72F8DA29300A9BEE9 /* MSX2.png in Resources */ = {isa = PBXBuildFile; fileRef = DDA58DD72F8DA29300A9BEE9 /* MSX2.png */; };
-		DDA58ED82F8DA29300A9BEE9 /* SGB.png in Resources */ = {isa = PBXBuildFile; fileRef = DDA58DF82F8DA29300A9BEE9 /* SGB.png */; };
-		DDA58ED92F8DA29300A9BEE9 /* vectrex@132w.png in Resources */ = {isa = PBXBuildFile; fileRef = DDA58D982F8DA29300A9BEE9 /* vectrex@132w.png */; };
-		DDA58EDA2F8DA29300A9BEE9 /* n64@132w.png in Resources */ = {isa = PBXBuildFile; fileRef = DDA58D7C2F8DA29300A9BEE9 /* n64@132w.png */; };
-		DDA58EDB2F8DA29300A9BEE9 /* TI83.png in Resources */ = {isa = PBXBuildFile; fileRef = DDA58DFD2F8DA29300A9BEE9 /* TI83.png */; };
-		DDA58EDC2F8DA29300A9BEE9 /* GG.png in Resources */ = {isa = PBXBuildFile; fileRef = DDA58DC92F8DA29300A9BEE9 /* GG.png */; };
-		DDA58EDD2F8DA29300A9BEE9 /* mame_unified.json in Resources */ = {isa = PBXBuildFile; fileRef = DDA58E182F8DA29300A9BEE9 /* mame_unified.json */; };
-		DDA58EDE2F8DA29300A9BEE9 /* chai@132w.png in Resources */ = {isa = PBXBuildFile; fileRef = DDA58D602F8DA29300A9BEE9 /* chai@132w.png */; };
-		DDA58EDF2F8DA29300A9BEE9 /* FC.png in Resources */ = {isa = PBXBuildFile; fileRef = DDA58DC32F8DA29300A9BEE9 /* FC.png */; };
-		DDA58EE02F8DA29300A9BEE9 /* saturn.ico in Resources */ = {isa = PBXBuildFile; fileRef = DDA58D4A2F8DA29300A9BEE9 /* saturn.ico */; };
-		DDA58EE12F8DA29300A9BEE9 /* dc@132w.png in Resources */ = {isa = PBXBuildFile; fileRef = DDA58D662F8DA29300A9BEE9 /* dc@132w.png */; };
-		DDA58EE22F8DA29300A9BEE9 /* XRICK.png in Resources */ = {isa = PBXBuildFile; fileRef = DDA58E0D2F8DA29300A9BEE9 /* XRICK.png */; };
-		DDA58EE32F8DA29300A9BEE9 /* X1.png in Resources */ = {isa = PBXBuildFile; fileRef = DDA58E0B2F8DA29300A9BEE9 /* X1.png */; };
-		DDA58EE42F8DA29300A9BEE9 /* NGC.png in Resources */ = {isa = PBXBuildFile; fileRef = DDA58DDE2F8DA29300A9BEE9 /* NGC.png */; };
-		DDA58EE52F8DA29300A9BEE9 /* fc@132w.png in Resources */ = {isa = PBXBuildFile; fileRef = DDA58D6B2F8DA29300A9BEE9 /* fc@132w.png */; };
-		DDA58EE62F8DA29300A9BEE9 /* msumd@132w.png in Resources */ = {isa = PBXBuildFile; fileRef = DDA58D7A2F8DA29300A9BEE9 /* msumd@132w.png */; };
-		DDA58EE72F8DA29300A9BEE9 /* msu1@132w.png in Resources */ = {isa = PBXBuildFile; fileRef = DDA58D792F8DA29300A9BEE9 /* msu1@132w.png */; };
-		DDA58EE82F8DA29300A9BEE9 /* sufami@132w.png in Resources */ = {isa = PBXBuildFile; fileRef = DDA58D932F8DA29300A9BEE9 /* sufami@132w.png */; };
-		DDA58EE92F8DA29300A9BEE9 /* ZXS.png in Resources */ = {isa = PBXBuildFile; fileRef = DDA58E0E2F8DA29300A9BEE9 /* ZXS.png */; };
-		DDA58EEA2F8DA29300A9BEE9 /* SFCMSU.png in Resources */ = {isa = PBXBuildFile; fileRef = DDA58DF52F8DA29300A9BEE9 /* SFCMSU.png */; };
-		DDA58EEB2F8DA29300A9BEE9 /* jaguar.ico in Resources */ = {isa = PBXBuildFile; fileRef = DDA58D402F8DA29300A9BEE9 /* jaguar.ico */; };
-		DDA58EEC2F8DA29300A9BEE9 /* openbor@132w.png in Resources */ = {isa = PBXBuildFile; fileRef = DDA58D832F8DA29300A9BEE9 /* openbor@132w.png */; };
-		DDA58EED2F8DA29300A9BEE9 /* cps1@132w.png in Resources */ = {isa = PBXBuildFile; fileRef = DDA58D632F8DA29300A9BEE9 /* cps1@132w.png */; };
-		DDA58EEE2F8DA29300A9BEE9 /* gb@132w.png in Resources */ = {isa = PBXBuildFile; fileRef = DDA58D6E2F8DA29300A9BEE9 /* gb@132w.png */; };
-		DDA58EEF2F8DA29300A9BEE9 /* LOWRESNX.png in Resources */ = {isa = PBXBuildFile; fileRef = DDA58DCC2F8DA29300A9BEE9 /* LOWRESNX.png */; };
-		DDA58EF02F8DA29300A9BEE9 /* arcade@132w.png in Resources */ = {isa = PBXBuildFile; fileRef = DDA58D5A2F8DA29300A9BEE9 /* arcade@132w.png */; };
-		DDA58EF12F8DA29300A9BEE9 /* psx.ico in Resources */ = {isa = PBXBuildFile; fileRef = DDA58D492F8DA29300A9BEE9 /* psx.ico */; };
-		DDA58EF22F8DA29300A9BEE9 /* CANNONBALL.png in Resources */ = {isa = PBXBuildFile; fileRef = DDA58DAE2F8DA29300A9BEE9 /* CANNONBALL.png */; };
-		DDA58EF32F8DA29300A9BEE9 /* NEOGEO.png in Resources */ = {isa = PBXBuildFile; fileRef = DDA58DDD2F8DA29300A9BEE9 /* NEOGEO.png */; };
-		DDA58EF42F8DA29300A9BEE9 /* NAOMI.png in Resources */ = {isa = PBXBuildFile; fileRef = DDA58DDA2F8DA29300A9BEE9 /* NAOMI.png */; };
-		DDA58EF52F8DA29300A9BEE9 /* DINOTHAWR.png in Resources */ = {isa = PBXBuildFile; fileRef = DDA58DBD2F8DA29300A9BEE9 /* DINOTHAWR.png */; };
-		DDA58EF62F8DA29300A9BEE9 /* tic@132w.png in Resources */ = {isa = PBXBuildFile; fileRef = DDA58D952F8DA29300A9BEE9 /* tic@132w.png */; };
-		DDA58EF72F8DA29300A9BEE9 /* genesis.ico in Resources */ = {isa = PBXBuildFile; fileRef = DDA58D3F2F8DA29300A9BEE9 /* genesis.ico */; };
-		DDA58EF82F8DA29300A9BEE9 /* vb@132w.png in Resources */ = {isa = PBXBuildFile; fileRef = DDA58D962F8DA29300A9BEE9 /* vb@132w.png */; };
-		DDA58EF92F8DA29300A9BEE9 /* MAME.png in Resources */ = {isa = PBXBuildFile; fileRef = DDA58DCF2F8DA29300A9BEE9 /* MAME.png */; };
-		DDA58EFA2F8DA29300A9BEE9 /* appIcon256.jpg in Resources */ = {isa = PBXBuildFile; fileRef = DDA58D2E2F8DA29300A9BEE9 /* appIcon256.jpg */; };
-		DDA58EFB2F8DA29300A9BEE9 /* pce.ico in Resources */ = {isa = PBXBuildFile; fileRef = DDA58D452F8DA29300A9BEE9 /* pce.ico */; };
-		DDA58EFC2F8DA29300A9BEE9 /* PCFX.png in Resources */ = {isa = PBXBuildFile; fileRef = DDA58DE72F8DA29300A9BEE9 /* PCFX.png */; };
-		DDA58EFD2F8DA29300A9BEE9 /* col@132w.png in Resources */ = {isa = PBXBuildFile; fileRef = DDA58D612F8DA29300A9BEE9 /* col@132w.png */; };
-		DDA58EFE2F8DA29300A9BEE9 /* zxs@132w.png in Resources */ = {isa = PBXBuildFile; fileRef = DDA58D9D2F8DA29300A9BEE9 /* zxs@132w.png */; };
-		DDA58EFF2F8DA29300A9BEE9 /* 7800@132w.png in Resources */ = {isa = PBXBuildFile; fileRef = DDA58D582F8DA29300A9BEE9 /* 7800@132w.png */; };
-		DDA58F002F8DA29300A9BEE9 /* PORTS.png in Resources */ = {isa = PBXBuildFile; fileRef = DDA58DEB2F8DA29300A9BEE9 /* PORTS.png */; };
-		DDA58F012F8DA29300A9BEE9 /* segacd@132w.png in Resources */ = {isa = PBXBuildFile; fileRef = DDA58D8E2F8DA29300A9BEE9 /* segacd@132w.png */; };
-		DDA58F022F8DA29300A9BEE9 /* cps2@132w.png in Resources */ = {isa = PBXBuildFile; fileRef = DDA58D642F8DA29300A9BEE9 /* cps2@132w.png */; };
-		DDA58F032F8DA29300A9BEE9 /* VIDEOS.png in Resources */ = {isa = PBXBuildFile; fileRef = DDA58E062F8DA29300A9BEE9 /* VIDEOS.png */; };
-		DDA58F042F8DA29300A9BEE9 /* N64.png in Resources */ = {isa = PBXBuildFile; fileRef = DDA58DD82F8DA29300A9BEE9 /* N64.png */; };
-		DDA58F052F8DA29300A9BEE9 /* VB.png in Resources */ = {isa = PBXBuildFile; fileRef = DDA58E012F8DA29300A9BEE9 /* VB.png */; };
-		DDA58F062F8DA29300A9BEE9 /* fairchild@132w.png in Resources */ = {isa = PBXBuildFile; fileRef = DDA58D6A2F8DA29300A9BEE9 /* fairchild@132w.png */; };
 		DDA58F0A2F8DC26600A9BEE9 /* LibrarySettingsViewGroup.swift in Sources */ = {isa = PBXBuildFile; fileRef = DDA58F092F8DC26600A9BEE9 /* LibrarySettingsViewGroup.swift */; };
 		DDA58F0C2F8DC32800A9BEE9 /* CoreSettingsViewGroup.swift in Sources */ = {isa = PBXBuildFile; fileRef = DDA58F0B2F8DC32800A9BEE9 /* CoreSettingsViewGroup.swift */; };
 		DDA58F122F8DC65100A9BEE9 /* ControllerSettingsViewGroup.swift in Sources */ = {isa = PBXBuildFile; fileRef = DDA58F112F8DC65100A9BEE9 /* ControllerSettingsViewGroup.swift */; };
@@ -365,6 +130,241 @@
 		DDA58F192F8DC83B00A9BEE9 /* DisplaySettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = DDA58F152F8DC83B00A9BEE9 /* DisplaySettingsView.swift */; };
 		DDA58F1A2F8DC83B00A9BEE9 /* BoxArtSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = DDA58F142F8DC83B00A9BEE9 /* BoxArtSettingsView.swift */; };
 		DDA58F1C2F8DC8E800A9BEE9 /* GameCardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = DDA58F1B2F8DC8E800A9BEE9 /* GameCardView.swift */; };
+		DDA591EF2F8DD4EA00A9BEE9 /* appIcon32.jpg in Resources */ = {isa = PBXBuildFile; fileRef = DDA590FE2F8DD4EA00A9BEE9 /* appIcon32.jpg */; };
+		DDA591F02F8DD4EA00A9BEE9 /* CPET.png in Resources */ = {isa = PBXBuildFile; fileRef = DDA591892F8DD4EA00A9BEE9 /* CPET.png */; };
+		DDA591F12F8DD4EA00A9BEE9 /* appIcon512.jpg in Resources */ = {isa = PBXBuildFile; fileRef = DDA591022F8DD4EA00A9BEE9 /* appIcon512.jpg */; };
+		DDA591F22F8DD4EA00A9BEE9 /* gw@132w.png in Resources */ = {isa = PBXBuildFile; fileRef = DDA591452F8DD4EA00A9BEE9 /* gw@132w.png */; };
+		DDA591F32F8DD4EA00A9BEE9 /* pcecd@132w.png in Resources */ = {isa = PBXBuildFile; fileRef = DDA591582F8DD4EA00A9BEE9 /* pcecd@132w.png */; };
+		DDA591F42F8DD4EA00A9BEE9 /* zxs@132w.png in Resources */ = {isa = PBXBuildFile; fileRef = DDA591702F8DD4EA00A9BEE9 /* zxs@132w.png */; };
+		DDA591F52F8DD4EA00A9BEE9 /* ports@132w.png in Resources */ = {isa = PBXBuildFile; fileRef = DDA5915B2F8DD4EA00A9BEE9 /* ports@132w.png */; };
+		DDA591F62F8DD4EA00A9BEE9 /* PANASONIC.png in Resources */ = {isa = PBXBuildFile; fileRef = DDA591B52F8DD4EA00A9BEE9 /* PANASONIC.png */; };
+		DDA591F72F8DD4EA00A9BEE9 /* lynx@132w.png in Resources */ = {isa = PBXBuildFile; fileRef = DDA591472F8DD4EA00A9BEE9 /* lynx@132w.png */; };
+		DDA591F82F8DD4EA00A9BEE9 /* vectrex@132w.png in Resources */ = {isa = PBXBuildFile; fileRef = DDA5916B2F8DD4EA00A9BEE9 /* vectrex@132w.png */; };
+		DDA591F92F8DD4EA00A9BEE9 /* gba@132w.png in Resources */ = {isa = PBXBuildFile; fileRef = DDA591422F8DD4EA00A9BEE9 /* gba@132w.png */; };
+		DDA591FA2F8DD4EA00A9BEE9 /* 5200@132w.png in Resources */ = {isa = PBXBuildFile; fileRef = DDA5912A2F8DD4EA00A9BEE9 /* 5200@132w.png */; };
+		DDA591FB2F8DD4EA00A9BEE9 /* genesis.ico in Resources */ = {isa = PBXBuildFile; fileRef = DDA591122F8DD4EA00A9BEE9 /* genesis.ico */; };
+		DDA591FC2F8DD4EA00A9BEE9 /* psp@132w.png in Resources */ = {isa = PBXBuildFile; fileRef = DDA5915D2F8DD4EA00A9BEE9 /* psp@132w.png */; };
+		DDA591FD2F8DD4EA00A9BEE9 /* Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = DDA591E92F8DD4EA00A9BEE9 /* Info.plist */; };
+		DDA591FE2F8DD4EA00A9BEE9 /* fairchild@132w.png in Resources */ = {isa = PBXBuildFile; fileRef = DDA5913D2F8DD4EA00A9BEE9 /* fairchild@132w.png */; };
+		DDA591FF2F8DD4EA00A9BEE9 /* CPS1.png in Resources */ = {isa = PBXBuildFile; fileRef = DDA5918B2F8DD4EA00A9BEE9 /* CPS1.png */; };
+		DDA592002F8DD4EA00A9BEE9 /* SEGA32X.png in Resources */ = {isa = PBXBuildFile; fileRef = DDA591C52F8DD4EA00A9BEE9 /* SEGA32X.png */; };
+		DDA592012F8DD4EA00A9BEE9 /* pico@132w.png in Resources */ = {isa = PBXBuildFile; fileRef = DDA591592F8DD4EA00A9BEE9 /* pico@132w.png */; };
+		DDA592022F8DD4EA00A9BEE9 /* ngage.ico in Resources */ = {isa = PBXBuildFile; fileRef = DDA591172F8DD4EA00A9BEE9 /* ngage.ico */; };
+		DDA592032F8DD4EA00A9BEE9 /* CHANNELF.png in Resources */ = {isa = PBXBuildFile; fileRef = DDA591842F8DD4EA00A9BEE9 /* CHANNELF.png */; };
+		DDA592042F8DD4EA00A9BEE9 /* COLECO.png in Resources */ = {isa = PBXBuildFile; fileRef = DDA591852F8DD4EA00A9BEE9 /* COLECO.png */; };
+		DDA592052F8DD4EA00A9BEE9 /* THOMSON.png in Resources */ = {isa = PBXBuildFile; fileRef = DDA591CF2F8DD4EA00A9BEE9 /* THOMSON.png */; };
+		DDA592062F8DD4EA00A9BEE9 /* appIcon16.jpg in Resources */ = {isa = PBXBuildFile; fileRef = DDA590FD2F8DD4EA00A9BEE9 /* appIcon16.jpg */; };
+		DDA592072F8DD4EA00A9BEE9 /* VIDEOS.png in Resources */ = {isa = PBXBuildFile; fileRef = DDA591D92F8DD4EA00A9BEE9 /* VIDEOS.png */; };
+		DDA592082F8DD4EA00A9BEE9 /* supervision@132w.png in Resources */ = {isa = PBXBuildFile; fileRef = DDA591672F8DD4EA00A9BEE9 /* supervision@132w.png */; };
+		DDA592092F8DD4EA00A9BEE9 /* appIcon1024.jpg in Resources */ = {isa = PBXBuildFile; fileRef = DDA591032F8DD4EA00A9BEE9 /* appIcon1024.jpg */; };
+		DDA5920A2F8DD4EA00A9BEE9 /* EASYRPG.png in Resources */ = {isa = PBXBuildFile; fileRef = DDA591932F8DD4EA00A9BEE9 /* EASYRPG.png */; };
+		DDA5920B2F8DD4EA00A9BEE9 /* MEGADUCK.png in Resources */ = {isa = PBXBuildFile; fileRef = DDA591A72F8DD4EA00A9BEE9 /* MEGADUCK.png */; };
+		DDA5920C2F8DD4EA00A9BEE9 /* cps1@132w.png in Resources */ = {isa = PBXBuildFile; fileRef = DDA591362F8DD4EA00A9BEE9 /* cps1@132w.png */; };
+		DDA5920D2F8DD4EA00A9BEE9 /* CHAILOVE.png in Resources */ = {isa = PBXBuildFile; fileRef = DDA591832F8DD4EA00A9BEE9 /* CHAILOVE.png */; };
+		DDA5920E2F8DD4EA00A9BEE9 /* vdp@132w.png in Resources */ = {isa = PBXBuildFile; fileRef = DDA5916A2F8DD4EA00A9BEE9 /* vdp@132w.png */; };
+		DDA5920F2F8DD4EA00A9BEE9 /* PGM.png in Resources */ = {isa = PBXBuildFile; fileRef = DDA591BB2F8DD4EA00A9BEE9 /* PGM.png */; };
+		DDA592102F8DD4EA00A9BEE9 /* ps@132w.png in Resources */ = {isa = PBXBuildFile; fileRef = DDA5915C2F8DD4EA00A9BEE9 /* ps@132w.png */; };
+		DDA592112F8DD4EA00A9BEE9 /* aWw6r.jpg in Resources */ = {isa = PBXBuildFile; fileRef = DDA591042F8DD4EA00A9BEE9 /* aWw6r.jpg */; };
+		DDA592122F8DD4EA00A9BEE9 /* SEtBX.jpg in Resources */ = {isa = PBXBuildFile; fileRef = DDA591072F8DD4EA00A9BEE9 /* SEtBX.jpg */; };
+		DDA592132F8DD4EA00A9BEE9 /* NEOGEO.png in Resources */ = {isa = PBXBuildFile; fileRef = DDA591B02F8DD4EA00A9BEE9 /* NEOGEO.png */; };
+		DDA592142F8DD4EA00A9BEE9 /* scummvm@132w.png in Resources */ = {isa = PBXBuildFile; fileRef = DDA591602F8DD4EA00A9BEE9 /* scummvm@132w.png */; };
+		DDA592152F8DD4EA00A9BEE9 /* VIDEOTON.png in Resources */ = {isa = PBXBuildFile; fileRef = DDA591DA2F8DD4EA00A9BEE9 /* VIDEOTON.png */; };
+		DDA592162F8DD4EA00A9BEE9 /* ZXS.png in Resources */ = {isa = PBXBuildFile; fileRef = DDA591E12F8DD4EA00A9BEE9 /* ZXS.png */; };
+		DDA592172F8DD4EA00A9BEE9 /* N64DD.png in Resources */ = {isa = PBXBuildFile; fileRef = DDA591AC2F8DD4EA00A9BEE9 /* N64DD.png */; };
+		DDA592182F8DD4EA00A9BEE9 /* MD.png in Resources */ = {isa = PBXBuildFile; fileRef = DDA591A52F8DD4EA00A9BEE9 /* MD.png */; };
+		DDA592192F8DD4EA00A9BEE9 /* pce.ico in Resources */ = {isa = PBXBuildFile; fileRef = DDA591182F8DD4EA00A9BEE9 /* pce.ico */; };
+		DDA5921A2F8DD4EA00A9BEE9 /* NGC.png in Resources */ = {isa = PBXBuildFile; fileRef = DDA591B12F8DD4EA00A9BEE9 /* NGC.png */; };
+		DDA5921B2F8DD4EA00A9BEE9 /* PC88.png in Resources */ = {isa = PBXBuildFile; fileRef = DDA591B62F8DD4EA00A9BEE9 /* PC88.png */; };
+		DDA5921C2F8DD4EA00A9BEE9 /* PC98.png in Resources */ = {isa = PBXBuildFile; fileRef = DDA591B72F8DD4EA00A9BEE9 /* PC98.png */; };
+		DDA5921D2F8DD4EA00A9BEE9 /* n64@132w.png in Resources */ = {isa = PBXBuildFile; fileRef = DDA5914F2F8DD4EA00A9BEE9 /* n64@132w.png */; };
+		DDA5921E2F8DD4EA00A9BEE9 /* SEGACD.png in Resources */ = {isa = PBXBuildFile; fileRef = DDA591C62F8DD4EA00A9BEE9 /* SEGACD.png */; };
+		DDA5921F2F8DD4EA00A9BEE9 /* sms.ico in Resources */ = {isa = PBXBuildFile; fileRef = DDA5911F2F8DD4EA00A9BEE9 /* sms.ico */; };
+		DDA592202F8DD4EA00A9BEE9 /* VB.png in Resources */ = {isa = PBXBuildFile; fileRef = DDA591D42F8DD4EA00A9BEE9 /* VB.png */; };
+		DDA592212F8DD4EA00A9BEE9 /* poke@132w.png in Resources */ = {isa = PBXBuildFile; fileRef = DDA5915A2F8DD4EA00A9BEE9 /* poke@132w.png */; };
+		DDA592222F8DD4EA00A9BEE9 /* segasgone@132w.png in Resources */ = {isa = PBXBuildFile; fileRef = DDA591622F8DD4EA00A9BEE9 /* segasgone@132w.png */; };
+		DDA592232F8DD4EA00A9BEE9 /* col@132w.png in Resources */ = {isa = PBXBuildFile; fileRef = DDA591342F8DD4EA00A9BEE9 /* col@132w.png */; };
+		DDA592242F8DD4EA00A9BEE9 /* LUTRO.png in Resources */ = {isa = PBXBuildFile; fileRef = DDA591A02F8DD4EA00A9BEE9 /* LUTRO.png */; };
+		DDA592252F8DD4EA00A9BEE9 /* POKEMINI.png in Resources */ = {isa = PBXBuildFile; fileRef = DDA591BD2F8DD4EA00A9BEE9 /* POKEMINI.png */; };
+		DDA592262F8DD4EA00A9BEE9 /* openbor@132w.png in Resources */ = {isa = PBXBuildFile; fileRef = DDA591562F8DD4EA00A9BEE9 /* openbor@132w.png */; };
+		DDA592272F8DD4EA00A9BEE9 /* cpc-alt.png in Resources */ = {isa = PBXBuildFile; fileRef = DDA591882F8DD4EA00A9BEE9 /* cpc-alt.png */; };
+		DDA592282F8DD4EA00A9BEE9 /* doom@132w.png in Resources */ = {isa = PBXBuildFile; fileRef = DDA5913A2F8DD4EA00A9BEE9 /* doom@132w.png */; };
+		DDA592292F8DD4EA00A9BEE9 /* wii.ico in Resources */ = {isa = PBXBuildFile; fileRef = DDA591232F8DD4EA00A9BEE9 /* wii.ico */; };
+		DDA5922A2F8DD4EA00A9BEE9 /* TYRQUAKE.png in Resources */ = {isa = PBXBuildFile; fileRef = DDA591D22F8DD4EA00A9BEE9 /* TYRQUAKE.png */; };
+		DDA5922B2F8DD4EA00A9BEE9 /* nds.ico in Resources */ = {isa = PBXBuildFile; fileRef = DDA591152F8DD4EA00A9BEE9 /* nds.ico */; };
+		DDA5922C2F8DD4EA00A9BEE9 /* cpc@132w.png in Resources */ = {isa = PBXBuildFile; fileRef = DDA591352F8DD4EA00A9BEE9 /* cpc@132w.png */; };
+		DDA5922D2F8DD4EA00A9BEE9 /* gc.ico in Resources */ = {isa = PBXBuildFile; fileRef = DDA591112F8DD4EA00A9BEE9 /* gc.ico */; };
+		DDA5922E2F8DD4EA00A9BEE9 /* OPENBOR.png in Resources */ = {isa = PBXBuildFile; fileRef = DDA591B32F8DD4EA00A9BEE9 /* OPENBOR.png */; };
+		DDA5922F2F8DD4EA00A9BEE9 /* NEOCD.png in Resources */ = {isa = PBXBuildFile; fileRef = DDA591AF2F8DD4EA00A9BEE9 /* NEOCD.png */; };
+		DDA592302F8DD4EA00A9BEE9 /* ATARI800.png in Resources */ = {isa = PBXBuildFile; fileRef = DDA591792F8DD4EA00A9BEE9 /* ATARI800.png */; };
+		DDA592312F8DD4EA00A9BEE9 /* vb@132w.png in Resources */ = {isa = PBXBuildFile; fileRef = DDA591692F8DD4EA00A9BEE9 /* vb@132w.png */; };
+		DDA592322F8DD4EA00A9BEE9 /* CPS2.png in Resources */ = {isa = PBXBuildFile; fileRef = DDA5918C2F8DD4EA00A9BEE9 /* CPS2.png */; };
+		DDA592332F8DD4EA00A9BEE9 /* SATURN.png in Resources */ = {isa = PBXBuildFile; fileRef = DDA591C32F8DD4EA00A9BEE9 /* SATURN.png */; };
+		DDA592342F8DD4EA00A9BEE9 /* NAOMI.png in Resources */ = {isa = PBXBuildFile; fileRef = DDA591AD2F8DD4EA00A9BEE9 /* NAOMI.png */; };
+		DDA592352F8DD4EA00A9BEE9 /* SCUMMVM.png in Resources */ = {isa = PBXBuildFile; fileRef = DDA591C42F8DD4EA00A9BEE9 /* SCUMMVM.png */; };
+		DDA592362F8DD4EA00A9BEE9 /* neogeo@132w.png in Resources */ = {isa = PBXBuildFile; fileRef = DDA591522F8DD4EA00A9BEE9 /* neogeo@132w.png */; };
+		DDA592372F8DD4EA00A9BEE9 /* GBA.png in Resources */ = {isa = PBXBuildFile; fileRef = DDA5919A2F8DD4EA00A9BEE9 /* GBA.png */; };
+		DDA592382F8DD4EA00A9BEE9 /* VECTREX.png in Resources */ = {isa = PBXBuildFile; fileRef = DDA591D52F8DD4EA00A9BEE9 /* VECTREX.png */; };
+		DDA592392F8DD4EA00A9BEE9 /* ARCADE_FBNEO.png in Resources */ = {isa = PBXBuildFile; fileRef = DDA591772F8DD4EA00A9BEE9 /* ARCADE_FBNEO.png */; };
+		DDA5923A2F8DD4EA00A9BEE9 /* VIDEOPAC.png in Resources */ = {isa = PBXBuildFile; fileRef = DDA591D72F8DD4EA00A9BEE9 /* VIDEOPAC.png */; };
+		DDA5923B2F8DD4EA00A9BEE9 /* AMIGA.png in Resources */ = {isa = PBXBuildFile; fileRef = DDA591732F8DD4EA00A9BEE9 /* AMIGA.png */; };
+		DDA5923C2F8DD4EA00A9BEE9 /* LOWRESNX.png in Resources */ = {isa = PBXBuildFile; fileRef = DDA5919F2F8DD4EA00A9BEE9 /* LOWRESNX.png */; };
+		DDA5923D2F8DD4EA00A9BEE9 /* AMIGACD.png in Resources */ = {isa = PBXBuildFile; fileRef = DDA591742F8DD4EA00A9BEE9 /* AMIGACD.png */; };
+		DDA5923E2F8DD4EA00A9BEE9 /* arduboy@132w.png in Resources */ = {isa = PBXBuildFile; fileRef = DDA5912E2F8DD4EA00A9BEE9 /* arduboy@132w.png */; };
+		DDA5923F2F8DD4EA00A9BEE9 /* appIcon64.jpg in Resources */ = {isa = PBXBuildFile; fileRef = DDA590FF2F8DD4EA00A9BEE9 /* appIcon64.jpg */; };
+		DDA592402F8DD4EA00A9BEE9 /* jaguar.ico in Resources */ = {isa = PBXBuildFile; fileRef = DDA591132F8DD4EA00A9BEE9 /* jaguar.ico */; };
+		DDA592412F8DD4EA00A9BEE9 /* SFC.png in Resources */ = {isa = PBXBuildFile; fileRef = DDA591C72F8DD4EA00A9BEE9 /* SFC.png */; };
+		DDA592422F8DD4EA00A9BEE9 /* dc@132w.png in Resources */ = {isa = PBXBuildFile; fileRef = DDA591392F8DD4EA00A9BEE9 /* dc@132w.png */; };
+		DDA592432F8DD4EA00A9BEE9 /* N64.png in Resources */ = {isa = PBXBuildFile; fileRef = DDA591AB2F8DD4EA00A9BEE9 /* N64.png */; };
+		DDA592442F8DD4EA00A9BEE9 /* dos@132w.png in Resources */ = {isa = PBXBuildFile; fileRef = DDA5913B2F8DD4EA00A9BEE9 /* dos@132w.png */; };
+		DDA592452F8DD4EA00A9BEE9 /* SUFAMI.png in Resources */ = {isa = PBXBuildFile; fileRef = DDA591CC2F8DD4EA00A9BEE9 /* SUFAMI.png */; };
+		DDA592462F8DD4EA00A9BEE9 /* WS.png in Resources */ = {isa = PBXBuildFile; fileRef = DDA591DC2F8DD4EA00A9BEE9 /* WS.png */; };
+		DDA592472F8DD4EA00A9BEE9 /* msx@132w.png in Resources */ = {isa = PBXBuildFile; fileRef = DDA5914E2F8DD4EA00A9BEE9 /* msx@132w.png */; };
+		DDA592482F8DD4EA00A9BEE9 /* switch.ico in Resources */ = {isa = PBXBuildFile; fileRef = DDA591212F8DD4EA00A9BEE9 /* switch.ico */; };
+		DDA592492F8DD4EA00A9BEE9 /* fc@132w.png in Resources */ = {isa = PBXBuildFile; fileRef = DDA5913E2F8DD4EA00A9BEE9 /* fc@132w.png */; };
+		DDA5924A2F8DD4EA00A9BEE9 /* saturn.ico in Resources */ = {isa = PBXBuildFile; fileRef = DDA5911D2F8DD4EA00A9BEE9 /* saturn.ico */; };
+		DDA5924B2F8DD4EA00A9BEE9 /* xbox360.ico in Resources */ = {isa = PBXBuildFile; fileRef = DDA591272F8DD4EA00A9BEE9 /* xbox360.ico */; };
+		DDA5924C2F8DD4EA00A9BEE9 /* wiiu.ico in Resources */ = {isa = PBXBuildFile; fileRef = DDA591252F8DD4EA00A9BEE9 /* wiiu.ico */; };
+		DDA5924D2F8DD4EA00A9BEE9 /* atari5200.ico in Resources */ = {isa = PBXBuildFile; fileRef = DDA5910B2F8DD4EA00A9BEE9 /* atari5200.ico */; };
+		DDA5924E2F8DD4EA00A9BEE9 /* SATELLAVIEW.png in Resources */ = {isa = PBXBuildFile; fileRef = DDA591C22F8DD4EA00A9BEE9 /* SATELLAVIEW.png */; };
+		DDA5924F2F8DD4EA00A9BEE9 /* cps2@132w.png in Resources */ = {isa = PBXBuildFile; fileRef = DDA591372F8DD4EA00A9BEE9 /* cps2@132w.png */; };
+		DDA592502F8DD4EA00A9BEE9 /* FLASHBACK.png in Resources */ = {isa = PBXBuildFile; fileRef = DDA591982F8DD4EA00A9BEE9 /* FLASHBACK.png */; };
+		DDA592512F8DD4EA00A9BEE9 /* GW.png in Resources */ = {isa = PBXBuildFile; fileRef = DDA5919D2F8DD4EA00A9BEE9 /* GW.png */; };
+		DDA592522F8DD4EA00A9BEE9 /* ps2.ico in Resources */ = {isa = PBXBuildFile; fileRef = DDA591192F8DD4EA00A9BEE9 /* ps2.ico */; };
+		DDA592532F8DD4EA00A9BEE9 /* NTbe4.jpg in Resources */ = {isa = PBXBuildFile; fileRef = DDA591062F8DD4EA00A9BEE9 /* NTbe4.jpg */; };
+		DDA592542F8DD4EA00A9BEE9 /* c64@132w.png in Resources */ = {isa = PBXBuildFile; fileRef = DDA591322F8DD4EA00A9BEE9 /* c64@132w.png */; };
+		DDA592552F8DD4EA00A9BEE9 /* sgfx@132w.png in Resources */ = {isa = PBXBuildFile; fileRef = DDA591652F8DD4EA00A9BEE9 /* sgfx@132w.png */; };
+		DDA592562F8DD4EA00A9BEE9 /* mame_unified.json in Resources */ = {isa = PBXBuildFile; fileRef = DDA591EB2F8DD4EA00A9BEE9 /* mame_unified.json */; };
+		DDA592572F8DD4EA00A9BEE9 /* j7C3Q.jpg in Resources */ = {isa = PBXBuildFile; fileRef = DDA591052F8DD4EA00A9BEE9 /* j7C3Q.jpg */; };
+		DDA592582F8DD4EA00A9BEE9 /* x68000@132w.png in Resources */ = {isa = PBXBuildFile; fileRef = DDA5916F2F8DD4EA00A9BEE9 /* x68000@132w.png */; };
+		DDA592592F8DD4EA00A9BEE9 /* xbox.ico in Resources */ = {isa = PBXBuildFile; fileRef = DDA591262F8DD4EA00A9BEE9 /* xbox.ico */; };
+		DDA5925A2F8DD4EA00A9BEE9 /* megaduck@132w.png in Resources */ = {isa = PBXBuildFile; fileRef = DDA5914A2F8DD4EA00A9BEE9 /* megaduck@132w.png */; };
+		DDA5925B2F8DD4EA00A9BEE9 /* chai@132w.png in Resources */ = {isa = PBXBuildFile; fileRef = DDA591332F8DD4EA00A9BEE9 /* chai@132w.png */; };
+		DDA5925C2F8DD4EA00A9BEE9 /* GB.png in Resources */ = {isa = PBXBuildFile; fileRef = DDA591992F8DD4EA00A9BEE9 /* GB.png */; };
+		DDA5925D2F8DD4EA00A9BEE9 /* VMAC.png in Resources */ = {isa = PBXBuildFile; fileRef = DDA591DB2F8DD4EA00A9BEE9 /* VMAC.png */; };
+		DDA5925E2F8DD4EA00A9BEE9 /* UZEBOX.png in Resources */ = {isa = PBXBuildFile; fileRef = DDA591D32F8DD4EA00A9BEE9 /* UZEBOX.png */; };
+		DDA5925F2F8DD4EA00A9BEE9 /* PS.png in Resources */ = {isa = PBXBuildFile; fileRef = DDA591BF2F8DD4EA00A9BEE9 /* PS.png */; };
+		DDA592602F8DD4EA00A9BEE9 /* PORTS.png in Resources */ = {isa = PBXBuildFile; fileRef = DDA591BE2F8DD4EA00A9BEE9 /* PORTS.png */; };
+		DDA592612F8DD4EA00A9BEE9 /* arcade@132w.png in Resources */ = {isa = PBXBuildFile; fileRef = DDA5912D2F8DD4EA00A9BEE9 /* arcade@132w.png */; };
+		DDA592622F8DD4EA00A9BEE9 /* wii classic ico.ico in Resources */ = {isa = PBXBuildFile; fileRef = DDA591242F8DD4EA00A9BEE9 /* wii classic ico.ico */; };
+		DDA592632F8DD4EA00A9BEE9 /* ARDUBOY.png in Resources */ = {isa = PBXBuildFile; fileRef = DDA591782F8DD4EA00A9BEE9 /* ARDUBOY.png */; };
+		DDA592642F8DD4EA00A9BEE9 /* gb.ico in Resources */ = {isa = PBXBuildFile; fileRef = DDA5910E2F8DD4EA00A9BEE9 /* gb.ico */; };
+		DDA592652F8DD4EA00A9BEE9 /* DOOM.png in Resources */ = {isa = PBXBuildFile; fileRef = DDA591912F8DD4EA00A9BEE9 /* DOOM.png */; };
+		DDA592662F8DD4EA00A9BEE9 /* PSPMINIS.png in Resources */ = {isa = PBXBuildFile; fileRef = DDA591C12F8DD4EA00A9BEE9 /* PSPMINIS.png */; };
+		DDA592672F8DD4EA00A9BEE9 /* sfc@132w.png in Resources */ = {isa = PBXBuildFile; fileRef = DDA591632F8DD4EA00A9BEE9 /* sfc@132w.png */; };
+		DDA592682F8DD4EA00A9BEE9 /* psp.ico in Resources */ = {isa = PBXBuildFile; fileRef = DDA5911B2F8DD4EA00A9BEE9 /* psp.ico */; };
+		DDA592692F8DD4EA00A9BEE9 /* snes.ico in Resources */ = {isa = PBXBuildFile; fileRef = DDA591202F8DD4EA00A9BEE9 /* snes.ico */; };
+		DDA5926A2F8DD4EA00A9BEE9 /* sgb@132w.png in Resources */ = {isa = PBXBuildFile; fileRef = DDA591642F8DD4EA00A9BEE9 /* sgb@132w.png */; };
+		DDA5926B2F8DD4EA00A9BEE9 /* neocd@132w.png in Resources */ = {isa = PBXBuildFile; fileRef = DDA591512F8DD4EA00A9BEE9 /* neocd@132w.png */; };
+		DDA5926C2F8DD4EA00A9BEE9 /* mame@132w.png in Resources */ = {isa = PBXBuildFile; fileRef = DDA591482F8DD4EA00A9BEE9 /* mame@132w.png */; };
+		DDA5926D2F8DD4EA00A9BEE9 /* appIcon128.jpg in Resources */ = {isa = PBXBuildFile; fileRef = DDA591002F8DD4EA00A9BEE9 /* appIcon128.jpg */; };
+		DDA5926E2F8DD4EA00A9BEE9 /* VIC20.png in Resources */ = {isa = PBXBuildFile; fileRef = DDA591D62F8DD4EA00A9BEE9 /* VIC20.png */; };
+		DDA5926F2F8DD4EA00A9BEE9 /* SystemDatabase.json in Resources */ = {isa = PBXBuildFile; fileRef = DDA591EC2F8DD4EA00A9BEE9 /* SystemDatabase.json */; };
+		DDA592702F8DD4EA00A9BEE9 /* wsc@132w.png in Resources */ = {isa = PBXBuildFile; fileRef = DDA5916E2F8DD4EA00A9BEE9 /* wsc@132w.png */; };
+		DDA592712F8DD4EA00A9BEE9 /* n64.ico in Resources */ = {isa = PBXBuildFile; fileRef = DDA591142F8DD4EA00A9BEE9 /* n64.ico */; };
+		DDA592722F8DD4EA00A9BEE9 /* sufami@132w.png in Resources */ = {isa = PBXBuildFile; fileRef = DDA591662F8DD4EA00A9BEE9 /* sufami@132w.png */; };
+		DDA592732F8DD4EA00A9BEE9 /* atari800@132w.png in Resources */ = {isa = PBXBuildFile; fileRef = DDA591302F8DD4EA00A9BEE9 /* atari800@132w.png */; };
+		DDA592742F8DD4EA00A9BEE9 /* PCECD.png in Resources */ = {isa = PBXBuildFile; fileRef = DDA591B92F8DD4EA00A9BEE9 /* PCECD.png */; };
+		DDA592752F8DD4EA00A9BEE9 /* mame_2003_plus.json in Resources */ = {isa = PBXBuildFile; fileRef = DDA591EA2F8DD4EA00A9BEE9 /* mame_2003_plus.json */; };
+		DDA592762F8DD4EA00A9BEE9 /* MDMSU.png in Resources */ = {isa = PBXBuildFile; fileRef = DDA591A62F8DD4EA00A9BEE9 /* MDMSU.png */; };
+		DDA592772F8DD4EA00A9BEE9 /* ATARI7800.png in Resources */ = {isa = PBXBuildFile; fileRef = DDA5917D2F8DD4EA00A9BEE9 /* ATARI7800.png */; };
+		DDA592782F8DD4EA00A9BEE9 /* MSX2.png in Resources */ = {isa = PBXBuildFile; fileRef = DDA591AA2F8DD4EA00A9BEE9 /* MSX2.png */; };
+		DDA592792F8DD4EA00A9BEE9 /* Sega Saturn Analog ico.ico in Resources */ = {isa = PBXBuildFile; fileRef = DDA5911E2F8DD4EA00A9BEE9 /* Sega Saturn Analog ico.ico */; };
+		DDA5927A2F8DD4EA00A9BEE9 /* ATOMISWAVE.png in Resources */ = {isa = PBXBuildFile; fileRef = DDA5917F2F8DD4EA00A9BEE9 /* ATOMISWAVE.png */; };
+		DDA5927B2F8DD4EA00A9BEE9 /* ARCADE.png in Resources */ = {isa = PBXBuildFile; fileRef = DDA591762F8DD4EA00A9BEE9 /* ARCADE.png */; };
+		DDA5927C2F8DD4EA00A9BEE9 /* appIcon256.jpg in Resources */ = {isa = PBXBuildFile; fileRef = DDA591012F8DD4EA00A9BEE9 /* appIcon256.jpg */; };
+		DDA5927D2F8DD4EA00A9BEE9 /* psx.ico in Resources */ = {isa = PBXBuildFile; fileRef = DDA5911C2F8DD4EA00A9BEE9 /* psx.ico */; };
+		DDA5927E2F8DD4EA00A9BEE9 /* amiga@132w.png in Resources */ = {isa = PBXBuildFile; fileRef = DDA5912C2F8DD4EA00A9BEE9 /* amiga@132w.png */; };
+		DDA5927F2F8DD4EA00A9BEE9 /* PCE.png in Resources */ = {isa = PBXBuildFile; fileRef = DDA591B82F8DD4EA00A9BEE9 /* PCE.png */; };
+		DDA592802F8DD4EA00A9BEE9 /* SFX.png in Resources */ = {isa = PBXBuildFile; fileRef = DDA591C92F8DD4EA00A9BEE9 /* SFX.png */; };
+		DDA592812F8DD4EA00A9BEE9 /* easyrpg@132w.png in Resources */ = {isa = PBXBuildFile; fileRef = DDA5913C2F8DD4EA00A9BEE9 /* easyrpg@132w.png */; };
+		DDA592822F8DD4EA00A9BEE9 /* atarist@132w.png in Resources */ = {isa = PBXBuildFile; fileRef = DDA591312F8DD4EA00A9BEE9 /* atarist@132w.png */; };
+		DDA592832F8DD4EA00A9BEE9 /* SFCMSU.png in Resources */ = {isa = PBXBuildFile; fileRef = DDA591C82F8DD4EA00A9BEE9 /* SFCMSU.png */; };
+		DDA592842F8DD4EA00A9BEE9 /* gg@132w.png in Resources */ = {isa = PBXBuildFile; fileRef = DDA591442F8DD4EA00A9BEE9 /* gg@132w.png */; };
+		DDA592852F8DD4EA00A9BEE9 /* SGB.png in Resources */ = {isa = PBXBuildFile; fileRef = DDA591CB2F8DD4EA00A9BEE9 /* SGB.png */; };
+		DDA592862F8DD4EA00A9BEE9 /* PICO.png in Resources */ = {isa = PBXBuildFile; fileRef = DDA591BC2F8DD4EA00A9BEE9 /* PICO.png */; };
+		DDA592872F8DD4EA00A9BEE9 /* ENTERPRISE.png in Resources */ = {isa = PBXBuildFile; fileRef = DDA591942F8DD4EA00A9BEE9 /* ENTERPRISE.png */; };
+		DDA592882F8DD4EA00A9BEE9 /* wolf@132w.png in Resources */ = {isa = PBXBuildFile; fileRef = DDA5916C2F8DD4EA00A9BEE9 /* wolf@132w.png */; };
+		DDA592892F8DD4EA00A9BEE9 /* gb@132w.png in Resources */ = {isa = PBXBuildFile; fileRef = DDA591412F8DD4EA00A9BEE9 /* gb@132w.png */; };
+		DDA5928A2F8DD4EA00A9BEE9 /* ps3.ico in Resources */ = {isa = PBXBuildFile; fileRef = DDA5911A2F8DD4EA00A9BEE9 /* ps3.ico */; };
+		DDA5928B2F8DD4EA00A9BEE9 /* pce@132w.png in Resources */ = {isa = PBXBuildFile; fileRef = DDA591572F8DD4EA00A9BEE9 /* pce@132w.png */; };
+		DDA5928C2F8DD4EA00A9BEE9 /* atari@132w.png in Resources */ = {isa = PBXBuildFile; fileRef = DDA5912F2F8DD4EA00A9BEE9 /* atari@132w.png */; };
+		DDA5928D2F8DD4EA00A9BEE9 /* SG1000.png in Resources */ = {isa = PBXBuildFile; fileRef = DDA591CA2F8DD4EA00A9BEE9 /* SG1000.png */; };
+		DDA5928E2F8DD4EA00A9BEE9 /* DOS.png in Resources */ = {isa = PBXBuildFile; fileRef = DDA591922F8DD4EA00A9BEE9 /* DOS.png */; };
+		DDA5928F2F8DD4EA00A9BEE9 /* CPC.png in Resources */ = {isa = PBXBuildFile; fileRef = DDA591872F8DD4EA00A9BEE9 /* CPC.png */; };
+		DDA592902F8DD4EA00A9BEE9 /* msumd@132w.png in Resources */ = {isa = PBXBuildFile; fileRef = DDA5914D2F8DD4EA00A9BEE9 /* msumd@132w.png */; };
+		DDA592912F8DD4EA00A9BEE9 /* NGP.png in Resources */ = {isa = PBXBuildFile; fileRef = DDA591B22F8DD4EA00A9BEE9 /* NGP.png */; };
+		DDA592922F8DD4EA00A9BEE9 /* ATARIST.png in Resources */ = {isa = PBXBuildFile; fileRef = DDA5917E2F8DD4EA00A9BEE9 /* ATARIST.png */; };
+		DDA592932F8DD4EA00A9BEE9 /* MAME2010.png in Resources */ = {isa = PBXBuildFile; fileRef = DDA591A42F8DD4EA00A9BEE9 /* MAME2010.png */; };
+		DDA592942F8DD4EA00A9BEE9 /* Nintendo_-_Super_Nintendo_Entertainment_System.json in Resources */ = {isa = PBXBuildFile; fileRef = DDA591E52F8DD4EA00A9BEE9 /* Nintendo_-_Super_Nintendo_Entertainment_System.json */; };
+		DDA592952F8DD4EA00A9BEE9 /* X68000.png in Resources */ = {isa = PBXBuildFile; fileRef = DDA591DF2F8DD4EA00A9BEE9 /* X68000.png */; };
+		DDA592962F8DD4EA00A9BEE9 /* 7800@132w.png in Resources */ = {isa = PBXBuildFile; fileRef = DDA5912B2F8DD4EA00A9BEE9 /* 7800@132w.png */; };
+		DDA592972F8DD4EA00A9BEE9 /* itv@132w.png in Resources */ = {isa = PBXBuildFile; fileRef = DDA591462F8DD4EA00A9BEE9 /* itv@132w.png */; };
+		DDA592982F8DD4EA00A9BEE9 /* virtualboy.ico in Resources */ = {isa = PBXBuildFile; fileRef = DDA591222F8DD4EA00A9BEE9 /* virtualboy.ico */; };
+		DDA592992F8DD4EA00A9BEE9 /* WSC.png in Resources */ = {isa = PBXBuildFile; fileRef = DDA591DD2F8DD4EA00A9BEE9 /* WSC.png */; };
+		DDA5929A2F8DD4EA00A9BEE9 /* XRICK.png in Resources */ = {isa = PBXBuildFile; fileRef = DDA591E02F8DD4EA00A9BEE9 /* XRICK.png */; };
+		DDA5929B2F8DD4EA00A9BEE9 /* Sega_-_Mega_Drive_-_Genesis.json in Resources */ = {isa = PBXBuildFile; fileRef = DDA591E62F8DD4EA00A9BEE9 /* Sega_-_Mega_Drive_-_Genesis.json */; };
+		DDA5929C2F8DD4EA00A9BEE9 /* FDS.png in Resources */ = {isa = PBXBuildFile; fileRef = DDA591972F8DD4EA00A9BEE9 /* FDS.png */; };
+		DDA5929D2F8DD4EA00A9BEE9 /* GBC.png in Resources */ = {isa = PBXBuildFile; fileRef = DDA5919B2F8DD4EA00A9BEE9 /* GBC.png */; };
+		DDA5929E2F8DD4EA00A9BEE9 /* CPS3.png in Resources */ = {isa = PBXBuildFile; fileRef = DDA5918D2F8DD4EA00A9BEE9 /* CPS3.png */; };
+		DDA5929F2F8DD4EA00A9BEE9 /* gbc.ico in Resources */ = {isa = PBXBuildFile; fileRef = DDA591102F8DD4EA00A9BEE9 /* gbc.ico */; };
+		DDA592A02F8DD4EA00A9BEE9 /* gbc@132w.png in Resources */ = {isa = PBXBuildFile; fileRef = DDA591432F8DD4EA00A9BEE9 /* gbc@132w.png */; };
+		DDA592A12F8DD4EA00A9BEE9 /* cps3@132w.png in Resources */ = {isa = PBXBuildFile; fileRef = DDA591382F8DD4EA00A9BEE9 /* cps3@132w.png */; };
+		DDA592A22F8DD4EA00A9BEE9 /* GG.png in Resources */ = {isa = PBXBuildFile; fileRef = DDA5919C2F8DD4EA00A9BEE9 /* GG.png */; };
+		DDA592A32F8DD4EA00A9BEE9 /* ody@132w.png in Resources */ = {isa = PBXBuildFile; fileRef = DDA591552F8DD4EA00A9BEE9 /* ody@132w.png */; };
+		DDA592A42F8DD4EA00A9BEE9 /* MS.png in Resources */ = {isa = PBXBuildFile; fileRef = DDA591A82F8DD4EA00A9BEE9 /* MS.png */; };
+		DDA592A52F8DD4EA00A9BEE9 /* ffplay@132w.png in Resources */ = {isa = PBXBuildFile; fileRef = DDA591402F8DD4EA00A9BEE9 /* ffplay@132w.png */; };
+		DDA592A62F8DD4EA00A9BEE9 /* PCFX.png in Resources */ = {isa = PBXBuildFile; fileRef = DDA591BA2F8DD4EA00A9BEE9 /* PCFX.png */; };
+		DDA592A72F8DD4EA00A9BEE9 /* NDS.png in Resources */ = {isa = PBXBuildFile; fileRef = DDA591AE2F8DD4EA00A9BEE9 /* NDS.png */; };
+		DDA592A82F8DD4EA00A9BEE9 /* satella@132w.png in Resources */ = {isa = PBXBuildFile; fileRef = DDA5915F2F8DD4EA00A9BEE9 /* satella@132w.png */; };
+		DDA592A92F8DD4EA00A9BEE9 /* MAME2003PLUS.png in Resources */ = {isa = PBXBuildFile; fileRef = DDA591A32F8DD4EA00A9BEE9 /* MAME2003PLUS.png */; };
+		DDA592AA2F8DD4EA00A9BEE9 /* DC.png in Resources */ = {isa = PBXBuildFile; fileRef = DDA5918F2F8DD4EA00A9BEE9 /* DC.png */; };
+		DDA592AB2F8DD4EA00A9BEE9 /* Sony_-_PlayStation.json in Resources */ = {isa = PBXBuildFile; fileRef = DDA591E72F8DD4EA00A9BEE9 /* Sony_-_PlayStation.json */; };
+		DDA592AC2F8DD4EA00A9BEE9 /* nds@132w.png in Resources */ = {isa = PBXBuildFile; fileRef = DDA591502F8DD4EA00A9BEE9 /* nds@132w.png */; };
+		DDA592AD2F8DD4EA00A9BEE9 /* ngp@132w.png in Resources */ = {isa = PBXBuildFile; fileRef = DDA591532F8DD4EA00A9BEE9 /* ngp@132w.png */; };
+		DDA592AE2F8DD4EA00A9BEE9 /* ATARI5200.png in Resources */ = {isa = PBXBuildFile; fileRef = DDA5917C2F8DD4EA00A9BEE9 /* ATARI5200.png */; };
+		DDA592AF2F8DD4EA00A9BEE9 /* nes.ico in Resources */ = {isa = PBXBuildFile; fileRef = DDA591162F8DD4EA00A9BEE9 /* nes.ico */; };
+		DDA592B02F8DD4EA00A9BEE9 /* ATARI800-alt.png in Resources */ = {isa = PBXBuildFile; fileRef = DDA5917A2F8DD4EA00A9BEE9 /* ATARI800-alt.png */; };
+		DDA592B12F8DD4EA00A9BEE9 /* ws@132w.png in Resources */ = {isa = PBXBuildFile; fileRef = DDA5916D2F8DD4EA00A9BEE9 /* ws@132w.png */; };
+		DDA592B22F8DD4EA00A9BEE9 /* 7vYdW.jpg in Resources */ = {isa = PBXBuildFile; fileRef = DDA590FC2F8DD4EA00A9BEE9 /* 7vYdW.jpg */; };
+		DDA592B32F8DD4EA00A9BEE9 /* dreamcast.ico in Resources */ = {isa = PBXBuildFile; fileRef = DDA5910C2F8DD4EA00A9BEE9 /* dreamcast.ico */; };
+		DDA592B42F8DD4EA00A9BEE9 /* CAVESTORY.png in Resources */ = {isa = PBXBuildFile; fileRef = DDA591822F8DD4EA00A9BEE9 /* CAVESTORY.png */; };
+		DDA592B52F8DD4EA00A9BEE9 /* X1.png in Resources */ = {isa = PBXBuildFile; fileRef = DDA591DE2F8DD4EA00A9BEE9 /* X1.png */; };
+		DDA592B62F8DD4EA00A9BEE9 /* SUPERVISION.png in Resources */ = {isa = PBXBuildFile; fileRef = DDA591CD2F8DD4EA00A9BEE9 /* SUPERVISION.png */; };
+		DDA592B72F8DD4EA00A9BEE9 /* C64.png in Resources */ = {isa = PBXBuildFile; fileRef = DDA591802F8DD4EA00A9BEE9 /* C64.png */; };
+		DDA592B82F8DD4EA00A9BEE9 /* MAME.png in Resources */ = {isa = PBXBuildFile; fileRef = DDA591A22F8DD4EA00A9BEE9 /* MAME.png */; };
+		DDA592B92F8DD4EA00A9BEE9 /* VIDEOPAC-alt.png in Resources */ = {isa = PBXBuildFile; fileRef = DDA591D82F8DD4EA00A9BEE9 /* VIDEOPAC-alt.png */; };
+		DDA592BA2F8DD4EA00A9BEE9 /* TI83.png in Resources */ = {isa = PBXBuildFile; fileRef = DDA591D02F8DD4EA00A9BEE9 /* TI83.png */; };
+		DDA592BB2F8DD4EA00A9BEE9 /* SUPERVISION-alt.png in Resources */ = {isa = PBXBuildFile; fileRef = DDA591CE2F8DD4EA00A9BEE9 /* SUPERVISION-alt.png */; };
+		DDA592BC2F8DD4EA00A9BEE9 /* Nintendo_-_Nintendo_Entertainment_System.json in Resources */ = {isa = PBXBuildFile; fileRef = DDA591E42F8DD4EA00A9BEE9 /* Nintendo_-_Nintendo_Entertainment_System.json */; };
+		DDA592BD2F8DD4EA00A9BEE9 /* INTELLIVISION.png in Resources */ = {isa = PBXBuildFile; fileRef = DDA5919E2F8DD4EA00A9BEE9 /* INTELLIVISION.png */; };
+		DDA592BE2F8DD4EA00A9BEE9 /* PSP.png in Resources */ = {isa = PBXBuildFile; fileRef = DDA591C02F8DD4EA00A9BEE9 /* PSP.png */; };
+		DDA592BF2F8DD4EA00A9BEE9 /* FBNEO.png in Resources */ = {isa = PBXBuildFile; fileRef = DDA591952F8DD4EA00A9BEE9 /* FBNEO.png */; };
+		DDA592C02F8DD4EA00A9BEE9 /* MSX.png in Resources */ = {isa = PBXBuildFile; fileRef = DDA591A92F8DD4EA00A9BEE9 /* MSX.png */; };
+		DDA592C12F8DD4EA00A9BEE9 /* ms@132w.png in Resources */ = {isa = PBXBuildFile; fileRef = DDA5914B2F8DD4EA00A9BEE9 /* ms@132w.png */; };
+		DDA592C22F8DD4EA00A9BEE9 /* TIC.png in Resources */ = {isa = PBXBuildFile; fileRef = DDA591D12F8DD4EA00A9BEE9 /* TIC.png */; };
+		DDA592C32F8DD4EA00A9BEE9 /* fds@132w.png in Resources */ = {isa = PBXBuildFile; fileRef = DDA5913F2F8DD4EA00A9BEE9 /* fds@132w.png */; };
+		DDA592C42F8DD4EA00A9BEE9 /* tic@132w.png in Resources */ = {isa = PBXBuildFile; fileRef = DDA591682F8DD4EA00A9BEE9 /* tic@132w.png */; };
+		DDA592C52F8DD4EA00A9BEE9 /* gamegear.ico in Resources */ = {isa = PBXBuildFile; fileRef = DDA5910D2F8DD4EA00A9BEE9 /* gamegear.ico */; };
+		DDA592C62F8DD4EA00A9BEE9 /* CPLUS4.png in Resources */ = {isa = PBXBuildFile; fileRef = DDA5918A2F8DD4EA00A9BEE9 /* CPLUS4.png */; };
+		DDA592C72F8DD4EA00A9BEE9 /* 32X@132w.png in Resources */ = {isa = PBXBuildFile; fileRef = DDA591292F8DD4EA00A9BEE9 /* 32X@132w.png */; };
+		DDA592C82F8DD4EA00A9BEE9 /* DAPHNE.png in Resources */ = {isa = PBXBuildFile; fileRef = DDA5918E2F8DD4EA00A9BEE9 /* DAPHNE.png */; };
+		DDA592C92F8DD4EA00A9BEE9 /* 3ds.ico in Resources */ = {isa = PBXBuildFile; fileRef = DDA591092F8DD4EA00A9BEE9 /* 3ds.ico */; };
+		DDA592CA2F8DD4EA00A9BEE9 /* COLSGM.png in Resources */ = {isa = PBXBuildFile; fileRef = DDA591862F8DD4EA00A9BEE9 /* COLSGM.png */; };
+		DDA592CB2F8DD4EA00A9BEE9 /* PALMOS.png in Resources */ = {isa = PBXBuildFile; fileRef = DDA591B42F8DD4EA00A9BEE9 /* PALMOS.png */; };
+		DDA592CC2F8DD4EA00A9BEE9 /* gba.ico in Resources */ = {isa = PBXBuildFile; fileRef = DDA5910F2F8DD4EA00A9BEE9 /* gba.ico */; };
+		DDA592CD2F8DD4EA00A9BEE9 /* md@132w.png in Resources */ = {isa = PBXBuildFile; fileRef = DDA591492F8DD4EA00A9BEE9 /* md@132w.png */; };
+		DDA592CE2F8DD4EA00A9BEE9 /* LYNX.png in Resources */ = {isa = PBXBuildFile; fileRef = DDA591A12F8DD4EA00A9BEE9 /* LYNX.png */; };
+		DDA592CF2F8DD4EA00A9BEE9 /* DINOTHAWR.png in Resources */ = {isa = PBXBuildFile; fileRef = DDA591902F8DD4EA00A9BEE9 /* DINOTHAWR.png */; };
+		DDA592D02F8DD4EA00A9BEE9 /* AMIGACDTV.png in Resources */ = {isa = PBXBuildFile; fileRef = DDA591752F8DD4EA00A9BEE9 /* AMIGACDTV.png */; };
+		DDA592D12F8DD4EA00A9BEE9 /* quake@132w.png in Resources */ = {isa = PBXBuildFile; fileRef = DDA5915E2F8DD4EA00A9BEE9 /* quake@132w.png */; };
+		DDA592D22F8DD4EA00A9BEE9 /* atari2600.ico in Resources */ = {isa = PBXBuildFile; fileRef = DDA5910A2F8DD4EA00A9BEE9 /* atari2600.ico */; };
+		DDA592D32F8DD4EA00A9BEE9 /* CANNONBALL.png in Resources */ = {isa = PBXBuildFile; fileRef = DDA591812F8DD4EA00A9BEE9 /* CANNONBALL.png */; };
+		DDA592D42F8DD4EA00A9BEE9 /* ATARI2600.png in Resources */ = {isa = PBXBuildFile; fileRef = DDA5917B2F8DD4EA00A9BEE9 /* ATARI2600.png */; };
+		DDA592D52F8DD4EA00A9BEE9 /* ngpc@132w.png in Resources */ = {isa = PBXBuildFile; fileRef = DDA591542F8DD4EA00A9BEE9 /* ngpc@132w.png */; };
+		DDA592D62F8DD4EA00A9BEE9 /* FC.png in Resources */ = {isa = PBXBuildFile; fileRef = DDA591962F8DD4EA00A9BEE9 /* FC.png */; };
+		DDA592D72F8DD4EA00A9BEE9 /* ADVMAME.png in Resources */ = {isa = PBXBuildFile; fileRef = DDA591722F8DD4EA00A9BEE9 /* ADVMAME.png */; };
+		DDA592D82F8DD4EA00A9BEE9 /* segacd@132w.png in Resources */ = {isa = PBXBuildFile; fileRef = DDA591612F8DD4EA00A9BEE9 /* segacd@132w.png */; };
+		DDA592D92F8DD4EA00A9BEE9 /* msu1@132w.png in Resources */ = {isa = PBXBuildFile; fileRef = DDA5914C2F8DD4EA00A9BEE9 /* msu1@132w.png */; };
 		DDAC0689F34313CEF845E3FC /* DOSRunner.swift in Sources */ = {isa = PBXBuildFile; fileRef = E87593F08B97B23BA2CAC02A /* DOSRunner.swift */; };
 		DDD7A0432F8C8F12002E26DB /* Asset.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = DDD7A0422F8C8F12002E26DB /* Asset.xcassets */; };
 		E05CB54B2368ED8F5003136D /* MAMEModels.swift in Sources */ = {isa = PBXBuildFile; fileRef = BA50A4BA7CA5DC3C5FCB550D /* MAMEModels.swift */; };
@@ -536,242 +536,6 @@
 		DB9293E37E0A331CD54CDBF3 /* CheatManagerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CheatManagerView.swift; sourceTree = "<group>"; };
 		DC76C12B188BD3512C51A51F /* LaunchBoxGameMetadata.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LaunchBoxGameMetadata.swift; sourceTree = "<group>"; };
 		DD7DD75048F4FE666F795285 /* ROMRepository.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ROMRepository.swift; sourceTree = "<group>"; };
-		DDA58D292F8DA29300A9BEE9 /* 7vYdW.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = 7vYdW.jpg; sourceTree = "<group>"; };
-		DDA58D2A2F8DA29300A9BEE9 /* appIcon16.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = appIcon16.jpg; sourceTree = "<group>"; };
-		DDA58D2B2F8DA29300A9BEE9 /* appIcon32.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = appIcon32.jpg; sourceTree = "<group>"; };
-		DDA58D2C2F8DA29300A9BEE9 /* appIcon64.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = appIcon64.jpg; sourceTree = "<group>"; };
-		DDA58D2D2F8DA29300A9BEE9 /* appIcon128.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = appIcon128.jpg; sourceTree = "<group>"; };
-		DDA58D2E2F8DA29300A9BEE9 /* appIcon256.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = appIcon256.jpg; sourceTree = "<group>"; };
-		DDA58D2F2F8DA29300A9BEE9 /* appIcon512.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = appIcon512.jpg; sourceTree = "<group>"; };
-		DDA58D302F8DA29300A9BEE9 /* appIcon1024.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = appIcon1024.jpg; sourceTree = "<group>"; };
-		DDA58D312F8DA29300A9BEE9 /* aWw6r.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = aWw6r.jpg; sourceTree = "<group>"; };
-		DDA58D322F8DA29300A9BEE9 /* j7C3Q.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = j7C3Q.jpg; sourceTree = "<group>"; };
-		DDA58D332F8DA29300A9BEE9 /* NTbe4.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = NTbe4.jpg; sourceTree = "<group>"; };
-		DDA58D342F8DA29300A9BEE9 /* SEtBX.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = SEtBX.jpg; sourceTree = "<group>"; };
-		DDA58D362F8DA29300A9BEE9 /* 3ds.ico */ = {isa = PBXFileReference; lastKnownFileType = image.ico; path = 3ds.ico; sourceTree = "<group>"; };
-		DDA58D372F8DA29300A9BEE9 /* atari2600.ico */ = {isa = PBXFileReference; lastKnownFileType = image.ico; path = atari2600.ico; sourceTree = "<group>"; };
-		DDA58D382F8DA29300A9BEE9 /* atari5200.ico */ = {isa = PBXFileReference; lastKnownFileType = image.ico; path = atari5200.ico; sourceTree = "<group>"; };
-		DDA58D392F8DA29300A9BEE9 /* dreamcast.ico */ = {isa = PBXFileReference; lastKnownFileType = image.ico; path = dreamcast.ico; sourceTree = "<group>"; };
-		DDA58D3A2F8DA29300A9BEE9 /* gamegear.ico */ = {isa = PBXFileReference; lastKnownFileType = image.ico; path = gamegear.ico; sourceTree = "<group>"; };
-		DDA58D3B2F8DA29300A9BEE9 /* gb.ico */ = {isa = PBXFileReference; lastKnownFileType = image.ico; path = gb.ico; sourceTree = "<group>"; };
-		DDA58D3C2F8DA29300A9BEE9 /* gba.ico */ = {isa = PBXFileReference; lastKnownFileType = image.ico; path = gba.ico; sourceTree = "<group>"; };
-		DDA58D3D2F8DA29300A9BEE9 /* gbc.ico */ = {isa = PBXFileReference; lastKnownFileType = image.ico; path = gbc.ico; sourceTree = "<group>"; };
-		DDA58D3E2F8DA29300A9BEE9 /* gc.ico */ = {isa = PBXFileReference; lastKnownFileType = image.ico; path = gc.ico; sourceTree = "<group>"; };
-		DDA58D3F2F8DA29300A9BEE9 /* genesis.ico */ = {isa = PBXFileReference; lastKnownFileType = image.ico; path = genesis.ico; sourceTree = "<group>"; };
-		DDA58D402F8DA29300A9BEE9 /* jaguar.ico */ = {isa = PBXFileReference; lastKnownFileType = image.ico; path = jaguar.ico; sourceTree = "<group>"; };
-		DDA58D412F8DA29300A9BEE9 /* n64.ico */ = {isa = PBXFileReference; lastKnownFileType = image.ico; path = n64.ico; sourceTree = "<group>"; };
-		DDA58D422F8DA29300A9BEE9 /* nds.ico */ = {isa = PBXFileReference; lastKnownFileType = image.ico; path = nds.ico; sourceTree = "<group>"; };
-		DDA58D432F8DA29300A9BEE9 /* nes.ico */ = {isa = PBXFileReference; lastKnownFileType = image.ico; path = nes.ico; sourceTree = "<group>"; };
-		DDA58D442F8DA29300A9BEE9 /* ngage.ico */ = {isa = PBXFileReference; lastKnownFileType = image.ico; path = ngage.ico; sourceTree = "<group>"; };
-		DDA58D452F8DA29300A9BEE9 /* pce.ico */ = {isa = PBXFileReference; lastKnownFileType = image.ico; path = pce.ico; sourceTree = "<group>"; };
-		DDA58D462F8DA29300A9BEE9 /* ps2.ico */ = {isa = PBXFileReference; lastKnownFileType = image.ico; path = ps2.ico; sourceTree = "<group>"; };
-		DDA58D472F8DA29300A9BEE9 /* ps3.ico */ = {isa = PBXFileReference; lastKnownFileType = image.ico; path = ps3.ico; sourceTree = "<group>"; };
-		DDA58D482F8DA29300A9BEE9 /* psp.ico */ = {isa = PBXFileReference; lastKnownFileType = image.ico; path = psp.ico; sourceTree = "<group>"; };
-		DDA58D492F8DA29300A9BEE9 /* psx.ico */ = {isa = PBXFileReference; lastKnownFileType = image.ico; path = psx.ico; sourceTree = "<group>"; };
-		DDA58D4A2F8DA29300A9BEE9 /* saturn.ico */ = {isa = PBXFileReference; lastKnownFileType = image.ico; path = saturn.ico; sourceTree = "<group>"; };
-		DDA58D4B2F8DA29300A9BEE9 /* Sega Saturn Analog ico.ico */ = {isa = PBXFileReference; lastKnownFileType = image.ico; path = "Sega Saturn Analog ico.ico"; sourceTree = "<group>"; };
-		DDA58D4C2F8DA29300A9BEE9 /* sms.ico */ = {isa = PBXFileReference; lastKnownFileType = image.ico; path = sms.ico; sourceTree = "<group>"; };
-		DDA58D4D2F8DA29300A9BEE9 /* snes.ico */ = {isa = PBXFileReference; lastKnownFileType = image.ico; path = snes.ico; sourceTree = "<group>"; };
-		DDA58D4E2F8DA29300A9BEE9 /* switch.ico */ = {isa = PBXFileReference; lastKnownFileType = image.ico; path = switch.ico; sourceTree = "<group>"; };
-		DDA58D4F2F8DA29300A9BEE9 /* virtualboy.ico */ = {isa = PBXFileReference; lastKnownFileType = image.ico; path = virtualboy.ico; sourceTree = "<group>"; };
-		DDA58D502F8DA29300A9BEE9 /* wii.ico */ = {isa = PBXFileReference; lastKnownFileType = image.ico; path = wii.ico; sourceTree = "<group>"; };
-		DDA58D512F8DA29300A9BEE9 /* wii classic ico.ico */ = {isa = PBXFileReference; lastKnownFileType = image.ico; path = "wii classic ico.ico"; sourceTree = "<group>"; };
-		DDA58D522F8DA29300A9BEE9 /* wiiu.ico */ = {isa = PBXFileReference; lastKnownFileType = image.ico; path = wiiu.ico; sourceTree = "<group>"; };
-		DDA58D532F8DA29300A9BEE9 /* xbox.ico */ = {isa = PBXFileReference; lastKnownFileType = image.ico; path = xbox.ico; sourceTree = "<group>"; };
-		DDA58D542F8DA29300A9BEE9 /* xbox360.ico */ = {isa = PBXFileReference; lastKnownFileType = image.ico; path = xbox360.ico; sourceTree = "<group>"; };
-		DDA58D562F8DA29300A9BEE9 /* 32X@132w.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "32X@132w.png"; sourceTree = "<group>"; };
-		DDA58D572F8DA29300A9BEE9 /* 5200@132w.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "5200@132w.png"; sourceTree = "<group>"; };
-		DDA58D582F8DA29300A9BEE9 /* 7800@132w.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "7800@132w.png"; sourceTree = "<group>"; };
-		DDA58D592F8DA29300A9BEE9 /* amiga@132w.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "amiga@132w.png"; sourceTree = "<group>"; };
-		DDA58D5A2F8DA29300A9BEE9 /* arcade@132w.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "arcade@132w.png"; sourceTree = "<group>"; };
-		DDA58D5B2F8DA29300A9BEE9 /* arduboy@132w.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "arduboy@132w.png"; sourceTree = "<group>"; };
-		DDA58D5C2F8DA29300A9BEE9 /* atari@132w.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "atari@132w.png"; sourceTree = "<group>"; };
-		DDA58D5D2F8DA29300A9BEE9 /* atari800@132w.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "atari800@132w.png"; sourceTree = "<group>"; };
-		DDA58D5E2F8DA29300A9BEE9 /* atarist@132w.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "atarist@132w.png"; sourceTree = "<group>"; };
-		DDA58D5F2F8DA29300A9BEE9 /* c64@132w.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "c64@132w.png"; sourceTree = "<group>"; };
-		DDA58D602F8DA29300A9BEE9 /* chai@132w.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "chai@132w.png"; sourceTree = "<group>"; };
-		DDA58D612F8DA29300A9BEE9 /* col@132w.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "col@132w.png"; sourceTree = "<group>"; };
-		DDA58D622F8DA29300A9BEE9 /* cpc@132w.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "cpc@132w.png"; sourceTree = "<group>"; };
-		DDA58D632F8DA29300A9BEE9 /* cps1@132w.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "cps1@132w.png"; sourceTree = "<group>"; };
-		DDA58D642F8DA29300A9BEE9 /* cps2@132w.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "cps2@132w.png"; sourceTree = "<group>"; };
-		DDA58D652F8DA29300A9BEE9 /* cps3@132w.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "cps3@132w.png"; sourceTree = "<group>"; };
-		DDA58D662F8DA29300A9BEE9 /* dc@132w.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "dc@132w.png"; sourceTree = "<group>"; };
-		DDA58D672F8DA29300A9BEE9 /* doom@132w.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "doom@132w.png"; sourceTree = "<group>"; };
-		DDA58D682F8DA29300A9BEE9 /* dos@132w.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "dos@132w.png"; sourceTree = "<group>"; };
-		DDA58D692F8DA29300A9BEE9 /* easyrpg@132w.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "easyrpg@132w.png"; sourceTree = "<group>"; };
-		DDA58D6A2F8DA29300A9BEE9 /* fairchild@132w.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "fairchild@132w.png"; sourceTree = "<group>"; };
-		DDA58D6B2F8DA29300A9BEE9 /* fc@132w.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "fc@132w.png"; sourceTree = "<group>"; };
-		DDA58D6C2F8DA29300A9BEE9 /* fds@132w.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "fds@132w.png"; sourceTree = "<group>"; };
-		DDA58D6D2F8DA29300A9BEE9 /* ffplay@132w.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "ffplay@132w.png"; sourceTree = "<group>"; };
-		DDA58D6E2F8DA29300A9BEE9 /* gb@132w.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "gb@132w.png"; sourceTree = "<group>"; };
-		DDA58D6F2F8DA29300A9BEE9 /* gba@132w.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "gba@132w.png"; sourceTree = "<group>"; };
-		DDA58D702F8DA29300A9BEE9 /* gbc@132w.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "gbc@132w.png"; sourceTree = "<group>"; };
-		DDA58D712F8DA29300A9BEE9 /* gg@132w.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "gg@132w.png"; sourceTree = "<group>"; };
-		DDA58D722F8DA29300A9BEE9 /* gw@132w.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "gw@132w.png"; sourceTree = "<group>"; };
-		DDA58D732F8DA29300A9BEE9 /* itv@132w.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "itv@132w.png"; sourceTree = "<group>"; };
-		DDA58D742F8DA29300A9BEE9 /* lynx@132w.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "lynx@132w.png"; sourceTree = "<group>"; };
-		DDA58D752F8DA29300A9BEE9 /* mame@132w.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "mame@132w.png"; sourceTree = "<group>"; };
-		DDA58D762F8DA29300A9BEE9 /* md@132w.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "md@132w.png"; sourceTree = "<group>"; };
-		DDA58D772F8DA29300A9BEE9 /* megaduck@132w.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "megaduck@132w.png"; sourceTree = "<group>"; };
-		DDA58D782F8DA29300A9BEE9 /* ms@132w.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "ms@132w.png"; sourceTree = "<group>"; };
-		DDA58D792F8DA29300A9BEE9 /* msu1@132w.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "msu1@132w.png"; sourceTree = "<group>"; };
-		DDA58D7A2F8DA29300A9BEE9 /* msumd@132w.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "msumd@132w.png"; sourceTree = "<group>"; };
-		DDA58D7B2F8DA29300A9BEE9 /* msx@132w.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "msx@132w.png"; sourceTree = "<group>"; };
-		DDA58D7C2F8DA29300A9BEE9 /* n64@132w.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "n64@132w.png"; sourceTree = "<group>"; };
-		DDA58D7D2F8DA29300A9BEE9 /* nds@132w.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "nds@132w.png"; sourceTree = "<group>"; };
-		DDA58D7E2F8DA29300A9BEE9 /* neocd@132w.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "neocd@132w.png"; sourceTree = "<group>"; };
-		DDA58D7F2F8DA29300A9BEE9 /* neogeo@132w.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "neogeo@132w.png"; sourceTree = "<group>"; };
-		DDA58D802F8DA29300A9BEE9 /* ngp@132w.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "ngp@132w.png"; sourceTree = "<group>"; };
-		DDA58D812F8DA29300A9BEE9 /* ngpc@132w.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "ngpc@132w.png"; sourceTree = "<group>"; };
-		DDA58D822F8DA29300A9BEE9 /* ody@132w.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "ody@132w.png"; sourceTree = "<group>"; };
-		DDA58D832F8DA29300A9BEE9 /* openbor@132w.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "openbor@132w.png"; sourceTree = "<group>"; };
-		DDA58D842F8DA29300A9BEE9 /* pce@132w.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "pce@132w.png"; sourceTree = "<group>"; };
-		DDA58D852F8DA29300A9BEE9 /* pcecd@132w.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "pcecd@132w.png"; sourceTree = "<group>"; };
-		DDA58D862F8DA29300A9BEE9 /* pico@132w.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "pico@132w.png"; sourceTree = "<group>"; };
-		DDA58D872F8DA29300A9BEE9 /* poke@132w.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "poke@132w.png"; sourceTree = "<group>"; };
-		DDA58D882F8DA29300A9BEE9 /* ports@132w.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "ports@132w.png"; sourceTree = "<group>"; };
-		DDA58D892F8DA29300A9BEE9 /* ps@132w.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "ps@132w.png"; sourceTree = "<group>"; };
-		DDA58D8A2F8DA29300A9BEE9 /* psp@132w.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "psp@132w.png"; sourceTree = "<group>"; };
-		DDA58D8B2F8DA29300A9BEE9 /* quake@132w.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "quake@132w.png"; sourceTree = "<group>"; };
-		DDA58D8C2F8DA29300A9BEE9 /* satella@132w.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "satella@132w.png"; sourceTree = "<group>"; };
-		DDA58D8D2F8DA29300A9BEE9 /* scummvm@132w.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "scummvm@132w.png"; sourceTree = "<group>"; };
-		DDA58D8E2F8DA29300A9BEE9 /* segacd@132w.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "segacd@132w.png"; sourceTree = "<group>"; };
-		DDA58D8F2F8DA29300A9BEE9 /* segasgone@132w.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "segasgone@132w.png"; sourceTree = "<group>"; };
-		DDA58D902F8DA29300A9BEE9 /* sfc@132w.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "sfc@132w.png"; sourceTree = "<group>"; };
-		DDA58D912F8DA29300A9BEE9 /* sgb@132w.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "sgb@132w.png"; sourceTree = "<group>"; };
-		DDA58D922F8DA29300A9BEE9 /* sgfx@132w.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "sgfx@132w.png"; sourceTree = "<group>"; };
-		DDA58D932F8DA29300A9BEE9 /* sufami@132w.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "sufami@132w.png"; sourceTree = "<group>"; };
-		DDA58D942F8DA29300A9BEE9 /* supervision@132w.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "supervision@132w.png"; sourceTree = "<group>"; };
-		DDA58D952F8DA29300A9BEE9 /* tic@132w.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "tic@132w.png"; sourceTree = "<group>"; };
-		DDA58D962F8DA29300A9BEE9 /* vb@132w.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "vb@132w.png"; sourceTree = "<group>"; };
-		DDA58D972F8DA29300A9BEE9 /* vdp@132w.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "vdp@132w.png"; sourceTree = "<group>"; };
-		DDA58D982F8DA29300A9BEE9 /* vectrex@132w.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "vectrex@132w.png"; sourceTree = "<group>"; };
-		DDA58D992F8DA29300A9BEE9 /* wolf@132w.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "wolf@132w.png"; sourceTree = "<group>"; };
-		DDA58D9A2F8DA29300A9BEE9 /* ws@132w.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "ws@132w.png"; sourceTree = "<group>"; };
-		DDA58D9B2F8DA29300A9BEE9 /* wsc@132w.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "wsc@132w.png"; sourceTree = "<group>"; };
-		DDA58D9C2F8DA29300A9BEE9 /* x68000@132w.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "x68000@132w.png"; sourceTree = "<group>"; };
-		DDA58D9D2F8DA29300A9BEE9 /* zxs@132w.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "zxs@132w.png"; sourceTree = "<group>"; };
-		DDA58D9F2F8DA29300A9BEE9 /* ADVMAME.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = ADVMAME.png; sourceTree = "<group>"; };
-		DDA58DA02F8DA29300A9BEE9 /* AMIGA.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = AMIGA.png; sourceTree = "<group>"; };
-		DDA58DA12F8DA29300A9BEE9 /* AMIGACD.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = AMIGACD.png; sourceTree = "<group>"; };
-		DDA58DA22F8DA29300A9BEE9 /* AMIGACDTV.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = AMIGACDTV.png; sourceTree = "<group>"; };
-		DDA58DA32F8DA29300A9BEE9 /* ARCADE.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = ARCADE.png; sourceTree = "<group>"; };
-		DDA58DA42F8DA29300A9BEE9 /* ARCADE_FBNEO.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = ARCADE_FBNEO.png; sourceTree = "<group>"; };
-		DDA58DA52F8DA29300A9BEE9 /* ARDUBOY.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = ARDUBOY.png; sourceTree = "<group>"; };
-		DDA58DA62F8DA29300A9BEE9 /* ATARI800.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = ATARI800.png; sourceTree = "<group>"; };
-		DDA58DA72F8DA29300A9BEE9 /* ATARI800-alt.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "ATARI800-alt.png"; sourceTree = "<group>"; };
-		DDA58DA82F8DA29300A9BEE9 /* ATARI2600.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = ATARI2600.png; sourceTree = "<group>"; };
-		DDA58DA92F8DA29300A9BEE9 /* ATARI5200.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = ATARI5200.png; sourceTree = "<group>"; };
-		DDA58DAA2F8DA29300A9BEE9 /* ATARI7800.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = ATARI7800.png; sourceTree = "<group>"; };
-		DDA58DAB2F8DA29300A9BEE9 /* ATARIST.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = ATARIST.png; sourceTree = "<group>"; };
-		DDA58DAC2F8DA29300A9BEE9 /* ATOMISWAVE.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = ATOMISWAVE.png; sourceTree = "<group>"; };
-		DDA58DAD2F8DA29300A9BEE9 /* C64.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = C64.png; sourceTree = "<group>"; };
-		DDA58DAE2F8DA29300A9BEE9 /* CANNONBALL.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = CANNONBALL.png; sourceTree = "<group>"; };
-		DDA58DAF2F8DA29300A9BEE9 /* CAVESTORY.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = CAVESTORY.png; sourceTree = "<group>"; };
-		DDA58DB02F8DA29300A9BEE9 /* CHAILOVE.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = CHAILOVE.png; sourceTree = "<group>"; };
-		DDA58DB12F8DA29300A9BEE9 /* CHANNELF.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = CHANNELF.png; sourceTree = "<group>"; };
-		DDA58DB22F8DA29300A9BEE9 /* COLECO.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = COLECO.png; sourceTree = "<group>"; };
-		DDA58DB32F8DA29300A9BEE9 /* COLSGM.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = COLSGM.png; sourceTree = "<group>"; };
-		DDA58DB42F8DA29300A9BEE9 /* CPC.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = CPC.png; sourceTree = "<group>"; };
-		DDA58DB52F8DA29300A9BEE9 /* cpc-alt.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "cpc-alt.png"; sourceTree = "<group>"; };
-		DDA58DB62F8DA29300A9BEE9 /* CPET.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = CPET.png; sourceTree = "<group>"; };
-		DDA58DB72F8DA29300A9BEE9 /* CPLUS4.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = CPLUS4.png; sourceTree = "<group>"; };
-		DDA58DB82F8DA29300A9BEE9 /* CPS1.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = CPS1.png; sourceTree = "<group>"; };
-		DDA58DB92F8DA29300A9BEE9 /* CPS2.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = CPS2.png; sourceTree = "<group>"; };
-		DDA58DBA2F8DA29300A9BEE9 /* CPS3.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = CPS3.png; sourceTree = "<group>"; };
-		DDA58DBB2F8DA29300A9BEE9 /* DAPHNE.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = DAPHNE.png; sourceTree = "<group>"; };
-		DDA58DBC2F8DA29300A9BEE9 /* DC.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = DC.png; sourceTree = "<group>"; };
-		DDA58DBD2F8DA29300A9BEE9 /* DINOTHAWR.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = DINOTHAWR.png; sourceTree = "<group>"; };
-		DDA58DBE2F8DA29300A9BEE9 /* DOOM.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = DOOM.png; sourceTree = "<group>"; };
-		DDA58DBF2F8DA29300A9BEE9 /* DOS.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = DOS.png; sourceTree = "<group>"; };
-		DDA58DC02F8DA29300A9BEE9 /* EASYRPG.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = EASYRPG.png; sourceTree = "<group>"; };
-		DDA58DC12F8DA29300A9BEE9 /* ENTERPRISE.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = ENTERPRISE.png; sourceTree = "<group>"; };
-		DDA58DC22F8DA29300A9BEE9 /* FBNEO.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = FBNEO.png; sourceTree = "<group>"; };
-		DDA58DC32F8DA29300A9BEE9 /* FC.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = FC.png; sourceTree = "<group>"; };
-		DDA58DC42F8DA29300A9BEE9 /* FDS.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = FDS.png; sourceTree = "<group>"; };
-		DDA58DC52F8DA29300A9BEE9 /* FLASHBACK.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = FLASHBACK.png; sourceTree = "<group>"; };
-		DDA58DC62F8DA29300A9BEE9 /* GB.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = GB.png; sourceTree = "<group>"; };
-		DDA58DC72F8DA29300A9BEE9 /* GBA.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = GBA.png; sourceTree = "<group>"; };
-		DDA58DC82F8DA29300A9BEE9 /* GBC.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = GBC.png; sourceTree = "<group>"; };
-		DDA58DC92F8DA29300A9BEE9 /* GG.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = GG.png; sourceTree = "<group>"; };
-		DDA58DCA2F8DA29300A9BEE9 /* GW.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = GW.png; sourceTree = "<group>"; };
-		DDA58DCB2F8DA29300A9BEE9 /* INTELLIVISION.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = INTELLIVISION.png; sourceTree = "<group>"; };
-		DDA58DCC2F8DA29300A9BEE9 /* LOWRESNX.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = LOWRESNX.png; sourceTree = "<group>"; };
-		DDA58DCD2F8DA29300A9BEE9 /* LUTRO.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = LUTRO.png; sourceTree = "<group>"; };
-		DDA58DCE2F8DA29300A9BEE9 /* LYNX.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = LYNX.png; sourceTree = "<group>"; };
-		DDA58DCF2F8DA29300A9BEE9 /* MAME.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = MAME.png; sourceTree = "<group>"; };
-		DDA58DD02F8DA29300A9BEE9 /* MAME2003PLUS.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = MAME2003PLUS.png; sourceTree = "<group>"; };
-		DDA58DD12F8DA29300A9BEE9 /* MAME2010.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = MAME2010.png; sourceTree = "<group>"; };
-		DDA58DD22F8DA29300A9BEE9 /* MD.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = MD.png; sourceTree = "<group>"; };
-		DDA58DD32F8DA29300A9BEE9 /* MDMSU.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = MDMSU.png; sourceTree = "<group>"; };
-		DDA58DD42F8DA29300A9BEE9 /* MEGADUCK.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = MEGADUCK.png; sourceTree = "<group>"; };
-		DDA58DD52F8DA29300A9BEE9 /* MS.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = MS.png; sourceTree = "<group>"; };
-		DDA58DD62F8DA29300A9BEE9 /* MSX.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = MSX.png; sourceTree = "<group>"; };
-		DDA58DD72F8DA29300A9BEE9 /* MSX2.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = MSX2.png; sourceTree = "<group>"; };
-		DDA58DD82F8DA29300A9BEE9 /* N64.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = N64.png; sourceTree = "<group>"; };
-		DDA58DD92F8DA29300A9BEE9 /* N64DD.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = N64DD.png; sourceTree = "<group>"; };
-		DDA58DDA2F8DA29300A9BEE9 /* NAOMI.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = NAOMI.png; sourceTree = "<group>"; };
-		DDA58DDB2F8DA29300A9BEE9 /* NDS.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = NDS.png; sourceTree = "<group>"; };
-		DDA58DDC2F8DA29300A9BEE9 /* NEOCD.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = NEOCD.png; sourceTree = "<group>"; };
-		DDA58DDD2F8DA29300A9BEE9 /* NEOGEO.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = NEOGEO.png; sourceTree = "<group>"; };
-		DDA58DDE2F8DA29300A9BEE9 /* NGC.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = NGC.png; sourceTree = "<group>"; };
-		DDA58DDF2F8DA29300A9BEE9 /* NGP.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = NGP.png; sourceTree = "<group>"; };
-		DDA58DE02F8DA29300A9BEE9 /* OPENBOR.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = OPENBOR.png; sourceTree = "<group>"; };
-		DDA58DE12F8DA29300A9BEE9 /* PALMOS.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = PALMOS.png; sourceTree = "<group>"; };
-		DDA58DE22F8DA29300A9BEE9 /* PANASONIC.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = PANASONIC.png; sourceTree = "<group>"; };
-		DDA58DE32F8DA29300A9BEE9 /* PC88.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = PC88.png; sourceTree = "<group>"; };
-		DDA58DE42F8DA29300A9BEE9 /* PC98.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = PC98.png; sourceTree = "<group>"; };
-		DDA58DE52F8DA29300A9BEE9 /* PCE.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = PCE.png; sourceTree = "<group>"; };
-		DDA58DE62F8DA29300A9BEE9 /* PCECD.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = PCECD.png; sourceTree = "<group>"; };
-		DDA58DE72F8DA29300A9BEE9 /* PCFX.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = PCFX.png; sourceTree = "<group>"; };
-		DDA58DE82F8DA29300A9BEE9 /* PGM.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = PGM.png; sourceTree = "<group>"; };
-		DDA58DE92F8DA29300A9BEE9 /* PICO.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = PICO.png; sourceTree = "<group>"; };
-		DDA58DEA2F8DA29300A9BEE9 /* POKEMINI.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = POKEMINI.png; sourceTree = "<group>"; };
-		DDA58DEB2F8DA29300A9BEE9 /* PORTS.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = PORTS.png; sourceTree = "<group>"; };
-		DDA58DEC2F8DA29300A9BEE9 /* PS.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = PS.png; sourceTree = "<group>"; };
-		DDA58DED2F8DA29300A9BEE9 /* PSP.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = PSP.png; sourceTree = "<group>"; };
-		DDA58DEE2F8DA29300A9BEE9 /* PSPMINIS.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = PSPMINIS.png; sourceTree = "<group>"; };
-		DDA58DEF2F8DA29300A9BEE9 /* SATELLAVIEW.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = SATELLAVIEW.png; sourceTree = "<group>"; };
-		DDA58DF02F8DA29300A9BEE9 /* SATURN.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = SATURN.png; sourceTree = "<group>"; };
-		DDA58DF12F8DA29300A9BEE9 /* SCUMMVM.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = SCUMMVM.png; sourceTree = "<group>"; };
-		DDA58DF22F8DA29300A9BEE9 /* SEGA32X.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = SEGA32X.png; sourceTree = "<group>"; };
-		DDA58DF32F8DA29300A9BEE9 /* SEGACD.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = SEGACD.png; sourceTree = "<group>"; };
-		DDA58DF42F8DA29300A9BEE9 /* SFC.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = SFC.png; sourceTree = "<group>"; };
-		DDA58DF52F8DA29300A9BEE9 /* SFCMSU.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = SFCMSU.png; sourceTree = "<group>"; };
-		DDA58DF62F8DA29300A9BEE9 /* SFX.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = SFX.png; sourceTree = "<group>"; };
-		DDA58DF72F8DA29300A9BEE9 /* SG1000.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = SG1000.png; sourceTree = "<group>"; };
-		DDA58DF82F8DA29300A9BEE9 /* SGB.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = SGB.png; sourceTree = "<group>"; };
-		DDA58DF92F8DA29300A9BEE9 /* SUFAMI.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = SUFAMI.png; sourceTree = "<group>"; };
-		DDA58DFA2F8DA29300A9BEE9 /* SUPERVISION.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = SUPERVISION.png; sourceTree = "<group>"; };
-		DDA58DFB2F8DA29300A9BEE9 /* SUPERVISION-alt.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "SUPERVISION-alt.png"; sourceTree = "<group>"; };
-		DDA58DFC2F8DA29300A9BEE9 /* THOMSON.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = THOMSON.png; sourceTree = "<group>"; };
-		DDA58DFD2F8DA29300A9BEE9 /* TI83.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = TI83.png; sourceTree = "<group>"; };
-		DDA58DFE2F8DA29300A9BEE9 /* TIC.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = TIC.png; sourceTree = "<group>"; };
-		DDA58DFF2F8DA29300A9BEE9 /* TYRQUAKE.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = TYRQUAKE.png; sourceTree = "<group>"; };
-		DDA58E002F8DA29300A9BEE9 /* UZEBOX.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = UZEBOX.png; sourceTree = "<group>"; };
-		DDA58E012F8DA29300A9BEE9 /* VB.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = VB.png; sourceTree = "<group>"; };
-		DDA58E022F8DA29300A9BEE9 /* VECTREX.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = VECTREX.png; sourceTree = "<group>"; };
-		DDA58E032F8DA29300A9BEE9 /* VIC20.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = VIC20.png; sourceTree = "<group>"; };
-		DDA58E042F8DA29300A9BEE9 /* VIDEOPAC.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = VIDEOPAC.png; sourceTree = "<group>"; };
-		DDA58E052F8DA29300A9BEE9 /* VIDEOPAC-alt.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "VIDEOPAC-alt.png"; sourceTree = "<group>"; };
-		DDA58E062F8DA29300A9BEE9 /* VIDEOS.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = VIDEOS.png; sourceTree = "<group>"; };
-		DDA58E072F8DA29300A9BEE9 /* VIDEOTON.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = VIDEOTON.png; sourceTree = "<group>"; };
-		DDA58E082F8DA29300A9BEE9 /* VMAC.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = VMAC.png; sourceTree = "<group>"; };
-		DDA58E092F8DA29300A9BEE9 /* WS.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = WS.png; sourceTree = "<group>"; };
-		DDA58E0A2F8DA29300A9BEE9 /* WSC.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = WSC.png; sourceTree = "<group>"; };
-		DDA58E0B2F8DA29300A9BEE9 /* X1.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = X1.png; sourceTree = "<group>"; };
-		DDA58E0C2F8DA29300A9BEE9 /* X68000.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = X68000.png; sourceTree = "<group>"; };
-		DDA58E0D2F8DA29300A9BEE9 /* XRICK.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = XRICK.png; sourceTree = "<group>"; };
-		DDA58E0E2F8DA29300A9BEE9 /* ZXS.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = ZXS.png; sourceTree = "<group>"; };
-		DDA58E112F8DA29300A9BEE9 /* Nintendo_-_Nintendo_Entertainment_System.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = "Nintendo_-_Nintendo_Entertainment_System.json"; sourceTree = "<group>"; };
-		DDA58E122F8DA29300A9BEE9 /* Nintendo_-_Super_Nintendo_Entertainment_System.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = "Nintendo_-_Super_Nintendo_Entertainment_System.json"; sourceTree = "<group>"; };
-		DDA58E132F8DA29300A9BEE9 /* Sega_-_Mega_Drive_-_Genesis.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = "Sega_-_Mega_Drive_-_Genesis.json"; sourceTree = "<group>"; };
-		DDA58E142F8DA29300A9BEE9 /* Sony_-_PlayStation.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = "Sony_-_PlayStation.json"; sourceTree = "<group>"; };
-		DDA58E162F8DA29300A9BEE9 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
-		DDA58E172F8DA29300A9BEE9 /* mame_2003_plus.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = mame_2003_plus.json; sourceTree = "<group>"; };
-		DDA58E182F8DA29300A9BEE9 /* mame_unified.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = mame_unified.json; sourceTree = "<group>"; };
-		DDA58E192F8DA29300A9BEE9 /* SystemDatabase.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = SystemDatabase.json; sourceTree = "<group>"; };
-		DDA58E1A2F8DA29300A9BEE9 /* TruchieEmu.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = TruchieEmu.entitlements; sourceTree = "<group>"; };
 		DDA58F092F8DC26600A9BEE9 /* LibrarySettingsViewGroup.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LibrarySettingsViewGroup.swift; sourceTree = "<group>"; };
 		DDA58F0B2F8DC32800A9BEE9 /* CoreSettingsViewGroup.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CoreSettingsViewGroup.swift; sourceTree = "<group>"; };
 		DDA58F112F8DC65100A9BEE9 /* ControllerSettingsViewGroup.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ControllerSettingsViewGroup.swift; sourceTree = "<group>"; };
@@ -780,6 +544,242 @@
 		DDA58F152F8DC83B00A9BEE9 /* DisplaySettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DisplaySettingsView.swift; sourceTree = "<group>"; };
 		DDA58F162F8DC83B00A9BEE9 /* GeneralSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GeneralSettingsView.swift; sourceTree = "<group>"; };
 		DDA58F1B2F8DC8E800A9BEE9 /* GameCardView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GameCardView.swift; sourceTree = "<group>"; };
+		DDA590FC2F8DD4EA00A9BEE9 /* 7vYdW.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = 7vYdW.jpg; sourceTree = "<group>"; };
+		DDA590FD2F8DD4EA00A9BEE9 /* appIcon16.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = appIcon16.jpg; sourceTree = "<group>"; };
+		DDA590FE2F8DD4EA00A9BEE9 /* appIcon32.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = appIcon32.jpg; sourceTree = "<group>"; };
+		DDA590FF2F8DD4EA00A9BEE9 /* appIcon64.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = appIcon64.jpg; sourceTree = "<group>"; };
+		DDA591002F8DD4EA00A9BEE9 /* appIcon128.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = appIcon128.jpg; sourceTree = "<group>"; };
+		DDA591012F8DD4EA00A9BEE9 /* appIcon256.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = appIcon256.jpg; sourceTree = "<group>"; };
+		DDA591022F8DD4EA00A9BEE9 /* appIcon512.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = appIcon512.jpg; sourceTree = "<group>"; };
+		DDA591032F8DD4EA00A9BEE9 /* appIcon1024.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = appIcon1024.jpg; sourceTree = "<group>"; };
+		DDA591042F8DD4EA00A9BEE9 /* aWw6r.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = aWw6r.jpg; sourceTree = "<group>"; };
+		DDA591052F8DD4EA00A9BEE9 /* j7C3Q.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = j7C3Q.jpg; sourceTree = "<group>"; };
+		DDA591062F8DD4EA00A9BEE9 /* NTbe4.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = NTbe4.jpg; sourceTree = "<group>"; };
+		DDA591072F8DD4EA00A9BEE9 /* SEtBX.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = SEtBX.jpg; sourceTree = "<group>"; };
+		DDA591092F8DD4EA00A9BEE9 /* 3ds.ico */ = {isa = PBXFileReference; lastKnownFileType = image.ico; path = 3ds.ico; sourceTree = "<group>"; };
+		DDA5910A2F8DD4EA00A9BEE9 /* atari2600.ico */ = {isa = PBXFileReference; lastKnownFileType = image.ico; path = atari2600.ico; sourceTree = "<group>"; };
+		DDA5910B2F8DD4EA00A9BEE9 /* atari5200.ico */ = {isa = PBXFileReference; lastKnownFileType = image.ico; path = atari5200.ico; sourceTree = "<group>"; };
+		DDA5910C2F8DD4EA00A9BEE9 /* dreamcast.ico */ = {isa = PBXFileReference; lastKnownFileType = image.ico; path = dreamcast.ico; sourceTree = "<group>"; };
+		DDA5910D2F8DD4EA00A9BEE9 /* gamegear.ico */ = {isa = PBXFileReference; lastKnownFileType = image.ico; path = gamegear.ico; sourceTree = "<group>"; };
+		DDA5910E2F8DD4EA00A9BEE9 /* gb.ico */ = {isa = PBXFileReference; lastKnownFileType = image.ico; path = gb.ico; sourceTree = "<group>"; };
+		DDA5910F2F8DD4EA00A9BEE9 /* gba.ico */ = {isa = PBXFileReference; lastKnownFileType = image.ico; path = gba.ico; sourceTree = "<group>"; };
+		DDA591102F8DD4EA00A9BEE9 /* gbc.ico */ = {isa = PBXFileReference; lastKnownFileType = image.ico; path = gbc.ico; sourceTree = "<group>"; };
+		DDA591112F8DD4EA00A9BEE9 /* gc.ico */ = {isa = PBXFileReference; lastKnownFileType = image.ico; path = gc.ico; sourceTree = "<group>"; };
+		DDA591122F8DD4EA00A9BEE9 /* genesis.ico */ = {isa = PBXFileReference; lastKnownFileType = image.ico; path = genesis.ico; sourceTree = "<group>"; };
+		DDA591132F8DD4EA00A9BEE9 /* jaguar.ico */ = {isa = PBXFileReference; lastKnownFileType = image.ico; path = jaguar.ico; sourceTree = "<group>"; };
+		DDA591142F8DD4EA00A9BEE9 /* n64.ico */ = {isa = PBXFileReference; lastKnownFileType = image.ico; path = n64.ico; sourceTree = "<group>"; };
+		DDA591152F8DD4EA00A9BEE9 /* nds.ico */ = {isa = PBXFileReference; lastKnownFileType = image.ico; path = nds.ico; sourceTree = "<group>"; };
+		DDA591162F8DD4EA00A9BEE9 /* nes.ico */ = {isa = PBXFileReference; lastKnownFileType = image.ico; path = nes.ico; sourceTree = "<group>"; };
+		DDA591172F8DD4EA00A9BEE9 /* ngage.ico */ = {isa = PBXFileReference; lastKnownFileType = image.ico; path = ngage.ico; sourceTree = "<group>"; };
+		DDA591182F8DD4EA00A9BEE9 /* pce.ico */ = {isa = PBXFileReference; lastKnownFileType = image.ico; path = pce.ico; sourceTree = "<group>"; };
+		DDA591192F8DD4EA00A9BEE9 /* ps2.ico */ = {isa = PBXFileReference; lastKnownFileType = image.ico; path = ps2.ico; sourceTree = "<group>"; };
+		DDA5911A2F8DD4EA00A9BEE9 /* ps3.ico */ = {isa = PBXFileReference; lastKnownFileType = image.ico; path = ps3.ico; sourceTree = "<group>"; };
+		DDA5911B2F8DD4EA00A9BEE9 /* psp.ico */ = {isa = PBXFileReference; lastKnownFileType = image.ico; path = psp.ico; sourceTree = "<group>"; };
+		DDA5911C2F8DD4EA00A9BEE9 /* psx.ico */ = {isa = PBXFileReference; lastKnownFileType = image.ico; path = psx.ico; sourceTree = "<group>"; };
+		DDA5911D2F8DD4EA00A9BEE9 /* saturn.ico */ = {isa = PBXFileReference; lastKnownFileType = image.ico; path = saturn.ico; sourceTree = "<group>"; };
+		DDA5911E2F8DD4EA00A9BEE9 /* Sega Saturn Analog ico.ico */ = {isa = PBXFileReference; lastKnownFileType = image.ico; path = "Sega Saturn Analog ico.ico"; sourceTree = "<group>"; };
+		DDA5911F2F8DD4EA00A9BEE9 /* sms.ico */ = {isa = PBXFileReference; lastKnownFileType = image.ico; path = sms.ico; sourceTree = "<group>"; };
+		DDA591202F8DD4EA00A9BEE9 /* snes.ico */ = {isa = PBXFileReference; lastKnownFileType = image.ico; path = snes.ico; sourceTree = "<group>"; };
+		DDA591212F8DD4EA00A9BEE9 /* switch.ico */ = {isa = PBXFileReference; lastKnownFileType = image.ico; path = switch.ico; sourceTree = "<group>"; };
+		DDA591222F8DD4EA00A9BEE9 /* virtualboy.ico */ = {isa = PBXFileReference; lastKnownFileType = image.ico; path = virtualboy.ico; sourceTree = "<group>"; };
+		DDA591232F8DD4EA00A9BEE9 /* wii.ico */ = {isa = PBXFileReference; lastKnownFileType = image.ico; path = wii.ico; sourceTree = "<group>"; };
+		DDA591242F8DD4EA00A9BEE9 /* wii classic ico.ico */ = {isa = PBXFileReference; lastKnownFileType = image.ico; path = "wii classic ico.ico"; sourceTree = "<group>"; };
+		DDA591252F8DD4EA00A9BEE9 /* wiiu.ico */ = {isa = PBXFileReference; lastKnownFileType = image.ico; path = wiiu.ico; sourceTree = "<group>"; };
+		DDA591262F8DD4EA00A9BEE9 /* xbox.ico */ = {isa = PBXFileReference; lastKnownFileType = image.ico; path = xbox.ico; sourceTree = "<group>"; };
+		DDA591272F8DD4EA00A9BEE9 /* xbox360.ico */ = {isa = PBXFileReference; lastKnownFileType = image.ico; path = xbox360.ico; sourceTree = "<group>"; };
+		DDA591292F8DD4EA00A9BEE9 /* 32X@132w.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "32X@132w.png"; sourceTree = "<group>"; };
+		DDA5912A2F8DD4EA00A9BEE9 /* 5200@132w.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "5200@132w.png"; sourceTree = "<group>"; };
+		DDA5912B2F8DD4EA00A9BEE9 /* 7800@132w.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "7800@132w.png"; sourceTree = "<group>"; };
+		DDA5912C2F8DD4EA00A9BEE9 /* amiga@132w.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "amiga@132w.png"; sourceTree = "<group>"; };
+		DDA5912D2F8DD4EA00A9BEE9 /* arcade@132w.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "arcade@132w.png"; sourceTree = "<group>"; };
+		DDA5912E2F8DD4EA00A9BEE9 /* arduboy@132w.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "arduboy@132w.png"; sourceTree = "<group>"; };
+		DDA5912F2F8DD4EA00A9BEE9 /* atari@132w.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "atari@132w.png"; sourceTree = "<group>"; };
+		DDA591302F8DD4EA00A9BEE9 /* atari800@132w.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "atari800@132w.png"; sourceTree = "<group>"; };
+		DDA591312F8DD4EA00A9BEE9 /* atarist@132w.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "atarist@132w.png"; sourceTree = "<group>"; };
+		DDA591322F8DD4EA00A9BEE9 /* c64@132w.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "c64@132w.png"; sourceTree = "<group>"; };
+		DDA591332F8DD4EA00A9BEE9 /* chai@132w.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "chai@132w.png"; sourceTree = "<group>"; };
+		DDA591342F8DD4EA00A9BEE9 /* col@132w.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "col@132w.png"; sourceTree = "<group>"; };
+		DDA591352F8DD4EA00A9BEE9 /* cpc@132w.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "cpc@132w.png"; sourceTree = "<group>"; };
+		DDA591362F8DD4EA00A9BEE9 /* cps1@132w.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "cps1@132w.png"; sourceTree = "<group>"; };
+		DDA591372F8DD4EA00A9BEE9 /* cps2@132w.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "cps2@132w.png"; sourceTree = "<group>"; };
+		DDA591382F8DD4EA00A9BEE9 /* cps3@132w.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "cps3@132w.png"; sourceTree = "<group>"; };
+		DDA591392F8DD4EA00A9BEE9 /* dc@132w.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "dc@132w.png"; sourceTree = "<group>"; };
+		DDA5913A2F8DD4EA00A9BEE9 /* doom@132w.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "doom@132w.png"; sourceTree = "<group>"; };
+		DDA5913B2F8DD4EA00A9BEE9 /* dos@132w.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "dos@132w.png"; sourceTree = "<group>"; };
+		DDA5913C2F8DD4EA00A9BEE9 /* easyrpg@132w.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "easyrpg@132w.png"; sourceTree = "<group>"; };
+		DDA5913D2F8DD4EA00A9BEE9 /* fairchild@132w.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "fairchild@132w.png"; sourceTree = "<group>"; };
+		DDA5913E2F8DD4EA00A9BEE9 /* fc@132w.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "fc@132w.png"; sourceTree = "<group>"; };
+		DDA5913F2F8DD4EA00A9BEE9 /* fds@132w.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "fds@132w.png"; sourceTree = "<group>"; };
+		DDA591402F8DD4EA00A9BEE9 /* ffplay@132w.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "ffplay@132w.png"; sourceTree = "<group>"; };
+		DDA591412F8DD4EA00A9BEE9 /* gb@132w.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "gb@132w.png"; sourceTree = "<group>"; };
+		DDA591422F8DD4EA00A9BEE9 /* gba@132w.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "gba@132w.png"; sourceTree = "<group>"; };
+		DDA591432F8DD4EA00A9BEE9 /* gbc@132w.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "gbc@132w.png"; sourceTree = "<group>"; };
+		DDA591442F8DD4EA00A9BEE9 /* gg@132w.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "gg@132w.png"; sourceTree = "<group>"; };
+		DDA591452F8DD4EA00A9BEE9 /* gw@132w.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "gw@132w.png"; sourceTree = "<group>"; };
+		DDA591462F8DD4EA00A9BEE9 /* itv@132w.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "itv@132w.png"; sourceTree = "<group>"; };
+		DDA591472F8DD4EA00A9BEE9 /* lynx@132w.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "lynx@132w.png"; sourceTree = "<group>"; };
+		DDA591482F8DD4EA00A9BEE9 /* mame@132w.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "mame@132w.png"; sourceTree = "<group>"; };
+		DDA591492F8DD4EA00A9BEE9 /* md@132w.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "md@132w.png"; sourceTree = "<group>"; };
+		DDA5914A2F8DD4EA00A9BEE9 /* megaduck@132w.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "megaduck@132w.png"; sourceTree = "<group>"; };
+		DDA5914B2F8DD4EA00A9BEE9 /* ms@132w.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "ms@132w.png"; sourceTree = "<group>"; };
+		DDA5914C2F8DD4EA00A9BEE9 /* msu1@132w.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "msu1@132w.png"; sourceTree = "<group>"; };
+		DDA5914D2F8DD4EA00A9BEE9 /* msumd@132w.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "msumd@132w.png"; sourceTree = "<group>"; };
+		DDA5914E2F8DD4EA00A9BEE9 /* msx@132w.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "msx@132w.png"; sourceTree = "<group>"; };
+		DDA5914F2F8DD4EA00A9BEE9 /* n64@132w.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "n64@132w.png"; sourceTree = "<group>"; };
+		DDA591502F8DD4EA00A9BEE9 /* nds@132w.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "nds@132w.png"; sourceTree = "<group>"; };
+		DDA591512F8DD4EA00A9BEE9 /* neocd@132w.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "neocd@132w.png"; sourceTree = "<group>"; };
+		DDA591522F8DD4EA00A9BEE9 /* neogeo@132w.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "neogeo@132w.png"; sourceTree = "<group>"; };
+		DDA591532F8DD4EA00A9BEE9 /* ngp@132w.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "ngp@132w.png"; sourceTree = "<group>"; };
+		DDA591542F8DD4EA00A9BEE9 /* ngpc@132w.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "ngpc@132w.png"; sourceTree = "<group>"; };
+		DDA591552F8DD4EA00A9BEE9 /* ody@132w.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "ody@132w.png"; sourceTree = "<group>"; };
+		DDA591562F8DD4EA00A9BEE9 /* openbor@132w.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "openbor@132w.png"; sourceTree = "<group>"; };
+		DDA591572F8DD4EA00A9BEE9 /* pce@132w.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "pce@132w.png"; sourceTree = "<group>"; };
+		DDA591582F8DD4EA00A9BEE9 /* pcecd@132w.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "pcecd@132w.png"; sourceTree = "<group>"; };
+		DDA591592F8DD4EA00A9BEE9 /* pico@132w.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "pico@132w.png"; sourceTree = "<group>"; };
+		DDA5915A2F8DD4EA00A9BEE9 /* poke@132w.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "poke@132w.png"; sourceTree = "<group>"; };
+		DDA5915B2F8DD4EA00A9BEE9 /* ports@132w.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "ports@132w.png"; sourceTree = "<group>"; };
+		DDA5915C2F8DD4EA00A9BEE9 /* ps@132w.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "ps@132w.png"; sourceTree = "<group>"; };
+		DDA5915D2F8DD4EA00A9BEE9 /* psp@132w.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "psp@132w.png"; sourceTree = "<group>"; };
+		DDA5915E2F8DD4EA00A9BEE9 /* quake@132w.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "quake@132w.png"; sourceTree = "<group>"; };
+		DDA5915F2F8DD4EA00A9BEE9 /* satella@132w.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "satella@132w.png"; sourceTree = "<group>"; };
+		DDA591602F8DD4EA00A9BEE9 /* scummvm@132w.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "scummvm@132w.png"; sourceTree = "<group>"; };
+		DDA591612F8DD4EA00A9BEE9 /* segacd@132w.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "segacd@132w.png"; sourceTree = "<group>"; };
+		DDA591622F8DD4EA00A9BEE9 /* segasgone@132w.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "segasgone@132w.png"; sourceTree = "<group>"; };
+		DDA591632F8DD4EA00A9BEE9 /* sfc@132w.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "sfc@132w.png"; sourceTree = "<group>"; };
+		DDA591642F8DD4EA00A9BEE9 /* sgb@132w.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "sgb@132w.png"; sourceTree = "<group>"; };
+		DDA591652F8DD4EA00A9BEE9 /* sgfx@132w.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "sgfx@132w.png"; sourceTree = "<group>"; };
+		DDA591662F8DD4EA00A9BEE9 /* sufami@132w.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "sufami@132w.png"; sourceTree = "<group>"; };
+		DDA591672F8DD4EA00A9BEE9 /* supervision@132w.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "supervision@132w.png"; sourceTree = "<group>"; };
+		DDA591682F8DD4EA00A9BEE9 /* tic@132w.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "tic@132w.png"; sourceTree = "<group>"; };
+		DDA591692F8DD4EA00A9BEE9 /* vb@132w.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "vb@132w.png"; sourceTree = "<group>"; };
+		DDA5916A2F8DD4EA00A9BEE9 /* vdp@132w.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "vdp@132w.png"; sourceTree = "<group>"; };
+		DDA5916B2F8DD4EA00A9BEE9 /* vectrex@132w.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "vectrex@132w.png"; sourceTree = "<group>"; };
+		DDA5916C2F8DD4EA00A9BEE9 /* wolf@132w.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "wolf@132w.png"; sourceTree = "<group>"; };
+		DDA5916D2F8DD4EA00A9BEE9 /* ws@132w.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "ws@132w.png"; sourceTree = "<group>"; };
+		DDA5916E2F8DD4EA00A9BEE9 /* wsc@132w.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "wsc@132w.png"; sourceTree = "<group>"; };
+		DDA5916F2F8DD4EA00A9BEE9 /* x68000@132w.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "x68000@132w.png"; sourceTree = "<group>"; };
+		DDA591702F8DD4EA00A9BEE9 /* zxs@132w.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "zxs@132w.png"; sourceTree = "<group>"; };
+		DDA591722F8DD4EA00A9BEE9 /* ADVMAME.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = ADVMAME.png; sourceTree = "<group>"; };
+		DDA591732F8DD4EA00A9BEE9 /* AMIGA.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = AMIGA.png; sourceTree = "<group>"; };
+		DDA591742F8DD4EA00A9BEE9 /* AMIGACD.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = AMIGACD.png; sourceTree = "<group>"; };
+		DDA591752F8DD4EA00A9BEE9 /* AMIGACDTV.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = AMIGACDTV.png; sourceTree = "<group>"; };
+		DDA591762F8DD4EA00A9BEE9 /* ARCADE.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = ARCADE.png; sourceTree = "<group>"; };
+		DDA591772F8DD4EA00A9BEE9 /* ARCADE_FBNEO.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = ARCADE_FBNEO.png; sourceTree = "<group>"; };
+		DDA591782F8DD4EA00A9BEE9 /* ARDUBOY.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = ARDUBOY.png; sourceTree = "<group>"; };
+		DDA591792F8DD4EA00A9BEE9 /* ATARI800.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = ATARI800.png; sourceTree = "<group>"; };
+		DDA5917A2F8DD4EA00A9BEE9 /* ATARI800-alt.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "ATARI800-alt.png"; sourceTree = "<group>"; };
+		DDA5917B2F8DD4EA00A9BEE9 /* ATARI2600.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = ATARI2600.png; sourceTree = "<group>"; };
+		DDA5917C2F8DD4EA00A9BEE9 /* ATARI5200.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = ATARI5200.png; sourceTree = "<group>"; };
+		DDA5917D2F8DD4EA00A9BEE9 /* ATARI7800.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = ATARI7800.png; sourceTree = "<group>"; };
+		DDA5917E2F8DD4EA00A9BEE9 /* ATARIST.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = ATARIST.png; sourceTree = "<group>"; };
+		DDA5917F2F8DD4EA00A9BEE9 /* ATOMISWAVE.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = ATOMISWAVE.png; sourceTree = "<group>"; };
+		DDA591802F8DD4EA00A9BEE9 /* C64.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = C64.png; sourceTree = "<group>"; };
+		DDA591812F8DD4EA00A9BEE9 /* CANNONBALL.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = CANNONBALL.png; sourceTree = "<group>"; };
+		DDA591822F8DD4EA00A9BEE9 /* CAVESTORY.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = CAVESTORY.png; sourceTree = "<group>"; };
+		DDA591832F8DD4EA00A9BEE9 /* CHAILOVE.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = CHAILOVE.png; sourceTree = "<group>"; };
+		DDA591842F8DD4EA00A9BEE9 /* CHANNELF.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = CHANNELF.png; sourceTree = "<group>"; };
+		DDA591852F8DD4EA00A9BEE9 /* COLECO.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = COLECO.png; sourceTree = "<group>"; };
+		DDA591862F8DD4EA00A9BEE9 /* COLSGM.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = COLSGM.png; sourceTree = "<group>"; };
+		DDA591872F8DD4EA00A9BEE9 /* CPC.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = CPC.png; sourceTree = "<group>"; };
+		DDA591882F8DD4EA00A9BEE9 /* cpc-alt.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "cpc-alt.png"; sourceTree = "<group>"; };
+		DDA591892F8DD4EA00A9BEE9 /* CPET.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = CPET.png; sourceTree = "<group>"; };
+		DDA5918A2F8DD4EA00A9BEE9 /* CPLUS4.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = CPLUS4.png; sourceTree = "<group>"; };
+		DDA5918B2F8DD4EA00A9BEE9 /* CPS1.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = CPS1.png; sourceTree = "<group>"; };
+		DDA5918C2F8DD4EA00A9BEE9 /* CPS2.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = CPS2.png; sourceTree = "<group>"; };
+		DDA5918D2F8DD4EA00A9BEE9 /* CPS3.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = CPS3.png; sourceTree = "<group>"; };
+		DDA5918E2F8DD4EA00A9BEE9 /* DAPHNE.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = DAPHNE.png; sourceTree = "<group>"; };
+		DDA5918F2F8DD4EA00A9BEE9 /* DC.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = DC.png; sourceTree = "<group>"; };
+		DDA591902F8DD4EA00A9BEE9 /* DINOTHAWR.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = DINOTHAWR.png; sourceTree = "<group>"; };
+		DDA591912F8DD4EA00A9BEE9 /* DOOM.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = DOOM.png; sourceTree = "<group>"; };
+		DDA591922F8DD4EA00A9BEE9 /* DOS.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = DOS.png; sourceTree = "<group>"; };
+		DDA591932F8DD4EA00A9BEE9 /* EASYRPG.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = EASYRPG.png; sourceTree = "<group>"; };
+		DDA591942F8DD4EA00A9BEE9 /* ENTERPRISE.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = ENTERPRISE.png; sourceTree = "<group>"; };
+		DDA591952F8DD4EA00A9BEE9 /* FBNEO.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = FBNEO.png; sourceTree = "<group>"; };
+		DDA591962F8DD4EA00A9BEE9 /* FC.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = FC.png; sourceTree = "<group>"; };
+		DDA591972F8DD4EA00A9BEE9 /* FDS.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = FDS.png; sourceTree = "<group>"; };
+		DDA591982F8DD4EA00A9BEE9 /* FLASHBACK.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = FLASHBACK.png; sourceTree = "<group>"; };
+		DDA591992F8DD4EA00A9BEE9 /* GB.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = GB.png; sourceTree = "<group>"; };
+		DDA5919A2F8DD4EA00A9BEE9 /* GBA.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = GBA.png; sourceTree = "<group>"; };
+		DDA5919B2F8DD4EA00A9BEE9 /* GBC.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = GBC.png; sourceTree = "<group>"; };
+		DDA5919C2F8DD4EA00A9BEE9 /* GG.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = GG.png; sourceTree = "<group>"; };
+		DDA5919D2F8DD4EA00A9BEE9 /* GW.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = GW.png; sourceTree = "<group>"; };
+		DDA5919E2F8DD4EA00A9BEE9 /* INTELLIVISION.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = INTELLIVISION.png; sourceTree = "<group>"; };
+		DDA5919F2F8DD4EA00A9BEE9 /* LOWRESNX.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = LOWRESNX.png; sourceTree = "<group>"; };
+		DDA591A02F8DD4EA00A9BEE9 /* LUTRO.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = LUTRO.png; sourceTree = "<group>"; };
+		DDA591A12F8DD4EA00A9BEE9 /* LYNX.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = LYNX.png; sourceTree = "<group>"; };
+		DDA591A22F8DD4EA00A9BEE9 /* MAME.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = MAME.png; sourceTree = "<group>"; };
+		DDA591A32F8DD4EA00A9BEE9 /* MAME2003PLUS.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = MAME2003PLUS.png; sourceTree = "<group>"; };
+		DDA591A42F8DD4EA00A9BEE9 /* MAME2010.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = MAME2010.png; sourceTree = "<group>"; };
+		DDA591A52F8DD4EA00A9BEE9 /* MD.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = MD.png; sourceTree = "<group>"; };
+		DDA591A62F8DD4EA00A9BEE9 /* MDMSU.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = MDMSU.png; sourceTree = "<group>"; };
+		DDA591A72F8DD4EA00A9BEE9 /* MEGADUCK.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = MEGADUCK.png; sourceTree = "<group>"; };
+		DDA591A82F8DD4EA00A9BEE9 /* MS.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = MS.png; sourceTree = "<group>"; };
+		DDA591A92F8DD4EA00A9BEE9 /* MSX.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = MSX.png; sourceTree = "<group>"; };
+		DDA591AA2F8DD4EA00A9BEE9 /* MSX2.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = MSX2.png; sourceTree = "<group>"; };
+		DDA591AB2F8DD4EA00A9BEE9 /* N64.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = N64.png; sourceTree = "<group>"; };
+		DDA591AC2F8DD4EA00A9BEE9 /* N64DD.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = N64DD.png; sourceTree = "<group>"; };
+		DDA591AD2F8DD4EA00A9BEE9 /* NAOMI.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = NAOMI.png; sourceTree = "<group>"; };
+		DDA591AE2F8DD4EA00A9BEE9 /* NDS.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = NDS.png; sourceTree = "<group>"; };
+		DDA591AF2F8DD4EA00A9BEE9 /* NEOCD.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = NEOCD.png; sourceTree = "<group>"; };
+		DDA591B02F8DD4EA00A9BEE9 /* NEOGEO.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = NEOGEO.png; sourceTree = "<group>"; };
+		DDA591B12F8DD4EA00A9BEE9 /* NGC.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = NGC.png; sourceTree = "<group>"; };
+		DDA591B22F8DD4EA00A9BEE9 /* NGP.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = NGP.png; sourceTree = "<group>"; };
+		DDA591B32F8DD4EA00A9BEE9 /* OPENBOR.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = OPENBOR.png; sourceTree = "<group>"; };
+		DDA591B42F8DD4EA00A9BEE9 /* PALMOS.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = PALMOS.png; sourceTree = "<group>"; };
+		DDA591B52F8DD4EA00A9BEE9 /* PANASONIC.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = PANASONIC.png; sourceTree = "<group>"; };
+		DDA591B62F8DD4EA00A9BEE9 /* PC88.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = PC88.png; sourceTree = "<group>"; };
+		DDA591B72F8DD4EA00A9BEE9 /* PC98.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = PC98.png; sourceTree = "<group>"; };
+		DDA591B82F8DD4EA00A9BEE9 /* PCE.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = PCE.png; sourceTree = "<group>"; };
+		DDA591B92F8DD4EA00A9BEE9 /* PCECD.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = PCECD.png; sourceTree = "<group>"; };
+		DDA591BA2F8DD4EA00A9BEE9 /* PCFX.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = PCFX.png; sourceTree = "<group>"; };
+		DDA591BB2F8DD4EA00A9BEE9 /* PGM.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = PGM.png; sourceTree = "<group>"; };
+		DDA591BC2F8DD4EA00A9BEE9 /* PICO.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = PICO.png; sourceTree = "<group>"; };
+		DDA591BD2F8DD4EA00A9BEE9 /* POKEMINI.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = POKEMINI.png; sourceTree = "<group>"; };
+		DDA591BE2F8DD4EA00A9BEE9 /* PORTS.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = PORTS.png; sourceTree = "<group>"; };
+		DDA591BF2F8DD4EA00A9BEE9 /* PS.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = PS.png; sourceTree = "<group>"; };
+		DDA591C02F8DD4EA00A9BEE9 /* PSP.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = PSP.png; sourceTree = "<group>"; };
+		DDA591C12F8DD4EA00A9BEE9 /* PSPMINIS.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = PSPMINIS.png; sourceTree = "<group>"; };
+		DDA591C22F8DD4EA00A9BEE9 /* SATELLAVIEW.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = SATELLAVIEW.png; sourceTree = "<group>"; };
+		DDA591C32F8DD4EA00A9BEE9 /* SATURN.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = SATURN.png; sourceTree = "<group>"; };
+		DDA591C42F8DD4EA00A9BEE9 /* SCUMMVM.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = SCUMMVM.png; sourceTree = "<group>"; };
+		DDA591C52F8DD4EA00A9BEE9 /* SEGA32X.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = SEGA32X.png; sourceTree = "<group>"; };
+		DDA591C62F8DD4EA00A9BEE9 /* SEGACD.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = SEGACD.png; sourceTree = "<group>"; };
+		DDA591C72F8DD4EA00A9BEE9 /* SFC.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = SFC.png; sourceTree = "<group>"; };
+		DDA591C82F8DD4EA00A9BEE9 /* SFCMSU.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = SFCMSU.png; sourceTree = "<group>"; };
+		DDA591C92F8DD4EA00A9BEE9 /* SFX.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = SFX.png; sourceTree = "<group>"; };
+		DDA591CA2F8DD4EA00A9BEE9 /* SG1000.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = SG1000.png; sourceTree = "<group>"; };
+		DDA591CB2F8DD4EA00A9BEE9 /* SGB.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = SGB.png; sourceTree = "<group>"; };
+		DDA591CC2F8DD4EA00A9BEE9 /* SUFAMI.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = SUFAMI.png; sourceTree = "<group>"; };
+		DDA591CD2F8DD4EA00A9BEE9 /* SUPERVISION.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = SUPERVISION.png; sourceTree = "<group>"; };
+		DDA591CE2F8DD4EA00A9BEE9 /* SUPERVISION-alt.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "SUPERVISION-alt.png"; sourceTree = "<group>"; };
+		DDA591CF2F8DD4EA00A9BEE9 /* THOMSON.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = THOMSON.png; sourceTree = "<group>"; };
+		DDA591D02F8DD4EA00A9BEE9 /* TI83.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = TI83.png; sourceTree = "<group>"; };
+		DDA591D12F8DD4EA00A9BEE9 /* TIC.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = TIC.png; sourceTree = "<group>"; };
+		DDA591D22F8DD4EA00A9BEE9 /* TYRQUAKE.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = TYRQUAKE.png; sourceTree = "<group>"; };
+		DDA591D32F8DD4EA00A9BEE9 /* UZEBOX.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = UZEBOX.png; sourceTree = "<group>"; };
+		DDA591D42F8DD4EA00A9BEE9 /* VB.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = VB.png; sourceTree = "<group>"; };
+		DDA591D52F8DD4EA00A9BEE9 /* VECTREX.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = VECTREX.png; sourceTree = "<group>"; };
+		DDA591D62F8DD4EA00A9BEE9 /* VIC20.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = VIC20.png; sourceTree = "<group>"; };
+		DDA591D72F8DD4EA00A9BEE9 /* VIDEOPAC.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = VIDEOPAC.png; sourceTree = "<group>"; };
+		DDA591D82F8DD4EA00A9BEE9 /* VIDEOPAC-alt.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "VIDEOPAC-alt.png"; sourceTree = "<group>"; };
+		DDA591D92F8DD4EA00A9BEE9 /* VIDEOS.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = VIDEOS.png; sourceTree = "<group>"; };
+		DDA591DA2F8DD4EA00A9BEE9 /* VIDEOTON.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = VIDEOTON.png; sourceTree = "<group>"; };
+		DDA591DB2F8DD4EA00A9BEE9 /* VMAC.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = VMAC.png; sourceTree = "<group>"; };
+		DDA591DC2F8DD4EA00A9BEE9 /* WS.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = WS.png; sourceTree = "<group>"; };
+		DDA591DD2F8DD4EA00A9BEE9 /* WSC.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = WSC.png; sourceTree = "<group>"; };
+		DDA591DE2F8DD4EA00A9BEE9 /* X1.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = X1.png; sourceTree = "<group>"; };
+		DDA591DF2F8DD4EA00A9BEE9 /* X68000.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = X68000.png; sourceTree = "<group>"; };
+		DDA591E02F8DD4EA00A9BEE9 /* XRICK.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = XRICK.png; sourceTree = "<group>"; };
+		DDA591E12F8DD4EA00A9BEE9 /* ZXS.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = ZXS.png; sourceTree = "<group>"; };
+		DDA591E42F8DD4EA00A9BEE9 /* Nintendo_-_Nintendo_Entertainment_System.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = "Nintendo_-_Nintendo_Entertainment_System.json"; sourceTree = "<group>"; };
+		DDA591E52F8DD4EA00A9BEE9 /* Nintendo_-_Super_Nintendo_Entertainment_System.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = "Nintendo_-_Super_Nintendo_Entertainment_System.json"; sourceTree = "<group>"; };
+		DDA591E62F8DD4EA00A9BEE9 /* Sega_-_Mega_Drive_-_Genesis.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = "Sega_-_Mega_Drive_-_Genesis.json"; sourceTree = "<group>"; };
+		DDA591E72F8DD4EA00A9BEE9 /* Sony_-_PlayStation.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = "Sony_-_PlayStation.json"; sourceTree = "<group>"; };
+		DDA591E92F8DD4EA00A9BEE9 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		DDA591EA2F8DD4EA00A9BEE9 /* mame_2003_plus.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = mame_2003_plus.json; sourceTree = "<group>"; };
+		DDA591EB2F8DD4EA00A9BEE9 /* mame_unified.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = mame_unified.json; sourceTree = "<group>"; };
+		DDA591EC2F8DD4EA00A9BEE9 /* SystemDatabase.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = SystemDatabase.json; sourceTree = "<group>"; };
+		DDA591ED2F8DD4EA00A9BEE9 /* TruchieEmu.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = TruchieEmu.entitlements; sourceTree = "<group>"; };
 		DDD7A0422F8C8F12002E26DB /* Asset.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Asset.xcassets; sourceTree = "<group>"; };
 		E35518FB34DEB243BF979DE0 /* LibretroCore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LibretroCore.swift; sourceTree = "<group>"; };
 		E3CF8589B867729FD91E572B /* GameDBLookupResult.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GameDBLookupResult.swift; sourceTree = "<group>"; };
@@ -838,6 +838,7 @@
 		1877F5A2D47F3BEBD4C9F107 /* TruchieEmu */ = {
 			isa = PBXGroup;
 			children = (
+				DDA591EE2F8DD4EA00A9BEE9 /* Resources */,
 				325C2DF7BFBE06CDBE6EF3A5 /* App */,
 				83304F5BB3B25877F8337BF8 /* Engine */,
 				58DECDD14D2EF32E5076893B /* Models */,
@@ -845,7 +846,6 @@
 				0DAE1ECDADDA76B1C01813C4 /* Shaders */,
 				5FD821B288CE5C724F30E07C /* Utilities */,
 				BD0AC71C3B8CE60EEEDFAAEC /* Views */,
-				DDA58E1B2F8DA29300A9BEE9 /* Resources 3 */,
 			);
 			path = TruchieEmu;
 			sourceTree = "<group>";
@@ -1151,295 +1151,295 @@
 			path = scripts;
 			sourceTree = "<group>";
 		};
-		DDA58D352F8DA29300A9BEE9 /* AppIcons */ = {
+		DDA591082F8DD4EA00A9BEE9 /* AppIcons */ = {
 			isa = PBXGroup;
 			children = (
-				DDA58D292F8DA29300A9BEE9 /* 7vYdW.jpg */,
-				DDA58D2A2F8DA29300A9BEE9 /* appIcon16.jpg */,
-				DDA58D2B2F8DA29300A9BEE9 /* appIcon32.jpg */,
-				DDA58D2C2F8DA29300A9BEE9 /* appIcon64.jpg */,
-				DDA58D2D2F8DA29300A9BEE9 /* appIcon128.jpg */,
-				DDA58D2E2F8DA29300A9BEE9 /* appIcon256.jpg */,
-				DDA58D2F2F8DA29300A9BEE9 /* appIcon512.jpg */,
-				DDA58D302F8DA29300A9BEE9 /* appIcon1024.jpg */,
-				DDA58D312F8DA29300A9BEE9 /* aWw6r.jpg */,
-				DDA58D322F8DA29300A9BEE9 /* j7C3Q.jpg */,
-				DDA58D332F8DA29300A9BEE9 /* NTbe4.jpg */,
-				DDA58D342F8DA29300A9BEE9 /* SEtBX.jpg */,
+				DDA590FC2F8DD4EA00A9BEE9 /* 7vYdW.jpg */,
+				DDA590FD2F8DD4EA00A9BEE9 /* appIcon16.jpg */,
+				DDA590FE2F8DD4EA00A9BEE9 /* appIcon32.jpg */,
+				DDA590FF2F8DD4EA00A9BEE9 /* appIcon64.jpg */,
+				DDA591002F8DD4EA00A9BEE9 /* appIcon128.jpg */,
+				DDA591012F8DD4EA00A9BEE9 /* appIcon256.jpg */,
+				DDA591022F8DD4EA00A9BEE9 /* appIcon512.jpg */,
+				DDA591032F8DD4EA00A9BEE9 /* appIcon1024.jpg */,
+				DDA591042F8DD4EA00A9BEE9 /* aWw6r.jpg */,
+				DDA591052F8DD4EA00A9BEE9 /* j7C3Q.jpg */,
+				DDA591062F8DD4EA00A9BEE9 /* NTbe4.jpg */,
+				DDA591072F8DD4EA00A9BEE9 /* SEtBX.jpg */,
 			);
 			path = AppIcons;
 			sourceTree = "<group>";
 		};
-		DDA58D552F8DA29300A9BEE9 /* ControllerIcons */ = {
+		DDA591282F8DD4EA00A9BEE9 /* ControllerIcons */ = {
 			isa = PBXGroup;
 			children = (
-				DDA58D362F8DA29300A9BEE9 /* 3ds.ico */,
-				DDA58D372F8DA29300A9BEE9 /* atari2600.ico */,
-				DDA58D382F8DA29300A9BEE9 /* atari5200.ico */,
-				DDA58D392F8DA29300A9BEE9 /* dreamcast.ico */,
-				DDA58D3A2F8DA29300A9BEE9 /* gamegear.ico */,
-				DDA58D3B2F8DA29300A9BEE9 /* gb.ico */,
-				DDA58D3C2F8DA29300A9BEE9 /* gba.ico */,
-				DDA58D3D2F8DA29300A9BEE9 /* gbc.ico */,
-				DDA58D3E2F8DA29300A9BEE9 /* gc.ico */,
-				DDA58D3F2F8DA29300A9BEE9 /* genesis.ico */,
-				DDA58D402F8DA29300A9BEE9 /* jaguar.ico */,
-				DDA58D412F8DA29300A9BEE9 /* n64.ico */,
-				DDA58D422F8DA29300A9BEE9 /* nds.ico */,
-				DDA58D432F8DA29300A9BEE9 /* nes.ico */,
-				DDA58D442F8DA29300A9BEE9 /* ngage.ico */,
-				DDA58D452F8DA29300A9BEE9 /* pce.ico */,
-				DDA58D462F8DA29300A9BEE9 /* ps2.ico */,
-				DDA58D472F8DA29300A9BEE9 /* ps3.ico */,
-				DDA58D482F8DA29300A9BEE9 /* psp.ico */,
-				DDA58D492F8DA29300A9BEE9 /* psx.ico */,
-				DDA58D4A2F8DA29300A9BEE9 /* saturn.ico */,
-				DDA58D4B2F8DA29300A9BEE9 /* Sega Saturn Analog ico.ico */,
-				DDA58D4C2F8DA29300A9BEE9 /* sms.ico */,
-				DDA58D4D2F8DA29300A9BEE9 /* snes.ico */,
-				DDA58D4E2F8DA29300A9BEE9 /* switch.ico */,
-				DDA58D4F2F8DA29300A9BEE9 /* virtualboy.ico */,
-				DDA58D502F8DA29300A9BEE9 /* wii.ico */,
-				DDA58D512F8DA29300A9BEE9 /* wii classic ico.ico */,
-				DDA58D522F8DA29300A9BEE9 /* wiiu.ico */,
-				DDA58D532F8DA29300A9BEE9 /* xbox.ico */,
-				DDA58D542F8DA29300A9BEE9 /* xbox360.ico */,
+				DDA591092F8DD4EA00A9BEE9 /* 3ds.ico */,
+				DDA5910A2F8DD4EA00A9BEE9 /* atari2600.ico */,
+				DDA5910B2F8DD4EA00A9BEE9 /* atari5200.ico */,
+				DDA5910C2F8DD4EA00A9BEE9 /* dreamcast.ico */,
+				DDA5910D2F8DD4EA00A9BEE9 /* gamegear.ico */,
+				DDA5910E2F8DD4EA00A9BEE9 /* gb.ico */,
+				DDA5910F2F8DD4EA00A9BEE9 /* gba.ico */,
+				DDA591102F8DD4EA00A9BEE9 /* gbc.ico */,
+				DDA591112F8DD4EA00A9BEE9 /* gc.ico */,
+				DDA591122F8DD4EA00A9BEE9 /* genesis.ico */,
+				DDA591132F8DD4EA00A9BEE9 /* jaguar.ico */,
+				DDA591142F8DD4EA00A9BEE9 /* n64.ico */,
+				DDA591152F8DD4EA00A9BEE9 /* nds.ico */,
+				DDA591162F8DD4EA00A9BEE9 /* nes.ico */,
+				DDA591172F8DD4EA00A9BEE9 /* ngage.ico */,
+				DDA591182F8DD4EA00A9BEE9 /* pce.ico */,
+				DDA591192F8DD4EA00A9BEE9 /* ps2.ico */,
+				DDA5911A2F8DD4EA00A9BEE9 /* ps3.ico */,
+				DDA5911B2F8DD4EA00A9BEE9 /* psp.ico */,
+				DDA5911C2F8DD4EA00A9BEE9 /* psx.ico */,
+				DDA5911D2F8DD4EA00A9BEE9 /* saturn.ico */,
+				DDA5911E2F8DD4EA00A9BEE9 /* Sega Saturn Analog ico.ico */,
+				DDA5911F2F8DD4EA00A9BEE9 /* sms.ico */,
+				DDA591202F8DD4EA00A9BEE9 /* snes.ico */,
+				DDA591212F8DD4EA00A9BEE9 /* switch.ico */,
+				DDA591222F8DD4EA00A9BEE9 /* virtualboy.ico */,
+				DDA591232F8DD4EA00A9BEE9 /* wii.ico */,
+				DDA591242F8DD4EA00A9BEE9 /* wii classic ico.ico */,
+				DDA591252F8DD4EA00A9BEE9 /* wiiu.ico */,
+				DDA591262F8DD4EA00A9BEE9 /* xbox.ico */,
+				DDA591272F8DD4EA00A9BEE9 /* xbox360.ico */,
 			);
 			path = ControllerIcons;
 			sourceTree = "<group>";
 		};
-		DDA58D9E2F8DA29300A9BEE9 /* 132 */ = {
+		DDA591712F8DD4EA00A9BEE9 /* 132 */ = {
 			isa = PBXGroup;
 			children = (
-				DDA58D562F8DA29300A9BEE9 /* 32X@132w.png */,
-				DDA58D572F8DA29300A9BEE9 /* 5200@132w.png */,
-				DDA58D582F8DA29300A9BEE9 /* 7800@132w.png */,
-				DDA58D592F8DA29300A9BEE9 /* amiga@132w.png */,
-				DDA58D5A2F8DA29300A9BEE9 /* arcade@132w.png */,
-				DDA58D5B2F8DA29300A9BEE9 /* arduboy@132w.png */,
-				DDA58D5C2F8DA29300A9BEE9 /* atari@132w.png */,
-				DDA58D5D2F8DA29300A9BEE9 /* atari800@132w.png */,
-				DDA58D5E2F8DA29300A9BEE9 /* atarist@132w.png */,
-				DDA58D5F2F8DA29300A9BEE9 /* c64@132w.png */,
-				DDA58D602F8DA29300A9BEE9 /* chai@132w.png */,
-				DDA58D612F8DA29300A9BEE9 /* col@132w.png */,
-				DDA58D622F8DA29300A9BEE9 /* cpc@132w.png */,
-				DDA58D632F8DA29300A9BEE9 /* cps1@132w.png */,
-				DDA58D642F8DA29300A9BEE9 /* cps2@132w.png */,
-				DDA58D652F8DA29300A9BEE9 /* cps3@132w.png */,
-				DDA58D662F8DA29300A9BEE9 /* dc@132w.png */,
-				DDA58D672F8DA29300A9BEE9 /* doom@132w.png */,
-				DDA58D682F8DA29300A9BEE9 /* dos@132w.png */,
-				DDA58D692F8DA29300A9BEE9 /* easyrpg@132w.png */,
-				DDA58D6A2F8DA29300A9BEE9 /* fairchild@132w.png */,
-				DDA58D6B2F8DA29300A9BEE9 /* fc@132w.png */,
-				DDA58D6C2F8DA29300A9BEE9 /* fds@132w.png */,
-				DDA58D6D2F8DA29300A9BEE9 /* ffplay@132w.png */,
-				DDA58D6E2F8DA29300A9BEE9 /* gb@132w.png */,
-				DDA58D6F2F8DA29300A9BEE9 /* gba@132w.png */,
-				DDA58D702F8DA29300A9BEE9 /* gbc@132w.png */,
-				DDA58D712F8DA29300A9BEE9 /* gg@132w.png */,
-				DDA58D722F8DA29300A9BEE9 /* gw@132w.png */,
-				DDA58D732F8DA29300A9BEE9 /* itv@132w.png */,
-				DDA58D742F8DA29300A9BEE9 /* lynx@132w.png */,
-				DDA58D752F8DA29300A9BEE9 /* mame@132w.png */,
-				DDA58D762F8DA29300A9BEE9 /* md@132w.png */,
-				DDA58D772F8DA29300A9BEE9 /* megaduck@132w.png */,
-				DDA58D782F8DA29300A9BEE9 /* ms@132w.png */,
-				DDA58D792F8DA29300A9BEE9 /* msu1@132w.png */,
-				DDA58D7A2F8DA29300A9BEE9 /* msumd@132w.png */,
-				DDA58D7B2F8DA29300A9BEE9 /* msx@132w.png */,
-				DDA58D7C2F8DA29300A9BEE9 /* n64@132w.png */,
-				DDA58D7D2F8DA29300A9BEE9 /* nds@132w.png */,
-				DDA58D7E2F8DA29300A9BEE9 /* neocd@132w.png */,
-				DDA58D7F2F8DA29300A9BEE9 /* neogeo@132w.png */,
-				DDA58D802F8DA29300A9BEE9 /* ngp@132w.png */,
-				DDA58D812F8DA29300A9BEE9 /* ngpc@132w.png */,
-				DDA58D822F8DA29300A9BEE9 /* ody@132w.png */,
-				DDA58D832F8DA29300A9BEE9 /* openbor@132w.png */,
-				DDA58D842F8DA29300A9BEE9 /* pce@132w.png */,
-				DDA58D852F8DA29300A9BEE9 /* pcecd@132w.png */,
-				DDA58D862F8DA29300A9BEE9 /* pico@132w.png */,
-				DDA58D872F8DA29300A9BEE9 /* poke@132w.png */,
-				DDA58D882F8DA29300A9BEE9 /* ports@132w.png */,
-				DDA58D892F8DA29300A9BEE9 /* ps@132w.png */,
-				DDA58D8A2F8DA29300A9BEE9 /* psp@132w.png */,
-				DDA58D8B2F8DA29300A9BEE9 /* quake@132w.png */,
-				DDA58D8C2F8DA29300A9BEE9 /* satella@132w.png */,
-				DDA58D8D2F8DA29300A9BEE9 /* scummvm@132w.png */,
-				DDA58D8E2F8DA29300A9BEE9 /* segacd@132w.png */,
-				DDA58D8F2F8DA29300A9BEE9 /* segasgone@132w.png */,
-				DDA58D902F8DA29300A9BEE9 /* sfc@132w.png */,
-				DDA58D912F8DA29300A9BEE9 /* sgb@132w.png */,
-				DDA58D922F8DA29300A9BEE9 /* sgfx@132w.png */,
-				DDA58D932F8DA29300A9BEE9 /* sufami@132w.png */,
-				DDA58D942F8DA29300A9BEE9 /* supervision@132w.png */,
-				DDA58D952F8DA29300A9BEE9 /* tic@132w.png */,
-				DDA58D962F8DA29300A9BEE9 /* vb@132w.png */,
-				DDA58D972F8DA29300A9BEE9 /* vdp@132w.png */,
-				DDA58D982F8DA29300A9BEE9 /* vectrex@132w.png */,
-				DDA58D992F8DA29300A9BEE9 /* wolf@132w.png */,
-				DDA58D9A2F8DA29300A9BEE9 /* ws@132w.png */,
-				DDA58D9B2F8DA29300A9BEE9 /* wsc@132w.png */,
-				DDA58D9C2F8DA29300A9BEE9 /* x68000@132w.png */,
-				DDA58D9D2F8DA29300A9BEE9 /* zxs@132w.png */,
+				DDA591292F8DD4EA00A9BEE9 /* 32X@132w.png */,
+				DDA5912A2F8DD4EA00A9BEE9 /* 5200@132w.png */,
+				DDA5912B2F8DD4EA00A9BEE9 /* 7800@132w.png */,
+				DDA5912C2F8DD4EA00A9BEE9 /* amiga@132w.png */,
+				DDA5912D2F8DD4EA00A9BEE9 /* arcade@132w.png */,
+				DDA5912E2F8DD4EA00A9BEE9 /* arduboy@132w.png */,
+				DDA5912F2F8DD4EA00A9BEE9 /* atari@132w.png */,
+				DDA591302F8DD4EA00A9BEE9 /* atari800@132w.png */,
+				DDA591312F8DD4EA00A9BEE9 /* atarist@132w.png */,
+				DDA591322F8DD4EA00A9BEE9 /* c64@132w.png */,
+				DDA591332F8DD4EA00A9BEE9 /* chai@132w.png */,
+				DDA591342F8DD4EA00A9BEE9 /* col@132w.png */,
+				DDA591352F8DD4EA00A9BEE9 /* cpc@132w.png */,
+				DDA591362F8DD4EA00A9BEE9 /* cps1@132w.png */,
+				DDA591372F8DD4EA00A9BEE9 /* cps2@132w.png */,
+				DDA591382F8DD4EA00A9BEE9 /* cps3@132w.png */,
+				DDA591392F8DD4EA00A9BEE9 /* dc@132w.png */,
+				DDA5913A2F8DD4EA00A9BEE9 /* doom@132w.png */,
+				DDA5913B2F8DD4EA00A9BEE9 /* dos@132w.png */,
+				DDA5913C2F8DD4EA00A9BEE9 /* easyrpg@132w.png */,
+				DDA5913D2F8DD4EA00A9BEE9 /* fairchild@132w.png */,
+				DDA5913E2F8DD4EA00A9BEE9 /* fc@132w.png */,
+				DDA5913F2F8DD4EA00A9BEE9 /* fds@132w.png */,
+				DDA591402F8DD4EA00A9BEE9 /* ffplay@132w.png */,
+				DDA591412F8DD4EA00A9BEE9 /* gb@132w.png */,
+				DDA591422F8DD4EA00A9BEE9 /* gba@132w.png */,
+				DDA591432F8DD4EA00A9BEE9 /* gbc@132w.png */,
+				DDA591442F8DD4EA00A9BEE9 /* gg@132w.png */,
+				DDA591452F8DD4EA00A9BEE9 /* gw@132w.png */,
+				DDA591462F8DD4EA00A9BEE9 /* itv@132w.png */,
+				DDA591472F8DD4EA00A9BEE9 /* lynx@132w.png */,
+				DDA591482F8DD4EA00A9BEE9 /* mame@132w.png */,
+				DDA591492F8DD4EA00A9BEE9 /* md@132w.png */,
+				DDA5914A2F8DD4EA00A9BEE9 /* megaduck@132w.png */,
+				DDA5914B2F8DD4EA00A9BEE9 /* ms@132w.png */,
+				DDA5914C2F8DD4EA00A9BEE9 /* msu1@132w.png */,
+				DDA5914D2F8DD4EA00A9BEE9 /* msumd@132w.png */,
+				DDA5914E2F8DD4EA00A9BEE9 /* msx@132w.png */,
+				DDA5914F2F8DD4EA00A9BEE9 /* n64@132w.png */,
+				DDA591502F8DD4EA00A9BEE9 /* nds@132w.png */,
+				DDA591512F8DD4EA00A9BEE9 /* neocd@132w.png */,
+				DDA591522F8DD4EA00A9BEE9 /* neogeo@132w.png */,
+				DDA591532F8DD4EA00A9BEE9 /* ngp@132w.png */,
+				DDA591542F8DD4EA00A9BEE9 /* ngpc@132w.png */,
+				DDA591552F8DD4EA00A9BEE9 /* ody@132w.png */,
+				DDA591562F8DD4EA00A9BEE9 /* openbor@132w.png */,
+				DDA591572F8DD4EA00A9BEE9 /* pce@132w.png */,
+				DDA591582F8DD4EA00A9BEE9 /* pcecd@132w.png */,
+				DDA591592F8DD4EA00A9BEE9 /* pico@132w.png */,
+				DDA5915A2F8DD4EA00A9BEE9 /* poke@132w.png */,
+				DDA5915B2F8DD4EA00A9BEE9 /* ports@132w.png */,
+				DDA5915C2F8DD4EA00A9BEE9 /* ps@132w.png */,
+				DDA5915D2F8DD4EA00A9BEE9 /* psp@132w.png */,
+				DDA5915E2F8DD4EA00A9BEE9 /* quake@132w.png */,
+				DDA5915F2F8DD4EA00A9BEE9 /* satella@132w.png */,
+				DDA591602F8DD4EA00A9BEE9 /* scummvm@132w.png */,
+				DDA591612F8DD4EA00A9BEE9 /* segacd@132w.png */,
+				DDA591622F8DD4EA00A9BEE9 /* segasgone@132w.png */,
+				DDA591632F8DD4EA00A9BEE9 /* sfc@132w.png */,
+				DDA591642F8DD4EA00A9BEE9 /* sgb@132w.png */,
+				DDA591652F8DD4EA00A9BEE9 /* sgfx@132w.png */,
+				DDA591662F8DD4EA00A9BEE9 /* sufami@132w.png */,
+				DDA591672F8DD4EA00A9BEE9 /* supervision@132w.png */,
+				DDA591682F8DD4EA00A9BEE9 /* tic@132w.png */,
+				DDA591692F8DD4EA00A9BEE9 /* vb@132w.png */,
+				DDA5916A2F8DD4EA00A9BEE9 /* vdp@132w.png */,
+				DDA5916B2F8DD4EA00A9BEE9 /* vectrex@132w.png */,
+				DDA5916C2F8DD4EA00A9BEE9 /* wolf@132w.png */,
+				DDA5916D2F8DD4EA00A9BEE9 /* ws@132w.png */,
+				DDA5916E2F8DD4EA00A9BEE9 /* wsc@132w.png */,
+				DDA5916F2F8DD4EA00A9BEE9 /* x68000@132w.png */,
+				DDA591702F8DD4EA00A9BEE9 /* zxs@132w.png */,
 			);
 			path = 132;
 			sourceTree = "<group>";
 		};
-		DDA58E0F2F8DA29300A9BEE9 /* 600 */ = {
+		DDA591E22F8DD4EA00A9BEE9 /* 600 */ = {
 			isa = PBXGroup;
 			children = (
-				DDA58D9F2F8DA29300A9BEE9 /* ADVMAME.png */,
-				DDA58DA02F8DA29300A9BEE9 /* AMIGA.png */,
-				DDA58DA12F8DA29300A9BEE9 /* AMIGACD.png */,
-				DDA58DA22F8DA29300A9BEE9 /* AMIGACDTV.png */,
-				DDA58DA32F8DA29300A9BEE9 /* ARCADE.png */,
-				DDA58DA42F8DA29300A9BEE9 /* ARCADE_FBNEO.png */,
-				DDA58DA52F8DA29300A9BEE9 /* ARDUBOY.png */,
-				DDA58DA62F8DA29300A9BEE9 /* ATARI800.png */,
-				DDA58DA72F8DA29300A9BEE9 /* ATARI800-alt.png */,
-				DDA58DA82F8DA29300A9BEE9 /* ATARI2600.png */,
-				DDA58DA92F8DA29300A9BEE9 /* ATARI5200.png */,
-				DDA58DAA2F8DA29300A9BEE9 /* ATARI7800.png */,
-				DDA58DAB2F8DA29300A9BEE9 /* ATARIST.png */,
-				DDA58DAC2F8DA29300A9BEE9 /* ATOMISWAVE.png */,
-				DDA58DAD2F8DA29300A9BEE9 /* C64.png */,
-				DDA58DAE2F8DA29300A9BEE9 /* CANNONBALL.png */,
-				DDA58DAF2F8DA29300A9BEE9 /* CAVESTORY.png */,
-				DDA58DB02F8DA29300A9BEE9 /* CHAILOVE.png */,
-				DDA58DB12F8DA29300A9BEE9 /* CHANNELF.png */,
-				DDA58DB22F8DA29300A9BEE9 /* COLECO.png */,
-				DDA58DB32F8DA29300A9BEE9 /* COLSGM.png */,
-				DDA58DB42F8DA29300A9BEE9 /* CPC.png */,
-				DDA58DB52F8DA29300A9BEE9 /* cpc-alt.png */,
-				DDA58DB62F8DA29300A9BEE9 /* CPET.png */,
-				DDA58DB72F8DA29300A9BEE9 /* CPLUS4.png */,
-				DDA58DB82F8DA29300A9BEE9 /* CPS1.png */,
-				DDA58DB92F8DA29300A9BEE9 /* CPS2.png */,
-				DDA58DBA2F8DA29300A9BEE9 /* CPS3.png */,
-				DDA58DBB2F8DA29300A9BEE9 /* DAPHNE.png */,
-				DDA58DBC2F8DA29300A9BEE9 /* DC.png */,
-				DDA58DBD2F8DA29300A9BEE9 /* DINOTHAWR.png */,
-				DDA58DBE2F8DA29300A9BEE9 /* DOOM.png */,
-				DDA58DBF2F8DA29300A9BEE9 /* DOS.png */,
-				DDA58DC02F8DA29300A9BEE9 /* EASYRPG.png */,
-				DDA58DC12F8DA29300A9BEE9 /* ENTERPRISE.png */,
-				DDA58DC22F8DA29300A9BEE9 /* FBNEO.png */,
-				DDA58DC32F8DA29300A9BEE9 /* FC.png */,
-				DDA58DC42F8DA29300A9BEE9 /* FDS.png */,
-				DDA58DC52F8DA29300A9BEE9 /* FLASHBACK.png */,
-				DDA58DC62F8DA29300A9BEE9 /* GB.png */,
-				DDA58DC72F8DA29300A9BEE9 /* GBA.png */,
-				DDA58DC82F8DA29300A9BEE9 /* GBC.png */,
-				DDA58DC92F8DA29300A9BEE9 /* GG.png */,
-				DDA58DCA2F8DA29300A9BEE9 /* GW.png */,
-				DDA58DCB2F8DA29300A9BEE9 /* INTELLIVISION.png */,
-				DDA58DCC2F8DA29300A9BEE9 /* LOWRESNX.png */,
-				DDA58DCD2F8DA29300A9BEE9 /* LUTRO.png */,
-				DDA58DCE2F8DA29300A9BEE9 /* LYNX.png */,
-				DDA58DCF2F8DA29300A9BEE9 /* MAME.png */,
-				DDA58DD02F8DA29300A9BEE9 /* MAME2003PLUS.png */,
-				DDA58DD12F8DA29300A9BEE9 /* MAME2010.png */,
-				DDA58DD22F8DA29300A9BEE9 /* MD.png */,
-				DDA58DD32F8DA29300A9BEE9 /* MDMSU.png */,
-				DDA58DD42F8DA29300A9BEE9 /* MEGADUCK.png */,
-				DDA58DD52F8DA29300A9BEE9 /* MS.png */,
-				DDA58DD62F8DA29300A9BEE9 /* MSX.png */,
-				DDA58DD72F8DA29300A9BEE9 /* MSX2.png */,
-				DDA58DD82F8DA29300A9BEE9 /* N64.png */,
-				DDA58DD92F8DA29300A9BEE9 /* N64DD.png */,
-				DDA58DDA2F8DA29300A9BEE9 /* NAOMI.png */,
-				DDA58DDB2F8DA29300A9BEE9 /* NDS.png */,
-				DDA58DDC2F8DA29300A9BEE9 /* NEOCD.png */,
-				DDA58DDD2F8DA29300A9BEE9 /* NEOGEO.png */,
-				DDA58DDE2F8DA29300A9BEE9 /* NGC.png */,
-				DDA58DDF2F8DA29300A9BEE9 /* NGP.png */,
-				DDA58DE02F8DA29300A9BEE9 /* OPENBOR.png */,
-				DDA58DE12F8DA29300A9BEE9 /* PALMOS.png */,
-				DDA58DE22F8DA29300A9BEE9 /* PANASONIC.png */,
-				DDA58DE32F8DA29300A9BEE9 /* PC88.png */,
-				DDA58DE42F8DA29300A9BEE9 /* PC98.png */,
-				DDA58DE52F8DA29300A9BEE9 /* PCE.png */,
-				DDA58DE62F8DA29300A9BEE9 /* PCECD.png */,
-				DDA58DE72F8DA29300A9BEE9 /* PCFX.png */,
-				DDA58DE82F8DA29300A9BEE9 /* PGM.png */,
-				DDA58DE92F8DA29300A9BEE9 /* PICO.png */,
-				DDA58DEA2F8DA29300A9BEE9 /* POKEMINI.png */,
-				DDA58DEB2F8DA29300A9BEE9 /* PORTS.png */,
-				DDA58DEC2F8DA29300A9BEE9 /* PS.png */,
-				DDA58DED2F8DA29300A9BEE9 /* PSP.png */,
-				DDA58DEE2F8DA29300A9BEE9 /* PSPMINIS.png */,
-				DDA58DEF2F8DA29300A9BEE9 /* SATELLAVIEW.png */,
-				DDA58DF02F8DA29300A9BEE9 /* SATURN.png */,
-				DDA58DF12F8DA29300A9BEE9 /* SCUMMVM.png */,
-				DDA58DF22F8DA29300A9BEE9 /* SEGA32X.png */,
-				DDA58DF32F8DA29300A9BEE9 /* SEGACD.png */,
-				DDA58DF42F8DA29300A9BEE9 /* SFC.png */,
-				DDA58DF52F8DA29300A9BEE9 /* SFCMSU.png */,
-				DDA58DF62F8DA29300A9BEE9 /* SFX.png */,
-				DDA58DF72F8DA29300A9BEE9 /* SG1000.png */,
-				DDA58DF82F8DA29300A9BEE9 /* SGB.png */,
-				DDA58DF92F8DA29300A9BEE9 /* SUFAMI.png */,
-				DDA58DFA2F8DA29300A9BEE9 /* SUPERVISION.png */,
-				DDA58DFB2F8DA29300A9BEE9 /* SUPERVISION-alt.png */,
-				DDA58DFC2F8DA29300A9BEE9 /* THOMSON.png */,
-				DDA58DFD2F8DA29300A9BEE9 /* TI83.png */,
-				DDA58DFE2F8DA29300A9BEE9 /* TIC.png */,
-				DDA58DFF2F8DA29300A9BEE9 /* TYRQUAKE.png */,
-				DDA58E002F8DA29300A9BEE9 /* UZEBOX.png */,
-				DDA58E012F8DA29300A9BEE9 /* VB.png */,
-				DDA58E022F8DA29300A9BEE9 /* VECTREX.png */,
-				DDA58E032F8DA29300A9BEE9 /* VIC20.png */,
-				DDA58E042F8DA29300A9BEE9 /* VIDEOPAC.png */,
-				DDA58E052F8DA29300A9BEE9 /* VIDEOPAC-alt.png */,
-				DDA58E062F8DA29300A9BEE9 /* VIDEOS.png */,
-				DDA58E072F8DA29300A9BEE9 /* VIDEOTON.png */,
-				DDA58E082F8DA29300A9BEE9 /* VMAC.png */,
-				DDA58E092F8DA29300A9BEE9 /* WS.png */,
-				DDA58E0A2F8DA29300A9BEE9 /* WSC.png */,
-				DDA58E0B2F8DA29300A9BEE9 /* X1.png */,
-				DDA58E0C2F8DA29300A9BEE9 /* X68000.png */,
-				DDA58E0D2F8DA29300A9BEE9 /* XRICK.png */,
-				DDA58E0E2F8DA29300A9BEE9 /* ZXS.png */,
+				DDA591722F8DD4EA00A9BEE9 /* ADVMAME.png */,
+				DDA591732F8DD4EA00A9BEE9 /* AMIGA.png */,
+				DDA591742F8DD4EA00A9BEE9 /* AMIGACD.png */,
+				DDA591752F8DD4EA00A9BEE9 /* AMIGACDTV.png */,
+				DDA591762F8DD4EA00A9BEE9 /* ARCADE.png */,
+				DDA591772F8DD4EA00A9BEE9 /* ARCADE_FBNEO.png */,
+				DDA591782F8DD4EA00A9BEE9 /* ARDUBOY.png */,
+				DDA591792F8DD4EA00A9BEE9 /* ATARI800.png */,
+				DDA5917A2F8DD4EA00A9BEE9 /* ATARI800-alt.png */,
+				DDA5917B2F8DD4EA00A9BEE9 /* ATARI2600.png */,
+				DDA5917C2F8DD4EA00A9BEE9 /* ATARI5200.png */,
+				DDA5917D2F8DD4EA00A9BEE9 /* ATARI7800.png */,
+				DDA5917E2F8DD4EA00A9BEE9 /* ATARIST.png */,
+				DDA5917F2F8DD4EA00A9BEE9 /* ATOMISWAVE.png */,
+				DDA591802F8DD4EA00A9BEE9 /* C64.png */,
+				DDA591812F8DD4EA00A9BEE9 /* CANNONBALL.png */,
+				DDA591822F8DD4EA00A9BEE9 /* CAVESTORY.png */,
+				DDA591832F8DD4EA00A9BEE9 /* CHAILOVE.png */,
+				DDA591842F8DD4EA00A9BEE9 /* CHANNELF.png */,
+				DDA591852F8DD4EA00A9BEE9 /* COLECO.png */,
+				DDA591862F8DD4EA00A9BEE9 /* COLSGM.png */,
+				DDA591872F8DD4EA00A9BEE9 /* CPC.png */,
+				DDA591882F8DD4EA00A9BEE9 /* cpc-alt.png */,
+				DDA591892F8DD4EA00A9BEE9 /* CPET.png */,
+				DDA5918A2F8DD4EA00A9BEE9 /* CPLUS4.png */,
+				DDA5918B2F8DD4EA00A9BEE9 /* CPS1.png */,
+				DDA5918C2F8DD4EA00A9BEE9 /* CPS2.png */,
+				DDA5918D2F8DD4EA00A9BEE9 /* CPS3.png */,
+				DDA5918E2F8DD4EA00A9BEE9 /* DAPHNE.png */,
+				DDA5918F2F8DD4EA00A9BEE9 /* DC.png */,
+				DDA591902F8DD4EA00A9BEE9 /* DINOTHAWR.png */,
+				DDA591912F8DD4EA00A9BEE9 /* DOOM.png */,
+				DDA591922F8DD4EA00A9BEE9 /* DOS.png */,
+				DDA591932F8DD4EA00A9BEE9 /* EASYRPG.png */,
+				DDA591942F8DD4EA00A9BEE9 /* ENTERPRISE.png */,
+				DDA591952F8DD4EA00A9BEE9 /* FBNEO.png */,
+				DDA591962F8DD4EA00A9BEE9 /* FC.png */,
+				DDA591972F8DD4EA00A9BEE9 /* FDS.png */,
+				DDA591982F8DD4EA00A9BEE9 /* FLASHBACK.png */,
+				DDA591992F8DD4EA00A9BEE9 /* GB.png */,
+				DDA5919A2F8DD4EA00A9BEE9 /* GBA.png */,
+				DDA5919B2F8DD4EA00A9BEE9 /* GBC.png */,
+				DDA5919C2F8DD4EA00A9BEE9 /* GG.png */,
+				DDA5919D2F8DD4EA00A9BEE9 /* GW.png */,
+				DDA5919E2F8DD4EA00A9BEE9 /* INTELLIVISION.png */,
+				DDA5919F2F8DD4EA00A9BEE9 /* LOWRESNX.png */,
+				DDA591A02F8DD4EA00A9BEE9 /* LUTRO.png */,
+				DDA591A12F8DD4EA00A9BEE9 /* LYNX.png */,
+				DDA591A22F8DD4EA00A9BEE9 /* MAME.png */,
+				DDA591A32F8DD4EA00A9BEE9 /* MAME2003PLUS.png */,
+				DDA591A42F8DD4EA00A9BEE9 /* MAME2010.png */,
+				DDA591A52F8DD4EA00A9BEE9 /* MD.png */,
+				DDA591A62F8DD4EA00A9BEE9 /* MDMSU.png */,
+				DDA591A72F8DD4EA00A9BEE9 /* MEGADUCK.png */,
+				DDA591A82F8DD4EA00A9BEE9 /* MS.png */,
+				DDA591A92F8DD4EA00A9BEE9 /* MSX.png */,
+				DDA591AA2F8DD4EA00A9BEE9 /* MSX2.png */,
+				DDA591AB2F8DD4EA00A9BEE9 /* N64.png */,
+				DDA591AC2F8DD4EA00A9BEE9 /* N64DD.png */,
+				DDA591AD2F8DD4EA00A9BEE9 /* NAOMI.png */,
+				DDA591AE2F8DD4EA00A9BEE9 /* NDS.png */,
+				DDA591AF2F8DD4EA00A9BEE9 /* NEOCD.png */,
+				DDA591B02F8DD4EA00A9BEE9 /* NEOGEO.png */,
+				DDA591B12F8DD4EA00A9BEE9 /* NGC.png */,
+				DDA591B22F8DD4EA00A9BEE9 /* NGP.png */,
+				DDA591B32F8DD4EA00A9BEE9 /* OPENBOR.png */,
+				DDA591B42F8DD4EA00A9BEE9 /* PALMOS.png */,
+				DDA591B52F8DD4EA00A9BEE9 /* PANASONIC.png */,
+				DDA591B62F8DD4EA00A9BEE9 /* PC88.png */,
+				DDA591B72F8DD4EA00A9BEE9 /* PC98.png */,
+				DDA591B82F8DD4EA00A9BEE9 /* PCE.png */,
+				DDA591B92F8DD4EA00A9BEE9 /* PCECD.png */,
+				DDA591BA2F8DD4EA00A9BEE9 /* PCFX.png */,
+				DDA591BB2F8DD4EA00A9BEE9 /* PGM.png */,
+				DDA591BC2F8DD4EA00A9BEE9 /* PICO.png */,
+				DDA591BD2F8DD4EA00A9BEE9 /* POKEMINI.png */,
+				DDA591BE2F8DD4EA00A9BEE9 /* PORTS.png */,
+				DDA591BF2F8DD4EA00A9BEE9 /* PS.png */,
+				DDA591C02F8DD4EA00A9BEE9 /* PSP.png */,
+				DDA591C12F8DD4EA00A9BEE9 /* PSPMINIS.png */,
+				DDA591C22F8DD4EA00A9BEE9 /* SATELLAVIEW.png */,
+				DDA591C32F8DD4EA00A9BEE9 /* SATURN.png */,
+				DDA591C42F8DD4EA00A9BEE9 /* SCUMMVM.png */,
+				DDA591C52F8DD4EA00A9BEE9 /* SEGA32X.png */,
+				DDA591C62F8DD4EA00A9BEE9 /* SEGACD.png */,
+				DDA591C72F8DD4EA00A9BEE9 /* SFC.png */,
+				DDA591C82F8DD4EA00A9BEE9 /* SFCMSU.png */,
+				DDA591C92F8DD4EA00A9BEE9 /* SFX.png */,
+				DDA591CA2F8DD4EA00A9BEE9 /* SG1000.png */,
+				DDA591CB2F8DD4EA00A9BEE9 /* SGB.png */,
+				DDA591CC2F8DD4EA00A9BEE9 /* SUFAMI.png */,
+				DDA591CD2F8DD4EA00A9BEE9 /* SUPERVISION.png */,
+				DDA591CE2F8DD4EA00A9BEE9 /* SUPERVISION-alt.png */,
+				DDA591CF2F8DD4EA00A9BEE9 /* THOMSON.png */,
+				DDA591D02F8DD4EA00A9BEE9 /* TI83.png */,
+				DDA591D12F8DD4EA00A9BEE9 /* TIC.png */,
+				DDA591D22F8DD4EA00A9BEE9 /* TYRQUAKE.png */,
+				DDA591D32F8DD4EA00A9BEE9 /* UZEBOX.png */,
+				DDA591D42F8DD4EA00A9BEE9 /* VB.png */,
+				DDA591D52F8DD4EA00A9BEE9 /* VECTREX.png */,
+				DDA591D62F8DD4EA00A9BEE9 /* VIC20.png */,
+				DDA591D72F8DD4EA00A9BEE9 /* VIDEOPAC.png */,
+				DDA591D82F8DD4EA00A9BEE9 /* VIDEOPAC-alt.png */,
+				DDA591D92F8DD4EA00A9BEE9 /* VIDEOS.png */,
+				DDA591DA2F8DD4EA00A9BEE9 /* VIDEOTON.png */,
+				DDA591DB2F8DD4EA00A9BEE9 /* VMAC.png */,
+				DDA591DC2F8DD4EA00A9BEE9 /* WS.png */,
+				DDA591DD2F8DD4EA00A9BEE9 /* WSC.png */,
+				DDA591DE2F8DD4EA00A9BEE9 /* X1.png */,
+				DDA591DF2F8DD4EA00A9BEE9 /* X68000.png */,
+				DDA591E02F8DD4EA00A9BEE9 /* XRICK.png */,
+				DDA591E12F8DD4EA00A9BEE9 /* ZXS.png */,
 			);
 			path = 600;
 			sourceTree = "<group>";
 		};
-		DDA58E102F8DA29300A9BEE9 /* EmulatorIcons */ = {
+		DDA591E32F8DD4EA00A9BEE9 /* EmulatorIcons */ = {
 			isa = PBXGroup;
 			children = (
-				DDA58D9E2F8DA29300A9BEE9 /* 132 */,
-				DDA58E0F2F8DA29300A9BEE9 /* 600 */,
+				DDA591712F8DD4EA00A9BEE9 /* 132 */,
+				DDA591E22F8DD4EA00A9BEE9 /* 600 */,
 			);
 			path = EmulatorIcons;
 			sourceTree = "<group>";
 		};
-		DDA58E152F8DA29300A9BEE9 /* ThumbnailManifests */ = {
+		DDA591E82F8DD4EA00A9BEE9 /* ThumbnailManifests */ = {
 			isa = PBXGroup;
 			children = (
-				DDA58E112F8DA29300A9BEE9 /* Nintendo_-_Nintendo_Entertainment_System.json */,
-				DDA58E122F8DA29300A9BEE9 /* Nintendo_-_Super_Nintendo_Entertainment_System.json */,
-				DDA58E132F8DA29300A9BEE9 /* Sega_-_Mega_Drive_-_Genesis.json */,
-				DDA58E142F8DA29300A9BEE9 /* Sony_-_PlayStation.json */,
+				DDA591E42F8DD4EA00A9BEE9 /* Nintendo_-_Nintendo_Entertainment_System.json */,
+				DDA591E52F8DD4EA00A9BEE9 /* Nintendo_-_Super_Nintendo_Entertainment_System.json */,
+				DDA591E62F8DD4EA00A9BEE9 /* Sega_-_Mega_Drive_-_Genesis.json */,
+				DDA591E72F8DD4EA00A9BEE9 /* Sony_-_PlayStation.json */,
 			);
 			path = ThumbnailManifests;
 			sourceTree = "<group>";
 		};
-		DDA58E1B2F8DA29300A9BEE9 /* Resources 3 */ = {
+		DDA591EE2F8DD4EA00A9BEE9 /* Resources */ = {
 			isa = PBXGroup;
 			children = (
-				DDA58D352F8DA29300A9BEE9 /* AppIcons */,
-				DDA58D552F8DA29300A9BEE9 /* ControllerIcons */,
-				DDA58E102F8DA29300A9BEE9 /* EmulatorIcons */,
-				DDA58E152F8DA29300A9BEE9 /* ThumbnailManifests */,
-				DDA58E162F8DA29300A9BEE9 /* Info.plist */,
-				DDA58E172F8DA29300A9BEE9 /* mame_2003_plus.json */,
-				DDA58E182F8DA29300A9BEE9 /* mame_unified.json */,
-				DDA58E192F8DA29300A9BEE9 /* SystemDatabase.json */,
-				DDA58E1A2F8DA29300A9BEE9 /* TruchieEmu.entitlements */,
+				DDA591082F8DD4EA00A9BEE9 /* AppIcons */,
+				DDA591282F8DD4EA00A9BEE9 /* ControllerIcons */,
+				DDA591E32F8DD4EA00A9BEE9 /* EmulatorIcons */,
+				DDA591E82F8DD4EA00A9BEE9 /* ThumbnailManifests */,
+				DDA591E92F8DD4EA00A9BEE9 /* Info.plist */,
+				DDA591EA2F8DD4EA00A9BEE9 /* mame_2003_plus.json */,
+				DDA591EB2F8DD4EA00A9BEE9 /* mame_unified.json */,
+				DDA591EC2F8DD4EA00A9BEE9 /* SystemDatabase.json */,
+				DDA591ED2F8DD4EA00A9BEE9 /* TruchieEmu.entitlements */,
 			);
-			path = "Resources 3";
+			path = Resources;
 			sourceTree = "<group>";
 		};
 		E2677C6594356F9F2E613AD9 /* Shaders */ = {
@@ -1566,242 +1566,242 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				DDA58E1C2F8DA29300A9BEE9 /* arduboy@132w.png in Resources */,
-				DDA58E1D2F8DA29300A9BEE9 /* TIC.png in Resources */,
-				DDA58E1E2F8DA29300A9BEE9 /* psp@132w.png in Resources */,
-				DDA58E1F2F8DA29300A9BEE9 /* MSX.png in Resources */,
-				DDA58E202F8DA29300A9BEE9 /* 3ds.ico in Resources */,
-				DDA58E212F8DA29300A9BEE9 /* ports@132w.png in Resources */,
-				DDA58E222F8DA29300A9BEE9 /* appIcon128.jpg in Resources */,
-				DDA58E232F8DA29300A9BEE9 /* xbox.ico in Resources */,
-				DDA58E242F8DA29300A9BEE9 /* easyrpg@132w.png in Resources */,
-				DDA58E252F8DA29300A9BEE9 /* gg@132w.png in Resources */,
-				DDA58E262F8DA29300A9BEE9 /* sms.ico in Resources */,
-				DDA58E272F8DA29300A9BEE9 /* INTELLIVISION.png in Resources */,
-				DDA58E282F8DA29300A9BEE9 /* NTbe4.jpg in Resources */,
-				DDA58E292F8DA29300A9BEE9 /* appIcon64.jpg in Resources */,
-				DDA58E2A2F8DA29300A9BEE9 /* wiiu.ico in Resources */,
-				DDA58E2B2F8DA29300A9BEE9 /* NGP.png in Resources */,
-				DDA58E2C2F8DA29300A9BEE9 /* appIcon16.jpg in Resources */,
-				DDA58E2D2F8DA29300A9BEE9 /* pcecd@132w.png in Resources */,
-				DDA58E2E2F8DA29300A9BEE9 /* wolf@132w.png in Resources */,
-				DDA58E2F2F8DA29300A9BEE9 /* ffplay@132w.png in Resources */,
-				DDA58E302F8DA29300A9BEE9 /* itv@132w.png in Resources */,
-				DDA58E312F8DA29300A9BEE9 /* ATARI800.png in Resources */,
-				DDA58E322F8DA29300A9BEE9 /* gc.ico in Resources */,
-				DDA58E332F8DA29300A9BEE9 /* megaduck@132w.png in Resources */,
-				DDA58E342F8DA29300A9BEE9 /* WS.png in Resources */,
-				DDA58E352F8DA29300A9BEE9 /* GB.png in Resources */,
-				DDA58E362F8DA29300A9BEE9 /* snes.ico in Resources */,
-				DDA58E372F8DA29300A9BEE9 /* vdp@132w.png in Resources */,
-				DDA58E382F8DA29300A9BEE9 /* wii.ico in Resources */,
-				DDA58E392F8DA29300A9BEE9 /* CPS1.png in Resources */,
-				DDA58E3A2F8DA29300A9BEE9 /* ARCADE.png in Resources */,
-				DDA58E3B2F8DA29300A9BEE9 /* PC98.png in Resources */,
-				DDA58E3C2F8DA29300A9BEE9 /* PSP.png in Resources */,
-				DDA58E3D2F8DA29300A9BEE9 /* ATARI2600.png in Resources */,
-				DDA58E3E2F8DA29300A9BEE9 /* MS.png in Resources */,
-				DDA58E3F2F8DA29300A9BEE9 /* Info.plist in Resources */,
-				DDA58E402F8DA29300A9BEE9 /* ms@132w.png in Resources */,
-				DDA58E412F8DA29300A9BEE9 /* SUPERVISION-alt.png in Resources */,
-				DDA58E422F8DA29300A9BEE9 /* CPC.png in Resources */,
-				DDA58E432F8DA29300A9BEE9 /* POKEMINI.png in Resources */,
-				DDA58E442F8DA29300A9BEE9 /* GBC.png in Resources */,
-				DDA58E452F8DA29300A9BEE9 /* AMIGACDTV.png in Resources */,
-				DDA58E462F8DA29300A9BEE9 /* ATOMISWAVE.png in Resources */,
-				DDA58E472F8DA29300A9BEE9 /* segasgone@132w.png in Resources */,
-				DDA58E482F8DA29300A9BEE9 /* PS.png in Resources */,
-				DDA58E492F8DA29300A9BEE9 /* lynx@132w.png in Resources */,
-				DDA58E4A2F8DA29300A9BEE9 /* scummvm@132w.png in Resources */,
-				DDA58E4B2F8DA29300A9BEE9 /* COLSGM.png in Resources */,
-				DDA58E4C2F8DA29300A9BEE9 /* MAME2010.png in Resources */,
-				DDA58E4D2F8DA29300A9BEE9 /* dreamcast.ico in Resources */,
-				DDA58E4E2F8DA29300A9BEE9 /* gw@132w.png in Resources */,
-				DDA58E4F2F8DA29300A9BEE9 /* sfc@132w.png in Resources */,
-				DDA58E502F8DA29300A9BEE9 /* ATARI5200.png in Resources */,
-				DDA58E512F8DA29300A9BEE9 /* PANASONIC.png in Resources */,
-				DDA58E522F8DA29300A9BEE9 /* gamegear.ico in Resources */,
-				DDA58E532F8DA29300A9BEE9 /* AMIGACD.png in Resources */,
-				DDA58E542F8DA29300A9BEE9 /* atarist@132w.png in Resources */,
-				DDA58E552F8DA29300A9BEE9 /* Sega_-_Mega_Drive_-_Genesis.json in Resources */,
-				DDA58E562F8DA29300A9BEE9 /* SFC.png in Resources */,
-				DDA58E572F8DA29300A9BEE9 /* SEGA32X.png in Resources */,
-				DDA58E582F8DA29300A9BEE9 /* PCECD.png in Resources */,
-				DDA58E592F8DA29300A9BEE9 /* ps3.ico in Resources */,
-				DDA58E5A2F8DA29300A9BEE9 /* pico@132w.png in Resources */,
-				DDA58E5B2F8DA29300A9BEE9 /* PALMOS.png in Resources */,
-				DDA58E5C2F8DA29300A9BEE9 /* mame_2003_plus.json in Resources */,
-				DDA58E5D2F8DA29300A9BEE9 /* ws@132w.png in Resources */,
-				DDA58E5E2F8DA29300A9BEE9 /* x68000@132w.png in Resources */,
-				DDA58E5F2F8DA29300A9BEE9 /* msx@132w.png in Resources */,
-				DDA58E602F8DA29300A9BEE9 /* CAVESTORY.png in Resources */,
-				DDA58E612F8DA29300A9BEE9 /* wsc@132w.png in Resources */,
-				DDA58E622F8DA29300A9BEE9 /* SCUMMVM.png in Resources */,
-				DDA58E632F8DA29300A9BEE9 /* atari2600.ico in Resources */,
-				DDA58E642F8DA29300A9BEE9 /* Nintendo_-_Nintendo_Entertainment_System.json in Resources */,
-				DDA58E652F8DA29300A9BEE9 /* sgb@132w.png in Resources */,
-				DDA58E662F8DA29300A9BEE9 /* wii classic ico.ico in Resources */,
-				DDA58E672F8DA29300A9BEE9 /* CHAILOVE.png in Resources */,
-				DDA58E682F8DA29300A9BEE9 /* j7C3Q.jpg in Resources */,
-				DDA58E692F8DA29300A9BEE9 /* neogeo@132w.png in Resources */,
-				DDA58E6A2F8DA29300A9BEE9 /* ngpc@132w.png in Resources */,
-				DDA58E6B2F8DA29300A9BEE9 /* LYNX.png in Resources */,
-				DDA58E6C2F8DA29300A9BEE9 /* VMAC.png in Resources */,
-				DDA58E6D2F8DA29300A9BEE9 /* ENTERPRISE.png in Resources */,
-				DDA58E6E2F8DA29300A9BEE9 /* Sony_-_PlayStation.json in Resources */,
-				DDA58E6F2F8DA29300A9BEE9 /* neocd@132w.png in Resources */,
-				DDA58E702F8DA29300A9BEE9 /* VIDEOPAC-alt.png in Resources */,
-				DDA58E712F8DA29300A9BEE9 /* satella@132w.png in Resources */,
-				DDA58E722F8DA29300A9BEE9 /* ADVMAME.png in Resources */,
-				DDA58E732F8DA29300A9BEE9 /* nes.ico in Resources */,
-				DDA58E742F8DA29300A9BEE9 /* CPLUS4.png in Resources */,
-				DDA58E752F8DA29300A9BEE9 /* PGM.png in Resources */,
-				DDA58E762F8DA29300A9BEE9 /* ATARI800-alt.png in Resources */,
-				DDA58E772F8DA29300A9BEE9 /* virtualboy.ico in Resources */,
-				DDA58E782F8DA29300A9BEE9 /* dos@132w.png in Resources */,
-				DDA58E792F8DA29300A9BEE9 /* ARCADE_FBNEO.png in Resources */,
-				DDA58E7A2F8DA29300A9BEE9 /* psp.ico in Resources */,
-				DDA58E7B2F8DA29300A9BEE9 /* atari800@132w.png in Resources */,
-				DDA58E7C2F8DA29300A9BEE9 /* atari@132w.png in Resources */,
-				DDA58E7D2F8DA29300A9BEE9 /* Nintendo_-_Super_Nintendo_Entertainment_System.json in Resources */,
-				DDA58E7E2F8DA29300A9BEE9 /* PICO.png in Resources */,
-				DDA58E7F2F8DA29300A9BEE9 /* appIcon32.jpg in Resources */,
-				DDA58E802F8DA29300A9BEE9 /* 5200@132w.png in Resources */,
-				DDA58E812F8DA29300A9BEE9 /* 7vYdW.jpg in Resources */,
-				DDA58E822F8DA29300A9BEE9 /* sgfx@132w.png in Resources */,
-				DDA58E832F8DA29300A9BEE9 /* gba@132w.png in Resources */,
-				DDA58E842F8DA29300A9BEE9 /* n64.ico in Resources */,
-				DDA58E852F8DA29300A9BEE9 /* MAME2003PLUS.png in Resources */,
-				DDA58E862F8DA29300A9BEE9 /* ngage.ico in Resources */,
-				DDA58E872F8DA29300A9BEE9 /* nds.ico in Resources */,
-				DDA58E882F8DA29300A9BEE9 /* PC88.png in Resources */,
-				DDA58E892F8DA29300A9BEE9 /* ATARIST.png in Resources */,
-				DDA58E8A2F8DA29300A9BEE9 /* GW.png in Resources */,
-				DDA58E8B2F8DA29300A9BEE9 /* c64@132w.png in Resources */,
-				DDA58E8C2F8DA29300A9BEE9 /* MD.png in Resources */,
-				DDA58E8D2F8DA29300A9BEE9 /* xbox360.ico in Resources */,
-				DDA58E8E2F8DA29300A9BEE9 /* SATELLAVIEW.png in Resources */,
-				DDA58E8F2F8DA29300A9BEE9 /* COLECO.png in Resources */,
-				DDA58E902F8DA29300A9BEE9 /* N64DD.png in Resources */,
-				DDA58E912F8DA29300A9BEE9 /* supervision@132w.png in Resources */,
-				DDA58E922F8DA29300A9BEE9 /* md@132w.png in Resources */,
-				DDA58E932F8DA29300A9BEE9 /* SATURN.png in Resources */,
-				DDA58E942F8DA29300A9BEE9 /* Sega Saturn Analog ico.ico in Resources */,
-				DDA58E952F8DA29300A9BEE9 /* LUTRO.png in Resources */,
-				DDA58E962F8DA29300A9BEE9 /* GBA.png in Resources */,
-				DDA58E972F8DA29300A9BEE9 /* aWw6r.jpg in Resources */,
-				DDA58E982F8DA29300A9BEE9 /* CPS2.png in Resources */,
-				DDA58E992F8DA29300A9BEE9 /* NEOCD.png in Resources */,
-				DDA58E9A2F8DA29300A9BEE9 /* appIcon512.jpg in Resources */,
-				DDA58E9B2F8DA29300A9BEE9 /* fds@132w.png in Resources */,
-				DDA58E9C2F8DA29300A9BEE9 /* WSC.png in Resources */,
-				DDA58E9D2F8DA29300A9BEE9 /* switch.ico in Resources */,
-				DDA58E9E2F8DA29300A9BEE9 /* mame@132w.png in Resources */,
-				DDA58E9F2F8DA29300A9BEE9 /* SystemDatabase.json in Resources */,
-				DDA58EA02F8DA29300A9BEE9 /* amiga@132w.png in Resources */,
-				DDA58EA12F8DA29300A9BEE9 /* gba.ico in Resources */,
-				DDA58EA22F8DA29300A9BEE9 /* VECTREX.png in Resources */,
-				DDA58EA32F8DA29300A9BEE9 /* VIDEOTON.png in Resources */,
-				DDA58EA42F8DA29300A9BEE9 /* ps@132w.png in Resources */,
-				DDA58EA52F8DA29300A9BEE9 /* ngp@132w.png in Resources */,
-				DDA58EA62F8DA29300A9BEE9 /* gb.ico in Resources */,
-				DDA58EA72F8DA29300A9BEE9 /* gbc.ico in Resources */,
-				DDA58EA82F8DA29300A9BEE9 /* DOOM.png in Resources */,
-				DDA58EA92F8DA29300A9BEE9 /* ATARI7800.png in Resources */,
-				DDA58EAA2F8DA29300A9BEE9 /* SUPERVISION.png in Resources */,
-				DDA58EAB2F8DA29300A9BEE9 /* doom@132w.png in Resources */,
-				DDA58EAC2F8DA29300A9BEE9 /* pce@132w.png in Resources */,
-				DDA58EAD2F8DA29300A9BEE9 /* OPENBOR.png in Resources */,
-				DDA58EAE2F8DA29300A9BEE9 /* SEGACD.png in Resources */,
-				DDA58EAF2F8DA29300A9BEE9 /* appIcon1024.jpg in Resources */,
-				DDA58EB02F8DA29300A9BEE9 /* SUFAMI.png in Resources */,
-				DDA58EB12F8DA29300A9BEE9 /* TYRQUAKE.png in Resources */,
-				DDA58EB22F8DA29300A9BEE9 /* FLASHBACK.png in Resources */,
-				DDA58EB32F8DA29300A9BEE9 /* THOMSON.png in Resources */,
-				DDA58EB42F8DA29300A9BEE9 /* PCE.png in Resources */,
-				DDA58EB52F8DA29300A9BEE9 /* ps2.ico in Resources */,
-				DDA58EB62F8DA29300A9BEE9 /* SEtBX.jpg in Resources */,
-				DDA58EB72F8DA29300A9BEE9 /* ody@132w.png in Resources */,
-				DDA58EB82F8DA29300A9BEE9 /* CPS3.png in Resources */,
-				DDA58EB92F8DA29300A9BEE9 /* MDMSU.png in Resources */,
-				DDA58EBA2F8DA29300A9BEE9 /* CPET.png in Resources */,
-				DDA58EBB2F8DA29300A9BEE9 /* X68000.png in Resources */,
-				DDA58EBC2F8DA29300A9BEE9 /* VIDEOPAC.png in Resources */,
-				DDA58EBD2F8DA29300A9BEE9 /* FBNEO.png in Resources */,
-				DDA58EBE2F8DA29300A9BEE9 /* SG1000.png in Resources */,
-				DDA58EBF2F8DA29300A9BEE9 /* atari5200.ico in Resources */,
-				DDA58EC02F8DA29300A9BEE9 /* quake@132w.png in Resources */,
-				DDA58EC12F8DA29300A9BEE9 /* NDS.png in Resources */,
-				DDA58EC22F8DA29300A9BEE9 /* C64.png in Resources */,
-				DDA58EC32F8DA29300A9BEE9 /* VIC20.png in Resources */,
-				DDA58EC42F8DA29300A9BEE9 /* UZEBOX.png in Resources */,
-				DDA58EC52F8DA29300A9BEE9 /* FDS.png in Resources */,
-				DDA58EC62F8DA29300A9BEE9 /* nds@132w.png in Resources */,
-				DDA58EC72F8DA29300A9BEE9 /* cps3@132w.png in Resources */,
-				DDA58EC82F8DA29300A9BEE9 /* SFX.png in Resources */,
-				DDA58EC92F8DA29300A9BEE9 /* 32X@132w.png in Resources */,
-				DDA58ECA2F8DA29300A9BEE9 /* ARDUBOY.png in Resources */,
-				DDA58ECB2F8DA29300A9BEE9 /* DOS.png in Resources */,
-				DDA58ECC2F8DA29300A9BEE9 /* cpc@132w.png in Resources */,
-				DDA58ECD2F8DA29300A9BEE9 /* CHANNELF.png in Resources */,
-				DDA58ECE2F8DA29300A9BEE9 /* cpc-alt.png in Resources */,
-				DDA58ECF2F8DA29300A9BEE9 /* DC.png in Resources */,
-				DDA58ED02F8DA29300A9BEE9 /* EASYRPG.png in Resources */,
-				DDA58ED12F8DA29300A9BEE9 /* poke@132w.png in Resources */,
-				DDA58ED22F8DA29300A9BEE9 /* DAPHNE.png in Resources */,
-				DDA58ED32F8DA29300A9BEE9 /* AMIGA.png in Resources */,
-				DDA58ED42F8DA29300A9BEE9 /* PSPMINIS.png in Resources */,
-				DDA58ED52F8DA29300A9BEE9 /* MEGADUCK.png in Resources */,
-				DDA58ED62F8DA29300A9BEE9 /* gbc@132w.png in Resources */,
-				DDA58ED72F8DA29300A9BEE9 /* MSX2.png in Resources */,
-				DDA58ED82F8DA29300A9BEE9 /* SGB.png in Resources */,
-				DDA58ED92F8DA29300A9BEE9 /* vectrex@132w.png in Resources */,
-				DDA58EDA2F8DA29300A9BEE9 /* n64@132w.png in Resources */,
-				DDA58EDB2F8DA29300A9BEE9 /* TI83.png in Resources */,
-				DDA58EDC2F8DA29300A9BEE9 /* GG.png in Resources */,
-				DDA58EDD2F8DA29300A9BEE9 /* mame_unified.json in Resources */,
-				DDA58EDE2F8DA29300A9BEE9 /* chai@132w.png in Resources */,
-				DDA58EDF2F8DA29300A9BEE9 /* FC.png in Resources */,
-				DDA58EE02F8DA29300A9BEE9 /* saturn.ico in Resources */,
-				DDA58EE12F8DA29300A9BEE9 /* dc@132w.png in Resources */,
-				DDA58EE22F8DA29300A9BEE9 /* XRICK.png in Resources */,
-				DDA58EE32F8DA29300A9BEE9 /* X1.png in Resources */,
-				DDA58EE42F8DA29300A9BEE9 /* NGC.png in Resources */,
-				DDA58EE52F8DA29300A9BEE9 /* fc@132w.png in Resources */,
-				DDA58EE62F8DA29300A9BEE9 /* msumd@132w.png in Resources */,
-				DDA58EE72F8DA29300A9BEE9 /* msu1@132w.png in Resources */,
-				DDA58EE82F8DA29300A9BEE9 /* sufami@132w.png in Resources */,
-				DDA58EE92F8DA29300A9BEE9 /* ZXS.png in Resources */,
-				DDA58EEA2F8DA29300A9BEE9 /* SFCMSU.png in Resources */,
-				DDA58EEB2F8DA29300A9BEE9 /* jaguar.ico in Resources */,
-				DDA58EEC2F8DA29300A9BEE9 /* openbor@132w.png in Resources */,
-				DDA58EED2F8DA29300A9BEE9 /* cps1@132w.png in Resources */,
-				DDA58EEE2F8DA29300A9BEE9 /* gb@132w.png in Resources */,
-				DDA58EEF2F8DA29300A9BEE9 /* LOWRESNX.png in Resources */,
-				DDA58EF02F8DA29300A9BEE9 /* arcade@132w.png in Resources */,
-				DDA58EF12F8DA29300A9BEE9 /* psx.ico in Resources */,
-				DDA58EF22F8DA29300A9BEE9 /* CANNONBALL.png in Resources */,
-				DDA58EF32F8DA29300A9BEE9 /* NEOGEO.png in Resources */,
-				DDA58EF42F8DA29300A9BEE9 /* NAOMI.png in Resources */,
-				DDA58EF52F8DA29300A9BEE9 /* DINOTHAWR.png in Resources */,
-				DDA58EF62F8DA29300A9BEE9 /* tic@132w.png in Resources */,
-				DDA58EF72F8DA29300A9BEE9 /* genesis.ico in Resources */,
-				DDA58EF82F8DA29300A9BEE9 /* vb@132w.png in Resources */,
-				DDA58EF92F8DA29300A9BEE9 /* MAME.png in Resources */,
-				DDA58EFA2F8DA29300A9BEE9 /* appIcon256.jpg in Resources */,
-				DDA58EFB2F8DA29300A9BEE9 /* pce.ico in Resources */,
-				DDA58EFC2F8DA29300A9BEE9 /* PCFX.png in Resources */,
-				DDA58EFD2F8DA29300A9BEE9 /* col@132w.png in Resources */,
-				DDA58EFE2F8DA29300A9BEE9 /* zxs@132w.png in Resources */,
-				DDA58EFF2F8DA29300A9BEE9 /* 7800@132w.png in Resources */,
-				DDA58F002F8DA29300A9BEE9 /* PORTS.png in Resources */,
-				DDA58F012F8DA29300A9BEE9 /* segacd@132w.png in Resources */,
-				DDA58F022F8DA29300A9BEE9 /* cps2@132w.png in Resources */,
-				DDA58F032F8DA29300A9BEE9 /* VIDEOS.png in Resources */,
-				DDA58F042F8DA29300A9BEE9 /* N64.png in Resources */,
-				DDA58F052F8DA29300A9BEE9 /* VB.png in Resources */,
-				DDA58F062F8DA29300A9BEE9 /* fairchild@132w.png in Resources */,
 				DDD7A0432F8C8F12002E26DB /* Asset.xcassets in Resources */,
+				DDA591EF2F8DD4EA00A9BEE9 /* appIcon32.jpg in Resources */,
+				DDA591F02F8DD4EA00A9BEE9 /* CPET.png in Resources */,
+				DDA591F12F8DD4EA00A9BEE9 /* appIcon512.jpg in Resources */,
+				DDA591F22F8DD4EA00A9BEE9 /* gw@132w.png in Resources */,
+				DDA591F32F8DD4EA00A9BEE9 /* pcecd@132w.png in Resources */,
+				DDA591F42F8DD4EA00A9BEE9 /* zxs@132w.png in Resources */,
+				DDA591F52F8DD4EA00A9BEE9 /* ports@132w.png in Resources */,
+				DDA591F62F8DD4EA00A9BEE9 /* PANASONIC.png in Resources */,
+				DDA591F72F8DD4EA00A9BEE9 /* lynx@132w.png in Resources */,
+				DDA591F82F8DD4EA00A9BEE9 /* vectrex@132w.png in Resources */,
+				DDA591F92F8DD4EA00A9BEE9 /* gba@132w.png in Resources */,
+				DDA591FA2F8DD4EA00A9BEE9 /* 5200@132w.png in Resources */,
+				DDA591FB2F8DD4EA00A9BEE9 /* genesis.ico in Resources */,
+				DDA591FC2F8DD4EA00A9BEE9 /* psp@132w.png in Resources */,
+				DDA591FD2F8DD4EA00A9BEE9 /* Info.plist in Resources */,
+				DDA591FE2F8DD4EA00A9BEE9 /* fairchild@132w.png in Resources */,
+				DDA591FF2F8DD4EA00A9BEE9 /* CPS1.png in Resources */,
+				DDA592002F8DD4EA00A9BEE9 /* SEGA32X.png in Resources */,
+				DDA592012F8DD4EA00A9BEE9 /* pico@132w.png in Resources */,
+				DDA592022F8DD4EA00A9BEE9 /* ngage.ico in Resources */,
+				DDA592032F8DD4EA00A9BEE9 /* CHANNELF.png in Resources */,
+				DDA592042F8DD4EA00A9BEE9 /* COLECO.png in Resources */,
+				DDA592052F8DD4EA00A9BEE9 /* THOMSON.png in Resources */,
+				DDA592062F8DD4EA00A9BEE9 /* appIcon16.jpg in Resources */,
+				DDA592072F8DD4EA00A9BEE9 /* VIDEOS.png in Resources */,
+				DDA592082F8DD4EA00A9BEE9 /* supervision@132w.png in Resources */,
+				DDA592092F8DD4EA00A9BEE9 /* appIcon1024.jpg in Resources */,
+				DDA5920A2F8DD4EA00A9BEE9 /* EASYRPG.png in Resources */,
+				DDA5920B2F8DD4EA00A9BEE9 /* MEGADUCK.png in Resources */,
+				DDA5920C2F8DD4EA00A9BEE9 /* cps1@132w.png in Resources */,
+				DDA5920D2F8DD4EA00A9BEE9 /* CHAILOVE.png in Resources */,
+				DDA5920E2F8DD4EA00A9BEE9 /* vdp@132w.png in Resources */,
+				DDA5920F2F8DD4EA00A9BEE9 /* PGM.png in Resources */,
+				DDA592102F8DD4EA00A9BEE9 /* ps@132w.png in Resources */,
+				DDA592112F8DD4EA00A9BEE9 /* aWw6r.jpg in Resources */,
+				DDA592122F8DD4EA00A9BEE9 /* SEtBX.jpg in Resources */,
+				DDA592132F8DD4EA00A9BEE9 /* NEOGEO.png in Resources */,
+				DDA592142F8DD4EA00A9BEE9 /* scummvm@132w.png in Resources */,
+				DDA592152F8DD4EA00A9BEE9 /* VIDEOTON.png in Resources */,
+				DDA592162F8DD4EA00A9BEE9 /* ZXS.png in Resources */,
+				DDA592172F8DD4EA00A9BEE9 /* N64DD.png in Resources */,
+				DDA592182F8DD4EA00A9BEE9 /* MD.png in Resources */,
+				DDA592192F8DD4EA00A9BEE9 /* pce.ico in Resources */,
+				DDA5921A2F8DD4EA00A9BEE9 /* NGC.png in Resources */,
+				DDA5921B2F8DD4EA00A9BEE9 /* PC88.png in Resources */,
+				DDA5921C2F8DD4EA00A9BEE9 /* PC98.png in Resources */,
+				DDA5921D2F8DD4EA00A9BEE9 /* n64@132w.png in Resources */,
+				DDA5921E2F8DD4EA00A9BEE9 /* SEGACD.png in Resources */,
+				DDA5921F2F8DD4EA00A9BEE9 /* sms.ico in Resources */,
+				DDA592202F8DD4EA00A9BEE9 /* VB.png in Resources */,
+				DDA592212F8DD4EA00A9BEE9 /* poke@132w.png in Resources */,
+				DDA592222F8DD4EA00A9BEE9 /* segasgone@132w.png in Resources */,
+				DDA592232F8DD4EA00A9BEE9 /* col@132w.png in Resources */,
+				DDA592242F8DD4EA00A9BEE9 /* LUTRO.png in Resources */,
+				DDA592252F8DD4EA00A9BEE9 /* POKEMINI.png in Resources */,
+				DDA592262F8DD4EA00A9BEE9 /* openbor@132w.png in Resources */,
+				DDA592272F8DD4EA00A9BEE9 /* cpc-alt.png in Resources */,
+				DDA592282F8DD4EA00A9BEE9 /* doom@132w.png in Resources */,
+				DDA592292F8DD4EA00A9BEE9 /* wii.ico in Resources */,
+				DDA5922A2F8DD4EA00A9BEE9 /* TYRQUAKE.png in Resources */,
+				DDA5922B2F8DD4EA00A9BEE9 /* nds.ico in Resources */,
+				DDA5922C2F8DD4EA00A9BEE9 /* cpc@132w.png in Resources */,
+				DDA5922D2F8DD4EA00A9BEE9 /* gc.ico in Resources */,
+				DDA5922E2F8DD4EA00A9BEE9 /* OPENBOR.png in Resources */,
+				DDA5922F2F8DD4EA00A9BEE9 /* NEOCD.png in Resources */,
+				DDA592302F8DD4EA00A9BEE9 /* ATARI800.png in Resources */,
+				DDA592312F8DD4EA00A9BEE9 /* vb@132w.png in Resources */,
+				DDA592322F8DD4EA00A9BEE9 /* CPS2.png in Resources */,
+				DDA592332F8DD4EA00A9BEE9 /* SATURN.png in Resources */,
+				DDA592342F8DD4EA00A9BEE9 /* NAOMI.png in Resources */,
+				DDA592352F8DD4EA00A9BEE9 /* SCUMMVM.png in Resources */,
+				DDA592362F8DD4EA00A9BEE9 /* neogeo@132w.png in Resources */,
+				DDA592372F8DD4EA00A9BEE9 /* GBA.png in Resources */,
+				DDA592382F8DD4EA00A9BEE9 /* VECTREX.png in Resources */,
+				DDA592392F8DD4EA00A9BEE9 /* ARCADE_FBNEO.png in Resources */,
+				DDA5923A2F8DD4EA00A9BEE9 /* VIDEOPAC.png in Resources */,
+				DDA5923B2F8DD4EA00A9BEE9 /* AMIGA.png in Resources */,
+				DDA5923C2F8DD4EA00A9BEE9 /* LOWRESNX.png in Resources */,
+				DDA5923D2F8DD4EA00A9BEE9 /* AMIGACD.png in Resources */,
+				DDA5923E2F8DD4EA00A9BEE9 /* arduboy@132w.png in Resources */,
+				DDA5923F2F8DD4EA00A9BEE9 /* appIcon64.jpg in Resources */,
+				DDA592402F8DD4EA00A9BEE9 /* jaguar.ico in Resources */,
+				DDA592412F8DD4EA00A9BEE9 /* SFC.png in Resources */,
+				DDA592422F8DD4EA00A9BEE9 /* dc@132w.png in Resources */,
+				DDA592432F8DD4EA00A9BEE9 /* N64.png in Resources */,
+				DDA592442F8DD4EA00A9BEE9 /* dos@132w.png in Resources */,
+				DDA592452F8DD4EA00A9BEE9 /* SUFAMI.png in Resources */,
+				DDA592462F8DD4EA00A9BEE9 /* WS.png in Resources */,
+				DDA592472F8DD4EA00A9BEE9 /* msx@132w.png in Resources */,
+				DDA592482F8DD4EA00A9BEE9 /* switch.ico in Resources */,
+				DDA592492F8DD4EA00A9BEE9 /* fc@132w.png in Resources */,
+				DDA5924A2F8DD4EA00A9BEE9 /* saturn.ico in Resources */,
+				DDA5924B2F8DD4EA00A9BEE9 /* xbox360.ico in Resources */,
+				DDA5924C2F8DD4EA00A9BEE9 /* wiiu.ico in Resources */,
+				DDA5924D2F8DD4EA00A9BEE9 /* atari5200.ico in Resources */,
+				DDA5924E2F8DD4EA00A9BEE9 /* SATELLAVIEW.png in Resources */,
+				DDA5924F2F8DD4EA00A9BEE9 /* cps2@132w.png in Resources */,
+				DDA592502F8DD4EA00A9BEE9 /* FLASHBACK.png in Resources */,
+				DDA592512F8DD4EA00A9BEE9 /* GW.png in Resources */,
+				DDA592522F8DD4EA00A9BEE9 /* ps2.ico in Resources */,
+				DDA592532F8DD4EA00A9BEE9 /* NTbe4.jpg in Resources */,
+				DDA592542F8DD4EA00A9BEE9 /* c64@132w.png in Resources */,
+				DDA592552F8DD4EA00A9BEE9 /* sgfx@132w.png in Resources */,
+				DDA592562F8DD4EA00A9BEE9 /* mame_unified.json in Resources */,
+				DDA592572F8DD4EA00A9BEE9 /* j7C3Q.jpg in Resources */,
+				DDA592582F8DD4EA00A9BEE9 /* x68000@132w.png in Resources */,
+				DDA592592F8DD4EA00A9BEE9 /* xbox.ico in Resources */,
+				DDA5925A2F8DD4EA00A9BEE9 /* megaduck@132w.png in Resources */,
+				DDA5925B2F8DD4EA00A9BEE9 /* chai@132w.png in Resources */,
+				DDA5925C2F8DD4EA00A9BEE9 /* GB.png in Resources */,
+				DDA5925D2F8DD4EA00A9BEE9 /* VMAC.png in Resources */,
+				DDA5925E2F8DD4EA00A9BEE9 /* UZEBOX.png in Resources */,
+				DDA5925F2F8DD4EA00A9BEE9 /* PS.png in Resources */,
+				DDA592602F8DD4EA00A9BEE9 /* PORTS.png in Resources */,
+				DDA592612F8DD4EA00A9BEE9 /* arcade@132w.png in Resources */,
+				DDA592622F8DD4EA00A9BEE9 /* wii classic ico.ico in Resources */,
+				DDA592632F8DD4EA00A9BEE9 /* ARDUBOY.png in Resources */,
+				DDA592642F8DD4EA00A9BEE9 /* gb.ico in Resources */,
+				DDA592652F8DD4EA00A9BEE9 /* DOOM.png in Resources */,
+				DDA592662F8DD4EA00A9BEE9 /* PSPMINIS.png in Resources */,
+				DDA592672F8DD4EA00A9BEE9 /* sfc@132w.png in Resources */,
+				DDA592682F8DD4EA00A9BEE9 /* psp.ico in Resources */,
+				DDA592692F8DD4EA00A9BEE9 /* snes.ico in Resources */,
+				DDA5926A2F8DD4EA00A9BEE9 /* sgb@132w.png in Resources */,
+				DDA5926B2F8DD4EA00A9BEE9 /* neocd@132w.png in Resources */,
+				DDA5926C2F8DD4EA00A9BEE9 /* mame@132w.png in Resources */,
+				DDA5926D2F8DD4EA00A9BEE9 /* appIcon128.jpg in Resources */,
+				DDA5926E2F8DD4EA00A9BEE9 /* VIC20.png in Resources */,
+				DDA5926F2F8DD4EA00A9BEE9 /* SystemDatabase.json in Resources */,
+				DDA592702F8DD4EA00A9BEE9 /* wsc@132w.png in Resources */,
+				DDA592712F8DD4EA00A9BEE9 /* n64.ico in Resources */,
+				DDA592722F8DD4EA00A9BEE9 /* sufami@132w.png in Resources */,
+				DDA592732F8DD4EA00A9BEE9 /* atari800@132w.png in Resources */,
+				DDA592742F8DD4EA00A9BEE9 /* PCECD.png in Resources */,
+				DDA592752F8DD4EA00A9BEE9 /* mame_2003_plus.json in Resources */,
+				DDA592762F8DD4EA00A9BEE9 /* MDMSU.png in Resources */,
+				DDA592772F8DD4EA00A9BEE9 /* ATARI7800.png in Resources */,
+				DDA592782F8DD4EA00A9BEE9 /* MSX2.png in Resources */,
+				DDA592792F8DD4EA00A9BEE9 /* Sega Saturn Analog ico.ico in Resources */,
+				DDA5927A2F8DD4EA00A9BEE9 /* ATOMISWAVE.png in Resources */,
+				DDA5927B2F8DD4EA00A9BEE9 /* ARCADE.png in Resources */,
+				DDA5927C2F8DD4EA00A9BEE9 /* appIcon256.jpg in Resources */,
+				DDA5927D2F8DD4EA00A9BEE9 /* psx.ico in Resources */,
+				DDA5927E2F8DD4EA00A9BEE9 /* amiga@132w.png in Resources */,
+				DDA5927F2F8DD4EA00A9BEE9 /* PCE.png in Resources */,
+				DDA592802F8DD4EA00A9BEE9 /* SFX.png in Resources */,
+				DDA592812F8DD4EA00A9BEE9 /* easyrpg@132w.png in Resources */,
+				DDA592822F8DD4EA00A9BEE9 /* atarist@132w.png in Resources */,
+				DDA592832F8DD4EA00A9BEE9 /* SFCMSU.png in Resources */,
+				DDA592842F8DD4EA00A9BEE9 /* gg@132w.png in Resources */,
+				DDA592852F8DD4EA00A9BEE9 /* SGB.png in Resources */,
+				DDA592862F8DD4EA00A9BEE9 /* PICO.png in Resources */,
+				DDA592872F8DD4EA00A9BEE9 /* ENTERPRISE.png in Resources */,
+				DDA592882F8DD4EA00A9BEE9 /* wolf@132w.png in Resources */,
+				DDA592892F8DD4EA00A9BEE9 /* gb@132w.png in Resources */,
+				DDA5928A2F8DD4EA00A9BEE9 /* ps3.ico in Resources */,
+				DDA5928B2F8DD4EA00A9BEE9 /* pce@132w.png in Resources */,
+				DDA5928C2F8DD4EA00A9BEE9 /* atari@132w.png in Resources */,
+				DDA5928D2F8DD4EA00A9BEE9 /* SG1000.png in Resources */,
+				DDA5928E2F8DD4EA00A9BEE9 /* DOS.png in Resources */,
+				DDA5928F2F8DD4EA00A9BEE9 /* CPC.png in Resources */,
+				DDA592902F8DD4EA00A9BEE9 /* msumd@132w.png in Resources */,
+				DDA592912F8DD4EA00A9BEE9 /* NGP.png in Resources */,
+				DDA592922F8DD4EA00A9BEE9 /* ATARIST.png in Resources */,
+				DDA592932F8DD4EA00A9BEE9 /* MAME2010.png in Resources */,
+				DDA592942F8DD4EA00A9BEE9 /* Nintendo_-_Super_Nintendo_Entertainment_System.json in Resources */,
+				DDA592952F8DD4EA00A9BEE9 /* X68000.png in Resources */,
+				DDA592962F8DD4EA00A9BEE9 /* 7800@132w.png in Resources */,
+				DDA592972F8DD4EA00A9BEE9 /* itv@132w.png in Resources */,
+				DDA592982F8DD4EA00A9BEE9 /* virtualboy.ico in Resources */,
+				DDA592992F8DD4EA00A9BEE9 /* WSC.png in Resources */,
+				DDA5929A2F8DD4EA00A9BEE9 /* XRICK.png in Resources */,
+				DDA5929B2F8DD4EA00A9BEE9 /* Sega_-_Mega_Drive_-_Genesis.json in Resources */,
+				DDA5929C2F8DD4EA00A9BEE9 /* FDS.png in Resources */,
+				DDA5929D2F8DD4EA00A9BEE9 /* GBC.png in Resources */,
+				DDA5929E2F8DD4EA00A9BEE9 /* CPS3.png in Resources */,
+				DDA5929F2F8DD4EA00A9BEE9 /* gbc.ico in Resources */,
+				DDA592A02F8DD4EA00A9BEE9 /* gbc@132w.png in Resources */,
+				DDA592A12F8DD4EA00A9BEE9 /* cps3@132w.png in Resources */,
+				DDA592A22F8DD4EA00A9BEE9 /* GG.png in Resources */,
+				DDA592A32F8DD4EA00A9BEE9 /* ody@132w.png in Resources */,
+				DDA592A42F8DD4EA00A9BEE9 /* MS.png in Resources */,
+				DDA592A52F8DD4EA00A9BEE9 /* ffplay@132w.png in Resources */,
+				DDA592A62F8DD4EA00A9BEE9 /* PCFX.png in Resources */,
+				DDA592A72F8DD4EA00A9BEE9 /* NDS.png in Resources */,
+				DDA592A82F8DD4EA00A9BEE9 /* satella@132w.png in Resources */,
+				DDA592A92F8DD4EA00A9BEE9 /* MAME2003PLUS.png in Resources */,
+				DDA592AA2F8DD4EA00A9BEE9 /* DC.png in Resources */,
+				DDA592AB2F8DD4EA00A9BEE9 /* Sony_-_PlayStation.json in Resources */,
+				DDA592AC2F8DD4EA00A9BEE9 /* nds@132w.png in Resources */,
+				DDA592AD2F8DD4EA00A9BEE9 /* ngp@132w.png in Resources */,
+				DDA592AE2F8DD4EA00A9BEE9 /* ATARI5200.png in Resources */,
+				DDA592AF2F8DD4EA00A9BEE9 /* nes.ico in Resources */,
+				DDA592B02F8DD4EA00A9BEE9 /* ATARI800-alt.png in Resources */,
+				DDA592B12F8DD4EA00A9BEE9 /* ws@132w.png in Resources */,
+				DDA592B22F8DD4EA00A9BEE9 /* 7vYdW.jpg in Resources */,
+				DDA592B32F8DD4EA00A9BEE9 /* dreamcast.ico in Resources */,
+				DDA592B42F8DD4EA00A9BEE9 /* CAVESTORY.png in Resources */,
+				DDA592B52F8DD4EA00A9BEE9 /* X1.png in Resources */,
+				DDA592B62F8DD4EA00A9BEE9 /* SUPERVISION.png in Resources */,
+				DDA592B72F8DD4EA00A9BEE9 /* C64.png in Resources */,
+				DDA592B82F8DD4EA00A9BEE9 /* MAME.png in Resources */,
+				DDA592B92F8DD4EA00A9BEE9 /* VIDEOPAC-alt.png in Resources */,
+				DDA592BA2F8DD4EA00A9BEE9 /* TI83.png in Resources */,
+				DDA592BB2F8DD4EA00A9BEE9 /* SUPERVISION-alt.png in Resources */,
+				DDA592BC2F8DD4EA00A9BEE9 /* Nintendo_-_Nintendo_Entertainment_System.json in Resources */,
+				DDA592BD2F8DD4EA00A9BEE9 /* INTELLIVISION.png in Resources */,
+				DDA592BE2F8DD4EA00A9BEE9 /* PSP.png in Resources */,
+				DDA592BF2F8DD4EA00A9BEE9 /* FBNEO.png in Resources */,
+				DDA592C02F8DD4EA00A9BEE9 /* MSX.png in Resources */,
+				DDA592C12F8DD4EA00A9BEE9 /* ms@132w.png in Resources */,
+				DDA592C22F8DD4EA00A9BEE9 /* TIC.png in Resources */,
+				DDA592C32F8DD4EA00A9BEE9 /* fds@132w.png in Resources */,
+				DDA592C42F8DD4EA00A9BEE9 /* tic@132w.png in Resources */,
+				DDA592C52F8DD4EA00A9BEE9 /* gamegear.ico in Resources */,
+				DDA592C62F8DD4EA00A9BEE9 /* CPLUS4.png in Resources */,
+				DDA592C72F8DD4EA00A9BEE9 /* 32X@132w.png in Resources */,
+				DDA592C82F8DD4EA00A9BEE9 /* DAPHNE.png in Resources */,
+				DDA592C92F8DD4EA00A9BEE9 /* 3ds.ico in Resources */,
+				DDA592CA2F8DD4EA00A9BEE9 /* COLSGM.png in Resources */,
+				DDA592CB2F8DD4EA00A9BEE9 /* PALMOS.png in Resources */,
+				DDA592CC2F8DD4EA00A9BEE9 /* gba.ico in Resources */,
+				DDA592CD2F8DD4EA00A9BEE9 /* md@132w.png in Resources */,
+				DDA592CE2F8DD4EA00A9BEE9 /* LYNX.png in Resources */,
+				DDA592CF2F8DD4EA00A9BEE9 /* DINOTHAWR.png in Resources */,
+				DDA592D02F8DD4EA00A9BEE9 /* AMIGACDTV.png in Resources */,
+				DDA592D12F8DD4EA00A9BEE9 /* quake@132w.png in Resources */,
+				DDA592D22F8DD4EA00A9BEE9 /* atari2600.ico in Resources */,
+				DDA592D32F8DD4EA00A9BEE9 /* CANNONBALL.png in Resources */,
+				DDA592D42F8DD4EA00A9BEE9 /* ATARI2600.png in Resources */,
+				DDA592D52F8DD4EA00A9BEE9 /* ngpc@132w.png in Resources */,
+				DDA592D62F8DD4EA00A9BEE9 /* FC.png in Resources */,
+				DDA592D72F8DD4EA00A9BEE9 /* ADVMAME.png in Resources */,
+				DDA592D82F8DD4EA00A9BEE9 /* segacd@132w.png in Resources */,
+				DDA592D92F8DD4EA00A9BEE9 /* msu1@132w.png in Resources */,
 				F1D62C5445CF2CB899702BDE /* mame_rom_data.json in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
