@@ -281,14 +281,14 @@ final class ROMIdentifierService: @unchecked Sendable {
         }
 
         // PASS 4: Name-based fallback (if we haven't tried it yet)
-        if !preferNameMatch && !isLargeFile {
-            LoggerService.romIdentify("Identify: no CRC match for \(key), falling back to name search...")
-            let language = Self.currentEmulatorLanguage()
-            if let byName = identifyByName(rom: rom, database: db, language: language) {
-                LoggerService.romIdentify("Identify: NAME MATCH → \(byName.name) (language=\(language.name))")
-                return .identifiedFromName(byName)
-            }
-        }
+        //if !preferNameMatch && !isLargeFile {
+        //    LoggerService.romIdentify("Identify: no CRC match for \(key), falling back to name search...")
+        //    let language = Self.currentEmulatorLanguage()
+        //    if let byName = identifyByName(rom: rom, database: db, language: language) {
+        //        LoggerService.romIdentify("Identify: NAME MATCH → \(byName.name) (language=\(language.name))")
+        //        return .identifiedFromName(byName)
+        //    }
+        //}
 
         LoggerService.romIdentifyWarn("Identify: NOT FOUND — CRC \(key) not in database and name search found 0 matches for \(systemID)")
         return .crcNotInDatabase(crc: key)
@@ -665,6 +665,7 @@ actor LibretroDatabaseLibrary {
         GameInfo(name: info.name, year: info.year, publisher: info.publisher, developer: info.developer, genre: info.genre, crc: info.crc, thumbnailLookupSystemID: thumbnailLookupSystemID)
     }
 
+    // TODO: make this dynamic
     private static let libretroDatBasenameOverrides: [String: String] = [
         "nes": "Nintendo - Nintendo Entertainment System.dat", "snes": "Nintendo - Super Nintendo Entertainment System.dat",
         "n64": "Nintendo - Nintendo 64.dat", "nds": "Nintendo - Nintendo DS.dat", "gb": "Nintendo - Game Boy.dat",
@@ -675,6 +676,7 @@ actor LibretroDatabaseLibrary {
         "wonderswan": "Bandai - WonderSwan.dat", "wswanc": "Bandai - WonderSwan Color.dat",
     ]
 
+    // TODO: make this dynamic
     private static let redumpOnlySystems: Set<String> = ["psx", "ps2", "psp", "psvita", "ps3", "segacd", "pcecd", "pcfx", "pc98", "jaguar_cd", "cd32", "cdtv", "wii", "gcn"]
 
     private static let mameRdbBasenames: [String] = ["MAME.rdb", "MAME 2016.rdb", "MAME 2015.rdb", "MAME 2010.rdb", "MAME 2003-Plus.rdb", "MAME 2003.rdb", "MAME 2000.rdb"]

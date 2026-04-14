@@ -45,7 +45,7 @@ class LibretroBridgeSwift {
     }
 
     static func waitForCompletion() {
-        var result = LibretroBridge.waitForCompletion()
+        let result: Void = LibretroBridge.waitForCompletion()
         LoggerService.debug(category: "LibretroBridge", "Waiting for LibretroBridge to complete: \(result)")
         return result
     }
@@ -68,7 +68,7 @@ class LibretroBridgeSwift {
     }
     
     static func isPaused() -> Bool {
-        var paused = LibretroBridge.isPaused()
+        let paused = LibretroBridge.isPaused()
         LoggerService.debug(category: "LibretroBridge", "Checking if paused: \(paused)")
         return paused
     }
@@ -76,25 +76,25 @@ class LibretroBridgeSwift {
     // MARK: - Save States
     
     static func saveState() {
-        var result = LibretroBridge.saveState()
+        let result: Void = LibretroBridge.saveState()
         LoggerService.debug(category: "LibretroBridge", "Saving state: \(result)")
         return result
     }
 
     static func serializeState() -> Data? {
-        var data = LibretroBridge.serializeState()
-        LoggerService.debug(category: "LibretroBridge", "Serializing state: \(data)")
+        let data = LibretroBridge.serializeState()
+        LoggerService.debug(category: "LibretroBridge", "Serializing state: \(String(describing: data))")
         return data
     }
 
     static func unserializeState(_ data: Data) -> Bool {
-        var result = LibretroBridge.unserializeState(data)
+        let result = LibretroBridge.unserializeState(data)
         LoggerService.debug(category: "LibretroBridge", "Unserializing state: \(result)")
         return result
     }
 
     static func serializeSize() -> Int {
-        var size = LibretroBridge.serializeSize()
+        let size = LibretroBridge.serializeSize()
         LoggerService.debug(category: "LibretroBridge", "Getting serialize size: \(size)")
         return size
     }
@@ -119,7 +119,7 @@ class LibretroBridgeSwift {
     // MARK: - Video / Geometry
     
     static func currentRotation() -> Int {
-        var rotation = LibretroBridge.currentRotation()
+        let rotation = LibretroBridge.currentRotation()
         LoggerService.extreme(category: "LibretroBridge", "Getting current rotation: \(rotation)")
         return Int(rotation)
     }
@@ -132,8 +132,8 @@ class LibretroBridgeSwift {
     // MARK: - Core Options Accessors
     
     static func getOptionValue(forKey key: String) -> String? {
-        var value = LibretroBridge.getOptionValue(forKey: key)
-        LoggerService.debug(category: "LibretroBridge", "Getting option value: \(value)")
+        let value = LibretroBridge.getOptionValue(forKey: key)
+        LoggerService.debug(category: "LibretroBridge", "Getting option value: \(String(describing: value))")
         return value
     }
 
@@ -153,14 +153,14 @@ class LibretroBridgeSwift {
     }
 
     static func getOptionsDictionary() -> [String: Any]? {
-        var options = LibretroBridge.getOptionsDictionary() as [String: Any]?
-        LoggerService.debug(category: "LibretroBridge", "Getting options dictionary: \(options)")
+        let options = LibretroBridge.getOptionsDictionary() as [String: Any]?
+        LoggerService.debug(category: "LibretroBridge", "Getting options dictionary: \(String(describing: options))")
         return options
     }
 
     static func getCategoriesDictionary() -> [String: Any]? {
-        var categories = LibretroBridge.getCategoriesDictionary() as [String: Any]?
-        LoggerService.debug(category: "LibretroBridge", "Getting categories dictionary: \(categories)")
+        let categories = LibretroBridge.getCategoriesDictionary() as [String: Any]?
+        LoggerService.debug(category: "LibretroBridge", "Getting categories dictionary: \(String(describing: categories))")
         return categories
     }
 

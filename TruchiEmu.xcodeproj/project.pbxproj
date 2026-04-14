@@ -365,6 +365,37 @@
 		DDA592D72F8DD4EA00A9BEE9 /* ADVMAME.png in Resources */ = {isa = PBXBuildFile; fileRef = DDA591722F8DD4EA00A9BEE9 /* ADVMAME.png */; };
 		DDA592D82F8DD4EA00A9BEE9 /* segacd@132w.png in Resources */ = {isa = PBXBuildFile; fileRef = DDA591612F8DD4EA00A9BEE9 /* segacd@132w.png */; };
 		DDA592D92F8DD4EA00A9BEE9 /* msu1@132w.png in Resources */ = {isa = PBXBuildFile; fileRef = DDA5914C2F8DD4EA00A9BEE9 /* msu1@132w.png */; };
+		DDA592FA2F8E570A00A9BEE9 /* SNK - Neo Geo.dat in Resources */ = {isa = PBXBuildFile; fileRef = DDA592F32F8E570A00A9BEE9 /* SNK - Neo Geo.dat */; };
+		DDA592FB2F8E570A00A9BEE9 /* Sega - Saturn.dat in Resources */ = {isa = PBXBuildFile; fileRef = DDA592F12F8E570A00A9BEE9 /* Sega - Saturn.dat */; };
+		DDA592FC2F8E570A00A9BEE9 /* Atari - 2600.dat in Resources */ = {isa = PBXBuildFile; fileRef = DDA592DA2F8E570A00A9BEE9 /* Atari - 2600.dat */; };
+		DDA592FD2F8E570A00A9BEE9 /* MAME.dat in Resources */ = {isa = PBXBuildFile; fileRef = DDA592E02F8E570A00A9BEE9 /* MAME.dat */; };
+		DDA592FE2F8E570A00A9BEE9 /* Nintendo - Super Nintendo Entertainment System.dat in Resources */ = {isa = PBXBuildFile; fileRef = DDA592E92F8E570A00A9BEE9 /* Nintendo - Super Nintendo Entertainment System.dat */; };
+		DDA592FF2F8E570A00A9BEE9 /* Sega - Dreamcast.dat in Resources */ = {isa = PBXBuildFile; fileRef = DDA592ED2F8E570A00A9BEE9 /* Sega - Dreamcast.dat */; };
+		DDA593002F8E570A00A9BEE9 /* Sega - 32X.dat in Resources */ = {isa = PBXBuildFile; fileRef = DDA592EC2F8E570A00A9BEE9 /* Sega - 32X.dat */; };
+		DDA593012F8E570A00A9BEE9 /* Nintendo - Family Computer Disk System.dat in Resources */ = {isa = PBXBuildFile; fileRef = DDA592E22F8E570A00A9BEE9 /* Nintendo - Family Computer Disk System.dat */; };
+		DDA593022F8E570A00A9BEE9 /* Atari - 7800.dat in Resources */ = {isa = PBXBuildFile; fileRef = DDA592DB2F8E570A00A9BEE9 /* Atari - 7800.dat */; };
+		DDA593032F8E570A00A9BEE9 /* Bandai - WonderSwan Color.dat in Resources */ = {isa = PBXBuildFile; fileRef = DDA592DF2F8E570A00A9BEE9 /* Bandai - WonderSwan Color.dat */; };
+		DDA593042F8E570A00A9BEE9 /* Nintendo - Game Boy Color.dat in Resources */ = {isa = PBXBuildFile; fileRef = DDA592E52F8E570A00A9BEE9 /* Nintendo - Game Boy Color.dat */; };
+		DDA593052F8E570A00A9BEE9 /* Nintendo - Game Boy.dat in Resources */ = {isa = PBXBuildFile; fileRef = DDA592E32F8E570A00A9BEE9 /* Nintendo - Game Boy.dat */; };
+		DDA593062F8E570A00A9BEE9 /* Sega - SG-1000.dat in Resources */ = {isa = PBXBuildFile; fileRef = DDA592F22F8E570A00A9BEE9 /* Sega - SG-1000.dat */; };
+		DDA593072F8E570A00A9BEE9 /* Atari - Jaguar.dat in Resources */ = {isa = PBXBuildFile; fileRef = DDA592DC2F8E570A00A9BEE9 /* Atari - Jaguar.dat */; };
+		DDA593082F8E570A00A9BEE9 /* NEC - PC Engine - TurboGrafx 16.dat in Resources */ = {isa = PBXBuildFile; fileRef = DDA592E12F8E570A00A9BEE9 /* NEC - PC Engine - TurboGrafx 16.dat */; };
+		DDA593092F8E570A00A9BEE9 /* Nintendo - Nintendo DS.dat in Resources */ = {isa = PBXBuildFile; fileRef = DDA592E72F8E570A00A9BEE9 /* Nintendo - Nintendo DS.dat */; };
+		DDA5930A2F8E570A00A9BEE9 /* Nintendo - Nintendo 64.dat in Resources */ = {isa = PBXBuildFile; fileRef = DDA592E62F8E570A00A9BEE9 /* Nintendo - Nintendo 64.dat */; };
+		DDA5930B2F8E570A00A9BEE9 /* Sony - PlayStation.dat in Resources */ = {isa = PBXBuildFile; fileRef = DDA592F62F8E570A00A9BEE9 /* Sony - PlayStation.dat */; };
+		DDA5930C2F8E570A00A9BEE9 /* Sega - Master System - Mark III.dat in Resources */ = {isa = PBXBuildFile; fileRef = DDA592EF2F8E570A00A9BEE9 /* Sega - Master System - Mark III.dat */; };
+		DDA5930D2F8E570A00A9BEE9 /* SNK - Neo Geo Pocket.dat in Resources */ = {isa = PBXBuildFile; fileRef = DDA592F42F8E570A00A9BEE9 /* SNK - Neo Geo Pocket.dat */; };
+		DDA5930E2F8E570A00A9BEE9 /* Atari - Lynx.dat in Resources */ = {isa = PBXBuildFile; fileRef = DDA592DD2F8E570A00A9BEE9 /* Atari - Lynx.dat */; };
+		DDA5930F2F8E570A00A9BEE9 /* ScummVM.dat in Resources */ = {isa = PBXBuildFile; fileRef = DDA592EB2F8E570A00A9BEE9 /* ScummVM.dat */; };
+		DDA593102F8E570A00A9BEE9 /* Sony - PlayStation Portable.dat in Resources */ = {isa = PBXBuildFile; fileRef = DDA592F82F8E570A00A9BEE9 /* Sony - PlayStation Portable.dat */; };
+		DDA593112F8E570A00A9BEE9 /* Sega - Mega Drive - Genesis.dat in Resources */ = {isa = PBXBuildFile; fileRef = DDA592F02F8E570A00A9BEE9 /* Sega - Mega Drive - Genesis.dat */; };
+		DDA593122F8E570A00A9BEE9 /* SNK - Neo Geo Pocket Color.dat in Resources */ = {isa = PBXBuildFile; fileRef = DDA592F52F8E570A00A9BEE9 /* SNK - Neo Geo Pocket Color.dat */; };
+		DDA593132F8E570A00A9BEE9 /* Bandai - WonderSwan.dat in Resources */ = {isa = PBXBuildFile; fileRef = DDA592DE2F8E570A00A9BEE9 /* Bandai - WonderSwan.dat */; };
+		DDA593142F8E570A00A9BEE9 /* Sony - PlayStation 2.dat in Resources */ = {isa = PBXBuildFile; fileRef = DDA592F72F8E570A00A9BEE9 /* Sony - PlayStation 2.dat */; };
+		DDA593152F8E570A00A9BEE9 /* Nintendo - Game Boy Advance.dat in Resources */ = {isa = PBXBuildFile; fileRef = DDA592E42F8E570A00A9BEE9 /* Nintendo - Game Boy Advance.dat */; };
+		DDA593162F8E570A00A9BEE9 /* Nintendo - Virtual Boy.dat in Resources */ = {isa = PBXBuildFile; fileRef = DDA592EA2F8E570A00A9BEE9 /* Nintendo - Virtual Boy.dat */; };
+		DDA593172F8E570A00A9BEE9 /* Nintendo - Nintendo Entertainment System.dat in Resources */ = {isa = PBXBuildFile; fileRef = DDA592E82F8E570A00A9BEE9 /* Nintendo - Nintendo Entertainment System.dat */; };
+		DDA593182F8E570A00A9BEE9 /* Sega - Game Gear.dat in Resources */ = {isa = PBXBuildFile; fileRef = DDA592EE2F8E570A00A9BEE9 /* Sega - Game Gear.dat */; };
 		DDAC0689F34313CEF845E3FC /* DOSRunner.swift in Sources */ = {isa = PBXBuildFile; fileRef = E87593F08B97B23BA2CAC02A /* DOSRunner.swift */; };
 		DDD7A0432F8C8F12002E26DB /* Asset.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = DDD7A0422F8C8F12002E26DB /* Asset.xcassets */; };
 		E05CB54B2368ED8F5003136D /* MAMEModels.swift in Sources */ = {isa = PBXBuildFile; fileRef = BA50A4BA7CA5DC3C5FCB550D /* MAMEModels.swift */; };
@@ -780,6 +811,37 @@
 		DDA591EB2F8DD4EA00A9BEE9 /* mame_unified.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = mame_unified.json; sourceTree = "<group>"; };
 		DDA591EC2F8DD4EA00A9BEE9 /* SystemDatabase.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = SystemDatabase.json; sourceTree = "<group>"; };
 		DDA591ED2F8DD4EA00A9BEE9 /* TruchieEmu.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = TruchieEmu.entitlements; sourceTree = "<group>"; };
+		DDA592DA2F8E570A00A9BEE9 /* Atari - 2600.dat */ = {isa = PBXFileReference; lastKnownFileType = text; path = "Atari - 2600.dat"; sourceTree = "<group>"; };
+		DDA592DB2F8E570A00A9BEE9 /* Atari - 7800.dat */ = {isa = PBXFileReference; lastKnownFileType = text; path = "Atari - 7800.dat"; sourceTree = "<group>"; };
+		DDA592DC2F8E570A00A9BEE9 /* Atari - Jaguar.dat */ = {isa = PBXFileReference; lastKnownFileType = text; path = "Atari - Jaguar.dat"; sourceTree = "<group>"; };
+		DDA592DD2F8E570A00A9BEE9 /* Atari - Lynx.dat */ = {isa = PBXFileReference; lastKnownFileType = text; path = "Atari - Lynx.dat"; sourceTree = "<group>"; };
+		DDA592DE2F8E570A00A9BEE9 /* Bandai - WonderSwan.dat */ = {isa = PBXFileReference; lastKnownFileType = text; path = "Bandai - WonderSwan.dat"; sourceTree = "<group>"; };
+		DDA592DF2F8E570A00A9BEE9 /* Bandai - WonderSwan Color.dat */ = {isa = PBXFileReference; lastKnownFileType = text; path = "Bandai - WonderSwan Color.dat"; sourceTree = "<group>"; };
+		DDA592E02F8E570A00A9BEE9 /* MAME.dat */ = {isa = PBXFileReference; lastKnownFileType = text; path = MAME.dat; sourceTree = "<group>"; };
+		DDA592E12F8E570A00A9BEE9 /* NEC - PC Engine - TurboGrafx 16.dat */ = {isa = PBXFileReference; lastKnownFileType = text; path = "NEC - PC Engine - TurboGrafx 16.dat"; sourceTree = "<group>"; };
+		DDA592E22F8E570A00A9BEE9 /* Nintendo - Family Computer Disk System.dat */ = {isa = PBXFileReference; lastKnownFileType = text; path = "Nintendo - Family Computer Disk System.dat"; sourceTree = "<group>"; };
+		DDA592E32F8E570A00A9BEE9 /* Nintendo - Game Boy.dat */ = {isa = PBXFileReference; lastKnownFileType = text; path = "Nintendo - Game Boy.dat"; sourceTree = "<group>"; };
+		DDA592E42F8E570A00A9BEE9 /* Nintendo - Game Boy Advance.dat */ = {isa = PBXFileReference; lastKnownFileType = text; path = "Nintendo - Game Boy Advance.dat"; sourceTree = "<group>"; };
+		DDA592E52F8E570A00A9BEE9 /* Nintendo - Game Boy Color.dat */ = {isa = PBXFileReference; lastKnownFileType = text; path = "Nintendo - Game Boy Color.dat"; sourceTree = "<group>"; };
+		DDA592E62F8E570A00A9BEE9 /* Nintendo - Nintendo 64.dat */ = {isa = PBXFileReference; lastKnownFileType = text; path = "Nintendo - Nintendo 64.dat"; sourceTree = "<group>"; };
+		DDA592E72F8E570A00A9BEE9 /* Nintendo - Nintendo DS.dat */ = {isa = PBXFileReference; lastKnownFileType = text; path = "Nintendo - Nintendo DS.dat"; sourceTree = "<group>"; };
+		DDA592E82F8E570A00A9BEE9 /* Nintendo - Nintendo Entertainment System.dat */ = {isa = PBXFileReference; lastKnownFileType = text; path = "Nintendo - Nintendo Entertainment System.dat"; sourceTree = "<group>"; };
+		DDA592E92F8E570A00A9BEE9 /* Nintendo - Super Nintendo Entertainment System.dat */ = {isa = PBXFileReference; lastKnownFileType = text; path = "Nintendo - Super Nintendo Entertainment System.dat"; sourceTree = "<group>"; };
+		DDA592EA2F8E570A00A9BEE9 /* Nintendo - Virtual Boy.dat */ = {isa = PBXFileReference; lastKnownFileType = text; path = "Nintendo - Virtual Boy.dat"; sourceTree = "<group>"; };
+		DDA592EB2F8E570A00A9BEE9 /* ScummVM.dat */ = {isa = PBXFileReference; lastKnownFileType = text; path = ScummVM.dat; sourceTree = "<group>"; };
+		DDA592EC2F8E570A00A9BEE9 /* Sega - 32X.dat */ = {isa = PBXFileReference; lastKnownFileType = text; path = "Sega - 32X.dat"; sourceTree = "<group>"; };
+		DDA592ED2F8E570A00A9BEE9 /* Sega - Dreamcast.dat */ = {isa = PBXFileReference; lastKnownFileType = text; path = "Sega - Dreamcast.dat"; sourceTree = "<group>"; };
+		DDA592EE2F8E570A00A9BEE9 /* Sega - Game Gear.dat */ = {isa = PBXFileReference; lastKnownFileType = text; path = "Sega - Game Gear.dat"; sourceTree = "<group>"; };
+		DDA592EF2F8E570A00A9BEE9 /* Sega - Master System - Mark III.dat */ = {isa = PBXFileReference; lastKnownFileType = text; path = "Sega - Master System - Mark III.dat"; sourceTree = "<group>"; };
+		DDA592F02F8E570A00A9BEE9 /* Sega - Mega Drive - Genesis.dat */ = {isa = PBXFileReference; lastKnownFileType = text; path = "Sega - Mega Drive - Genesis.dat"; sourceTree = "<group>"; };
+		DDA592F12F8E570A00A9BEE9 /* Sega - Saturn.dat */ = {isa = PBXFileReference; lastKnownFileType = text; path = "Sega - Saturn.dat"; sourceTree = "<group>"; };
+		DDA592F22F8E570A00A9BEE9 /* Sega - SG-1000.dat */ = {isa = PBXFileReference; lastKnownFileType = text; path = "Sega - SG-1000.dat"; sourceTree = "<group>"; };
+		DDA592F32F8E570A00A9BEE9 /* SNK - Neo Geo.dat */ = {isa = PBXFileReference; lastKnownFileType = text; path = "SNK - Neo Geo.dat"; sourceTree = "<group>"; };
+		DDA592F42F8E570A00A9BEE9 /* SNK - Neo Geo Pocket.dat */ = {isa = PBXFileReference; lastKnownFileType = text; path = "SNK - Neo Geo Pocket.dat"; sourceTree = "<group>"; };
+		DDA592F52F8E570A00A9BEE9 /* SNK - Neo Geo Pocket Color.dat */ = {isa = PBXFileReference; lastKnownFileType = text; path = "SNK - Neo Geo Pocket Color.dat"; sourceTree = "<group>"; };
+		DDA592F62F8E570A00A9BEE9 /* Sony - PlayStation.dat */ = {isa = PBXFileReference; lastKnownFileType = text; path = "Sony - PlayStation.dat"; sourceTree = "<group>"; };
+		DDA592F72F8E570A00A9BEE9 /* Sony - PlayStation 2.dat */ = {isa = PBXFileReference; lastKnownFileType = text; path = "Sony - PlayStation 2.dat"; sourceTree = "<group>"; };
+		DDA592F82F8E570A00A9BEE9 /* Sony - PlayStation Portable.dat */ = {isa = PBXFileReference; lastKnownFileType = text; path = "Sony - PlayStation Portable.dat"; sourceTree = "<group>"; };
 		DDD7A0422F8C8F12002E26DB /* Asset.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Asset.xcassets; sourceTree = "<group>"; };
 		E35518FB34DEB243BF979DE0 /* LibretroCore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LibretroCore.swift; sourceTree = "<group>"; };
 		E3CF8589B867729FD91E572B /* GameDBLookupResult.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GameDBLookupResult.swift; sourceTree = "<group>"; };
@@ -1429,6 +1491,7 @@
 		DDA591EE2F8DD4EA00A9BEE9 /* Resources */ = {
 			isa = PBXGroup;
 			children = (
+				DDA592F92F8E570A00A9BEE9 /* LibretroDats */,
 				DDA591082F8DD4EA00A9BEE9 /* AppIcons */,
 				DDA591282F8DD4EA00A9BEE9 /* ControllerIcons */,
 				DDA591E32F8DD4EA00A9BEE9 /* EmulatorIcons */,
@@ -1440,6 +1503,44 @@
 				DDA591ED2F8DD4EA00A9BEE9 /* TruchieEmu.entitlements */,
 			);
 			path = Resources;
+			sourceTree = "<group>";
+		};
+		DDA592F92F8E570A00A9BEE9 /* LibretroDats */ = {
+			isa = PBXGroup;
+			children = (
+				DDA592DA2F8E570A00A9BEE9 /* Atari - 2600.dat */,
+				DDA592DB2F8E570A00A9BEE9 /* Atari - 7800.dat */,
+				DDA592DC2F8E570A00A9BEE9 /* Atari - Jaguar.dat */,
+				DDA592DD2F8E570A00A9BEE9 /* Atari - Lynx.dat */,
+				DDA592DE2F8E570A00A9BEE9 /* Bandai - WonderSwan.dat */,
+				DDA592DF2F8E570A00A9BEE9 /* Bandai - WonderSwan Color.dat */,
+				DDA592E02F8E570A00A9BEE9 /* MAME.dat */,
+				DDA592E12F8E570A00A9BEE9 /* NEC - PC Engine - TurboGrafx 16.dat */,
+				DDA592E22F8E570A00A9BEE9 /* Nintendo - Family Computer Disk System.dat */,
+				DDA592E32F8E570A00A9BEE9 /* Nintendo - Game Boy.dat */,
+				DDA592E42F8E570A00A9BEE9 /* Nintendo - Game Boy Advance.dat */,
+				DDA592E52F8E570A00A9BEE9 /* Nintendo - Game Boy Color.dat */,
+				DDA592E62F8E570A00A9BEE9 /* Nintendo - Nintendo 64.dat */,
+				DDA592E72F8E570A00A9BEE9 /* Nintendo - Nintendo DS.dat */,
+				DDA592E82F8E570A00A9BEE9 /* Nintendo - Nintendo Entertainment System.dat */,
+				DDA592E92F8E570A00A9BEE9 /* Nintendo - Super Nintendo Entertainment System.dat */,
+				DDA592EA2F8E570A00A9BEE9 /* Nintendo - Virtual Boy.dat */,
+				DDA592EB2F8E570A00A9BEE9 /* ScummVM.dat */,
+				DDA592EC2F8E570A00A9BEE9 /* Sega - 32X.dat */,
+				DDA592ED2F8E570A00A9BEE9 /* Sega - Dreamcast.dat */,
+				DDA592EE2F8E570A00A9BEE9 /* Sega - Game Gear.dat */,
+				DDA592EF2F8E570A00A9BEE9 /* Sega - Master System - Mark III.dat */,
+				DDA592F02F8E570A00A9BEE9 /* Sega - Mega Drive - Genesis.dat */,
+				DDA592F12F8E570A00A9BEE9 /* Sega - Saturn.dat */,
+				DDA592F22F8E570A00A9BEE9 /* Sega - SG-1000.dat */,
+				DDA592F32F8E570A00A9BEE9 /* SNK - Neo Geo.dat */,
+				DDA592F42F8E570A00A9BEE9 /* SNK - Neo Geo Pocket.dat */,
+				DDA592F52F8E570A00A9BEE9 /* SNK - Neo Geo Pocket Color.dat */,
+				DDA592F62F8E570A00A9BEE9 /* Sony - PlayStation.dat */,
+				DDA592F72F8E570A00A9BEE9 /* Sony - PlayStation 2.dat */,
+				DDA592F82F8E570A00A9BEE9 /* Sony - PlayStation Portable.dat */,
+			);
+			path = LibretroDats;
 			sourceTree = "<group>";
 		};
 		E2677C6594356F9F2E613AD9 /* Shaders */ = {
@@ -1686,6 +1787,37 @@
 				DDA592632F8DD4EA00A9BEE9 /* ARDUBOY.png in Resources */,
 				DDA592642F8DD4EA00A9BEE9 /* gb.ico in Resources */,
 				DDA592652F8DD4EA00A9BEE9 /* DOOM.png in Resources */,
+				DDA592FA2F8E570A00A9BEE9 /* SNK - Neo Geo.dat in Resources */,
+				DDA592FB2F8E570A00A9BEE9 /* Sega - Saturn.dat in Resources */,
+				DDA592FC2F8E570A00A9BEE9 /* Atari - 2600.dat in Resources */,
+				DDA592FD2F8E570A00A9BEE9 /* MAME.dat in Resources */,
+				DDA592FE2F8E570A00A9BEE9 /* Nintendo - Super Nintendo Entertainment System.dat in Resources */,
+				DDA592FF2F8E570A00A9BEE9 /* Sega - Dreamcast.dat in Resources */,
+				DDA593002F8E570A00A9BEE9 /* Sega - 32X.dat in Resources */,
+				DDA593012F8E570A00A9BEE9 /* Nintendo - Family Computer Disk System.dat in Resources */,
+				DDA593022F8E570A00A9BEE9 /* Atari - 7800.dat in Resources */,
+				DDA593032F8E570A00A9BEE9 /* Bandai - WonderSwan Color.dat in Resources */,
+				DDA593042F8E570A00A9BEE9 /* Nintendo - Game Boy Color.dat in Resources */,
+				DDA593052F8E570A00A9BEE9 /* Nintendo - Game Boy.dat in Resources */,
+				DDA593062F8E570A00A9BEE9 /* Sega - SG-1000.dat in Resources */,
+				DDA593072F8E570A00A9BEE9 /* Atari - Jaguar.dat in Resources */,
+				DDA593082F8E570A00A9BEE9 /* NEC - PC Engine - TurboGrafx 16.dat in Resources */,
+				DDA593092F8E570A00A9BEE9 /* Nintendo - Nintendo DS.dat in Resources */,
+				DDA5930A2F8E570A00A9BEE9 /* Nintendo - Nintendo 64.dat in Resources */,
+				DDA5930B2F8E570A00A9BEE9 /* Sony - PlayStation.dat in Resources */,
+				DDA5930C2F8E570A00A9BEE9 /* Sega - Master System - Mark III.dat in Resources */,
+				DDA5930D2F8E570A00A9BEE9 /* SNK - Neo Geo Pocket.dat in Resources */,
+				DDA5930E2F8E570A00A9BEE9 /* Atari - Lynx.dat in Resources */,
+				DDA5930F2F8E570A00A9BEE9 /* ScummVM.dat in Resources */,
+				DDA593102F8E570A00A9BEE9 /* Sony - PlayStation Portable.dat in Resources */,
+				DDA593112F8E570A00A9BEE9 /* Sega - Mega Drive - Genesis.dat in Resources */,
+				DDA593122F8E570A00A9BEE9 /* SNK - Neo Geo Pocket Color.dat in Resources */,
+				DDA593132F8E570A00A9BEE9 /* Bandai - WonderSwan.dat in Resources */,
+				DDA593142F8E570A00A9BEE9 /* Sony - PlayStation 2.dat in Resources */,
+				DDA593152F8E570A00A9BEE9 /* Nintendo - Game Boy Advance.dat in Resources */,
+				DDA593162F8E570A00A9BEE9 /* Nintendo - Virtual Boy.dat in Resources */,
+				DDA593172F8E570A00A9BEE9 /* Nintendo - Nintendo Entertainment System.dat in Resources */,
+				DDA593182F8E570A00A9BEE9 /* Sega - Game Gear.dat in Resources */,
 				DDA592662F8DD4EA00A9BEE9 /* PSPMINIS.png in Resources */,
 				DDA592672F8DD4EA00A9BEE9 /* sfc@132w.png in Resources */,
 				DDA592682F8DD4EA00A9BEE9 /* psp.ico in Resources */,
