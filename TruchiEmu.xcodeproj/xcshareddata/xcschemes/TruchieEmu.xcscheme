@@ -16,8 +16,8 @@
                BuildableIdentifier = "primary"
                BlueprintIdentifier = "CB3BA833402929B57F3054AB"
                BuildableName = "TruchieEmu.app"
-               BlueprintName = "TruchieEmu"
-               ReferencedContainer = "container:TruchieEmu.xcodeproj">
+               BlueprintName = "TruchiEmu"
+               ReferencedContainer = "container:TruchiEmu.xcodeproj">
             </BuildableReference>
          </BuildActionEntry>
          <BuildActionEntry
@@ -30,8 +30,8 @@
                BuildableIdentifier = "primary"
                BlueprintIdentifier = "0DFF743C147C334A93F07CF2"
                BuildableName = "TruchieEmuTests.xctest"
-               BlueprintName = "TruchieEmuTests"
-               ReferencedContainer = "container:TruchieEmu.xcodeproj">
+               BlueprintName = "TruchiEmuTests"
+               ReferencedContainer = "container:TruchiEmu.xcodeproj">
             </BuildableReference>
          </BuildActionEntry>
       </BuildActionEntries>
@@ -46,8 +46,8 @@
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "CB3BA833402929B57F3054AB"
             BuildableName = "TruchieEmu.app"
-            BlueprintName = "TruchieEmu"
-            ReferencedContainer = "container:TruchieEmu.xcodeproj">
+            BlueprintName = "TruchiEmu"
+            ReferencedContainer = "container:TruchiEmu.xcodeproj">
          </BuildableReference>
       </MacroExpansion>
       <Testables>
@@ -58,8 +58,8 @@
                BuildableIdentifier = "primary"
                BlueprintIdentifier = "0DFF743C147C334A93F07CF2"
                BuildableName = "TruchieEmuTests.xctest"
-               BlueprintName = "TruchieEmuTests"
-               ReferencedContainer = "container:TruchieEmu.xcodeproj">
+               BlueprintName = "TruchiEmuTests"
+               ReferencedContainer = "container:TruchiEmu.xcodeproj">
             </BuildableReference>
          </TestableReference>
       </Testables>
@@ -80,8 +80,8 @@
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "CB3BA833402929B57F3054AB"
             BuildableName = "TruchieEmu.app"
-            BlueprintName = "TruchieEmu"
-            ReferencedContainer = "container:TruchieEmu.xcodeproj">
+            BlueprintName = "TruchiEmu"
+            ReferencedContainer = "container:TruchiEmu.xcodeproj">
          </BuildableReference>
       </BuildableProductRunnable>
    </LaunchAction>
@@ -97,8 +97,8 @@
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "CB3BA833402929B57F3054AB"
             BuildableName = "TruchieEmu.app"
-            BlueprintName = "TruchieEmu"
-            ReferencedContainer = "container:TruchieEmu.xcodeproj">
+            BlueprintName = "TruchiEmu"
+            ReferencedContainer = "container:TruchiEmu.xcodeproj">
          </BuildableReference>
       </BuildableProductRunnable>
    </ProfileAction>

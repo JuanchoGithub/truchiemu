@@ -48,11 +48,14 @@ struct SettingsView: View {
                 case .logging:     LoggingSettingsView()
                 case .about:       AboutView()
                 }
-            }
-            .frame(minWidth: 550, minHeight: 420)
-        }
-        .frame(minWidth: 750, minHeight: 500)
-    }
+             }
+             .frame(minWidth: 550, minHeight: 420)
+         }
+         .frame(minWidth: 750, minHeight: 500)
+         .sheet(item: $coreManager.pendingDownload) { pending in
+             CoreDownloadSheet(pending: pending)
+         }
+     }
     
     private func sidebarItem(icon: String, label: String, page: Page) -> some View {
         HStack(spacing: 12) {

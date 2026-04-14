@@ -455,7 +455,7 @@
 		5F78F845B9C63B8B6F072751 /* LibraryAutomationCoordinator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LibraryAutomationCoordinator.swift; sourceTree = "<group>"; };
 		60BB5F4BA1A30F9A52DB839A /* SidebarRowButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SidebarRowButton.swift; sourceTree = "<group>"; };
 		64A688BC67EE841CEE4466D4 /* BezelModels.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BezelModels.swift; sourceTree = "<group>"; };
-		6585DF4DC7B0FEC323F3AB80 /* TruchieEmuTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = TruchieEmuTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		6585DF4DC7B0FEC323F3AB80 /* TruchiEmuTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = TruchiEmuTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		676A433C26413EA5440A49A6 /* TruchieEmu-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "TruchieEmu-Bridging-Header.h"; sourceTree = "<group>"; };
 		67828B9B95A21FE57196B832 /* SaveStateManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SaveStateManager.swift; sourceTree = "<group>"; };
 		681D379EFFCD99F4BDE955CA /* BezelDownloadProgressTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BezelDownloadProgressTests.swift; sourceTree = "<group>"; };
@@ -503,7 +503,7 @@
 		A853FDE98AE470141649C4D7 /* BezelBrowserView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BezelBrowserView.swift; sourceTree = "<group>"; };
 		AAB697A681DC7032BBEA56F0 /* CoreOptionsRepository.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CoreOptionsRepository.swift; sourceTree = "<group>"; };
 		ACC34ADA0917BCC91FAA1989 /* SystemInfo.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SystemInfo.swift; sourceTree = "<group>"; };
-		ACEC10EE62F062AF5FAEE9BB /* TruchieEmu.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = TruchieEmu.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		ACEC10EE62F062AF5FAEE9BB /* TruchiEmu.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = TruchiEmu.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		AD6D8A426A0F0B5278A2061D /* LibretroRDBParser.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LibretroRDBParser.swift; sourceTree = "<group>"; };
 		B286AEB9B77657F1BFA3B9EA /* BezelsSection.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BezelsSection.swift; sourceTree = "<group>"; };
 		B6B43857C6383165BD22A9AF /* RetroAchievementsSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RetroAchievementsSettingsView.swift; sourceTree = "<group>"; };
@@ -1084,8 +1084,8 @@
 		898E3BAF8FE5EB5068391AB1 /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				ACEC10EE62F062AF5FAEE9BB /* TruchieEmu.app */,
-				6585DF4DC7B0FEC323F3AB80 /* TruchieEmuTests.xctest */,
+				ACEC10EE62F062AF5FAEE9BB /* TruchiEmu.app */,
+				6585DF4DC7B0FEC323F3AB80 /* TruchiEmuTests.xctest */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -1491,9 +1491,9 @@
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
-		0DFF743C147C334A93F07CF2 /* TruchieEmuTests */ = {
+		0DFF743C147C334A93F07CF2 /* TruchiEmuTests */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = 18BF14EC82D4DBF8D574A3B2 /* Build configuration list for PBXNativeTarget "TruchieEmuTests" */;
+			buildConfigurationList = 18BF14EC82D4DBF8D574A3B2 /* Build configuration list for PBXNativeTarget "TruchiEmuTests" */;
 			buildPhases = (
 				C9FC12B027E6C2F4A5B93B92 /* Sources */,
 			);
@@ -1502,16 +1502,16 @@
 			dependencies = (
 				5C95227A25E59E39D746DB65 /* PBXTargetDependency */,
 			);
-			name = TruchieEmuTests;
+			name = TruchiEmuTests;
 			packageProductDependencies = (
 			);
 			productName = TruchieEmuTests;
-			productReference = 6585DF4DC7B0FEC323F3AB80 /* TruchieEmuTests.xctest */;
+			productReference = 6585DF4DC7B0FEC323F3AB80 /* TruchiEmuTests.xctest */;
 			productType = "com.apple.product-type.bundle.unit-test";
 		};
-		CB3BA833402929B57F3054AB /* TruchieEmu */ = {
+		CB3BA833402929B57F3054AB /* TruchiEmu */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = FC61AF2BB3ABF32D52509631 /* Build configuration list for PBXNativeTarget "TruchieEmu" */;
+			buildConfigurationList = FC61AF2BB3ABF32D52509631 /* Build configuration list for PBXNativeTarget "TruchiEmu" */;
 			buildPhases = (
 				16A55D322B3BC741416F8011 /* Sources */,
 				72BEA9F28E3292A80ED17226 /* Resources */,
@@ -1520,11 +1520,11 @@
 			);
 			dependencies = (
 			);
-			name = TruchieEmu;
+			name = TruchiEmu;
 			packageProductDependencies = (
 			);
 			productName = TruchieEmu;
-			productReference = ACEC10EE62F062AF5FAEE9BB /* TruchieEmu.app */;
+			productReference = ACEC10EE62F062AF5FAEE9BB /* TruchiEmu.app */;
 			productType = "com.apple.product-type.application";
 		};
 /* End PBXNativeTarget section */
@@ -1541,7 +1541,7 @@
 					};
 				};
 			};
-			buildConfigurationList = E0C01427B5CD045D4AC754BE /* Build configuration list for PBXProject "TruchieEmu" */;
+			buildConfigurationList = E0C01427B5CD045D4AC754BE /* Build configuration list for PBXProject "TruchiEmu" */;
 			developmentRegion = en;
 			hasScannedForEncodings = 0;
 			knownRegions = (
@@ -1555,8 +1555,8 @@
 			projectDirPath = "";
 			projectRoot = "";
 			targets = (
-				CB3BA833402929B57F3054AB /* TruchieEmu */,
-				0DFF743C147C334A93F07CF2 /* TruchieEmuTests */,
+				CB3BA833402929B57F3054AB /* TruchiEmu */,
+				0DFF743C147C334A93F07CF2 /* TruchiEmuTests */,
 			);
 		};
 /* End PBXProject section */
@@ -1980,7 +1980,7 @@
 /* Begin PBXTargetDependency section */
 		5C95227A25E59E39D746DB65 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
-			target = CB3BA833402929B57F3054AB /* TruchieEmu */;
+			target = CB3BA833402929B57F3054AB /* TruchiEmu */;
 			targetProxy = 09F8EF341958BC84153A61A1 /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
@@ -2096,7 +2096,7 @@
 					SwiftData,
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = com.truchiemu.app;
-				PRODUCT_NAME = TruchieEmu;
+				PRODUCT_NAME = TruchiEmu;
 				RUNTIME_EXCEPTION_ALLOW_DYLD_ENVIRONMENT_VARIABLES = NO;
 				RUNTIME_EXCEPTION_ALLOW_JIT = YES;
 				RUNTIME_EXCEPTION_ALLOW_UNSIGNED_EXECUTABLE_MEMORY = YES;
@@ -2178,10 +2178,10 @@
 				);
 				MACOSX_DEPLOYMENT_TARGET = 14.0;
 				PRODUCT_BUNDLE_IDENTIFIER = com.truchiemu.tests;
-				PRODUCT_NAME = TruchieEmuTests;
+				PRODUCT_NAME = TruchiEmuTests;
 				SDKROOT = macosx;
 				SWIFT_VERSION = 5.9;
-				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/TruchieEmu.app/Contents/MacOS/TruchieEmu";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/TruchiEmu.app/Contents/MacOS/TruchiEmu";
 			};
 			name = Debug;
 		};
@@ -2198,10 +2198,10 @@
 				);
 				MACOSX_DEPLOYMENT_TARGET = 14.0;
 				PRODUCT_BUNDLE_IDENTIFIER = com.truchiemu.tests;
-				PRODUCT_NAME = TruchieEmuTests;
+				PRODUCT_NAME = TruchiEmuTests;
 				SDKROOT = macosx;
 				SWIFT_VERSION = 5.9;
-				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/TruchieEmu.app/Contents/MacOS/TruchieEmu";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/TruchiEmu.app/Contents/MacOS/TruchiEmu";
 			};
 			name = Release;
 		};
@@ -2245,7 +2245,7 @@
 					SwiftData,
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = com.truchiemu.app;
-				PRODUCT_NAME = TruchieEmu;
+				PRODUCT_NAME = TruchiEmu;
 				SDKROOT = macosx;
 				SWIFT_OBJC_BRIDGING_HEADER = "TruchieEmu/Engine/TruchieEmu-Bridging-Header.h";
 				SWIFT_VERSION = 5.9;
@@ -2255,7 +2255,7 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
-		18BF14EC82D4DBF8D574A3B2 /* Build configuration list for PBXNativeTarget "TruchieEmuTests" */ = {
+		18BF14EC82D4DBF8D574A3B2 /* Build configuration list for PBXNativeTarget "TruchiEmuTests" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				4CC5A5B5BCF3FF4048266F99 /* Debug */,
@@ -2264,7 +2264,7 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Debug;
 		};
-		E0C01427B5CD045D4AC754BE /* Build configuration list for PBXProject "TruchieEmu" */ = {
+		E0C01427B5CD045D4AC754BE /* Build configuration list for PBXProject "TruchiEmu" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				0B9F0BC16E2A5DEADF60344E /* Debug */,
@@ -2273,7 +2273,7 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Debug;
 		};
-		FC61AF2BB3ABF32D52509631 /* Build configuration list for PBXNativeTarget "TruchieEmu" */ = {
+		FC61AF2BB3ABF32D52509631 /* Build configuration list for PBXNativeTarget "TruchiEmu" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				CFCDDDC495B6418772AF4305 /* Debug */,
