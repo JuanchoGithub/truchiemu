@@ -89,7 +89,7 @@ actor ROMScanner {
         }
         
         let ignoredTime = Date().timeIntervalSince(ignoredStart)
-        LoggerService.info(category: "ROMScanner", "Ignored files build: \(ignoredURLs.count) ignored in \(String(format: "%.2f", ignoredTime))s")
+        LoggerService.debug(category: "ROMScanner", "Ignored files build: \(ignoredURLs.count) ignored in \(String(format: "%.2f", ignoredTime))s")
 
         let orderedURLs = nonZipURLs + zipURLs
         let totalFiles = orderedURLs.count

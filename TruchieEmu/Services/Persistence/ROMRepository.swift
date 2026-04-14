@@ -14,6 +14,19 @@ final class ROMRepository {
     }
 
     // MARK: - ROM Operations
+    func deleteAllROMS() {
+        let descriptor = FetchDescriptor<ROMEntry>()
+        do {
+            let entries = try context.fetch(descriptor)
+            for entry in entries {
+                context.delete(entry)
+            }
+            try context.save()
+            LoggerService.info(category: "ROMRepository", "Deleted all ROM entries.")
+        } catch {
+            LoggerService.error(category: "ROMRepository", "Failed to delete all ROMs: \(error.localizedDescription)")
+        }
+    }
 
     /// Fetch all ROMs and map them to ROM structs.
     func allROMs() -> [ROM] {

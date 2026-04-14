@@ -389,6 +389,19 @@ final class LibraryMetadataStore: ObservableObject {
 
     // MARK: - Deletion
 
+    func deleteAllMetadata() {
+        entries.removeAll()
+        let descriptor = FetchDescriptor<ROMMetadataEntry>()
+        do {
+            let allItems = try context.fetch(descriptor)
+            for item in allItems { context.delete(item) }
+            try context.save()
+            LoggerService.info(category: "MetadataStore", "Deleted all metadata entries.")
+        } catch {
+            LoggerService.error(category: "MetadataStore", "Failed to delete all metadata: \(error.localizedDescription)")
+        }
+    }
+
     func deleteMetadata(for rom: ROM) {
         deleteMetadataEntry(Self.pathKey(for: rom))
     }

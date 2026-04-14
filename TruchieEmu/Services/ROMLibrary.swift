@@ -167,7 +167,7 @@ class ROMLibrary: ObservableObject {
         } else { repository.saveROMs(roms) }
     }
 
-
+    // This method is called after any folder removal to ensure we don't keep orphaned ROM entries
     private func purgeROMsOutsideLibraryFolders() {
         let validPaths = primaryFolders.map { $0.url.path } + subfolderMap.values.flatMap { $0.map { $0.url.path } }
         guard !validPaths.isEmpty else {
@@ -420,18 +420,31 @@ class ROMLibrary: ObservableObject {
         ScummVMCacheManager.cleanupOrphanedCaches(activeScummvmPaths: activeScummVMPaths)
     }
 
+    func deleteAllFoldersAndROMs() {
+        for idx in libraryFolders.indices.reversed() { removeLibraryFolder(at: idx) }
+        roms.removeAll()
+        fileIndex.removeAll()
+        saveROMsToDatabase()
+    }
+
     func fullRescan() async {
         isScanning = true
         scanProgress = 0
+        
+        // 1. Clear UI state
         roms = []
         fileIndex = [:]
-        saveROMsToDatabase()
+
+        // 2. CLEAR THE DATABASE
+        repository.deleteAllROMS()
+        LibraryMetadataStore.shared.deleteAllMetadata()
 
         for (i, folder) in libraryFolders.enumerated() {
             if !isScanning { break }
             let last = i == libraryFolders.count - 1
             await scanROMs(in: folder, runAutomationAfter: last)
         }
+        updateCounts()
         isScanning = false
     }
 

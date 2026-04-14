@@ -42,14 +42,11 @@ enum ROMIdentifier {
             system.extensions.contains { normalize(extension: $0) == extLower }
         }
         let isAmbiguous = ambiguousSystems.count > 1
-        LoggerService.debug(category: "ROMIdentifier", "Extension for file \(filename): '\(extLower)' is \(isAmbiguous ? "ambiguous" : "unique") with \(ambiguousSystems.count) matching systems: \(ambiguousSystems.map { $0.id })")
         if isAmbiguous {
             if let headerID = peekSystemID(url: url, systems: ambiguousSystems) {
                 candidates[headerID, default: 0] += 100
-                LoggerService.debug(category: "ROMIdentifier", "Magic Header match for \(filename): \(headerID)")
+                LoggerService.extreme(category: "ROMIdentifier", "Magic Header match for \(filename): \(headerID)")
             }
-        } else {
-            LoggerService.debug(category: "ROMIdentifier", "Skipping magic header check for \(filename) due to unique extension '\(extLower)'")
         }
 
         // 2. Archive Analysis (High Confidence: 90 pts)
@@ -57,51 +54,42 @@ enum ROMIdentifier {
         if archiveFormats.contains(extLower) {
             if let archiveSystem = identifyArchive(url: url) {
                 candidates[archiveSystem.id, default: 0] += 90
-                LoggerService.debug(category: "ROMIdentifier", "Archive match for \(filename): \(archiveSystem.id)")
+                LoggerService.extreme(category: "ROMIdentifier", "Archive match for \(filename): \(archiveSystem.id)")
             }
-        } else {
-            LoggerService.debug(category: "ROMIdentifier", "Skipping archive analysis for \(filename) since it's not a recognized archive (\(archiveFormats.joined(separator: ", "))) format ('\(extLower)')")
         }
-
         // 3. Metadata Scoring (Extension & Path)
         scoreByMetadata(url: url, extLower: extLower, parentNames: parentNames, candidates: &candidates)
         
         //3.5 CD-based System Detection (PS1/PS2) via SYSTEM.CNF
         if ["bin", "iso", "img", "cue"].contains(extLower) {
-            LoggerService.debug(category: "ROMIdentifier", "File \(filename) has CD-based extension '\(extLower)', attempting disc-based system identification")
             identifyDiscSystem(url: url, candidates: &candidates)
-        } else {
-            LoggerService.debug(category: "ROMIdentifier", "Skipping disc-based system identification for \(filename) since it's not a CD-based extension")
         }
 
         // 4. MAME Lookup (Specialized: 90 pts)
         if extLower == "zip" {
             scoreByMAME(url: url, candidates: &candidates)
-        } else {
-            LoggerService.debug(category: "ROMIdentifier", "Skipping MAME lookup for \(filename) since it's not a ZIP archive (extension: '\(extLower)')")
         }
 
         // --- FINAL DECISION ---
         var sortedCandidates = candidates.sorted { $0.value > $1.value }
-        LoggerService.debug(category: "ROMIdentifier", "Candidate scores for \(filename): \(sortedCandidates)")
 
         //if the order of candidates is MAME then NeoGeo, choose NeoGeo
         if sortedCandidates.first?.key == "mame", let second = sortedCandidates.dropFirst().first, second.key == "neogeo" {
             // swap scores to prefer Neo Geo
             candidates["neogeo", default: 0] += candidates["mame", default: 0] + 10 // give Neo Geo a boost over MAME
             sortedCandidates = candidates.sorted { $0.value > $1.value }
-            LoggerService.debug(category: "ROMIdentifier", "Adjusting scores for \(filename) to prefer Neo Geo over MAME when both are present, new scores: \(sortedCandidates)")
         }
 
         
         if let winner = sortedCandidates.first, winner.value >= 30 {
-            LoggerService.debug(category: "ROMIdentifier", "High confidence match for \(filename): \(winner.key) (\(winner.value) pts)")
+            LoggerService.debug(category: "ROMIdentifier", "Winner for \(filename) is \(winner.key) with scores \(sortedCandidates.map { "\($0.key): \($0.value)" }.joined(separator: ", "))")
             return cachedSystems.first { $0.id == winner.key } ?? SystemDatabase.system(forID: winner.key)
+        } else {
+            LoggerService.debug(category: "ROMIdentifier", "No clear winner for \(filename). Candidates: \(sortedCandidates.map { "\($0.key): \($0.value)" }.joined(separator: ", "))")
         }
 
         // Fallback 1: Check if any parent folder name is a valid System ID
         if let folderSystem = parentNames.lazy.compactMap({ name in cachedSystems.first(where: { $0.id.lowercased() == name }) }).first {
-            LoggerService.debug(category: "ROMIdentifier", "Fallback: Folder name match for \(filename): \(folderSystem.id)")
             return folderSystem
         }
 
@@ -130,7 +118,6 @@ struct ISOScanner {
         
         // Search for the filename string in the raw data
         guard let range = data.range(of: targetName) else {
-            LoggerService.debug(category: "ROMIdentifier", "SYSTEM.CNF not found in first 1MB of ISO \(url.lastPathComponent)")
             return nil
         }
         
@@ -150,17 +137,15 @@ struct ISOScanner {
         // Seek to that offset and read the file
         try? fileHandle.seek(toOffset: fileOffset)
         guard let fileData = try? fileHandle.read(upToCount: 2048) else { return nil }
-        LoggerService.debug(category: "ROMIdentifier", "Extracted SYSTEM.CNF from ISO \(url.lastPathComponent) at offset \(fileOffset), file data: \(fileData)")
         return String(data: fileData, encoding: .ascii)
     }
 }
 
 static func identifyDiscSystem(url: URL, candidates: inout [String: Int]) -> String? {
-    LoggerService.debug(category: "ROMIdentifier", "Attempting disc-based system identification for \(url.lastPathComponent)")
+    LoggerService.extreme(category: "ROMIdentifier", "Attempting disc-based system identification for \(url.lastPathComponent)")
     guard let config = ISOScanner.extractSystemConfig(from: url) else {
         // If SYSTEM.CNF is missing, check for PARAM.SFO (PSP)
         if hasPSPParameterFile(url: url) { 
-            LoggerService.debug(category: "ROMIdentifier", "PARAM.SFO found in ISO \(url.lastPathComponent) without SYSTEM.CNF, strongly indicating PSP")
             candidates["psp", default: 0] += 100
             return "psp" 
         }
@@ -169,22 +154,18 @@ static func identifyDiscSystem(url: URL, candidates: inout [String: Int]) -> Str
     
     // hardcoded for PS1 and PS2
     if config.contains("BOOT2") {
-        LoggerService.debug(category: "ROMIdentifier", "Identified SYSTEM.CNF with BOOT2 for \(url.lastPathComponent), strongly indicating PS2 -> \(config)")
         candidates["ps2", default: 0] += 100
         return "ps2"
     } else if config.contains("BOOT") {
-        LoggerService.debug(category: "ROMIdentifier", "Identified SYSTEM.CNF with BOOT for \(url.lastPathComponent), strongly indicating PS1 (but could be PS2) -> \(config)")
         candidates["ps1", default: 0] += 70
         candidates["psx", default: 0] += 70
         return "psx"
     }
-    LoggerService.debug(category: "ROMIdentifier", "SYSTEM.CNF found in \(url.lastPathComponent) but no clear BOOT indicators. Unable to confidently identify system.")
     return nil
 }
 
 /// Checks for a PSP "PARAM.SFO" file within an ISO/Disc image
 private static func hasPSPParameterFile(url: URL) -> Bool {
-    LoggerService.debug(category: "ROMIdentifier", "Checking for PARAM.SFO in ISO \(url.lastPathComponent) to identify potential PSP disc image")
     guard let fileHandle = try? FileHandle(forReadingFrom: url) else { return false }
     defer { try? fileHandle.close() }
     
@@ -195,7 +176,6 @@ private static func hasPSPParameterFile(url: URL) -> Bool {
     // 1. Search for the string "PARAM.SFO" in the directory records
     let targetName = "PARAM.SFO".data(using: .ascii)!
     guard let range = data.range(of: targetName) else {
-        LoggerService.debug(category: "ROMIdentifier", "PARAM.SFO not found in ISO \(url.lastPathComponent)")
         return false
     }
     
@@ -212,7 +192,6 @@ private static func hasPSPParameterFile(url: URL) -> Bool {
     
     if let header = try? fileHandle.read(upToCount: 4) {
         // Verify "\0PSF" (00 50 53 46)
-        LoggerService.debug(category: "ROMIdentifier", "Checking PARAM.SFO header in ISO \(url.lastPathComponent) at offset \(fileOffset)")
         let pspMagic: [UInt8] = [0x00, 0x50, 0x53, 0x46]
         return Array(header) == pspMagic
     }
@@ -229,7 +208,6 @@ private static func scoreByMetadata(url: URL, extLower: String, parentNames: [St
             system.extensions.contains { normalize(extension: $0) == extLower } 
         }
         let isUniqueExt = systemsWithExt.count == 1
-        LoggerService.debug(category: "ROMIdentifier", "File \(url.lastPathComponent): extension '\(extLower)' matches \(systemsWithExt.count) systems: \(systemsWithExt.map { $0.id })")
         
         for system in systemsWithExt {
             candidates[system.id, default: 0] += isUniqueExt ? 80 : 40
@@ -275,7 +253,6 @@ private static func scoreByMetadata(url: URL, extLower: String, parentNames: [St
             
             if pathScore > 0 {
                 candidates[system.id, default: 0] += pathScore
-                LoggerService.debug(category: "ROMIdentifier", "Total path score for \(url.lastPathComponent) and system \(system.id): \(pathScore) pts")
             }
         }
     }
@@ -297,24 +274,19 @@ private static func scoreByMetadata(url: URL, extLower: String, parentNames: [St
 
         // Quick Path Check for Archives
         if parentName.contains("mame") || parentName.contains("arcade") || parentName.contains("fba") || parentName.contains("fbneo") {
-            LoggerService.debug(category: "ROMIdentifier", "Archive path match for \(url.lastPathComponent): mame")
             return SystemDatabase.system(forID: "mame")
         }
         if parentName.contains("dos") || parentName.contains("dosbox") || parentName.contains("pc") {
-            LoggerService.debug(category: "ROMIdentifier", "Archive path match for \(url.lastPathComponent): dos")
             return SystemDatabase.system(forID: "dos")
         }
         if parentName.contains("scummvm") || parentName.contains("scumm") {
-            LoggerService.debug(category: "ROMIdentifier", "Archive path match for \(url.lastPathComponent): scummvm")
             return SystemDatabase.system(forID: "scummvm")
         }
         if parentName.contains("32x") || parentName.contains("genesis32x") || parentName.contains("sega32x") {
-            LoggerService.debug(category: "ROMIdentifier", "Archive path match for \(url.lastPathComponent): 32x")
             return SystemDatabase.system(forID: "32x")
         }
 
         if KnownBIOS.isKnownBios(filename: url.lastPathComponent) {
-            LoggerService.debug(category: "ROMIdentifier", "Archive path match for \(url.lastPathComponent): BIOS")
             return nil
         }
 
@@ -377,7 +349,6 @@ private static func scoreByMetadata(url: URL, extLower: String, parentNames: [St
         // 4. Resolve Winner
         // Sort by score descending and ensure we meet a minimum confidence threshold
         if let bestMatch = scores.sorted(by: { $0.value > $1.value }).first, bestMatch.value >= 3 {
-            LoggerService.debug(category: "ROMIdentifier", "Archive \(url.lastPathComponent) identified as \(bestMatch.key) (Score: \(bestMatch.value))")
             return SystemDatabase.system(forID: bestMatch.key)
         }
         
@@ -388,7 +359,6 @@ private static func scoreByMetadata(url: URL, extLower: String, parentNames: [St
 
     private static func peekSystemID(url: URL, systems: [SystemInfo]) -> String? {
         let ext = url.pathExtension.lowercased()
-        LoggerService.debug(category: "ROMIdentifier", "Attempting to peek header for \(url.lastPathComponent) with extension: \(ext)")
 
         if ext == "cue" {
             guard let content = try? String(contentsOf: url, encoding: .utf8) else { return nil }
@@ -404,14 +374,12 @@ private static func scoreByMetadata(url: URL, extLower: String, parentNames: [St
                     }
                     if let name = filename as String? {
                         let fileURL = url.deletingLastPathComponent().appendingPathComponent(name)
-                        LoggerService.debug(category: "ROMIdentifier", "Found a .cue file. Checking file header for \(fileURL.lastPathComponent) from CUE sheet,")
                         return peekHeader(url: fileURL, systems: systems)
                     }
                 }
             }
             return nil
         } else {
-            LoggerService.debug(category: "ROMIdentifier", "Checking file header for \(url.lastPathComponent),")
             return peekHeader(url: url, systems: systems)
         }
     }
@@ -419,52 +387,27 @@ private static func scoreByMetadata(url: URL, extLower: String, parentNames: [St
     // MARK: - Improved Header Peeking
 
     private static func peekHeader(url: URL, systems: [SystemInfo]) -> String? {
-        LoggerService.debug(category: "ROMIdentifier", "Peeking header for \(url.lastPathComponent)")
         guard let handle = try? FileHandle(forReadingFrom: url) else { return nil }
-        LoggerService.debug(category: "ROMIdentifier", "Successfully opened file handle for \(url.lastPathComponent)")
         defer { try? handle.close() }
-        LoggerService.debug(category: "ROMIdentifier", "Starting magic header checks for \(url.lastPathComponent) against \(systems.count) systems")
 
         do {
-            LoggerService.debug(category: "ROMIdentifier", "Checking magic headers for \(url.lastPathComponent) against \(systems.count) candi date systems")
             for system in systems {
-                LoggerService.debug(category: "ROMIdentifier", "Evaluating system \(system) for file \(url.lastPathComponent)")
-                if system.magicHeaders.isEmpty {
-                    LoggerService.debug(category: "ROMIdentifier", "For \(url.lastPathComponent): System \(system.id) has no magic headers defined \(system.magicHeaders). Skipping.")
-                    continue
-                } else {
-                    LoggerService.debug(category: "ROMIdentifier", "For \(url.lastPathComponent): System \(system.id) has \(system.magicHeaders.count) magic headers to check.")
-                }
-                // what if system does not have magicHeaders or is nul?
-                let magicHeaders = system.magicHeaders
-
-                if magicHeaders.isEmpty {
-                    LoggerService.debug(category: "ROMIdentifier", "For \(url.lastPathComponent): System \(system.id) has no magic headers defined. Skipping.")
-                    continue
-                }
-                for magicHeader in magicHeaders {
-                    LoggerService.debug(category: "ROMIdentifier", "Checking magic header for system \(system.id) at offset \(magicHeader.offset) and bytes: \(magicHeader.bytes ?? "nil") in file \(url.lastPathComponent)")
+                for magicHeader in system.magicHeaders {
                     // 1. Convert the JSON string into actual raw bytes
                     let headerBytes = magicHeader.bytes
                     let offset = magicHeader.offset 
                     
                     let expectedData = parseHeaderBytes(headerBytes ?? "", url.lastPathComponent ?? "")
-                    LoggerService.debug(category: "ROMIdentifier", "For \(url.lastPathComponent): Parsed magic header bytes for system \(system.id) at offset \(offset): \(expectedData as NSData)")
                     if expectedData.isEmpty { continue }
 
                     // 2. Seek to the offset
                     try handle.seek(toOffset: UInt64(offset))
-                    LoggerService.debug(category: "ROMIdentifier", "For \(url.lastPathComponent): Seeking to offset \(offset) for system \(system.id) in file \(url.lastPathComponent)")
                     
                     // 3. Read exactly the number of bytes needed
                     let data = try handle.read(upToCount: expectedData.count) ?? Data()
-                    LoggerService.debug(category: "ROMIdentifier", "For \(url.lastPathComponent): Read data at offset \(offset) for system \(system.id) in file \(url.lastPathComponent): \(data as NSData) vs expected: \(expectedData as NSData)")
                     if data == expectedData {
-                        LoggerService.debug(category: "ROMIdentifier", "For \(url.lastPathComponent): Magic header match for \(url.lastPathComponent): \(system.id)")
                         return system.id
-                    } else {
-                        LoggerService.debug(category: "ROMIdentifier", "For \(url.lastPathComponent): No match at offset \(offset) for system \(system.id) in file \(url.lastPathComponent). Read data: \(data as NSData), expected: \(expectedData as NSData)")
-                    }
+                    } 
                 }
             }
         } catch {
@@ -483,7 +426,6 @@ private static func scoreByMetadata(url: URL, extLower: String, parentNames: [St
         // Case 1: It's a Hex String (contains spaces or is purely hex characters)
         // Check if it looks like "AA BB CC" or "AABBCC"
         let hexPattern = "^[0-9A-Fa-f\\s]+$"
-        LoggerService.debug(category: "ROMIdentifier", "For \(fileURL): Parsing magic header string: '\(input)'")
         if input.range(of: hexPattern, options: .regularExpression) != nil && input.contains(" ") {
             let hexComponents = input.components(separatedBy: .whitespaces).filter { !$0.isEmpty }
             var data = Data()
@@ -492,7 +434,6 @@ private static func scoreByMetadata(url: URL, extLower: String, parentNames: [St
                     data.append(byte)
                 }
             }
-            LoggerService.debug(category: "ROMIdentifier", "For \(fileURL): Parsed hex string \(input) into data: \(data as NSData)")
             return data
         }
 
@@ -516,11 +457,9 @@ private static func scoreByMetadata(url: URL, extLower: String, parentNames: [St
                     data.append(byte)
                 }
             }
-            LoggerService.debug(category: "ROMIdentifier", "For \(fileURL): Parsed escaped hex string \(input) into data: \(data as NSData)")
             return data
         }
         let data = input.data(using: .utf8) ?? Data()
-        LoggerService.debug(category: "ROMIdentifier", "For \(fileURL): Treating magic header \(data as NSData) as plain text: '\(input)'")
         // Case 3: It's a standard literal string
         return data
     }
@@ -537,7 +476,6 @@ private static func scoreByMetadata(url: URL, extLower: String, parentNames: [St
             guard start + 2 <= data.count else { return nil }
             var value: UInt16 = 0
             for i in 0..<2 { value |= UInt16(data[start + i]) << (8 * i) }
-            LoggerService.extreme(category: "ROMIdentifier", "Read LE UInt16 at offset \(start): \(value)")
             return value
         }
 
@@ -545,7 +483,6 @@ private static func scoreByMetadata(url: URL, extLower: String, parentNames: [St
             guard start + 4 <= data.count else { return nil }
             var value: UInt32 = 0
             for i in 0..<4 { value |= UInt32(data[start + i]) << (8 * i) }
-            LoggerService.extreme(category: "ROMIdentifier", "Read LE UInt32 at offset \(start): \(value)")
             return value
         }
 
@@ -569,7 +506,6 @@ private static func scoreByMetadata(url: URL, extLower: String, parentNames: [St
             guard offset + 30 + nameLen <= data.count else { break }
             let nameData = data[offset + 30 ..< offset + 30 + nameLen]
             if let name = String(data: nameData, encoding: .utf8), !name.hasSuffix("/") {
-                LoggerService.extreme(category: "ROMIdentifier", "Read filename at offset \(offset + 30): \(name)")
                 filenames.append(name)
             }
 
@@ -578,7 +514,6 @@ private static func scoreByMetadata(url: URL, extLower: String, parentNames: [St
             offset = next
         }
 
-        LoggerService.extreme(category: "ROMIdentifier", "Read filenames: \(filenames)")
         return filenames.isEmpty ? nil : filenames
     }
 
