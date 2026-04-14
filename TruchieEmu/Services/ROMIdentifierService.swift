@@ -351,14 +351,22 @@ final class ROMIdentifierService: @unchecked Sendable {
             .trimmingCharacters(in: .whitespacesAndNewlines)
     }
 
-    static func titleFromDatGame(name: String, description: String) -> String {
+static func titleFromDatGame(name: String, description: String) -> String {
         guard !description.isEmpty else { return name }
-        if description.count > 150 { return name }
-        let sentenceEndCount = description.split(whereSeparator: { $0.isNewline }).filter { line in
-            line.contains(".") || line.contains("!") || line.contains("?")
-        }.count
-        if sentenceEndCount >= 2 { return name }
-        return description
+        guard name != description else { return name }
+        
+        // In Arcade DATs (MAME/FBNeo), 'name' is often a short romset code (e.g., "sf2")
+        // and 'description' holds the actual game title ("Street Fighter II").
+        // A typical romset code has no spaces, is fully lowercase, and is relatively short.
+        let isLikelyRomCode = !name.contains(" ") && name == name.lowercased() && name.count <= 16
+        
+        if isLikelyRomCode || name.isEmpty {
+            return description
+        }
+        
+        // For proper DATs (ScummVM, No-Intro, Redump), 'name' is already the correct full title.
+        // The 'description' field might be actual flavor text, so we ignore it and keep the real name.
+        return name
     }
 
     private static func regionPreferenceRank(fullName: String, language: EmulatorLanguage) -> Int {
@@ -530,7 +538,7 @@ final class ROMIdentifierService: @unchecked Sendable {
                 
                 var bestScore: Double = 0.0
                 
-                // 1) Token Overlap Matching (Highly resilient to subtitles and out-of-order words)
+// 1) Token Overlap Matching (Highly resilient to subtitles and out-of-order words)
                 let sanitizedC = datBase.replacingOccurrences(of: "'", with: "").components(separatedBy: CharacterSet.alphanumerics.inverted).joined(separator: " ")
                 let cTokens = Set(sanitizedC.components(separatedBy: .whitespaces).filter { !$0.isEmpty })
                 
@@ -540,21 +548,41 @@ final class ROMIdentifierService: @unchecked Sendable {
                         let intersection = qTokens.intersection(cTokens)
                         if intersection.isEmpty { continue }
                         
-                        let queryMatchRatio = Double(intersection.count) / Double(qTokens.count)
                         let candidateMatchRatio = Double(intersection.count) / Double(cTokens.count)
                         
-                        // Calculate score: 70% weight on matching the query, 30% weight on matching the database title length
-                        let score = (queryMatchRatio * 0.7) + (candidateMatchRatio * 0.3)
+                        // Use Sørensen–Dice coefficient for balanced length weighting
+                        var score = (2.0 * Double(intersection.count)) / Double(qTokens.count + cTokens.count)
+                        
+                        // Subset Bonus: If the database title's words are completely contained within the query
+                        if candidateMatchRatio == 1.0 {
+                            if cTokens.count >= 2 {
+                                score += 0.3 // Strong bonus for multi-word exact subsets (handles Base Game + Subtitle)
+                            } else {
+                                score += 0.1 // Minor bonus for single-word exact subsets
+                            }
+                        }
+                        
+                        score = min(1.0, score) // Cap at 1.0
                         if score > bestScore { bestScore = score }
+                    }
+                }
+                
+                // 1.5) Space-Agnostic Exact Match (Catches "Open Quest" vs "OpenQuest")
+                for q in validQueries {
+                    let qNoSpaces = q.lowercased().replacingOccurrences(of: " ", with: "")
+                    let cNoSpaces = datBase.replacingOccurrences(of: " ", with: "")
+                    if qNoSpaces == cNoSpaces && qNoSpaces.count >= 4 {
+                        bestScore = 1.0
+                        break
                     }
                 }
                 
                 // 2) Word-Bounded Substring Fallback (Prevents "ace quest" from triggering inside "space quest")
                 for q in validQueries {
-                    let qLower = q.lowercased() // FIX: Make sure substring math is case-insensitive
+                    let qLower = q.lowercased()
                     if datBase.contains(qLower) || qLower.contains(datBase) {
-                        let isWordBounded = datBase.range(of: "\\b" + NSRegularExpression.escapedPattern(for: qLower) + "\\b", options: [.regularExpression, .caseInsensitive]) != nil
-                        let reverseWordBounded = qLower.range(of: "\\b" + NSRegularExpression.escapedPattern(for: datBase) + "\\b", options: [.regularExpression, .caseInsensitive]) != nil
+                        let isWordBounded = datBase.range(of: "\\b" + NSRegularExpression.escapedPattern(for: qLower) + "\\b", options:[.regularExpression, .caseInsensitive]) != nil
+                        let reverseWordBounded = qLower.range(of: "\\b" + NSRegularExpression.escapedPattern(for: datBase) + "\\b", options:[.regularExpression, .caseInsensitive]) != nil
                         
                         if isWordBounded || reverseWordBounded {
                             let minLen = Double(min(qLower.count, datBase.count))
@@ -562,8 +590,17 @@ final class ROMIdentifierService: @unchecked Sendable {
                             let lengthRatio = maxLen > 0 ? (minLen / maxLen) : 0
                             
                             // Base score of 0.2, up to 0.95 for a near-identical string
-                            let substringScore = 0.2 + (0.75 * lengthRatio)
+                            var substringScore = 0.2 + (0.75 * lengthRatio)
                             
+                            // Prefix Bonus: Base games often act as literal prefixes to their subtitled versions
+                            if qLower.hasPrefix(datBase + " ") || datBase.hasPrefix(qLower + " ") || 
+                               qLower.hasPrefix(datBase + ":") || datBase.hasPrefix(qLower + ":") {
+                                substringScore += 0.35
+                            } else if qLower.hasPrefix(datBase) || datBase.hasPrefix(qLower) {
+                                substringScore += 0.25
+                            }
+                            
+                            substringScore = min(1.0, substringScore) // Cap at 1.0
                             if substringScore > bestScore { bestScore = substringScore }
                         }
                     }
