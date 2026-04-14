@@ -14,7 +14,6 @@
 		10FFFA7BE141AC88F0269711 /* ScaleSmooth.metal in Sources */ = {isa = PBXBuildFile; fileRef = 840A714CA43403666CE4D704 /* ScaleSmooth.metal */; };
 		11210EDC6C1D31FA4E541116 /* LibretroBridge.mm in Sources */ = {isa = PBXBuildFile; fileRef = B7D46AC62DC8C09CBAA53763 /* LibretroBridge.mm */; };
 		14FD6E9E7603AB29B679170D /* SetupWizardState.swift in Sources */ = {isa = PBXBuildFile; fileRef = FAB6045B123F3B9A7267B3B0 /* SetupWizardState.swift */; };
-		16CB7D18289AA9EDAD125F1D /* GameCardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = CC21247C777B18987224E8A7 /* GameCardView.swift */; };
 		18B5A011C25087D7501BA0B4 /* ShaderSection.swift in Sources */ = {isa = PBXBuildFile; fileRef = 56A702E2CACC5FDF780FD52F /* ShaderSection.swift */; };
 		1A35E4BC913F2B92D6C21A1D /* BaseRunner.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2039A7902CA4B44A7D4CA878 /* BaseRunner.swift */; };
 		21F5365057B92ADB3B89C036 /* LCDGrid.metal in Sources */ = {isa = PBXBuildFile; fileRef = 7F559B83E48D1A47C6F37BC6 /* LCDGrid.metal */; };
@@ -358,6 +357,14 @@
 		DDA58F042F8DA29300A9BEE9 /* N64.png in Resources */ = {isa = PBXBuildFile; fileRef = DDA58DD82F8DA29300A9BEE9 /* N64.png */; };
 		DDA58F052F8DA29300A9BEE9 /* VB.png in Resources */ = {isa = PBXBuildFile; fileRef = DDA58E012F8DA29300A9BEE9 /* VB.png */; };
 		DDA58F062F8DA29300A9BEE9 /* fairchild@132w.png in Resources */ = {isa = PBXBuildFile; fileRef = DDA58D6A2F8DA29300A9BEE9 /* fairchild@132w.png */; };
+		DDA58F0A2F8DC26600A9BEE9 /* LibrarySettingsViewGroup.swift in Sources */ = {isa = PBXBuildFile; fileRef = DDA58F092F8DC26600A9BEE9 /* LibrarySettingsViewGroup.swift */; };
+		DDA58F0C2F8DC32800A9BEE9 /* CoreSettingsViewGroup.swift in Sources */ = {isa = PBXBuildFile; fileRef = DDA58F0B2F8DC32800A9BEE9 /* CoreSettingsViewGroup.swift */; };
+		DDA58F122F8DC65100A9BEE9 /* ControllerSettingsViewGroup.swift in Sources */ = {isa = PBXBuildFile; fileRef = DDA58F112F8DC65100A9BEE9 /* ControllerSettingsViewGroup.swift */; };
+		DDA58F172F8DC83B00A9BEE9 /* AboutView.swift in Sources */ = {isa = PBXBuildFile; fileRef = DDA58F132F8DC83B00A9BEE9 /* AboutView.swift */; };
+		DDA58F182F8DC83B00A9BEE9 /* GeneralSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = DDA58F162F8DC83B00A9BEE9 /* GeneralSettingsView.swift */; };
+		DDA58F192F8DC83B00A9BEE9 /* DisplaySettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = DDA58F152F8DC83B00A9BEE9 /* DisplaySettingsView.swift */; };
+		DDA58F1A2F8DC83B00A9BEE9 /* BoxArtSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = DDA58F142F8DC83B00A9BEE9 /* BoxArtSettingsView.swift */; };
+		DDA58F1C2F8DC8E800A9BEE9 /* GameCardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = DDA58F1B2F8DC8E800A9BEE9 /* GameCardView.swift */; };
 		DDAC0689F34313CEF845E3FC /* DOSRunner.swift in Sources */ = {isa = PBXBuildFile; fileRef = E87593F08B97B23BA2CAC02A /* DOSRunner.swift */; };
 		DDD7A0432F8C8F12002E26DB /* Asset.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = DDD7A0422F8C8F12002E26DB /* Asset.xcassets */; };
 		E05CB54B2368ED8F5003136D /* MAMEModels.swift in Sources */ = {isa = PBXBuildFile; fileRef = BA50A4BA7CA5DC3C5FCB550D /* MAMEModels.swift */; };
@@ -387,7 +394,6 @@
 		F97B9EE26C8F47F9C0B54E1D /* AchievementToastView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 19166B656DA22482BC3BF197 /* AchievementToastView.swift */; };
 		FB3E637776BC6CA41BE42990 /* BezelSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C33C12F5883FC11131A65FF7 /* BezelSettingsView.swift */; };
 		FC2EA7938982440C4F5BA3D3 /* ShaderManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 055E2AC9E58C1AC87C32C168 /* ShaderManager.swift */; };
-		FC67BB50EE78744FF7A11536 /* EmptyDetailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = BCB346F2AEB7FDB0705ADC7C /* EmptyDetailView.swift */; };
 		FFBB71BB1E6660833F75F2C1 /* CheatManagerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB9293E37E0A331CD54CDBF3 /* CheatManagerView.swift */; };
 		FFF54913367BDBC6C5B17D24 /* SwiftDataModels.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B1C41BC0003F4A32C3D176F /* SwiftDataModels.swift */; };
 /* End PBXBuildFile section */
@@ -508,7 +514,6 @@
 		BA50A4BA7CA5DC3C5FCB550D /* MAMEModels.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MAMEModels.swift; sourceTree = "<group>"; };
 		BB27DEA4536CF36FCD8394F2 /* OnboardingView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OnboardingView.swift; sourceTree = "<group>"; };
 		BB93840EA89D1346651C53BE /* LibretroBridgeSwift.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LibretroBridgeSwift.swift; sourceTree = "<group>"; };
-		BCB346F2AEB7FDB0705ADC7C /* EmptyDetailView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EmptyDetailView.swift; sourceTree = "<group>"; };
 		BD7CD170E8F21A7C11AA8A96 /* BezelSystemMappingTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BezelSystemMappingTests.swift; sourceTree = "<group>"; };
 		BDB20047AD50ACDD07213C8B /* ResourceCacheRepository.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ResourceCacheRepository.swift; sourceTree = "<group>"; };
 		C33C12F5883FC11131A65FF7 /* BezelSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BezelSettingsView.swift; sourceTree = "<group>"; };
@@ -520,7 +525,6 @@
 		C9687B623BF31DEC24CB1B16 /* MAMEDependencyService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MAMEDependencyService.swift; sourceTree = "<group>"; };
 		C9D4F3329E4574FD30094324 /* CoreManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CoreManager.swift; sourceTree = "<group>"; };
 		CA2F6CC0B668CE9DBE156BF6 /* DATIngestionTrackerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DATIngestionTrackerTests.swift; sourceTree = "<group>"; };
-		CC21247C777B18987224E8A7 /* GameCardView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GameCardView.swift; sourceTree = "<group>"; };
 		D117D4363FBC8E02D7F7B049 /* CheatParser.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CheatParser.swift; sourceTree = "<group>"; };
 		D2741A6AD9158E9F4EBE44C4 /* BezelManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BezelManager.swift; sourceTree = "<group>"; };
 		D4BD45E407C6A4D3059F2996 /* N64Runner.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = N64Runner.swift; sourceTree = "<group>"; };
@@ -768,6 +772,14 @@
 		DDA58E182F8DA29300A9BEE9 /* mame_unified.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = mame_unified.json; sourceTree = "<group>"; };
 		DDA58E192F8DA29300A9BEE9 /* SystemDatabase.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = SystemDatabase.json; sourceTree = "<group>"; };
 		DDA58E1A2F8DA29300A9BEE9 /* TruchieEmu.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = TruchieEmu.entitlements; sourceTree = "<group>"; };
+		DDA58F092F8DC26600A9BEE9 /* LibrarySettingsViewGroup.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LibrarySettingsViewGroup.swift; sourceTree = "<group>"; };
+		DDA58F0B2F8DC32800A9BEE9 /* CoreSettingsViewGroup.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CoreSettingsViewGroup.swift; sourceTree = "<group>"; };
+		DDA58F112F8DC65100A9BEE9 /* ControllerSettingsViewGroup.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ControllerSettingsViewGroup.swift; sourceTree = "<group>"; };
+		DDA58F132F8DC83B00A9BEE9 /* AboutView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AboutView.swift; sourceTree = "<group>"; };
+		DDA58F142F8DC83B00A9BEE9 /* BoxArtSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BoxArtSettingsView.swift; sourceTree = "<group>"; };
+		DDA58F152F8DC83B00A9BEE9 /* DisplaySettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DisplaySettingsView.swift; sourceTree = "<group>"; };
+		DDA58F162F8DC83B00A9BEE9 /* GeneralSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GeneralSettingsView.swift; sourceTree = "<group>"; };
+		DDA58F1B2F8DC8E800A9BEE9 /* GameCardView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GameCardView.swift; sourceTree = "<group>"; };
 		DDD7A0422F8C8F12002E26DB /* Asset.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Asset.xcassets; sourceTree = "<group>"; };
 		E35518FB34DEB243BF979DE0 /* LibretroCore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LibretroCore.swift; sourceTree = "<group>"; };
 		E3CF8589B867729FD91E572B /* GameDBLookupResult.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GameDBLookupResult.swift; sourceTree = "<group>"; };
@@ -902,6 +914,7 @@
 		2C503F1AC4270AE1CC303595 /* Library */ = {
 			isa = PBXGroup;
 			children = (
+				DDA58F1B2F8DC8E800A9BEE9 /* GameCardView.swift */,
 				F7B01C061953C178E665826D /* CategoryRowButton.swift */,
 				3356A4F200DFBFEEEE0F91A7 /* LibraryGridView.swift */,
 				BB27DEA4536CF36FCD8394F2 /* OnboardingView.swift */,
@@ -940,6 +953,13 @@
 		49F1461080903BC32A7BB44B /* Settings */ = {
 			isa = PBXGroup;
 			children = (
+				DDA58F132F8DC83B00A9BEE9 /* AboutView.swift */,
+				DDA58F142F8DC83B00A9BEE9 /* BoxArtSettingsView.swift */,
+				DDA58F152F8DC83B00A9BEE9 /* DisplaySettingsView.swift */,
+				DDA58F162F8DC83B00A9BEE9 /* GeneralSettingsView.swift */,
+				DDA58F112F8DC65100A9BEE9 /* ControllerSettingsViewGroup.swift */,
+				DDA58F0B2F8DC32800A9BEE9 /* CoreSettingsViewGroup.swift */,
+				DDA58F092F8DC26600A9BEE9 /* LibrarySettingsViewGroup.swift */,
 				8EAA8B5D7F9154D320382A23 /* CheatSettingsView.swift */,
 				B8A759D694F034223120BFB5 /* CoreOptionsView.swift */,
 				9183DACD944D63FC80019B78 /* LoggingSettingsView.swift */,
@@ -1101,7 +1121,6 @@
 		A655ADE29C2FB2E6D809951D /* Detail */ = {
 			isa = PBXGroup;
 			children = (
-				BCB346F2AEB7FDB0705ADC7C /* EmptyDetailView.swift */,
 				EA462E15A1500FD878B5160A /* GameDetailView.swift */,
 				8E10246CCBAE92B545C3FF68 /* Sections */,
 			);
@@ -1111,7 +1130,6 @@
 		BD0AC71C3B8CE60EEEDFAAEC /* Views */ = {
 			isa = PBXGroup;
 			children = (
-				CC21247C777B18987224E8A7 /* GameCardView.swift */,
 				ECA345BFDFAA76553C45C37F /* Bezels */,
 				778AF2550C9A43CD6CD9D601 /* BoxArt */,
 				4F07E586C17BC93480F71E29 /* CoreDownload */,
@@ -1818,6 +1836,10 @@
 				F27EE6E590B48D9E91C8504F /* BoxArtPreloaderService.swift in Sources */,
 				3D30F9BC2F7FBA0BEA44693B /* BoxArtService.swift in Sources */,
 				785352A1776D2F26AE6E9BDA /* CLILauncher.swift in Sources */,
+				DDA58F172F8DC83B00A9BEE9 /* AboutView.swift in Sources */,
+				DDA58F182F8DC83B00A9BEE9 /* GeneralSettingsView.swift in Sources */,
+				DDA58F192F8DC83B00A9BEE9 /* DisplaySettingsView.swift in Sources */,
+				DDA58F1A2F8DC83B00A9BEE9 /* BoxArtSettingsView.swift in Sources */,
 				90BFE4669CA37266D841CA99 /* CLIManager.swift in Sources */,
 				55F19268FAB68DFC6D19F209 /* CRTFilter.metal in Sources */,
 				A00192372A0183EF4772CACF /* CategoryManager.swift in Sources */,
@@ -1845,8 +1867,6 @@
 				EAD91D99F333B8CADC56A17A /* DATPrepopulationService.swift in Sources */,
 				DDAC0689F34313CEF845E3FC /* DOSRunner.swift in Sources */,
 				F151DC383F7138A47F18FE8B /* DotMatrixLCD.metal in Sources */,
-				FC67BB50EE78744FF7A11536 /* EmptyDetailView.swift in Sources */,
-				16CB7D18289AA9EDAD125F1D /* GameCardView.swift in Sources */,
 				8EE995D174427204927B68F4 /* GameCategory.swift in Sources */,
 				BAF59C4E886296719DE9D28F /* GameDBLookupResult.swift in Sources */,
 				A0DE5B81F27E19D49BD7E620 /* GameDBRepository.swift in Sources */,
@@ -1862,6 +1882,7 @@
 				BEB2E809BAB983CF0E071449 /* LaunchBoxGamesDBService.swift in Sources */,
 				AA0B53183BF112AB49210A6D /* LibraryAutomationCoordinator.swift in Sources */,
 				F78B007ED4F76DEFC5324B2F /* LibraryGridView.swift in Sources */,
+				DDA58F0A2F8DC26600A9BEE9 /* LibrarySettingsViewGroup.swift in Sources */,
 				25B7586B9799B197EAE6D393 /* LibraryMetadataStore.swift in Sources */,
 				11210EDC6C1D31FA4E541116 /* LibretroBridge.mm in Sources */,
 				469CB718F4F3CEB1456E1454 /* LibretroBridgeSwift.swift in Sources */,
@@ -1870,6 +1891,7 @@
 				AA9FF76AF209339503C6148E /* LibretroThumbnailResolver.swift in Sources */,
 				C0ECA92ACA4223EB7B1275FB /* LiteCRT.metal in Sources */,
 				F0D6B9000421AB5BD7E85EC8 /* LogManager.swift in Sources */,
+				DDA58F0C2F8DC32800A9BEE9 /* CoreSettingsViewGroup.swift in Sources */,
 				3407D4D1297B8DA39CE0A93D /* LoggerService.swift in Sources */,
 				2F8441505DD14F2DC1B83795 /* LoggingSettingsView.swift in Sources */,
 				7874B82F430F8E47A01C0C72 /* LottesCRT.metal in Sources */,
@@ -1884,6 +1906,7 @@
 				828668B6C4FA339C93E5B005 /* MAMEVerificationService.swift in Sources */,
 				4EA5799C1F93442DD8C0C6A8 /* MetadataSyncCoordinator.swift in Sources */,
 				236EFB0A130B6F76AC8713A5 /* N64Runner.swift in Sources */,
+				DDA58F122F8DC65100A9BEE9 /* ControllerSettingsViewGroup.swift in Sources */,
 				455AB80D7490B0717CBE94AD /* NESRunner.swift in Sources */,
 				6F744ECC857F8807BD5BF1AA /* OnboardingView.swift in Sources */,
 				57FDF642BA0CEF9B3245B2C8 /* Passthrough.metal in Sources */,
@@ -1907,6 +1930,7 @@
 				8F729FB157583DECC75B0124 /* ScummVMRunner.swift in Sources */,
 				2B95ADBBD965C8784E0F14C1 /* SettingsView.swift in Sources */,
 				14FD6E9E7603AB29B679170D /* SetupWizardState.swift in Sources */,
+				DDA58F1C2F8DC8E800A9BEE9 /* GameCardView.swift in Sources */,
 				A8D097D74DFDAB7242696289 /* SetupWizardView.swift in Sources */,
 				FC2EA7938982440C4F5BA3D3 /* ShaderManager.swift in Sources */,
 				2426F4E6C399C0218826CFF6 /* ShaderPreset.swift in Sources */,

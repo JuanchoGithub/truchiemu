@@ -192,8 +192,6 @@ struct BezelSettingsView: View {
         }
     }
     
-    // MARK: - Download Section
-    
     private var downloadSection: some View {
         VStack(alignment: .leading, spacing: 12) {
             HStack {
