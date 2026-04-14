@@ -89,7 +89,7 @@ actor ROMScanner {
         }
         
         let ignoredTime = Date().timeIntervalSince(ignoredStart)
-        LoggerService.debug(category: "ROMScanner", "Ignored files build: \(ignoredURLs.count) ignored in \(String(format: "%.2f", ignoredTime))s")
+        LoggerService.debug(category: "ROMScanner", "Ignored files: \(ignoredURLs.count) ignored in \(String(format: "%.2f", ignoredTime))s")
 
         let orderedURLs = nonZipURLs + zipURLs
         let totalFiles = orderedURLs.count
@@ -365,6 +365,7 @@ actor ROMScanner {
     // MARK: - XML Parsing Optimization
     
     nonisolated private func loadFolderMetadata(folder: URL) -> [String: ROMMetadata] {
+        LoggerService.debug(category: "ROMScanner", "Loading XML metadata for folder: \(folder.path)")
         let xmlPath = folder.appendingPathComponent("games.xml")
         var metadataMap: [String: ROMMetadata] = [:]
         

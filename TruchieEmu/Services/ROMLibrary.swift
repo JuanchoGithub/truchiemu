@@ -301,8 +301,10 @@ class ROMLibrary: ObservableObject {
 
     func scanROMs(in folder: URL, runAutomationAfter: Bool = true) async {
         if RunningGamesTracker.shared.isGameRunning {
-            LoggerService.debug(category: "ROMLibrary", "Deferring ROM scan — game is running")
+            LoggerService.debug(category: "ROMLibrary", "Deferring ROM scan for \(folder.path) — game is running")
             return
+        } else {
+            LoggerService.info(category: "ROMLibrary", "Starting ROM scan for folder: \(folder.path)")
         }
 
         let scanStart = Date()

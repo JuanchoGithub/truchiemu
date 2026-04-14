@@ -171,6 +171,7 @@ final class ROMIdentifierService: @unchecked Sendable {
     private let indexCache = NSCache<NSString, SystemSearchIndex>()
 
     func identify(rom: ROM, preferNameMatch: Bool = false) async -> ROMIdentifyResult {
+        LoggerService.debug(category: "ROMIdentifier","Identify \(rom.name): START (preferNameMatch=\(preferNameMatch))")
         guard let systemID = rom.systemID,
               let system = SystemDatabase.system(forID: systemID) else {
             LoggerService.error(category: "ROMIdentifier", "Identify: no system for ROM \(rom.path.lastPathComponent)")
@@ -178,12 +179,13 @@ final class ROMIdentifierService: @unchecked Sendable {
         }
 
         if systemID == "mame" {
+            LoggerService.debug(category: "ROMIdentifier","Identify \(rom.name): MAME ROM detected, attempting unified database lookup...")
             let shortName = rom.path.deletingPathExtension().lastPathComponent.lowercased()
             
             // First: try the unified MAME database (multi-core, 50K+ entries)
             if let unifiedEntry = MAMEUnifiedService.shared.lookup(shortName: shortName) {
                 if unifiedEntry.isRunnableInAnyCore && !unifiedEntry.isBIOS {
-                    LoggerService.debug(category: "ROMIdentifier","Identify: MAME game identified via unified database → \(unifiedEntry.description) [cores: \(unifiedEntry.compatibleCores.joined(separator: ", "))]")
+                    LoggerService.debug(category: "ROMIdentifier","Identify \(rom.name): MAME game → \(unifiedEntry.description) [cores: \(unifiedEntry.compatibleCores.joined(separator: ", "))]")
                     return .identified(GameInfo(
                         name: unifiedEntry.description,
                         year: unifiedEntry.year,
@@ -194,7 +196,7 @@ final class ROMIdentifierService: @unchecked Sendable {
                         thumbnailLookupSystemID: nil
                     ))
                 } else if unifiedEntry.isBIOS {
-                    LoggerService.debug(category: "ROMIdentifier","Identify: MAME BIOS identified via unified database → \(unifiedEntry.description)")
+                    LoggerService.debug(category: "ROMIdentifier","Identify \(rom.name): MAME BIOS → \(unifiedEntry.description)")
                     return .identified(GameInfo(
                         name: unifiedEntry.description,
                         year: unifiedEntry.year,
@@ -205,13 +207,13 @@ final class ROMIdentifierService: @unchecked Sendable {
                         thumbnailLookupSystemID: nil
                     ))
                 } else {
-                    LoggerService.debug(category: "ROMIdentifier","Identify: MAME game '\(shortName)' found in unified database but not runnable in any core → \(unifiedEntry.description)")
+                    LoggerService.debug(category: "ROMIdentifier","Identify \(rom.name): MAME game '\(shortName)' found but not runnable in any core → \(unifiedEntry.description)")
                     return .crcNotInDatabase(crc: shortName)
                 }
             }
             
             // Not in any MAME database — no point searching libretro DAT (bundled MAME DBs are more comprehensive)
-            LoggerService.debug(category: "ROMIdentifier","Identify: MAME game '\(shortName)' not in bundled database — hiding")
+            LoggerService.debug(category: "ROMIdentifier","Identify \(rom.name): MAME game '\(shortName)' not in MAME database — hiding")
             return .crcNotInDatabase(crc: shortName)
         }
 
@@ -219,7 +221,7 @@ final class ROMIdentifierService: @unchecked Sendable {
 
         let db = await LibretroDatabaseLibrary.shared.fetchAndLoadDat(for: system)
         if db.isEmpty {
-            LoggerService.error(category: "ROMIdentifier", "Identify: empty database for system \(systemID)")
+            LoggerService.error(category: "ROMIdentifier", "Identify \(rom.name): empty database for system \(systemID), identification skipped.")
             return .databaseUnavailable
         }
 
@@ -230,19 +232,22 @@ final class ROMIdentifierService: @unchecked Sendable {
         // PASS 1: Sony Serial Extraction (Fastest)
         // Optimization: For Sony CD-based systems, try serial extraction (FASTEST)
         if ["psx", "ps2", "psp"].contains(systemID) {
+            LoggerService.debug(category: "ROMIdentifier", "Identify \(rom.name): Game is Playstation (1/2/P) \(systemID)...")
             if let serial = await extractSonySerial(from: romPath) {
-                LoggerService.debug(category: "ROMIdentifier", "Identify: Checking database for serial '\(serial)'...")
+                LoggerService.debug(category: "ROMIdentifier", "Identify \(rom.name): Checking database for serial '\(serial)'...")
                 let normalizedSerial = serial.replacingOccurrences(of: "-", with: "").replacingOccurrences(of: "_", with: "").replacingOccurrences(of: ".", with: "").lowercased()
                 
                 for info in db.values {
                     let infoName = info.name.lowercased()
                     // Many DATs include the serial in the title, e.g. "Game Name (USA) (SLUS-20071)"
                     if infoName.contains(normalizedSerial) || infoName.contains(serial.lowercased()) {
-                        LoggerService.debug(category: "ROMIdentifier", "Identify: SUCCESS (Serial Path) → \(info.name) matched serial \(serial)")
+                        LoggerService.debug(category: "ROMIdentifier", "Identify \(rom.name): SUCCESS (Serial Path) → \(info.name) matched serial \(serial)")
                         return .identified(info)
                     }
                 }
-                LoggerService.debug(category: "ROMIdentifier", "Identify: Serial '\(serial)' not found in Libretro DB, falling back...")
+                LoggerService.debug(category: "ROMIdentifier", "Identify \(rom.name): Serial '\(serial)' not found.")
+            } else {
+                LoggerService.debug(category: "ROMIdentifier", "Identify \(rom.name): No serial found.")
             }
         }
 
@@ -250,13 +255,13 @@ final class ROMIdentifierService: @unchecked Sendable {
         // Optimization: Try name-based search first if requested OR if file is large.
         // If we find an exact match by name, we can skip the heavy CRC calculation.
         if preferNameMatch || isLargeFile {
-            LoggerService.debug(category: "ROMIdentifier", "Identify: Attempting name-based search (preferNameMatch=\(preferNameMatch), isLargeFile=\(isLargeFile))...")
+            LoggerService.debug(category: "ROMIdentifier", "Identify \(rom.name): Attempting name-based search (preferNameMatch=\(preferNameMatch), isLargeFile=\(isLargeFile))...")
             let language = Self.currentEmulatorLanguage()
             if let byName = identifyByName(rom: rom, database: db, language: language) {
-                LoggerService.debug(category: "ROMIdentifier", "Identify: SUCCESS (Name Path) → \(byName.name) found by name, skipping CRC.")
+                LoggerService.debug(category: "ROMIdentifier", "Identify \(rom.name): SUCCESS (Name Path) → \(byName.name) found by name, skipping CRC.")
                 return .identifiedFromName(byName)
             }
-            LoggerService.debug(category: "ROMIdentifier", "Identify: Name-based search failed for '\(rom.name)', falling back to CRC hashing...")
+            LoggerService.debug(category: "ROMIdentifier", "Identify \(rom.name): Name-based search failed for '\(rom.name)', falling back to CRC hashing...")
         }
 
         // PASS 3: CRC-based identification (Heavy)
@@ -264,33 +269,33 @@ final class ROMIdentifierService: @unchecked Sendable {
         guard let crc = await Task.detached(priority: .userInitiated, operation: {
             self.computeCRC(for: romPath, systemID: systemID)
         }).value else {
-            LoggerService.error(category: "ROMIdentifier", "Identify: CRC read failed for \(rom.path.path)")
+            LoggerService.error(category: "ROMIdentifier", "Identify \(rom.name): CRC read failed for \(rom.path.path)")
             return .romReadFailed("Could not read the ROM file. If the library is on a removable drive or you moved files, re-add the folder in Settings.")
         }
 
         let key = crc.uppercased()
-        LoggerService.debug(category: "ROMIdentifier", "Identify: ROM CRC=\(key)")
+        LoggerService.debug(category: "ROMIdentifier", "Identify \(rom.name): ROM CRC=\(key)")
 
         if let info = db[key] {
             if let thumb = info.thumbnailLookupSystemID, thumb != systemID {
-                LoggerService.debug(category: "ROMIdentifier", "Identify: CRC HIT → \(info.name) (thumbnails: use system \(thumb), ROM is \(systemID))")
+                LoggerService.debug(category: "ROMIdentifier", "Identify \(rom.name): CRC HIT → \(info.name) (thumbnails: use system \(thumb), ROM is \(systemID))")
             } else {
-                LoggerService.debug(category: "ROMIdentifier", "Identify: CRC HIT → \(info.name)")
+                LoggerService.debug(category: "ROMIdentifier", "Identify \(rom.name): CRC HIT → \(info.name)")
             }
             return .identified(info)
         }
 
         // PASS 4: Name-based fallback (if we haven't tried it yet)
-        //if !preferNameMatch && !isLargeFile {
-        //    LoggerService.debug(category: "ROMIdentifier", "Identify: no CRC match for \(key), falling back to name search...")
-        //    let language = Self.currentEmulatorLanguage()
-        //    if let byName = identifyByName(rom: rom, database: db, language: language) {
-        //        LoggerService.debug(category: "ROMIdentifier", "Identify: NAME MATCH → \(byName.name) (language=\(language.name))")
-        //        return .identifiedFromName(byName)
-        //    }
-        //}
+        if !preferNameMatch && !isLargeFile {
+            LoggerService.debug(category: "ROMIdentifier", "Identify \(rom.name): no CRC match for \(key), falling back to name search...")
+            let language = Self.currentEmulatorLanguage()
+            if let byName = identifyByName(rom: rom, database: db, language: language) {
+                LoggerService.debug(category: "ROMIdentifier", "Identify \(rom.name): NAME MATCH → \(byName.name) (language=\(language.name))")
+                return .identifiedFromName(byName)
+            }
+        }
 
-        LoggerService.debug(category: "ROMIdentifier", "Identify: NOT FOUND — CRC \(key) not in database and name search found 0 matches for \(systemID)")
+        LoggerService.debug(category: "ROMIdentifier", "Identify \(rom.name): NOT FOUND — CRC \(key) not in database and name search found 0 matches for \(systemID)")
         return .crcNotInDatabase(crc: key)
     }
 
@@ -318,19 +323,27 @@ final class ROMIdentifierService: @unchecked Sendable {
     ]
 
     static func aggressivelyNormalizedTitle(_ s: String) -> String {
-        var result = LibretroThumbnailResolver.stripParenthesesForFuzzyMatch(s)
-        while let r = result.range(of: "\\[([^\\]]*)\\]", options: .regularExpression) {
-            result.removeSubrange(r)
+            var result = LibretroThumbnailResolver.stripParenthesesForFuzzyMatch(s)
+            while let r = result.range(of: "\\[([^\\]]*)\\]", options: .regularExpression) {
+                result.removeSubrange(r)
+            }
+            while let r = result.range(of: "\\{([^\\}]*)\\}", options: .regularExpression) {
+                result.removeSubrange(r)
+            }
+            result = result.replacingOccurrences(of: "\\s*\\([^)]*\\)\\s*", with: " ", options: .regularExpression)
+            result = result.replacingOccurrences(of: "\\s*\\[[^\\]]*\\]\\s*", with: " ", options: .regularExpression)
+            
+            // Lowercase and handle specific characters
+            result = result.lowercased()
+            result = result.replacingOccurrences(of: "'", with: "")
+            result = result.replacingOccurrences(of: "&", with: "and")
+            
+            // Replace all remaining punctuation/symbols with spaces
+            result = result.components(separatedBy: CharacterSet.alphanumerics.inverted).joined(separator: " ")
+            
+            return result.replacingOccurrences(of: "  +", with: " ", options: .regularExpression)
+                .trimmingCharacters(in: .whitespacesAndNewlines)
         }
-        while let r = result.range(of: "\\{([^\\}]*)\\}", options: .regularExpression) {
-            result.removeSubrange(r)
-        }
-        result = result.replacingOccurrences(of: "\\s*\\([^)]*\\)\\s*", with: " ", options: .regularExpression)
-        result = result.replacingOccurrences(of: "\\s*\\[[^\\]]*\\]\\s*", with: " ", options: .regularExpression)
-        return result.lowercased().replacingOccurrences(of: "  +", with: " ", options: .regularExpression)
-            .trimmingCharacters(in: .whitespacesAndNewlines).trimmingCharacters(in: CharacterSet(charactersIn: "-_."))
-            .trimmingCharacters(in: .whitespacesAndNewlines)
-    }
 
     static func normalizedComparableTitle(_ s: String) -> String {
         let stripped = LibretroThumbnailResolver.stripParenthesesForFuzzyMatch(s)
@@ -425,12 +438,13 @@ final class ROMIdentifierService: @unchecked Sendable {
     }
 
     private func identifyByName(rom: ROM, database: [String: GameInfo], language: EmulatorLanguage) -> GameInfo? {
+        LoggerService.info(category: "ROMIdentifier", "IdentifyByName \(rom.name): START for ROM '\(rom.name)'")
         let stem = rom.path.deletingPathExtension().lastPathComponent
         var cleaned = LibretroThumbnailResolver.stripRomFilenameTags(stem)
         cleaned = LibretroThumbnailResolver.stripParenthesesForFuzzyMatch(cleaned)
         let queryBase = Self.normalizedComparableTitle(cleaned)
         guard queryBase.count >= 2 else {
-            LoggerService.error(category: "ROMIdentifier", "Identify: name search skipped — queryBase='\(queryBase)' too short (<2 chars)")
+            LoggerService.error(category: "ROMIdentifier", "IdentifyByName \(rom.name): name search skipped — queryBase='\(queryBase)' too short (<2 chars)")
             return nil
         }
 
@@ -444,33 +458,33 @@ final class ROMIdentifierService: @unchecked Sendable {
         }
 
         // PASS 1: Exact normalized match (Dictionary lookup)
-        LoggerService.debug(category: "ROMIdentifier", "Identify: PASS 1 — exact match on queryBase='\(queryBase)'")
+        LoggerService.debug(category: "ROMIdentifier", "IdentifyByName \(rom.name): PASS 1 — exact match on queryBase='\(queryBase)'")
         var exact: [GameInfo] = index.exactMap[queryBase] ?? []
-        if !exact.isEmpty { LoggerService.debug(category: "ROMIdentifier", "Identify: PASS 1 FOUND \(exact.count) exact match(es)") }
+        if !exact.isEmpty { LoggerService.debug(category: "ROMIdentifier", "IdentifyByName \(rom.name): PASS 1 FOUND \(exact.count) exact match(es)") }
 
         if exact.isEmpty {
             let variants = Self.romanNumeralVariants(of: queryBase)
-            LoggerService.debug(category: "ROMIdentifier", "Identify: PASS 2 — number variants (\(variants.count) variants generated)")
+            LoggerService.debug(category: "ROMIdentifier", "IdentifyByName \(rom.name): PASS 2 — number variants (\(variants.count) variants generated)")
             if !variants.isEmpty {
                 for variant in variants {
                     if let found = index.exactMap[variant] {
                         exact.append(contentsOf: found)
-                        LoggerService.debug(category: "ROMIdentifier", "Identify: PASS 2 matched variant='\(variant)' → \(found.count) entries")
+                        LoggerService.debug(category: "ROMIdentifier", "IdentifyByName \(rom.name): PASS 2 matched variant='\(variant)' → \(found.count) entries")
                         break
                     }
                 }
             }
-            if exact.isEmpty { LoggerService.debug(category: "ROMIdentifier", "Identify: PASS 2 found 0 matches") }
+            if exact.isEmpty { LoggerService.debug(category: "ROMIdentifier", "IdentifyByName \(rom.name): PASS 2 found 0 matches") }
         }
 
         if exact.isEmpty {
             let aggressiveQuery = Self.aggressivelyNormalizedTitle(stem)
-            LoggerService.debug(category: "ROMIdentifier", "Identify: PASS 3 — aggressive normalization")
-            LoggerService.debug(category: "ROMIdentifier", "Identify: PASS 3 query='\(stem)' → '\(aggressiveQuery)'")
+            LoggerService.debug(category: "ROMIdentifier", "IdentifyByName \(rom.name): PASS 3 — aggressive normalization")
+            LoggerService.debug(category: "ROMIdentifier", "IdentifyByName \(rom.name): PASS 3 query='\(stem)' → '\(aggressiveQuery)'")
             if !aggressiveQuery.isEmpty && aggressiveQuery.count >= 2 {
                 if let found = index.aggressiveMap[aggressiveQuery] {
                     exact.append(contentsOf: found)
-                    LoggerService.debug(category: "ROMIdentifier", "Identify: PASS 3 matched aggressive query → \(found.count) entries")
+                    LoggerService.debug(category: "ROMIdentifier", "IdentifyByName \(rom.name): PASS 3 matched aggressive query → \(found.count) entries")
                 }
                 
                 if exact.isEmpty {
@@ -478,7 +492,7 @@ final class ROMIdentifierService: @unchecked Sendable {
                     for variant in aggressiveVariants {
                         if let found = index.aggressiveMap[variant] {
                             exact.append(contentsOf: found)
-                            LoggerService.debug(category: "ROMIdentifier", "Identify: PASS 3 matched aggressive variant='\(variant)'")
+                            LoggerService.debug(category: "ROMIdentifier", "IdentifyByName \(rom.name): PASS 3 matched aggressive variant='\(variant)'")
                             break
                         }
                     }
@@ -488,18 +502,89 @@ final class ROMIdentifierService: @unchecked Sendable {
 
         var candidates = exact
         if candidates.isEmpty {
-            LoggerService.debug(category: "ROMIdentifier", "Identify: PASS 4 — substring/fuzzy matching")
-            var pass4Matched = 0
+            LoggerService.debug(category: "ROMIdentifier", "IdentifyByName \(rom.name): PASS 4 — substring/fuzzy matching")
+            var pass4Candidates:[(info: GameInfo, score: Double)] = []
+            
+            // Gather the query and all its aggressively normalized/roman numeral variants
+            let aggressiveQuery = Self.aggressivelyNormalizedTitle(stem)
+            var queryVariants = Set([queryBase, aggressiveQuery])
+            queryVariants.formUnion(Self.romanNumeralVariants(of: queryBase))
+            queryVariants.formUnion(Self.romanNumeralVariants(of: aggressiveQuery))
+            
+            // Filter out short queries and pre-tokenize them into sets of words
+            let validQueries = queryVariants.filter { $0.count >= 3 }
+            let queryTokensList = validQueries.map { q -> Set<String> in
+                // FIX: Ensure the query (and any generated Roman Numerals) are completely lowercased before tokenizing
+                let sanitized = q.lowercased().replacingOccurrences(of: "'", with: "").components(separatedBy: CharacterSet.alphanumerics.inverted).joined(separator: " ")
+                return Set(sanitized.components(separatedBy: .whitespaces).filter { !$0.isEmpty })
+            }
+            
             for info in index.allEntries {
-                let datBase = Self.normalizedComparableTitle(info.name)
-                guard datBase.count >= 3, queryBase.count >= 3 else { continue }
-                if Self.isProblematicNumberSuffixPartialMatch(query: queryBase, candidate: datBase) { continue }
-                if datBase.contains(queryBase) || queryBase.contains(datBase) {
-                    candidates.append(info)
-                    pass4Matched += 1
+                let datBase = Self.normalizedComparableTitle(info.name).lowercased()
+                guard datBase.count >= 3 else { continue }
+                
+                // Keep the existing protection against "Sonic" matching "Sonic 2"
+                if validQueries.contains(where: { Self.isProblematicNumberSuffixPartialMatch(query: $0.lowercased(), candidate: datBase) }) {
+                    continue
+                }
+                
+                var bestScore: Double = 0.0
+                
+                // 1) Token Overlap Matching (Highly resilient to subtitles and out-of-order words)
+                let sanitizedC = datBase.replacingOccurrences(of: "'", with: "").components(separatedBy: CharacterSet.alphanumerics.inverted).joined(separator: " ")
+                let cTokens = Set(sanitizedC.components(separatedBy: .whitespaces).filter { !$0.isEmpty })
+                
+                if !cTokens.isEmpty {
+                    for qTokens in queryTokensList {
+                        guard !qTokens.isEmpty else { continue }
+                        let intersection = qTokens.intersection(cTokens)
+                        if intersection.isEmpty { continue }
+                        
+                        let queryMatchRatio = Double(intersection.count) / Double(qTokens.count)
+                        let candidateMatchRatio = Double(intersection.count) / Double(cTokens.count)
+                        
+                        // Calculate score: 70% weight on matching the query, 30% weight on matching the database title length
+                        let score = (queryMatchRatio * 0.7) + (candidateMatchRatio * 0.3)
+                        if score > bestScore { bestScore = score }
+                    }
+                }
+                
+                // 2) Word-Bounded Substring Fallback (Prevents "ace quest" from triggering inside "space quest")
+                for q in validQueries {
+                    let qLower = q.lowercased() // FIX: Make sure substring math is case-insensitive
+                    if datBase.contains(qLower) || qLower.contains(datBase) {
+                        let isWordBounded = datBase.range(of: "\\b" + NSRegularExpression.escapedPattern(for: qLower) + "\\b", options: [.regularExpression, .caseInsensitive]) != nil
+                        let reverseWordBounded = qLower.range(of: "\\b" + NSRegularExpression.escapedPattern(for: datBase) + "\\b", options: [.regularExpression, .caseInsensitive]) != nil
+                        
+                        if isWordBounded || reverseWordBounded {
+                            let minLen = Double(min(qLower.count, datBase.count))
+                            let maxLen = Double(max(qLower.count, datBase.count))
+                            let lengthRatio = maxLen > 0 ? (minLen / maxLen) : 0
+                            
+                            // Base score of 0.2, up to 0.95 for a near-identical string
+                            let substringScore = 0.2 + (0.75 * lengthRatio)
+                            
+                            if substringScore > bestScore { bestScore = substringScore }
+                        }
+                    }
+                }
+                
+                // Threshold: Needs at least a 65% overlap score to be considered a viable match
+                if bestScore >= 0.65 {
+                    pass4Candidates.append((info: info, score: bestScore))
                 }
             }
-            if pass4Matched > 0 { LoggerService.debug(category: "ROMIdentifier", "Identify: PASS 4 found \(pass4Matched) substring match(es)") }
+            
+            if !pass4Candidates.isEmpty {
+                let maxScore = pass4Candidates.map { $0.score }.max() ?? 0.0
+                // Keep only matches within 5% of the top score. 
+                // This prevents the subsequent region tie-breaker from favoring a low-quality fuzzy match just because it has a (USA) tag.
+                let topCandidates = pass4Candidates.filter { maxScore - $0.score <= 0.05 }
+                candidates = topCandidates.map { $0.info }
+                LoggerService.debug(category: "ROMIdentifier", "IdentifyByName \(rom.name): PASS 4 found \(pass4Candidates.count) fuzzy match(es), sending top \(candidates.count) (score ~\(String(format: "%.2f", maxScore))) to region tie-breaker.")
+            } else {
+                LoggerService.debug(category: "ROMIdentifier", "IdentifyByName \(rom.name): PASS 4 found 0 valid fuzzy matches.")
+            }
         }
 
         guard !candidates.isEmpty else { return nil }
@@ -516,7 +601,7 @@ final class ROMIdentifierService: @unchecked Sendable {
         }
         if let best = sorted.first {
             let rank = Self.regionPreferenceRank(fullName: best.name, language: language)
-            if rank >= prefs.count { LoggerService.debug(category: "ROMIdentifier", "Identify: name match without preferred region tag; used worldwide/Japan tie-break then length/lex order") }
+            if rank >= prefs.count { LoggerService.debug(category: "ROMIdentifier", "IdentifyByName \(rom.name): name match without preferred region tag; used worldwide/Japan tie-break then length/lex order") }
         }
         return sorted.first
     }
@@ -620,7 +705,7 @@ final class ROMIdentifierService: @unchecked Sendable {
                            let match = regex.firstMatch(in: string, options: [], range: NSRange(location: 0, length: string.count)) {
                             if let range = Range(match.range, in: string) {
                                 let serial = String(string[range]).replacingOccurrences(of: "_", with: "-")
-                                LoggerService.debug(category: "ROMIdentifier", "Found Sony serial candidate: \(serial)")
+                                LoggerService.debug(category: "ROMIdentifier", "For \(url): Found Sony serial candidate: \(serial)")
                                 return serial
                             }
                         }
@@ -631,14 +716,14 @@ final class ROMIdentifierService: @unchecked Sendable {
                            let match = regex.firstMatch(in: string, options: [], range: NSRange(location: 0, length: string.count)) {
                             if let range = Range(match.range, in: string) {
                                 let serial = String(string[range])
-                                LoggerService.debug(category: "ROMIdentifier", "Found PSP serial candidate: \(serial)")
+                                LoggerService.debug(category: "ROMIdentifier", "For \(url): Found PSP serial candidate: \(serial)")
                                 return serial
                             }
                         }
                     }
                 }
             } catch {
-                LoggerService.debug(category: "ROMIdentifier", "Error reading disc for serial: \(error.localizedDescription)")
+                LoggerService.debug(category: "ROMIdentifier", "For \(url): Error reading disc for serial: \(error.localizedDescription)")
             }
             return nil
         }.value

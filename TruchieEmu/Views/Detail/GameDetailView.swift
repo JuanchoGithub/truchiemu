@@ -1346,18 +1346,46 @@ struct GameDetailView: View {
                 let result = await library.identifyROM(currentROM, preferNameMatch: false)
                 switch result {
                 case .identified(let info):
-                    showManualResult("Found: \(info.name)", tone: .success)
+                    showManualResult("Found: \(currentROM.name) → \(info.name)", tone: .success)
+                    // Update ROM name
+                    var updated = currentROM
+                    updated.customName = info.name
+                    library.updateROM(updated)
+                    //And update box art if not already set
+                    if !currentROM.hasBoxArt {
+                        if let _ = await BoxArtService.shared.fetchBoxArt(for: currentROM) {
+                            var u = currentROM
+                            u.hasBoxArt = true
+                            library.updateROM(u)
+                            loadBoxArt()
+                        }
+                    }
+                    // Make sure the changes are updated in this view
+                    loadSlotInfo()
                 case .identifiedFromName(let info):
                     showManualResult(
-                        "Found: \(info.name) (matched by filename)",
+                        "Found: \(currentROM.name) → \(info.name) (matched by filename)",
                         tone: .success
                     )
+                    var updated = currentROM
+                    updated.customName = info.name
+                    library.updateROM(updated)
+                    // And update box art if not already set
+                    if !currentROM.hasBoxArt {
+                        if let _ = await BoxArtService.shared.fetchBoxArt(for: currentROM) {
+                            var u = currentROM
+                            u.hasBoxArt = true
+                            library.updateROM(u)
+                            loadBoxArt()
+                        }
+                    }
+                    loadSlotInfo()
                 case .crcNotInDatabase(let crc):
                     showManualResult(
                         "Couldn't identify this game. Try downloading metadata manually.",
                         tone: .warning
                     )
-                    LoggerService.debug(category: "Identity", "Unknown game — CRC: \(crc)")
+                    LoggerService.debug(category: "Identity", "For: \(currentROM.name) — Unknown game — CRC: \(crc)")
                 case .identificationCleared:
                     showManualResult("Identification cleared — game will use ROM filename", tone: .success)
                 case .databaseUnavailable:
