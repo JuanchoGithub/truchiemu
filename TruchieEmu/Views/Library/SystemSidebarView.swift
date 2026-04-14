@@ -47,43 +47,93 @@ struct SystemSidebarView: View {
             sidebarRow(icon: "clock.fill", label: "Recent", count: recentCount, tint: .orange, filter: .recent)
                  .tag(LibraryFilter.recent)
 
+            
+            // Categories section — tap title row to expand/collapse; "New Category" on header hover
+            Section {
+                if categoriesSectionExpanded {
+                    ForEach(categoryManager.categories) { category in
+                        categoryRow(category: category)
+                            .tag(LibraryFilter.category(category.id))
+                    }
+                    .onMove(perform: categoryManager.reorderCategories)
+                }
+            } header: {
+                HStack(spacing: 8) {
+                    Button {
+                        categoriesSectionExpanded.toggle()
+                    } label: {
+                        HStack(spacing: 4) {
+                            Image(systemName: categoriesSectionExpanded ? "chevron.down" : "chevron.right")
+                                .font(.caption.weight(.semibold))
+                                .foregroundStyle(.secondary)
+                                .frame(width: 12, alignment: .center)
+                            Text("Categories")
+                            Spacer(minLength: 0)
+                        }
+                        .frame(maxWidth: .infinity, alignment: .leading)
+                        .contentShape(Rectangle())
+                    }
+                    .buttonStyle(.plain)
+                    .help(categoriesSectionExpanded ? "Collapse Categories" : "Expand Categories")
+
+                    if categoriesHeaderHovered {
+                        Button {
+                            showCreateCategorySheet = true
+                        } label: {
+                            HStack(spacing: 4) {
+                                Image(systemName: "plus.circle")
+                                    .foregroundStyle(.secondary)
+                                Text("New Category")
+                                    .lineLimit(1)
+                            }
+                            .font(.caption)
+                        }
+                        .buttonStyle(.plain)
+                        .help("Create a new category")
+                        .transition(.opacity.combined(with: .move(edge: .trailing)))
+                    }
+                }
+                .frame(maxWidth: .infinity, alignment: .leading)
+                .contentShape(Rectangle())
+                .onHover { categoriesHeaderHovered = $0 }
+                .animation(.easeInOut(duration: 0.15), value: categoriesHeaderHovered)
+            }
+            
+
             if !combinedSystemsWithROMs.isEmpty {
-                Section("Systems") {
-                    ForEach(combinedSystemsWithROMs, id: \.system.id) { entry in
-                        sidebarRow(
-                            icon: entry.system.iconName,
-                            label: entry.system.sidebarDisplayName,
-                            system: entry.system,
-                            count: entry.combinedCount,
-                            filter: .system(entry.system)
-                        )
-                        .tag(LibraryFilter.system(entry.system))
+                Section {
+                    if systemsSectionExpanded {
+                        ForEach(combinedSystemsWithROMs, id: \.system.id) { entry in
+                            sidebarRow(
+                                icon: entry.system.iconName,
+                                label: entry.system.sidebarDisplayName,
+                                system: entry.system,
+                                count: entry.combinedCount,
+                                filter: .system(entry.system)
+                            )
+                            .tag(LibraryFilter.system(entry.system))
+                        }
                     }
+                } header: {
+                    Button {
+                        systemsSectionExpanded.toggle()
+                    } label: {
+                        HStack(spacing: 4) {
+                            Image(systemName: systemsSectionExpanded ? "chevron.down" : "chevron.right")
+                                .font(.caption.weight(.semibold))
+                                .foregroundStyle(.secondary)
+                                .frame(width: 12, alignment: .center)
+                            Text("Systems")
+                            Spacer(minLength: 0)
+                        }
+                        .frame(maxWidth: .infinity, alignment: .leading)
+                        .contentShape(Rectangle())
+                    }
+                    .buttonStyle(.plain)
+                    .help(systemsSectionExpanded ? "Collapse Systems" : "Expand Systems")
                 }
             }
-            
-            // Categories section
-            Section("Categories") {
-                ForEach(categoryManager.categories) { category in
-                    categoryRow(category: category)
-                        .tag(LibraryFilter.category(category.id))
-                }
-                .onMove(perform: categoryManager.reorderCategories)
-                
-                Button {
-                    showCreateCategorySheet = true
-                } label: {
-                    HStack {
-                        Image(systemName: "plus.circle")
-                            .foregroundColor(.secondary)
-                            .frame(width: 18)
-                        Text("New Category")
-                            .lineLimit(1)
-                    }
-                }
-                .buttonStyle(.plain)
-            }
-            
+
             // Hidden Games section — shown only when there are hidden games
             // and the user hasn't disabled it in settings
             let hiddenCount = library.romCounts["hidden"] ?? 0
@@ -121,6 +171,9 @@ struct SystemSidebarView: View {
     @StateObject private var dragState = GameDragState.shared
     
     @State private var hoveredCategoryID: String? = nil
+    @State private var categoriesHeaderHovered = false
+    @State private var categoriesSectionExpanded = true
+    @State private var systemsSectionExpanded = true
     
     @ViewBuilder
     private func categoryRow(category: GameCategory) -> some View {

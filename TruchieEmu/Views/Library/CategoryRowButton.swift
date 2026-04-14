@@ -15,7 +15,7 @@ struct CategoryRowButton: View {
         Button {
             selectedFilter = .category(category.id)
         } label: {
-            HStack(spacing: 8) {
+            HStack(spacing: 6) {
                 Image(systemName: category.iconName)
                     .foregroundColor(Color(hex: category.colorHex) ?? .blue)
                     .font(.system(size: 14))
@@ -37,7 +37,7 @@ struct CategoryRowButton: View {
                     .cornerRadius(6)
             }
             .padding(.horizontal, 6)
-            .padding(.vertical, 4)
+            .padding(.vertical, 2)
             .contentShape(Rectangle())
         }
         .buttonStyle(.plain)

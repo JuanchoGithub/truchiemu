@@ -21,7 +21,7 @@ struct SidebarRowButton: View {
         Button {
             selectedFilter = filter
         } label: {
-            HStack(spacing: 8) {
+            HStack(spacing: 6) {
                 iconView
                     .frame(width: 22, height: 22)
                 
@@ -41,7 +41,7 @@ struct SidebarRowButton: View {
                     .cornerRadius(6)
             }
             .padding(.horizontal, 6)
-            .padding(.vertical, 4)
+            .padding(.vertical, 2)
             .contentShape(Rectangle())
         }
         .buttonStyle(.plain)
