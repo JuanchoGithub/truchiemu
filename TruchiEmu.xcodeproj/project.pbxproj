@@ -396,6 +396,12 @@
 		DDA593162F8E570A00A9BEE9 /* Nintendo - Virtual Boy.dat in Resources */ = {isa = PBXBuildFile; fileRef = DDA592EA2F8E570A00A9BEE9 /* Nintendo - Virtual Boy.dat */; };
 		DDA593172F8E570A00A9BEE9 /* Nintendo - Nintendo Entertainment System.dat in Resources */ = {isa = PBXBuildFile; fileRef = DDA592E82F8E570A00A9BEE9 /* Nintendo - Nintendo Entertainment System.dat */; };
 		DDA593182F8E570A00A9BEE9 /* Sega - Game Gear.dat in Resources */ = {isa = PBXBuildFile; fileRef = DDA592EE2F8E570A00A9BEE9 /* Sega - Game Gear.dat */; };
+		DDA5931F2F8F256900A9BEE9 /* GameListRowView.swift in Sources */ = {isa = PBXBuildFile; fileRef = DDA5931B2F8F256900A9BEE9 /* GameListRowView.swift */; };
+		DDA593202F8F256900A9BEE9 /* GridCardZoomableFullScreenView.swift in Sources */ = {isa = PBXBuildFile; fileRef = DDA5931C2F8F256900A9BEE9 /* GridCardZoomableFullScreenView.swift */; };
+		DDA593212F8F256900A9BEE9 /* LibraryAnimations.swift in Sources */ = {isa = PBXBuildFile; fileRef = DDA5931D2F8F256900A9BEE9 /* LibraryAnimations.swift */; };
+		DDA593222F8F256900A9BEE9 /* CategoryViews.swift in Sources */ = {isa = PBXBuildFile; fileRef = DDA593192F8F256900A9BEE9 /* CategoryViews.swift */; };
+		DDA593232F8F256900A9BEE9 /* LibraryFilterOption.swift in Sources */ = {isa = PBXBuildFile; fileRef = DDA5931E2F8F256900A9BEE9 /* LibraryFilterOption.swift */; };
+		DDA593242F8F256900A9BEE9 /* FilterChipView.swift in Sources */ = {isa = PBXBuildFile; fileRef = DDA5931A2F8F256900A9BEE9 /* FilterChipView.swift */; };
 		DDAC0689F34313CEF845E3FC /* DOSRunner.swift in Sources */ = {isa = PBXBuildFile; fileRef = E87593F08B97B23BA2CAC02A /* DOSRunner.swift */; };
 		DDD7A0432F8C8F12002E26DB /* Asset.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = DDD7A0422F8C8F12002E26DB /* Asset.xcassets */; };
 		E05CB54B2368ED8F5003136D /* MAMEModels.swift in Sources */ = {isa = PBXBuildFile; fileRef = BA50A4BA7CA5DC3C5FCB550D /* MAMEModels.swift */; };
@@ -842,6 +848,12 @@
 		DDA592F62F8E570A00A9BEE9 /* Sony - PlayStation.dat */ = {isa = PBXFileReference; lastKnownFileType = text; path = "Sony - PlayStation.dat"; sourceTree = "<group>"; };
 		DDA592F72F8E570A00A9BEE9 /* Sony - PlayStation 2.dat */ = {isa = PBXFileReference; lastKnownFileType = text; path = "Sony - PlayStation 2.dat"; sourceTree = "<group>"; };
 		DDA592F82F8E570A00A9BEE9 /* Sony - PlayStation Portable.dat */ = {isa = PBXFileReference; lastKnownFileType = text; path = "Sony - PlayStation Portable.dat"; sourceTree = "<group>"; };
+		DDA593192F8F256900A9BEE9 /* CategoryViews.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CategoryViews.swift; sourceTree = "<group>"; };
+		DDA5931A2F8F256900A9BEE9 /* FilterChipView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FilterChipView.swift; sourceTree = "<group>"; };
+		DDA5931B2F8F256900A9BEE9 /* GameListRowView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GameListRowView.swift; sourceTree = "<group>"; };
+		DDA5931C2F8F256900A9BEE9 /* GridCardZoomableFullScreenView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GridCardZoomableFullScreenView.swift; sourceTree = "<group>"; };
+		DDA5931D2F8F256900A9BEE9 /* LibraryAnimations.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LibraryAnimations.swift; sourceTree = "<group>"; };
+		DDA5931E2F8F256900A9BEE9 /* LibraryFilterOption.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LibraryFilterOption.swift; sourceTree = "<group>"; };
 		DDD7A0422F8C8F12002E26DB /* Asset.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Asset.xcassets; sourceTree = "<group>"; };
 		E35518FB34DEB243BF979DE0 /* LibretroCore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LibretroCore.swift; sourceTree = "<group>"; };
 		E3CF8589B867729FD91E572B /* GameDBLookupResult.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GameDBLookupResult.swift; sourceTree = "<group>"; };
@@ -976,6 +988,12 @@
 		2C503F1AC4270AE1CC303595 /* Library */ = {
 			isa = PBXGroup;
 			children = (
+				DDA593192F8F256900A9BEE9 /* CategoryViews.swift */,
+				DDA5931A2F8F256900A9BEE9 /* FilterChipView.swift */,
+				DDA5931B2F8F256900A9BEE9 /* GameListRowView.swift */,
+				DDA5931C2F8F256900A9BEE9 /* GridCardZoomableFullScreenView.swift */,
+				DDA5931D2F8F256900A9BEE9 /* LibraryAnimations.swift */,
+				DDA5931E2F8F256900A9BEE9 /* LibraryFilterOption.swift */,
 				DDA58F1B2F8DC8E800A9BEE9 /* GameCardView.swift */,
 				F7B01C061953C178E665826D /* CategoryRowButton.swift */,
 				3356A4F200DFBFEEEE0F91A7 /* LibraryGridView.swift */,
@@ -2029,6 +2047,12 @@
 				7874B82F430F8E47A01C0C72 /* LottesCRT.metal in Sources */,
 				244314F2F386044FD11738B6 /* MAMEDependencyService.swift in Sources */,
 				0F997E74D7C475FDA0A2CCE1 /* MAMEDependencyStatusView.swift in Sources */,
+				DDA5931F2F8F256900A9BEE9 /* GameListRowView.swift in Sources */,
+				DDA593202F8F256900A9BEE9 /* GridCardZoomableFullScreenView.swift in Sources */,
+				DDA593212F8F256900A9BEE9 /* LibraryAnimations.swift in Sources */,
+				DDA593222F8F256900A9BEE9 /* CategoryViews.swift in Sources */,
+				DDA593232F8F256900A9BEE9 /* LibraryFilterOption.swift in Sources */,
+				DDA593242F8F256900A9BEE9 /* FilterChipView.swift in Sources */,
 				7BCABE033C966C00D3C37B3D /* MAMEImportService.swift in Sources */,
 				F801A3B0E298FF5B551C0CF8 /* MAMEMissingROMsAlert.swift in Sources */,
 				E05CB54B2368ED8F5003136D /* MAMEModels.swift in Sources */,
