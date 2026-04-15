@@ -958,14 +958,16 @@ struct LibraryGridView: View {
     }
 
     private func contextMenu(for rom: ROM) -> AnyView {
-        AnyView(
+        let targetIDs = Array(selectedROMs.union([rom.id]))
+        let targetIDsSet = Set(targetIDs)
+        return AnyView(
             Group {
                 Button {
                     openWindow(id: "game-info", value: rom.id)
                 } label: {
                     Label("See Game Info", systemImage: "info.circle")
                 }
-                
+
                 Button {
                     launchGame(rom)
                 } label: {
@@ -980,25 +982,25 @@ struct LibraryGridView: View {
                 }
 
                 Divider()
-                
+
                 Menu {
                     Button {
                         showCreateCategorySheet = true
                     } label: {
                         Label("New Category...", systemImage: "plus.circle")
                     }
-                    
+
                     if !categoryManager.categories.isEmpty {
                         Divider()
                     }
-                    
+
                     ForEach(categoryManager.categories) { category in
                         let isInCategory = category.gameIDs.contains(rom.id)
                         Button {
                             if isInCategory {
-                                categoryManager.removeGamesFromCategory(gameIDs: [rom.id], categoryID: category.id)
+                                categoryManager.removeGamesFromCategory(gameIDs: targetIDs, categoryID: category.id)
                             } else {
-                                categoryManager.addGamesToCategory(gameIDs: [rom.id], categoryID: category.id)
+                                categoryManager.addGamesToCategory(gameIDs: targetIDs, categoryID: category.id)
                             }
                         } label: {
                             HStack {
@@ -1016,13 +1018,15 @@ struct LibraryGridView: View {
                             }
                         }
                     }
-                    
-                    let categoriesForGame = categoryManager.categories.filter { $0.gameIDs.contains(rom.id) }
-                    if !categoriesForGame.isEmpty {
+
+                    let categoriesForTargetGames = categoryManager.categories.filter { category in
+                        category.gameIDs.contains { targetIDsSet.contains($0) }
+                    }
+                    if !categoriesForTargetGames.isEmpty {
                         Divider()
                         Button(role: .destructive) {
-                            for category in categoriesForGame {
-                                categoryManager.removeGamesFromCategory(gameIDs: [rom.id], categoryID: category.id)
+                            for category in categoriesForTargetGames {
+                                categoryManager.removeGamesFromCategory(gameIDs: targetIDs, categoryID: category.id)
                             }
                         } label: {
                             Label("Remove from All Categories", systemImage: "folder.badge.minus")
@@ -1031,7 +1035,7 @@ struct LibraryGridView: View {
                 } label: {
                     Label("Categories", systemImage: "folder.badge.plus")
                 }
-                
+
                 Divider()
                 Button(rom.isFavorite ? "Remove from Favorites" : "Add to Favorites") {
                     var updated = rom
@@ -1045,7 +1049,7 @@ struct LibraryGridView: View {
                 Button("Reveal in Finder") {
                     NSWorkspace.shared.selectFile(rom.path.path, inFileViewerRootedAtPath: "")
                 }
-                
+
                 Divider()
                 if rom.isHidden {
                     Button("Unhide Game") {
