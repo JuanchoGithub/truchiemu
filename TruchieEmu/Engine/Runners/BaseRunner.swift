@@ -283,6 +283,13 @@ class EmulatorRunner: ObservableObject, @unchecked Sendable {
                 shaderDir: shaderDir,
                 videoCallback: { [weak self] data, width, height, pitch, format in
                     self?.updateFrame(data: data, width: width, height: height, pitch: pitch, format: format)
+                },
+                onFailure: { [weak self] message in
+                    Task { @MainActor in
+                        LoggerService.error(category: "Runner", "Core launch failed: \(message)")
+                        self?.lastError = .launchFailed(reason: message)
+                        self?.isRunning = false
+                    }
                 }
             )
             

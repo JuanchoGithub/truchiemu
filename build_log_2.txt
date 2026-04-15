@@ -1,0 +1,486 @@
+Command line invocation:
+    /Applications/Xcode.app/Contents/Developer/usr/bin/xcodebuild -project TruchiEmu.xcodeproj -scheme TruchieEmu -configuration Debug -sdk macosx -destination platform=macOS,arch=arm64 build
+
+Build settings from command line:
+    SDKROOT = macosx26.4
+
+ComputePackagePrebuildTargetDependencyGraph
+
+Prepare packages
+
+CreateBuildRequest
+
+SendProjectDescription
+
+CreateBuildOperation
+
+ComputeTargetDependencyGraph
+note: Building targets in dependency order
+note: Target dependency graph (1 target)
+    Target 'TruchiEmu' in project 'TruchiEmu' (no dependencies)
+
+GatherProvisioningInputs
+
+CreateBuildDescription
+
+ClangStatCache /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/clang-stat-cache /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX26.4.sdk /Users/jayjay/Library/Developer/Xcode/DerivedData/SDKStatCaches.noindex/macosx26.4-25E236-688ef53f1462e2c8f657fdc38a81448f30f9ca8789b706f8bd3fc906a70d770f.sdkstatcache
+    cd /Users/jayjay/gitrepos/truchiemu/TruchiEmu.xcodeproj
+    /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/clang-stat-cache /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX26.4.sdk -o /Users/jayjay/Library/Developer/Xcode/DerivedData/SDKStatCaches.noindex/macosx26.4-25E236-688ef53f1462e2c8f657fdc38a81448f30f9ca8789b706f8bd3fc906a70d770f.sdkstatcache
+
+/Users/jayjay/gitrepos/truchiemu/TruchiEmu.xcodeproj: warning: The Copy Bundle Resources build phase contains this target's Info.plist file '/Users/jayjay/gitrepos/truchiemu/TruchieEmu/Resources/Info.plist'. (in target 'TruchiEmu' from project 'TruchiEmu')
+SwiftDriver TruchiEmu normal arm64 com.apple.xcode.tools.swift.compiler (in target 'TruchiEmu' from project 'TruchiEmu')
+    cd /Users/jayjay/gitrepos/truchiemu
+    builtin-SwiftDriver -- /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/swiftc -module-name TruchiEmu -Onone @/Users/jayjay/Library/Developer/Xcode/DerivedData/TruchiEmu-gawyppvgjxbeaaebuslnlsaalnra/Build/Intermediates.noindex/TruchiEmu.build/Debug/TruchiEmu.build/Objects-normal/arm64/TruchiEmu.SwiftFileList -DDEBUG -enable-bare-slash-regex -enable-experimental-feature DebugDescriptionMacro -sdk /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX26.4.sdk -target arm64-apple-macos14.0 -g -module-cache-path /Users/jayjay/Library/Developer/Xcode/DerivedData/ModuleCache.noindex -Xfrontend -serialize-debugging-options -enable-testing -index-store-path /Users/jayjay/Library/Developer/Xcode/DerivedData/TruchiEmu-gawyppvgjxbeaaebuslnlsaalnra/Index.noindex/DataStore -Xcc -D_LIBCPP_HARDENING_MODE\=_LIBCPP_HARDENING_MODE_DEBUG -swift-version 5 -I /Users/jayjay/Library/Developer/Xcode/DerivedData/TruchiEmu-gawyppvgjxbeaaebuslnlsaalnra/Build/Products/Debug -F /Users/jayjay/Library/Developer/Xcode/DerivedData/TruchiEmu-gawyppvgjxbeaaebuslnlsaalnra/Build/Products/Debug -c -j10 -enable-batch-mode -incremental -Xcc -ivfsstatcache -Xcc /Users/jayjay/Library/Developer/Xcode/DerivedData/SDKStatCaches.noindex/macosx26.4-25E236-688ef53f1462e2c8f657fdc38a81448f30f9ca8789b706f8bd3fc906a70d770f.sdkstatcache -output-file-map /Users/jayjay/Library/Developer/Xcode/DerivedData/TruchiEmu-gawyppvgjxbeaaebuslnlsaalnra/Build/Intermediates.noindex/TruchiEmu.build/Debug/TruchiEmu.build/Objects-normal/arm64/TruchiEmu-OutputFileMap.json -use-frontend-parseable-output -save-temps -no-color-diagnostics -explicit-module-build -module-cache-path /Users/jayjay/Library/Developer/Xcode/DerivedData/TruchiEmu-gawyppvgjxbeaaebuslnlsaalnra/Build/Intermediates.noindex/SwiftExplicitPrecompiledModules -clang-scanner-module-cache-path /Users/jayjay/Library/Developer/Xcode/DerivedData/ModuleCache.noindex -sdk-module-cache-path /Users/jayjay/Library/Developer/Xcode/DerivedData/ModuleCache.noindex -serialize-diagnostics -emit-dependencies -emit-module -emit-module-path /Users/jayjay/Library/Developer/Xcode/DerivedData/TruchiEmu-gawyppvgjxbeaaebuslnlsaalnra/Build/Intermediates.noindex/TruchiEmu.build/Debug/TruchiEmu.build/Objects-normal/arm64/TruchiEmu.swiftmodule -validate-clang-modules-once -clang-build-session-file /Users/jayjay/Library/Developer/Xcode/DerivedData/ModuleCache.noindex/Session.modulevalidation -Xcc -I/Users/jayjay/Library/Developer/Xcode/DerivedData/TruchiEmu-gawyppvgjxbeaaebuslnlsaalnra/Build/Intermediates.noindex/TruchiEmu.build/Debug/TruchiEmu.build/swift-overrides.hmap -emit-const-values -Xfrontend -const-gather-protocols-file -Xfrontend /Users/jayjay/Library/Developer/Xcode/DerivedData/TruchiEmu-gawyppvgjxbeaaebuslnlsaalnra/Build/Intermediates.noindex/TruchiEmu.build/Debug/TruchiEmu.build/Objects-normal/arm64/TruchiEmu_const_extract_protocols.json -Xcc -iquote -Xcc /Users/jayjay/Library/Developer/Xcode/DerivedData/TruchiEmu-gawyppvgjxbeaaebuslnlsaalnra/Build/Intermediates.noindex/TruchiEmu.build/Debug/TruchiEmu.build/TruchiEmu-generated-files.hmap -Xcc -I/Users/jayjay/Library/Developer/Xcode/DerivedData/TruchiEmu-gawyppvgjxbeaaebuslnlsaalnra/Build/Intermediates.noindex/TruchiEmu.build/Debug/TruchiEmu.build/TruchiEmu-own-target-headers.hmap -Xcc -I/Users/jayjay/Library/Developer/Xcode/DerivedData/TruchiEmu-gawyppvgjxbeaaebuslnlsaalnra/Build/Intermediates.noindex/TruchiEmu.build/Debug/TruchiEmu.build/TruchiEmu-all-target-headers.hmap -Xcc -iquote -Xcc /Users/jayjay/Library/Developer/Xcode/DerivedData/TruchiEmu-gawyppvgjxbeaaebuslnlsaalnra/Build/Intermediates.noindex/TruchiEmu.build/Debug/TruchiEmu.build/TruchiEmu-project-headers.hmap -Xcc -I/Users/jayjay/Library/Developer/Xcode/DerivedData/TruchiEmu-gawyppvgjxbeaaebuslnlsaalnra/Build/Products/Debug/include -Xcc -I/Users/jayjay/Library/Developer/Xcode/DerivedData/TruchiEmu-gawyppvgjxbeaaebuslnlsaalnra/Build/Intermediates.noindex/TruchiEmu.build/Debug/TruchiEmu.build/DerivedSources-normal/arm64 -Xcc -I/Users/jayjay/Library/Developer/Xcode/DerivedData/TruchiEmu-gawyppvgjxbeaaebuslnlsaalnra/Build/Intermediates.noindex/TruchiEmu.build/Debug/TruchiEmu.build/DerivedSources/arm64 -Xcc -I/Users/jayjay/Library/Developer/Xcode/DerivedData/TruchiEmu-gawyppvgjxbeaaebuslnlsaalnra/Build/Intermediates.noindex/TruchiEmu.build/Debug/TruchiEmu.build/DerivedSources -Xcc -DDEBUG\=1 -emit-objc-header -emit-objc-header-path /Users/jayjay/Library/Developer/Xcode/DerivedData/TruchiEmu-gawyppvgjxbeaaebuslnlsaalnra/Build/Intermediates.noindex/TruchiEmu.build/Debug/TruchiEmu.build/Objects-normal/arm64/TruchiEmu-Swift.h -import-objc-header /Users/jayjay/gitrepos/truchiemu/TruchieEmu/Engine/TruchieEmu-Bridging-Header.h -working-directory /Users/jayjay/gitrepos/truchiemu -experimental-emit-module-separately -disable-cmo
+
+SwiftGeneratePch normal arm64 Compiling\ bridging\ header (in target 'TruchiEmu' from project 'TruchiEmu')
+
+SwiftDriverJobDiscovery normal arm64 Compiling bridging header (in target 'TruchiEmu' from project 'TruchiEmu')
+
+SwiftCompile normal arm64 Compiling\ LibraryAutomationCoordinator.swift,\ LibraryGridView.swift,\ LibrarySettingsViewGroup.swift,\ LibraryMetadataStore.swift,\ NESRunner.swift /Users/jayjay/gitrepos/truchiemu/TruchieEmu/Services/LibraryAutomationCoordinator.swift /Users/jayjay/gitrepos/truchiemu/TruchieEmu/Views/Library/LibraryGridView.swift /Users/jayjay/gitrepos/truchiemu/TruchieEmu/Views/Settings/LibrarySettingsViewGroup.swift /Users/jayjay/gitrepos/truchiemu/TruchieEmu/Models/LibraryMetadataStore.swift /Users/jayjay/gitrepos/truchiemu/TruchieEmu/Engine/Runners/NESRunner.swift (in target 'TruchiEmu' from project 'TruchiEmu')
+
+SwiftCompile normal arm64 /Users/jayjay/gitrepos/truchiemu/TruchieEmu/Services/LibraryAutomationCoordinator.swift (in target 'TruchiEmu' from project 'TruchiEmu')
+    cd /Users/jayjay/gitrepos/truchiemu
+    
+
+SwiftCompile normal arm64 /Users/jayjay/gitrepos/truchiemu/TruchieEmu/Views/Library/LibraryGridView.swift (in target 'TruchiEmu' from project 'TruchiEmu')
+    cd /Users/jayjay/gitrepos/truchiemu
+    
+
+SwiftCompile normal arm64 /Users/jayjay/gitrepos/truchiemu/TruchieEmu/Views/Settings/LibrarySettingsViewGroup.swift (in target 'TruchiEmu' from project 'TruchiEmu')
+    cd /Users/jayjay/gitrepos/truchiemu
+    
+
+SwiftCompile normal arm64 /Users/jayjay/gitrepos/truchiemu/TruchieEmu/Models/LibraryMetadataStore.swift (in target 'TruchiEmu' from project 'TruchiEmu')
+    cd /Users/jayjay/gitrepos/truchiemu
+    
+
+SwiftCompile normal arm64 /Users/jayjay/gitrepos/truchiemu/TruchieEmu/Engine/Runners/NESRunner.swift (in target 'TruchiEmu' from project 'TruchiEmu')
+    cd /Users/jayjay/gitrepos/truchiemu
+    
+
+SwiftCompile normal arm64 Compiling\ OnboardingView.swift,\ PersistenceMigrationFlag.swift,\ ROM.swift,\ GameError.swift,\ ROMIdentifierService.swift /Users/jayjay/gitrepos/truchiemu/TruchieEmu/Views/Library/OnboardingView.swift /Users/jayjay/gitrepos/truchiemu/TruchieEmu/Services/Persistence/PersistenceMigrationFlag.swift /Users/jayjay/gitrepos/truchiemu/TruchieEmu/Models/ROM.swift /Users/jayjay/gitrepos/truchiemu/TruchieEmu/GameError.swift /Users/jayjay/gitrepos/truchiemu/TruchieEmu/Services/ROMIdentifierService.swift (in target 'TruchiEmu' from project 'TruchiEmu')
+
+SwiftCompile normal arm64 /Users/jayjay/gitrepos/truchiemu/TruchieEmu/Views/Library/OnboardingView.swift (in target 'TruchiEmu' from project 'TruchiEmu')
+    cd /Users/jayjay/gitrepos/truchiemu
+    
+
+SwiftCompile normal arm64 /Users/jayjay/gitrepos/truchiemu/TruchieEmu/Services/Persistence/PersistenceMigrationFlag.swift (in target 'TruchiEmu' from project 'TruchiEmu')
+    cd /Users/jayjay/gitrepos/truchiemu
+    
+
+SwiftCompile normal arm64 /Users/jayjay/gitrepos/truchiemu/TruchieEmu/Models/ROM.swift (in target 'TruchiEmu' from project 'TruchiEmu')
+    cd /Users/jayjay/gitrepos/truchiemu
+    
+
+SwiftCompile normal arm64 /Users/jayjay/gitrepos/truchiemu/TruchieEmu/GameError.swift (in target 'TruchiEmu' from project 'TruchiEmu')
+    cd /Users/jayjay/gitrepos/truchiemu
+    
+
+SwiftCompile normal arm64 /Users/jayjay/gitrepos/truchiemu/TruchieEmu/Services/ROMIdentifierService.swift (in target 'TruchiEmu' from project 'TruchiEmu')
+    cd /Users/jayjay/gitrepos/truchiemu
+    
+/Users/jayjay/gitrepos/truchiemu/TruchieEmu/Services/ROMIdentifierService.swift:932:104: warning: string interpolation produces a debug description for an optional value; did you mean to make this explicit?
+        LoggerService.debug(category: "LibretroDB", "=== STEP 2: Looking for resource bundle dats at \(Bundle.main.resourcePath) ===")
+                                                                                                       ^~~~~~~~~~~~~~~~~~~~~~~~
+/Users/jayjay/gitrepos/truchiemu/TruchieEmu/Services/ROMIdentifierService.swift:932:116: note: provide a default value to avoid this warning
+        LoggerService.debug(category: "LibretroDB", "=== STEP 2: Looking for resource bundle dats at \(Bundle.main.resourcePath) ===")
+                                                                                                       ~~~~~~~~~~~~^~~~~~~~~~~~
+                                                                                                                                ?? <#default value#>
+/Users/jayjay/gitrepos/truchiemu/TruchieEmu/Services/ROMIdentifierService.swift:932:116: note: use 'String(describing:)' to silence this warning
+        LoggerService.debug(category: "LibretroDB", "=== STEP 2: Looking for resource bundle dats at \(Bundle.main.resourcePath) ===")
+                                                                                                       ~~~~~~~~~~~~^~~~~~~~~~~~
+                                                                                                       String(describing:      )
+
+SwiftCompile normal arm64 Compiling\ BezelModels.swift,\ BezelSelectorSheet.swift,\ GameDetailView.swift,\ GameDragState.swift,\ GameInfoWindow.swift,\ GameLauncher.swift /Users/jayjay/gitrepos/truchiemu/TruchieEmu/Services/Bezels/BezelModels.swift /Users/jayjay/gitrepos/truchiemu/TruchieEmu/Views/Bezels/BezelSelectorSheet.swift /Users/jayjay/gitrepos/truchiemu/TruchieEmu/Views/Detail/GameDetailView.swift /Users/jayjay/gitrepos/truchiemu/TruchieEmu/Services/GameDragState.swift /Users/jayjay/gitrepos/truchiemu/TruchieEmu/App/GameInfoWindow.swift /Users/jayjay/gitrepos/truchiemu/TruchieEmu/Services/GameLauncher.swift (in target 'TruchiEmu' from project 'TruchiEmu')
+SwiftCompile normal arm64 /Users/jayjay/gitrepos/truchiemu/TruchieEmu/Services/Bezels/BezelModels.swift (in target 'TruchiEmu' from project 'TruchiEmu')
+    cd /Users/jayjay/gitrepos/truchiemu
+    
+
+SwiftCompile normal arm64 /Users/jayjay/gitrepos/truchiemu/TruchieEmu/Views/Bezels/BezelSelectorSheet.swift (in target 'TruchiEmu' from project 'TruchiEmu')
+    cd /Users/jayjay/gitrepos/truchiemu
+    
+
+SwiftCompile normal arm64 /Users/jayjay/gitrepos/truchiemu/TruchieEmu/Views/Detail/GameDetailView.swift (in target 'TruchiEmu' from project 'TruchiEmu')
+    cd /Users/jayjay/gitrepos/truchiemu
+    
+
+SwiftCompile normal arm64 /Users/jayjay/gitrepos/truchiemu/TruchieEmu/Services/GameDragState.swift (in target 'TruchiEmu' from project 'TruchiEmu')
+    cd /Users/jayjay/gitrepos/truchiemu
+    
+
+SwiftCompile normal arm64 /Users/jayjay/gitrepos/truchiemu/TruchieEmu/App/GameInfoWindow.swift (in target 'TruchiEmu' from project 'TruchiEmu')
+    cd /Users/jayjay/gitrepos/truchiemu
+    
+
+SwiftCompile normal arm64 /Users/jayjay/gitrepos/truchiemu/TruchieEmu/Services/GameLauncher.swift (in target 'TruchiEmu' from project 'TruchiEmu')
+    cd /Users/jayjay/gitrepos/truchiemu
+    
+
+SwiftCompile normal arm64 Compiling\ BaseRunner.swift,\ BezelAPIService.swift,\ BezelBackgroundView.swift,\ BezelBrowserView.swift,\ BezelDownloadLogView.swift,\ BezelManager.swift /Users/jayjay/gitrepos/truchiemu/TruchieEmu/Engine/Runners/BaseRunner.swift /Users/jayjay/gitrepos/truchiemu/TruchieEmu/Services/Bezels/BezelAPIService.swift /Users/jayjay/gitrepos/truchiemu/TruchieEmu/Views/Player/BezelBackgroundView.swift /Users/jayjay/gitrepos/truchiemu/TruchieEmu/Views/Bezels/BezelBrowserView.swift /Users/jayjay/gitrepos/truchiemu/TruchieEmu/Views/Bezels/BezelDownloadLogView.swift /Users/jayjay/gitrepos/truchiemu/TruchieEmu/Services/Bezels/BezelManager.swift (in target 'TruchiEmu' from project 'TruchiEmu')
+
+SwiftCompile normal arm64 /Users/jayjay/gitrepos/truchiemu/TruchieEmu/Engine/Runners/BaseRunner.swift (in target 'TruchiEmu' from project 'TruchiEmu')
+    cd /Users/jayjay/gitrepos/truchiemu
+    
+/Users/jayjay/gitrepos/truchiemu/TruchieEmu/Engine/Runners/BaseRunner.swift:280:31: warning: main actor-isolated property 'rom' can not be referenced from a Sendable closure
+                romPath: self.rom!.path.path,
+                              ^
+/Users/jayjay/gitrepos/truchiemu/TruchieEmu/Engine/Runners/BaseRunner.swift:212:31: note: property declared here
+    @MainActor @Published var rom: ROM?
+                              ^
+/Users/jayjay/gitrepos/truchiemu/TruchieEmu/Engine/Runners/BaseRunner.swift:282:32: warning: main actor-isolated property 'rom' can not be referenced from a Sendable closure
+                systemID: self.rom!.systemID,
+                               ^
+/Users/jayjay/gitrepos/truchiemu/TruchieEmu/Engine/Runners/BaseRunner.swift:212:31: note: property declared here
+    @MainActor @Published var rom: ROM?
+                              ^
+
+SwiftCompile normal arm64 /Users/jayjay/gitrepos/truchiemu/TruchieEmu/Services/Bezels/BezelAPIService.swift (in target 'TruchiEmu' from project 'TruchiEmu')
+    cd /Users/jayjay/gitrepos/truchiemu
+    
+
+SwiftCompile normal arm64 /Users/jayjay/gitrepos/truchiemu/TruchieEmu/Views/Player/BezelBackgroundView.swift (in target 'TruchiEmu' from project 'TruchiEmu')
+    cd /Users/jayjay/gitrepos/truchiemu
+    
+
+SwiftCompile normal arm64 /Users/jayjay/gitrepos/truchiemu/TruchieEmu/Views/Bezels/BezelBrowserView.swift (in target 'TruchiEmu' from project 'TruchiEmu')
+    cd /Users/jayjay/gitrepos/truchiemu
+    
+
+SwiftCompile normal arm64 /Users/jayjay/gitrepos/truchiemu/TruchieEmu/Views/Bezels/BezelDownloadLogView.swift (in target 'TruchiEmu' from project 'TruchiEmu')
+    cd /Users/jayjay/gitrepos/truchiemu
+    
+
+SwiftCompile normal arm64 /Users/jayjay/gitrepos/truchiemu/TruchieEmu/Services/Bezels/BezelManager.swift (in target 'TruchiEmu' from project 'TruchiEmu')
+    cd /Users/jayjay/gitrepos/truchiemu
+    
+
+SwiftCompile normal arm64 Compiling\ SystemInfo.swift,\ SystemSidebarView.swift,\ TruchieEmuApp.swift,\ ZoomableBoxArtView.swift,\ GeneratedAssetSymbols.swift /Users/jayjay/gitrepos/truchiemu/TruchieEmu/Models/SystemInfo.swift /Users/jayjay/gitrepos/truchiemu/TruchieEmu/Views/Library/SystemSidebarView.swift /Users/jayjay/gitrepos/truchiemu/TruchieEmu/App/TruchieEmuApp.swift /Users/jayjay/gitrepos/truchiemu/TruchieEmu/Views/BoxArt/ZoomableBoxArtView.swift /Users/jayjay/Library/Developer/Xcode/DerivedData/TruchiEmu-gawyppvgjxbeaaebuslnlsaalnra/Build/Intermediates.noindex/TruchiEmu.build/Debug/TruchiEmu.build/DerivedSources/GeneratedAssetSymbols.swift (in target 'TruchiEmu' from project 'TruchiEmu')
+
+SwiftCompile normal arm64 /Users/jayjay/gitrepos/truchiemu/TruchieEmu/Models/SystemInfo.swift (in target 'TruchiEmu' from project 'TruchiEmu')
+    cd /Users/jayjay/gitrepos/truchiemu
+    
+/Users/jayjay/gitrepos/truchiemu/TruchieEmu/Models/SystemInfo.swift:528:48: warning: instance method 'makeIterator' is unavailable from asynchronous contexts; this is an error in the Swift 6 language mode
+                for case let fileURL as URL in enumerator where fileURL.pathExtension == "info" {
+                                               ^
+/Users/jayjay/gitrepos/truchiemu/TruchieEmu/Models/SystemInfo.swift:496:13: warning: capture of 'self' with non-Sendable type 'LibretroInfoManager' in a '@Sendable' closure
+            self.isRefreshing = true
+            ^
+/Users/jayjay/gitrepos/truchiemu/TruchieEmu/Models/SystemInfo.swift:475:7: note: class 'LibretroInfoManager' does not conform to the 'Sendable' protocol
+class LibretroInfoManager: ObservableObject {
+      ^
+/Users/jayjay/gitrepos/truchiemu/TruchieEmu/Models/SystemInfo.swift:508:40: warning: capture of 'self' with non-Sendable type 'LibretroInfoManager' in a '@Sendable' closure
+            DispatchQueue.main.async { self.refreshStatus = "Extracting files..." }
+                                       ^
+/Users/jayjay/gitrepos/truchiemu/TruchieEmu/Models/SystemInfo.swift:475:7: note: class 'LibretroInfoManager' does not conform to the 'Sendable' protocol
+class LibretroInfoManager: ObservableObject {
+      ^
+/Users/jayjay/gitrepos/truchiemu/TruchieEmu/Models/SystemInfo.swift:517:40: warning: capture of 'self' with non-Sendable type 'LibretroInfoManager' in a '@Sendable' closure
+            DispatchQueue.main.async { self.refreshStatus = "Parsing system info..." }
+                                       ^
+/Users/jayjay/gitrepos/truchiemu/TruchieEmu/Models/SystemInfo.swift:475:7: note: class 'LibretroInfoManager' does not conform to the 'Sendable' protocol
+class LibretroInfoManager: ObservableObject {
+      ^
+/Users/jayjay/gitrepos/truchiemu/TruchieEmu/Models/SystemInfo.swift:566:40: warning: capture of 'self' with non-Sendable type 'LibretroInfoManager' in a '@Sendable' closure
+            DispatchQueue.main.async { self.refreshStatus = "Updating database..." }
+                                       ^
+/Users/jayjay/gitrepos/truchiemu/TruchieEmu/Models/SystemInfo.swift:475:7: note: class 'LibretroInfoManager' does not conform to the 'Sendable' protocol
+class LibretroInfoManager: ObservableObject {
+      ^
+/Users/jayjay/gitrepos/truchiemu/TruchieEmu/Models/SystemInfo.swift:615:17: warning: capture of 'self' with non-Sendable type 'LibretroInfoManager' in a '@Sendable' closure
+                self.isRefreshing = false
+                ^
+/Users/jayjay/gitrepos/truchiemu/TruchieEmu/Models/SystemInfo.swift:475:7: note: class 'LibretroInfoManager' does not conform to the 'Sendable' protocol
+class LibretroInfoManager: ObservableObject {
+      ^
+/Users/jayjay/gitrepos/truchiemu/TruchieEmu/Models/SystemInfo.swift:623:17: warning: capture of 'self' with non-Sendable type 'LibretroInfoManager' in a '@Sendable' closure
+                self.isRefreshing = false
+                ^
+/Users/jayjay/gitrepos/truchiemu/TruchieEmu/Models/SystemInfo.swift:475:7: note: class 'LibretroInfoManager' does not conform to the 'Sendable' protocol
+class LibretroInfoManager: ObservableObject {
+      ^
+
+SwiftCompile normal arm64 /Users/jayjay/gitrepos/truchiemu/TruchieEmu/Views/Library/SystemSidebarView.swift (in target 'TruchiEmu' from project 'TruchiEmu')
+    cd /Users/jayjay/gitrepos/truchiemu
+    
+
+SwiftCompile normal arm64 /Users/jayjay/gitrepos/truchiemu/TruchieEmu/App/TruchieEmuApp.swift (in target 'TruchiEmu' from project 'TruchiEmu')
+    cd /Users/jayjay/gitrepos/truchiemu
+    
+
+SwiftCompile normal arm64 /Users/jayjay/gitrepos/truchiemu/TruchieEmu/Views/BoxArt/ZoomableBoxArtView.swift (in target 'TruchiEmu' from project 'TruchiEmu')
+    cd /Users/jayjay/gitrepos/truchiemu
+    
+
+SwiftCompile normal arm64 /Users/jayjay/Library/Developer/Xcode/DerivedData/TruchiEmu-gawyppvgjxbeaaebuslnlsaalnra/Build/Intermediates.noindex/TruchiEmu.build/Debug/TruchiEmu.build/DerivedSources/GeneratedAssetSymbols.swift (in target 'TruchiEmu' from project 'TruchiEmu')
+    cd /Users/jayjay/gitrepos/truchiemu
+    
+
+SwiftCompile normal arm64 Compiling\ GitHubAPIModels.swift,\ LibretroThumbnailManifestService.swift,\ Achievement.swift,\ AchievementListView.swift,\ AchievementToastView.swift,\ AppSettings.swift /Users/jayjay/gitrepos/truchiemu/TruchieEmu/Models/GitHubAPIModels.swift /Users/jayjay/gitrepos/truchiemu/TruchieEmu/Services/LibretroThumbnailManifestService.swift /Users/jayjay/gitrepos/truchiemu/TruchieEmu/Models/Achievement.swift /Users/jayjay/gitrepos/truchiemu/TruchieEmu/Views/Player/AchievementListView.swift /Users/jayjay/gitrepos/truchiemu/TruchieEmu/Views/Player/AchievementToastView.swift /Users/jayjay/gitrepos/truchiemu/TruchieEmu/Utilities/AppSettings.swift (in target 'TruchiEmu' from project 'TruchiEmu')
+
+SwiftCompile normal arm64 /Users/jayjay/gitrepos/truchiemu/TruchieEmu/Models/GitHubAPIModels.swift (in target 'TruchiEmu' from project 'TruchiEmu')
+    cd /Users/jayjay/gitrepos/truchiemu
+    
+
+SwiftCompile normal arm64 /Users/jayjay/gitrepos/truchiemu/TruchieEmu/Services/LibretroThumbnailManifestService.swift (in target 'TruchiEmu' from project 'TruchiEmu')
+    cd /Users/jayjay/gitrepos/truchiemu
+    
+
+SwiftCompile normal arm64 /Users/jayjay/gitrepos/truchiemu/TruchieEmu/Models/Achievement.swift (in target 'TruchiEmu' from project 'TruchiEmu')
+    cd /Users/jayjay/gitrepos/truchiemu
+    
+
+SwiftCompile normal arm64 /Users/jayjay/gitrepos/truchiemu/TruchieEmu/Views/Player/AchievementListView.swift (in target 'TruchiEmu' from project 'TruchiEmu')
+    cd /Users/jayjay/gitrepos/truchiemu
+    
+
+SwiftCompile normal arm64 /Users/jayjay/gitrepos/truchiemu/TruchieEmu/Views/Player/AchievementToastView.swift (in target 'TruchiEmu' from project 'TruchiEmu')
+    cd /Users/jayjay/gitrepos/truchiemu
+    
+
+SwiftCompile normal arm64 /Users/jayjay/gitrepos/truchiemu/TruchieEmu/Utilities/AppSettings.swift (in target 'TruchiEmu' from project 'TruchiEmu')
+    cd /Users/jayjay/gitrepos/truchiemu
+    
+
+SwiftCompile normal arm64 Compiling\ ROMLibrary.swift,\ ROMRepository.swift,\ ROMScanner.swift,\ ROMIdentifier.swift,\ ResourceCacheInterceptor.swift /Users/jayjay/gitrepos/truchiemu/TruchieEmu/Services/ROMLibrary.swift /Users/jayjay/gitrepos/truchiemu/TruchieEmu/Services/Persistence/ROMRepository.swift /Users/jayjay/gitrepos/truchiemu/TruchieEmu/Services/ROMScanner.swift /Users/jayjay/gitrepos/truchiemu/TruchieEmu/Services/ROMIdentifier.swift /Users/jayjay/gitrepos/truchiemu/TruchieEmu/Services/ResourceCacheInterceptor.swift (in target 'TruchiEmu' from project 'TruchiEmu')
+
+SwiftCompile normal arm64 /Users/jayjay/gitrepos/truchiemu/TruchieEmu/Services/ROMLibrary.swift (in target 'TruchiEmu' from project 'TruchiEmu')
+    cd /Users/jayjay/gitrepos/truchiemu
+    
+/Users/jayjay/gitrepos/truchiemu/TruchieEmu/Services/ROMLibrary.swift:477:9: warning: result of call to 'applyIdentificationResult(_:to:persist:silent:)' is unused
+        applyIdentificationResult(result, to: rom, persist: persist)
+        ^                        ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+SwiftCompile normal arm64 /Users/jayjay/gitrepos/truchiemu/TruchieEmu/Services/Persistence/ROMRepository.swift (in target 'TruchiEmu' from project 'TruchiEmu')
+    cd /Users/jayjay/gitrepos/truchiemu
+    
+
+SwiftCompile normal arm64 /Users/jayjay/gitrepos/truchiemu/TruchieEmu/Services/ROMScanner.swift (in target 'TruchiEmu' from project 'TruchiEmu')
+    cd /Users/jayjay/gitrepos/truchiemu
+    
+/Users/jayjay/gitrepos/truchiemu/TruchieEmu/Services/ROMScanner.swift:467:14: warning: expression of type 'Set<String>' is unused
+        self.romExtensions
+        ~~~~~^~~~~~~~~~~~~
+
+SwiftCompile normal arm64 /Users/jayjay/gitrepos/truchiemu/TruchieEmu/Services/ROMIdentifier.swift (in target 'TruchiEmu' from project 'TruchiEmu')
+    cd /Users/jayjay/gitrepos/truchiemu
+    
+/Users/jayjay/gitrepos/truchiemu/TruchieEmu/Services/ROMIdentifier.swift:65:13: warning: result of call to 'identifyDiscSystem(url:candidates:)' is unused
+            identifyDiscSystem(url: url, candidates: &candidates)
+            ^                 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/Users/jayjay/gitrepos/truchiemu/TruchieEmu/Services/ROMIdentifier.swift:312:17: warning: initialization of immutable value 'fileName' was never used; consider replacing with assignment to '_' or removing it
+            let fileName = fileURL.lastPathComponent.uppercased()
+            ~~~~^~~~~~~~
+            _
+/Users/jayjay/gitrepos/truchiemu/TruchieEmu/Services/ROMIdentifier.swift:400:98: warning: left side of nil coalescing operator '??' has non-optional type 'String', so the right side is never used
+                    let expectedData = parseHeaderBytes(headerBytes ?? "", url.lastPathComponent ?? "")
+                                                                           ~~~~~~~~~~~~~~~~~~~~~~^~~~~
+                                                                                                
+
+SwiftCompile normal arm64 /Users/jayjay/gitrepos/truchiemu/TruchieEmu/Services/ResourceCacheInterceptor.swift (in target 'TruchiEmu' from project 'TruchiEmu')
+    cd /Users/jayjay/gitrepos/truchiemu
+    
+
+SwiftCompile normal arm64 Compiling\ SidebarRowButton.swift,\ SlotPickerSheet.swift,\ SwiftDataContainer.swift,\ SwiftDataModels.swift,\ SystemControlsMappingView.swift /Users/jayjay/gitrepos/truchiemu/TruchieEmu/Views/Library/SidebarRowButton.swift /Users/jayjay/gitrepos/truchiemu/TruchieEmu/Views/Player/SlotPickerSheet.swift /Users/jayjay/gitrepos/truchiemu/TruchieEmu/Services/Persistence/SwiftDataContainer.swift /Users/jayjay/gitrepos/truchiemu/TruchieEmu/Models/SwiftDataModels.swift /Users/jayjay/gitrepos/truchiemu/TruchieEmu/Views/Library/SystemControlsMappingView.swift (in target 'TruchiEmu' from project 'TruchiEmu')
+
+SwiftCompile normal arm64 /Users/jayjay/gitrepos/truchiemu/TruchieEmu/Views/Library/SidebarRowButton.swift (in target 'TruchiEmu' from project 'TruchiEmu')
+    cd /Users/jayjay/gitrepos/truchiemu
+    
+
+SwiftCompile normal arm64 /Users/jayjay/gitrepos/truchiemu/TruchieEmu/Views/Player/SlotPickerSheet.swift (in target 'TruchiEmu' from project 'TruchiEmu')
+    cd /Users/jayjay/gitrepos/truchiemu
+    
+
+SwiftCompile normal arm64 /Users/jayjay/gitrepos/truchiemu/TruchieEmu/Services/Persistence/SwiftDataContainer.swift (in target 'TruchiEmu' from project 'TruchiEmu')
+    cd /Users/jayjay/gitrepos/truchiemu
+    
+
+SwiftCompile normal arm64 /Users/jayjay/gitrepos/truchiemu/TruchieEmu/Models/SwiftDataModels.swift (in target 'TruchiEmu' from project 'TruchiEmu')
+    cd /Users/jayjay/gitrepos/truchiemu
+    
+
+SwiftCompile normal arm64 /Users/jayjay/gitrepos/truchiemu/TruchieEmu/Views/Library/SystemControlsMappingView.swift (in target 'TruchiEmu' from project 'TruchiEmu')
+    cd /Users/jayjay/gitrepos/truchiemu
+    
+
+SwiftEmitModule normal arm64 Emitting\ module\ for\ TruchiEmu (in target 'TruchiEmu' from project 'TruchiEmu')
+
+EmitSwiftModule normal arm64 (in target 'TruchiEmu' from project 'TruchiEmu')
+    cd /Users/jayjay/gitrepos/truchiemu
+    
+
+SwiftCompile normal arm64 Compiling\ ResourceCacheModels.swift,\ ResourceCacheRepository.swift,\ ShaderPresetPickerView.swift,\ ShaderSection.swift,\ SharedPlayerComponents.swift /Users/jayjay/gitrepos/truchiemu/TruchieEmu/Models/ResourceCacheModels.swift /Users/jayjay/gitrepos/truchiemu/TruchieEmu/Services/Persistence/ResourceCacheRepository.swift /Users/jayjay/gitrepos/truchiemu/TruchieEmu/Views/Shaders/ShaderPresetPickerView.swift /Users/jayjay/gitrepos/truchiemu/TruchieEmu/Views/Detail/Sections/ShaderSection.swift /Users/jayjay/gitrepos/truchiemu/TruchieEmu/Views/Player/SharedPlayerComponents.swift (in target 'TruchiEmu' from project 'TruchiEmu')
+
+SwiftCompile normal arm64 /Users/jayjay/gitrepos/truchiemu/TruchieEmu/Models/ResourceCacheModels.swift (in target 'TruchiEmu' from project 'TruchiEmu')
+    cd /Users/jayjay/gitrepos/truchiemu
+    
+
+SwiftCompile normal arm64 /Users/jayjay/gitrepos/truchiemu/TruchieEmu/Services/Persistence/ResourceCacheRepository.swift (in target 'TruchiEmu' from project 'TruchiEmu')
+    cd /Users/jayjay/gitrepos/truchiemu
+    
+
+SwiftCompile normal arm64 /Users/jayjay/gitrepos/truchiemu/TruchieEmu/Views/Shaders/ShaderPresetPickerView.swift (in target 'TruchiEmu' from project 'TruchiEmu')
+    cd /Users/jayjay/gitrepos/truchiemu
+    
+
+SwiftCompile normal arm64 /Users/jayjay/gitrepos/truchiemu/TruchieEmu/Views/Detail/Sections/ShaderSection.swift (in target 'TruchiEmu' from project 'TruchiEmu')
+    cd /Users/jayjay/gitrepos/truchiemu
+    
+
+SwiftCompile normal arm64 /Users/jayjay/gitrepos/truchiemu/TruchieEmu/Views/Player/SharedPlayerComponents.swift (in target 'TruchiEmu' from project 'TruchiEmu')
+    cd /Users/jayjay/gitrepos/truchiemu
+    
+/Users/jayjay/gitrepos/truchiemu/TruchieEmu/Views/Player/SharedPlayerComponents.swift:1441:33: warning: initialization of immutable value 'systemAR' was never used; consider replacing with assignment to '_' or removing it
+                            let systemAR = systemInfo.displayAspectRatio
+                            ~~~~^~~~~~~~
+                            _
+/Users/jayjay/gitrepos/truchiemu/TruchieEmu/Views/Player/SharedPlayerComponents.swift:1501:33: warning: initialization of immutable value 'bleed' was never used; consider replacing with assignment to '_' or removing it
+                            let bleed = getUniform("bleedAmount", fallback: 0.8) // Increase this to 0.8+
+                            ~~~~^~~~~
+                            _
+
+SwiftCompile normal arm64 Compiling\ GameNameFormatter.swift,\ HardcoreModeManager.swift,\ ImageCache.swift,\ LaunchBoxGameMetadata.swift,\ LaunchBoxGamesDBService.swift /Users/jayjay/gitrepos/truchiemu/TruchieEmu/Utilities/GameNameFormatter.swift /Users/jayjay/gitrepos/truchiemu/TruchieEmu/Services/HardcoreModeManager.swift /Users/jayjay/gitrepos/truchiemu/TruchieEmu/Services/ImageCache.swift /Users/jayjay/gitrepos/truchiemu/TruchieEmu/Models/LaunchBoxGameMetadata.swift /Users/jayjay/gitrepos/truchiemu/TruchieEmu/Services/LaunchBoxGamesDBService.swift (in target 'TruchiEmu' from project 'TruchiEmu')
+
+SwiftCompile normal arm64 /Users/jayjay/gitrepos/truchiemu/TruchieEmu/Utilities/GameNameFormatter.swift (in target 'TruchiEmu' from project 'TruchiEmu')
+    cd /Users/jayjay/gitrepos/truchiemu
+    
+
+SwiftCompile normal arm64 /Users/jayjay/gitrepos/truchiemu/TruchieEmu/Services/HardcoreModeManager.swift (in target 'TruchiEmu' from project 'TruchiEmu')
+    cd /Users/jayjay/gitrepos/truchiemu
+    
+
+SwiftCompile normal arm64 /Users/jayjay/gitrepos/truchiemu/TruchieEmu/Services/ImageCache.swift (in target 'TruchiEmu' from project 'TruchiEmu')
+    cd /Users/jayjay/gitrepos/truchiemu
+    
+
+SwiftCompile normal arm64 /Users/jayjay/gitrepos/truchiemu/TruchieEmu/Models/LaunchBoxGameMetadata.swift (in target 'TruchiEmu' from project 'TruchiEmu')
+    cd /Users/jayjay/gitrepos/truchiemu
+    
+
+SwiftCompile normal arm64 /Users/jayjay/gitrepos/truchiemu/TruchieEmu/Services/LaunchBoxGamesDBService.swift (in target 'TruchiEmu' from project 'TruchiEmu')
+    cd /Users/jayjay/gitrepos/truchiemu
+    
+
+SwiftDriverJobDiscovery normal arm64 Compiling GitHubAPIModels.swift, LibretroThumbnailManifestService.swift, Achievement.swift, AchievementListView.swift, AchievementToastView.swift, AppSettings.swift (in target 'TruchiEmu' from project 'TruchiEmu')
+
+SwiftDriverJobDiscovery normal arm64 Compiling OnboardingView.swift, PersistenceMigrationFlag.swift, ROM.swift, GameError.swift, ROMIdentifierService.swift (in target 'TruchiEmu' from project 'TruchiEmu')
+
+SwiftDriverJobDiscovery normal arm64 Compiling SystemInfo.swift, SystemSidebarView.swift, TruchieEmuApp.swift, ZoomableBoxArtView.swift, GeneratedAssetSymbols.swift (in target 'TruchiEmu' from project 'TruchiEmu')
+
+SwiftDriverJobDiscovery normal arm64 Compiling ROMLibrary.swift, ROMRepository.swift, ROMScanner.swift, ROMIdentifier.swift, ResourceCacheInterceptor.swift (in target 'TruchiEmu' from project 'TruchiEmu')
+
+SwiftDriverJobDiscovery normal arm64 Compiling GameNameFormatter.swift, HardcoreModeManager.swift, ImageCache.swift, LaunchBoxGameMetadata.swift, LaunchBoxGamesDBService.swift (in target 'TruchiEmu' from project 'TruchiEmu')
+
+SwiftDriverJobDiscovery normal arm64 Compiling BaseRunner.swift, BezelAPIService.swift, BezelBackgroundView.swift, BezelBrowserView.swift, BezelDownloadLogView.swift, BezelManager.swift (in target 'TruchiEmu' from project 'TruchiEmu')
+
+SwiftDriverJobDiscovery normal arm64 Compiling ResourceCacheModels.swift, ResourceCacheRepository.swift, ShaderPresetPickerView.swift, ShaderSection.swift, SharedPlayerComponents.swift (in target 'TruchiEmu' from project 'TruchiEmu')
+
+SwiftDriverJobDiscovery normal arm64 Emitting module for TruchiEmu (in target 'TruchiEmu' from project 'TruchiEmu')
+
+SwiftDriver\ Compilation\ Requirements TruchiEmu normal arm64 com.apple.xcode.tools.swift.compiler (in target 'TruchiEmu' from project 'TruchiEmu')
+    cd /Users/jayjay/gitrepos/truchiemu
+    builtin-Swift-Compilation-Requirements -- /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/swiftc -module-name TruchiEmu -Onone @/Users/jayjay/Library/Developer/Xcode/DerivedData/TruchiEmu-gawyppvgjxbeaaebuslnlsaalnra/Build/Intermediates.noindex/TruchiEmu.build/Debug/TruchiEmu.build/Objects-normal/arm64/TruchiEmu.SwiftFileList -DDEBUG -enable-bare-slash-regex -enable-experimental-feature DebugDescriptionMacro -sdk /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX26.4.sdk -target arm64-apple-macos14.0 -g -module-cache-path /Users/jayjay/Library/Developer/Xcode/DerivedData/ModuleCache.noindex -Xfrontend -serialize-debugging-options -enable-testing -index-store-path /Users/jayjay/Library/Developer/Xcode/DerivedData/TruchiEmu-gawyppvgjxbeaaebuslnlsaalnra/Index.noindex/DataStore -Xcc -D_LIBCPP_HARDENING_MODE\=_LIBCPP_HARDENING_MODE_DEBUG -swift-version 5 -I /Users/jayjay/Library/Developer/Xcode/DerivedData/TruchiEmu-gawyppvgjxbeaaebuslnlsaalnra/Build/Products/Debug -F /Users/jayjay/Library/Developer/Xcode/DerivedData/TruchiEmu-gawyppvgjxbeaaebuslnlsaalnra/Build/Products/Debug -c -j10 -enable-batch-mode -incremental -Xcc -ivfsstatcache -Xcc /Users/jayjay/Library/Developer/Xcode/DerivedData/SDKStatCaches.noindex/macosx26.4-25E236-688ef53f1462e2c8f657fdc38a81448f30f9ca8789b706f8bd3fc906a70d770f.sdkstatcache -output-file-map /Users/jayjay/Library/Developer/Xcode/DerivedData/TruchiEmu-gawyppvgjxbeaaebuslnlsaalnra/Build/Intermediates.noindex/TruchiEmu.build/Debug/TruchiEmu.build/Objects-normal/arm64/TruchiEmu-OutputFileMap.json -use-frontend-parseable-output -save-temps -no-color-diagnostics -explicit-module-build -module-cache-path /Users/jayjay/Library/Developer/Xcode/DerivedData/TruchiEmu-gawyppvgjxbeaaebuslnlsaalnra/Build/Intermediates.noindex/SwiftExplicitPrecompiledModules -clang-scanner-module-cache-path /Users/jayjay/Library/Developer/Xcode/DerivedData/ModuleCache.noindex -sdk-module-cache-path /Users/jayjay/Library/Developer/Xcode/DerivedData/ModuleCache.noindex -serialize-diagnostics -emit-dependencies -emit-module -emit-module-path /Users/jayjay/Library/Developer/Xcode/DerivedData/TruchiEmu-gawyppvgjxbeaaebuslnlsaalnra/Build/Intermediates.noindex/TruchiEmu.build/Debug/TruchiEmu.build/Objects-normal/arm64/TruchiEmu.swiftmodule -validate-clang-modules-once -clang-build-session-file /Users/jayjay/Library/Developer/Xcode/DerivedData/ModuleCache.noindex/Session.modulevalidation -Xcc -I/Users/jayjay/Library/Developer/Xcode/DerivedData/TruchiEmu-gawyppvgjxbeaaebuslnlsaalnra/Build/Intermediates.noindex/TruchiEmu.build/Debug/TruchiEmu.build/swift-overrides.hmap -emit-const-values -Xfrontend -const-gather-protocols-file -Xfrontend /Users/jayjay/Library/Developer/Xcode/DerivedData/TruchiEmu-gawyppvgjxbeaaebuslnlsaalnra/Build/Intermediates.noindex/TruchiEmu.build/Debug/TruchiEmu.build/Objects-normal/arm64/TruchiEmu_const_extract_protocols.json -Xcc -iquote -Xcc /Users/jayjay/Library/Developer/Xcode/DerivedData/TruchiEmu-gawyppvgjxbeaaebuslnlsaalnra/Build/Intermediates.noindex/TruchiEmu.build/Debug/TruchiEmu.build/TruchiEmu-generated-files.hmap -Xcc -I/Users/jayjay/Library/Developer/Xcode/DerivedData/TruchiEmu-gawyppvgjxbeaaebuslnlsaalnra/Build/Intermediates.noindex/TruchiEmu.build/Debug/TruchiEmu.build/TruchiEmu-own-target-headers.hmap -Xcc -I/Users/jayjay/Library/Developer/Xcode/DerivedData/TruchiEmu-gawyppvgjxbeaaebuslnlsaalnra/Build/Intermediates.noindex/TruchiEmu.build/Debug/TruchiEmu.build/TruchiEmu-all-target-headers.hmap -Xcc -iquote -Xcc /Users/jayjay/Library/Developer/Xcode/DerivedData/TruchiEmu-gawyppvgjxbeaaebuslnlsaalnra/Build/Intermediates.noindex/TruchiEmu.build/Debug/TruchiEmu.build/TruchiEmu-project-headers.hmap -Xcc -I/Users/jayjay/Library/Developer/Xcode/DerivedData/TruchiEmu-gawyppvgjxbeaaebuslnlsaalnra/Build/Products/Debug/include -Xcc -I/Users/jayjay/Library/Developer/Xcode/DerivedData/TruchiEmu-gawyppvgjxbeaaebuslnlsaalnra/Build/Intermediates.noindex/TruchiEmu.build/Debug/TruchiEmu.build/DerivedSources-normal/arm64 -Xcc -I/Users/jayjay/Library/Developer/Xcode/DerivedData/TruchiEmu-gawyppvgjxbeaaebuslnlsaalnra/Build/Intermediates.noindex/TruchiEmu.build/Debug/TruchiEmu.build/DerivedSources/arm64 -Xcc -I/Users/jayjay/Library/Developer/Xcode/DerivedData/TruchiEmu-gawyppvgjxbeaaebuslnlsaalnra/Build/Intermediates.noindex/TruchiEmu.build/Debug/TruchiEmu.build/DerivedSources -Xcc -DDEBUG\=1 -emit-objc-header -emit-objc-header-path /Users/jayjay/Library/Developer/Xcode/DerivedData/TruchiEmu-gawyppvgjxbeaaebuslnlsaalnra/Build/Intermediates.noindex/TruchiEmu.build/Debug/TruchiEmu.build/Objects-normal/arm64/TruchiEmu-Swift.h -import-objc-header /Users/jayjay/gitrepos/truchiemu/TruchieEmu/Engine/TruchieEmu-Bridging-Header.h -working-directory /Users/jayjay/gitrepos/truchiemu -experimental-emit-module-separately -disable-cmo
+
+Copy /Users/jayjay/Library/Developer/Xcode/DerivedData/TruchiEmu-gawyppvgjxbeaaebuslnlsaalnra/Build/Products/Debug/TruchiEmu.swiftmodule/arm64-apple-macos.abi.json /Users/jayjay/Library/Developer/Xcode/DerivedData/TruchiEmu-gawyppvgjxbeaaebuslnlsaalnra/Build/Intermediates.noindex/TruchiEmu.build/Debug/TruchiEmu.build/Objects-normal/arm64/TruchiEmu.abi.json (in target 'TruchiEmu' from project 'TruchiEmu')
+    cd /Users/jayjay/gitrepos/truchiemu
+    builtin-copy -exclude .DS_Store -exclude CVS -exclude .svn -exclude .git -exclude .hg -resolve-src-symlinks -rename /Users/jayjay/Library/Developer/Xcode/DerivedData/TruchiEmu-gawyppvgjxbeaaebuslnlsaalnra/Build/Intermediates.noindex/TruchiEmu.build/Debug/TruchiEmu.build/Objects-normal/arm64/TruchiEmu.abi.json /Users/jayjay/Library/Developer/Xcode/DerivedData/TruchiEmu-gawyppvgjxbeaaebuslnlsaalnra/Build/Products/Debug/TruchiEmu.swiftmodule/arm64-apple-macos.abi.json
+
+CompileC /Users/jayjay/Library/Developer/Xcode/DerivedData/TruchiEmu-gawyppvgjxbeaaebuslnlsaalnra/Build/Intermediates.noindex/TruchiEmu.build/Debug/TruchiEmu.build/Objects-normal/arm64/LibretroBridge.o /Users/jayjay/gitrepos/truchiemu/TruchieEmu/Engine/LibretroBridge.mm normal arm64 objective-c++ com.apple.compilers.llvm.clang.1_0.compiler (in target 'TruchiEmu' from project 'TruchiEmu')
+    cd /Users/jayjay/gitrepos/truchiemu
+    
+    Using response file: /Users/jayjay/Library/Developer/Xcode/DerivedData/TruchiEmu-gawyppvgjxbeaaebuslnlsaalnra/Build/Intermediates.noindex/TruchiEmu.build/Debug/TruchiEmu.build/Objects-normal/arm64/af3fcb34312c57c0f52879cdce924b91-common-args.resp
+    
+    /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/clang -x objective-c++ -ivfsstatcache /Users/jayjay/Library/Developer/Xcode/DerivedData/SDKStatCaches.noindex/macosx26.4-25E236-688ef53f1462e2c8f657fdc38a81448f30f9ca8789b706f8bd3fc906a70d770f.sdkstatcache -target arm64-apple-macos14.0 -fmessage-length\=0 -fdiagnostics-show-note-include-stack -fmacro-backtrace-limit\=0 -fno-color-diagnostics -fmodules-prune-interval\=86400 -fmodules-prune-after\=345600 -fbuild-session-file\=/Users/jayjay/Library/Developer/Xcode/DerivedData/ModuleCache.noindex/Session.modulevalidation -fmodules-validate-once-per-build-session -Wnon-modular-include-in-framework-module -Werror\=non-modular-include-in-framework-module -Wno-trigraphs -Wno-missing-field-initializers -Wno-missing-prototypes -Werror\=return-type -Wdocumentation -Wunreachable-code -Wquoted-include-in-framework-header -Wno-implicit-atomic-properties -Werror\=deprecated-objc-isa-usage -Wno-objc-interface-ivars -Werror\=objc-root-class -Wno-arc-repeated-use-of-weak -Wimplicit-retain-self -Wno-non-virtual-dtor -Wno-overloaded-virtual -Wno-exit-time-destructors -Wduplicate-method-match -Wno-missing-braces -Wparentheses -Wswitch -Wunused-function -Wno-unused-label -Wno-unused-parameter -Wunused-variable -Wunused-value -Wempty-body -Wuninitialized -Wconditional-uninitialized -Wno-unknown-pragmas -Wno-shadow -Wno-four-char-constants -Wno-conversion -Wconstant-conversion -Wint-conversion -Wbool-conversion -Wenum-conversion -Wno-float-conversion -Wnon-literal-null-conversion -Wobjc-literal-conversion -Wshorten-64-to-32 -Wno-newline-eof -Wno-selector -Wno-strict-selector-match -Wundeclared-selector -Wdeprecated-implementations -Wno-c++11-extensions -Wno-implicit-fallthrough -isysroot /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX26.4.sdk -fstrict-aliasing -Wprotocol -Wdeprecated-declarations -Winvalid-offsetof -Wno-sign-conversion -Winfinite-recursion -Wmove -Wcomma -Wblock-capture-autoreleasing -Wstrict-prototypes -Wrange-loop-analysis -Wno-semicolon-before-method-body -Wunguarded-availability -index-store-path /Users/jayjay/Library/Developer/Xcode/DerivedData/TruchiEmu-gawyppvgjxbeaaebuslnlsaalnra/Index.noindex/DataStore @/Users/jayjay/Library/Developer/Xcode/DerivedData/TruchiEmu-gawyppvgjxbeaaebuslnlsaalnra/Build/Intermediates.noindex/TruchiEmu.build/Debug/TruchiEmu.build/Objects-normal/arm64/af3fcb34312c57c0f52879cdce924b91-common-args.resp -MMD -MT dependencies -MF /Users/jayjay/Library/Developer/Xcode/DerivedData/TruchiEmu-gawyppvgjxbeaaebuslnlsaalnra/Build/Intermediates.noindex/TruchiEmu.build/Debug/TruchiEmu.build/Objects-normal/arm64/LibretroBridge.d --serialize-diagnostics /Users/jayjay/Library/Developer/Xcode/DerivedData/TruchiEmu-gawyppvgjxbeaaebuslnlsaalnra/Build/Intermediates.noindex/TruchiEmu.build/Debug/TruchiEmu.build/Objects-normal/arm64/LibretroBridge.dia -c /Users/jayjay/gitrepos/truchiemu/TruchieEmu/Engine/LibretroBridge.mm -o /Users/jayjay/Library/Developer/Xcode/DerivedData/TruchiEmu-gawyppvgjxbeaaebuslnlsaalnra/Build/Intermediates.noindex/TruchiEmu.build/Debug/TruchiEmu.build/Objects-normal/arm64/LibretroBridge.o -index-unit-output-path /TruchiEmu.build/Debug/TruchiEmu.build/Objects-normal/arm64/LibretroBridge.o
+/Users/jayjay/gitrepos/truchiemu/TruchieEmu/Engine/LibretroBridge.mm:1192:5: error: cannot jump from this goto statement to its label
+ 1192 |     goto shutdown;
+      |     ^
+/Users/jayjay/gitrepos/truchiemu/TruchieEmu/Engine/LibretroBridge.mm:1263:12: note: jump bypasses initialization of __strong variable
+ 1263 |   NSError *err;
+      |            ^
+/Users/jayjay/gitrepos/truchiemu/TruchieEmu/Engine/LibretroBridge.mm:1242:10: note: jump bypasses variable initialization
+ 1242 |   double fps = _avInfo.timing.fps > 0 ? _avInfo.timing.fps : 60.0;
+      |          ^
+/Users/jayjay/gitrepos/truchiemu/TruchieEmu/Engine/LibretroBridge.mm:1240:10: note: jump bypasses variable initialization
+ 1240 |   double sampleRate =
+      |          ^
+/Users/jayjay/gitrepos/truchiemu/TruchieEmu/Engine/LibretroBridge.mm:1195:12: note: jump bypasses variable initialization
+ 1195 |   unsigned device_type =
+      |            ^
+/Users/jayjay/gitrepos/truchiemu/TruchieEmu/Engine/LibretroBridge.mm:1188:5: error: cannot jump from this goto statement to its label
+ 1188 |     goto shutdown;
+      |     ^
+/Users/jayjay/gitrepos/truchiemu/TruchieEmu/Engine/LibretroBridge.mm:1263:12: note: jump bypasses initialization of __strong variable
+ 1263 |   NSError *err;
+      |            ^
+/Users/jayjay/gitrepos/truchiemu/TruchieEmu/Engine/LibretroBridge.mm:1242:10: note: jump bypasses variable initialization
+ 1242 |   double fps = _avInfo.timing.fps > 0 ? _avInfo.timing.fps : 60.0;
+      |          ^
+/Users/jayjay/gitrepos/truchiemu/TruchieEmu/Engine/LibretroBridge.mm:1240:10: note: jump bypasses variable initialization
+ 1240 |   double sampleRate =
+      |          ^
+/Users/jayjay/gitrepos/truchiemu/TruchieEmu/Engine/LibretroBridge.mm:1195:12: note: jump bypasses variable initialization
+ 1195 |   unsigned device_type =
+      |            ^
+/Users/jayjay/gitrepos/truchiemu/TruchieEmu/Engine/LibretroBridge.mm:1183:7: error: cannot jump from this goto statement to its label
+ 1183 |       goto shutdown;
+      |       ^
+/Users/jayjay/gitrepos/truchiemu/TruchieEmu/Engine/LibretroBridge.mm:1263:12: note: jump bypasses initialization of __strong variable
+ 1263 |   NSError *err;
+      |            ^
+/Users/jayjay/gitrepos/truchiemu/TruchieEmu/Engine/LibretroBridge.mm:1242:10: note: jump bypasses variable initialization
+ 1242 |   double fps = _avInfo.timing.fps > 0 ? _avInfo.timing.fps : 60.0;
+      |          ^
+/Users/jayjay/gitrepos/truchiemu/TruchieEmu/Engine/LibretroBridge.mm:1240:10: note: jump bypasses variable initialization
+ 1240 |   double sampleRate =
+      |          ^
+/Users/jayjay/gitrepos/truchiemu/TruchieEmu/Engine/LibretroBridge.mm:1195:12: note: jump bypasses variable initialization
+ 1195 |   unsigned device_type =
+      |            ^
+/Users/jayjay/gitrepos/truchiemu/TruchieEmu/Engine/LibretroBridge.mm:1148:7: error: cannot jump from this goto statement to its label
+ 1148 |       goto shutdown;
+      |       ^
+/Users/jayjay/gitrepos/truchiemu/TruchieEmu/Engine/LibretroBridge.mm:1263:12: note: jump bypasses initialization of __strong variable
+ 1263 |   NSError *err;
+      |            ^
+/Users/jayjay/gitrepos/truchiemu/TruchieEmu/Engine/LibretroBridge.mm:1242:10: note: jump bypasses variable initialization
+ 1242 |   double fps = _avInfo.timing.fps > 0 ? _avInfo.timing.fps : 60.0;
+      |          ^
+/Users/jayjay/gitrepos/truchiemu/TruchieEmu/Engine/LibretroBridge.mm:1240:10: note: jump bypasses variable initialization
+ 1240 |   double sampleRate =
+      |          ^
+/Users/jayjay/gitrepos/truchiemu/TruchieEmu/Engine/LibretroBridge.mm:1195:12: note: jump bypasses variable initialization
+ 1195 |   unsigned device_type =
+      |            ^
+/Users/jayjay/gitrepos/truchiemu/TruchieEmu/Engine/LibretroBridge.mm:1151:26: note: jump bypasses variable initialization
+ 1151 |   struct retro_game_info gi = {0};
+      |                          ^
+/Users/jayjay/gitrepos/truchiemu/TruchieEmu/Engine/LibretroBridge.mm:1145:7: error: cannot jump from this goto statement to its label
+ 1145 |       goto shutdown;
+      |       ^
+/Users/jayjay/gitrepos/truchiemu/TruchieEmu/Engine/LibretroBridge.mm:1263:12: note: jump bypasses initialization of __strong variable
+ 1263 |   NSError *err;
+      |            ^
+/Users/jayjay/gitrepos/truchiemu/TruchieEmu/Engine/LibretroBridge.mm:1242:10: note: jump bypasses variable initialization
+ 1242 |   double fps = _avInfo.timing.fps > 0 ? _avInfo.timing.fps : 60.0;
+      |          ^
+/Users/jayjay/gitrepos/truchiemu/TruchieEmu/Engine/LibretroBridge.mm:1240:10: note: jump bypasses variable initialization
+ 1240 |   double sampleRate =
+      |          ^
+/Users/jayjay/gitrepos/truchiemu/TruchieEmu/Engine/LibretroBridge.mm:1195:12: note: jump bypasses variable initialization
+ 1195 |   unsigned device_type =
+      |            ^
+/Users/jayjay/gitrepos/truchiemu/TruchieEmu/Engine/LibretroBridge.mm:1151:26: note: jump bypasses variable initialization
+ 1151 |   struct retro_game_info gi = {0};
+      |                          ^
+5 errors generated.
+
+SwiftDriverJobDiscovery normal arm64 Compiling SidebarRowButton.swift, SlotPickerSheet.swift, SwiftDataContainer.swift, SwiftDataModels.swift, SystemControlsMappingView.swift (in target 'TruchiEmu' from project 'TruchiEmu')
+
+SwiftDriverJobDiscovery normal arm64 Compiling LibraryAutomationCoordinator.swift, LibraryGridView.swift, LibrarySettingsViewGroup.swift, LibraryMetadataStore.swift, NESRunner.swift (in target 'TruchiEmu' from project 'TruchiEmu')
+
+** BUILD FAILED **
+
+
+The following build commands failed:
+	CompileC /Users/jayjay/Library/Developer/Xcode/DerivedData/TruchiEmu-gawyppvgjxbeaaebuslnlsaalnra/Build/Intermediates.noindex/TruchiEmu.build/Debug/TruchiEmu.build/Objects-normal/arm64/LibretroBridge.o /Users/jayjay/gitrepos/truchiemu/TruchieEmu/Engine/LibretroBridge.mm normal arm64 objective-c++ com.apple.compilers.llvm.clang.1_0.compiler (in target 'TruchiEmu' from project 'TruchiEmu')
+	Building project TruchiEmu with scheme TruchieEmu and configuration Debug
+(2 failures)

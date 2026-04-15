@@ -21,10 +21,13 @@ class LibretroBridgeSwift {
 
     static func launch(dylibPath: String, romPath: String, coreID: String, systemID: String? = nil,
                        shaderDir: String? = nil,
-                       videoCallback: @escaping (UnsafeRawPointer?, Int, Int, Int, Int) -> Void) {
+                       videoCallback: @escaping (UnsafeRawPointer?, Int, Int, Int, Int) -> Void,
+                       onFailure: ((String) -> Void)? = nil) {
         LibretroBridge.launch(withDylibPath: dylibPath, romPath: romPath, shaderDir: shaderDir, videoCallback: { data, w, h, pitch, format in
             videoCallback(data, Int(w), Int(h), Int(pitch), Int(format))
-        }, coreID: coreID)
+        }, coreID: coreID, failureCallback: { message in
+            onFailure?(message)
+        })
         
         if let sysID = systemID {
             DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {

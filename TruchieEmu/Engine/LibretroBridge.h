@@ -15,7 +15,8 @@ typedef void (^CoreLoggerBlock)(const char *message, int level);
                   shaderDir:(nullable NSString *)shaderDir
               videoCallback:(void (^)(const void *data, int width, int height,
                                       int pitch, int format))cb
-                     coreID:(NSString *)coreID;
+                     coreID:(NSString *)coreID
+            failureCallback:(nullable void (^)(NSString *message))failureCb;
 
 + (void)stop;
 + (void)waitForCompletion;

@@ -1106,9 +1106,19 @@ static int16_t bridge_input_state(unsigned port, unsigned device,
         g_coreID);
   }
 
-  // Query system info to check for need_fullpath
-  struct retro_system_info sysInfo = {0};
+  BOOL didInit = NO;
+  double frameError = 0.0;
   bool needsFullPath = false;
+  unsigned device_type = 1;
+  double sampleRate = 44100.0;
+  double fps = 60.0;
+  NSError *err = nil;
+  struct retro_system_info sysInfo = {0};
+  struct retro_game_info gi = {0};
+
+  // Query system info to check for need_fullpath
+  memset(&sysInfo, 0, sizeof(sysInfo));
+  needsFullPath = false;
   if (_retro_get_system_info) {
     _retro_get_system_info(&sysInfo);
     needsFullPath = sysInfo.need_fullpath;
@@ -1132,9 +1142,20 @@ static int16_t bridge_input_state(unsigned port, unsigned device,
                       _retainedRomPath);
   }
 
-  _retro_init();
+  @try {
+      if (_retro_init) {
+          _retro_init();
+          didInit = YES;
+      }
+  } @catch (NSException *e) {
+      bridge_log_printf(RETRO_LOG_ERROR, "FATAL CRASH in retro_init: %@", e.reason);
+      goto shutdown;
+  } @catch (...) {
+      bridge_log_printf(RETRO_LOG_ERROR, "FATAL CRASH in retro_init (C++)");
+      goto shutdown;
+  }
 
-  struct retro_game_info gi = {0};
+  memset(&gi, 0, sizeof(gi));
   gi.path = _retainedRomPath.UTF8String;
 
   if (needsFullPath) {
@@ -1166,19 +1187,19 @@ static int16_t bridge_input_state(unsigned port, unsigned device,
     if (!g_instance->_retro_load_game(&gi)) {
       bridge_log_printf(RETRO_LOG_ERROR,
                         "retro_load_game returned NO (failed)");
-      return NO;
+      goto shutdown;
     }
   } @catch (NSException *exception) {
     bridge_log_printf(RETRO_LOG_ERROR, "retro_load_game crashed: %@",
                       exception.reason);
-    return NO;
+    goto shutdown;
   } @catch (...) {
     bridge_log_printf(RETRO_LOG_ERROR,
                       "retro_load_game crashed with unknown exception");
-    return NO;
+    goto shutdown;
   }
   // Set controller type ONCE during load based on the console type
-  unsigned device_type =
+  device_type =
       1; // Default to RETRO_DEVICE_JOYPAD (Standard GameCube / GameCube)
   
   if (g_coreID && [[g_coreID lowercaseString] containsString:@"dolphin"]) {
@@ -1223,9 +1244,9 @@ static int16_t bridge_input_state(unsigned port, unsigned device,
 
   // config A/V
   _retro_get_system_av_info(&_avInfo);
-  double sampleRate =
+  sampleRate =
       _avInfo.timing.sample_rate > 0 ? _avInfo.timing.sample_rate : 44100.0;
-  double fps = _avInfo.timing.fps > 0 ? _avInfo.timing.fps : 60.0;
+  fps = _avInfo.timing.fps > 0 ? _avInfo.timing.fps : 60.0;
   bridge_log_printf(RETRO_LOG_DEBUG, "Core A/V Info: SampleRate=%.1f FPS=%.2f",
                     sampleRate, fps);
 
@@ -1246,13 +1267,12 @@ static int16_t bridge_input_state(unsigned port, unsigned device,
   }
   [self setupAudioWithSampleRate:sampleRate];
 
-  NSError *err;
+  err = nil;
   [_audioEngine startAndReturnError:&err];
 
   _saveStatePath = [romPath stringByAppendingString:@".state"];
 
   _running = YES;
-  double frameError = 0.0;
 
   // MAIN GAME LOOP
   while (_running) {
@@ -1278,17 +1298,30 @@ static int16_t bridge_input_state(unsigned port, unsigned device,
     }
 
     [_coreLock lock];
-    if (_hwRenderEnabled && _glContext)
-      CGLSetCurrentContext(_glContext);
+    uint64_t start = 0;
+    uint64_t end = 0;
+    @try {
+      if (_hwRenderEnabled && _glContext)
+        CGLSetCurrentContext(_glContext);
 
-    uint64_t start = mach_absolute_time();
-    _retro_run();
-    uint64_t end = mach_absolute_time();
+      start = mach_absolute_time();
+      if (_retro_run) {
+          _retro_run();
+      }
+      end = mach_absolute_time();
 
-    // UNBIND context so the main thread can safely bind it for save states
-    // concurrently if needed
-    if (_hwRenderEnabled && _glContext)
-      CGLSetCurrentContext(NULL);
+      // UNBIND context so the main thread can safely bind it for save states
+      // concurrently if needed
+      if (_hwRenderEnabled && _glContext)
+        CGLSetCurrentContext(NULL);
+    } @catch (NSException *exception) {
+      bridge_log_printf(RETRO_LOG_ERROR, "FATAL CRASH in retro_run: %@",
+                        exception.reason);
+      _running = NO;
+    } @catch (...) {
+      bridge_log_printf(RETRO_LOG_ERROR, "FATAL CRASH in retro_run (C++)");
+      _running = NO;
+    }
     [_coreLock unlock];
 
     static mach_timebase_info_data_t s_tb = {0, 0};
@@ -1332,7 +1365,10 @@ static int16_t bridge_input_state(unsigned port, unsigned device,
   }
 
   // --- SHUTDOWN SEQUENCE ---
-  [_audioEngine stop];
+shutdown:
+  if ([_audioEngine isRunning]) {
+    [_audioEngine stop];
+  }
 
   [_coreLock lock];
   if (_hwRenderEnabled && _glContext)
@@ -1344,23 +1380,39 @@ static int16_t bridge_input_state(unsigned port, unsigned device,
 
   // 1. Unload the game
   // Note: PPSSPP destroys its internal GL objects here.
-  if (_retro_unload_game) {
-    _retro_unload_game();
+  if (didInit) {
+      @try {
+          if (_retro_unload_game) {
+            _retro_unload_game();
+          }
+      } @catch (...) {
+          bridge_log_printf(RETRO_LOG_ERROR, "Crash in retro_unload_game");
+      }
   }
 
   // 2. Clean up HW Context
   if (_hwRenderEnabled && _hw_callback.context_destroy) {
     // Skip context_destroy for PSP to avoid a double-free crash
     if (!isPSP_Shutdown) {
-      _hw_callback.context_destroy();
+      @try {
+          _hw_callback.context_destroy();
+      } @catch (...) {
+          bridge_log_printf(RETRO_LOG_ERROR, "Crash in HW context_destroy");
+      }
     }
     // Set to NULL so dealloc or other methods don't try to call it again
     _hw_callback.context_destroy = NULL;
   }
 
   // 3. Final De-init
-  if (_retro_deinit) {
-    _retro_deinit();
+  if (didInit) {
+      @try {
+          if (_retro_deinit) {
+            _retro_deinit();
+          }
+      } @catch (...) {
+          bridge_log_printf(RETRO_LOG_ERROR, "Crash in retro_deinit");
+      }
   }
 
   if (_hwRenderEnabled && _glContext)
@@ -1372,7 +1424,7 @@ static int16_t bridge_input_state(unsigned port, unsigned device,
     dispatch_semaphore_signal(_bridgeCompletionSemaphore);
   }
 
-  return YES;
+  return (didInit && _running);
 }
 
 - (void)stop {
@@ -1395,12 +1447,17 @@ static int16_t bridge_input_state(unsigned port, unsigned device,
   void *buf = malloc(_cachedSerializeSize);
   NSData *data = nil;
   if (buf) {
-    if (_retro_serialize(buf, _cachedSerializeSize)) {
-      data = [NSData dataWithBytesNoCopy:buf
-                                  length:_cachedSerializeSize
-                            freeWhenDone:YES];
-    } else {
-      free(buf);
+    @try {
+        if (_retro_serialize(buf, _cachedSerializeSize)) {
+          data = [NSData dataWithBytesNoCopy:buf
+                                      length:_cachedSerializeSize
+                                freeWhenDone:YES];
+        } else {
+          free(buf);
+        }
+    } @catch (...) {
+        bridge_log_printf(RETRO_LOG_ERROR, "Crash in retro_serialize");
+        free(buf);
     }
   }
 
@@ -1417,7 +1474,12 @@ static int16_t bridge_input_state(unsigned port, unsigned device,
   if (_hwRenderEnabled && _glContext)
     CGLSetCurrentContext(_glContext);
 
-  BOOL success = _retro_unserialize(data.bytes, data.length);
+  BOOL success = NO;
+  @try {
+      success = _retro_unserialize(data.bytes, data.length);
+  } @catch (...) {
+      bridge_log_printf(RETRO_LOG_ERROR, "Crash in retro_unserialize");
+  }
 
   if (_hwRenderEnabled && _glContext)
     CGLSetCurrentContext(NULL);
@@ -1750,11 +1812,12 @@ static int16_t bridge_input_state(unsigned port, unsigned device,
   }
 }
 
-+ (void)launchWithDylibPath:(NSString *)dylib
-                    romPath:(NSString *)rom
-                  shaderDir:(NSString *)shaderDir
++ (void)launchWithDylibPath:(NSString *)dylibPath
+                    romPath:(NSString *)romPath
+                  shaderDir:(nullable NSString *)shaderDir
               videoCallback:(void (^)(const void *, int, int, int, int))cb
-                     coreID:(NSString *)coreID {
+                     coreID:(NSString *)coreID
+            failureCallback:(nullable void (^)(NSString *))failureCb {
   static dispatch_once_t onceToken;
   dispatch_once(&onceToken, ^{
     g_bridgeQueue =
@@ -1766,8 +1829,6 @@ static int16_t bridge_input_state(unsigned port, unsigned device,
   dispatch_semaphore_t semToSignal = _bridgeCompletionSemaphore;
 
   // 1. PREPARE ENVIRONMENT (Keep this!)
-  // These must happen on the calling thread to ensure the next core
-  // gets the correct IDs immediately.
   g_coreID = [coreID copy];
   g_shaderDir = [shaderDir copy];
   initOptStorage();
@@ -1794,10 +1855,22 @@ static int16_t bridge_input_state(unsigned port, unsigned device,
     }
 
     bridge_log_printf(RETRO_LOG_INFO, "Starting new core session: %@",
-                      dylib.lastPathComponent);
+                      dylibPath.lastPathComponent);
 
-    if ([newInst loadDylib:dylib]) {
-      [newInst launchROM:rom videoCallback:cb];
+    BOOL loadSuccess = NO;
+    @try {
+        if ([newInst loadDylib:dylibPath]) {
+          loadSuccess = [newInst launchROM:romPath videoCallback:cb];
+        } else {
+          if (failureCb) failureCb(@"Failed to load core dylib.");
+        }
+    } @catch (NSException *e) {
+        bridge_log_printf(RETRO_LOG_ERROR, "Exception during launch: %@", e.reason);
+        if (failureCb) failureCb([NSString stringWithFormat:@"Core crashed during launch: %@", e.reason]);
+    }
+
+    if (!loadSuccess && failureCb) {
+        failureCb(@"Failed to launch game. Check core compatibility or BIOS files.");
     }
 
     // Only nullify if another thread hasn't already replaced us
@@ -1805,7 +1878,6 @@ static int16_t bridge_input_state(unsigned port, unsigned device,
       g_instance = nil;
     }
 
-    // FIX: Use the Swift logger for the finish message
     bridge_log_printf(RETRO_LOG_INFO, "Core session finished.");
     dispatch_semaphore_signal(semToSignal);
   });
