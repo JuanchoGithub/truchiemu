@@ -959,7 +959,7 @@ static int16_t bridge_input_state(unsigned port, unsigned device,
 // Add this method to your @implementation LibretroBridgeImpl for dolphon
 - (void)setControllerPortDevice:(unsigned)port device:(unsigned)device {
   // You need a function pointer to retro_set_controller_port_device
-  // If you didn't load this symbol in loadDylib, add it to the struct
+  // If you didn' didn't load this symbol in loadDylib, add it to the struct
   // and the LOAD_SYM macro.
   if (_retro_set_controller_port_device) {
     _retro_set_controller_port_device(port, device);
@@ -1179,8 +1179,8 @@ static int16_t bridge_input_state(unsigned port, unsigned device,
   }
   // Set controller type ONCE during load based on the console type
   unsigned device_type =
-      1; // Default to RETRO_DEVICE_JOYPAD (Standard Gamepad / GameCube)
-
+      1; // Default to RETRO_DEVICE_JOYPAD (Standard GameCube / GameCube)
+  
   if (g_coreID && [[g_coreID lowercaseString] containsString:@"dolphin"]) {
     // Check file extension to see if it's a Wii game
     NSString *ext = [_retainedRomPath.pathExtension lowercaseString];
@@ -1763,6 +1763,7 @@ static int16_t bridge_input_state(unsigned port, unsigned device,
 
   // Initialize completion semaphore for this session
   _bridgeCompletionSemaphore = dispatch_semaphore_create(0);
+  dispatch_semaphore_t semToSignal = _bridgeCompletionSemaphore;
 
   // 1. PREPARE ENVIRONMENT (Keep this!)
   // These must happen on the calling thread to ensure the next core
@@ -1806,7 +1807,7 @@ static int16_t bridge_input_state(unsigned port, unsigned device,
 
     // FIX: Use the Swift logger for the finish message
     bridge_log_printf(RETRO_LOG_INFO, "Core session finished.");
-    dispatch_semaphore_signal(_bridgeCompletionSemaphore);
+    dispatch_semaphore_signal(semToSignal);
   });
 }
 
@@ -1820,15 +1821,29 @@ static int16_t bridge_input_state(unsigned port, unsigned device,
   // Wait for the completion semaphore with a timeout (5 seconds max)
   // This ensures the core has fully terminated before proceeding
   if (_bridgeCompletionSemaphore) {
-    dispatch_time_t timeout =
-        dispatch_time(DISPATCH_TIME_NOW, (int64_t)(5.0 * NSEC_PER_SEC));
-    long result = dispatch_semaphore_wait(_bridgeCompletionSemaphore, timeout);
+    // 1. Fast path: check if it's already signaled (non-blocking)
+    if (dispatch_semaphore_wait(_bridgeCompletionSemaphore, dispatch_time(DISPATCH_TIME_NOW, 0)) == 0) {
+      bridge_log_printf(RETRO_LOG_DEBUG, "Core already terminated (fast path)");
+      return;
+    }
+
+    // 2. Medium path: wait for up to 1 second
+    dispatch_time_t mediumTimeout = dispatch_time(DISPATCH_TIME_NOW, (int64_t)(1.0 * NSEC_PER_SEC));
+    long result = dispatch_semaphore_wait(_bridgeCompletionSemaphore, mediumTimeout);
+    
     if (result == 0) {
-      bridge_log_printf(RETRO_LOG_DEBUG,
-                        "Core fully terminated (waited for completion)");
+      bridge_log_printf(RETRO_LOG_DEBUG, "Core fully terminated (medium path)");
     } else {
-      bridge_log_printf(RETRO_LOG_ERROR,
-                        "Timeout waiting for core to terminate (5s)");
+      // 3. Fallback: wait for the remaining 4 seconds
+      bridge_log_printf(RETRO_LOG_INFO, "Core not terminated after 1s, waiting up to 5s total...");
+      dispatch_time_t finalTimeout = dispatch_time(DISPATCH_TIME_NOW, (int64_t)(4.0 * NSEC_PER_SEC));
+      result = dispatch_semaphore_wait(_bridgeCompletionSemaphore, finalTimeout);
+      
+      if (result == 0) {
+        bridge_log_printf(RETRO_LOG_DEBUG, "Core fully terminated (fallback path)");
+      } else {
+        bridge_log_printf(RETRO_LOG_ERROR, "Timeout waiting for core to terminate (5s total)");
+      }
     }
   }
 }
@@ -2221,7 +2236,6 @@ static dispatch_once_t g_optAccessQueueOnce;
 
       NSNumber *addressNum = cheat[@"address"];
       NSNumber *valueNum = cheat[@"value"];
-
       if (addressNum && valueNum) {
         uint32_t address = [addressNum unsignedIntValue];
         uint8_t value = [valueNum unsignedCharValue];

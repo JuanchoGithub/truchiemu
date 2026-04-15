@@ -402,6 +402,7 @@
 		DDA593222F8F256900A9BEE9 /* CategoryViews.swift in Sources */ = {isa = PBXBuildFile; fileRef = DDA593192F8F256900A9BEE9 /* CategoryViews.swift */; };
 		DDA593232F8F256900A9BEE9 /* LibraryFilterOption.swift in Sources */ = {isa = PBXBuildFile; fileRef = DDA5931E2F8F256900A9BEE9 /* LibraryFilterOption.swift */; };
 		DDA593242F8F256900A9BEE9 /* FilterChipView.swift in Sources */ = {isa = PBXBuildFile; fileRef = DDA5931A2F8F256900A9BEE9 /* FilterChipView.swift */; };
+		DDA5933B2F90097F00A9BEE9 /* GameError.swift in Sources */ = {isa = PBXBuildFile; fileRef = DDA5933A2F90097F00A9BEE9 /* GameError.swift */; };
 		DDAC0689F34313CEF845E3FC /* DOSRunner.swift in Sources */ = {isa = PBXBuildFile; fileRef = E87593F08B97B23BA2CAC02A /* DOSRunner.swift */; };
 		DDD7A0432F8C8F12002E26DB /* Asset.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = DDD7A0422F8C8F12002E26DB /* Asset.xcassets */; };
 		E05CB54B2368ED8F5003136D /* MAMEModels.swift in Sources */ = {isa = PBXBuildFile; fileRef = BA50A4BA7CA5DC3C5FCB550D /* MAMEModels.swift */; };
@@ -854,6 +855,7 @@
 		DDA5931C2F8F256900A9BEE9 /* GridCardZoomableFullScreenView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GridCardZoomableFullScreenView.swift; sourceTree = "<group>"; };
 		DDA5931D2F8F256900A9BEE9 /* LibraryAnimations.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LibraryAnimations.swift; sourceTree = "<group>"; };
 		DDA5931E2F8F256900A9BEE9 /* LibraryFilterOption.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LibraryFilterOption.swift; sourceTree = "<group>"; };
+		DDA5933A2F90097F00A9BEE9 /* GameError.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GameError.swift; sourceTree = "<group>"; };
 		DDD7A0422F8C8F12002E26DB /* Asset.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Asset.xcassets; sourceTree = "<group>"; };
 		E35518FB34DEB243BF979DE0 /* LibretroCore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LibretroCore.swift; sourceTree = "<group>"; };
 		E3CF8589B867729FD91E572B /* GameDBLookupResult.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GameDBLookupResult.swift; sourceTree = "<group>"; };
@@ -912,6 +914,7 @@
 		1877F5A2D47F3BEBD4C9F107 /* TruchieEmu */ = {
 			isa = PBXGroup;
 			children = (
+				DDA5933A2F90097F00A9BEE9 /* GameError.swift */,
 				DDA591EE2F8DD4EA00A9BEE9 /* Resources */,
 				325C2DF7BFBE06CDBE6EF3A5 /* App */,
 				83304F5BB3B25877F8337BF8 /* Engine */,
@@ -2068,6 +2071,7 @@
 				57FDF642BA0CEF9B3245B2C8 /* Passthrough.metal in Sources */,
 				C0D6FCFEA2CC6E07BE935EF9 /* PersistenceMigrationFlag.swift in Sources */,
 				C99B75B6B31091E08C1F162A /* ROM.swift in Sources */,
+				DDA5933B2F90097F00A9BEE9 /* GameError.swift in Sources */,
 				D7A2504994F1DE09E699F30F /* ROMIdentifierService.swift in Sources */,
 				F3C6A31B44657B3FF9B89A4F /* ROMLibrary.swift in Sources */,
 				F0C531CC9AE8E5F3501E703B /* ROMRepository.swift in Sources */,

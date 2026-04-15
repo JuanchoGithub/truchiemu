@@ -1,6 +1,7 @@
 import SwiftUI
 import MetalKit
 import Cocoa
+import Combine
 
 // MARK: - MouseDownButton (NSButton that fires action on mouseDown)
 class MouseDownButton: NSButton {
@@ -1035,11 +1036,20 @@ class StandaloneGameWindowController: NSWindowController, NSWindowDelegate, Obse
                     self.window?.close()
                     self.runner?.stop()
                     self.runner = nil
-                    //Show error message
-                    let alert = NSAlert()
-                    alert.messageText = "Error"
-                    alert.informativeText = "Game could not be launched"
-                    alert.runModal()
+                    
+                    // Use centralized error handling if possible, or fallback to alert
+                    let error = GameError.timeout(message: "The game took too long to start. The emulator may have crashed or failed to respond.")
+                    
+                    DispatchQueue.main.async {
+                        // Set the error on the runner so the controller can observe it
+                        self.runner?.lastError = error
+                        
+                        let alert = NSAlert()
+                        alert.alertStyle = .critical
+                        alert.messageText = "Launch Timeout"
+                        alert.informativeText = error.localizedDescription
+                        alert.runModal()
+                    }
                 } else {
                     self.showWindowAndLoadSlot(slotToLoad: slotToLoad, rom: rom)
                 }

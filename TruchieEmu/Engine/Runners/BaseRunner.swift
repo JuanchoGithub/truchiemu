@@ -3,6 +3,11 @@ import Foundation
 import SwiftUI
 import GameController
 import AppKit
+import Combine
+
+// Import the GameError definition
+// Since it's in the same module, we don't necessarily need an import if it's part of the same target,
+// but we might need to ensure it's accessible.
 
 // MARK: - MTLTexture to NSImage conversion
 
@@ -205,6 +210,7 @@ class EmulatorRunner: ObservableObject, @unchecked Sendable {
     private var textureCache: MTLTexture? = nil
     private let textureLock = NSLock()
     @MainActor @Published var rom: ROM?
+    @MainActor @Published var lastError: GameError?
     var romPath: String = ""
     private var analogButtonStates: [RetroButton: Float] = [:]
     
@@ -263,8 +269,14 @@ class EmulatorRunner: ObservableObject, @unchecked Sendable {
         emulationQueue.async {
             LibretroBridgeSwift.setLanguage(selectedLang)
             LibretroBridgeSwift.setLogLevel(Int(selectedLogLevel))
+            
+            let dylibPath = self.findCoreLib(coreID: coreID) ?? coreID
+            
+            // We don't have a direct way to catch a SIGSEGV here, 
+            // but we can catch potential Swift errors if the bridge was designed to throw.
+            // For now, we ensure we handle the launch result.
             LibretroBridgeSwift.launch(
-                dylibPath: self.findCoreLib(coreID: coreID) ?? coreID, 
+                dylibPath: dylibPath, 
                 romPath: self.rom!.path.path,
                 coreID: coreID,
                 systemID: self.rom!.systemID,
@@ -273,6 +285,11 @@ class EmulatorRunner: ObservableObject, @unchecked Sendable {
                     self?.updateFrame(data: data, width: width, height: height, pitch: pitch, format: format)
                 }
             )
+            
+            // If we reach here, the launch call has returned. 
+            // We should verify if it actually succeeded.
+            // This is a bit speculative without more info from the bridge, 
+            // but it's a good place to check.
         }
     }
 
@@ -352,17 +369,23 @@ class EmulatorRunner: ObservableObject, @unchecked Sendable {
     @MainActor
     func saveState(slot: Int) -> Bool {
         guard supportsSaveStates else {
-            osdMessage = "Error: Core doesn't support save states"
+            let error = GameError.saveStateError(reason: "Core doesn't support save states")
+            osdMessage = error.localizedDescription
+            self.lastError = error
             return false
         }
         
         guard let stateData = LibretroBridgeSwift.serializeState() else {
-            osdMessage = "Error: Serialization failed"
+            let error = GameError.saveStateError(reason: "Serialization failed")
+            osdMessage = error.localizedDescription
+            self.lastError = error
             return false
         }
         
         guard let gameRom = rom else {
-            osdMessage = "Error: No game loaded"
+            let error = GameError.saveStateError(reason: "No game loaded")
+            osdMessage = error.localizedDescription
+            self.lastError = error
             return false
         }
         
@@ -406,7 +429,9 @@ class EmulatorRunner: ObservableObject, @unchecked Sendable {
             
             return true
         } catch {
-            osdMessage = "Error: Could not write save state"
+            let err = GameError.saveStateError(reason: error.localizedDescription)
+            osdMessage = err.localizedDescription
+            self.lastError = err
             return false
         }
     }
@@ -415,12 +440,16 @@ class EmulatorRunner: ObservableObject, @unchecked Sendable {
     @MainActor
     func loadState(slot: Int) -> Bool {
         guard supportsSaveStates else {
-            osdMessage = "Error: Core doesn't support save states"
+            let error = GameError.loadStateError(reason: "Core doesn't support save states")
+            osdMessage = error.localizedDescription
+            self.lastError = error
             return false
         }
         
         guard let gameRom = rom else {
-            osdMessage = "Error: No game loaded"
+            let error = GameError.loadStateError(reason: "No game loaded")
+            osdMessage = error.localizedDescription
+            self.lastError = error
             return false
         }
         
@@ -431,7 +460,9 @@ class EmulatorRunner: ObservableObject, @unchecked Sendable {
         undoBuffer = LibretroBridgeSwift.serializeState()
         
         guard let fileData = try? Data(contentsOf: stateURL) else {
-            osdMessage = "Error: State file not found"
+            let error = GameError.loadStateError(reason: "State file not found")
+            osdMessage = error.localizedDescription
+            self.lastError = error
             return false
         }
         
@@ -440,7 +471,9 @@ class EmulatorRunner: ObservableObject, @unchecked Sendable {
         if let decompressed = SaveStateManager.decompressStateData(fileData) {
             actualData = decompressed
         } else {
-            osdMessage = "Error: State incompatible or corrupted"
+            let error = GameError.loadStateError(reason: "State incompatible or corrupted")
+            osdMessage = error.localizedDescription
+            self.lastError = error
             return false
         }
         
@@ -454,7 +487,9 @@ class EmulatorRunner: ObservableObject, @unchecked Sendable {
                 await MainActor.run { self.osdMessage = nil }
             }
         } else {
-            osdMessage = "Error: State incompatible or corrupted"
+            let error = GameError.loadStateError(reason: "State incompatible or corrupted")
+            osdMessage = error.localizedDescription
+            self.lastError = error
         }
         
         return success
