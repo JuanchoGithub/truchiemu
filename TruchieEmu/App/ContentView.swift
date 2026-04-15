@@ -34,27 +34,26 @@ struct ContentView: View {
     private var mainInterface: some View {
         ZStack {
             VStack(spacing: 0) {
-                NavigationSplitView {
-                    SystemSidebarView(
-                        selectedFilter: $selectedFilter,
-                        showCreateCategorySheet: $showCreateCategorySheet,
-                        editingCategory: $editingCategory
-                    )
-                } detail: {
-                    LibraryGridView(
-                        showCreateCategorySheet: $showCreateCategorySheet,
-                        filter: selectedFilter,
-                        selectedROM: $selectedROM,
-                        searchText: $searchText
-                    )
-                    .id(selectedFilter.id) // Force view recreation on filter change
-                    .navigationTitle(navigationTitle)
-                    .onChange(of: selectedFilter) { _, newFilter in
-                        AppSettings.setString("lastSelectedFilter", value: newFilter.id)
-                    }
-                }
-                .navigationSplitViewStyle(.balanced)
-                .toolbar(removing: .sidebarToggle)
+                 HStack(spacing: 0) {
+                     SystemSidebarView(
+                         selectedFilter: $selectedFilter,
+                         showCreateCategorySheet: $showCreateCategorySheet,
+                         editingCategory: $editingCategory
+                     )
+                     .frame(width: 240)
+
+                     LibraryGridView(
+                         showCreateCategorySheet: $showCreateCategorySheet,
+                         filter: selectedFilter,
+                         selectedROM: $selectedROM,
+                         searchText: $searchText
+                     )
+                     .id(selectedFilter.id) // Force view recreation on filter change
+                     .navigationTitle(navigationTitle)
+                     .onChange(of: selectedFilter) { _, newFilter in
+                         AppSettings.setString("lastSelectedFilter", value: newFilter.id)
+                     }
+                 }
                 .sheet(isPresented: $showCreateCategorySheet) {
                     CreateCategorySheet()
                 }
