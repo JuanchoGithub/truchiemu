@@ -4,19 +4,31 @@ import SwiftUI
 
 struct CategoryBadgeView: View {
     let category: GameCategory
-    
+    var isCompact: Bool = false
+
     var body: some View {
-        HStack(spacing: 3) {
+        if isCompact {
+            // Compact mode: Icon only in a circle
             Image(systemName: category.iconName)
-                .font(.system(size: 9, weight: .medium))
-            Text(category.name)
                 .font(.system(size: 10, weight: .medium))
+                .padding(4)
+                .background(Color(hex: category.colorHex) ?? .blue.opacity(0.2))
+                .foregroundStyle(Color(hex: category.colorHex) ?? .blue)
+                .clipShape(Circle())
+        } else {
+            // Standard mode: Icon + Text in a capsule/rounded rect
+            HStack(spacing: 3) {
+                Image(systemName: category.iconName)
+                    .font(.system(size: 9, weight: .medium))
+                Text(category.name)
+                    .font(.system(size: 10, weight: .medium))
+            }
+            .foregroundColor(.white)
+            .padding(.horizontal, 6)
+            .padding(.vertical, 3)
+            .background(Color(hex: category.colorHex) ?? .blue)
+            .cornerRadius(4)
         }
-        .foregroundColor(.white)
-        .padding(.horizontal, 6)
-        .padding(.vertical, 3)
-        .background(Color(hex: category.colorHex) ?? .blue)
-        .cornerRadius(4)
     }
 }
 

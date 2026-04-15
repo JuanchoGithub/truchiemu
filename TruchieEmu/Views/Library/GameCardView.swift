@@ -280,11 +280,10 @@ struct CategoryBadgesRow: View {
     let badges: [GameCategory]
 
     var body: some View {
-        ScrollView(.horizontal, showsIndicators: false) {
-            HStack(spacing: 4) {
-                ForEach(badges) { category in
-                    CategoryBadgeView(category: category)
-                }
+        HStack(spacing: 4) {
+            ForEach(badges) { category in
+                // If more than one category, use compact mode (icon only)
+                CategoryBadgeView(category: category, isCompact: badges.count > 1)
             }
         }
     }
