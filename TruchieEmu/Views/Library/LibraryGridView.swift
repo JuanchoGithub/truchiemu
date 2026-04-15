@@ -515,26 +515,23 @@ struct LibraryGridView: View {
             LazyVGrid(columns: columns, spacing: gridSpacing) {
                 ForEach(Array(displayedROMs.enumerated()), id: \.element.id) { index, rom in
                     let isSelected = selectedROMs.contains(rom.id) || selectedROM?.id == rom.id
-                    GameCardView(rom: rom, isSelected: isSelected, isMultiSelected: selectedROMs.contains(rom.id), zoomLevel: continuousZoom)
-                        .contentShape(Rectangle())
-                        .onTapGesture {
-                            handleTap(on: rom, at: index)
-                        }
-                        .simultaneousGesture(
-                            TapGesture(count: 2).onEnded {
-                                launchGame(rom)
-                            }
-                        )
-                        .contextMenu { contextMenu(for: rom) }
-                        .onDrag {
-                            let items = selectedROMs.contains(rom.id) || selectedROM?.id == rom.id
-                                ? selectedROMs.compactMap { id in displayedROMs.first(where: { $0.id == id }) }
-                                : [rom]
-                            draggedROMs = items
-                            dragState.startDrag(gameIDs: items.map { $0.id })
-                            let provider = NSItemProvider(object: NSString(string: items.map { $0.id.uuidString }.joined(separator: ",")))
-                            return provider
-                        }
+                    GameCardView(
+                        rom: rom, 
+                        isSelected: isSelected, 
+                        isMultiSelected: selectedROMs.contains(rom.id), 
+                        zoomLevel: continuousZoom,
+                        onTap: { handleTap(on: rom, at: index) },
+                        contextMenu: { contextMenu(for: rom) }
+                    )
+                    .onDrag {
+                        let items = selectedROMs.contains(rom.id) || selectedROM?.id == rom.id
+                            ? selectedROMs.compactMap { id in displayedROMs.first(where: { $0.id == id }) }
+                            : [rom]
+                        draggedROMs = items
+                        dragState.startDrag(gameIDs: items.map { $0.id })
+                        let provider = NSItemProvider(object: NSString(string: items.map { $0.id.uuidString }.joined(separator: ",")))
+                        return provider
+                    }                    
                 }
             }
             .padding(gridPadding)
@@ -960,110 +957,113 @@ struct LibraryGridView: View {
         }
     }
 
-    @ViewBuilder
-    private func contextMenu(for rom: ROM) -> some View {
-        Button {
-            openWindow(id: "game-info", value: rom.id)
-        } label: {
-            Label("See Game Info", systemImage: "info.circle")
-        }
-        
-        Button {
-            launchGame(rom)
-        } label: {
-            Label("Launch Game", systemImage: "play.fill")
-        }
-
-        Button {
-            renameText = rom.customName ?? rom.metadata?.title ?? rom.name
-            renamingROM = rom
-        } label: {
-            Label("Rename Game", systemImage: "pencil")
-        }
-
-        Divider()
-        
-        Menu {
-            Button {
-                showCreateCategorySheet = true
-            } label: {
-                Label("New Category...", systemImage: "plus.circle")
-            }
-            
-            if !categoryManager.categories.isEmpty {
-                Divider()
-            }
-            
-            ForEach(categoryManager.categories) { category in
-                let isInCategory = category.gameIDs.contains(rom.id)
+    private func contextMenu(for rom: ROM) -> AnyView {
+        AnyView(
+            Group {
                 Button {
-                    if isInCategory {
-                        categoryManager.removeGamesFromCategory(gameIDs: [rom.id], categoryID: category.id)
-                    } else {
-                        categoryManager.addGamesToCategory(gameIDs: [rom.id], categoryID: category.id)
-                    }
+                    openWindow(id: "game-info", value: rom.id)
                 } label: {
-                    HStack {
-                        Image(systemName: category.iconName)
-                            .foregroundColor(Color(hex: category.colorHex) ?? .blue)
-                        Text(category.name)
-                        Spacer()
-                        if isInCategory {
-                            Image(systemName: "checkmark.circle.fill")
-                                .foregroundColor(.blue)
-                        } else {
-                            Image(systemName: "plus.circle")
-                                .foregroundColor(.secondary)
+                    Label("See Game Info", systemImage: "info.circle")
+                }
+                
+                Button {
+                    launchGame(rom)
+                } label: {
+                    Label("Launch Game", systemImage: "play.fill")
+                }
+
+                Button {
+                    renameText = rom.customName ?? rom.metadata?.title ?? rom.name
+                    renamingROM = rom
+                } label: {
+                    Label("Rename Game", systemImage: "pencil")
+                }
+
+                Divider()
+                
+                Menu {
+                    Button {
+                        showCreateCategorySheet = true
+                    } label: {
+                        Label("New Category...", systemImage: "plus.circle")
+                    }
+                    
+                    if !categoryManager.categories.isEmpty {
+                        Divider()
+                    }
+                    
+                    ForEach(categoryManager.categories) { category in
+                        let isInCategory = category.gameIDs.contains(rom.id)
+                        Button {
+                            if isInCategory {
+                                categoryManager.removeGamesFromCategory(gameIDs: [rom.id], categoryID: category.id)
+                            } else {
+                                categoryManager.addGamesToCategory(gameIDs: [rom.id], categoryID: category.id)
+                            }
+                        } label: {
+                            HStack {
+                                Image(systemName: category.iconName)
+                                    .foregroundColor(Color(hex: category.colorHex) ?? .blue)
+                                Text(category.name)
+                                Spacer()
+                                if isInCategory {
+                                    Image(systemName: "checkmark.circle.fill")
+                                        .foregroundColor(.blue)
+                                } else {
+                                    Image(systemName: "plus.circle")
+                                        .foregroundColor(.secondary)
+                                }
+                            }
                         }
                     }
-                }
-            }
-            
-            let categoriesForGame = categoryManager.categories.filter { $0.gameIDs.contains(rom.id) }
-            if !categoriesForGame.isEmpty {
-                Divider()
-                Button(role: .destructive) {
-                    for category in categoriesForGame {
-                        categoryManager.removeGamesFromCategory(gameIDs: [rom.id], categoryID: category.id)
+                    
+                    let categoriesForGame = categoryManager.categories.filter { $0.gameIDs.contains(rom.id) }
+                    if !categoriesForGame.isEmpty {
+                        Divider()
+                        Button(role: .destructive) {
+                            for category in categoriesForGame {
+                                categoryManager.removeGamesFromCategory(gameIDs: [rom.id], categoryID: category.id)
+                            }
+                        } label: {
+                            Label("Remove from All Categories", systemImage: "folder.badge.minus")
+                        }
                     }
                 } label: {
-                    Label("Remove from All Categories", systemImage: "folder.badge.minus")
+                    Label("Categories", systemImage: "folder.badge.plus")
+                }
+                
+                Divider()
+                Button(rom.isFavorite ? "Remove from Favorites" : "Add to Favorites") {
+                    var updated = rom
+                    updated.isFavorite.toggle()
+                    library.updateROM(updated)
+                }
+                Divider()
+                Button("Get Box Art") {
+                    manualBoxArtSearchROM = rom
+                }
+                Button("Reveal in Finder") {
+                    NSWorkspace.shared.selectFile(rom.path.path, inFileViewerRootedAtPath: "")
+                }
+                
+                Divider()
+                if rom.isHidden {
+                    Button("Unhide Game") {
+                        unhideGame(rom)
+                    }
+                } else {
+                    Button("Hide Game") {
+                        hideGame(rom)
+                    }
+                    Button(role: .destructive) {
+                        gameToDelete = rom
+                        showDeleteConfirmation = true
+                    } label: {
+                        Label("Delete Game...", systemImage: "trash")
+                    }
                 }
             }
-        } label: {
-            Label("Categories", systemImage: "folder.badge.plus")
-        }
-        
-        Divider()
-        Button(rom.isFavorite ? "Remove from Favorites" : "Add to Favorites") {
-            var updated = rom
-            updated.isFavorite.toggle()
-            library.updateROM(updated)
-        }
-        Divider()
-        Button("Get Box Art") {
-            manualBoxArtSearchROM = rom
-        }
-        Button("Reveal in Finder") {
-            NSWorkspace.shared.selectFile(rom.path.path, inFileViewerRootedAtPath: "")
-        }
-        
-        Divider()
-        if rom.isHidden {
-            Button("Unhide Game") {
-                unhideGame(rom)
-            }
-        } else {
-            Button("Hide Game") {
-                hideGame(rom)
-            }
-            Button(role: .destructive) {
-                gameToDelete = rom
-                showDeleteConfirmation = true
-            } label: {
-                Label("Delete Game...", systemImage: "trash")
-            }
-        }
+        )
     }
 
     // MARK: - Delete/Hide Game Actions
