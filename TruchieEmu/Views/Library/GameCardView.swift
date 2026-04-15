@@ -137,11 +137,11 @@ struct GameCardView: View {
         .scaleEffect(isPressed ? 0.97 : 1.0)
         .clipped()
         .onHover { isHovered = $0 }
-        .simultaneousGesture(
-            DragGesture(minimumDistance: 0)
+        /*.simultaneousGesture(
+            DragGesture(minimumDistance: 10)
                 .onChanged { _ in isPressed = true }
                 .onEnded { _ in isPressed = false }
-        )
+        )*/
         .animation(.interpolatingSpring(stiffness: 200, damping: 25), value: isHovered)
         .animation(.interpolatingSpring(stiffness: 200, damping: 25), value: isPressed)
         .accessibilityLabel(rom.displayName)
