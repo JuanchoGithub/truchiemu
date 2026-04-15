@@ -1025,29 +1025,46 @@ class StandaloneGameWindowController: NSWindowController, NSWindowDelegate, Obse
             
             attempts += 1
             // Already on main thread (Timer.scheduledTimer runs on main runloop)
-            let isReady = MainActor.assumeIsolated { self.runner?.isReadyForDisplay } ?? false
+            let state = MainActor.assumeIsolated { (self.runner?.isReadyForDisplay ?? false, self.runner?.lastError != nil, self.runner?.isRunning ?? false) }
+            let isReady = state.0
+            let hasError = state.1
+            let isRunning = state.2
             let timedOut = attempts >= maxAttempts
             
-            if isReady || timedOut {
+            if isReady || hasError || !isRunning || timedOut {
                 timer.invalidate()
                 if !isReady {
-                    LoggerService.info(category: "Runner", "Timeout waiting for first frame, showing window anyway")
+                    let errorToDisplay: GameError? = MainActor.assumeIsolated { self.runner?.lastError }
+
+                    if hasError {
+                        LoggerService.error(category: "Runner", "Core failed during launch, closing window immediately")
+                    } else if !isRunning {
+                        LoggerService.error(category: "Runner", "Runner stopped unexpectedly, closing window")
+                    } else {
+                        LoggerService.info(category: "Runner", "Timeout waiting for first frame, closing window")
+                    }
+                    
                     // Dont show window, terminate the emulation instead
                     self.window?.close()
                     self.runner?.stop()
                     self.runner = nil
                     
-                    // Use centralized error handling if possible, or fallback to alert
-                    let error = GameError.timeout(message: "The game took too long to start. The emulator may have crashed or failed to respond.")
-                    
+                    // Show error alert to the user
                     DispatchQueue.main.async {
-                        // Set the error on the runner so the controller can observe it
-                        self.runner?.lastError = error
-                        
                         let alert = NSAlert()
                         alert.alertStyle = .critical
-                        alert.messageText = "Launch Timeout"
-                        alert.informativeText = error.localizedDescription
+                        
+                        if let error = errorToDisplay {
+                            alert.messageText = "Launch Error"
+                            alert.informativeText = error.localizedDescription
+                        } else if timedOut {
+                            alert.messageText = "Launch Timeout"
+                            alert.informativeText = "The game took too long to start. The emulator may have crashed or failed to respond."
+                        } else {
+                            alert.messageText = "Launch Failed"
+                            alert.informativeText = "The game session ended unexpectedly during launch."
+                        }
+                        
                         alert.runModal()
                     }
                 } else {
