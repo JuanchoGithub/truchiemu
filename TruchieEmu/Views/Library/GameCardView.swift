@@ -9,7 +9,7 @@ struct GameCardView: View {
     let zoomLevel: Double
     let onTap: () -> Void // Placeholder for tap action, for Dragging
     var contextMenu: (() -> AnyView)?
-
+    var onDrag: (() -> NSItemProvider?)? // New closure for drag handling
 
     @State private var isHovered = false
     @State private var isPressed = false
@@ -77,78 +77,24 @@ struct GameCardView: View {
         isHiddenItem ? .gray : .primary
     }
 
-    var body: some View {
-        Button(action: onTap) { // Use the new onTap closure
-            VStack(alignment: .leading, spacing: 8) {
-                ZStack(alignment: .topTrailing) {
-                    artworkView
-                        .clipped()
-                        .overlay(
-                            RoundedRectangle(cornerRadius: 8)
-                                .fill(Color.black.opacity(isHovered ? 0.1 : 0))
-                        )
-                        .grayscale(artworkGrayscale)
-                        .opacity(artworkOpacity)
-
-                    if isMultiSelected {
-                        Image(systemName: "checkmark.circle.fill")
-                            .font(.title2)
-                            .foregroundColor(.white)
-                            .shadow(radius: 2)
-                            .padding(4)
-                            .transition(.scale.combined(with: .opacity))
-                    }
-                }
-
-                VStack(alignment: .leading, spacing: 4) {
-                    Text(rom.displayName)
-                        .font(.system(size: titleFontSize, weight: .medium))
-                        .lineLimit(2)
-                        .multilineTextAlignment(.leading)
-                        .foregroundColor(titleColor)
-                        .frame(minHeight: titleLineHeight * 2, alignment: .top)
-
-                    if isHiddenItem, let mameType = rom.mameRomType {
-                        HStack(spacing: 4) {
-                            Image(systemName: "eye.slash")
-                                .font(.system(size: 9))
-                                .foregroundColor(.gray)
-                            Text(mameType.capitalized)
-                                .font(.system(size: 9))
-                                .foregroundColor(.gray)
-                        }
-                    }
-                }
-
-                if !categoryBadges.isEmpty {
-                    CategoryBadgesRow(badges: categoryBadges)
-                }
-            }
-            .padding(8)
-            .background(
-                RoundedRectangle(cornerRadius: 12)
-                    .fill(cardBackground)
-            )
-            .overlay(
-                RoundedRectangle(cornerRadius: 12)
-                    .stroke(cardStrokeColor, lineWidth: cardStrokeWidth)
-            )
-            .shadow(
-                color: isHovered ? Color.accentColor.opacity(0.15) : Color.black.opacity(0.3),
-                radius: isHovered ? 12 : 6,
-                y: isHovered ? 8 : 3
-            )
-            .scaleEffect(isHovered ? 1.03 : 1.0)
-            .clipped()
+var body: some View {
+        Button(action: onTap) {
+            cardContent
         }
         .buttonStyle(CardButtonStyle())
+        .onDrag {
+            return onDrag?() ?? NSItemProvider()
+        } preview: {
+            // This is the image that follows the mouse
+            cardContent
+                .frame(width: 80 + (zoomLevel * 200)) // Ensure layout matches the grid
+                .scaleEffect(0.5) // Shrink the transit preview to 50%
+        }
         .onHover { isHovered = $0 }
         .contextMenu {
             contextMenu?()
         }
-        .animation(.interpolatingSpring(stiffness: 200, damping: 25), value: isHovered)
-        .animation(.interpolatingSpring(stiffness: 200, damping: 25), value: isPressed)
-        .animation(.interpolatingSpring(stiffness: 200, damping: 25), value: dragState.draggedGameIDs.contains(rom.id))
+        .animation(.spring(), value: isHovered)
         .accessibilityLabel(rom.displayName)
         .accessibilityAddTraits(.isButton)
         // Load box art: try multiple naming patterns via BoxArtService.
@@ -185,6 +131,69 @@ struct GameCardView: View {
                 }
             }
         }
+    }
+    
+    @ViewBuilder
+    private var cardContent: some View {
+        VStack(alignment: .leading, spacing: 8) {
+            ZStack(alignment: .topTrailing) {
+                artworkView
+                    .clipped()
+                    .overlay(
+                        RoundedRectangle(cornerRadius: 8)
+                            .fill(Color.black.opacity(isHovered ? 0.1 : 0))
+                    )
+                    .grayscale(artworkGrayscale)
+                    .opacity(artworkOpacity)
+
+                if isMultiSelected {
+                    Image(systemName: "checkmark.circle.fill")
+                        .font(.title2)
+                        .foregroundColor(.white)
+                        .shadow(radius: 2)
+                        .padding(4)
+                        .transition(.scale.combined(with: .opacity))
+                }
+            }
+
+            VStack(alignment: .leading, spacing: 4) {
+                Text(rom.displayName)
+                    .font(.system(size: titleFontSize, weight: .medium))
+                    .lineLimit(2)
+                    .multilineTextAlignment(.leading)
+                    .foregroundColor(titleColor)
+                    .frame(minHeight: titleLineHeight * 2, alignment: .top)
+
+                if isHiddenItem, let mameType = rom.mameRomType {
+                    HStack(spacing: 4) {
+                        Image(systemName: "eye.slash")
+                            .font(.system(size: 9))
+                            .foregroundColor(.gray)
+                        Text(mameType.capitalized)
+                            .font(.system(size: 9))
+                            .foregroundColor(.gray)
+                    }
+                }
+            }
+
+            if !categoryBadges.isEmpty {
+                CategoryBadgesRow(badges: categoryBadges)
+            }
+        }
+        .padding(8)
+        .background(
+            RoundedRectangle(cornerRadius: 12)
+                .fill(cardBackground)
+        )
+        .overlay(
+            RoundedRectangle(cornerRadius: 12)
+                .stroke(cardStrokeColor, lineWidth: cardStrokeWidth)
+        )
+        .shadow(
+            color: isHovered ? Color.accentColor.opacity(0.15) : Color.black.opacity(0.3),
+            radius: isHovered ? 12 : 6,
+            y: isHovered ? 8 : 3
+        )
     }
 
     private var artworkView: some View {
@@ -269,8 +278,8 @@ extension GameCardView {
 struct CardButtonStyle: ButtonStyle {
     func makeBody(configuration: Configuration) -> some View {
         configuration.label
-            .scaleEffect(configuration.isPressed ? 0.25 : 1.0)
-            .animation(.interpolatingSpring(stiffness: 200, damping: 25), value: configuration.isPressed)
+            .scaleEffect(configuration.isPressed ? 0.98 : 1.0)
+            .animation(.spring(), value: configuration.isPressed)
     }
 }
 

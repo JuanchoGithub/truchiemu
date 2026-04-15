@@ -521,17 +521,26 @@ struct LibraryGridView: View {
                         isMultiSelected: selectedROMs.contains(rom.id), 
                         zoomLevel: continuousZoom,
                         onTap: { handleTap(on: rom, at: index) },
-                        contextMenu: { contextMenu(for: rom) }
-                    )
-                    .onDrag {
-                        let items = selectedROMs.contains(rom.id) || selectedROM?.id == rom.id
-                            ? selectedROMs.compactMap { id in displayedROMs.first(where: { $0.id == id }) }
-                            : [rom]
-                        draggedROMs = items
-                        dragState.startDrag(gameIDs: items.map { $0.id })
-                        let provider = NSItemProvider(object: NSString(string: items.map { $0.id.uuidString }.joined(separator: ",")))
-                        return provider
-                    }                    
+                        contextMenu: { contextMenu(for: rom) },
+                        onDrag: {
+                            let items: [ROM]
+                            if selectedROMs.contains(rom.id) || selectedROM?.id == rom.id {
+                                // Combine the multi-selection array and the single-selection property
+                                var dragIDs = selectedROMs
+                                if let singleSelection = selectedROM {
+                                    dragIDs.insert(singleSelection.id)
+                                }
+                                items = displayedROMs.filter { dragIDs.contains($0.id) }
+                            } else {
+                                items = [rom]
+                            }
+                            
+                            draggedROMs = items
+                            dragState.startDrag(gameIDs: items.map { $0.id })
+                            let provider = NSItemProvider(object: NSString(string: items.map { $0.id.uuidString }.joined(separator: ",")))
+                            return provider
+                        }
+                    )                    
                 }
             }
             .padding(gridPadding)
@@ -639,9 +648,17 @@ struct LibraryGridView: View {
                     )
                     .contextMenu { contextMenu(for: rom) }
                     .onDrag {
-                        let items = selectedROMs.contains(rom.id) || selectedROM?.id == rom.id
-                            ? selectedROMs.compactMap { id in displayedROMs.first(where: { $0.id == id }) }
-                            : [rom]
+                        let items: [ROM]
+                        if selectedROMs.contains(rom.id) || selectedROM?.id == rom.id {
+                            var dragIDs = selectedROMs
+                            if let singleSelection = selectedROM {
+                                dragIDs.insert(singleSelection.id)
+                            }
+                            items = displayedROMs.filter { dragIDs.contains($0.id) }
+                        } else {
+                            items = [rom]
+                        }
+                        
                         draggedROMs = items
                         dragState.startDrag(gameIDs: items.map { $0.id })
                         let provider = NSItemProvider(object: NSString(string: items.map { $0.id.uuidString }.joined(separator: ",")))
