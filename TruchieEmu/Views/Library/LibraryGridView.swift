@@ -121,8 +121,8 @@ struct LibraryGridView: View {
         return applySorting(to: filtered)
     }
 
-    private func applySorting(to roms: [ROM]) -> [ROM] {
-        guard !roms.isEmpty else { return [] }
+    private func applySorting(to roms:[ROM]) -> [ROM] {
+        guard !roms.isEmpty else { return[] }
         
         if sortByLastPlayed {
             return roms.sorted { a, b in
@@ -515,32 +515,39 @@ struct LibraryGridView: View {
             LazyVGrid(columns: columns, spacing: gridSpacing) {
                 ForEach(Array(displayedROMs.enumerated()), id: \.element.id) { index, rom in
                     let isSelected = selectedROMs.contains(rom.id) || selectedROM?.id == rom.id
+                    
+                    let draggedItemsForCard: [ROM] = {
+                        if isSelected {
+                            var dragIDs = selectedROMs
+                            if let singleSelection = selectedROM {
+                                dragIDs.insert(singleSelection.id)
+                            }
+                            return displayedROMs.filter { dragIDs.contains($0.id) }
+                        } else {
+                            return [rom]
+                        }
+                    }()
+
                     GameCardView(
                         rom: rom, 
                         isSelected: isSelected, 
                         isMultiSelected: selectedROMs.contains(rom.id), 
                         zoomLevel: continuousZoom,
+                        draggedROMs: draggedItemsForCard,
                         onTap: { handleTap(on: rom, at: index) },
                         contextMenu: { contextMenu(for: rom) },
                         onDrag: {
-                            let items: [ROM]
-                            if selectedROMs.contains(rom.id) || selectedROM?.id == rom.id {
-                                // Combine the multi-selection array and the single-selection property
-                                var dragIDs = selectedROMs
-                                if let singleSelection = selectedROM {
-                                    dragIDs.insert(singleSelection.id)
-                                }
-                                items = displayedROMs.filter { dragIDs.contains($0.id) }
-                            } else {
-                                items = [rom]
-                            }
-                            
-                            draggedROMs = items
-                            dragState.startDrag(gameIDs: items.map { $0.id })
-                            let provider = NSItemProvider(object: NSString(string: items.map { $0.id.uuidString }.joined(separator: ",")))
+                            draggedROMs = draggedItemsForCard
+                            dragState.startDrag(gameIDs: draggedItemsForCard.map { $0.id })
+                            let provider = NSItemProvider(object: NSString(string: draggedItemsForCard.map { $0.id.uuidString }.joined(separator: ",")))
                             return provider
                         }
                     )                    
+                    .simultaneousGesture(
+                        TapGesture(count: 2).onEnded {
+                            launchGame(rom)
+                        }
+                    )
                 }
             }
             .padding(gridPadding)
@@ -574,7 +581,7 @@ struct LibraryGridView: View {
                     lastMagnification = 1.0
                 }
         )
-        .onDrop(of: [.url], isTargeted: nil) { items, location in
+        .onDrop(of:[.url], isTargeted: nil) { items, location in
             return false
         }
     }
@@ -649,7 +656,7 @@ struct LibraryGridView: View {
                     .contextMenu { contextMenu(for: rom) }
                     .onDrag {
                         let items: [ROM]
-                        if selectedROMs.contains(rom.id) || selectedROM?.id == rom.id {
+                        if isSelected {
                             var dragIDs = selectedROMs
                             if let singleSelection = selectedROM {
                                 dragIDs.insert(singleSelection.id)
@@ -734,8 +741,7 @@ struct LibraryGridView: View {
 
     @State private var scanningMessageIndex = 0
     
-    private var scanningMessages: [String] {
-        [
+    private var scanningMessages: [String] {[
             "Scanning your ROM library…",
             "Identifying classic games…",
             "Building your game shelf…",
@@ -766,7 +772,7 @@ struct LibraryGridView: View {
                     .font(.system(size: 28))
                     .foregroundStyle(
                         LinearGradient(
-                            colors: [Color(red: 0.1, green: 0.6, blue: 0.35), Color(red: 0.15, green: 0.65, blue: 0.55)],
+                            colors:[Color(red: 0.1, green: 0.6, blue: 0.35), Color(red: 0.15, green: 0.65, blue: 0.55)],
                             startPoint: .topLeading,
                             endPoint: .bottomTrailing
                         )
@@ -812,8 +818,7 @@ struct LibraryGridView: View {
 
     @State private var boxArtMessageIndex = 0
     
-    private var boxArtMessages: [String] {
-        [
+    private var boxArtMessages: [String] {[
             "Fetching box art…",
             "Dressing up your games…",
             "Making your library pretty…",
@@ -836,7 +841,7 @@ struct LibraryGridView: View {
                     .font(.system(size: 10))
                     .foregroundStyle(
                         LinearGradient(
-                            colors: [Color(red: 0.1, green: 0.6, blue: 0.35), Color(red: 0.15, green: 0.65, blue: 0.55)],
+                            colors:[Color(red: 0.1, green: 0.6, blue: 0.35), Color(red: 0.15, green: 0.65, blue: 0.55)],
                             startPoint: .topLeading,
                             endPoint: .bottomTrailing
                         )
@@ -1348,6 +1353,6 @@ struct LibraryGridView: View {
                     }
                 }
             }
-    }
+        }
     }
 }
