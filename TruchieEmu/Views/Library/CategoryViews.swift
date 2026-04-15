@@ -9,11 +9,11 @@ struct CategoryBadgeView: View {
     var body: some View {
         if isCompact {
             // Compact mode: Icon only in a circle
-            Image(systemName: category.iconName)
+            Image(systemName: category.iconName.isEmpty ? "tag" : category.iconName)
                 .font(.system(size: 10, weight: .medium))
                 .padding(4)
-                .background(Color(hex: category.colorHex) ?? .blue.opacity(0.2))
-                .foregroundStyle(Color(hex: category.colorHex) ?? .blue)
+                .background(Color(hex: category.colorHex) ?? .blue)
+                .foregroundColor(.white)
                 .clipShape(Circle())
         } else {
             // Standard mode: Icon + Text in a capsule/rounded rect
