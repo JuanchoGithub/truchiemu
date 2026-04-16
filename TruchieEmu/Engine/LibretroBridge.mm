@@ -1489,6 +1489,11 @@ shutdown:
 }
 
 - (void)saveState {
+  // Update size if it was never set or is currently 0
+  if (_cachedSerializeSize == 0 && _retro_serialize_size) {
+    _cachedSerializeSize = _retro_serialize_size();
+  }
+
   if (!_cachedSerializeSize || !_retro_serialize)
     return;
 
@@ -1500,8 +1505,7 @@ shutdown:
   if (buf) {
     if (_retro_serialize(buf, _cachedSerializeSize)) {
       NSData *data = [NSData dataWithBytesNoCopy:buf
-                                          length:_cachedSerializeSize];
-      [data writeToFile:_saveStatePath atomically:YES];
+                                          length:_cachedSerializeSize];[data writeToFile:_saveStatePath atomically:YES];
     } else {
       free(buf);
     }
@@ -1511,7 +1515,6 @@ shutdown:
     CGLSetCurrentContext(NULL);
   [_coreLock unlock];
 }
-
 - (void)handleVideoData:(const void *)data
                   width:(int)w
                  height:(int)h
@@ -1931,7 +1934,14 @@ shutdown:
   return g_instance ? [g_instance unserializeState:data] : NO;
 }
 + (size_t)serializeSize {
-  return g_instance ? g_instance->_cachedSerializeSize : 0;
+  if (g_instance) {
+    // Lazily evaluate the size if it's currently 0
+    if (g_instance->_cachedSerializeSize == 0 && g_instance->_retro_serialize_size) {
+      g_instance->_cachedSerializeSize = g_instance->_retro_serialize_size();
+    }
+    return g_instance->_cachedSerializeSize;
+  }
+  return 0;
 }
 + (void)setKeyState:(int)rid pressed:(BOOL)p {
   if (g_instance)
