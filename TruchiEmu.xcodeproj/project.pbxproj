@@ -403,6 +403,19 @@
 		DDA593232F8F256900A9BEE9 /* LibraryFilterOption.swift in Sources */ = {isa = PBXBuildFile; fileRef = DDA5931E2F8F256900A9BEE9 /* LibraryFilterOption.swift */; };
 		DDA593242F8F256900A9BEE9 /* FilterChipView.swift in Sources */ = {isa = PBXBuildFile; fileRef = DDA5931A2F8F256900A9BEE9 /* FilterChipView.swift */; };
 		DDA5933B2F90097F00A9BEE9 /* GameError.swift in Sources */ = {isa = PBXBuildFile; fileRef = DDA5933A2F90097F00A9BEE9 /* GameError.swift */; };
+		DDA59E612F905F8C00A9BEE9 /* ScummVMRunner.swift in Sources */ = {isa = PBXBuildFile; fileRef = DDA59E502F905F8C00A9BEE9 /* ScummVMRunner.swift */; };
+		DDA59E622F905F8C00A9BEE9 /* DOSRunner.swift in Sources */ = {isa = PBXBuildFile; fileRef = DDA59E4D2F905F8C00A9BEE9 /* DOSRunner.swift */; };
+		DDA59E632F905F8C00A9BEE9 /* LibretroProxyManager.mm in Sources */ = {isa = PBXBuildFile; fileRef = DDA59E5B2F905F8C00A9BEE9 /* LibretroProxyManager.mm */; };
+		DDA59E642F905F8C00A9BEE9 /* LibretroBridgeSwift.swift in Sources */ = {isa = PBXBuildFile; fileRef = DDA59E592F905F8C00A9BEE9 /* LibretroBridgeSwift.swift */; };
+		DDA59E652F905F8C00A9BEE9 /* NESRunner.swift in Sources */ = {isa = PBXBuildFile; fileRef = DDA59E4F2F905F8C00A9BEE9 /* NESRunner.swift */; };
+		DDA59E662F905F8C00A9BEE9 /* GameError.swift in Sources */ = {isa = PBXBuildFile; fileRef = DDA59E542F905F8C00A9BEE9 /* GameError.swift */; };
+		DDA59E672F905F8C00A9BEE9 /* SharedSurfaceManager.mm in Sources */ = {isa = PBXBuildFile; fileRef = DDA59E5E2F905F8C00A9BEE9 /* SharedSurfaceManager.mm */; };
+		DDA59E682F905F8C00A9BEE9 /* BaseRunner.swift in Sources */ = {isa = PBXBuildFile; fileRef = DDA59E4C2F905F8C00A9BEE9 /* BaseRunner.swift */; };
+		DDA59E692F905F8C00A9BEE9 /* SNESRunner.swift in Sources */ = {isa = PBXBuildFile; fileRef = DDA59E512F905F8C00A9BEE9 /* SNESRunner.swift */; };
+		DDA59E6A2F905F8C00A9BEE9 /* LibretroBridge.mm in Sources */ = {isa = PBXBuildFile; fileRef = DDA59E572F905F8C00A9BEE9 /* LibretroBridge.mm */; };
+		DDA59E6B2F905F8C00A9BEE9 /* N64Runner.swift in Sources */ = {isa = PBXBuildFile; fileRef = DDA59E4E2F905F8C00A9BEE9 /* N64Runner.swift */; };
+		DDA59E6C2F905F8C00A9BEE9 /* SharedAudioBuffer.mm in Sources */ = {isa = PBXBuildFile; fileRef = DDA59E5D2F905F8C00A9BEE9 /* SharedAudioBuffer.mm */; };
+		DDA59E6D2F905F8C00A9BEE9 /* LibretroBridge.mm.bak in Resources */ = {isa = PBXBuildFile; fileRef = DDA59E582F905F8C00A9BEE9 /* LibretroBridge.mm.bak */; };
 		DDAC0689F34313CEF845E3FC /* DOSRunner.swift in Sources */ = {isa = PBXBuildFile; fileRef = E87593F08B97B23BA2CAC02A /* DOSRunner.swift */; };
 		DDD7A0432F8C8F12002E26DB /* Asset.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = DDD7A0422F8C8F12002E26DB /* Asset.xcassets */; };
 		E05CB54B2368ED8F5003136D /* MAMEModels.swift in Sources */ = {isa = PBXBuildFile; fileRef = BA50A4BA7CA5DC3C5FCB550D /* MAMEModels.swift */; };
@@ -856,6 +869,25 @@
 		DDA5931D2F8F256900A9BEE9 /* LibraryAnimations.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LibraryAnimations.swift; sourceTree = "<group>"; };
 		DDA5931E2F8F256900A9BEE9 /* LibraryFilterOption.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LibraryFilterOption.swift; sourceTree = "<group>"; };
 		DDA5933A2F90097F00A9BEE9 /* GameError.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GameError.swift; sourceTree = "<group>"; };
+		DDA59E4C2F905F8C00A9BEE9 /* BaseRunner.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BaseRunner.swift; sourceTree = "<group>"; };
+		DDA59E4D2F905F8C00A9BEE9 /* DOSRunner.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DOSRunner.swift; sourceTree = "<group>"; };
+		DDA59E4E2F905F8C00A9BEE9 /* N64Runner.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = N64Runner.swift; sourceTree = "<group>"; };
+		DDA59E4F2F905F8C00A9BEE9 /* NESRunner.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NESRunner.swift; sourceTree = "<group>"; };
+		DDA59E502F905F8C00A9BEE9 /* ScummVMRunner.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScummVMRunner.swift; sourceTree = "<group>"; };
+		DDA59E512F905F8C00A9BEE9 /* SNESRunner.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SNESRunner.swift; sourceTree = "<group>"; };
+		DDA59E532F905F8C00A9BEE9 /* CoreRunnerProtocol.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = CoreRunnerProtocol.h; sourceTree = "<group>"; };
+		DDA59E542F905F8C00A9BEE9 /* GameError.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GameError.swift; sourceTree = "<group>"; };
+		DDA59E552F905F8C00A9BEE9 /* libretro.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = libretro.h; sourceTree = "<group>"; };
+		DDA59E562F905F8C00A9BEE9 /* LibretroBridge.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = LibretroBridge.h; sourceTree = "<group>"; };
+		DDA59E572F905F8C00A9BEE9 /* LibretroBridge.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; path = LibretroBridge.mm; sourceTree = "<group>"; };
+		DDA59E582F905F8C00A9BEE9 /* LibretroBridge.mm.bak */ = {isa = PBXFileReference; lastKnownFileType = text; path = LibretroBridge.mm.bak; sourceTree = "<group>"; };
+		DDA59E592F905F8C00A9BEE9 /* LibretroBridgeSwift.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LibretroBridgeSwift.swift; sourceTree = "<group>"; };
+		DDA59E5A2F905F8C00A9BEE9 /* LibretroProxyManager.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = LibretroProxyManager.h; sourceTree = "<group>"; };
+		DDA59E5B2F905F8C00A9BEE9 /* LibretroProxyManager.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; path = LibretroProxyManager.mm; sourceTree = "<group>"; };
+		DDA59E5C2F905F8C00A9BEE9 /* SharedAudioBuffer.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SharedAudioBuffer.h; sourceTree = "<group>"; };
+		DDA59E5D2F905F8C00A9BEE9 /* SharedAudioBuffer.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; path = SharedAudioBuffer.mm; sourceTree = "<group>"; };
+		DDA59E5E2F905F8C00A9BEE9 /* SharedSurfaceManager.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; path = SharedSurfaceManager.mm; sourceTree = "<group>"; };
+		DDA59E5F2F905F8C00A9BEE9 /* TruchieEmu-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "TruchieEmu-Bridging-Header.h"; sourceTree = "<group>"; };
 		DDD7A0422F8C8F12002E26DB /* Asset.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Asset.xcassets; sourceTree = "<group>"; };
 		E35518FB34DEB243BF979DE0 /* LibretroCore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LibretroCore.swift; sourceTree = "<group>"; };
 		E3CF8589B867729FD91E572B /* GameDBLookupResult.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GameDBLookupResult.swift; sourceTree = "<group>"; };
@@ -1076,6 +1108,7 @@
 		51DCF45034CBD3ABFA194491 = {
 			isa = PBXGroup;
 			children = (
+				DDA59E602F905F8C00A9BEE9 /* Engine */,
 				DDD7A0422F8C8F12002E26DB /* Asset.xcassets */,
 				D414975E3ECEDF8E738599C0 /* scripts */,
 				1877F5A2D47F3BEBD4C9F107 /* TruchieEmu */,
@@ -1564,6 +1597,40 @@
 			path = LibretroDats;
 			sourceTree = "<group>";
 		};
+		DDA59E522F905F8C00A9BEE9 /* Runners */ = {
+			isa = PBXGroup;
+			children = (
+				DDA59E4C2F905F8C00A9BEE9 /* BaseRunner.swift */,
+				DDA59E4D2F905F8C00A9BEE9 /* DOSRunner.swift */,
+				DDA59E4E2F905F8C00A9BEE9 /* N64Runner.swift */,
+				DDA59E4F2F905F8C00A9BEE9 /* NESRunner.swift */,
+				DDA59E502F905F8C00A9BEE9 /* ScummVMRunner.swift */,
+				DDA59E512F905F8C00A9BEE9 /* SNESRunner.swift */,
+			);
+			path = Runners;
+			sourceTree = "<group>";
+		};
+		DDA59E602F905F8C00A9BEE9 /* Engine */ = {
+			isa = PBXGroup;
+			children = (
+				DDA59E522F905F8C00A9BEE9 /* Runners */,
+				DDA59E532F905F8C00A9BEE9 /* CoreRunnerProtocol.h */,
+				DDA59E542F905F8C00A9BEE9 /* GameError.swift */,
+				DDA59E552F905F8C00A9BEE9 /* libretro.h */,
+				DDA59E562F905F8C00A9BEE9 /* LibretroBridge.h */,
+				DDA59E572F905F8C00A9BEE9 /* LibretroBridge.mm */,
+				DDA59E582F905F8C00A9BEE9 /* LibretroBridge.mm.bak */,
+				DDA59E592F905F8C00A9BEE9 /* LibretroBridgeSwift.swift */,
+				DDA59E5A2F905F8C00A9BEE9 /* LibretroProxyManager.h */,
+				DDA59E5B2F905F8C00A9BEE9 /* LibretroProxyManager.mm */,
+				DDA59E5C2F905F8C00A9BEE9 /* SharedAudioBuffer.h */,
+				DDA59E5D2F905F8C00A9BEE9 /* SharedAudioBuffer.mm */,
+				DDA59E5E2F905F8C00A9BEE9 /* SharedSurfaceManager.mm */,
+				DDA59E5F2F905F8C00A9BEE9 /* TruchieEmu-Bridging-Header.h */,
+			);
+			path = Engine;
+			sourceTree = "<group>";
+		};
 		E2677C6594356F9F2E613AD9 /* Shaders */ = {
 			isa = PBXGroup;
 			children = (
@@ -1927,6 +1994,7 @@
 				DDA592BB2F8DD4EA00A9BEE9 /* SUPERVISION-alt.png in Resources */,
 				DDA592BC2F8DD4EA00A9BEE9 /* Nintendo_-_Nintendo_Entertainment_System.json in Resources */,
 				DDA592BD2F8DD4EA00A9BEE9 /* INTELLIVISION.png in Resources */,
+				DDA59E6D2F905F8C00A9BEE9 /* LibretroBridge.mm.bak in Resources */,
 				DDA592BE2F8DD4EA00A9BEE9 /* PSP.png in Resources */,
 				DDA592BF2F8DD4EA00A9BEE9 /* FBNEO.png in Resources */,
 				DDA592C02F8DD4EA00A9BEE9 /* MSX.png in Resources */,
@@ -2070,6 +2138,18 @@
 				6F744ECC857F8807BD5BF1AA /* OnboardingView.swift in Sources */,
 				57FDF642BA0CEF9B3245B2C8 /* Passthrough.metal in Sources */,
 				C0D6FCFEA2CC6E07BE935EF9 /* PersistenceMigrationFlag.swift in Sources */,
+				DDA59E612F905F8C00A9BEE9 /* ScummVMRunner.swift in Sources */,
+				DDA59E622F905F8C00A9BEE9 /* DOSRunner.swift in Sources */,
+				DDA59E632F905F8C00A9BEE9 /* LibretroProxyManager.mm in Sources */,
+				DDA59E642F905F8C00A9BEE9 /* LibretroBridgeSwift.swift in Sources */,
+				DDA59E652F905F8C00A9BEE9 /* NESRunner.swift in Sources */,
+				DDA59E662F905F8C00A9BEE9 /* GameError.swift in Sources */,
+				DDA59E672F905F8C00A9BEE9 /* SharedSurfaceManager.mm in Sources */,
+				DDA59E682F905F8C00A9BEE9 /* BaseRunner.swift in Sources */,
+				DDA59E692F905F8C00A9BEE9 /* SNESRunner.swift in Sources */,
+				DDA59E6A2F905F8C00A9BEE9 /* LibretroBridge.mm in Sources */,
+				DDA59E6B2F905F8C00A9BEE9 /* N64Runner.swift in Sources */,
+				DDA59E6C2F905F8C00A9BEE9 /* SharedAudioBuffer.mm in Sources */,
 				C99B75B6B31091E08C1F162A /* ROM.swift in Sources */,
 				DDA5933B2F90097F00A9BEE9 /* GameError.swift in Sources */,
 				D7A2504994F1DE09E699F30F /* ROMIdentifierService.swift in Sources */,

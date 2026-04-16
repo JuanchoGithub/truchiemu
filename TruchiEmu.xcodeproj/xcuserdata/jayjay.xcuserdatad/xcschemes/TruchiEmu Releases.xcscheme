@@ -15,7 +15,7 @@
             <BuildableReference
                BuildableIdentifier = "primary"
                BlueprintIdentifier = "CB3BA833402929B57F3054AB"
-               BuildableName = "TruchieEmu.app"
+               BuildableName = "TruchiEmu.app"
                BlueprintName = "TruchiEmu"
                ReferencedContainer = "container:TruchiEmu.xcodeproj">
             </BuildableReference>
@@ -29,7 +29,7 @@
             <BuildableReference
                BuildableIdentifier = "primary"
                BlueprintIdentifier = "0DFF743C147C334A93F07CF2"
-               BuildableName = "TruchieEmuTests.xctest"
+               BuildableName = "TruchiEmuTests.xctest"
                BlueprintName = "TruchiEmuTests"
                ReferencedContainer = "container:TruchiEmu.xcodeproj">
             </BuildableReference>
@@ -45,7 +45,7 @@
          <BuildableReference
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "CB3BA833402929B57F3054AB"
-            BuildableName = "TruchieEmu.app"
+            BuildableName = "TruchiEmu.app"
             BlueprintName = "TruchiEmu"
             ReferencedContainer = "container:TruchiEmu.xcodeproj">
          </BuildableReference>
@@ -57,7 +57,7 @@
             <BuildableReference
                BuildableIdentifier = "primary"
                BlueprintIdentifier = "0DFF743C147C334A93F07CF2"
-               BuildableName = "TruchieEmuTests.xctest"
+               BuildableName = "TruchiEmuTests.xctest"
                BlueprintName = "TruchiEmuTests"
                ReferencedContainer = "container:TruchiEmu.xcodeproj">
             </BuildableReference>
@@ -79,7 +79,7 @@
          <BuildableReference
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "CB3BA833402929B57F3054AB"
-            BuildableName = "TruchieEmu.app"
+            BuildableName = "TruchiEmu.app"
             BlueprintName = "TruchiEmu"
             ReferencedContainer = "container:TruchiEmu.xcodeproj">
          </BuildableReference>
@@ -96,7 +96,7 @@
          <BuildableReference
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "CB3BA833402929B57F3054AB"
-            BuildableName = "TruchieEmu.app"
+            BuildableName = "TruchiEmu.app"
             BlueprintName = "TruchiEmu"
             ReferencedContainer = "container:TruchiEmu.xcodeproj">
          </BuildableReference>

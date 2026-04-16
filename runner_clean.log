@@ -1,0 +1,208 @@
+Command line invocation:
+    /Applications/Xcode.app/Contents/Developer/usr/bin/xcodebuild -project TruchieEmu.xcodeproj -scheme TruchiCoreRunner clean build
+
+--- xcodebuild: WARNING: Using the first of multiple matching destinations:
+{ platform:macOS, arch:arm64, id:00006020-0001089002C0C01E, name:My Mac }
+{ platform:macOS, arch:x86_64, id:00006020-0001089002C0C01E, name:My Mac }
+{ platform:macOS, name:Any Mac }
+CreateBuildRequest
+
+SendProjectDescription
+
+CreateBuildOperation
+
+** CLEAN SUCCEEDED **
+
+--- xcodebuild: WARNING: Using the first of multiple matching destinations:
+{ platform:macOS, arch:arm64, id:00006020-0001089002C0C01E, name:My Mac }
+{ platform:macOS, arch:x86_64, id:00006020-0001089002C0C01E, name:My Mac }
+{ platform:macOS, name:Any Mac }
+ComputePackagePrebuildTargetDependencyGraph
+
+Prepare packages
+
+CreateBuildRequest
+
+SendProjectDescription
+
+CreateBuildOperation
+
+ComputeTargetDependencyGraph
+note: Building targets in dependency order
+note: Target dependency graph (1 target)
+    Target 'TruchiCoreRunner' in project 'TruchieEmu' (no dependencies)
+
+GatherProvisioningInputs
+
+CreateBuildDescription
+
+ExecuteExternalTool /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/clang -v -E -dM -isysroot /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX26.4.sdk -x c -c /dev/null
+
+ExecuteExternalTool /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/clang -v -E -dM -arch arm64 -isysroot /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX26.4.sdk -x objective-c++ -c /dev/null
+
+ExecuteExternalTool /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/clang -v -E -dM -arch arm64 -isysroot /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX26.4.sdk -x c -c /dev/null
+
+ExecuteExternalTool /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/ld -version_details
+
+Build description signature: 1863e757d9a0cb238d50943c6c066999
+Build description path: /Users/jayjay/Library/Developer/Xcode/DerivedData/TruchieEmu-alcfinswigbcsuemhksixsvdwjda/Build/Intermediates.noindex/XCBuildData/1863e757d9a0cb238d50943c6c066999.xcbuilddata
+ClangStatCache /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/clang-stat-cache /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX26.4.sdk /Users/jayjay/Library/Developer/Xcode/DerivedData/SDKStatCaches.noindex/macosx26.4-25E236-688ef53f1462e2c8f657fdc38a81448f30f9ca8789b706f8bd3fc906a70d770f.sdkstatcache
+    cd /Users/jayjay/gitrepos/truchiemu/TruchieEmu.xcodeproj
+    /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/clang-stat-cache /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX26.4.sdk -o /Users/jayjay/Library/Developer/Xcode/DerivedData/SDKStatCaches.noindex/macosx26.4-25E236-688ef53f1462e2c8f657fdc38a81448f30f9ca8789b706f8bd3fc906a70d770f.sdkstatcache
+
+CreateBuildDirectory /Users/jayjay/Library/Developer/Xcode/DerivedData/TruchieEmu-alcfinswigbcsuemhksixsvdwjda/Build/Products
+    cd /Users/jayjay/gitrepos/truchiemu/TruchieEmu.xcodeproj
+    builtin-create-build-directory /Users/jayjay/Library/Developer/Xcode/DerivedData/TruchieEmu-alcfinswigbcsuemhksixsvdwjda/Build/Products
+
+CreateBuildDirectory /Users/jayjay/Library/Developer/Xcode/DerivedData/TruchieEmu-alcfinswigbcsuemhksixsvdwjda/Build/Intermediates.noindex
+    cd /Users/jayjay/gitrepos/truchiemu/TruchieEmu.xcodeproj
+    builtin-create-build-directory /Users/jayjay/Library/Developer/Xcode/DerivedData/TruchieEmu-alcfinswigbcsuemhksixsvdwjda/Build/Intermediates.noindex
+
+CreateBuildDirectory /Users/jayjay/Library/Developer/Xcode/DerivedData/TruchieEmu-alcfinswigbcsuemhksixsvdwjda/Build/Intermediates.noindex/SwiftExplicitPrecompiledModules
+    cd /Users/jayjay/gitrepos/truchiemu/TruchieEmu.xcodeproj
+    builtin-create-build-directory /Users/jayjay/Library/Developer/Xcode/DerivedData/TruchieEmu-alcfinswigbcsuemhksixsvdwjda/Build/Intermediates.noindex/SwiftExplicitPrecompiledModules
+
+CreateBuildDirectory /Users/jayjay/Library/Developer/Xcode/DerivedData/TruchieEmu-alcfinswigbcsuemhksixsvdwjda/Build/Intermediates.noindex/ExplicitPrecompiledModules
+    cd /Users/jayjay/gitrepos/truchiemu/TruchieEmu.xcodeproj
+    builtin-create-build-directory /Users/jayjay/Library/Developer/Xcode/DerivedData/TruchieEmu-alcfinswigbcsuemhksixsvdwjda/Build/Intermediates.noindex/ExplicitPrecompiledModules
+
+CreateBuildDirectory /Users/jayjay/Library/Developer/Xcode/DerivedData/TruchieEmu-alcfinswigbcsuemhksixsvdwjda/Build/Intermediates.noindex/EagerLinkingTBDs/Debug
+    cd /Users/jayjay/gitrepos/truchiemu/TruchieEmu.xcodeproj
+    builtin-create-build-directory /Users/jayjay/Library/Developer/Xcode/DerivedData/TruchieEmu-alcfinswigbcsuemhksixsvdwjda/Build/Intermediates.noindex/EagerLinkingTBDs/Debug
+
+WriteAuxiliaryFile /Users/jayjay/Library/Developer/Xcode/DerivedData/TruchieEmu-alcfinswigbcsuemhksixsvdwjda/Build/Intermediates.noindex/TruchieEmu.build/Debug/TruchieEmu-d9fe9940d15f4d1d07ee8562d11340b9-VFS/all-product-headers.yaml
+    cd /Users/jayjay/gitrepos/truchiemu/TruchieEmu.xcodeproj
+    write-file /Users/jayjay/Library/Developer/Xcode/DerivedData/TruchieEmu-alcfinswigbcsuemhksixsvdwjda/Build/Intermediates.noindex/TruchieEmu.build/Debug/TruchieEmu-d9fe9940d15f4d1d07ee8562d11340b9-VFS/all-product-headers.yaml
+
+CreateBuildDirectory /Users/jayjay/Library/Developer/Xcode/DerivedData/TruchieEmu-alcfinswigbcsuemhksixsvdwjda/Build/Products/Debug
+    cd /Users/jayjay/gitrepos/truchiemu/TruchieEmu.xcodeproj
+    builtin-create-build-directory /Users/jayjay/Library/Developer/Xcode/DerivedData/TruchieEmu-alcfinswigbcsuemhksixsvdwjda/Build/Products/Debug
+
+WriteAuxiliaryFile /Users/jayjay/Library/Developer/Xcode/DerivedData/TruchieEmu-alcfinswigbcsuemhksixsvdwjda/Build/Intermediates.noindex/TruchieEmu.build/Debug/TruchiCoreRunner.build/TruchiCoreRunner.DependencyStaticMetadataFileList (in target 'TruchiCoreRunner' from project 'TruchieEmu')
+    cd /Users/jayjay/gitrepos/truchiemu
+    write-file /Users/jayjay/Library/Developer/Xcode/DerivedData/TruchieEmu-alcfinswigbcsuemhksixsvdwjda/Build/Intermediates.noindex/TruchieEmu.build/Debug/TruchiCoreRunner.build/TruchiCoreRunner.DependencyStaticMetadataFileList
+
+WriteAuxiliaryFile /Users/jayjay/Library/Developer/Xcode/DerivedData/TruchieEmu-alcfinswigbcsuemhksixsvdwjda/Build/Intermediates.noindex/TruchieEmu.build/Debug/TruchiCoreRunner.build/TruchiCoreRunner-all-non-framework-target-headers.hmap (in target 'TruchiCoreRunner' from project 'TruchieEmu')
+    cd /Users/jayjay/gitrepos/truchiemu
+    write-file /Users/jayjay/Library/Developer/Xcode/DerivedData/TruchieEmu-alcfinswigbcsuemhksixsvdwjda/Build/Intermediates.noindex/TruchieEmu.build/Debug/TruchiCoreRunner.build/TruchiCoreRunner-all-non-framework-target-headers.hmap
+
+WriteAuxiliaryFile /Users/jayjay/Library/Developer/Xcode/DerivedData/TruchieEmu-alcfinswigbcsuemhksixsvdwjda/Build/Intermediates.noindex/TruchieEmu.build/Debug/TruchiCoreRunner.build/TruchiCoreRunner-all-target-headers.hmap (in target 'TruchiCoreRunner' from project 'TruchieEmu')
+    cd /Users/jayjay/gitrepos/truchiemu
+    write-file /Users/jayjay/Library/Developer/Xcode/DerivedData/TruchieEmu-alcfinswigbcsuemhksixsvdwjda/Build/Intermediates.noindex/TruchieEmu.build/Debug/TruchiCoreRunner.build/TruchiCoreRunner-all-target-headers.hmap
+
+WriteAuxiliaryFile /Users/jayjay/Library/Developer/Xcode/DerivedData/TruchieEmu-alcfinswigbcsuemhksixsvdwjda/Build/Intermediates.noindex/TruchieEmu.build/Debug/TruchiCoreRunner.build/TruchiCoreRunner-own-target-headers.hmap (in target 'TruchiCoreRunner' from project 'TruchieEmu')
+    cd /Users/jayjay/gitrepos/truchiemu
+    write-file /Users/jayjay/Library/Developer/Xcode/DerivedData/TruchieEmu-alcfinswigbcsuemhksixsvdwjda/Build/Intermediates.noindex/TruchieEmu.build/Debug/TruchiCoreRunner.build/TruchiCoreRunner-own-target-headers.hmap
+
+WriteAuxiliaryFile /Users/jayjay/Library/Developer/Xcode/DerivedData/TruchieEmu-alcfinswigbcsuemhksixsvdwjda/Build/Intermediates.noindex/TruchieEmu.build/Debug/TruchiCoreRunner.build/TruchiCoreRunner.hmap (in target 'TruchiCoreRunner' from project 'TruchieEmu')
+    cd /Users/jayjay/gitrepos/truchiemu
+    write-file /Users/jayjay/Library/Developer/Xcode/DerivedData/TruchieEmu-alcfinswigbcsuemhksixsvdwjda/Build/Intermediates.noindex/TruchieEmu.build/Debug/TruchiCoreRunner.build/TruchiCoreRunner.hmap
+
+WriteAuxiliaryFile /Users/jayjay/Library/Developer/Xcode/DerivedData/TruchieEmu-alcfinswigbcsuemhksixsvdwjda/Build/Intermediates.noindex/TruchieEmu.build/Debug/TruchiCoreRunner.build/TruchiCoreRunner-project-headers.hmap (in target 'TruchiCoreRunner' from project 'TruchieEmu')
+    cd /Users/jayjay/gitrepos/truchiemu
+    write-file /Users/jayjay/Library/Developer/Xcode/DerivedData/TruchieEmu-alcfinswigbcsuemhksixsvdwjda/Build/Intermediates.noindex/TruchieEmu.build/Debug/TruchiCoreRunner.build/TruchiCoreRunner-project-headers.hmap
+
+WriteAuxiliaryFile /Users/jayjay/Library/Developer/Xcode/DerivedData/TruchieEmu-alcfinswigbcsuemhksixsvdwjda/Build/Intermediates.noindex/TruchieEmu.build/Debug/TruchiCoreRunner.build/TruchiCoreRunner-generated-files.hmap (in target 'TruchiCoreRunner' from project 'TruchieEmu')
+    cd /Users/jayjay/gitrepos/truchiemu
+    write-file /Users/jayjay/Library/Developer/Xcode/DerivedData/TruchieEmu-alcfinswigbcsuemhksixsvdwjda/Build/Intermediates.noindex/TruchieEmu.build/Debug/TruchiCoreRunner.build/TruchiCoreRunner-generated-files.hmap
+
+WriteAuxiliaryFile /Users/jayjay/Library/Developer/Xcode/DerivedData/TruchieEmu-alcfinswigbcsuemhksixsvdwjda/Build/Intermediates.noindex/TruchieEmu.build/Debug/TruchiCoreRunner.build/TruchiCoreRunner.DependencyMetadataFileList (in target 'TruchiCoreRunner' from project 'TruchieEmu')
+    cd /Users/jayjay/gitrepos/truchiemu
+    write-file /Users/jayjay/Library/Developer/Xcode/DerivedData/TruchieEmu-alcfinswigbcsuemhksixsvdwjda/Build/Intermediates.noindex/TruchieEmu.build/Debug/TruchiCoreRunner.build/TruchiCoreRunner.DependencyMetadataFileList
+
+WriteAuxiliaryFile /Users/jayjay/Library/Developer/Xcode/DerivedData/TruchieEmu-alcfinswigbcsuemhksixsvdwjda/Build/Intermediates.noindex/TruchieEmu.build/Debug/TruchiCoreRunner.build/Objects-normal/arm64/af3fcb34312c57c0f52879cdce924b91-common-args.resp (in target 'TruchiCoreRunner' from project 'TruchieEmu')
+    cd /Users/jayjay/gitrepos/truchiemu
+    write-file /Users/jayjay/Library/Developer/Xcode/DerivedData/TruchieEmu-alcfinswigbcsuemhksixsvdwjda/Build/Intermediates.noindex/TruchieEmu.build/Debug/TruchiCoreRunner.build/Objects-normal/arm64/af3fcb34312c57c0f52879cdce924b91-common-args.resp
+'-std=gnu++17' '-stdlib=libc++' -fobjc-arc -fobjc-weak -fmodules -fno-cxx-modules -gmodules '-fmodules-cache-path=/Users/jayjay/Library/Developer/Xcode/DerivedData/ModuleCache.noindex' '-D_LIBCPP_HARDENING_MODE=_LIBCPP_HARDENING_MODE_DEBUG' -fpascal-strings -O0 -fno-common '-DDEBUG=1' '-DOBJC_OLD_DISPATCH_PROTOTYPES=0' -g -fvisibility-inlines-hidden -iquote /Users/jayjay/Library/Developer/Xcode/DerivedData/TruchieEmu-alcfinswigbcsuemhksixsvdwjda/Build/Intermediates.noindex/TruchieEmu.build/Debug/TruchiCoreRunner.build/TruchiCoreRunner-generated-files.hmap -I/Users/jayjay/Library/Developer/Xcode/DerivedData/TruchieEmu-alcfinswigbcsuemhksixsvdwjda/Build/Intermediates.noindex/TruchieEmu.build/Debug/TruchiCoreRunner.build/TruchiCoreRunner-own-target-headers.hmap -I/Users/jayjay/Library/Developer/Xcode/DerivedData/TruchieEmu-alcfinswigbcsuemhksixsvdwjda/Build/Intermediates.noindex/TruchieEmu.build/Debug/TruchiCoreRunner.build/TruchiCoreRunner-all-target-headers.hmap -iquote /Users/jayjay/Library/Developer/Xcode/DerivedData/TruchieEmu-alcfinswigbcsuemhksixsvdwjda/Build/Intermediates.noindex/TruchieEmu.build/Debug/TruchiCoreRunner.build/TruchiCoreRunner-project-headers.hmap -I/Users/jayjay/Library/Developer/Xcode/DerivedData/TruchieEmu-alcfinswigbcsuemhksixsvdwjda/Build/Products/Debug/include -I/Users/jayjay/Library/Developer/Xcode/DerivedData/TruchieEmu-alcfinswigbcsuemhksixsvdwjda/Build/Intermediates.noindex/TruchieEmu.build/Debug/TruchiCoreRunner.build/DerivedSources-normal/arm64 -I/Users/jayjay/Library/Developer/Xcode/DerivedData/TruchieEmu-alcfinswigbcsuemhksixsvdwjda/Build/Intermediates.noindex/TruchieEmu.build/Debug/TruchiCoreRunner.build/DerivedSources/arm64 -I/Users/jayjay/Library/Developer/Xcode/DerivedData/TruchieEmu-alcfinswigbcsuemhksixsvdwjda/Build/Intermediates.noindex/TruchieEmu.build/Debug/TruchiCoreRunner.build/DerivedSources -F/Users/jayjay/Library/Developer/Xcode/DerivedData/TruchieEmu-alcfinswigbcsuemhksixsvdwjda/Build/Products/Debug
+
+WriteAuxiliaryFile /Users/jayjay/Library/Developer/Xcode/DerivedData/TruchieEmu-alcfinswigbcsuemhksixsvdwjda/Build/Intermediates.noindex/TruchieEmu.build/Debug/TruchiCoreRunner.build/Objects-normal/arm64/TruchiCoreRunner.LinkFileList (in target 'TruchiCoreRunner' from project 'TruchieEmu')
+    cd /Users/jayjay/gitrepos/truchiemu
+    write-file /Users/jayjay/Library/Developer/Xcode/DerivedData/TruchieEmu-alcfinswigbcsuemhksixsvdwjda/Build/Intermediates.noindex/TruchieEmu.build/Debug/TruchiCoreRunner.build/Objects-normal/arm64/TruchiCoreRunner.LinkFileList
+
+WriteAuxiliaryFile /Users/jayjay/Library/Developer/Xcode/DerivedData/TruchieEmu-alcfinswigbcsuemhksixsvdwjda/Build/Intermediates.noindex/TruchieEmu.build/Debug/TruchiCoreRunner.build/DerivedSources/Entitlements.plist (in target 'TruchiCoreRunner' from project 'TruchieEmu')
+    cd /Users/jayjay/gitrepos/truchiemu
+    write-file /Users/jayjay/Library/Developer/Xcode/DerivedData/TruchieEmu-alcfinswigbcsuemhksixsvdwjda/Build/Intermediates.noindex/TruchieEmu.build/Debug/TruchiCoreRunner.build/DerivedSources/Entitlements.plist
+
+ProcessProductPackaging "" /Users/jayjay/Library/Developer/Xcode/DerivedData/TruchieEmu-alcfinswigbcsuemhksixsvdwjda/Build/Intermediates.noindex/TruchieEmu.build/Debug/TruchiCoreRunner.build/TruchiCoreRunner.xcent (in target 'TruchiCoreRunner' from project 'TruchieEmu')
+    cd /Users/jayjay/gitrepos/truchiemu
+    
+    Entitlements:
+    
+    {
+    "com.apple.application-identifier" = "com.truchiemu.runner";
+    "com.apple.security.get-task-allow" = 1;
+}
+    
+    builtin-productPackagingUtility -entitlements -format xml -o /Users/jayjay/Library/Developer/Xcode/DerivedData/TruchieEmu-alcfinswigbcsuemhksixsvdwjda/Build/Intermediates.noindex/TruchieEmu.build/Debug/TruchiCoreRunner.build/TruchiCoreRunner.xcent
+
+ProcessProductPackagingDER /Users/jayjay/Library/Developer/Xcode/DerivedData/TruchieEmu-alcfinswigbcsuemhksixsvdwjda/Build/Intermediates.noindex/TruchieEmu.build/Debug/TruchiCoreRunner.build/TruchiCoreRunner.xcent /Users/jayjay/Library/Developer/Xcode/DerivedData/TruchieEmu-alcfinswigbcsuemhksixsvdwjda/Build/Intermediates.noindex/TruchieEmu.build/Debug/TruchiCoreRunner.build/TruchiCoreRunner.xcent.der (in target 'TruchiCoreRunner' from project 'TruchieEmu')
+    cd /Users/jayjay/gitrepos/truchiemu
+    /usr/bin/derq query -f xml -i /Users/jayjay/Library/Developer/Xcode/DerivedData/TruchieEmu-alcfinswigbcsuemhksixsvdwjda/Build/Intermediates.noindex/TruchieEmu.build/Debug/TruchiCoreRunner.build/TruchiCoreRunner.xcent -o /Users/jayjay/Library/Developer/Xcode/DerivedData/TruchieEmu-alcfinswigbcsuemhksixsvdwjda/Build/Intermediates.noindex/TruchieEmu.build/Debug/TruchiCoreRunner.build/TruchiCoreRunner.xcent.der --raw
+
+CompileC /Users/jayjay/Library/Developer/Xcode/DerivedData/TruchieEmu-alcfinswigbcsuemhksixsvdwjda/Build/Intermediates.noindex/TruchieEmu.build/Debug/TruchiCoreRunner.build/Objects-normal/arm64/SharedSurfaceManager.o /Users/jayjay/gitrepos/truchiemu/TruchieEmu/Engine/SharedSurfaceManager.mm normal arm64 objective-c++ com.apple.compilers.llvm.clang.1_0.compiler (in target 'TruchiCoreRunner' from project 'TruchieEmu')
+    cd /Users/jayjay/gitrepos/truchiemu
+    
+    Using response file: /Users/jayjay/Library/Developer/Xcode/DerivedData/TruchieEmu-alcfinswigbcsuemhksixsvdwjda/Build/Intermediates.noindex/TruchieEmu.build/Debug/TruchiCoreRunner.build/Objects-normal/arm64/af3fcb34312c57c0f52879cdce924b91-common-args.resp
+    
+    /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/clang -x objective-c++ -ivfsstatcache /Users/jayjay/Library/Developer/Xcode/DerivedData/SDKStatCaches.noindex/macosx26.4-25E236-688ef53f1462e2c8f657fdc38a81448f30f9ca8789b706f8bd3fc906a70d770f.sdkstatcache -target arm64-apple-macos14.0 -fmessage-length\=0 -fdiagnostics-show-note-include-stack -fmacro-backtrace-limit\=0 -fno-color-diagnostics -fmodules-prune-interval\=86400 -fmodules-prune-after\=345600 -fbuild-session-file\=/Users/jayjay/Library/Developer/Xcode/DerivedData/ModuleCache.noindex/Session.modulevalidation -fmodules-validate-once-per-build-session -Wnon-modular-include-in-framework-module -Werror\=non-modular-include-in-framework-module -Wno-trigraphs -Wno-missing-field-initializers -Wno-missing-prototypes -Werror\=return-type -Wdocumentation -Wunreachable-code -Wquoted-include-in-framework-header -Wno-implicit-atomic-properties -Werror\=deprecated-objc-isa-usage -Wno-objc-interface-ivars -Werror\=objc-root-class -Wno-arc-repeated-use-of-weak -Wimplicit-retain-self -Wno-non-virtual-dtor -Wno-overloaded-virtual -Wno-exit-time-destructors -Wduplicate-method-match -Wno-missing-braces -Wparentheses -Wswitch -Wunused-function -Wno-unused-label -Wno-unused-parameter -Wunused-variable -Wunused-value -Wempty-body -Wuninitialized -Wconditional-uninitialized -Wno-unknown-pragmas -Wno-shadow -Wno-four-char-constants -Wno-conversion -Wconstant-conversion -Wint-conversion -Wbool-conversion -Wenum-conversion -Wno-float-conversion -Wnon-literal-null-conversion -Wobjc-literal-conversion -Wshorten-64-to-32 -Wno-newline-eof -Wno-selector -Wno-strict-selector-match -Wundeclared-selector -Wdeprecated-implementations -Wno-c++11-extensions -Wno-implicit-fallthrough -isysroot /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX26.4.sdk -fstrict-aliasing -Wprotocol -Wdeprecated-declarations -Winvalid-offsetof -Wno-sign-conversion -Winfinite-recursion -Wmove -Wcomma -Wblock-capture-autoreleasing -Wstrict-prototypes -Wrange-loop-analysis -Wno-semicolon-before-method-body -Wunguarded-availability -index-store-path /Users/jayjay/Library/Developer/Xcode/DerivedData/TruchieEmu-alcfinswigbcsuemhksixsvdwjda/Index.noindex/DataStore @/Users/jayjay/Library/Developer/Xcode/DerivedData/TruchieEmu-alcfinswigbcsuemhksixsvdwjda/Build/Intermediates.noindex/TruchieEmu.build/Debug/TruchiCoreRunner.build/Objects-normal/arm64/af3fcb34312c57c0f52879cdce924b91-common-args.resp -MMD -MT dependencies -MF /Users/jayjay/Library/Developer/Xcode/DerivedData/TruchieEmu-alcfinswigbcsuemhksixsvdwjda/Build/Intermediates.noindex/TruchieEmu.build/Debug/TruchiCoreRunner.build/Objects-normal/arm64/SharedSurfaceManager.d --serialize-diagnostics /Users/jayjay/Library/Developer/Xcode/DerivedData/TruchieEmu-alcfinswigbcsuemhksixsvdwjda/Build/Intermediates.noindex/TruchieEmu.build/Debug/TruchiCoreRunner.build/Objects-normal/arm64/SharedSurfaceManager.dia -c /Users/jayjay/gitrepos/truchiemu/TruchieEmu/Engine/SharedSurfaceManager.mm -o /Users/jayjay/Library/Developer/Xcode/DerivedData/TruchieEmu-alcfinswigbcsuemhksixsvdwjda/Build/Intermediates.noindex/TruchieEmu.build/Debug/TruchiCoreRunner.build/Objects-normal/arm64/SharedSurfaceManager.o -index-unit-output-path /TruchieEmu.build/Debug/TruchiCoreRunner.build/Objects-normal/arm64/SharedSurfaceManager.o
+/Users/jayjay/gitrepos/truchiemu/TruchieEmu/Engine/SharedSurfaceManager.mm:18:13: warning: 'kIOSurfaceIsGlobal' is deprecated: first deprecated in macOS 10.11 - Global surfaces are insecure [-Wdeprecated-declarations]
+   18 |         (id)kIOSurfaceIsGlobal: @YES
+      |             ^
+In file included from /Users/jayjay/gitrepos/truchiemu/TruchieEmu/Engine/SharedSurfaceManager.mm:2:
+In file included from /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX26.4.sdk/System/Library/Frameworks/IOSurface.framework/Headers/IOSurface.h:13:
+In file included from /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX26.4.sdk/System/Library/Frameworks/IOSurface.framework/Headers/IOSurfaceAPI.h:17:
+/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX26.4.sdk/System/Library/Frameworks/IOSurface.framework/Headers/IOSurfaceRef.h:101:26: note: 'kIOSurfaceIsGlobal' has been explicitly marked deprecated here
+  101 | extern const CFStringRef kIOSurfaceIsGlobal                                 API_DEPRECATED("Global surfaces are insecure",macos(10.6,10.11), ios(11.0,11.0), watchos(4.0,4.0), tvos(11.0,11.0));
+      |                          ^
+1 warning generated.
+
+CompileC /Users/jayjay/Library/Developer/Xcode/DerivedData/TruchieEmu-alcfinswigbcsuemhksixsvdwjda/Build/Intermediates.noindex/TruchieEmu.build/Debug/TruchiCoreRunner.build/Objects-normal/arm64/SharedAudioBuffer.o /Users/jayjay/gitrepos/truchiemu/TruchieEmu/Engine/SharedAudioBuffer.mm normal arm64 objective-c++ com.apple.compilers.llvm.clang.1_0.compiler (in target 'TruchiCoreRunner' from project 'TruchieEmu')
+    cd /Users/jayjay/gitrepos/truchiemu
+    
+    Using response file: /Users/jayjay/Library/Developer/Xcode/DerivedData/TruchieEmu-alcfinswigbcsuemhksixsvdwjda/Build/Intermediates.noindex/TruchieEmu.build/Debug/TruchiCoreRunner.build/Objects-normal/arm64/af3fcb34312c57c0f52879cdce924b91-common-args.resp
+    
+    /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/clang -x objective-c++ -ivfsstatcache /Users/jayjay/Library/Developer/Xcode/DerivedData/SDKStatCaches.noindex/macosx26.4-25E236-688ef53f1462e2c8f657fdc38a81448f30f9ca8789b706f8bd3fc906a70d770f.sdkstatcache -target arm64-apple-macos14.0 -fmessage-length\=0 -fdiagnostics-show-note-include-stack -fmacro-backtrace-limit\=0 -fno-color-diagnostics -fmodules-prune-interval\=86400 -fmodules-prune-after\=345600 -fbuild-session-file\=/Users/jayjay/Library/Developer/Xcode/DerivedData/ModuleCache.noindex/Session.modulevalidation -fmodules-validate-once-per-build-session -Wnon-modular-include-in-framework-module -Werror\=non-modular-include-in-framework-module -Wno-trigraphs -Wno-missing-field-initializers -Wno-missing-prototypes -Werror\=return-type -Wdocumentation -Wunreachable-code -Wquoted-include-in-framework-header -Wno-implicit-atomic-properties -Werror\=deprecated-objc-isa-usage -Wno-objc-interface-ivars -Werror\=objc-root-class -Wno-arc-repeated-use-of-weak -Wimplicit-retain-self -Wno-non-virtual-dtor -Wno-overloaded-virtual -Wno-exit-time-destructors -Wduplicate-method-match -Wno-missing-braces -Wparentheses -Wswitch -Wunused-function -Wno-unused-label -Wno-unused-parameter -Wunused-variable -Wunused-value -Wempty-body -Wuninitialized -Wconditional-uninitialized -Wno-unknown-pragmas -Wno-shadow -Wno-four-char-constants -Wno-conversion -Wconstant-conversion -Wint-conversion -Wbool-conversion -Wenum-conversion -Wno-float-conversion -Wnon-literal-null-conversion -Wobjc-literal-conversion -Wshorten-64-to-32 -Wno-newline-eof -Wno-selector -Wno-strict-selector-match -Wundeclared-selector -Wdeprecated-implementations -Wno-c++11-extensions -Wno-implicit-fallthrough -isysroot /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX26.4.sdk -fstrict-aliasing -Wprotocol -Wdeprecated-declarations -Winvalid-offsetof -Wno-sign-conversion -Winfinite-recursion -Wmove -Wcomma -Wblock-capture-autoreleasing -Wstrict-prototypes -Wrange-loop-analysis -Wno-semicolon-before-method-body -Wunguarded-availability -index-store-path /Users/jayjay/Library/Developer/Xcode/DerivedData/TruchieEmu-alcfinswigbcsuemhksixsvdwjda/Index.noindex/DataStore @/Users/jayjay/Library/Developer/Xcode/DerivedData/TruchieEmu-alcfinswigbcsuemhksixsvdwjda/Build/Intermediates.noindex/TruchieEmu.build/Debug/TruchiCoreRunner.build/Objects-normal/arm64/af3fcb34312c57c0f52879cdce924b91-common-args.resp -MMD -MT dependencies -MF /Users/jayjay/Library/Developer/Xcode/DerivedData/TruchieEmu-alcfinswigbcsuemhksixsvdwjda/Build/Intermediates.noindex/TruchieEmu.build/Debug/TruchiCoreRunner.build/Objects-normal/arm64/SharedAudioBuffer.d --serialize-diagnostics /Users/jayjay/Library/Developer/Xcode/DerivedData/TruchieEmu-alcfinswigbcsuemhksixsvdwjda/Build/Intermediates.noindex/TruchieEmu.build/Debug/TruchiCoreRunner.build/Objects-normal/arm64/SharedAudioBuffer.dia -c /Users/jayjay/gitrepos/truchiemu/TruchieEmu/Engine/SharedAudioBuffer.mm -o /Users/jayjay/Library/Developer/Xcode/DerivedData/TruchieEmu-alcfinswigbcsuemhksixsvdwjda/Build/Intermediates.noindex/TruchieEmu.build/Debug/TruchiCoreRunner.build/Objects-normal/arm64/SharedAudioBuffer.o -index-unit-output-path /TruchieEmu.build/Debug/TruchiCoreRunner.build/Objects-normal/arm64/SharedAudioBuffer.o
+
+CompileC /Users/jayjay/Library/Developer/Xcode/DerivedData/TruchieEmu-alcfinswigbcsuemhksixsvdwjda/Build/Intermediates.noindex/TruchieEmu.build/Debug/TruchiCoreRunner.build/Objects-normal/arm64/CoreRunner.o /Users/jayjay/gitrepos/truchiemu/TruchieEmu/Runner/CoreRunner.mm normal arm64 objective-c++ com.apple.compilers.llvm.clang.1_0.compiler (in target 'TruchiCoreRunner' from project 'TruchieEmu')
+    cd /Users/jayjay/gitrepos/truchiemu
+    
+    Using response file: /Users/jayjay/Library/Developer/Xcode/DerivedData/TruchieEmu-alcfinswigbcsuemhksixsvdwjda/Build/Intermediates.noindex/TruchieEmu.build/Debug/TruchiCoreRunner.build/Objects-normal/arm64/af3fcb34312c57c0f52879cdce924b91-common-args.resp
+    
+    /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/clang -x objective-c++ -ivfsstatcache /Users/jayjay/Library/Developer/Xcode/DerivedData/SDKStatCaches.noindex/macosx26.4-25E236-688ef53f1462e2c8f657fdc38a81448f30f9ca8789b706f8bd3fc906a70d770f.sdkstatcache -target arm64-apple-macos14.0 -fmessage-length\=0 -fdiagnostics-show-note-include-stack -fmacro-backtrace-limit\=0 -fno-color-diagnostics -fmodules-prune-interval\=86400 -fmodules-prune-after\=345600 -fbuild-session-file\=/Users/jayjay/Library/Developer/Xcode/DerivedData/ModuleCache.noindex/Session.modulevalidation -fmodules-validate-once-per-build-session -Wnon-modular-include-in-framework-module -Werror\=non-modular-include-in-framework-module -Wno-trigraphs -Wno-missing-field-initializers -Wno-missing-prototypes -Werror\=return-type -Wdocumentation -Wunreachable-code -Wquoted-include-in-framework-header -Wno-implicit-atomic-properties -Werror\=deprecated-objc-isa-usage -Wno-objc-interface-ivars -Werror\=objc-root-class -Wno-arc-repeated-use-of-weak -Wimplicit-retain-self -Wno-non-virtual-dtor -Wno-overloaded-virtual -Wno-exit-time-destructors -Wduplicate-method-match -Wno-missing-braces -Wparentheses -Wswitch -Wunused-function -Wno-unused-label -Wno-unused-parameter -Wunused-variable -Wunused-value -Wempty-body -Wuninitialized -Wconditional-uninitialized -Wno-unknown-pragmas -Wno-shadow -Wno-four-char-constants -Wno-conversion -Wconstant-conversion -Wint-conversion -Wbool-conversion -Wenum-conversion -Wno-float-conversion -Wnon-literal-null-conversion -Wobjc-literal-conversion -Wshorten-64-to-32 -Wno-newline-eof -Wno-selector -Wno-strict-selector-match -Wundeclared-selector -Wdeprecated-implementations -Wno-c++11-extensions -Wno-implicit-fallthrough -isysroot /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX26.4.sdk -fstrict-aliasing -Wprotocol -Wdeprecated-declarations -Winvalid-offsetof -Wno-sign-conversion -Winfinite-recursion -Wmove -Wcomma -Wblock-capture-autoreleasing -Wstrict-prototypes -Wrange-loop-analysis -Wno-semicolon-before-method-body -Wunguarded-availability -index-store-path /Users/jayjay/Library/Developer/Xcode/DerivedData/TruchieEmu-alcfinswigbcsuemhksixsvdwjda/Index.noindex/DataStore @/Users/jayjay/Library/Developer/Xcode/DerivedData/TruchieEmu-alcfinswigbcsuemhksixsvdwjda/Build/Intermediates.noindex/TruchieEmu.build/Debug/TruchiCoreRunner.build/Objects-normal/arm64/af3fcb34312c57c0f52879cdce924b91-common-args.resp -MMD -MT dependencies -MF /Users/jayjay/Library/Developer/Xcode/DerivedData/TruchieEmu-alcfinswigbcsuemhksixsvdwjda/Build/Intermediates.noindex/TruchieEmu.build/Debug/TruchiCoreRunner.build/Objects-normal/arm64/CoreRunner.d --serialize-diagnostics /Users/jayjay/Library/Developer/Xcode/DerivedData/TruchieEmu-alcfinswigbcsuemhksixsvdwjda/Build/Intermediates.noindex/TruchieEmu.build/Debug/TruchiCoreRunner.build/Objects-normal/arm64/CoreRunner.dia -c /Users/jayjay/gitrepos/truchiemu/TruchieEmu/Runner/CoreRunner.mm -o /Users/jayjay/Library/Developer/Xcode/DerivedData/TruchieEmu-alcfinswigbcsuemhksixsvdwjda/Build/Intermediates.noindex/TruchieEmu.build/Debug/TruchiCoreRunner.build/Objects-normal/arm64/CoreRunner.o -index-unit-output-path /TruchieEmu.build/Debug/TruchiCoreRunner.build/Objects-normal/arm64/CoreRunner.o
+/Users/jayjay/gitrepos/truchiemu/TruchieEmu/Runner/CoreRunner.mm:439:31: warning: unused variable 'fmt' [-Wunused-variable]
+  439 |       enum retro_pixel_format fmt = *(enum retro_pixel_format *)data;
+      |                               ^~~
+/Users/jayjay/gitrepos/truchiemu/TruchieEmu/Runner/CoreRunner.mm:87:12: warning: unused variable 'g_selectedLanguage' [-Wunused-variable]
+   87 | static int g_selectedLanguage = 0; // RETRO_LANGUAGE_ENGLISH
+      |            ^~~~~~~~~~~~~~~~~~
+/Users/jayjay/gitrepos/truchiemu/TruchieEmu/Runner/CoreRunner.mm:88:12: warning: unused variable 'g_logLevel' [-Wunused-variable]
+   88 | static int g_logLevel = 1;         // 1 = Warn & Error
+      |            ^~~~~~~~~~
+/Users/jayjay/gitrepos/truchiemu/TruchieEmu/Runner/CoreRunner.mm:92:13: warning: unused variable 'g_isPaused' [-Wunused-variable]
+   92 | static BOOL g_isPaused = NO;      // Pause state
+      |             ^~~~~~~~~~
+/Users/jayjay/gitrepos/truchiemu/TruchieEmu/Runner/CoreRunner.mm:336:18: warning: unused function 'bridge_get_current_framebuffer' [-Wunused-function]
+  336 | static uintptr_t bridge_get_current_framebuffer() { return (uintptr_t)g_hwFBO; }
+      |                  ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/Users/jayjay/gitrepos/truchiemu/TruchieEmu/Runner/CoreRunner.mm:345:18: warning: unused function 'bridge_get_proc_address' [-Wunused-function]
+  345 | static uintptr_t bridge_get_proc_address(const char *sym) {
+      |                  ^~~~~~~~~~~~~~~~~~~~~~~
+6 warnings generated.
+
+Ld /Users/jayjay/Library/Developer/Xcode/DerivedData/TruchieEmu-alcfinswigbcsuemhksixsvdwjda/Build/Products/Debug/TruchiCoreRunner normal (in target 'TruchiCoreRunner' from project 'TruchieEmu')
+    cd /Users/jayjay/gitrepos/truchiemu
+    /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/clang++ -Xlinker -reproducible -target arm64-apple-macos14.0 -isysroot /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX26.4.sdk -O0 -L/Users/jayjay/Library/Developer/Xcode/DerivedData/TruchieEmu-alcfinswigbcsuemhksixsvdwjda/Build/Intermediates.noindex/EagerLinkingTBDs/Debug -L/Users/jayjay/Library/Developer/Xcode/DerivedData/TruchieEmu-alcfinswigbcsuemhksixsvdwjda/Build/Products/Debug -F/Users/jayjay/Library/Developer/Xcode/DerivedData/TruchieEmu-alcfinswigbcsuemhksixsvdwjda/Build/Intermediates.noindex/EagerLinkingTBDs/Debug -F/Users/jayjay/Library/Developer/Xcode/DerivedData/TruchieEmu-alcfinswigbcsuemhksixsvdwjda/Build/Products/Debug -filelist /Users/jayjay/Library/Developer/Xcode/DerivedData/TruchieEmu-alcfinswigbcsuemhksixsvdwjda/Build/Intermediates.noindex/TruchieEmu.build/Debug/TruchiCoreRunner.build/Objects-normal/arm64/TruchiCoreRunner.LinkFileList -Xlinker -rpath -Xlinker @executable_path/../Frameworks -Xlinker -object_path_lto -Xlinker /Users/jayjay/Library/Developer/Xcode/DerivedData/TruchieEmu-alcfinswigbcsuemhksixsvdwjda/Build/Intermediates.noindex/TruchieEmu.build/Debug/TruchiCoreRunner.build/Objects-normal/arm64/TruchiCoreRunner_lto.o -rdynamic -Xlinker -no_deduplicate -Xlinker -dependency_info -Xlinker /Users/jayjay/Library/Developer/Xcode/DerivedData/TruchieEmu-alcfinswigbcsuemhksixsvdwjda/Build/Intermediates.noindex/TruchieEmu.build/Debug/TruchiCoreRunner.build/Objects-normal/arm64/TruchiCoreRunner_dependency_info.dat -stdlib\=libc++ -fobjc-arc -fobjc-link-runtime -framework Metal -framework MetalKit -framework GameController -framework AVFoundation -framework OpenGL -framework IOSurface -Xlinker -no_adhoc_codesign -o /Users/jayjay/Library/Developer/Xcode/DerivedData/TruchieEmu-alcfinswigbcsuemhksixsvdwjda/Build/Products/Debug/TruchiCoreRunner
+
+CodeSign /Users/jayjay/Library/Developer/Xcode/DerivedData/TruchieEmu-alcfinswigbcsuemhksixsvdwjda/Build/Products/Debug/TruchiCoreRunner (in target 'TruchiCoreRunner' from project 'TruchieEmu')
+    cd /Users/jayjay/gitrepos/truchiemu
+    
+    Signing Identity:     "Sign to Run Locally"
+    
+    /usr/bin/codesign --force --sign - --entitlements /Users/jayjay/Library/Developer/Xcode/DerivedData/TruchieEmu-alcfinswigbcsuemhksixsvdwjda/Build/Intermediates.noindex/TruchieEmu.build/Debug/TruchiCoreRunner.build/TruchiCoreRunner.xcent --timestamp\=none --generate-entitlement-der /Users/jayjay/Library/Developer/Xcode/DerivedData/TruchieEmu-alcfinswigbcsuemhksixsvdwjda/Build/Products/Debug/TruchiCoreRunner
+
+RegisterExecutionPolicyException /Users/jayjay/Library/Developer/Xcode/DerivedData/TruchieEmu-alcfinswigbcsuemhksixsvdwjda/Build/Products/Debug/TruchiCoreRunner (in target 'TruchiCoreRunner' from project 'TruchieEmu')
+    cd /Users/jayjay/gitrepos/truchiemu
+    builtin-RegisterExecutionPolicyException /Users/jayjay/Library/Developer/Xcode/DerivedData/TruchieEmu-alcfinswigbcsuemhksixsvdwjda/Build/Products/Debug/TruchiCoreRunner
+
+** BUILD SUCCEEDED **
+

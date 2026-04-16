@@ -1,0 +1,141 @@
+Command line invocation:
+    /Applications/Xcode.app/Contents/Developer/usr/bin/xcodebuild -project TruchieEmu.xcodeproj -scheme TruchiCoreRunner -arch arm64 build
+
+Build settings from command line:
+    ARCHS = arm64
+
+--- xcodebuild: WARNING: Using the first of multiple matching destinations:
+{ platform:macOS, arch:arm64, id:00006020-0001089002C0C01E, name:My Mac }
+{ platform:macOS, arch:x86_64, id:00006020-0001089002C0C01E, name:My Mac }
+{ platform:macOS, name:Any Mac }
+ComputePackagePrebuildTargetDependencyGraph
+
+Prepare packages
+
+CreateBuildRequest
+
+SendProjectDescription
+
+CreateBuildOperation
+
+ComputeTargetDependencyGraph
+note: Building targets in dependency order
+note: Target dependency graph (1 target)
+    Target 'TruchiCoreRunner' in project 'TruchieEmu' (no dependencies)
+
+GatherProvisioningInputs
+
+CreateBuildDescription
+
+ClangStatCache /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/clang-stat-cache /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX26.4.sdk /Users/jayjay/Library/Developer/Xcode/DerivedData/SDKStatCaches.noindex/macosx26.4-25E236-688ef53f1462e2c8f657fdc38a81448f30f9ca8789b706f8bd3fc906a70d770f.sdkstatcache
+    cd /Users/jayjay/gitrepos/truchiemu/TruchieEmu.xcodeproj
+    /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/clang-stat-cache /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX26.4.sdk -o /Users/jayjay/Library/Developer/Xcode/DerivedData/SDKStatCaches.noindex/macosx26.4-25E236-688ef53f1462e2c8f657fdc38a81448f30f9ca8789b706f8bd3fc906a70d770f.sdkstatcache
+
+CompileC /Users/jayjay/Library/Developer/Xcode/DerivedData/TruchieEmu-alcfinswigbcsuemhksixsvdwjda/Build/Intermediates.noindex/TruchieEmu.build/Debug/TruchiCoreRunner.build/Objects-normal/arm64/CoreRunner.o /Users/jayjay/gitrepos/truchiemu/TruchieEmu/Runner/CoreRunner.mm normal arm64 objective-c++ com.apple.compilers.llvm.clang.1_0.compiler (in target 'TruchiCoreRunner' from project 'TruchieEmu')
+    cd /Users/jayjay/gitrepos/truchiemu
+    
+    Using response file: /Users/jayjay/Library/Developer/Xcode/DerivedData/TruchieEmu-alcfinswigbcsuemhksixsvdwjda/Build/Intermediates.noindex/TruchieEmu.build/Debug/TruchiCoreRunner.build/Objects-normal/arm64/af3fcb34312c57c0f52879cdce924b91-common-args.resp
+    
+    /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/clang -x objective-c++ -ivfsstatcache /Users/jayjay/Library/Developer/Xcode/DerivedData/SDKStatCaches.noindex/macosx26.4-25E236-688ef53f1462e2c8f657fdc38a81448f30f9ca8789b706f8bd3fc906a70d770f.sdkstatcache -target arm64-apple-macos14.0 -fmessage-length\=0 -fdiagnostics-show-note-include-stack -fmacro-backtrace-limit\=0 -fno-color-diagnostics -fmodules-prune-interval\=86400 -fmodules-prune-after\=345600 -fbuild-session-file\=/Users/jayjay/Library/Developer/Xcode/DerivedData/ModuleCache.noindex/Session.modulevalidation -fmodules-validate-once-per-build-session -Wnon-modular-include-in-framework-module -Werror\=non-modular-include-in-framework-module -Wno-trigraphs -Wno-missing-field-initializers -Wno-missing-prototypes -Werror\=return-type -Wdocumentation -Wunreachable-code -Wquoted-include-in-framework-header -Wno-implicit-atomic-properties -Werror\=deprecated-objc-isa-usage -Wno-objc-interface-ivars -Werror\=objc-root-class -Wno-arc-repeated-use-of-weak -Wimplicit-retain-self -Wno-non-virtual-dtor -Wno-overloaded-virtual -Wno-exit-time-destructors -Wduplicate-method-match -Wno-missing-braces -Wparentheses -Wswitch -Wunused-function -Wno-unused-label -Wno-unused-parameter -Wunused-variable -Wunused-value -Wempty-body -Wuninitialized -Wconditional-uninitialized -Wno-unknown-pragmas -Wno-shadow -Wno-four-char-constants -Wno-conversion -Wconstant-conversion -Wint-conversion -Wbool-conversion -Wenum-conversion -Wno-float-conversion -Wnon-literal-null-conversion -Wobjc-literal-conversion -Wshorten-64-to-32 -Wno-newline-eof -Wno-selector -Wno-strict-selector-match -Wundeclared-selector -Wdeprecated-implementations -Wno-c++11-extensions -Wno-implicit-fallthrough -isysroot /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX26.4.sdk -fstrict-aliasing -Wprotocol -Wdeprecated-declarations -Winvalid-offsetof -Wno-sign-conversion -Winfinite-recursion -Wmove -Wcomma -Wblock-capture-autoreleasing -Wstrict-prototypes -Wrange-loop-analysis -Wno-semicolon-before-method-body -Wunguarded-availability -index-store-path /Users/jayjay/Library/Developer/Xcode/DerivedData/TruchieEmu-alcfinswigbcsuemhksixsvdwjda/Index.noindex/DataStore @/Users/jayjay/Library/Developer/Xcode/DerivedData/TruchieEmu-alcfinswigbcsuemhksixsvdwjda/Build/Intermediates.noindex/TruchieEmu.build/Debug/TruchiCoreRunner.build/Objects-normal/arm64/af3fcb34312c57c0f52879cdce924b91-common-args.resp -MMD -MT dependencies -MF /Users/jayjay/Library/Developer/Xcode/DerivedData/TruchieEmu-alcfinswigbcsuemhksixsvdwjda/Build/Intermediates.noindex/TruchieEmu.build/Debug/TruchiCoreRunner.build/Objects-normal/arm64/CoreRunner.d --serialize-diagnostics /Users/jayjay/Library/Developer/Xcode/DerivedData/TruchieEmu-alcfinswigbcsuemhksixsvdwjda/Build/Intermediates.noindex/TruchieEmu.build/Debug/TruchiCoreRunner.build/Objects-normal/arm64/CoreRunner.dia -c /Users/jayjay/gitrepos/truchiemu/TruchieEmu/Runner/CoreRunner.mm -o /Users/jayjay/Library/Developer/Xcode/DerivedData/TruchieEmu-alcfinswigbcsuemhksixsvdwjda/Build/Intermediates.noindex/TruchieEmu.build/Debug/TruchiCoreRunner.build/Objects-normal/arm64/CoreRunner.o -index-unit-output-path /TruchieEmu.build/Debug/TruchiCoreRunner.build/Objects-normal/arm64/CoreRunner.o
+In file included from /Users/jayjay/gitrepos/truchiemu/TruchieEmu/Runner/CoreRunner.mm:7:
+/Users/jayjay/gitrepos/truchiemu/TruchieEmu/Runner/../Engine/SharedSurfaceManager.mm:18:13: warning: 'kIOSurfaceIsGlobal' is deprecated: first deprecated in macOS 10.11 - Global surfaces are insecure [-Wdeprecated-declarations]
+   18 |         (id)kIOSurfaceIsGlobal: @YES
+      |             ^
+In file included from /Users/jayjay/gitrepos/truchiemu/TruchieEmu/Runner/CoreRunner.mm:2:
+In file included from /Users/jayjay/gitrepos/truchiemu/TruchieEmu/Engine/CoreRunnerProtocol.h:2:
+In file included from /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX26.4.sdk/System/Library/Frameworks/IOSurface.framework/Headers/IOSurfaceObjC.h:15:
+/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX26.4.sdk/System/Library/Frameworks/IOSurface.framework/Headers/IOSurfaceRef.h:101:26: note: 'kIOSurfaceIsGlobal' has been explicitly marked deprecated here
+  101 | extern const CFStringRef kIOSurfaceIsGlobal                                 API_DEPRECATED("Global surfaces are insecure",macos(10.6,10.11), ios(11.0,11.0), watchos(4.0,4.0), tvos(11.0,11.0));
+      |                          ^
+/Users/jayjay/gitrepos/truchiemu/TruchieEmu/Runner/CoreRunner.mm:79:8: error: unknown type name 'GLuint'; did you mean 'uint'?
+   79 | static GLuint g_hwFBO = 0;
+      |        ^~~~~~
+      |        uint
+In file included from /Users/jayjay/gitrepos/truchiemu/TruchieEmu/Runner/CoreRunner.mm:1:
+In file included from /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX26.4.sdk/System/Library/Frameworks/Foundation.framework/Headers/Foundation.h:6:
+In file included from /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX26.4.sdk/System/Library/Frameworks/CoreFoundation.framework/Headers/CoreFoundation.h:18:
+/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX26.4.sdk/usr/include/sys/types.h:93:33: note: 'uint' declared here
+   93 | typedef unsigned int            uint;           /* Sys V compatibility */
+      |                                 ^
+/Users/jayjay/gitrepos/truchiemu/TruchieEmu/Runner/CoreRunner.mm:912:1: error: duplicate declaration of method 'setOptionValue:forKey:'
+  912 | - (void)setOptionValue:(NSString *)value forKey:(NSString *)key {}
+      | ^
+/Users/jayjay/gitrepos/truchiemu/TruchieEmu/Runner/CoreRunner.mm:910:1: note: previous declaration is here
+  910 | - (void)setOptionValue:(NSString *)value forKey:(NSString *)key {}
+      | ^
+/Users/jayjay/gitrepos/truchiemu/TruchieEmu/Runner/CoreRunner.mm:855:22: error: use of undeclared identifier '_width'; did you mean 'CGSize::width'?
+  855 |     if (!_surface || _width != w || _height != h) {
+      |                      ^~~~~~
+      |                      CGSize::width
+In file included from /Users/jayjay/gitrepos/truchiemu/TruchieEmu/Runner/CoreRunner.mm:1:
+In file included from /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX26.4.sdk/System/Library/Frameworks/Foundation.framework/Headers/Foundation.h:6:
+In file included from /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX26.4.sdk/System/Library/Frameworks/CoreFoundation.framework/Headers/CoreFoundation.h:61:
+/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX26.4.sdk/System/Library/Frameworks/CoreFoundation.framework/Headers/CFCGTypes.h:60:13: note: 'CGSize::width' declared here
+   60 |     CGFloat width;
+      |             ^
+/Users/jayjay/gitrepos/truchiemu/TruchieEmu/Runner/CoreRunner.mm:855:22: error: invalid use of non-static data member 'width'
+  855 |     if (!_surface || _width != w || _height != h) {
+      |                      ^~~~~~
+/Users/jayjay/gitrepos/truchiemu/TruchieEmu/Runner/CoreRunner.mm:855:37: error: use of undeclared identifier '_height'
+  855 |     if (!_surface || _width != w || _height != h) {
+      |                                     ^~~~~~~
+/Users/jayjay/gitrepos/truchiemu/TruchieEmu/Runner/CoreRunner.mm:858:9: error: use of undeclared identifier '_width'
+  858 |         _width = w;
+      |         ^~~~~~
+/Users/jayjay/gitrepos/truchiemu/TruchieEmu/Runner/CoreRunner.mm:859:9: error: use of undeclared identifier '_height'
+  859 |         _height = h;
+      |         ^~~~~~~
+/Users/jayjay/gitrepos/truchiemu/TruchieEmu/Runner/CoreRunner.mm:865:86: error: cast of C pointer type 'IOSurfaceRef' (aka '__IOSurface *') to Objective-C pointer type 'id' requires a bridged cast
+  865 |     [(id<TruchiCoreHostProtocol>)_connection.remoteObjectProxy frameReadyWithSurface:(id)_surface 
+      |                                                                                      ^~~~~~~~~~~~
+/Users/jayjay/gitrepos/truchiemu/TruchieEmu/Runner/CoreRunner.mm:865:87: note: use __bridge to convert directly (no change in ownership)
+  865 |     [(id<TruchiCoreHostProtocol>)_connection.remoteObjectProxy frameReadyWithSurface:(id)_surface 
+      |                                                                                       ^
+      |                                                                                       __bridge 
+/Users/jayjay/gitrepos/truchiemu/TruchieEmu/Runner/CoreRunner.mm:865:90: note: use CFBridgingRelease call to transfer ownership of a +1 'IOSurfaceRef' (aka '__IOSurface *') into ARC
+  865 |     [(id<TruchiCoreHostProtocol>)_connection.remoteObjectProxy frameReadyWithSurface:(id)_surface 
+      |                                                                                          ^
+      |                                                                                          CFBridgingRelease( )
+/Users/jayjay/gitrepos/truchiemu/TruchieEmu/Runner/CoreRunner.mm:118:9: error: use of undeclared identifier 'bridge_log_printf'
+  118 |         bridge_log_printf(RETRO_LOG_WARN, " Failed to parse category: %s",
+      |         ^~~~~~~~~~~~~~~~~
+/Users/jayjay/gitrepos/truchiemu/TruchieEmu/Runner/CoreRunner.mm:163:13: error: use of undeclared identifier 'bridge_log_printf'
+  163 |             bridge_log_printf(RETRO_LOG_ERROR,
+      |             ^~~~~~~~~~~~~~~~~
+/Users/jayjay/gitrepos/truchiemu/TruchieEmu/Runner/CoreRunner.mm:181:9: error: use of undeclared identifier 'bridge_log_printf'
+  181 |         bridge_log_printf(RETRO_LOG_ERROR,
+      |         ^~~~~~~~~~~~~~~~~
+/Users/jayjay/gitrepos/truchiemu/TruchieEmu/Runner/CoreRunner.mm:231:13: error: use of undeclared identifier 'bridge_log_printf'
+  231 |             bridge_log_printf(RETRO_LOG_ERROR,
+      |             ^~~~~~~~~~~~~~~~~
+/Users/jayjay/gitrepos/truchiemu/TruchieEmu/Runner/CoreRunner.mm:248:9: error: use of undeclared identifier 'bridge_log_printf'
+  248 |         bridge_log_printf(RETRO_LOG_ERROR,
+      |         ^~~~~~~~~~~~~~~~~
+/Users/jayjay/gitrepos/truchiemu/TruchieEmu/Runner/CoreRunner.mm:313:7: error: use of undeclared identifier 'bridge_log_printf'
+  313 |       bridge_log_printf(RETRO_LOG_INFO, "Override from .cfg: %s = %s",
+      |       ^~~~~~~~~~~~~~~~~
+/Users/jayjay/gitrepos/truchiemu/TruchieEmu/Runner/CoreRunner.mm:368:8: error: use of undeclared identifier 'g_instance'
+  368 |   if (!g_instance)
+      |        ^~~~~~~~~~
+/Users/jayjay/gitrepos/truchiemu/TruchieEmu/Runner/CoreRunner.mm:382:51: error: use of undeclared identifier 'bridge_log_printf'
+  382 |       ((struct retro_log_interface *)data)->log = bridge_log_printf;
+      |                                                   ^~~~~~~~~~~~~~~~~
+/Users/jayjay/gitrepos/truchiemu/TruchieEmu/Runner/CoreRunner.mm:423:11: error: use of undeclared identifier 'g_instance'
+  423 |       if (g_instance) {
+      |           ^~~~~~~~~~
+/Users/jayjay/gitrepos/truchiemu/TruchieEmu/Runner/CoreRunner.mm:424:10: error: use of undeclared identifier 'g_instance'
+  424 |         [g_instance setPixelFormat:(int)fmt];
+      |          ^~~~~~~~~~
+/Users/jayjay/gitrepos/truchiemu/TruchieEmu/Runner/CoreRunner.mm:450:11: error: use of undeclared identifier 'bridge_log_printf'
+  450 |           bridge_log_printf(RETRO_LOG_INFO, "Flycast Override: %s = %s",
+      |           ^~~~~~~~~~~~~~~~~
+fatal error: too many errors emitted, stopping now [-ferror-limit=]
+1 warning and 20 errors generated.
+
+** BUILD FAILED **
+
+
+The following build commands failed:
+	CompileC /Users/jayjay/Library/Developer/Xcode/DerivedData/TruchieEmu-alcfinswigbcsuemhksixsvdwjda/Build/Intermediates.noindex/TruchieEmu.build/Debug/TruchiCoreRunner.build/Objects-normal/arm64/CoreRunner.o /Users/jayjay/gitrepos/truchiemu/TruchieEmu/Runner/CoreRunner.mm normal arm64 objective-c++ com.apple.compilers.llvm.clang.1_0.compiler (in target 'TruchiCoreRunner' from project 'TruchieEmu')
+	Building project TruchieEmu with scheme TruchiCoreRunner
+(2 failures)

@@ -73,9 +73,9 @@ targets:
           - "slang/**"
           - "internal/**"
           - "all_shaders.metal"
+          - "CRTFilter_*.metal"
         buildPhase: sources
       - path: TruchieEmu/Views
-      - path: TruchieEmu/Views/Shaders
       - path: TruchieEmu/Utilities
       # MAME ROM database (bundled JSON)
       - path: scripts/mame_lookup/mame_rom_data.json
@@ -103,3 +103,28 @@ targets:
 
     dependencies:
       - target: TruchieEmu
+
+  TruchiCoreRunner:
+    type: tool
+    platform: macOS
+    deploymentTarget: "14.0"
+
+    settings:
+      base:
+        PRODUCT_NAME: TruchiCoreRunner
+        PRODUCT_BUNDLE_IDENTIFIER: com.truchiemu.runner
+        MACOSX_DEPLOYMENT_TARGET: "14.0"
+        ENABLE_HARDENED_RUNTIME: NO
+        CLANG_ENABLE_OBJC_ARC: YES
+        GCC_C_LANGUAGE_STANDARD: gnu17
+        CLANG_CXX_LANGUAGE_STANDARD: gnu++17
+        CLANG_CXX_LIBRARY: libc++
+        OTHER_LDFLAGS: "-framework Metal -framework MetalKit -framework GameController -framework AVFoundation -framework OpenGL -framework IOSurface"
+
+    sources:
+      - path: TruchieEmu/Runner
+      - path: TruchieEmu/Engine/libretro.h
+      - path: TruchieEmu/Engine/CoreRunnerProtocol.h
+      - path: TruchieEmu/Engine/SharedSurfaceManager.mm
+      - path: TruchieEmu/Engine/SharedAudioBuffer.mm
+      - path: TruchieEmu/Engine/SharedAudioBuffer.h

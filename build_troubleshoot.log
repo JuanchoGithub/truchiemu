@@ -1,0 +1,35 @@
+Command line invocation:
+    /Applications/Xcode.app/Contents/Developer/usr/bin/xcodebuild -project TruchieEmu.xcodeproj -scheme TruchieEmu -arch arm64 build
+
+Build settings from command line:
+    ARCHS = arm64
+
+--- xcodebuild: WARNING: Using the first of multiple matching destinations:
+{ platform:macOS, arch:arm64, id:00006020-0001089002C0C01E, name:My Mac }
+{ platform:macOS, arch:x86_64, id:00006020-0001089002C0C01E, name:My Mac }
+{ platform:macOS, name:Any Mac }
+ComputePackagePrebuildTargetDependencyGraph
+
+Prepare packages
+
+CreateBuildRequest
+
+SendProjectDescription
+
+CreateBuildOperation
+
+ComputeTargetDependencyGraph
+note: Building targets in dependency order
+note: Target dependency graph (1 target)
+    Target 'TruchieEmu' in project 'TruchieEmu' (no dependencies)
+
+GatherProvisioningInputs
+
+CreateBuildDescription
+
+ClangStatCache /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/clang-stat-cache /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX26.4.sdk /Users/jayjay/Library/Developer/Xcode/DerivedData/SDKStatCaches.noindex/macosx26.4-25E236-688ef53f1462e2c8f657fdc38a81448f30f9ca8789b706f8bd3fc906a70d770f.sdkstatcache
+    cd /Users/jayjay/gitrepos/truchiemu/TruchieEmu.xcodeproj
+    /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/clang-stat-cache /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX26.4.sdk -o /Users/jayjay/Library/Developer/Xcode/DerivedData/SDKStatCaches.noindex/macosx26.4-25E236-688ef53f1462e2c8f657fdc38a81448f30f9ca8789b706f8bd3fc906a70d770f.sdkstatcache
+
+** BUILD SUCCEEDED **
+
