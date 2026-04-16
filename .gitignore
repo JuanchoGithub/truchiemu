@@ -1,1 +1,9 @@
-TruchiEmu.xcodeproj/project.xcworkspace/xcuserdata/jayjay.xcuserdatad/UserInterfaceState.xcuserstate
+# macOS system files
+.DS_Store
+
+# Xcode user-specific files
+xcuserdata/
+*.xcuserdatad/
+*.xcuserstate
+
+# Other common ignores
