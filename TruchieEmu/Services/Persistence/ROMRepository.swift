@@ -317,6 +317,7 @@ final class ROMRepository {
             systemID: entry.systemID,
             isFavorite: entry.isFavorite,
             lastPlayed: entry.lastPlayed,
+            dateAdded: entry.dateAdded,
             totalPlaytimeSeconds: entry.totalPlaytimeSeconds,
             timesPlayed: entry.timesPlayed,
             selectedCoreID: entry.selectedCoreID,
@@ -369,6 +370,7 @@ final class ROMRepository {
             metadataJSON: metadataJSON,
             isBios: rom.isBios,
             isHidden: rom.isHidden,
+            dateAdded: rom.dateAdded,
             category: rom.category,
             crc32: rom.crc32,
             thumbnailLookupSystemID: rom.thumbnailLookupSystemID,
@@ -385,6 +387,7 @@ final class ROMRepository {
         if entry.systemID != rom.systemID { entry.systemID = rom.systemID }
         if entry.isFavorite != rom.isFavorite { entry.isFavorite = rom.isFavorite }
         if entry.lastPlayed != rom.lastPlayed { entry.lastPlayed = rom.lastPlayed }
+        if entry.dateAdded != rom.dateAdded { entry.dateAdded = rom.dateAdded }
         if entry.totalPlaytimeSeconds != rom.totalPlaytimeSeconds { entry.totalPlaytimeSeconds = rom.totalPlaytimeSeconds }
         if entry.timesPlayed != rom.timesPlayed { entry.timesPlayed = rom.timesPlayed }
         if entry.selectedCoreID != rom.selectedCoreID { entry.selectedCoreID = rom.selectedCoreID }

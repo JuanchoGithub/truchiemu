@@ -20,6 +20,7 @@ final class ROMEntry {
     var metadataJSON: String?
     var isBios: Bool
     var isHidden: Bool
+    var dateAdded: Date
     var category: String
     var crc32: String?
     var thumbnailLookupSystemID: String?
@@ -54,6 +55,7 @@ final class ROMEntry {
         metadataJSON: String? = nil,
         isBios: Bool = false,
         isHidden: Bool = false,
+        dateAdded: Date = Date(),
         category: String = "game",
         crc32: String? = nil,
         thumbnailLookupSystemID: String? = nil,
@@ -76,6 +78,7 @@ final class ROMEntry {
         self.metadataJSON = metadataJSON
         self.isBios = isBios
         self.isHidden = isHidden
+        self.dateAdded = dateAdded
         self.category = category
         self.crc32 = crc32
         self.thumbnailLookupSystemID = thumbnailLookupSystemID

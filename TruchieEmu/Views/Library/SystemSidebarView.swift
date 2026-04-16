@@ -47,6 +47,10 @@ struct SystemSidebarView: View {
             sidebarRow(icon: "clock.fill", label: "Recent", count: recentCount, tint: .orange, filter: .recent)
                  .tag(LibraryFilter.recent)
 
+            // Last added
+            sidebarRow(icon: "plus.circle", label: "Last Added", count: library.roms.filter { !$0.isHidden }.count, tint: .blue, filter: .lastAdded)
+                 .tag(LibraryFilter.lastAdded)
+
             
             // Categories section — tap title row to expand/collapse; "New Category" on header hover
             Section {
@@ -375,6 +379,7 @@ enum LibraryFilter: Hashable, Identifiable {
     case all
     case favorites
     case recent
+    case lastAdded
     case system(SystemInfo)
     case category(String) // category ID
     case hidden
@@ -385,6 +390,7 @@ enum LibraryFilter: Hashable, Identifiable {
         case .all: return "all"
         case .favorites: return "favorites"
         case .recent: return "recent"
+        case .lastAdded: return "last-added"
         case .system(let system): return "system-\(system.id)"
         case .category(let id): return "category-\(id)"
         case .hidden: return "hidden"

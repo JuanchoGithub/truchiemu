@@ -154,6 +154,8 @@ struct ContentView: View {
             return "Category"
         case .hidden: return "Hidden Games"
         case .mameNonGames: return "Hidden MAME Files"
+        case .lastAdded: return "Last Added"
+        
         }
     }
     

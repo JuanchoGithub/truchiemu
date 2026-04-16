@@ -79,6 +79,7 @@ struct SystemInfo: Identifiable, Codable, Hashable {
     var sortOrder: Int
     var defaultBoxType: BoxType = .vertical
     var displayInUI: Bool = true
+    var isDiskBased: Bool = false
 
     var coreReportedAspectRatio: CGFloat?
 
@@ -102,7 +103,7 @@ struct SystemInfo: Identifiable, Codable, Hashable {
     enum CodingKeys: String, CodingKey {
         case id, name, pathKeywords, magicHeaders, filenamePatterns, manufacturer
         case extensions, defaultCoreID, iconName, emuIconName, year, sortOrder
-        case defaultBoxType, displayInUI, coreReportedAspectRatio
+        case defaultBoxType, displayInUI, coreReportedAspectRatio, isDiskBased
     }
     
     // Custom Decoder to handle missing JSON fields safely
@@ -126,11 +127,12 @@ struct SystemInfo: Identifiable, Codable, Hashable {
         sortOrder = try container.decodeIfPresent(Int.self, forKey: .sortOrder) ?? 99
         defaultBoxType = try container.decodeIfPresent(BoxType.self, forKey: .defaultBoxType) ?? .vertical
         displayInUI = try container.decodeIfPresent(Bool.self, forKey: .displayInUI) ?? true
+        isDiskBased = try container.decodeIfPresent(Bool.self, forKey: .isDiskBased) ?? false
         coreReportedAspectRatio = try container.decodeIfPresent(CGFloat.self, forKey: .coreReportedAspectRatio)
     }
 
     // Keep the standard init so LibretroInfoManager can still create objects dynamically
-    init(id: String, name: String, pathKeywords: [String], magicHeaders:[MagicHeader], filenamePatterns: [String], manufacturer: String, extensions: [String], defaultCoreID: String?, iconName: String, emuIconName: String?, year: String?, sortOrder: Int, defaultBoxType: BoxType, displayInUI: Bool) {
+    init(id: String, name: String, pathKeywords: [String], magicHeaders:[MagicHeader], filenamePatterns: [String], manufacturer: String, extensions: [String], defaultCoreID: String?, iconName: String, emuIconName: String?, year: String?, sortOrder: Int, defaultBoxType: BoxType, displayInUI: Bool, isDiskBased: Bool = false) {
         self.id = id
         self.name = name
         self.pathKeywords = pathKeywords
@@ -145,6 +147,7 @@ struct SystemInfo: Identifiable, Codable, Hashable {
         self.sortOrder = sortOrder
         self.defaultBoxType = defaultBoxType
         self.displayInUI = displayInUI
+        self.isDiskBased = isDiskBased
     }
 
     func emuImage(size: Int) -> NSImage? {
@@ -274,6 +277,14 @@ class SystemDatabase {
             if !processedIDs.contains(id) {
                 // This is a system exclusively found by Libretro (like your '32x' before you added it to JSON)
                 finalSystems.append(cacheSys)
+            }
+        }
+
+        // Inject disk-based flag for known systems (since bundle JSON cannot be modified)
+        let diskBasedIDs: Set<String> = ["psx", "ps1", "ps2", "saturn", "dreamcast", "3do", "psp"]
+        for i in 0..<finalSystems.count {
+            if diskBasedIDs.contains(finalSystems[i].id) {
+                finalSystems[i].isDiskBased = true
             }
         }
 

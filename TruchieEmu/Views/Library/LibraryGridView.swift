@@ -52,6 +52,7 @@ struct LibraryGridView: View {
     // Filter chips
     @State private var activeFilters: Set<String> = []
     @State private var sortByLastPlayed: Bool = false
+    @State private var sortByLastAdded: Bool = false
 
     private enum ViewMode: String { case grid, list }
 
@@ -66,6 +67,8 @@ struct LibraryGridView: View {
             base = library.roms.filter { $0.isFavorite && !$0.isHidden }
         case .recent:
             base = library.roms.filter { $0.lastPlayed != nil && !$0.isHidden }
+        case .lastAdded:
+            base = library.roms.filter { !$0.isHidden }
         case .system(let system):
             let systemIDs = SystemDatabase.allInternalIDs(forDisplayID: system.id)
             var systemRoms = library.roms.filter { systemIDs.contains($0.systemID ?? "") && !$0.isHidden }
@@ -137,6 +140,8 @@ struct LibraryGridView: View {
                     return dateA > dateB  // most recent first
                 }
             }
+        } else if filter == .lastAdded {
+            return roms.sorted { $0.dateAdded > $1.dateAdded }
         } else {
             // Schwartzian transform: pre-compute display names once to avoid N log N regex stripping calls
             return roms
@@ -1036,7 +1041,7 @@ struct LibraryGridView: View {
                                 } else {
                                     Image(systemName: "plus.circle")
                                         .foregroundColor(.secondary)
-                                }
+                                    }
                             }
                         }
                     }
@@ -1170,7 +1175,7 @@ struct LibraryGridView: View {
             Slider(value: $continuousZoom, in: 0...1, step: 1.0/7.0,
                    onEditingChanged: { isEditing in
                        if !isEditing {
-                           // Only recalculate columns when user releases the slider
+                           // On release, snap to nearest step
                            withAnimation(.interpolatingSpring(stiffness: 150, damping: 20)) {
                                applyZoomToColumnCount(animate: true)
                            }
@@ -1185,7 +1190,7 @@ struct LibraryGridView: View {
             Text("\(Int(continuousZoom * 100))%")
                 .font(.system(size: 11, weight: .medium, design: .monospaced))
                 .foregroundColor(.secondary)
-                .frame(width: 36, alignment: .trailing)
+                .frame(width: 32, alignment: .trailing)
         }
         .padding(.horizontal, 16)
         .padding(.vertical, 6)

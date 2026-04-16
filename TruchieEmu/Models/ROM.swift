@@ -8,6 +8,7 @@ struct ROM: Identifiable, Codable, Hashable, Sendable {
     var hasBoxArt: Bool = false
     var isFavorite: Bool = false
     var lastPlayed: Date?
+    var dateAdded: Date = Date()
     /// Total playtime across all sessions (in seconds)
     var totalPlaytimeSeconds: Double = 0
     /// Number of times this game has been launched
@@ -157,7 +158,7 @@ struct ROMMetadata: Codable, Hashable {
     // MAME 2003+ video/display metadata
     /// Screen orientation: "vertical" or "horizontal"
     var orientation: String?
-    /// Aspect ratio X component (e.g., 3 for 3:4 vertical, 4 for 4:3 horizontal)
+    /// Aspect ratio X component (e.g. 3 for 3:4 vertical, 4 for 4:3 horizontal)
     var aspectX: Int?
     /// Aspect ratio Y component
     var aspectY: Int?

@@ -73,13 +73,17 @@ actor ROMScanner {
         for url in allURLs {
             let ext = url.pathExtension.lowercased()
             
-            // Only search for references inside known container files (Huge speedup)
-            if ext == "cue" || ext == "m3u" {
-                let refs = getReferencedFiles(in: url)
-                for ref in refs {
-                    ignoredURLs.insert(ref.standardized.path)
-                }
-            }
+             // Only search for references inside known container files (Huge speedup)
+             if ext == "cue" || ext == "m3u" {
+                 let system = self.identifySystem(url: url, extension: ext)
+                 if system?.isDiskBased == true {
+                     let refs = getReferencedFiles(in: url)
+                     for ref in refs {
+                        LoggerService.debug(category: "ROMScanner", "Ignoring referenced file included in \(url.lastPathComponent): \(ref.path)")
+                        ignoredURLs.insert(ref.standardized.path)
+                     }
+                 }
+             }
             
             if ext == "zip" || ext == "7z" {
                 zipURLs.append(url)
@@ -88,9 +92,6 @@ actor ROMScanner {
             }
         }
         
-        let ignoredTime = Date().timeIntervalSince(ignoredStart)
-        LoggerService.debug(category: "ROMScanner", "Ignored files: \(ignoredURLs.count) ignored in \(String(format: "%.2f", ignoredTime))s")
-
         let orderedURLs = nonZipURLs + zipURLs
         let totalFiles = orderedURLs.count
         
@@ -123,6 +124,14 @@ actor ROMScanner {
                     if url.path.contains("/Contents/") || url.path.hasSuffix(".app") { return nil }
 
                     let system = self.identifySystem(url: url, extension: ext)
+
+                    // Ignore specific PS1 BIOS files if they are identified as PS1/PSX
+                    let filename = url.lastPathComponent.lowercased()
+                    if (filename == "scph5500.bin" || filename == "scph5501.bin" || filename == "scph5502.bin") &&
+                       (system?.id == "ps1" || system?.id == "psx") {
+                        return nil
+                    }
+
                     let name = url.deletingPathExtension().lastPathComponent
 
                     var rom = ROM(id: UUID(), name: name, path: url, systemID: system?.id)
@@ -215,6 +224,14 @@ actor ROMScanner {
                     if url.path.contains("/Contents/") || url.path.hasSuffix(".app") { return nil }
 
                     let system = self.identifySystem(url: url, extension: ext)
+
+                    // Ignore specific PS1 BIOS files if they are identified as PS1/PSX
+                    let filename = url.lastPathComponent.lowercased()
+                    if (filename == "scph5500.bin" || filename == "scph5501.bin" || filename == "scph5502.bin") &&
+                       (system?.id == "ps1" || system?.id == "psx") {
+                        return nil
+                    }
+
                     let name = url.deletingPathExtension().lastPathComponent
 
                     var rom = ROM(id: UUID(), name: name, path: url, systemID: system?.id)
@@ -350,15 +367,18 @@ actor ROMScanner {
         let fm = FileManager.default
         guard let files = try? fm.contentsOfDirectory(at: folder, includingPropertiesForKeys: nil, options: .skipsHiddenFiles) else { return [] }
         var ignored = Set<String>()
-        for file in files {
-            let ext = file.pathExtension.lowercased()
-            if ext == "cue" || ext == "m3u" {
-                let refs = ROMIdentifier.getReferencedFiles(in: file)
-                for ref in refs {
-                    ignored.insert(ref.standardized.path)
-                }
-            }
-        }
+         for file in files {
+             let ext = file.pathExtension.lowercased()
+             if ext == "cue" || ext == "m3u" {
+                 let system = self.identifySystem(url: file, extension: ext)
+                 if system?.isDiskBased == true {
+                     let refs = ROMIdentifier.getReferencedFiles(in: file)
+                     for ref in refs {
+                         ignored.insert(ref.standardized.path)
+                     }
+                 }
+             }
+         }
         return ignored
     }
 
@@ -430,9 +450,14 @@ actor ROMScanner {
         for url in allURLs {
             let ext = url.pathExtension.lowercased()
             if ext == "cue" || ext == "m3u" {
-                let refs = getReferencedFiles(in: url)
-                for ref in refs {
-                    ignoredURLs.insert(ref.standardized.path)
+                let system = self.identifySystem(url: url, extension: ext)
+                if system?.isDiskBased == true {
+                    let refs = getReferencedFiles(in: url)
+                    LoggerService.debug(category: "ROMScanner", "Found container file: \(url.lastPathComponent) referencing \(refs.count) files")
+                    for ref in refs {
+                        LoggerService.debug(category: "ROMScanner", "Ignoring referenced file inside \(url.lastPathComponent): \(ref.path)")
+                        ignoredURLs.insert(ref.standardized.path)
+                    }
                 }
             }
         }
