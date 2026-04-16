@@ -46,11 +46,6 @@ struct SystemSidebarView: View {
             let recentCount = library.romCounts["recent"] ?? 0
             sidebarRow(icon: "clock.fill", label: "Recent", count: recentCount, tint: .orange, filter: .recent)
                  .tag(LibraryFilter.recent)
-
-            // Last added
-            sidebarRow(icon: "plus.circle", label: "Last Added", count: library.roms.filter { !$0.isHidden }.count, tint: .blue, filter: .lastAdded)
-                 .tag(LibraryFilter.lastAdded)
-
             
             // Categories section — tap title row to expand/collapse; "New Category" on header hover
             Section {

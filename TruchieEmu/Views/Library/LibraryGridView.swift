@@ -1244,7 +1244,7 @@ struct LibraryGridView: View {
                     AppSettings.setBool("sortByLastAdded", value: sortByLastAdded)
                 } label: {
                     HStack(spacing: 4) {
-                        Image(systemName: sortByLastAdded ? "calendar.badge.clock.fill" : "calendar.badge.clock")
+                        Image(systemName: sortByLastAdded ? "calendar" : "calendar")
                             .font(.system(size: 10, weight: .medium))
                             .scaleEffect(sortByLastAdded ? 1.1 : 1)
                         Text("Last Added")
