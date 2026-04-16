@@ -140,7 +140,7 @@ struct LibraryGridView: View {
                     return dateA > dateB  // most recent first
                 }
             }
-        } else if filter == .lastAdded {
+        } else if sortByLastAdded {
             return roms.sorted { $0.dateAdded > $1.dateAdded }
         } else {
             // Schwartzian transform: pre-compute display names once to avoid N log N regex stripping calls
@@ -455,6 +455,7 @@ struct LibraryGridView: View {
             // Recompute columns from saved zoom level
             applyZoomToColumnCount(animate: false)
             sortByLastPlayed = AppSettings.getBool("sortByLastPlayed", defaultValue: false)
+            sortByLastAdded = AppSettings.getBool("sortByLastAdded", defaultValue: false)
             
             // When a new system/filter appears, preload its visible ROMs immediately.
             // The ContentView handles global preloading (current filter → smallest systems),
@@ -1236,6 +1237,43 @@ struct LibraryGridView: View {
                     }
                 }
                 .animation(.easeOut(duration: 0.2), value: sortByLastPlayed)
+
+                // Last Added sort toggle chip
+                Button {
+                    sortByLastAdded.toggle()
+                    AppSettings.setBool("sortByLastAdded", value: sortByLastAdded)
+                } label: {
+                    HStack(spacing: 4) {
+                        Image(systemName: sortByLastAdded ? "calendar.badge.clock.fill" : "calendar.badge.clock")
+                            .font(.system(size: 10, weight: .medium))
+                            .scaleEffect(sortByLastAdded ? 1.1 : 1)
+                        Text("Last Added")
+                            .font(.system(size: 11, weight: .medium))
+                    }
+                    .foregroundColor(sortByLastAdded ? .white : .secondary)
+                    .padding(.horizontal, 10)
+                    .padding(.vertical, 6)
+                    .frame(minHeight: 30)
+                    .background(
+                        Capsule()
+                            .fill(sortByLastAdded ? Color.orange : Color.secondary.opacity(0.12))
+                            .scaleEffect(isSortHovered ? 1.05 : 1)
+                            .shadow(color: sortByLastAdded ? Color.orange.opacity(0.3) : .clear, radius: isSortHovered ? 4 : 0, y: 2)
+                    )
+                }
+                .buttonStyle(.plain)
+                .help(sortByLastAdded ? "Sorting by Last Added — click to sort by Name" : "Sorting by Name — click to sort by Last Added")
+                .onHover { hovering in
+                    let shouldAnimate = !NSWorkspace.shared.accessibilityDisplayShouldReduceMotion
+                    if shouldAnimate {
+                        withAnimation(.easeOut(duration: 0.15)) {
+                            isSortHovered = hovering
+                        }
+                    } else {
+                        isSortHovered = hovering
+                    }
+                }
+                .animation(.easeOut(duration: 0.2), value: sortByLastAdded)
 
                 ForEach(GameFilterOption.allCases) { option in
                     FilterChipView(
