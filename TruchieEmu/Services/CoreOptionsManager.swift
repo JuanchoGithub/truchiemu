@@ -17,10 +17,16 @@ class CoreOptionsManager: ObservableObject {
     /// The core ID we're managing (set when loading a core)
     private var currentCoreID: String?
     
-    /// Directory for per-core options config files
+    /// Directory for per-core options config files (.cfg)
     private let optionsDirectory: URL = {
         let base = FileManager.default.urls(for: .applicationSupportDirectory, in: .userDomainMask).first!
         return base.appendingPathComponent("TruchieEmu/CoreOptions", isDirectory: true)
+    }()
+
+    /// Directory for per-core option definitions (.json)
+    private let definitionsDirectory: URL = {
+        let base = FileManager.default.urls(for: .applicationSupportDirectory, in: .userDomainMask).first!
+        return base.appendingPathComponent("TruchieEmu/CoreOptionDefinitions", isDirectory: true)
     }()
     
     private let encoder = JSONEncoder()
@@ -28,6 +34,7 @@ class CoreOptionsManager: ObservableObject {
     
     private init() {
         try? FileManager.default.createDirectory(at: optionsDirectory, withIntermediateDirectories: true)
+        try? FileManager.default.createDirectory(at: definitionsDirectory, withIntermediateDirectories: true)
         encoder.outputFormatting = [.prettyPrinted, .sortedKeys]
     }
     
@@ -70,6 +77,69 @@ class CoreOptionsManager: ObservableObject {
         options.removeAll()
         categories.removeAll()
     }
+
+    /// Loads definitions and overrides from disk for a specific core.
+    /// Used when the core is not running (e.g., in Settings).
+    func loadForCore(coreID: String) {
+        currentCoreID = coreID
+        
+        // 1. Load Definitions
+        let defURL = definitionsDirectory.appendingPathComponent("\(coreID).json")
+        guard let data = try? Data(contentsOf: defURL),
+              let json = try? JSONSerialization.jsonObject(with: data) as? [String: Any] else {
+            options.removeAll()
+            categories.removeAll()
+            return
+        }
+        
+        // Parse categories
+        if let cats = json["categories"] as? [String: [String: String]] {
+            categories.removeAll()
+            for (k, v) in cats {
+                categories[k] = CoreOptionCategory(key: k, description: v["desc"] ?? k, info: v["info"] ?? "")
+            }
+        }
+        
+        // Parse options
+        if let opts = json["options"] as? [String: [String: Any]] {
+            options.removeAll()
+            for (key, d) in opts {
+                let desc = d["desc"] as? String ?? key
+                let info = d["info"] as? String ?? ""
+                let catKey = d["category"] as? String ?? ""
+                let defaultVal = d["defaultValue"] as? String ?? ""
+                let currentVal = d["currentValue"] as? String ?? defaultVal
+                
+                var values: [CoreOptionValue] = []
+                if let valsArr = d["values"] as? [[String: String]] {
+                    for v in valsArr {
+                        values.append(CoreOptionValue(value: v["value"] ?? "", label: v["label"] ?? v["value"] ?? ""))
+                    }
+                }
+                if values.isEmpty {
+                    values = [CoreOptionValue(value: currentVal, label: currentVal)]
+                }
+                
+                options[key] = CoreOption(
+                    key: key,
+                    description: desc,
+                    info: info,
+                    category: catKey.isEmpty ? nil : catKey,
+                    values: values,
+                    defaultValue: defaultVal,
+                    currentValue: currentVal
+                )
+            }
+        }
+        
+        // 2. Apply Overrides
+        let overrides = loadUserOverrides(for: coreID)
+        for (key, value) in overrides {
+            if options[key] != nil {
+                options[key]?.currentValue = value
+            }
+        }
+    }
     
     /// Set the full options list (called from ObjC bridge when core calls SET_CORE_OPTIONS_V2).
     func setOptions(_ newOptions: [CoreOption], categories: [CoreOptionCategory]) {
@@ -87,6 +157,11 @@ class CoreOptionsManager: ObservableObject {
                 }
             }
             self.options[option.key] = option
+        }
+        
+        // Persist these definitions so they can be loaded when the core isn't running
+        if let coreID = currentCoreID {
+            persistDefinitions(for: coreID)
         }
     }
     
@@ -126,7 +201,7 @@ class CoreOptionsManager: ObservableObject {
         }
     }
     
-    /// Reset a single option to its core-defined default.
+    /// Reset a single option to its core-default.
     func resetToDefault(key: String) {
         if let option = options[key] {
             options[key]!.currentValue = option.defaultValue
@@ -140,6 +215,11 @@ class CoreOptionsManager: ObservableObject {
             options[key]!.currentValue = options[key]!.defaultValue
         }
         clearAllOverrides()
+        
+        // Also persist the reset values to the definitions cache
+        if let coreID = currentCoreID {
+            persistDefinitions(for: coreID)
+        }
     }
     
     // MARK: - Persistence
@@ -201,8 +281,29 @@ class CoreOptionsManager: ObservableObject {
         guard let coreID = currentCoreID else { return }
         let configURL = optionsFileURL(coreID)
         try? FileManager.default.removeItem(at: configURL)
+        
+        // Also clear the definitions cache
+        let defURL = definitionsDirectory.appendingPathComponent("\(coreID).json")
+        try? FileManager.default.removeItem(at: defURL)
     }
     
+    // MARK: - Definition Persistence
+    
+    private func persistDefinitions(for coreID: String) {
+        let payload: [String: Any] = [
+            "categories": categories.mapValues { ["desc": $0.description, "info": $0.info] },
+            "options": options.mapValues { o -> [String: Any] in
+                return ["desc": o.description, "info": o.info, "category": o.category ?? "",
+                        "defaultValue": o.defaultValue, "currentValue": o.currentValue,
+                        "values": o.values.map { ["value": $0.value, "label": $0.label] }]
+            }
+        ]
+        if let data = try? JSONSerialization.data(withJSONObject: payload) {
+            let url = definitionsDirectory.appendingPathComponent("\(coreID).json")
+            try? data.write(to: url)
+        }
+    }
+
     // MARK: - Export / Import (RetroArch compatibility)
     
     /// Export options in RetroArch-compatible .cfg format

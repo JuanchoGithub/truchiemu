@@ -1,24 +1,28 @@
 import SwiftUI
 
 // MARK: - Core Options View
-/// Shows options for a specific core. Reads from the Obj-C bridge when the core
-/// is running; falls back to a persisted JSON cache on disk.
+/// Shows options for a specific core.
 struct CoreOptionsView: View {
     let coreID: String
-    @StateObject private var viewModel = CoreOptionsViewModel()
+    @StateObject private var viewModel: CoreOptionsViewModel
     @Environment(\.dismiss) private var dismiss
+
+    init(coreID: String) {
+        self.coreID = coreID
+        self._viewModel = StateObject(wrappedValue: CoreOptionsViewModel(coreID: coreID))
+    }
 
     var body: some View {
         NavigationView {
             Group {
-                if viewModel.sortedKeys.isEmpty, !viewModel.hasLoadedOnce {
+                if viewModel.options.isEmpty, !viewModel.hasLoadedOnce {
                     VStack(spacing: 16) {
                         ProgressView()
                         Text("Loading core settings…")
                             .foregroundColor(.secondary)
                     }
                     .frame(maxWidth: .infinity, maxHeight: .infinity)
-                } else if viewModel.sortedKeys.isEmpty {
+                } else if viewModel.options.isEmpty {
                     VStack(spacing: 16) {
                         Image(systemName: "slider.vertical.3")
                             .font(.system(size: 48))
@@ -71,18 +75,20 @@ struct CoreOptionsView: View {
                     Button("Done") { dismiss() }
                 }
             }
+            .onAppear { viewModel.loadOptions(for: coreID) }
         }
-        .onAppear { viewModel.loadOptions(for: coreID) }
     }
 }
 
 // MARK: - View Model
 @MainActor
 class CoreOptionsViewModel: ObservableObject {
-    @Published var options: [String: CoreOption] = [:]
-    @Published var categories: [String: CoreOptionCategory] = [:]
-    @Published var isLoading = false
+    @ObservedObject private var manager = CoreOptionsManager.shared
+    let coreID: String
     @Published var hasLoadedOnce = false
+
+    var options: [String: CoreOption] { manager.options }
+    var categories: [String: CoreOptionCategory] { manager.categories }
 
     var sortedKeys: [String] {
         var catKeys = Set(options.values.compactMap { $0.category })
@@ -97,6 +103,10 @@ class CoreOptionsViewModel: ObservableObject {
         return result
     }
 
+    init(coreID: String) {
+        self.coreID = coreID
+    }
+
     func categoryDisplayName(for key: String) -> String {
         if key.isEmpty { return "General" }
         return categories[key]?.description ?? key
@@ -109,106 +119,18 @@ class CoreOptionsViewModel: ObservableObject {
     }
 
     func loadOptions(for coreID: String) {
-        isLoading = true; hasLoadedOnce = false
-        // 1) Read active options from Obj-C bridge (populated when core is running)
-        if let defs = LibretroBridge.getOptionsDictionary(), !defs.isEmpty {
-            parseAndSave(defs: defs, cats: LibretroBridge.getCategoriesDictionary(), coreID: coreID)
-        } else {
-            // 2) Fallback: load persisted JSON from disk
-            if !loadPersisted(for: coreID) { options.removeAll(); categories.removeAll() }
-        }
-        isLoading = false; hasLoadedOnce = true
-    }
-
-    func parseAndSave(defs: [String: Any], cats: [String: Any]?, coreID: String) {
-        options.removeAll(); categories.removeAll()
-        if let catDict = cats as? [String: [String: String]] {
-            for (k, v) in catDict { categories[k] = CoreOptionCategory(key: k, description: v["desc"] ?? k, info: v["info"] ?? "") }
-        }
-        for (key, def) in defs {
-            guard let d = def as? [String: Any] else { continue }
-            let desc = d["desc"] as? String ?? key
-            let info = d["info"] as? String ?? ""
-            let catKey = d["category"] as? String ?? ""
-            let defaultVal = d["defaultValue"] as? String ?? ""
-            let currentVal = d["currentValue"] as? String ?? defaultVal
-            var values: [CoreOptionValue] = []
-            if let valsArr = d["values"] as? [[String: String]] {
-                for v in valsArr { values.append(CoreOptionValue(value: v["value"] ?? "", label: v["label"] ?? v["value"] ?? "")) }
-            }
-            if values.isEmpty { values = [CoreOptionValue(value: currentVal, label: currentVal)] }
-            options[key] = CoreOption(key: key, description: desc, info: info, category: catKey.isEmpty ? nil : catKey,
-                                      values: values, defaultValue: defaultVal, currentValue: currentVal)
-        }
-        persistDefinitions(for: coreID)
-    }
-
-    // MARK: - Disk persistence for option definitions
-    private func definitionsURL(for coreID: String) -> URL {
-        let dir = FileManager.default.urls(for: .applicationSupportDirectory, in: .userDomainMask)
-            .first!.appendingPathComponent("TruchieEmu/CoreOptionDefinitions", isDirectory: true)
-        try? FileManager.default.createDirectory(at: dir, withIntermediateDirectories: true)
-        return dir.appendingPathComponent("\(coreID).json")
-    }
-
-    func persistDefinitions(for coreID: String) {
-        let payload: [String: Any] = [
-            "categories": categories.mapValues { ["desc": $0.description, "info": $0.info] },
-            "options": options.mapValues { o -> [String: Any] in
-                return ["desc": o.description, "info": o.info, "category": o.category ?? "",
-                        "defaultValue": o.defaultValue, "currentValue": o.currentValue,
-                        "values": o.values.map { ["value": $0.value, "label": $0.label] }]
-            }
-        ]
-        if let data = try? JSONSerialization.data(withJSONObject: payload) {
-            try? data.write(to: definitionsURL(for: coreID))
-        }
-    }
-
-    func loadPersisted(for coreID: String) -> Bool {
-        let url = definitionsURL(for: coreID)
-        guard let data = try? Data(contentsOf: url),
-              let json = try? JSONSerialization.jsonObject(with: data) as? [String: Any] else { return false }
-        categories.removeAll(); options.removeAll()
-        if let cats = json["categories"] as? [String: [String: String]] {
-            for (k, v) in cats { categories[k] = CoreOptionCategory(key: k, description: v["desc"] ?? k, info: v["info"] ?? "") }
-        }
-        if let opts = json["options"] as? [String: [String: Any]] {
-            for (key, d) in opts {
-                let desc = d["desc"] as? String ?? key
-                let info = d["info"] as? String ?? ""
-                let catKey = d["category"] as? String ?? ""
-                let defaultVal = d["defaultValue"] as? String ?? ""
-                let storedVal = d["currentValue"] as? String ?? defaultVal
-                var values: [CoreOptionValue] = []
-                if let valsArr = d["values"] as? [[String: String]] {
-                    for v in valsArr { values.append(CoreOptionValue(value: v["value"] ?? "", label: v["label"] ?? v["value"] ?? "")) }
-                }
-                if values.isEmpty { values = [CoreOptionValue(value: storedVal, label: storedVal)] }
-                options[key] = CoreOption(key: key, description: desc, info: info, category: catKey.isEmpty ? nil : catKey,
-                                          values: values, defaultValue: defaultVal, currentValue: storedVal)
-            }
-        }
-        return !options.isEmpty
+        hasLoadedOnce = false
+        manager.loadForCore(coreID: coreID)
+        hasLoadedOnce = true
     }
 
     func updateValue(_ value: String, for key: String) {
-        options[key]?.currentValue = value
-        LibretroBridge.setOptionValue(value, forKey: key)
-        AppSettings.set("coreopt_\(coreID)_\(key)", value: value)
-        if let coreID = AppSettings.get("lastLoadedCoreID", type: String.self) { persistDefinitions(for: coreID) }
+        manager.updateValue(value, for: key)
     }
 
     func resetAll() {
-        for key in options.keys {
-            let defaultVal = options[key]?.defaultValue ?? ""
-            options[key]?.currentValue = defaultVal
-            LibretroBridge.setOptionValue(defaultVal, forKey: key)
-        }
-        if let coreID = AppSettings.get("lastLoadedCoreID", type: String.self) { persistDefinitions(for: coreID) }
+        manager.resetAllToDefaults()
     }
-    
-    let coreID: String = ""
 }
 
 // MARK: - Option Row
@@ -220,7 +142,9 @@ struct CoreOptionRow: View {
     init(key: String, viewModel: CoreOptionsViewModel) {
         self.key = key
         self.viewModel = viewModel
-        _selectedValue = State(initialValue: viewModel.options[key]?.currentValue ?? "")
+        // We need to initialize selectedValue based on the current value in the manager
+        let initialValue = viewModel.options[key]?.currentValue ?? ""
+        _selectedValue = State(initialValue: initialValue)
     }
 
     var body: some View {
