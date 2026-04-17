@@ -46,9 +46,10 @@ struct ContentView: View {
                          showCreateCategorySheet: $showCreateCategorySheet,
                          filter: selectedFilter,
                          selectedROM: $selectedROM,
-                         searchText: $searchText
+                         searchText: $searchText,
+                         library: library,
+                         categoryManager: categoryManager
                      )
-                     .id(selectedFilter.id) // Force view recreation on filter change
                      .navigationTitle(navigationTitle)
                      .onChange(of: selectedFilter) { _, newFilter in
                          AppSettings.setString("lastSelectedFilter", value: newFilter.id)

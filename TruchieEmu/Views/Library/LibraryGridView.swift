@@ -4,8 +4,6 @@ import AppKit
 // MARK: - Library Grid View
 
 struct LibraryGridView: View {
-    @EnvironmentObject var library: ROMLibrary
-    @EnvironmentObject var categoryManager: CategoryManager
     @EnvironmentObject var coreManager: CoreManager
     @EnvironmentObject var controllerService: ControllerService
     @StateObject private var dragState = GameDragState.shared
@@ -14,7 +12,41 @@ struct LibraryGridView: View {
     @Binding var selectedROM: ROM?
     @Binding var searchText: String
 
+    // These are now passed in via init to allow ViewModel initialization
+    let library: ROMLibrary
+    let categoryManager: CategoryManager
+    @StateObject private var viewModel: LibraryViewModel
+
+
     @Environment(\.openWindow) private var openWindow
+    
+    init(
+        showCreateCategorySheet: Binding<Bool>,
+        filter: LibraryFilter,
+        selectedROM: Binding<ROM?>,
+        searchText: Binding<String>,
+        library: ROMLibrary,
+        categoryManager: CategoryManager
+    ) {
+        self._showCreateCategorySheet = showCreateCategorySheet
+        self.filter = filter
+        self._selectedROM = selectedROM
+        self._searchText = searchText
+        self.library = library
+        self.categoryManager = categoryManager
+        self._viewModel = StateObject(wrappedValue: LibraryViewModel(
+            library: library,
+            categoryManager: categoryManager,
+            initialFilter: filter,
+            initialSearchText: searchText.wrappedValue
+        ))
+    }
+
+
+
+
+
+
     @State private var renamingROM: ROM? = nil
     @State private var renameText: String = ""
     @StateObject private var gameLauncher = GameLauncher.shared
@@ -56,100 +88,6 @@ struct LibraryGridView: View {
 
     private enum ViewMode: String { case grid, list }
 
-    /// Filtered and sorted ROMs. The sorting step is deferred to a lazy sequence
-    /// so that SwiftUI's LazyVGrid only computes the visible range on each pass.
-    private var displayedROMs: [ROM] {
-        let base: [ROM]
-        switch filter {
-        case .all:
-            base = library.roms.filter { !$0.isHidden }
-        case .favorites:
-            base = library.roms.filter { $0.isFavorite && !$0.isHidden }
-        case .recent:
-            base = library.roms.filter { $0.lastPlayed != nil && !$0.isHidden }
-        case .lastAdded:
-            base = library.roms.filter { !$0.isHidden }
-        case .system(let system):
-            let systemIDs = SystemDatabase.allInternalIDs(forDisplayID: system.id)
-            var systemRoms = library.roms.filter { systemIDs.contains($0.systemID ?? "") && !$0.isHidden }
-            
-            // For MAME, show only runnable/playable games
-            if system.id == "mame" {
-                // First filter: hide BIOS/device/mechanical entries
-                systemRoms = systemRoms.filter { rom in
-                    rom.mameRomType == "game" || rom.mameRomType == nil
-                }
-                // Second filter: if we have XML-based runnable data, further filter to only runnable games
-                let runnableSet = MAMEDependencyService.shared.rachableShortNamesForCurrentCores
-                if !runnableSet.isEmpty {
-                    systemRoms = systemRoms.filter { rom in
-                        runnableSet.contains(rom.path.lastPathComponent.replacingOccurrences(of: ".zip", with: "").lowercased())
-                    }
-                }
-            }
-            
-            base = systemRoms
-        case .category(let categoryID):
-            base = categoryManager.gamesInCategory(categoryID: categoryID, fromROMs: library.roms).filter { !$0.isHidden }
-        case .hidden:
-            base = library.roms.filter { $0.isHidden }
-        case .mameNonGames:
-            // Show MAME files that are not games (BIOS, device, mechanical, unknown) with grayish styling
-            base = library.roms.filter { rom in
-                rom.systemID == "mame" && rom.mameRomType != "game"
-            }
-        }
-
-        var filtered = base
-        if !activeFilters.isEmpty {
-            filtered = filtered.filter { rom in
-                for rawValue in activeFilters {
-                    if let option = GameFilterOption(rawValue: rawValue) {
-                        if !option.matches(rom) { return false }
-                    }
-                }
-                return true
-            }
-        }
-
-        if !searchText.isEmpty {
-            let searchTerms = searchText.split(separator: " ")
-            filtered = filtered.filter { rom in
-                searchTerms.allSatisfy { term in
-                    rom.displayName.localizedCaseInsensitiveContains(term)
-                }
-            }
-        }
-
-        return applySorting(to: filtered)
-    }
-
-    private func applySorting(to roms:[ROM]) -> [ROM] {
-        guard !roms.isEmpty else { return[] }
-        
-        if sortByLastPlayed {
-            return roms.sorted { a, b in
-                switch (a.lastPlayed, b.lastPlayed) {
-                case (nil, nil):
-                    return a.displayName.localizedCaseInsensitiveCompare(b.displayName) == .orderedAscending
-                case (_, nil):
-                    return true  // played sorts before never-played
-                case (nil, _):
-                    return false // never-played sorts after
-                case let (dateA?, dateB?):
-                    return dateA > dateB  // most recent first
-                }
-            }
-        } else if sortByLastAdded {
-            return roms.sorted { $0.dateAdded > $1.dateAdded }
-        } else {
-            // Schwartzian transform: pre-compute display names once to avoid N log N regex stripping calls
-            return roms
-                .map { (rom: $0, key: $0.displayName) }
-                .sorted { $0.key.localizedCaseInsensitiveCompare($1.key) == .orderedAscending }
-                .map { $0.rom }
-        }
-    }
     @State private var columns: [GridItem] = []
     @State private var lastSelectedFilterID: String? = nil
 
@@ -172,7 +110,7 @@ struct LibraryGridView: View {
             ZStack {
                 if library.isScanning {
                     scanningOverlay
-                } else if displayedROMs.isEmpty {
+                } else if viewModel.displayedROMs.isEmpty {
                     emptyState
                 } else if viewMode == .grid {
                     gridView
@@ -345,8 +283,8 @@ struct LibraryGridView: View {
                         Button {
                             Task {
                                 let targetROMs = selectedROMs.isEmpty
-                                    ? displayedROMs
-                                    : displayedROMs.filter { selectedROMs.contains($0.id) || selectedROM?.id == $0.id }
+                                    ? viewModel.displayedROMs
+                                    : viewModel.displayedROMs.filter { selectedROMs.contains($0.id) || selectedROM?.id == $0.id }
                                 guard !targetROMs.isEmpty else { return }
                                 await BoxArtService.shared.batchDownloadBoxArtLibretro(for: targetROMs, library: library)
                                 await LaunchBoxGamesDBService.shared.batchDownloadBoxArt(for: targetROMs, library: library)
@@ -360,7 +298,7 @@ struct LibraryGridView: View {
                         
                         Button {
                             Task {
-                                let romsNeedingArt = BoxArtService.shared.romsNeedingBoxArt(in: displayedROMs)
+                                let romsNeedingArt = BoxArtService.shared.romsNeedingBoxArt(in: viewModel.displayedROMs)
                                 guard !romsNeedingArt.isEmpty else { return }
                                 await BoxArtService.shared.batchDownloadBoxArtLibretro(for: romsNeedingArt, library: library)
                             }
@@ -370,8 +308,8 @@ struct LibraryGridView: View {
                         
                         Button {
                             Task {
-                                await BoxArtService.shared.batchDownloadBoxArtLibretro(for: displayedROMs, library: library)
-                                await LaunchBoxGamesDBService.shared.batchDownloadBoxArt(for: displayedROMs, library: library)
+                                await BoxArtService.shared.batchDownloadBoxArtLibretro(for: viewModel.displayedROMs, library: library)
+                                await LaunchBoxGamesDBService.shared.batchDownloadBoxArt(for: viewModel.displayedROMs, library: library)
                             }
                         } label: {
                             Label("Download All Box Art", systemImage: "arrow.down.circle.fill")
@@ -457,17 +395,29 @@ struct LibraryGridView: View {
             sortByLastPlayed = AppSettings.getBool("sortByLastPlayed", defaultValue: false)
             sortByLastAdded = AppSettings.getBool("sortByLastAdded", defaultValue: false)
             
-            // When a new system/filter appears, preload its visible ROMs immediately.
-            // The ContentView handles global preloading (current filter → smallest systems),
-            // but this ensures newly visible filters get preloaded on-demand too.
-            preloadCurrentViewIfNotCached()
-            
             // Contextually resolve local boxarts for the current view
             handleFilterChange(filter)
         }
         .onChange(of: filter) { _, newFilter in
             handleFilterChange(newFilter)
+            viewModel.updateFilters(
+                filter: newFilter,
+                searchText: searchText,
+                activeFilters: activeFilters,
+                sortByLastPlayed: sortByLastPlayed,
+                sortByLastAdded: sortByLastAdded
+            )
         }
+        .onChange(of: searchText) { _, newValue in
+            viewModel.updateFilters(
+                filter: filter,
+                searchText: newValue,
+                activeFilters: activeFilters,
+                sortByLastPlayed: sortByLastPlayed,
+                sortByLastAdded: sortByLastAdded
+            )
+        }
+
         .onDisappear {
             // Save zoom level persistently
             AppSettings.setDouble("gridZoomLevel", value: continuousZoom)
@@ -519,7 +469,7 @@ struct LibraryGridView: View {
     private var gridView: some View {
         ScrollView(.vertical) {
             LazyVGrid(columns: columns, spacing: gridSpacing) {
-                ForEach(Array(displayedROMs.enumerated()), id: \.element.id) { index, rom in
+                ForEach(Array(viewModel.displayedROMs.enumerated()), id: \.element.id) { index, rom in
                     let isSelected = selectedROMs.contains(rom.id) || selectedROM?.id == rom.id
                     
                     let draggedItemsForCard: [ROM] = {
@@ -528,7 +478,7 @@ struct LibraryGridView: View {
                             if let singleSelection = selectedROM {
                                 dragIDs.insert(singleSelection.id)
                             }
-                            return displayedROMs.filter { dragIDs.contains($0.id) }
+                            return viewModel.displayedROMs.filter { dragIDs.contains($0.id) }
                         } else {
                             return [rom]
                         }
@@ -633,7 +583,7 @@ struct LibraryGridView: View {
         } else if modifiers.contains(.shift), let lastIndex = lastSelectedIndex {
             let range = min(lastIndex, index)...max(lastIndex, index)
             let rangeIDs = range.compactMap { i in
-                i < displayedROMs.count ? displayedROMs[i].id : nil
+                i < viewModel.displayedROMs.count ? viewModel.displayedROMs[i].id : nil
             }
             selectedROMs.formUnion(rangeIDs)
             selectedROM = rom
@@ -646,7 +596,7 @@ struct LibraryGridView: View {
 
     private var listView: some View {
         List(selection: $selectedROM) {
-            ForEach(Array(displayedROMs.enumerated()), id: \.element.id) { index, rom in
+            ForEach(Array(viewModel.displayedROMs.enumerated()), id: \.element.id) { index, rom in
                 let isSelected = selectedROMs.contains(rom.id) || selectedROM?.id == rom.id
                 GameListRowView(rom: rom, isSelected: isSelected, zoomLevel: zoomLevel)
                     .tag(rom)
@@ -667,7 +617,7 @@ struct LibraryGridView: View {
                             if let singleSelection = selectedROM {
                                 dragIDs.insert(singleSelection.id)
                             }
-                            items = displayedROMs.filter { dragIDs.contains($0.id) }
+                            items = viewModel.displayedROMs.filter { dragIDs.contains($0.id) }
                         } else {
                             items = [rom]
                         }
@@ -714,7 +664,7 @@ struct LibraryGridView: View {
         } else if modifiers.contains(.shift), let lastIndex = lastSelectedIndex {
             let range = min(lastIndex, index)...max(lastIndex, index)
             let rangeIDs = range.compactMap { i in
-                i < displayedROMs.count ? displayedROMs[i].id : nil
+                i < viewModel.displayedROMs.count ? viewModel.displayedROMs[i].id : nil
             }
             selectedROMs.formUnion(rangeIDs)
             selectedROM = rom
@@ -1205,7 +1155,15 @@ struct LibraryGridView: View {
                 Button {
                     sortByLastPlayed.toggle()
                     AppSettings.setBool("sortByLastPlayed", value: sortByLastPlayed)
+                    viewModel.updateFilters(
+                        filter: filter,
+                        searchText: searchText,
+                        activeFilters: activeFilters,
+                        sortByLastPlayed: sortByLastPlayed,
+                        sortByLastAdded: sortByLastAdded
+                    )
                 } label: {
+
                     HStack(spacing: 4) {
                         Image(systemName: sortByLastPlayed ? "clock.fill" : "clock")
                             .font(.system(size: 10, weight: .medium))
@@ -1326,7 +1284,7 @@ struct LibraryGridView: View {
             
             Spacer()
             
-            Text("\(displayedROMs.count) game\(displayedROMs.count == 1 ? "" : "s")")
+            Text("\(viewModel.displayedROMs.count) game\(viewModel.displayedROMs.count == 1 ? "" : "s")")
                 .font(.caption)
                 .foregroundColor(.secondary)
         }
@@ -1341,16 +1299,16 @@ struct LibraryGridView: View {
         } else {
             activeFilters.insert(option.rawValue)
         }
+        
+        viewModel.updateFilters(
+            filter: filter,
+            searchText: searchText,
+            activeFilters: activeFilters,
+            sortByLastPlayed: sortByLastPlayed,
+            sortByLastAdded: sortByLastAdded
+        )
     }
 
-    /// Preload box art for the currently displayed ROMs in the grid.
-    /// OPT-IN: Only preloads when explicitly triggered (e.g., from settings).
-    /// The grid view relies on lazy .task(id: rom.id) for on-demand loading.
-    private func preloadCurrentViewIfNotCached() {
-        // Preloading is now opt-in, not automatic.
-        // Images load on-demand as cards appear in the LazyVGrid.
-        // To manually preload: BoxArtPreloaderService.shared.preloadBoxArt(for: displayedROMs)
-    }
 
     @MainActor
     private func launchGame(_ rom: ROM) {
@@ -1377,7 +1335,7 @@ struct LibraryGridView: View {
     private func handleFilterChange(_ filter: LibraryFilter) {
         // Only run for specific categories or systems so we don't scan 4000 items at once
         if case .system = filter {
-            let missingArt = displayedROMs.filter { !$0.hasBoxArt }
+            let missingArt = viewModel.displayedROMs.filter { !$0.hasBoxArt }
             guard !missingArt.isEmpty else { return }
             
             let service = self.boxArtService

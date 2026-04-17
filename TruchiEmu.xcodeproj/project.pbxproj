@@ -122,6 +122,7 @@
 		D992F811F8E06415C23F897C /* BezelsSection.swift in Sources */ = {isa = PBXBuildFile; fileRef = B286AEB9B77657F1BFA3B9EA /* BezelsSection.swift */; };
 		DA7B953D862BCA9932664C99 /* RunningGamesTracker.swift in Sources */ = {isa = PBXBuildFile; fileRef = EAE090319110B0F262FC2BC2 /* RunningGamesTracker.swift */; };
 		DBA355086BB7C0CC12EA76B3 /* ResourceCacheRepository.swift in Sources */ = {isa = PBXBuildFile; fileRef = BDB20047AD50ACDD07213C8B /* ResourceCacheRepository.swift */; };
+		DD1AA7C42F9260D90014A60E /* LibraryViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = DD1AA7C32F9260D90014A60E /* LibraryViewModel.swift */; };
 		DDA58F0A2F8DC26600A9BEE9 /* LibrarySettingsViewGroup.swift in Sources */ = {isa = PBXBuildFile; fileRef = DDA58F092F8DC26600A9BEE9 /* LibrarySettingsViewGroup.swift */; };
 		DDA58F0C2F8DC32800A9BEE9 /* CoreSettingsViewGroup.swift in Sources */ = {isa = PBXBuildFile; fileRef = DDA58F0B2F8DC32800A9BEE9 /* CoreSettingsViewGroup.swift */; };
 		DDA58F122F8DC65100A9BEE9 /* ControllerSettingsViewGroup.swift in Sources */ = {isa = PBXBuildFile; fileRef = DDA58F112F8DC65100A9BEE9 /* ControllerSettingsViewGroup.swift */; };
@@ -572,6 +573,7 @@
 		DAD4BAC83053A0F149602D6D /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
 		DB9293E37E0A331CD54CDBF3 /* CheatManagerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CheatManagerView.swift; sourceTree = "<group>"; };
 		DC76C12B188BD3512C51A51F /* LaunchBoxGameMetadata.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LaunchBoxGameMetadata.swift; sourceTree = "<group>"; };
+		DD1AA7C32F9260D90014A60E /* LibraryViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LibraryViewModel.swift; sourceTree = "<group>"; };
 		DD7DD75048F4FE666F795285 /* ROMRepository.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ROMRepository.swift; sourceTree = "<group>"; };
 		DDA58F092F8DC26600A9BEE9 /* LibrarySettingsViewGroup.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LibrarySettingsViewGroup.swift; sourceTree = "<group>"; };
 		DDA58F0B2F8DC32800A9BEE9 /* CoreSettingsViewGroup.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CoreSettingsViewGroup.swift; sourceTree = "<group>"; };
@@ -990,6 +992,7 @@
 		2C503F1AC4270AE1CC303595 /* Library */ = {
 			isa = PBXGroup;
 			children = (
+				DD1AA7C32F9260D90014A60E /* LibraryViewModel.swift */,
 				DDA593192F8F256900A9BEE9 /* CategoryViews.swift */,
 				DDA5931A2F8F256900A9BEE9 /* FilterChipView.swift */,
 				DDA5931B2F8F256900A9BEE9 /* GameListRowView.swift */,
@@ -2046,6 +2049,7 @@
 				3407D4D1297B8DA39CE0A93D /* LoggerService.swift in Sources */,
 				2F8441505DD14F2DC1B83795 /* LoggingSettingsView.swift in Sources */,
 				7874B82F430F8E47A01C0C72 /* LottesCRT.metal in Sources */,
+				DD1AA7C42F9260D90014A60E /* LibraryViewModel.swift in Sources */,
 				244314F2F386044FD11738B6 /* MAMEDependencyService.swift in Sources */,
 				0F997E74D7C475FDA0A2CCE1 /* MAMEDependencyStatusView.swift in Sources */,
 				DDA5931F2F8F256900A9BEE9 /* GameListRowView.swift in Sources */,

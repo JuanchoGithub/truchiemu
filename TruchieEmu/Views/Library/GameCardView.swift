@@ -112,7 +112,7 @@ struct GameCardView: View {
                     if !rom.hasBoxArt {
                         var updated = rom
                         updated.hasBoxArt = true
-                        library.updateROM(updated, persist: false)
+                        library.updateROM(updated, persist: false, silent: true)
                     }
                 }
             } else {
@@ -120,7 +120,7 @@ struct GameCardView: View {
                     if rom.hasBoxArt {
                         var updated = rom
                         updated.hasBoxArt = false
-                        library.updateROM(updated, persist: false)
+                        library.updateROM(updated, persist: false, silent: true)
                     }
                     self.image = nil
                 }
