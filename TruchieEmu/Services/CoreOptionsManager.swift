@@ -66,6 +66,7 @@ class CoreOptionsManager: ObservableObject {
     
     nonisolated func saveOverride(for coreID: String, values: [String: String]) {
         let configURL = optionsDirectory.appendingPathComponent("\(coreID).cfg")
+        LoggerService.debug(category: "CoreOptionsManager", "For \(coreID): Saving Override \(values) in file: \(configURL)")
         let content = values.map { "\($0.key) = \"\($0.value)\"" }.joined(separator: "\n")
         try? content.write(to: configURL, atomically: true, encoding: .utf8)
     }
@@ -74,6 +75,7 @@ class CoreOptionsManager: ObservableObject {
     
     /// Called when a new core is loaded. Clears previous options and loads persisted overrides.
     func prepareForCore(coreID: String) {
+        LoggerService.debug(category: "CoreOptionsManager", "New core \(coreID) loaded, cleaning all optiones and overrides")
         currentCoreID = coreID
         options.removeAll()
         categories.removeAll()
@@ -93,6 +95,8 @@ class CoreOptionsManager: ObservableObject {
               let json = try? JSONSerialization.jsonObject(with: data) as? [String: Any] else {
             options.removeAll()
             categories.removeAll()
+
+            LoggerService.debug(category: "CoreOptionsManager", "For \(coreID): cleaned up.")
             return
         }
         
@@ -102,6 +106,7 @@ class CoreOptionsManager: ObservableObject {
             for (k, v) in cats {
                 categories[k] = CoreOptionCategory(key: k, description: v["desc"] ?? k, info: v["info"] ?? "")
             }
+            LoggerService.debug(category: "CoreOptionsManager", "For \(currentCoreID): loaded these categories: \(categories)")
         }
         
         // Parse options
@@ -134,6 +139,7 @@ class CoreOptionsManager: ObservableObject {
                     currentValue: currentVal
                 )
             }
+            LoggerService.debug(category: "CoreOptionsManager", "For \(coreID): these are the options: \(options)")
         }
         
         // 2. Apply Overrides
@@ -308,6 +314,8 @@ class CoreOptionsManager: ObservableObject {
                         "values": o.values.map { ["value": $0.value, "label": $0.label] }]
             }
         ]
+        LoggerService.debug(category: "CoreOptionsManager", "For \(coreID): Persisting payload \(payload)")
+
         if let data = try? JSONSerialization.data(withJSONObject: payload) {
             let url = definitionsDirectory.appendingPathComponent("\(coreID).json")
             try? data.write(to: url)
@@ -318,6 +326,7 @@ class CoreOptionsManager: ObservableObject {
     
     /// Export options in RetroArch-compatible .cfg format
     func exportAsRetroArchConfig() -> String {
+        LoggerService.debug(category: "CoreOptionsManager", "For \(currentCoreID): Exporting data as retroarch config")
         let lines = options.values.map { opt in
             "\(opt.key) = \"\(opt.currentValue)\""
         }
