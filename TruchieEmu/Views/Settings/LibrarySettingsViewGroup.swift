@@ -7,7 +7,6 @@ import GameController
 struct LibrarySettingsView: View {
     @EnvironmentObject var library: ROMLibrary
     @State private var scanningFolders: Set<String> = []
-    @State private var showingRebuildSheet = false
     @State private var rebuildTargetFolder: ROMLibraryFolder?
     @ObservedObject var prefs = SystemPreferences.shared
 
@@ -98,7 +97,6 @@ struct LibrarySettingsView: View {
                                     },
                                     onRebuild: { target in
                                         rebuildTargetFolder = target
-                                        showingRebuildSheet = true
                                     }
                                 )
                             }
@@ -165,10 +163,8 @@ struct LibrarySettingsView: View {
             .padding(16)
         }
         .navigationTitle("Library")
-        .sheet(isPresented: $showingRebuildSheet) {
-            if let folder = rebuildTargetFolder {
-                RebuildOptionsSheet(folder: folder, library: library)
-            }
+        .sheet(item: $rebuildTargetFolder) { folder in
+            RebuildOptionsSheet(folder: folder, library: library)
         }
     }
     
