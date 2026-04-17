@@ -65,34 +65,40 @@ class LibraryViewModel: ObservableObject {
     }
     
     private func refreshData() {
-        guard !isProcessing else { return }
-        isProcessing = true
-        
-        let filter = currentFilter
-        let searchText = currentSearchText
-        let activeFilters = activeFilters
-        let sortByLastPlayed = sortByLastPlayed
-        let sortByLastAdded = sortByLastAdded
-        let allRoms = library.roms
-        
-        // Capture the categories data to avoid accessing the MainActor-isolated categoryManager inside the background task
-        let categories = categoryManager.categories
-        
-        Task.detached(priority: .userInitiated) {
-            let filtered = self.computeFilteredAndSorted(
-                roms: allRoms,
-                categories: categories,
-                filter: filter,
-                searchText: searchText,
-                activeFilters: activeFilters,
-                sortByLastPlayed: sortByLastPlayed,
-                sortByLastAdded: sortByLastAdded
-            )
-            
-            await MainActor.run {
-                self.displayedROMs = filtered
-                self.isProcessing = false
+        Task {
+            // Wait until not processing
+            while isProcessing {
+                try? await Task.sleep(nanoseconds: 50_000_000) // 0.05s
             }
+            
+            // Re-check because another task might have started while we were sleeping
+            guard !isProcessing else { return }
+            
+            isProcessing = true
+            
+            // Capture current state
+            let filter = currentFilter
+            let searchText = currentSearchText
+            let activeFilters = activeFilters
+            let sortByLastPlayed = sortByLastPlayed
+            let sortByLastAdded = sortByLastAdded
+            let allRoms = library.roms
+            let categories = categoryManager.categories
+            
+            let filtered = await Task.detached(priority: .userInitiated) {
+                return self.computeFilteredAndSorted(
+                    roms: allRoms,
+                    categories: categories,
+                    filter: filter,
+                    searchText: searchText,
+                    activeFilters: activeFilters,
+                    sortByLastPlayed: sortByLastPlayed,
+                    sortByLastAdded: sortByLastAdded
+                )
+            }.value
+            
+            self.displayedROMs = filtered
+            self.isProcessing = false
         }
     }
     

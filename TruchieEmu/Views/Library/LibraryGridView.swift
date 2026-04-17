@@ -8,7 +8,7 @@ struct LibraryGridView: View {
     @EnvironmentObject var controllerService: ControllerService
     @StateObject private var dragState = GameDragState.shared
     @Binding var showCreateCategorySheet: Bool
-    var filter: LibraryFilter
+    @Binding var filter: LibraryFilter
     @Binding var selectedROM: ROM?
     @Binding var searchText: String
 
@@ -22,14 +22,14 @@ struct LibraryGridView: View {
     
     init(
         showCreateCategorySheet: Binding<Bool>,
-        filter: LibraryFilter,
+        filter: Binding<LibraryFilter>,
         selectedROM: Binding<ROM?>,
         searchText: Binding<String>,
         library: ROMLibrary,
         categoryManager: CategoryManager
     ) {
         self._showCreateCategorySheet = showCreateCategorySheet
-        self.filter = filter
+        self._filter = filter
         self._selectedROM = selectedROM
         self._searchText = searchText
         self.library = library
@@ -37,7 +37,7 @@ struct LibraryGridView: View {
         self._viewModel = StateObject(wrappedValue: LibraryViewModel(
             library: library,
             categoryManager: categoryManager,
-            initialFilter: filter,
+            initialFilter: filter.wrappedValue,
             initialSearchText: searchText.wrappedValue
         ))
     }

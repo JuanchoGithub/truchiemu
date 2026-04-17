@@ -42,14 +42,14 @@ struct ContentView: View {
                      )
                      .frame(width: 240)
 
-                     LibraryGridView(
-                         showCreateCategorySheet: $showCreateCategorySheet,
-                         filter: selectedFilter,
-                         selectedROM: $selectedROM,
-                         searchText: $searchText,
-                         library: library,
-                         categoryManager: categoryManager
-                     )
+                      LibraryGridView(
+                          showCreateCategorySheet: $showCreateCategorySheet,
+                          filter: $selectedFilter,
+                          selectedROM: $selectedROM,
+                          searchText: $searchText,
+                          library: library,
+                          categoryManager: categoryManager
+                      )
                      .navigationTitle(navigationTitle)
                      .onChange(of: selectedFilter) { _, newFilter in
                          AppSettings.setString("lastSelectedFilter", value: newFilter.id)
