@@ -5,7 +5,7 @@ import GameController
 struct ControllerSettingsView: View {
     @EnvironmentObject var controllerService: ControllerService
     @State private var selectedPlayer: Int = 1
-    @State private var selectedSystemID: String = "default"
+    @State private var selectedSystemID: String
     @State private var configName: String = ""
     @State private var savedConfigs: [String: ControllerGamepadMapping] = [:]
     @State private var leftColumnWidth: CGFloat = 340
@@ -13,6 +13,19 @@ struct ControllerSettingsView: View {
     @State private var resetTrigger = UUID()
 
     @State private var activeTab = 0
+    @State private var isReadOnly: Bool = false
+
+    init(systemID: String? = nil) {
+        if let sid = systemID {
+            _selectedSystemID = State(initialValue: sid)
+            let groups = SystemDatabase.multiSystemGroups()
+            let isMulti = groups.values.contains(where: { $0.contains(sid) })
+            _isReadOnly = State(initialValue: !isMulti)
+        } else {
+            _selectedSystemID = State(initialValue: "default")
+            _isReadOnly = State(initialValue: false)
+        }
+    }
 
     var body: some View {
         VStack(spacing: 12) {
@@ -42,7 +55,7 @@ struct ControllerSettingsView: View {
 
     @ViewBuilder
     private var keyboardContent: some View {
-        KeyboardContentView()
+        KeyboardContentView(systemID: selectedSystemID, isReadOnly: isReadOnly)
             .environmentObject(controllerService)
     }
 
@@ -756,42 +769,22 @@ struct ControllerDrawingView: View {
 // MARK: - Keyboard
 struct KeyboardContentView: View {
     @EnvironmentObject var controllerService: ControllerService
+    let systemID: String
+    let isReadOnly: Bool
     @State private var listeningFor: RetroButton? = nil
-    @State private var selectedSystemID: String = "default"
 
     var body: some View {
         VStack(alignment: .leading, spacing: 0) {
             HStack(spacing: 20) {
                 Text("Keyboard Mapping").font(.title3.weight(.semibold))
-                
-                Picker("System", selection: $selectedSystemID) {
-                    Text("Global / Default").tag("default")
-                    Divider()
-                    ForEach(SystemDatabase.systemsForDisplay) { sys in
-                        Text(sys.name).tag(sys.id)
-                    }
-                }
-                .frame(width: 280)
-                
                 Spacer()
-                
-                Button("Reset to Defaults") {
-                    if selectedSystemID == "default" {
-                        // Hard reset the global default to factory settings
-                        controllerService.updateKeyboardMapping(KeyboardMapping.defaults(for: "default"), for: "default")
-                    } else {
-                        // Remove the system-specific override so it falls back to the global "default"
-                        controllerService.removeKeyboardMapping(for: selectedSystemID)
-                    }
-                }
-                .buttonStyle(.bordered)
             }
             .padding()
 
             Divider()
 
             ScrollView {
-                let buttons = availableButtons(for: selectedSystemID)
+                let buttons = RetroButton.availableButtons(for: systemID)
                 
                 LazyVGrid(columns: [GridItem(.flexible()), GridItem(.flexible())], spacing: 12) {
                     ForEach(buttons, id: \.self) { btn in
@@ -799,26 +792,25 @@ struct KeyboardContentView: View {
                             Text(btn.displayName).frame(width: 120, alignment: .leading)
                             Spacer()
                             KeyCaptureButton(
-                                keyCode: controllerService.keyboardMapping(for: selectedSystemID).buttons[btn],
+                                keyCode: controllerService.keyboardMapping(for: systemID).buttons[btn],
                                 isListening: listeningFor == btn
                             ) { code in
-                                var m = controllerService.keyboardMapping(for: selectedSystemID)
+                                var m = controllerService.keyboardMapping(for: systemID)
                                 m.buttons[btn] = code
-                                controllerService.updateKeyboardMapping(m, for: selectedSystemID)
+                                controllerService.updateKeyboardMapping(m, for: systemID)
                                 listeningFor = nil
                             } onStartListening: {
-                                listeningFor = btn
+                                if !isReadOnly {
+                                    listeningFor = btn
+                                }
                             }
+                            .disabled(isReadOnly)
                         }
                     }
                 }
                 .padding()
             }
         }
-    }
-
-    private func availableButtons(for systemID: String) -> [RetroButton] {
-        return RetroButton.availableButtons(for: systemID)
     }
 }
 

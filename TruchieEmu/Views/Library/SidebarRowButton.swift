@@ -10,6 +10,8 @@ struct SidebarRowButton: View {
     let tint: Color
     let filter: LibraryFilter
     @Binding var selectedFilter: LibraryFilter
+    var onRefresh: (() -> Void)? = nil
+    var onSettings: (() -> Void)? = nil
     
     @State private var isHovered = false
     
@@ -45,6 +47,21 @@ struct SidebarRowButton: View {
             .contentShape(Rectangle())
         }
         .buttonStyle(.plain)
+        .contextMenu {
+            if let system = system {
+                Button {
+                    onRefresh?()
+                } label: {
+                    Label("Refresh", systemImage: "arrow.clockwise")
+                }
+
+                Button {
+                    onSettings?()
+                } label: {
+                    Label("Settings", systemImage: "gearshape")
+                }
+            }
+        }
         .background(
             RoundedRectangle(cornerRadius: 6)
                 .fill(isSelected ? Color.accentColor.opacity(0.15) : (isHovered ? Color.secondary.opacity(0.08) : .clear))

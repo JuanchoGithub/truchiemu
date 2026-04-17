@@ -305,8 +305,18 @@ class SystemDatabase {
     static func allInternalIDs(forDisplayID id: String) -> [String] {
         switch id {
         case "gb", "gbc": return ["gb", "gbc"]
+        case "gc", "wii": return ["gc", "wii"]
         default: return [id]
         }
+    }
+
+    static func multiSystemGroups() -> [String: [String]] {
+        return [
+            "gb": ["gb", "gbc"],
+            "gbc": ["gb", "gbc"],
+            "gc": ["gc", "wii"],
+            "wii": ["gc", "wii"]
+        ]
     }
 
     static func displaySystem(forInternalID id: String) -> SystemInfo? {

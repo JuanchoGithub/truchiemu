@@ -6,6 +6,8 @@ struct SystemSidebarView: View {
     @Binding var selectedFilter: LibraryFilter
     @Binding var showCreateCategorySheet: Bool
     @Binding var editingCategory: GameCategory?
+    var onRefresh: ((SystemInfo) -> Void)? = nil
+    var onSettings: ((String) -> Void)? = nil
 
     /// Combined system entries for the sidebar. Game Boy (gb) absorbs Game Boy Color (gbc)
     /// into a single "Game Boy" display entry while keeping internal systemIDs intact.
@@ -164,7 +166,17 @@ struct SystemSidebarView: View {
 
     @ViewBuilder
     private func sidebarRow(icon: String, label: String, system: SystemInfo? = nil, count: Int, tint: Color = .accentColor, filter: LibraryFilter) -> some View {
-        SidebarRowButton(icon: icon, label: label, system: system, count: count, tint: tint, filter: filter, selectedFilter: $selectedFilter)
+        SidebarRowButton(
+            icon: icon,
+            label: label,
+            system: system,
+            count: count,
+            tint: tint,
+            filter: filter,
+            selectedFilter: $selectedFilter,
+            onRefresh: system != nil ? { onRefresh?(system!) } : nil,
+            onSettings: system != nil ? { onSettings?(system!.defaultCoreID ?? "") } : nil
+        )
     }
 
     @StateObject private var dragState = GameDragState.shared

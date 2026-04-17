@@ -90,7 +90,7 @@ struct ControlsSection: View {
             }
         }
         .sheet(isPresented: $showControlsPicker) {
-            SystemControlsMappingView(systemID: systemID, systemName: systemName)
+            ControllerSettingsView(systemID: systemID)
                 .environmentObject(controllerService)
         }
     }

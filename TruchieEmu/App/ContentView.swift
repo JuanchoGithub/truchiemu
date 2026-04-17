@@ -15,6 +15,12 @@ struct ContentView: View {
     @State private var searchText = ""
     @State private var showCreateCategorySheet = false
     @State private var editingCategory: GameCategory? = nil
+    @State private var pendingCoreSettings: CoreSettingsTrigger? = nil
+
+    struct CoreSettingsTrigger: Identifiable {
+        let id = UUID()
+        let coreID: String
+    }
 
     var body: some View {
         Group {
@@ -38,7 +44,19 @@ struct ContentView: View {
                      SystemSidebarView(
                          selectedFilter: $selectedFilter,
                          showCreateCategorySheet: $showCreateCategorySheet,
-                         editingCategory: $editingCategory
+                         editingCategory: $editingCategory,
+                         onRefresh: { system in
+                             let romsForSystem = library.roms.filter { $0.systemID == system.id }
+                             let uniqueFolders = Set(romsForSystem.map { $0.path.deletingLastPathComponent() })
+                             Task {
+                                 for folder in uniqueFolders {
+                                     await library.refreshFolder(at: folder)
+                                 }
+                             }
+                         },
+                         onSettings: { coreID in
+                             pendingCoreSettings = ContentView.CoreSettingsTrigger(coreID: coreID)
+                         }
                      )
                      .frame(width: 240)
 
@@ -58,11 +76,14 @@ struct ContentView: View {
                 .sheet(isPresented: $showCreateCategorySheet) {
                     CreateCategorySheet()
                 }
-                .sheet(item: $editingCategory) { category in
-                    EditCategorySheet(category: category)
-                }
-
-                // Status bar for library automation or metadata sync
+                 .sheet(item: $editingCategory) { category in
+                     EditCategorySheet(category: category)
+                 }
+                 .sheet(item: $pendingCoreSettings) { trigger in
+                     CoreOptionsView(coreID: trigger.coreID)
+                 }
+ 
+                 // Status bar for library automation or metadata sync
                 if let activeStatus = activeBackgroundTask {
                     VStack(alignment: .leading, spacing: 6) {
                         ProgressView(value: activeStatus.progress)
