@@ -63,11 +63,17 @@ struct SidebarRowButton: View {
                         Label("Settings", systemImage: "gearshape")
                     }
 
-                    Button {
-                        onSystemAction(system, .cheats)
-                    } label: {
-                        Label("Cheats", systemImage: "wand.and.stars")
-                    }
+                     Button {
+                         onSystemAction(system, .cheats)
+                     } label: {
+                         Label("Cheats", systemImage: "wand.and.stars")
+                     }
+
+                     Button {
+                         onSystemAction(system, .shaders)
+                     } label: {
+                         Label("Shaders", systemImage: "wand.and.stars")
+                     }
 
                     Button {
                         onSystemAction(system, .bezels)

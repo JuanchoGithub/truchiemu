@@ -9,6 +9,7 @@ enum SystemAction {
     case bezels
     case controllers
     case library
+    case shaders
 }
 
 /// Request used to open system-specific settings via a sheet

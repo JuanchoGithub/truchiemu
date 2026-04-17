@@ -12,6 +12,7 @@ struct ContentView: View {
     @State private var selectedFilter: LibraryFilter = .recent
     @State private var selectedROM: ROM? = nil
     @State private var showOnboarding = false
+    @State private var shaderController: ShaderWindowController? = nil
     @State private var searchText = ""
     @State private var showCreateCategorySheet = false
     @State private var editingCategory: GameCategory? = nil
@@ -68,11 +69,25 @@ struct ContentView: View {
                                  openWindow(id: "system-settings", value: SystemSettingsRequest(system: system, page: .cheats))
                              case .bezels:
                                  openWindow(id: "system-settings", value: SystemSettingsRequest(system: system, page: .bezels))
-                             case .controllers:
-                                 openWindow(id: "system-settings", value: SystemSettingsRequest(system: system, page: .controllers))
-                             case .library:
-                                 selectedFilter = .system(system)
-                             }
+                              case .controllers:
+                                  openWindow(id: "system-settings", value: SystemSettingsRequest(system: system, page: .controllers))
+                              case .shaders:
+                                  let settings = ShaderWindowSettings(
+                                      shaderPresetID: ShaderManager.shared.activePreset.id,
+                                      uniformValues: ShaderManager.shared.uniformValues
+                                  )
+                                  shaderController = ShaderWindowController(settings: settings) { newPresetID, newUniforms in
+                                      let preset = ShaderPreset.preset(id: newPresetID) ?? ShaderPreset.defaultPreset
+                                      ShaderManager.shared.activatePreset(preset)
+                                      // Update uniform values as well
+                                      for (name, value) in newUniforms {
+                                          ShaderManager.shared.updateUniform(name, value: value)
+                                      }
+                                  }
+                                  shaderController?.show()
+                              case .library:
+                                  selectedFilter = .system(system)
+                              }
                          }
                      )
                      .frame(width: 240)
