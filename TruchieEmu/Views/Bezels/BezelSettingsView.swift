@@ -13,6 +13,15 @@ struct BezelSettingsView: View {
     @State private var selectedSystem: String = "all"
     @State private var showStorageLocationPicker = false
     
+    let system: SystemInfo?
+
+    init(system: SystemInfo? = nil) {
+        self.system = system
+        if let system = system {
+            _selectedSystem = State(initialValue: system.id)
+        }
+    }
+    
     var body: some View {
         ScrollView {
             VStack(alignment: .leading, spacing: 24) {
@@ -311,34 +320,48 @@ struct BezelSettingsView: View {
                         }
                     }
                     
-                    // System quick download menu
-                    Menu {
-                        ForEach(SystemDatabase.systemsForDisplay.sorted(by: { $0.name < $1.name })) { system in
-                            Button(system.name) {
-                                selectedSystem = system.id
-                                Task {
-                                    let result = await apiService.downloadAllBezels(systemID: system.id)
-                                    downloadResult = result.message
-                                }
-                            }
-                        }
-                    } label: {
-                        Label("Quick Download...", systemImage: "gamecontroller")
-                    }
-                    .menuStyle(.borderlessButton)
-                    .disabled(apiService.progressTracker.isRunning)
-                }
-            }
-            .padding(12)
-            .background(.ultraThinMaterial)
-            .cornerRadius(12)
-            
-            // Download result message
-            if let result = downloadResult {
-                resultBanner(result: result)
-            }
-        }
-    }
+                     // System quick download menu
+                     if let system = system {
+                         Button {
+                             Task {
+                                 let result = await apiService.downloadAllBezels(systemID: system.id)
+                                 downloadResult = result.message
+                             }
+                         } label: {
+                             Label("Download \(system.name) Bezels", systemImage: "arrow.down.circle")
+                                 .frame(maxWidth: .infinity)
+                         }
+                         .buttonStyle(.borderedProminent)
+                         .disabled(apiService.progressTracker.isRunning)
+                     } else {
+                         Menu {
+                             ForEach(SystemDatabase.systemsForDisplay.sorted(by: { $0.name < $1.name })) { system in
+                                 Button(system.name) {
+                                     selectedSystem = system.id
+                                     Task {
+                                         let result = await apiService.downloadAllBezels(systemID: system.id)
+                                         downloadResult = result.message
+                                     }
+                                 }
+                             }
+                         } label: {
+                             Label("Quick Download...", systemImage: "gamecontroller")
+                         }
+                         .menuStyle(.borderlessButton)
+                         .disabled(apiService.progressTracker.isRunning)
+                     }
+                 }
+             }
+             .padding(12)
+             .background(.ultraThinMaterial)
+             .cornerRadius(12)
+             
+             // Download result message
+             if let result = downloadResult {
+                 resultBanner(result: result)
+             }
+         }
+     }
     
     // MARK: - Dynamic Button Label
     

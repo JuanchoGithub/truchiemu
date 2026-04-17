@@ -12,6 +12,7 @@ struct SidebarRowButton: View {
     @Binding var selectedFilter: LibraryFilter
     var onRefresh: (() -> Void)? = nil
     var onSettings: (() -> Void)? = nil
+    var onSystemAction: ((SystemInfo, SystemAction) -> Void)? = nil
     
     @State private var isHovered = false
     
@@ -49,16 +50,54 @@ struct SidebarRowButton: View {
         .buttonStyle(.plain)
         .contextMenu {
             if let system = system {
-                Button {
-                    onRefresh?()
-                } label: {
-                    Label("Refresh", systemImage: "arrow.clockwise")
-                }
+                if let onSystemAction = onSystemAction {
+                    Button {
+                        onSystemAction(system, .refresh)
+                    } label: {
+                        Label("Refresh", systemImage: "arrow.clockwise")
+                    }
 
-                Button {
-                    onSettings?()
-                } label: {
-                    Label("Settings", systemImage: "gearshape")
+                    Button {
+                        onSystemAction(system, .settings(system.defaultCoreID ?? ""))
+                    } label: {
+                        Label("Settings", systemImage: "gearshape")
+                    }
+
+                    Button {
+                        onSystemAction(system, .cheats)
+                    } label: {
+                        Label("Cheats", systemImage: "wand.and.stars")
+                    }
+
+                    Button {
+                        onSystemAction(system, .bezels)
+                    } label: {
+                        Label("Bezels", systemImage: "rectangle.on.rectangle")
+                    }
+
+                    Button {
+                        onSystemAction(system, .controllers)
+                    } label: {
+                        Label("Controllers", systemImage: "gamecontroller")
+                    }
+
+                    Button {
+                        onSystemAction(system, .library)
+                    } label: {
+                        Label("Library", systemImage: "book")
+                    }
+                } else {
+                    Button {
+                        onRefresh?()
+                    } label: {
+                        Label("Refresh", systemImage: "arrow.clockwise")
+                    }
+
+                    Button {
+                        onSettings?()
+                    } label: {
+                        Label("Settings", systemImage: "gearshape")
+                    }
                 }
             }
         }

@@ -8,55 +8,70 @@ struct SettingsView: View {
     @EnvironmentObject var coreManager: CoreManager
     @EnvironmentObject var controllerService: ControllerService
     
-    private enum Page: Hashable { case general, library, cores, controllers, boxArt, display, cheats, bezels, retroAchievements, logging, about }
+    enum Page: Hashable, Codable { case general, library, cores, controllers, boxArt, display, cheats, bezels, retroAchievements, logging, about }
     @State private var selectedPage: Page = .general
+    
+    let system: SystemInfo?
+    let initialPage: Page?
+
+    init(system: SystemInfo? = nil, initialPage: Page? = nil) {
+        self.system = system
+        self.initialPage = initialPage
+    }
     
     var body: some View {
         HStack(spacing: 0) {
             // Custom sidebar (no NavigationSplitView = no toggle button)
-            List(selection: $selectedPage) {
-                sidebarItem(icon: "photo.stack.fill", label: "Box Art", page: .boxArt)
-                sidebarItem(icon: "wand.and.stars", label: "Cheats", page: .cheats)
-                sidebarItem(icon: "gamecontroller.fill", label: "Controllers", page: .controllers)
-                sidebarItem(icon: "cpu.fill", label: "Cores", page: .cores)
-                sidebarItem(icon: "rectangle.on.rectangle", label: "Bezels", page: .bezels)
-                sidebarItem(icon: "tv.fill", label: "Display", page: .display)
-                sidebarItem(icon: "gearshape.fill", label: "General", page: .general)
-                sidebarItem(icon: "book.fill", label: "Library", page: .library)
-                sidebarItem(icon: "doc.text.fill", label: "Logging", page: .logging)
-                sidebarItem(icon: "trophy.fill", label: "RetroAchievements", page: .retroAchievements)
-                sidebarItem(icon: "info.circle.fill", label: "About", page: .about)
+            if system == nil {
+                List(selection: $selectedPage) {
+                    sidebarItem(icon: "photo.stack.fill", label: "Box Art", page: .boxArt)
+                    sidebarItem(icon: "wand.and.stars", label: "Cheats", page: .cheats)
+                    sidebarItem(icon: "gamecontroller.fill", label: "Controllers", page: .controllers)
+                    sidebarItem(icon: "cpu.fill", label: "Cores", page: .cores)
+                    sidebarItem(icon: "rectangle.on.rectangle", label: "Bezels", page: .bezels)
+                    sidebarItem(icon: "tv.fill", label: "Display", page: .display)
+                    sidebarItem(icon: "gearshape.fill", label: "General", page: .general)
+                    sidebarItem(icon: "book.fill", label: "Library", page: .library)
+                    sidebarItem(icon: "doc.text.fill", label: "Logging", page: .logging)
+                    sidebarItem(icon: "trophy.fill", label: "RetroAchievements", page: .retroAchievements)
+                    sidebarItem(icon: "info.circle.fill", label: "About", page: .about)
+                }
+                .listStyle(.sidebar)
+                .frame(width: 180)
+                .scrollContentBackground(.hidden)
+                
+                Divider()
             }
-            .listStyle(.sidebar)
-            .frame(width: 180)
-            .scrollContentBackground(.hidden)
-            
-            Divider()
             
             // Content area
             Group {
                 switch selectedPage {
                 case .general:     GeneralSettingsView()
                 case .library:     LibrarySettingsView()
-                 case .cores:       CoreSettingsView()
-                 case .controllers: ControllerSettingsView()
-                 case .boxArt:      BoxArtSettingsView()
+                case .cores:       CoreSettingsView()
+                case .controllers: ControllerSettingsView()
+                case .boxArt:      BoxArtSettingsView()
                 case .display:     DisplaySettingsView()
-                case .cheats:      CheatSettingsView()
-                case .bezels:      BezelSettingsView()
+                case .cheats:      CheatSettingsView(system: system)
+                case .bezels:      BezelSettingsView(system: system)
                 case .retroAchievements: RetroAchievementsSettingsView()
                 case .logging:     LoggingSettingsView()
                 case .about:       AboutView()
                 }
-             }
-             .frame(minWidth: 550, minHeight: 420)
-         }
-         .frame(minWidth: 750, minHeight: 500)
-         .sheet(item: $coreManager.pendingDownload) { pending in
-             CoreDownloadSheet(pending: pending)
-         }
-     }
-    
+            }
+            .frame(minWidth: 550, minHeight: 420)
+        }
+        .frame(minWidth: 750, minHeight: 500)
+        .onAppear {
+            if let initialPage = initialPage {
+                selectedPage = initialPage
+            }
+        }
+        .sheet(item: $coreManager.pendingDownload) { pending in
+            CoreDownloadSheet(pending: pending)
+        }
+    }
+
     private func sidebarItem(icon: String, label: String, page: Page) -> some View {
         HStack(spacing: 12) {
             Image(systemName: icon)

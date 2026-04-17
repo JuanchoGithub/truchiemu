@@ -2,45 +2,64 @@
 #include "internal/ShaderTypes.h.metal"
 using namespace metal;
 
-// ============================================================
-// LCD Grid Shader (Classic Handheld)
-// Simulates sub-pixel layout and a clean grid.
-// ============================================================
 struct LCDGridUniforms {
     float gridStrength;
     float pixelSeparation;
     float brightnessBoost;
     float colorBoost;
-    float4 sourceSize;
-    float4 outputSize;
+    float4 sourceSize; // 160x144
+    float4 outputSize; // Your window size
 };
 
 fragment float4 fragmentLCDGrid(VertexOut in [[stage_in]],
                                  texture2d<float> tex [[texture(0)]],
                                  constant LCDGridUniforms &u [[buffer(0)]]) {
+    
+    // 1. CALCULATE TRUE SCALE
+    // We use the reported 160x144 to ensure we stay inside the buffer
+    float2 ratio = u.outputSize.xy / u.sourceSize.xy;
+    float2 pixelCoord = in.position.xy / ratio;
+
+    // 2. THE CLAMP (Fixes the "Outside Drawing Area" issue)
+    // If we are outside the 160x144 range, return black bars
+    if (pixelCoord.x < 0.0 || pixelCoord.x >= u.sourceSize.x ||
+        pixelCoord.y < 0.0 || pixelCoord.y >= u.sourceSize.y) {
+        return float4(0.0, 0.0, 0.0, 1.0);
+    }
+
+    // 3. PIXEL-PERFECT SAMPLING
+    float2 texelCenter = floor(pixelCoord) + 0.5;
+    float2 alignedUV = texelCenter / u.sourceSize.xy;
+
     constexpr sampler s(filter::nearest, address::clamp_to_edge);
-    float2 uv = in.texCoord;
-    float4 color = tex.sample(s, uv);
+    float3 rawColor = tex.sample(s, alignedUV).rgb;
     
-    // Position within the source pixel
-    float2 pixelPos = fract(uv * u.sourceSize.xy);
+    // Target Colors: Physical Background (149, 147, 110) & Heart Red (128, 48, 44)
+    float3 physicalBase = float3(0.584, 0.576, 0.431);
+    float3 color = pow(rawColor, 1.8) * float3(0.85, 0.55, 0.50);
+
+    // 4. UNIFORM GRID MASK
+    float2 gridFract = fract(pixelCoord);
+    float2 gridLines = step(u.pixelSeparation, gridFract) * step(gridFract, 1.0 - u.pixelSeparation);
+    float gridMask = gridLines.x * gridLines.y;
+
+    // Organic Intersections (Trapezoidal feel)
+    float2 distToEdge = abs(gridFract - 0.5);
+    float cornerMask = smoothstep(0.47, 0.42, length(max(distToEdge - 0.35, 0.0)));
+    gridMask *= cornerMask;
+
+    // 5. BLEND & SUBPIXEL OPTIMIZATION
+    float3 finalColor = mix(physicalBase, color, gridMask * u.gridStrength);
+
+    uint xPos = uint(in.position.x);
+    float3 subMask = float3(1.0);
+    if (xPos % 3 == 0)      subMask = float3(1.02, 0.98, 0.98);
+    else if (xPos % 3 == 1) subMask = float3(0.98, 1.02, 0.98);
+    else                    subMask = float3(0.98, 0.98, 1.02);
     
-    // Grid calculation
-    float2 grid = smoothstep(0.5 - u.pixelSeparation, 0.5, abs(pixelPos - 0.5));
-    float gridMask = 1.0 - max(grid.x, grid.y) * u.gridStrength;
-    
-    // Sub-pixel effect (RGB vertical stripes)
-    float subpixelSub = fract(in.position.x / 3.0);
-    float3 subpixelMask = float3(1.0);
-    if (subpixelSub < 0.33) subpixelMask = float3(1.1, 0.8, 0.8);
-    else if (subpixelSub < 0.66) subpixelMask = float3(0.8, 1.1, 0.8);
-    else subpixelMask = float3(0.8, 0.8, 1.1);
-    
-    color.rgb *= gridMask;
-    color.rgb *= subpixelMask;
-    color.rgb *= u.brightnessBoost;
-    color.rgb *= u.colorBoost;
-    
-    color.a = 1.0;
-    return color;
+    finalColor *= subMask;
+    finalColor *= u.brightnessBoost;
+    finalColor *= u.colorBoost;
+
+    return float4(finalColor, 1.0);
 }

@@ -15,12 +15,7 @@ struct ContentView: View {
     @State private var searchText = ""
     @State private var showCreateCategorySheet = false
     @State private var editingCategory: GameCategory? = nil
-    @State private var pendingCoreSettings: CoreSettingsTrigger? = nil
-
-    struct CoreSettingsTrigger: Identifiable {
-        let id = UUID()
-        let coreID: String
-    }
+    @Environment(\.openWindow) var openWindow
 
     var body: some View {
         Group {
@@ -55,7 +50,29 @@ struct ContentView: View {
                              }
                          },
                          onSettings: { coreID in
-                             pendingCoreSettings = ContentView.CoreSettingsTrigger(coreID: coreID)
+                             openWindow(id: "core-options", value: coreID)
+                         },
+                         onSystemAction: { system, action in
+                             switch action {
+                             case .refresh:
+                                 let romsForSystem = library.roms.filter { $0.systemID == system.id }
+                                 let uniqueFolders = Set(romsForSystem.map { $0.path.deletingLastPathComponent() })
+                                 Task {
+                                     for folder in uniqueFolders {
+                                         await library.refreshFolder(at: folder)
+                                     }
+                                 }
+                             case .settings(let coreID):
+                                 openWindow(id: "core-options", value: coreID)
+                             case .cheats:
+                                 openWindow(id: "system-settings", value: SystemSettingsRequest(system: system, page: .cheats))
+                             case .bezels:
+                                 openWindow(id: "system-settings", value: SystemSettingsRequest(system: system, page: .bezels))
+                             case .controllers:
+                                 openWindow(id: "system-settings", value: SystemSettingsRequest(system: system, page: .controllers))
+                             case .library:
+                                 selectedFilter = .system(system)
+                             }
                          }
                      )
                      .frame(width: 240)
@@ -79,10 +96,7 @@ struct ContentView: View {
                  .sheet(item: $editingCategory) { category in
                      EditCategorySheet(category: category)
                  }
-                 .sheet(item: $pendingCoreSettings) { trigger in
-                     CoreOptionsView(coreID: trigger.coreID)
-                 }
- 
+  
                  // Status bar for library automation or metadata sync
                 if let activeStatus = activeBackgroundTask {
                     VStack(alignment: .leading, spacing: 6) {
@@ -143,7 +157,7 @@ struct ContentView: View {
         return nil
     }
 
-    /// Restores a LibraryFilter from its persisted ID string.
+    /// Restores a LibraryFilter from a persisted ID string.
     private func restoreFilter(from id: String) -> LibraryFilter? {
         if id == "all" { return .all }
         if id == "favorites" { return .favorites }

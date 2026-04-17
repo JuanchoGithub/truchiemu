@@ -99,6 +99,26 @@ struct TruchieEmuApp: App {
                 .environmentObject(coreManager)
                 .environmentObject(controllerService)
         }
+
+        WindowGroup(id: "core-options", for: String.self) { $coreID in
+            if let coreID = coreID {
+                CoreOptionsView(coreID: coreID)
+                    .environmentObject(library)
+                    .environmentObject(categoryManager)
+                    .environmentObject(coreManager)
+                    .environmentObject(controllerService)
+            }
+        }
+
+        WindowGroup(id: "system-settings", for: SystemSettingsRequest.self) { $request in
+            if let request = request {
+                SettingsView(system: request.system, initialPage: request.page)
+                    .environmentObject(library)
+                    .environmentObject(categoryManager)
+                    .environmentObject(coreManager)
+                    .environmentObject(controllerService)
+            }
+        }
         
         Settings {
             SettingsView()

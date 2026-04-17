@@ -1,6 +1,29 @@
 import Foundation
 import SwiftUI // Required for @Published in SystemPreferences and LibretroInfoManager
 
+// MARK: - System Action
+enum SystemAction {
+    case refresh
+    case settings(String) // coreID
+    case cheats
+    case bezels
+    case controllers
+    case library
+}
+
+/// Request used to open system-specific settings via a sheet
+struct SystemSettingsRequest: Identifiable, Codable, Hashable {
+    let id: UUID
+    let system: SystemInfo
+    let page: SettingsView.Page
+
+    init(system: SystemInfo, page: SettingsView.Page) {
+        self.id = UUID()
+        self.system = system
+        self.page = page
+    }
+}
+
 // MARK: - Box Type (must be before SystemInfo since SystemInfo uses it)
 enum BoxType: String, CaseIterable, Identifiable, Codable {
     case vertical = "Vertical"
@@ -8,7 +31,7 @@ enum BoxType: String, CaseIterable, Identifiable, Codable {
     case landscape = "Landscape"
     
     var id: String { self.rawValue }
-
+    
     var aspectRatio: CGFloat {
         switch self {
         case .vertical: return 3.0 / 4.0
@@ -54,7 +77,6 @@ enum KnownBIOS {
         return mameFiles.contains(nameWithoutExt)
     }
 }
-
 struct MagicHeader: Codable, Hashable {
     let offset: UInt64
     let bytes: String? // Changed to optional to allow 'null' in JSON
@@ -130,7 +152,7 @@ struct SystemInfo: Identifiable, Codable, Hashable {
         isDiskBased = try container.decodeIfPresent(Bool.self, forKey: .isDiskBased) ?? false
         coreReportedAspectRatio = try container.decodeIfPresent(CGFloat.self, forKey: .coreReportedAspectRatio)
     }
-
+    
     // Keep the standard init so LibretroInfoManager can still create objects dynamically
     init(id: String, name: String, pathKeywords: [String], magicHeaders:[MagicHeader], filenamePatterns: [String], manufacturer: String, extensions: [String], defaultCoreID: String?, iconName: String, emuIconName: String?, year: String?, sortOrder: Int, defaultBoxType: BoxType, displayInUI: Bool, isDiskBased: Bool = false) {
         self.id = id
@@ -148,8 +170,9 @@ struct SystemInfo: Identifiable, Codable, Hashable {
         self.defaultBoxType = defaultBoxType
         self.displayInUI = displayInUI
         self.isDiskBased = isDiskBased
+        self.coreReportedAspectRatio = nil
     }
-
+    
     func emuImage(size: Int) -> NSImage? {
         LoggerService.extreme(category: "SystemInfo", "Loading emu image for system: \(id)")
         guard let iconName = emuIconName else { return nil }
@@ -186,7 +209,7 @@ struct SystemInfo: Identifiable, Codable, Hashable {
         for name in namesToTry {
             LoggerService.extreme(category: "SystemInfo", "Loading emu image for system: \(id) with name: \(name)")
             if let path = bundle.path(forResource: name, ofType: "png") {
-                if let img = NSImage(contentsOfFile: path) { return img }
+                if let img = NSImage(contentsOf: URL(fileURLWithPath: path)) { return img }
             }
         }
         return nil
@@ -199,7 +222,9 @@ struct SystemInfo: Identifiable, Codable, Hashable {
         default: return name
         }
     }
-}// MARK: - SystemDatabase
+}
+
+// MARK: - SystemDatabase
 class SystemDatabase {
     static var systems: [SystemInfo] = loadSystems()
 
@@ -262,7 +287,7 @@ class SystemDatabase {
                 // Preserve user states from cache (if they hid a system in the UI, respect it)
                 mergedSys.displayInUI = cacheSys.displayInUI
                 
-                // If the cache dynamically found a better year or manufacturer, you COULD 
+                // If the cache dynamically found a better year or manufacturer, you COULD
                 // merge it here, but typically you want your Bundle to win.
                 
                 finalSystems.append(mergedSys)
@@ -291,7 +316,7 @@ class SystemDatabase {
         // 4. Return sorted by your defined order
         return finalSystems.sorted { $0.sortOrder < $1.sortOrder }
     }
-    
+
     static func saveSystems(_ updatedSystems: [SystemInfo]) {
         LoggerService.debug(category: "SystemDatabase", "Saving systems")
         self.systems = updatedSystems.sorted { $0.sortOrder < $1.sortOrder }
@@ -354,7 +379,7 @@ enum EmulatorLanguage: Int, CaseIterable, Identifiable {
         case .japanese: return ["(Japan)", "(JP)", "(Ja)"]
         }
     }
-
+    
     var flagEmoji: String {
         switch self {
         case .spanish: return "🇦🇷"
@@ -366,7 +391,7 @@ enum EmulatorLanguage: Int, CaseIterable, Identifiable {
         case .britishEnglish: return "🇬🇧"
         }
     }
-
+    
     var name: String {
         switch self {
         case .english: return "English"
@@ -502,13 +527,28 @@ class LibretroInfoManager: ObservableObject {
     // Add a static dictionary to act as our "Source of Truth"
     static var coreToSystemMap: [String: Set<String>] = [:]
     // Add a helper to save/load this mapping (like you did for SystemDatabase)
-
+    
     static func saveMappings() {
         if let data = try? JSONEncoder().encode(coreToSystemMap.mapValues { Array($0) }) {
             try? data.write(to: mapURL)
             LoggerService.debug(category: "LibretroInfoManager", "Saved core-to-system mappings")
         }
     }
+
+    static func loadMappings() {
+        if let data = try? Data(contentsOf: mapURL),
+           let parsed = try? JSONDecoder().decode([String: [String]].self, from: data) {
+            coreToSystemMap = parsed.mapValues { Set($0) }
+            LoggerService.debug(category: "LibretroInfoManager", "Loaded core-to-system mappings")
+        } else {
+            LoggerService.debug(category: "LibretroInfoManager", "No existing core-to-system mappings found to load")
+        }
+    }
+
+    private static let mapURL: URL = {
+        let appSupport = FileManager.default.urls(for: .applicationSupportDirectory, in: .userDomainMask).first!
+        return appSupport.appendingPathComponent("TruchieEmu/CoreSystemMappings.json")
+    }()
 
     private let githubZipURL = URL(string: "https://github.com/libretro/libretro-core-info/archive/refs/heads/master.zip")!
     
@@ -521,7 +561,7 @@ class LibretroInfoManager: ObservableObject {
             let (zipData, _) = try await URLSession.shared.data(from: githubZipURL)
             LoggerService.info(category: "LibretroInfoManager", "Downloading libretro info from \(githubZipURL)")
             let tempDir = FileManager.default.temporaryDirectory.appendingPathComponent(UUID().uuidString)
-            try FileManager.default.createDirectory(at: tempDir, withIntermediateDirectories: true)
+            try FileManager.default.createDirectory(at: tempDir, withIntermediateDirectories: true, attributes: nil)
             let zipPath = tempDir.appendingPathComponent("master.zip")
             try zipData.write(to: zipPath)
             LoggerService.debug(category: "LibretroInfoManager", "Downloaded libretro info to \(zipPath)")
@@ -537,7 +577,7 @@ class LibretroInfoManager: ObservableObject {
             
             DispatchQueue.main.async { self.refreshStatus = "Parsing system info..." }
             
-let extractedFolder = tempDir.appendingPathComponent("libretro-core-info-master")
+            let extractedFolder = tempDir.appendingPathComponent("libretro-core-info-master")
             var newExtensionsDict: [String: Set<String>] = [:] 
             
             // 🔥 NEW: Track names and manufacturers for newly discovered systems
@@ -548,7 +588,7 @@ let extractedFolder = tempDir.appendingPathComponent("libretro-core-info-master"
             if let enumerator = FileManager.default.enumerator(at: extractedFolder, includingPropertiesForKeys: nil) {
                 for case let fileURL as URL in enumerator where fileURL.pathExtension == "info" {
                     let infoDict = parseInfoFile(at: fileURL)
-
+        
                     // 1. Handle System/Core Mapping & Discovery
                     if let sysIDString = infoDict["systemid"] { 
                         let coreID = fileURL.deletingPathExtension().lastPathComponent 
@@ -574,7 +614,7 @@ let extractedFolder = tempDir.appendingPathComponent("libretro-core-info-master"
                             }
                         }
                     }
-
+        
                     // 2. Handle File Extensions
                     if let sysName = infoDict["systemname"], let exts = infoDict["supported_extensions"] {
                         let parsedExts = exts.components(separatedBy: "|").map { $0.lowercased() }
@@ -583,7 +623,7 @@ let extractedFolder = tempDir.appendingPathComponent("libretro-core-info-master"
                     }
                 }
             }
-
+            
             DispatchQueue.main.async { self.refreshStatus = "Updating database..." }
             LoggerService.debug(category: "LibretroInfoManager", "Updating database...")
             
@@ -646,18 +686,6 @@ let extractedFolder = tempDir.appendingPathComponent("libretro-core-info-master"
             }
         }
     }
-
-    private static let mapURL: URL = {
-        let appSupport = FileManager.default.urls(for: .applicationSupportDirectory, in: .userDomainMask).first!
-        return appSupport.appendingPathComponent("TruchieEmu/CoreSystemMappings.json")
-    }()
-
-    static func loadMappings() {
-        if let data = try? Data(contentsOf: mapURL),
-        let decoded = try? JSONDecoder().decode([String: [String]].self, from: data) {
-            coreToSystemMap = decoded.mapValues { Set($0) }
-        }
-    }
     
     private func parseInfoFile(at url: URL) -> [String: String] {
         LoggerService.debug(category: "LibretroInfoManager", "Parsing system info from \(url)")
@@ -681,7 +709,6 @@ let extractedFolder = tempDir.appendingPathComponent("libretro-core-info-master"
                 LoggerService.debug(category: "LibretroInfoManager", "Parsed key: \(key), value: \(value)")
             }
         }
-        LoggerService.debug(category: "LibretroInfoManager", "Parsed system info: \(result)")
         return result
     }
 }

@@ -13,6 +13,12 @@ struct CheatSettingsView: View {
     @State private var selectedSystem: String = "all"
     @State private var isExporting = false
     
+    let system: SystemInfo?
+
+    init(system: SystemInfo? = nil) {
+        self.system = system
+    }
+    
     var body: some View {
         ScrollView {
             VStack(alignment: .leading, spacing: 24) {
@@ -101,51 +107,71 @@ struct CheatSettingsView: View {
                     }
                 }
                 
-                // Download buttons
-                HStack(spacing: 12) {
-                    Button {
-                        Task {
-                            let result = await downloadService.downloadAllCheats()
-                            switch result {
-                            case .success(_, _, let message):
-                                downloadResult = message
-                            case .failed(let message):
-                                downloadResult = message
-                            case .alreadyDownloading:
-                                break
-                            }
-                        }
-                    } label: {
-                        Label("Download All Cheats", systemImage: "arrow.down.circle")
-                            .frame(maxWidth: .infinity)
-                    }
-                    .buttonStyle(.borderedProminent)
-                    .disabled(downloadService.isDownloading)
-                    
-                    // System-specific download
-                    Menu {
-                        ForEach(SystemDatabase.systemsForDisplay.sorted(by: { $0.name < $1.name })) { system in
-                            Button(system.name) {
-                                Task {
-                                    do {
-                                        let count = try await downloadService.downloadCheatsForSystem(system.id)
-                                        if count > 0 {
-                                            downloadResult = "Downloaded \(count) cheat file(s) for \(system.name)"
-                                        } else {
-                                            downloadResult = "No cheat files found for \(system.name)"
-                                        }
-                                    } catch {
-                                        downloadResult = "Download failed: \(error.localizedDescription)"
-                                    }
-                                }
-                            }
-                        }
-                    } label: {
-                        Label("Download for System...", systemImage: "gamecontroller")
-                    }
-                    .menuStyle(.borderlessButton)
-                    .disabled(downloadService.isDownloading)
-                }
+                 // Download buttons
+                 HStack(spacing: 12) {
+                     Button {
+                         Task {
+                             let result = await downloadService.downloadAllCheats()
+                             switch result {
+                             case .success(_, _, let message):
+                                 downloadResult = message
+                             case .failed(let message):
+                                 downloadResult = message
+                             case .alreadyDownloading:
+                                 break
+                             }
+                         }
+                     } label: {
+                         Label("Download All Cheats", systemImage: "arrow.down.circle")
+                             .frame(maxWidth: .infinity)
+                     }
+                     .buttonStyle(.borderedProminent)
+                     .disabled(downloadService.isDownloading)
+                     
+                     if let system = system {
+                         Button {
+                             Task {
+                                 do {
+                                     let count = try await downloadService.downloadCheatsForSystem(system.id)
+                                     if count > 0 {
+                                         downloadResult = "Downloaded \(count) cheat file(s) for \(system.name)"
+                                     } else {
+                                         downloadResult = "No cheat files found for \(system.name)"
+                                     }
+                                 } catch {
+                                     downloadResult = "Download failed: \(error.localizedDescription)"
+                                 }
+                             }
+                         } label: {
+                             Label("Download for \(system.name)", systemImage: "gamecontroller")
+                         }
+                         .buttonStyle(.borderedProminent)
+                         .disabled(downloadService.isDownloading)
+                     } else {
+                         Menu {
+                             ForEach(SystemDatabase.systemsForDisplay.sorted(by: { $0.name < $1.name })) { system in
+                                 Button(system.name) {
+                                     Task {
+                                         do {
+                                             let count = try await downloadService.downloadCheatsForSystem(system.id)
+                                             if count > 0 {
+                                                 downloadResult = "Downloaded \(count) cheat file(s) for \(system.name)"
+                                             } else {
+                                                 downloadResult = "No cheat files found for \(system.name)"
+                                             }
+                                         } catch {
+                                             downloadResult = "Download failed: \(error.localizedDescription)"
+                                         }
+                                     }
+                                 }
+                             }
+                         } label: {
+                             Label("Download for System...", systemImage: "gamecontroller")
+                         }
+                         .menuStyle(.borderlessButton)
+                         .disabled(downloadService.isDownloading)
+                     }
+                 }
             }
             
             // Download result message

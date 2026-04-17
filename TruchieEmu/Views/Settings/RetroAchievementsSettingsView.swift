@@ -9,6 +9,12 @@ struct RetroAchievementsSettingsView: View {
     @State private var isLoggingIn = false
     @State private var showPassword = false
     
+    let system: SystemInfo?
+
+    init(system: SystemInfo? = nil) {
+        self.system = system
+    }
+    
     var body: some View {
         ScrollView {
             VStack(alignment: .leading, spacing: 24) {
