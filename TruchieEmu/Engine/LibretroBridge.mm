@@ -572,6 +572,138 @@ static bool bridge_environment(unsigned cmd, void *data) {
     struct retro_variable *var = (struct retro_variable *)data;
     if (var && var->key) {
 
+      // ─── HIGH PRIORITY PS1 OVERRIDES (Force 60Hz / NTSC) ───
+      
+      // For PCSX ReARMed
+      if (strcmp(var->key, "pcsx_rearmed_region") == 0) {
+        var->value = "NTSC"; // Valid values: auto, NTSC, PAL
+        bridge_log_printf(RETRO_LOG_INFO, "PS1 Override: %s = %s (Forcing 60Hz)", var->key, var->value);
+        return true;
+      }
+
+      // --Mednafen PS1 (Beetle) --
+      if (g_coreID && [[g_coreID lowercaseString] containsString:@"mednafen_"]) {
+
+        if ((strcmp(var->key, "beetle_psx_analog_toggle") == 0) || (strcmp(var->key, "beetle_psx_hw_analog_toggle") == 0)) {
+          var->value = "disabled"; // 200% is usually safe and doubles the processing overhead
+          bridge_log_printf(RETRO_LOG_INFO, "PS1 Override: %s = %s ", var->key, var->value);
+          return true;
+        }
+        if ((strcmp(var->key, "beetle_psx_gpu_overclock") == 0) || (strcmp(var->key, "beetle_psx_hw_gpu_overclock") == 0)) {
+          var->value = "2x"; // 200% is usually safe and doubles the processing overhead
+          bridge_log_printf(RETRO_LOG_INFO, "PS1 Override: %s = %s ", var->key, var->value);
+          return true;
+        }
+        if ((strcmp(var->key, "beetle_psx_skip_bios") == 0) || (strcmp(var->key, "beetle_psx_hw_skip_bios") == 0)) {
+          var->value = "enabled"; // 200% is usually safe and doubles the processing overhead
+          bridge_log_printf(RETRO_LOG_INFO, "PS1 Override: %s = %s ", var->key, var->value);
+          return true;
+        }
+        if ((strcmp(var->key, "beetle_psx_internal_resolution") == 0) || (strcmp(var->key, "beetle_psx_hw_internal_resolution") == 0)) {
+          var->value = "4x"; // 200% is usually safe and doubles the processing overhead
+          bridge_log_printf(RETRO_LOG_INFO, "PS1 Override: %s = %s ", var->key, var->value);
+          return true;
+        }
+        if ((strcmp(var->key, "beetle_psx_cd_fastload") == 0) || (strcmp(var->key, "beetle_psx_hw_cd_fastload") == 0)) {
+          var->value = "4x"; // 200% is usually safe and doubles the processing overhead
+          bridge_log_printf(RETRO_LOG_INFO, "PS1 Override: %s = %s ", var->key, var->value);
+          return true;
+        }
+      }
+
+
+      // ─── SWANSTATION PERFORMANCE OVERRIDES ───      
+      if (strstr(var->key, "swanstation_") || (strstr(var->key, "duckstation_"))) {
+        // Force SwanStation to enable Analog mode automatically
+        if (strcmp(var->key, "swanstation_InGame") && strcmp(var->key, "AnalogMode")) {
+          var->value = "Analog"; 
+          return true;
+        }
+        // CPU Overclock: Prevents the game from lagging during heavy scenes
+        if  (strcmp(var->key, "swanstation_CPU_Overclock") == 0) {
+            var->value = "200"; // 200% is usually safe and doubles the processing overhead
+            bridge_log_printf(RETRO_LOG_INFO, "PS1 Override: %s = %s (Forcing 60fps)", var->key, var->value);
+            return true;
+        }
+
+        if (strcmp(var->key, "swanstation_60hz") == 0 || 
+            strcmp(var->key, "duckstation_60hz") == 0 ||
+            strcmp(var->key, "swanstation_Force60HZ") == 0) {
+          var->value = "true"; 
+          bridge_log_printf(RETRO_LOG_INFO, "PS1 Override: %s = %s (Forcing 60Hz)", var->key, var->value);
+          return true;
+        }
+
+        // 1. Force Software Renderer (This is why Mednafen felt faster)
+        // Valid values: "Software", "OpenGL", "Vulkan"
+        if (strcmp(var->key, "swanstation_GPU_Renderer") == 0) {
+          var->value = "Software"; 
+          bridge_log_printf(RETRO_LOG_INFO, "PS1 Override: %s = %s (Forcing Software for Performance)", var->key, var->value);
+          return true;
+        }
+        if (strstr(var->key, "swanstation_GPU") && strstr(var->key, "Renderer")) {
+            var->value = "Software";
+            bridge_log_printf(RETRO_LOG_INFO, "SwanStation Fix: Using Software Renderer");
+            return true;
+        }
+
+        // 2. Disable PGXP (Perspective Correct Geometry)
+        // PGXP is very heavy on the CPU/GPU. Turn it off for maximum speed.
+        if (strstr(var->key, "swanstation_GPU_PGXPEnable")) {
+          var->value = "false";
+          bridge_log_printf(RETRO_LOG_INFO, "PS1 Override: %s = %s (Forcing Software for Performance)", var->key, var->value);
+          return true;
+        }
+
+        // 3. Disable Adaptive Downsampling (Heavy for macOS GL)
+        if (strcmp(var->key, "swanstation_GPU_DownsampleMode") == 0) {
+          var->value = "Disabled";
+          bridge_log_printf(RETRO_LOG_INFO, "PS1 Override: %s = %s (Forcing Software for Performance)", var->key, var->value);
+          return true;
+        }
+
+
+        // 3. Preload entire CD into Mac RAM for instant access
+        if (strcmp(var->key, "swanstation_CDROM_LoadImageToRAM") == 0) {
+          var->value = "enabled";
+          bridge_log_printf(RETRO_LOG_INFO, "PS1 Override: %s = %s (Preload to RAM)", var->key, var->value);
+          return true;
+        }
+        // 2. Multiply the CD read speed (6 = 12x Speed, safe for most games)
+        if (strcmp(var->key, "swanstation_CDROM_ReadSpeedup") == 0) {
+          var->value = "8"; 
+          bridge_log_printf(RETRO_LOG_INFO, "PS1 Override: %s = %s (Fast CD Reading)", var->key, var->value);
+          return true;
+        }
+        // 1. Remove physical laser seek time (0 = Instant/Infinite)
+        if (strcmp(var->key, "swanstation_CDROM_SeekSpeedup") == 0) {
+          //var->value = "0"; 
+          bridge_log_printf(RETRO_LOG_INFO, "PS1 Override: %s = %s (Instant Seek)", var->key, var->value);
+          return true;
+        }
+          
+        // 2. Force 32-bit Color 
+        // Ensures the software renderer outputs 32-bit pixels to match your Metal view.
+        if (strcmp(var->key, "swanstation_GPU.ColorBuffer32Bit") == 0) {
+          var->value = "enabled";
+          return true;
+        }
+
+        // 3. Set Software Resolution (Start at 1x for safety)
+        // M2 Pro can likely handle 2x, but 1x is the most stable.
+        if (strcmp(var->key, "swanstation_GPU.SoftwareRendererResolution") == 0) {
+          var->value = "1x";
+          return true;
+        }
+
+        // 4. Disable PGXP (CPU Killer)
+        // This is usually what causes "horrible slow" performance on laptops.
+        if (strstr(var->key, "swanstation_PGXP.")) {
+          var->value = "disabled";
+          return true;
+        }
+      }
+      
       // ─── HIGH PRIORITY FLYCAST OVERRIDES ───
       // Check for both modern "flycast_" and legacy "reicast_" prefixes
       if (strstr(var->key, "flycast_") || strstr(var->key, "reicast_")) {
@@ -1168,6 +1300,44 @@ static int16_t bridge_input_state(unsigned port, unsigned device,
 
   gi.meta = NULL;
 
+
+// ----------- CONTROLLERS SECTION
+  // Set controller type ONCE during load based on the console type
+  device_type = 1; // Default to RETRO_DEVICE_JOYPAD (Standard GameCube / GameCube)
+  
+
+  // WII - GAMECUGE
+  if (g_coreID && [[g_coreID lowercaseString] containsString:@"dolphin"]) {
+    // Check file extension to see if it's a Wii game
+    NSString *ext = [_retainedRomPath.pathExtension lowercaseString];
+    if ([ext isEqualToString:@"wbfs"] || [ext isEqualToString:@"wad"] ||
+        [ext isEqualToString:@"wia"] || [ext isEqualToString:@"rvz"]) {
+      // It's a Wii game, use Wiimote / Classic Controller
+      device_type = 513;
+      bridge_log_printf(
+          RETRO_LOG_INFO,
+          "Wii game detected. Setting controller to Classic Controller (513).");
+    } else {
+      // It's a GameCube game (.iso, .gcm)
+      bridge_log_printf(
+          RETRO_LOG_INFO,
+          "GameCube game detected. Setting controller to Standard Joypad (1).");
+    }
+      // PLAYSTATION 1
+  } else if (g_coreID && ([[g_coreID lowercaseString] containsString:@"swanstation"])) {
+          device_type = 1;
+          bridge_log_printf(RETRO_LOG_INFO, "PS1 Core detected. Setting device to DualShock (Analog).");
+          
+      } else if (g_coreID && ([[g_coreID lowercaseString] containsString:@"mednafen_psx"])) {
+      device_type = 1;
+      bridge_log_printf(RETRO_LOG_INFO, "PS1 Core detected. Setting device to DualShock (Analog).");
+  } else if (g_coreID && ([[g_coreID lowercaseString] containsString:@"pcsx"])) {
+      device_type = 1;
+      bridge_log_printf(RETRO_LOG_INFO, "PS1 Core detected. Setting device to DualShock (Analog).");
+  }
+
+
+// LAUNCH GAME
   if (!_retro_load_game) {
     bridge_log_printf(RETRO_LOG_ERROR, "retro_load_game is NULL!");
     return NO;
@@ -1198,28 +1368,8 @@ static int16_t bridge_input_state(unsigned port, unsigned device,
                       "retro_load_game crashed with unknown exception");
     goto shutdown;
   }
-  // Set controller type ONCE during load based on the console type
-  device_type =
-      1; // Default to RETRO_DEVICE_JOYPAD (Standard GameCube / GameCube)
-  
-  if (g_coreID && [[g_coreID lowercaseString] containsString:@"dolphin"]) {
-    // Check file extension to see if it's a Wii game
-    NSString *ext = [_retainedRomPath.pathExtension lowercaseString];
-    if ([ext isEqualToString:@"wbfs"] || [ext isEqualToString:@"wad"] ||
-        [ext isEqualToString:@"wia"] || [ext isEqualToString:@"rvz"]) {
 
-      // It's a Wii game, use Wiimote / Classic Controller
-      device_type = 513;
-      bridge_log_printf(
-          RETRO_LOG_INFO,
-          "Wii game detected. Setting controller to Classic Controller (513).");
-    } else {
-      // It's a GameCube game (.iso, .gcm)
-      bridge_log_printf(
-          RETRO_LOG_INFO,
-          "GameCube game detected. Setting controller to Standard Joypad (1).");
-    }
-  }
+/////////// CONTROLLER -- ASIGNED TO CORE
   [self setControllerPortDevice:0 device:device_type];
 
   // ── Notify the core that the hardware context is ready & fetch safe
@@ -1364,22 +1514,34 @@ static int16_t bridge_input_state(unsigned port, unsigned device,
     }
   }
 
-  // --- SHUTDOWN SEQUENCE ---
+// --- SHUTDOWN SEQUENCE ---
 shutdown:
-  if ([_audioEngine isRunning]) {
-    [_audioEngine stop];
+  if ([_audioEngine isRunning]) {[_audioEngine stop];
   }
 
   [_coreLock lock];
   if (_hwRenderEnabled && _glContext)
     CGLSetCurrentContext(_glContext);
 
-  // Check if this is a PSP core to handle specific cleanup quirks
-  BOOL isPSP_Shutdown =
-      (g_coreID && [[g_coreID lowercaseString] containsString:@"ppsspp"]);
+  // Certain cores (SwanStation, DuckStation, PPSSPP) crash if context_destroy is 
+  // called AFTER retro_unload_game because they destroy their internal GPU instances 
+  // during unload. We must trigger it BEFORE to let them clean up safely.
+  BOOL isBuggyShutdown =
+      (g_coreID && [[g_coreID lowercaseString] containsString:@"ppsspp"]) ||
+      (g_coreID && [[g_coreID lowercaseString] containsString:@"swanstation"]) ||
+      (g_coreID && [[g_coreID lowercaseString] containsString:@"duckstation"]);
+
+  if (isBuggyShutdown && _hwRenderEnabled && _hw_callback.context_destroy) {
+      @try {
+          _hw_callback.context_destroy();
+      } @catch (...) {
+          bridge_log_printf(RETRO_LOG_ERROR, "Crash in early HW context_destroy");
+      }
+      // Set to NULL so we don't call it again below
+      _hw_callback.context_destroy = NULL;
+  }
 
   // 1. Unload the game
-  // Note: PPSSPP destroys its internal GL objects here.
   if (didInit) {
       @try {
           if (_retro_unload_game) {
@@ -1390,18 +1552,14 @@ shutdown:
       }
   }
 
-  // 2. Clean up HW Context
+  // 2. Clean up HW Context (for normal, compliant cores)
   if (_hwRenderEnabled && _hw_callback.context_destroy) {
-    // Skip context_destroy for PSP to avoid a double-free crash
-    if (!isPSP_Shutdown) {
       @try {
           _hw_callback.context_destroy();
       } @catch (...) {
           bridge_log_printf(RETRO_LOG_ERROR, "Crash in HW context_destroy");
       }
-    }
-    // Set to NULL so dealloc or other methods don't try to call it again
-    _hw_callback.context_destroy = NULL;
+      _hw_callback.context_destroy = NULL;
   }
 
   // 3. Final De-init
@@ -1416,15 +1574,16 @@ shutdown:
   }
 
   if (_hwRenderEnabled && _glContext)
-    CGLSetCurrentContext(NULL);
-  [_coreLock unlock];
+    CGLSetCurrentContext(NULL);[_coreLock unlock];
 
   // Signal that the core has fully terminated
   if (_bridgeCompletionSemaphore) {
     dispatch_semaphore_signal(_bridgeCompletionSemaphore);
   }
 
-  return (didInit && _running);
+  // Return YES if we made it through init successfully, so the frontend 
+  // doesn't falsely think the launch failed when the user stops the emulation.
+  return didInit;
 }
 
 - (void)stop {
@@ -1708,18 +1867,14 @@ shutdown:
   glBindFramebuffer(GL_READ_FRAMEBUFFER, 0);
 
   uint32_t *pixels = (uint32_t *)_hwReadbackBuffer;
-  BOOL isPSP =
-      (g_coreID && [[g_coreID lowercaseString] containsString:@"ppsspp"]);
-  BOOL isPS2 = (g_coreID &&
-                [[g_coreID lowercaseString] containsString:@"play_libretro"]);
-  BOOL isDolphin =
-      (g_coreID && [[g_coreID lowercaseString] containsString:@"dolphin"]);
-  BOOL isDOSBox =
-      (g_coreID && [[g_coreID lowercaseString] containsString:@"dosbox"]);
-  BOOL isDreamcast =
-      (g_coreID && [[g_coreID lowercaseString] containsString:@"flycast"]);
+  BOOL isPSP = (g_coreID && [[g_coreID lowercaseString] containsString:@"ppsspp"]);
+  BOOL isPS1_swanstation = (g_coreID && [[g_coreID lowercaseString] containsString:@"swanstation"]);
+  BOOL isPS2_play = (g_coreID && [[g_coreID lowercaseString] containsString:@"play_libretro"]);
+  BOOL isDolphin = (g_coreID && [[g_coreID lowercaseString] containsString:@"dolphin"]);
+  BOOL isDOSBox = (g_coreID && [[g_coreID lowercaseString] containsString:@"dosbox"]);
+  BOOL isDreamcast = (g_coreID && [[g_coreID lowercaseString] containsString:@"flycast"]);
 
-  if (isPSP || isPS2 || isDolphin || isDOSBox || isDreamcast) {
+  if (isPSP || isPS2_play || isDolphin || isDOSBox || isDreamcast || isPS1_swanstation) {
     // --- FIX: Vertical FLIP REQUIRED ONLY ---
 
     // 1. Vertical Flip (Fixes the "Upside Down" issue)
