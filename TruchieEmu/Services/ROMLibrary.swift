@@ -468,6 +468,7 @@ class ROMLibrary: ObservableObject {
             // Only update counts if not silent
             if !silent { updateCounts() }
             if persist {
+                LibraryMetadataStore.shared.flushDirtyToSwiftData()
                 updateGamesXML(for: rom)
                 saveROMsToDatabase(only: [rom.id])
             }

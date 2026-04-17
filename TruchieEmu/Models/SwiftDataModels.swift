@@ -109,6 +109,7 @@ final class ROMMetadataEntry {
     var titleScreenPath: String?
     var screenshotPathsJSON: String?
     var customCoreID: String?
+    var customName: String?
 
     // Note: inverse relationship disabled to avoid circular reference
     var romID: UUID?
@@ -130,7 +131,8 @@ final class ROMMetadataEntry {
         hasBoxArt: Bool = false,
         titleScreenPath: String? = nil,
         screenshotPathsJSON: String? = nil,
-        customCoreID: String? = nil
+        customCoreID: String? = nil,
+        customName: String? = nil
     ) {
         self.pathKey = pathKey
         self.crc32 = crc32
@@ -149,6 +151,7 @@ final class ROMMetadataEntry {
         self.titleScreenPath = titleScreenPath
         self.screenshotPathsJSON = screenshotPathsJSON
         self.customCoreID = customCoreID
+        self.customName = customName
     }
 }
 

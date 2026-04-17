@@ -31,6 +31,8 @@ struct ROMMetadataRecord: Codable, Hashable {
     var screenshotPaths: [String] = []
     /// Custom core ID selected by the user for this ROM.
     var customCoreID: String?
+    /// Manually set display name for the ROM.
+    var customName: String?
 
     init() {
         hasBoxArt = false
@@ -52,6 +54,7 @@ struct ROMMetadataRecord: Codable, Hashable {
         hasBoxArt = rom.hasBoxArt
         titleScreenPath = nil
         screenshotPaths = rom.screenshotPaths.map { $0.path }
+        customName = rom.customName
     }
 
     func applying(to rom: ROM) -> ROM {
@@ -85,15 +88,7 @@ struct ROMMetadataRecord: Codable, Hashable {
 
 extension ROMMetadataEntry {
     static func from(pathKey: String, record: ROMMetadataRecord) -> ROMMetadataEntry {
-        let screenshotJSON: String?
-        if !record.screenshotPaths.isEmpty,
-           let data = try? JSONEncoder().encode(record.screenshotPaths),
-           let str = String(data: data, encoding: .utf8) {
-            screenshotJSON = str
-        } else {
-            screenshotJSON = nil
-        }
-        return ROMMetadataEntry(
+        let entry = ROMMetadataEntry(
             pathKey: pathKey,
             crc32: record.crc32,
             title: record.title,
@@ -109,9 +104,17 @@ extension ROMMetadataEntry {
             thumbnailSystemID: record.thumbnailLookupSystemID,
             hasBoxArt: record.hasBoxArt,
             titleScreenPath: record.titleScreenPath,
-            screenshotPathsJSON: screenshotJSON,
-            customCoreID: record.customCoreID
+            customCoreID: record.customCoreID,
+            customName: record.customName
         )
+        
+        if !record.screenshotPaths.isEmpty,
+           let data = try? JSONEncoder().encode(record.screenshotPaths),
+           let str = String(data: data, encoding: .utf8) {
+            entry.screenshotPathsJSON = str
+        }
+        
+        return entry
     }
 
     func toRecord() -> ROMMetadataRecord {
@@ -131,6 +134,7 @@ extension ROMMetadataEntry {
         record.hasBoxArt = hasBoxArt
         record.titleScreenPath = titleScreenPath
         record.customCoreID = customCoreID
+        record.customName = customName
         if let json = screenshotPathsJSON,
            let data = json.data(using: .utf8),
            let paths = try? JSONDecoder().decode([String].self, from: data) {
@@ -269,6 +273,12 @@ final class LibraryMetadataStore: ObservableObject {
     func mergedROM(_ rom: ROM) -> ROM {
         guard let rec = entries[Self.pathKey(for: rom)] else { return rom }
         var merged = rec.applying(to: rom)
+        
+        // Ensure that if a custom name exists on the original ROM, it is preserved during merging.
+        if let customName = rom.customName {
+            merged.customName = customName
+        }
+        
         merged.refreshDerivedFields()
         return merged
     }
