@@ -35,69 +35,72 @@ struct ROM: Identifiable, Codable, Hashable, Sendable {
     var screenshotPaths: [URL] = []
     var settings: ROMSettings = ROMSettings()
     
-    // Derived
-    var displayName: String {
-        // If custom name is set, use it
+    // Derived (Stored)
+    var displayName: String = ""
+    var fileExtension: String = ""
+    var needsAutomaticIdentification: Bool = true
+    var needsAutomaticBoxArt: Bool = true
+    var boxArtLocalPath: URL = URL(fileURLWithPath: "")
+    var infoLocalPath: URL = URL(fileURLWithPath: "")
+    var shortNameForMAME: String = ""
+    var filenameWithoutExtension: String = ""
+
+    /// Updates all stored derived properties based on current state.
+    mutating func refreshDerivedFields() {
+        // 1. filenameWithoutExtension
+        let rawName = path.lastPathComponent
+            .replacingOccurrences(of: ".zip", with: "")
+            .replacingOccurrences(of: ".7z", with: "")
+            .replacingOccurrences(of: ".rom", with: "")
+        self.filenameWithoutExtension = rawName.lowercased()
+
+        // 2. shortNameForMAME
+        self.shortNameForMAME = self.filenameWithoutExtension
+
+        // 3. fileExtension
+        self.fileExtension = path.pathExtension.lowercased()
+
+        // 4. displayName
         if let custom = customName {
-            return GameNameFormatter.stripTags(custom)
+            self.displayName = GameNameFormatter.stripTags(custom)
+        } else if let unifiedEntry = MAMEUnifiedService.shared.lookup(shortName: shortNameForMAME) {
+            self.displayName = GameNameFormatter.stripTags(unifiedEntry.description)
+        } else {
+            let baseName = metadata?.title ?? path.deletingPathExtension().lastPathComponent
+            self.displayName = GameNameFormatter.stripTags(baseName)
         }
-        
-        // For MAME games, try to get the human-readable description from the unified database
-        if let unifiedEntry = MAMEUnifiedService.shared.lookup(shortName: shortNameForMAME) {
-            return GameNameFormatter.stripTags(unifiedEntry.description)
+
+        // 5. needsAutomaticIdentification
+        if customName != nil {
+            self.needsAutomaticIdentification = false
+        } else {
+            let title = metadata?.title?.trimmingCharacters(in: .whitespacesAndNewlines) ?? ""
+            self.needsAutomaticIdentification = title.isEmpty
         }
-        
-        // Fall back to metadata title or filename
-        let baseName = metadata?.title ?? displayNameFromROM()
-        return GameNameFormatter.stripTags(baseName)
-    }
-    
-    /// Returns the ROM filename without extension as a fallback display name.
-    private func displayNameFromROM() -> String {
-        path.deletingPathExtension().lastPathComponent
-    }
-    var fileExtension: String { path.pathExtension.lowercased() }
-    
-    /// Post-scan automation: fetch No-Intro title when missing.
-    var needsAutomaticIdentification: Bool {
-        if customName != nil { return false }
-        let title = metadata?.title?.trimmingCharacters(in: .whitespacesAndNewlines) ?? ""
-        return title.isEmpty
-    }
-    
-    /// Post-scan automation: fetch art when no file on disk yet.
-    var needsAutomaticBoxArt: Bool {
-        return !hasBoxArt
-    }
-    
-    // Persistent storage paths
-    var boxArtLocalPath: URL {
-        let boxartDir = path.deletingLastPathComponent()
-            .appendingPathComponent("boxart")
-        // Use filename without extension: "1942" not "1942.nes"
+
+        // 6. needsAutomaticBoxArt
+        self.needsAutomaticBoxArt = !hasBoxArt
+
+        // 7. boxArtLocalPath
+        let boxartDir = path.deletingLastPathComponent().appendingPathComponent("boxart")
         let romNameWithoutExt = path.deletingPathExtension().lastPathComponent
         let baseName = "\(romNameWithoutExt)_boxart"
-        
-        // Check for .png first, then .jpg, then .jpeg
         let pngPath = boxartDir.appendingPathComponent("\(baseName).png")
         let jpgPath = boxartDir.appendingPathComponent("\(baseName).jpg")
         let jpegPath = boxartDir.appendingPathComponent("\(baseName).jpeg")
-        
+
         if FileManager.default.fileExists(atPath: pngPath.path) {
-            return pngPath
+            self.boxArtLocalPath = pngPath
         } else if FileManager.default.fileExists(atPath: jpgPath.path) {
-            return jpgPath
+            self.boxArtLocalPath = jpgPath
         } else if FileManager.default.fileExists(atPath: jpegPath.path) {
-            return jpegPath
+            self.boxArtLocalPath = jpegPath
+        } else {
+            self.boxArtLocalPath = pngPath
         }
-        
-        // Default to .png for new downloads
-        return pngPath
-    }
-    
-    var infoLocalPath: URL {
-        path.deletingLastPathComponent()
-            .appendingPathComponent("\(name)_info.json")
+
+        // 8. infoLocalPath
+        self.infoLocalPath = path.deletingLastPathComponent().appendingPathComponent("\(name)_info.json")
     }
 }
 
@@ -178,25 +181,6 @@ struct ROMMetadata: Codable, Hashable {
     var audioChips: [String]?
 }
 
-// MARK: - MAME Helpers
-
-extension ROM {
-    /// Get the MAME short name from the ROM.
-    /// Falls back to filename without extension.
-    var shortNameForMAME: String {
-        // Always use filename without extension — this is the canonical MAME short name
-        filenameWithoutExtension
-    }
-    
-    /// Get filename without extension and lowercase.
-    var filenameWithoutExtension: String {
-        let name = path.lastPathComponent
-            .replacingOccurrences(of: ".zip", with: "")
-            .replacingOccurrences(of: ".7z", with: "")
-            .replacingOccurrences(of: ".rom", with: "")
-        return name.lowercased()
-    }
-}
 
 // MARK: - ROM Category Enum
 

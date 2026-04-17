@@ -148,13 +148,17 @@ actor ROMScanner {
                         self.applyMAMEIdentification(to: &rom, url: url)
                     }
 
-                    // Attach cached metadata
-                    rom.metadata = xmlMetadataCache[url.lastPathComponent]
-                    
-                    // Check local boxart
-                    if !rom.isBios && fm.fileExists(atPath: rom.boxArtLocalPath.path) {
-                        rom.hasBoxArt = true
-                    }
+                     // Attach cached metadata
+                     rom.metadata = xmlMetadataCache[url.lastPathComponent]
+                     
+                     // Populate derived fields
+                     rom.refreshDerivedFields()
+                     
+                     // Check local boxart and refresh if found
+                     if !rom.isBios && fm.fileExists(atPath: rom.boxArtLocalPath.path) {
+                         rom.hasBoxArt = true
+                         rom.refreshDerivedFields()
+                     }
 
                     return rom
                 }
@@ -243,15 +247,19 @@ actor ROMScanner {
                         rom.category = "bios"
                     }
 
-                    // Metadata
-                    if let folderMetadata = xmlCache[folder] {
-                        rom.metadata = folderMetadata[url.lastPathComponent]
-                    }
-                    
-                    // Boxart
-                    if !rom.isBios && fm.fileExists(atPath: rom.boxArtLocalPath.path) {
-                        rom.hasBoxArt = true
-                    }
+                     // Metadata
+                     if let folderMetadata = xmlCache[folder] {
+                         rom.metadata = folderMetadata[url.lastPathComponent]
+                     }
+                     
+                     // Populate derived fields
+                     rom.refreshDerivedFields()
+                     
+                     // Boxart: check local and refresh if found
+                     if !rom.isBios && fm.fileExists(atPath: rom.boxArtLocalPath.path) {
+                         rom.hasBoxArt = true
+                         rom.refreshDerivedFields()
+                     }
 
                     return rom
                 }

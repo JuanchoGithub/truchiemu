@@ -268,7 +268,9 @@ final class LibraryMetadataStore: ObservableObject {
 
     func mergedROM(_ rom: ROM) -> ROM {
         guard let rec = entries[Self.pathKey(for: rom)] else { return rom }
-        return rec.applying(to: rom)
+        var merged = rec.applying(to: rom)
+        merged.refreshDerivedFields()
+        return merged
     }
 
     func persist(rom: ROM) {

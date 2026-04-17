@@ -101,11 +101,13 @@ final class LibraryAutomationCoordinator: ObservableObject {
                     for (romID, result) in identificationResults {
                         // Instant lookup (O(1)) instead of scanning the entire library array (O(n))
                         if let current = batchLookup[romID] { 
-                            // Capture the returned updated ROM
-                            if let updated = library.applyIdentificationResult(result, to: current, persist: false, silent: true) {
-                                batchModifiedROMs.append(updated)
-                                modifiedIDs.append(romID)
-                            }
+                                 // Capture the returned updated ROM
+                                 if let updated = library.applyIdentificationResult(result, to: current, persist: false, silent: true) {
+                                     var refreshed = updated
+                                     refreshed.refreshDerivedFields()
+                                     batchModifiedROMs.append(refreshed)
+                                     modifiedIDs.append(romID)
+                                 }
                             completedCount += 1
                         }
                     }

@@ -454,13 +454,16 @@ class ROMLibrary: ObservableObject {
 
     func updateROM(_ rom: ROM, persist: Bool = true, silent: Bool = false) {
         if let idx = roms.firstIndex(where: { $0.id == rom.id }) {
+            var updatedROM = rom
+            updatedROM.refreshDerivedFields()
+            
             let oldBezel = roms[idx].settings.bezelFileName
             
             // Only send updates if not silent
             if !silent { objectWillChange.send() }
-            roms[idx] = rom
-            if oldBezel != rom.settings.bezelFileName { bezelUpdateToken += 1 }
-            LibraryMetadataStore.shared.persist(rom: rom)
+            roms[idx] = updatedROM
+            if oldBezel != updatedROM.settings.bezelFileName { bezelUpdateToken += 1 }
+            LibraryMetadataStore.shared.persist(rom: updatedROM)
             
             // Only update counts if not silent
             if !silent { updateCounts() }
