@@ -60,6 +60,7 @@ class CoreOptionsManager: ObservableObject {
                 if !key.isEmpty { result[key] = value }
             }
         }
+        LoggerService.debug(category: "CoreOptionsManager", "User Overrides: \(result)")
         return result
     }
     
@@ -81,10 +82,13 @@ class CoreOptionsManager: ObservableObject {
     /// Loads definitions and overrides from disk for a specific core.
     /// Used when the core is not running (e.g., in Settings).
     func loadForCore(coreID: String) {
+        LoggerService.debug(category: "CoreOptionsManager", "Loading options from core: \(coreID)")
         currentCoreID = coreID
         
         // 1. Load Definitions
         let defURL = definitionsDirectory.appendingPathComponent("\(coreID).json")
+        LoggerService.debug(category: "CoreOptionsManager", "Definitions file For \(currentCoreID): \(defURL)")
+
         guard let data = try? Data(contentsOf: defURL),
               let json = try? JSONSerialization.jsonObject(with: data) as? [String: Any] else {
             options.removeAll()
@@ -139,10 +143,12 @@ class CoreOptionsManager: ObservableObject {
                 options[key]?.currentValue = value
             }
         }
+        LoggerService.debug(category: "CoreOptionsManager", "Options For \(currentCoreID): \(options)")
     }
     
     /// Set the full options list (called from ObjC bridge when core calls SET_CORE_OPTIONS_V2).
     func setOptions(_ newOptions: [CoreOption], categories: [CoreOptionCategory]) {
+        LoggerService.debug(category: "CoreOptionsManager", "For \(currentCoreID) Setting options: \(newOptions), categories: \(categories)")
         self.categories = Dictionary(uniqueKeysWithValues: categories.map { ($0.key, $0) })
         
         // Load persisted overrides
@@ -195,6 +201,7 @@ class CoreOptionsManager: ObservableObject {
     
     /// Update a single option value and persist.
     func updateValue(_ value: String, for key: String) {
+        LoggerService.debug(category: "CoreOptionsManager", "For \(currentCoreID): updating key: \(key), value \(value)")
         if options[key] != nil {
             options[key]!.currentValue = value
             persistOverride(key: key, value: value)
@@ -203,6 +210,7 @@ class CoreOptionsManager: ObservableObject {
     
     /// Reset a single option to its core-default.
     func resetToDefault(key: String) {
+        LoggerService.debug(category: "CoreOptionsManager", "For \(currentCoreID): resetting key: \(key)")
         if let option = options[key] {
             options[key]!.currentValue = option.defaultValue
             persistOverride(key: key, value: option.defaultValue)
@@ -211,6 +219,7 @@ class CoreOptionsManager: ObservableObject {
     
     /// Reset ALL options to their core-defined defaults.
     func resetAllToDefaults() {
+        LoggerService.debug(category: "CoreOptionsManager", "For \(currentCoreID): resetting ALL KEYS")
         for key in options.keys {
             options[key]!.currentValue = options[key]!.defaultValue
         }
@@ -238,6 +247,7 @@ class CoreOptionsManager: ObservableObject {
         let configURL = optionsFileURL(coreID)
         let content = allOverrides.map { "\($0.key) = \"\($0.value)\"" }.joined(separator: "\n")
         try? content.write(to: configURL, atomically: true, encoding: .utf8)
+        LoggerService.debug(category: "CoreOptionsManager", "For \(currentCoreID): Saving content \(content) into file \(configURL)")
     }
     
     /// Load all user overrides from the per-core config file.
@@ -272,7 +282,7 @@ class CoreOptionsManager: ObservableObject {
                 }
             }
         }
-        
+        LoggerService.debug(category: "CoreOptionsManager", "For \(currentCoreID): Loaded user overrides: \(result)")        
         return result
     }
     
