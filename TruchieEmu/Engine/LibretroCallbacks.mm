@@ -1,0 +1,401 @@
+#import "LibretroCallbacks.h"
+#import "LibretroGlobals.h"
+#import "LibretroBridgeImpl.h"
+#import <dlfcn.h>
+
+int16_t g_input_state[32] = {0};
+int16_t g_analog_state[2][2] = {0};
+BOOL g_turbo_state[32] = {NO};       
+int g_turbo_counter[32] = {0};      
+BOOL g_turbo_active[32] = {NO}; 
+const int g_turbo_rate = 6; 
+int g_turbo_fireButton[32] = {0};
+
+uintptr_t bridge_get_proc_address(const char *sym) {
+  if (!sym) return 0;
+  static void *glHandle = NULL;
+  if (!glHandle)
+    glHandle = dlopen("/System/Library/Frameworks/OpenGL.framework/Versions/Current/OpenGL", RTLD_LAZY);
+  uintptr_t res = (uintptr_t)dlsym(glHandle ? glHandle : RTLD_DEFAULT, sym);
+  if (!res && sym[0] != '_') {
+    char buf[256];
+    snprintf(buf, sizeof(buf), "_%s", sym);
+    res = (uintptr_t)dlsym(glHandle ? glHandle : RTLD_DEFAULT, buf);
+  }
+  return res;
+}
+
+uintptr_t bridge_get_current_framebuffer(void) { 
+  return (uintptr_t)g_hwFBO; 
+}
+
+bool bridge_environment(unsigned cmd, void *data) {
+  if (!g_instance) return false;
+
+  switch (cmd) {
+  case RETRO_ENVIRONMENT_SET_ROTATION:
+    if (data) g_currentRotation = *(const unsigned *)data;
+    return true;
+
+  case RETRO_ENVIRONMENT_GET_LOG_INTERFACE:
+    if (data) ((struct retro_log_interface *)data)->log = bridge_log_printf;
+    return true;
+
+  case RETRO_ENVIRONMENT_GET_CAN_DUPE:
+    if (data) *(unsigned char *)data = 1;
+    return true;
+
+  case RETRO_ENVIRONMENT_GET_SYSTEM_DIRECTORY: {
+    static char s_sysPath[1024];
+    NSString *path =[NSSearchPathForDirectoriesInDomains(NSApplicationSupportDirectory, NSUserDomainMask, YES) firstObject];
+    path =[path stringByAppendingPathComponent:@"TruchieEmu/System"];
+    [[NSFileManager defaultManager] createDirectoryAtPath:path withIntermediateDirectories:YES attributes:nil error:nil];
+    strncpy(s_sysPath, path.UTF8String, sizeof(s_sysPath) - 1);
+    if (data) *(const char **)data = s_sysPath;
+    return true;
+  }
+  case RETRO_ENVIRONMENT_GET_SAVE_DIRECTORY: {
+    static char s_savePath[1024];
+    NSString *path =[NSSearchPathForDirectoriesInDomains(NSApplicationSupportDirectory, NSUserDomainMask, YES) firstObject];
+    path =[path stringByAppendingPathComponent:@"TruchieEmu"];
+    [[NSFileManager defaultManager] createDirectoryAtPath:path withIntermediateDirectories:YES attributes:nil error:nil];
+    strncpy(s_savePath, path.UTF8String, sizeof(s_savePath) - 1);
+    if (data) *(const char **)data = s_savePath;
+    return true;
+  }
+
+  case RETRO_ENVIRONMENT_SET_PIXEL_FORMAT:
+    if (data) {
+      enum retro_pixel_format fmt = *(enum retro_pixel_format *)data;
+      if (g_instance) {[g_instance setPixelFormat:(int)fmt];
+      }
+    }
+    return true;
+
+  case RETRO_ENVIRONMENT_GET_CORE_OPTIONS_VERSION:
+    if (data) *(unsigned *)data = 2;
+    return true;
+
+  case RETRO_ENVIRONMENT_GET_LANGUAGE:
+    if (data) *(unsigned *)data = RETRO_LANGUAGE_ENGLISH;
+    return true;
+
+  case RETRO_ENVIRONMENT_GET_VARIABLE: {
+    struct retro_variable *var = (struct retro_variable *)data;
+    if (var && var->key) {
+
+      // ─── HIGH PRIORITY PS1 OVERRIDES (Force 60Hz / NTSC) ───
+      if (strcmp(var->key, "pcsx_rearmed_region") == 0) {
+        var->value = "NTSC";
+        bridge_log_printf(RETRO_LOG_INFO, "PS1 Override: %s = %s (Forcing 60Hz)", var->key, var->value);
+        return true;
+      }
+
+      // --Mednafen PS1 (Beetle) --
+      if (g_coreID && [[g_coreID lowercaseString] containsString:@"mednafen_"]) {
+        if ((strcmp(var->key, "beetle_psx_analog_toggle") == 0) || (strcmp(var->key, "beetle_psx_hw_analog_toggle") == 0)) {
+          var->value = "disabled";
+          return true;
+        }
+        if ((strcmp(var->key, "beetle_psx_gpu_overclock") == 0) || (strcmp(var->key, "beetle_psx_hw_gpu_overclock") == 0)) {
+          var->value = "2x";
+          return true;
+        }
+        if ((strcmp(var->key, "beetle_psx_skip_bios") == 0) || (strcmp(var->key, "beetle_psx_hw_skip_bios") == 0)) {
+          var->value = "enabled";
+          return true;
+        }
+        if ((strcmp(var->key, "beetle_psx_internal_resolution") == 0) || (strcmp(var->key, "beetle_psx_hw_internal_resolution") == 0)) {
+          var->value = "4x";
+          return true;
+        }
+        if ((strcmp(var->key, "beetle_psx_cd_fastload") == 0) || (strcmp(var->key, "beetle_psx_hw_cd_fastload") == 0)) {
+          var->value = "4x";
+          return true;
+        }
+      }
+
+      // ─── SWANSTATION PERFORMANCE OVERRIDES ───      
+      if (strstr(var->key, "swanstation_") || (strstr(var->key, "duckstation_"))) {
+        if (strcmp(var->key, "swanstation_InGame") && strcmp(var->key, "AnalogMode")) {
+          var->value = "Analog"; 
+          return true;
+        }
+        if (strcmp(var->key, "swanstation_CPU_Overclock") == 0) {
+            var->value = "200";
+            return true;
+        }
+        if (strcmp(var->key, "swanstation_60hz") == 0 || strcmp(var->key, "duckstation_60hz") == 0 || strcmp(var->key, "swanstation_Force60HZ") == 0) {
+          var->value = "true"; 
+          return true;
+        }
+        if (strcmp(var->key, "swanstation_GPU_Renderer") == 0) {
+          var->value = "Software"; 
+          return true;
+        }
+        if (strstr(var->key, "swanstation_GPU") && strstr(var->key, "Renderer")) {
+            var->value = "Software";
+            return true;
+        }
+        if (strstr(var->key, "swanstation_GPU_PGXPEnable")) {
+          var->value = "false";
+          return true;
+        }
+        if (strcmp(var->key, "swanstation_GPU_DownsampleMode") == 0) {
+          var->value = "Disabled";
+          return true;
+        }
+        if (strcmp(var->key, "swanstation_CDROM_LoadImageToRAM") == 0) {
+          var->value = "enabled";
+          return true;
+        }
+        if (strcmp(var->key, "swanstation_CDROM_ReadSpeedup") == 0) {
+          var->value = "8"; 
+          return true;
+        }
+        if (strcmp(var->key, "swanstation_CDROM_SeekSpeedup") == 0) {
+          return true; // was commented out in original file but returned true
+        }
+        if (strcmp(var->key, "swanstation_GPU.ColorBuffer32Bit") == 0) {
+          var->value = "enabled";
+          return true;
+        }
+        if (strcmp(var->key, "swanstation_GPU.SoftwareRendererResolution") == 0) {
+          var->value = "1x";
+          return true;
+        }
+        if (strstr(var->key, "swanstation_PGXP.")) {
+          var->value = "disabled";
+          return true;
+        }
+      }
+      
+      // ─── HIGH PRIORITY FLYCAST OVERRIDES ───
+      if (strstr(var->key, "flycast_") || strstr(var->key, "reicast_")) {
+        if (strstr(var->key, "threaded_rendering") != NULL) {
+          var->value = "disabled";
+          return true;
+        }
+        if (strstr(var->key, "cpu_core") != NULL || strstr(var->key, "cpu_mode") != NULL) {
+          var->value = "interpreter";
+          return true;
+        }
+        if (strstr(var->key, "mmu") != NULL) {
+          var->value = "enabled";
+          return true;
+        }
+        if (strstr(var->key, "alpha_sorting") != NULL) {
+          var->value = "per-triangle";
+          return true;
+        }
+      }
+
+      // dolphin_libretro
+      if (strcmp(var->key, "dolphin_gfx_backend") == 0) {
+        var->value = "OGL";
+        return true;
+      }
+      if (strcmp(var->key, "dolphin_vertex_rounding") == 0) {
+        var->value = "disabled";
+        return true;
+      }
+      if (strcmp(var->key, "dolphin_fastmem") == 0) {
+        var->value = "enabled";
+        return true;
+      }
+
+      // --- MUPEN64 FIXES ---
+      if (strcmp(var->key, "mupen64plus-next-cpucore") == 0 || strcmp(var->key, "mupen64plus-cpucore") == 0) {
+        var->value = "pure_interpreter";
+        return true;
+      }
+      if (strcmp(var->key, "mupen64plus-rdp-plugin") == 0 || strcmp(var->key, "mupen64plus-next-rdp-plugin") == 0) {
+        var->value = "angrylion";
+        return true;
+      }
+      if (strcmp(var->key, "mupen64plus-next-ThreadedRenderer") == 0 || strcmp(var->key, "mupen64plus-next-parallel-rdp-synchronous") == 0) {
+        var->value = "Disabled";
+        return true;
+      }
+      if (strcmp(var->key, "mupen64plus-next-aspect") == 0) {
+        var->value = "4:3";
+        return true;
+      }
+
+      // ── MAME throttle/frame-limiting ──
+      if (strcmp(var->key, "mame2003-plus-throttle") == 0 || strcmp(var->key, "mame2003-plus-skip_disclaimer") == 0 ||
+          strcmp(var->key, "mame2003-plus-skip_warnings") == 0 || strcmp(var->key, "mame2010-throttle") == 0 ||
+          strcmp(var->key, "mame2010-skip_disclaimer") == 0 || strcmp(var->key, "mame2010-skip_warnings") == 0 ||
+          strcmp(var->key, "mame-throttle") == 0 || strcmp(var->key, "mame2000-throttle") == 0) {
+        var->value = "enabled";
+        return true;
+      }
+
+      static __thread char g_varBuf[512];
+      if (g_optValues && g_optValues.count > 0) {
+        NSString *keyStr =[NSString stringWithUTF8String:var->key];
+        NSString *valStr = g_optValues[keyStr];
+        if (valStr && valStr.length > 0) {
+          strncpy(g_varBuf, valStr.UTF8String, sizeof(g_varBuf) - 1);
+          g_varBuf[sizeof(g_varBuf) - 1] = '\0';
+          var->value = g_varBuf;
+          return true;
+        }
+      }
+
+      var->value = NULL;
+    }
+    return false;
+  }
+  case RETRO_ENVIRONMENT_SET_GEOMETRY:
+    if (data && g_instance) {
+      struct retro_game_geometry *geo = (struct retro_game_geometry *)data;
+      g_instance->_avInfo.geometry = *geo;
+    }
+    return true;
+  case RETRO_ENVIRONMENT_SET_INPUT_DESCRIPTORS:
+  case RETRO_ENVIRONMENT_SET_DISK_CONTROL_INTERFACE:
+  case RETRO_ENVIRONMENT_SET_VARIABLES: 
+  case RETRO_ENVIRONMENT_SET_SERIALIZATION_QUIRKS:
+  case RETRO_ENVIRONMENT_SET_PERFORMANCE_LEVEL:
+  case RETRO_ENVIRONMENT_SET_CONTROLLER_INFO:
+  case RETRO_ENVIRONMENT_SET_CONTENT_INFO_OVERRIDE:
+  case RETRO_ENVIRONMENT_SET_SUBSYSTEM_INFO:
+  case RETRO_ENVIRONMENT_SET_KEYBOARD_CALLBACK: 
+    return true;
+  case RETRO_ENVIRONMENT_GET_DISK_CONTROL_INTERFACE_VERSION: 
+    if (data) *(unsigned *)data = 1;
+    return true;
+  case RETRO_ENVIRONMENT_GET_PREFERRED_HW_RENDER: 
+    if (data) *(unsigned *)data = RETRO_HW_CONTEXT_OPENGL_CORE; 
+    return true;
+  case RETRO_ENVIRONMENT_SET_CORE_OPTIONS: {
+    if (data) parseCoreOptionsV1((struct retro_core_options *)data);
+    applyPersistedOverrides();
+    return true;
+  }
+  case RETRO_ENVIRONMENT_SET_CORE_OPTIONS_INTL: {
+    struct retro_core_options_intl *intl = (struct retro_core_options_intl *)data;
+    if (intl) parseCoreOptionsV1(intl->us ? intl->us : intl->local);
+    applyPersistedOverrides();
+    return true;
+  }
+  case RETRO_ENVIRONMENT_SET_CORE_OPTIONS_V2: {
+    if (data) parseCoreOptionsV2((struct retro_core_options_v2 *)data);
+    applyPersistedOverrides();
+    return true;
+  }
+  case RETRO_ENVIRONMENT_SET_CORE_OPTIONS_V2_INTL: {
+    struct retro_core_options_v2_intl *intl = (struct retro_core_options_v2_intl *)data;
+    if (intl) parseCoreOptionsV2(intl->us ? intl->us : intl->local);
+    applyPersistedOverrides();
+    return true;
+  }
+  case RETRO_ENVIRONMENT_GET_GAME_INFO_EXT:
+    return false;
+  case RETRO_ENVIRONMENT_SET_CORE_OPTIONS_DISPLAY:
+  case RETRO_ENVIRONMENT_SET_CORE_OPTIONS_UPDATE_DISPLAY_CALLBACK:
+    return true;
+  case RETRO_ENVIRONMENT_SET_SUPPORT_NO_GAME:
+    return true;
+  case RETRO_ENVIRONMENT_SET_SYSTEM_AV_INFO:
+    if (data && g_instance) {
+      struct retro_system_av_info *info = (struct retro_system_av_info *)data;
+      double fps = info->timing.fps;
+      double sampleRate = info->timing.sample_rate;
+
+      if (fps > 10.0 && fps < 120.0) {
+        g_instance->_avInfo.timing.fps = fps;
+      } else if (fps > 0.0) {
+        g_instance->_avInfo.timing.fps = 60.0;
+      } else {
+        if (g_instance->_avInfo.timing.fps <= 0.0) g_instance->_avInfo.timing.fps = 60.0;
+      }
+
+      if (sampleRate > 8000.0 && sampleRate < 192000.0) {
+        g_instance->_avInfo.timing.sample_rate = sampleRate;
+      }
+      g_instance->_avInfo.geometry = info->geometry;
+    }
+    return true;
+  case RETRO_ENVIRONMENT_GET_VARIABLE_UPDATE: 
+    if (data) *(bool *)data = false;
+    return true;
+  case RETRO_ENVIRONMENT_SET_HW_RENDER: {
+    struct retro_hw_render_callback *cb = (struct retro_hw_render_callback *)data;
+    if (g_instance && cb) {
+      [g_instance setupHWRender:cb];
+      return true;
+    }
+    return false;
+  }
+  case RETRO_ENVIRONMENT_GET_PERF_INTERFACE:
+  case RETRO_ENVIRONMENT_GET_RUMBLE_INTERFACE:
+  case RETRO_ENVIRONMENT_GET_SENSOR_INTERFACE:
+  case RETRO_ENVIRONMENT_GET_HW_RENDER_INTERFACE: 
+  case RETRO_ENVIRONMENT_GET_LED_INTERFACE:
+  case RETRO_ENVIRONMENT_GET_MIDI_INTERFACE:
+  case RETRO_ENVIRONMENT_GET_INPUT_BITMASKS:
+    return false;
+  case RETRO_ENVIRONMENT_GET_AUDIO_VIDEO_ENABLE:
+    if (data) *(int *)data = 3; 
+    return true;
+  default:
+    return false;
+  }
+}
+
+void bridge_video_refresh(const void *data, unsigned width, unsigned height, size_t pitch) {
+  if (g_instance) {
+    if (g_instance->_hwRenderEnabled && g_instance->_glContext)
+      CGLSetCurrentContext(g_instance->_glContext);
+    const void *finalData = data;
+    int format = [g_instance pixelFormat];
+    if (data == RETRO_HW_FRAME_BUFFER_VALID) {
+      finalData =[g_instance readHWRenderedPixels:width height:height];
+      pitch = width * 4;                   
+      format = RETRO_PIXEL_FORMAT_XRGB8888; 
+    }[g_instance handleVideoData:finalData width:width height:height pitch:(int)pitch format:format];
+  }
+}
+
+void bridge_audio_sample(int16_t left, int16_t right) {
+  int16_t samples[2] = {left, right};
+  if (g_instance) [g_instance handleAudioSamples:samples count:2];
+}
+
+size_t bridge_audio_sample_batch(const int16_t *data, size_t frames) {
+  if (g_instance) [g_instance handleAudioSamples:data count:frames * 2];
+  return frames;
+}
+
+static void bridge_handle_turbo(void) {
+  for (int i = 0; i < 32; i++) {
+    if (g_turbo_active[i]) {
+      if (g_turbo_counter[i] <= 0) {
+        g_turbo_counter[i] = g_turbo_rate;
+        g_turbo_state[i] = !g_turbo_state[i];
+        int targetIdx = g_turbo_fireButton[i];
+        if (targetIdx >= 0 && targetIdx < 32) {
+          g_input_state[targetIdx] = g_turbo_state[i] ? 1 : 0;
+        }
+      } else {
+        g_turbo_counter[i]--;
+      }
+    }
+  }
+}
+
+void bridge_input_poll(void) {
+  bridge_handle_turbo();
+}
+
+int16_t bridge_input_state(unsigned port, unsigned device, unsigned index, unsigned id) {
+  if (port == 0) {
+    if (device == RETRO_DEVICE_JOYPAD)
+      return g_input_state[id & 0x1F] ? 1 : 0;
+    if (device == RETRO_DEVICE_ANALOG && index < 2 && id < 2)
+      return g_analog_state[index][id];
+  }
+  return 0;
+}

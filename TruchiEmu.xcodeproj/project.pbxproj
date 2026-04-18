@@ -123,6 +123,10 @@
 		DA7B953D862BCA9932664C99 /* RunningGamesTracker.swift in Sources */ = {isa = PBXBuildFile; fileRef = EAE090319110B0F262FC2BC2 /* RunningGamesTracker.swift */; };
 		DBA355086BB7C0CC12EA76B3 /* ResourceCacheRepository.swift in Sources */ = {isa = PBXBuildFile; fileRef = BDB20047AD50ACDD07213C8B /* ResourceCacheRepository.swift */; };
 		DD1AA7C42F9260D90014A60E /* LibraryViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = DD1AA7C32F9260D90014A60E /* LibraryViewModel.swift */; };
+		DD1AA7CE2F93E53A0014A60E /* LibretroBridgeImpl.mm in Sources */ = {isa = PBXBuildFile; fileRef = DD1AA7C92F93E53A0014A60E /* LibretroBridgeImpl.mm */; };
+		DD1AA7CF2F93E53A0014A60E /* LibretroCallbacks.mm in Sources */ = {isa = PBXBuildFile; fileRef = DD1AA7CB2F93E53A0014A60E /* LibretroCallbacks.mm */; };
+		DD1AA7D02F93E53A0014A60E /* LibretroGlobals.mm in Sources */ = {isa = PBXBuildFile; fileRef = DD1AA7CD2F93E53A0014A60E /* LibretroGlobals.mm */; };
+		DD1AA7D22F93E53A0014A60E /* LibretroBridge.mm.bkp in Resources */ = {isa = PBXBuildFile; fileRef = DD1AA7C72F93E53A0014A60E /* LibretroBridge.mm.bkp */; };
 		DDA58F0A2F8DC26600A9BEE9 /* LibrarySettingsViewGroup.swift in Sources */ = {isa = PBXBuildFile; fileRef = DDA58F092F8DC26600A9BEE9 /* LibrarySettingsViewGroup.swift */; };
 		DDA58F0C2F8DC32800A9BEE9 /* CoreSettingsViewGroup.swift in Sources */ = {isa = PBXBuildFile; fileRef = DDA58F0B2F8DC32800A9BEE9 /* CoreSettingsViewGroup.swift */; };
 		DDA58F122F8DC65100A9BEE9 /* ControllerSettingsViewGroup.swift in Sources */ = {isa = PBXBuildFile; fileRef = DDA58F112F8DC65100A9BEE9 /* ControllerSettingsViewGroup.swift */; };
@@ -574,6 +578,14 @@
 		DB9293E37E0A331CD54CDBF3 /* CheatManagerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CheatManagerView.swift; sourceTree = "<group>"; };
 		DC76C12B188BD3512C51A51F /* LaunchBoxGameMetadata.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LaunchBoxGameMetadata.swift; sourceTree = "<group>"; };
 		DD1AA7C32F9260D90014A60E /* LibraryViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LibraryViewModel.swift; sourceTree = "<group>"; };
+		DD1AA7C52F93E53A0014A60E /* AudioRingBuffer.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = AudioRingBuffer.hpp; sourceTree = "<group>"; };
+		DD1AA7C72F93E53A0014A60E /* LibretroBridge.mm.bkp */ = {isa = PBXFileReference; lastKnownFileType = text; path = LibretroBridge.mm.bkp; sourceTree = "<group>"; };
+		DD1AA7C82F93E53A0014A60E /* LibretroBridgeImpl.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = LibretroBridgeImpl.h; sourceTree = "<group>"; };
+		DD1AA7C92F93E53A0014A60E /* LibretroBridgeImpl.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; path = LibretroBridgeImpl.mm; sourceTree = "<group>"; };
+		DD1AA7CA2F93E53A0014A60E /* LibretroCallbacks.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = LibretroCallbacks.h; sourceTree = "<group>"; };
+		DD1AA7CB2F93E53A0014A60E /* LibretroCallbacks.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; path = LibretroCallbacks.mm; sourceTree = "<group>"; };
+		DD1AA7CC2F93E53A0014A60E /* LibretroGlobals.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = LibretroGlobals.h; sourceTree = "<group>"; };
+		DD1AA7CD2F93E53A0014A60E /* LibretroGlobals.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; path = LibretroGlobals.mm; sourceTree = "<group>"; };
 		DD7DD75048F4FE666F795285 /* ROMRepository.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ROMRepository.swift; sourceTree = "<group>"; };
 		DDA58F092F8DC26600A9BEE9 /* LibrarySettingsViewGroup.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LibrarySettingsViewGroup.swift; sourceTree = "<group>"; };
 		DDA58F0B2F8DC32800A9BEE9 /* CoreSettingsViewGroup.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CoreSettingsViewGroup.swift; sourceTree = "<group>"; };
@@ -1148,6 +1160,14 @@
 		83304F5BB3B25877F8337BF8 /* Engine */ = {
 			isa = PBXGroup;
 			children = (
+				DD1AA7C52F93E53A0014A60E /* AudioRingBuffer.hpp */,
+				DD1AA7C72F93E53A0014A60E /* LibretroBridge.mm.bkp */,
+				DD1AA7C82F93E53A0014A60E /* LibretroBridgeImpl.h */,
+				DD1AA7C92F93E53A0014A60E /* LibretroBridgeImpl.mm */,
+				DD1AA7CA2F93E53A0014A60E /* LibretroCallbacks.h */,
+				DD1AA7CB2F93E53A0014A60E /* LibretroCallbacks.mm */,
+				DD1AA7CC2F93E53A0014A60E /* LibretroGlobals.h */,
+				DD1AA7CD2F93E53A0014A60E /* LibretroGlobals.mm */,
 				29AA23F97722816919BB9A98 /* libretro.h */,
 				D57E42574E494390B161B243 /* LibretroBridge.h */,
 				B7D46AC62DC8C09CBAA53763 /* LibretroBridge.mm */,
@@ -1798,6 +1818,7 @@
 				DDA592582F8DD4EA00A9BEE9 /* x68000@132w.png in Resources */,
 				DDA592592F8DD4EA00A9BEE9 /* xbox.ico in Resources */,
 				DDA5925A2F8DD4EA00A9BEE9 /* megaduck@132w.png in Resources */,
+				DD1AA7D22F93E53A0014A60E /* LibretroBridge.mm.bkp in Resources */,
 				DDA5925B2F8DD4EA00A9BEE9 /* chai@132w.png in Resources */,
 				DDA5925C2F8DD4EA00A9BEE9 /* GB.png in Resources */,
 				DDA5925D2F8DD4EA00A9BEE9 /* VMAC.png in Resources */,
@@ -1996,6 +2017,9 @@
 				DDA58F1A2F8DC83B00A9BEE9 /* BoxArtSettingsView.swift in Sources */,
 				90BFE4669CA37266D841CA99 /* CLIManager.swift in Sources */,
 				55F19268FAB68DFC6D19F209 /* CRTFilter.metal in Sources */,
+				DD1AA7CE2F93E53A0014A60E /* LibretroBridgeImpl.mm in Sources */,
+				DD1AA7CF2F93E53A0014A60E /* LibretroCallbacks.mm in Sources */,
+				DD1AA7D02F93E53A0014A60E /* LibretroGlobals.mm in Sources */,
 				A00192372A0183EF4772CACF /* CategoryManager.swift in Sources */,
 				D828831253FFC9F16AA7D2B7 /* CategoryRowButton.swift in Sources */,
 				C1A4A19926D1834FC8C42E3D /* Cheat.swift in Sources */,
