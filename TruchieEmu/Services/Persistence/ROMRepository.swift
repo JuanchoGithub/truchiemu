@@ -28,6 +28,24 @@ final class ROMRepository {
         }
     }
 
+    // Fetch the first valid (non-BIOS, non-hidden) ROM for a given system.
+    func firstROM(forSystemID systemID: String) -> ROM? {
+        let descriptor = FetchDescriptor<ROMEntry>(
+            predicate: #Predicate { 
+                $0.systemID == systemID && !$0.isBios && !$0.isHidden 
+            }
+        )
+        do {
+            let entries = try context.fetch(descriptor)
+            if let entry = entries.first {
+                return rom(from: entry)
+            }
+        } catch {
+            LoggerService.error(category: "ROMRepository", "Failed to fetch first ROM for system \(systemID): \(error.localizedDescription)")
+        }
+        return nil
+    }
+
     // Fetch all ROMs and map them to ROM structs.
     func allROMs() -> [ROM] {
         let descriptor = FetchDescriptor<ROMEntry>()

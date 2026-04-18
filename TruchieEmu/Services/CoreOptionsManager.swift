@@ -161,12 +161,23 @@ class CoreOptionsManager: ObservableObject {
     func discoverOptions(for coreID: String, dylibPath: String, romPath: String?) async {
         LoggerService.debug(category: "CoreOptionsManager", "Starting discovery for core: \(coreID)")
         
-        // 1. Launch the core in headless mode to trigger environment callbacks
-        await LibretroBridge.loadCore(forOptions: dylibPath, coreID: coreID, romPath: nil)
+        // 1. Launch the core in headless mode to trigger environment callbacks.
+        // We provide a dummy ROM path if possible to prevent crashes in cores that require a valid game context.
+        var dummyRomPath: String? = nil
+        if let systemID = CoreManager.supportedSystems(for: coreID).first {
+            let repository = ROMRepository(context: SwiftDataContainer.shared.mainContext)
+            if let rom = repository.firstROM(forSystemID: systemID) {
+                dummyRomPath = rom.path.path
+            }
+        }
+
+        await LibretroBridge.loadCore(forOptions: dylibPath, coreID: coreID, romPath: dummyRomPath)
+        LoggerService.debug(category: "CoreOptionsManager", "For: \(coreID), Core loaded")
         
         // 2. Fetch the captured options and categories from the bridge
         let optionsDict = LibretroBridge.getOptionsDictionary() ?? [:]
         let categoriesDict = LibretroBridge.getCategoriesDictionary() ?? [:]
+        LoggerService.debug(category: "CoreOptionsManager", "For: \(coreID), options: \(optionsDict), categories: \(categoriesDict)")
         
         // 3. Convert the bridge dictionaries into our internal models
         var newOptions: [CoreOption] = []
@@ -178,6 +189,7 @@ class CoreOptionsManager: ObservableObject {
             let info = catData["info"] as? String ?? ""
             newCategories.append(CoreOptionCategory(key: catKey, description: desc, info: info))
         }
+        LoggerService.debug(category: "CoreOptionsManager", "For: \(coreID), new Categories: \(newCategories)")
         
         // Parse Options
         for (key, optData) in optionsDict {
@@ -209,6 +221,7 @@ class CoreOptionsManager: ObservableObject {
                 version: .v2
             ))
         }
+        LoggerService.debug(category: "CoreOptionsManager", "For: \(coreID), Parsed options")
         
         // 4. Update the manager and persist
         await MainActor.run {

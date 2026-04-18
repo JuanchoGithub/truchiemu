@@ -317,7 +317,7 @@ struct SystemCoresView: View {
             set: { if !$0 { showOptionsFor = nil } }
         )) {
             if let coreID = showOptionsFor {
-                CoreOptionsView(coreID: coreID)
+                CoreOptionsView(identifier: coreID)
             }
         }
     }
