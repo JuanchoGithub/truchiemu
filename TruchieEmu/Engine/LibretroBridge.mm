@@ -119,7 +119,8 @@ static NSString *_Nullable g_optionsDylibPath = nil;
 + (void)setPaused:(BOOL)paused { g_isPaused = paused; }
 + (BOOL)isPaused { return g_isPaused; }
 
-+ (void)loadCoreForOptions:(NSString *)dylibPath coreID:(NSString *)coreID {
+// Load a core (optionally with a ROM) to initialize its options
++ (void)loadCoreForOptions:(NSString *)dylibPath coreID:(NSString *)coreID romPath:(nullable NSString *)romPath {
   g_loadingForOptions = YES;
   g_coreID = [coreID copy];
   g_optionsDylibPath = [dylibPath copy];

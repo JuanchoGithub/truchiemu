@@ -1,4 +1,5 @@
 import SwiftUI
+import Combine
 
 // MARK: - Core Options View
 // Shows options for a specific core.
@@ -6,6 +7,7 @@ struct CoreOptionsView: View {
     let coreID: String
     @StateObject private var viewModel: CoreOptionsViewModel
     @Environment(\.dismiss) private var dismiss
+    @EnvironmentObject var library: ROMLibrary
 
     init(coreID: String) {
         self.coreID = coreID
@@ -37,10 +39,12 @@ struct CoreOptionsView: View {
                                 .frame(maxWidth: 280)
                         }
                         
-                        Button("Load Settings from Definitions") {
-                            viewModel.loadOptions(for: coreID)
-                        }
-                        .buttonStyle(.borderedProminent)
+                         Button("Load Settings from Definitions") {
+                             Task {
+                                 await viewModel.discoverOptions(for: coreID, library: library)
+                             }
+                         }
+                         .buttonStyle(.borderedProminent)
                     }
                     .frame(maxWidth: .infinity, maxHeight: .infinity)
                 } else {
@@ -90,9 +94,10 @@ struct CoreOptionsView: View {
 // MARK: - View Model
 @MainActor
 class CoreOptionsViewModel: ObservableObject {
-    @ObservedObject private var manager = CoreOptionsManager.shared
+    private let manager = CoreOptionsManager.shared
     let coreID: String
     @Published var hasLoadedOnce = false
+    private var cancellables = Set<AnyCancellable>()
 
     var options: [String: CoreOption] { manager.options }
     var categories: [String: CoreOptionCategory] { manager.categories }
@@ -112,6 +117,13 @@ class CoreOptionsViewModel: ObservableObject {
 
     init(coreID: String) {
         self.coreID = coreID
+        
+        // Observe manager changes to update the view model
+        manager.objectWillChange
+            .sink { [weak self] _ in
+                self?.objectWillChange.send()
+            }
+            .store(in: &cancellables)
     }
 
     func categoryDisplayName(for key: String) -> String {
@@ -133,12 +145,32 @@ class CoreOptionsViewModel: ObservableObject {
         hasLoadedOnce = true
     }
 
-    func updateValue(_ value: String, for key: String) {
-        manager.updateValue(value, for: key)
+    func discoverOptions(for coreID: String, library: ROMLibrary) async {
+        // Find the dylib path for this core
+        let runner = EmulatorRunner.forSystem(nil) // Use a generic runner to access findCoreLib
+        guard let dylibPath = runner.findCoreLib(coreID: coreID) else {
+            LoggerService.error(category: "CoreOptionsView", "Could not find dylib for core: \(coreID)")
+            return
+        }
+        
+        // To fulfill the "launch with any random game" requirement, we attempt to find a random ROM.
+        var randomRomPath: String? = nil
+        if let randomRom = library.roms.randomElement() {
+            randomRomPath = randomRom.path.path
+        }
+        
+        await manager.discoverOptions(for: coreID, dylibPath: dylibPath, romPath: randomRomPath)
+        
+        // Reload the options from the newly created definitions
+        manager.loadForCore(coreID: coreID)
     }
 
     func resetAll() {
         manager.resetAllToDefaults()
+    }
+
+    func updateValue(_ value: String, for key: String) {
+        manager.updateValue(value, for: key)
     }
 }
 

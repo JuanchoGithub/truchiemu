@@ -36,8 +36,8 @@ typedef void (^CoreLoggerBlock)(const char *message, int level);
 + (BOOL)unserializeState:(NSData *)data;
 + (size_t)serializeSize;
 
-/* Load a core without content to initialize its options (supports_no_game) */
-+ (void)loadCoreForOptions:(NSString *)dylibPath coreID:(NSString *)coreID;
+/* Load a core (optionally with a ROM) to initialize its options */
++ (void)loadCoreForOptions:(NSString *)dylibPath coreID:(NSString *)coreID romPath:(nullable NSString *)romPath;
 + (BOOL)isCoreLoadedForOptions;
 
 /* Core Options — called from Swift to get/set values */

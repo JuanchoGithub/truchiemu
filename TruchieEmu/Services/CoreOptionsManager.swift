@@ -90,16 +90,16 @@ class CoreOptionsManager: ObservableObject {
         // 1. Load Definitions
         let defURL = definitionsDirectory.appendingPathComponent("\(coreID).json")
         LoggerService.debug(category: "CoreOptionsManager", "Definitions file For \(currentCoreID): \(defURL)")
-
+ 
         guard let data = try? Data(contentsOf: defURL),
               let json = try? JSONSerialization.jsonObject(with: data) as? [String: Any] else {
             options.removeAll()
             categories.removeAll()
-
+ 
             LoggerService.debug(category: "CoreOptionsManager", "For \(coreID): cleaned up.")
             return
         }
-        
+ 
         // Parse categories
         if let cats = json["categories"] as? [String: [String: String]] {
             categories.removeAll()
@@ -108,7 +108,7 @@ class CoreOptionsManager: ObservableObject {
             }
             LoggerService.debug(category: "CoreOptionsManager", "For \(currentCoreID): loaded these categories: \(categories)")
         }
-        
+ 
         // Parse options
         if let opts = json["options"] as? [String: [String: Any]] {
             options.removeAll()
@@ -118,7 +118,7 @@ class CoreOptionsManager: ObservableObject {
                 let catKey = d["category"] as? String ?? ""
                 let defaultVal = d["defaultValue"] as? String ?? ""
                 let currentVal = d["currentValue"] as? String ?? defaultVal
-                
+ 
                 var values: [CoreOptionValue] = []
                 if let valsArr = d["values"] as? [[String: String]] {
                     for v in valsArr {
@@ -128,7 +128,7 @@ class CoreOptionsManager: ObservableObject {
                 if values.isEmpty {
                     values = [CoreOptionValue(value: currentVal, label: currentVal)]
                 }
-                
+ 
                 // JSON definitions are assumed to be V2
                 let versionedKey = "\(key)_\(CoreOptionVersion.v2.rawValue)"
                 options[versionedKey] = CoreOption(
@@ -144,7 +144,7 @@ class CoreOptionsManager: ObservableObject {
             }
             LoggerService.debug(category: "CoreOptionsManager", "For \(coreID): these are the options: \(options)")
         }
-        
+ 
         // 2. Apply Overrides
         let overrides = loadUserOverrides(for: coreID)
         for (key, value) in overrides {
@@ -154,6 +154,68 @@ class CoreOptionsManager: ObservableObject {
             }
         }
         LoggerService.debug(category: "CoreOptionsManager", "Options For \(currentCoreID): \(options)")
+    }
+
+    /// Triggers the discovery of core options by launching a headless core session.
+    /// This is used when definitions are missing.
+    func discoverOptions(for coreID: String, dylibPath: String, romPath: String?) async {
+        LoggerService.debug(category: "CoreOptionsManager", "Starting discovery for core: \(coreID)")
+        
+        // 1. Launch the core in headless mode to trigger environment callbacks
+        await LibretroBridge.loadCore(forOptions: dylibPath, coreID: coreID, romPath: nil)
+        
+        // 2. Fetch the captured options and categories from the bridge
+        let optionsDict = LibretroBridge.getOptionsDictionary() ?? [:]
+        let categoriesDict = LibretroBridge.getCategoriesDictionary() ?? [:]
+        
+        // 3. Convert the bridge dictionaries into our internal models
+        var newOptions: [CoreOption] = []
+        var newCategories: [CoreOptionCategory] = []
+        
+        // Parse Categories
+        for (catKey, catData) in categoriesDict {
+            let desc = catData["description"] as? String ?? catKey
+            let info = catData["info"] as? String ?? ""
+            newCategories.append(CoreOptionCategory(key: catKey, description: desc, info: info))
+        }
+        
+        // Parse Options
+        for (key, optData) in optionsDict {
+            let desc = optData["description"] as? String ?? key
+            let info = optData["info"] as? String ?? ""
+            let catKey = optData["category"] as? String
+            let defaultVal = optData["defaultValue"] as? String ?? ""
+            let currentVal = optData["currentValue"] as? String ?? defaultVal
+            
+            var values: [CoreOptionValue] = []
+            if let valsArr = optData["values"] as? [[String: String]] {
+                for v in valsArr {
+                    values.append(CoreOptionValue(value: v["value"] ?? "", label: v["label"] ?? v["value"] ?? ""))
+                }
+            }
+            
+            if values.isEmpty {
+                values = [CoreOptionValue(value: currentVal, label: currentVal)]
+            }
+            
+            newOptions.append(CoreOption(
+                key: key,
+                description: desc,
+                info: info,
+                category: catKey,
+                values: values,
+                defaultValue: defaultVal,
+                currentValue: currentVal,
+                version: .v2
+            ))
+        }
+        
+        // 4. Update the manager and persist
+        await MainActor.run {
+            self.prepareForCore(coreID: coreID)
+            self.setOptions(newOptions, categories: newCategories)
+            LoggerService.debug(category: "CoreOptionsManager", "Discovery complete. Persisted \(newOptions.count) options.")
+        }
     }
     
     // Set the full options list (called from ObjC bridge when core calls SET_CORE_OPTIONS_V2).
