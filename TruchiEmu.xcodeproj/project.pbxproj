@@ -132,6 +132,24 @@
 		DD1AA7DF2F93EA840014A60E /* BezelView.swift in Sources */ = {isa = PBXBuildFile; fileRef = DD1AA7D32F93EA840014A60E /* BezelView.swift */; };
 		DD1AA7E02F93EA840014A60E /* FocusableMTKView.swift in Sources */ = {isa = PBXBuildFile; fileRef = DD1AA7D52F93EA840014A60E /* FocusableMTKView.swift */; };
 		DD1AA7E12F93EA840014A60E /* GameButtons.swift in Sources */ = {isa = PBXBuildFile; fileRef = DD1AA7D62F93EA840014A60E /* GameButtons.swift */; };
+		DD1AA7ED2F93ED700014A60E /* ModernSectionCard.swift in Sources */ = {isa = PBXBuildFile; fileRef = DD1AA7EB2F93ED700014A60E /* ModernSectionCard.swift */; };
+		DD1AA7EE2F93ED700014A60E /* CheatComponents.swift in Sources */ = {isa = PBXBuildFile; fileRef = DD1AA7E32F93ED700014A60E /* CheatComponents.swift */; };
+		DD1AA7EF2F93ED700014A60E /* ManualActionStatus.swift in Sources */ = {isa = PBXBuildFile; fileRef = DD1AA7E82F93ED700014A60E /* ManualActionStatus.swift */; };
+		DD1AA7F02F93ED700014A60E /* AchievementBadgeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = DD1AA7E22F93ED700014A60E /* AchievementBadgeView.swift */; };
+		DD1AA7F12F93ED700014A60E /* DetailSection.swift in Sources */ = {isa = PBXBuildFile; fileRef = DD1AA7E62F93ED700014A60E /* DetailSection.swift */; };
+		DD1AA7F22F93ED700014A60E /* CoreVersionPickerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = DD1AA7E42F93ED700014A60E /* CoreVersionPickerView.swift */; };
+		DD1AA7F32F93ED700014A60E /* DetailBoxArtComponents.swift in Sources */ = {isa = PBXBuildFile; fileRef = DD1AA7E52F93ED700014A60E /* DetailBoxArtComponents.swift */; };
+		DD1AA7F52F93ED700014A60E /* MetadataRow.swift in Sources */ = {isa = PBXBuildFile; fileRef = DD1AA7E92F93ED700014A60E /* MetadataRow.swift */; };
+		DD1AA7F62F93ED700014A60E /* ModernSaveStateSlotView.swift in Sources */ = {isa = PBXBuildFile; fileRef = DD1AA7EA2F93ED700014A60E /* ModernSaveStateSlotView.swift */; };
+		DD1AA7F72F93ED700014A60E /* ThemeColors.swift in Sources */ = {isa = PBXBuildFile; fileRef = DD1AA7EC2F93ED700014A60E /* ThemeColors.swift */; };
+		DD1AA8002F93F0CE0014A60E /* Bezels.swift in Sources */ = {isa = PBXBuildFile; fileRef = DD1AA7F82F93F0CE0014A60E /* Bezels.swift */; };
+		DD1AA8012F93F0CE0014A60E /* CoreAndAchievements.swift in Sources */ = {isa = PBXBuildFile; fileRef = DD1AA7FB2F93F0CE0014A60E /* CoreAndAchievements.swift */; };
+		DD1AA8022F93F0CE0014A60E /* Cheats.swift in Sources */ = {isa = PBXBuildFile; fileRef = DD1AA7F92F93F0CE0014A60E /* Cheats.swift */; };
+		DD1AA8032F93F0CE0014A60E /* SavedStates.swift in Sources */ = {isa = PBXBuildFile; fileRef = DD1AA7FE2F93F0CE0014A60E /* SavedStates.swift */; };
+		DD1AA8042F93F0CE0014A60E /* Shader.swift in Sources */ = {isa = PBXBuildFile; fileRef = DD1AA7FF2F93F0CE0014A60E /* Shader.swift */; };
+		DD1AA8052F93F0CE0014A60E /* GameInfo.swift in Sources */ = {isa = PBXBuildFile; fileRef = DD1AA7FC2F93F0CE0014A60E /* GameInfo.swift */; };
+		DD1AA8062F93F0CE0014A60E /* Header.swift in Sources */ = {isa = PBXBuildFile; fileRef = DD1AA7FD2F93F0CE0014A60E /* Header.swift */; };
+		DD1AA8072F93F0CE0014A60E /* Controls.swift in Sources */ = {isa = PBXBuildFile; fileRef = DD1AA7FA2F93F0CE0014A60E /* Controls.swift */; };
 		DDA58F0A2F8DC26600A9BEE9 /* LibrarySettingsViewGroup.swift in Sources */ = {isa = PBXBuildFile; fileRef = DDA58F092F8DC26600A9BEE9 /* LibrarySettingsViewGroup.swift */; };
 		DDA58F0C2F8DC32800A9BEE9 /* CoreSettingsViewGroup.swift in Sources */ = {isa = PBXBuildFile; fileRef = DDA58F0B2F8DC32800A9BEE9 /* CoreSettingsViewGroup.swift */; };
 		DDA58F122F8DC65100A9BEE9 /* ControllerSettingsViewGroup.swift in Sources */ = {isa = PBXBuildFile; fileRef = DDA58F112F8DC65100A9BEE9 /* ControllerSettingsViewGroup.swift */; };
@@ -596,6 +614,24 @@
 		DD1AA7D72F93EA840014A60E /* GameOverlayToolbar.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GameOverlayToolbar.swift; sourceTree = "<group>"; };
 		DD1AA7D82F93EA840014A60E /* ShaderUniforms.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShaderUniforms.swift; sourceTree = "<group>"; };
 		DD1AA7D92F93EA840014A60E /* StandaloneGameWindowController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StandaloneGameWindowController.swift; sourceTree = "<group>"; };
+		DD1AA7E22F93ED700014A60E /* AchievementBadgeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AchievementBadgeView.swift; sourceTree = "<group>"; };
+		DD1AA7E32F93ED700014A60E /* CheatComponents.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CheatComponents.swift; sourceTree = "<group>"; };
+		DD1AA7E42F93ED700014A60E /* CoreVersionPickerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CoreVersionPickerView.swift; sourceTree = "<group>"; };
+		DD1AA7E52F93ED700014A60E /* DetailBoxArtComponents.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DetailBoxArtComponents.swift; sourceTree = "<group>"; };
+		DD1AA7E62F93ED700014A60E /* DetailSection.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DetailSection.swift; sourceTree = "<group>"; };
+		DD1AA7E82F93ED700014A60E /* ManualActionStatus.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ManualActionStatus.swift; sourceTree = "<group>"; };
+		DD1AA7E92F93ED700014A60E /* MetadataRow.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MetadataRow.swift; sourceTree = "<group>"; };
+		DD1AA7EA2F93ED700014A60E /* ModernSaveStateSlotView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ModernSaveStateSlotView.swift; sourceTree = "<group>"; };
+		DD1AA7EB2F93ED700014A60E /* ModernSectionCard.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ModernSectionCard.swift; sourceTree = "<group>"; };
+		DD1AA7EC2F93ED700014A60E /* ThemeColors.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ThemeColors.swift; sourceTree = "<group>"; };
+		DD1AA7F82F93F0CE0014A60E /* Bezels.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Bezels.swift; sourceTree = "<group>"; };
+		DD1AA7F92F93F0CE0014A60E /* Cheats.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Cheats.swift; sourceTree = "<group>"; };
+		DD1AA7FA2F93F0CE0014A60E /* Controls.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Controls.swift; sourceTree = "<group>"; };
+		DD1AA7FB2F93F0CE0014A60E /* CoreAndAchievements.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CoreAndAchievements.swift; sourceTree = "<group>"; };
+		DD1AA7FC2F93F0CE0014A60E /* GameInfo.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GameInfo.swift; sourceTree = "<group>"; };
+		DD1AA7FD2F93F0CE0014A60E /* Header.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Header.swift; sourceTree = "<group>"; };
+		DD1AA7FE2F93F0CE0014A60E /* SavedStates.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SavedStates.swift; sourceTree = "<group>"; };
+		DD1AA7FF2F93F0CE0014A60E /* Shader.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Shader.swift; sourceTree = "<group>"; };
 		DD7DD75048F4FE666F795285 /* ROMRepository.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ROMRepository.swift; sourceTree = "<group>"; };
 		DDA58F092F8DC26600A9BEE9 /* LibrarySettingsViewGroup.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LibrarySettingsViewGroup.swift; sourceTree = "<group>"; };
 		DDA58F0B2F8DC32800A9BEE9 /* CoreSettingsViewGroup.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CoreSettingsViewGroup.swift; sourceTree = "<group>"; };
@@ -1222,6 +1258,24 @@
 		8E10246CCBAE92B545C3FF68 /* Sections */ = {
 			isa = PBXGroup;
 			children = (
+				DD1AA7F82F93F0CE0014A60E /* Bezels.swift */,
+				DD1AA7F92F93F0CE0014A60E /* Cheats.swift */,
+				DD1AA7FA2F93F0CE0014A60E /* Controls.swift */,
+				DD1AA7FB2F93F0CE0014A60E /* CoreAndAchievements.swift */,
+				DD1AA7FC2F93F0CE0014A60E /* GameInfo.swift */,
+				DD1AA7FD2F93F0CE0014A60E /* Header.swift */,
+				DD1AA7FE2F93F0CE0014A60E /* SavedStates.swift */,
+				DD1AA7FF2F93F0CE0014A60E /* Shader.swift */,
+				DD1AA7E22F93ED700014A60E /* AchievementBadgeView.swift */,
+				DD1AA7E32F93ED700014A60E /* CheatComponents.swift */,
+				DD1AA7E42F93ED700014A60E /* CoreVersionPickerView.swift */,
+				DD1AA7E52F93ED700014A60E /* DetailBoxArtComponents.swift */,
+				DD1AA7E62F93ED700014A60E /* DetailSection.swift */,
+				DD1AA7E82F93ED700014A60E /* ManualActionStatus.swift */,
+				DD1AA7E92F93ED700014A60E /* MetadataRow.swift */,
+				DD1AA7EA2F93ED700014A60E /* ModernSaveStateSlotView.swift */,
+				DD1AA7EB2F93ED700014A60E /* ModernSectionCard.swift */,
+				DD1AA7EC2F93ED700014A60E /* ThemeColors.swift */,
 				B286AEB9B77657F1BFA3B9EA /* BezelsSection.swift */,
 				2C56E0DBE32C8053ACF0E989 /* CheatsSection.swift */,
 				3473B2502A5F7DACEEC6A285 /* ControlsSection.swift */,
@@ -2072,6 +2126,14 @@
 				A0DE5B81F27E19D49BD7E620 /* GameDBRepository.swift in Sources */,
 				3C8A90F76B0E04A65E48EBED /* GameDetailView.swift in Sources */,
 				889D5640E4056E730D0FAF6F /* GameDragState.swift in Sources */,
+				DD1AA8002F93F0CE0014A60E /* Bezels.swift in Sources */,
+				DD1AA8012F93F0CE0014A60E /* CoreAndAchievements.swift in Sources */,
+				DD1AA8022F93F0CE0014A60E /* Cheats.swift in Sources */,
+				DD1AA8032F93F0CE0014A60E /* SavedStates.swift in Sources */,
+				DD1AA8042F93F0CE0014A60E /* Shader.swift in Sources */,
+				DD1AA8052F93F0CE0014A60E /* GameInfo.swift in Sources */,
+				DD1AA8062F93F0CE0014A60E /* Header.swift in Sources */,
+				DD1AA8072F93F0CE0014A60E /* Controls.swift in Sources */,
 				EC8FCCD2DB45AA136AEE82C6 /* GameInfoWindow.swift in Sources */,
 				2C90FACC3F4A1834DEBA87F2 /* GameLauncher.swift in Sources */,
 				CDB133F917088EBB09E076FA /* GameNameFormatter.swift in Sources */,
@@ -2157,6 +2219,16 @@
 				DD1AA7DB2F93EA840014A60E /* StandaloneGameWindowController.swift in Sources */,
 				DD1AA7DC2F93EA840014A60E /* ShaderUniforms.swift in Sources */,
 				DD1AA7DD2F93EA840014A60E /* CheatManagerViews.swift in Sources */,
+				DD1AA7ED2F93ED700014A60E /* ModernSectionCard.swift in Sources */,
+				DD1AA7EE2F93ED700014A60E /* CheatComponents.swift in Sources */,
+				DD1AA7EF2F93ED700014A60E /* ManualActionStatus.swift in Sources */,
+				DD1AA7F02F93ED700014A60E /* AchievementBadgeView.swift in Sources */,
+				DD1AA7F12F93ED700014A60E /* DetailSection.swift in Sources */,
+				DD1AA7F22F93ED700014A60E /* CoreVersionPickerView.swift in Sources */,
+				DD1AA7F32F93ED700014A60E /* DetailBoxArtComponents.swift in Sources */,
+				DD1AA7F52F93ED700014A60E /* MetadataRow.swift in Sources */,
+				DD1AA7F62F93ED700014A60E /* ModernSaveStateSlotView.swift in Sources */,
+				DD1AA7F72F93ED700014A60E /* ThemeColors.swift in Sources */,
 				DD1AA7DE2F93EA840014A60E /* GameOverlayToolbar.swift in Sources */,
 				DD1AA7DF2F93EA840014A60E /* BezelView.swift in Sources */,
 				DD1AA7E02F93EA840014A60E /* FocusableMTKView.swift in Sources */,
