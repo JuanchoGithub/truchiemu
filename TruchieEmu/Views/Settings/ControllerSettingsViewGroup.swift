@@ -4,6 +4,7 @@ import GameController
 // MARK: - Controllers
 struct ControllerSettingsView: View {
     @EnvironmentObject var controllerService: ControllerService
+    @EnvironmentObject var library: ROMLibrary
     @State private var selectedPlayer: Int = 1
     @State private var selectedSystemID: String
     @State private var configName: String = ""
@@ -59,11 +60,11 @@ struct ControllerSettingsView: View {
             .environmentObject(controllerService)
     }
 
-    // MARK: - Controllers Tab
+// MARK: - Controllers Tab
     @ViewBuilder
     private var controllerTab: some View {
-            VStack(alignment: .leading, spacing: 0) {
-                // Top bar: Player selection + Config management
+        VStack(alignment: .leading, spacing: 0) {
+            // Top bar: Player selection + Config management
                 VStack(spacing: 10) {
                     HStack(spacing: 12) {
                         // Player selection
@@ -86,15 +87,15 @@ struct ControllerSettingsView: View {
 
                         Divider().frame(height: 20)
 
-                          // System picker
-                          Picker("System", selection: $selectedSystemID) {
-                              Text("Global / Default").tag("default")
-                              Divider()
-                              ForEach(SystemDatabase.systemsForDisplay.sorted(by: { $0.name < $1.name }), id: \.id) { sys in
-                                  Text(sys.name).tag(sys.id)
-                              }
-                          }
-                          .frame(width: 180)
+                           // System picker
+                           Picker("System", selection: $selectedSystemID) {
+                               Text("Global / Default").tag("default")
+                               Divider()
+                               ForEach(filteredSystemsForDisplay, id: \.id) { sys in
+                                   Text(sys.name).tag(sys.id)
+                               }
+                           }
+                           .frame(width: 180)
 
                         Spacer()
 
@@ -233,15 +234,23 @@ struct ControllerSettingsView: View {
         }
     }
 
-    private func loadSavedConfigs() {
-        // Persist controller configs to AppSettings
-        if let data = AppSettings.getData("controller_saved_configs"),
-           let configs = try? JSONDecoder().decode([String: ControllerGamepadMapping].self, from: data) {
-            savedConfigs = configs
-        }
-    }
+     private func loadSavedConfigs() {
+         // Persist controller configs to AppSettings
+         if let data = AppSettings.getData("controller_saved_configs"),
+            let configs = try? JSONDecoder().decode([String: ControllerGamepadMapping].self, from: data) {
+             savedConfigs = configs
+         }
+     }
 
-    private func saveConfigsToDisk() {
+     private var filteredSystemsForDisplay: [SystemInfo] {
+         SystemDatabase.systemsForDisplay
+             .filter { sys in
+                 (library.romCounts[sys.id] ?? 0) > 0
+             }
+             .sorted { $0.name < $1.name }
+     }
+
+     private func saveConfigsToDisk() {
         if let data = try? JSONEncoder().encode(savedConfigs) {
             AppSettings.setData("controller_saved_configs", value: data)
         }
