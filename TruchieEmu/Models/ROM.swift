@@ -63,8 +63,6 @@ struct ROM: Identifiable, Codable, Hashable, Sendable {
         // 4. displayName
         if let custom = customName {
             self.displayName = GameNameFormatter.stripTags(custom)
-        } else if let unifiedEntry = MAMEUnifiedService.shared.lookup(shortName: shortNameForMAME) {
-            self.displayName = GameNameFormatter.stripTags(unifiedEntry.description)
         } else {
             let baseName = metadata?.title ?? path.deletingPathExtension().lastPathComponent
             self.displayName = GameNameFormatter.stripTags(baseName)

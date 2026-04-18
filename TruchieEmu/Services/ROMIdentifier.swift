@@ -26,7 +26,7 @@ enum ROMIdentifier {
 
     // MARK: - Public Entry Point
 
-    static func identifySystem(url: URL, extension ext: String) -> SystemInfo? {
+    static func identifySystem(url: URL, extension ext: String) async -> SystemInfo? {
         let filename = url.lastPathComponent.lowercased()
         let extLower = normalize(extension: ext)
         
@@ -67,7 +67,7 @@ enum ROMIdentifier {
 
         // 4. MAME Lookup (Specialized: 90 pts)
         if extLower == "zip" {
-            scoreByMAME(url: url, candidates: &candidates)
+            await scoreByMAME(url: url, candidates: &candidates)
         }
 
         // --- FINAL DECISION ---
@@ -257,10 +257,10 @@ private static func scoreByMetadata(url: URL, extLower: String, parentNames: [St
         }
     }
 
-    private static func scoreByMAME(url: URL, candidates: inout [String: Int]) {
+    private static func scoreByMAME(url: URL, candidates: inout [String: Int]) async {
         let shortName = url.deletingPathExtension().lastPathComponent.lowercased()
         LoggerService.debug(category: "ROMIdentifier", "Performing MAME lookup for \(url.lastPathComponent) with short name: \(shortName)")
-        if let mameEntry = MAMEUnifiedService.shared.lookup(shortName: shortName), 
+        if let mameEntry = await MAMEUnifiedService.shared.lookup(shortName: shortName), 
            mameEntry.isRunnableInAnyCore && !mameEntry.isBIOS {
             candidates["mame", default: 0] += 90
             LoggerService.debug(category: "ROMIdentifier", "MAME lookup match for \(url.lastPathComponent): \(mameEntry.shortName)")

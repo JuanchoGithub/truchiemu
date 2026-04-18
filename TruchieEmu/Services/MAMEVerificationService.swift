@@ -133,6 +133,9 @@ final class MAMEVerificationService: ObservableObject {
     
     /// Verify a single ROM record.
     private func verifySingleRecord(_ record: MAMEVerificationRecord) async {
+        // Ensure MAME database is loaded before verification
+        await MAMEUnifiedService.shared.ensureLoaded()
+        
         let romURL = URL(fileURLWithPath: record.romPath)
         
         // Check file exists
@@ -155,7 +158,7 @@ final class MAMEVerificationService: ObservableObject {
         let crcString = String(format: "%08X", computeCRC32(data))
         
         // Check if this shortname exists in the MAME database
-        if let entry = MAMEUnifiedService.shared.lookup(shortName: record.shortName) {
+        if let entry = await MAMEUnifiedService.shared.lookup(shortName: record.shortName) {
             // Found in database - mark as verified
             record.markVerified(crc32: crcString, innerFiles: nil)
             LoggerService.mameVerify("Verified: \(record.shortName) -> \(entry.description)")

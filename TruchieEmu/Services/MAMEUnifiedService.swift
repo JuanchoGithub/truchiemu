@@ -7,6 +7,7 @@ import Foundation
 ///
 /// This replaces the old per-core XML download system with a single pre-built database.
 /// Each game entry knows which cores it's compatible with and its per-core dependencies.
+@MainActor
 final class MAMEUnifiedService: ObservableObject {
     static let shared = MAMEUnifiedService()
     
@@ -22,17 +23,35 @@ final class MAMEUnifiedService: ObservableObject {
     /// Set of unplayable short names (not runnable in any core)
     private var unplayableShortNames: Set<String> = []
     
+    private var loadingTask: Task<Void, Never>?
+    
     static let bundledResourceName = "mame_unified"
     static let bundledResourceExtension = "json"
     
     init() {
-        loadDatabase()
+        // The database is loaded asynchronously to avoid blocking startup.
     }
     
     // MARK: - Loading
     
+    /// Ensures the database is loaded. If it's already loading or loaded, it returns immediately.
+    /// If not, it waits for the loading task to complete.
+    func ensureLoaded() async {
+        if isLoaded { return }
+        if let task = loadingTask {
+            _ = await task.result
+            return
+        }
+        
+        let task = Task {
+            await loadDatabase()
+        }
+        loadingTask = task
+        _ = await task.result
+    }
+
     /// Load the bundled unified database from the app resources.
-    func loadDatabase() {
+    func loadDatabase() async {
         var jsonURL: URL?
         
         // 1. Try main bundle (production)

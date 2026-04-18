@@ -182,8 +182,11 @@ final class ROMIdentifierService: @unchecked Sendable {
             LoggerService.debug(category: "ROMIdentifier","Identify \(rom.name): MAME ROM detected, attempting unified database lookup...")
             let shortName = rom.path.deletingPathExtension().lastPathComponent.lowercased()
             
+            // Ensure MAME database is loaded before lookup
+            await MAMEUnifiedService.shared.ensureLoaded()
+            
             // First: try the unified MAME database (multi-core, 50K+ entries)
-            if let unifiedEntry = MAMEUnifiedService.shared.lookup(shortName: shortName) {
+            if let unifiedEntry = await MAMEUnifiedService.shared.lookup(shortName: shortName) {
                 if unifiedEntry.isRunnableInAnyCore && !unifiedEntry.isBIOS {
                     LoggerService.debug(category: "ROMIdentifier","Identify \(rom.name): MAME game → \(unifiedEntry.description) [cores: \(unifiedEntry.compatibleCores.joined(separator: ", "))]")
                     return .identified(GameInfo(

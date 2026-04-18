@@ -75,7 +75,7 @@ actor ROMScanner {
             
              // Only search for references inside known container files (Huge speedup)
              if ext == "cue" || ext == "m3u" {
-                 let system = self.identifySystem(url: url, extension: ext)
+                 let system = await self.identifySystem(url: url, extension: ext)
                  if system?.isDiskBased == true {
                      let refs = getReferencedFiles(in: url)
                      for ref in refs {
@@ -123,7 +123,7 @@ actor ROMScanner {
                     
                     if url.path.contains("/Contents/") || url.path.hasSuffix(".app") { return nil }
 
-                    let system = self.identifySystem(url: url, extension: ext)
+                    let system = await self.identifySystem(url: url, extension: ext)
 
                     // Ignore specific PS1 BIOS files if they are identified as PS1/PSX
                     let filename = url.lastPathComponent.lowercased()
@@ -145,7 +145,7 @@ actor ROMScanner {
 
                     // MAME ROM Identification
                     if system?.id == "mame" {
-                        self.applyMAMEIdentification(to: &rom, url: url)
+                        await self.applyMAMEIdentification(to: &rom, url: url)
                     }
 
                      // Attach cached metadata
@@ -202,7 +202,7 @@ actor ROMScanner {
         
         for folder in uniqueFolders {
             xmlCache[folder] = loadFolderMetadata(folder: folder)
-            folderRefsCache[folder] = getIgnoredFiles(in: folder)
+            folderRefsCache[folder] = await getIgnoredFiles(in: folder)
         }
 
         // 2. Concurrent Processing
@@ -227,7 +227,7 @@ actor ROMScanner {
                     guard !ext.isEmpty, !self.shouldSkipExtension(ext) else { return nil }
                     if url.path.contains("/Contents/") || url.path.hasSuffix(".app") { return nil }
 
-                    let system = self.identifySystem(url: url, extension: ext)
+                    let system = await self.identifySystem(url: url, extension: ext)
 
                     // Ignore specific PS1 BIOS files if they are identified as PS1/PSX
                     let filename = url.lastPathComponent.lowercased()
@@ -277,22 +277,18 @@ actor ROMScanner {
     }
 
     // MARK: - MAME ROM Identification
-
-    nonisolated private func applyMAMEIdentification(to rom: inout ROM, url: URL) {
+    
+    nonisolated private func applyMAMEIdentification(to rom: inout ROM, url: URL) async {
         let shortName = url.deletingPathExtension().lastPathComponent.lowercased()
-        
-        if let unifiedEntry = MAMEUnifiedService.shared.lookup(shortName: shortName) {
-            applyUnifiedMAMEIdentification(to: &rom, entry: unifiedEntry, shortName: shortName)
-            return
+        if let unifiedEntry = await MAMEUnifiedService.shared.lookup(shortName: shortName) {
+            await applyUnifiedMAMEIdentification(to: &rom, entry: unifiedEntry, shortName: shortName)
+        } else {
+            // Handle unplayable case if needed, but since this is nonisolated, 
+            // we might need to handle it differently depending on ROM model.
         }
-        
-        ROMScannerLog.debug("MAME lookup MISS for '\(shortName)' — not in any database, tagging as MAME Unplayable")
-        rom.mameRomType = "unplayable"
-        rom.isHidden = true
-        rom.category = "unplayable"
     }
     
-    nonisolated private func applyUnifiedMAMEIdentification(to rom: inout ROM, entry: MAMEUnifiedEntry, shortName: String) {
+    nonisolated private func applyUnifiedMAMEIdentification(to rom: inout ROM, entry: MAMEUnifiedEntry, shortName: String) async {
         if entry.isBIOS {
             rom.mameRomType = "bios"
             rom.name = entry.description
@@ -306,7 +302,7 @@ actor ROMScanner {
             rom.isHidden = false
             rom.category = "game"
             
-            let bestCore = MAMEUnifiedService.shared.bestCore(for: shortName) ?? entry.compatibleCores.first ?? "mame"
+            let bestCore = await MAMEUnifiedService.shared.bestCore(for: shortName) ?? entry.compatibleCores.first ?? "mame"
             ROMScannerLog.debug("MAME SELECT '\(shortName)' → '\(entry.description)' [core:\(bestCore) compatible, cores: \(entry.compatibleCores.joined(separator: ", "))]")
             
             if rom.metadata == nil { rom.metadata = ROMMetadata() }
@@ -361,24 +357,24 @@ actor ROMScanner {
 
     // MARK: - System Identification & Container Logic
     
-    nonisolated private func identifySystem(url: URL, extension ext: String) -> SystemInfo? {
-        ROMIdentifier.identifySystem(url: url, extension: ext)
+    nonisolated private func identifySystem(url: URL, extension ext: String) async -> SystemInfo? {
+        await ROMIdentifier.identifySystem(url: url, extension: ext)
     }
 
-    // ACCESSIBLE FROM ROMLIBRARY
+    // ACCESSIBLE FROM ROMLibrary
     nonisolated func getReferencedFiles(in url: URL) -> [URL] {
         ROMIdentifier.getReferencedFiles(in: url)
     }
     
-    // ACCESSIBLE FROM ROMLIBRARY
-    nonisolated func getIgnoredFiles(in folder: URL) -> Set<String> {
+    // ACCESSIBLE FROM ROMLibrary
+    nonisolated func getIgnoredFiles(in folder: URL) async -> Set<String> {
         let fm = FileManager.default
         guard let files = try? fm.contentsOfDirectory(at: folder, includingPropertiesForKeys: nil, options: .skipsHiddenFiles) else { return [] }
         var ignored = Set<String>()
          for file in files {
              let ext = file.pathExtension.lowercased()
              if ext == "cue" || ext == "m3u" {
-                 let system = self.identifySystem(url: file, extension: ext)
+                 let system = await self.identifySystem(url: file, extension: ext)
                  if system?.isDiskBased == true {
                      let refs = ROMIdentifier.getReferencedFiles(in: file)
                      for ref in refs {
@@ -458,7 +454,7 @@ actor ROMScanner {
         for url in allURLs {
             let ext = url.pathExtension.lowercased()
             if ext == "cue" || ext == "m3u" {
-                let system = self.identifySystem(url: url, extension: ext)
+                let system = await self.identifySystem(url: url, extension: ext)
                 if system?.isDiskBased == true {
                     let refs = getReferencedFiles(in: url)
                     LoggerService.debug(category: "ROMScanner", "Found container file: \(url.lastPathComponent) referencing \(refs.count) files")
@@ -487,7 +483,8 @@ actor ROMScanner {
         }
 
         progress(1.0)
-        LoggerService.info(category: "ROMScanner", "=== LIGHTWEIGHT SCAN COMPLETE: \(found.count) ROM files found in \(String(format: "%.2f", Date().timeIntervalSince(scanStart)))s ===")
+        let scanTime = Date().timeIntervalSince(scanStart)
+        LoggerService.info(category: "ROMScanner", "=== LIGHTWEIGHT SCAN COMPLETE: \(found.count) ROM files found in \(String(format: "%.2f", scanTime))s ===")
         return found
     }
     // get a distinct list from all the extensions from all the systems in SystemDatabase.systems

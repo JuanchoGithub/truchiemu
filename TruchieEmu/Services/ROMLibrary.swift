@@ -300,6 +300,9 @@ class ROMLibrary: ObservableObject {
     // MARK: - Core Scanning Method (Optimized)
 
     func scanROMs(in folder: URL, runAutomationAfter: Bool = true) async {
+        // Ensure MAME database is loaded before scanning
+        await MAMEUnifiedService.shared.ensureLoaded()
+        
         if RunningGamesTracker.shared.isGameRunning {
             LoggerService.debug(category: "ROMLibrary", "Deferring ROM scan for \(folder.path) — game is running")
             return
@@ -325,12 +328,12 @@ class ROMLibrary: ObservableObject {
         if !newROMs.isEmpty {
             var processedROMs: [ROM] = []
             
-            // 3. Process only the new items
-            for var rom in newROMs {
-                if rom.systemID == "mame" {
-                    self.applyMAMEIdentificationInline(to: &rom, url: rom.path)
-                }
-                // Add metadata merging
+        // 3. Process only the new items
+        for var rom in newROMs {
+            if rom.systemID == "mame" {
+                await self.applyMAMEIdentificationInline(to: &rom, url: rom.path)
+            }
+            // Add metadata merging
                 let merged = LibraryMetadataStore.shared.mergedROM(rom)
                 processedROMs.append(merged)
             }
@@ -371,7 +374,7 @@ class ROMLibrary: ObservableObject {
     }
 
     /// Apply MAME identification inline during scanning.
-    private func applyMAMEIdentificationInline(to rom: inout ROM, url: URL) {
+    private func applyMAMEIdentificationInline(to rom: inout ROM, url: URL) async {
         let shortName = url.deletingPathExtension().lastPathComponent.lowercased()
         var description: String?
         var isPlayable: Bool?
@@ -379,7 +382,7 @@ class ROMLibrary: ObservableObject {
 
         // Check user's selected core first, if applicable
         if let coreID = rom.selectedCoreID {
-            if let lookup = MAMEDependencyService.shared.lookupGame(for: coreID, shortName: shortName) {
+            if let lookup = await MAMEDependencyService.shared.lookupGame(for: coreID, shortName: shortName) {
                 description = lookup.description
                 type = lookup.type
                 isPlayable = lookup.isPlayable
@@ -388,7 +391,7 @@ class ROMLibrary: ObservableObject {
 
         // Fall back to multi-core unified lookup
         if description == nil {
-            if let unifiedEntry = MAMEUnifiedService.shared.lookup(shortName: shortName) {
+            if let unifiedEntry = await MAMEUnifiedService.shared.lookup(shortName: shortName) {
                 description = unifiedEntry.description
                 type = unifiedEntry.isBIOS ? "bios" : (unifiedEntry.isRunnableInAnyCore ? "game" : "unplayable")
                 isPlayable = unifiedEntry.isRunnableInAnyCore && !unifiedEntry.isBIOS

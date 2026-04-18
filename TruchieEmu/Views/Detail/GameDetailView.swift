@@ -390,28 +390,7 @@ struct GameDetailView: View {
     }
 
     /// Game description from multiple sources: MAME database, ROM metadata, or Libretro DAT.
-    private var gameDescription: String? {
-        // 1. MAME games: use the unified MAME database description
-        if currentROM.systemID == "mame" || currentROM.systemID == "arcade" {
-            let shortName = currentROM.shortNameForMAME
-            if let unifiedEntry = MAMEUnifiedService.shared.lookup(shortName: shortName) {
-                return unifiedEntry.description
-            }
-        }
-
-        // 2. ROM metadata description (from LaunchBox or manual identification)
-        if let desc = currentROM.metadata?.description, !desc.isEmpty {
-            return desc
-        }
-
-        // 3. Libretro DAT: for non-MAME games, try to find the game info via identification
-        // This is populated when the user identifies a game
-        if let info = currentROM.metadata?.title, let year = currentROM.metadata?.year {
-            return "\(info) (\(year))"
-        }
-
-        return nil
-    }
+    @State private var gameDescription: String? = nil
     
     /// Returns true when the active core for this ROM is Gambatte (which supports named internal palettes and color correction).
     private var isGambatteCore: Bool {
@@ -521,6 +500,28 @@ struct GameDetailView: View {
             loadAchievements()
         }
         .task(id: currentROM.id) {
+            // Ensure MAME database is loaded for any MAME-related info in this view
+            if currentROM.systemID == "mame" || currentROM.systemID == "arcade" {
+                await MAMEUnifiedService.shared.ensureLoaded()
+                
+                // Fetch MAME description
+                let shortName = currentROM.shortNameForMAME
+                if let unifiedEntry = await MAMEUnifiedService.shared.lookup(shortName: shortName) {
+                    gameDescription = unifiedEntry.description
+                }
+            }
+
+            // Fallback to metadata if MAME description not found or not a MAME game
+            if gameDescription == nil {
+                if let desc = currentROM.metadata?.description, !desc.isEmpty {
+                    gameDescription = desc
+                } else if let info = currentROM.metadata?.title, let year = currentROM.metadata?.year {
+                    gameDescription = "\(info) (\(year))"
+                } else {
+                    gameDescription = nil
+                }
+            }
+            
             if let attrs = try? FileManager.default.attributesOfItem(atPath: currentROM.path.path),
                let size = attrs[.size] as? Int64 {
                 let formatter = ByteCountFormatter()

@@ -650,8 +650,8 @@ final class MAMEDependencyService: ObservableObject {
 
     /// Look up a MAME game by shortName, preferring per-core dependency data
     /// (from downloaded XML) over the bundled fallback JSON.
-    /// Returns a tuple with the description, type, isRunnable, parentROM, and the source.
-    func lookupGame(for coreID: String, shortName: String) -> (description: String, type: String, isPlayable: Bool, parent: String?, source: String)? {
+    /// Returns a tuple with the description, type, isPlayable, parentROM, and the source.
+    func lookupGame(for coreID: String, shortName: String) async -> (description: String, type: String, isPlayable: Bool, parent: String?, source: String)? {
         let baseID = Self.baseCoreID(coreID)
 
         // First: try per-core dependency database (downloaded XML)
@@ -667,7 +667,7 @@ final class MAMEDependencyService: ObservableObject {
         }
 
         // Fallback: try the unified MAME database
-        if let unifiedEntry = MAMEUnifiedService.shared.lookup(shortName: shortName) {
+        if let unifiedEntry = await MAMEUnifiedService.shared.lookup(shortName: shortName) {
             return (
                 description: unifiedEntry.description,
                 type: unifiedEntry.isBIOS ? "bios" : (unifiedEntry.isRunnableInAnyCore ? "game" : "unplayable"),
@@ -692,3 +692,4 @@ final class MAMEDependencyService: ObservableObject {
         return names
     }
 }
+
