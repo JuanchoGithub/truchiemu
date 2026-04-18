@@ -6,6 +6,9 @@
 
 TruchieEmu is a modern, high-performance emulator built from the ground up with SwiftUI. It brings your favorite classic consoles to life with a stunning interface, immersive visuals, and effortless library management.
 
+
+https://github.com/user-attachments/assets/d5a99324-a778-49b9-8d86-79127bbe5b59
+
 ---
 
 ## ✨ The TruchieEmu Experience
@@ -17,6 +20,9 @@ Forget clunky, outdated menus. TruchieEmu features a polished, native macOS inte
 
 
 ### 📺 Immersive Visuals
+
+https://github.com/user-attachments/assets/55b87d35-dcf3-4591-80ab-c26fc22c6112
+
 Relive the golden age of gaming with advanced Metal-powered shaders. Whether you want the warm glow of a classic CRT, the sharp look of an LCD, or custom scanline effects, TruchieEmu makes every pixel feel authentic.
 
 <img width="1136" height="866" alt="Captura de pantalla 2026-04-13 a la(s) 12 22 24 a  m" src="https://github.com/user-attachments/assets/a2a0f14a-f867-45dd-8c61-c9750e1f9231" />
