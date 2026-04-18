@@ -2,11 +2,11 @@ import SwiftUI
 
 // MARK: - Bezel Browser View
 
-/// A dedicated view for browsing and managing bezels per system.
-/// Features:
-/// - Local tab: Image grid of downloaded bezels
-/// - Remote tab: List with preview panel, click to download and cache
-/// Cached bezels are kept separate from "available" until user chooses to apply them.
+// A dedicated view for browsing and managing bezels per system.
+// Features:
+// - Local tab: Image grid of downloaded bezels
+// - Remote tab: List with preview panel, click to download and cache
+// Cached bezels are kept separate from "available" until user chooses to apply them.
 struct BezelBrowserView: View {
     let systemID: String
     let systemName: String
@@ -433,12 +433,12 @@ struct BezelBrowserView: View {
         isLoading = false
     }
     
-    /// Check if a bezel is cached (preview downloaded)
+    // Check if a bezel is cached (preview downloaded)
     private func isCached(_ bezelID: String) -> Bool {
         cachedBezels[bezelID] != nil
     }
     
-    /// Download bezel for preview caching
+    // Download bezel for preview caching
     @MainActor
     private func downloadAndCache(_ entry: BezelEntry) {
         isDownloading = true
@@ -476,7 +476,7 @@ struct BezelBrowserView: View {
         }
     }
     
-    /// Move cached bezel to available (essentially mark it as applied)
+    // Move cached bezel to available (essentially mark it as applied)
     private func moveToAvailable(_ entry: BezelEntry) {
         // The bezel is already downloaded to local storage, it just needs to be marked
         // In this context, apply means add to the local bezels
@@ -493,21 +493,21 @@ struct BezelBrowserView: View {
         }
     }
     
-    /// Apply bezel to current game (placeholder - needs current ROM context)
+    // Apply bezel to current game (placeholder - needs current ROM context)
     private func applyBezel(_ entry: BezelEntry) {
         // This needs a ROM context - for now show the action
         // In practice, this would update the current game's bezel setting
         LoggerService.debug(category: "Bezel", "Would apply \(entry.displayName) to current game")
     }
     
-    /// Open bezel in Finder
+    // Open bezel in Finder
     private func openBezelInFinder(_ entry: BezelEntry) {
         if let url = entry.localURL {
             NSWorkspace.shared.activateFileViewerSelecting([url])
         }
     }
     
-    /// Load preview image for remote bezel (downloads small preview)
+    // Load preview image for remote bezel (downloads small preview)
     private func loadPreviewImage(for entry: BezelEntry) {
         previewDownloadTask?.cancel()
         previewDownloadTask = Task {

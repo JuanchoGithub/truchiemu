@@ -2,7 +2,7 @@ import Foundation
 
 // MARK: - Download Log Entry
 
-/// Represents a single download log entry
+// Represents a single download log entry
 struct CheatDownloadLogEntry: Identifiable {
     let id = UUID()
     let timestamp: Date
@@ -33,8 +33,8 @@ struct CheatDownloadLogEntry: Identifiable {
 
 // MARK: - Cheat Download Service
 
-/// Downloads cheat files from the libretro-database cheats repository.
-/// URL: https://github.com/libretro/libretro-database/tree/master/cht
+// Downloads cheat files from the libretro-database cheats repository.
+// URL: https://github.com/libretro/libretro-database/tree/master/cht
 class CheatDownloadService: ObservableObject {
     static let shared = CheatDownloadService()
     
@@ -51,33 +51,33 @@ class CheatDownloadService: ObservableObject {
     
     // MARK: - Download Progress State
     
-    /// Total number of items to download
+    // Total number of items to download
     @Published var totalItemsToDownload: Int = 0
-    /// Number of items currently downloaded
+    // Number of items currently downloaded
     @Published var currentDownloadedCount: Int = 0
-    /// Number of items currently being downloaded (in progress)
+    // Number of items currently being downloaded (in progress)
     @Published var currentlyDownloadingCount: Int = 0
-    /// Log of all download attempts with their status
+    // Log of all download attempts with their status
     @Published var downloadLog: [CheatDownloadLogEntry] = []
     
     // MARK: - Constants
     
-    /// Base URL for libretro cheat database
+    // Base URL for libretro cheat database
     private let baseURL = "https://github.com/libretro/libretro-database/raw/master/cht"
     
-    /// Raw API URL for listing files (Contents API)
+    // Raw API URL for listing files (Contents API)
     private let apiBaseURL = "https://api.github.com/repos/libretro/libretro-database/contents/cht"
     
-    /// Git Trees API base URL for getting all files in a tree (recursive)
+    // Git Trees API base URL for getting all files in a tree (recursive)
     private let gitTreesBaseURL = "https://api.github.com/repos/libretro/libretro-database/git/trees/master?recursive=1"
     
-    /// Local directory for downloaded cheats
+    // Local directory for downloaded cheats
     private var localCheatsDirectory: URL {
         let base = FileManager.default.urls(for: .applicationSupportDirectory, in: .userDomainMask).first!
         return base.appendingPathComponent("TruchieEmu/cheats_downloaded")
     }
     
-    /// Directory for a specific system's cheats
+    // Directory for a specific system's cheats
     func systemCheatDirectory(for systemID: String) -> URL {
         localCheatsDirectory.appendingPathComponent(systemID)
     }
@@ -94,7 +94,7 @@ class CheatDownloadService: ObservableObject {
     
     // MARK: - Public Methods
     
-    /// Download all cheat files from libretro database
+    // Download all cheat files from libretro database
     @MainActor
     func downloadAllCheats() async -> CheatDownloadResult {
         guard !isDownloading else {
@@ -179,8 +179,8 @@ class CheatDownloadService: ObservableObject {
         return .success(downloaded: totalDownloaded, failed: totalFailed, message: message)
     }
     
-    /// Download a cheat file for a specific ROM by finding the matching cheat in the libretro-database.
-    /// Tries the .dat name (metadata.title) first, then falls back to the ROM filename.
+    // Download a cheat file for a specific ROM by finding the matching cheat in the libretro-database.
+    // Tries the .dat name (metadata.title) first, then falls back to the ROM filename.
     @MainActor
     func downloadCheatForROM(_ rom: ROM, systemID: String) async throws -> Bool {
         LoggerService.info(category: "CheatDownloadService", "=== Starting cheat download for ROM: \(rom.displayName) ===")
@@ -266,7 +266,7 @@ class CheatDownloadService: ObservableObject {
         return true
     }
     
-    /// Download cheats for a specific system (throws on error, returns count on success)
+    // Download cheats for a specific system (throws on error, returns count on success)
     @MainActor
     func downloadCheatsForSystem(_ systemID: String) async throws -> Int {
         LoggerService.info(category: "CheatDownloadService", "=== Starting download for system: \(systemID) ===")
@@ -337,7 +337,7 @@ class CheatDownloadService: ObservableObject {
     
     // MARK: - ROM Cheat Lookup
     
-    /// Find cheats for a specific ROM by searching downloaded cheat files
+    // Find cheats for a specific ROM by searching downloaded cheat files
     func findCheatsForROM(_ rom: ROM) -> [CheatFile] {
         let romFilename = rom.path.deletingPathExtension().lastPathComponent
         var foundFiles: [CheatFile] = []
@@ -395,9 +395,9 @@ class CheatDownloadService: ObservableObject {
     
     // MARK: - Private Methods
     
-    /// Fetch directory contents from GitHub API.
-    /// Uses the Git Trees API for directories that may have >1000 files (like NES cheats),
-    /// since the Contents API is limited to 1000 results.
+    // Fetch directory contents from GitHub API.
+    // Uses the Git Trees API for directories that may have >1000 files (like NES cheats),
+    // since the Contents API is limited to 1000 results.
     private func fetchGitHubContents(_ urlString: String) async throws -> [GitHubContent] {
         // Check if this is the cheats base directory or a system subdirectory
         // These directories have >1000 files, so we use the Git Trees API
@@ -409,8 +409,8 @@ class CheatDownloadService: ObservableObject {
         return try await fetchUsingContentsAPI(urlString)
     }
     
-    /// Fetch using the Git Trees API (returns all files, no pagination limit)
-    /// Integrates with ResourceCacheInterceptor for cache-first fetching with ETag/304 support.
+    // Fetch using the Git Trees API (returns all files, no pagination limit)
+    // Integrates with ResourceCacheInterceptor for cache-first fetching with ETag/304 support.
     private func fetchUsingGitTreesAPI(_ urlString: String) async throws -> [GitHubContent] {
         LoggerService.info(category: "CheatDownloadService", "Using Git Trees API for: \(urlString)")
         
@@ -512,7 +512,7 @@ class CheatDownloadService: ObservableObject {
         }
     }
     
-    /// Standard Contents API fetch (for directories with <1000 files)
+    // Standard Contents API fetch (for directories with <1000 files)
     private func fetchUsingContentsAPI(_ urlString: String) async throws -> [GitHubContent] {
         guard let url = URL(string: urlString) else {
             throw CheatDownloadError.invalidURL
@@ -547,7 +547,7 @@ class CheatDownloadService: ObservableObject {
         return try decoder.decode([GitHubContent].self, from: data)
     }
     
-    /// Count total cheat files across all system folders
+    // Count total cheat files across all system folders
     private func countTotalCheatFiles(in systemFolders: [GitHubContent]) async -> Int {
         var totalCount = 0
         for folder in systemFolders {
@@ -557,7 +557,7 @@ class CheatDownloadService: ObservableObject {
         return totalCount
     }
     
-    /// Count cheat files in a folder (with depth limit to prevent excessive recursion)
+    // Count cheat files in a folder (with depth limit to prevent excessive recursion)
     private func countCheatFilesInFolder(_ url: URL, maxDepth: Int) async -> Int {
         guard maxDepth > 0 else { return 0 }
         
@@ -580,7 +580,7 @@ class CheatDownloadService: ObservableObject {
         }
     }
     
-    /// Download cheat files from a system folder
+    // Download cheat files from a system folder
     private func downloadSystemCheats(_ folder: GitHubContent, systemName: String) async throws -> Int {
         let destDir = localCheatsDirectory.appendingPathComponent(folder.name)
         try FileManager.default.createDirectory(at: destDir, withIntermediateDirectories: true)
@@ -614,7 +614,7 @@ class CheatDownloadService: ObservableObject {
         return downloaded
     }
     
-    /// Download cheat files from a specific folder URL
+    // Download cheat files from a specific folder URL
     private func downloadCheatsFromFolder(_ url: URL, to destination: URL, systemName: String = "Unknown") async throws -> Int {
         LoggerService.info(category: "CheatDownloadService", "Downloading from folder: \(url.absoluteString)")
         LoggerService.info(category: "CheatDownloadService", "Destination: \(destination.path)")
@@ -639,7 +639,7 @@ class CheatDownloadService: ObservableObject {
         return downloaded
     }
     
-    /// Download a single file
+    // Download a single file
     private func downloadFile(_ content: GitHubContent, to destination: URL, systemName: String) async throws {
         // Log start of download
         await MainActor.run {
@@ -808,7 +808,7 @@ class CheatDownloadService: ObservableObject {
     
     // MARK: - Utility Methods
     
-    /// Get the total number of downloaded cheat files
+    // Get the total number of downloaded cheat files
     func getDownloadedCheatCount() -> Int {
         var count = 0
         if let enumerator = FileManager.default.enumerator(
@@ -825,7 +825,7 @@ class CheatDownloadService: ObservableObject {
         return count
     }
     
-    /// Get the total size of downloaded cheats
+    // Get the total size of downloaded cheats
     func getDownloadedCheatSize() -> Int64 {
         var totalSize: Int64 = 0
         if let enumerator = FileManager.default.enumerator(
@@ -844,7 +844,7 @@ class CheatDownloadService: ObservableObject {
         return totalSize
     }
     
-    /// Clear all downloaded cheats
+    // Clear all downloaded cheats
     func clearDownloadedCheats() throws {
         if FileManager.default.fileExists(atPath: localCheatsDirectory.path) {
             try FileManager.default.removeItem(at: localCheatsDirectory)
@@ -913,8 +913,8 @@ class CheatDownloadService: ObservableObject {
         return mapping[systemID.lowercased()] ?? systemID
     }
     
-    /// Find a matching cheat file for a given ROM filename.
-    /// Looks for exact match first, then partial matches, then space-removed matches.
+    // Find a matching cheat file for a given ROM filename.
+    // Looks for exact match first, then partial matches, then space-removed matches.
     private func findMatchingCheatFile(in contents: [GitHubContent], romFilename: String) -> GitHubContent? {
         let chtFiles = contents.filter { $0.type == .file && $0.name.hasSuffix(".cht") }
         
@@ -971,7 +971,7 @@ class CheatDownloadService: ObservableObject {
         return nil
     }
     
-    /// Remove brackets, parentheses and their contents from a string
+    // Remove brackets, parentheses and their contents from a string
     private func removeBracketsAndParentheses(_ str: String) -> String {
         var result = str
         // Remove content in parentheses: (USA), (Europe), etc.
@@ -1024,7 +1024,7 @@ class CheatDownloadService: ObservableObject {
 
 // MARK: - Data Types
 
-/// GitHub API content response
+// GitHub API content response
 private struct GitHubContent: Decodable {
     let name: String
     let path: String?
@@ -1047,7 +1047,7 @@ private struct GitHubContent: Decodable {
         case type
     }
     
-    /// Public initializer for creating GitHubContent from Git Trees API
+    // Public initializer for creating GitHubContent from Git Trees API
     init(name: String, path: String?, url: String?, htmlUrl: String?, downloadUrl: String?, sha: String?, size: Int?, type: ContentType) {
         self.name = name
         self.path = path
@@ -1094,14 +1094,14 @@ private struct GitHubContent: Decodable {
     var safePath: String { path ?? name }
 }
 
-/// Result of cheat download operation
+// Result of cheat download operation
 enum CheatDownloadResult: Equatable {
     case success(downloaded: Int, failed: Int, message: String)
     case failed(String)
     case alreadyDownloading
 }
 
-/// Cheat download errors
+// Cheat download errors
 enum CheatDownloadError: LocalizedError {
     case invalidURL
     case invalidResponse
@@ -1130,7 +1130,7 @@ enum CheatDownloadError: LocalizedError {
 
 // MARK: - Timeout Support
 
-/// Error thrown when an operation exceeds the specified time limit
+// Error thrown when an operation exceeds the specified time limit
 struct TimeoutError: Error, LocalizedError {
     let seconds: TimeInterval
     
@@ -1139,7 +1139,7 @@ struct TimeoutError: Error, LocalizedError {
     }
 }
 
-/// Executes an async operation with a timeout. Throws TimeoutError if the operation doesn't complete in time.
+// Executes an async operation with a timeout. Throws TimeoutError if the operation doesn't complete in time.
 func withTimeout<T: Sendable>(seconds: TimeInterval, operation: @Sendable @escaping () async throws -> T) async throws -> T {
     return try await withThrowingTaskGroup(of: T.self) { group in
         // Start the actual operation

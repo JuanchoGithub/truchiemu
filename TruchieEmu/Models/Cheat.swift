@@ -2,7 +2,7 @@ import Foundation
 
 // MARK: - Cheat Data Structures
 
-/// Represents a single cheat code for a game.
+// Represents a single cheat code for a game.
 struct Cheat: Identifiable, Codable, Hashable {
     var id: UUID = UUID()
     var index: Int
@@ -11,18 +11,18 @@ struct Cheat: Identifiable, Codable, Hashable {
     var enabled: Bool = false
     var format: CheatFormat = .raw
     
-    /// Display name for the cheat (usually the description)
+    // Display name for the cheat (usually the description)
     var displayName: String {
         description.isEmpty ? "Cheat \(index + 1)" : description
     }
     
-    /// Short preview of the code (truncated if too long)
+    // Short preview of the code (truncated if too long)
     var codePreview: String {
         code.count > 20 ? String(code.prefix(20)) + "..." : code
     }
 }
 
-/// Supported cheat code formats.
+// Supported cheat code formats.
 enum CheatFormat: String, Codable, CaseIterable {
     case raw         // Raw hex address + value (e.g., 7E0DBE05)
     case gameGenie   // Game Genie (NES: 6-char, SNES: 8-char with check digit)
@@ -38,7 +38,7 @@ enum CheatFormat: String, Codable, CaseIterable {
         }
     }
     
-    /// Example code format for user guidance
+    // Example code format for user guidance
     var example: String {
         switch self {
         case .raw: return "7E0DBE05"
@@ -51,7 +51,7 @@ enum CheatFormat: String, Codable, CaseIterable {
 
 // MARK: - Cheat File
 
-/// Represents a parsed .cht cheat file containing multiple cheats.
+// Represents a parsed .cht cheat file containing multiple cheats.
 struct CheatFile: Identifiable, Codable {
     var id: UUID = UUID()
     var romPath: String          // Path to the ROM this cheat file belongs to
@@ -59,18 +59,18 @@ struct CheatFile: Identifiable, Codable {
     var cheats: [Cheat]
     var source: CheatSource      // Where this file came from
     
-    /// Number of enabled cheats
+    // Number of enabled cheats
     var enabledCount: Int {
         cheats.filter { $0.enabled }.count
     }
     
-    /// All cheats as a single string (for debugging)
+    // All cheats as a single string (for debugging)
     var summary: String {
         "\(cheats.count) cheats (\(enabledCount) enabled)"
     }
 }
 
-/// Source of the cheat file.
+// Source of the cheat file.
 enum CheatSource: String, Codable {
     case libretroDatabase   // From libretro-database/cheats
     case userDefined        // User-created custom cheat file
@@ -79,7 +79,7 @@ enum CheatSource: String, Codable {
 
 // MARK: - Cheat Category
 
-/// Categories for organizing cheats.
+// Categories for organizing cheats.
 enum CheatCategory: String, Codable, CaseIterable {
     case gameplay     // Infinite lives, health, etc.
     case items        // Weapons, power-ups, etc.

@@ -1,10 +1,10 @@
 import XCTest
 @testable import TruchieEmu
 
-/// End-to-End tests for bezel system
-/// Tests the full pipeline: system mapping → manifest fetch → bezel resolution → download
-/// Uses real ROM names from the user's library
-/// NOTE: These tests require network access and The Bezel Project repos to be available
+// End-to-End tests for bezel system
+// Tests the full pipeline: system mapping → manifest fetch → bezel resolution → download
+// Uses real ROM names from the user's library
+// NOTE: These tests require network access and The Bezel Project repos to be available
 @MainActor
 final class BezelE2ETests: XCTestCase {
 

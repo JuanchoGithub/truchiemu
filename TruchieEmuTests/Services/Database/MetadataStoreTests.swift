@@ -2,8 +2,8 @@ import Foundation
 import XCTest
 @testable import TruchieEmu
 
-/// Tests for metadata store models and functionality.
-/// Note: Tests the ROMMetadataRecord model and related functionality.
+// Tests for metadata store models and functionality.
+// Note: Tests the ROMMetadataRecord model and related functionality.
 final class MetadataStoreTests: XCTestCase {
 
     func testUpsertMetadataEntry() async throws {

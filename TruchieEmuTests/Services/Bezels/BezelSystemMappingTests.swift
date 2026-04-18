@@ -1,7 +1,7 @@
 import XCTest
 @testable import TruchieEmu
 
-/// Unit tests for BezelSystemMapping - no network required
+// Unit tests for BezelSystemMapping - no network required
 final class BezelSystemMappingTests: XCTestCase {
 
     // MARK: - System ID Mapping Tests

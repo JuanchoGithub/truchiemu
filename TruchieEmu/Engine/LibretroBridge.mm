@@ -1369,7 +1369,7 @@ static int16_t bridge_input_state(unsigned port, unsigned device,
     goto shutdown;
   }
 
-/////////// CONTROLLER -- ASIGNED TO CORE
+// CONTROLLER -- ASIGNED TO CORE
   [self setControllerPortDevice:0 device:device_type];
 
   // ── Notify the core that the hardware context is ready & fetch safe

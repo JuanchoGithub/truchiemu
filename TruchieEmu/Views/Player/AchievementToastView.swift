@@ -2,9 +2,9 @@ import SwiftUI
 
 // MARK: - Achievement Toast Notification
 
-/// A toast notification displayed when an achievement is unlocked.
-/// Appears as a slide-in banner with the achievement badge, title, and points.
-/// Triggers confetti celebration for rare achievements (10+ points).
+// A toast notification displayed when an achievement is unlocked.
+// Appears as a slide-in banner with the achievement badge, title, and points.
+// Triggers confetti celebration for rare achievements (10+ points).
 struct AchievementToastView: View {
     let achievement: Achievement
     @Binding var isPresented: Bool
@@ -129,7 +129,7 @@ struct AchievementToastView: View {
 
 // MARK: - Achievement Toast Manager
 
-/// Manages the display of achievement toast notifications.
+// Manages the display of achievement toast notifications.
 @MainActor
 class AchievementToastManager: ObservableObject {
     static let shared = AchievementToastManager()
@@ -153,7 +153,7 @@ class AchievementToastManager: ObservableObject {
 
 // MARK: - Toast Overlay View
 
-/// An overlay that displays achievement toasts on top of other content.
+// An overlay that displays achievement toasts on top of other content.
 struct AchievementToastOverlay: View {
     @ObservedObject private var manager = AchievementToastManager.shared
     

@@ -2,7 +2,7 @@ import SwiftUI
 
 // MARK: - Slot Picker Sheet
 
-/// Sheet that shows all save slots (0-9) with thumbnails and info
+// Sheet that shows all save slots (0-9) with thumbnails and info
 struct SlotPickerSheet: View {
     @ObservedObject var runner: EmulatorRunner
     @Binding var showSlotPicker: Bool

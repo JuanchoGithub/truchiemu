@@ -2,7 +2,7 @@ import SwiftUI
 
 // MARK: - Game Filter Options
 
-/// Filter chips for refining the game library view
+// Filter chips for refining the game library view
 enum GameFilterOption: String, CaseIterable, Identifiable {
     case noBoxArt      = "noBoxArt"
     case neverPlayed   = "neverPlayed"

@@ -3,25 +3,25 @@ import Foundation
 import SwiftUI
 import GameController
 
-/// DOS-specific emulator runner using DOSBox-Pure.
-///
-/// DOSBox-Pure is designed to work with ZIP files directly, providing:
-/// - Automatic C: drive mounting from ZIP contents
-/// - Built-in "Start Menu" for selecting executables
-/// - Game controller auto-mapping (arrows, space, ctrl, alt)
-/// - Mouse mode support for point-and-click adventures
-/// - Save state support via Libretro API
+// DOS-specific emulator runner using DOSBox-Pure.
+//
+// DOSBox-Pure is designed to work with ZIP files directly, providing:
+// - Automatic C: drive mounting from ZIP contents
+// - Built-in "Start Menu" for selecting executables
+// - Game controller auto-mapping (arrows, space, ctrl, alt)
+// - Mouse mode support for point-and-click adventures
+// - Save state support via Libretro API
 class DOSRunner: EmulatorRunner, @unchecked Sendable {
     
     // MARK: - DOS-Specific Configuration
     
-    /// CPU cycles setting for DOS emulation
-    /// Values: "auto", "3000" (8088/XT), "8000" (286), "25000" (386), "max" (Pentium)
+    // CPU cycles setting for DOS emulation
+    // Values: "auto", "3000" (8088/XT), "8000" (286), "25000" (386), "max" (Pentium)
     private var cyclesSetting: String {
         AppSettings.get("dosbox_pure_cycles", type: String.self) ?? "auto"
     }
     
-    /// Whether mouse mode is currently active (used by UI)
+    // Whether mouse mode is currently active (used by UI)
     @MainActor @Published var isMouseMode: Bool = false
     
     // MARK: - Launch Override
@@ -40,7 +40,7 @@ class DOSRunner: EmulatorRunner, @unchecked Sendable {
     
     // MARK: - Core Options Configuration
     
-    /// Configure DOSBox-Pure specific core options
+    // Configure DOSBox-Pure specific core options
     private func configureCoreOptions() {
         // Set CPU cycles
         let cycles = cyclesSetting
@@ -55,8 +55,8 @@ class DOSRunner: EmulatorRunner, @unchecked Sendable {
     
     // MARK: - Mouse Mode Toggle
     
-    /// Toggle between gamepad mode and mouse mode
-    /// In mouse mode, the left analog stick controls the DOS mouse cursor
+    // Toggle between gamepad mode and mouse mode
+    // In mouse mode, the left analog stick controls the DOS mouse cursor
     @MainActor func toggleMouseMode() {
         isMouseMode.toggle()
         LoggerService.debug(category: "DOSRunner", "Mouse mode: \(isMouseMode ? "ON" : "OFF")")
@@ -88,8 +88,8 @@ class DOSRunner: EmulatorRunner, @unchecked Sendable {
         }
     }
     
-    /// Handle gamepad input in standard DOS game mode
-    /// Maps: D-Pad → Arrow keys, Buttons → Enter/Space/Alt/Ctrl
+    // Handle gamepad input in standard DOS game mode
+    // Maps: D-Pad → Arrow keys, Buttons → Enter/Space/Alt/Ctrl
     private func handleGamepadInput(_ element: GCControllerElement) {
         if let dpad = element as? GCControllerDirectionPad {
             // DOSBox-Pure handles keyboard mapping internally
@@ -115,21 +115,21 @@ class DOSRunner: EmulatorRunner, @unchecked Sendable {
     
     // MARK: - Disk Control for Multi-Disc Games
     
-    /// Load a new disk image for multi-disc DOS games
-    /// DOSBox-Pure supports the Libretro Disk Control API
+    // Load a new disk image for multi-disc DOS games
+    // DOSBox-Pure supports the Libretro Disk Control API
     func loadDisk(imagePath: String) {
         LoggerService.info(category: "DOSRunner", "Loading disk image: \(imagePath)")
         // Use Libretro disk control API to swap disks
         // This is handled by the core's RETRO_ENVIRONMENT_SET_DISK_CONTROL_EXT_INTERFACE
     }
     
-    /// Get the current disk index (for multi-disc games)
+    // Get the current disk index (for multi-disc games)
     var currentDiskIndex: Int {
         // Query current disk from Libretro
         return 0
     }
     
-    /// Get the total number of disks in the current game
+    // Get the total number of disks in the current game
     var totalDisks: Int {
         // Query total disks from Libretro
         return 1

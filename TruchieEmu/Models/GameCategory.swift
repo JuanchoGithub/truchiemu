@@ -1,25 +1,25 @@
 import Foundation
 import SwiftUI
 
-/// A user-defined category for organizing games in the library
+// A user-defined category for organizing games in the library
 struct GameCategory: Identifiable, Codable, Hashable, Equatable {
     var id: String = UUID().uuidString
     var name: String
     var iconName: String // SF Symbol name
     var colorHex: String // Hex color string
     
-    /// Array of ROM IDs that belong to this category
+    // Array of ROM IDs that belong to this category
     var gameIDs: [UUID] = []
     
-    /// Display order in the sidebar
+    // Display order in the sidebar
     var sortOrder: Int = 0
     
-    /// Derived color
+    // Derived color
     var color: Color {
         Color(hex: colorHex) ?? .blue
     }
     
-    /// Common icon presets
+    // Common icon presets
     static let commonIcons = [
         "folder.fill", "star.fill", "heart.fill", "gamecontroller.fill",
         "trophy.fill", "flag.fill", "bookmark.fill", "tag.fill",
@@ -30,7 +30,7 @@ struct GameCategory: Identifiable, Codable, Hashable, Equatable {
         "puzzlepiece.fill", "brain.fill", "wand.and.stars", "rosette"
     ]
     
-    /// Predefined color palette
+    // Predefined color palette
     static let colorPalette: [(name: String, hex: String)] = [
         ("Red", "FF3B30"), ("Orange", "FF9500"), ("Yellow", "FFCC00"),
         ("Green", "34C759"), ("Mint", "00C7BE"), ("Teal", "5AC8FA"),
@@ -39,7 +39,7 @@ struct GameCategory: Identifiable, Codable, Hashable, Equatable {
         ("Gray", "8E8E93"), ("Dark Gray", "636366")
     ]
     
-    /// Default categories
+    // Default categories
     static func defaults() -> [GameCategory] {
         [
             GameCategory(name: "Favorites", iconName: "heart.fill", colorHex: "FF2D55", sortOrder: 0),

@@ -6,14 +6,14 @@ import Compression
 
 // MARK: - Slot Info
 
-/// Represents a single save state slot's metadata
+// Represents a single save state slot's metadata
 struct SlotInfo: Identifiable, Equatable {
     let id: Int  // slot number (0-9, -1 for auto)
     let exists: Bool
     let fileSize: Int64?
     let modificationDate: Date?
     
-    /// Computed: display slot name (or "Auto" for slot -1)
+    // Computed: display slot name (or "Auto" for slot -1)
     var displayName: String {
         if id == -1 { return "Auto" }
         return "Slot \(id)"
@@ -22,23 +22,23 @@ struct SlotInfo: Identifiable, Equatable {
 
 // MARK: - Save State Manager
 
-/// Centralized manager for save state file I/O and directory management.
-/// 
-/// Directory structure:
-/// ```
-/// ~/Library/Application Support/TruchieEmu/saves/states/<SystemID>/
-///     GameName.state          (slot 0)
-///     GameName.state1         (slot 1)
-///     GameName.state2         (slot 2)
-///     GameName.state1.png     (thumbnail for slot 1)
-/// ```
-/// 
-/// Marked `@unchecked Sendable` because all file operations are thread-safe (FileManager handles them).
+// Centralized manager for save state file I/O and directory management.
+// 
+// Directory structure:
+// ```
+// ~/Library/Application Support/TruchieEmu/saves/states/<SystemID>/
+//     GameName.state          (slot 0)
+//     GameName.state1         (slot 1)
+//     GameName.state2         (slot 2)
+//     GameName.state1.png     (thumbnail for slot 1)
+// ```
+// 
+// Marked `@unchecked Sendable` because all file operations are thread-safe (FileManager handles them).
 class SaveStateManager: ObservableObject, @unchecked Sendable {
     
     // MARK: - Published State
     
-    /// Base directory for all save states
+    // Base directory for all save states
     let savesDirectory: URL
     
     // MARK: - Initialization
@@ -58,7 +58,7 @@ class SaveStateManager: ObservableObject, @unchecked Sendable {
     
     // MARK: - Directory Management
     
-    /// Ensures the base save states directory exists
+    // Ensures the base save states directory exists
     private func ensureDirectoriesExist() {
         do {
             try FileManager.default.createDirectory(
@@ -70,7 +70,7 @@ class SaveStateManager: ObservableObject, @unchecked Sendable {
         }
     }
     
-    /// Returns the system-specific subdirectory, creating it if needed
+    // Returns the system-specific subdirectory, creating it if needed
     func systemDirectory(systemID: String) -> URL {
         let dir = savesDirectory.appendingPathComponent(safePathComponent(systemID))
         do {
@@ -86,12 +86,12 @@ class SaveStateManager: ObservableObject, @unchecked Sendable {
     
     // MARK: - Path Resolution
     
-    /// Returns the full URL for a save state file
-    /// - Parameters:
-    ///   - gameName: The display name of the game (used for filename)
-    ///   - systemID: The system identifier (used for subdirectory)
-    ///   - slot: Slot number (0-9 for user slots, -1 for auto-save)
-    /// - Returns: URL to the .state file
+    // Returns the full URL for a save state file
+    // - Parameters:
+    //   - gameName: The display name of the game (used for filename)
+    //   - systemID: The system identifier (used for subdirectory)
+    //   - slot: Slot number (0-9 for user slots, -1 for auto-save)
+    // - Returns: URL to the .state file
     func statePath(gameName: String, systemID: String, slot: Int) -> URL {
         let sysDir = systemDirectory(systemID: systemID)
         let safeName = safeGameStateName(gameName)
@@ -114,12 +114,12 @@ class SaveStateManager: ObservableObject, @unchecked Sendable {
         return sysDir.appendingPathComponent(fileName)
     }
     
-    /// Returns the full URL for a save state thumbnail
-    /// - Parameters:
-    ///   - gameName: The display name of the game
-    ///   - systemID: The system identifier
-    ///   - slot: Slot number
-    /// - Returns: URL to the .png thumbnail file
+    // Returns the full URL for a save state thumbnail
+    // - Parameters:
+    //   - gameName: The display name of the game
+    //   - systemID: The system identifier
+    //   - slot: Slot number
+    // - Returns: URL to the .png thumbnail file
     func thumbnailPath(gameName: String, systemID: String, slot: Int) -> URL {
         let stateURL = statePath(gameName: gameName, systemID: systemID, slot: slot)
         return stateURL.appendingPathExtension("png")
@@ -127,7 +127,7 @@ class SaveStateManager: ObservableObject, @unchecked Sendable {
     
     // MARK: - Slot Information
     
-    /// Returns info for a specific slot
+    // Returns info for a specific slot
     func slotInfo(gameName: String, systemID: String, slot: Int) -> SlotInfo {
         let path = statePath(gameName: gameName, systemID: systemID, slot: slot)
         let fm = FileManager.default
@@ -144,7 +144,7 @@ class SaveStateManager: ObservableObject, @unchecked Sendable {
         )
     }
     
-    /// Returns info for all user slots (0-9) plus auto slot (-1)
+    // Returns info for all user slots (0-9) plus auto slot (-1)
     func allSlotInfo(gameName: String, systemID: String) -> [SlotInfo] {
         // Slots -1 (auto), 0-9
         return (-1...9).map { slot in
@@ -152,20 +152,20 @@ class SaveStateManager: ObservableObject, @unchecked Sendable {
         }
     }
     
-    /// Returns only user slots with existing save files, useful for cleanup
+    // Returns only user slots with existing save files, useful for cleanup
     func existingSlots(gameName: String, systemID: String) -> [SlotInfo] {
         allSlotInfo(gameName: gameName, systemID: systemID).filter { $0.exists }
     }
     
     // MARK: - File Operations
     
-    /// Checks if a save state exists for the given slot
+    // Checks if a save state exists for the given slot
     func hasState(gameName: String, systemID: String, slot: Int) -> Bool {
         let path = statePath(gameName: gameName, systemID: systemID, slot: slot)
         return FileManager.default.fileExists(atPath: path.path)
     }
     
-    /// Deletes a save state file for a specific slot
+    // Deletes a save state file for a specific slot
     func deleteState(gameName: String, systemID: String, slot: Int) throws {
         let statePath = self.statePath(gameName: gameName, systemID: systemID, slot: slot)
         let thumbPath = self.thumbnailPath(gameName: gameName, systemID: systemID, slot: slot)
@@ -179,7 +179,7 @@ class SaveStateManager: ObservableObject, @unchecked Sendable {
         }
     }
     
-    /// Deletes all save states for a specific game
+    // Deletes all save states for a specific game
     func deleteAllStates(gameName: String, systemID: String) throws {
         let sysDir = systemDirectory(systemID: systemID)
         let safeName = safeGameStateName(gameName)
@@ -195,7 +195,7 @@ class SaveStateManager: ObservableObject, @unchecked Sendable {
         }
     }
     
-    /// Returns total size of all save states on disk (in bytes)
+    // Returns total size of all save states on disk (in bytes)
     func totalDiskUsage() -> Int64 {
         guard let enumerator = FileManager.default.enumerator(
             at: savesDirectory,
@@ -213,12 +213,12 @@ class SaveStateManager: ObservableObject, @unchecked Sendable {
     
     // MARK: - Thumbnail Operations
     
-    /// Save a thumbnail image for a save state slot
-    /// - Parameters:
-    ///   - image: The NSImage to save as thumbnail
-    ///   - gameName: The display name of the game
-    ///   - systemID: The system identifier
-    ///   - slot: Slot number
+    // Save a thumbnail image for a save state slot
+    // - Parameters:
+    //   - image: The NSImage to save as thumbnail
+    //   - gameName: The display name of the game
+    //   - systemID: The system identifier
+    //   - slot: Slot number
     func saveThumbnail(_ image: NSImage, gameName: String, systemID: String, slot: Int) {
         let thumbURL = thumbnailPath(gameName: gameName, systemID: systemID, slot: slot)
         LoggerService.debug(category: "SaveStateManager", "Saving thumbnail: gameName='\(gameName)', systemID='\(systemID)', slot=\(slot), path: \(thumbURL.path)")
@@ -266,12 +266,12 @@ class SaveStateManager: ObservableObject, @unchecked Sendable {
         }
     }
     
-    /// Load a thumbnail image for a save state slot
-    /// - Parameters:
-    ///   - gameName: The display name of the game
-    ///   - systemID: The system identifier
-    ///   - slot: Slot number
-    /// - Returns: The loaded NSImage, or nil if not found
+    // Load a thumbnail image for a save state slot
+    // - Parameters:
+    //   - gameName: The display name of the game
+    //   - systemID: The system identifier
+    //   - slot: Slot number
+    // - Returns: The loaded NSImage, or nil if not found
     func loadThumbnail(gameName: String, systemID: String, slot: Int) -> NSImage? {
         let thumbURL = thumbnailPath(gameName: gameName, systemID: systemID, slot: slot)
         LoggerService.debug(category: "SaveStateManager", "Loading thumbnail: gameName='\(gameName)', systemID='\(systemID)', slot=\(slot)")
@@ -288,7 +288,7 @@ class SaveStateManager: ObservableObject, @unchecked Sendable {
         return NSImage(contentsOf: thumbURL)
     }
     
-    /// Delete a thumbnail for a save state slot
+    // Delete a thumbnail for a save state slot
     func deleteThumbnail(gameName: String, systemID: String, slot: Int) throws {
         let thumbURL = thumbnailPath(gameName: gameName, systemID: systemID, slot: slot)
         if FileManager.default.fileExists(atPath: thumbURL.path) {
@@ -298,7 +298,7 @@ class SaveStateManager: ObservableObject, @unchecked Sendable {
     
     // MARK: - Helpers
     
-    /// Sanitize game name to be filesystem-safe
+    // Sanitize game name to be filesystem-safe
     private func safeGameStateName(_ name: String) -> String {
         // Remove dangerous characters and use a consistent format
         let sanitized = name
@@ -310,22 +310,22 @@ class SaveStateManager: ObservableObject, @unchecked Sendable {
         return sanitized.isEmpty ? "unknown" : sanitized
     }
     
-    /// Sanitize a path component
+    // Sanitize a path component
     private func safePathComponent(_ s: String) -> String {
         return safeGameStateName(s)
     }
     
     // MARK: - Compression Utilities
     
-    /// Compressed save state format:
-    /// - Bytes 0-3: Magic header "TCS2" (TruChie State v2)
-    /// - Bytes 4-7: Original uncompressed size (UInt32, little-endian)
-    /// - Bytes 8+:  LZ4 compressed data
+    // Compressed save state format:
+    // - Bytes 0-3: Magic header "TCS2" (TruChie State v2)
+    // - Bytes 4-7: Original uncompressed size (UInt32, little-endian)
+    // - Bytes 8+:  LZ4 compressed data
     private static let compressedMagicHeader: [UInt8] = [0x54, 0x43, 0x53, 0x32] // "TCS2"
     
-    /// Compress state data using LZ4 compression
-    /// - Parameter data: Raw state data
-    /// - Returns: Compressed data with magic header prefix, or raw data if compression fails
+    // Compress state data using LZ4 compression
+    // - Parameter data: Raw state data
+    // - Returns: Compressed data with magic header prefix, or raw data if compression fails
     static func compressStateData(_ data: Data) -> Data? {
         let algorithm = COMPRESSION_LZ4_RAW
         
@@ -362,9 +362,9 @@ class SaveStateManager: ObservableObject, @unchecked Sendable {
         return result
     }
     
-    /// Decompress state data
-    /// - Parameter data: Compressed or raw state data
-    /// - Returns: Decompressed data, or nil on failure
+    // Decompress state data
+    // - Parameter data: Compressed or raw state data
+    // - Returns: Decompressed data, or nil on failure
     static func decompressStateData(_ data: Data) -> Data? {
         let headerSize = 8  // 4 bytes magic + 4 bytes original size
         guard data.count >= headerSize else {
@@ -416,7 +416,7 @@ class SaveStateManager: ObservableObject, @unchecked Sendable {
 // MARK: - Human-readable file size
 
 extension Int64 {
-    /// Format bytes as a human-readable string (e.g., "15.2 MB")
+    // Format bytes as a human-readable string (e.g., "15.2 MB")
     var formattedByteSize: String {
         let formatter = ByteCountFormatter()
         formatter.allowedUnits = [.useKB, .useMB, .useGB]
@@ -428,7 +428,7 @@ extension Int64 {
 // MARK: - SlotInfo date formatting helper
 
 extension SlotInfo {
-    /// Formatted modification date string for UI display
+    // Formatted modification date string for UI display
     var formattedDate: String? {
         guard let date = modificationDate else { return nil }
         let formatter = DateFormatter()

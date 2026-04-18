@@ -1,6 +1,6 @@
 import SwiftUI
 
-/// View that shows MAME ROM dependency status in the Game Info window.
+// View that shows MAME ROM dependency status in the Game Info window.
 struct MAMEDependencyStatusView: View {
     let rom: ROM
     let coreID: String?
@@ -169,7 +169,7 @@ struct MAMEDependencyStatusView: View {
     }
 }
 
-/// Represents a single dependency file for display.
+// Represents a single dependency file for display.
 struct MAMEDependencyInfo: Identifiable {
     let id = UUID()
     let name: String

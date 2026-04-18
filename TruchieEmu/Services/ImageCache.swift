@@ -4,23 +4,23 @@ import ImageIO
 
 // MARK: - Image Cache
 
-/// Simple, robust image cache for box art.
-/// Uses NSCache for automatic memory management and limits concurrency to prevent memory pressure crashes.
+// Simple, robust image cache for box art.
+// Uses NSCache for automatic memory management and limits concurrency to prevent memory pressure crashes.
 actor ImageCache {
     static let shared = ImageCache()
     
     private var cache = NSCache<NSURL, NSImage>()
     
-    /// Tracks in-flight loading tasks to prevent duplicate loads for the same URL.
+    // Tracks in-flight loading tasks to prevent duplicate loads for the same URL.
     private var inFlight = [URL: Task<NSImage?, Never>]()
     
-    /// Limits concurrent image decoding to prevent task explosion and memory pressure crashes.
+    // Limits concurrent image decoding to prevent task explosion and memory pressure crashes.
     private var activeLoadCount = 0
     private let maxConcurrentLoads = 12
     
     // MARK: - Public API
     
-    /// Get an image from cache, or load it from disk asynchronously.
+    // Get an image from cache, or load it from disk asynchronously.
     func image(for url: URL) async -> NSImage? {
         // Check cache first
         if let cached = cache.object(forKey: url as NSURL) {
@@ -46,19 +46,19 @@ actor ImageCache {
         return await task.value
     }
     
-    /// Get a downscaled thumbnail for grid/list views.
+    // Get a downscaled thumbnail for grid/list views.
     func thumbnail(for url: URL, maxWidth: CGFloat = 400, maxHeight: CGFloat = 600) async -> NSImage? {
         return await image(for: url)
     }
     
-    /// Decode and cache an image (used by preloader).
+    // Decode and cache an image (used by preloader).
     func decodedImage(for url: URL, maxWidth: CGFloat = 0, maxHeight: CGFloat = 0) async -> NSImage? {
         return await image(for: url)
     }
     
     // MARK: - Internal Loading Logic
     
-    /// Loads and decodes an image using CGImageSource for stability and efficiency.
+    // Loads and decodes an image using CGImageSource for stability and efficiency.
     private func loadAndDecode(at url: URL) async -> NSImage? {
         // Wait if too many loads are active (primitive semaphore)
         while activeLoadCount >= maxConcurrentLoads {

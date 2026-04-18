@@ -3,7 +3,7 @@ import SwiftData
 
 // MARK: - Core Options Repository
 
-/// Repository for core options persistence using SwiftData.
+// Repository for core options persistence using SwiftData.
 @MainActor
 final class CoreOptionsRepository {
     private let context: ModelContext
@@ -14,7 +14,7 @@ final class CoreOptionsRepository {
 
     // MARK: - Read Methods
 
-    /// Get all options for a given core as a dictionary.
+    // Get all options for a given core as a dictionary.
     func getOptions(for coreID: String) -> [String: String] {
         let descriptor = FetchDescriptor<CoreOptionEntry>(
             predicate: #Predicate { $0.coreID == coreID }
@@ -34,7 +34,7 @@ final class CoreOptionsRepository {
         }
     }
 
-    /// Get override-only options for a core (user-specified overrides).
+    // Get override-only options for a core (user-specified overrides).
     func getOverrideOptions(for coreID: String) -> [String: String] {
         let descriptor = FetchDescriptor<CoreOptionEntry>(
             predicate: #Predicate { $0.coreID == coreID && $0.isOverride }
@@ -54,7 +54,7 @@ final class CoreOptionsRepository {
         }
     }
 
-    /// Get all core option entries across all cores.
+    // Get all core option entries across all cores.
     func getAllOptions() -> [CoreOptionEntry] {
         let descriptor = FetchDescriptor<CoreOptionEntry>()
         do {
@@ -65,7 +65,7 @@ final class CoreOptionsRepository {
         }
     }
 
-    /// Get a single option value for a given core.
+    // Get a single option value for a given core.
     func getOption(key: String, for coreID: String) -> String? {
         let compositeKey = "\(coreID)::\(key)"
         let descriptor = FetchDescriptor<CoreOptionEntry>(
@@ -81,7 +81,7 @@ final class CoreOptionsRepository {
 
     // MARK: - Write Methods
 
-    /// Set a single option for a given core.
+    // Set a single option for a given core.
     func setOption(key: String, value: String, for coreID: String) {
         let compositeKey = "\(coreID)::\(key)"
         let descriptor = FetchDescriptor<CoreOptionEntry>(
@@ -104,7 +104,7 @@ final class CoreOptionsRepository {
         }
     }
 
-    /// Set multiple options for a given core, overwriting existing ones.
+    // Set multiple options for a given core, overwriting existing ones.
     func setOptions(_ options: [String: String], for coreID: String) {
         // Get existing entries to detect removals
         let existingDescriptor = FetchDescriptor<CoreOptionEntry>(
@@ -156,7 +156,7 @@ final class CoreOptionsRepository {
         }
     }
 
-    /// Clear all options for a given core.
+    // Clear all options for a given core.
     func clearOptions(for coreID: String) {
         let descriptor = FetchDescriptor<CoreOptionEntry>(
             predicate: #Predicate { $0.coreID == coreID }
@@ -173,7 +173,7 @@ final class CoreOptionsRepository {
         }
     }
 
-    /// Clear all options across all cores.
+    // Clear all options across all cores.
     func clearAllOptions() {
         do {
             let descriptor = FetchDescriptor<CoreOptionEntry>()

@@ -24,23 +24,23 @@ final class PersistenceMigrationFlag {
         self.defaults = userDefaults
     }
     
-    /// Check if the SwiftData migration has been completed
+    // Check if the SwiftData migration has been completed
     var hasMigrated: Bool {
         defaults.bool(forKey: PersistenceMigrationFlagKeys.migrationKey)
     }
     
-    /// Mark the migration as complete
+    // Mark the migration as complete
     func markMigrationComplete() {
         defaults.set(true, forKey: PersistenceMigrationFlagKeys.migrationKey)
         defaults.set(Date(), forKey: PersistenceMigrationFlagKeys.migrationDateKey)
     }
     
-    /// Get the date when migration was completed
+    // Get the date when migration was completed
     var migrationDate: Date? {
         defaults.object(forKey: PersistenceMigrationFlagKeys.migrationDateKey) as? Date
     }
     
-    /// Reset migration flag (useful for testing or re-migration)
+    // Reset migration flag (useful for testing or re-migration)
     func resetMigrationFlag() {
         defaults.removeObject(forKey: PersistenceMigrationFlagKeys.migrationKey)
         defaults.removeObject(forKey: PersistenceMigrationFlagKeys.migrationDateKey)

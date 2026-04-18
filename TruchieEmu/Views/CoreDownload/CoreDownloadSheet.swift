@@ -16,7 +16,7 @@ struct CoreDownloadSheet: View {
         _selectedCoreID = State(initialValue: pending.coreInfo.coreID)
     }
 
-    /// A core entry that can be either installed or downloadable — mirrors CorePickerView pattern
+    // A core entry that can be either installed or downloadable — mirrors CorePickerView pattern
     private struct CoreEntry: Identifiable {
         enum Kind {
             case installed(LibretroCore)
@@ -44,9 +44,9 @@ struct CoreDownloadSheet: View {
         }
     }
 
-    /// All cores for the target system — installed + downloadable, same logic as CorePickerView.
-    /// Always includes the pending.coreInfo guaranteed minimum, even when availableCores
-    /// hasn't finished the async buildbot fetch and returns empty.
+    // All cores for the target system — installed + downloadable, same logic as CorePickerView.
+    // Always includes the pending.coreInfo guaranteed minimum, even when availableCores
+    // hasn't finished the async buildbot fetch and returns empty.
     private var allCoresForSystem: [CoreEntry] {
         // Always seed with the pending core — it was the explicitly requested core.
         var result: [CoreEntry] = [
@@ -102,7 +102,7 @@ struct CoreDownloadSheet: View {
         return result
     }
 
-    /// Never-nil — always resolves to either a matched entry or the pending coreInfo
+    // Never-nil — always resolves to either a matched entry or the pending coreInfo
     private var selectedCoreEntry: CoreEntry {
         if let found = allCoresForSystem.first(where: { $0.id == selectedCoreID }) {
             return found
@@ -110,14 +110,14 @@ struct CoreDownloadSheet: View {
         return CoreEntry(id: pending.coreInfo.coreID, kind: .downloadable(pending.coreInfo))
     }
 
-    /// The pending ROM looked up reliably by UUID
+    // The pending ROM looked up reliably by UUID
     private var pendingROM: ROM? {
         guard let id = pending.romID else { return nil }
         return library.roms.first { $0.id == id }
     }
 
-    /// Returns the best installed core ID to auto-select, or falls back to the requested core.
-    /// Prefers cores in recommendation order (e.g. mame2003_plus → mame2010 → mame → …).
+    // Returns the best installed core ID to auto-select, or falls back to the requested core.
+    // Prefers cores in recommendation order (e.g. mame2003_plus → mame2010 → mame → …).
     private var bestInstalledOrRequestedCoreID: String {
         // Find the first installed core in the recommendation order
         if let entry = allCoresForSystem.first(where: { $0.isInstalled }) {
@@ -198,7 +198,7 @@ struct CoreDownloadSheet: View {
         .cornerRadius(10)
     }
 
-    /// A single core selection button view
+    // A single core selection button view
     private func coreButton(for entry: CoreEntry) -> some View {
         Button {
             selectedCoreID = entry.id
@@ -274,7 +274,7 @@ struct CoreDownloadSheet: View {
         .buttonStyle(.plain)
     }
 
-    /// Max height to show 4 cores before scrolling (each button is ~60px + 8px spacing)
+    // Max height to show 4 cores before scrolling (each button is ~60px + 8px spacing)
     private var maxCoreListHeight: CGFloat {
         let itemHeight: CGFloat = 68
         let spacing: CGFloat = 8

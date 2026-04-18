@@ -1,8 +1,8 @@
 import Foundation
 import SwiftUI
 
-/// Background coordinator that integrates LaunchBox metadata fetching into the
-/// post-scan automation pipeline.
+// Background coordinator that integrates LaunchBox metadata fetching into the
+// post-scan automation pipeline.
 @MainActor
 final class MetadataSyncCoordinator: ObservableObject {
     static let shared = MetadataSyncCoordinator()
@@ -19,8 +19,8 @@ final class MetadataSyncCoordinator: ObservableObject {
 
     private init() {}
 
-    /// Run after library update: sync LaunchBox metadata for ROMs that need it.
-    /// Only runs when the feature is enabled in settings.
+    // Run after library update: sync LaunchBox metadata for ROMs that need it.
+    // Only runs when the feature is enabled in settings.
     func runAfterLibraryUpdate(library: ROMLibrary, targetROMs: [ROM]? = nil) async {
         // Skip if any game is running — metadata syncing is network-heavy
         // and degrades gameplay performance.
@@ -96,7 +96,7 @@ final class MetadataSyncCoordinator: ObservableObject {
         launchbox.recordSyncDate()
     }
 
-    /// Full manual sync of all games.
+    // Full manual sync of all games.
     func fullSync(library: ROMLibrary) async {
         await LaunchBoxGamesDBService.shared.batchSyncLibrary(library: library) { [weak self] completed, total, label in
             guard let self = self else { return }

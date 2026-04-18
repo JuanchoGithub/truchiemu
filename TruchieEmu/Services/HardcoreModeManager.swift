@@ -3,8 +3,8 @@ import SwiftUI
 
 // MARK: - Hardcore Mode Manager
 
-/// Manages hardcore mode enforcement for RetroAchievements.
-/// When hardcore mode is enabled, it blocks save states, rewind, slow motion, and cheats.
+// Manages hardcore mode enforcement for RetroAchievements.
+// When hardcore mode is enabled, it blocks save states, rewind, slow motion, and cheats.
 @MainActor
 class HardcoreModeManager: ObservableObject {
     static let shared = HardcoreModeManager()
@@ -17,29 +17,29 @@ class HardcoreModeManager: ObservableObject {
         isHardcoreActive = RetroAchievementsService.shared.hardcoreMode && RetroAchievementsService.shared.isEnabled
     }
     
-    /// Whether save states are currently blocked
+    // Whether save states are currently blocked
     var areSaveStatesBlocked: Bool {
         isHardcoreActive
     }
     
-    /// Whether rewind is currently blocked
+    // Whether rewind is currently blocked
     var isRewindBlocked: Bool {
         isHardcoreActive
     }
     
-    /// Whether slow motion is currently blocked
+    // Whether slow motion is currently blocked
     var isSlowMotionBlocked: Bool {
         isHardcoreActive
     }
     
-    /// Whether cheats are currently blocked
+    // Whether cheats are currently blocked
     var areCheatsBlocked: Bool {
         isHardcoreActive
     }
     
     // MARK: - Feature Blocking
     
-    /// Attempt to use save states. Returns false if hardcore mode blocks it.
+    // Attempt to use save states. Returns false if hardcore mode blocks it.
     func attemptSaveState() -> Bool {
         guard !areSaveStatesBlocked else {
             LoggerService.warning(category: "HardcoreMode", "Save state blocked by hardcore mode")
@@ -48,7 +48,7 @@ class HardcoreModeManager: ObservableObject {
         return true
     }
     
-    /// Attempt to use rewind. Returns false if hardcore mode blocks it.
+    // Attempt to use rewind. Returns false if hardcore mode blocks it.
     func attemptRewind() -> Bool {
         guard !isRewindBlocked else {
             LoggerService.warning(category: "HardcoreMode", "Rewind blocked by hardcore mode")
@@ -57,7 +57,7 @@ class HardcoreModeManager: ObservableObject {
         return true
     }
     
-    /// Attempt to use slow motion. Returns false if hardcore mode blocks it.
+    // Attempt to use slow motion. Returns false if hardcore mode blocks it.
     func attemptSlowMotion() -> Bool {
         guard !isSlowMotionBlocked else {
             LoggerService.warning(category: "HardcoreMode", "Slow motion blocked by hardcore mode")
@@ -66,7 +66,7 @@ class HardcoreModeManager: ObservableObject {
         return true
     }
     
-    /// Attempt to use cheats. Returns false if hardcore mode blocks it.
+    // Attempt to use cheats. Returns false if hardcore mode blocks it.
     func attemptUseCheats() -> Bool {
         guard !areCheatsBlocked else {
             LoggerService.warning(category: "HardcoreMode", "Cheats blocked by hardcore mode")
@@ -77,8 +77,8 @@ class HardcoreModeManager: ObservableObject {
     
     // MARK: - Disqualification
     
-    /// Called when user attempts to use a forbidden feature.
-    /// Drops session to softcore mode and notifies the user.
+    // Called when user attempts to use a forbidden feature.
+    // Drops session to softcore mode and notifies the user.
     func disqualifyHardcore(reason: String) {
         guard isHardcoreActive else { return }
         
@@ -91,7 +91,7 @@ class HardcoreModeManager: ObservableObject {
         LoggerService.warning(category: "HardcoreMode", "Hardcore mode disabled: \(reason)")
     }
     
-    /// Get a user-friendly message about blocked features
+    // Get a user-friendly message about blocked features
     func getBlockedMessage(feature: String) -> String {
         "Feature blocked: \(feature). Hardcore Mode is active. Disable Hardcore Mode in Settings to use this feature."
     }
@@ -99,7 +99,7 @@ class HardcoreModeManager: ObservableObject {
 
 // MARK: - Hardcore Mode OSD View
 
-/// An on-screen display overlay shown when hardcore mode blocks a feature.
+// An on-screen display overlay shown when hardcore mode blocks a feature.
 struct HardcoreBlockView: View {
     let featureName: String
     @State private var opacity: Double = 1
@@ -135,7 +135,7 @@ struct HardcoreBlockView: View {
 
 // MARK: - Hardcore Mode Banner
 
-/// A banner shown at the top of the game view when hardcore mode is active.
+// A banner shown at the top of the game view when hardcore mode is active.
 struct HardcoreModeBanner: View {
     @ObservedObject var raService = RetroAchievementsService.shared
     

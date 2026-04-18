@@ -1,7 +1,7 @@
 import XCTest
 @testable import TruchieEmu
 
-/// Tests for bezel manifest pagination handling and local vs remote bezel distinction
+// Tests for bezel manifest pagination handling and local vs remote bezel distinction
 @MainActor
 final class BezelPaginationTests: XCTestCase {
 

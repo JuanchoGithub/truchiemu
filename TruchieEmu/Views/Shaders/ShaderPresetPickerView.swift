@@ -3,7 +3,7 @@ import AppKit
 import Combine
 
 // MARK: - Shader Window Settings (Observable)
-/// Settings container for the shader picker window, shared between StandaloneGameWindowController and picker.
+// Settings container for the shader picker window, shared between StandaloneGameWindowController and picker.
 class ShaderWindowSettings: ObservableObject {
     @Published var shaderPresetID: String
     @Published var uniformValues: [String: Float]
@@ -15,7 +15,7 @@ class ShaderWindowSettings: ObservableObject {
 }
 
 // MARK: - Key Window Panel
-/// A custom NSPanel that can become key and receive user input
+// A custom NSPanel that can become key and receive user input
 class KeyWindowPanel: NSPanel {
     override var canBecomeKey: Bool { true }
     override var canBecomeMain: Bool { true }
@@ -48,7 +48,7 @@ struct ShaderParameterSliders: View {
     let preset: ShaderPreset
     @Binding var uniformValues: [String: Float]
     
-    /// Callback fired when user releases any slider (not during drag)
+    // Callback fired when user releases any slider (not during drag)
     var onValueCommitted: (([String: Float]) -> Void)?
     
     var body: some View {
@@ -112,7 +112,7 @@ struct ShaderParameterSliders: View {
 }
 
 // MARK: - Shader Window Controller
-/// Native macOS window controller for the shader preset picker.
+// Native macOS window controller for the shader preset picker.
 class ShaderWindowController: NSWindowController, NSWindowDelegate {
     private var settings: ShaderWindowSettings
     private var onPresetChanged: ((String, [String: Float]) -> Void)?
@@ -208,7 +208,7 @@ class ShaderWindowController: NSWindowController, NSWindowDelegate {
 }
 
 // MARK: - Shader Preset Picker View
-/// A window that lets users browse and select shader presets by category.
+// A window that lets users browse and select shader presets by category.
 
 // MARK: - Shader Preset Row View
 struct ShaderPresetRowView: View {
@@ -305,7 +305,7 @@ struct ShaderPresetPickerView: View {
     @State private var selectedCategory: ShaderType?
     @State private var searchText: String = ""
     
-    /// Callback fired when user releases any slider (not during drag)
+    // Callback fired when user releases any slider (not during drag)
     var onValueCommitted: (([String: Float]) -> Void)?
     
     var body: some View {

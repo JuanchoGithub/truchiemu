@@ -2,7 +2,7 @@ import SwiftUI
 
 // MARK: - Cheat Settings View
 
-/// Settings view for managing cheat downloads and preferences
+// Settings view for managing cheat downloads and preferences
 struct CheatSettingsView: View {
     @StateObject private var downloadService = CheatDownloadService.shared
     @StateObject private var cheatManager = CheatManagerService.shared
@@ -418,7 +418,7 @@ struct CheatSettingsView: View {
 
 // MARK: - Download Log View
 
-/// Shows a scrollable log of download entries with success/error status
+// Shows a scrollable log of download entries with success/error status
 struct DownloadLogView: View {
     let logEntries: [CheatDownloadLogEntry]
     
@@ -445,7 +445,7 @@ struct DownloadLogView: View {
     }
 }
 
-/// Single row in the download log
+// Single row in the download log
 struct LogEntryRow: View {
     let entry: CheatDownloadLogEntry
     

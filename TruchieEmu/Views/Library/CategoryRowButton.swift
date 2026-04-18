@@ -1,6 +1,6 @@
 import SwiftUI
 
-/// Category row button for the sidebar — full-row clickable with drag-and-drop support.
+// Category row button for the sidebar — full-row clickable with drag-and-drop support.
 struct CategoryRowButton: View {
     let category: GameCategory
     let count: Int

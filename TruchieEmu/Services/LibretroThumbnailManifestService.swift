@@ -1,18 +1,18 @@
 import Foundation
 import Combine
 
-/// Fetches and caches Libretro Thumbnail repository manifests (Git trees) via GitHub API.
-/// This allows checking if a thumbnail exists on the CDN without performing multiple HEAD requests.
+// Fetches and caches Libretro Thumbnail repository manifests (Git trees) via GitHub API.
+// This allows checking if a thumbnail exists on the CDN without performing multiple HEAD requests.
 @MainActor
 class LibretroThumbnailManifestService: ObservableObject {
     static let shared = LibretroThumbnailManifestService()
     
     private let logCategory = "LibretroManifest"
     
-    /// Maps repo name (e.g. "Nintendo_-_Super_Nintendo_Entertainment_System") to its file set.
+    // Maps repo name (e.g. "Nintendo_-_Super_Nintendo_Entertainment_System") to its file set.
     private var manifestCache: [String: Set<String>] = [:]
     
-    /// Active fetch tasks to avoid redundant network calls for the same repo.
+    // Active fetch tasks to avoid redundant network calls for the same repo.
     private var activeTasks: [String: Task<Set<String>, Error>] = [:]
 
     @Published var isRefreshing = false
@@ -25,7 +25,7 @@ class LibretroThumbnailManifestService: ObservableObject {
         }
     }
 
-    /// Loads pre-bundled manifests from the app's resource bundle.
+    // Loads pre-bundled manifests from the app's resource bundle.
     private func loadBundledManifests() async {
         guard let resourceURL = Bundle.main.url(forResource: "ThumbnailManifests", withExtension: nil) else {
             LoggerService.debug(category: logCategory, "No bundled ThumbnailManifests directory found")
@@ -48,7 +48,7 @@ class LibretroThumbnailManifestService: ObservableObject {
         }
     }
 
-    /// Explicitly refreshes all manifests currently in use or for primary systems.
+    // Explicitly refreshes all manifests currently in use or for primary systems.
     func refreshAllManifests() async {
         let systems = LibretroThumbnailResolver.allKnownSystemRepos()
         guard !systems.isEmpty else { return }
@@ -73,11 +73,11 @@ class LibretroThumbnailManifestService: ObservableObject {
         }
     }
 
-    /// Checks if a candidate URL is likely to exist on the Libretro CDN using the manifest.
-    /// - Parameters:
-    ///   - url: The full CDN URL to check (e.g. https://thumbnails.libretro.com/System/Type/Game.png)
-    ///   - folderName: The folder name used in the CDN (e.g. "Nintendo - Nintendo Entertainment System")
-    /// - Returns: True if the file is present in the manifest, or true if the manifest cannot be fetched (fallback to HEAD).
+    // Checks if a candidate URL is likely to exist on the Libretro CDN using the manifest.
+    // - Parameters:
+    //   - url: The full CDN URL to check (e.g. https://thumbnails.libretro.com/System/Type/Game.png)
+    //   - folderName: The folder name used in the CDN (e.g. "Nintendo - Nintendo Entertainment System")
+    // - Returns: True if the file is present in the manifest, or true if the manifest cannot be fetched (fallback to HEAD).
     func existsInManifest(url: URL, folderName: String) async -> Bool {
         let repoName = LibretroThumbnailResolver.githubRepoName(for: folderName)
         
@@ -111,7 +111,7 @@ class LibretroThumbnailManifestService: ObservableObject {
         }
     }
 
-    /// Retrieves the file manifest for a specific system repository, with caching.
+    // Retrieves the file manifest for a specific system repository, with caching.
     private func getManifest(for repoName: String) async throws -> Set<String> {
         if let cached = manifestCache[repoName] {
             return cached

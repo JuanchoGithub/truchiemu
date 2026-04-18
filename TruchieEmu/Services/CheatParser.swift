@@ -2,23 +2,23 @@ import Foundation
 
 // MARK: - Cheat Parser
 
-/// Parses RetroArch `.cht` cheat files into `Cheat` objects.
-///
-/// The `.cht` format is a simple INI-like key-value format:
-/// ```ini
-/// cheats = 3
-/// cheat0_desc = "Infinite Lives"
-/// cheat0_code = "7E0DBE05"
-/// cheat0_enable = false
-/// cheat1_desc = "Invincibility"
-/// cheat1_code = "7E1490FF"
-/// cheat1_enable = false
-/// ```
+// Parses RetroArch `.cht` cheat files into `Cheat` objects.
+//
+// The `.cht` format is a simple INI-like key-value format:
+// ```ini
+// cheats = 3
+// cheat0_desc = "Infinite Lives"
+// cheat0_code = "7E0DBE05"
+// cheat0_enable = false
+// cheat1_desc = "Invincibility"
+// cheat1_code = "7E1490FF"
+// cheat1_enable = false
+// ```
 class CheatParser {
     
     // MARK: - Public Methods
     
-    /// Parse a .cht file from a URL.
+    // Parse a .cht file from a URL.
     static func parseChtFile(url: URL) -> [Cheat]? {
         do {
             let content = try String(contentsOf: url, encoding: .utf8)
@@ -31,7 +31,7 @@ class CheatParser {
         }
     }
     
-    /// Parse .cht content from a string.
+    // Parse .cht content from a string.
     static func parseChtContent(_ content: String) -> [Cheat] {
         let lines = content.components(separatedBy: .newlines)
         var cheats: [Cheat] = []
@@ -84,7 +84,7 @@ class CheatParser {
         return cheats
     }
     
-    /// Parse a custom cheat code entered by the user.
+    // Parse a custom cheat code entered by the user.
     static func parseCustomCode(_ code: String, description: String = "") -> Cheat? {
         let trimmed = code.trimmingCharacters(in: .whitespacesAndNewlines)
         guard !trimmed.isEmpty else { return nil }
@@ -101,7 +101,7 @@ class CheatParser {
     
     // MARK: - Format Detection
     
-    /// Detect the format of a cheat code string.
+    // Detect the format of a cheat code string.
     static func detectFormat(_ code: String) -> CheatFormat {
         let cleaned = code.replacingOccurrences(of: "[- ]", with: "", options: .regularExpression)
             .uppercased()
@@ -176,11 +176,11 @@ class CheatParser {
 
 // MARK: - Cheat Code Validator
 
-/// Validates and converts cheat codes between formats.
+// Validates and converts cheat codes between formats.
 enum CheatValidator {
     
-    /// Validate a raw hex code and extract address + value.
-    /// Returns (address, value) if valid.
+    // Validate a raw hex code and extract address + value.
+    // Returns (address, value) if valid.
     static func validateRawHex(_ code: String) -> (address: UInt32, value: UInt8)? {
         let cleaned = code.replacingOccurrences(of: "[- ]", with: "", options: .regularExpression)
             .uppercased()
@@ -201,8 +201,8 @@ enum CheatValidator {
         return (address, value)
     }
     
-    /// Decode a Game Genie NES code (6 characters).
-    /// Returns (address, value) if valid.
+    // Decode a Game Genie NES code (6 characters).
+    // Returns (address, value) if valid.
     static func decodeGameGenieNES(_ code: String) -> (address: UInt16, value: UInt8)? {
         let cleaned = code.replacingOccurrences(of: "[- ]", with: "", options: .regularExpression)
             .uppercased()
@@ -238,9 +238,9 @@ enum CheatValidator {
         return (address, value)
     }
     
-    /// Decode a Game Genie SNES code (8 characters with check digit).
-    /// Format: ABCD-EFGH where H is a check digit.
-    /// Returns (address, value) if valid.
+    // Decode a Game Genie SNES code (8 characters with check digit).
+    // Format: ABCD-EFGH where H is a check digit.
+    // Returns (address, value) if valid.
     static func decodeGameGenieSNES(_ code: String) -> (address: UInt32, value: UInt8)? {
         let cleaned = code.replacingOccurrences(of: "[- ]", with: "", options: .regularExpression)
             .uppercased()
@@ -276,8 +276,8 @@ enum CheatValidator {
         return (address, value)
     }
     
-    /// Validate a Pro Action Replay code.
-    /// Format: AAAAVVVV (address + value, both 16-bit)
+    // Validate a Pro Action Replay code.
+    // Format: AAAAVVVV (address + value, both 16-bit)
     static func validatePAR(_ code: String) -> (address: UInt32, value: UInt16)? {
         let cleaned = code.replacingOccurrences(of: "[- ]", with: "", options: .regularExpression)
             .uppercased()
@@ -297,8 +297,8 @@ enum CheatValidator {
         return (address, value)
     }
     
-    /// Validate a GameShark code.
-    /// Format: TTAAVVVV (type + address + value)
+    // Validate a GameShark code.
+    // Format: TTAAVVVV (type + address + value)
     static func validateGameShark(_ code: String) -> (type: UInt8, address: UInt16, value: UInt16)? {
         let cleaned = code.replacingOccurrences(of: "[- ]", with: "", options: .regularExpression)
             .uppercased()

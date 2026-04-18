@@ -143,7 +143,7 @@ struct ShaderPreset: Codable, Hashable, Identifiable {
 // MARK: - Built-in Shader Preset Factory
 
 extension ShaderPreset {
-    /// All built-in shader presets
+    // All built-in shader presets
     static let builtinPresets: [ShaderPreset] = [
         // CRT Lottes (High Quality)
         ShaderPreset(
@@ -322,16 +322,16 @@ extension ShaderPreset {
         ),
     ]
     
-    /// All available presets (built-in only)
+    // All available presets (built-in only)
     static var allPresets: [ShaderPreset] {
         builtinPresets
     }
     
-    /// Get preset by ID
+    // Get preset by ID
     static func preset(id: String) -> ShaderPreset? {
         builtinPresets.first(where: { $0.id == id })
     }
     
-    /// Default preset (no filtering)
+    // Default preset (no filtering)
     static let defaultPreset = preset(id: "builtin-none")!
 }

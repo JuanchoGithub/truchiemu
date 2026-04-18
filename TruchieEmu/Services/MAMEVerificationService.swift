@@ -1,8 +1,8 @@
 import Foundation
 import SwiftData
 
-/// Background service that verifies MAME ROMs by computing CRC32 of inner files.
-/// Runs when the app is idle, pauses when active, and resumes on next launch.
+// Background service that verifies MAME ROMs by computing CRC32 of inner files.
+// Runs when the app is idle, pauses when active, and resumes on next launch.
 @MainActor
 final class MAMEVerificationService: ObservableObject {
     static let shared = MAMEVerificationService()
@@ -22,8 +22,8 @@ final class MAMEVerificationService: ObservableObject {
     
     // MARK: - Public API
     
-    /// Start or resume background verification.
-    /// Call this when the app becomes idle.
+    // Start or resume background verification.
+    // Call this when the app becomes idle.
     func startVerification(modelContext: ModelContext) {
         guard !isRunning else { return }
         
@@ -39,14 +39,14 @@ final class MAMEVerificationService: ObservableObject {
         }
     }
     
-    /// Pause verification (e.g., when app becomes active or user starts a game).
+    // Pause verification (e.g., when app becomes active or user starts a game).
     func pause() {
         guard isRunning else { return }
         isPaused = true
         LoggerService.mameVerify("MAME verification paused")
     }
     
-    /// Resume verification after pause.
+    // Resume verification after pause.
     func resume() {
         guard isRunning && isPaused else { return }
         isPaused = false
@@ -57,7 +57,7 @@ final class MAMEVerificationService: ObservableObject {
         }
     }
     
-    /// Stop verification completely.
+    // Stop verification completely.
     func stop() {
         isCancelled = true
         isRunning = false
@@ -66,7 +66,7 @@ final class MAMEVerificationService: ObservableObject {
         LoggerService.mameVerify("MAME verification stopped")
     }
     
-    /// Get count of pending verifications.
+    // Get count of pending verifications.
     func updatePendingCount() {
         guard let modelContext else { return }
         do {
@@ -111,7 +111,7 @@ final class MAMEVerificationService: ObservableObject {
         }
     }
     
-    /// Fetch the next pending verification record.
+    // Fetch the next pending verification record.
     private func fetchNextPending() async -> MAMEVerificationRecord? {
         guard let modelContext else { return nil }
         
@@ -131,7 +131,7 @@ final class MAMEVerificationService: ObservableObject {
         }
     }
     
-    /// Verify a single ROM record.
+    // Verify a single ROM record.
     private func verifySingleRecord(_ record: MAMEVerificationRecord) async {
         // Ensure MAME database is loaded before verification
         await MAMEUnifiedService.shared.ensureLoaded()

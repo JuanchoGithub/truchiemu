@@ -2,8 +2,8 @@ import Foundation
 import XCTest
 @testable import TruchieEmu
 
-/// Tests for ROM database models and related functionality.
-/// Note: Tests ROM models since DatabaseManager has been replaced by repositories.
+// Tests for ROM database models and related functionality.
+// Note: Tests ROM models since DatabaseManager has been replaced by repositories.
 final class ROMDatabaseTests: XCTestCase {
 
     func testROMModelCreation() async throws {

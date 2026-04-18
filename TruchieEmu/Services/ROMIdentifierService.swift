@@ -2,13 +2,13 @@ import Foundation
 import zlib // <-- ADD THIS
 
 // MARK: - I/O Bottleneck Controller
-/// Limits heavy file reading to 4 concurrent operations to prevent SSD/HDD I/O thrashing.
+// Limits heavy file reading to 4 concurrent operations to prevent SSD/HDD I/O thrashing.
 private let diskIOQueue = DispatchQueue(label: "com.truchiemu.diskIO", attributes: .concurrent)
 private let diskIOSemaphore = DispatchSemaphore(value: 4) // Max 4 concurrent disk reads
 
 // MARK: - Hardware-Accelerated CRC32
 struct CRC32 {
-    /// Computes CRC32 using the highly optimized, C-based zlib library included in macOS/iOS
+    // Computes CRC32 using the highly optimized, C-based zlib library included in macOS/iOS
     static func compute(url: URL, offset: UInt64 = 0) -> String? {
         // Wait in line so we don't choke the SSD
         diskIOSemaphore.wait()
@@ -719,8 +719,8 @@ static func titleFromDatGame(name: String, description: String) -> String {
     
     // MARK: - Disc Serial Extraction
     
-    /// Attempts to extract a PlayStation serial (PS1, PS2, PSP) from a disc image.
-    /// This is much faster than hashing a multi-GB ISO.
+    // Attempts to extract a PlayStation serial (PS1, PS2, PSP) from a disc image.
+    // This is much faster than hashing a multi-GB ISO.
     func extractSonySerial(from url: URL) async -> String? {
         let romPath = url
         return await Task.detached(priority: .userInitiated) {

@@ -2,27 +2,27 @@ import Foundation
 
 // MARK: - Bezel Entry Model
 
-/// Represents a single bezel entry from The Bezel Project repository.
+// Represents a single bezel entry from The Bezel Project repository.
 struct BezelEntry: Identifiable, Codable, Equatable, Hashable {
-    /// Unique identifier (filename without .png extension)
+    // Unique identifier (filename without .png extension)
     let id: String
-    /// Full filename including extension
+    // Full filename including extension
     let filename: String
-    /// GitHub raw download URL
+    // GitHub raw download URL
     let rawURL: URL
-    /// Local file URL (nil until downloaded)
+    // Local file URL (nil until downloaded)
     var localURL: URL?
     
-    /// Human-readable display name (filename without extension, cleaned up)
+    // Human-readable display name (filename without extension, cleaned up)
     var displayName: String {
         let stripped = GameNameFormatter.stripTags(id)
         return stripped.replacingOccurrences(of: "_", with: " ")
     }
     
-    /// URL for thumbnail preview (uses GitHub's raw URL)
+    // URL for thumbnail preview (uses GitHub's raw URL)
     var thumbnailURL: URL { rawURL }
     
-    /// Check if this bezel is downloaded locally
+    // Check if this bezel is downloaded locally
     var isDownloaded: Bool {
         guard let url = localURL else { return false }
         return FileManager.default.fileExists(atPath: url.path)
@@ -35,7 +35,7 @@ struct BezelEntry: Identifiable, Codable, Equatable, Hashable {
         self.localURL = localURL
     }
     
-    /// Create from a GitHub API response item
+    // Create from a GitHub API response item
     init?(fromGitHubItem item: [String: Any], baseURL: URL) {
         guard let name = item["name"] as? String,
               let downloadURL = item["download_url"] as? String,
@@ -51,31 +51,31 @@ struct BezelEntry: Identifiable, Codable, Equatable, Hashable {
 
 // MARK: - Bezel System Config
 
-/// Configuration for mapping internal system IDs to Bezel Project repository names.
+// Configuration for mapping internal system IDs to Bezel Project repository names.
 struct BezelSystemConfig: Codable {
-    /// Internal system ID (e.g., "snes")
+    // Internal system ID (e.g., "snes")
     let systemID: String
-    /// Bezel Project repository name (e.g., "SNES")
+    // Bezel Project repository name (e.g., "SNES")
     let bezelProjectName: String
-    /// GitHub API base URL for this system's bezel directory
+    // GitHub API base URL for this system's bezel directory
     let githubAPIURL: URL
-    /// GitHub raw content base URL for this system's bezels
+    // GitHub raw content base URL for this system's bezels
     let githubRawURL: URL
     
-    /// Git Trees API URL to get the full directory structure (no pagination)
+    // Git Trees API URL to get the full directory structure (no pagination)
     let treesAPIURL: URL
     
-    /// The subdirectory path within the repo where bezels are stored
+    // The subdirectory path within the repo where bezels are stored
     var bezelDirectoryPath: String {
         "retroarch/overlay/GameBezels/\(bezelProjectName)/"
     }
     
-    /// Generate a direct URL to a bezel PNG file (for download)
+    // Generate a direct URL to a bezel PNG file (for download)
     func bezelRawURL(for filename: String) -> URL {
         githubRawURL.appendingPathComponent(filename)
     }
     
-    /// Default aspect ratio for this system's bezels (most are 4:3)
+    // Default aspect ratio for this system's bezels (most are 4:3)
     var defaultAspectRatio: CGFloat { 4.0 / 3.0 }
     
     init(systemID: String, bezelProjectName: String) {
@@ -97,16 +97,16 @@ struct BezelSystemConfig: Codable {
 
 // MARK: - Bezel Manifest Cache
 
-/// Cached manifest for a system's available bezels.
+// Cached manifest for a system's available bezels.
 struct BezelManifest: Codable {
-    /// System ID this manifest belongs to
+    // System ID this manifest belongs to
     let systemID: String
-    /// Date when this manifest was last fetched
+    // Date when this manifest was last fetched
     let lastFetched: Date
-    /// List of available bezel entries
+    // List of available bezel entries
     let entries: [BezelEntry]
     
-    /// Check if manifest is stale (older than 7 days)
+    // Check if manifest is stale (older than 7 days)
     var isStale: Bool {
         Date().timeIntervalSince(lastFetched) > 7 * 24 * 60 * 60
     }
@@ -114,13 +114,13 @@ struct BezelManifest: Codable {
 
 // MARK: - Bezel Storage Mode
 
-/// Defines where bezel files are stored.
+// Defines where bezel files are stored.
 enum BezelStorageMode: String, Codable, CaseIterable {
-    /// Bezels stored relative to the first library folder (default)
+    // Bezels stored relative to the first library folder (default)
     case libraryRelative
-    /// User-selected custom folder
+    // User-selected custom folder
     case customFolder
-    /// Internal app-managed folder in Application Support
+    // Internal app-managed folder in Application Support
     case internalManaged
     
     var displayName: String {
@@ -148,13 +148,13 @@ enum BezelStorageMode: String, Codable, CaseIterable {
 
 // MARK: - Bezel Resolution Result
 
-/// Result of resolving a bezel for a specific game.
+// Result of resolving a bezel for a specific game.
 struct BezelResolutionResult {
-    /// The bezel entry (may be nil if not found)
+    // The bezel entry (may be nil if not found)
     let entry: BezelEntry?
-    /// How this bezel was resolved
+    // How this bezel was resolved
     let resolutionMethod: ResolutionMethod
-    /// The aspect ratio to use for the playable area
+    // The aspect ratio to use for the playable area
     let aspectRatio: CGFloat
     
     enum ResolutionMethod {

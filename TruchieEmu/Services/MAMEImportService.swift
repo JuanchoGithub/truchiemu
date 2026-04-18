@@ -1,7 +1,7 @@
 import Foundation
 import SwiftData
 
-/// A single MAME ROM lookup entry (lightweight, for in-memory dictionary).
+// A single MAME ROM lookup entry (lightweight, for in-memory dictionary).
 struct MAMELookupEntry {
     let shortName: String
     let description: String
@@ -17,8 +17,8 @@ struct MAMELookupEntry {
     }
 }
 
-/// Service that imports the MAME ROM database (mame_rom_data.json) into SwiftData.
-/// Provides lookup services for identifying MAME ROMs by filename.
+// Service that imports the MAME ROM database (mame_rom_data.json) into SwiftData.
+// Provides lookup services for identifying MAME ROMs by filename.
 @MainActor
 final class MAMEImportService: ObservableObject {
     static let shared = MAMEImportService()
@@ -31,7 +31,7 @@ final class MAMEImportService: ObservableObject {
     
     // MARK: - SwiftData Import
     
-    /// Find the bundled JSON file
+    // Find the bundled JSON file
     func findDatabaseFile() -> URL? {
         // First try app bundle (for production builds)
         if let bundledURL = Bundle.main.url(forResource: "mame_rom_data", withExtension: "json") {
@@ -56,7 +56,7 @@ final class MAMEImportService: ObservableObject {
         return nil
     }
     
-    /// Import the database into SwiftData
+    // Import the database into SwiftData
     @MainActor
     func importDatabase(from fileURL: URL, modelContext: ModelContext) async -> ImportResult {
         guard !isImporting else {
@@ -174,7 +174,7 @@ final class MAMEImportService: ObservableObject {
         }
     }
     
-    /// Delete all existing MAME database entries
+    // Delete all existing MAME database entries
     @MainActor
     private func deleteExistingEntries(modelContext: ModelContext) {
         do {
@@ -209,7 +209,7 @@ final class MAMEImportService: ObservableObject {
         }
     }
     
-    /// Get import status for display
+    // Get import status for display
     var isDatabaseImported: Bool {
         // Quick check - could be made more robust with a persistence check
         return totalEntries > 0

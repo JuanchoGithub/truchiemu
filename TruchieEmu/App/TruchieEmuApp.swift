@@ -130,10 +130,10 @@ struct TruchieEmuApp: App {
     }
 }
 
-/// Wrapper view that runs first-run DAT pre-population before showing content.
-/// MAME dictionary loading is deferred to lazy/on-demand loading.
-/// Checks the prepopulation flag synchronously to avoid showing the loading view
-/// on subsequent launches.
+// Wrapper view that runs first-run DAT pre-population before showing content.
+// MAME dictionary loading is deferred to lazy/on-demand loading.
+// Checks the prepopulation flag synchronously to avoid showing the loading view
+// on subsequent launches.
 struct ContentWithPrepopulationView: View {
     @State private var isPrepopulated: Bool
     @State private var isRunningPrepopulation = false
@@ -145,7 +145,7 @@ struct ContentWithPrepopulationView: View {
         _isPrepopulated = State(initialValue: AppSettings.getBool("dat_prepopulation_done_v1", defaultValue: false))
     }
     
-    /// Whether we need to show the loading view
+    // Whether we need to show the loading view
     private var needsLoading: Bool {
         !isPrepopulated
     }
@@ -177,7 +177,7 @@ struct ContentWithPrepopulationView: View {
 }
 
 class AppDelegate: NSObject, NSApplicationDelegate {
-    /// Track if this instance was launched via CLI
+    // Track if this instance was launched via CLI
     private var isCLILaunch: Bool {
         ProcessInfo.processInfo.arguments.contains("--launch")
     }
@@ -217,8 +217,8 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         }
     }
     
-    /// Remove any saved state for the game-info window to prevent restoration on launch.
-    /// Called during applicationWillFinishLaunching to clear UserDefaults before macOS restores windows.
+    // Remove any saved state for the game-info window to prevent restoration on launch.
+    // Called during applicationWillFinishLaunching to clear UserDefaults before macOS restores windows.
     private func clearGameInfoWindowState() {
         // macOS stores window frame info under keys like "NSWindow Frame game-info:UUID"
         let defaults = UserDefaults.standard
@@ -242,7 +242,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         }
     }
     
-    /// Close any game-info windows that were restored despite UserDefaults cleanup.
+    // Close any game-info windows that were restored despite UserDefaults cleanup.
     private func closeRestoredGameInfoWindows() {
         let gameInfoWindows = NSApp.windows.filter { window in
             // Match by restoration class name or by checking if it's a game-info window

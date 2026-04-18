@@ -2,8 +2,8 @@ import Foundation
 
 // MARK: - RetroAchievements Service
 
-/// Service for interacting with the RetroAchievements API.
-/// Handles authentication, game identification, achievement tracking, and leaderboards.
+// Service for interacting with the RetroAchievements API.
+// Handles authentication, game identification, achievement tracking, and leaderboards.
 @MainActor
 class RetroAchievementsService: ObservableObject {
     static let shared = RetroAchievementsService()
@@ -66,7 +66,7 @@ class RetroAchievementsService: ObservableObject {
     
     // MARK: - Authentication
     
-    /// Validate stored token on app launch.
+    // Validate stored token on app launch.
     func validateToken(token: String, username: String) async {
         guard isEnabled, !apiKey.isEmpty else { return }
         
@@ -85,7 +85,7 @@ class RetroAchievementsService: ObservableObject {
         }
     }
     
-    /// Login with username and password to get API token.
+    // Login with username and password to get API token.
     func login(username: String, password: String) async throws -> String {
         guard !apiKey.isEmpty else {
             throw RAError.apiKeyMissing
@@ -127,7 +127,7 @@ class RetroAchievementsService: ObservableObject {
     
     // MARK: - Game Identification
     
-    /// Identify a game by its hash and fetch achievement data.
+    // Identify a game by its hash and fetch achievement data.
     func identifyGame(hash: String) async throws -> RAGameInfo? {
         guard isEnabled, isLoggedIn, !apiKey.isEmpty else { return nil }
         guard let username = username else { return nil }
@@ -143,14 +143,14 @@ class RetroAchievementsService: ObservableObject {
         return try await fetchGameInfo(gameID: gameID, username: username)
     }
     
-    /// Resolve a ROM hash to a RetroAchievements game ID.
+    // Resolve a ROM hash to a RetroAchievements game ID.
     private func resolveHash(hash: String) async throws -> Int? {
         guard username != nil else { return nil }
         
         return nil // Requires separate hash resolution endpoint
     }
     
-    /// Fetch detailed game info including achievements.
+    // Fetch detailed game info including achievements.
     private func fetchGameInfo(gameID: Int, username: String) async throws -> RAGameInfo {
         let response = try await requestGameInfo(gameID: String(gameID), username: username)
         guard let response = response else {
@@ -189,7 +189,7 @@ class RetroAchievementsService: ObservableObject {
     
     // MARK: - Achievement Unlocking
     
-    /// Submit an achievement unlock.
+    // Submit an achievement unlock.
     func unlockAchievement(id: Int, hardcore: Bool) async throws {
         guard isLoggedIn, let username = username else { return }
         
@@ -225,7 +225,7 @@ class RetroAchievementsService: ObservableObject {
     
     // MARK: - Leaderboards
     
-    /// Fetch leaderboards for a game.
+    // Fetch leaderboards for a game.
     func fetchLeaderboards(gameID: Int) async throws -> [Leaderboard] {
         guard isLoggedIn, let username = username else { return [] }
         
@@ -263,7 +263,7 @@ class RetroAchievementsService: ObservableObject {
         return leaderboards
     }
     
-    /// Submit a leaderboard entry.
+    // Submit a leaderboard entry.
     func submitLeaderboardScore(leaderboardID: Int, score: Int) async throws {
         guard isLoggedIn, let username = username else { return }
         
@@ -289,7 +289,7 @@ class RetroAchievementsService: ObservableObject {
     
     // MARK: - Rich Presence
     
-    /// Update rich presence message.
+    // Update rich presence message.
     func updateRichPresence(gameID: Int, message: String) async {
         guard isLoggedIn, let username = username else { return }
         

@@ -1,8 +1,8 @@
 import AppKit
 import Metal
 
-/// Convert MTLTexture to NSImage using Metal texture bytes directly
-/// This is more reliable than going through CIImage/CGImage paths
+// Convert MTLTexture to NSImage using Metal texture bytes directly
+// This is more reliable than going through CIImage/CGImage paths
 func NSImageFromMTLTexture(_ texture: MTLTexture) -> NSImage? {
     let width = texture.width
     let height = texture.height
@@ -60,7 +60,7 @@ func NSImageFromMTLTexture(_ texture: MTLTexture) -> NSImage? {
 }
 
 extension NSImage {
-    /// Resize the image to the specified size
+    // Resize the image to the specified size
     func resized(to targetSize: NSSize) -> NSImage {
         let newImage = NSImage(size: targetSize)
         newImage.lockFocus()
@@ -76,12 +76,12 @@ extension NSImage {
         return newImage
     }
     
-    /// Convert MTLTexture to NSImage
-    /// - Parameters:
-    ///   - texture: The MTLTexture to convert
-    ///   - width: Width of the texture
-    ///   - height: Height of the texture
-    /// - Returns: NSImage representation, or nil on failure
+    // Convert MTLTexture to NSImage
+    // - Parameters:
+    //   - texture: The MTLTexture to convert
+    //   - width: Width of the texture
+    //   - height: Height of the texture
+    // - Returns: NSImage representation, or nil on failure
     static func fromMTLTexture(_ texture: MTLTexture, width: Int, height: Int) -> NSImage? {
         // Create a CIImage from the texture
         let ciContext = CIContext(options: nil)
@@ -102,7 +102,7 @@ extension NSImage {
 }
 
 extension MTLTexture {
-    /// Convert MTLTexture to CGImage
+    // Convert MTLTexture to CGImage
     func toCGImage() -> CGImage? {
         // Ensure texture is in a readable format
         guard pixelFormat == .bgra8Unorm || pixelFormat == .rgba8Unorm else {

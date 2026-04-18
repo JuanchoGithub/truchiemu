@@ -3,18 +3,18 @@ import MetalKit
 
 // MARK: - ScummVM Cache Manager (static, called from ROMLibrary)
 
-/// Shared cache manager for ScummVM extracted files.
-/// Provides static methods for cleanup that can be called during library scanning.
+// Shared cache manager for ScummVM extracted files.
+// Provides static methods for cleanup that can be called during library scanning.
 enum ScummVMCacheManager {
     
-    /// Directory where extracted ScummVM games are stored
+    // Directory where extracted ScummVM games are stored
     static var scummVMDirectory: URL {
         let appSupport = FileManager.default.urls(for: .applicationSupportDirectory, in: .userDomainMask).first!
         return appSupport.appendingPathComponent("TruchieEmu/ScummVMExtracted")
     }
     
-    /// Clean up extracted ScummVM folders whose source ZIP files no longer exist in the library.
-    /// - Parameter activeScummvmPaths: Set of paths for ScummVM ZIP files currently in the library.
+    // Clean up extracted ScummVM folders whose source ZIP files no longer exist in the library.
+    // - Parameter activeScummvmPaths: Set of paths for ScummVM ZIP files currently in the library.
     static func cleanupOrphanedCaches(activeScummvmPaths: Set<String>) {
         let fm = FileManager.default
         guard let extractedFolders = try? fm.contentsOfDirectory(at: scummVMDirectory, includingPropertiesForKeys: nil) else {
@@ -41,16 +41,16 @@ enum ScummVMCacheManager {
     }
 }
 
-/// ScummVM-specific emulator runner that handles ZIP files by:
-/// 1. Extracting the ZIP to a cache directory
-/// 2. Detecting the game ID from filenames
-/// 3. Generating a .scummvm hook file
-/// 4. Passing the .scummvm file to the core instead of the ZIP
+// ScummVM-specific emulator runner that handles ZIP files by:
+// 1. Extracting the ZIP to a cache directory
+// 2. Detecting the game ID from filenames
+// 3. Generating a .scummvm hook file
+// 4. Passing the .scummvm file to the core instead of the ZIP
 class ScummVMRunner: EmulatorRunner, @unchecked Sendable {
     
     // MARK: - Game ID Detection Patterns
     
-    /// Known ScummVM game file patterns - maps distinctive files to game IDs
+    // Known ScummVM game file patterns - maps distinctive files to game IDs
     static let gameFilePatterns: [(pattern: String, gameID: String)] = [
         // LucasArts games
         ("TENTACLE", "tentacle"),           // Day of the Tentacle
@@ -97,12 +97,12 @@ class ScummVMRunner: EmulatorRunner, @unchecked Sendable {
         ("TOUCHE", "tuche"),                // Touche: The Adventures of the 5th Musketeer
     ]
     
-    /// Audio file extensions that indicate ScummVM game data
+    // Audio file extensions that indicate ScummVM game data
     static let scummVMAudioExtensions: Set<String> = [
         "flac", "ogg", "wav", "mp3", "aif", "aiff"
     ]
     
-    /// ScummVM-specific data file extensions
+    // ScummVM-specific data file extensions
     static let scummVMDataExtensions: Set<String> = [
         "sou", "000", "001", "002", "003", "004", "005",
         "flc", "flx", "san", "bun", "ws6",
@@ -111,19 +111,19 @@ class ScummVMRunner: EmulatorRunner, @unchecked Sendable {
     
     // MARK: - Cache Management
     
-    /// Directory where extracted ScummVM games are stored
+    // Directory where extracted ScummVM games are stored
     private var scummVMDirectory: URL {
         let appSupport = FileManager.default.urls(for: .applicationSupportDirectory, in: .userDomainMask).first!
         return appSupport.appendingPathComponent("TruchieEmu/ScummVMExtracted")
     }
     
-    /// Get the extracted game folder path for a given ZIP file
+    // Get the extracted game folder path for a given ZIP file
     private func extractedPath(for zipPath: URL) -> URL {
         let baseName = zipPath.deletingPathExtension().lastPathComponent
         return scummVMDirectory.appendingPathComponent(baseName)
     }
     
-    /// Get the .scummvm hook file path for a given ZIP file
+    // Get the .scummvm hook file path for a given ZIP file
     private func hookFilePath(in gameFolder: URL) -> URL {
         let gameID = detectGameID(in: gameFolder)
         return gameFolder.appendingPathComponent("\(gameID).scummvm")
@@ -131,8 +131,8 @@ class ScummVMRunner: EmulatorRunner, @unchecked Sendable {
     
     // MARK: - ZIP Extraction
     
-    /// Extract a ZIP file to the cache directory if not already extracted
-    /// Returns the path to the extracted folder
+    // Extract a ZIP file to the cache directory if not already extracted
+    // Returns the path to the extracted folder
     func extractIfNeeded(zipPath: URL) -> URL? {
         let destFolder = extractedPath(for: zipPath)
         
@@ -190,7 +190,7 @@ class ScummVMRunner: EmulatorRunner, @unchecked Sendable {
         }
     }
     
-    /// Fallback extraction using ditto
+    // Fallback extraction using ditto
     private func extractWithDitto(zipPath: URL, destFolder: URL) -> URL? {
         let process = Process()
         process.executableURL = URL(fileURLWithPath: "/usr/bin/ditto")
@@ -215,7 +215,7 @@ class ScummVMRunner: EmulatorRunner, @unchecked Sendable {
     
     // MARK: - Game ID Detection
     
-    /// Detect the ScummVM game ID by scanning files in the extracted folder
+    // Detect the ScummVM game ID by scanning files in the extracted folder
     func detectGameID(in folder: URL) -> String {
         do {
             let files = try FileManager.default.contentsOfDirectory(atPath: folder.path)
@@ -288,8 +288,8 @@ class ScummVMRunner: EmulatorRunner, @unchecked Sendable {
     
     // MARK: - Hook File Generation
     
-    /// Create a .scummvm hook file in the game folder
-    /// Returns the path to the hook file
+    // Create a .scummvm hook file in the game folder
+    // Returns the path to the hook file
     func createHookFile(in gameFolder: URL, gameID: String) -> URL? {
         let hookPath = gameFolder.appendingPathComponent("\(gameID).scummvm")
         
@@ -326,7 +326,7 @@ class ScummVMRunner: EmulatorRunner, @unchecked Sendable {
     
     // MARK: - Game File Detection
     
-    /// Check if a folder contains ScummVM game files
+    // Check if a folder contains ScummVM game files
     func hasGameFiles(in folder: URL) -> Bool {
         do {
             let files = try FileManager.default.contentsOfDirectory(atPath: folder.path)

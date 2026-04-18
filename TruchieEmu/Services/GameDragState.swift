@@ -1,15 +1,15 @@
 import Foundation
 import Combine
 
-/// Shared state for tracking game drag operations across views
+// Shared state for tracking game drag operations across views
 @MainActor
 class GameDragState: ObservableObject {
     static let shared = GameDragState()
     
-    /// Currently dragged game IDs
+    // Currently dragged game IDs
     @Published var draggedGameIDs: [UUID] = []
     
-    /// Whether a drag operation is in progress
+    // Whether a drag operation is in progress
     @Published var isDraggingGames: Bool = false
     
     private init() {}

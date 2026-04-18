@@ -394,7 +394,7 @@ struct SubfolderRow: View {
         return library.roms.filter { $0.path.path == folderPath || $0.path.path.hasPrefix(prefix) }.count
     }
     
-    /// Display as "relative/path (# games)"
+    // Display as "relative/path (# games)"
     private var compactPathDisplay: String {
         let relative = relativePathDisplay
         return "\(relative) (\(romCount) game\(romCount == 1 ? "" : "s"))"
@@ -548,7 +548,7 @@ struct SubfolderRow: View {
         }
     }
     
-    /// Whether this folder might have children (to show expand chevron)
+    // Whether this folder might have children (to show expand chevron)
     private var folderHasChildren: Bool {
         // Only allow expansion up to depth 2
         guard depth < 2 else { return false }

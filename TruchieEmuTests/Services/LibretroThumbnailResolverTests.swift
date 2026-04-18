@@ -116,8 +116,8 @@ final class LibretroThumbnailResolverTests: XCTestCase {
 
     // MARK: - Live CDN Integration Tests
 
-    /// Tests that the URL generation order prefers Named_Boxarts over Named_Titles
-    /// using a real game that has both on the Libretro CDN.
+    // Tests that the URL generation order prefers Named_Boxarts over Named_Titles
+    // using a real game that has both on the Libretro CDN.
     func testRealGame_BoxartPreferredOverTitle() async throws {
         // "Super Mario Bros. 3 (USA)" has both boxart and title on the CDN
         let title = "Super Mario Bros. 3 (USA)"

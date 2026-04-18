@@ -4,8 +4,8 @@ import SwiftUI
 
 // MARK: - GameLauncher
 
-/// Unified game launcher that ensures ALL launch paths (double-click, launch button, save state click, CLI)
-/// apply the same settings consistently: shaders, core options, achievements, cheats, controls, etc.
+// Unified game launcher that ensures ALL launch paths (double-click, launch button, save state click, CLI)
+// apply the same settings consistently: shaders, core options, achievements, cheats, controls, etc.
 @MainActor
 class GameLauncher: ObservableObject {
     static let shared = GameLauncher()
@@ -20,7 +20,7 @@ class GameLauncher: ObservableObject {
     
     // MARK: - Launch Configuration
     
-    /// Complete launch configuration for a game
+    // Complete launch configuration for a game
     @MainActor
     struct LaunchConfig {
         let rom: ROM
@@ -88,14 +88,14 @@ class GameLauncher: ObservableObject {
     
     // MARK: - Public Launch Methods
     
-    /// Launch a game with all settings applied - the single unified launch point
-    /// - Parameters:
-    ///   - rom: The ROM to launch
-    ///   - coreID: The core to use
-    ///   - slotToLoad: Optional save slot to load on start
-    ///   - library: Reference to ROMLibrary for marking as played
-    ///   - completion: Called when launch is complete
-    /// - Returns: The window controller if launch was successful
+    // Launch a game with all settings applied - the single unified launch point
+    // - Parameters:
+    //   - rom: The ROM to launch
+    //   - coreID: The core to use
+    //   - slotToLoad: Optional save slot to load on start
+    //   - library: Reference to ROMLibrary for marking as played
+    //   - completion: Called when launch is complete
+    // - Returns: The window controller if launch was successful
     @discardableResult
     func launchGame(
         rom: ROM,
@@ -186,7 +186,7 @@ class GameLauncher: ObservableObject {
     
     // MARK: - Settings Application
     
-    /// Apply all launch settings before the game starts
+    // Apply all launch settings before the game starts
     private func applyLaunchConfiguration(_ config: LaunchConfig) {
         // 1. Apply shader preset
         if let preset = ShaderPreset.preset(id: config.shaderPresetID) {
@@ -233,9 +233,9 @@ class GameLauncher: ObservableObject {
     
     // MARK: - MAME Frame Limiting
     
-    /// Apply MAME-specific core options that ensure games run at their native speed.
-    /// MAME cores run unlocked by default and can far exceed real hardware speed.
-    /// This sets critical options like auto-frame-delay, vsync hints, and frameskip controls.
+    // Apply MAME-specific core options that ensure games run at their native speed.
+    // MAME cores run unlocked by default and can far exceed real hardware speed.
+    // This sets critical options like auto-frame-delay, vsync hints, and frameskip controls.
     private func applyMAMEFrameLimitOptions(for systemID: String, coreID: String) {
         guard systemID == "mame" || systemID == "fba" else { return }
         
@@ -291,8 +291,8 @@ class GameLauncher: ObservableObject {
     
     // MARK: - Game Boy Colorization
     
-    /// Apply GB colorization core options based on ROM settings.
-    /// Supports both original Game Boy (gb) and Game Boy Color (gbc).
+    // Apply GB colorization core options based on ROM settings.
+    // Supports both original Game Boy (gb) and Game Boy Color (gbc).
     private func applyGBColorizationForROM(_ rom: ROM, coreID: String) {
         guard rom.systemID == "gb" || rom.systemID == "gbc" else { return }
         
@@ -383,7 +383,7 @@ class GameLauncher: ObservableObject {
     
     // MARK: - MAME Missing Files Alert
     
-    /// Show an alert when MAME ROM files are missing.
+    // Show an alert when MAME ROM files are missing.
     private func showMAMEMissingFilesAlert(gameName: String, missing: [MissingROMItem], romsDirectory: URL) {
         let alert = NSAlert()
         alert.alertStyle = .warning
@@ -402,12 +402,12 @@ class GameLauncher: ObservableObject {
     
     // MARK: - Cleanup
     
-    /// Remove a controller from tracking when its window closes
+    // Remove a controller from tracking when its window closes
     func removeController(for romID: UUID) {
         activeControllers.removeValue(forKey: romID)
     }
     
-    /// Check if a game is currently being launched
+    // Check if a game is currently being launched
     func isLaunchingGame(romID: UUID) -> Bool {
         return currentLaunchROM?.id == romID
     }

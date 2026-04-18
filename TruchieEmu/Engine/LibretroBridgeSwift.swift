@@ -1,6 +1,6 @@
 import Foundation
 
-class LibretroBridgeSwift {
+@objc class LibretroBridgeSwift: NSObject {
     
     // MARK: - Logging Integration
     
@@ -167,6 +167,91 @@ class LibretroBridgeSwift {
         let categories = LibretroBridge.getCategoriesDictionary() as [String: Any]?
         LoggerService.debug(category: "LibretroBridge", "Getting categories dictionary: \(String(describing: categories))")
         return categories
+    }
+
+    // MARK: - Environment Callbacks (Bridge $\rightarrow$ Swift)
+
+    static func setCoreOptionsV1(_ optionsArray: [[String: Any]]) {
+        LoggerService.debug(category: "LibretroBridge", "Receiving V1 core options")
+        var options: [CoreOption] = []
+        for dict in optionsArray {
+            let key = dict["key"] as? String ?? ""
+            let desc = dict["desc"] as? String ?? ""
+            let info = dict["info"] as? String ?? ""
+            let catKey = dict["category"] as? String ?? ""
+            let defaultVal = dict["defaultValue"] as? String ?? ""
+            let currentVal = dict["currentValue"] as? String ?? defaultVal
+            
+            var values: [CoreOptionValue] = []
+            if let valsArr = dict["values"] as? [[String: String]] {
+                for v in valsArr {
+                    values.append(CoreOptionValue(value: v["value"] ?? "", label: v["label"] ?? v["value"] ?? ""))
+                }
+            }
+            if values.isEmpty {
+                values = [CoreOptionValue(value: currentVal, label: currentVal)]
+            }
+            
+            options.append(CoreOption(
+                key: key,
+                description: desc,
+                info: info,
+                category: catKey.isEmpty ? nil : catKey,
+                values: values,
+                defaultValue: defaultVal,
+                currentValue: currentVal,
+                version: .v1
+            ))
+        }
+        Task { @MainActor in
+            CoreOptionsManager.shared.setOptionsV1(options)
+        }
+    }
+
+    static func setCoreOptionsV2(_ optionsArray: [[String: Any]], categoriesArray: [[String: Any]]) {
+        LoggerService.debug(category: "LibretroBridge", "Receiving V2 core options")
+        var options: [CoreOption] = []
+        for dict in optionsArray {
+            let key = dict["key"] as? String ?? ""
+            let desc = dict["desc"] as? String ?? ""
+            let info = dict["info"] as? String ?? ""
+            let catKey = dict["category"] as? String ?? ""
+            let defaultVal = dict["defaultValue"] as? String ?? ""
+            let currentVal = dict["currentValue"] as? String ?? defaultVal
+            
+            var values: [CoreOptionValue] = []
+            if let valsArr = dict["values"] as? [[String: String]] {
+                for v in valsArr {
+                    values.append(CoreOptionValue(value: v["value"] ?? "", label: v["label"] ?? v["value"] ?? ""))
+                }
+            }
+            if values.isEmpty {
+                values = [CoreOptionValue(value: currentVal, label: currentVal)]
+            }
+            
+            options.append(CoreOption(
+                key: key,
+                description: desc,
+                info: info,
+                category: catKey.isEmpty ? nil : catKey,
+                values: values,
+                defaultValue: defaultVal,
+                currentValue: currentVal,
+                version: .v2
+            ))
+        }
+        
+        var categories: [CoreOptionCategory] = []
+        for dict in categoriesArray {
+            let key = dict["key"] as? String ?? ""
+            let desc = dict["desc"] as? String ?? ""
+            let info = dict["info"] as? String ?? ""
+            categories.append(CoreOptionCategory(key: key, description: desc, info: info))
+        }
+        
+        Task { @MainActor in
+            CoreOptionsManager.shared.setOptions(options, categories: categories)
+        }
     }
 
     // MARK: - Cheats

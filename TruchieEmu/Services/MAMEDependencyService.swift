@@ -3,7 +3,7 @@ import SwiftData
 
 // MARK: - XML Parser for MAME XML
 
-/// Parses a single MAME XML file and returns a dependency map.
+// Parses a single MAME XML file and returns a dependency map.
 struct MAMEXMLParser {
     
     struct ParsedGame {
@@ -27,7 +27,7 @@ struct MAMEXMLParser {
         let merge: String?
     }
     
-    /// Parse MAME XML data into a dependency database.
+    // Parse MAME XML data into a dependency database.
     static func parse(xmlData: Data, coreID: String) throws -> MAMEDependencyDB {
         let guardInstance = XMLParser(data: xmlData)
         let delegate = MAMEXMLParserDelegate()
@@ -64,7 +64,7 @@ struct MAMEXMLParser {
         )
     }
     
-    /// Parse a list of MAMEGameInfo entries — only runnable games.
+    // Parse a list of MAMEGameInfo entries — only runnable games.
     static func getRunnableGames(from db: MAMEDependencyDB) -> [MAMEGameInfo] {
         db.games.compactMap { shortName, deps -> MAMEGameInfo? in
             guard deps.isRunnable else { return nil }
@@ -241,11 +241,11 @@ enum MAMEParserError: Error, LocalizedError {
 
 // MARK: - MAME Dependency Service
 
-/// Service that manages MAME game dependencies per core version.
+// Service that manages MAME game dependencies per core version.
 final class MAMEDependencyService: ObservableObject {
     static let shared = MAMEDependencyService()
     
-    /// URL patterns for MAME XML files on GitHub
+    // URL patterns for MAME XML files on GitHub
     static let xmlURLs: [String: String] = [
         "mame2000": "https://raw.githubusercontent.com/libretro/libretro-database/master/metadat/mame/MAME%202000%20XML.dat",
         "mame2003": "https://raw.githubusercontent.com/libretro/libretro-database/master/metadat/mame/MAME%202003%20XML.xml",
@@ -260,7 +260,7 @@ final class MAMEDependencyService: ObservableObject {
         return base.hasPrefix("mame")
     }
     
-    /// Core ID -> base name (e.g. "mame2003_libretro" -> "mame2003")
+    // Core ID -> base name (e.g. "mame2003_libretro" -> "mame2003")
     static func baseCoreID(_ coreID: String) -> String {
         coreID.replacingOccurrences(of: "_libretro", with: "")
     }
@@ -268,20 +268,20 @@ final class MAMEDependencyService: ObservableObject {
     @Published var isFetching = false
     @Published var fetchProgress: Double = 0
     
-    /// In-memory cache: coreID -> dependency database
+    // In-memory cache: coreID -> dependency database
     private var dependencyCache: [String: MAMEDependencyDB] = [:]
     
-    /// Persistent storage URL
+    // Persistent storage URL
     private var storageURL: URL {
         let base = FileManager.default.urls(for: .applicationSupportDirectory, in: .userDomainMask).first!
         return base.appendingPathComponent("TruchieEmu/MAMEDeps", isDirectory: true)
     }
     
     
-    /// UserDefaults key tracking cores whose XML fetch failed (for retry)
+    // UserDefaults key tracking cores whose XML fetch failed (for retry)
     private static let failedFetchKey = "MAMEDependencyService_failedFetchCores"
     
-    /// Bundled JSON fallback URL
+    // Bundled JSON fallback URL
     private static let fallbackJSONPath = "scripts/mame_lookup/mame_rom_data.json"
     
     init() {
@@ -293,16 +293,16 @@ final class MAMEDependencyService: ObservableObject {
     
     // MARK: - Fetch & Parse
     
-    /// Fetch and parse MAME XML dependencies for a core.
-    /// NOTE: Now uses the bundled mame_unified.json instead of runtime XML downloads.
-    /// The XML download logic is kept for backwards compatibility but is no longer the primary path.
+    // Fetch and parse MAME XML dependencies for a core.
+    // NOTE: Now uses the bundled mame_unified.json instead of runtime XML downloads.
+    // The XML download logic is kept for backwards compatibility but is no longer the primary path.
     @MainActor
     func fetchAndParseDependencies(for coreID: String) async throws {
         try await fetchAndParseDependencies(for: coreID, forceRefresh: false)
     }
 
-    /// Fetch and parse MAME XML dependencies for a core with optional cache bypass.
-    /// For all MAME cores, this now loads from the bundled unified database.
+    // Fetch and parse MAME XML dependencies for a core with optional cache bypass.
+    // For all MAME cores, this now loads from the bundled unified database.
     @MainActor
     func fetchAndParseDependencies(for coreID: String, forceRefresh: Bool) async throws {
         let baseID = Self.baseCoreID(coreID)
@@ -404,7 +404,7 @@ final class MAMEDependencyService: ObservableObject {
         }
     }
     
-    /// Load dependencies for a specific core from the bundled unified database.
+    // Load dependencies for a specific core from the bundled unified database.
     @MainActor
     private func loadFromUnifiedDatabase(for baseID: String) {
         // Check if already cached
@@ -451,7 +451,7 @@ final class MAMEDependencyService: ObservableObject {
     
     // MARK: - Retry Failed Fetches
     
-    /// Record that a core's XML fetch failed so we can retry on next startup.
+    // Record that a core's XML fetch failed so we can retry on next startup.
     private func recordFailedFetch(_ baseID: String) {
         var failed = AppSettings.get(Self.failedFetchKey, type: [String].self) ?? []
         guard !failed.contains(baseID) else { return }
@@ -460,19 +460,19 @@ final class MAMEDependencyService: ObservableObject {
         LoggerService.mameDeps("Recorded failed fetch for core: \(baseID)")
     }
     
-    /// Clear a core from the failed fetch list.
+    // Clear a core from the failed fetch list.
     private func clearFailedFetch(_ baseID: String) {
         var failed = AppSettings.get(Self.failedFetchKey, type: [String].self) ?? []
         failed.removeAll { $0 == baseID }
         AppSettings.set(Self.failedFetchKey, value: failed.count > 0 ? failed : nil)
     }
     
-    /// Get cores whose dependency fetch previously failed (for retry).
+    // Get cores whose dependency fetch previously failed (for retry).
     static var failedFetchCores: [String] {
         AppSettings.get(Self.failedFetchKey, type: [String].self) ?? []
     }
     
-    /// Retry fetching dependencies for previously-failed cores.
+    // Retry fetching dependencies for previously-failed cores.
     @MainActor
     func retryFailedFetches() async {
         let failedCores = Self.failedFetchCores
@@ -493,7 +493,7 @@ final class MAMEDependencyService: ObservableObject {
     
     // MARK: - Query
     
-    /// Get all runnable games for a core.
+    // Get all runnable games for a core.
     func getRunnableGames(for coreID: String) -> [MAMEGameInfo] {
         let baseID = Self.baseCoreID(coreID)
         guard let db = dependencyCache[baseID] else {
@@ -503,8 +503,8 @@ final class MAMEDependencyService: ObservableObject {
         return MAMEXMLParser.getRunnableGames(from: db)
     }
     
-    /// Check missing dependencies for a specific game.
-    /// Returns a list of missing ZIP files the user needs to obtain.
+    // Check missing dependencies for a specific game.
+    // Returns a list of missing ZIP files the user needs to obtain.
     func checkMissingDependencies(for shortName: String, coreID: String, romsDirectory: URL) -> [MissingROMItem] {
         let baseID = Self.baseCoreID(coreID)
         guard let db = dependencyCache[baseID],
@@ -575,8 +575,8 @@ final class MAMEDependencyService: ObservableObject {
     
     // MARK: - Fallback JSON Loading
     
-    /// Load the bundled mame_rom_data.json as a fallback dependency database.
-    /// This ensures we always have at least basic game descriptions and runnable status.
+    // Load the bundled mame_rom_data.json as a fallback dependency database.
+    // This ensures we always have at least basic game descriptions and runnable status.
     private func loadFallbackFromBundle() {
         // Try app bundle first (production)
         if let bundleURL = Bundle.main.url(forResource: "mame_rom_data", withExtension: "json") {
@@ -601,7 +601,7 @@ final class MAMEDependencyService: ObservableObject {
         LoggerService.mameDepsWarn("No fallback MAME JSON found")
     }
     
-    /// Parse the bundled JSON and add any cores that don't have cached databases.
+    // Parse the bundled JSON and add any cores that don't have cached databases.
     private func loadFallbackJSON(from url: URL) {
         do {
             let data = try Data(contentsOf: url)
@@ -642,15 +642,15 @@ final class MAMEDependencyService: ObservableObject {
         }
     }
     
-    /// Check if dependencies have been fetched for a core.
+    // Check if dependencies have been fetched for a core.
     func hasDependencies(for coreID: String) -> Bool {
         let baseID = Self.baseCoreID(coreID)
         return dependencyCache[baseID] != nil
     }
 
-    /// Look up a MAME game by shortName, preferring per-core dependency data
-    /// (from downloaded XML) over the bundled fallback JSON.
-    /// Returns a tuple with the description, type, isPlayable, parentROM, and the source.
+    // Look up a MAME game by shortName, preferring per-core dependency data
+    // (from downloaded XML) over the bundled fallback JSON.
+    // Returns a tuple with the description, type, isPlayable, parentROM, and the source.
     func lookupGame(for coreID: String, shortName: String) async -> (description: String, type: String, isPlayable: Bool, parent: String?, source: String)? {
         let baseID = Self.baseCoreID(coreID)
 
@@ -680,8 +680,8 @@ final class MAMEDependencyService: ObservableObject {
         return nil
     }
 
-    /// Set of short names for all runnable games across all loaded cores.
-    /// Used by the library view to filter MAME games to only playable ones.
+    // Set of short names for all runnable games across all loaded cores.
+    // Used by the library view to filter MAME games to only playable ones.
     var rachableShortNamesForCurrentCores: Set<String> {
         var names: Set<String> = []
         for db in dependencyCache.values {

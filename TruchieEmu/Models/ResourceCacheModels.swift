@@ -2,7 +2,7 @@ import Foundation
 
 // MARK: - Internal Cache Data Types (used by ResourceCacheRepository)
 
-/// Internal cache data used by ResourceCacheRepository.
+// Internal cache data used by ResourceCacheRepository.
 public struct RCCacheData {
     public let cacheKey: String
     public let resourceType: String
@@ -30,7 +30,7 @@ public struct RCCacheData {
     }
 }
 
-/// Internal box art resolution data used by ResourceCacheRepository.
+// Internal box art resolution data used by ResourceCacheRepository.
 public struct RCBoxArtData {
     public let romPathKey: String
     public let systemID: String
@@ -44,7 +44,7 @@ public struct RCBoxArtData {
 
 // MARK: - Resource Type
 
-/// Represents the type of external resource being cached.
+// Represents the type of external resource being cached.
 enum ResourceType: String, Codable, Sendable {
     case dat              // No-Intro .dat files
     case rdb              // Libretro .rdb files
@@ -62,7 +62,7 @@ enum ResourceType: String, Codable, Sendable {
 
 // MARK: - Cache Expiry Policy
 
-/// Defines how long a cached entry should be considered valid.
+// Defines how long a cached entry should be considered valid.
 enum CacheExpiryPolicy: Sendable {
     case never            // Permanent (DAT files — change detection via checksum)
     case short            // 1 hour (Git tree listings, directory indexes)
@@ -83,7 +83,7 @@ enum CacheExpiryPolicy: Sendable {
 
 // MARK: - Resource Cache Entry
 
-/// Represents a single cached HTTP resource in the resource_cache table.
+// Represents a single cached HTTP resource in the resource_cache table.
 struct ResourceCacheEntry: Equatable, Sendable {
     let id: Int
     let cacheKey: String            // e.g. "dat_genesis_no_intro"
@@ -115,38 +115,38 @@ struct ResourceCacheEntry: Equatable, Sendable {
         return status == 200 || status == 304
     }
 
-    /// Compute a cache key for a DAT file by system and source.
+    // Compute a cache key for a DAT file by system and source.
     static func makeDatKey(systemID: String, source: String) -> String {
         return "dat_\(systemID)_\(source)"
     }
 
-    /// Compute a cache key for an RDB file by system and source.
+    // Compute a cache key for an RDB file by system and source.
     static func makeRdbKey(systemID: String, source: String) -> String {
         return "rdb_\(systemID)_\(source)"
     }
 
-    /// Compute a cache key for a box art lookup.
+    // Compute a cache key for a box art lookup.
     static func makeBoxArtKey(systemID: String, gameTitle: String, source: String) -> String {
         let sanitizedTitle = gameTitle.replacingOccurrences(of: " ", with: "_")
         return "boxart_\(systemID)_\(sanitizedTitle)_\(source)"
     }
 
-    /// Compute a cache key for a bezel manifest by system.
+    // Compute a cache key for a bezel manifest by system.
     static func makeBezelManifestKey(systemID: String) -> String {
         return "bezel_manifest_\(systemID)"
     }
 
-    /// Compute a cache key for a cheat manifest by system folder.
+    // Compute a cache key for a cheat manifest by system folder.
     static func makeCheatManifestKey(systemFolder: String) -> String {
         return "cheat_manifest_\(systemFolder)"
     }
 
-    /// Compute a cache key for a thumbnail manifest by system repository.
+    // Compute a cache key for a thumbnail manifest by system repository.
     static func makeThumbnailManifestKey(repoName: String) -> String {
         return "thumbnail_manifest_\(repoName)"
     }
 
-    /// Compute a cache key for LaunchBox search results.
+    // Compute a cache key for LaunchBox search results.
     static func makeLaunchBoxSearchKey(platform: String, query: String) -> String {
         let sanitizedQuery = query.replacingOccurrences(of: " ", with: "_")
         return "launchbox_search_\(platform)_\(sanitizedQuery)"
@@ -155,7 +155,7 @@ struct ResourceCacheEntry: Equatable, Sendable {
 
 // MARK: - Resource Cache Stats
 
-/// Aggregate statistics for the resource cache.
+// Aggregate statistics for the resource cache.
 struct ResourceCacheStats: Sendable {
     let totalEntries: Int
     let totalBytes: Int
@@ -166,7 +166,7 @@ struct ResourceCacheStats: Sendable {
 
 // MARK: - DAT Ingestion Record
 
-/// Tracks each DAT/RDB file ingestion event in the dat_ingestion table.
+// Tracks each DAT/RDB file ingestion event in the dat_ingestion table.
 struct DATIngestionRecord: Equatable, Sendable {
     let id: Int
     let resourceCacheID: Int           // FK to resource_cache
@@ -182,7 +182,7 @@ struct DATIngestionRecord: Equatable, Sendable {
 
 // MARK: - Box Art Resolution
 
-/// Caches the result of "this ROM → this box art URL" lookup in box_art_resolutions table.
+// Caches the result of "this ROM → this box art URL" lookup in box_art_resolutions table.
 struct BoxArtResolution: Equatable, Sendable {
     let id: Int
     let romPathKey: String             // Hash or normalized ROM path
@@ -201,7 +201,7 @@ struct BoxArtResolution: Equatable, Sendable {
 
 // MARK: - Bezel Manifest Cache
 
-/// Caches Git tree responses per bezel system.
+// Caches Git tree responses per bezel system.
 struct BezelManifestCache: Equatable, Sendable {
     let id: Int
     let resourceCacheID: Int

@@ -3,8 +3,8 @@ import AppKit
 
 // MARK: - Bezel Background View for Gameplay
 
-/// SwiftUI view that renders a bezel behind the game content.
-/// This is used as the background layer in the game window.
+// SwiftUI view that renders a bezel behind the game content.
+// This is used as the background layer in the game window.
 struct BezelBackgroundView: View {
     let bezelImage: NSImage?
     let bezelAspectRatio: CGFloat?
@@ -40,8 +40,8 @@ struct BezelBackgroundView: View {
 
 // MARK: - Bezel Layer for NSView-based Game Window
 
-/// NSView-based bezel background layer for the game window.
-/// This sits behind the Metal rendering view.
+// NSView-based bezel background layer for the game window.
+// This sits behind the Metal rendering view.
 class BezelBackgroundLayer: NSView {
     private var bezelImage: NSImage?
     private var imageView: NSImageView?
@@ -54,8 +54,8 @@ class BezelBackgroundLayer: NSView {
     
     // MARK: - Bezel Scaling
     
-    /// Scales a bezel image to fit within the target size while maintaining aspect ratio.
-    /// Prevents high-resolution bezels from exceeding screen bounds.
+    // Scales a bezel image to fit within the target size while maintaining aspect ratio.
+    // Prevents high-resolution bezels from exceeding screen bounds.
     private func scaleBezelImageToFit(_ image: NSImage, targetSize: NSSize) -> NSImage {
         let originalSize = image.size
         
@@ -88,7 +88,7 @@ class BezelBackgroundLayer: NSView {
         return scaledImage
     }
     
-    /// Update the bezel image with screen scaling to prevent oversized window.
+    // Update the bezel image with screen scaling to prevent oversized window.
     func setBezelImageForScreen(_ image: NSImage?, screenSize: NSSize) {
         guard let originalImage = image else {
             setBezelImage(nil)
@@ -104,8 +104,8 @@ class BezelBackgroundLayer: NSView {
         fatalError("init(coder:) has not been implemented")
     }
     
-    /// Set the bezel image to display.
-    /// The bezel will be scaled proportionally to fit within the view bounds.
+    // Set the bezel image to display.
+    // The bezel will be scaled proportionally to fit within the view bounds.
     func setBezelImage(_ image: NSImage?) {
         bezelImage = image
         
@@ -152,8 +152,8 @@ class BezelBackgroundLayer: NSView {
         }
     }
     
-    /// Get the playable area rect within the bezel.
-    /// Returns the center rect where the emulator content should be rendered.
+    // Get the playable area rect within the bezel.
+    // Returns the center rect where the emulator content should be rendered.
     var playableAreaRect: NSRect? {
         guard let image = bezelImage else { return nil }
         
@@ -173,7 +173,7 @@ class BezelBackgroundLayer: NSView {
         return calculatePlayableArea(containerSize: bounds.size, imageAspect: imageAspect, playableAspect: playableAspect)
     }
     
-    /// Calculate the playable area given container and aspect ratios.
+    // Calculate the playable area given container and aspect ratios.
     private func calculatePlayableArea(containerSize: NSSize, imageAspect: CGFloat, playableAspect: CGFloat) -> NSRect {
         // Calculate how the bezel image fits in the container
         let containerAspect = containerSize.width / containerSize.height
@@ -230,7 +230,7 @@ class BezelBackgroundLayer: NSView {
 
 // MARK: - Bezel View Model for Game Window
 
-/// Observable object that manages the bezel for a game window.
+// Observable object that manages the bezel for a game window.
 @MainActor
 class BezelViewModel: ObservableObject {
     @Published var bezelImage: NSImage?
@@ -247,7 +247,7 @@ class BezelViewModel: ObservableObject {
         self.bezelManager = bezelManager
     }
     
-    /// Load bezel for a game.
+    // Load bezel for a game.
     func loadBezel(systemID: String, rom: ROM) async {
         isLoading = true
         
@@ -276,7 +276,7 @@ class BezelViewModel: ObservableObject {
         isLoading = false
     }
     
-    /// Calculate the playable area rectangle for the bezel image.
+    // Calculate the playable area rectangle for the bezel image.
     private func calculatePlayableRect(image: NSImage, aspectRatio: CGFloat) -> CGRect {
         let imageAspect = image.size.width / image.size.height
         

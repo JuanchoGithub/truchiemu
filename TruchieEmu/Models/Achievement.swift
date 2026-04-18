@@ -2,7 +2,7 @@ import Foundation
 
 // MARK: - Achievement Data Structures
 
-/// Represents a single RetroAchievement.
+// Represents a single RetroAchievement.
 struct Achievement: Identifiable, Codable, Hashable {
     var id: Int              // RA achievement ID
     var title: String
@@ -31,7 +31,7 @@ struct Achievement: Identifiable, Codable, Hashable {
     }
 }
 
-/// Achievement categories based on RetroAchievements.
+// Achievement categories based on RetroAchievements.
 enum AchievementCategory: String, Codable, CaseIterable {
     case core       // Core achievements (count towards score)
     case unofficial // Unofficial/test achievements
@@ -48,7 +48,7 @@ enum AchievementCategory: String, Codable, CaseIterable {
 
 // MARK: - Game Info
 
-/// Represents a RetroAchievements game.
+// Represents a RetroAchievements game.
 struct RAGameInfo: Codable {
     var id: Int
     var title: String
@@ -66,7 +66,7 @@ struct RAGameInfo: Codable {
 
 // MARK: - Leaderboard
 
-/// Represents a RetroAchievements leaderboard.
+// Represents a RetroAchievements leaderboard.
 struct Leaderboard: Identifiable, Codable {
     var id: Int
     var title: String
@@ -102,7 +102,7 @@ struct Leaderboard: Identifiable, Codable {
     }
 }
 
-/// Leaderboard value formats.
+// Leaderboard value formats.
 enum LeaderboardFormat: String, Codable {
     case value
     case time
@@ -112,7 +112,7 @@ enum LeaderboardFormat: String, Codable {
     case seconds
 }
 
-/// A single entry in a leaderboard.
+// A single entry in a leaderboard.
 struct LeaderboardEntry: Identifiable, Codable {
     var id: UUID = UUID()
     var rank: Int
@@ -125,7 +125,7 @@ struct LeaderboardEntry: Identifiable, Codable {
 
 // MARK: - RA User Info
 
-/// Represents a RetroAchievements user.
+// Represents a RetroAchievements user.
 struct RAUserInfo: Codable {
     var username: String
     var totalPoints: Int
@@ -141,7 +141,7 @@ struct RAUserInfo: Codable {
 
 // MARK: - RA API Response Types
 
-/// Response from the RA API for game info.
+// Response from the RA API for game info.
 struct RAGameResponse: Codable {
     var ID: String
     var Title: String

@@ -4,8 +4,8 @@ import Foundation
 
 // MARK: - Shader Manager
 
-/// Manages shader pipeline states, uniform buffers, and shader preset selection.
-/// Thread-safe singleton that handles dynamic shader switching without recompilation.
+// Manages shader pipeline states, uniform buffers, and shader preset selection.
+// Thread-safe singleton that handles dynamic shader switching without recompilation.
 @MainActor
 class ShaderManager: ObservableObject {
     static let shared = ShaderManager()
@@ -79,7 +79,7 @@ class ShaderManager: ObservableObject {
     
     // MARK: - Pipeline State Management
     
-    /// Get or create pipeline state for a shader function
+    // Get or create pipeline state for a shader function
     func getPipelineState(for shaderName: String) -> MTLRenderPipelineState? {
         // Check cache first
         if let cached = pipelineCache[shaderName] {
@@ -115,14 +115,14 @@ class ShaderManager: ObservableObject {
         }
     }
     
-    /// Clear all cached pipeline states (call when shaders change)
+    // Clear all cached pipeline states (call when shaders change)
     func clearPipelineCache() {
         pipelineCache.removeAll()
     }
     
     // MARK: - Preset Management
     
-    /// Switch to a new shader preset
+    // Switch to a new shader preset
     func activatePreset(_ preset: ShaderPreset) {
         activePreset = preset
         clearPipelineCache()
@@ -136,19 +136,19 @@ class ShaderManager: ObservableObject {
         LoggerService.info(category: "ShaderManager", "Activated shader preset: \(preset.name)")
     }
     
-    /// Update a uniform value
+    // Update a uniform value
     func updateUniform(_ name: String, value: Float) {
         uniformValues[name] = value
     }
     
-    /// Get current value for a uniform
+    // Get current value for a uniform
     func getUniform(_ name: String) -> Float {
         uniformValues[name] ?? 0.0
     }
     
     // MARK: - Preset Groups for UI
     
-    /// Get presets grouped by type for organized UI display
+    // Get presets grouped by type for organized UI display
     static func presetsGroupedByType() -> [(type: ShaderType, presets: [ShaderPreset])] {
         var grouped: [ShaderType: [ShaderPreset]] = [:]
         
@@ -164,14 +164,14 @@ class ShaderManager: ObservableObject {
         }
     }
     
-    /// Get recommended presets for a specific system
+    // Get recommended presets for a specific system
     func recommendedPresets(for systemID: String) -> [ShaderPreset] {
         ShaderPreset.allPresets.filter { preset in
             preset.recommendedSystems.contains(systemID)
         }
     }
     
-    /// Get a human-readable display name for a preset
+    // Get a human-readable display name for a preset
     static func displayName(for presetID: String) -> String {
         ShaderPreset.preset(id: presetID)?.name ?? "None"
     }
@@ -179,7 +179,7 @@ class ShaderManager: ObservableObject {
 
 // MARK: - Shader Uniform Buffer (matches Metal shader expectations)
 
-/// Standard uniform buffer structure passed to all fragment shaders
+// Standard uniform buffer structure passed to all fragment shaders
 struct ShaderStandardUniforms {
     var SourceSize: SIMD4<Float>   // (width, height, 1/width, 1/height)
     var OutputSize: SIMD4<Float>   // (width, height, 1/width, 1/height)

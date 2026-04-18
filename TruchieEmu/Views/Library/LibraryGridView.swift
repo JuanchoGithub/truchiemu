@@ -442,7 +442,7 @@ struct LibraryGridView: View {
 
     @State private var gridWidth: CGFloat = 800
 
-    /// Whether the current filter is a system view (used to enable/disable box art style).
+    // Whether the current filter is a system view (used to enable/disable box art style).
     private var isSystemView: Bool {
         if case .system = filter { return true }
         return false
@@ -544,24 +544,24 @@ struct LibraryGridView: View {
     
     // MARK: - Zoom Calculations
     
-    /// The scale factor applied to the entire grid content
+    // The scale factor applied to the entire grid content
     private var gridScale: CGFloat {
         // Base scale starts at 0.7 and goes up to 1.3
         0.7 + (continuousZoom * 0.6)
     }
     
-    /// Dynamic spacing between grid items based on zoom
+    // Dynamic spacing between grid items based on zoom
     private var gridSpacing: CGFloat {
         // Less spacing when zoomed in (cards are bigger)
         8 + ((1.0 - continuousZoom) * 12)
     }
     
-    /// Horizontal padding adjusts with zoom to prevent edge clipping
+    // Horizontal padding adjusts with zoom to prevent edge clipping
     private var horizontalPadding: CGFloat {
         8 + ((1.0 - continuousZoom) * 12)
     }
     
-    /// Combined grid padding
+    // Combined grid padding
     private var gridPadding: EdgeInsets {
         EdgeInsets(top: 12, leading: horizontalPadding, bottom: 12, trailing: horizontalPadding)
     }
@@ -679,8 +679,8 @@ struct LibraryGridView: View {
         continuousZoom
     }
     
-    /// Applies the current continuousZoom value to columnCount and updates the grid.
-    /// Shared between slider, pinch gesture, and onAppear restoration.
+    // Applies the current continuousZoom value to columnCount and updates the grid.
+    // Shared between slider, pinch gesture, and onAppear restoration.
     private func applyZoomToColumnCount(animate: Bool = false) {
         let newColumnCount = max(1, min(8, Int(round((1.0 - continuousZoom) * 7.0) + 1)))
         if newColumnCount != columnCount {
@@ -919,8 +919,8 @@ struct LibraryGridView: View {
         }
     }
     
-    /// Opens a folder picker to add ROM folders to the library.
-    /// This empty-state CTA gives users a direct path to value when no games exist.
+    // Opens a folder picker to add ROM folders to the library.
+    // This empty-state CTA gives users a direct path to value when no games exist.
     private func pickFolder() {
         let panel = NSOpenPanel()
         panel.canChooseDirectories = true
@@ -1113,9 +1113,9 @@ struct LibraryGridView: View {
         .padding(.bottom, 4)
     }
     
-    /// Visible zoom slider for the grid view
-    /// Uses onEditingChanged to avoid column recalculation on every tiny value change
-    /// during scroll (which causes scroll lock/jank).
+    // Visible zoom slider for the grid view
+    // Uses onEditingChanged to avoid column recalculation on every tiny value change
+    // during scroll (which causes scroll lock/jank).
     private var zoomSlider: some View {
         HStack(spacing: 8) {
             Image(systemName: "minus.magnifyingglass")

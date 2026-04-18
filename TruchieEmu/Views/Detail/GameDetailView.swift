@@ -2,8 +2,8 @@ import SwiftUI
 
 // MARK: - Light/Dark Theme Color Tokens
 
-/// Centralized color tokens for GameDetailView — works in both light and dark mode.
-/// Prevents hardcoded `.white.opacity(x)` colors that break in light mode.
+// Centralized color tokens for GameDetailView — works in both light and dark mode.
+// Prevents hardcoded `.white.opacity(x)` colors that break in light mode.
 struct ThemeColors {
     let textPrimary: Color
     let textSecondary: Color
@@ -104,7 +104,7 @@ enum DetailSection: String, CaseIterable {
     case core = "Core"
     case achievements = "Achievements"
     
-    /// Plain-language description of what each section does, shown as tooltip
+    // Plain-language description of what each section does, shown as tooltip
     var helpText: String {
         switch self {
         case .gameInfo:
@@ -126,12 +126,12 @@ enum DetailSection: String, CaseIterable {
         }
     }
     
-    /// SF Symbol icon for the section header (larger)
+    // SF Symbol icon for the section header (larger)
     var headerIcon: String {
         return sectionIcon
     }
     
-    /// SF Symbol icon used in sidebar navigation
+    // SF Symbol icon used in sidebar navigation
     var sectionIcon: String {
         switch self {
         case .gameInfo: return "info.circle"
@@ -191,7 +191,7 @@ struct ModernSectionCard<Content: View>: View {
         colorScheme == .dark ? Color.white.opacity(0.1) : .secondary.opacity(0.15)
     }
     
-    /// Accent badge color — adapts for light mode readability
+    // Accent badge color — adapts for light mode readability
     private var badgeBackground: Color {
         colorScheme == .dark ? Color.blue.opacity(0.3) : .blue.opacity(0.15)
     }
@@ -322,10 +322,10 @@ struct GameDetailView: View {
     @Environment(\.colorScheme) private var colorScheme
     var rom: ROM
     
-    /// Theme-aware color tokens for this view
+    // Theme-aware color tokens for this view
     private var t: ThemeColors { ThemeColors.for(colorScheme) }
     
-    /// Text color that adapts for light/dark mode
+    // Text color that adapts for light/dark mode
     private var textColor: Color { colorScheme == .dark ? .white : .primary }
     private var secondaryTextColor: Color { colorScheme == .dark ? .white.opacity(0.7) : .secondary }
     private var tertiaryTextColor: Color { colorScheme == .dark ? .white.opacity(0.5) : .secondary }
@@ -382,17 +382,17 @@ struct GameDetailView: View {
         SystemDatabase.displaySystem(forInternalID: currentROM.systemID ?? "")
     }
 
-    /// The effective core ID used to launch this ROM. Used by GB colorization UI.
+    // The effective core ID used to launch this ROM. Used by GB colorization UI.
     private var activeCoreID: String? {
         guard let sysID = currentROM.systemID, let sys = SystemDatabase.system(forID: sysID) else { return system?.defaultCoreID }
         if currentROM.useCustomCore, let sel = currentROM.selectedCoreID { return sel }
         return sysPrefs.preferredCoreID(for: sysID) ?? sys.defaultCoreID
     }
 
-    /// Game description from multiple sources: MAME database, ROM metadata, or Libretro DAT.
+    // Game description from multiple sources: MAME database, ROM metadata, or Libretro DAT.
     @State private var gameDescription: String? = nil
     
-    /// Returns true when the active core for this ROM is Gambatte (which supports named internal palettes and color correction).
+    // Returns true when the active core for this ROM is Gambatte (which supports named internal palettes and color correction).
     private var isGambatteCore: Bool {
         (activeCoreID ?? "").lowercased().contains("gambatte")
     }
@@ -1327,7 +1327,7 @@ struct GameDetailView: View {
         }
     }
 
-    /// Apply GB colorization settings to the ROM and save
+    // Apply GB colorization settings to the ROM and save
     private func applyGBColorizationSettings() {
         guard currentROM.systemID == "gb" || currentROM.systemID == "gbc" else { return }
         var updated = currentROM
@@ -1757,7 +1757,7 @@ struct GameDetailView: View {
         windowController.show()
     }
     
-    /// Extract uniform values from ROM settings into a dictionary for ShaderWindowSettings
+    // Extract uniform values from ROM settings into a dictionary for ShaderWindowSettings
     private func extractUniformValues(from settings: ROMSettings) -> [String: Float] {
         var values: [String: Float] = [:]
         values["scanlineIntensity"] = settings.scanlineIntensity
@@ -1770,7 +1770,7 @@ struct GameDetailView: View {
         return values
     }
     
-    /// Apply uniform values from dictionary to ROM settings
+    // Apply uniform values from dictionary to ROM settings
     private func applyUniformValues(_ values: [String: Float], to settings: inout ROMSettings) {
         if let v = values["scanlineIntensity"] { settings.scanlineIntensity = v }
         if let v = values["barrelAmount"] { settings.barrelAmount = v }
@@ -1906,7 +1906,7 @@ struct GameDetailView: View {
         }
     }
 
-    /// Get the current bezel display text — shown as a badge in the section header.
+    // Get the current bezel display text — shown as a badge in the section header.
     private var currentBezelStatusText: String {
         let bezelFileName = currentROM.settings.bezelFileName
         if bezelFileName == "none" {
@@ -1918,7 +1918,7 @@ struct GameDetailView: View {
         }
     }
 
-    /// Get the current bezel display name — shown under "Current Bezel" heading.
+    // Get the current bezel display name — shown under "Current Bezel" heading.
     private var currentBezelDisplayName: String {
         let bezelFileName = currentROM.settings.bezelFileName
         if bezelFileName == "none" {
@@ -1931,7 +1931,7 @@ struct GameDetailView: View {
         }
     }
 
-    /// Load the current bezel image for preview
+    // Load the current bezel image for preview
     @MainActor
     private func loadCurrentBezelImage() async {
         let bezelFileName = currentROM.settings.bezelFileName
@@ -2010,7 +2010,7 @@ struct GameDetailView: View {
         LoggerService.debug(category: "Bezel", "No bezel image found for \(currentROM.displayName)")
     }
 
-    /// Auto-match bezel for the current game.
+    // Auto-match bezel for the current game.
     @MainActor
     private func autoMatchBezel() {
         guard let systemID = currentROM.systemID else { return }
@@ -2036,7 +2036,7 @@ struct GameDetailView: View {
         }
     }
 
-    /// Clear bezel for the current game.
+    // Clear bezel for the current game.
     private func clearBezel() {
         var updated = currentROM
         updated.settings.bezelFileName = ""
@@ -2815,7 +2815,7 @@ struct GameDetailView: View {
         }
     }
 
-    /// Color-coded ESRB badge matching rating severity.
+    // Color-coded ESRB badge matching rating severity.
     private func esrbBadgeColor(for rating: String) -> Color {
         switch rating.lowercased() {
         case "ec", "e": return Color.green.opacity(0.3)
@@ -2836,8 +2836,8 @@ struct GameDetailView: View {
 
     @State private var isLaunchingGame = false
     
-    /// Unified game launch - uses GameLauncher for consistent behavior across all launch points
-    /// (double-click, launch button, save state click)
+    // Unified game launch - uses GameLauncher for consistent behavior across all launch points
+    // (double-click, launch button, save state click)
     private func launchGame(slotToLoad: Int? = nil) {
         guard !isLaunchingGame else { return }
         

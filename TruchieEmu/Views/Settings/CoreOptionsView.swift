@@ -1,7 +1,7 @@
 import SwiftUI
 
 // MARK: - Core Options View
-/// Shows options for a specific core.
+// Shows options for a specific core.
 struct CoreOptionsView: View {
     let coreID: String
     @StateObject private var viewModel: CoreOptionsViewModel
@@ -23,17 +23,24 @@ struct CoreOptionsView: View {
                     }
                     .frame(maxWidth: .infinity, maxHeight: .infinity)
                 } else if viewModel.options.isEmpty {
-                    VStack(spacing: 16) {
+                    VStack(spacing: 24) {
                         Image(systemName: "slider.vertical.3")
                             .font(.system(size: 48))
                             .foregroundColor(.secondary)
-                        Text("No settings cached for this core.")
-                            .foregroundColor(.secondary)
-                        Text("Launch a game with this core first. Core settings are saved after you play, and will be available here for future adjustments.")
-                            .font(.caption)
-                            .foregroundColor(.secondary)
-                            .multilineTextAlignment(.center)
-                            .frame(maxWidth: 280)
+                        VStack(spacing: 8) {
+                            Text("No settings cached for this core.")
+                                .foregroundColor(.secondary)
+                            Text("Launch a game with this core first. Core settings are saved after you play, and will be available here for future adjustments.")
+                                .font(.caption)
+                                .foregroundColor(.secondary)
+                                .multilineTextAlignment(.center)
+                                .frame(maxWidth: 280)
+                        }
+                        
+                        Button("Load Settings from Definitions") {
+                            viewModel.loadOptions(for: coreID)
+                        }
+                        .buttonStyle(.borderedProminent)
                     }
                     .frame(maxWidth: .infinity, maxHeight: .infinity)
                 } else {
@@ -45,7 +52,7 @@ struct CoreOptionsView: View {
                                         .font(.headline)
                                         .padding(.top)
                                     ForEach(viewModel.optionKeysInCategory(category), id: \.self) { key in
-                                        CoreOptionRow(key: key, viewModel: viewModel)
+                                        CoreOptionRow(versionedKey: key, viewModel: viewModel)
                                     }
                                 }
                                 .padding(.horizontal)
@@ -114,8 +121,10 @@ class CoreOptionsViewModel: ObservableObject {
 
     func optionKeysInCategory(_ categoryKey: String) -> [String] {
         let targetCat = categoryKey.isEmpty ? nil : categoryKey
+        // Filter by category, then map to the versioned key
         return options.values.filter { $0.category == targetCat }
-            .sorted { $0.description < $1.description }.map { $0.key }
+            .sorted { $0.description < $1.description }
+            .map { "\($0.key)_\($0.version.rawValue)" }
     }
 
     func loadOptions(for coreID: String) {
@@ -136,26 +145,34 @@ class CoreOptionsViewModel: ObservableObject {
 // MARK: - Option Row
 struct CoreOptionRow: View {
     @ObservedObject var viewModel: CoreOptionsViewModel
-    let key: String
+    let versionedKey: String
     @State private var selectedValue: String
 
-    init(key: String, viewModel: CoreOptionsViewModel) {
-        self.key = key
+    init(versionedKey: String, viewModel: CoreOptionsViewModel) {
+        self.versionedKey = versionedKey
         self.viewModel = viewModel
         // We need to initialize selectedValue based on the current value in the manager
-        let initialValue = viewModel.options[key]?.currentValue ?? ""
+        let initialValue = viewModel.options[versionedKey]?.currentValue ?? ""
         _selectedValue = State(initialValue: initialValue)
     }
 
     var body: some View {
         Group {
-            if let option = viewModel.options[key] {
+            if let option = viewModel.options[versionedKey] {
                 VStack(alignment: .leading, spacing: 6) {
-                    VStack(alignment: .leading, spacing: 4) {
-                        Text(option.description).font(.body)
-                        if !option.info.isEmpty {
-                            Text(option.info).font(.caption).foregroundColor(.secondary).lineLimit(3)
+                    HStack {
+                        VStack(alignment: .leading, spacing: 4) {
+                            HStack {
+                                Text(option.description).font(.body)
+                                Text("[\(option.version.rawValue)]")
+                                    .font(.caption2)
+                                    .foregroundColor(.secondary)
+                            }
+                            if !option.info.isEmpty {
+                                Text(option.info).font(.caption).foregroundColor(.secondary).lineLimit(3)
+                            }
                         }
+                        Spacer()
                     }
                     .frame(maxWidth: .infinity, alignment: .leading)
 
@@ -166,7 +183,8 @@ struct CoreOptionRow: View {
                         .pickerStyle(.menu)
                         .labelsHidden()
                         .onChange(of: selectedValue) { _, newValue in
-                            viewModel.updateValue(newValue, for: key)
+                            // Use the base key for the update
+                            viewModel.updateValue(newValue, for: option.key)
                         }
                     } else {
                         Text(option.currentValue)
@@ -186,7 +204,7 @@ struct CoreOptionRow: View {
                             Spacer()
                             Button("Reset to Default") {
                                 selectedValue = option.defaultValue
-                                viewModel.updateValue(option.defaultValue, for: key)
+                                viewModel.updateValue(option.defaultValue, for: option.key)
                             }
                             .buttonStyle(.link)
                             .foregroundColor(.blue)

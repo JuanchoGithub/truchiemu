@@ -2,7 +2,7 @@ import SwiftUI
 
 // MARK: - Full Screen Zoomable Box Art View (alias for backwards compat)
 
-/// A full-screen sheet that shows a zoomable image with a close button.
+// A full-screen sheet that shows a zoomable image with a close button.
 struct GridCardZoomableFullScreenView: View {
     let image: NSImage
     @Environment(\.dismiss) private var dismiss

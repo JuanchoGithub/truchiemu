@@ -8,7 +8,7 @@ class BoxArtService: ObservableObject {
 
     @Published var credentials: ScreenScraperCredentials? = nil
     
-    /// Updated whenever box art is fetched or changed — observe this to trigger UI refresh
+    // Updated whenever box art is fetched or changed — observe this to trigger UI refresh
     @Published var boxArtUpdated: UUID = UUID()
 
     private let cacheBase: URL = {
@@ -28,7 +28,7 @@ class BoxArtService: ObservableObject {
     private let keyUseLibretroThumbnails = "thumbnail_use_libretro"
     private let keyHeadBeforeDownload = "thumbnail_use_head_check"
 
-    /// Libretro CDN base URL (default: https://thumbnails.libretro.com/)
+    // Libretro CDN base URL (default: https://thumbnails.libretro.com/)
     var thumbnailServerURL: URL {
         get {
             if let s = AppSettings.get(keyThumbnailBaseURL, type: String.self), let u = URL(string: s), u.scheme != nil {
@@ -107,7 +107,7 @@ class BoxArtService: ObservableObject {
 
     // MARK: - Local BoxArt Resolution
 
-    /// Lazily resolves local boxart for a single ROM on-demand.
+    // Lazily resolves local boxart for a single ROM on-demand.
     @MainActor
     func resolveLocalBoxArtIfNeeded(for rom: ROM, library: ROMLibrary) -> URL? {
         if rom.hasBoxArt { return rom.boxArtLocalPath }
@@ -122,8 +122,8 @@ class BoxArtService: ObservableObject {
         return nil
     }
 
-    /// Scans the local /boxart subfolder for an existing image matching this ROM.
-    /// Returns the local file URL if found, nil otherwise. Does NOT download from CDN.
+    // Scans the local /boxart subfolder for an existing image matching this ROM.
+    // Returns the local file URL if found, nil otherwise. Does NOT download from CDN.
     nonisolated func resolveLocalBoxArt(for rom: ROM) -> URL? {
         let localBoxArtDir = rom.path.deletingLastPathComponent().appendingPathComponent("boxart", isDirectory: true)
         let imageExtensions = ["png", "jpg", "jpeg", "webp", "gif", "bmp"]

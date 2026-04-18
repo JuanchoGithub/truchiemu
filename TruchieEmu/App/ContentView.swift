@@ -161,7 +161,7 @@ struct ContentView: View {
         .frame(minWidth: 1000, idealWidth: 1200, minHeight: 650, idealHeight: 750)
     }
 
-    /// Shows whichever background task is currently active (library automation takes precedence).
+    // Shows whichever background task is currently active (library automation takes precedence).
     private var activeBackgroundTask: (progress: Double, statusLine: String)? {
         if libraryAutomation.isActive {
             return (libraryAutomation.progress, libraryAutomation.statusLine)
@@ -172,7 +172,7 @@ struct ContentView: View {
         return nil
     }
 
-    /// Restores a LibraryFilter from a persisted ID string.
+    // Restores a LibraryFilter from a persisted ID string.
     private func restoreFilter(from id: String) -> LibraryFilter? {
         if id == "all" { return .all }
         if id == "favorites" { return .favorites }

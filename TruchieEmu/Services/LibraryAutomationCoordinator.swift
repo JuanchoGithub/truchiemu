@@ -1,7 +1,7 @@
 import Foundation
 import SwiftUI
 
-/// Post-scan: identify ROMs missing metadata, then download Libretro box art. Drives the global status bar.
+// Post-scan: identify ROMs missing metadata, then download Libretro box art. Drives the global status bar.
 @MainActor
 final class LibraryAutomationCoordinator: ObservableObject {
     static let shared = LibraryAutomationCoordinator()

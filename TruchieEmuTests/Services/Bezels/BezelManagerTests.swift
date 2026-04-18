@@ -1,8 +1,8 @@
 import XCTest
 @testable import TruchieEmu
 
-/// Unit tests for BezelManager - no network required
-/// Tests bezel resolution logic with mocked data
+// Unit tests for BezelManager - no network required
+// Tests bezel resolution logic with mocked data
 @MainActor
 final class BezelManagerTests: XCTestCase {
 

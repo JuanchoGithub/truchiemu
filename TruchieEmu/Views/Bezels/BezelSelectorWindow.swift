@@ -1,7 +1,7 @@
 import SwiftUI
 import AppKit
 
-/// NSWindowController that presents the BezelSelector as a proper window
+// NSWindowController that presents the BezelSelector as a proper window
 class BezelSelectorWindowController: NSWindowController, NSWindowDelegate {
 
     init(rom: ROM, systemID: String, library: ROMLibrary) {

@@ -6,110 +6,110 @@ import SwiftUI
 
 // MARK: - Theme Colors
 
-/// Centralized color tokens that adapt to light and dark mode
+// Centralized color tokens that adapt to light and dark mode
 struct AppColors {
     // MARK: - Semantic Colors
     
-    /// Primary background color for cards and panels
+    // Primary background color for cards and panels
     static func cardBackground(_ colorScheme: ColorScheme) -> Color {
         colorScheme == .dark ? Color(white: 0.12).opacity(0.8) : Color(white: 0.96)
     }
     
-    /// Subtle background for sections within cards
+    // Subtle background for sections within cards
     static func cardBackgroundSubtle(_ colorScheme: ColorScheme) -> Color {
         colorScheme == .dark ? Color(white: 0.15).opacity(0.5) : Color(white: 0.98)
     }
     
-    /// Card border with subtle visibility
+    // Card border with subtle visibility
     static func cardBorder(_ colorScheme: ColorScheme) -> Color {
         colorScheme == .dark ? Color.white.opacity(0.08) : Color.black.opacity(0.06)
     }
     
-    /// Separator/divider color
+    // Separator/divider color
     static func divider(_ colorScheme: ColorScheme) -> Color {
         colorScheme == .dark ? Color.white.opacity(0.08) : Color.black.opacity(0.08)
     }
     
-    /// Primary text color
+    // Primary text color
     static func textPrimary(_ colorScheme: ColorScheme) -> Color {
         colorScheme == .dark ? .white : Color(white: 0.1)
     }
     
-    /// Secondary text (labels, descriptions)
+    // Secondary text (labels, descriptions)
     static func textSecondary(_ colorScheme: ColorScheme) -> Color {
         colorScheme == .dark ? Color(white: 0.7) : Color(white: 0.45)
     }
     
-    /// Tertiary text (meta, timestamps)
+    // Tertiary text (meta, timestamps)
     static func textTertiary(_ colorScheme: ColorScheme) -> Color {
         colorScheme == .dark ? Color(white: 0.5) : Color(white: 0.6)
     }
     
-    /// Muted text for disabled/inactive states
+    // Muted text for disabled/inactive states
     static func textMuted(_ colorScheme: ColorScheme) -> Color {
         colorScheme == .dark ? Color(white: 0.35) : Color(white: 0.65)
     }
     
     // MARK: - Accent Colors
     
-    /// Primary accent (blue) - standard interactive elements
+    // Primary accent (blue) - standard interactive elements
     static var accent: Color { .accentColor }
     
-    /// Accent tint for selected states (adapts to mode)
+    // Accent tint for selected states (adapts to mode)
     static func accentTint(_ colorScheme: ColorScheme) -> Color {
         colorScheme == .dark ? Color.blue : Color.blue
     }
     
-    /// Accent background (subtle)
+    // Accent background (subtle)
     static func accentBackground(_ colorScheme: ColorScheme) -> Color {
         colorScheme == .dark ? Color.blue.opacity(0.15) : Color.blue.opacity(0.08)
     }
     
-    /// Success green
+    // Success green
     static func success(_ colorScheme: ColorScheme) -> Color {
         colorScheme == .dark ? Color(red: 0.2, green: 0.85, blue: 0.3) : Color(red: 0.1, green: 0.65, blue: 0.2)
     }
     
-    /// Warning orange
+    // Warning orange
     static func warning(_ colorScheme: ColorScheme) -> Color {
         colorScheme == .dark ? Color.orange : Color.orange
     }
     
-    /// Error red
+    // Error red
     static func error(_ colorScheme: ColorScheme) -> Color {
         colorScheme == .dark ? Color(red: 1.0, green: 0.35, blue: 0.35) : Color(red: 0.85, green: 0.15, blue: 0.15)
     }
     
     // MARK: - Surface Colors
     
-    /// Main window background
+    // Main window background
     static func windowBackground(_ colorScheme: ColorScheme) -> Color {
         colorScheme == .dark ? Color(white: 0.06) : Color(white: 0.94)
     }
     
-    /// Sidebar background (with material effect)
+    // Sidebar background (with material effect)
     static var sidebarBackground: Color {
         Color(nsColor: .underPageBackgroundColor)
     }
     
-    /// Toolbar/chrome background
+    // Toolbar/chrome background
     static func toolbarBackground(_ colorScheme: ColorScheme) -> Color {
         colorScheme == .dark ? Color(white: 0.1) : Color(white: 0.96)
     }
     
-    /// Elevated surface (popovers, sheets)
+    // Elevated surface (popovers, sheets)
     static func surface(_ colorScheme: ColorScheme) -> Color {
         colorScheme == .dark ? Color(white: 0.15) : .white
     }
     
     // MARK: - Overlay Colors
     
-    /// Shadow overlay for cards
+    // Shadow overlay for cards
     static func shadowOverlay(_ colorScheme: ColorScheme) -> Color {
         colorScheme == .dark ? .black.opacity(0.4) : .black.opacity(0.12)
     }
     
-    /// Glass overlay effect
+    // Glass overlay effect
     static func glassOverlay(_ colorScheme: ColorScheme) -> Color {
         colorScheme == .dark ?
             LinearGradient(
@@ -394,7 +394,7 @@ enum AppPillStyle {
 
 // MARK: - Continuous Pulse Modifier
 
-/// Infinite pulsing animation for icons and decorative elements
+// Infinite pulsing animation for icons and decorative elements
 struct ContinuousPulse: ViewModifier {
     @State private var isPulsing = false
     var scaleRange: ClosedRange<Double> = 0.95...1.05
@@ -414,7 +414,7 @@ struct ContinuousPulse: ViewModifier {
 // MARK: - Gradient Assets
 
 enum AppGradients {
-    /// Refined emerald-to-teal accent gradient
+    // Refined emerald-to-teal accent gradient
     static var accent: LinearGradient {
         LinearGradient(
             colors: [
@@ -426,7 +426,7 @@ enum AppGradients {
         )
     }
     
-    /// Warm amber-to-orange gradient for hero elements
+    // Warm amber-to-orange gradient for hero elements
     static var warmAccent: LinearGradient {
         LinearGradient(
             colors: [
@@ -438,7 +438,7 @@ enum AppGradients {
         )
     }
     
-    /// Subtle background gradient for cards
+    // Subtle background gradient for cards
     static func subtleCard(_ colorScheme: ColorScheme) -> LinearGradient {
         colorScheme == .dark ?
             LinearGradient(
@@ -470,7 +470,7 @@ enum AppAnimations {
 
 // MARK: - Button Styles
 
-/// Primary action button with consistent styling
+// Primary action button with consistent styling
 struct AppPrimaryButtonStyle: ButtonStyle {
     @Environment(\.colorScheme) private var colorScheme
     var accent: Color = .blue
@@ -492,7 +492,7 @@ struct AppPrimaryButtonStyle: ButtonStyle {
     }
 }
 
-/// Secondary/outlined button style
+// Secondary/outlined button style
 struct AppSecondaryButtonStyle: ButtonStyle {
     @Environment(\.colorScheme) private var colorScheme
     
@@ -719,8 +719,8 @@ struct AppChip: View, Identifiable {
 
 // MARK: - Settings Section Card
 
-/// A reusable card component for settings sections with consistent styling.
-/// Provides a titled container with proper spacing, padding, and background.
+// A reusable card component for settings sections with consistent styling.
+// Provides a titled container with proper spacing, padding, and background.
 struct SettingsSectionCard<Content: View>: View {
     let title: String
     let icon: String?
@@ -757,7 +757,7 @@ struct SettingsSectionCard<Content: View>: View {
     }
 }
 
-/// A settings row with a label and control, properly aligned.
+// A settings row with a label and control, properly aligned.
 struct SettingsRow<Content: View>: View {
     let label: String
     let description: String?

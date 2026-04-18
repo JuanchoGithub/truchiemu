@@ -1,7 +1,7 @@
 import SwiftUI
 
-/// Dedicated sidebar row button component — replaces DragGesture(minimumDistance: 0) with
-/// a proper Button for instant, reliable click handling across the entire row area.
+// Dedicated sidebar row button component — replaces DragGesture(minimumDistance: 0) with
+// a proper Button for instant, reliable click handling across the entire row area.
 struct SidebarRowButton: View {
     let icon: String
     let label: String

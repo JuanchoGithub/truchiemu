@@ -2,9 +2,9 @@ import SwiftUI
 
 // MARK: - Bezel Selector Sheet
 
-/// Sheet for selecting a bezel for a specific game.
-/// Split into "Local Bezels" (cached/downloaded) and "Search Online" (API).
-/// Shows a preview panel on the right when a bezel is selected.
+// Sheet for selecting a bezel for a specific game.
+// Split into "Local Bezels" (cached/downloaded) and "Search Online" (API).
+// Shows a preview panel on the right when a bezel is selected.
 struct BezelSelectorSheet: View {
     let rom: ROM
     let systemID: String
@@ -37,7 +37,7 @@ struct BezelSelectorSheet: View {
         var id: String { rawValue }
     }
     
-    /// Filtered local bezels based on search (fuzzy word-level matching)
+    // Filtered local bezels based on search (fuzzy word-level matching)
     var filteredLocalBezels: [BezelStorageManager.LocalBezelInfo] {
         guard !searchQuery.isEmpty else { return localBezels }
         return localBezels.filter { entry in
@@ -47,7 +47,7 @@ struct BezelSelectorSheet: View {
         }
     }
     
-    /// Filtered remote bezels based on search (fuzzy word-level matching)
+    // Filtered remote bezels based on search (fuzzy word-level matching)
     var filteredRemoteBezels: [BezelEntry] {
         guard !searchQuery.isEmpty else { return remoteBezels }
         return remoteBezels.filter { entry in
@@ -56,8 +56,8 @@ struct BezelSelectorSheet: View {
         }
     }
     
-    /// Fuzzy match: all words in the query must appear somewhere in the text.
-    /// E.g., "mario 3" matches "Super Mario Bros. 3" because both "mario" and "3" are found.
+    // Fuzzy match: all words in the query must appear somewhere in the text.
+    // E.g., "mario 3" matches "Super Mario Bros. 3" because both "mario" and "3" are found.
     private func matchesFuzzy(_ query: String, against text: String) -> Bool {
         let words = query.lowercased().split(separator: " ").map { String($0) }
         let lowerText = text.lowercased()
@@ -194,7 +194,7 @@ struct BezelSelectorSheet: View {
     
     // MARK: - Selection helpers
     
-    /// Unified selected entry (either local or remote).
+    // Unified selected entry (either local or remote).
     private var selectedEntry: BezelPreviewEntry? {
         if activeTab == .local, let local = selectedLocalEntry {
             return .local(local)
@@ -505,7 +505,7 @@ struct BezelSelectorSheet: View {
         isLoadingRemote = false
     }
     
-    /// Download a remote bezel with progress indicator and refresh the preview image
+    // Download a remote bezel with progress indicator and refresh the preview image
     @MainActor
     private func downloadRemoteBezel(_ entry: BezelEntry) {
         downloadingBezelID = entry.id

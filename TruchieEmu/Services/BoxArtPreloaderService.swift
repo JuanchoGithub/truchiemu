@@ -2,30 +2,30 @@ import Foundation
 import Combine
 import AppKit
 
-/// Background service that preloads and decodes box art images for efficient grid display.
-/// Handles pre-warming the image cache, LRU disk cache management, and scoped invalidation.
-///
-/// ## Persistent Thumbnail Cache
-/// Downscaled thumbnails are serialized to disk in `TruchieEmu/ThumbnailCache`. On each launch,
-/// these pre-decoded thumbnails are loaded directly into the NSCache so images appear instantly
-/// without re-reading and rescaling the original box art files.
+// Background service that preloads and decodes box art images for efficient grid display.
+// Handles pre-warming the image cache, LRU disk cache management, and scoped invalidation.
+//
+// ## Persistent Thumbnail Cache
+// Downscaled thumbnails are serialized to disk in `TruchieEmu/ThumbnailCache`. On each launch,
+// these pre-decoded thumbnails are loaded directly into the NSCache so images appear instantly
+// without re-reading and rescaling the original box art files.
 @MainActor
 class BoxArtPreloaderService: ObservableObject {
     static let shared = BoxArtPreloaderService()
     
-    /// Configuration for the preloader
+    // Configuration for the preloader
     struct Config {
-        /// Maximum persistent thumbnail cache size in bytes (default: 300MB)
+        // Maximum persistent thumbnail cache size in bytes (default: 300MB)
         var maxThumbnailCacheBytes: Int
-        /// Maximum disk cache size in bytes for box art originals (default: 500MB)
+        // Maximum disk cache size in bytes for box art originals (default: 500MB)
         var maxDiskCacheBytes: Int
-        /// Number of images to preload in background batch
+        // Number of images to preload in background batch
         var preloadBatchSize: Int
-        /// Delay between preload batches to keep UI responsive
+        // Delay between preload batches to keep UI responsive
         var preloadBatchDelay: UInt64
-        /// Target width for downscaled thumbnails (0 = full resolution)
+        // Target width for downscaled thumbnails (0 = full resolution)
         var thumbnailMaxWidth: CGFloat
-        /// Target height for downscaled thumbnails (0 = full resolution)
+        // Target height for downscaled thumbnails (0 = full resolution)
         var thumbnailMaxHeight: CGFloat
         
         static let `default` = Config(
@@ -45,7 +45,7 @@ class BoxArtPreloaderService: ObservableObject {
     
     var config: Config = .default
     
-    /// Cache directory for serialized NSImage thumbnails (persists across launches)
+    // Cache directory for serialized NSImage thumbnails (persists across launches)
     nonisolated
     static var thumbnailCacheURL: URL {
         let appSupport = FileManager.default.urls(for: .applicationSupportDirectory, in: .userDomainMask).first!
@@ -54,7 +54,7 @@ class BoxArtPreloaderService: ObservableObject {
     
     // MARK: - Thumbnail Persistence
     
-    /// Save a thumbnail to the persistent disk cache.
+    // Save a thumbnail to the persistent disk cache.
     nonisolated
     static func storeThumbnail(_ image: NSImage, for url: URL) {
         let key = url.path
@@ -66,7 +66,7 @@ class BoxArtPreloaderService: ObservableObject {
         try? tiff.write(to: fileURL, options: .atomic)
     }
     
-    /// Load a thumbnail from the persistent disk cache. Returns nil if not cached.
+    // Load a thumbnail from the persistent disk cache. Returns nil if not cached.
     nonisolated
     static func loadThumbnail(at url: URL) -> NSImage? {
         let key = url.path
@@ -85,7 +85,7 @@ class BoxArtPreloaderService: ObservableObject {
         return NSImage(cgImage: cgImage, size: rep.size)
     }
     
-    /// Check if a thumbnail exists for the given URL.
+    // Check if a thumbnail exists for the given URL.
     nonisolated
     static func hasThumbnail(at url: URL) -> Bool {
         let key = url.path
@@ -96,10 +96,10 @@ class BoxArtPreloaderService: ObservableObject {
     
     // MARK: - Preload ROMs into Image Cache
     
-    /// Preload box art for a set of ROMs into the decoded image cache.
-    /// Runs in background batches to avoid blocking the main thread.
-    /// If a pre-decoded thumbnail exists on disk, it is loaded instantly; otherwise
-    /// the original image is decoded and downscaled, then saved to the persistent cache.
+    // Preload box art for a set of ROMs into the decoded image cache.
+    // Runs in background batches to avoid blocking the main thread.
+    // If a pre-decoded thumbnail exists on disk, it is loaded instantly; otherwise
+    // the original image is decoded and downscaled, then saved to the persistent cache.
     func preloadBoxArt(for roms: [ROM]) async {
         guard !roms.isEmpty else { return }
         
@@ -169,8 +169,8 @@ class BoxArtPreloaderService: ObservableObject {
         }
     }
     
-    /// Invalidate a single image from the cache (scoped invalidation).
-    /// Call this instead of clear() when a single ROM's box art changes.
+    // Invalidate a single image from the cache (scoped invalidation).
+    // Call this instead of clear() when a single ROM's box art changes.
     func invalidateImage(for rom: ROM) {
         // Remove full-res from cache
         let url = rom.boxArtLocalPath
@@ -180,7 +180,7 @@ class BoxArtPreloaderService: ObservableObject {
         }
     }
     
-    /// Invalidate multiple images from the cache
+    // Invalidate multiple images from the cache
     func invalidateImages(for roms: [ROM]) {
         for rom in roms {
             invalidateImage(for: rom)
@@ -189,8 +189,8 @@ class BoxArtPreloaderService: ObservableObject {
     
     // MARK: - LRU Disk Cache Management
     
-    /// Check disk cache size and evict least-recently-used files if over limit.
-    /// Returns number of files evicted.
+    // Check disk cache size and evict least-recently-used files if over limit.
+    // Returns number of files evicted.
     func enforceDiskCacheLimit() async -> Int {
         let boxArtCacheURL = Self.diskCacheURL
         guard FileManager.default.fileExists(atPath: boxArtCacheURL.path) else { return 0 }
@@ -225,7 +225,7 @@ class BoxArtPreloaderService: ObservableObject {
         return evicted
     }
     
-    /// Touch a file to update its modification date (extends its LRU lifetime).
+    // Touch a file to update its modification date (extends its LRU lifetime).
     func touchFile(at url: URL) {
         let now = Date()
         try? FileManager.default.setAttributes([.modificationDate: now], ofItemAtPath: url.path)
@@ -233,12 +233,12 @@ class BoxArtPreloaderService: ObservableObject {
     
     // MARK: - Disk Cache Info
     
-    /// Get current disk cache size in bytes
+    // Get current disk cache size in bytes
     func diskCacheSizeBytes() -> Int {
         calculateDirectorySize(at: Self.diskCacheURL)
     }
     
-    /// Get human-readable disk cache size
+    // Get human-readable disk cache size
     var diskCacheSizeFormatted: String {
         let bytes = diskCacheSizeBytes()
         if bytes < 1024 { return "\(bytes) B" }
@@ -247,7 +247,7 @@ class BoxArtPreloaderService: ObservableObject {
         return String(format: "%.1f GB", Double(bytes) / (1024 * 1024 * 1024))
     }
     
-    /// Get file count in disk cache
+    // Get file count in disk cache
     func diskCacheFileCount() -> Int {
         let url = Self.diskCacheURL
         guard let enumerator = FileManager.default.enumerator(at: url, includingPropertiesForKeys: nil) else { return 0 }
@@ -256,7 +256,7 @@ class BoxArtPreloaderService: ObservableObject {
     
     // MARK: - Clear All Cached Data
     
-    /// Clear all cached box art from disk and memory.
+    // Clear all cached box art from disk and memory.
     func clearAllCache() async {
         // Clear memory cache
         await ImageCache.shared.clear()

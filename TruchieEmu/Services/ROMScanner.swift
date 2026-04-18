@@ -1,6 +1,6 @@
 import Foundation
 
-/// Logger for ROMScanner - routes through LoggerService for timestamped file logging.
+// Logger for ROMScanner - routes through LoggerService for timestamped file logging.
 private enum ROMScannerLog {
     static func debug(_ message: String) { LoggerService.debug(category: "ROMScanner", message) }
 }

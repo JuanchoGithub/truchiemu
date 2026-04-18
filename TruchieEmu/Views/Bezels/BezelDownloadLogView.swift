@@ -2,7 +2,7 @@ import SwiftUI
 
 // MARK: - Bezel Download Log View
 
-/// Shows a scrollable log of bezel download entries with success/error status
+// Shows a scrollable log of bezel download entries with success/error status
 struct BezelDownloadLogView: View {
     let logEntries: [BezelDownloadLogEntry]
     @State private var lastCount: Int = 0
@@ -79,7 +79,7 @@ struct BezelDownloadLogView: View {
     }
 }
 
-/// Single row in the bezel download log
+// Single row in the bezel download log
 struct BezelLogEntryRow: View {
     let entry: BezelDownloadLogEntry
     var showDetails: Bool = false

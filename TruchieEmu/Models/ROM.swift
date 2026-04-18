@@ -9,9 +9,9 @@ struct ROM: Identifiable, Codable, Hashable, Sendable {
     var isFavorite: Bool = false
     var lastPlayed: Date?
     var dateAdded: Date = Date()
-    /// Total playtime across all sessions (in seconds)
+    // Total playtime across all sessions (in seconds)
     var totalPlaytimeSeconds: Double = 0
-    /// Number of times this game has been launched
+    // Number of times this game has been launched
     var timesPlayed: Int = 0
     var selectedCoreID: String?
     var customName: String?
@@ -19,19 +19,19 @@ struct ROM: Identifiable, Codable, Hashable, Sendable {
     var metadata: ROMMetadata?
     
     // MARK: - BIOS & Categorization
-    /// Whether this ROM is a BIOS file (not a playable game)
+    // Whether this ROM is a BIOS file (not a playable game)
     var isBios: Bool = false
-    /// Whether this ROM should be hidden from the main game list
+    // Whether this ROM should be hidden from the main game list
     var isHidden: Bool = false
-    /// Category: "game", "bios", "system"
+    // Category: "game", "bios", "system"
     var category: String = "game"
-    /// MAME ROM type: "game", "bios", "device", "mechanical" (nil if not a MAME ROM)
+    // MAME ROM type: "game", "bios", "device", "mechanical" (nil if not a MAME ROM)
     var mameRomType: String?
-    /// No-Intro / identification CRC32 (hex), persisted in library metadata file.
+    // No-Intro / identification CRC32 (hex), persisted in library metadata file.
     var crc32: String?
-    /// Libretro thumbnail CDN folder (`Nintendo - Game Boy` vs `GBC`) when identification matched a different DB (e.g. GB ROM in merged GB+GBC set).
+    // Libretro thumbnail CDN folder (`Nintendo - Game Boy` vs `GBC`) when identification matched a different DB (e.g. GB ROM in merged GB+GBC set).
     var thumbnailLookupSystemID: String?
-    /// Array of screenshot image paths for the game
+    // Array of screenshot image paths for the game
     var screenshotPaths: [URL] = []
     var settings: ROMSettings = ROMSettings()
     
@@ -45,7 +45,7 @@ struct ROM: Identifiable, Codable, Hashable, Sendable {
     var shortNameForMAME: String = ""
     var filenameWithoutExtension: String = ""
 
-    /// Updates all stored derived properties based on current state.
+    // Updates all stored derived properties based on current state.
     mutating func refreshDerivedFields() {
         // 1. filenameWithoutExtension
         let rawName = path.lastPathComponent
@@ -122,23 +122,23 @@ struct ROMSettings: Codable, Hashable {
     var bezelFileName: String = ""
     
     // MARK: - Game Boy Colorization
-    /// Whether to apply color palettes to original Game Boy (DMG) games.
-    /// Defaults to true (colorization enabled). Only relevant for GB system games.
+    // Whether to apply color palettes to original Game Boy (DMG) games.
+    // Defaults to true (colorization enabled). Only relevant for GB system games.
     var gbColorizationEnabled: Bool = true
     
-    /// Colorization mode for Game Boy games.
-    /// "auto" = auto-select best palette, "disabled" = monochrome
-    /// Maps to gambatte's gb_colorization, mGBA's model, sameboy's model
+    // Colorization mode for Game Boy games.
+    // "auto" = auto-select best palette, "disabled" = monochrome
+    // Maps to gambatte's gb_colorization, mGBA's model, sameboy's model
     var gbColorizationMode: String = "auto"
     
-    /// Which internal palette to use when mode is "internal".
+    // Which internal palette to use when mode is "internal".
     var gbInternalPalette: String = "GB - DMG"
     
-    /// Whether to use SGB borders when a Super Game Boy enhanced game is detected.
-    /// Works with mGBA's "GB: Borders" option.
+    // Whether to use SGB borders when a Super Game Boy enhanced game is detected.
+    // Works with mGBA's "GB: Borders" option.
     var gbSGBBordersEnabled: Bool = true
     
-    /// Color correction (Gambatte core only).
+    // Color correction (Gambatte core only).
     var gbColorCorrectionMode: String = "gbc_only"
 }
 
@@ -157,25 +157,25 @@ struct ROMMetadata: Codable, Hashable {
     var cooperative: Bool = false
     
     // MAME 2003+ video/display metadata
-    /// Screen orientation: "vertical" or "horizontal"
+    // Screen orientation: "vertical" or "horizontal"
     var orientation: String?
-    /// Aspect ratio X component (e.g. 3 for 3:4 vertical, 4 for 4:3 horizontal)
+    // Aspect ratio X component (e.g. 3 for 3:4 vertical, 4 for 4:3 horizontal)
     var aspectX: Int?
-    /// Aspect ratio Y component
+    // Aspect ratio Y component
     var aspectY: Int?
-    /// Native screen width in pixels
+    // Native screen width in pixels
     var screenWidth: Int?
-    /// Native screen height in pixels
+    // Native screen height in pixels
     var screenHeight: Int?
-    /// Refresh rate in Hz
+    // Refresh rate in Hz
     var refreshRate: Double?
-    /// Screen type: "raster" or "vector"
+    // Screen type: "raster" or "vector"
     var screenType: String?
-    /// CPU name
+    // CPU name
     var cpuName: String?
-    /// CPU clock speed in Hz
+    // CPU clock speed in Hz
     var cpuClock: Double?
-    /// Audio chip names
+    // Audio chip names
     var audioChips: [String]?
 }
 

@@ -2,8 +2,8 @@ import SwiftUI
 
 // MARK: - Achievement List View
 
-/// Displays all achievements for the current game.
-/// Accessible from the in-game HUD or game detail view.
+// Displays all achievements for the current game.
+// Accessible from the in-game HUD or game detail view.
 struct AchievementListView: View {
     @ObservedObject var raService = RetroAchievementsService.shared
     @Environment(\.dismiss) private var dismiss

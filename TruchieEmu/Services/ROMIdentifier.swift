@@ -1,8 +1,8 @@
 import Foundation
 
-/// Shared ROM system identification utility that both ROMScanner and ROMLibrary use.
-/// Uses a weighted scoring system to determine the most likely system based on 
-/// Magic Headers, Unique Extensions, Filename Patterns, and Path Context.
+// Shared ROM system identification utility that both ROMScanner and ROMLibrary use.
+// Uses a weighted scoring system to determine the most likely system based on 
+// Magic Headers, Unique Extensions, Filename Patterns, and Path Context.
 enum ROMIdentifier {
 
     // MARK: - Private Properties
@@ -16,7 +16,7 @@ enum ROMIdentifier {
         return ext.lowercased().replacingOccurrences(of: ".", with: "").trimmingCharacters(in: .whitespacesAndNewlines)
     }
 
-    /// Cached set of extensions that are shared by more than one system.
+    // Cached set of extensions that are shared by more than one system.
     private static let ambiguousExtensions: Set<String> = {
         let counts = cachedSystems.flatMap { $0.extensions }.reduce(into: [String: Int]()) { counts, ext in
             counts[normalize(extension: ext), default: 0] += 1
@@ -103,7 +103,7 @@ enum ROMIdentifier {
 // MARK: - ISO Scanning for CD-based Systems
 struct ISOScanner {
     
-    /// Reads the ISO and attempts to locate and extract the content of "SYSTEM.CNF"
+    // Reads the ISO and attempts to locate and extract the content of "SYSTEM.CNF"
     static func extractSystemConfig(from url: URL) -> String? {
         guard let fileHandle = try? FileHandle(forReadingFrom: url) else { return nil }
         defer { try? fileHandle.close() }
@@ -164,7 +164,7 @@ static func identifyDiscSystem(url: URL, candidates: inout [String: Int]) -> Str
     return nil
 }
 
-/// Checks for a PSP "PARAM.SFO" file within an ISO/Disc image
+// Checks for a PSP "PARAM.SFO" file within an ISO/Disc image
 private static func hasPSPParameterFile(url: URL) -> Bool {
     guard let fileHandle = try? FileHandle(forReadingFrom: url) else { return false }
     defer { try? fileHandle.close() }
@@ -417,11 +417,11 @@ private static func scoreByMetadata(url: URL, extLower: String, parentNames: [St
         return nil
     }
 
-    /// Converts a variety of string formats into actual Data
-    /// Supports: 
-    /// - Hex strings: "24 FF AE"
-    /// - Escaped strings: "AGB\x1A"
-    /// - Plain strings: "GBAX"
+    // Converts a variety of string formats into actual Data
+    // Supports: 
+    // - Hex strings: "24 FF AE"
+    // - Escaped strings: "AGB\x1A"
+    // - Plain strings: "GBAX"
     private static func parseHeaderBytes(_ input: String, _ fileURL: String) -> Data {
         // Case 1: It's a Hex String (contains spaces or is purely hex characters)
         // Check if it looks like "AA BB CC" or "AABBCC"

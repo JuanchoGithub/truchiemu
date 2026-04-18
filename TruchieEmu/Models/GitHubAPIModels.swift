@@ -1,6 +1,6 @@
 import Foundation
 
-/// Git Trees API response model for recursive tree listing
+// Git Trees API response model for recursive tree listing
 struct GitTreesResponse: Codable, Sendable {
     let sha: String?
     let tree: [GitTreeItem]
@@ -8,7 +8,7 @@ struct GitTreesResponse: Codable, Sendable {
     let url: String?
 }
 
-/// Individual item in a Git tree response
+// Individual item in a Git tree response
 struct GitTreeItem: Codable, Sendable {
     let path: String
     let mode: String?
@@ -18,7 +18,7 @@ struct GitTreeItem: Codable, Sendable {
     let url: String?
 }
 
-/// Individual item in a GitHub Contents API response
+// Individual item in a GitHub Contents API response
 struct GitHubFileContent: Codable, Sendable {
     let name: String
     let path: String?

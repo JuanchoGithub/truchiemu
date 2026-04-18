@@ -1,7 +1,7 @@
 import SwiftUI
 
-/// Optimized game card view for the library grid.
-/// Simplified image loading path for fast scroll performance.
+// Optimized game card view for the library grid.
+// Simplified image loading path for fast scroll performance.
 struct GameCardView: View {
     let rom: ROM
     let isSelected: Bool
@@ -356,7 +356,7 @@ struct DragPreviewStack: View {
     }
 }
 
-/// A simplified, performance-friendly card strictly for the dragging stack
+// A simplified, performance-friendly card strictly for the dragging stack
 struct DragPreviewCard: View {
     let rom: ROM
     let preloadedImage: NSImage?

@@ -4,12 +4,12 @@ import AppKit
 
 // MARK: - Bezel Window Sizing Tests
 
-/// Tests to verify that bezel images are properly scaled and windows are constrained to screen bounds.
+// Tests to verify that bezel images are properly scaled and windows are constrained to screen bounds.
 struct BezelWindowSizingTests {
     
     // MARK: - Helper Functions
     
-    /// Creates a mock bezel image with the specified dimensions.
+    // Creates a mock bezel image with the specified dimensions.
     private func createMockBezelImage(width: CGFloat, height: CGFloat) -> NSImage? {
         let size = NSSize(width: width, height: height)
         let image = NSImage(size: size)
@@ -142,7 +142,7 @@ struct BezelWindowSizingTests {
 
 // MARK: - BezelBackgroundLayer Integration Tests
 
-/// Tests for the BezelBackgroundLayer class itself
+// Tests for the BezelBackgroundLayer class itself
 @MainActor
 struct BezelBackgroundLayerTests {
     
@@ -207,7 +207,7 @@ struct BezelBackgroundLayerTests {
 
 // MARK: - BezelViewModel Tests
 
-/// Tests for the BezelViewModel class
+// Tests for the BezelViewModel class
 @MainActor
 struct BezelViewModelTests {
     

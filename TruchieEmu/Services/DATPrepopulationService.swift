@@ -1,19 +1,19 @@
 import Foundation
 import SwiftData
 
-/// Handles first-run pre-population of the game database from the bundled seed database.
-/// On first launch, copies the pre-populated seed database to Application Support so
-/// ROM identification works immediately without needing to download DAT files.
+// Handles first-run pre-population of the game database from the bundled seed database.
+// On first launch, copies the pre-populated seed database to Application Support so
+// ROM identification works immediately without needing to download DAT files.
 @MainActor
 enum DATPrepopulationService {
 
-    /// Key stored in Settings to track whether pre-population has been done.
+    // Key stored in Settings to track whether pre-population has been done.
     private static let popDoneKey = "dat_prepopulation_done_v1"
 
     // MARK: - Public API
 
-    /// Check if pre-population is needed and perform it if so.
-    /// Returns true if the database was populated (or already had data), false if the seed was unavailable.
+    // Check if pre-population is needed and perform it if so.
+    // Returns true if the database was populated (or already had data), false if the seed was unavailable.
     static func ensureDATsArePopulated() async -> Bool {
         // If already done, skip
         if AppSettings.getBool(popDoneKey, defaultValue: false) {
@@ -39,8 +39,8 @@ enum DATPrepopulationService {
         return success
     }
 
-    /// Copy the bundled seed database to the Application Support location if the existing
-    /// database is empty (no game_entries).
+    // Copy the bundled seed database to the Application Support location if the existing
+    // database is empty (no game_entries).
     static func importSeedDatabaseIfNecessary() -> Bool {
         let appSupport = FileManager.default.urls(for: .applicationSupportDirectory, in: .userDomainMask).first!
         let dbDir = appSupport.appendingPathComponent("TruchieEmu")
@@ -91,14 +91,14 @@ enum DATPrepopulationService {
         }
     }
 
-    /// Return a list of system IDs that have been populated in the game database.
+    // Return a list of system IDs that have been populated in the game database.
     static func getPopulatedSystems() -> [String] {
         return getAllSystemIDsFromRepository()
     }
 
-    /// Get all system IDs from the repository.
-    /// Uses a fetch request with property selection to only retrieve the systemID column,
-    /// avoiding materialization of full GameDBEntry objects.
+    // Get all system IDs from the repository.
+    // Uses a fetch request with property selection to only retrieve the systemID column,
+    // avoiding materialization of full GameDBEntry objects.
     private static func getAllSystemIDsFromRepository() -> [String] {
         let context = SwiftDataContainer.shared.mainContext
         var descriptor = FetchDescriptor<GameDBEntry>()

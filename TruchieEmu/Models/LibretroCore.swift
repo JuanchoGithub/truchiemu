@@ -1,6 +1,6 @@
 import Foundation
 
-/// Rich metadata for known cores, used to show descriptions and recommendations in the UI.
+// Rich metadata for known cores, used to show descriptions and recommendations in the UI.
 struct CoreMetadata {
     let displayName: String
     let version: String
@@ -24,14 +24,14 @@ struct LibretroCore: Identifiable, Codable, Hashable {
 
     var isInstalled: Bool { !installedVersions.isEmpty }
 
-    /// Returns metadata for this core if available.
+    // Returns metadata for this core if available.
     var metadata: CoreMetadata {
         let baseID = id.replacingOccurrences(of: "_libretro", with: "")
         return LibretroCore.knownCoreMetadata[baseID]
             ?? CoreMetadata(displayName: displayName, version: "?", description: "Community-maintained libretro core.", recommendation: nil)
     }
 
-    /// Static lookup table of known core metadata with human-readable descriptions.
+    // Static lookup table of known core metadata with human-readable descriptions.
     static let knownCoreMetadata: [String: CoreMetadata] = [
         // MAME variants
         "mame2000": CoreMetadata(
@@ -83,7 +83,7 @@ struct RemoteCoreInfo: Identifiable, Codable {
     var systemIDs: [String]
     var displayName: String
 
-    /// Returns metadata for this core if available.
+    // Returns metadata for this core if available.
     var metadata: CoreMetadata {
         let baseID = coreID.replacingOccurrences(of: "_libretro", with: "")
         return LibretroCore.knownCoreMetadata[baseID]

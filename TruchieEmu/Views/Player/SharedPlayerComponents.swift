@@ -378,7 +378,7 @@ class FocusableMTKView: MTKView {
     override var acceptsFirstResponder: Bool { true }
     override var isOpaque: Bool { false }
     
-    /// Tracks active game keys to properly release them on keyUp
+    // Tracks active game keys to properly release them on keyUp
     private var activeGameKeys: Set<Int> = []
     
     override func mouseDown(with event: NSEvent) {
@@ -462,7 +462,7 @@ class FocusableMTKView: MTKView {
 // Each Metal shader expects a specific uniform buffer layout.
 // We create per-shader layouts that match exactly what Metal expects.
 
-/// CRT Filter uniforms - matches CRTUniforms in CRTFilter.metal
+// CRT Filter uniforms - matches CRTUniforms in CRTFilter.metal
 struct CRTUniforms {
     var scanlineIntensity: Float
     var barrelAmount: Float
@@ -474,7 +474,7 @@ struct CRTUniforms {
     var padding: Float
 };
 
-/// Dot Matrix LCD uniforms (48 bytes) - matches DotMatrixLCDUniforms in DotMatrixLCD.metal
+// Dot Matrix LCD uniforms (48 bytes) - matches DotMatrixLCDUniforms in DotMatrixLCD.metal
 struct DotMatrixLCDUniforms {
     var dotOpacity: Float
     var metallicIntensity: Float
@@ -484,7 +484,7 @@ struct DotMatrixLCDUniforms {
     var outputSize: SIMD4<Float>
 }
 
-/// Lottes CRT uniforms - matches LottesUniforms in LottesCRT.metal
+// Lottes CRT uniforms - matches LottesUniforms in LottesCRT.metal
 struct LottesUniforms {
     var scanlineStrength: Float
     var maskStrength: Float
@@ -496,7 +496,7 @@ struct LottesUniforms {
     var outputSize: SIMD4<Float>
 }
 
-/// Sharp Bilinear uniforms - matches SharpBilinearUniforms in SharpBilinear.metal
+// Sharp Bilinear uniforms - matches SharpBilinearUniforms in SharpBilinear.metal
 struct SharpBilinearUniforms {
     var sharpness: Float
     var colorBoost: Float
@@ -506,7 +506,7 @@ struct SharpBilinearUniforms {
     var outputSize: SIMD4<Float>
 }
 
-/// LCD Grid uniforms - matches LCDGridUniforms in LCDGrid.metal
+// LCD Grid uniforms - matches LCDGridUniforms in LCDGrid.metal
 struct LCDGridUniforms {
     var gridStrength: Float
     var pixelSeparation: Float
@@ -516,7 +516,7 @@ struct LCDGridUniforms {
     var outputSize: SIMD4<Float>
 }
 
-/// Lite CRT uniforms - matches LiteCRTUniforms in LiteCRT.metal
+// Lite CRT uniforms - matches LiteCRTUniforms in LiteCRT.metal
 struct LiteCRTUniforms {
     var scanlineIntensity: Float
     var phosphorStrength: Float
@@ -524,7 +524,7 @@ struct LiteCRTUniforms {
     var colorBoost: Float
 }
 
-/// ScaleSmooth uniforms - matches ScaleSmoothUniforms in ScaleSmooth.metal
+// ScaleSmooth uniforms - matches ScaleSmoothUniforms in ScaleSmooth.metal
 struct ScaleSmoothUniforms {
     var smoothness: Float
     var colorBoost: Float
@@ -657,24 +657,24 @@ class StandaloneGameWindowController: NSWindowController, NSWindowDelegate, Obse
     private var pendingROM: ROM?
     private var pendingCoreID: String?
     
-    /// Reference to the ROM library for updating playtime (weak to avoid retain cycles)
+    // Reference to the ROM library for updating playtime (weak to avoid retain cycles)
     weak var library: ROMLibrary?
-    /// Track the ROM reference for this window instance (for playtime tracking)
+    // Track the ROM reference for this window instance (for playtime tracking)
     private var trackedROM: ROM?
-    /// Accumulated playtime in seconds (only counts when game is running and not paused)
+    // Accumulated playtime in seconds (only counts when game is running and not paused)
     private var accumulatedPlaytime: TimeInterval = 0
-    /// Timer that increments playtime every second while the game is active and not paused
+    // Timer that increments playtime every second while the game is active and not paused
     private var playtimeTimer: Timer?
     
-    /// The currently running game's ROM. Published so the toolbar can observe it.
+    // The currently running game's ROM. Published so the toolbar can observe it.
     @MainActor @Published public var currentGameROM: ROM?
     
-    /// Whether the cheats overlay is currently shown.
+    // Whether the cheats overlay is currently shown.
     @MainActor @Published public var showCheatsView: Bool = false
     
-    /// The sheet window for the cheat manager (if currently presented).
+    // The sheet window for the cheat manager (if currently presented).
     private var cheatManagerSheetWindow: NSWindow?
-    /// Track the ROM path for this window instance (for cleanup on close)
+    // Track the ROM path for this window instance (for cleanup on close)
     private var trackedROMPath: String?
     
     // Bezel support
@@ -814,7 +814,7 @@ class StandaloneGameWindowController: NSWindowController, NSWindowDelegate, Obse
         }
     }
     
-    /// Called when the window is resized. Dynamically scales bezel to fit new window size.
+    // Called when the window is resized. Dynamically scales bezel to fit new window size.
     private func onWindowResized() {
         guard let containerView = window?.contentView as? GameContainerView,
               let bezelLayer = bezelBackgroundLayer else { return }
@@ -832,8 +832,8 @@ class StandaloneGameWindowController: NSWindowController, NSWindowDelegate, Obse
         updateMetalViewFrameForBezel()
     }
     
-    /// Updates the Metal view frame to match the playable area of the bezel.
-    /// This ensures the bezel is visible around the edges of the game content.
+    // Updates the Metal view frame to match the playable area of the bezel.
+    // This ensures the bezel is visible around the edges of the game content.
     private func updateMetalViewFrameForBezel() {
         guard let containerView = window?.contentView as? GameContainerView else {
             return
@@ -850,7 +850,7 @@ class StandaloneGameWindowController: NSWindowController, NSWindowDelegate, Obse
         }
     }
     
-    /// Called when the window moves to a different screen or returns from fullscreen.
+    // Called when the window moves to a different screen or returns from fullscreen.
     private func onWindowMoved() {
         // Update max window size for current screen
         constrainWindowToScreenBounds()
@@ -859,7 +859,7 @@ class StandaloneGameWindowController: NSWindowController, NSWindowDelegate, Obse
         onWindowResized()
     }
     
-    /// Toggle macOS native fullscreen mode
+    // Toggle macOS native fullscreen mode
     @MainActor
     func toggleFullscreen() {
         window?.toggleFullScreen(nil)
@@ -897,7 +897,7 @@ class StandaloneGameWindowController: NSWindowController, NSWindowDelegate, Obse
     
     // MARK: - Playtime Tracking
     
-    /// Start tracking playtime with a timer that accumulates seconds only when the game is running and not paused
+    // Start tracking playtime with a timer that accumulates seconds only when the game is running and not paused
     private func startPlaytimeTracking() {
         playtimeTimer?.invalidate()
         playtimeTimer = Timer.scheduledTimer(withTimeInterval: 1.0, repeats: true) { [weak self] timer in
@@ -918,7 +918,7 @@ class StandaloneGameWindowController: NSWindowController, NSWindowDelegate, Obse
         }
     }
     
-    /// Stop playtime tracking
+    // Stop playtime tracking
     private func stopPlaytimeTracking() {
         playtimeTimer?.invalidate()
         playtimeTimer = nil
@@ -1010,8 +1010,8 @@ class StandaloneGameWindowController: NSWindowController, NSWindowDelegate, Obse
         waitForFirstFrameAndShowWindow(slotToLoad: slotToLoad, rom: rom)
     }
     
-    /// Wait for the first frame to be rendered before showing the window.
-    /// This prevents the user from seeing a flash of the bezel without game content.
+    // Wait for the first frame to be rendered before showing the window.
+    // This prevents the user from seeing a flash of the bezel without game content.
     private func waitForFirstFrameAndShowWindow(slotToLoad: Int?, rom: ROM) {
         // Poll for isReadyForDisplay with a timeout (5 seconds max)
         var attempts = 0
@@ -1074,7 +1074,7 @@ class StandaloneGameWindowController: NSWindowController, NSWindowDelegate, Obse
         }
     }
     
-    /// Show the window and handle save state loading.
+    // Show the window and handle save state loading.
     private func showWindowAndLoadSlot(slotToLoad: Int?, rom: ROM) {
         // Show and bring window to front
         window?.orderFrontRegardless()
@@ -1135,8 +1135,8 @@ class StandaloneGameWindowController: NSWindowController, NSWindowDelegate, Obse
         }
     }
     
-    /// Load bezel for a game and set up the background layer.
-    /// Constrains window size to screen bounds if bezel is larger than screen.
+    // Load bezel for a game and set up the background layer.
+    // Constrains window size to screen bounds if bezel is larger than screen.
     @MainActor
     private func loadBezelForGame(systemID: String, rom: ROM) async {
         // Initialize bezel view model if needed
@@ -1183,8 +1183,8 @@ class StandaloneGameWindowController: NSWindowController, NSWindowDelegate, Obse
     
     // MARK: - Cheats
     
-    /// Load cheats for the ROM and optionally apply enabled cheats to the running core.
-    /// Called after the emulator core has started.
+    // Load cheats for the ROM and optionally apply enabled cheats to the running core.
+    // Called after the emulator core has started.
     private func autoLoadAndApplyCheats(for rom: ROM) {
         // Always load cheats so they appear in the manager
         if AppSettings.getBool("applyCheatsOnLaunch", defaultValue: false) {
@@ -1211,8 +1211,8 @@ class StandaloneGameWindowController: NSWindowController, NSWindowDelegate, Obse
         }
     }
     
-    /// Present the cheat manager as a sheet on this game window.
-    /// Pauses the game while the cheat manager is shown.
+    // Present the cheat manager as a sheet on this game window.
+    // Pauses the game while the cheat manager is shown.
     @MainActor
     func showCheatManager() {
         guard let rom = currentGameROM, let window = window else { return }
@@ -1247,7 +1247,7 @@ class StandaloneGameWindowController: NSWindowController, NSWindowDelegate, Obse
         }
     }
     
-    /// Dismiss the cheat manager sheet.
+    // Dismiss the cheat manager sheet.
     @MainActor
     func dismissCheatManager() {
         guard let sheetWindow = cheatManagerSheetWindow, let window = window else { return }
@@ -1257,8 +1257,8 @@ class StandaloneGameWindowController: NSWindowController, NSWindowDelegate, Obse
         LibretroBridge.setPaused(false)
     }
     
-    /// Constrain the window size to fit within screen bounds.
-    /// This prevents bezels from making the window larger than the screen.
+    // Constrain the window size to fit within screen bounds.
+    // This prevents bezels from making the window larger than the screen.
     @MainActor
     private func constrainWindowToScreenBounds() {
         guard let window = window, let screen = window.screen ?? NSScreen.main else { return }
@@ -1633,7 +1633,7 @@ class StandaloneGameWindowController: NSWindowController, NSWindowDelegate, Obse
             cmdBuffer.commit()
         }
         
-        /// Load the shader library containing all shaders
+        // Load the shader library containing all shaders
         private func loadShaderLibrary(device: MTLDevice) -> MTLLibrary? {
             // Try to load pre-compiled metallib from bundle
             if let url = Bundle.main.url(forResource: "default", withExtension: "metallib") {
@@ -1941,7 +1941,7 @@ struct CheatManagerViewWrapper: View {
         LibretroBridge.applyCheats(cheatData)
     }
     
-    /// Search and download cheats from the libretro-database for this ROM.
+    // Search and download cheats from the libretro-database for this ROM.
     @MainActor
     private func downloadOnlineCheat() async {
         guard let systemID = rom.systemID else {

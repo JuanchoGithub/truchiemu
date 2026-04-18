@@ -11,7 +11,7 @@ import Combine
 
 // MARK: - MTLTexture to NSImage conversion
 
-/// Convert MTLTexture to NSImage using Metal texture bytes directly
+// Convert MTLTexture to NSImage using Metal texture bytes directly
 func NSImageFromMTLTexture(_ texture: MTLTexture) -> NSImage? {
     let width = texture.width
     let height = texture.height
@@ -118,7 +118,7 @@ func NSImageFromMTLTexture(_ texture: MTLTexture) -> NSImage? {
     return NSImage(cgImage: image, size: NSSize(width: width, height: height))
 }
 
-/// Expand RGB565 data to BGRA8888
+// Expand RGB565 data to BGRA8888
 private func expandRGB565toBGRA(from data: [UInt8], width: Int, height: Int) -> [UInt8] {
     var result = [UInt8](repeating: 0, count: width * height * 4)
     let srcCount = data.count / 2  // number of 16-bit pixels
@@ -149,7 +149,7 @@ private func expandRGB565toBGRA(from data: [UInt8], width: Int, height: Int) -> 
     return result
 }
 
-/// Expand ARGB1555 data to BGRA8888
+// Expand ARGB1555 data to BGRA8888
 private func expandARGB1555toBGRA(from data: [UInt8], width: Int, height: Int) -> [UInt8] {
     var result = [UInt8](repeating: 0, count: width * height * 4)
     let srcCount = data.count / 2  // number of 16-bit pixels
@@ -187,8 +187,8 @@ class EmulatorRunner: ObservableObject, @unchecked Sendable {
     @MainActor @Published var currentFrameTexture: MTLTexture? = nil
     @MainActor @Published var currentFrameRotation: Int = 0  // 0, 1, 2, 3 = 0, 90, 180, 270 CW
     
-    /// Whether the first frame has been received and the view is ready for display.
-    /// Used to prevent showing the window before game content is ready (avoids bezel flash).
+    // Whether the first frame has been received and the view is ready for display.
+    // Used to prevent showing the window before game content is ready (avoids bezel flash).
     @MainActor @Published var isReadyForDisplay: Bool = false
     
     // MARK: - Save State
@@ -197,7 +197,7 @@ class EmulatorRunner: ObservableObject, @unchecked Sendable {
     var undoBuffer: Data?
     
     
-    /// Whether the current core supports save states
+    // Whether the current core supports save states
     var supportsSaveStates: Bool {
         LibretroBridgeSwift.serializeSize() > 0
     }
@@ -214,10 +214,10 @@ class EmulatorRunner: ObservableObject, @unchecked Sendable {
     var romPath: String = ""
     private var analogButtonStates: [RetroButton: Float] = [:]
     
-    /// Expose saveManager for UI access
+    // Expose saveManager for UI access
     var saveManager: SaveStateManager { _saveManager }
     private let _saveManager = SaveStateManager()
-    /// Keyboard mapping snapshot captured at launch — safe to read from any thread.
+    // Keyboard mapping snapshot captured at launch — safe to read from any thread.
     var cachedKeyboardMapping: KeyboardMapping = KeyboardMapping(buttons: [:])
     private var hookedController: GCController? = nil
     
@@ -316,7 +316,7 @@ class EmulatorRunner: ObservableObject, @unchecked Sendable {
         hookedController = nil
     }
     
-    /// Toggle pause state
+    // Toggle pause state
     @MainActor
     func togglePause() {
         isPaused.toggle()
@@ -329,7 +329,7 @@ class EmulatorRunner: ObservableObject, @unchecked Sendable {
         }
     }
     
-    /// Reload the current ROM
+    // Reload the current ROM
     @MainActor
     func reloadGame() {
         guard let gameRom = rom else { return }
@@ -367,12 +367,12 @@ class EmulatorRunner: ObservableObject, @unchecked Sendable {
 
     // MARK: - Slot-based Save State
     
-    /// Compression preference
+    // Compression preference
     var compressSaveStates: Bool {
         AppSettings.getBool("saveState_compress", defaultValue: false)
     }
     
-    /// Save the current emulator state to the specified slot
+    // Save the current emulator state to the specified slot
     @MainActor
     func saveState(slot: Int) -> Bool {
         guard supportsSaveStates else {
@@ -443,7 +443,7 @@ class EmulatorRunner: ObservableObject, @unchecked Sendable {
         }
     }
     
-    /// Load an emulator state from the specified slot
+    // Load an emulator state from the specified slot
     @MainActor
     func loadState(slot: Int) -> Bool {
         guard supportsSaveStates else {
@@ -502,7 +502,7 @@ class EmulatorRunner: ObservableObject, @unchecked Sendable {
         return success
     }
     
-    /// Undo the last load operation (restore from undo buffer)
+    // Undo the last load operation (restore from undo buffer)
     @MainActor
     func undoLoadState() -> Bool {
         guard let undoData = undoBuffer else {
@@ -536,7 +536,7 @@ class EmulatorRunner: ObservableObject, @unchecked Sendable {
         return success
     }
     
-    /// Cycle to the next save slot (0-9)
+    // Cycle to the next save slot (0-9)
     @MainActor
     func nextSlot() {
         if currentSlot >= 9 {
@@ -552,7 +552,7 @@ class EmulatorRunner: ObservableObject, @unchecked Sendable {
         }
     }
     
-    /// Cycle to the previous save slot (0-9)
+    // Cycle to the previous save slot (0-9)
     @MainActor
     func previousSlot() {
         if currentSlot <= 0 {

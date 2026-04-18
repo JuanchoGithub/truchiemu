@@ -2,7 +2,7 @@ import SwiftUI
 
 // MARK: - Box Art Pulse Animation
 
-/// A subtle pulse animation for the box art download icon
+// A subtle pulse animation for the box art download icon
 struct BoxArtPulseAnimation: ViewModifier {
     @State private var isAnimating = false
     
@@ -22,7 +22,7 @@ struct BoxArtPulseAnimation: ViewModifier {
 
 // MARK: - Scanning Pulse Animation
 
-/// A subtle pulse animation for the scanning overlay icon
+// A subtle pulse animation for the scanning overlay icon
 struct ScanningPulseAnimation: ViewModifier {
     @State private var isAnimating = false
     
@@ -42,7 +42,7 @@ struct ScanningPulseAnimation: ViewModifier {
 
 // MARK: - Empty State Float Animation
 
-/// A subtle floating animation for empty state icons to make the view feel alive
+// A subtle floating animation for empty state icons to make the view feel alive
 struct EmptyStateFloatAnimation: ViewModifier {
     @State private var isAnimating = false
     

@@ -1,8 +1,8 @@
 import SwiftUI
 
 // MARK: - Recommendation Badge Component
-/// Shared badge for displaying core recommendations with a purple-to-cyan gradient.
-/// Extracted to avoid duplicating the same gradient across 4+ locations.
+// Shared badge for displaying core recommendations with a purple-to-cyan gradient.
+// Extracted to avoid duplicating the same gradient across 4+ locations.
 struct CoreRecommendationBadge: View {
     let text: String
 
@@ -18,7 +18,7 @@ struct CoreRecommendationBadge: View {
     }
 }
 
-/// Shared design tokens for Core views
+// Shared design tokens for Core views
 enum CoreStyle {
     static let recommendationGradient = LinearGradient(
         colors: [
@@ -32,8 +32,8 @@ enum CoreStyle {
 
 // MARK: - Core Picker View
 
-/// A view for selecting which core to use for a game.
-/// Accessible from the game detail view context menu.
+// A view for selecting which core to use for a game.
+// Accessible from the game detail view context menu.
 struct CorePickerView: View {
     @Environment(\.dismiss) private var dismiss
     let rom: ROM
@@ -42,7 +42,7 @@ struct CorePickerView: View {
     @StateObject private var metadataStore = LibraryMetadataStore.shared
     @State private var downloadTask: Task<Void, Never>? = nil
     
-    /// All cores that match this game's system — including uninstalled ones from the buildbot.
+    // All cores that match this game's system — including uninstalled ones from the buildbot.
     private struct CoreEntry: Identifiable {
         enum Kind {
             case installed(LibretroCore)
@@ -331,7 +331,7 @@ struct CoreRowView: View {
 
 // MARK: - Core Selection Sheet (for ambiguous games)
 
-/// A sheet shown when a game could be played with multiple cores.
+// A sheet shown when a game could be played with multiple cores.
 struct CoreSelectionSheet: View {
     @Environment(\.dismiss) private var dismiss
     let rom: ROM

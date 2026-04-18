@@ -3,8 +3,8 @@ import SwiftData
 
 // MARK: - MAME ROM Database Entry
 
-/// Stores MAME ROM metadata: shortname → description, type, year, manufacturer.
-/// Populated from libretro-database MAME.dat for ROM identification.
+// Stores MAME ROM metadata: shortname → description, type, year, manufacturer.
+// Populated from libretro-database MAME.dat for ROM identification.
 @Model
 final class MAMERomEntry {
     @Attribute(.unique) var shortName: String
@@ -41,7 +41,7 @@ final class MAMERomEntry {
 
 // MARK: - MAME Database Import Log
 
-/// Tracks when the MAME database was last imported into SwiftData.
+// Tracks when the MAME database was last imported into SwiftData.
 @Model
 final class MAMEDatabaseInfo {
     @Attribute(.unique) var id: Int

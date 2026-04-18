@@ -3,21 +3,21 @@ import AppKit
 
 // MARK: - LogManager
 
-/// Manages log file storage, paths, and file system operations for TruchieEmu.
+// Manages log file storage, paths, and file system operations for TruchieEmu.
 final class LogManager: @unchecked Sendable {
     static let shared = LogManager()
     
     // MARK: - Constants
     
-    /// Default log file name
+    // Default log file name
     static let defaultLogFileName = "TruchieEmu.log"
     
-    /// AppSettings key for custom log folder URL
+    // AppSettings key for custom log folder URL
     private static let customLogFolderKey = "custom_log_folder_url"
     
     // MARK: - Log File URL
     
-    /// The current log file URL, using custom path if set.
+    // The current log file URL, using custom path if set.
     var currentLogURL: URL {
         if let customURL = customLogFolderURL {
             return customURL.appendingPathComponent(Self.defaultLogFileName)
@@ -25,7 +25,7 @@ final class LogManager: @unchecked Sendable {
         return defaultLogURL
     }
     
-    /// Default log file location in Application Support.
+    // Default log file location in Application Support.
     var defaultLogURL: URL {
         let appSupport = FileManager.default.urls(for: .applicationSupportDirectory, in: .userDomainMask).first!
         return appSupport
@@ -34,7 +34,7 @@ final class LogManager: @unchecked Sendable {
             .appendingPathComponent(Self.defaultLogFileName)
     }
     
-    /// Current log folder URL (custom or default).
+    // Current log folder URL (custom or default).
     var currentLogFolderURL: URL {
         if let customURL = customLogFolderURL {
             return customURL
@@ -42,7 +42,7 @@ final class LogManager: @unchecked Sendable {
         return defaultLogFolderURL
     }
     
-    /// Default log folder URL.
+    // Default log folder URL.
     var defaultLogFolderURL: URL {
         let appSupport = FileManager.default.urls(for: .applicationSupportDirectory, in: .userDomainMask).first!
         return appSupport.appendingPathComponent("TruchieEmu").appendingPathComponent("Logs")
@@ -50,14 +50,14 @@ final class LogManager: @unchecked Sendable {
     
     // MARK: - Custom Log Folder
     
-    /// Get custom log folder URL if set by user.
+    // Get custom log folder URL if set by user.
     var customLogFolderURL: URL? {
         guard let data = AppSettings.getData(Self.customLogFolderKey) else { return nil }
         var isStale = false
         return try? URL(resolvingBookmarkData: data, options: [], relativeTo: nil, bookmarkDataIsStale: &isStale)
     }
     
-    /// Save a custom log folder bookmark.
+    // Save a custom log folder bookmark.
     func setLogFolder(_ url: URL) {
         do {
             _ = url.startAccessingSecurityScopedResource()
@@ -70,7 +70,7 @@ final class LogManager: @unchecked Sendable {
         }
     }
     
-    /// Reset to default log folder.
+    // Reset to default log folder.
     func resetToDefaultLogFolder() {
         AppSettings.removeObject(Self.customLogFolderKey)
         LoggerService.shared.setLevel(LoggerService.shared.currentLevel) // Re-setup file logging
@@ -79,7 +79,7 @@ final class LogManager: @unchecked Sendable {
     
     // MARK: - Finder Integration
     
-    /// Open the log file in Finder (reveals the file).
+    // Open the log file in Finder (reveals the file).
     func showLogInFinder() {
         let logURL = currentLogURL
         
@@ -102,7 +102,7 @@ final class LogManager: @unchecked Sendable {
         NSWorkspace.shared.activateFileViewerSelecting([logURL])
     }
     
-    /// Open the log folder in Finder (reveals the directory).
+    // Open the log folder in Finder (reveals the directory).
     func showLogFolderInFinder() {
         let folderURL = currentLogFolderURL
         
@@ -115,7 +115,7 @@ final class LogManager: @unchecked Sendable {
     
     // MARK: - Cleanup
     
-    /// Clean up old log files (rotated files older than 7 days).
+    // Clean up old log files (rotated files older than 7 days).
     func cleanupOldRotatedLogs() {
         let folderURL = currentLogFolderURL
         let maxAge: TimeInterval = 7 * 24 * 60 * 60 // 7 days
@@ -141,12 +141,12 @@ final class LogManager: @unchecked Sendable {
         }
     }
     
-    /// Quick trim of logs: keep only the most recent entries to stay under 5MB.
+    // Quick trim of logs: keep only the most recent entries to stay under 5MB.
     func quickTrimLog() {
         LoggerService.shared.trimOldEntries(olderThanDays: 7)
     }
     
-    /// Get human-readable file size string.
+    // Get human-readable file size string.
     var currentLogFileSizeString: String {
         let size = LoggerService.shared.currentLogFileSize()
         if size == 0 { return "0 KB (empty)" }
@@ -155,7 +155,7 @@ final class LogManager: @unchecked Sendable {
         return String(format: "%.2f MB", Double(size) / (1024.0 * 1024.0))
     }
     
-    /// Get human-readable total file size string (includes rotated files).
+    // Get human-readable total file size string (includes rotated files).
     var totalLogFileSizeString: String {
         let size = LoggerService.shared.totalLogFileSize()
         if size == 0 { return "0 KB (empty)" }
@@ -164,7 +164,7 @@ final class LogManager: @unchecked Sendable {
         return String(format: "%.2f MB", Double(size) / (1024.0 * 1024.0))
     }
     
-    /// Get age of current log file as human-readable string.
+    // Get age of current log file as human-readable string.
     var currentLogFileAgeString: String {
         guard let age = LoggerService.shared.currentLogFileAge() else { return "Unknown" }
         if age < 60 { return "Just now" }
@@ -181,7 +181,7 @@ final class LogManager: @unchecked Sendable {
         ensureLogDirectoryExists()
     }
     
-    /// Create the log directory if it doesn't exist.
+    // Create the log directory if it doesn't exist.
     private func ensureLogDirectoryExists() {
         let logURL = currentLogURL
         let directoryURL = logURL.deletingLastPathComponent()

@@ -3,8 +3,8 @@ import SwiftData
 
 // MARK: - Game DB Repository
 
-/// Typed repository for ROM identification lookups.
-/// Replaces the old GameDatabase with typed SwiftData queries.
+// Typed repository for ROM identification lookups.
+// Replaces the old GameDatabase with typed SwiftData queries.
 @MainActor
 final class GameDBRepository {
     private let context: ModelContext
@@ -15,7 +15,7 @@ final class GameDBRepository {
 
     // MARK: - Lookup Methods
 
-    /// Look up a game by systemID + CRC (exact match).
+    // Look up a game by systemID + CRC (exact match).
     func lookupByCRC(systemID: String, crc: String) -> GameDBLookupResult? {
         let descriptor = FetchDescriptor<GameDBEntry>(
             predicate: #Predicate { $0.systemID == systemID && $0.crc == crc }
@@ -30,7 +30,7 @@ final class GameDBRepository {
         }
     }
 
-    /// Search for games by exact stripped title match within a system.
+    // Search for games by exact stripped title match within a system.
     func searchByStrippedTitle(systemID: String, strippedTitle: String, limit: Int = 10) -> [GameDBLookupResult] {
         let descriptor = FetchDescriptor<GameDBEntry>(
             predicate: #Predicate { $0.systemID == systemID && $0.strippedTitle == strippedTitle }
@@ -44,7 +44,7 @@ final class GameDBRepository {
         }
     }
 
-    /// Search for games by substring match within a system.
+    // Search for games by substring match within a system.
     func searchBySubstring(systemID: String, substring: String, limit: Int = 20) -> [GameDBLookupResult] {
         let descriptor = FetchDescriptor<GameDBEntry>(
             predicate: #Predicate { $0.systemID == systemID && $0.title.contains(substring) }
@@ -60,7 +60,7 @@ final class GameDBRepository {
 
     // MARK: - Write Methods
 
-    /// Bulk upsert game entries for a given system.
+    // Bulk upsert game entries for a given system.
     func upsertEntries(systemID: String, entries: [(crc: String, title: String, strippedTitle: String, year: String?, developer: String?, publisher: String?, genre: String?, thumbnailSystemID: String?)]) {
         // First, clear existing entries for this system to avoid duplicates
         clearSystem(systemID: systemID)
@@ -88,7 +88,7 @@ final class GameDBRepository {
         }
     }
 
-    /// Delete all game entries for a given system.
+    // Delete all game entries for a given system.
     func clearSystem(systemID: String) {
         do {
             let descriptor = FetchDescriptor<GameDBEntry>(
@@ -104,7 +104,7 @@ final class GameDBRepository {
         }
     }
 
-    /// Count game entries for a given system.
+    // Count game entries for a given system.
     func countForSystem(systemID: String) -> Int {
         let descriptor = FetchDescriptor<GameDBEntry>(
             predicate: #Predicate { $0.systemID == systemID }
@@ -112,14 +112,14 @@ final class GameDBRepository {
         return (try? context.fetchCount(descriptor)) ?? 0
     }
 
-    /// Check if any entries exist for a given system.
+    // Check if any entries exist for a given system.
     func hasEntriesForSystem(systemID: String) -> Bool {
         return countForSystem(systemID: systemID) > 0
     }
 
     // MARK: - Mapping
 
-    /// Create a GameDBLookupResult from a GameDBEntry @Model.
+    // Create a GameDBLookupResult from a GameDBEntry @Model.
     private func lookupResult(from entry: GameDBEntry) -> GameDBLookupResult {
         GameDBLookupResult(
             systemID: entry.systemID,

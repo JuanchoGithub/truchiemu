@@ -1,8 +1,8 @@
 import XCTest
 @testable import TruchieEmu
 
-/// Integration tests for BezelAPIService - requires network connection
-/// These tests make real API calls to GitHub and may fail if the service is unavailable
+// Integration tests for BezelAPIService - requires network connection
+// These tests make real API calls to GitHub and may fail if the service is unavailable
 @MainActor
 final class BezelAPIServiceIntegrationTests: XCTestCase {
 

@@ -3,8 +3,8 @@ import SwiftData
 
 // MARK: - ROM Repository
 
-/// Typed repository for ROM and library folder operations using SwiftData.
-/// Encapsulates all persistence logic for ROMEntry and LibraryFolder models.
+// Typed repository for ROM and library folder operations using SwiftData.
+// Encapsulates all persistence logic for ROMEntry and LibraryFolder models.
 @MainActor
 final class ROMRepository {
     private let context: ModelContext
@@ -28,7 +28,7 @@ final class ROMRepository {
         }
     }
 
-    /// Fetch all ROMs and map them to ROM structs.
+    // Fetch all ROMs and map them to ROM structs.
     func allROMs() -> [ROM] {
         let descriptor = FetchDescriptor<ROMEntry>()
         do {
@@ -40,9 +40,9 @@ final class ROMRepository {
         }
     }
 
-    /// Bulk upsert ROM entries into the store.
-    /// Uses a single batch fetch + dictionary lookup to avoid N+1 queries.
-    /// All inserts/updates happen before a single context.save() to minimize WAL flushes.
+    // Bulk upsert ROM entries into the store.
+    // Uses a single batch fetch + dictionary lookup to avoid N+1 queries.
+    // All inserts/updates happen before a single context.save() to minimize WAL flushes.
     func saveROMs(_ roms: [ROM]) {
         guard !roms.isEmpty else { return }
 
@@ -81,7 +81,7 @@ final class ROMRepository {
         }
     }
 
-    /// Save a single ROM entry by ID. Use for targeted updates (favorites, play sessions, etc.).
+    // Save a single ROM entry by ID. Use for targeted updates (favorites, play sessions, etc.).
     func saveROM(_ rom: ROM) {
         let descriptor = FetchDescriptor<ROMEntry>(
             predicate: #Predicate { $0.id == rom.id }
@@ -101,8 +101,8 @@ final class ROMRepository {
         }
     }
 
-    /// Delete ROMs by their unique identifiers.
-    /// This is the most efficient way to delete specific entries when IDs are already known.
+    // Delete ROMs by their unique identifiers.
+    // This is the most efficient way to delete specific entries when IDs are already known.
     func deleteROMs(ids: [UUID]) {
         guard !ids.isEmpty else { return }
         
@@ -129,8 +129,8 @@ final class ROMRepository {
         }
     }
 
-    /// Delete ROMs whose path starts with any of the given path prefixes.
-    /// Uses range-based fetching for common folder deletions to avoid fetching the entire database.
+    // Delete ROMs whose path starts with any of the given path prefixes.
+    // Uses range-based fetching for common folder deletions to avoid fetching the entire database.
     func deleteROMsByPath(_ paths: [String]) {
         guard !paths.isEmpty else { return }
         
@@ -173,7 +173,7 @@ final class ROMRepository {
 
     // MARK: - Library Folder Operations
 
-    /// Load all library folders.
+    // Load all library folders.
     func loadLibraryFolders() -> [(urlPath: String, bookmarkData: Data, parentPath: String?, isPrimary: Bool)] {
         let descriptor = FetchDescriptor<LibraryFolder>()
         do {
@@ -185,7 +185,7 @@ final class ROMRepository {
         }
     }
 
-    /// Bulk upsert library folders.
+    // Bulk upsert library folders.
     func saveLibraryFolders(_ folders: [(String, Data, String?, Bool)]) {
         for (urlPath, bookmarkData, parentPath, isPrimary) in folders {
             let descriptor = FetchDescriptor<LibraryFolder>(
@@ -214,7 +214,7 @@ final class ROMRepository {
         }
     }
 
-    /// Remove a library folder, optionally deleting subfolders too.
+    // Remove a library folder, optionally deleting subfolders too.
     func removeLibraryFolder(urlPath: String, removeSubfolders: Bool) {
         do {
             let descriptor = FetchDescriptor<LibraryFolder>()
@@ -235,7 +235,7 @@ final class ROMRepository {
         }
     }
 
-    /// Check if a folder is marked as primary.
+    // Check if a folder is marked as primary.
     func isFolderPrimary(urlPath: String) -> Bool {
         let descriptor = FetchDescriptor<LibraryFolder>(
             predicate: #Predicate { $0.urlPath == urlPath && $0.isPrimary }
@@ -243,7 +243,7 @@ final class ROMRepository {
         return (try? context.fetch(descriptor).count) ?? 0 > 0
     }
 
-    /// Mark a folder as primary, and update sibling subfolders.
+    // Mark a folder as primary, and update sibling subfolders.
     func markFolderAsPrimary(urlPath: String, parentPath: String?) {
         do {
             // If this is a top-level folder, clear other top-level primary flags
@@ -263,7 +263,7 @@ final class ROMRepository {
         }
     }
 
-    /// Load primary folders (isPrimary=true or parentPath=nil).
+    // Load primary folders (isPrimary=true or parentPath=nil).
     func loadPrimaryFolders() -> [(String, Data, String?, Bool)] {
         do {
             let descriptor = FetchDescriptor<LibraryFolder>(
@@ -277,7 +277,7 @@ final class ROMRepository {
         }
     }
 
-    /// Load subfolders of a given parent path.
+    // Load subfolders of a given parent path.
     func loadSubfolders(parentPath: String) -> [(String, Data, String?, Bool)] {
         let descriptor = FetchDescriptor<LibraryFolder>(
             predicate: #Predicate { $0.parentPath == parentPath }
@@ -293,7 +293,7 @@ final class ROMRepository {
 
     // MARK: - Mapping Helpers
 
-    /// Create a ROM struct from a ROMEntry @Model.
+    // Create a ROM struct from a ROMEntry @Model.
     private func rom(from entry: ROMEntry) -> ROM? {
         let metadata: ROMMetadata? = entry.metadataJSON.flatMap {
             let decoder = JSONDecoder()
@@ -340,7 +340,7 @@ final class ROMRepository {
         return encoder
     }()
 
-    /// Create a ROMEntry @Model from a ROM struct.
+    // Create a ROMEntry @Model from a ROM struct.
     private func romEntry(from rom: ROM) -> ROMEntry {
         let metadataJSON: String? = rom.metadata.flatMap {
             return String(data: try! Self.sharedEncoder.encode($0), encoding: .utf8)
@@ -380,7 +380,7 @@ final class ROMRepository {
         )
     }
 
-    /// Update an existing ROMEntry with data from a ROM struct.
+    // Update an existing ROMEntry with data from a ROM struct.
     private func updateROMEntry(_ entry: ROMEntry, from rom: ROM) {
         if entry.name != rom.name { entry.name = rom.name }
         if entry.path != rom.path.path { entry.path = rom.path.path }

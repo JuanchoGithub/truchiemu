@@ -1,11 +1,11 @@
 import Foundation
 
-/// Maps internal system IDs to libretro-thumbnails CDN folder names (https://thumbnails.libretro.com/).
+// Maps internal system IDs to libretro-thumbnails CDN folder names (https://thumbnails.libretro.com/).
 enum LibretroThumbnailResolver {
     static let defaultBaseURL = URL(string: "https://thumbnails.libretro.com")!
     private static let logCategory = "LibretroThumbnails"
 
-    /// Prefer `ROM.thumbnailLookupSystemID` when identification matched a different Libretro set (e.g. GB vs GBC).
+    // Prefer `ROM.thumbnailLookupSystemID` when identification matched a different Libretro set (e.g. GB vs GBC).
     static func effectiveThumbnailSystemID(for rom: ROM) -> String? {
         let result = rom.thumbnailLookupSystemID ?? rom.systemID
         if let thumbID = rom.thumbnailLookupSystemID, thumbID != rom.systemID {
@@ -27,7 +27,7 @@ enum LibretroThumbnailResolver {
         return result
     }
 
-    /// Returns a list of all known Libretro thumbnail repository names (formatted for GitHub).
+    // Returns a list of all known Libretro thumbnail repository names (formatted for GitHub).
     static func allKnownSystemRepos() -> [String] {
         return Array(Set(systemMapping().values)).map { githubRepoName(for: $0) }.sorted()
     }
@@ -87,13 +87,13 @@ enum LibretroThumbnailResolver {
         ]
     }
 
-    /// Converts a Libretro folder name (e.g. "Nintendo - Nintendo Entertainment System")
-    /// to a GitHub repository name (e.g. "Nintendo_-_Nintendo_Entertainment_System").
+    // Converts a Libretro folder name (e.g. "Nintendo - Nintendo Entertainment System")
+    // to a GitHub repository name (e.g. "Nintendo_-_Nintendo_Entertainment_System").
     static func githubRepoName(for folderName: String) -> String {
         return folderName.replacingOccurrences(of: " ", with: "_")
     }
 
-    /// Tier 3: replace characters that libretro treats as filesystem-unsafe (design doc table).
+    // Tier 3: replace characters that libretro treats as filesystem-unsafe (design doc table).
     static func libretroFilesystemSafeName(_ s: String) -> String {
         var result = ""
         for ch in s {
@@ -107,13 +107,13 @@ enum LibretroThumbnailResolver {
         return result.trimmingCharacters(in: .whitespacesAndNewlines)
     }
 
-    /// Strip tags from a ROM filename stem for display. Delegates to GameNameFormatter.
+    // Strip tags from a ROM filename stem for display. Delegates to GameNameFormatter.
     static func stripRomFilenameTags(_ filenameStem: String) -> String {
         GameNameFormatter.stripTags(filenameStem)
     }
 
-    /// Fuzzy fallback: remove all `( … )` segments for a second pass on Named_Boxarts.
-    /// Delegates to GameNameFormatter for consistency.
+    // Fuzzy fallback: remove all `( … )` segments for a second pass on Named_Boxarts.
+    // Delegates to GameNameFormatter for consistency.
     static func stripParenthesesForFuzzyMatch(_ name: String) -> String {
         GameNameFormatter.removeParentheses(name)
     }
@@ -133,7 +133,7 @@ enum LibretroThumbnailResolver {
         return url
     }
 
-    /// Ordered `Named_*` folders per user priority (Boxart / Title / Snap).
+    // Ordered `Named_*` folders per user priority (Boxart / Title / Snap).
     static func orderedThumbnailTypeFolders(priority: LibretroThumbnailPriority) -> [String] {
         switch priority {
         case .boxart:
@@ -145,8 +145,8 @@ enum LibretroThumbnailResolver {
         }
     }
 
-    /// Common suffix variants that the Libretro CDN uses for boxart entries.
-    /// These are appended to the base title to match entries like "(Beta)" or "(Rev 1)".
+    // Common suffix variants that the Libretro CDN uses for boxart entries.
+    // These are appended to the base title to match entries like "(Beta)" or "(Rev 1)".
     private static let boxartSuffixVariants = [
         " (Beta)",
         " (Rev 1)",
@@ -162,9 +162,9 @@ enum LibretroThumbnailResolver {
         " (World)",
     ]
 
-    /// All CDN URLs to try for one resolved title (primary + safe + fuzzy + suffix variants).
-    /// Strategy: Named_Boxarts uses cleaned titles (no region tags), so we try the fuzzy/stripped
-    /// variant first for boxart before falling back to Named_Titles with the full tagged name.
+    // All CDN URLs to try for one resolved title (primary + safe + fuzzy + suffix variants).
+    // Strategy: Named_Boxarts uses cleaned titles (no region tags), so we try the fuzzy/stripped
+    // variant first for boxart before falling back to Named_Titles with the full tagged name.
     static func candidateURLs(
         base: URL,
         systemFolder: String,
@@ -174,16 +174,16 @@ enum LibretroThumbnailResolver {
         return candidateURLs(base: base, systemFolder: systemFolder, gameTitle: gameTitle, knownVariants: [], priority: priority)
     }
 
-    /// Generate Roman numeral and text number variants of a title for boxart matching.
-    /// E.g. "Ecco the Dolphin 2" → "Ecco the Dolphin II", "Ecco the Dolphin Two"
-    /// E.g. "Double Dragon 3" → "Double Dragon III", "Double Dragon Three"
-    /// Visible for testing.
+    // Generate Roman numeral and text number variants of a title for boxart matching.
+    // E.g. "Ecco the Dolphin 2" → "Ecco the Dolphin II", "Ecco the Dolphin Two"
+    // E.g. "Double Dragon 3" → "Double Dragon III", "Double Dragon Three"
+    // Visible for testing.
     static func numberVariants(of title: String) -> [String] {
         ROMIdentifierService.romanNumeralVariants(of: title)
     }
 
-    /// All CDN URLs to try, including known DAT variant names.
-    /// Known variants are tried BEFORE arbitrary suffix guessing to maximize match probability.
+    // All CDN URLs to try, including known DAT variant names.
+    // Known variants are tried BEFORE arbitrary suffix guessing to maximize match probability.
     static func candidateURLs(
         base: URL,
         systemFolder: String,
@@ -318,7 +318,7 @@ enum LibretroThumbnailResolver {
         return urls
     }
 
-    /// Resolve a display title: CRC/DAT (tier 1), else filename sanitization (tier 2).
+    // Resolve a display title: CRC/DAT (tier 1), else filename sanitization (tier 2).
     static func resolveGameTitle(
         for rom: ROM,
         useCRC: Bool,
@@ -366,7 +366,7 @@ enum LibretroThumbnailResolver {
         return result
     }
 
-    /// Strict file name match, else shortest prefix match among `.png` / `.jpg` in `folder`.
+    // Strict file name match, else shortest prefix match among `.png` / `.jpg` in `folder`.
     static func resolveLocalThumbnail(named sanitizedStem: String, in folder: URL) -> URL? {
         let fm = FileManager.default
         LoggerService.debug(category: logCategory, "resolveLocalThumbnail: searching for '\(sanitizedStem)' in folder \(folder.path)")

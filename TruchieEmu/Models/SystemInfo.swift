@@ -12,7 +12,7 @@ enum SystemAction {
     case shaders
 }
 
-/// Request used to open system-specific settings via a sheet
+// Request used to open system-specific settings via a sheet
 struct SystemSettingsRequest: Identifiable, Codable, Hashable {
     let id: UUID
     let system: SystemInfo
@@ -106,7 +106,7 @@ struct SystemInfo: Identifiable, Codable, Hashable {
 
     var coreReportedAspectRatio: CGFloat?
 
-    /// The correct display aspect ratio for this system's output.
+    // The correct display aspect ratio for this system's output.
     var displayAspectRatio: CGFloat {
         if let coreAR = coreReportedAspectRatio, coreAR > 0.0 {
             return coreAR

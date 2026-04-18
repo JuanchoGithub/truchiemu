@@ -1,6 +1,6 @@
 import SwiftUI
 
-/// Wrapper view for the game info window that receives a ROM ID and displays GameDetailView
+// Wrapper view for the game info window that receives a ROM ID and displays GameDetailView
 struct GameInfoWindow: View {
     @EnvironmentObject var library: ROMLibrary
     let romID: UUID?

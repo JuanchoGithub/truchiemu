@@ -2,7 +2,7 @@ import SwiftUI
 
 // MARK: - Bezel Settings View
 
-/// Settings view for managing bezel downloads, storage location, and preferences.
+// Settings view for managing bezel downloads, storage location, and preferences.
 struct BezelSettingsView: View {
     @StateObject private var apiService = BezelAPIService.shared
     @StateObject private var storageManager = BezelStorageManager.shared
@@ -365,7 +365,7 @@ struct BezelSettingsView: View {
     
     // MARK: - Dynamic Button Label
     
-    /// Generates the button label based on selected system
+    // Generates the button label based on selected system
     private var downloadButtonLabel: String {
         if selectedSystem == "all" {
             return "Download All Bezels"

@@ -1,14 +1,14 @@
 import Foundation
 import SwiftData
 
-/// Single-file library metadata (migrated to SwiftData ROMMetadataEntry).
+// Single-file library metadata (migrated to SwiftData ROMMetadataEntry).
 struct ROMLibraryMetadataFile: Codable {
     var version: Int = 1
-    /// Key: standardized filesystem path to the ROM file.
+    // Key: standardized filesystem path to the ROM file.
     var entries: [String: ROMMetadataRecord] = [:]
 }
 
-/// Persisted fields for one ROM; extends beyond `ROMMetadata` with hashes and asset paths.
+// Persisted fields for one ROM; extends beyond `ROMMetadata` with hashes and asset paths.
 struct ROMMetadataRecord: Codable, Hashable {
     var crc32: String?
     var title: String?
@@ -21,17 +21,17 @@ struct ROMMetadataRecord: Codable, Hashable {
     var rating: Double?
     var cooperative: Bool?
     var esrbRating: String?
-    /// Matches `ROM.thumbnailLookupSystemID` for Libretro CDN.
+    // Matches `ROM.thumbnailLookupSystemID` for Libretro CDN.
     var thumbnailLookupSystemID: String?
-    /// Whether this ROM has box art.
+    // Whether this ROM has box art.
     var hasBoxArt: Bool
-    /// Reserved: title screen / Libretro Named_Titles.
+    // Reserved: title screen / Libretro Named_Titles.
     var titleScreenPath: String?
-    /// Array of screenshot image paths for the game
+    // Array of screenshot image paths for the game
     var screenshotPaths: [String] = []
-    /// Custom core ID selected by the user for this ROM.
+    // Custom core ID selected by the user for this ROM.
     var customCoreID: String?
-    /// Manually set display name for the ROM.
+    // Manually set display name for the ROM.
     var customName: String?
 
     init() {
@@ -153,7 +153,7 @@ final class LibraryMetadataStore: ObservableObject {
     private var entries: [String: ROMMetadataRecord] = [:]
     private let context: ModelContext
 
-    /// Track which entries have been modified in memory but not yet flushed to SwiftData.
+    // Track which entries have been modified in memory but not yet flushed to SwiftData.
     private var dirtyKeys: Set<String> = []
 
     private let encoder: JSONEncoder = {
@@ -226,7 +226,7 @@ final class LibraryMetadataStore: ObservableObject {
         rom.path.standardizedFileURL.path
     }
 
-    /// Flush entire cache to SwiftData (used on init after sidecar migration).
+    // Flush entire cache to SwiftData (used on init after sidecar migration).
     private func flushAllToSwiftData() {
         do {
             let descriptor = FetchDescriptor<ROMMetadataEntry>()
@@ -300,8 +300,8 @@ final class LibraryMetadataStore: ObservableObject {
         objectWillChange.send()
     }
 
-    /// Flush only dirty entries to SwiftData. More efficient than flushAllToSwiftData()
-    /// when only a subset of ROMs have been modified.
+    // Flush only dirty entries to SwiftData. More efficient than flushAllToSwiftData()
+    // when only a subset of ROMs have been modified.
     func flushDirtyToSwiftData() {
         guard !dirtyKeys.isEmpty else { return }
         let keysToFlush = dirtyKeys
@@ -327,8 +327,8 @@ final class LibraryMetadataStore: ObservableObject {
         }
     }
 
-    /// Batch flush all in-memory entries to SwiftData.
-    /// Call this after a batch operation (e.g., scan, import) instead of per-ROM persist().
+    // Batch flush all in-memory entries to SwiftData.
+    // Call this after a batch operation (e.g., scan, import) instead of per-ROM persist().
     func flushToSwiftData() {
         guard !entries.isEmpty else { return }
         flushAllToSwiftData()
@@ -368,7 +368,7 @@ final class LibraryMetadataStore: ObservableObject {
         if any { objectWillChange.send() }
     }
 
-    /// Imports legacy `<name>_info.json` when the central file has no entries yet.
+    // Imports legacy `<name>_info.json` when the central file has no entries yet.
     func migrateLegacySidecarsIfStoreEmpty(roms: [ROM]) {
         guard entries.isEmpty else { return }
         importLegacySidecarJSON(roms: roms)
@@ -418,13 +418,13 @@ final class LibraryMetadataStore: ObservableObject {
         deleteMetadataEntry(Self.pathKey(for: rom))
     }
 
-    /// Delete a metadata entry by its path key.
+    // Delete a metadata entry by its path key.
     func deleteMetadataEntry(_ key: String) {
         deleteMetadataEntries(Set([key]))
     }
 
-    /// Delete multiple metadata entries by their path keys in a single batch.
-    /// This avoids the massive overhead of multiple context.save() calls.
+    // Delete multiple metadata entries by their path keys in a single batch.
+    // This avoids the massive overhead of multiple context.save() calls.
     func deleteMetadataEntries(_ keys: Set<String>) {
         guard !keys.isEmpty else { return }
         

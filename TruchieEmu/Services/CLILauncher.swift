@@ -2,7 +2,7 @@ import Foundation
 
 // MARK: - CLI Launch Arguments
 
-/// Command-line argument keys used for launching games
+// Command-line argument keys used for launching games
 enum CLIArg: String {
     // Core launch options
     case launch = "--launch"
@@ -41,7 +41,7 @@ enum CLIArg: String {
 
 // MARK: - CLI Launch Options
 
-/// Parsed CLI launch options with all supported features
+// Parsed CLI launch options with all supported features
 struct CLILaunchOptions {
     // Core launch options
     let romPath: String?
@@ -132,27 +132,27 @@ enum CLICommand {
 
 // MARK: - CLILauncher
 
-/// Utility to launch games via CLI using `open -a`
+// Utility to launch games via CLI using `open -a`
 class CLILauncher {
     static let shared = CLILauncher()
     
     private init() {}
     
-    /// Launch a game by spawning the TruchieEmu app with CLI arguments
-    /// - Parameters:
-    ///   - romPath: Absolute path to the ROM file
-    ///   - coreID: Core identifier (e.g., "fceumm", "snes9x")
-    ///   - slot: Optional save slot to load on start
-    ///   - shaderPresetID: Shader preset to use
-    ///   - achievementsEnabled: Whether to enable RetroAchievements
-    ///   - hardcoreMode: Whether to enable hardcore mode
-    ///   - cheatsEnabled: Whether to load cheats
-    ///   - coreOptions: Core option overrides
-    ///   - autoLoad: Whether to auto-load save state
-    ///   - autoSave: Whether to auto-save on exit
-    ///   - headless: If true, run without UI
-    ///   - timeout: Optional timeout in seconds (for headless mode)
-    /// - Returns: Whether the launch was initiated successfully
+    // Launch a game by spawning the TruchieEmu app with CLI arguments
+    // - Parameters:
+    //   - romPath: Absolute path to the ROM file
+    //   - coreID: Core identifier (e.g., "fceumm", "snes9x")
+    //   - slot: Optional save slot to load on start
+    //   - shaderPresetID: Shader preset to use
+    //   - achievementsEnabled: Whether to enable RetroAchievements
+    //   - hardcoreMode: Whether to enable hardcore mode
+    //   - cheatsEnabled: Whether to load cheats
+    //   - coreOptions: Core option overrides
+    //   - autoLoad: Whether to auto-load save state
+    //   - autoSave: Whether to auto-save on exit
+    //   - headless: If true, run without UI
+    //   - timeout: Optional timeout in seconds (for headless mode)
+    // - Returns: Whether the launch was initiated successfully
     @discardableResult
     func launchGame(
         romPath: String,
@@ -191,20 +191,20 @@ class CLILauncher {
         return spawnApp(bundleID: appBundleID, arguments: arguments)
     }
     
-    /// Launch a game using the app's executable directly
-    /// - Parameters:
-    ///   - romPath: Absolute path to the ROM file
-    ///   - coreID: Core identifier
-    ///   - slot: Optional save slot to load on start
-    ///   - shaderPresetID: Shader preset to use
-    ///   - achievementsEnabled: Whether to enable RetroAchievements
-    ///   - hardcoreMode: Whether to enable hardcore mode
-    ///   - cheatsEnabled: Whether to load cheats
-    ///   - coreOptions: Core option overrides
-    ///   - autoLoad: Whether to auto-load save state
-    ///   - autoSave: Whether to auto-save on exit
-    ///   - headless: If true, run without UI
-    /// - Returns: The process that was spawned
+    // Launch a game using the app's executable directly
+    // - Parameters:
+    //   - romPath: Absolute path to the ROM file
+    //   - coreID: Core identifier
+    //   - slot: Optional save slot to load on start
+    //   - shaderPresetID: Shader preset to use
+    //   - achievementsEnabled: Whether to enable RetroAchievements
+    //   - hardcoreMode: Whether to enable hardcore mode
+    //   - cheatsEnabled: Whether to load cheats
+    //   - coreOptions: Core option overrides
+    //   - autoLoad: Whether to auto-load save state
+    //   - autoSave: Whether to auto-save on exit
+    //   - headless: If true, run without UI
+    // - Returns: The process that was spawned
     func launchGameDirect(
         romPath: String,
         coreID: String? = nil,
@@ -238,7 +238,7 @@ class CLILauncher {
         return spawnDirect(arguments: arguments)
     }
     
-    /// Build CLI arguments array from launch parameters
+    // Build CLI arguments array from launch parameters
     private func buildLaunchArguments(
         romPath: String,
         coreID: String?,

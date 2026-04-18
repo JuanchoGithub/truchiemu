@@ -4,7 +4,7 @@ import SwiftData
 
 // MARK: - LaunchBox GamesDB Platform Mapping
 
-/// Maps internal system IDs to LaunchBox GamesDB display platform names.
+// Maps internal system IDs to LaunchBox GamesDB display platform names.
 enum LaunchBoxPlatformMapper {
     static func launchBoxPlatformName(for systemID: String) -> String? {
         let map: [String: String] = [
@@ -56,8 +56,8 @@ enum LaunchBoxMediaType: String {
 
 // MARK: - LaunchBox GamesDB Media Service
 
-/// Fetches boxart and game metadata from the LaunchBox GamesDB (gamesdb.launchbox-app.com).
-/// Uses web scraping and HTML parsing to discover game entries and their media URLs.
+// Fetches boxart and game metadata from the LaunchBox GamesDB (gamesdb.launchbox-app.com).
+// Uses web scraping and HTML parsing to discover game entries and their media URLs.
 @MainActor
 class LaunchBoxGamesDBService: ObservableObject {
     static let shared = LaunchBoxGamesDBService()
@@ -99,8 +99,8 @@ class LaunchBoxGamesDBService: ObservableObject {
 
     // MARK: - Primary: Fetch BoxArt for a ROM
 
-    /// Search LaunchBox GamesDB and return boxart URL for a ROM.
-    /// Uses CRC-identified name when available, otherwise sanitizes filename.
+    // Search LaunchBox GamesDB and return boxart URL for a ROM.
+    // Uses CRC-identified name when available, otherwise sanitizes filename.
     func fetchBoxArt(for rom: ROM) async -> URL? {
         guard isEnabled else {
             LoggerService.debug(category: "LaunchBoxDB", "LaunchBox GamesDB is disabled in settings")
@@ -184,7 +184,7 @@ class LaunchBoxGamesDBService: ObservableObject {
         return nil
     }
 
-    /// Clean and create alternate title search for better matching.
+    // Clean and create alternate title search for better matching.
     nonisolated private static func cleanAlternateTitle(_ title: String) -> String {
         var cleaned = title
         // Remove region tags in parentheses
@@ -196,8 +196,8 @@ class LaunchBoxGamesDBService: ObservableObject {
 
     // MARK: - Web Search
 
-    /// Search LaunchBox GamesDB web interface for games.
-    /// Integrates with ResourceCacheInterceptor for cache-first fetching.
+    // Search LaunchBox GamesDB web interface for games.
+    // Integrates with ResourceCacheInterceptor for cache-first fetching.
     private func searchGamesWeb(title: String, platformName: String?) async -> [LaunchBoxGameResult] {
         var results: [LaunchBoxGameResult] = []
 
@@ -288,7 +288,7 @@ class LaunchBoxGamesDBService: ObservableObject {
         return results
     }
 
-    /// Parse game search result entries from HTML.
+    // Parse game search result entries from HTML.
     private func parseGameSearchResults(_ html: String) -> [LaunchBoxGameResult] {
         var results: [LaunchBoxGameResult] = []
 
@@ -317,7 +317,7 @@ class LaunchBoxGamesDBService: ObservableObject {
         return results
     }
 
-    /// Extract first boxart/cover image URL from an HTML range.
+    // Extract first boxart/cover image URL from an HTML range.
     private func extractFirstBoxartURL(in html: String, range: NSRange) -> URL? {
         let subRange = Range(range, in: html) ?? html.startIndex..<html.endIndex
         let sub = String(html[subRange])
@@ -386,7 +386,7 @@ class LaunchBoxGamesDBService: ObservableObject {
         return nil
     }
 
-    /// Extract boxart URL from game detail page HTML.
+    // Extract boxart URL from game detail page HTML.
     private func extractBoxartFromDetailHTML(_ html: String) -> URL? {
         // LaunchBox GamesDB detail pages include images with specific class names or patterns
         let patterns = [
@@ -424,7 +424,7 @@ class LaunchBoxGamesDBService: ObservableObject {
 
     // MARK: - Download & Cache
 
-    /// Download boxart image and cache it locally for a ROM.
+    // Download boxart image and cache it locally for a ROM.
     private func downloadAndCache(artURL: URL, for rom: ROM) async -> URL? {
         let localURL = rom.boxArtLocalPath
         let folder = localURL.deletingLastPathComponent()
@@ -473,8 +473,8 @@ class LaunchBoxGamesDBService: ObservableObject {
 
     // MARK: - Batch Download
 
-    /// Batch download boxart from LaunchBox GamesDB for multiple ROMs.
-    /// First cleans broken boxarts, then downloads for all ROMs missing valid art.
+    // Batch download boxart from LaunchBox GamesDB for multiple ROMs.
+    // First cleans broken boxarts, then downloads for all ROMs missing valid art.
     func batchDownloadBoxArt(for roms: [ROM], library: ROMLibrary, onItemProgress: ((Int, Int, String) -> Void)? = nil) async {
         guard isEnabled else { return }
 
@@ -571,7 +571,7 @@ class LaunchBoxGamesDBService: ObservableObject {
         LoggerService.info(category: "LaunchBoxDB", "LaunchBox batch complete. \(completed)/\(total) processed.")
     }
 
-    /// Internal fetch helper for batch downloads - called via MainActor.
+    // Internal fetch helper for batch downloads - called via MainActor.
     private func fetchBoxArtInner(for rom: ROM) async -> URL? {
         var titleToSearch = ""
         if let crcName = rom.metadata?.title?.trimmingCharacters(in: .whitespacesAndNewlines),
@@ -625,23 +625,23 @@ class LaunchBoxGamesDBService: ObservableObject {
 
     // MARK: - Metadata Sync (used by MetadataSyncCoordinator)
 
-    /// Set enabled/disabled state and persist.
+    // Set enabled/disabled state and persist.
     func setEnabled(_ enabled: Bool) {
         AppSettings.setBool(keyUseLaunchBox, value: enabled)
     }
 
-    /// Last sync date stored in app settings.
+    // Last sync date stored in app settings.
     var lastSyncDate: Date? {
         let interval = AppSettings.getDouble("launchbox_last_sync", defaultValue: 0); guard interval > 0 else { return nil }
         return Date(timeIntervalSince1970: interval)
     }
 
-    /// Record the current sync time.
+    // Record the current sync time.
     func recordSyncDate() {
         AppSettings.setDouble("launchbox_last_sync", value: Date().timeIntervalSince1970)
     }
 
-    /// Fetch and apply metadata for a single ROM.
+    // Fetch and apply metadata for a single ROM.
     func fetchAndApplyMetadata(for rom: ROM, library: ROMLibrary) async -> Bool {
         guard await fetchBoxArt(for: rom) != nil else { return false }
         await MainActor.run {
@@ -652,7 +652,7 @@ class LaunchBoxGamesDBService: ObservableObject {
         return true
     }
 
-    /// Batch-sync the entire library with a progress callback.
+    // Batch-sync the entire library with a progress callback.
     func batchSyncLibrary(library: ROMLibrary, onProgress: @escaping (Int, Int, String) -> Void) async {
         guard isEnabled else { return }
 

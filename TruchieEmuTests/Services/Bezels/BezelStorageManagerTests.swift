@@ -1,7 +1,7 @@
 import XCTest
 @testable import TruchieEmu
 
-/// Unit tests for BezelStorageManager - no network required
+// Unit tests for BezelStorageManager - no network required
 @MainActor
 final class BezelStorageManagerTests: XCTestCase {
 

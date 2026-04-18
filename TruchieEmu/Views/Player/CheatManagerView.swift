@@ -2,8 +2,8 @@ import SwiftUI
 
 // MARK: - Cheat Manager View
 
-/// A view for managing cheat codes for a game.
-/// Accessible from the in-game HUD or game detail view.
+// A view for managing cheat codes for a game.
+// Accessible from the in-game HUD or game detail view.
 struct CheatManagerView: View {
     let rom: ROM
     @Environment(\.dismiss) var dismiss
@@ -243,7 +243,7 @@ struct AddCheatWindow: View {
 
 // MARK: - Cheat Manager Service
 
-/// Manages cheat state for all games.
+// Manages cheat state for all games.
 class CheatManager: ObservableObject {
     static let shared = CheatManager()
     @Published private var allCheats: [String: [Cheat]] = [:]

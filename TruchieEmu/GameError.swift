@@ -1,6 +1,6 @@
 import Foundation
 
-/// Represents various errors that can occur during game emulation.
+// Represents various errors that can occur during game emulation.
 enum GameError: Error, LocalizedError {
     case coreNotFound(coreID: String)
     case launchFailed(reason: String)

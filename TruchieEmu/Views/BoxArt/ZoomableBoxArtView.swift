@@ -6,8 +6,8 @@ import UIKit
 
 // MARK: - Zoomable Image View (iPhone Photos-style)
 
-/// A reusable view that allows pinch-to-zoom and pan gestures on an image,
-/// similar to the iOS Photos app zoom behavior.
+// A reusable view that allows pinch-to-zoom and pan gestures on an image,
+// similar to the iOS Photos app zoom behavior.
 struct ZoomableBoxArtView: View {
     let image: NSImage
     let maxSize: CGSize
@@ -17,7 +17,7 @@ struct ZoomableBoxArtView: View {
     @State private var lastOffset: CGSize = .zero
     @State private var viewSize: CGSize = .zero
     
-    /// Minimum and maximum zoom factors
+    // Minimum and maximum zoom factors
     private let minScale: CGFloat = 1.0
     private let maxScale: CGFloat = 5.0
     
@@ -117,7 +117,7 @@ struct ZoomableBoxArtView: View {
 
 // MARK: - Zoomable Image with Modal Presentation
 
-/// A button that shows a small image and opens a full-screen zoomable view when tapped.
+// A button that shows a small image and opens a full-screen zoomable view when tapped.
 struct ZoomableBoxArtButton: View {
     let image: NSImage?
     let placeholder: () -> AnyView

@@ -2,7 +2,7 @@ import SwiftUI
 
 // MARK: - Confetti Particle
 
-/// A single confetti particle with physics-based animation
+// A single confetti particle with physics-based animation
 struct ConfettiParticle: Identifiable {
     let id = UUID()
     var x: CGFloat
@@ -20,7 +20,7 @@ enum ConfettiShape: CaseIterable {
 
 // MARK: - Confetti View
 
-/// A lightweight confetti burst effect for celebration moments
+// A lightweight confetti burst effect for celebration moments
 struct ConfettiView: View {
     @State private var particles: [ConfettiParticle] = []
     @State private var animateOut = false
@@ -123,7 +123,7 @@ struct ConfettiView: View {
 
 // MARK: - Confetti Manager
 
-/// Manages confetti display across the app
+// Manages confetti display across the app
 @MainActor
 class ConfettiManager: ObservableObject {
     static let shared = ConfettiManager()
@@ -131,7 +131,7 @@ class ConfettiManager: ObservableObject {
     @Published var isShowing = false
     @Published var particleCount: Int = 40
     
-    /// Show a quick confetti burst
+    // Show a quick confetti burst
     func burst(particles: Int = 40) {
         guard !isShowing else { return }
         particleCount = particles
@@ -143,7 +143,7 @@ class ConfettiManager: ObservableObject {
         }
     }
     
-    /// Show confetti for a rare/special achievement
+    // Show confetti for a rare/special achievement
     func grandCelebration() {
         burst(particles: 80)
     }

@@ -1,16 +1,16 @@
 import Foundation
 import AppKit
 
-/// Main manager for bezel resolution, caching, and loading.
-/// This is the primary interface for other parts of the app to interact with bezels.
+// Main manager for bezel resolution, caching, and loading.
+// This is the primary interface for other parts of the app to interact with bezels.
 @MainActor
 class BezelManager: ObservableObject {
     static let shared = BezelManager()
     
-    /// Cached bezel images (LRU cache)
+    // Cached bezel images (LRU cache)
     private var imageCache: NSCache<NSString, NSImage>
     
-    /// Currently loading bezels (prevent duplicate downloads)
+    // Currently loading bezels (prevent duplicate downloads)
     private var loadingBezels: Set<String> = []
     
     private let apiService: BezelAPIService
@@ -28,12 +28,12 @@ class BezelManager: ObservableObject {
     
     // MARK: - Bezel Resolution
     
-    /// Resolve a bezel for a game.
-    /// - Parameters:
-    ///   - systemID: The system ID (e.g., "snes")
-    ///   - rom: The ROM to resolve a bezel for
-    ///   - preferAutoMatch: If true, skip user-selected bezel and use auto-match (for when user explicitly triggers auto-match)
-    /// - Returns: A bezel resolution result with the image URL and aspect ratio
+    // Resolve a bezel for a game.
+    // - Parameters:
+    //   - systemID: The system ID (e.g., "snes")
+    //   - rom: The ROM to resolve a bezel for
+    //   - preferAutoMatch: If true, skip user-selected bezel and use auto-match (for when user explicitly triggers auto-match)
+    // - Returns: A bezel resolution result with the image URL and aspect ratio
     func resolveBezel(systemID: String, rom: ROM, preferAutoMatch: Bool = false) -> BezelResolutionResult {
         // Check if bezels are enabled for this ROM
         let bezelFileName = rom.settings.bezelFileName
@@ -77,7 +77,7 @@ class BezelManager: ObservableObject {
         return .noBezel
     }
     
-    /// Fuzzy match a bezel against manifest entries using cleaned/normalized names.
+    // Fuzzy match a bezel against manifest entries using cleaned/normalized names.
     private func fuzzyMatchBezel(systemID: String, gameName: String) -> BezelResolutionResult? {
         guard let cachedManifest = apiService.cachedManifest(systemID: systemID) else {
             return nil
@@ -111,7 +111,7 @@ class BezelManager: ObservableObject {
         return nil
     }
     
-    /// Create a BezelResolutionResult for a manifest-matched entry.
+    // Create a BezelResolutionResult for a manifest-matched entry.
     private func createResultFor(entry: BezelEntry, systemID: String) -> BezelResolutionResult {
         // Download if not local
         let localURL = storageManager.bezelFilePath(systemID: systemID, gameName: entry.id)
@@ -138,7 +138,7 @@ class BezelManager: ObservableObject {
         )
     }
     
-    /// Resolve a specific bezel by filename.
+    // Resolve a specific bezel by filename.
     private func resolveSpecificBezel(systemID: String, filename: String) -> BezelResolutionResult? {
         let localURL = storageManager.bezelFilePath(systemID: systemID, gameName: filename)
         
@@ -161,7 +161,7 @@ class BezelManager: ObservableObject {
         )
     }
     
-    /// Try to auto-match a game name to a bezel.
+    // Try to auto-match a game name to a bezel.
     private func autoMatchBezel(systemID: String, gameName: String) -> BezelResolutionResult? {
         let localURL = storageManager.bezelFilePath(systemID: systemID, gameName: gameName)
         
@@ -186,7 +186,7 @@ class BezelManager: ObservableObject {
     
     // MARK: - Image Loading
     
-    /// Load a bezel image from a local URL (with caching).
+    // Load a bezel image from a local URL (with caching).
     func loadBezelImage(at url: URL) -> NSImage? {
         let cacheKey = url.path as NSString
         
@@ -207,7 +207,7 @@ class BezelManager: ObservableObject {
         return image
     }
     
-    /// Get the aspect ratio of a bezel image.
+    // Get the aspect ratio of a bezel image.
     func getAspectRatio(for url: URL) -> CGFloat {
         guard let image = NSImage(contentsOf: url) else {
             return 4.0 / 3.0 // Default fallback
@@ -232,7 +232,7 @@ class BezelManager: ObservableObject {
     
     // MARK: - Download Management
     
-    /// Download a bezel for a game. This is called before gameplay to ensure bezels are ready.
+    // Download a bezel for a game. This is called before gameplay to ensure bezels are ready.
     func downloadBezelIfNeeded(systemID: String, gameName: String) async throws -> URL? {
         // Check local first (use full gameName for storage)
         let localURL = storageManager.bezelFilePath(systemID: systemID, gameName: gameName)
@@ -280,24 +280,24 @@ class BezelManager: ObservableObject {
         return nil // Not found in repository
     }
     
-    /// Normalize a game name for matching (lowercase, remove special chars, remove spaces for matching variants like "ShadowRun" vs "Shadow Run").
+    // Normalize a game name for matching (lowercase, remove special chars, remove spaces for matching variants like "ShadowRun" vs "Shadow Run").
     private func normalizeGameNameForMatch(_ name: String) -> String {
         return GameNameFormatter.normalizedComparisonKey(cleanGameName(name))
     }
     
     // MARK: - Manifest Management
     
-    /// Refresh the manifest for a system (force fetch from GitHub).
+    // Refresh the manifest for a system (force fetch from GitHub).
     func refreshManifest(systemID: String) async throws -> [BezelEntry] {
         return try await apiService.fetchManifest(systemID: systemID)
     }
     
-    /// Get cached bezel entries for a system.
+    // Get cached bezel entries for a system.
     func getBezels(systemID: String) async throws -> [BezelEntry] {
         return try await apiService.getManifest(systemID: systemID)
     }
     
-    /// Get bezel entries with download status updated.
+    // Get bezel entries with download status updated.
     func getBezelsWithStatus(systemID: String) async -> [BezelEntry] {
         do {
             let entries = try await apiService.getManifest(systemID: systemID)
@@ -323,7 +323,7 @@ class BezelManager: ObservableObject {
     
     // MARK: - Custom Bezels
     
-    /// Import a custom bezel from a user-selected file.
+    // Import a custom bezel from a user-selected file.
     func importCustomBezel(from sourceURL: URL, systemID: String, gameName: String) throws -> URL {
         try storageManager.ensureDirectoriesExist()
         
@@ -349,7 +349,7 @@ class BezelManager: ObservableObject {
         return destinationURL
     }
     
-    /// Remove a bezel file for a game.
+    // Remove a bezel file for a game.
     func removeBezel(systemID: String, gameName: String) throws {
         let localURL = storageManager.bezelFilePath(systemID: systemID, gameName: gameName)
         
@@ -361,7 +361,7 @@ class BezelManager: ObservableObject {
     
     // MARK: - Helpers
     
-    /// Clean a game name by removing region/language suffixes for better matching.
+    // Clean a game name by removing region/language suffixes for better matching.
     private func cleanGameName(_ name: String) -> String {
         var cleaned = name
         
@@ -392,12 +392,12 @@ class BezelManager: ObservableObject {
         return cleaned.trimmingCharacters(in: .whitespacesAndNewlines)
     }
     
-    /// Check if a system has bezel support.
+    // Check if a system has bezel support.
     func hasBezelSupport(for systemID: String) -> Bool {
         return BezelSystemMapping.hasBezelSupport(for: systemID)
     }
     
-    /// Check if a bezel exists locally for a game.
+    // Check if a bezel exists locally for a game.
     func bezelExists(systemID: String, gameName: String) -> Bool {
         let url = storageManager.bezelFilePath(systemID: systemID, gameName: gameName)
         return FileManager.default.fileExists(atPath: url.path)

@@ -1,8 +1,8 @@
 import Foundation
 import SwiftData
 
-/// A cache-first HTTP fetcher that checks the local cache before hitting the network.
-/// Supports ETag/Last-Modified conditional requests for efficient revalidation.
+// A cache-first HTTP fetcher that checks the local cache before hitting the network.
+// Supports ETag/Last-Modified conditional requests for efficient revalidation.
 @MainActor
 class ResourceCacheInterceptor: ObservableObject {
     static let shared = ResourceCacheInterceptor()

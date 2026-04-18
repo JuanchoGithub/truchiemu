@@ -1,9 +1,9 @@
 import Foundation
 
-/// Maps internal system IDs to Bezel Project repository names and configurations.
+// Maps internal system IDs to Bezel Project repository names and configurations.
 enum BezelSystemMapping {
     
-    /// All supported system configurations.
+    // All supported system configurations.
     static let configurations: [String: BezelSystemConfig] = [
         // Nintendo consoles
         "nes": BezelSystemConfig(systemID: "nes", bezelProjectName: "NES"),
@@ -82,7 +82,7 @@ enum BezelSystemMapping {
         "sfc": BezelSystemConfig(systemID: "snes", bezelProjectName: "SFC")
     ]
     
-    /// Get the bezel configuration for a system ID.
+    // Get the bezel configuration for a system ID.
     static func config(for systemID: String) -> BezelSystemConfig? {
         // Direct match first
         if let config = configurations[systemID] {
@@ -110,15 +110,15 @@ enum BezelSystemMapping {
         }
     }
     
-    /// Check if a system has bezel support.
+    // Check if a system has bezel support.
     static func hasBezelSupport(for systemID: String) -> Bool {
         return config(for: systemID) != nil
     }
     
-    /// Get all system IDs that support bezels.
+    // Get all system IDs that support bezels.
     static let supportedSystemIDs = Set(configurations.keys)
     
-    /// Generate a raw download URL for a bezel without needing the config.
+    // Generate a raw download URL for a bezel without needing the config.
     static func rawURL(bezelProjectName: String, filename: String) -> URL? {
         let encodedFilename = filename.addingPercentEncoding(
             withAllowedCharacters: .urlQueryAllowed

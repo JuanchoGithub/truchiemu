@@ -1,6 +1,6 @@
 import Foundation
 
-/// Simple UserDefaults wrapper for app settings.
+// Simple UserDefaults wrapper for app settings.
 enum AppSettings {
     static func getBool(_ key: String, defaultValue: Bool) -> Bool {
         if UserDefaults.standard.object(forKey: key) == nil {

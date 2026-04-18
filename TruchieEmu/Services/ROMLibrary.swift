@@ -373,7 +373,7 @@ class ROMLibrary: ObservableObject {
         }
     }
 
-    /// Apply MAME identification inline during scanning.
+    // Apply MAME identification inline during scanning.
     private func applyMAMEIdentificationInline(to rom: inout ROM, url: URL) async {
         let shortName = url.deletingPathExtension().lastPathComponent.lowercased()
         var description: String?

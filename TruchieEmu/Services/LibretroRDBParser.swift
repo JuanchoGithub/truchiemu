@@ -1,12 +1,12 @@
 import Foundation
 
-/// Parses Libretro `.rdb` files (RARCHDB header + MessagePack documents). Used when ClrMamePro `.dat` is missing or empty.
-/// Format reference: RetroArch `libretro-db/libretrodb.c`, `rmsgpack.c`.
+// Parses Libretro `.rdb` files (RARCHDB header + MessagePack documents). Used when ClrMamePro `.dat` is missing or empty.
+// Format reference: RetroArch `libretro-db/libretrodb.c`, `rmsgpack.c`.
 enum LibretroRDBParser {
 
     private static let magic = Data("RARCHDB\0".utf8)
 
-    /// Builds a CRC32 (hex, uppercase) → `GameInfo` map from an RDB file body.
+    // Builds a CRC32 (hex, uppercase) → `GameInfo` map from an RDB file body.
     static func buildCRCIndex(data: Data) -> [String: GameInfo] {
         guard data.count > 16 else {
             LoggerService.info(category: "LibretroDB", "LibretroDB RDB: skip — file too short (\(data.count) bytes)")
@@ -137,7 +137,7 @@ enum LibretroRDBParser {
         }
     }
 
-    /// If `crc` parses as a 32-bit value, also register the endian-swapped hex so lookups match either packing.
+    // If `crc` parses as a 32-bit value, also register the endian-swapped hex so lookups match either packing.
     private static func alternateCRCKey(fromOriginalHex hex: String) -> String? {
         guard hex.count == 8, let u = UInt32(hex, radix: 16) else { return nil }
         let swapped = u.byteSwapped

@@ -3,14 +3,14 @@ import Foundation
 import XCTest
 @testable import TruchieEmu
 
-/// Tests for in-memory SQLite database operations using a standalone test helper.
-/// Note: These tests validate SQLite functionality directly since DatabaseManager
-/// has been replaced by ResourceCacheRepository and other repositories.
+// Tests for in-memory SQLite database operations using a standalone test helper.
+// Note: These tests validate SQLite functionality directly since DatabaseManager
+// has been replaced by ResourceCacheRepository and other repositories.
 final class DatabaseManagerTests: XCTestCase {
 
     // MARK: - Test Helper
 
-    /// A simple SQLite wrapper for testing database operations.
+    // A simple SQLite wrapper for testing database operations.
     final class TestDB {
         private var db: OpaquePointer?
         let tempURL: URL

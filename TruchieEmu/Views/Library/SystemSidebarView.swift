@@ -10,8 +10,8 @@ struct SystemSidebarView: View {
     var onSettings: ((String) -> Void)? = nil
     var onSystemAction: ((SystemInfo, SystemAction) -> Void)? = nil
     
-    /// Combined system entries for the sidebar. Game Boy (gb) absorbs Game Boy Color (gbc)
-    /// into a single "Game Boy" display entry while keeping internal systemIDs intact.
+    // Combined system entries for the sidebar. Game Boy (gb) absorbs Game Boy Color (gbc)
+    // into a single "Game Boy" display entry while keeping internal systemIDs intact.
     private var combinedSystemsWithROMs: [(system: SystemInfo, combinedCount: Int)] {
         let ids = Set(library.roms.compactMap { $0.systemID })
         // Only include display-visible systems (gb visible, gbc hidden)

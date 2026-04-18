@@ -1,6 +1,6 @@
 import Foundation
 
-/// Result of a CRC lookup in the game database.
+// Result of a CRC lookup in the game database.
 struct GameDBLookupResult {
     let systemID: String
     let crc: String

@@ -70,9 +70,9 @@ class BezelDownloadProgress: ObservableObject {
     @Published var downloadLog: [BezelDownloadLogEntry] = []
     @Published var currentlyDownloadingCount = 0
     
-    /// The system currently being downloaded (for display purposes)
+    // The system currently being downloaded (for display purposes)
     @Published var currentSystemID: String = ""
-    /// Total bezels downloaded across all sessions
+    // Total bezels downloaded across all sessions
     var totalDownloadedCount: Int {
         downloadLog.filter { $0.status.isSuccess }.count
     }
@@ -114,14 +114,14 @@ class BezelDownloadProgress: ObservableObject {
         saveLog()
     }
     
-    /// Save download log to AppSettings for persistence
+    // Save download log to AppSettings for persistence
     private func saveLog() {
         if let encoded = try? JSONEncoder().encode(downloadLog) {
             AppSettings.setData(BezelDownloadUserDefaultsKeys.downloadLog, value: encoded)
         }
     }
     
-    /// Load download log from AppSettings
+    // Load download log from AppSettings
     private func loadPersistentLog() {
         if let data = AppSettings.getData(BezelDownloadUserDefaultsKeys.downloadLog),
            let entries = try? JSONDecoder().decode([BezelDownloadLogEntry].self, from: data) {
@@ -130,7 +130,7 @@ class BezelDownloadProgress: ObservableObject {
         }
     }
     
-    /// Cancel the current download
+    // Cancel the current download
     func cancelDownload() {
         isRunning = false
         downloadStatus = "Download cancelled"
@@ -144,15 +144,15 @@ class BezelDownloadProgress: ObservableObject {
 
 // MARK: - Bezel API Service
 
-/// Handles communication with The Bezel Project's GitHub repositories.
-/// Fetches manifests (directory listings) and downloads bezel files.
+// Handles communication with The Bezel Project's GitHub repositories.
+// Fetches manifests (directory listings) and downloads bezel files.
 @MainActor
 class BezelAPIService: ObservableObject {
     static let shared = BezelAPIService()
     
     @Published var progressTracker = BezelDownloadProgress()
     
-    /// URLSession for downloads (with reasonable timeout)
+    // URLSession for downloads (with reasonable timeout)
     private var urlSession: URLSession
     
     private init() {
@@ -164,9 +164,9 @@ class BezelAPIService: ObservableObject {
     
     // MARK: - Manifest Fetching
     
-    /// Fetch the manifest (list of available bezels) from GitHub API for a system.
-    /// Uses the Git Trees API to get ALL files without pagination limits.
-    /// Integrates with ResourceCacheInterceptor for cache-first fetching with ETag support.
+    // Fetch the manifest (list of available bezels) from GitHub API for a system.
+    // Uses the Git Trees API to get ALL files without pagination limits.
+    // Integrates with ResourceCacheInterceptor for cache-first fetching with ETag support.
     func fetchManifest(systemID: String) async throws -> [BezelEntry] {
         guard let config = BezelSystemMapping.config(for: systemID) else {
             throw BezelError.systemNotSupported(systemID)
@@ -292,7 +292,7 @@ class BezelAPIService: ObservableObject {
         }
     }
     
-    /// Get cached manifest for a system.
+    // Get cached manifest for a system.
     func cachedManifest(systemID: String) -> BezelManifest? {
         let storageManager = BezelStorageManager.shared
         let cachePath = storageManager.manifestCachePath(for: systemID)
@@ -301,7 +301,7 @@ class BezelAPIService: ObservableObject {
         return try? JSONDecoder().decode(BezelManifest.self, from: data)
     }
     
-    /// Fetch manifest, using cache if available and not stale.
+    // Fetch manifest, using cache if available and not stale.
     func getManifest(systemID: String) async throws -> [BezelEntry] {
         // Try cache first
         if let manifest = cachedManifest(systemID: systemID), !manifest.isStale {
@@ -313,7 +313,7 @@ class BezelAPIService: ObservableObject {
         return try await fetchManifest(systemID: systemID)
     }
     
-    /// Cache a manifest to disk.
+    // Cache a manifest to disk.
     private func cacheManifest(_ entries: [BezelEntry], for systemID: String) throws {
         let storageManager = BezelStorageManager.shared
         let cachePath = storageManager.manifestCachePath(for: systemID)
@@ -334,7 +334,7 @@ class BezelAPIService: ObservableObject {
         try data.write(to: cachePath, options: .atomic)
     }
     
-    /// Update local URLs for entries that are already downloaded.
+    // Update local URLs for entries that are already downloaded.
     private func updateLocalURLs(_ entries: [BezelEntry], systemID: String) -> [BezelEntry] {
         let storageManager = BezelStorageManager.shared
         
@@ -358,7 +358,7 @@ class BezelAPIService: ObservableObject {
     
     // MARK: - Single Bezel Download
     
-    /// Download a single bezel file.
+    // Download a single bezel file.
     func downloadBezel(systemID: String, entry: BezelEntry) async throws -> URL {
         let storageManager = BezelStorageManager.shared
         try storageManager.ensureDirectoriesExist()
@@ -399,7 +399,7 @@ class BezelAPIService: ObservableObject {
         return destinationURL
     }
     
-    /// Check if data is a valid PNG file.
+    // Check if data is a valid PNG file.
     private func isValidPNG(data: Data) -> Bool {
         // PNG magic bytes: 89 50 4E 47 0D 0A 1A 0A
         return data.count >= 8 &&
@@ -415,8 +415,8 @@ class BezelAPIService: ObservableObject {
     
     // MARK: - Batch Download
     
-    /// Download all bezels for a system.
-    /// - Returns: Number of successfully downloaded bezels.
+    // Download all bezels for a system.
+    // - Returns: Number of successfully downloaded bezels.
     func downloadAllBezels(systemID: String) async -> (success: Int, failed: Int, message: String) {
         // Check if already running
         guard !progressTracker.isRunning else {
@@ -532,7 +532,7 @@ class BezelAPIService: ObservableObject {
         return (successCount, failedCount, message)
     }
     
-    /// Download bezels for all supported systems.
+    // Download bezels for all supported systems.
     func downloadAllSystems() async -> (success: Int, failed: Int, message: String) {
         var totalSuccess = 0
         var totalFailed = 0
@@ -568,7 +568,7 @@ class BezelAPIService: ObservableObject {
         return (totalSuccess, totalFailed, message)
     }
     
-    /// Get the count of downloaded bezel PNG files.
+    // Get the count of downloaded bezel PNG files.
     func getDownloadedBezelCount(for systemID: String) -> Int {
         let storageManager = BezelStorageManager.shared
         let systemDir = storageManager.systemBezelsDirectory(for: systemID)

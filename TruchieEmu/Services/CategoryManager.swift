@@ -1,7 +1,7 @@
 import Foundation
 import Combine
 
-/// Manages user-defined game categories and their relationships with ROMs
+// Manages user-defined game categories and their relationships with ROMs
 @MainActor
 class CategoryManager: ObservableObject {
     @Published var categories: [GameCategory] = []
@@ -82,12 +82,12 @@ class CategoryManager: ObservableObject {
         saveCategories()
     }
     
-    /// Get all category IDs that contain a specific game
+    // Get all category IDs that contain a specific game
     func categoriesForGame(gameID: UUID) -> [String] {
         categories.filter { $0.gameIDs.contains(gameID) }.map { $0.id }
     }
     
-    /// Get all games in a category
+    // Get all games in a category
     func gamesInCategory(categoryID: String, fromROMs roms: [ROM]) -> [ROM] {
         guard let category = categories.first(where: { $0.id == categoryID }) else { return [] }
         return roms.filter { category.gameIDs.contains($0.id) }

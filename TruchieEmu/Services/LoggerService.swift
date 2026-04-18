@@ -1,9 +1,9 @@
 import Foundation
 import os
 
-/// C-callable callback for routing libretro core logs into the file logger.
-/// Registered with LibretroBridge at startup so core-level logs (LibretroDB,
-/// Identify, Bridge, etc.) are written to TruchieEmu.log.
+// C-callable callback for routing libretro core logs into the file logger.
+// Registered with LibretroBridge at startup so core-level logs (LibretroDB,
+// Identify, Bridge, etc.) are written to TruchieEmu.log.
 private let g_coreLogCallback: @convention(c) (UnsafePointer<Int8>?, Int32)
     -> Void = { message, level in
     guard let cStr = message else { return }
@@ -26,7 +26,7 @@ private let g_coreLogCallback: @convention(c) (UnsafePointer<Int8>?, Int32)
 
 // MARK: - Log Level
 
-/// Log levels for the TruchieEmu logging system.
+// Log levels for the TruchieEmu logging system.
 enum LogLevel: String, Codable, CaseIterable {
     case none = "none"
     case info = "info"
@@ -58,9 +58,9 @@ enum LogLevel: String, Codable, CaseIterable {
 
 // MARK: - LoggerService
 
-/// Centralized logging service for TruchieEmu.
-/// Routes logs to both the debug console and an optional log file.
-/// Thread-safe for concurrent access.
+// Centralized logging service for TruchieEmu.
+// Routes logs to both the debug console and an optional log file.
+// Thread-safe for concurrent access.
 final class LoggerService: @unchecked Sendable {
     static let shared = LoggerService()
     
@@ -181,37 +181,37 @@ final class LoggerService: @unchecked Sendable {
     
     // MARK: - Public Logging API
     
-    /// Log at INFO level: general logs, games running, downloads, file operations, save/load states, zipping, online operations.
+    // Log at INFO level: general logs, games running, downloads, file operations, save/load states, zipping, online operations.
     static func info(_ message: String) {
         shared.log(.info, category: "App", message: message)
     }
     
-    /// Log at INFO level with a specific category.
+    // Log at INFO level with a specific category.
     static func info(category: String, _ message: String) {
         shared.log(.info, category: category, message: message)
     }
     
-    /// Log at DEBUG level: more detailed logs for troubleshooting.
+    // Log at DEBUG level: more detailed logs for troubleshooting.
     static func debug(_ message: String) {
         shared.log(.debug, category: "App", message: message)
     }
     
-    /// Log at DEBUG level with a specific category.
+    // Log at DEBUG level with a specific category.
     static func debug(category: String, _ message: String) {
         shared.log(.debug, category: category, message: message)
     }
     
-    /// Log at EXTREME level: every frame, timing data, etc.
+    // Log at EXTREME level: every frame, timing data, etc.
     static func extreme(_ message: String) {
         shared.log(.extreme, category: "App", message: message)
     }
     
-    /// Log at EXTREME level with a specific category.
+    // Log at EXTREME level with a specific category.
     static func extreme(category: String, _ message: String) {
         shared.log(.extreme, category: category, message: message)
     }
 
-    /// Log at ERROR level (logged as .info to always appear, tagged with [ERROR]).
+    // Log at ERROR level (logged as .info to always appear, tagged with [ERROR]).
     static func error(_ message: String) {
         let ts = ISO8601DateFormatter.string(from: Date(), timeZone: TimeZone.current)
         let formatted = "\(ts) [ERROR] [App] \(message)"
@@ -221,7 +221,7 @@ final class LoggerService: @unchecked Sendable {
         }
     }
 
-    /// Log at ERROR level with a specific category (logged as .info to always appear, tagged with [ERROR]).
+    // Log at ERROR level with a specific category (logged as .info to always appear, tagged with [ERROR]).
     static func error(category: String, _ message: String) {
         let ts = ISO8601DateFormatter.string(from: Date(), timeZone: TimeZone.current)
         let formatted = "\(ts) [ERROR] [\(category)] \(message)"
@@ -231,7 +231,7 @@ final class LoggerService: @unchecked Sendable {
         }
     }
     
-    /// Log at WARNING level.
+    // Log at WARNING level.
     static func warning(_ message: String) {
         let ts = ISO8601DateFormatter.string(from: Date(), timeZone: TimeZone.current)
         let formatted = "\(ts) [WARN] [App] \(message)"
@@ -243,7 +243,7 @@ final class LoggerService: @unchecked Sendable {
     
     // MARK: - Core Log Bridge (exposed to C)
     
-    /// Log at WARNING level with category.
+    // Log at WARNING level with category.
     static func warning(category: String, _ message: String) {
         let ts = ISO8601DateFormatter.string(from: Date(), timeZone: TimeZone.current)
         let formatted = "\(ts) [WARN] [\(category)] \(message)"
@@ -313,7 +313,7 @@ final class LoggerService: @unchecked Sendable {
         handle.write(data)
     }
     
-    /// Rebuild the file handle if it becomes stale (e.g., after file deletion).
+    // Rebuild the file handle if it becomes stale (e.g., after file deletion).
     private func _rebuildFileHandle() {
         logFileHandle?.closeFile()
         logFileHandle = nil
@@ -374,7 +374,7 @@ final class LoggerService: @unchecked Sendable {
         _setupFileLoggingSync()
     }
     
-    /// Trim a log file to keep only the most recent N lines.
+    // Trim a log file to keep only the most recent N lines.
     private func trimFileToRecentEntries(at url: URL, maxLines: Int) {
         guard let content = try? String(contentsOf: url, encoding: .utf8) else { return }
         let lines = content.components(separatedBy: .newlines)
@@ -385,7 +385,7 @@ final class LoggerService: @unchecked Sendable {
     
     // MARK: - File Management (called from main thread)
     
-    /// Trim the current log file to remove entries older than N days.
+    // Trim the current log file to remove entries older than N days.
     func trimOldEntries(olderThanDays days: Int) {
         logFileQueue.async { [weak self] in
             self?._trimOldEntriesSync(olderThanDays: days)
@@ -414,7 +414,7 @@ final class LoggerService: @unchecked Sendable {
         writeToFile("// Trimmed entries older than \(cutoffDate.description) //\n")
     }
     
-    /// Clear all log files (current and rotated).
+    // Clear all log files (current and rotated).
     func clearAllLogs() {
         logFileQueue.async { [weak self] in
             let logURL = LogManager.shared.currentLogURL
@@ -433,13 +433,13 @@ final class LoggerService: @unchecked Sendable {
         }
     }
     
-    /// Get the current log file size in bytes.
+    // Get the current log file size in bytes.
     func currentLogFileSize() -> Int64 {
         let logURL = LogManager.shared.currentLogURL
         return (try? FileManager.default.attributesOfItem(atPath: logURL.path)[.size] as? Int64) ?? 0
     }
     
-    /// Get total size of all log files (current + rotated).
+    // Get total size of all log files (current + rotated).
     func totalLogFileSize() -> Int64 {
         let logURL = LogManager.shared.currentLogURL
         var total: Int64 = 0
@@ -452,7 +452,7 @@ final class LoggerService: @unchecked Sendable {
         return total
     }
     
-    /// Get age of the current log file.
+    // Get age of the current log file.
     func currentLogFileAge() -> TimeInterval? {
         let logURL = LogManager.shared.currentLogURL
         guard let attrs = try? FileManager.default.attributesOfItem(atPath: logURL.path),

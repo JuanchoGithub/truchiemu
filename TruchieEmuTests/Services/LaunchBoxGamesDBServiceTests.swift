@@ -1,7 +1,7 @@
 import XCTest
 @testable import TruchieEmu
 
-/// Unit tests for LaunchBoxGamesDBService - tests for the fixed warnings and core parsing logic
+// Unit tests for LaunchBoxGamesDBService - tests for the fixed warnings and core parsing logic
 @MainActor
 final class LaunchBoxGamesDBServiceTests: XCTestCase {
 

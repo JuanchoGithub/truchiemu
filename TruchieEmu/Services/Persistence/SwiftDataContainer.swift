@@ -8,7 +8,7 @@ private enum containerLog {
 
 // MARK: - SwiftData Container
 
-/// Singleton that manages the SwiftData ModelContainer lifecycle.
+// Singleton that manages the SwiftData ModelContainer lifecycle.
 @MainActor
 final class SwiftDataContainer: ObservableObject {
     
@@ -21,20 +21,20 @@ final class SwiftDataContainer: ObservableObject {
     private(set) var container: ModelContainer!
     private(set) var migrationFlag: PersistenceMigrationFlag?
     
-    /// Primary context for MainActor writes
+    // Primary context for MainActor writes
     var mainContext: ModelContext {
         container.mainContext
     }
     
-    /// Whether migration has already been completed
+    // Whether migration has already been completed
     var hasMigrated: Bool {
         migrationFlag?.hasMigrated ?? false
     }
     
     // MARK: - Store Management
     
-    /// Delete all SwiftData store files to force a fresh schema creation.
-    /// Used as a fallback when schema migration fails.
+    // Delete all SwiftData store files to force a fresh schema creation.
+    // Used as a fallback when schema migration fails.
     private static func deleteStoreFiles() {
         let appSupport = FileManager.default.urls(for: .applicationSupportDirectory, in: .userDomainMask).first!
         

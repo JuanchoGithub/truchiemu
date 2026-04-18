@@ -3,7 +3,7 @@ import Combine
 import SwiftUI
 import GameController
 
-/// Manages the state of the first-run setup wizard
+// Manages the state of the first-run setup wizard
 @MainActor
 final class SetupWizardState: ObservableObject {
     static let shared = SetupWizardState()
@@ -11,13 +11,13 @@ final class SetupWizardState: ObservableObject {
     enum WizardStep: Int, CaseIterable, Identifiable {
         var id: Int { rawValue }
         
-        /// Phase 1: Welcome + Add game folders (combined)
+        // Phase 1: Welcome + Add game folders (combined)
         case getStarted = 0
-        /// Phase 2: Bezels + Shaders (visual preferences)
+        // Phase 2: Bezels + Shaders (visual preferences)
         case lookAndFeel = 1
-        /// Phase 3: Cheats + Achievements + Logging (optional features)
+        // Phase 3: Cheats + Achievements + Logging (optional features)
         case optionalFeatures = 2
-        /// Phase 4: Completion
+        // Phase 4: Completion
         case completion = 3
         
         var title: String {
@@ -38,7 +38,7 @@ final class SetupWizardState: ObservableObject {
             }
         }
         
-        /// Whether this step can be skipped
+        // Whether this step can be skipped
         var canSkip: Bool {
             switch self {
             case .getStarted: return true

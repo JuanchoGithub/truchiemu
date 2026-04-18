@@ -14,7 +14,7 @@ class ControllerService: ObservableObject {
         }
     }
 
-    /// Handedness preference: "right" (default) or "left"
+    // Handedness preference: "right" (default) or "left"
     @Published var handedness: String {
         didSet {
             AppSettings.set("controller_handedness", value: handedness)
@@ -775,8 +775,8 @@ enum RetroButton: String, Codable, CaseIterable {
         }
     }
     
-    /// Returns the list of buttons that are relevant/available for a given system.
-    /// This limits the UI to only show buttons that can be mapped for that system.
+    // Returns the list of buttons that are relevant/available for a given system.
+    // This limits the UI to only show buttons that can be mapped for that system.
     static func availableButtons(for systemID: String) -> [RetroButton] {
         switch systemID.lowercased() {
         // MARK: - NES Family (8-bit Nintendo)
@@ -886,8 +886,8 @@ enum RetroButton: String, Codable, CaseIterable {
         }
     }
     
-    /// Returns the list of button names for a turbo variation of a system.
-    /// Turbo buttons rapidly toggle their associated button on/off when held.
+    // Returns the list of button names for a turbo variation of a system.
+    // Turbo buttons rapidly toggle their associated button on/off when held.
     static func turboButtons(for systemID: String) -> [RetroButton] {
         switch systemID.lowercased() {
         case "nes", "nes_turbo":
@@ -904,7 +904,7 @@ enum RetroButton: String, Codable, CaseIterable {
         }
     }
     
-    /// Returns a human-readable system category name for UI grouping
+    // Returns a human-readable system category name for UI grouping
     static func systemCategory(for systemID: String) -> String {
         switch systemID.lowercased() {
         case "nes": return "NES (8-bit Nintendo)"
@@ -929,7 +929,7 @@ enum RetroButton: String, Codable, CaseIterable {
         }
     }
     
-    /// Returns the retro input ID for libretro compatibility
+    // Returns the retro input ID for libretro compatibility
     var retroID: Int32 {
         switch self {
         case .b: return 0
@@ -967,7 +967,7 @@ enum RetroButton: String, Codable, CaseIterable {
         }
     }
     
-    /// Returns whether this button is an analog axis rather than a digital button
+    // Returns whether this button is an analog axis rather than a digital button
     var isAnalog: Bool {
         return self == .lStickUp || self == .lStickDown || self == .lStickLeft || self == .lStickRight ||
                self == .rStickUp || self == .rStickDown || self == .rStickLeft || self == .rStickRight ||
@@ -975,7 +975,7 @@ enum RetroButton: String, Codable, CaseIterable {
                self == .mouseX || self == .mouseY
     }
 
-    /// Returns analog axis information for libretro analog state
+    // Returns analog axis information for libretro analog state
     var analogInfo: (index: Int32, id: Int32, sign: Float)? {
         switch self {
         case .lStickUp:    return (0, 1, -1.0)
@@ -996,12 +996,12 @@ enum RetroButton: String, Codable, CaseIterable {
         }
     }
     
-    /// Whether this is a turbo button that should rapidly toggle
+    // Whether this is a turbo button that should rapidly toggle
     var isTurbo: Bool {
         return self == .turboA || self == .turboB || self == .turboX || self == .turboY
     }
     
-    /// The base button this turbo button maps to
+    // The base button this turbo button maps to
     var turboBaseButton: RetroButton? {
         switch self {
         case .turboA: return .a

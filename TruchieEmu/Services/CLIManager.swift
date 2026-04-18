@@ -4,11 +4,11 @@ import Combine
 
 // MARK: - CLIManager
 
-/// Manages CLI command routing at app startup
+// Manages CLI command routing at app startup
 class CLIManager: ObservableObject {
     static let shared = CLIManager()
     
-    /// Reference to the ROM library for recording playtime in CLI launches (weak to avoid retain cycles)
+    // Reference to the ROM library for recording playtime in CLI launches (weak to avoid retain cycles)
     weak var library: ROMLibrary?
     
     @MainActor
@@ -23,15 +23,15 @@ class CLIManager: ObservableObject {
     
     // MARK: - Public
     
-    /// Parse command-line arguments and route to appropriate handler
-    /// - Returns: The parsed CLI options
+    // Parse command-line arguments and route to appropriate handler
+    // - Returns: The parsed CLI options
     func parseArguments() -> CLILaunchOptions {
         let arguments = ProcessInfo.processInfo.arguments
         return parse(arguments: arguments)
     }
     
-    /// Handle CLI commands - call this at app startup
-    /// - Returns: true if CLI handled the command (app should not show main window)
+    // Handle CLI commands - call this at app startup
+    // - Returns: true if CLI handled the command (app should not show main window)
     @MainActor
     func handleStartupCommands() -> Bool {
         let options = parseArguments()

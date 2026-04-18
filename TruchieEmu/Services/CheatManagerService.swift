@@ -2,21 +2,21 @@ import Foundation
 
 // MARK: - Cheat Manager Service
 
-/// Central service for managing cheats across all games.
-/// Handles loading, saving, enabling/disabling cheats, and integrating with downloaded cheats.
+// Central service for managing cheats across all games.
+// Handles loading, saving, enabling/disabling cheats, and integrating with downloaded cheats.
 @MainActor
 class CheatManagerService: ObservableObject {
     static let shared = CheatManagerService()
     
     // MARK: - Published State
     
-    /// All cheats keyed by ROM path
+    // All cheats keyed by ROM path
     @Published private var allCheats: [String: [Cheat]] = [:]
     
-    /// Whether cheats are currently applied to the running game
+    // Whether cheats are currently applied to the running game
     @Published var areCheatsApplied = false
     
-    /// Loading state
+    // Loading state
     @Published var isLoading = false
     
     private let saveKey = "cheats_v2"
@@ -29,27 +29,27 @@ class CheatManagerService: ObservableObject {
     
     // MARK: - Public Methods
     
-    /// Get cheats for a specific ROM
+    // Get cheats for a specific ROM
     func cheats(for rom: ROM) -> [Cheat] {
         return allCheats[rom.path.path] ?? []
     }
     
-    /// Get enabled cheats for a ROM
+    // Get enabled cheats for a ROM
     func enabledCheats(for rom: ROM) -> [Cheat] {
         return cheats(for: rom).filter { $0.enabled }
     }
     
-    /// Get the count of enabled cheats
+    // Get the count of enabled cheats
     func enabledCount(for rom: ROM) -> Int {
         return enabledCheats(for: rom).count
     }
     
-    /// Get total cheat count for a ROM
+    // Get total cheat count for a ROM
     func totalCount(for rom: ROM) -> Int {
         return cheats(for: rom).count
     }
     
-    /// Update a cheat's state (enable/disable)
+    // Update a cheat's state (enable/disable)
     func updateCheat(_ cheat: Cheat, for rom: ROM) {
         var cheats = allCheats[rom.path.path] ?? []
         if let index = cheats.firstIndex(where: { $0.id == cheat.id }) {
@@ -62,14 +62,14 @@ class CheatManagerService: ObservableObject {
         LoggerService.info(category: "CheatManagerService", "Updated cheat: \(cheat.displayName) for \(rom.displayName)")
     }
     
-    /// Toggle a cheat's enabled state
+    // Toggle a cheat's enabled state
     func toggleCheat(_ cheat: Cheat, for rom: ROM) {
         var updated = cheat
         updated.enabled.toggle()
         updateCheat(updated, for: rom)
     }
     
-    /// Add a new cheat for a ROM
+    // Add a new cheat for a ROM
     func addCheat(_ cheat: Cheat, for rom: ROM) {
         var cheats = allCheats[rom.path.path] ?? []
         cheats.append(cheat)
@@ -78,7 +78,7 @@ class CheatManagerService: ObservableObject {
         LoggerService.info(category: "CheatManagerService", "Added cheat: \(cheat.displayName) for \(rom.displayName)")
     }
     
-    /// Remove a cheat from a ROM
+    // Remove a cheat from a ROM
     func removeCheat(_ cheat: Cheat, for rom: ROM) {
         var cheats = allCheats[rom.path.path] ?? []
         cheats.removeAll { $0.id == cheat.id }
@@ -87,7 +87,7 @@ class CheatManagerService: ObservableObject {
         LoggerService.info(category: "CheatManagerService", "Removed cheat: \(cheat.displayName) from \(rom.displayName)")
     }
     
-    /// Enable all cheats for a ROM
+    // Enable all cheats for a ROM
     func enableAllCheats(for rom: ROM) {
         var cheats = cheats(for: rom)
         cheats.indices.forEach { cheats[$0].enabled = true }
@@ -95,7 +95,7 @@ class CheatManagerService: ObservableObject {
         saveCheats()
     }
     
-    /// Disable all cheats for a ROM
+    // Disable all cheats for a ROM
     func disableAllCheats(for rom: ROM) {
         var cheats = cheats(for: rom)
         cheats.indices.forEach { cheats[$0].enabled = false }
@@ -103,7 +103,7 @@ class CheatManagerService: ObservableObject {
         saveCheats()
     }
     
-    /// Load cheats from multiple sources (auto-detected + downloaded + user-defined)
+    // Load cheats from multiple sources (auto-detected + downloaded + user-defined)
     func loadCheatsForROM(_ rom: ROM) {
         isLoading = true
         
@@ -133,7 +133,7 @@ class CheatManagerService: ObservableObject {
         LoggerService.info(category: "CheatManagerService", "Loaded \(mergedCheats.count) cheats for ROM: \(rom.displayName)")
     }
     
-    /// Import a .cht file for a ROM
+    // Import a .cht file for a ROM
     func importChtFile(_ url: URL, for rom: ROM) async -> Bool {
         // Access security-scoped resource
         let accessed = url.startAccessingSecurityScopedResource()
@@ -171,7 +171,7 @@ class CheatManagerService: ObservableObject {
         return true
     }
     
-    /// Add a custom cheat with validation
+    // Add a custom cheat with validation
     func addCustomCheat(
         code: String,
         description: String,
@@ -202,7 +202,7 @@ class CheatManagerService: ObservableObject {
         return cheat
     }
     
-    /// Export cheats to a .cht file
+    // Export cheats to a .cht file
     func exportCheatsToChtFile(_ cheats: [Cheat], to url: URL) -> Bool {
         var content = "cheats = \(cheats.count)\n\n"
         
@@ -223,13 +223,13 @@ class CheatManagerService: ObservableObject {
         }
     }
     
-    /// Clear all cheats for a ROM
+    // Clear all cheats for a ROM
     func clearCheats(for rom: ROM) {
         allCheats[rom.path.path] = nil
         saveCheats()
     }
     
-    /// Get cheats formatted for libretro (applied to the core)
+    // Get cheats formatted for libretro (applied to the core)
     func cheatsForLibretro(for rom: ROM) -> [[String: Any]] {
         return enabledCheats(for: rom).map { cheat in
             [
@@ -242,7 +242,7 @@ class CheatManagerService: ObservableObject {
     
     // MARK: - Search and Filter
     
-    /// Search cheats by text
+    // Search cheats by text
     func searchCheats(_ cheats: [Cheat], query: String) -> [Cheat] {
         guard !query.isEmpty else { return cheats }
         return cheats.filter { cheat in
@@ -251,7 +251,7 @@ class CheatManagerService: ObservableObject {
         }
     }
     
-    /// Filter cheats by category
+    // Filter cheats by category
     func filterCheatsByCategory(_ cheats: [Cheat], category: CheatCategory) -> [Cheat] {
         return cheats.filter { cheat in
             categoryMatches(cheat.description, category: category)

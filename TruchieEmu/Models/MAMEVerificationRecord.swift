@@ -3,8 +3,8 @@ import SwiftData
 
 // MARK: - MAME ROM Verification Tracking
 
-/// Tracks the CRC verification status of MAME ROMs.
-/// This enables background verification that survives app restarts.
+// Tracks the CRC verification status of MAME ROMs.
+// This enables background verification that survives app restarts.
 @Model
 final class MAMEVerificationRecord {
     @Attribute(.unique) var romPath: String

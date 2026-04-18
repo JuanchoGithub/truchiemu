@@ -2,37 +2,37 @@ import Foundation
 
 // MARK: - Cheat Auto-Loader
 
-/// Automatically loads cheat files for a ROM when a game is launched.
-/// Searches multiple directories for matching .cht files.
+// Automatically loads cheat files for a ROM when a game is launched.
+// Searches multiple directories for matching .cht files.
 class CheatAutoLoader {
     
     // MARK: - Cheat Search Directories
     
-    /// Directory for system-wide cheats
+    // Directory for system-wide cheats
     static var systemCheatsDirectory: URL {
         let base = FileManager.default.urls(for: .applicationSupportDirectory, in: .userDomainMask).first!
         return base.appendingPathComponent("TruchieEmu/cheats")
     }
     
-    /// Directory for downloaded cheats (from libretro database)
+    // Directory for downloaded cheats (from libretro database)
     static var downloadedCheatsDirectory: URL {
         let base = FileManager.default.urls(for: .applicationSupportDirectory, in: .userDomainMask).first!
         return base.appendingPathComponent("TruchieEmu/cheats_downloaded")
     }
     
-    /// Get the cheats directory for a specific system
+    // Get the cheats directory for a specific system
     static func systemCheatsDirectory(for systemID: String) -> URL {
         systemCheatsDirectory.appendingPathComponent(systemID)
     }
     
-    /// Get the downloaded cheats directory for a specific system
+    // Get the downloaded cheats directory for a specific system
     static func downloadedCheatsDirectory(for systemID: String) -> URL {
         downloadedCheatsDirectory.appendingPathComponent(systemID)
     }
     
     // MARK: - Auto-Loading
     
-    /// Build list of possible cheat filenames for a ROM (includes filename, metadata title, and display name).
+    // Build list of possible cheat filenames for a ROM (includes filename, metadata title, and display name).
     private static func possibleFilenames(for rom: ROM) -> [String] {
         var names: [String] = []
         
@@ -58,8 +58,8 @@ class CheatAutoLoader {
         return names
     }
     
-    /// Find and load cheats for a given ROM.
-    /// Returns an array of Cheat objects.
+    // Find and load cheats for a given ROM.
+    // Returns an array of Cheat objects.
     @MainActor
     static func loadCheats(for rom: ROM) -> [Cheat] {
         var allCheats: [Cheat] = []
@@ -123,7 +123,7 @@ class CheatAutoLoader {
         return allCheats
     }
     
-    /// Load and parse a single .cht file if it exists.
+    // Load and parse a single .cht file if it exists.
     private static func loadCheatFile(_ url: URL, source: CheatSource) -> [Cheat]? {
         guard FileManager.default.fileExists(atPath: url.path) else {
             return nil
@@ -139,7 +139,7 @@ class CheatAutoLoader {
     
     // MARK: - Merge Logic
     
-    /// Merge cheats from multiple sources, deduplicating by index.
+    // Merge cheats from multiple sources, deduplicating by index.
     private static func mergeCheats(_ allCheats: [Cheat]) -> [Cheat] {
         var cheatByIndex: [Int: Cheat] = [:]
         
@@ -162,7 +162,7 @@ class CheatAutoLoader {
     
     // MARK: - Directory Setup
     
-    /// Ensure cheat directories exist.
+    // Ensure cheat directories exist.
     static func ensureDirectoriesExist() {
         let directories = [systemCheatsDirectory, downloadedCheatsDirectory] 
             + SystemDatabase.systems.map { systemCheatsDirectory(for: $0.id) }
@@ -183,7 +183,7 @@ class CheatAutoLoader {
     
     // MARK: - Cheat Discovery
     
-    /// Find all available .cht files for a ROM (searching multiple filename variants).
+    // Find all available .cht files for a ROM (searching multiple filename variants).
     static func findAvailableCheatFiles(for rom: ROM) -> [URL] {
         var found: [URL] = []
         let systemID = rom.systemID ?? "unknown"

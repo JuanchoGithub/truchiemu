@@ -97,7 +97,7 @@ class BiosDownloader {
         }
     }
     
-    /// Executes the shell command: unzip <path> -d <destination>
+    // Executes the shell command: unzip <path> -d <destination>
     private func runUnzip(zipPath: String, destination: String) throws {
         let process = Process()
         let pipe = Pipe()
@@ -178,7 +178,7 @@ class CoreManager: ObservableObject {
         #endif
     }
 
-    /// Whether to trigger an automatic core list fetch from the buildbot. Returns true only on first launch with no cached data.
+    // Whether to trigger an automatic core list fetch from the buildbot. Returns true only on first launch with no cached data.
     var shouldAutoFetchCores: Bool {
         let hasCache = !availableCores.isEmpty
         let hasBeenFetched = AppSettings.getBool(coresInitialFetchDoneKey, defaultValue: false)
@@ -295,7 +295,7 @@ class CoreManager: ObservableObject {
             LoggerService.debug(category: "CoreManager", "PendingCoreDownload initialized")
         }
 
-        /// Convenience: true when launch context is provided
+        // Convenience: true when launch context is provided
         var hasLaunchContext: Bool { romID != nil && systemID != nil }
     }
 

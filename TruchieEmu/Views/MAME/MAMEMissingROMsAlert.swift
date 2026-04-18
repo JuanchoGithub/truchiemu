@@ -3,7 +3,7 @@ import AppKit
 
 // MARK: - Missing ROMs Alert View
 
-/// Alert shown when a MAME game is missing required ROM files.
+// Alert shown when a MAME game is missing required ROM files.
 struct MAMEMissingROMsAlert: View {
     let missingItems: [MissingROMItem]
     let gameName: String
@@ -115,14 +115,14 @@ struct MAMEMissingROMsAlert: View {
 
 // MARK: - MAME Pre-Launch Check Result
 
-/// Result of checking MAME ROM dependencies before launch.
+// Result of checking MAME ROM dependencies before launch.
 enum MAMEPreLaunchCheck {
     case canLaunch
     case missingFiles(gameName: String, missing: [MissingROMItem], romsDirectory: URL)
 }
 
-/// Check MAME ROM dependencies before launch.
-/// Returns `.canLaunch` if all required files exist, or `.missingFiles` with details.
+// Check MAME ROM dependencies before launch.
+// Returns `.canLaunch` if all required files exist, or `.missingFiles` with details.
 func checkMAMEDependencies(rom: ROM, coreID: String) -> MAMEPreLaunchCheck {
     // Only check MAME cores
     guard MAMEDependencyService.isMAMECore(coreID) else {

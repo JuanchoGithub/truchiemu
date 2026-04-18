@@ -2,7 +2,7 @@ import Foundation
 
 // MARK: - MAME Game Info (lightweight for UI display)
 
-/// Lightweight representation of a MAME game for UI display purposes.
+// Lightweight representation of a MAME game for UI display purposes.
 struct MAMEGameInfo: Identifiable, Equatable {
     var id: String { shortName }
     let shortName: String
@@ -18,7 +18,7 @@ struct MAMEGameInfo: Identifiable, Equatable {
 
 // MARK: - MAME Unified Database Models (multi-core)
 
-/// Root structure of the bundled mame_unified.json file.
+// Root structure of the bundled mame_unified.json file.
 struct MAMEUnifiedDatabase {
     let metadata: MAMEUnifiedMetadata
     let games: [String: MAMEUnifiedEntry]
@@ -41,7 +41,7 @@ private enum _CodingKeys: String, CodingKey {
     case metadata, games
 }
 
-/// Metadata section of the unified database.
+// Metadata section of the unified database.
 struct MAMEUnifiedMetadata: Codable {
     let generatedAt: String
     let totalEntries: Int
@@ -53,7 +53,7 @@ struct MAMEUnifiedMetadata: Codable {
     let sources: [String: String]
 }
 
-/// A single game entry from the unified MAME database.
+// A single game entry from the unified MAME database.
 struct MAMEUnifiedEntry: Identifiable {
     var id: String { shortName }
     
@@ -63,10 +63,10 @@ struct MAMEUnifiedEntry: Identifiable {
     let manufacturer: String?
     let isBIOS: Bool
     
-    /// All cores that have this game in their database
+    // All cores that have this game in their database
     let compatibleCores: [String]
     
-    /// Per-core dependency info (runnable status, parent ROMs, etc.)
+    // Per-core dependency info (runnable status, parent ROMs, etc.)
     let coreDeps: [String: MAMECoreDependency]?
     
     // Display metadata (merged from best available source)
@@ -105,34 +105,34 @@ struct MAMEUnifiedEntry: Identifiable {
         self.driverStatus = gameData.driverStatus
     }
     
-    /// Check if this game is runnable in a specific core.
+    // Check if this game is runnable in a specific core.
     func isRunnable(in coreID: String) -> Bool {
         guard let deps = coreDeps?[coreID] else { return false }
         return deps.runnable
     }
     
-    /// Check if this game is runnable in ANY core.
+    // Check if this game is runnable in ANY core.
     var isRunnableInAnyCore: Bool {
         compatibleCores.contains { isRunnable(in: $0) }
     }
     
-    /// Get the dependency info for a specific core.
+    // Get the dependency info for a specific core.
     func deps(for coreID: String) -> MAMECoreDependency? {
         coreDeps?[coreID]
     }
     
-    /// Returns true if this game runs in vertical orientation.
+    // Returns true if this game runs in vertical orientation.
     var isVertical: Bool {
         orientation?.lowercased() == "vertical"
     }
     
-    /// Returns the effective aspect ratio as a string (e.g. "4:3", "3:4").
+    // Returns the effective aspect ratio as a string (e.g. "4:3", "3:4").
     var aspectRatioString: String? {
         guard let x = aspectX, let y = aspectY else { return nil }
         return "\(x):\(y)"
     }
     
-    /// Generate a compatibility tag for display.
+    // Generate a compatibility tag for display.
     var compatibilityTag: String {
         if isBIOS {
             return "MAME BIOS"
@@ -147,7 +147,7 @@ struct MAMEUnifiedEntry: Identifiable {
         return "MAME Unplayable"
     }
     
-    /// Get all required ZIPs for a specific core.
+    // Get all required ZIPs for a specific core.
     func requiredZIPs(for coreID: String) -> [String] {
         guard let deps = coreDeps?[coreID] else { return [shortName] }
         
@@ -161,7 +161,7 @@ struct MAMEUnifiedEntry: Identifiable {
     }
 }
 
-/// Codable representation of a game's data fields in the unified database.
+// Codable representation of a game's data fields in the unified database.
 struct MAMEUnifiedGameData: Codable {
     let description: String
     let year: String?
@@ -183,7 +183,7 @@ struct MAMEUnifiedGameData: Codable {
     let driverStatus: String?
 }
 
-/// Per-core dependency information.
+// Per-core dependency information.
 struct MAMECoreDependency: Codable, Equatable {
     let runnable: Bool
     let cloneOf: String?
@@ -194,7 +194,7 @@ struct MAMECoreDependency: Codable, Equatable {
 
 // MARK: - MAME 2003-Plus Specific Models (backwards compatibility)
 
-/// Root structure of the bundled mame_2003_plus.json file (legacy format).
+// Root structure of the bundled mame_2003_plus.json file (legacy format).
 struct MAME2003PlusDatabase {
     let metadata: MAME2003PlusMetadata
     let games: [String: MAME2003PlusEntry]
@@ -217,7 +217,7 @@ private enum _CodingKeys2003: String, CodingKey {
     case metadata, games
 }
 
-/// Metadata section of the MAME 2003-Plus database.
+// Metadata section of the MAME 2003-Plus database.
 struct MAME2003PlusMetadata: Codable {
     let core: String
     let coreDisplayName: String
@@ -229,14 +229,14 @@ struct MAME2003PlusMetadata: Codable {
     let sources: MAME2003PlusSources
 }
 
-/// Source files used to generate the database.
+// Source files used to generate the database.
 struct MAME2003PlusSources: Codable {
     let xml: String
     let dat: String
     let bios: String
 }
 
-/// A single game entry from the MAME 2003-Plus database.
+// A single game entry from the MAME 2003-Plus database.
 struct MAME2003PlusEntry: Identifiable {
     var id: String { shortName }
     
@@ -314,7 +314,7 @@ struct MAME2003PlusEntry: Identifiable {
     }
 }
 
-/// Codable representation of a MAME 2003-Plus game's data fields.
+// Codable representation of a MAME 2003-Plus game's data fields.
 struct MAME2003PlusGameData: Codable {
     let description: String
     let year: String?
@@ -346,7 +346,7 @@ struct MAME2003PlusGameData: Codable {
 
 // MARK: - Missing ROM Item
 
-/// Represents a missing ROM file that the user needs to obtain.
+// Represents a missing ROM file that the user needs to obtain.
 struct MissingROMItem: Identifiable, Equatable {
     let id = UUID()
     let romName: String
@@ -357,7 +357,7 @@ struct MissingROMItem: Identifiable, Equatable {
 
 // MARK: - MAME Dependency Database
 
-/// A parsed dependency database for a specific MAME core version.
+// A parsed dependency database for a specific MAME core version.
 struct MAMEDependencyDB: Codable {
     let coreID: String
     let version: String
@@ -367,7 +367,7 @@ struct MAMEDependencyDB: Codable {
 
 // MARK: - MAME Game Dependencies
 
-/// Dependency information for a single MAME game.
+// Dependency information for a single MAME game.
 struct MAMEGameDependencies: Codable, Equatable {
     let description: String
     let isRunnable: Bool

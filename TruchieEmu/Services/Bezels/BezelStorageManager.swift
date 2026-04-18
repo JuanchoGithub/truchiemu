@@ -2,17 +2,17 @@ import Foundation
 import SwiftUI
 import AppKit
 
-/// AppSettings keys for bezel storage configuration.
+// AppSettings keys for bezel storage configuration.
 enum BezelUserDefaultsKeys {
     static let storageMode = "bezelStorageMode"
     static let customFolderPath = "bezelCustomFolderPath"
     static let initialSetupComplete = "bezelInitialSetupComplete"
     static let lastPromptedLibraryCount = "bezelLastPromptedLibraryCount"
-    /// Tracks the parent folder when using library-relative mode (for multi-folder detection)
+    // Tracks the parent folder when using library-relative mode (for multi-folder detection)
     static let libraryFolderPath = "bezelLibraryFolderPath"
 }
 
-/// Manages bezel storage location, folder setup, and migration between locations.
+// Manages bezel storage location, folder setup, and migration between locations.
 @MainActor
 class BezelStorageManager: ObservableObject {
     static let shared = BezelStorageManager()
@@ -20,7 +20,7 @@ class BezelStorageManager: ObservableObject {
     @Published var storageMode: BezelStorageMode
     @Published var customFolderPath: URL?
     @Published var hasCompletedInitialSetup: Bool
-    /// The library folder that bezels are relative to (stored for multi-folder detection)
+    // The library folder that bezels are relative to (stored for multi-folder detection)
     @Published var libraryFolderPath: URL?
     
     private init() {
@@ -45,7 +45,7 @@ class BezelStorageManager: ObservableObject {
     
     // MARK: - Storage Resolution
     
-    /// Returns the root directory where bezels are stored.
+    // Returns the root directory where bezels are stored.
     var bezelRootDirectory: URL {
         switch storageMode {
         case .libraryRelative:
@@ -57,7 +57,7 @@ class BezelStorageManager: ObservableObject {
         }
     }
     
-    /// Default directory relative to the stored library folder.
+    // Default directory relative to the stored library folder.
     var libraryRelativeBezelsDirectory: URL {
         if let folder = libraryFolderPath {
             return folder.appendingPathComponent("bezels")
@@ -66,8 +66,8 @@ class BezelStorageManager: ObservableObject {
         return internalManagedDirectory
     }
     
-    /// Set the library folder reference for library-relative mode.
-    /// Should be called when the first library folder is added.
+    // Set the library folder reference for library-relative mode.
+    // Should be called when the first library folder is added.
     func setLibraryFolderPath(_ url: URL) {
         guard libraryFolderPath == nil else { return } // Only set once
         libraryFolderPath = url
@@ -81,7 +81,7 @@ class BezelStorageManager: ObservableObject {
         }
     }
     
-    /// Internal managed directory in Application Support.
+    // Internal managed directory in Application Support.
     var internalManagedDirectory: URL {
         let appSupport = FileManager.default.urls(
             for: .applicationSupportDirectory,
@@ -90,19 +90,19 @@ class BezelStorageManager: ObservableObject {
         return appSupport.appendingPathComponent("TruchieEmu/bezels")
     }
     
-    /// Get the system-specific bezel directory.
+    // Get the system-specific bezel directory.
     func systemBezelsDirectory(for systemID: String) -> URL {
         bezelRootDirectory.appendingPathComponent(systemID)
     }
     
-    /// Get the path to a specific bezel file.
+    // Get the path to a specific bezel file.
     func bezelFilePath(systemID: String, gameName: String) -> URL {
         let sanitized = sanitizeFilename(gameName)
         return systemBezelsDirectory(for: systemID)
             .appendingPathComponent("\(sanitized).png")
     }
     
-    /// Get the path to the manifest cache for a system.
+    // Get the path to the manifest cache for a system.
     func manifestCachePath(for systemID: String) -> URL {
         return systemBezelsDirectory(for: systemID)
             .appendingPathComponent("manifest.json")
@@ -110,7 +110,7 @@ class BezelStorageManager: ObservableObject {
     
     // MARK: - Directory Management
     
-    /// Ensure the bezel directory structure exists.
+    // Ensure the bezel directory structure exists.
     func ensureDirectoriesExist() throws {
         let fm = FileManager.default
         
@@ -120,7 +120,7 @@ class BezelStorageManager: ObservableObject {
         }
     }
     
-    /// Open the bezel root directory in Finder.
+    // Open the bezel root directory in Finder.
     func openInFinder() {
         do {
             try ensureDirectoriesExist()
@@ -132,7 +132,7 @@ class BezelStorageManager: ObservableObject {
     
     // MARK: - Storage Configuration
     
-    /// Prompt user to choose bezel storage location.
+    // Prompt user to choose bezel storage location.
     func promptForStorageLocation() async -> Bool {
         // Check if already configured
         guard !hasCompletedInitialSetup else { return true }
@@ -198,8 +198,8 @@ class BezelStorageManager: ObservableObject {
         return true
     }
     
-    /// Called when a new library folder is added. May prompt to relocate bezels.
-    /// - Parameter libraryFolderCount: The current number of library folders.
+    // Called when a new library folder is added. May prompt to relocate bezels.
+    // - Parameter libraryFolderCount: The current number of library folders.
     func checkMultiFolderRelocation(libraryFolderCount: Int) async {
         // Only prompt if currently in library-relative mode
         guard storageMode == .libraryRelative else { return }
@@ -264,7 +264,7 @@ class BezelStorageManager: ObservableObject {
     
     // MARK: - Migration
     
-    /// Migrate bezels to a new location.
+    // Migrate bezels to a new location.
     func migrateBezels(to newLocation: URL) async throws {
         let fm = FileManager.default
         let currentRoot = bezelRootDirectory
@@ -301,7 +301,7 @@ class BezelStorageManager: ObservableObject {
         LoggerService.info(category: "Bezel", "Migrated \(totalItems) items to \(newLocation.path)")
     }
     
-    /// Clear all bezel files from current location.
+    // Clear all bezel files from current location.
     func clearAllBezels() throws {
         let fm = FileManager.default
         let root = bezelRootDirectory
@@ -312,7 +312,7 @@ class BezelStorageManager: ObservableObject {
         }
     }
     
-    /// Get the size of bezel storage (for statistics).
+    // Get the size of bezel storage (for statistics).
     func bezelStorageSize() -> Int64 {
         let fm = FileManager.default
         let root = bezelRootDirectory
@@ -333,7 +333,7 @@ class BezelStorageManager: ObservableObject {
         return totalSize
     }
     
-    /// List all local bezel PNG files for a given system ID.
+    // List all local bezel PNG files for a given system ID.
     struct LocalBezelInfo: Identifiable, Hashable {
         let id: String
         let fileURL: URL
@@ -369,7 +369,7 @@ class BezelStorageManager: ObservableObject {
         return results
     }
     
-    /// Get count of downloaded bezel files.
+    // Get count of downloaded bezel files.
     func downloadedBezelCount() -> Int {
         let fm = FileManager.default
         let root = bezelRootDirectory
@@ -391,7 +391,7 @@ class BezelStorageManager: ObservableObject {
     
     // MARK: - Helpers
     
-    /// Sanitize a filename for safe file storage.
+    // Sanitize a filename for safe file storage.
     func sanitizeFilename(_ filename: String) -> String {
         // Remove or replace problematic characters
         var sanitized = filename
