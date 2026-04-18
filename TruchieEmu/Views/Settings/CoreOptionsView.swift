@@ -13,7 +13,7 @@ struct CoreOptionsView: View {
     }
 
     var body: some View {
-        NavigationView {
+        NavigationStack {
             Group {
                 if viewModel.options.isEmpty, !viewModel.hasLoadedOnce {
                     VStack(spacing: 16) {
