@@ -47,7 +47,6 @@
 		59F004458D3DA067C6728CA2 /* BezelAPIService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 429518CD364123358B2D8AEC /* BezelAPIService.swift */; };
 		5AE08777350BDC6F25FA69E1 /* ShaderPresetPickerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 31472C6AA70EE71CBF6669A8 /* ShaderPresetPickerView.swift */; };
 		5D044254D97EF1A2198DC22C /* CheatManagerService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2E5CF9A3D4671251F618EA57 /* CheatManagerService.swift */; };
-		5FFDEBF8550AFB751087D5F7 /* SharedPlayerComponents.swift in Sources */ = {isa = PBXBuildFile; fileRef = D88D96DF545C1C1905F21A6C /* SharedPlayerComponents.swift */; };
 		6224A47EFF4D640CEED2929E /* ResourceCacheModels.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4F60AE4F947E2D693F0BE80A /* ResourceCacheModels.swift */; };
 		69C5F4C099C331E5E4BE4DCB /* SaveStateManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 67828B9B95A21FE57196B832 /* SaveStateManager.swift */; };
 		6D0A2EF10F72FAB3F7E86C75 /* ConfettiView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2E5866BCD171AD2667DA9188 /* ConfettiView.swift */; };
@@ -126,7 +125,13 @@
 		DD1AA7CE2F93E53A0014A60E /* LibretroBridgeImpl.mm in Sources */ = {isa = PBXBuildFile; fileRef = DD1AA7C92F93E53A0014A60E /* LibretroBridgeImpl.mm */; };
 		DD1AA7CF2F93E53A0014A60E /* LibretroCallbacks.mm in Sources */ = {isa = PBXBuildFile; fileRef = DD1AA7CB2F93E53A0014A60E /* LibretroCallbacks.mm */; };
 		DD1AA7D02F93E53A0014A60E /* LibretroGlobals.mm in Sources */ = {isa = PBXBuildFile; fileRef = DD1AA7CD2F93E53A0014A60E /* LibretroGlobals.mm */; };
-		DD1AA7D22F93E53A0014A60E /* LibretroBridge.mm.bkp in Resources */ = {isa = PBXBuildFile; fileRef = DD1AA7C72F93E53A0014A60E /* LibretroBridge.mm.bkp */; };
+		DD1AA7DB2F93EA840014A60E /* StandaloneGameWindowController.swift in Sources */ = {isa = PBXBuildFile; fileRef = DD1AA7D92F93EA840014A60E /* StandaloneGameWindowController.swift */; };
+		DD1AA7DC2F93EA840014A60E /* ShaderUniforms.swift in Sources */ = {isa = PBXBuildFile; fileRef = DD1AA7D82F93EA840014A60E /* ShaderUniforms.swift */; };
+		DD1AA7DD2F93EA840014A60E /* CheatManagerViews.swift in Sources */ = {isa = PBXBuildFile; fileRef = DD1AA7D42F93EA840014A60E /* CheatManagerViews.swift */; };
+		DD1AA7DE2F93EA840014A60E /* GameOverlayToolbar.swift in Sources */ = {isa = PBXBuildFile; fileRef = DD1AA7D72F93EA840014A60E /* GameOverlayToolbar.swift */; };
+		DD1AA7DF2F93EA840014A60E /* BezelView.swift in Sources */ = {isa = PBXBuildFile; fileRef = DD1AA7D32F93EA840014A60E /* BezelView.swift */; };
+		DD1AA7E02F93EA840014A60E /* FocusableMTKView.swift in Sources */ = {isa = PBXBuildFile; fileRef = DD1AA7D52F93EA840014A60E /* FocusableMTKView.swift */; };
+		DD1AA7E12F93EA840014A60E /* GameButtons.swift in Sources */ = {isa = PBXBuildFile; fileRef = DD1AA7D62F93EA840014A60E /* GameButtons.swift */; };
 		DDA58F0A2F8DC26600A9BEE9 /* LibrarySettingsViewGroup.swift in Sources */ = {isa = PBXBuildFile; fileRef = DDA58F092F8DC26600A9BEE9 /* LibrarySettingsViewGroup.swift */; };
 		DDA58F0C2F8DC32800A9BEE9 /* CoreSettingsViewGroup.swift in Sources */ = {isa = PBXBuildFile; fileRef = DDA58F0B2F8DC32800A9BEE9 /* CoreSettingsViewGroup.swift */; };
 		DDA58F122F8DC65100A9BEE9 /* ControllerSettingsViewGroup.swift in Sources */ = {isa = PBXBuildFile; fileRef = DDA58F112F8DC65100A9BEE9 /* ControllerSettingsViewGroup.swift */; };
@@ -573,19 +578,24 @@
 		D54096F9DD108A5FCB06171C /* MAMEVerificationRecord.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MAMEVerificationRecord.swift; sourceTree = "<group>"; };
 		D57E42574E494390B161B243 /* LibretroBridge.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = LibretroBridge.h; sourceTree = "<group>"; };
 		D7B636AF510163B230F22182 /* MAMEMissingROMsAlert.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MAMEMissingROMsAlert.swift; sourceTree = "<group>"; };
-		D88D96DF545C1C1905F21A6C /* SharedPlayerComponents.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SharedPlayerComponents.swift; sourceTree = "<group>"; };
 		DAD4BAC83053A0F149602D6D /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
 		DB9293E37E0A331CD54CDBF3 /* CheatManagerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CheatManagerView.swift; sourceTree = "<group>"; };
 		DC76C12B188BD3512C51A51F /* LaunchBoxGameMetadata.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LaunchBoxGameMetadata.swift; sourceTree = "<group>"; };
 		DD1AA7C32F9260D90014A60E /* LibraryViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LibraryViewModel.swift; sourceTree = "<group>"; };
 		DD1AA7C52F93E53A0014A60E /* AudioRingBuffer.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = AudioRingBuffer.hpp; sourceTree = "<group>"; };
-		DD1AA7C72F93E53A0014A60E /* LibretroBridge.mm.bkp */ = {isa = PBXFileReference; lastKnownFileType = text; path = LibretroBridge.mm.bkp; sourceTree = "<group>"; };
 		DD1AA7C82F93E53A0014A60E /* LibretroBridgeImpl.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = LibretroBridgeImpl.h; sourceTree = "<group>"; };
 		DD1AA7C92F93E53A0014A60E /* LibretroBridgeImpl.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; path = LibretroBridgeImpl.mm; sourceTree = "<group>"; };
 		DD1AA7CA2F93E53A0014A60E /* LibretroCallbacks.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = LibretroCallbacks.h; sourceTree = "<group>"; };
 		DD1AA7CB2F93E53A0014A60E /* LibretroCallbacks.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; path = LibretroCallbacks.mm; sourceTree = "<group>"; };
 		DD1AA7CC2F93E53A0014A60E /* LibretroGlobals.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = LibretroGlobals.h; sourceTree = "<group>"; };
 		DD1AA7CD2F93E53A0014A60E /* LibretroGlobals.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; path = LibretroGlobals.mm; sourceTree = "<group>"; };
+		DD1AA7D32F93EA840014A60E /* BezelView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BezelView.swift; sourceTree = "<group>"; };
+		DD1AA7D42F93EA840014A60E /* CheatManagerViews.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CheatManagerViews.swift; sourceTree = "<group>"; };
+		DD1AA7D52F93EA840014A60E /* FocusableMTKView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FocusableMTKView.swift; sourceTree = "<group>"; };
+		DD1AA7D62F93EA840014A60E /* GameButtons.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GameButtons.swift; sourceTree = "<group>"; };
+		DD1AA7D72F93EA840014A60E /* GameOverlayToolbar.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GameOverlayToolbar.swift; sourceTree = "<group>"; };
+		DD1AA7D82F93EA840014A60E /* ShaderUniforms.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShaderUniforms.swift; sourceTree = "<group>"; };
+		DD1AA7D92F93EA840014A60E /* StandaloneGameWindowController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StandaloneGameWindowController.swift; sourceTree = "<group>"; };
 		DD7DD75048F4FE666F795285 /* ROMRepository.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ROMRepository.swift; sourceTree = "<group>"; };
 		DDA58F092F8DC26600A9BEE9 /* LibrarySettingsViewGroup.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LibrarySettingsViewGroup.swift; sourceTree = "<group>"; };
 		DDA58F0B2F8DC32800A9BEE9 /* CoreSettingsViewGroup.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CoreSettingsViewGroup.swift; sourceTree = "<group>"; };
@@ -1036,12 +1046,12 @@
 		47CBF2ADC9FFD0C267CB6239 /* Player */ = {
 			isa = PBXGroup;
 			children = (
+				DD1AA7DA2F93EA840014A60E /* ShaderPlayerComponents */,
 				2D9EAD70473602ACB00FE54F /* AchievementListView.swift */,
 				19166B656DA22482BC3BF197 /* AchievementToastView.swift */,
 				1B07E7146789A12D6E627BD9 /* BezelBackgroundView.swift */,
 				DB9293E37E0A331CD54CDBF3 /* CheatManagerView.swift */,
 				2509BE73DFA2ACCF17CAA8DD /* CorePickerView.swift */,
-				D88D96DF545C1C1905F21A6C /* SharedPlayerComponents.swift */,
 				F92119B38E7206704F501F92 /* SlotPickerSheet.swift */,
 			);
 			path = Player;
@@ -1161,7 +1171,6 @@
 			isa = PBXGroup;
 			children = (
 				DD1AA7C52F93E53A0014A60E /* AudioRingBuffer.hpp */,
-				DD1AA7C72F93E53A0014A60E /* LibretroBridge.mm.bkp */,
 				DD1AA7C82F93E53A0014A60E /* LibretroBridgeImpl.h */,
 				DD1AA7C92F93E53A0014A60E /* LibretroBridgeImpl.mm */,
 				DD1AA7CA2F93E53A0014A60E /* LibretroCallbacks.h */,
@@ -1254,6 +1263,20 @@
 				85D625ABC90C79FA5B3D9948 /* mame_lookup */,
 			);
 			path = scripts;
+			sourceTree = "<group>";
+		};
+		DD1AA7DA2F93EA840014A60E /* ShaderPlayerComponents */ = {
+			isa = PBXGroup;
+			children = (
+				DD1AA7D32F93EA840014A60E /* BezelView.swift */,
+				DD1AA7D42F93EA840014A60E /* CheatManagerViews.swift */,
+				DD1AA7D52F93EA840014A60E /* FocusableMTKView.swift */,
+				DD1AA7D62F93EA840014A60E /* GameButtons.swift */,
+				DD1AA7D72F93EA840014A60E /* GameOverlayToolbar.swift */,
+				DD1AA7D82F93EA840014A60E /* ShaderUniforms.swift */,
+				DD1AA7D92F93EA840014A60E /* StandaloneGameWindowController.swift */,
+			);
+			path = ShaderPlayerComponents;
 			sourceTree = "<group>";
 		};
 		DDA591082F8DD4EA00A9BEE9 /* AppIcons */ = {
@@ -1818,7 +1841,6 @@
 				DDA592582F8DD4EA00A9BEE9 /* x68000@132w.png in Resources */,
 				DDA592592F8DD4EA00A9BEE9 /* xbox.ico in Resources */,
 				DDA5925A2F8DD4EA00A9BEE9 /* megaduck@132w.png in Resources */,
-				DD1AA7D22F93E53A0014A60E /* LibretroBridge.mm.bkp in Resources */,
 				DDA5925B2F8DD4EA00A9BEE9 /* chai@132w.png in Resources */,
 				DDA5925C2F8DD4EA00A9BEE9 /* GB.png in Resources */,
 				DDA5925D2F8DD4EA00A9BEE9 /* VMAC.png in Resources */,
@@ -2122,7 +2144,6 @@
 				2426F4E6C399C0218826CFF6 /* ShaderPreset.swift in Sources */,
 				5AE08777350BDC6F25FA69E1 /* ShaderPresetPickerView.swift in Sources */,
 				18B5A011C25087D7501BA0B4 /* ShaderSection.swift in Sources */,
-				5FFDEBF8550AFB751087D5F7 /* SharedPlayerComponents.swift in Sources */,
 				71EE5C800D12CC9445F35E6A /* SharpBilinear.metal in Sources */,
 				82B1A3EA975F48157E1FDACE /* SidebarRowButton.swift in Sources */,
 				BE53CB7D7C4EF9D138148628 /* SlotPickerSheet.swift in Sources */,
@@ -2133,6 +2154,13 @@
 				8406C90890303236B45F5FE2 /* SystemSidebarView.swift in Sources */,
 				F59885E8417267AF6A34F97C /* TruchieEmuApp.swift in Sources */,
 				A1632ED514C07772E28CB97D /* ZoomableBoxArtView.swift in Sources */,
+				DD1AA7DB2F93EA840014A60E /* StandaloneGameWindowController.swift in Sources */,
+				DD1AA7DC2F93EA840014A60E /* ShaderUniforms.swift in Sources */,
+				DD1AA7DD2F93EA840014A60E /* CheatManagerViews.swift in Sources */,
+				DD1AA7DE2F93EA840014A60E /* GameOverlayToolbar.swift in Sources */,
+				DD1AA7DF2F93EA840014A60E /* BezelView.swift in Sources */,
+				DD1AA7E02F93EA840014A60E /* FocusableMTKView.swift in Sources */,
+				DD1AA7E12F93EA840014A60E /* GameButtons.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
