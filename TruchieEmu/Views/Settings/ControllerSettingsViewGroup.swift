@@ -86,15 +86,15 @@ struct ControllerSettingsView: View {
 
                         Divider().frame(height: 20)
 
-                        // System picker
-                        Picker("System", selection: $selectedSystemID) {
-                            Text("Global / Default").tag("default")
-                            Divider()
-                            ForEach(SystemDatabase.systemsForDisplay) { sys in
-                                Text(sys.name).tag(sys.id)
-                            }
-                        }
-                        .frame(width: 180)
+                          // System picker
+                          Picker("System", selection: $selectedSystemID) {
+                              Text("Global / Default").tag("default")
+                              Divider()
+                              ForEach(SystemDatabase.systemsForDisplay.sorted(by: { $0.name < $1.name }), id: \.id) { sys in
+                                  Text(sys.name).tag(sys.id)
+                              }
+                          }
+                          .frame(width: 180)
 
                         Spacer()
 

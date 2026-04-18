@@ -48,9 +48,9 @@ struct SettingsView: View {
                 switch selectedPage {
                 case .general:     GeneralSettingsView()
                 case .library:     LibrarySettingsView()
-                case .cores:       CoreSettingsView()
-                case .controllers: ControllerSettingsView()
-                case .boxArt:      BoxArtSettingsView()
+                 case .cores:       CoreSettingsView()
+                 case .controllers: ControllerSettingsView(systemID: system?.id)
+                 case .boxArt:      BoxArtSettingsView()
                 case .display:     DisplaySettingsView()
                 case .cheats:      CheatSettingsView(system: system)
                 case .bezels:      BezelSettingsView(system: system)
