@@ -102,7 +102,7 @@ struct TruchieEmuApp: App {
 
         WindowGroup(id: "core-options", for: String.self) { $coreID in
             if let coreID = coreID {
-                CoreOptionsView(identifier: coreID)
+                CoreOptionsView(coreID: coreID)
                     .environmentObject(library)
                     .environmentObject(categoryManager)
                     .environmentObject(coreManager)

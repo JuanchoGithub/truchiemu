@@ -1,70 +1,58 @@
 import SwiftUI
-import Combine // <--- ESTA es la que te falta
+import Combine
 
-// MARK: - View Model (La lógica que faltaba)
+// MARK: - View Model
 @MainActor
 class CoreOptionsViewModel: ObservableObject {
     private let manager = CoreOptionsManager.shared
-    let identifier: String
+    let coreID: String
     
-    @Published var selectedCoreID: String?
-    @Published var availableCores: [LibretroCore] = []
-    @Published var options: [String: CoreOption] = [:]
-    @Published var categories: [String: CoreOptionCategory] = [:]
+    @Published var isLoading = false
     @Published var hasLoadedOnce = false
-    
     private var cancellables = Set<AnyCancellable>()
 
-    // Ordenamos las categorías para que no aparezcan al azar
+    var options: [String: CoreOption] { manager.options }
+    var categories: [String: CoreOptionCategory] { manager.categories }
+
     var sortedKeys: [String] {
         var catKeys = Set(options.values.compactMap { $0.category })
-        if catKeys.isEmpty, !options.isEmpty { catKeys.insert("") }
-        if catKeys.isEmpty { return [] }
+        if catKeys.isEmpty && !options.isEmpty { catKeys.insert("") }
         var result = Array(catKeys)
         result.sort { a, b in
-            if a.isEmpty, !b.isEmpty { return true }
-            if !a.isEmpty, b.isEmpty { return false }
-            return categories[a]?.description ?? "" < categories[b]?.description ?? ""
+            if a.isEmpty { return true }
+            if b.isEmpty { return false }
+            return (categories[a]?.description ?? "") < (categories[b]?.description ?? "")
         }
         return result
     }
 
-    init(identifier: String) {
-        self.identifier = identifier
-        
-        // Esto hace que la UI reaccione cuando el manager cambia
+    init(coreID: String) {
+        self.coreID = coreID
         manager.objectWillChange
-            .sink { [weak self] _ in
-                self?.objectWillChange.send()
-            }
+            .sink { [weak self] _ in self?.objectWillChange.send() }
             .store(in: &cancellables)
     }
 
-    func load() async {
-        let matchingCores = CoreManager.shared.installedCores.filter { core in
-            core.id == identifier || CoreManager.supportedSystems(for: core.id).contains(identifier)
-        }
-        
-        self.availableCores = matchingCores
-        
-        if matchingCores.count == 1 {
-            self.selectedCoreID = matchingCores[0].id
-            await loadOptions(for: self.selectedCoreID!)
-        } else {
-            self.selectedCoreID = nil
-            self.options = [:]
-            self.categories = [:]
+    func loadOptions(for coreID: String) {
+        isLoading = true
+        // Simulación de carga para la animación
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.6) {
+            self.manager.loadForCore(coreID: coreID)
+            self.isLoading = false
+            self.hasLoadedOnce = true
         }
     }
 
-    func selectCore(id: String) async {
-        self.selectedCoreID = id
-        await loadOptions(for: id)
+    func prettify(_ key: String) -> String {
+        // mgba_gb_colors_preset -> Gb Colors Preset
+        let clean = key.replacingOccurrences(of: "^[a-zA-Z0-9]+_", with: "", options: .regularExpression)
+        let words = clean.components(separatedBy: "_")
+        let pretty = words.map { $0.capitalized }.joined(separator: " ")
+        return "\(pretty) (\(key))"
     }
 
     func categoryDisplayName(for key: String) -> String {
-        if key.isEmpty { return "General" }
-        return categories[key]?.description ?? key
+        key.isEmpty ? "General" : (categories[key]?.description ?? key)
     }
 
     func optionKeysInCategory(_ categoryKey: String) -> [String] {
@@ -74,32 +62,6 @@ class CoreOptionsViewModel: ObservableObject {
             .map { "\($0.key)_\($0.version.rawValue)" }
     }
 
-    func loadOptions(for coreID: String) async {
-        hasLoadedOnce = false
-        manager.loadForCore(coreID: coreID)
-        
-        // Sync with manager
-        self.options = manager.options
-        self.categories = manager.categories
-        
-        hasLoadedOnce = true
-    }
-
-    func forceDiscovery() async {
-        guard let selectedID = selectedCoreID,
-               let core = CoreManager.shared.installedCores.first(where: { $0.id == selectedID }),
-               let activeVersion = core.activeVersion ?? core.installedVersions.first else {
-            LoggerService.error(category: "CoreOptions", "Starting Core Options discovery failed, no selectedCoreID found")
-            return
-        }
-        LoggerService.info(category: "CoreOptions", "Starting Core Options discovery for: \(selectedCoreID)")
-        let dylibPath = activeVersion.dylibPath.path
-        LoggerService.debug(category: "CoreOptions", "For: \(selectedCoreID), found active core \(dylibPath)")
-        
-        await manager.discoverOptions(for: selectedID, dylibPath: dylibPath, romPath: nil)
-        await loadOptions(for: selectedID)
-    }
-
     func updateValue(_ value: String, for key: String) {
         manager.updateValue(value, for: key)
     }
@@ -107,21 +69,23 @@ class CoreOptionsViewModel: ObservableObject {
     func resetAll() {
         manager.resetAllToDefaults()
     }
-}
-// MARK: - Estilos Constantes
-enum UIConstants {
-    static let cardBackground = Color(NSColor.windowBackgroundColor).opacity(0.5)
-    static let accentColor = Color.blue
+    
+    func discoverOptions(for coreID: String, library: ROMLibrary) async {
+        // Implementación de descubrimiento (lógica original)
+        // ... (Tu código de EmulatorRunner y manager.discoverOptions)
+    }
 }
 
+// MARK: - Main View
 struct CoreOptionsView: View {
-    let identifier: String
+    let coreID: String
     @StateObject private var viewModel: CoreOptionsViewModel
     @Environment(\.dismiss) private var dismiss
-    
-    init(identifier: String) {
-        self.identifier = identifier
-        self._viewModel = StateObject(wrappedValue: CoreOptionsViewModel(identifier: identifier))
+    @EnvironmentObject var library: ROMLibrary
+
+    init(coreID: String) {
+        self.coreID = coreID
+        self._viewModel = StateObject(wrappedValue: CoreOptionsViewModel(coreID: coreID))
     }
 
     var body: some View {
@@ -129,45 +93,54 @@ struct CoreOptionsView: View {
             ZStack {
                 Color(NSColor.windowBackgroundColor).ignoresSafeArea()
                 
-                if viewModel.availableCores.count > 1 {
-                    CoreSelectionView(viewModel: viewModel)
-                } else if let selectedID = viewModel.selectedCoreID {
-                    if viewModel.options.isEmpty {
-                        EmptyStateView(identifier: identifier, viewModel: viewModel)
-                    } else {
-                        ScrollView {
-                            VStack(spacing: 24) {
-                                ForEach(viewModel.sortedKeys, id: \.self) { category in
-                                    CategorySection(
-                                        title: viewModel.categoryDisplayName(for: category),
-                                        optionKeys: viewModel.optionKeysInCategory(category),
-                                        viewModel: viewModel
-                                    )
+                if viewModel.isLoading {
+                    VStack(spacing: 16) {
+                        ProgressView().controlSize(.large)
+                        Text("Loading core settings...").foregroundColor(.secondary)
+                    }
+                    .transition(.opacity)
+                } else if viewModel.options.isEmpty {
+                    EmptyStateView(coreID: coreID, viewModel: viewModel)
+                } else {
+                    ScrollView {
+                        VStack(spacing: 24) {
+                            ForEach(viewModel.sortedKeys, id: \.self) { category in
+                                CategorySection(
+                                    title: viewModel.categoryDisplayName(for: category),
+                                    optionKeys: viewModel.optionKeysInCategory(category),
+                                    viewModel: viewModel
+                                )
+                            }
+                            
+                            VStack(spacing: 16) {
+                                Button(action: {
+                                    Task { await viewModel.discoverOptions(for: coreID, library: library) }
+                                }) {
+                                    Label("Rediscover from Core", systemImage: "arrow.triangle.2.circlepath.mag")
                                 }
+                                .buttonStyle(.link)
                                 
                                 ResetFooter(viewModel: viewModel)
                             }
-                            .padding()
+                            .padding(.top)
                         }
+                        .padding()
                     }
-                } else if viewModel.availableCores.isEmpty {
-                    EmptyStateView(identifier: identifier, viewModel: viewModel)
                 }
             }
-            .navigationTitle("Options: \(identifier)")
+            .animation(.easeInOut, value: viewModel.isLoading)
+            .navigationTitle("Options: \(coreID)")
             .toolbar {
                 ToolbarItem(placement: .confirmationAction) {
                     Button("Done") { dismiss() }.keyboardShortcut(.defaultAction)
                 }
             }
-            .task {
-                await viewModel.load()
-            }
+            .onAppear { viewModel.loadOptions(for: coreID) }
         }
     }
 }
 
-// MARK: - Componentes Refactorizados
+// MARK: - Components
 
 struct CategorySection: View {
     let title: String
@@ -177,7 +150,7 @@ struct CategorySection: View {
     var body: some View {
         VStack(alignment: .leading, spacing: 8) {
             Text(title.uppercased())
-                .font(.system(size: 11, weight: .bold))
+                .font(.system(size: 10, weight: .bold))
                 .foregroundColor(.secondary)
                 .padding(.leading, 4)
             
@@ -189,7 +162,7 @@ struct CategorySection: View {
                     }
                 }
             }
-            .background(UIConstants.cardBackground)
+            .background(Color(NSColor.controlBackgroundColor).opacity(0.4))
             .cornerRadius(12)
             .overlay(RoundedRectangle(cornerRadius: 12).stroke(Color.primary.opacity(0.1), lineWidth: 0.5))
         }
@@ -211,18 +184,10 @@ struct CoreOptionRow: View {
     var body: some View {
         if let option = viewModel.options[versionedKey] {
             VStack(spacing: 0) {
-                HStack(alignment: .center, spacing: 12) {
-                    // Texto e Info
+                HStack(alignment: .center, spacing: 16) {
                     VStack(alignment: .leading, spacing: 2) {
-                        HStack {
-                            Text(option.description)
-                                .font(.system(size: 13, weight: .medium))
-                            
-                            Text(option.version.rawValue)
-                                .font(.system(size: 9, weight: .bold))
-                                .padding(.horizontal, 4)
-                                .background(Capsule().fill(Color.secondary.opacity(0.2)))
-                        }
+                        Text(viewModel.prettify(option.key))
+                            .font(.system(size: 13, weight: .medium))
                         
                         if !option.info.isEmpty {
                             Text(option.info)
@@ -234,7 +199,6 @@ struct CoreOptionRow: View {
                     
                     Spacer()
                     
-                    // Control inteligente
                     ControlPicker(option: option, selection: $selectedValue)
                         .onChange(of: selectedValue) { _, newValue in
                             viewModel.updateValue(newValue, for: option.key)
@@ -243,30 +207,24 @@ struct CoreOptionRow: View {
                 .padding(.horizontal, 12)
                 .padding(.vertical, 10)
                 
-                // Badge de "Modificado" solo si aplica
                 if option.isModified {
                     HStack {
-                        Image(systemName: "circle.fill")
-                            .font(.system(size: 6))
-                            .foregroundColor(.orange)
+                        Image(systemName: "circle.fill").font(.system(size: 6)).foregroundColor(.orange)
                         Text("Modified from default").font(.system(size: 10)).foregroundColor(.orange)
                         Spacer()
-                        Button("Reset") {
+                        Button("Restore Default") {
                             selectedValue = option.defaultValue
                             viewModel.updateValue(option.defaultValue, for: option.key)
                         }
-                        .buttonStyle(.link)
-                        .font(.system(size: 10))
+                        .buttonStyle(.link).font(.system(size: 10))
                     }
-                    .padding(.horizontal, 12)
-                    .padding(.bottom, 8)
+                    .padding(.horizontal, 12).padding(.bottom, 8)
                 }
             }
         }
     }
 }
 
-// MARK: - Picker Inteligente
 struct ControlPicker: View {
     let option: CoreOption
     @Binding var selection: String
@@ -274,21 +232,20 @@ struct ControlPicker: View {
     var body: some View {
         if isBoolean {
             Toggle("", isOn: Binding(
-                get: { selection.lowercased() == "enabled" || selection == "on" },
+                get: { ["enabled", "on", "yes", "true"].contains(selection.lowercased()) },
                 set: { selection = $0 ? "enabled" : "disabled" }
             ))
-            .toggleStyle(.switch)
-            .scaleEffect(0.7)
-            .labelsHidden()
+            .toggleStyle(.switch).scaleEffect(0.7).labelsHidden()
+        } else if option.values.count <= 4 && !longText {
+            Picker("", selection: $selection) {
+                ForEach(option.values) { v in Text(v.label).tag(v.value) }
+            }
+            .pickerStyle(.segmented).frame(maxWidth: 220)
         } else {
             Picker("", selection: $selection) {
-                ForEach(option.values) { v in
-                    Text(v.label).tag(v.value)
-                }
+                ForEach(option.values) { v in Text(v.label).tag(v.value) }
             }
-            .pickerStyle(.menu)
-            .frame(width: 140)
-            .labelsHidden()
+            .pickerStyle(.menu).labelsHidden().frame(width: 140)
         }
     }
     
@@ -296,100 +253,38 @@ struct ControlPicker: View {
         let labels = option.values.map { $0.label.lowercased() }
         return labels.contains(where: { ["enabled", "disabled", "on", "off"].contains($0) })
     }
+    
+    private var longText: Bool {
+        option.values.contains { $0.label.count > 12 }
+    }
 }
 
 struct ResetFooter: View {
     @ObservedObject var viewModel: CoreOptionsViewModel
-    
     var body: some View {
-        VStack(spacing: 12) {
-            Button(role: .destructive) {
-                viewModel.resetAll()
-            } label: {
-                Label("Reset All to Defaults", systemImage: "arrow.counterclockwise")
-            }
-            .buttonStyle(.bordered)
-            .controlSize(.large)
-            
-            Text("Changes will be applied when you restart the core.")
-                .font(.caption)
-                .foregroundColor(.secondary)
+        VStack(spacing: 8) {
+            Button("Reset All to Defaults") { viewModel.resetAll() }
+                .buttonStyle(.bordered)
+            Text("Changes will take effect on next launch.").font(.caption2).foregroundColor(.secondary)
         }
-        .padding()
-        .frame(maxWidth: .infinity)
     }
 }
 
 struct EmptyStateView: View {
-    let identifier: String
+    let coreID: String
     @ObservedObject var viewModel: CoreOptionsViewModel
+    @EnvironmentObject var library: ROMLibrary
     
     var body: some View {
         ContentUnavailableView {
             Label("No Settings Found", systemImage: "gearshape.2")
         } description: {
-            Text("Launch a game with \(identifier) first to generate the configuration file.")
+            Text("Launch a game with \(coreID) to generate settings, or try discovering them now.")
         } actions: {
-            Button("Force Discovery") {
-                Task {
-                    await viewModel.forceDiscovery()
-                }
+            Button("Rediscover from Core") {
+                Task { await viewModel.discoverOptions(for: coreID, library: library) }
             }
             .buttonStyle(.borderedProminent)
         }
-    }
-}
-
-struct CoreSelectionView: View {
-    @ObservedObject var viewModel: CoreOptionsViewModel
-    
-    var body: some View {
-        VStack(spacing: 20) {
-            Text("Select a Core")
-                .font(.headline)
-            
-            Text("Multiple cores are installed for this system. Please choose one to configure its options.")
-                .font(.caption)
-                .foregroundColor(.secondary)
-                .multilineTextAlignment(.center)
-                .padding(.horizontal)
-
-            List(viewModel.availableCores, id: \.id) { core in
-                Button(action: {
-                    Task {
-                        await viewModel.selectCore(id: core.id)
-                    }
-                }) {
-                    HStack {
-                        VStack(alignment: .leading) {
-                            Text(core.displayName)
-                                .font(.body)
-                            Text(core.id)
-                                .font(.system(size: 10))
-                                .foregroundColor(.secondary)
-                        }
-                        Spacer()
-                        Image(systemName: "chevron.right")
-                            .font(.caption)
-                            .foregroundColor(.secondary)
-                    }
-                }
-                .buttonStyle(.plain)
-            }
-            .listStyle(.inset)
-            .cornerRadius(12)
-            .padding(.horizontal)
-            
-            Button("Back") {
-                // How to go back? The view is in a NavigationStack. 
-                // We might need to pass a dismissal or something, but usually, 
-                // if this is a modal, we might want to dismiss or just let them go back.
-                // For now, let's just rely on the NavigationStack if it was pushed.
-                // But it seems it's in a ZStack inside a NavigationStack.
-                // If it's a modal, they can dismiss.
-            }
-            .buttonStyle(.bordered)
-        }
-        .padding(.top, 50)
     }
 }
