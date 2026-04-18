@@ -1,6 +1,6 @@
 # TruchiEmu 🕹️
 
-<img width="1112" height="814" alt="Captura de pantalla 2026-04-13 a la(s) 12 20 57 a  m" src="https://github.com/user-attachments/assets/3a61adcc-a9c8-469d-a9c7-b2a3249f82df" />
+<img width="1112" height="814" alt="TruchiEmu main interface" src="https://github.com/user-attachments/assets/3a61adcc-a9c8-469d-a9c7-b2a3249f82df" />
 
 **The ultimate retro gaming experience, beautifully reimagined for macOS.**
 
@@ -16,7 +16,7 @@ https://github.com/user-attachments/assets/d5a99324-a778-49b9-8d86-79127bbe5b59
 ### 🎨 Beautifully Designed
 Forget clunky, outdated menus. TruchieEmu features a polished, native macOS interface. Browse your collection with high-quality box art, detailed game information, and a seamless, modern navigation experience.
 
-<img width="1112" height="814" alt="Captura de pantalla 2026-04-13 a la(s) 12 20 22 a  m" src="https://github.com/user-attachments/assets/45cdd5d0-1898-4ba2-afd4-0e3d9857757c" />
+<img width="1112" height="814" alt="List view" src="https://github.com/user-attachments/assets/45cdd5d0-1898-4ba2-afd4-0e3d9857757c" />
 
 
 ### 📺 Immersive Visuals
@@ -25,12 +25,12 @@ https://github.com/user-attachments/assets/55b87d35-dcf3-4591-80ab-c26fc22c6112
 
 Relive the golden age of gaming with advanced Metal-powered shaders. Whether you want the warm glow of a classic CRT, the sharp look of an LCD, or custom scanline effects, TruchieEmu makes every pixel feel authentic.
 
-<img width="1136" height="866" alt="Captura de pantalla 2026-04-13 a la(s) 12 22 24 a  m" src="https://github.com/user-attachments/assets/a2a0f14a-f867-45dd-8c61-c9750e1f9231" />
+<img width="1136" height="866" alt="Custom Shaders!" src="https://github.com/user-attachments/assets/a2a0f14a-f867-45dd-8c61-c9750e1f9231" />
 
 ### 🚀 Effortless Setup
 Getting started is a breeze. Our guided setup wizard walks you through your first launch, and our automated library services handle the heavy lifting—syncing metadata and downloading beautiful box art for your entire collection.
 
-<img width="1012" height="644" alt="Captura de pantalla 2026-04-13 a la(s) 12 21 43 a  m" src="https://github.com/user-attachments/assets/ad5d22f4-812f-4794-abbf-254c26c8fa10" />
+<img width="1012" height="644" alt="Every Libretro Core supported (not all tested), including core options" src="https://github.com/user-attachments/assets/ad5d22f4-812f-4794-abbf-254c26c8fa10" />
 
 ### 🏆 RetroAchievements
 Take your nostalgia to the next level. TruchieEmu supports RetroAchievements, allowing you to earn trophies and compete for glory while playing the classics.
@@ -38,7 +38,7 @@ Take your nostalgia to the next level. TruchieEmu supports RetroAchievements, al
 ### ✨ Pure Delight
 Every interaction is designed to be smooth and joyful. From polished transitions to celebratory confetti moments, TruchieEmu brings a touch of magic to your retro gaming sessions.
 
-<img width="1112" height="814" alt="Captura de pantalla 2026-04-13 a la(s) 12 22 41 a  m" src="https://github.com/user-attachments/assets/b68a47cd-e09e-4c22-a5ac-baec4d0c9b2a" />
+<img width="1112" height="814" alt="Easy interface to serach Box Art" src="https://github.com/user-attachments/assets/b68a47cd-e09e-4c22-a5ac-baec4d0c9b2a" />
 
 ---
 
@@ -98,6 +98,6 @@ MIT, etc, thanks to LibRetro and a countless other teams around the web.
 
 Now for some more images:
 
-<img width="1112" height="814" alt="Captura de pantalla 2026-04-13 a la(s) 12 25 05 a  m" src="https://github.com/user-attachments/assets/b681a4a5-0caf-4ea6-8c4e-c954bd6b50df" />
+<img width="1112" height="814" alt="Custom categories" src="https://github.com/user-attachments/assets/b681a4a5-0caf-4ea6-8c4e-c954bd6b50df" />
 
-<img width="1453" height="866" alt="Captura de pantalla 2026-04-13 a la(s) 12 23 19 a  m" src="https://github.com/user-attachments/assets/c2f845a9-81d5-4a56-9719-2acfdbce3a79" />
+<img width="1453" height="866" alt="Custom Bezels, bezel search and discovery and automatic download" src="https://github.com/user-attachments/assets/c2f845a9-81d5-4a56-9719-2acfdbce3a79" />
