@@ -58,7 +58,7 @@ struct SidebarRowButton: View {
                         Label("Refresh", systemImage: "arrow.clockwise")
                     }
 
-                    if let cores = installedCores, !cores.isEmpty {
+                    if let cores = installedCores, cores.count > 1 {
                         Menu {
                             ForEach(cores) { core in
                                 Button {
@@ -67,6 +67,12 @@ struct SidebarRowButton: View {
                                     Label(core.displayName, systemImage: "cpu")
                                 }
                             }
+                        } label: {
+                            Label("Core Options", systemImage: "gearshape")
+                        }
+                    } else if let installedCore = installedCores?.first {
+                        Button {
+                            onSystemAction(system, .settings(installedCore.id))
                         } label: {
                             Label("Core Options", systemImage: "gearshape")
                         }
