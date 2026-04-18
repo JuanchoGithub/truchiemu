@@ -4,85 +4,99 @@ using namespace metal;
 
 struct LCDGridUniforms {
     float gridStrength;
-    float pixelSeparation; // Use this for the gap width (e.g., 0.1 to 0.2)
+    float pixelSeparation;
     float brightnessBoost;
     float colorBoost;
     float4 sourceSize;
     float4 outputSize;
 };
 
+// Helper for 0.5% color variance
+float3 colorNoise(float2 p) {
+    float n = fract(sin(dot(p, float2(12.9898, 78.233))) * 43758.5453);
+    return float3(n) * 0.005; // 0.5% max variance
+}
+
 fragment float4 fragmentLCDGrid(VertexOut in [[stage_in]],
                                  texture2d<float> tex [[texture(0)]],
                                  constant LCDGridUniforms &u [[buffer(0)]]) {
     
-    // 1. PHYSICAL GRID COORDINATES
+    // --- INTERNAL CONFIGURATION ---
+    float washOutAmount = 0.30; 
+    float3 washColor = float3(0.55, 0.60, 0.50); 
+    
+    // BLEED CONTROLS
+    float bleedIntensity = 0.25; // 0.0 to 1.0
+    float bleedSpread = 0.40;    // How far light spills from center
+    
+    // 1. COORDINATE LOCK
     float2 gameRes = float2(160.0, 144.0);
-    float scale = min(u.outputSize.x / gameRes.x, u.outputSize.y / gameRes.y);
-    float intScale = max(1.0, floor(scale));
+    float2 scale = u.outputSize.xy / gameRes;
+    float intScale = max(1.0, floor(min(scale.x, scale.y)));
     float2 offset = (u.outputSize.xy - (gameRes * intScale)) * 0.5;
-
-    float2 fragCoord = in.position.xy;
-    float2 relativePos = fragCoord - offset;
-    float2 modPos = fmod(relativePos, intScale);
-
-    // Boundary check for black bars
-    if (relativePos.x < 0.0 || relativePos.x >= (gameRes.x * intScale) ||
-        relativePos.y < 0.0 || relativePos.y >= (gameRes.y * intScale)) {
+    
+    float2 screenPos = in.position.xy - offset;
+    
+    if (screenPos.x < 0.0 || screenPos.x >= (gameRes.x * intScale) ||
+        screenPos.y < 0.0 || screenPos.y >= (gameRes.y * intScale)) {
         return float4(0.0, 0.0, 0.0, 1.0);
     }
 
-    // 2. THE BACKGROUND (The "Paper" layer)
-    // This color is visible in the gaps AND through transparent pixels
-    float3 targetGrid = float3(0.608, 0.635, 0.490);
+    float2 pixelIndex = floor(screenPos / intScale);
+    float2 pixelFract = fract(screenPos / intScale);
 
-    // 3. THE GAP STENCIL
-    float gapWidth = max(1.0, u.pixelSeparation);
-    bool isGap = (modPos.x < gapWidth || modPos.y < gapWidth);
-
-    if (isGap) {
-        return float4(targetGrid, 1.0);
-    }
-
-    // 4. SAMPLING THE DIGITAL IMAGE
-    float2 pixelCoord = floor(relativePos / intScale);
-    float2 uv = (pixelCoord + 0.5) / gameRes;
-    constexpr sampler s(filter::nearest, address::clamp_to_edge);
-    float3 sourceCol = tex.sample(s, uv).rgb;
-
-    // 5. COLOR INJECTION (The "Ink" layer)
-    float3 targetRed    = float3(0.536, 0.155, 0.148);
-    float3 targetGreen  = float3(0.227, 0.412, 0.220);
-    float3 targetYellow = float3(0.590, 0.580, 0.404);
-
-    // Detection
-    bool isRed    = (sourceCol.r > 0.65 && sourceCol.g < 0.35 && sourceCol.b < 0.35);
-    bool isGreen  = (sourceCol.g > 0.55 && sourceCol.r < 0.45 && sourceCol.b < 0.45);
-    bool isYellow = (sourceCol.r > 0.60 && sourceCol.g > 0.50 && sourceCol.b < 0.45 && abs(sourceCol.r - sourceCol.g) < 0.2);
-
-    float3 pixelInk;
-    if (isRed) {
-        pixelInk = targetRed;
-    } else if (isGreen) {
-        pixelInk = targetGreen;
-    } else if (isYellow) {
-        pixelInk = targetYellow;
-    } else {
-        // For everything else, treat the source color as the ink color
-        pixelInk = sourceCol;
-    }
-
-    // 6. THE MASK BLEND (Subtractive/Multiplicative Logic)
-    // White (1.0) makes the mask fully transparent -> shows targetGrid.
-    // Black (0.0) makes the mask opaque -> shows a very dark version of the ink.
-    // We use a base opacity of 0.05 for blacks as you suggested.
+    // 2. SAMPLING & CONTROLLABLE BLEED
+    float2 uv = (pixelIndex + 0.5) / gameRes;
+    constexpr sampler s(filter::linear, address::clamp_to_edge);
+    float3 sourceCol = pow(tex.sample(s, uv).rgb, 1.1);
     
-    // We calculate "how much to reveal the background" based on the luminance of the ink
-    float luminance = dot(pixelInk, float3(0.299, 0.587, 0.114));
-    float alpha = mix(0.05, 1.0, luminance);
+    // Apply controllable spill logic
+    float2 bleedDir = sign(pixelFract - 0.5);
+    float2 neighborUV = (pixelIndex + 0.5 + bleedDir) / gameRes;
+    float3 neighborCol = pow(tex.sample(s, neighborUV).rgb, 1.1);
+    
+    // The bleed is stronger toward the edges of the cell
+    float distFromCenter = length(pixelFract - 0.5);
+    float spillFactor = smoothstep(0.0, bleedSpread, distFromCenter) * bleedIntensity;
+    sourceCol = mix(sourceCol, neighborCol, spillFactor);
 
-    // Final Blend: Result = Ink * alpha + Grid * (1 - alpha)
-    // But to get that "White is Transparent" look, we simply lerp:
-    float3 finalColor = mix(pixelInk, targetGrid, alpha);
+    float luma = dot(sourceCol, float3(0.299, 0.587, 0.114));
 
-    return float4(finalColor * u.brightnessBoost * u.colorBoost, 1.0);
+    // 3. COLOR COMPENSATION & VARIANCE
+    float3 finalTarget = float3(0.430, 0.516, 0.188);
+    float3 compensatedGreen = finalTarget - float3(0.0, -0.100, 0.350);
+    
+    // Add the 0.5% variance here so it's part of the base pixel color
+    compensatedGreen += (colorNoise(pixelIndex) - 0.0025); 
+    
+    sourceCol.b -= 0.350;
+    sourceCol.g += 0.100;
+
+    // 4. GRID & BLOOM
+    float waveH = sin(pixelIndex.y * 0.25) * 0.02; 
+    float waveV = cos(pixelIndex.x * 0.30) * 0.02; 
+    float baseGap = u.pixelSeparation * 0.45;
+    
+    float bloomThreshold = smoothstep(0.05, 0.5, luma);
+    float dynamicGap = mix(baseGap + 0.08 + waveH + waveV, -0.4, bloomThreshold);
+
+    // 5. MASK
+    float2 dist = abs(pixelFract - 0.5);
+    float2 delta = fwidth(pixelFract);
+    float2 edge = 0.5 - dynamicGap;
+    float2 maskXY = smoothstep(edge + delta, edge - delta, dist);
+    float gridMask = maskXY.x * maskXY.y;
+
+    // 6. COMPOSITING
+    float finalMask = mix(1.0, gridMask, u.gridStrength);
+    float3 finalColor = mix(compensatedGreen, sourceCol, finalMask);
+    
+    // 7. RESTORE TARGET COLORS
+    finalColor.b = clamp(finalColor.b + 0.440, 0.0, 1.0);
+    finalColor.g = clamp(finalColor.g - 0.175, 0.0, 1.0);
+
+    // 8. GLOBAL WASHOUT
+    finalColor = mix(finalColor, washColor, washOutAmount);
+
+    return float4(max(finalColor, 0.0) * u.brightnessBoost * u.colorBoost, 1.0);
 }
