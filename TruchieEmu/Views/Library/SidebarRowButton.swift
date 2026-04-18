@@ -60,7 +60,7 @@ struct SidebarRowButton: View {
                     Button {
                         onSystemAction(system, .settings(system.defaultCoreID ?? ""))
                     } label: {
-                        Label("Settings", systemImage: "gearshape")
+                        Label("Core Options", systemImage: "gearshape")
                     }
 
                      Button {
