@@ -153,7 +153,8 @@ static NSString *_Nullable g_optionsDylibPath = nil;
   struct retro_game_info gi;
   memset(&gi, 0, sizeof(gi));
 
-  if (impl->_retro_load_game(&gi)) {
+  BOOL gameLoaded = impl->_retro_load_game(&gi);
+  if (gameLoaded) {
     [impl->_coreLock lock];
     if (impl->_hwRenderEnabled && impl->_hw_callback.context_reset) {
       if (impl->_glContext) CGLSetCurrentContext(impl->_glContext);
@@ -161,20 +162,30 @@ static NSString *_Nullable g_optionsDylibPath = nil;
     }
     if (impl->_hwRenderEnabled && impl->_glContext) CGLSetCurrentContext(NULL);
     [impl->_coreLock unlock];
-  }[impl->_coreLock lock];
-  if (impl->_hwRenderEnabled && impl->_glContext) CGLSetCurrentContext(impl->_glContext);
-  impl->_retro_run();
-  if (impl->_hwRenderEnabled && impl->_glContext) CGLSetCurrentContext(NULL);
-  [impl->_coreLock unlock];
 
-  [[NSUserDefaults standardUserDefaults] setObject:coreID forKey:@"lastLoadedCoreID"];[impl->_coreLock lock];
+    [impl->_coreLock lock];
+    if (impl->_hwRenderEnabled && impl->_glContext) CGLSetCurrentContext(impl->_glContext);
+    if (impl->_retro_run) impl->_retro_run();
+    if (impl->_hwRenderEnabled && impl->_glContext) CGLSetCurrentContext(NULL);
+    [impl->_coreLock unlock];
+  }
+
+  [[NSUserDefaults standardUserDefaults] setObject:coreID forKey:@"lastLoadedCoreID"];
+
+  [impl->_coreLock lock];
   if (impl->_hwRenderEnabled && impl->_glContext) CGLSetCurrentContext(impl->_glContext);
-  impl->_retro_unload_game();
+  
+  if (gameLoaded) {
+    impl->_retro_unload_game();
+  }
+  
   if (impl->_hwRenderEnabled && impl->_hw_callback.context_destroy) {
     impl->_hw_callback.context_destroy();
     impl->_hw_callback.context_destroy = NULL;
   }
+  
   impl->_retro_deinit();
+  
   if (impl->_hwRenderEnabled && impl->_glContext) CGLSetCurrentContext(NULL);
   [impl->_coreLock unlock];
 
