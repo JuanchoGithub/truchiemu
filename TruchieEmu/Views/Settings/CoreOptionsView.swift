@@ -5,7 +5,11 @@ import Combine
 @MainActor
 class CoreOptionsViewModel: ObservableObject {
     private let manager = CoreOptionsManager.shared
-    let coreID: String
+    
+    @Published var currentCoreID: String
+    @Published var isSystemMode: Bool = false
+    @Published var systemID: String? = nil
+    @Published var availableCores: [(id: String, name: String)] = []
     
     @Published var isLoading = false
     @Published var hasLoadedOnce = false
@@ -26,20 +30,84 @@ class CoreOptionsViewModel: ObservableObject {
         return result
     }
 
-    init(coreID: String) {
-        self.coreID = coreID
+    init(id: String) {
+        if let system = SystemDatabase.system(forID: id) {
+            self.currentCoreID = system.defaultCoreID ?? ""
+            self.isSystemMode = true
+            self.systemID = id
+        } else {
+            self.currentCoreID = id
+            self.isSystemMode = false
+            self.systemID = nil
+        }
+        
         manager.objectWillChange
             .sink { [weak self] _ in self?.objectWillChange.send() }
             .store(in: &cancellables)
     }
 
-    func loadOptions(for coreID: String) {
+    func loadOptions(for id: String, library: ROMLibrary? = nil) {
         isLoading = true
-        // Simulación de carga para la animación
+        
+        // Find dylib path from installed cores
+        var dylibPath: String? = nil
+        if let core = CoreManager.shared.installedCores.first(where: { $0.id == id }) {
+            LoggerService.debug(category: "CoreOptionsViewModel", "Found installed core: \(core.id). Versions: \(core.installedVersions.count). ActiveTag: \(core.activeVersionTag ?? "nil")")
+            if let activeVersion = core.activeVersion {
+                dylibPath = activeVersion.dylibPath.path
+                LoggerService.debug(category: "CoreOptionsViewModel", "Resolved dylibPath: \(dylibPath!)")
+            } else {
+                LoggerService.debug(category: "CoreOptionsViewModel", "No active version found for core: \(id)")
+            }
+        } else {
+            LoggerService.debug(category: "CoreOptionsViewModel", "Core \(id) not found in installedCores")
+        }
+        
+        // Find rom path from library
+        var romPath: String? = nil
+        if let lib = library {
+            let systemIDs = CoreManager.supportedSystems(for: id)
+            if let sysID = systemIDs.first, let rom = lib.roms.first(where: { $0.systemID == sysID }) {
+                romPath = rom.path.path
+                LoggerService.debug(category: "CoreOptionsViewModel", "Resolved romPath: \(romPath!) for system: \(sysID)")
+            } else {
+                LoggerService.debug(category: "CoreOptionsViewModel", "No ROM found in library for system(s): \(systemIDs)")
+            }
+        }
+        
+        // Simulação de carga para a animação
         DispatchQueue.main.asyncAfter(deadline: .now() + 0.6) {
-            self.manager.loadForCore(coreID: coreID)
+            if self.isSystemMode, let sysID = self.systemID {
+                self.discoverCoresForSystem(sysID)
+            } else {
+                self.manager.loadForCore(coreID: id, dylibPath: dylibPath, romPath: romPath)
+            }
             self.isLoading = false
             self.hasLoadedOnce = true
+        }
+    }
+
+    private func discoverCoresForSystem(_ sysID: String) {
+        let cores = LibretroInfoManager.coreToSystemMap
+            .filter { $0.value.contains(sysID) }
+            .map { $0.key }
+        
+        self.availableCores = cores.map { coreID in
+            let baseID = coreID.replacingOccurrences(of: "_libretro", with: "")
+            let name = LibretroCore.knownCoreMetadata[baseID]?.displayName ?? coreID.replacingOccurrences(of: "_libretro", with: "").capitalized
+            return (id: coreID, name: name)
+        }
+
+        if let system = SystemDatabase.system(forID: sysID), let defaultID = system.defaultCoreID, availableCores.contains(where: { $0.id == defaultID }) {
+            self.currentCoreID = defaultID
+        } else if let firstCore = availableCores.first?.id {
+            self.currentCoreID = firstCore
+        } else {
+            self.currentCoreID = ""
+        }
+
+        if !currentCoreID.isEmpty {
+            self.manager.loadForCore(coreID: currentCoreID)
         }
     }
 
@@ -78,14 +146,14 @@ class CoreOptionsViewModel: ObservableObject {
 
 // MARK: - Main View
 struct CoreOptionsView: View {
-    let coreID: String
+    let initialID: String
     @StateObject private var viewModel: CoreOptionsViewModel
     @Environment(\.dismiss) private var dismiss
     @EnvironmentObject var library: ROMLibrary
 
     init(coreID: String) {
-        self.coreID = coreID
-        self._viewModel = StateObject(wrappedValue: CoreOptionsViewModel(coreID: coreID))
+        self.initialID = coreID
+        self._viewModel = StateObject(wrappedValue: CoreOptionsViewModel(id: coreID))
     }
 
     var body: some View {
@@ -100,10 +168,24 @@ struct CoreOptionsView: View {
                     }
                     .transition(.opacity)
                 } else if viewModel.options.isEmpty {
-                    EmptyStateView(coreID: coreID, viewModel: viewModel)
+                    EmptyStateView(coreID: viewModel.isSystemMode ? (viewModel.systemID ?? "") : viewModel.currentCoreID, viewModel: viewModel)
                 } else {
                     ScrollView {
                         VStack(spacing: 24) {
+                            if viewModel.isSystemMode {
+                                Picker("Core", selection: $viewModel.currentCoreID) {
+                                    ForEach(viewModel.availableCores, id: \.id) { core in
+                                        Text(core.name).tag(core.id)
+                                    }
+                                }
+                                .pickerStyle(.menu)
+                                .padding(.horizontal)
+                                 .onChange(of: viewModel.currentCoreID) { _, newID in
+                                     viewModel.loadOptions(for: newID, library: library)
+                                 }
+                                Divider()
+                            }
+
                             ForEach(viewModel.sortedKeys, id: \.self) { category in
                                 CategorySection(
                                     title: viewModel.categoryDisplayName(for: category),
@@ -114,7 +196,7 @@ struct CoreOptionsView: View {
                             
                             VStack(spacing: 16) {
                                 Button(action: {
-                                    Task { await viewModel.discoverOptions(for: coreID, library: library) }
+                                    Task { await viewModel.discoverOptions(for: viewModel.currentCoreID, library: library) }
                                 }) {
                                     Label("Rediscover from Core", systemImage: "arrow.triangle.2.circlepath.mag")
                                 }
@@ -127,15 +209,15 @@ struct CoreOptionsView: View {
                         .padding()
                     }
                 }
-            }
-            .animation(.easeInOut, value: viewModel.isLoading)
-            .navigationTitle("Options: \(coreID)")
-            .toolbar {
-                ToolbarItem(placement: .confirmationAction) {
-                    Button("Done") { dismiss() }.keyboardShortcut(.defaultAction)
-                }
-            }
-            .onAppear { viewModel.loadOptions(for: coreID) }
+             }
+             .animation(.easeInOut, value: viewModel.isLoading)
+             .navigationTitle(viewModel.isSystemMode ? "Options: \(SystemDatabase.system(forID: viewModel.systemID ?? "")?.name ?? "")" : "Options: \(viewModel.currentCoreID)")
+             .toolbar {
+                 ToolbarItem(placement: .confirmationAction) {
+                     Button("Done") { dismiss() }.keyboardShortcut(.defaultAction)
+                 }
+             }
+             .onAppear { viewModel.loadOptions(for: initialID, library: library) }
         }
     }
 }

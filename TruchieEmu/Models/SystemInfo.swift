@@ -5,6 +5,7 @@ import SwiftUI // Required for @Published in SystemPreferences and LibretroInfoM
 enum SystemAction {
     case refresh
     case settings(String) // coreID
+    case selectCore(SystemInfo)
     case cheats
     case bezels
     case controllers

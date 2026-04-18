@@ -83,20 +83,26 @@ class CoreOptionsManager: ObservableObject {
 
     // Loads definitions and overrides from disk for a specific core.
     // Used when the core is not running (e.g., in Settings).
-    func loadForCore(coreID: String) {
+    func loadForCore(coreID: String, dylibPath: String? = nil, romPath: String? = nil) {
         LoggerService.debug(category: "CoreOptionsManager", "Loading options from core: \(coreID)")
         currentCoreID = coreID
         
         // 1. Load Definitions
         let defURL = definitionsDirectory.appendingPathComponent("\(coreID).json")
         LoggerService.debug(category: "CoreOptionsManager", "Definitions file For \(currentCoreID): \(defURL)")
- 
+    
         guard let data = try? Data(contentsOf: defURL),
               let json = try? JSONSerialization.jsonObject(with: data) as? [String: Any] else {
             options.removeAll()
             categories.removeAll()
- 
-            LoggerService.debug(category: "CoreOptionsManager", "For \(coreID): cleaned up.")
+    
+            LoggerService.debug(category: "CoreOptionsManager", "For \(coreID): cleaned up. Attempting discovery if paths provided.")
+            
+            if let dylib = dylibPath {
+                Task {
+                    await discoverOptions(for: coreID, dylibPath: dylib, romPath: romPath)
+                }
+            }
             return
         }
  

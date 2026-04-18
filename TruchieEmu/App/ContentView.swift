@@ -63,9 +63,11 @@ struct ContentView: View {
                                          await library.refreshFolder(at: folder)
                                      }
                                  }
-                             case .settings(let coreID):
-                                 openWindow(id: "core-options", value: coreID)
-                             case .cheats:
+                              case .settings(let coreID):
+                                  openWindow(id: "core-options", value: coreID)
+                              case .selectCore(let system):
+                                  openWindow(id: "core-options", value: system.id)
+                              case .cheats:
                                  openWindow(id: "system-settings", value: SystemSettingsRequest(system: system, page: .cheats))
                              case .bezels:
                                  openWindow(id: "system-settings", value: SystemSettingsRequest(system: system, page: .bezels))

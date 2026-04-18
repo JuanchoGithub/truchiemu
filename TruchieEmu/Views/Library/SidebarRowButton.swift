@@ -13,6 +13,7 @@ struct SidebarRowButton: View {
     var onRefresh: (() -> Void)? = nil
     var onSettings: (() -> Void)? = nil
     var onSystemAction: ((SystemInfo, SystemAction) -> Void)? = nil
+    var installedCores: [LibretroCore]? = nil
     
     @State private var isHovered = false
     
@@ -57,10 +58,30 @@ struct SidebarRowButton: View {
                         Label("Refresh", systemImage: "arrow.clockwise")
                     }
 
-                    Button {
-                        onSystemAction(system, .settings(system.defaultCoreID ?? ""))
-                    } label: {
-                        Label("Core Options", systemImage: "gearshape")
+                    if let cores = installedCores, !cores.isEmpty {
+                        Menu {
+                            ForEach(cores) { core in
+                                Button {
+                                    onSystemAction(system, .settings(core.id))
+                                } label: {
+                                    Label(core.displayName, systemImage: "cpu")
+                                }
+                            }
+                        } label: {
+                            Label("Core Options", systemImage: "gearshape")
+                        }
+                    } else if let coreID = system.defaultCoreID {
+                        Button {
+                            onSystemAction(system, .settings(coreID))
+                        } label: {
+                            Label("Core Options", systemImage: "gearshape")
+                        }
+                    } else {
+                        Button {
+                            onSystemAction(system, .selectCore(system))
+                        } label: {
+                            Label("Core Options", systemImage: "gearshape")
+                        }
                     }
 
                      Button {

@@ -3,6 +3,7 @@ import SwiftUI
 struct SystemSidebarView: View {
     @EnvironmentObject var library: ROMLibrary
     @EnvironmentObject var categoryManager: CategoryManager
+    @EnvironmentObject var coreManager: CoreManager
     @Binding var selectedFilter: LibraryFilter
     @Binding var showCreateCategorySheet: Bool
     @Binding var editingCategory: GameCategory?
@@ -185,6 +186,9 @@ struct SystemSidebarView: View {
                 } else {
                     onSystemAction?(sys, action)
                 }
+            } : nil,
+            installedCores: system != nil ? coreManager.installedCores.filter { core in
+                core.systemIDs.contains(system!.id)
             } : nil
         )
     }

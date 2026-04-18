@@ -96,6 +96,7 @@ fragment float4 fragmentLCDGrid(VertexOut in [[stage_in]],
                 col = mix(float3(0.88, 0.88, 0.84), float3(0.18, 0.16, 0.14), borderMix);
             } else {
                 col = float3(0.38, 0.39, 0.40);
+                
                 float noise = fract(sin(dot(gb, float2(12.9898, 78.233))) * 43758.5453);
                 col += (noise - 0.5) * 0.012;
                 
@@ -133,21 +134,18 @@ fragment float4 fragmentLCDGrid(VertexOut in [[stage_in]],
     }
 
     // 5. INTERNAL SCREEN
-    // FIX: Snap gb to floor to ensure every LCD pixel is identical in size
-    float2 snappedGb = floor(gb);
-    float2 f = fract(gb); 
-    
-    float3 src = pow(tex.sample(sampler(filter::linear), (snappedGb + 0.5) / gameRes).rgb, 1.15);
+    float2 f = fract(gb);
+    float3 src = pow(tex.sample(sampler(filter::linear), (floor(gb)+0.5)/gameRes).rgb, 1.15);
     
     float3 baseLCD = float3(0.35, 0.45, 0.15); 
     src.g += 0.05;
     src.b -= 0.2;
 
-    // Use snappedGb for the horizontal grid calculation to prevent "jitter"
-    float g = mix(u.pixelSeparation * 0.45 + 0.08 + sin(snappedGb.y * 0.25) * 0.02, -0.3, smoothstep(0.05, 0.6, dot(src, float3(0.3, 0.6, 0.1))));
-    float2 m = smoothstep(0.5 - g + fwidth(f), 0.5 - g - fwidth(f), abs(f - 0.5));
+    float g = mix(u.pixelSeparation*0.45 + 0.08 + sin(floor(gb.y)*0.25)*0.02, -0.3, smoothstep(0.05, 0.6, dot(src, float3(0.3,0.6,0.1))));
+    float2 m = smoothstep(0.5-g+fwidth(f), 0.5-g-fwidth(f), abs(f-0.5));
     
-    float3 final = mix(baseLCD, src, mix(1.0, m.x * m.y, u.gridStrength)); 
+    float3 final = mix(baseLCD, src, mix(1.0, m.x*m.y, u.gridStrength));
+    
     final.g = clamp(final.g - 0.1, 0.0, 1.0);
     final.b = clamp(final.b + 0.35, 0.0, 1.0);
     final = mix(final, float3(0.5, 0.55, 0.45), 0.2);
@@ -156,38 +154,24 @@ fragment float4 fragmentLCDGrid(VertexOut in [[stage_in]],
     float screenEdgeShadow = smoothstep(-2.0, 5.0, screenSDF);
     final *= mix(0.82, 1.0, screenEdgeShadow);
 
-    // --- METALLIC "SIN" REFLECTOR ---
-    
-    // Testing variables
-    float reflectionStrength = 1.0;    
-    float glareWeight        = 0.35;   
-    float sheenWeight        = 0.12;   
-    float grainWeight        = 0.03;   
-    
-    float2 lightPos = float2(170.0, -20.0);
+    // --- METALLIC BACKPLANE REFLECTION ---
+    // Positioned outside the top-right corner (x > 160, y < 0)
+    float2 lightPos = float2(170.0, -20.0); 
     float distToLight = length(gb - lightPos);
     
-    // NEW BRUSHED TEXTURE: Dual interference waves to hide the "lines"
-    // Wave 1: Tight diagonal lines
-    float wave1 = sin(gb.x * 5.0 - gb.y * 2.5);
-    // Wave 2: Slower intersecting lines to break up the pattern
-    float wave2 = sin(gb.x * 2.1 + gb.y * 4.8);
-    // Combine for a non-linear texture
-    float metallicGrain = (wave1 * wave2) * 0.5 + 0.5;
-    
-    // Lighting components
+    // Broad sheen radiating from the top-right to bottom-left
     float sheen = smoothstep(-100.0, 180.0, gb.x - gb.y);
+    
+    // Focused specular hotspot
     float glare = smoothstep(140.0, 0.0, distToLight);
     
-    // Refined mask to allow subtle texture in midtones
+    // Only apply heavy reflection to the "off" (background) pixels
     float luma = dot(final, float3(0.299, 0.587, 0.114));
-    float reflectionMask = smoothstep(0.05, 0.5, luma); 
+    float reflectionMask = smoothstep(0.3, 0.55, luma); 
     
-    float3 reflectionColor = float3(0.88, 0.95, 0.75); 
-    
-    // Composite the reflection
-    final += (glare * glareWeight + sheen * sheenWeight + metallicGrain * grainWeight) 
-             * reflectionColor * reflectionMask * reflectionStrength;
+    // Add the yellowish-silver reflection back into the final color
+    float3 reflectionColor = float3(0.85, 0.90, 0.65); 
+    final += (glare * 0.06 + sheen * 0.03) * reflectionColor * reflectionMask;
 
     return float4(max(final, 0.0) * u.brightnessBoost * u.colorBoost, 1.0);
 }
