@@ -88,7 +88,7 @@ extension GameDetailView {
                     .frame(maxWidth: .infinity).padding(.vertical, 16)
                 } else if gameAchievements.isEmpty {
                     VStack(spacing: 8) {
-                        Image(systemName: "trophy.slash").font(.system(size: 30)).foregroundColor(.white.opacity(0.3))
+                        Image(systemName: "trophy.circle").font(.system(size: 30)).foregroundColor(.white.opacity(0.3))
                         Text("No achievements available").font(.subheadline).foregroundColor(.white.opacity(0.5))
                         Text("Game may not have RetroAchievements data").font(.caption).foregroundColor(.white.opacity(0.4))
                     }
