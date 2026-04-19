@@ -164,3 +164,9 @@ struct RAAchievementResponse: Codable {
     var HardcoreAchieved: Int?
     var Category: String?
 }
+
+// Response from the RA API for hash resolution.
+struct RAHashResponse: Codable {
+    var ID: String
+    var Hash: String
+}

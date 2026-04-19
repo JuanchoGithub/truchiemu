@@ -214,6 +214,32 @@ struct GameDetailView: View {
         .onChange(of: currentROM.hasBoxArt) { _, _ in loadBoxArt() }
         .onChange(of: currentROM.screenshotPaths) { _, _ in loadScreenshots() }
         .onChange(of: library.bezelUpdateToken) { _, _ in Task { await loadCurrentBezelImage() } }
+        .onChange(of: achievementsService.isLoggedIn) { _, isLoggedIn in
+            if isLoggedIn {
+                loadAchievements()
+            } else {
+                gameAchievements = []
+                isAchievementsLoading = false
+            }
+        }
+        .onChange(of: achievementsService.isEnabled) { _, isEnabled in
+            if isEnabled {
+                loadAchievements()
+            } else {
+                gameAchievements = []
+                isAchievementsLoading = false
+            }
+        }
+        .onChange(of: achievementsService.isLoggedIn) { _, isLoggedIn in
+            if isLoggedIn {
+                loadAchievements()
+            }
+        }
+        .onChange(of: achievementsService.isEnabled) { _, isEnabled in
+            if isEnabled {
+                loadAchievements()
+            }
+        }
         .sheet(isPresented: $showBoxArtPicker) { BoxArtPickerView(rom: currentROM) }
         .sheet(isPresented: $showControlsPicker) {
             SystemControlsMappingView(systemID: currentROM.systemID ?? "", systemName: system?.name ?? "Unknown")

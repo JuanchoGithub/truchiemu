@@ -128,10 +128,42 @@ class RetroAchievementsService: ObservableObject {
     
     // Resolve a ROM hash to a RetroAchievements game ID.
     private func resolveHash(hash: String) async throws -> Int? {
-        guard username != nil else { return nil }
+        guard let username = username else { return nil }
+        LoggerService.debug(category: "RetroAchievements", "Resolving hash for user \(username)")
         
-        // Requires separate hash resolution endpoint implementation
-        return nil 
+        do {
+            if let response = try await requestGameByHash(hash: hash, username: username) {
+                return Int(response.ID)
+            }
+        } catch {
+            LoggerService.error(category: "RetroAchievements", "Hash resolution failed: \(error.localizedDescription)")
+        }
+        
+        return nil
+    }
+
+    // Fetch game ID from a ROM hash.
+    private func requestGameByHash(hash: String, username: String) async throws -> RAHashResponse? {
+        let url = URL(string: "\(apiBaseURL)/API_GetGameByHash.php")!
+        var components = URLComponents(url: url, resolvingAgainstBaseURL: false)!
+        LoggerService.debug(category: "RetroAchievements", "Requesting Game, hash \(hash), user: \(username)")
+
+        components.queryItems = [
+            URLQueryItem(name: "h", value: hash),
+            URLQueryItem(name: "u", value: username),
+            URLQueryItem(name: "y", value: webApiKey)
+        ]
+        
+        let (data, _) = try await URLSession.shared.data(from: components.url!)
+        LoggerService.debug(category: "RetroAchievements", "Requesting Game, url: \(components.url)")
+        // Check for error in JSON
+        let json = try JSONSerialization.jsonObject(with: data) as? [String: Any]
+        if let errorMsg = json?["Error"] as? String {
+            LoggerService.debug(category: "RetroAchievements", "Hash resolution error: \(errorMsg)")
+            return nil
+        }
+        
+        return try JSONDecoder().decode(RAHashResponse.self, from: data)
     }
     
     // Fetch detailed game info including achievements.
