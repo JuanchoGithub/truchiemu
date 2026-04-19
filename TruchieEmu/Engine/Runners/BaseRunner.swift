@@ -196,7 +196,8 @@ class EmulatorRunner: ObservableObject, @unchecked Sendable {
     @MainActor @Published var osdMessage: String?
     var undoBuffer: Data?
     
-    
+    var systemID: String = "default"
+
     // Whether the current core supports save states
     var supportsSaveStates: Bool {
         LibretroBridgeSwift.serializeSize() > 0
@@ -225,15 +226,20 @@ class EmulatorRunner: ObservableObject, @unchecked Sendable {
     private var activeTurboButtons: Set<RetroButton> = []
     
     static func forSystem(_ systemID: String?) -> EmulatorRunner {
+        let runner: EmulatorRunner
         switch systemID {
-        case "nes":      return NESRunner()
-        case "snes":     return SNESRunner()
-        case "n64":      return N64Runner()
-        case "dos":      return DOSRunner()
-        case "scummvm":  return ScummVMRunner()
-        default:         return EmulatorRunner()
+        case "nes":      runner = NESRunner()
+        case "snes":     runner = SNESRunner()
+        case "n64":      runner = N64Runner()
+        case "dos":      runner = DOSRunner()
+        case "scummvm":  runner = ScummVMRunner()
+        default:         runner = EmulatorRunner()
         }
+        runner.systemID = systemID ?? "default"
+        return runner
     }
+
+
 
     @MainActor
     func launch(rom: ROM, coreID: String) {
@@ -651,7 +657,7 @@ class EmulatorRunner: ObservableObject, @unchecked Sendable {
     func mapKey(_ keyCode: UInt16) -> Int? {
         for (button, code) in cachedKeyboardMapping.buttons {
             if code == keyCode {
-                return Int(button.retroID)
+                return Int(button.retroID(for: self.systemID))
             }
         }
         return nil
@@ -690,54 +696,80 @@ class EmulatorRunner: ObservableObject, @unchecked Sendable {
 
     private func updateGamepadButton(_ element: GCControllerElement, in mapping: ControllerGamepadMapping) {
         let name = element.localizedName ?? ""
+
         for (btn, btnMapping) in mapping.buttons {
-            if btnMapping.gcElementName == name {
-                if let info = btn.analogInfo {
-                    // 1. Extract the raw 0.0...1.0 analog value
-                    var value: Float = 0.0
-                    if let stick = element as? GCControllerDirectionPad {
-                        let axisVal = (info.id == 0) ? stick.xAxis.value : stick.yAxis.value
-                        value = abs(axisVal) // Fallback if a whole pad was mapped
-                    } else if let btnElement = element as? GCControllerButtonInput {
-                        value = btnElement.value // Preserves partial analog tilt
-                    } else if let axisElement = element as? GCControllerAxisInput {
-                        value = abs(axisElement.value)
-                    }
-                    
-                    // 2. Save the state for this specific directional button
-                    analogButtonStates[btn] = value
-                    
-                    // 3. Aggregate all buttons mapped to this specific Axis (X or Y)
-                    var aggregatedAxisValue: Float = 0.0
-                    for (mappedBtn, _) in mapping.buttons {
-                        if let otherInfo = mappedBtn.analogInfo, 
-                           otherInfo.index == info.index, // Same stick (Left or Right)
-                           otherInfo.id == info.id {      // Same axis (X or Y)
-                            
-                            let btnState = analogButtonStates[mappedBtn] ?? 0.0
-                            aggregatedAxisValue += (btnState * otherInfo.sign)
-                        }
-                    }
-                    
-                    // 4. Clamp the final value to prevent overflow (-1.0 to 1.0)
-                    aggregatedAxisValue = max(-1.0, min(1.0, aggregatedAxisValue))
-                    
-                    // 5. Send the unified axis state to the Libretro core
-                    let retroValue = Int32(aggregatedAxisValue * 32767.0)
-                    LibretroBridgeSwift.setAnalogState(Int(info.index), id: Int(info.id), value: retroValue)
-                } else {
-                    // Handle Digital
-                    let retroID = btn.retroID
-                    if let btnElement = element as? GCControllerButtonInput {
-                        self.setKeyState(retroID: Int(retroID), pressed: btnElement.isPressed)
-                    } else if let axisElement = element as? GCControllerAxisInput {
-                        self.setKeyState(retroID: Int(retroID), pressed: abs(axisElement.value) > 0.5)
-                    } else if let dpad = element as? GCControllerDirectionPad {
-                        let isPressed = dpad.up.isPressed || dpad.down.isPressed || dpad.left.isPressed || dpad.right.isPressed
-                        self.setKeyState(retroID: Int(retroID), pressed: isPressed)
+            // Only process the mapping that matches the physical element that changed
+            guard btnMapping.gcElementName == name else { continue }
+            
+            // 1. Handle Analog Sticks / Axes (e.g., N64 Analog Stick)
+            if let info = btn.analogInfo {
+                var value: Float = 0.0
+                
+                if let btnElement = element as? GCControllerButtonInput {
+                    value = btnElement.value
+                } else if let axisElement = element as? GCControllerAxisInput {
+                    value = abs(axisElement.value)
+                } else if let stick = element as? GCControllerDirectionPad {
+                    // Rare case: If the mapping points to the whole stick
+                    let axisVal = (info.id == 0) ? stick.xAxis.value : stick.yAxis.value
+                    value = abs(axisVal)
+                }
+                
+                analogButtonStates[btn] = value
+                
+                // Aggregate directions for this specific axis (e.g., combine Up + Down into one Y axis)
+                var aggregatedAxisValue: Float = 0.0
+                for (mappedBtn, _) in mapping.buttons {
+                    if let otherInfo = mappedBtn.analogInfo, 
+                    otherInfo.index == info.index, 
+                    otherInfo.id == info.id {
+                        let btnState = analogButtonStates[mappedBtn] ?? 0.0
+                        aggregatedAxisValue += (btnState * otherInfo.sign)
                     }
                 }
+                
+                aggregatedAxisValue = max(-1.0, min(1.0, aggregatedAxisValue))
+                let retroValue = Int32(aggregatedAxisValue * 32767.0)
+                LibretroBridgeSwift.setAnalogState(Int(info.index), id: Int(info.id), value: retroValue)
+            } 
+            
+            // 2. Handle Digital Joypad Buttons (ID 0 to 15)
+            else if btn.retroID(for: self.systemID) >= 0 {
+                let retroID = Int(btn.retroID(for: self.systemID))
+                
+                if let btnElement = element as? GCControllerButtonInput {
+                    // This covers face buttons, triggers (Z-button), and D-pad directions
+                    self.setKeyState(retroID: retroID, pressed: btnElement.isPressed)
+                } 
+                else if let axisElement = element as? GCControllerAxisInput {
+                    // If a digital button is mapped to an axis (like a trigger mapped to 'A')
+                    self.setKeyState(retroID: retroID, pressed: abs(axisElement.value) > 0.5)
+                }
+                // NOTE: Removed the 'GCControllerDirectionPad' check here.
+                // Mapping names like "D-pad Up" refer to button sub-elements in GameController.
             }
+            
+            // 3. Handle System Buttons (Pause, Reset, etc. with retroID: -1)
+            else {
+                if let btnElement = element as? GCControllerButtonInput, btnElement.isPressed {
+                    // Handle non-gameplay actions here (e.g., open menu, toggle fast forward)
+                    self.handleSystemAction(for: btn)
+                }
+            }
+        }
+    }
+
+    // Helper to handle buttons that aren't mapped to the libretro virtual controller
+    private func handleSystemAction(for btn: RetroButton) {
+        switch btn {
+        case .pause:
+            // Trigger your emulator pause logic
+            break
+        case .reset:
+            // Trigger your emulator reset logic
+            break
+        default:
+            break
         }
     }
 }

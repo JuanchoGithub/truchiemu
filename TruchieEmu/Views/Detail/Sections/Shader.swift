@@ -98,7 +98,7 @@ extension GameDetailView {
 
         let windowController = ShaderWindowController(
             settings: shaderWindowSettings!
-        ) { [self] newPresetID, newUniformValues in
+        ) { [self] newPresetID, newUniformValues, _ in
             updateSettings { romSettings in
                 romSettings.shaderPresetID = newPresetID
                 applyUniformValues(newUniformValues, to: &romSettings)

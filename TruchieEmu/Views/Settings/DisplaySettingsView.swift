@@ -75,7 +75,7 @@ struct DisplaySettingsView: View {
         
         let windowController = ShaderWindowController(
             settings: shaderWindowSettings!
-        ) { [self] newPresetID, newUniformValues in
+        ) { [self] newPresetID, newUniformValues, _ in
             selectedPresetID = newPresetID
             if let preset = ShaderPreset.preset(id: newPresetID) {
                 shaderManager.activatePreset(preset)

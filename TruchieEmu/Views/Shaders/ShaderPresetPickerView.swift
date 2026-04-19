@@ -2,15 +2,29 @@ import SwiftUI
 import AppKit
 import Combine
 
+// MARK: - Shader Application Mode
+enum ShaderApplicationMode {
+    case applyToCurrent
+    case applyToDefaults
+    case applyToAll
+}
+
 // MARK: - Shader Window Settings (Observable)
 // Settings container for the shader picker window, shared between StandaloneGameWindowController and picker.
 class ShaderWindowSettings: ObservableObject {
     @Published var shaderPresetID: String
     @Published var uniformValues: [String: Float]
+    @Published var systemID: String?
+    @Published var applicationMode: ShaderApplicationMode = .applyToCurrent
     
-    init(shaderPresetID: String = "builtin-crt-classic", uniformValues: [String: Float] = [:]) {
+    init(shaderPresetID: String = "builtin-crt-classic", 
+         uniformValues: [String: Float] = [:], 
+         systemID: String? = nil,
+         applicationMode: ShaderApplicationMode = .applyToCurrent) {
         self.shaderPresetID = shaderPresetID
         self.uniformValues = uniformValues
+        self.systemID = systemID
+        self.applicationMode = applicationMode
     }
 }
 
@@ -115,12 +129,12 @@ struct ShaderParameterSliders: View {
 // Native macOS window controller for the shader preset picker.
 class ShaderWindowController: NSWindowController, NSWindowDelegate {
     private var settings: ShaderWindowSettings
-    private var onPresetChanged: ((String, [String: Float]) -> Void)?
+    private var onPresetChanged: ((String, [String: Float], ShaderApplicationMode) -> Void)?
     private var settingsCancellable: AnyCancellable?
     
     static var shared: ShaderWindowController?
     
-    init(settings: ShaderWindowSettings, onPresetChanged: ((String, [String: Float]) -> Void)? = nil) {
+    init(settings: ShaderWindowSettings, onPresetChanged: ((String, [String: Float], ShaderApplicationMode) -> Void)? = nil) {
         self.settings = settings
         self.onPresetChanged = onPresetChanged
         
@@ -155,7 +169,7 @@ class ShaderWindowController: NSWindowController, NSWindowDelegate {
             settings: settings,
             onValueCommitted: { [weak self] values in
                 guard let self = self else { return }
-                self.onPresetChanged?(self.settings.shaderPresetID, values)
+                self.onPresetChanged?(self.settings.shaderPresetID, values, self.settings.applicationMode)
             }
         ))
         hostingView.translatesAutoresizingMaskIntoConstraints = true
@@ -167,7 +181,7 @@ class ShaderWindowController: NSWindowController, NSWindowDelegate {
             .dropFirst()
             .removeDuplicates()
             .sink { [weak self] presetID in
-                self?.onPresetChanged?(presetID, self?.settings.uniformValues ?? [:])
+                self?.onPresetChanged?(presetID, self?.settings.uniformValues ?? [:], self?.settings.applicationMode ?? .applyToCurrent)
             }
     }
     
@@ -330,6 +344,49 @@ struct ShaderPresetPickerView: View {
                     Divider()
                     parameterSliders
                 }
+            }
+            
+            // Application Mode Footer
+            if settings.systemID != nil {
+                Divider()
+                HStack {
+                    Spacer()
+                    HStack(spacing: 12) {
+                        Button {
+                            settings.applicationMode = .applyToCurrent
+                        } label: {
+                            Label("Apply to Current", systemImage: settings.applicationMode == .applyToCurrent ? "checkmark.circle.fill" : "circle")
+                        }
+                        .buttonStyle(.plain)
+                        .foregroundColor(settings.applicationMode == .applyToCurrent ? .accentColor : .secondary)
+
+                        Button {
+                            settings.applicationMode = .applyToDefaults
+                        } label: {
+                            Label("Default the defaults", systemImage: settings.applicationMode == .applyToDefaults ? "checkmark.circle.fill" : "circle")
+                        }
+                        .buttonStyle(.plain)
+                        .foregroundColor(settings.applicationMode == .applyToDefaults ? .accentColor : .secondary)
+
+                        Button {
+                            settings.applicationMode = .applyToAll
+                        } label: {
+                            Label("Default everything", systemImage: settings.applicationMode == .applyToAll ? "checkmark.circle.fill" : "circle")
+                        }
+                        .buttonStyle(.plain)
+                        .foregroundColor(settings.applicationMode == .applyToAll ? .accentColor : .secondary)
+                    }
+                    .padding(.horizontal, 12)
+                    .padding(.vertical, 8)
+                    
+                    Button("Apply") {
+                        onValueCommitted?(settings.uniformValues)
+                    }
+                    .buttonStyle(.borderedProminent)
+                    .controlSize(.small)
+                    .padding(.trailing, 12)
+                }
+                .background(Color(NSColor.controlBackgroundColor))
             }
         }
         .frame(minWidth: 650, minHeight: 350)

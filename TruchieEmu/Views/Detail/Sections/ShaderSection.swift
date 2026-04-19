@@ -139,7 +139,7 @@ struct ShaderSection: View {
 
         let windowController = ShaderWindowController(
             settings: settings
-        ) { newPresetID, newUniformValues in
+        ) { newPresetID, newUniformValues, _ in
             updateSettings { romSettings in
                 romSettings.shaderPresetID = newPresetID
                 applyUniformValues(newUniformValues, to: &romSettings)

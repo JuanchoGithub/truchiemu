@@ -1,6 +1,8 @@
 import SwiftUI
+import SwiftData
 
 struct ContentView: View {
+    @Environment(\.modelContext) var modelContext
     @EnvironmentObject var library: ROMLibrary
     @EnvironmentObject var categoryManager: CategoryManager
     @EnvironmentObject var coreManager: CoreManager
@@ -73,21 +75,106 @@ struct ContentView: View {
                                  openWindow(id: "system-settings", value: SystemSettingsRequest(system: system, page: .bezels))
                               case .controllers:
                                   openWindow(id: "system-settings", value: SystemSettingsRequest(system: system, page: .controllers))
-                              case .shaders:
-                                  let settings = ShaderWindowSettings(
-                                      shaderPresetID: ShaderManager.shared.activePreset.id,
-                                      uniformValues: ShaderManager.shared.uniformValues
-                                  )
-                                  shaderController = ShaderWindowController(settings: settings) { newPresetID, newUniforms in
-                                      let preset = ShaderPreset.preset(id: newPresetID) ?? ShaderPreset.defaultPreset
-                                      ShaderManager.shared.activatePreset(preset)
-                                      // Update uniform values as well
-                                      for (name, value) in newUniforms {
-                                          ShaderManager.shared.updateUniform(name, value: value)
-                                      }
-                                  }
-                                  shaderController?.show()
-                              case .library:
+                                case .shaders:
+                                    let settings = ShaderWindowSettings(
+                                        shaderPresetID: ShaderManager.shared.activePreset.id,
+                                        uniformValues: ShaderManager.shared.uniformValues,
+                                        systemID: system.id
+                                    )
+                                    shaderController = ShaderWindowController(settings: settings) { newPresetID, newUniforms, mode in
+                                        let preset = ShaderPreset.preset(id: newPresetID) ?? ShaderPreset.defaultPreset
+                                        
+                                        // 1. Update global manager state (for the next game launched)
+                                        ShaderManager.shared.activatePreset(preset)
+                                        for (name, value) in newUniforms {
+                                            ShaderManager.shared.updateUniform(name, value: value)
+                                        }
+                                        
+                                        // 2. Apply to database based on mode
+                                        let encoder = JSONEncoder()
+                                        let decoder = JSONDecoder()
+                                        
+                                        let targetSystemID = system.id
+                                        let descriptor = FetchDescriptor<ROMEntry>(predicate: #Predicate { $0.systemID == targetSystemID })
+                                        guard let entries = try? modelContext.fetch(descriptor) else { return }
+                                        
+                                        for entry in entries {
+                                            var settings: ROMSettings
+                                            if let json = entry.settingsJSON, let data = json.data(using: .utf8), let decoded = try? decoder.decode(ROMSettings.self, from: data) {
+                                                settings = decoded
+                                            } else {
+                                                settings = ROMSettings()
+                                            }
+                                            
+                                            let shouldUpdate: Bool
+                                            switch mode {
+                                            case .applyToCurrent:
+                                                // Only update if this is the currently selected ROM
+                                                shouldUpdate = (entry.id == selectedROM?.id)
+                                            case .applyToDefaults:
+                                                // Update only if it has no specific preference (using default ID)
+                                                shouldUpdate = (settings.shaderPresetID == "builtin-crt-classic")
+                                            case .applyToAll:
+                                                shouldUpdate = true
+                                            }
+                                            
+                                            if shouldUpdate {
+                                                settings.shaderPresetID = newPresetID
+                                                // Also update uniform values if they are stored in ROMSettings
+                                                // (Assuming ROMSettings has a way to store these, or we just rely on presetID)
+                                                // For now, we just update the presetID as per existing logic.
+                                                
+                                                if let encoded = try? encoder.encode(settings), let json = String(data: encoded, encoding: .utf8) {
+                                                    entry.settingsJSON = json
+                                                }
+                                            }
+                                        }
+                                        try? modelContext.save()
+                                    }
+                                    shaderController?.show()
+                               case .defaultShadersForDefaults(let systemID, let shaderID):
+                                   let descriptor = FetchDescriptor<ROMEntry>(predicate: #Predicate { $0.systemID == systemID })
+                                   if let entries = try? modelContext.fetch(descriptor) {
+                                       let encoder = JSONEncoder()
+                                       let decoder = JSONDecoder()
+                                       for entry in entries {
+                                           var settings: ROMSettings
+                                           if let json = entry.settingsJSON, let data = json.data(using: .utf8), let decoded = try? decoder.decode(ROMSettings.self, from: data) {
+                                               settings = decoded
+                                           } else {
+                                               settings = ROMSettings()
+                                           }
+                                           
+                                           if settings.shaderPresetID == "builtin-crt-classic" {
+                                               settings.shaderPresetID = shaderID
+                                               if let encoded = try? encoder.encode(settings), let json = String(data: encoded, encoding: .utf8) {
+                                                   entry.settingsJSON = json
+                                               }
+                                           }
+                                       }
+                                       try? modelContext.save()
+                                   }
+                               case .defaultShadersForAll(let systemID, let shaderID):
+                                   let descriptor = FetchDescriptor<ROMEntry>(predicate: #Predicate { $0.systemID == systemID })
+                                   if let entries = try? modelContext.fetch(descriptor) {
+                                       let encoder = JSONEncoder()
+                                       let decoder = JSONDecoder()
+                                       for entry in entries {
+                                           var settings: ROMSettings
+                                           if let json = entry.settingsJSON, let data = json.data(using: .utf8), let decoded = try? decoder.decode(ROMSettings.self, from: data) {
+                                               settings = decoded
+                                           } else {
+                                               settings = ROMSettings()
+                                           }
+                                           
+                                           settings.shaderPresetID = shaderID
+                                           if let encoded = try? encoder.encode(settings), let json = String(data: encoded, encoding: .utf8) {
+                                               entry.settingsJSON = json
+                                           }
+                                       }
+                                       try? modelContext.save()
+                                   }
+                               case .library:
                                   selectedFilter = .system(system)
                               }
                          }

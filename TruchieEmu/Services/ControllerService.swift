@@ -5,7 +5,8 @@ import Combine
 @MainActor
 class ControllerService: ObservableObject {
     static let shared = ControllerService()
-    
+    @Published var currentSystemID: String = "default" 
+
     @Published var connectedControllers: [PlayerController] = []
 
     @Published var activePlayerIndex: Int = 0 {
@@ -929,9 +930,9 @@ enum RetroButton: String, Codable, CaseIterable {
         }
     }
     
-    // Returns the retro input ID for libretro compatibility
-    var retroID: Int32 {
+    func retroID(for systemID: String) -> Int32 {
         switch self {
+        // Standard buttons remain the same
         case .b: return 0
         case .y: return 1
         case .select: return 2
@@ -948,22 +949,27 @@ enum RetroButton: String, Codable, CaseIterable {
         case .r2: return 13
         case .l3: return 14
         case .r3: return 15
-        case .coin1: return 2  // RETRO_DEVICE_ID_JOYPAD_SELECT mapped to coin
+
+        // The Context-Sensitive "Z" Button
+        case .z:
+            if systemID == "n64" {
+                return 12 // N64 Z is a Trigger (L2)
+            } else if ["genesis", "megadrive", "saturn", "32x"].contains(systemID) {
+                return 11 // Sega Z is the 6th face button (usually mapped to R1)
+            }
+            return 12 // Default fallback
+
+        // The Context-Sensitive "C" Button
+        case .c:
+            if ["genesis", "megadrive", "saturn", "32x"].contains(systemID) {
+                return 8 // Sega C is usually mapped to RetroPad A
+            }
+            return -1
+
+        case .coin1: return 2
         case .start1: return 3
-        case .turboA: return 0  // Turbo A maps to normal A
-        case .turboB: return 1  // Turbo B maps to normal B
-        case .turboX: return 9  // Turbo X maps to normal X
-        case .turboY: return 1  // Turbo Y maps to normal Y
-        case .cUp, .cDown, .cLeft, .cRight:
-            // C-buttons are handled as analog in most N64 cores
-            return 0
-        case .mouseLeft: return 0  // Mouse handled separately
-        case .mouseRight: return 1
-        case .mouseMiddle: return 2
-        case .mouseX, .mouseY, .mouseScrollUp, .mouseScrollDown:
-            return 0  // Mouse handled separately
-        case .space, .pause, .reset, .coin2, .start2, .lStickUp, .lStickDown, .lStickLeft, .lStickRight, .rStickUp, .rStickDown, .rStickLeft, .rStickRight, .c, .z:
-            return 0
+        
+        default: return -1
         }
     }
     

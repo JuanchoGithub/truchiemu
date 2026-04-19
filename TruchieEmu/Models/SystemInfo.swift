@@ -11,6 +11,8 @@ enum SystemAction {
     case controllers
     case library
     case shaders
+    case defaultShadersForDefaults(String, String) // systemID, shaderPresetID
+    case defaultShadersForAll(String, String) // systemID, shaderPresetID
 }
 
 // Request used to open system-specific settings via a sheet
