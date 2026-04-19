@@ -21,7 +21,7 @@ struct CoreOption: Identifiable, Codable, Hashable {
     let key: String                 // Unique key, e.g. "mupen64plus-cpucore"
     let description: String         // Short display name
     let info: String                // Help/description text
-    let category: String?           // Category key (nil = uncategorized)
+    var category: String?           // Category key (nil = uncategorized)
     var version: CoreOptionVersion  // V1 or V2
     var values: [CoreOptionValue]   // Possible values
     let defaultValue: String        // Default value from core

@@ -107,58 +107,54 @@ class CoreOptionsManager: ObservableObject {
         }
  
         // Parse categories
+
+        // 1. Load Categories
         if let cats = json["categories"] as? [String: [String: String]] {
-            categories.removeAll()
-            for (k, v) in cats {
-                categories[k] = CoreOptionCategory(key: k, description: v["desc"] ?? k, info: v["info"] ?? "")
+            self.categories = cats.reduce(into: [:]) { res, entry in
+                res[entry.key] = CoreOptionCategory(key: entry.key, description: entry.value["desc"] ?? entry.key, info: entry.value["info"] ?? "")
             }
             LoggerService.debug(category: "CoreOptionsManager", "For \(currentCoreID): loaded these categories: \(categories)")
-        }
+        }        
  
-        // Parse options
+        // 2. Load Options
         if let opts = json["options"] as? [String: [String: Any]] {
-            options.removeAll()
-            for (key, d) in opts {
-                let desc = d["desc"] as? String ?? key
-                let info = d["info"] as? String ?? ""
-                let catKey = d["category"] as? String ?? ""
-                let defaultVal = d["defaultValue"] as? String ?? ""
-                let currentVal = d["currentValue"] as? String ?? defaultVal
- 
-                var values: [CoreOptionValue] = []
-                if let valsArr = d["values"] as? [[String: String]] {
-                    for v in valsArr {
-                        values.append(CoreOptionValue(value: v["value"] ?? "", label: v["label"] ?? v["value"] ?? ""))
-                    }
-                }
-                if values.isEmpty {
-                    values = [CoreOptionValue(value: currentVal, label: currentVal)]
-                }
- 
-                // JSON definitions are assumed to be V2
-                let versionedKey = "\(key)_\(CoreOptionVersion.v2.rawValue)"
-                options[versionedKey] = CoreOption(
-                    key: key,
-                    description: desc,
-                    info: info,
-                    category: catKey.isEmpty ? nil : catKey,
-                    values: values,
-                    defaultValue: defaultVal,
-                    currentValue: currentVal,
+            self.options.removeAll()
+            for (jsonKey, d) in opts {
+                // jsonKey is the base key (e.g. "gambatte_gb_bootloader_V2")
+                
+                // Create the internal key safely
+                let internalKey = makeInternalKey(baseKey: jsonKey, version: .v2)
+                
+                options[internalKey] = CoreOption(
+                    key: jsonKey,
+                    description: d["desc"] as? String ?? jsonKey,
+                    info: d["info"] as? String ?? "",
+                    category: d["category"] as? String ?? "general",
+                    values: (d["values"] as? [[String: String]])?.map { CoreOptionValue(value: $0["value"] ?? "", label: $0["label"] ?? "") } ?? [],
+                    defaultValue: d["defaultValue"] as? String ?? "",
+                    currentValue: d["currentValue"] as? String ?? "",
                     version: .v2
                 )
             }
         }
  
-        // 2. Apply Overrides
+        // 3. Apply Overrides
         let overrides = loadUserOverrides(for: coreID)
         for (key, value) in overrides {
-            // Find the versioned key that matches this base key
-            if let vKey = options.keys.first(where: { $0 == "\(key)_\(CoreOptionVersion.v1.rawValue)" || $0 == "\(key)_\(CoreOptionVersion.v2.rawValue)" }) {
+            // Look for the versioned key that matches the config key
+            if let vKey = options.keys.first(where: { $0.hasPrefix("\(key)_") }) {
                 options[vKey]?.currentValue = value
             }
         }
         LoggerService.debug(category: "CoreOptionsManager", "Options For \(currentCoreID): \(options)")
+    }
+
+    private func makeInternalKey(baseKey: String, version: CoreOptionVersion) -> String {
+        let suffix = "_\(version.rawValue)"
+        if baseKey.hasSuffix(suffix) {
+            return baseKey // It already has it (like Gambatte)
+        }
+        return "\(baseKey)\(suffix)" // Add it (for other cores)
     }
 
     /// Triggers the discovery of core options by launching a headless core session.
@@ -238,24 +234,32 @@ class CoreOptionsManager: ObservableObject {
     
     // Set the full options list (called from ObjC bridge when core calls SET_CORE_OPTIONS_V2).
     func setOptions(_ newOptions: [CoreOption], categories: [CoreOptionCategory]) {
-        LoggerService.debug(category: "CoreOptionsManager", "For \(currentCoreID) Setting options: \(newOptions), categories: \(categories)")
-        self.categories = Dictionary(uniqueKeysWithValues: categories.map { ($0.key, $0) })
+        // 1. Setup Categories
+        var updatedCategories = Dictionary(uniqueKeysWithValues: categories.map { ($0.key, $0) })
+        let fallbackKey = "general"
+        if updatedCategories[fallbackKey] == nil {
+            updatedCategories[fallbackKey] = CoreOptionCategory(key: fallbackKey, description: "General Settings", info: "")
+        }
+        self.categories = updatedCategories
         
-        // Load persisted overrides
         let persisted = loadUserOverrides()
         
         for var option in newOptions {
-            // Apply persisted override if it exists
-            if let savedValue = persisted[option.key],
-               option.values.contains(where: { $0.value == savedValue }) {
+            // 2. Clean Category
+            if option.category == nil || option.category?.isEmpty == true {
+                option.category = fallbackKey
+            }
+            
+            // 3. Apply Overrides
+            if let savedValue = persisted[option.key] {
                 option.currentValue = savedValue
             }
             
-            // Store using versioned key
-            let versionedKey = "\(option.key)_\(option.version.rawValue)"
-            self.options[versionedKey] = option
+            // 4. SMART INTERNAL KEY (No more _V2_V2)
+            let internalKey = makeInternalKey(baseKey: option.key, version: option.version)
+            self.options[internalKey] = option
         }
-        
+
         // Persist these definitions so they can be loaded when the core isn't running
         if let coreID = currentCoreID {
             persistDefinitions(for: coreID)
@@ -294,10 +298,16 @@ class CoreOptionsManager: ObservableObject {
     // Get all raw key-value pairs for passing back to the core
     func allValues() -> [String: String] {
         var result: [String: String] = [:]
+        let v1Suffix = "_\(CoreOptionVersion.v1.rawValue)"
+        let v2Suffix = "_\(CoreOptionVersion.v2.rawValue)"
+        
         for (versionedKey, option) in options {
-            // Strip the version suffix to get the base key for the core
-            let baseKey = versionedKey.replacingOccurrences(of: "_\(CoreOptionVersion.v1.rawValue)", with: "")
-                                      .replacingOccurrences(of: "_\(CoreOptionVersion.v2.rawValue)", with: "")
+            var baseKey = versionedKey
+            if baseKey.hasSuffix(v1Suffix) {
+                baseKey = String(baseKey.dropLast(v1Suffix.count))
+            } else if baseKey.hasSuffix(v2Suffix) {
+                baseKey = String(baseKey.dropLast(v2Suffix.count))
+            }
             result[baseKey] = option.currentValue
         }
         return result
@@ -417,19 +427,26 @@ class CoreOptionsManager: ObservableObject {
     }
     
     // MARK: - Definition Persistence
-    
     private func persistDefinitions(for coreID: String) {
-        let payload: [String: Any] = [
-            "categories": categories.mapValues { ["desc": $0.description, "info": $0.info] },
-            "options": options.mapValues { o -> [String: Any] in
-                return ["desc": o.description, "info": o.info, "category": o.category ?? "",
-                        "defaultValue": o.defaultValue, "currentValue": o.currentValue,
-                        "values": o.values.map { ["value": $0.value, "label": $0.label] }]
-            }
-        ]
-        LoggerService.debug(category: "CoreOptionsManager", "For \(coreID): Persisting payload \(payload)")
+        // Map categories
+        let catsPayload = categories.mapValues { ["desc": $0.description, "info": $0.info] }
+        
+        // Map options using the BASE key as the JSON key
+        var optsPayload: [String: Any] = [:]
+        for (_, option) in options {
+            optsPayload[option.key] = [ // <--- USE option.key (Base), NOT the dictionary key
+                "desc": option.description,
+                "info": option.info,
+                "category": option.category ?? "general",
+                "defaultValue": option.defaultValue,
+                "currentValue": option.currentValue,
+                "values": option.values.map { ["value": $0.value, "label": $0.label] }
+            ]
+        }
 
-        if let data = try? JSONSerialization.data(withJSONObject: payload) {
+        let payload: [String: Any] = ["categories": catsPayload, "options": optsPayload]
+
+        if let data = try? JSONSerialization.data(withJSONObject: payload, options: [.prettyPrinted, .sortedKeys]) {
             let url = definitionsDirectory.appendingPathComponent("\(coreID).json")
             try? data.write(to: url)
         }

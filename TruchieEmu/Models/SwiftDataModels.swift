@@ -27,7 +27,7 @@ final class ROMEntry {
     var screenshotPathsJSON: String?
     var settingsJSON: String?
     var isIdentified: Bool
-    var raGameId: Int?
+    var raGameI: Int?
     var raMatchStatus: String? // Values: "matched", "mismatch:<expected_hash>", "not_supported"
 
     // Relationships
