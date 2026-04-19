@@ -57,6 +57,8 @@ class StandaloneGameWindowController: NSWindowController, NSWindowDelegate, Obse
     
     // The sheet window for the cheat manager (if currently presented).
     private var cheatManagerSheetWindow: NSWindow?
+    // Whether cheats are enabled for this game launch.
+    @MainActor @Published var cheatsEnabled: Bool = false
     // Track the ROM path for this window instance (for cleanup on close)
     private var trackedROMPath: String?
     
@@ -569,12 +571,12 @@ class StandaloneGameWindowController: NSWindowController, NSWindowDelegate, Obse
     // Called after the emulator core has started.
     private func autoLoadAndApplyCheats(for rom: ROM) {
         // Always load cheats so they appear in the manager
-        if AppSettings.getBool("applyCheatsOnLaunch", defaultValue: false) {
+        if cheatsEnabled {
             CheatManagerService.shared.loadCheatsForROM(rom)
         } else {
             return
         }
-
+        
         let enabledCheats = CheatManagerService.shared.enabledCheats(for: rom)
         guard !enabledCheats.isEmpty else { return }
         

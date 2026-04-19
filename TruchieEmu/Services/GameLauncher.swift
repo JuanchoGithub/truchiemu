@@ -67,7 +67,7 @@ class GameLauncher: ObservableObject {
             LoggerService.extreme(category: "GameLauncher", "Resolved hardcore mode: \(self.hardcoreMode)")
             
             // Resolve cheats
-            self.cheatsEnabled = cheatsEnabled ?? AppSettings.getBool("cheats_enabled", defaultValue: false)
+            self.cheatsEnabled = cheatsEnabled ?? rom.settings.cheatsEnabled ?? AppSettings.getBool("cheats_enabled", defaultValue: false)
             LoggerService.extreme(category: "GameLauncher", "Resolved cheats enabled: \(self.cheatsEnabled)")
             
             // Resolve core options
@@ -168,6 +168,7 @@ class GameLauncher: ObservableObject {
         let runner = EmulatorRunner.forSystem(systemID)
         let controller = StandaloneGameWindowController(runner: runner)
         controller.library = library
+        controller.cheatsEnabled = config.cheatsEnabled
         
         // Track the controller
         activeControllers[rom.id] = controller
@@ -226,9 +227,6 @@ class GameLauncher: ObservableObject {
         if config.hardcoreMode != HardcoreModeManager.shared.isHardcoreActive {
             HardcoreModeManager.shared.isHardcoreActive = config.hardcoreMode
         }
-        
-        // 6. Apply cheats setting
-        AppSettings.setBool("cheats_enabled", value: config.cheatsEnabled)
     }
     
     // MARK: - MAME Frame Limiting

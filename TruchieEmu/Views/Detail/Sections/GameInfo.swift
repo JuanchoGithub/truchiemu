@@ -85,9 +85,11 @@ extension GameDetailView {
                 }
             }
 
-            coreInfoSection
-            
-            if currentROM.systemID == "mame" || currentROM.systemID == "arcade" {
+             coreInfoSection
+             
+             cheatsEnabledSection
+             
+             if currentROM.systemID == "mame" || currentROM.systemID == "arcade" {
                 MAMEDependencyStatusView(rom: currentROM, coreID: activeCoreID)
             }
             
@@ -186,55 +188,79 @@ extension GameDetailView {
         }
     }
 
-    var gbColorizationSection: some View {
-        ModernSectionCard(title: "Game Boy Colorization", icon: "paintpalette") {
-            VStack(alignment: .leading, spacing: 12) {
-                Toggle(isOn: Binding(
-                    get: { gbColorizationEnabled },
-                    set: { newValue in
-                        gbColorizationEnabled = newValue
-                        applyGBColorizationSettings()
-                    }
-                )) {
-                    HStack {
-                        Image(systemName: "paintpalette.fill").foregroundColor(.purple)
-                        Text("Enable Colorization").foregroundColor(.white.opacity(0.85))
-                    }
-                }
-                .toggleStyle(SwitchToggleStyle())
+     var cheatsEnabledSection: some View {
+         ModernSectionCard(title: "Cheats", icon: "gamecontroller") {
+             VStack(alignment: .leading, spacing: 12) {
+                 Toggle(isOn: Binding(
+                     get: { currentROM.settings.cheatsEnabled ?? false },
+                     set: { newValue in
+                         updateSettings { $0.cheatsEnabled = newValue }
+                     }
+                 )) {
+                     HStack {
+                         Image(systemName: "gamecontroller.fill").foregroundColor(.blue)
+                         Text("Enable Cheats").foregroundColor(.white.opacity(0.85))
+                     }
+                 }
+                 .toggleStyle(SwitchToggleStyle())
+                 
+                 if currentROM.settings.cheatsEnabled ?? false {
+                     Text("When enabled, the emulator will attempt to apply active cheats during launch.")
+                         .font(.caption).foregroundColor(.white.opacity(0.4)).lineSpacing(2)
+                 }
+             }
+         }
+     }
 
-                if gbColorizationEnabled {
-                    Divider().overlay(dividerColor)
-                    gbPaletteModeRow
-                    if gbColorizationMode == "internal" {
-                        Divider().overlay(dividerColor)
-                        if isGambatteCore {
-                            gbInternalPaletteRow
-                        } else {
-                            gbInternalPaletteRow.opacity(0.4).disabled(true)
-                                .help("Gambatte core only — switch to gambatte_libretro to use named palettes")
-                        }
-                    }
-                    Divider().overlay(dividerColor)
-                    gbSGBBordersRow
-                    Divider().overlay(dividerColor)
-                    if isGambatteCore {
-                        gbColorCorrectionRow
-                    } else {
-                        gbColorCorrectionRow.opacity(0.4).disabled(true)
-                            .help("Gambatte core only — switch to gambatte_libretro to use color correction")
-                    }
-                    Divider().overlay(dividerColor)
-                    Text("Apply color palettes to original Game Boy (DMG) games. 'Auto' selects the best palette for each game. 'Internal' uses a classic Game Boy or Super Game Boy palette. Named palettes and color correction require the Gambatte core.")
-                        .font(.caption).foregroundColor(.white.opacity(0.4)).lineSpacing(2)
-                } else {
-                    Divider().overlay(dividerColor)
-                    Text("Games will display in classic Game Boy monochrome (green-tinted).")
-                        .font(.caption).foregroundColor(.white.opacity(0.4)).lineSpacing(2)
-                }
-            }
-        }
-    }
+     var gbColorizationSection: some View {
+         ModernSectionCard(title: "Game Boy Colorization", icon: "paintpalette") {
+             VStack(alignment: .leading, spacing: 12) {
+                 Toggle(isOn: Binding(
+                     get: { gbColorizationEnabled },
+                     set: { newValue in
+                         gbColorizationEnabled = newValue
+                         applyGBColorizationSettings()
+                     }
+                 )) {
+                     HStack {
+                         Image(systemName: "paintpalette.fill").foregroundColor(.purple)
+                         Text("Enable Colorization").foregroundColor(.white.opacity(0.85))
+                     }
+                 }
+                 .toggleStyle(SwitchToggleStyle())
+                 
+                 if gbColorizationEnabled {
+                     Divider().overlay(dividerColor)
+                     gbPaletteModeRow
+                     if gbColorizationMode == "internal" {
+                         Divider().overlay(dividerColor)
+                         if isGambatteCore {
+                             gbInternalPaletteRow
+                         } else {
+                             gbInternalPaletteRow.opacity(0.4).disabled(true)
+                                 .help("Gambatte core only — switch to gambatte_libretro to use named palettes")
+                         }
+                     }
+                     Divider().overlay(dividerColor)
+                     gbSGBBordersRow
+                     Divider().overlay(dividerColor)
+                     if isGambatteCore {
+                         gbColorCorrectionRow
+                     } else {
+                         gbColorCorrectionRow.opacity(0.4).disabled(true)
+                             .help("Gambatte core only — switch to gambatte_libretro to use color correction")
+                     }
+                     Divider().overlay(dividerColor)
+                     Text("Apply color palettes to original Game Boy (DMG) games. 'Auto' selects the best palette for each game. 'Internal' uses a classic Game Boy or Super Game Boy palette. Named palettes and color correction require the Gambatte core.")
+                         .font(.caption).foregroundColor(.white.opacity(0.4)).lineSpacing(2)
+                 } else {
+                     Divider().overlay(dividerColor)
+                     Text("Games will display in classic Game Boy monochrome (green-tinted).")
+                         .font(.caption).foregroundColor(.white.opacity(0.4)).lineSpacing(2)
+                 }
+             }
+         }
+     }
 
     var gbPaletteModeRow: some View {
         HStack {

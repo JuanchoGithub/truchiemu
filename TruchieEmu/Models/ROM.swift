@@ -140,6 +140,10 @@ struct ROMSettings: Codable, Hashable {
     
     // Color correction (Gambatte core only).
     var gbColorCorrectionMode: String = "gbc_only"
+
+    // Whether to enable cheats for this specific game.
+    // If nil, the global application setting is used.
+    var cheatsEnabled: Bool? = nil
 }
 
 struct ROMMetadata: Codable, Hashable {
@@ -159,7 +163,7 @@ struct ROMMetadata: Codable, Hashable {
     // MAME 2003+ video/display metadata
     // Screen orientation: "vertical" or "horizontal"
     var orientation: String?
-    // Aspect ratio X component (e.g. 3 for 3:4 vertical, 4 for 4:3 horizontal)
+    // Aspect ratio X component (e.g 3 for 3:4 vertical, 4 for 4:3 horizontal)
     var aspectX: Int?
     // Aspect ratio Y component
     var aspectY: Int?
