@@ -349,7 +349,7 @@ final class ROMRepository {
             thumbnailLookupSystemID: entry.thumbnailLookupSystemID,
             screenshotPaths: screenshotPaths,
             settings: settings ?? ROMSettings(),
-            raGameId: entry.raGameID,
+            raGameId: entry.raGameId,
             raMatchStatus: entry.raMatchStatus
         )
     }

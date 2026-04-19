@@ -201,8 +201,8 @@ class RetroAchievementsService: ObservableObject {
         // 1. Attempt Name-based identification using the local RA cache
         let raConsoleID = mapSystemIDToRAConsoleID(systemID)
         
-        if let raGameID = await identifyGameByName(title: rom.name, consoleID: raConsoleID) {
-            romEntry.raGameId = raGameID
+        if let raGameId = await identifyGameByName(title: rom.name, consoleID: raConsoleID) {
+            romEntry.raGameId = raGameId
             
             // 2. Verify the exact version using the ROM's hash (if available)
             if let romHash = rom.crc32 {
@@ -210,7 +210,7 @@ class RetroAchievementsService: ObservableObject {
                     // Check if the provided hash matches the RA database for this specific Game ID
                     let raGameIDFromHash = try await resolveHash(hash: romHash)
                     
-                    if raGameIDFromHash == raGameID {
+                    if raGameIDFromHash == raGameId {
                         romEntry.raMatchStatus = "matched"
                     } else {
                         // The game is found by name, but the hash points to a different RA Game ID (version mismatch)
@@ -223,8 +223,8 @@ class RetroAchievementsService: ObservableObject {
         } else {
             // 3. Fallback: If name match fails, try identifying by hash only
             if let romHash = rom.crc32 {
-                if let raGameID = try? await resolveHash(hash: romHash) {
-                    romEntry.raGameId = raGameID
+                if let raGameId = try? await resolveHash(hash: romHash) {
+                    romEntry.raGameId = raGameId
                     romEntry.raMatchStatus = "matched"
                 } else {
                     romEntry.raMatchStatus = "not_supported"
