@@ -81,11 +81,6 @@ extension GameDetailView {
                     }
                     
                     Spacer()
-                    
-                    Button { showCheatManager = true } label: {
-                        HStack(spacing: 4) { Image(systemName: "wand.and.stars"); Text("Manage") }
-                        .foregroundColor(.white).padding(.horizontal, 10).padding(.vertical, 5).background(Color.blue.opacity(0.6)).cornerRadius(5)
-                    }
                 }
 
                 Divider().overlay(dividerColor)

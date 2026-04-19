@@ -41,7 +41,6 @@ struct GameDetailView: View {
     @State var slotInfoList: [SlotInfo] = []
     @State var gameAchievements:[Achievement] = []
     @State var isAchievementsLoading = false
-    @State var showCheatManager = false
     @State var showImportCheatFile = false
     @State var gbColorizationEnabled: Bool = true
     @State var gbColorizationMode: String = "auto"
@@ -220,7 +219,6 @@ struct GameDetailView: View {
             SystemControlsMappingView(systemID: currentROM.systemID ?? "", systemName: system?.name ?? "Unknown")
             .environmentObject(controllerService)
         }
-        .sheet(isPresented: $showCheatManager) { CheatManagerView(rom: currentROM).frame(minWidth: 500, minHeight: 600) }
     }
 
     var immersiveBackground: some View {

@@ -7,7 +7,7 @@ struct CheatManagerViewWrapper: View {
     let rom: ROM
     weak var windowController: StandaloneGameWindowController?
     
-    @StateObject private var cheatManager = CheatManager.shared
+    @ObservedObject private var cheatManager = CheatManagerService.shared
     @StateObject private var cheatDownloadService = CheatDownloadService.shared
     @State private var showAddCheatWindow = false
     @State private var showImportFile = false
@@ -62,9 +62,12 @@ struct CheatManagerViewWrapper: View {
             }
             .padding()
             
-            Divider()
-            
-            // Category filter
+             Divider()
+             .onAppear {
+                 cheatManager.loadCheatsForROM(rom)
+             }
+             
+             // Category filter
             ScrollView(.horizontal, showsIndicators: false) {
                 HStack(spacing: 8) {
                     Button(action: { selectedCategory = nil }) {
@@ -368,7 +371,7 @@ struct InlineCheatRowView: View {
 
 struct AddCheatViewWrapper: View {
     let rom: ROM
-    @ObservedObject var cheatManager: CheatManager
+    @ObservedObject var cheatManager: CheatManagerService
     @Environment(\.dismiss) private var dismiss
     @State private var description = ""
     @State private var code = ""

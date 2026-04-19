@@ -8,7 +8,7 @@ struct CheatManagerView: View {
     let rom: ROM
     @Environment(\.dismiss) var dismiss
     @Environment(\.colorScheme) private var colorScheme
-    @StateObject private var cheatManager = CheatManager.shared
+    @ObservedObject private var cheatManager = CheatManagerService.shared
     @State private var showAddCheatWindow = false
     @State private var showImportFile = false
     @State private var searchText = ""
@@ -55,11 +55,14 @@ struct CheatManagerView: View {
                         .foregroundColor(.secondary)
                 }
                 .buttonStyle(.plain)
-            }
-            .padding(.horizontal, 16)
-            .padding(.vertical, 12)
-            
-            Divider()
+             }
+             .padding(.horizontal, 16)
+             .padding(.vertical, 12)
+             
+             Divider()
+             .onAppear {
+                 cheatManager.loadCheatsForROM(rom)
+             }
             
             ScrollView(.horizontal, showsIndicators: false) {
                 HStack(spacing: 6) {
@@ -168,7 +171,7 @@ struct CheatManagerView: View {
 struct CheatRowView: View {
     let cheat: Cheat
     let rom: ROM
-    @StateObject private var cheatManager = CheatManager.shared
+    @ObservedObject private var cheatManager = CheatManagerService.shared
     
     var body: some View {
         HStack(spacing: 12) {
@@ -196,7 +199,7 @@ struct AddCheatWindow: View {
     let rom: ROM
     @Environment(\.dismiss) private var dismiss
     @Environment(\.colorScheme) private var colorScheme
-    @StateObject private var cheatManager = CheatManager.shared
+    @ObservedObject private var cheatManager = CheatManagerService.shared
     @State private var description = ""
     @State private var code = ""
     @State private var format: CheatFormat = .raw
@@ -241,47 +244,3 @@ struct AddCheatWindow: View {
     }
 }
 
-// MARK: - Cheat Manager Service
-
-// Manages cheat state for all games.
-class CheatManager: ObservableObject {
-    static let shared = CheatManager()
-    @Published private var allCheats: [String: [Cheat]] = [:]
-    private let saveKey = "cheats"
-    init() { loadCheats() }
-    
-    func cheats(for rom: ROM) -> [Cheat] { allCheats[rom.path.path] ?? [] }
-    
-    func updateCheat(_ cheat: Cheat, for rom: ROM) {
-        var cheats = allCheats[rom.path.path] ?? []
-        if let index = cheats.firstIndex(where: { $0.id == cheat.id }) { cheats[index] = cheat } else { cheats.append(cheat) }
-        allCheats[rom.path.path] = cheats; saveCheats()
-    }
-    
-    func addCheat(_ cheat: Cheat, for rom: ROM) {
-        var cheats = allCheats[rom.path.path] ?? []; cheats.append(cheat)
-        allCheats[rom.path.path] = cheats; saveCheats()
-    }
-    
-    func removeCheat(_ cheat: Cheat, for rom: ROM) {
-        var cheats = allCheats[rom.path.path] ?? []
-        cheats.removeAll { $0.id == cheat.id }
-        allCheats[rom.path.path] = cheats; saveCheats()
-    }
-    
-    @MainActor func importChtFile(_ url: URL, for rom: ROM) async {
-        let accessed = url.startAccessingSecurityScopedResource()
-        defer { if accessed { url.stopAccessingSecurityScopedResource() } }
-        guard let cheats = CheatParser.parseChtFile(url: url) else { LoggerService.debug(category: "Cheats", "Failed to parse cheat file: \(url.path)"); return }
-        var existing = allCheats[rom.path.path] ?? []
-        for newCheat in cheats {
-            if let index = existing.firstIndex(where: { $0.index == newCheat.index }) { existing[index] = newCheat } else { existing.append(newCheat) }
-        }
-        allCheats[rom.path.path] = existing; saveCheats()
-    }
-    
-    func clearCheats(for rom: ROM) { allCheats[rom.path.path] = nil; saveCheats() }
-    
-    private func saveCheats() { guard let data = try? JSONEncoder().encode(allCheats) else { return }; AppSettings.setData(saveKey, value: data) }
-    private func loadCheats() { guard let data = AppSettings.getData(saveKey), let decoded = try? JSONDecoder().decode([String: [Cheat]].self, from: data) else { return }; allCheats = decoded }
-}
