@@ -198,7 +198,7 @@ struct CoreOptionsView: View {
                                 Button(action: {
                                     Task { await viewModel.discoverOptions(for: viewModel.currentCoreID, library: library) }
                                 }) {
-                                    Label("Rediscover from Core", systemImage: "arrow.triangle.2.circlepath.mag")
+                                    Label("Rediscover from Core", systemImage: "arrow.triangle.2.circlepath")
                                 }
                                 .buttonStyle(.link)
                                 

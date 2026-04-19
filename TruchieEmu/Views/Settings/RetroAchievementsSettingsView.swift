@@ -4,10 +4,10 @@ import SwiftUI
 struct RetroAchievementsSettingsView: View {
     @ObservedObject private var raService = RetroAchievementsService.shared
     @State private var username = ""
-    @State private var password = ""
+    @State private var webApiKey = ""
     @State private var loginError: String?
     @State private var isLoggingIn = false
-    @State private var showPassword = false
+    @State private var showApiKey = false
     
     let system: SystemInfo?
 
@@ -82,11 +82,11 @@ struct RetroAchievementsSettingsView: View {
                                 }
                                 Spacer()
                                 Button("Logout") {
-                                    raService.saveSettings(username: "", token: "")
+                                    raService.saveSettings(username: "", webApiKey: "")
                                     raService.isLoggedIn = false
                                     raService.userInfo = nil
                                     username = ""
-                                    password = ""
+                                    webApiKey = ""
                                 }
                                 .buttonStyle(.bordered)
                                 .tint(.red.opacity(0.8))
@@ -133,15 +133,16 @@ struct RetroAchievementsSettingsView: View {
                                 .disableAutocorrection(true)
                             
                             HStack {
-                                if showPassword {
-                                    TextField("Password", text: $password)
+                                if showApiKey {
+                                    TextField("Web API Key", text: $webApiKey)
                                         .textFieldStyle(.roundedBorder)
+                                        .disableAutocorrection(true)
                                 } else {
-                                    SecureField("Password", text: $password)
+                                    SecureField("Web API Key", text: $webApiKey)
                                         .textFieldStyle(.roundedBorder)
                                 }
-                                Button(action: { showPassword.toggle() }) {
-                                    Image(systemName: showPassword ? "eye.slash" : "eye")
+                                Button(action: { showApiKey.toggle() }) {
+                                    Image(systemName: showApiKey ? "eye.slash" : "eye")
                                 }
                                 .buttonStyle(.plain)
                             }
@@ -157,25 +158,33 @@ struct RetroAchievementsSettingsView: View {
                                     ProgressView()
                                         .controlSize(.small)
                                 } else {
-                                    Text("Login")
+                                    Text("Connect")
                                 }
                             }
                             .buttonStyle(.borderedProminent)
-                            .disabled(isLoggingIn || username.isEmpty || password.isEmpty)
+                            .disabled(isLoggingIn || username.isEmpty || webApiKey.isEmpty)
                         }
                         .padding()
                         .background(.ultraThinMaterial)
                         .cornerRadius(12)
                         
-                        Text("Enter your RetroAchievements credentials. Your password is only used to obtain an API token and is never stored.")
+                        Text("Enter your RetroAchievements Username and Web API Key. Do not use your account password.")
                             .font(.caption)
                             .foregroundColor(.secondary)
+                        
+                        HStack(spacing: 4) {
+                            Text("Find your key at")
+                                .font(.caption)
+                                .foregroundColor(.secondary)
+                            Link("RetroAchievements Settings", destination: URL(string: "https://retroachievements.org/controlpanel.php")!)
+                                .font(.caption)
+                        }
                         
                         HStack(spacing: 4) {
                             Text("Don't have an account?")
                                 .font(.caption)
                                 .foregroundColor(.secondary)
-                            Link("Register on RetroAchievements", destination: URL(string: "https://retroachievements.org/createaccount.php")!)
+                            Link("Register here", destination: URL(string: "https://retroachievements.org/createaccount.php")!)
                                 .font(.caption)
                         }
                     }
@@ -283,10 +292,13 @@ struct RetroAchievementsSettingsView: View {
         
         Task {
             do {
-                _ = try await raService.login(username: username, password: password)
+                // Call the new service method
+                try await raService.loginWithWebApiKey(username: username, webApiKey: webApiKey)
                 await MainActor.run {
                     isLoggingIn = false
-                    password = "" // Clear password after login
+                    // We can leave the webApiKey in the field, or clear it if preferred.
+                    // Leaving it cleared for security is generally good practice.
+                    webApiKey = "" 
                 }
             } catch {
                 await MainActor.run {

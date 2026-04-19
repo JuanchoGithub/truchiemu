@@ -166,21 +166,22 @@ struct SetupWizardView: View {
             }
             
             // RetroAchievements login
+            /*
             if achievementsEnabled && !achievementsUsername.isEmpty && !achievementsPassword.isEmpty {
                 do {
-                    let token = try await RetroAchievementsService.shared.login(
+                    let token = try await RetroAchievementsService.shared.loginWithWebApiKey(
                         username: achievementsUsername,
-                        password: achievementsPassword
+                        webApiKey: achievementsPassword
                     )
                     await RetroAchievementsService.shared.saveSettings(
                         username: achievementsUsername,
-                        token: token
+                        webApiKey: <#T##String#>: token
                     )
                     await RetroAchievementsService.shared.setEnabled(true)
                 } catch {
                     LoggerService.info(category: "Wizard", "Achievements login failed: \(error.localizedDescription)")
                 }
-            }
+            }*/
         }
     }
 }
@@ -378,7 +379,7 @@ extension SetupWizardView {
                                 .foregroundColor(.red)
                         }
                         
-                        HStack(spacing: 8) {
+                        /*HStack(spacing: 8) {
                             Button {
                                 Task {
                                     isRALoggingIn = true
@@ -400,7 +401,7 @@ extension SetupWizardView {
                             Link("Create Account", destination: URL(string: "https://retroachievements.org")!)
                                 .font(.callout)
                                 .foregroundColor(.accentColor)
-                        }
+                        }*/
                     }
                     .padding()
                     .background(Color.secondary.opacity(0.05))

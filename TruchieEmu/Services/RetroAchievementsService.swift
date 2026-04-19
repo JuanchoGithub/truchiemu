@@ -21,14 +21,13 @@ class RetroAchievementsService: ObservableObject {
     // MARK: - Configuration
     
     private let apiBaseURL = "https://retroachievements.org/API"
-    private let apiKey: String
+    
+    // The user's personal Web API Key used to authenticate all REST requests
+    private var webApiKey: String = ""
     
     // MARK: - Initialization
     
     private init() {
-        // Load API key from environment or hardcoded value
-        // For production, this should be stored securely
-        self.apiKey = ProcessInfo.processInfo.environment["RA_API_KEY"] ?? ""
         loadSettings()
     }
     
@@ -36,19 +35,22 @@ class RetroAchievementsService: ObservableObject {
     
     private func loadSettings() {
         username = AppSettings.get("ra_username", type: String.self)
-        let token = AppSettings.get("ra_token", type: String.self)
+        let key = AppSettings.get("ra_web_api_key", type: String.self)
         hardcoreMode = AppSettings.getBool("ra_hardcore", defaultValue: false)
         isEnabled = AppSettings.getBool("ra_enabled", defaultValue: false)
         
-        if let token = token, let username = username, !token.isEmpty {
-            Task { await validateToken(token: token, username: username) }
+        if let key = key, let username = username, !key.isEmpty {
+            self.webApiKey = key
+            Task { await validateCredentials(username: username, webApiKey: key) }
         }
     }
     
-    func saveSettings(username: String, token: String) {
+    func saveSettings(username: String, webApiKey: String) {
         AppSettings.set("ra_username", value: username)
-        AppSettings.set("ra_token", value: token)
+        AppSettings.set("ra_web_api_key", value: webApiKey)
+        
         self.username = username
+        self.webApiKey = webApiKey
     }
     
     func setHardcoreMode(_ enabled: Bool) {
@@ -66,62 +68,43 @@ class RetroAchievementsService: ObservableObject {
     
     // MARK: - Authentication
     
-    // Validate stored token on app launch.
-    func validateToken(token: String, username: String) async {
-        guard isEnabled, !apiKey.isEmpty else { return }
+    /// Validates the user's Web API Key by attempting to fetch their user summary.
+    func loginWithWebApiKey(username: String, webApiKey: String) async throws {
+        // Temporarily set the key so the request wrapper can use it
+        self.webApiKey = webApiKey
         
         do {
-            let response = try await requestUserSummary(username: username, token: token)
-            await MainActor.run {
-                self.isLoggedIn = true
-                self.userInfo = response
-                LoggerService.info(category: "RetroAchievements", "RetroAchievements token validated for \(username)")
+            guard let response = try await requestUserSummary(username: username) else {
+                throw RAError.loginFailed("Invalid Web API Key or Username.")
             }
-        } catch {
-            LoggerService.error(category: "RetroAchievements", "Token validation failed: \(error.localizedDescription)")
-            await MainActor.run {
-                self.isLoggedIn = false
-            }
-        }
-    }
-    
-    // Login with username and password to get API token.
-    func login(username: String, password: String) async throws -> String {
-        guard !apiKey.isEmpty else {
-            throw RAError.apiKeyMissing
-        }
-        
-        let url = URL(string: "\(apiBaseURL)/APILogin.php")!
-        var request = URLRequest(url: url)
-        request.httpMethod = "POST"
-        request.setValue("application/json", forHTTPHeaderField: "Content-Type")
-        
-        let body: [String: String] = [
-            "u": username,
-            "p": password,
-            "y": apiKey
-        ]
-        request.httpBody = try JSONSerialization.data(withJSONObject: body)
-        
-        let (data, response) = try await URLSession.shared.data(for: request)
-        guard let httpResponse = response as? HTTPURLResponse, httpResponse.statusCode == 200 else {
-            throw RAError.networkError
-        }
-        
-        let json = try JSONSerialization.jsonObject(with: data) as? [String: Any]
-        
-        if let success = json?["Success"] as? Bool, success {
-            let token = json?["Token"] as? String ?? ""
+            
             await MainActor.run {
                 self.isLoggedIn = true
                 self.username = username
-                saveSettings(username: username, token: token)
+                self.userInfo = response
+                self.saveSettings(username: username, webApiKey: webApiKey)
             }
-            LoggerService.info(category: "RetroAchievements", "Login successful for \(username)")
-            return token
-        } else {
-            let error = json?["Error"] as? String ?? "Unknown error"
-            throw RAError.loginFailed(error)
+            
+            LoggerService.info(category: "RetroAchievements", "Logged in successfully as \(username)")
+            
+        } catch {
+            await MainActor.run {
+                self.webApiKey = "" // Reset on failure
+                self.isLoggedIn = false
+            }
+            LoggerService.error(category: "RetroAchievements", "Login failed: \(error.localizedDescription)")
+            throw error
+        }
+    }
+    
+    // Validate stored credentials on app launch.
+    private func validateCredentials(username: String, webApiKey: String) async {
+        guard isEnabled, !webApiKey.isEmpty else { return }
+        
+        do {
+            try await loginWithWebApiKey(username: username, webApiKey: webApiKey)
+        } catch {
+            LoggerService.error(category: "RetroAchievements", "Token validation failed on launch.")
         }
     }
     
@@ -129,7 +112,7 @@ class RetroAchievementsService: ObservableObject {
     
     // Identify a game by its hash and fetch achievement data.
     func identifyGame(hash: String) async throws -> RAGameInfo? {
-        guard isEnabled, isLoggedIn, !apiKey.isEmpty else { return nil }
+        guard isEnabled, isLoggedIn, !webApiKey.isEmpty else { return nil }
         guard let username = username else { return nil }
         
         // First, get game ID from hash
@@ -147,7 +130,8 @@ class RetroAchievementsService: ObservableObject {
     private func resolveHash(hash: String) async throws -> Int? {
         guard username != nil else { return nil }
         
-        return nil // Requires separate hash resolution endpoint
+        // Requires separate hash resolution endpoint implementation
+        return nil 
     }
     
     // Fetch detailed game info including achievements.
@@ -191,18 +175,18 @@ class RetroAchievementsService: ObservableObject {
     
     // Submit an achievement unlock.
     func unlockAchievement(id: Int, hardcore: Bool) async throws {
-        guard isLoggedIn, let username = username else { return }
+        guard isLoggedIn, let username = username, !webApiKey.isEmpty else { return }
         
         let url = URL(string: "\(apiBaseURL)/AwardAchievement.php")!
         var request = URLRequest(url: url)
         request.httpMethod = "POST"
         request.setValue("application/json", forHTTPHeaderField: "Content-Type")
         
-        let body: [String: String] = [
+        let body:[String: String] = [
             "u": username,
             "a": String(id),
             "h": hardcore ? "1" : "0",
-            "y": apiKey
+            "y": webApiKey
         ]
         request.httpBody = try JSONSerialization.data(withJSONObject: body)
         
@@ -227,14 +211,14 @@ class RetroAchievementsService: ObservableObject {
     
     // Fetch leaderboards for a game.
     func fetchLeaderboards(gameID: Int) async throws -> [Leaderboard] {
-        guard isLoggedIn, let username = username else { return [] }
+        guard isLoggedIn, let username = username, !webApiKey.isEmpty else { return[] }
         
         let url = URL(string: "\(apiBaseURL)/API_GetGameRankAndScore.php")!
         var components = URLComponents(url: url, resolvingAgainstBaseURL: false)!
         components.queryItems = [
             URLQueryItem(name: "g", value: String(gameID)),
             URLQueryItem(name: "u", value: username),
-            URLQueryItem(name: "y", value: apiKey)
+            URLQueryItem(name: "y", value: webApiKey)
         ]
         
         let (data, _) = try await URLSession.shared.data(from: components.url!)
@@ -265,7 +249,7 @@ class RetroAchievementsService: ObservableObject {
     
     // Submit a leaderboard entry.
     func submitLeaderboardScore(leaderboardID: Int, score: Int) async throws {
-        guard isLoggedIn, let username = username else { return }
+        guard isLoggedIn, let username = username, !webApiKey.isEmpty else { return }
         
         let url = URL(string: "\(apiBaseURL)/API_SubmitLeaderboardEntry.php")!
         var request = URLRequest(url: url)
@@ -275,7 +259,7 @@ class RetroAchievementsService: ObservableObject {
             "u": username,
             "i": String(leaderboardID),
             "s": String(score),
-            "y": apiKey
+            "y": webApiKey
         ]
         request.httpBody = try JSONSerialization.data(withJSONObject: body)
         
@@ -291,17 +275,17 @@ class RetroAchievementsService: ObservableObject {
     
     // Update rich presence message.
     func updateRichPresence(gameID: Int, message: String) async {
-        guard isLoggedIn, let username = username else { return }
+        guard isLoggedIn, let username = username, !webApiKey.isEmpty else { return }
         
         let url = URL(string: "\(apiBaseURL)/API_Ping.php")!
         var request = URLRequest(url: url)
         request.httpMethod = "POST"
         
-        let body: [String: String] = [
+        let body:[String: String] = [
             "u": username,
             "g": String(gameID),
             "m": message,
-            "y": apiKey
+            "y": webApiKey
         ]
         request.httpBody = try? JSONSerialization.data(withJSONObject: body)
         
@@ -317,20 +301,28 @@ class RetroAchievementsService: ObservableObject {
     
     // MARK: - API Request Helpers
     
-    private func requestUserSummary(username: String, token: String) async throws -> RAUserInfo? {
+    private func requestUserSummary(username: String) async throws -> RAUserInfo? {
         let url = URL(string: "\(apiBaseURL)/API_GetUserSummary.php")!
         var components = URLComponents(url: url, resolvingAgainstBaseURL: false)!
         components.queryItems = [
             URLQueryItem(name: "u", value: username),
-            URLQueryItem(name: "t", value: token),
-            URLQueryItem(name: "y", value: apiKey),
+            URLQueryItem(name: "y", value: webApiKey), // Auth happens here
             URLQueryItem(name: "a", value: "1")
         ]
         
-        let (data, _) = try await URLSession.shared.data(from: components.url!)
+        let (data, response) = try await URLSession.shared.data(from: components.url!)
+        guard let httpResponse = response as? HTTPURLResponse, httpResponse.statusCode == 200 else {
+            throw RAError.networkError
+        }
+        
         let json = try JSONSerialization.jsonObject(with: data) as? [String: Any]
         
-        guard let responseData = json?["User"] as? [String: Any] else { return nil }
+        // Throw proper error if RetroAchievements rejects the Web API Key
+        if let errorMsg = json?["Error"] as? String {
+            throw RAError.loginFailed(errorMsg)
+        }
+        
+        guard let responseData = json else { return nil }
         
         return RAUserInfo(
             username: responseData["User"] as? String ?? username,
@@ -352,7 +344,7 @@ class RetroAchievementsService: ObservableObject {
         components.queryItems = [
             URLQueryItem(name: "i", value: gameID),
             URLQueryItem(name: "u", value: username),
-            URLQueryItem(name: "y", value: apiKey)
+            URLQueryItem(name: "y", value: webApiKey)
         ]
         
         let (data, _) = try await URLSession.shared.data(from: components.url!)
@@ -372,11 +364,11 @@ enum RAError: LocalizedError {
     var errorDescription: String? {
         switch self {
         case .apiKeyMissing:
-            return "RetroAchievements API key is not configured"
+            return "RetroAchievements Web API key is not configured"
         case .networkError:
             return "Network error occurred"
         case .loginFailed(let msg):
-            return "Login failed: \(msg)"
+            return "Connection failed: \(msg)"
         case .gameNotFound:
             return "Game not found in RetroAchievements database"
         case .invalidHash:
