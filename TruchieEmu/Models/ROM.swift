@@ -44,6 +44,10 @@ struct ROM: Identifiable, Codable, Hashable, Sendable {
     var infoLocalPath: URL = URL(fileURLWithPath: "")
     var shortNameForMAME: String = ""
     var filenameWithoutExtension: String = ""
+    
+    // RetroAchievements metadata
+    var raGameId: Int?
+    var raMatchStatus: String?
 
     // Updates all stored derived properties based on current state.
     mutating func refreshDerivedFields() {

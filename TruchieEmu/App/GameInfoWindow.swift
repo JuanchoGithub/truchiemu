@@ -9,7 +9,12 @@ struct GameInfoWindow: View {
     var body: some View {
         Group {
             if let rom = library.roms.first(where: { $0.id == romID }) {
-                GameDetailView(rom: rom)
+                VStack(spacing: 0) {
+                    GameDetailView(rom: rom)
+                    
+                    // RA Mismatch Warning
+                    raMismatchWarning(for: rom)
+                }
             } else {
                 VStack(spacing: 24) {
                     Image(systemName: "gamecontroller")
@@ -46,6 +51,27 @@ struct GameInfoWindow: View {
         .frame(minWidth: 900, minHeight: 700)
         .background(colorScheme == .dark ? Color(white: 0.06) : Color(white: 0.94))
     }
+    
+    // MARK: - RetroAchievements Warning
+    private func raMismatchWarning(for rom: ROM) -> some View {
+        Group {
+            if let raMatchStatus = rom.raMatchStatus, raMatchStatus.contains("mismatch") {
+                HStack {
+                    Image(systemName: "exclamationmark.triangle.fill")
+                        .foregroundColor(.orange)
+                    Text("This game is supported by RetroAchievements, but it needs an exact version of it that you do not have")
+                        .font(.caption)
+                        .foregroundColor(.orange)
+                }
+                .padding(.vertical, 4)
+                .frame(maxWidth: .infinity)
+                .background(Color.orange.opacity(0.1))
+            } else {
+                EmptyView()
+            }
+        }
+    }
+
     
     @State private var appeared = false
 }

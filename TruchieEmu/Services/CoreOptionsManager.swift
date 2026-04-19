@@ -148,7 +148,6 @@ class CoreOptionsManager: ObservableObject {
                     version: .v2
                 )
             }
-            LoggerService.debug(category: "CoreOptionsManager", "For \(coreID): these are the options: \(options)")
         }
  
         // 2. Apply Overrides

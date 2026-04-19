@@ -4,6 +4,8 @@ import Foundation
 
 // Service for interacting with the RetroAchievements API.
 // Handles authentication, game identification, achievement tracking, and leaderboards.
+import SwiftData
+
 @MainActor
 class RetroAchievementsService: ObservableObject {
     static let shared = RetroAchievementsService()
@@ -24,6 +26,13 @@ class RetroAchievementsService: ObservableObject {
     
     // The user's personal Web API Key used to authenticate all REST requests
     private var webApiKey: String = ""
+
+    private var modelContext: ModelContext?
+
+    /// Injected by the Coordinator/App to allow SwiftData access
+    func setModelContext(_ context: ModelContext) {
+        self.modelContext = context
+    }
     
     // MARK: - Initialization
     
@@ -108,8 +117,152 @@ class RetroAchievementsService: ObservableObject {
         }
     }
     
+    // MARK: - Game List Caching (New)
+
+    /// Fetches the entire game list from RA and stores it locally.
+    /// Should be called on first login or when requested via UI.
+    func fetchAndCacheGameList() async throws {
+        guard isEnabled, isLoggedIn, let context = modelContext else {
+            throw RAError.networkError 
+        }
+        guard let username = username else { return }
+
+        LoggerService.info(category: "RetroAchievements", "Fetching full game list from RA...")
+
+        // API endpoint: https://api-docs.retroachievements.org/v1/get-game-list.html
+        let url = URL(string: "\(apiBaseURL)/API_GetGameList.php")!
+        var components = URLComponents(url: url, resolvingAgainstBaseURL: false)!
+        components.queryItems = [
+            URLQueryItem(name: "u", value: username),
+            URLQueryItem(name: "y", value: webApiKey)
+        ]
+
+        let (data, _) = try await URLSession.shared.data(from: components.url!)
+        
+        // Decode the response (Expected format: Array of objects)
+        let raGames = try JSONDecoder().decode([RARAGameListResponse].self, from: data)
+
+        // Transactional update to the local cache
+        try await context.transaction {
+            // Clear old cache to ensure a clean, up-to-date list
+            try context.delete(model: RAGameCacheEntry.self)
+
+            for raGame in raGames {
+                let entry = RAGameCacheEntry(
+                    id: Int(raGame.ID) ?? 0,
+                    title: raGame.Title,
+                    consoleID: Int(raGame.ConsoleID) ?? 0,
+                    consoleName: raGame.ConsoleName
+                )
+                context.insert(entry)
+            }
+        }
+        
+        LoggerService.info(category: "RetroAchievements", "Successfully cached \(raGames.count) games from RA.")
+    }
+
+    /// Performs a local search in the RAGameCacheEntry database for a name match.
+    func identifyGameByName(title: String, consoleID: Int) async -> Int? {
+        guard let context = modelContext else { return nil }
+        
+        // Use localizedStandardContains for resilient name matching
+        let predicate = #Predicate<RAGameCacheEntry> {
+            $0.title.localizedStandardContains(title) && $0.consoleID == consoleID
+        }
+        
+        let descriptor = FetchDescriptor<RAGameCacheEntry>(predicate: predicate)
+        
+        do {
+            let results = try context.fetch(descriptor)
+            // Return the first match found in the local cache
+            return results.first?.id
+        } catch {
+            LoggerService.error(category: "RetroAchievements", "Failed to search local RA cache: \(error)")
+            return nil
+        }
+    }
+
     // MARK: - Game Identification
     
+    /// Coordinates the identification of a local ROM with RetroAchievements.
+    /// Performs name-based lookup via local cache, followed by hash verification via API.
+    func syncROMWithRA(rom: ROM) async {
+        guard isLoggedIn, let systemID = rom.systemID, let context = modelContext else { return }
+
+        LoggerService.info(category: "RetroAchievements", "Syncing \(rom.name) with RA...")
+
+        // 0. Find the corresponding ROMEntry in SwiftData
+        let descriptor = FetchDescriptor<ROMEntry>(predicate: #Predicate { $0.id == rom.id })
+        guard let romEntry = try? context.fetch(descriptor).first else {
+            LoggerService.error(category: "RetroAchievements", "Syncing \(rom.name) failed: ROMEntry not found in SwiftData.")
+            return
+        }
+
+        // 1. Attempt Name-based identification using the local RA cache
+        let raConsoleID = mapSystemIDToRAConsoleID(systemID)
+        
+        if let raGameID = await identifyGameByName(title: rom.name, consoleID: raConsoleID) {
+            romEntry.raGameId = raGameID
+            
+            // 2. Verify the exact version using the ROM's hash (if available)
+            if let romHash = rom.crc32 {
+                do {
+                    // Check if the provided hash matches the RA database for this specific Game ID
+                    let raGameIDFromHash = try await resolveHash(hash: romHash)
+                    
+                    if raGameIDFromHash == raGameID {
+                        romEntry.raMatchStatus = "matched"
+                    } else {
+                        // The game is found by name, but the hash points to a different RA Game ID (version mismatch)
+                        romEntry.raMatchStatus = "mismatch:\(romHash)"
+                    }
+                } catch {
+                    LoggerService.error(category: "RetroAchievements", "Hash verification failed for \(rom.name): \(error)")
+                }
+            }
+        } else {
+            // 3. Fallback: If name match fails, try identifying by hash only
+            if let romHash = rom.crc32 {
+                if let raGameID = try? await resolveHash(hash: romHash) {
+                    romEntry.raGameId = raGameID
+                    romEntry.raMatchStatus = "matched"
+                } else {
+                    romEntry.raMatchStatus = "not_supported"
+                }
+            }
+        }
+        
+        // Persist changes to SwiftData
+        try? context.save()
+    }
+
+    /// Helper to map Libretro/SystemDatabase IDs to RetroAchievements Console IDs
+    private func mapSystemIDToRAConsoleID(_ systemID: String) -> Int {
+        // Implementation will include a mapping dictionary (e.g., "nes" -> 1, "snes" -> 2, etc.)
+        // based on the RA API documentation.
+        let mapping: [String: Int] = [
+            "nes": 1,
+            "snes": 2,
+            "genesis": 3,
+            "megadrive": 3,
+            "sms": 4,
+            "gamegear": 5,
+            "gba": 6,
+            "gb": 7,
+            "gbc": 8,
+            "nds": 9,
+            "psx": 10,
+            "ps2": 11,
+            "psp": 12,
+            "n64": 13,
+            "dreamcast": 14,
+            "saturn": 15,
+            "mame": 16,
+            "arcade": 16
+        ]
+        return mapping[systemID.lowercased()] ?? 0
+    }
+
     // Identify a game by its hash and fetch achievement data.
     func identifyGame(hash: String) async throws -> RAGameInfo? {
         guard isEnabled, isLoggedIn, !webApiKey.isEmpty else { return nil }
@@ -333,6 +486,13 @@ class RetroAchievementsService: ObservableObject {
     
     // MARK: - API Request Helpers
     
+    private struct RARAGameListResponse: Decodable {
+        let ID: String
+        let Title: String
+        let ConsoleID: String
+        let ConsoleName: String
+    }
+
     private func requestUserSummary(username: String) async throws -> RAUserInfo? {
         let url = URL(string: "\(apiBaseURL)/API_GetUserSummary.php")!
         var components = URLComponents(url: url, resolvingAgainstBaseURL: false)!

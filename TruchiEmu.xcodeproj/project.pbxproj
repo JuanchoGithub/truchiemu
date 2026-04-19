@@ -151,6 +151,7 @@
 		DD1AA8072F93F0CE0014A60E /* Controls.swift in Sources */ = {isa = PBXBuildFile; fileRef = DD1AA7FA2F93F0CE0014A60E /* Controls.swift */; };
 		DD1AA8092F94941B0014A60E /* CheatManagerViews.swift in Sources */ = {isa = PBXBuildFile; fileRef = DD1AA8082F94941B0014A60E /* CheatManagerViews.swift */; };
 		DD1AA80B2F94943D0014A60E /* CheatManagerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = DD1AA80A2F94943D0014A60E /* CheatManagerView.swift */; };
+		DD1AA80D2F9565950014A60E /* RAGameCacheEntry.swift in Sources */ = {isa = PBXBuildFile; fileRef = DD1AA80C2F9565950014A60E /* RAGameCacheEntry.swift */; };
 		DDA58F0A2F8DC26600A9BEE9 /* LibrarySettingsViewGroup.swift in Sources */ = {isa = PBXBuildFile; fileRef = DDA58F092F8DC26600A9BEE9 /* LibrarySettingsViewGroup.swift */; };
 		DDA58F0C2F8DC32800A9BEE9 /* CoreSettingsViewGroup.swift in Sources */ = {isa = PBXBuildFile; fileRef = DDA58F0B2F8DC32800A9BEE9 /* CoreSettingsViewGroup.swift */; };
 		DDA58F122F8DC65100A9BEE9 /* ControllerSettingsViewGroup.swift in Sources */ = {isa = PBXBuildFile; fileRef = DDA58F112F8DC65100A9BEE9 /* ControllerSettingsViewGroup.swift */; };
@@ -632,6 +633,7 @@
 		DD1AA7FF2F93F0CE0014A60E /* Shader.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Shader.swift; sourceTree = "<group>"; };
 		DD1AA8082F94941B0014A60E /* CheatManagerViews.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CheatManagerViews.swift; sourceTree = "<group>"; };
 		DD1AA80A2F94943D0014A60E /* CheatManagerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CheatManagerView.swift; sourceTree = "<group>"; };
+		DD1AA80C2F9565950014A60E /* RAGameCacheEntry.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RAGameCacheEntry.swift; sourceTree = "<group>"; };
 		DD7DD75048F4FE666F795285 /* ROMRepository.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ROMRepository.swift; sourceTree = "<group>"; };
 		DDA58F092F8DC26600A9BEE9 /* LibrarySettingsViewGroup.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LibrarySettingsViewGroup.swift; sourceTree = "<group>"; };
 		DDA58F0B2F8DC32800A9BEE9 /* CoreSettingsViewGroup.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CoreSettingsViewGroup.swift; sourceTree = "<group>"; };
@@ -1147,6 +1149,7 @@
 		58DECDD14D2EF32E5076893B /* Models */ = {
 			isa = PBXGroup;
 			children = (
+				DD1AA80C2F9565950014A60E /* RAGameCacheEntry.swift */,
 				A1B2C3D4E5F6000000000003 /* GitHubAPIModels.swift */,
 				5DE05F787C487A0BBA81DAB7 /* Achievement.swift */,
 				C818FB0D70AE32972B1C5458 /* Cheat.swift */,
@@ -2156,6 +2159,7 @@
 				DDA58F0C2F8DC32800A9BEE9 /* CoreSettingsViewGroup.swift in Sources */,
 				3407D4D1297B8DA39CE0A93D /* LoggerService.swift in Sources */,
 				2F8441505DD14F2DC1B83795 /* LoggingSettingsView.swift in Sources */,
+				DD1AA80D2F9565950014A60E /* RAGameCacheEntry.swift in Sources */,
 				7874B82F430F8E47A01C0C72 /* LottesCRT.metal in Sources */,
 				DD1AA7C42F9260D90014A60E /* LibraryViewModel.swift in Sources */,
 				244314F2F386044FD11738B6 /* MAMEDependencyService.swift in Sources */,

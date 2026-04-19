@@ -348,7 +348,9 @@ final class ROMRepository {
             crc32: entry.crc32,
             thumbnailLookupSystemID: entry.thumbnailLookupSystemID,
             screenshotPaths: screenshotPaths,
-            settings: settings ?? ROMSettings()
+            settings: settings ?? ROMSettings(),
+            raGameId: entry.raGameID,
+            raMatchStatus: entry.raMatchStatus
         )
     }
 
@@ -416,6 +418,8 @@ final class ROMRepository {
         if entry.category != rom.category { entry.category = rom.category }
         if entry.crc32 != rom.crc32 { entry.crc32 = rom.crc32 }
         if entry.thumbnailLookupSystemID != rom.thumbnailLookupSystemID { entry.thumbnailLookupSystemID = rom.thumbnailLookupSystemID }
+        if entry.raGameId != rom.raGameId { entry.raGameId = rom.raGameId }
+        if entry.raMatchStatus != rom.raMatchStatus { entry.raMatchStatus = rom.raMatchStatus }
 
         // Update JSON fields only if they changed
         let newMetadataJSON: String? = rom.metadata.flatMap {

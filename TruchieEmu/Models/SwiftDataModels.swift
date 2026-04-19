@@ -27,6 +27,8 @@ final class ROMEntry {
     var screenshotPathsJSON: String?
     var settingsJSON: String?
     var isIdentified: Bool
+    var raGameId: Int?
+    var raMatchStatus: String? // Values: "matched", "mismatch:<expected_hash>", "not_supported"
 
     // Relationships
     // Note: inverse relationships with @Relationship can cause circular reference issues
@@ -61,7 +63,9 @@ final class ROMEntry {
         thumbnailLookupSystemID: String? = nil,
         screenshotPathsJSON: String? = nil,
         settingsJSON: String? = nil,
-        isIdentified: Bool = false
+        isIdentified: Bool = false,
+        raGameId: Int? = nil,
+        raMatchStatus: String? = nil
     ) {
         self.id = id
         self.name = name
@@ -85,6 +89,8 @@ final class ROMEntry {
         self.screenshotPathsJSON = screenshotPathsJSON
         self.settingsJSON = settingsJSON
         self.isIdentified = isIdentified
+        self.raGameId = raGameId
+        self.raMatchStatus = raMatchStatus
     }
 }
 
@@ -605,3 +611,4 @@ final class BoxArtResolutionEntry {
         self.compositeKey = "\(romPathKey)::\(source)"
     }
 }
+
