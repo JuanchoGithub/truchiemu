@@ -13,14 +13,39 @@ class CoreOptionsViewModel: ObservableObject {
     
     @Published var isLoading = false
     @Published var hasLoadedOnce = false
+    @Published var searchText: String = ""
     private var cancellables = Set<AnyCancellable>()
 
     var options: [String: CoreOption] { manager.options }
     var categories: [String: CoreOptionCategory] { manager.categories }
 
     var sortedKeys: [String] {
-        var catKeys = Set(options.values.compactMap { $0.category })
-        if catKeys.isEmpty && !options.isEmpty { catKeys.insert("") }
+        let filteredOptions = options.values.filter { option in
+            if searchText.isEmpty { return true }
+            let query = searchText.lowercased()
+            return option.key.lowercased().contains(query) ||
+                   option.description.lowercased().contains(query) ||
+                   prettify(option.key).lowercased().contains(query)
+        }
+        
+        var catKeys = Set(filteredOptions.compactMap { $0.category })
+        if catKeys.isEmpty && !options.isEmpty {
+            if searchText.isEmpty {
+                catKeys.insert("")
+            } else {
+                // If searching, check if any option in the empty category matches
+                let emptyCatOptions = options.values.filter { $0.category == nil || $0.category == "" }
+                if emptyCatOptions.contains(where: { option in
+                    let query = searchText.lowercased()
+                    return option.key.lowercased().contains(query) ||
+                           option.description.lowercased().contains(query) ||
+                           prettify(option.key).lowercased().contains(query)
+                }) {
+                    catKeys.insert("")
+                }
+            }
+        }
+
         var result = Array(catKeys)
         result.sort { a, b in
             if a.isEmpty { return true }
@@ -125,9 +150,18 @@ class CoreOptionsViewModel: ObservableObject {
 
     func optionKeysInCategory(_ categoryKey: String) -> [String] {
         let targetCat = categoryKey.isEmpty ? nil : categoryKey
-        return options.values.filter { $0.category == targetCat }
-            .sorted { $0.description < $1.description }
-            .map { "\($0.key)_\($0.version.rawValue)" }
+        return options.values.filter { option in
+            let matchesCategory = (option.category == targetCat)
+            if !matchesCategory { return false }
+            
+            if searchText.isEmpty { return true }
+            let query = searchText.lowercased()
+            return option.key.lowercased().contains(query) ||
+                   option.description.lowercased().contains(query) ||
+                   prettify(option.key).lowercased().contains(query)
+        }
+        .sorted { $0.description < $1.description }
+        .map { "\($0.key)_\($0.version.rawValue)" }
     }
 
     func updateValue(_ value: String, for key: String) {
@@ -212,6 +246,7 @@ struct CoreOptionsView: View {
              }
              .animation(.easeInOut, value: viewModel.isLoading)
              .navigationTitle(viewModel.isSystemMode ? "Options: \(SystemDatabase.system(forID: viewModel.systemID ?? "")?.name ?? "")" : "Options: \(viewModel.currentCoreID)")
+             .searchable(text: $viewModel.searchText, prompt: "Search options...")
              .toolbar {
                  ToolbarItem(placement: .confirmationAction) {
                      Button("Done") { dismiss() }.keyboardShortcut(.defaultAction)
