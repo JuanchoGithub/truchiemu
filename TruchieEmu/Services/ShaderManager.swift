@@ -2,8 +2,6 @@ import Metal
 import MetalKit
 import Foundation
 
-// MARK: - Shader Manager
-
 // Manages shader pipeline states, uniform buffers, and shader preset selection.
 // Thread-safe singleton that handles dynamic shader switching without recompilation.
 @MainActor
@@ -19,8 +17,18 @@ class ShaderManager: ObservableObject {
     // Current active preset
     @Published var activePreset: ShaderPreset = .defaultPreset
     
-    // Current uniform values (updated by UI sliders)
-    @Published var uniformValues: [String: Float] = [:]
+// Current uniform values (updated by UI sliders)
+    @Published private(set) var uniformValues: [String: Float] = [:]
+    
+    // Thread-safe storage for the renderer
+    private let parameterStore = ShaderParameterStore()
+
+    init() {
+        setupDevice()
+        loadLibrary()
+        createVertexBuffer()
+        loadDefaultUniforms()
+    }
     
     // Vertex buffer for fullscreen quad
     private var vertexBuffer: MTLBuffer?
@@ -31,12 +39,6 @@ class ShaderManager: ObservableObject {
     // Metal library reference
     private var library: MTLLibrary?
     
-    private init() {
-        setupDevice()
-        loadLibrary()
-        createVertexBuffer()
-        loadDefaultUniforms()
-    }
     
     func resetToDefault() {
         // Reset to the default preset
@@ -145,10 +147,12 @@ class ShaderManager: ObservableObject {
         clearPipelineCache()
         
         // Reset uniform values to preset defaults
-        uniformValues.removeAll()
+        var newUniforms: [String: Float] = [:]
         for uniform in preset.globalUniforms {
-            uniformValues[uniform.name] = uniform.defaultValue
+            newUniforms[uniform.name] = uniform.defaultValue
         }
+        uniformValues = newUniforms
+        parameterStore.update(with: newUniforms)
         
         LoggerService.info(category: "ShaderManager", "Activated shader preset: \(preset.name)")
     }
@@ -156,11 +160,24 @@ class ShaderManager: ObservableObject {
     // Update a uniform value
     func updateUniform(_ name: String, value: Float) {
         uniformValues[name] = value
+        parameterStore.update(name: name, value: value)
+        
+        LoggerService.debug(category: "ShaderManager", "Updated uniform '\(name)' to \(value)")
     }
     
     // Get current value for a uniform
     func getUniform(_ name: String) -> Float {
         uniformValues[name] ?? 0.0
+    }
+
+    // Thread-safe way to get a snapshot of all uniforms for the renderer
+    nonisolated func getUniformSnapshot() -> [String: Float] {
+        return parameterStore.getSnapshot()
+    }
+
+    // Internal method to sync snapshot after batch updates (like activatePreset)
+    func syncSnapshot() {
+        parameterStore.update(with: uniformValues)
     }
     
     // MARK: - Preset Groups for UI
@@ -191,6 +208,35 @@ class ShaderManager: ObservableObject {
     // Get a human-readable display name for a preset
     static func displayName(for presetID: String) -> String {
         ShaderPreset.preset(id: presetID)?.name ?? "None"
+    }
+}
+
+// MARK: - Thread-Safe Parameter Storage
+
+/// A non-isolated storage class to hold shader parameters for the rendering thread.
+/// This prevents data races and actor isolation conflicts between the Main Actor (UI)
+// and the background rendering thread.
+private class ShaderParameterStore {
+    private var snapshot: [String: Float] = [:]
+    private let lock = NSLock()
+
+    func update(with values: [String: Float]) {
+        lock.lock()
+        snapshot = values
+        lock.unlock()
+    }
+
+    func update(name: String, value: Float) {
+        lock.lock()
+        snapshot[name] = value
+        lock.unlock()
+    }
+
+    func getSnapshot() -> [String: Float] {
+        lock.lock()
+        let copy = snapshot
+        lock.unlock()
+        return copy
     }
 }
 

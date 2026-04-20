@@ -870,19 +870,20 @@ class StandaloneGameWindowController: NSWindowController, NSWindowDelegate, Obse
                         let time = Float(CACurrentMediaTime().truncatingRemainder(dividingBy: 100))
                         let fragmentName = getFragmentFunctionName()
                         
-                        // Helper: get a uniform value from ShaderManager overrides, falling back to the preset's defined default
-                        func getUniform(_ name: String, fallback: Float) -> Float {
-                            // First check for user overrides
-                            if let value = ShaderManager.shared.uniformValues[name] {
-                                return value
-                            }
-                            // Then check the active preset's globalUniforms for a defined default
-                            if let uniform = ShaderManager.shared.activePreset.globalUniforms.first(where: { $0.name == name }) {
-                                return uniform.defaultValue ?? fallback
-                            }
-                            // Last resort: hardcoded fallback
-                            return fallback
-                        }
+                         // Helper: get a uniform value from the thread-safe snapshot, falling back to the preset's defined default
+                         func getUniform(_ name: String, fallback: Float) -> Float {
+                             let snapshot = ShaderManager.shared.getUniformSnapshot()
+                             // First check for user overrides in the snapshot
+                             if let value = snapshot[name] {
+                                 return value
+                             }
+                             // Then check the active preset's globalUniforms for a defined default
+                             if let uniform = ShaderManager.shared.activePreset.globalUniforms.first(where: { $0.name == name }) {
+                                 return uniform.defaultValue ?? fallback
+                             }
+                             // Last resort: hardcoded fallback
+                             return fallback
+                         }
 
                         enc.setRenderPipelineState(pipeline)
                         enc.setFragmentTexture(frameTex, index: 0)
