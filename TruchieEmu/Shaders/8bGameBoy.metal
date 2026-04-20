@@ -2,13 +2,20 @@
 #include "internal/ShaderTypes.h.metal"
 using namespace metal;
 
-struct LCDGridUniforms {
+struct EightBitGameBoyUniforms {
     float gridStrength;
     float pixelSeparation;
     float brightnessBoost;
     float colorBoost;
     float4 sourceSize;
     float4 outputSize;
+    float showShell;
+    float showStrip;
+    float showLens;
+    float showText;
+    float showLED;
+    float lightPositionIndex;
+    float lightStrength;
 };
 
 // --- FONT SYSTEM ---
@@ -65,9 +72,9 @@ float sdLensBox(float2 p, float2 b, float4 r) {
     return min(max(q.x, q.y), 0.0) + length(max(q, 0.0)) - rad;
 }
 
-fragment float4 fragmentLCDGrid(VertexOut in [[stage_in]],
-                                 texture2d<float> tex [[texture(0)]],
-                                 constant LCDGridUniforms &u [[buffer(0)]]) {
+fragment float4 fragment8bGameBoy(VertexOut in [[stage_in]],
+                                  texture2d<float> tex [[texture(0)]],
+                                  constant EightBitGameBoyUniforms &u [[buffer(0)]]) {
     
     // 1. PHYSICAL DIMENSIONS
     float2 gameRes = float2(160.0, 144.0);
@@ -87,22 +94,46 @@ fragment float4 fragmentLCDGrid(VertexOut in [[stage_in]],
     float stripSDF  = sdRoundRect(p, (gameRes * 0.5) + stripW, 2.8);
     float lensSDF   = sdLensBox(p, (gameRes * 0.5) + stripW + lensPadding, float4(8.0, 35.0, 8.0, 8.0));
 
-    // 4. BEZEL COMPOSITING
+// 4. BEZEL COMPOSITING
     if (screenSDF > 0.0) {
-        float3 col;
-        if (stripSDF > 0.0) {
-            if (lensSDF > 0.0) {
-                float borderMix = smoothstep(1.5, 0.0, lensSDF);
-                col = mix(float3(0.88, 0.88, 0.84), float3(0.18, 0.16, 0.14), borderMix);
-            } else {
-                col = float3(0.38, 0.39, 0.40);
-                float noise = fract(sin(dot(gb, float2(12.9898, 78.233))) * 43758.5453);
-                col += (noise - 0.5) * 0.012;
-                
+        float3 col = float3(0.1, 0.1, 0.1); // Default background (hidden)
+        bool renderedBezel = false;
+
+        // --- LAYER 1: THE BEZEL (Grey Area) ---
+        // This is the area outside the strip but inside the lens
+        if (u.showShell > 0.5) {
+            col = float3(0.38, 0.39, 0.40);
+            float noise = fract(sin(dot(gb, float2(12.9898, 78.233))) * 43758.5453);
+            col += (noise - 0.5) * 0.012;
+            renderedBezel = true;
+        }
+
+        // --- LAYER 2: THE INNER STRIP (Greenish Ring) ---
+        // Original logic: If screenSDF > 0 AND stripSDF <= 0
+        if (u.showStrip > 0.5 && stripSDF <= 0.0) {
+            col = float3(0.51, 0.50, 0.12);
+            float shadow = max(smoothstep(0.0, -3.0, gb.y), smoothstep(160.0, 163.0, gb.x));
+            col *= mix(1.0, 0.25, shadow);
+            renderedBezel = true;
+        }
+
+        // --- LAYER 3: THE GLASS LENS (Outer Border) ---
+        if (u.showLens > 0.5 && lensSDF > 0.0) {
+            float borderMix = smoothstep(1.5, 0.0, lensSDF);
+            // Light grey shell vs Dark grey border
+            col = mix(float3(0.88, 0.88, 0.84), float3(0.18, 0.16, 0.14), borderMix);
+            renderedBezel = true;
+        }
+
+        // --- LAYER 4: TEXT & LED ---
+        if (u.showText > 0.5 && renderedBezel) {
+            // Main Text (only if in the grey bezel area)
+            if (stripSDF > 0.0 && lensSDF <= 0.0) {
                 float textMain = drawString(float2(gb.x - 48.0, gb.y - (-18.0)), TEXT_MAIN, 28);
                 if (textMain > 0.0) {
                     col = mix(col, float3(0.68, 0.69, 0.65), textMain);
                 } else {
+                    // Purple/Blue accent lines
                     if (gb.y > -18.0 && gb.y < -12.5) {
                         bool isLeft = (gb.x >= -34.0 && gb.x <= 42.0);
                         bool isRight = (gb.x >= 166.0 && gb.x <= 192.0);
@@ -112,28 +143,27 @@ fragment float4 fragmentLCDGrid(VertexOut in [[stage_in]],
                         }
                     }
                 }
-
-                float textBatt = drawString(float2(gb.x - (-36.0), gb.y - 57.0), TEXT_BATT, 7);
-                col = mix(col, float3(0.65, 0.66, 0.65), textBatt);
-                
-                float2 ledP = gb - float2(-28.5, 45.0);
-                float ledD = length(ledP);
-                if (ledD < 4.5) {
-                    float glow = pow(1.0 - clamp(ledD / 4.5, 0.0, 1.0), 2.0);
-                    col = mix(col, float3(0.8, 0.05, 0.02), glow);
-                    if (ledD < 1.6) col = mix(col, float3(1.0, 0.8, 0.6), 0.9);
-                }
             }
-        } else {
-            col = float3(0.51, 0.50, 0.12);
-            float shadow = max(smoothstep(0.0, -3.0, gb.y), smoothstep(160.0, 163.0, gb.x));
-            col *= mix(1.0, 0.25, shadow);
+
+            // Battery Text
+            float textBatt = drawString(float2(gb.x - (-36.0), gb.y - 57.0), TEXT_BATT, 7);
+            if (textBatt > 0.0) col = mix(col, float3(0.65, 0.66, 0.65), textBatt);
         }
+
+        if (u.showLED > 0.5 && renderedBezel) {
+            float2 ledP = gb - float2(-28.5, 45.0);
+            float ledD = length(ledP);
+            if (ledD < 4.5) {
+                float glow = pow(1.0 - clamp(ledD / 4.5, 0.0, 1.0), 2.0);
+                col = mix(col, float3(0.8, 0.05, 0.02), glow);
+                if (ledD < 1.6) col = mix(col, float3(1.0, 0.8, 0.6), 0.9);
+            }
+        }
+        
         return float4(col, 1.0);
     }
 
     // 5. INTERNAL SCREEN
-    // FIX: Snap gb to floor to ensure every LCD pixel is identical in size
     float2 snappedGb = floor(gb);
     float2 f = fract(gb); 
     
@@ -143,7 +173,6 @@ fragment float4 fragmentLCDGrid(VertexOut in [[stage_in]],
     src.g += 0.05;
     src.b -= 0.2;
 
-    // Use snappedGb for the horizontal grid calculation to prevent "jitter"
     float g = mix(u.pixelSeparation * 0.45 + 0.08 + sin(snappedGb.y * 0.25) * 0.02, -0.3, smoothstep(0.05, 0.6, dot(src, float3(0.3, 0.6, 0.1))));
     float2 m = smoothstep(0.5 - g + fwidth(f), 0.5 - g - fwidth(f), abs(f - 0.5));
     
@@ -152,42 +181,44 @@ fragment float4 fragmentLCDGrid(VertexOut in [[stage_in]],
     final.b = clamp(final.b + 0.35, 0.0, 1.0);
     final = mix(final, float3(0.5, 0.55, 0.45), 0.2);
 
-    // Physical Depth Shadow
     float screenEdgeShadow = smoothstep(-2.0, 5.0, screenSDF);
     final *= mix(0.82, 1.0, screenEdgeShadow);
 
-    // --- METALLIC "SIN" REFLECTOR ---
-    
-    // Testing variables
-    float reflectionStrength = 1.0;    
-    float glareWeight        = 0.35;   
-    float sheenWeight        = 0.12;   
-    float grainWeight        = 0.03;   
-    
-    float2 lightPos = float2(170.0, -20.0);
+    // --- DYNAMIC METALLIC REFLECTOR ---
+    // Map lightPositionIndex (0-8) to discrete positions:
+    // 0: Center, 1: TL, 2: T, 3: TR, 4: L, 5: R, 6: BL, 7: B, 8: BR
+    float2 lightPos;
+    int idx = int(u.lightPositionIndex);
+    if (idx == 0)      lightPos = float2(160.0, 0.0); // Default to Top-Right
+    else if (idx == 1) lightPos = float2(0.0, 0.0);
+    else if (idx == 2) lightPos = float2(80.0, 0.0);
+    else if (idx == 3) lightPos = float2(80.0, 72.0);
+    else if (idx == 4) lightPos = float2(0.0, 72.0);
+    else if (idx == 5) lightPos = float2(160.0, 72.0);
+    else if (idx == 6) lightPos = float2(0.0, 144.0);
+    else if (idx == 7) lightPos = float2(80.0, 144.0);
+    else               lightPos = float2(160.0, 144.0);
+
     float distToLight = length(gb - lightPos);
     
-    // NEW BRUSHED TEXTURE: Dual interference waves to hide the "lines"
-    // Wave 1: Tight diagonal lines
     float wave1 = sin(gb.x * 5.0 - gb.y * 2.5);
-    // Wave 2: Slower intersecting lines to break up the pattern
     float wave2 = sin(gb.x * 2.1 + gb.y * 4.8);
-    // Combine for a non-linear texture
     float metallicGrain = (wave1 * wave2) * 0.5 + 0.5;
     
-    // Lighting components
     float sheen = smoothstep(-100.0, 180.0, gb.x - gb.y);
     float glare = smoothstep(140.0, 0.0, distToLight);
     
-    // Refined mask to allow subtle texture in midtones
     float luma = dot(final, float3(0.299, 0.587, 0.114));
     float reflectionMask = smoothstep(0.05, 0.5, luma); 
     
     float3 reflectionColor = float3(0.88, 0.95, 0.75); 
     
-    // Composite the reflection
+    float glareWeight = 0.35;   
+    float sheenWeight = 0.12;   
+    float grainWeight = 0.03;   
+    
     final += (glare * glareWeight + sheen * sheenWeight + metallicGrain * grainWeight) 
-             * reflectionColor * reflectionMask * reflectionStrength;
+             * reflectionColor * reflectionMask * u.lightStrength;
 
     return float4(max(final, 0.0) * u.brightnessBoost * u.colorBoost, 1.0);
 }

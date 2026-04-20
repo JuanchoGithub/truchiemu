@@ -16,7 +16,6 @@
 		14FD6E9E7603AB29B679170D /* SetupWizardState.swift in Sources */ = {isa = PBXBuildFile; fileRef = FAB6045B123F3B9A7267B3B0 /* SetupWizardState.swift */; };
 		18B5A011C25087D7501BA0B4 /* ShaderSection.swift in Sources */ = {isa = PBXBuildFile; fileRef = 56A702E2CACC5FDF780FD52F /* ShaderSection.swift */; };
 		1A35E4BC913F2B92D6C21A1D /* BaseRunner.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2039A7902CA4B44A7D4CA878 /* BaseRunner.swift */; };
-		21F5365057B92ADB3B89C036 /* LCDGrid.metal in Sources */ = {isa = PBXBuildFile; fileRef = 7F559B83E48D1A47C6F37BC6 /* LCDGrid.metal */; };
 		236EFB0A130B6F76AC8713A5 /* N64Runner.swift in Sources */ = {isa = PBXBuildFile; fileRef = D4BD45E407C6A4D3059F2996 /* N64Runner.swift */; };
 		2426F4E6C399C0218826CFF6 /* ShaderPreset.swift in Sources */ = {isa = PBXBuildFile; fileRef = E85C7A0C40C8A384AA47160D /* ShaderPreset.swift */; };
 		244314F2F386044FD11738B6 /* MAMEDependencyService.swift in Sources */ = {isa = PBXBuildFile; fileRef = C9687B623BF31DEC24CB1B16 /* MAMEDependencyService.swift */; };
@@ -154,6 +153,8 @@
 		DD1AA80D2F9565950014A60E /* RAGameCacheEntry.swift in Sources */ = {isa = PBXBuildFile; fileRef = DD1AA80C2F9565950014A60E /* RAGameCacheEntry.swift */; };
 		DD1AA80F2F965D760014A60E /* CRTFilter.ui in Resources */ = {isa = PBXBuildFile; fileRef = DD1AA80E2F965D760014A60E /* CRTFilter.ui */; };
 		DD1ABECE2F965E620014A60E /* ShaderMetadataLoader.swift in Sources */ = {isa = PBXBuildFile; fileRef = DD1ABECD2F965E620014A60E /* ShaderMetadataLoader.swift */; };
+		DD1ABED12F96B3310014A60E /* 8bGameBoy.metal in Sources */ = {isa = PBXBuildFile; fileRef = DD1ABECF2F96B3310014A60E /* 8bGameBoy.metal */; };
+		DD1ABED22F96B3310014A60E /* 8bGameBoy.ui in Resources */ = {isa = PBXBuildFile; fileRef = DD1ABED02F96B3310014A60E /* 8bGameBoy.ui */; };
 		DDA58F0A2F8DC26600A9BEE9 /* LibrarySettingsViewGroup.swift in Sources */ = {isa = PBXBuildFile; fileRef = DDA58F092F8DC26600A9BEE9 /* LibrarySettingsViewGroup.swift */; };
 		DDA58F0C2F8DC32800A9BEE9 /* CoreSettingsViewGroup.swift in Sources */ = {isa = PBXBuildFile; fileRef = DDA58F0B2F8DC32800A9BEE9 /* CoreSettingsViewGroup.swift */; };
 		DDA58F122F8DC65100A9BEE9 /* ControllerSettingsViewGroup.swift in Sources */ = {isa = PBXBuildFile; fileRef = DDA58F112F8DC65100A9BEE9 /* ControllerSettingsViewGroup.swift */; };
@@ -543,7 +544,6 @@
 		7D4DE8B36744135985A50982 /* CLIManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CLIManager.swift; sourceTree = "<group>"; };
 		7D6D46D0F856BC93AFDD1A73 /* MAMERomEntry.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MAMERomEntry.swift; sourceTree = "<group>"; };
 		7DF10A2892C7DDEB5683637F /* CheatDownloadService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CheatDownloadService.swift; sourceTree = "<group>"; };
-		7F559B83E48D1A47C6F37BC6 /* LCDGrid.metal */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.metal; path = LCDGrid.metal; sourceTree = "<group>"; };
 		7F988F08EFDCA767E62683C4 /* GameNameFormatterTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GameNameFormatterTests.swift; sourceTree = "<group>"; };
 		81440507D3F6155A9AC60E31 /* NESRunner.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NESRunner.swift; sourceTree = "<group>"; };
 		824B99AA8F4D46E6A5E01A05 /* GameLauncher.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GameLauncher.swift; sourceTree = "<group>"; };
@@ -638,6 +638,8 @@
 		DD1AA80C2F9565950014A60E /* RAGameCacheEntry.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RAGameCacheEntry.swift; sourceTree = "<group>"; };
 		DD1AA80E2F965D760014A60E /* CRTFilter.ui */ = {isa = PBXFileReference; lastKnownFileType = text; path = CRTFilter.ui; sourceTree = "<group>"; };
 		DD1ABECD2F965E620014A60E /* ShaderMetadataLoader.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShaderMetadataLoader.swift; sourceTree = "<group>"; };
+		DD1ABECF2F96B3310014A60E /* 8bGameBoy.metal */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.metal; path = 8bGameBoy.metal; sourceTree = "<group>"; };
+		DD1ABED02F96B3310014A60E /* 8bGameBoy.ui */ = {isa = PBXFileReference; lastKnownFileType = text; path = 8bGameBoy.ui; sourceTree = "<group>"; };
 		DD7DD75048F4FE666F795285 /* ROMRepository.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ROMRepository.swift; sourceTree = "<group>"; };
 		DDA58F092F8DC26600A9BEE9 /* LibrarySettingsViewGroup.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LibrarySettingsViewGroup.swift; sourceTree = "<group>"; };
 		DDA58F0B2F8DC32800A9BEE9 /* CoreSettingsViewGroup.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CoreSettingsViewGroup.swift; sourceTree = "<group>"; };
@@ -964,10 +966,11 @@
 		0DAE1ECDADDA76B1C01813C4 /* Shaders */ = {
 			isa = PBXGroup;
 			children = (
+				DD1ABECF2F96B3310014A60E /* 8bGameBoy.metal */,
+				DD1ABED02F96B3310014A60E /* 8bGameBoy.ui */,
 				DD1AA80E2F965D760014A60E /* CRTFilter.ui */,
 				2F02B2718F34118A171C7103 /* CRTFilter.metal */,
 				FB1E0BA149353E4880AC8642 /* DotMatrixLCD.metal */,
-				7F559B83E48D1A47C6F37BC6 /* LCDGrid.metal */,
 				43D1886C073CD8586F00A47E /* LiteCRT.metal */,
 				B723AAB46A1C224A605A7AC6 /* LottesCRT.metal */,
 				303F62E5D4BA8B32A0AEFEEE /* Passthrough.metal */,
@@ -1895,6 +1898,7 @@
 				DDA5924F2F8DD4EA00A9BEE9 /* cps2@132w.png in Resources */,
 				DDA592502F8DD4EA00A9BEE9 /* FLASHBACK.png in Resources */,
 				DDA592512F8DD4EA00A9BEE9 /* GW.png in Resources */,
+				DD1ABED22F96B3310014A60E /* 8bGameBoy.ui in Resources */,
 				DDA592522F8DD4EA00A9BEE9 /* ps2.ico in Resources */,
 				DDA592532F8DD4EA00A9BEE9 /* NTbe4.jpg in Resources */,
 				DDA592542F8DD4EA00A9BEE9 /* c64@132w.png in Resources */,
@@ -2149,7 +2153,6 @@
 				CDB133F917088EBB09E076FA /* GameNameFormatter.swift in Sources */,
 				43C778A329E437002D224F79 /* HardcoreModeManager.swift in Sources */,
 				CF0D01D75D00064F452B57C1 /* ImageCache.swift in Sources */,
-				21F5365057B92ADB3B89C036 /* LCDGrid.metal in Sources */,
 				EB54086B1C1430F2BDD68CA0 /* LaunchBoxGameMetadata.swift in Sources */,
 				BEB2E809BAB983CF0E071449 /* LaunchBoxGamesDBService.swift in Sources */,
 				AA0B53183BF112AB49210A6D /* LibraryAutomationCoordinator.swift in Sources */,
@@ -2220,6 +2223,7 @@
 				18B5A011C25087D7501BA0B4 /* ShaderSection.swift in Sources */,
 				71EE5C800D12CC9445F35E6A /* SharpBilinear.metal in Sources */,
 				82B1A3EA975F48157E1FDACE /* SidebarRowButton.swift in Sources */,
+				DD1ABED12F96B3310014A60E /* 8bGameBoy.metal in Sources */,
 				BE53CB7D7C4EF9D138148628 /* SlotPickerSheet.swift in Sources */,
 				D501CF9374AEB1151D309853 /* SwiftDataContainer.swift in Sources */,
 				FFF54913367BDBC6C5B17D24 /* SwiftDataModels.swift in Sources */,

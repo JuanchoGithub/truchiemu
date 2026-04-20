@@ -935,17 +935,24 @@ class StandaloneGameWindowController: NSWindowController, NSWindowDelegate, Obse
                                 outputSize: SIMD4<Float>(vpW, vpH, 0.0, 0.0)
                             )
                             enc.setFragmentBytes(&u, length: MemoryLayout<SharpBilinearUniforms>.stride, index: 0)
-                        case "fragmentLCDGrid":
+                        case "fragment8bGameBoy":
                             let colorB = getUniform("colorBoost", fallback: 1.0)
-                            var u = LCDGridUniforms(
+                            var u = EightBitGameBoyUniforms(
                                 gridStrength: getUniform("gridStrength", fallback: 0.4),
                                 pixelSeparation: getUniform("pixelSeparation", fallback: 0.05),
                                 brightnessBoost: getUniform("brightnessBoost", fallback: 1.2),
                                 colorBoost: colorB,
                                 sourceSize: SIMD4<Float>(fw, fh, 1.0/fw, 1.0/fh),
-                                outputSize: SIMD4<Float>(vpW, vpH, 0.0, 0.0)
+                                outputSize: SIMD4<Float>(vpW, vpH, 0.0, 0.0),
+                                showShell: getUniform("showShell", fallback: 1.0),
+                                showStrip: getUniform("showStrip", fallback: 1.0),
+                                showLens: getUniform("showLens", fallback: 1.0),
+                                showText: getUniform("showText", fallback: 1.0),
+                                showLED: getUniform("showLED", fallback: 1.0),
+                                lightPositionIndex: getUniform("lightPositionIndex", fallback: 0.0),
+                                lightStrength: getUniform("lightStrength", fallback: 1.0)
                             )
-                            enc.setFragmentBytes(&u, length: MemoryLayout<LCDGridUniforms>.stride, index: 0)
+                            enc.setFragmentBytes(&u, length: MemoryLayout<EightBitGameBoyUniforms>.stride, index: 0)
                         case "fragmentLiteCRT":
                             let colorB = getUniform("colorBoost", fallback: 1.0)
                             var u = LiteCRTUniforms(

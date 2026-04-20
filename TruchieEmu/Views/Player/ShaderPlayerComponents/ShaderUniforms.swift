@@ -69,14 +69,21 @@ struct SharpBilinearUniforms {
     var outputSize: SIMD4<Float>
 }
 
-// LCD Grid uniforms - matches LCDGridUniforms in LCDGrid.metal
-struct LCDGridUniforms {
+// Eight Bit Game Boy uniforms - matches EightBitGameBoyUniforms in 8bGameBoy.metal
+struct EightBitGameBoyUniforms {
     var gridStrength: Float
     var pixelSeparation: Float
     var brightnessBoost: Float
     var colorBoost: Float
     var sourceSize: SIMD4<Float>
     var outputSize: SIMD4<Float>
+    var showShell: Float
+    var showStrip: Float
+    var showLens: Float
+    var showText: Float
+    var showLED: Float
+    var lightPositionIndex: Float
+    var lightStrength: Float
 }
 
 // Lite CRT uniforms - matches LiteCRTUniforms in LiteCRT.metal

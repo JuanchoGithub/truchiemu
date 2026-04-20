@@ -229,14 +229,14 @@ extension ShaderPreset {
             recommendedSystems: ["nes", "snes", "genesis", "gb", "gba"]
         ),
         
-        // LCD Grid (Classic Handheld)
+        // 8b Game Boy (Advanced Handheld)
         ShaderPreset(
-            id: "builtin-lcd-grid",
-            name: "LCD Grid",
+            id: "builtin-8b-gameboy",
+            name: "8b Game Boy",
             shaderType: .lcd,
             passes: [
                 ShaderPass(
-                    shaderFile: "LCDGrid",
+                    shaderFile: "8bGameBoy",
                     filter: .nearest,
                     scaleX: 1.0, scaleY: 1.0,
                     scaleTypeX: .viewport, scaleTypeY: .viewport
@@ -244,12 +244,19 @@ extension ShaderPreset {
             ],
             globalUniforms: [
                 ShaderUniform(name: "gridStrength", defaultValue: 0.4, minValue: 0.0, maxValue: 1.0),
-                ShaderUniform(name: "pixelSeparation", defaultValue: 0.05, minValue: 0.0, maxValue: 0.2),
+                ShaderUniform(name: "pixelSeparation", defaultValue: 0.05, minValue: -0.5, maxValue: 0.5),
                 ShaderUniform(name: "brightnessBoost", defaultValue: 1.2, minValue: 0.5, maxValue: 2.0),
                 ShaderUniform(name: "colorBoost", defaultValue: 1.0, minValue: 0.5, maxValue: 2.0),
+                ShaderUniform(name: "showShell", defaultValue: 1.0, minValue: 0.0, maxValue: 1.0, type: .toggle),
+                ShaderUniform(name: "showStrip", defaultValue: 1.0, minValue: 0.0, maxValue: 1.0, type: .toggle),
+                ShaderUniform(name: "showLens", defaultValue: 1.0, minValue: 0.0, maxValue: 1.0, type: .toggle),
+                ShaderUniform(name: "showText", defaultValue: 1.0, minValue: 0.0, maxValue: 1.0, type: .toggle),
+                ShaderUniform(name: "showLED", defaultValue: 1.0, minValue: 0.0, maxValue: 1.0, type: .toggle),
+                ShaderUniform(name: "lightPositionIndex", defaultValue: 0.0, minValue: 0.0, maxValue: 8.0),
+                ShaderUniform(name: "lightStrength", defaultValue: 1.0, minValue: 0.0, maxValue: 2.0),
             ],
-            description: "Standard sub-pixel LCD grid for handheld consoles.",
-            recommendedSystems: ["gb", "gbc", "gg", "gba"]
+            description: "High-fidelity Game Boy simulation with customizable bezel and dynamic lighting.",
+            recommendedSystems: ["gb", "gbc", "gg"]
         ),
 
         // Dot Matrix LCD (Game Boy metallic dot-matrix)
