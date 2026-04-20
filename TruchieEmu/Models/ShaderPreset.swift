@@ -338,8 +338,8 @@ extension ShaderPreset {
         ),
     ]
     
-    // All available presets (built-in only)
-    static var allPresets: [ShaderPreset] {
+    // All available presets (built-in only), enriched once at startup
+    static let allPresets: [ShaderPreset] = {
         builtinPresets.map { preset in
             var enrichedPreset = preset
             
@@ -355,17 +355,17 @@ extension ShaderPreset {
                             enrichedUniform.displayName = meta.displayName
                             enrichedUniform.description = meta.description
                             enrichedUniform.minValue = meta.minValue
-                                                         enrichedUniform.maxValue = meta.maxValue
-                                                         enrichedUniform.step = meta.step
-                                                         enrichedUniform.type = meta.type
-                                                         // If metadata doesn't provide a default, keep the original
-                                                         if enrichedUniform.defaultValue == nil {
-                                                             enrichedUniform.defaultValue = uniform.defaultValue
-                                                         }
-                                                         return enrichedUniform
-                                                     }
-                                                     return uniform
-                                                 }
+                                                          enrichedUniform.maxValue = meta.maxValue
+                                                          enrichedUniform.step = meta.step
+                                                          enrichedUniform.type = meta.type
+                                                          // If metadata doesn't provide a default, keep the original
+                                                          if enrichedUniform.defaultValue == nil {
+                                                              enrichedUniform.defaultValue = uniform.defaultValue
+                                                          }
+                                                          return enrichedUniform
+                                                      }
+                                                      return uniform
+                                                  }
                     enrichedPreset.passes[passIndex] = updatedPass
                 }
             }
@@ -394,11 +394,11 @@ extension ShaderPreset {
             
             return enrichedPreset
         }
-    }
+    }()
     
     // Get preset by ID
     static func preset(id: String) -> ShaderPreset? {
-        builtinPresets.first(where: { $0.id == id })
+        allPresets.first(where: { $0.id == id })
     }
     
     // Default preset (no filtering)

@@ -4,12 +4,23 @@ import Foundation
 class ShaderMetadataLoader {
     static let shared = ShaderMetadataLoader()
     
+    private var cache: [String: [String: ShaderUniform]] = [:]
+    private var failedLookups: Set<String> = []
+    
     private init() {}
     
     /// Loads metadata for a given shader file.
     /// - Parameter shaderFile: The name of the shader file (without extension, e.g., "CRTFilter").
     /// - Returns: A dictionary of ShaderUniforms keyed by their name.
     func loadMetadata(for shaderFile: String) -> [String: ShaderUniform] {
+        if let cached = cache[shaderFile] {
+            return cached
+        }
+        
+        if failedLookups.contains(shaderFile) {
+            return [:]
+        }
+
         var url: URL?
         
         // 1. Try finding in the main bundle
@@ -30,12 +41,16 @@ class ShaderMetadataLoader {
         }
         
         guard let finalUrl = url else {
-            print("ShaderMetadataLoader: Could not find metadata file for \(shaderFile).ui (tried bundle and local fallback)")
+            if !failedLookups.contains(shaderFile) {
+                print("ShaderMetadataLoader: Could not find metadata file for \(shaderFile).ui (tried bundle and local fallback)")
+                failedLookups.insert(shaderFile)
+            }
             return [:]
         }
         
         guard let data = try? Data(contentsOf: finalUrl) else {
             print("ShaderMetadataLoader: Could not read metadata file at \(finalUrl.path)")
+            failedLookups.insert(shaderFile)
             return [:]
         }
         
@@ -45,9 +60,12 @@ class ShaderMetadataLoader {
             for uniform in uniforms {
                 metadataMap[uniform.name] = uniform
             }
+            cache[shaderFile] = metadataMap
+            LoggerService.info(category: "ShaderMetadataLoader", "Decoded metadata for \(shaderFile): \(metadataMap)")
             return metadataMap
         } catch {
-            print("ShaderMetadataLoader: Failed to decode metadata for \(shaderFile): \(error)")
+            LoggerService.error(category: "ShaderMetadataLoader", "Failed to decode metadata for \(shaderFile): \(error)")
+            failedLookups.insert(shaderFile)
             return [:]
         }
     }

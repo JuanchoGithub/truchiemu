@@ -157,8 +157,8 @@ struct ShaderParameterSliders: View {
          }
      }
     
-     private func currentUniformValue(for uniform: ShaderUniform) -> Float {
-        uniformValues[uniform.name] ?? uniform.defaultValue ?? 0.0
+    private func currentUniformValue(for uniform: ShaderUniform) -> Float {
+        uniformValues[uniform.name] ?? uniform.defaultValue ?? 0.0 as Float
     }
 }
 
@@ -610,14 +610,14 @@ struct ShaderPresetPickerView: View {
         Group {
             if let preset = ShaderPreset.preset(id: settings.shaderPresetID),
                !preset.globalUniforms.isEmpty {
-                ShaderParameterSliders(
-                    preset: preset,
-                    uniformValues: $settings.uniformValues,
-                    onValueCommitted: onValueCommitted
-                )
-                .frame(minWidth: 180, maxWidth: 220)
-                .padding(.horizontal, 8)
-                .padding(.vertical, 8)
+                 ShaderParameterSliders(
+                     preset: preset,
+                     uniformValues: $settings.uniformValues,
+                     onValueCommitted: onValueCommitted
+                 )
+                 .frame(maxWidth: .infinity)
+                 .padding(.horizontal, 8)
+                 .padding(.vertical, 8)
             }
         }
     }
