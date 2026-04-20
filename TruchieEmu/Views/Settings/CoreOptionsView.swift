@@ -52,9 +52,10 @@ class CoreOptionsViewModel: ObservableObject {
         let matchingOptions = allOptions.filter { option in
             if query.isEmpty { return true }
             let optDesc = option.description.lowercased()
+            let optInfo = option.info.lowercased()
             let optKey = option.key.lowercased()
             let optPretty = prettify(option.key).lowercased()
-            return optKey.contains(query) || optDesc.contains(query) || optPretty.contains(query)
+            return optKey.contains(query) || optDesc.contains(query) || optInfo.contains(query) || optPretty.contains(query)
         }
         
         // 2. Build category map for matching options
@@ -82,9 +83,10 @@ class CoreOptionsViewModel: ObservableObject {
             let emptyCatMatches = allOptions.filter { ($0.category == nil || $0.category == "") }
                                            .contains { option in
                 let optDesc = option.description.lowercased()
+                let optInfo = option.info.lowercased()
                 let optKey = option.key.lowercased()
                 let optPretty = prettify(option.key).lowercased()
-                return optKey.contains(query) || optDesc.contains(query) || optPretty.contains(query)
+                return optKey.contains(query) || optDesc.contains(query) || optInfo.contains(query) || optPretty.contains(query)
             }
             if emptyCatMatches { visibleCatKeys.insert("") }
         } else if !allOptions.isEmpty {
