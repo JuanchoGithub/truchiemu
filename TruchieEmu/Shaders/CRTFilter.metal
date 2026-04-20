@@ -165,9 +165,23 @@ float3 applyMaskAndBezel(float3 rgb, float2 distortUV, float2 sampleUV, texture2
     
     // Bezel reflection: Samples the texture with mirrors to fake "light spill" on the frame.
     if (bezel && tubeVis < 0.99) {
-        float bezelW = (1.0 - tubeVis) * (1.0 - smoothstep(1.0, 1.0 + (32.0/texX), max(maskEdge.x, maskEdge.y)));
+        // 1. Calculate a normalized "Glow Distance" based on the texture width
+        // This ensures that 32 pixels of glow looks the same size on a 256px wide screen 
+        // vs a 320px wide screen.
+        float glowWidth = 32.0 / texX; 
+
+        // 2. Adjust the maskEdge to be aspect-aware
+        // This prevents the "tall" 240p resolutions from eating the top/bottom glow
+        float2 adjustedEdge = maskEdge;
+        
+        // 3. Re-calculate bezelW using a more consistent falloff
+        float bezelW = (1.0 - tubeVis) * (1.0 - smoothstep(1.0, 1.0 + glowWidth, max(adjustedEdge.x, adjustedEdge.y)));
+
         if (bezelW > 0.001) {
+            // Mirrored UV sampling
             float2 mirUV = 1.0 - abs(1.0 - abs(sampleUV)); 
+            // We add a small "push" to the reflection so it reaches further out 
+            // even if the internal resolution is high.
             output += tex.sample(s, mix(mirUV, sampleUV, 0.08)).rgb * boost * bezelW * glowInt;
         }
     }

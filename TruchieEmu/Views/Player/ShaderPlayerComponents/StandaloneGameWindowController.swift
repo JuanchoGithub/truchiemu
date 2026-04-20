@@ -726,27 +726,7 @@ class StandaloneGameWindowController: NSWindowController, NSWindowDelegate, Obse
         }
 
         private func getFragmentFunctionName() -> String {
-            let preset = ShaderManager.shared.activePreset
-            LoggerService.extreme(category: "Shaders", "Active shader preset: \(preset.id) - \(preset.name)")
-            guard let firstPass = preset.passes.first,
-                  let shaderFile = firstPass.shaderFile.components(separatedBy: ".").first else {
-                LoggerService.debug(category: "Shaders", "No passes found, falling back to fragmentPassthrough")
-                return "fragmentPassthrough"
-            }
-            let result: String
-            switch shaderFile {
-            case "CRTFilter": result = "fragmentCRT"
-            case "DotMatrixLCD": result = "fragmentDotMatrixLCD"
-            case "LottesCRT": result = "fragmentLottesCRT"
-            case "SharpBilinear": result = "fragmentSharpBilinear"
-            case "LCDGrid": result = "fragmentLCDGrid"
-            case "LiteCRT": result = "fragmentLiteCRT"
-            case "ScaleSmooth": result = "fragmentScaleSmooth"
-            case "Passthrough": result = "fragmentPassthrough"
-            default: result = "fragment" + shaderFile
-            }
-            LoggerService.extreme(category: "Shaders", "ShaderFile: '\(shaderFile)' -> Fragment: '\(result)'")
-            return result
+            return ShaderManager.shared.getCurrentFragmentFunctionName()
         }
 
         private func getPipelineState(device: MTLDevice) -> MTLRenderPipelineState? {
@@ -870,19 +850,10 @@ class StandaloneGameWindowController: NSWindowController, NSWindowDelegate, Obse
                         let time = Float(CACurrentMediaTime().truncatingRemainder(dividingBy: 100))
                         let fragmentName = getFragmentFunctionName()
                         
-                         // Helper: get a uniform value from the thread-safe snapshot, falling back to the preset's defined default
+                         // Helper: get a uniform value from the thread-safe snapshot
                          func getUniform(_ name: String, fallback: Float) -> Float {
                              let snapshot = ShaderManager.shared.getUniformSnapshot()
-                             // First check for user overrides in the snapshot
-                             if let value = snapshot[name] {
-                                 return value
-                             }
-                             // Then check the active preset's globalUniforms for a defined default
-                             if let uniform = ShaderManager.shared.activePreset.globalUniforms.first(where: { $0.name == name }) {
-                                 return uniform.defaultValue ?? fallback
-                             }
-                             // Last resort: hardcoded fallback
-                             return fallback
+                             return snapshot[name] ?? fallback
                          }
 
                         enc.setRenderPipelineState(pipeline)

@@ -17,12 +17,12 @@ class ShaderManager: ObservableObject {
     // Current active preset
     @Published var activePreset: ShaderPreset = .defaultPreset
     
-// Current uniform values (updated by UI sliders)
+    // Current uniform values (updated by UI sliders)
     @Published private(set) var uniformValues: [String: Float] = [:]
     
     // Thread-safe storage for the renderer
-    private let parameterStore = ShaderParameterStore()
-
+    private static let parameterStore = ShaderParameterStore()
+    
     init() {
         setupDevice()
         loadLibrary()
@@ -50,14 +50,18 @@ class ShaderManager: ObservableObject {
         }
         
         // Reset all uniform values to their defaults
-        activePreset.globalUniforms.forEach { uniform in
-            uniformValues[uniform.name] = uniform.defaultValue
+        let defaults = activePreset.globalUniforms
+        var newUniforms: [String: Float] = [:]
+        defaults.forEach { uniform in
+            newUniforms[uniform.name] = uniform.defaultValue
         }
+        uniformValues = newUniforms
+        Self.parameterStore.update(with: newUniforms)
         
         LoggerService.debug(category: "ShaderManager", "Shader manager reset to default")
     }
-
-
+    
+    
     // MARK: - Setup    
     private func setupDevice() {
         device = MTLCreateSystemDefaultDevice()
@@ -91,9 +95,12 @@ class ShaderManager: ObservableObject {
     
     private func loadDefaultUniforms() {
         // Set default values from current preset
+        var newUniforms: [String: Float] = [:]
         for uniform in activePreset.globalUniforms {
-            uniformValues[uniform.name] = uniform.defaultValue
+            newUniforms[uniform.name] = uniform.defaultValue
         }
+        uniformValues = newUniforms
+        Self.parameterStore.update(with: newUniforms)
     }
     
     // MARK: - Pipeline State Management
@@ -152,7 +159,11 @@ class ShaderManager: ObservableObject {
             newUniforms[uniform.name] = uniform.defaultValue
         }
         uniformValues = newUniforms
-        parameterStore.update(with: newUniforms)
+        Self.parameterStore.update(with: newUniforms)
+        
+        // Update cached fragment function name
+        let fragmentName = deriveFragmentFunctionName(from: preset)
+        Self.parameterStore.updateFragmentFunctionName(fragmentName)
         
         LoggerService.info(category: "ShaderManager", "Activated shader preset: \(preset.name)")
     }
@@ -160,7 +171,7 @@ class ShaderManager: ObservableObject {
     // Update a uniform value
     func updateUniform(_ name: String, value: Float) {
         uniformValues[name] = value
-        parameterStore.update(name: name, value: value)
+        Self.parameterStore.update(name: name, value: value)
         
         LoggerService.debug(category: "ShaderManager", "Updated uniform '\(name)' to \(value)")
     }
@@ -169,15 +180,45 @@ class ShaderManager: ObservableObject {
     func getUniform(_ name: String) -> Float {
         uniformValues[name] ?? 0.0
     }
-
+    
     // Thread-safe way to get a snapshot of all uniforms for the renderer
     nonisolated func getUniformSnapshot() -> [String: Float] {
-        return parameterStore.getSnapshot()
+        return Self.parameterStore.getSnapshot()
     }
 
+    // Thread-safe way to get the current fragment function name for the renderer
+    nonisolated func getCurrentFragmentFunctionName() -> String {
+        return Self.parameterStore.getFragmentFunctionName()
+    }
+    
     // Internal method to sync snapshot after batch updates (like activatePreset)
     func syncSnapshot() {
-        parameterStore.update(with: uniformValues)
+        Self.parameterStore.update(with: uniformValues)
+    }
+    
+    // MARK: - Helper Methods
+    
+    private func deriveFragmentFunctionName(from preset: ShaderPreset) -> String {
+        guard let firstPass = preset.passes.first,
+              let shaderFile = firstPass.shaderFile.components(separatedBy: ".").first else {
+            return "fragmentPassthrough"
+        }
+        
+        let result: String
+        switch shaderFile {
+        case "CRTFilter": result = "fragmentCRT"
+        case "DotMatrixLCD": result = "fragmentDotMatrixLCD"
+        case "LottesCRT": result = "fragmentLottesCRT"
+        case "SharpBilinear": result = "fragmentSharpBilinear"
+        case "LCDGrid": result = "fragmentLCDGrid"
+        case "LiteCRT": result = "fragmentLiteCRT"
+        case "ScaleSmooth": result = "fragmentScaleSmooth"
+        case "Passthrough": result = "fragmentPassthrough"
+        default: result = "fragment" + shaderFile
+        }
+        
+        LoggerService.extreme(category: "Shaders", "ShaderFile: '\(shaderFile)' -> Fragment: '\(result)'")
+        return result
     }
     
     // MARK: - Preset Groups for UI
@@ -218,25 +259,39 @@ class ShaderManager: ObservableObject {
 // and the background rendering thread.
 private class ShaderParameterStore {
     private var snapshot: [String: Float] = [:]
+    private var currentFragmentFunctionName: String = "fragmentPassthrough"
     private let lock = NSLock()
-
+    
     func update(with values: [String: Float]) {
         lock.lock()
         snapshot = values
         lock.unlock()
     }
-
+    
     func update(name: String, value: Float) {
         lock.lock()
         snapshot[name] = value
         lock.unlock()
     }
 
+    func updateFragmentFunctionName(_ name: String) {
+        lock.lock()
+        currentFragmentFunctionName = name
+        lock.unlock()
+    }
+    
     func getSnapshot() -> [String: Float] {
         lock.lock()
         let copy = snapshot
         lock.unlock()
         return copy
+    }
+
+    func getFragmentFunctionName() -> String {
+        lock.lock()
+        let name = currentFragmentFunctionName
+        lock.unlock()
+        return name
     }
 }
 
