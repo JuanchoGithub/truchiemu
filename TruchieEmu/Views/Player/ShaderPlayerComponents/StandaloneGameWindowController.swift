@@ -878,7 +878,7 @@ class StandaloneGameWindowController: NSWindowController, NSWindowDelegate, Obse
                             }
                             // Then check the active preset's globalUniforms for a defined default
                             if let uniform = ShaderManager.shared.activePreset.globalUniforms.first(where: { $0.name == name }) {
-                                return uniform.defaultValue
+                                return uniform.defaultValue ?? fallback
                             }
                             // Last resort: hardcoded fallback
                             return fallback

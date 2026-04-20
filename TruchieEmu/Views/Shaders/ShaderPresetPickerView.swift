@@ -158,7 +158,7 @@ struct ShaderParameterSliders: View {
      }
     
      private func currentUniformValue(for uniform: ShaderUniform) -> Float {
-        uniformValues[uniform.name] ?? uniform.defaultValue
+        uniformValues[uniform.name] ?? uniform.defaultValue ?? 0.0
     }
 }
 

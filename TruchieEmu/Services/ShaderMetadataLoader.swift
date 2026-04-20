@@ -10,14 +10,32 @@ class ShaderMetadataLoader {
     /// - Parameter shaderFile: The name of the shader file (without extension, e.g., "CRTFilter").
     /// - Returns: A dictionary of ShaderUniforms keyed by their name.
     func loadMetadata(for shaderFile: String) -> [String: ShaderUniform] {
-        // Construct the path to the .ui file in the Shaders directory using the app bundle.
-        guard let url = Bundle.main.url(forResource: shaderFile, withExtension: "ui") else {
-            print("ShaderMetadataLoader: Could not find metadata file for \(shaderFile).ui in bundle")
+        var url: URL?
+        
+        // 1. Try finding in the main bundle
+        url = Bundle.main.url(forResource: shaderFile, withExtension: "ui")
+        
+        // 2. Try finding in a "Shaders" subdirectory in the bundle
+        if url == nil {
+            url = Bundle.main.url(forResource: shaderFile, withExtension: "ui", subdirectory: "Shaders")
+        }
+        
+        // 3. Fallback: Try finding relative to the current working directory (useful for local dev)
+        if url == nil {
+            let currentDir = FileManager.default.currentDirectoryPath
+            let fallbackPath = "\(currentDir)/TruchieEmu/Shaders/\(shaderFile).ui"
+            if FileManager.default.fileExists(atPath: fallbackPath) {
+                url = URL(fileURLWithPath: fallbackPath)
+            }
+        }
+        
+        guard let finalUrl = url else {
+            print("ShaderMetadataLoader: Could not find metadata file for \(shaderFile).ui (tried bundle and local fallback)")
             return [:]
         }
         
-        guard let data = try? Data(contentsOf: url) else {
-            print("ShaderMetadataLoader: Could not read metadata file at \(url.path)")
+        guard let data = try? Data(contentsOf: finalUrl) else {
+            print("ShaderMetadataLoader: Could not read metadata file at \(finalUrl.path)")
             return [:]
         }
         

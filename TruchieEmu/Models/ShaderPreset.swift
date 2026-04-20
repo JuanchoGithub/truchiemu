@@ -62,7 +62,7 @@ enum ShaderUniformType: String, Codable {
 struct ShaderUniform: Codable, Hashable, Identifiable {
     var id: String { name }
     var name: String
-    var defaultValue: Float
+    var defaultValue: Float?
     var minValue: Float
     var maxValue: Float
     var step: Float = 0.01
@@ -355,13 +355,17 @@ extension ShaderPreset {
                             enrichedUniform.displayName = meta.displayName
                             enrichedUniform.description = meta.description
                             enrichedUniform.minValue = meta.minValue
-                            enrichedUniform.maxValue = meta.maxValue
-                            enrichedUniform.step = meta.step
-                            enrichedUniform.type = meta.type
-                            return enrichedUniform
-                        }
-                        return uniform
-                    }
+                                                         enrichedUniform.maxValue = meta.maxValue
+                                                         enrichedUniform.step = meta.step
+                                                         enrichedUniform.type = meta.type
+                                                         // If metadata doesn't provide a default, keep the original
+                                                         if enrichedUniform.defaultValue == nil {
+                                                             enrichedUniform.defaultValue = uniform.defaultValue
+                                                         }
+                                                         return enrichedUniform
+                                                     }
+                                                     return uniform
+                                                 }
                     enrichedPreset.passes[passIndex] = updatedPass
                 }
             }
