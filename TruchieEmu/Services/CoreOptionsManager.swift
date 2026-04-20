@@ -96,13 +96,7 @@ class CoreOptionsManager: ObservableObject {
             options.removeAll()
             categories.removeAll()
     
-            LoggerService.debug(category: "CoreOptionsManager", "For \(coreID): cleaned up. Attempting discovery if paths provided.")
-            
-            if let dylib = dylibPath {
-                Task {
-                    await discoverOptions(for: coreID, dylibPath: dylib, romPath: romPath)
-                }
-            }
+            LoggerService.debug(category: "CoreOptionsManager", "For \(coreID): cleaned up. Definitions not found.")
             return
         }
  
