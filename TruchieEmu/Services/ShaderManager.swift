@@ -38,8 +38,25 @@ class ShaderManager: ObservableObject {
         loadDefaultUniforms()
     }
     
-    // MARK: - Setup
-    
+    func resetToDefault() {
+        // Reset to the default preset
+        if let defaultPreset = ShaderPreset.preset(id: ShaderPreset.defaultPreset.id) {
+            activatePreset(defaultPreset)
+        } else {
+            // Fallback if even the default preset can't be found
+            activePreset = ShaderPreset.defaultPreset
+        }
+        
+        // Reset all uniform values to their defaults
+        activePreset.globalUniforms.forEach { uniform in
+            uniformValues[uniform.name] = uniform.defaultValue
+        }
+        
+        LoggerService.debug(category: "ShaderManager", "Shader manager reset to default")
+    }
+
+
+    // MARK: - Setup    
     private func setupDevice() {
         device = MTLCreateSystemDefaultDevice()
         commandQueue = device?.makeCommandQueue()

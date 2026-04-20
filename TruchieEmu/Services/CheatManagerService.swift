@@ -114,10 +114,10 @@ class CheatManagerService: ObservableObject {
         mergedCheats.append(contentsOf: autoLoadedCheats)
         
         // Priority 2: Downloaded cheats from libretro database
-        let downloadedCheats = CheatDownloadService.shared.findCheatsForROM(rom)
-        for cheatFile in downloadedCheats {
-            mergedCheats.append(contentsOf: cheatFile.cheats)
-        }
+        //let downloadedCheats = CheatDownloadService.shared.findCheatsForROM(rom)
+        //for cheatFile in downloadedCheats {
+        //    mergedCheats.append(contentsOf: cheatFile.cheats)
+        //}
         
         // Priority 3: User-defined cheats (from AppSettings)
         let userCheats = allCheats[rom.path.path] ?? []

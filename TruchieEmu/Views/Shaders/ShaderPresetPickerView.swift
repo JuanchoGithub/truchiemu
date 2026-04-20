@@ -17,7 +17,7 @@ class ShaderWindowSettings: ObservableObject {
     @Published var systemID: String?
     @Published var applicationMode: ShaderApplicationMode = .applyToCurrent
     
-    init(shaderPresetID: String = "builtin-crt-classic", 
+    init(shaderPresetID: String = "", 
          uniformValues: [String: Float] = [:], 
          systemID: String? = nil,
          applicationMode: ShaderApplicationMode = .applyToCurrent) {
@@ -336,6 +336,7 @@ struct ShaderPresetPickerView: View {
             }
             
             // Application Mode Footer
+                        // Application Mode Footer
             if settings.systemID != nil {
                 Divider()
                 VStack(spacing: 0) {
@@ -359,6 +360,7 @@ struct ShaderPresetPickerView: View {
                     .background(Color(NSColor.controlBackgroundColor))
                 }
             }
+
         }
         .frame(minWidth: 650, minHeight: 350)
     }
@@ -568,7 +570,7 @@ struct ShaderPresetPickerView: View {
 #Preview {
     ShaderPresetPickerView(
         settings: ShaderWindowSettings(
-            shaderPresetID: "builtin-crt-classic",
+            shaderPresetID: "",
             uniformValues: ["scanlineIntensity": 0.35, "colorBoost": 1.0]
         )
     )

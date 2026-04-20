@@ -77,7 +77,7 @@ struct ContentView: View {
                                   openWindow(id: "system-settings", value: SystemSettingsRequest(system: system, page: .controllers))
                                 case .shaders:
                                     let settings = ShaderWindowSettings(
-                                        shaderPresetID: ShaderManager.shared.activePreset.id,
+                                        shaderPresetID: system.defaultShaderPresetID ?? "",
                                         uniformValues: ShaderManager.shared.uniformValues,
                                         systemID: system.id
                                     )
@@ -95,7 +95,7 @@ struct ContentView: View {
                                          let decoder = JSONDecoder()
                                          
                                          let targetSystemID = system.id
-                                         let oldSystemDefault = SystemDatabase.system(forID: targetSystemID)?.defaultShaderPresetID ?? "builtin-crt-classic"
+                                         let oldSystemDefault = SystemDatabase.system(forID: targetSystemID)?.defaultShaderPresetID ?? ""
                                          
                                          // NEW: Update system default if applying to defaults or all
                                          if mode == .applyToDefaults || mode == .applyToAll {
@@ -150,7 +150,7 @@ struct ContentView: View {
                                      if let entries = try? modelContext.fetch(descriptor) {
                                          let encoder = JSONEncoder()
                                          let decoder = JSONDecoder()
-                                         let oldSystemDefault = SystemDatabase.system(forID: systemID)?.defaultShaderPresetID ?? "builtin-crt-classic"
+                                         let oldSystemDefault = SystemDatabase.system(forID: systemID)?.defaultShaderPresetID ?? ""
                                          for entry in entries {
                                              var settings: ROMSettings
                                              if let json = entry.settingsJSON, let data = json.data(using: .utf8), let decoded = try? decoder.decode(ROMSettings.self, from: data) {

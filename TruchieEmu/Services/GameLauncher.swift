@@ -57,7 +57,7 @@ class GameLauncher: ObservableObject {
             
              // Resolve shader preset
             let system = SystemDatabase.system(forID: rom.systemID ?? "")
-            let defaultShader = system?.defaultShaderPresetID ?? "builtin-crt-classic"
+            let defaultShader = system?.defaultShaderPresetID ?? ""
             let romShader = rom.settings.shaderPresetID.isEmpty ? defaultShader : rom.settings.shaderPresetID
             LoggerService.debug(category: "GameLauncher", "Resolved shader preset: \(romShader) (System default: \(defaultShader))")
             self.shaderPresetID = shaderPresetID ?? romShader
@@ -192,10 +192,15 @@ class GameLauncher: ObservableObject {
     // Apply all launch settings before the game starts
     private func applyLaunchConfiguration(_ config: LaunchConfig) {
         // 1. Apply shader preset
-        if let preset = ShaderPreset.preset(id: config.shaderPresetID) {
+        if let preset = ShaderPreset.preset(id: config.shaderPresetID), !config.shaderPresetID.isEmpty {
             ShaderManager.shared.activatePreset(preset)
             LoggerService.debug(category: "GameLauncher", "Activated shader: \(preset.name)")
+        } else {
+            // If no shader is specified, we must explicitly reset the manager to prevent "leaking" the last used shader
+            ShaderManager.shared.resetToDefault()
+            LoggerService.debug(category: "GameLauncher", "Reset shader to default (no preset specified)")
         }
+
         
         // 1.5. Apply shader uniform overrides (after preset activation to override defaults)
         if !config.shaderUniformOverrides.isEmpty {

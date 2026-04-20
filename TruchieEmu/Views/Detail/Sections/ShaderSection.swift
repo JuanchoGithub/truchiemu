@@ -15,7 +15,7 @@ struct ShaderSection: View {
         rom.settings.shaderPresetID != systemDefaultShaderID
     }
 
-    private var systemDefaultShaderID: String { "builtin-crt-classic" }
+    private var systemDefaultShaderID: String { "" }
 
     var body: some View {
         ModernSectionCard(

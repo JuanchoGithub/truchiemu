@@ -2,7 +2,7 @@ import SwiftUI
 
 // MARK: - Display Settings
 struct DisplaySettingsView: View {
-    @State private var selectedPresetID: String = "builtin-crt-classic"
+    @State private var selectedPresetID: String = ""
     @State private var shaderWindowSettings: ShaderWindowSettings?
     @StateObject private var shaderManager = ShaderManager.shared
     
@@ -58,7 +58,7 @@ struct DisplaySettingsView: View {
         .formStyle(.grouped)
         .navigationTitle("Display")
         .onAppear {
-            selectedPresetID = AppSettings.get("display_default_shader_preset", type: String.self) ?? "builtin-crt-classic"
+            selectedPresetID = AppSettings.get("display_default_shader_preset", type: String.self) ?? ""
         }
     }
     

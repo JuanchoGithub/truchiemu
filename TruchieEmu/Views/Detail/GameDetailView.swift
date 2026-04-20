@@ -114,7 +114,7 @@ struct GameDetailView: View {
     var unlockedAchievementCount: Int { gameAchievements.filter { $0.isUnlocked }.count }
     var totalAchievementPoints: Int { gameAchievements.reduce(0) { $0 + $1.points } }
     var earnedPoints: Int { gameAchievements.filter { $0.isUnlocked }.reduce(0) { $0 + $1.points } }
-    var systemDefaultShaderID: String { "builtin-crt-classic" }
+    var systemDefaultShaderID: String { "" }
     var isShaderCustomized: Bool { currentROM.settings.shaderPresetID != systemDefaultShaderID }
 
     var body: some View {

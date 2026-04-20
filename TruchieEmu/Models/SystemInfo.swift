@@ -283,22 +283,21 @@ class SystemDatabase {
         for (id, bundleSys) in bundledSystems {
             processedIDs.insert(id)
             
-            if let cacheSys = cachedSystems[id] {
-                // MERGE: Take the important bundled data, but keep cached dynamic changes
-                var mergedSys = bundleSys
-                
-                // Union the extensions (Bundle + Libretro discoveries)
-                let combinedExtensions = Set(bundleSys.extensions).union(cacheSys.extensions)
-                mergedSys.extensions = Array(combinedExtensions).sorted()
-                
-                // Preserve user states from cache (if they hid a system in the UI, respect it)
-                mergedSys.displayInUI = cacheSys.displayInUI
-                
-                // If the cache dynamically found a better year or manufacturer, you COULD
-                // merge it here, but typically you want your Bundle to win.
-                
-                finalSystems.append(mergedSys)
-            } else {
+                if let cacheSys = cachedSystems[id] {
+                    // MERGE: Take the important bundled data, but keep cached dynamic changes
+                    var mergedSys = bundleSys
+                    
+                    // Union the extensions (Bundle + Libretro discoveries)
+                    let combinedExtensions = Set(bundleSys.extensions).union(cacheSys.extensions)
+                    mergedSys.extensions = Array(combinedExtensions).sorted()
+                    
+                    // Preserve user states from cache
+                    mergedSys.displayInUI = cacheSys.displayInUI
+                    mergedSys.defaultShaderPresetID = cacheSys.defaultShaderPresetID
+                    mergedSys.defaultCoreID = cacheSys.defaultCoreID
+                    
+                    finalSystems.append(mergedSys)
+                } else {
                 // Found in bundle, but not in cache yet (brand new install or you added a new system)
                 finalSystems.append(bundleSys)
             }

@@ -120,7 +120,7 @@ struct ROMSettings: Codable, Hashable {
     var bezelStyle: String = "none"
     
     // New shader preset system
-    var shaderPresetID: String = "builtin-crt-classic"  // Default to CRT Classic
+    var shaderPresetID: String = ""
     
     // Bezel: filename of the selected bezel, empty = auto-detect, "none" = disabled
     var bezelFileName: String = ""
