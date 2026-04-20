@@ -137,16 +137,14 @@ class CoreOptionsViewModel: ObservableObject {
             }
         }
         
-        // Simulação de carga para a animação
-        DispatchQueue.main.asyncAfter(deadline: .now() + 0.6) {
-            if self.isSystemMode, let sysID = self.systemID {
-                self.discoverCoresForSystem(sysID)
-            } else {
-                self.manager.loadForCore(coreID: id, dylibPath: dylibPath, romPath: romPath)
-            }
-            self.isLoading = false
-            self.hasLoadedOnce = true
+        // Load the options
+        if self.isSystemMode, let sysID = self.systemID {
+            self.discoverCoresForSystem(sysID)
+        } else {
+            self.manager.loadForCore(coreID: id, dylibPath: dylibPath, romPath: romPath)
         }
+        self.isLoading = false
+        self.hasLoadedOnce = true
     }
 
     private func discoverCoresForSystem(_ sysID: String) {
