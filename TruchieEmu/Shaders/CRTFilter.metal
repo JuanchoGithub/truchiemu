@@ -27,14 +27,34 @@ constant float INV_RES_X = 0.00024414;
 // --- [ STRUCTURES ] ---
 
 struct CRTUniforms {
-    float scanlineIntensity; // Darkness of the black horizontal gaps.
-    float barrelAmount;      // Strength of the lens/tube curvature.
-    float colorBoost;        // Master brightness multiplier.
-    float time;              // Drives animation (flicker/jitter).
-    float bleedAmount;       // Horizontal color smearing.
-    float texSizeX;          // Width of the source texture.
-    float texSizeY;          // Height of the source texture.
-    float padding;
+    float scanlineIntensity; // 0.0 - 1.0
+    float barrelAmount;      // 0.0 - 0.5
+    float colorBoost;        // 0.5 - 2.0
+    float time;              // Animation time
+    float bleedAmount;       // 0.0 - 1.0
+    float texSizeX;          // Width
+    float texSizeY;          // Height
+    float vignetteStrength;  // 0.0 - 1.0
+    float flickerStrength;   // 0.0 - 0.05
+    float bloomStrength;     // 0.0 - 2.0
+    float chromaAmount;      // 0.0 - 0.01
+    float softnessAmount;    // 0.0 - 0.01
+    float bezelRounding;     // 0.0 - 0.1
+    float bezelGlow;         // 0.0 - 1.0
+    float tintR;             // Color Tint R
+    float tintG;             // Color Tint G
+    float tintB;             // Color Tint B
+    float useDistort;        // 0.0 or 1.0
+    float useScan;           // 0.0 or 1.0
+    float useBleed;          // 0.0 or 1.0
+    float useSoft;           // 0.0 or 1.0
+    float useChroma;         // 0.0 or 1.0
+    float useWhite;          // 0.0 or 1.0
+    float useVig;            // 0.0 or 1.0
+    float useFlick;          // 0.0 or 1.0
+    float useBezel;          // 0.0 or 1.0
+    float useBloom;          // 0.0 or 1.0
+    float padding;           // Alignment
 };
 
 struct ShaderContext {
@@ -218,8 +238,16 @@ fragment float4 fragmentCRT(VertexOut in [[stage_in]],
      * phosphors fills the black gaps, making the image look much brighter.
      * =================================================================================
      */
-    const bool DISTORT = true, SCAN = true, BLEED = true, SOFT = true, CHROMA = true;
-    const bool WHITE   = true, VIG  = true, FLICK = true, BEZEL = true, BLOOM  = false;
+    const bool DISTORT = u.useDistort > 0.5;
+    const bool SCAN = u.useScan > 0.5;
+    const bool BLEED = u.useBleed > 0.5;
+    const bool SOFT = u.useSoft > 0.5;
+    const bool CHROMA = u.useChroma > 0.5;
+    const bool WHITE = u.useWhite > 0.5;
+    const bool VIG = u.useVig > 0.5;
+    const bool FLICK = u.useFlick > 0.5;
+    const bool BEZEL = u.useBezel > 0.5;
+    const bool BLOOM = u.useBloom > 0.5;
 
     // 1. Preparation: Handle math context.
     ShaderContext ctx = prepareContext(in.texCoord, SOFT, CHROMA, VIG, DISTORT);
@@ -253,20 +281,20 @@ fragment float4 fragmentCRT(VertexOut in [[stage_in]],
     
     // CHROMA: Color misregistration at edges.
     if (CHROMA) {
-        rgb.r = tex.sample(s, sampleUV + float2(pShift, 0)).r;
-        rgb.b = tex.sample(s, sampleUV - float2(pShift, 0)).b;
+        float chromaShift = pShift * (u.chromaAmount / 0.0012); // Normalize against the default hardcoded pShift factor if necessary, or just use u.chromaAmount
+        rgb.r = tex.sample(s, sampleUV + float2(chromaShift, 0)).r;
+        rgb.b = tex.sample(s, sampleUV - float2(chromaShift, 0)).b;
     }
-
+    
     // BLEED & ANALOG: Dithering, Vignette, and Flicker.
     rgb = applyDitherBleed(rgb, colL, colR, BLEED);
-    rgb = applyAnalogFinishing(rgb, ctx, u.colorBoost, float3(0.96, 1.04, 0.95), 0.45, u.time, 0.005, WHITE, VIG, FLICK);
-
+    rgb = applyAnalogFinishing(rgb, ctx, u.colorBoost, float3(u.tintR, u.tintG, u.tintB), u.vignetteStrength, u.time, u.flickerStrength, WHITE, VIG, FLICK);
+    
     // SCANLINES: Horizontal darkened lines with adaptive bloom.
-    const float BLOOM_STRENGTH = 1.3;
-    if (SCAN) rgb = applyScanlines(rgb, mainColor, in.position.y, u.scanlineIntensity, BLOOM_STRENGTH, BLOOM);
-
+    if (SCAN) rgb = applyScanlines(rgb, mainColor, in.position.y, u.scanlineIntensity, u.bloomStrength, BLOOM);
+    
     // 5. Final Composite: Add bezel mask and glass glow.
-    float3 finalOut = applyMaskAndBezel(rgb, distortedUV, sampleUV, tex, s, u.colorBoost, u.texSizeX, 0.04, 0.35, BEZEL);
+    float3 finalOut = applyMaskAndBezel(rgb, distortedUV, sampleUV, tex, s, u.colorBoost, u.texSizeX, u.bezelRounding, u.bezelGlow, BEZEL);
 
     return float4(saturate(finalOut), 1.0);
 }

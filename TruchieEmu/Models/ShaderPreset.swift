@@ -182,11 +182,22 @@ extension ShaderPreset {
                     scaleTypeX: .viewport, scaleTypeY: .viewport
                 )
             ],
-             globalUniforms: [
-                 ShaderUniform(name: "scanlineIntensity", defaultValue: 0.35, minValue: 0.0, maxValue: 1.0),
-                 ShaderUniform(name: "barrelAmount", defaultValue: 0.12, minValue: 0.0, maxValue: 0.5),
-                 ShaderUniform(name: "colorBoost", defaultValue: 1.0, minValue: 0.5, maxValue: 2.0),
-             ],
+            globalUniforms: [
+                ShaderUniform(name: "scanlineIntensity", defaultValue: 0.35, minValue: 0.0, maxValue: 1.0),
+                ShaderUniform(name: "barrelAmount", defaultValue: 0.12, minValue: 0.0, maxValue: 0.5),
+                ShaderUniform(name: "colorBoost", defaultValue: 1.0, minValue: 0.5, maxValue: 2.0),
+                // Add these to the globalUniforms array for the builtin-crt-classic preset:
+                ShaderUniform(name: "useDistort", defaultValue: 1.0, minValue: 0.0, maxValue: 1.0),
+                ShaderUniform(name: "useScan", defaultValue: 1.0, minValue: 0.0, maxValue: 1.0),
+                ShaderUniform(name: "useBleed", defaultValue: 1.0, minValue: 0.0, maxValue: 1.0),
+                ShaderUniform(name: "useSoft", defaultValue: 1.0, minValue: 0.0, maxValue: 1.0),
+                ShaderUniform(name: "useChroma", defaultValue: 1.0, minValue: 0.0, maxValue: 1.0),
+                ShaderUniform(name: "useWhite", defaultValue: 1.0, minValue: 0.0, maxValue: 1.0),
+                ShaderUniform(name: "useVig", defaultValue: 1.0, minValue: 0.0, maxValue: 1.0),
+                ShaderUniform(name: "useFlick", defaultValue: 1.0, minValue: 0.0, maxValue: 1.0),
+                ShaderUniform(name: "useBezel", defaultValue: 1.0, minValue: 0.0, maxValue: 1.0),
+                ShaderUniform(name: "useBloom", defaultValue: 0.0, minValue: 0.0, maxValue: 1.0),
+            ],
             description: "Classic CRT scanlines with barrel distortion and vignette.",
             recommendedSystems: ["nes", "snes", "genesis", "psx"]
         ),

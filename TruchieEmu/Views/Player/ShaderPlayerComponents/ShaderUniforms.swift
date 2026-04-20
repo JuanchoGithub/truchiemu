@@ -14,6 +14,26 @@ struct CRTUniforms {
     var bleedAmount: Float
     var texSizeX: Float
     var texSizeY: Float
+    var vignetteStrength: Float
+    var flickerStrength: Float
+    var bloomStrength: Float
+    var chromaAmount: Float
+    var softnessAmount: Float
+    var bezelRounding: Float
+    var bezelGlow: Float
+    var tintR: Float
+    var tintG: Float
+    var tintB: Float
+    var useDistort: Float
+    var useScan: Float
+    var useBleed: Float
+    var useSoft: Float
+    var useChroma: Float
+    var useWhite: Float
+    var useVig: Float
+    var useFlick: Float
+    var useBezel: Float
+    var useBloom: Float
     var padding: Float
 }
 

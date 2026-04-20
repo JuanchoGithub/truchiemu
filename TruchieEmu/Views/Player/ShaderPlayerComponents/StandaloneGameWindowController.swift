@@ -897,14 +897,34 @@ class StandaloneGameWindowController: NSWindowController, NSWindowDelegate, Obse
                             let colorB = getUniform("colorBoost", fallback: 1.1)
                             LoggerService.extreme(category: "Shaders", "scanInt=\(scanInt) barrelAmt=\(barrelAmt) colorBoost=\(colorB)")
                             var u = CRTUniforms(
-                                scanlineIntensity: scanInt,
-                                barrelAmount: barrelAmt,
-                                colorBoost: colorB,
-                                time: time,
-                                bleedAmount: getUniform("bleedAmount", fallback: 0.0),
-                                texSizeX: Float(frameTex.width),
-                                texSizeY: Float(frameTex.height),
-                                padding: 0.0
+                                 scanlineIntensity: scanInt,
+                                 barrelAmount: barrelAmt,
+                                 colorBoost: colorB,
+                                 time: time,
+                                 bleedAmount: getUniform("bleedAmount", fallback: 0.0),
+                                 texSizeX: Float(frameTex.width),
+                                 texSizeY: Float(frameTex.height),
+                                 vignetteStrength: getUniform("vignetteStrength", fallback: 0.45),
+                                 flickerStrength: getUniform("flickerStrength", fallback: 0.005),
+                                 bloomStrength: getUniform("bloomStrength", fallback: 1.3),
+                                 chromaAmount: getUniform("chromaAmount", fallback: 0.0012),
+                                 softnessAmount: getUniform("softnessAmount", fallback: 0.0008),
+                                 bezelRounding: getUniform("bezelRounding", fallback: 0.04),
+                                 bezelGlow: getUniform("bezelGlow", fallback: 0.35),
+                                 tintR: getUniform("tintR", fallback: 0.96),
+                                 tintG: getUniform("tintG", fallback: 1.04),
+                                 tintB: getUniform("tintB", fallback: 0.95),
+                                 useDistort: getUniform("useDistort", fallback: 1.0),
+                                 useScan: getUniform("useScan", fallback: 1.0),
+                                 useBleed: getUniform("useBleed", fallback: 1.0),
+                                 useSoft: getUniform("useSoft", fallback: 1.0),
+                                 useChroma: getUniform("useChroma", fallback: 1.0),
+                                 useWhite: getUniform("useWhite", fallback: 1.0),
+                                 useVig: getUniform("useVig", fallback: 1.0),
+                                 useFlick: getUniform("useFlick", fallback: 1.0),
+                                 useBezel: getUniform("useBezel", fallback: 1.0),
+                                 useBloom: getUniform("useBloom", fallback: 0.0),
+                                 padding: 0.0
                             )
                             enc.setFragmentBytes(&u, length: MemoryLayout<CRTUniforms>.stride, index: 0)
                         case "fragmentDotMatrixLCD":
@@ -982,10 +1002,31 @@ class StandaloneGameWindowController: NSWindowController, NSWindowDelegate, Obse
                                 bleedAmount: getUniform("bleedAmount", fallback: 0.0),
                                 texSizeX: Float(frameTex.width),
                                 texSizeY: Float(frameTex.height),
+                                vignetteStrength: 0.0,
+                                flickerStrength: 0.0,
+                                bloomStrength: 0.0,
+                                chromaAmount: 0.0,
+                                softnessAmount: 0.0,
+                                bezelRounding: 0.0,
+                                bezelGlow: 0.0,
+                                tintR: 1.0,
+                                tintG: 1.0,
+                                tintB: 1.0,
+                                useDistort: 0.0,
+                                useScan: 0.0,
+                                useBleed: 0.0,
+                                useSoft: 0.0,
+                                useChroma: 0.0,
+                                useWhite: 0.0,
+                                useVig: 0.0,
+                                useFlick: 0.0,
+                                useBezel: 0.0,
+                                useBloom: 0.0,
                                 padding: 0.0
                             )
                             enc.setFragmentBytes(&u, length: MemoryLayout<CRTUniforms>.stride, index: 0)
                         }
+
                         enc.drawPrimitives(type: .triangleStrip, vertexStart: 0, vertexCount: 4)
                         enc.endEncoding()
                         innerDrawCount += 1
