@@ -1,0 +1,119 @@
+[
+  {
+    "name": "scanlineIntensity",
+    "displayName": "Scanline Intensity",
+    "description": "Darkness of the horizontal gaps between rows of pixels.",
+    "minValue": 0.0,
+    "maxValue": 1.0,
+    "step": 0.01,
+    "type": "slider"
+  },
+  {
+    "name": "barrelAmount",
+    "displayName": "Barrel Distortion",
+    "description": "Simulates the curved glass of a cathode ray tube.",
+    "minValue": 0.0,
+    "maxValue": 0.5,
+    "step": 0.01,
+    "type": "slider"
+  },
+  {
+    "name": "colorBoost",
+    "displayName": "Color Boost",
+    "description": "Overall brightness multiplier for the image.",
+    "minValue": 0.5,
+    "maxValue": 2.0,
+    "step": 0.01,
+    "type": "slider"
+  },
+  {
+    "name": "useDistort",
+    "displayName": "Distortion",
+    "description": "Enable/Disable barrel distortion.",
+    "minValue": 0.0,
+    "maxValue": 1.0,
+    "step": 1.0,
+    "type": "toggle"
+  },
+  {
+    "name": "useScan",
+    "displayName": "Scanlines",
+    "description": "Enable/Disable horizontal scanline effect.",
+    "minValue": 0.0,
+    "maxValue": 1.0,
+    "step": 1.0,
+    "type": "toggle"
+  },
+  {
+    "name": "useBleed",
+    "displayName": "Color Bleed",
+    "description": "Enable/Disable horizontal color smearing.",
+    "minValue": 0.0,
+    "maxValue": 1.0,
+    "step": 1.0,
+    "type": "toggle"
+  },
+  {
+    "name": "useSoft",
+    "displayName": "Corner Softness",
+    "description": "Enable/Disable dynamic corner blur.",
+    "minValue": 0.0,
+    "maxValue": 1.0,
+    "step": 1.0,
+    "type": "toggle"
+  },
+  {
+    "name": "useChroma",
+    "displayName": "Chromatic Aberration",
+    "description": "Enable/Disable color fringing at edges.",
+    "minValue": 0.0,
+    "maxValue": 1.0,
+    "step": 1.0,
+    "type": "toggle"
+  },
+  {
+    "name": "useWhite",
+    "displayName": "White Balance",
+    "description": "Enable/Disable phosphor tinting.",
+    "minValue": 0.0,
+    "maxValue": 1.0,
+    "step": 1.0,
+    "type": "toggle"
+  },
+  {
+    "name": "useVig",
+    "displayName": "Vignette",
+    "description": "Enable/Disable corner darkening.",
+    "minValue": 0.0,
+    "maxValue": 1.0,
+    "step": 1.0,
+    "type": "toggle"
+  },
+  {
+    "name": "useFlick",
+    "displayName": "Flicker",
+    "description": "Enable/Disable 60Hz brightness oscillation.",
+    "minValue": 0.0,
+    "maxValue": 1.0,
+    "step": 1.0,
+    "type": "toggle"
+  },
+  {
+    "name": "useBezel",
+    "displayName": "Bezel Mask",
+    "description": "Enable/Disable tube mask and internal glow.",
+    "minValue": 0.0,
+    "maxValue": 1.0,
+    "step": 1.0,
+    "type": "toggle"
+  },
+  {
+    "name": "useBloom",
+    "displayName": "Scanline Bloom",
+    "description": "Enable/Disable adaptive scanline brightness.",
+    "minValue": 0.0,
+    "maxValue": 1.0,
+    "step": 1.0,
+    "type": "toggle"
+  }
+]
