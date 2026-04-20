@@ -355,57 +355,72 @@ struct ShaderPresetPickerView: View {
     var onValueCommitted: (([String: Float]) -> Void)?
     
     var body: some View {
-        VStack(spacing: 0) {
-            // Current selection indicator
-            currentSelectionHeader
-            
-            // Search bar
-            searchBar
-            
-            // Category tabs
-            categoryTabs
-            
-            // Main content area: list on left, sliders on right
-            HStack(spacing: 0) {
-                // Preset list (left side)
+        HStack(spacing: 0) {
+            // LEFT COLUMN: Controls and List
+            VStack(spacing: 0) {
+                // Current selection indicator
+                currentSelectionHeader
+                
+                // Search bar
+                searchBar
+                
+                // Category tabs
+                categoryTabs
+                
+                Divider()
+                
+                // Preset list
                 presetList
                 
-                // Uniform sliders (right side)
+                // Application Mode Footer
+                if settings.systemID != nil {
+                    Divider()
+                    VStack(spacing: 0) {
+                        Picker("Application Mode", selection: $settings.applicationMode) {
+                            Text("Default").tag(ShaderApplicationMode.applyToDefaults)
+                            Text("Override").tag(ShaderApplicationMode.applyToAll)
+                        }
+                        .pickerStyle(.segmented)
+                        .padding(10)
+ 
+                        HStack {
+                            Spacer()
+                            Button("Apply") {
+                                onValueCommitted?(settings.uniformValues)
+                            }
+                            .buttonStyle(.borderedProminent)
+                            .controlSize(.small)
+                            .padding(.horizontal, 12)
+                            .padding(.vertical, 8)
+                        }
+                        .background(Color(NSColor.controlBackgroundColor))
+                    }
+                }
+            }
+            .frame(minWidth: 300, maxWidth: .infinity)
+            
+            Divider()
+            
+            // RIGHT COLUMN: Shader Properties
+            Group {
                 if let selectedPreset = ShaderPreset.preset(id: settings.shaderPresetID),
                    !selectedPreset.globalUniforms.isEmpty {
-                    Divider()
                     parameterSliders
-                }
-            }
-            
-            // Application Mode Footer
-                        // Application Mode Footer
-            if settings.systemID != nil {
-                Divider()
-                VStack(spacing: 0) {
-                    Picker("Application Mode", selection: $settings.applicationMode) {
-                        Text("Default").tag(ShaderApplicationMode.applyToDefaults)
-                        Text("Override").tag(ShaderApplicationMode.applyToAll)
-                    }
-                    .pickerStyle(.segmented)
-                    .padding(10)
-
-                    HStack {
+                } else {
+                    VStack {
                         Spacer()
-                        Button("Apply") {
-                            onValueCommitted?(settings.uniformValues)
-                        }
-                        .buttonStyle(.borderedProminent)
-                        .controlSize(.small)
-                        .padding(.horizontal, 12)
-                        .padding(.vertical, 8)
+                        Text("Select a shader to view parameters")
+                            .font(.subheadline)
+                            .foregroundColor(.secondary)
+                        Spacer()
                     }
-                    .background(Color(NSColor.controlBackgroundColor))
+                    .frame(maxWidth: .infinity, maxHeight: .infinity)
+                    .background(Color(NSColor.windowBackgroundColor))
                 }
             }
-
+            .frame(minWidth: 250, maxWidth: .infinity)
         }
-        .frame(minWidth: 650, minHeight: 350)
+        .frame(minWidth: 700, minHeight: 500)
     }
     
     // MARK: - Current Selection Header
