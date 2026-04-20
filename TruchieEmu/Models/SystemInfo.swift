@@ -99,6 +99,7 @@ struct SystemInfo: Identifiable, Codable, Hashable {
     var manufacturer: String
     var extensions: [String]
     var defaultCoreID: String?
+    var defaultShaderPresetID: String?
     var iconName: String
     var emuIconName: String?
     var year: String?
@@ -128,7 +129,7 @@ struct SystemInfo: Identifiable, Codable, Hashable {
     // Explicit CodingKeys ensure both custom Decoding and automatic Encoding work perfectly
     enum CodingKeys: String, CodingKey {
         case id, name, pathKeywords, magicHeaders, filenamePatterns, manufacturer
-        case extensions, defaultCoreID, iconName, emuIconName, year, sortOrder
+        case extensions, defaultCoreID, defaultShaderPresetID, iconName, emuIconName, year, sortOrder
         case defaultBoxType, displayInUI, coreReportedAspectRatio, isDiskBased
     }
     
@@ -147,6 +148,7 @@ struct SystemInfo: Identifiable, Codable, Hashable {
         
         manufacturer = try container.decodeIfPresent(String.self, forKey: .manufacturer) ?? "Unknown"
         defaultCoreID = try container.decodeIfPresent(String.self, forKey: .defaultCoreID)
+        defaultShaderPresetID = try container.decodeIfPresent(String.self, forKey: .defaultShaderPresetID)
         iconName = try container.decodeIfPresent(String.self, forKey: .iconName) ?? "gamecontroller"
         emuIconName = try container.decodeIfPresent(String.self, forKey: .emuIconName)
         year = try container.decodeIfPresent(String.self, forKey: .year)
@@ -158,7 +160,7 @@ struct SystemInfo: Identifiable, Codable, Hashable {
     }
     
     // Keep the standard init so LibretroInfoManager can still create objects dynamically
-    init(id: String, name: String, pathKeywords: [String], magicHeaders:[MagicHeader], filenamePatterns: [String], manufacturer: String, extensions: [String], defaultCoreID: String?, iconName: String, emuIconName: String?, year: String?, sortOrder: Int, defaultBoxType: BoxType, displayInUI: Bool, isDiskBased: Bool = false) {
+    init(id: String, name: String, pathKeywords: [String], magicHeaders:[MagicHeader], filenamePatterns: [String], manufacturer: String, extensions: [String], defaultCoreID: String?, defaultShaderPresetID: String? = nil, iconName: String, emuIconName: String?, year: String?, sortOrder: Int, defaultBoxType: BoxType, displayInUI: Bool, isDiskBased: Bool = false) {
         self.id = id
         self.name = name
         self.pathKeywords = pathKeywords
@@ -167,6 +169,7 @@ struct SystemInfo: Identifiable, Codable, Hashable {
         self.manufacturer = manufacturer
         self.extensions = extensions
         self.defaultCoreID = defaultCoreID
+        self.defaultShaderPresetID = defaultShaderPresetID
         self.iconName = iconName
         self.emuIconName = emuIconName
         self.year = year

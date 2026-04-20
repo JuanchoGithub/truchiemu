@@ -55,9 +55,11 @@ class GameLauncher: ObservableObject {
             self.slotToLoad = slotToLoad
             self.shaderUniformOverrides = shaderUniformOverrides
             
-            // Resolve shader preset
-            let romShader = rom.settings.shaderPresetID.isEmpty ? "builtin-crt-classic" : rom.settings.shaderPresetID
-            LoggerService.extreme(category: "GameLauncher", "Resolved shader preset: \(romShader)")
+             // Resolve shader preset
+            let system = SystemDatabase.system(forID: rom.systemID ?? "")
+            let defaultShader = system?.defaultShaderPresetID ?? "builtin-crt-classic"
+            let romShader = rom.settings.shaderPresetID.isEmpty ? defaultShader : rom.settings.shaderPresetID
+            LoggerService.debug(category: "GameLauncher", "Resolved shader preset: \(romShader) (System default: \(defaultShader))")
             self.shaderPresetID = shaderPresetID ?? romShader
             
             // Resolve achievements

@@ -109,12 +109,7 @@ struct ShaderParameterSliders: View {
                 ),
                 in: uniform.minValue...uniform.maxValue,
                 step: uniform.step,
-                onEditingChanged: { editing in
-                    // Only notify when user releases the slider (editing = false)
-                    if !editing {
-                        onValueCommitted?(uniformValues)
-                    }
-                }
+                onEditingChanged: { _ in }
             )
             .controlSize(.small)
         }
@@ -177,12 +172,6 @@ class ShaderWindowController: NSWindowController, NSWindowDelegate {
         window.contentView = hostingView
         
         // Observe preset changes using Combine (for preset switches only)
-        settingsCancellable = settings.$shaderPresetID
-            .dropFirst()
-            .removeDuplicates()
-            .sink { [weak self] presetID in
-                self?.onPresetChanged?(presetID, self?.settings.uniformValues ?? [:], self?.settings.applicationMode ?? .applyToCurrent)
-            }
     }
     
     required init?(coder: NSCoder) {
@@ -349,44 +338,26 @@ struct ShaderPresetPickerView: View {
             // Application Mode Footer
             if settings.systemID != nil {
                 Divider()
-                HStack {
-                    Spacer()
-                    HStack(spacing: 12) {
-                        Button {
-                            settings.applicationMode = .applyToCurrent
-                        } label: {
-                            Label("Apply to Current", systemImage: settings.applicationMode == .applyToCurrent ? "checkmark.circle.fill" : "circle")
-                        }
-                        .buttonStyle(.plain)
-                        .foregroundColor(settings.applicationMode == .applyToCurrent ? .accentColor : .secondary)
-
-                        Button {
-                            settings.applicationMode = .applyToDefaults
-                        } label: {
-                            Label("Default the defaults", systemImage: settings.applicationMode == .applyToDefaults ? "checkmark.circle.fill" : "circle")
-                        }
-                        .buttonStyle(.plain)
-                        .foregroundColor(settings.applicationMode == .applyToDefaults ? .accentColor : .secondary)
-
-                        Button {
-                            settings.applicationMode = .applyToAll
-                        } label: {
-                            Label("Default everything", systemImage: settings.applicationMode == .applyToAll ? "checkmark.circle.fill" : "circle")
-                        }
-                        .buttonStyle(.plain)
-                        .foregroundColor(settings.applicationMode == .applyToAll ? .accentColor : .secondary)
+                VStack(spacing: 0) {
+                    Picker("Application Mode", selection: $settings.applicationMode) {
+                        Text("Default").tag(ShaderApplicationMode.applyToDefaults)
+                        Text("Override").tag(ShaderApplicationMode.applyToAll)
                     }
-                    .padding(.horizontal, 12)
-                    .padding(.vertical, 8)
-                    
-                    Button("Apply") {
-                        onValueCommitted?(settings.uniformValues)
+                    .pickerStyle(.segmented)
+                    .padding(10)
+
+                    HStack {
+                        Spacer()
+                        Button("Apply") {
+                            onValueCommitted?(settings.uniformValues)
+                        }
+                        .buttonStyle(.borderedProminent)
+                        .controlSize(.small)
+                        .padding(.horizontal, 12)
+                        .padding(.vertical, 8)
                     }
-                    .buttonStyle(.borderedProminent)
-                    .controlSize(.small)
-                    .padding(.trailing, 12)
+                    .background(Color(NSColor.controlBackgroundColor))
                 }
-                .background(Color(NSColor.controlBackgroundColor))
             }
         }
         .frame(minWidth: 650, minHeight: 350)
