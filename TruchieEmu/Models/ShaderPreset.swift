@@ -54,6 +54,11 @@ enum ShaderFilter: String, Codable {
 
 // MARK: - Shader Uniform Definition
 
+enum ShaderUniformType: String, Codable {
+    case slider
+    case toggle
+}
+
 struct ShaderUniform: Codable, Hashable, Identifiable {
     var id: String { name }
     var name: String
@@ -62,6 +67,8 @@ struct ShaderUniform: Codable, Hashable, Identifiable {
     var maxValue: Float
     var step: Float = 0.01
     var displayName: String?
+    var description: String?
+    var type: ShaderUniformType = .slider
     
     var displayLabel: String {
         displayName ?? name.replacingOccurrences(of: "_", with: " ").capitalized
@@ -167,40 +174,38 @@ extension ShaderPreset {
             ],
             description: "Advanced CRT simulation by Timothy Lottes. Featuring high-quality scanlines and mask.",
             recommendedSystems: ["nes", "snes", "genesis", "psx", "arcade"]
-        ),
-        
-        // CRT Classic
-        ShaderPreset(
-            id: "builtin-crt-classic",
-            name: "CRT Classic",
-            shaderType: .crt,
-            passes: [
-                ShaderPass(
-                    shaderFile: "CRTFilter",
-                    filter: .linear,
-                    scaleX: 1.0, scaleY: 1.0,
-                    scaleTypeX: .viewport, scaleTypeY: .viewport
-                )
-            ],
-            globalUniforms: [
-                ShaderUniform(name: "scanlineIntensity", defaultValue: 0.35, minValue: 0.0, maxValue: 1.0),
-                ShaderUniform(name: "barrelAmount", defaultValue: 0.12, minValue: 0.0, maxValue: 0.5),
-                ShaderUniform(name: "colorBoost", defaultValue: 1.0, minValue: 0.5, maxValue: 2.0),
-                // Add these to the globalUniforms array for the builtin-crt-classic preset:
-                ShaderUniform(name: "useDistort", defaultValue: 1.0, minValue: 0.0, maxValue: 1.0),
-                ShaderUniform(name: "useScan", defaultValue: 1.0, minValue: 0.0, maxValue: 1.0),
-                ShaderUniform(name: "useBleed", defaultValue: 1.0, minValue: 0.0, maxValue: 1.0),
-                ShaderUniform(name: "useSoft", defaultValue: 1.0, minValue: 0.0, maxValue: 1.0),
-                ShaderUniform(name: "useChroma", defaultValue: 1.0, minValue: 0.0, maxValue: 1.0),
-                ShaderUniform(name: "useWhite", defaultValue: 1.0, minValue: 0.0, maxValue: 1.0),
-                ShaderUniform(name: "useVig", defaultValue: 1.0, minValue: 0.0, maxValue: 1.0),
-                ShaderUniform(name: "useFlick", defaultValue: 1.0, minValue: 0.0, maxValue: 1.0),
-                ShaderUniform(name: "useBezel", defaultValue: 1.0, minValue: 0.0, maxValue: 1.0),
-                ShaderUniform(name: "useBloom", defaultValue: 0.0, minValue: 0.0, maxValue: 1.0),
-            ],
-            description: "Classic CRT scanlines with barrel distortion and vignette.",
-            recommendedSystems: ["nes", "snes", "genesis", "psx"]
-        ),
+        ),        
+                // CRT Classic
+                ShaderPreset(
+                    id: "builtin-crt-classic",
+                    name: "CRT Classic",
+                    shaderType: .crt,
+                    passes: [
+                        ShaderPass(
+                            shaderFile: "CRTFilter",
+                            filter: .linear,
+                            scaleX: 1.0, scaleY: 1.0,
+                            scaleTypeX: .viewport, scaleTypeY: .viewport
+                        )
+                    ],
+                    globalUniforms: [
+                        ShaderUniform(name: "scanlineIntensity", defaultValue: 0.35, minValue: 0.0, maxValue: 1.0),
+                        ShaderUniform(name: "barrelAmount", defaultValue: 0.12, minValue: 0.0, maxValue: 0.5),
+                        ShaderUniform(name: "colorBoost", defaultValue: 1.0, minValue: 0.5, maxValue: 2.0),
+                        ShaderUniform(name: "useDistort", defaultValue: 1.0, minValue: 0.0, maxValue: 1.0, type: .toggle),
+                        ShaderUniform(name: "useScan", defaultValue: 1.0, minValue: 0.0, maxValue: 1.0, type: .toggle),
+                        ShaderUniform(name: "useBleed", defaultValue: 1.0, minValue: 0.0, maxValue: 1.0, type: .toggle),
+                        ShaderUniform(name: "useSoft", defaultValue: 1.0, minValue: 0.0, maxValue: 1.0, type: .toggle),
+                        ShaderUniform(name: "useChroma", defaultValue: 1.0, minValue: 0.0, maxValue:1.0, type: .toggle),
+                        ShaderUniform(name: "useWhite", defaultValue: 1.0, minValue: 0.0, maxValue: 1.0, type: .toggle),
+                        ShaderUniform(name: "useVig", defaultValue: 1.0, minValue: 0.0, maxValue: 1.0, type: .toggle),
+                        ShaderUniform(name: "useFlick", defaultValue: 1.0, minValue: 0.0, maxValue: 1.0, type: .toggle),
+                        ShaderUniform(name: "useBezel", defaultValue: 1.0, minValue: 0.0, maxValue: 1.0, type: .toggle),
+                        ShaderUniform(name: "useBloom", defaultValue: 0.0, minValue: 0.0, maxValue: 1.0, type: .toggle),
+                    ],
+                    description: "Classic CRT scanlines with barrel distortion and vignette.",
+                    recommendedSystems: ["nes", "snes", "genesis", "psx"]
+                ),
 
         // Sharp Bilinear (Clean & Sharp)
         ShaderPreset(
@@ -335,7 +340,56 @@ extension ShaderPreset {
     
     // All available presets (built-in only)
     static var allPresets: [ShaderPreset] {
-        builtinPresets
+        builtinPresets.map { preset in
+            var enrichedPreset = preset
+            
+            // For each pass, try to load metadata for its shader
+            for (passIndex, pass) in preset.passes.enumerated() {
+                let metadata = ShaderMetadataLoader.shared.loadMetadata(for: pass.shaderFile)
+                if !metadata.isEmpty {
+                    var updatedPass = pass
+                    // Enrich the pass's uniforms with metadata
+                    updatedPass.uniforms = pass.uniforms.map { uniform in
+                        if let meta = metadata[uniform.name] {
+                            var enrichedUniform = uniform
+                            enrichedUniform.displayName = meta.displayName
+                            enrichedUniform.description = meta.description
+                            enrichedUniform.minValue = meta.minValue
+                            enrichedUniform.maxValue = meta.maxValue
+                            enrichedUniform.step = meta.step
+                            enrichedUniform.type = meta.type
+                            return enrichedUniform
+                        }
+                        return uniform
+                    }
+                    enrichedPreset.passes[passIndex] = updatedPass
+                }
+            }
+            
+            // Also enrich globalUniforms if they exist
+            let globalMetadata = preset.passes.reduce(into: [String: ShaderUniform]()) { acc, pass in
+                let meta = ShaderMetadataLoader.shared.loadMetadata(for: pass.shaderFile)
+                acc.merge(meta) { (_, new) in new }
+            }
+            
+            if !globalMetadata.isEmpty {
+                enrichedPreset.globalUniforms = enrichedPreset.globalUniforms.map { uniform in
+                    if let meta = globalMetadata[uniform.name] {
+                        var enrichedUniform = uniform
+                        enrichedUniform.displayName = meta.displayName
+                        enrichedUniform.description = meta.description
+                        enrichedUniform.minValue = meta.minValue
+                        enrichedUniform.maxValue = meta.maxValue
+                        enrichedUniform.step = meta.step
+                        enrichedUniform.type = meta.type
+                        return enrichedUniform
+                    }
+                    return uniform
+                }
+            }
+            
+            return enrichedPreset
+        }
     }
     
     // Get preset by ID

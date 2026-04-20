@@ -152,6 +152,8 @@
 		DD1AA8092F94941B0014A60E /* CheatManagerViews.swift in Sources */ = {isa = PBXBuildFile; fileRef = DD1AA8082F94941B0014A60E /* CheatManagerViews.swift */; };
 		DD1AA80B2F94943D0014A60E /* CheatManagerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = DD1AA80A2F94943D0014A60E /* CheatManagerView.swift */; };
 		DD1AA80D2F9565950014A60E /* RAGameCacheEntry.swift in Sources */ = {isa = PBXBuildFile; fileRef = DD1AA80C2F9565950014A60E /* RAGameCacheEntry.swift */; };
+		DD1AA80F2F965D760014A60E /* CRTFilter.ui in Resources */ = {isa = PBXBuildFile; fileRef = DD1AA80E2F965D760014A60E /* CRTFilter.ui */; };
+		DD1ABECE2F965E620014A60E /* ShaderMetadataLoader.swift in Sources */ = {isa = PBXBuildFile; fileRef = DD1ABECD2F965E620014A60E /* ShaderMetadataLoader.swift */; };
 		DDA58F0A2F8DC26600A9BEE9 /* LibrarySettingsViewGroup.swift in Sources */ = {isa = PBXBuildFile; fileRef = DDA58F092F8DC26600A9BEE9 /* LibrarySettingsViewGroup.swift */; };
 		DDA58F0C2F8DC32800A9BEE9 /* CoreSettingsViewGroup.swift in Sources */ = {isa = PBXBuildFile; fileRef = DDA58F0B2F8DC32800A9BEE9 /* CoreSettingsViewGroup.swift */; };
 		DDA58F122F8DC65100A9BEE9 /* ControllerSettingsViewGroup.swift in Sources */ = {isa = PBXBuildFile; fileRef = DDA58F112F8DC65100A9BEE9 /* ControllerSettingsViewGroup.swift */; };
@@ -634,6 +636,8 @@
 		DD1AA8082F94941B0014A60E /* CheatManagerViews.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CheatManagerViews.swift; sourceTree = "<group>"; };
 		DD1AA80A2F94943D0014A60E /* CheatManagerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CheatManagerView.swift; sourceTree = "<group>"; };
 		DD1AA80C2F9565950014A60E /* RAGameCacheEntry.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RAGameCacheEntry.swift; sourceTree = "<group>"; };
+		DD1AA80E2F965D760014A60E /* CRTFilter.ui */ = {isa = PBXFileReference; lastKnownFileType = text; path = CRTFilter.ui; sourceTree = "<group>"; };
+		DD1ABECD2F965E620014A60E /* ShaderMetadataLoader.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShaderMetadataLoader.swift; sourceTree = "<group>"; };
 		DD7DD75048F4FE666F795285 /* ROMRepository.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ROMRepository.swift; sourceTree = "<group>"; };
 		DDA58F092F8DC26600A9BEE9 /* LibrarySettingsViewGroup.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LibrarySettingsViewGroup.swift; sourceTree = "<group>"; };
 		DDA58F0B2F8DC32800A9BEE9 /* CoreSettingsViewGroup.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CoreSettingsViewGroup.swift; sourceTree = "<group>"; };
@@ -960,6 +964,7 @@
 		0DAE1ECDADDA76B1C01813C4 /* Shaders */ = {
 			isa = PBXGroup;
 			children = (
+				DD1AA80E2F965D760014A60E /* CRTFilter.ui */,
 				2F02B2718F34118A171C7103 /* CRTFilter.metal */,
 				FB1E0BA149353E4880AC8642 /* DotMatrixLCD.metal */,
 				7F559B83E48D1A47C6F37BC6 /* LCDGrid.metal */,
@@ -991,6 +996,7 @@
 		22252D163B158EFEB49A0DAF /* Services */ = {
 			isa = PBXGroup;
 			children = (
+				DD1ABECD2F965E620014A60E /* ShaderMetadataLoader.swift */,
 				A1B2C3D4E5F6000000000001 /* LibretroThumbnailManifestService.swift */,
 				57E31A0548A2DE07AEC19A74 /* BoxArtPreloaderService.swift */,
 				6DDE7FC6FAA1F8677EB963A1 /* BoxArtService.swift */,
@@ -1977,6 +1983,7 @@
 				DDA592882F8DD4EA00A9BEE9 /* wolf@132w.png in Resources */,
 				DDA592892F8DD4EA00A9BEE9 /* gb@132w.png in Resources */,
 				DDA5928A2F8DD4EA00A9BEE9 /* ps3.ico in Resources */,
+				DD1AA80F2F965D760014A60E /* CRTFilter.ui in Resources */,
 				DDA5928B2F8DD4EA00A9BEE9 /* pce@132w.png in Resources */,
 				DDA5928C2F8DD4EA00A9BEE9 /* atari@132w.png in Resources */,
 				DDA5928D2F8DD4EA00A9BEE9 /* SG1000.png in Resources */,
@@ -2230,6 +2237,7 @@
 				DD1AA7F12F93ED700014A60E /* DetailSection.swift in Sources */,
 				DD1AA7F22F93ED700014A60E /* CoreVersionPickerView.swift in Sources */,
 				DD1AA7F32F93ED700014A60E /* DetailBoxArtComponents.swift in Sources */,
+				DD1ABECE2F965E620014A60E /* ShaderMetadataLoader.swift in Sources */,
 				DD1AA7F52F93ED700014A60E /* MetadataRow.swift in Sources */,
 				DD1AA7F62F93ED700014A60E /* ModernSaveStateSlotView.swift in Sources */,
 				DD1AA7F72F93ED700014A60E /* ThemeColors.swift in Sources */,
