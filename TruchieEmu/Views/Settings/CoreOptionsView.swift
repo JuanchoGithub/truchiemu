@@ -14,46 +14,15 @@ class CoreOptionsViewModel: ObservableObject {
     @Published var isLoading = false
     @Published var hasLoadedOnce = false
     @Published var searchText: String = ""
+    
+    // Pre-calculated filtered data to improve performance
+    @Published private(set) var filteredSortedKeys: [String] = []
+    @Published private(set) var filteredOptionKeysByCategory: [String: [String]] = [:]
+    
     private var cancellables = Set<AnyCancellable>()
 
     var options: [String: CoreOption] { manager.options }
     var categories: [String: CoreOptionCategory] { manager.categories }
-
-    var sortedKeys: [String] {
-        let filteredOptions = options.values.filter { option in
-            if searchText.isEmpty { return true }
-            let query = searchText.lowercased()
-            return option.key.lowercased().contains(query) ||
-                   option.description.lowercased().contains(query) ||
-                   prettify(option.key).lowercased().contains(query)
-        }
-        
-        var catKeys = Set(filteredOptions.compactMap { $0.category })
-        if catKeys.isEmpty && !options.isEmpty {
-            if searchText.isEmpty {
-                catKeys.insert("")
-            } else {
-                // If searching, check if any option in the empty category matches
-                let emptyCatOptions = options.values.filter { $0.category == nil || $0.category == "" }
-                if emptyCatOptions.contains(where: { option in
-                    let query = searchText.lowercased()
-                    return option.key.lowercased().contains(query) ||
-                           option.description.lowercased().contains(query) ||
-                           prettify(option.key).lowercased().contains(query)
-                }) {
-                    catKeys.insert("")
-                }
-            }
-        }
-
-        var result = Array(catKeys)
-        result.sort { a, b in
-            if a.isEmpty { return true }
-            if b.isEmpty { return false }
-            return (categories[a]?.description ?? "") < (categories[b]?.description ?? "")
-        }
-        return result
-    }
 
     init(id: String) {
         if let system = SystemDatabase.system(forID: id) {
@@ -66,10 +35,76 @@ class CoreOptionsViewModel: ObservableObject {
             self.systemID = nil
         }
         
-        manager.objectWillChange
-            .sink { [weak self] _ in self?.objectWillChange.send() }
+        // Observe changes to manager (options/categories) and searchText
+        Publishers.CombineLatest(manager.objectWillChange, $searchText)
+            .receive(on: RunLoop.main)
+            .sink { [weak self] _ in
+                self?.updateFilteredData()
+            }
             .store(in: &cancellables)
     }
+
+    private func updateFilteredData() {
+        let allOptions = options.values
+        let query = searchText.trimmingCharacters(in: .whitespacesAndNewlines).lowercased()
+        
+        // 1. Filter options first
+        let matchingOptions = allOptions.filter { option in
+            if query.isEmpty { return true }
+            let optDesc = option.description.lowercased()
+            let optKey = option.key.lowercased()
+            let optPretty = prettify(option.key).lowercased()
+            return optKey.contains(query) || optDesc.contains(query) || optPretty.contains(query)
+        }
+        
+        // 2. Build category map for matching options
+        var categoryToKeys: [String: [String]] = [:]
+        for option in matchingOptions {
+            let internalKey = "\(option.key)_\(option.version.rawValue)"
+            let cat = option.category ?? ""
+            categoryToKeys[cat, default: []].append(internalKey)
+        }
+        
+        // 3. Sort keys within each category
+        for (cat, keys) in categoryToKeys {
+            categoryToKeys[cat] = keys.sorted { k1, k2 in
+                let opt1 = options[k1]!
+                let opt2 = options[k2]!
+                return opt1.description < opt2.description
+            }
+        }
+        
+        // 4. Determine which categories to show
+        var visibleCatKeys: Set<String> = Set(matchingOptions.compactMap { $0.category })
+        
+        // If searching, handle the "General" (empty) category specifically if it has matches
+        if !query.isEmpty {
+            let emptyCatMatches = allOptions.filter { ($0.category == nil || $0.category == "") }
+                                           .contains { option in
+                let optDesc = option.description.lowercased()
+                let optKey = option.key.lowercased()
+                let optPretty = prettify(option.key).lowercased()
+                return optKey.contains(query) || optDesc.contains(query) || optPretty.contains(query)
+            }
+            if emptyCatMatches { visibleCatKeys.insert("") }
+        } else if !allOptions.isEmpty {
+            // If not searching, always show general category if it exists
+            if allOptions.contains(where: { $0.category == nil || $0.category == "" }) {
+                visibleCatKeys.insert("")
+            }
+        }
+        
+        // 5. Sort the categories themselves
+        let sortedCats = visibleCatKeys.sorted { a, b in
+            if a.isEmpty { return true }
+            if b.isEmpty { return false }
+            return (categories[a]?.description ?? "") < (categories[b]?.description ?? "")
+        }
+        
+        self.filteredSortedKeys = sortedCats
+        self.filteredOptionKeysByCategory = categoryToKeys
+    }
+
 
     func loadOptions(for id: String, library: ROMLibrary? = nil) {
         isLoading = true
@@ -149,19 +184,7 @@ class CoreOptionsViewModel: ObservableObject {
     }
 
     func optionKeysInCategory(_ categoryKey: String) -> [String] {
-        let targetCat = categoryKey.isEmpty ? nil : categoryKey
-        return options.values.filter { option in
-            let matchesCategory = (option.category == targetCat)
-            if !matchesCategory { return false }
-            
-            if searchText.isEmpty { return true }
-            let query = searchText.lowercased()
-            return option.key.lowercased().contains(query) ||
-                   option.description.lowercased().contains(query) ||
-                   prettify(option.key).lowercased().contains(query)
-        }
-        .sorted { $0.description < $1.description }
-        .map { "\($0.key)_\($0.version.rawValue)" }
+        return filteredOptionKeysByCategory[categoryKey] ?? []
     }
 
     func updateValue(_ value: String, for key: String) {
@@ -220,9 +243,9 @@ struct CoreOptionsView: View {
                                 Divider()
                             }
 
-                            ForEach(viewModel.sortedKeys, id: \.self) { category in
-                                CategorySection(
-                                    title: viewModel.categoryDisplayName(for: category),
+                             ForEach(viewModel.filteredSortedKeys, id: \.self) { category in
+                                 CategorySection(
+                                     title: viewModel.categoryDisplayName(for: category),
                                     optionKeys: viewModel.optionKeysInCategory(category),
                                     viewModel: viewModel
                                 )
@@ -294,7 +317,8 @@ struct CoreOptionRow: View {
     init(versionedKey: String, viewModel: CoreOptionsViewModel) {
         self.versionedKey = versionedKey
         self.viewModel = viewModel
-        let initialValue = viewModel.options[versionedKey]?.currentValue ?? ""
+        let options = viewModel.options
+        let initialValue = options[versionedKey]?.currentValue ?? ""
         _selectedValue = State(initialValue: initialValue)
     }
 
