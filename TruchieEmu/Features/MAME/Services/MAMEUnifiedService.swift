@@ -7,12 +7,11 @@ import Foundation
 //
 // This replaces the old per-core XML download system with a single pre-built database.
 // Each game entry knows which cores it's compatible with and its per-core dependencies.
-@MainActor
 final class MAMEUnifiedService: ObservableObject {
     static let shared = MAMEUnifiedService()
     
-    @Published var isLoaded = false
-    @Published var database: MAMEUnifiedDatabase?
+    @MainActor @Published var isLoaded = false
+    @MainActor @Published var database: MAMEUnifiedDatabase?
     
     // In-memory lookup: shortName -> entry
     nonisolated(unsafe) private var lookupTable: [String: MAMEUnifiedEntry] = [:]
@@ -37,7 +36,9 @@ final class MAMEUnifiedService: ObservableObject {
     // Ensures the database is loaded. If it's already loading or loaded, it returns immediately.
     // If not, it waits for the loading task to complete.
     func ensureLoaded() async {
-        if isLoaded { return }
+        let loaded = await MainActor.run { isLoaded }
+        if loaded { return }
+        
         if let task = loadingTask {
             _ = await task.result
             return
@@ -88,7 +89,7 @@ final class MAMEUnifiedService: ObservableObject {
         // 3. Try absolute project path
         if jsonURL == nil {
             let projectURL = URL(
-                fileURLWithPath: "/Users/jayjay/gitrepos/truchiemu/TruchieEmu/Resources/mame_unified.json"
+                fileURLWithPath: "mame_unified.json"
             )
             if FileManager.default.fileExists(atPath: projectURL.path) {
                 jsonURL = projectURL
@@ -96,42 +97,66 @@ final class MAMEUnifiedService: ObservableObject {
         }
         
         guard let url = jsonURL else {
-            LoggerService.mameImport("MAMEUnifiedService: Could not find bundled mame_unified.json")
+            LoggerService.debug(category: "mameImport", "MAMEUnifiedService: Could not find bundled mame_unified.json")
             return
         }
         
-        do {
-            let data = try Data(contentsOf: url)
-            let decoder = JSONDecoder()
-            let db = try decoder.decode(MAMEUnifiedDatabase.self, from: data)
-            
-            self.database = db
-            self.lookupTable = db.games
-            
-            // Build lookup sets
-            for (shortName, entry) in db.games {
-                if entry.isBIOS {
-                    allBIOSShortNames.insert(shortName)
-                } else if entry.isRunnableInAnyCore {
-                    allRunnableShortNames.insert(shortName)
-                } else if !entry.compatibleCores.isEmpty {
-                    // In cores but not runnable
-                    unplayableShortNames.insert(shortName)
-                } else {
-                    // Not in any core at all
-                    unplayableShortNames.insert(shortName)
+        // Perform heavy decoding on a background thread
+        let result = await Task.detached(priority: .userInitiated) { () -> Result<(MAMEUnifiedDatabase, [String: MAMEUnifiedEntry], Set<String>, Set<String>, Set<String>), Error> in
+            do {
+                let data = try Data(contentsOf: url)
+                let decoder = JSONDecoder()
+                let db = try decoder.decode(MAMEUnifiedDatabase.self, from: data)
+                
+                var lookupTable: [String: MAMEUnifiedEntry] = db.games
+                var allBIOSShortNames: Set<String> = []
+                var allRunnableShortNames: Set<String> = []
+                var unplayableShortNames: Set<String> = []
+                
+                for (shortName, entry) in db.games {
+                    if entry.isBIOS || entry.description.localizedCaseInsensitiveContains("bios") 
+                    || entry.description.localizedCaseInsensitiveContains("boot rom")
+                    || entry.description.localizedCaseInsensitiveContains("system")
+                    || entry.players == nil 
+                    || entry.driverStatus == "preliminary" {
+                        allBIOSShortNames.insert(shortName)
+                    } else if entry.isRunnableInAnyCore {
+                        allRunnableShortNames.insert(shortName)
+                    } else if !entry.compatibleCores.isEmpty {
+                        // In cores but not runnable
+                        unplayableShortNames.insert(shortName)
+                    } else {
+                        // Not in any core at all
+                        unplayableShortNames.insert(shortName)
+                    }
                 }
+                
+                return .success((db, lookupTable, allBIOSShortNames, allRunnableShortNames, unplayableShortNames))
+            } catch {
+                return .failure(error)
             }
+        }.value
+
+        switch result {
+        case .success(let (db, lookup, bios, runnable, unplayable)):
+            await MainActor.run {
+                self.database = db
+                self.isLoaded = true
+            }
+            // Update nonisolated properties
+            self.lookupTable = lookup
+            self.allBIOSShortNames = bios
+            self.allRunnableShortNames = runnable
+            self.unplayableShortNames = unplayable
             
-            self.isLoaded = true
-            
-            LoggerService.mameImport(
+            LoggerService.debug(category: "mameImport",
                 "MAMEUnifiedService: Loaded \(db.metadata.totalEntries) entries " +
                 "(\(db.metadata.entriesInAtLeastOneCore) in cores, " +
                 "\(db.metadata.entriesNotInAnyCore) not in any core)"
             )
-        } catch {
-            LoggerService.mameImportError(
+            
+        case .failure(let error):
+            LoggerService.error(category: "mameImport",
                 "MAMEUnifiedService: Failed to decode unified JSON: \(error.localizedDescription)"
             )
         }

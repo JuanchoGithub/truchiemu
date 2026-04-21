@@ -12,6 +12,21 @@ enum ROMIdentifier {
         return systems.isEmpty ? SystemDatabase.loadSystems() : systems
     }()
 
+    // Cache normalized path keywords to avoid millions of expensive string 
+    // operations during metadata scoring
+    private static let normalizedSystemKeywords: [String: [String]] = {
+        var dict: [String: [String]] = [:]
+        for system in cachedSystems {
+            dict[system.id] = system.pathKeywords.map {
+                $0.lowercased()
+                  .replacingOccurrences(of: " ", with: "")
+                  .replacingOccurrences(of: "-", with: "")
+                  .replacingOccurrences(of: "_", with: "")
+            }.filter { !$0.isEmpty }
+        }
+        return dict
+    }()
+
     private static func normalize(extension ext: String) -> String {
         return ext.lowercased().replacingOccurrences(of: ".", with: "").trimmingCharacters(in: .whitespacesAndNewlines)
     }
@@ -30,70 +45,86 @@ enum ROMIdentifier {
         let filename = url.lastPathComponent.lowercased()
         let extLower = normalize(extension: ext)
         
-        // Get all parent folder names for path context
+        LoggerService.debug(category: "ROMIdentifier", "Analyzing \(filename)")
+
+        // 🚀 FAST PATH: Unique Extensions
+        // If the extension belongs to exactly ONE system, we can instantly return it
+        // and bypass all string allocations, path parsing, and I/O reads entirely.
+        if !ambiguousExtensions.contains(extLower) {
+            if let uniqueSystem = cachedSystems.first(where: { system in
+                system.extensions.contains { normalize(extension: $0) == extLower }
+            }) {
+                LoggerService.debug(category: "ROMIdentifier", "Fast Path: \(filename) exactly matched \(uniqueSystem.id) via unique extension '.\(extLower)'")
+                return uniqueSystem
+            }
+        }
+        
+        // Get all parent folder names for path context (Deferred until after the fast path to save CPU)
         let parentNames = url.deletingLastPathComponent().pathComponents.map { $0.lowercased() }
-        LoggerService.debug(category: "ROMIdentifier", "Analyzing \(filename) (ext: \(extLower)) with parents: \(parentNames)")
         
         // Dictionary to track potential matches: [SystemID: ConfidenceScore]
         var candidates: [String: Int] = [:]
 
-    // 1. Metadata Scoring (Fast, No I/O: 80 pts for ext, 70 for path)
-    scoreByMetadata(url: url, extLower: extLower, parentNames: parentNames, candidates: &candidates)
+        // 1. Metadata Scoring (Fast, No I/O: 80 pts for ext, 70 for path)
+        scoreByMetadata(url: url, extLower: extLower, parentNames: parentNames, candidates: &candidates)
 
-    // 2. MAME Lookup (Fast, No I/O: 90 pts)
-    if extLower == "zip" {
-        await scoreByMAME(url: url, candidates: &candidates)
-    }
+        var currentBestScore = candidates.values.max() ?? 0
 
-    // 3. Magic Headers (Expensive I/O: 100 pts)
-    // Only perform if we don't have a very strong candidate yet
-    let currentBestScore = candidates.values.max() ?? 0
-    if currentBestScore < 90 {
-        let ambiguousSystems = cachedSystems.filter { system in 
-            system.extensions.contains { normalize(extension: $0) == extLower }
+        // 2. MAME Lookup (Potentially slow I/O: 90 pts)
+        // Only perform if we don't have a very strong candidate from metadata matching
+        if currentBestScore < 90 && extLower == "zip" {
+            await scoreByMAME(url: url, candidates: &candidates)
+            currentBestScore = candidates.values.max() ?? 0
         }
-        if !ambiguousSystems.isEmpty {
-            if let headerID = peekSystemID(url: url, systems: ambiguousSystems) {
-                candidates[headerID, default: 0] += 100
-                LoggerService.extreme(category: "ROMIdentifier", "Magic Header match for \(filename): \(headerID)")
+
+        // 3. Magic Headers (Expensive I/O: 100 pts)
+        if currentBestScore < 90 {
+            let ambiguousSystems = cachedSystems.filter { system in 
+                system.extensions.contains { normalize(extension: $0) == extLower }
+            }
+            if !ambiguousSystems.isEmpty {
+                if let headerID = peekSystemID(url: url, systems: ambiguousSystems) {
+                    candidates[headerID, default: 0] += 100
+                    currentBestScore = candidates.values.max() ?? 0
+                }
             }
         }
-    }
 
-    // 4. Archive Analysis (Expensive I/O: 90 pts)
-    // Only perform if still ambiguous
-    if currentBestScore < 90 {
-        let archiveFormats = ["zip", "7z"]
-        if archiveFormats.contains(extLower) {
-            if let archiveSystem = identifyArchive(url: url) {
-                candidates[archiveSystem.id, default: 0] += 90
-                LoggerService.extreme(category: "ROMIdentifier", "Archive match for \(filename): \(archiveSystem.id)")
+        // 4. Archive Analysis (Expensive I/O: 90 pts)
+        if currentBestScore < 90 {
+            let archiveFormats = ["zip", "7z", "rar"]
+            if archiveFormats.contains(extLower) {
+                if let archiveSystem = identifyArchive(url: url) {
+                    candidates[archiveSystem.id, default: 0] += 90
+                    LoggerService.debug(category: "ROMIdentifier", "Archive match for \(filename): \(archiveSystem.id)")
+                    currentBestScore = candidates.values.max() ?? 0
+                }
             }
         }
-    }
 
-    // 5. CD-based System Detection (Expensive I/O: 70-100 pts)
-    // Only perform if still ambiguous
-    if currentBestScore < 90 && ["bin", "iso", "img", "cue"].contains(extLower) {
-        identifyDiscSystem(url: url, candidates: &candidates)
-    }
+        // 5. CD-based System Detection (Expensive I/O: 70-100 pts)
+        if currentBestScore < 90 && ["bin", "iso", "img", "cue", "chd"].contains(extLower) {
+            _ = identifyDiscSystem(url: url, candidates: &candidates)
+        }
 
         // --- FINAL DECISION ---
         var sortedCandidates = candidates.sorted { $0.value > $1.value }
 
-        //if the order of candidates is MAME then NeoGeo, choose NeoGeo
+        // if the order of candidates is MAME then NeoGeo, choose NeoGeo
         if sortedCandidates.first?.key == "mame", let second = sortedCandidates.dropFirst().first, second.key == "neogeo" {
             // swap scores to prefer Neo Geo
             candidates["neogeo", default: 0] += candidates["mame", default: 0] + 10 // give Neo Geo a boost over MAME
             sortedCandidates = candidates.sorted { $0.value > $1.value }
         }
-
         
         if let winner = sortedCandidates.first, winner.value >= 30 {
-            LoggerService.debug(category: "ROMIdentifier", "Winner for \(filename) is \(winner.key) with scores \(sortedCandidates.map { "\($0.key): \($0.value)" }.joined(separator: ", "))")
+            // Log only the winner and top 3 candidates to avoid massive string concatenation overhead
+            let topCandidates = sortedCandidates.prefix(3).map { "\($0.key): \($0.value)" }.joined(separator: ", ")
+            LoggerService.debug(category: "ROMIdentifier", "Winner for \(filename) is \(winner.key). Top candidates:[\(topCandidates)]")
             return cachedSystems.first { $0.id == winner.key } ?? SystemDatabase.system(forID: winner.key)
         } else {
-            LoggerService.debug(category: "ROMIdentifier", "No clear winner for \(filename). Candidates: \(sortedCandidates.map { "\($0.key): \($0.value)" }.joined(separator: ", "))")
+            let topCandidates = sortedCandidates.prefix(3).map { "\($0.key): \($0.value)" }.joined(separator: ", ")
+            LoggerService.debug(category: "ROMIdentifier", "No clear winner for \(filename). Top candidates: [\(topCandidates)]")
         }
 
         // Fallback 1: Check if any parent folder name is a valid System ID
@@ -108,107 +139,107 @@ enum ROMIdentifier {
         } ?? SystemDatabase.system(forExtension: extLower)
     }
 
-// MARK: - ISO Scanning for CD-based Systems
-struct ISOScanner {
-    
-    // Reads the ISO and attempts to locate and extract the content of "SYSTEM.CNF"
-    static func extractSystemConfig(from url: URL) -> String? {
-        guard let fileHandle = try? FileHandle(forReadingFrom: url) else { return nil }
-        defer { try? fileHandle.close() }
+    // MARK: - ISO Scanning for CD-based Systems
+    struct ISOScanner {
         
-        // ISO9660 Directory Records start after the Primary Volume Descriptor.
-        // For most PS1/PS2 images, we can scan the first 1MB for the "SYSTEM.CNF" filename.
-        // It's a crude but highly effective "cheat" method.
-        let scanRange = 1_024 * 1_024 // 1MB scan
-        guard let data = try? fileHandle.read(upToCount: scanRange) else { return nil }
-        
-        let targetName = "SYSTEM.CNF;1".data(using: .ascii)!
-        
-        // Search for the filename string in the raw data
-        guard let range = data.range(of: targetName) else {
+        // Reads the ISO and attempts to locate and extract the content of "SYSTEM.CNF"
+        static func extractSystemConfig(from url: URL) -> String? {
+            guard let fileHandle = try? FileHandle(forReadingFrom: url) else { return nil }
+            defer { try? fileHandle.close() }
+            
+            // ISO9660 Directory Records start after the Primary Volume Descriptor.
+            // For most PS1/PS2 images, we can scan the first 1MB for the "SYSTEM.CNF" filename.
+            // It's a crude but highly effective "cheat" method.
+            let scanRange = 1_024 * 1_024 // 1MB scan
+            guard let data = try? fileHandle.read(upToCount: scanRange) else { return nil }
+            
+            let targetName = "SYSTEM.CNF;1".data(using: .ascii)!
+            
+            // Search for the filename string in the raw data
+            guard let range = data.range(of: targetName) else {
+                return nil
+            }
+            
+            // The Directory Record contains the Logical Block Number (LBN) 
+            // where the file starts. In ISO9660, the LBN is at a specific offset 
+            // relative to the filename.
+            let lbnOffset = range.lowerBound - 10
+            guard lbnOffset > 0 else { return nil }
+            
+            // Extract the 4-byte LBN (Little Endian)
+            let lbnData = data.subdata(in: lbnOffset..<lbnOffset+4)
+            let lbn = lbnData.withUnsafeBytes { $0.load(as: UInt32.self) }
+            
+            // The ISO9660 block size is 2048 bytes
+            let fileOffset = UInt64(lbn) * 2048
+            
+            // Seek to that offset and read the file
+            try? fileHandle.seek(toOffset: fileOffset)
+            guard let fileData = try? fileHandle.read(upToCount: 2048) else { return nil }
+            return String(data: fileData, encoding: .ascii)
+        }
+    }
+
+    static func identifyDiscSystem(url: URL, candidates: inout [String: Int]) -> String? {
+        LoggerService.extreme(category: "ROMIdentifier", "Attempting disc-based system identification for \(url.lastPathComponent)")
+        guard let config = ISOScanner.extractSystemConfig(from: url) else {
+            // If SYSTEM.CNF is missing, check for PARAM.SFO (PSP)
+            if hasPSPParameterFile(url: url) { 
+                candidates["psp", default: 0] += 100
+                return "psp" 
+            }
             return nil
         }
         
-        // The Directory Record contains the Logical Block Number (LBN) 
-        // where the file starts. In ISO9660, the LBN is at a specific offset 
-        // relative to the filename.
-        let lbnOffset = range.lowerBound - 10
-        guard lbnOffset > 0 else { return nil }
-        
-        // Extract the 4-byte LBN (Little Endian)
-        let lbnData = data.subdata(in: lbnOffset..<lbnOffset+4)
-        let lbn = lbnData.withUnsafeBytes { $0.load(as: UInt32.self) }
-        
-        // The ISO9660 block size is 2048 bytes
-        let fileOffset = UInt64(lbn) * 2048
-        
-        // Seek to that offset and read the file
-        try? fileHandle.seek(toOffset: fileOffset)
-        guard let fileData = try? fileHandle.read(upToCount: 2048) else { return nil }
-        return String(data: fileData, encoding: .ascii)
-    }
-}
-
-static func identifyDiscSystem(url: URL, candidates: inout [String: Int]) -> String? {
-    LoggerService.extreme(category: "ROMIdentifier", "Attempting disc-based system identification for \(url.lastPathComponent)")
-    guard let config = ISOScanner.extractSystemConfig(from: url) else {
-        // If SYSTEM.CNF is missing, check for PARAM.SFO (PSP)
-        if hasPSPParameterFile(url: url) { 
-            candidates["psp", default: 0] += 100
-            return "psp" 
+        // hardcoded for PS1 and PS2
+        if config.contains("BOOT2") {
+            candidates["ps2", default: 0] += 100
+            return "ps2"
+        } else if config.contains("BOOT") {
+            candidates["ps1", default: 0] += 70
+            candidates["psx", default: 0] += 70
+            return "psx"
         }
         return nil
     }
-    
-    // hardcoded for PS1 and PS2
-    if config.contains("BOOT2") {
-        candidates["ps2", default: 0] += 100
-        return "ps2"
-    } else if config.contains("BOOT") {
-        candidates["ps1", default: 0] += 70
-        candidates["psx", default: 0] += 70
-        return "psx"
-    }
-    return nil
-}
 
-// Checks for a PSP "PARAM.SFO" file within an ISO/Disc image
-private static func hasPSPParameterFile(url: URL) -> Bool {
-    guard let fileHandle = try? FileHandle(forReadingFrom: url) else { return false }
-    defer { try? fileHandle.close() }
-    
-    // PARAM.SFO is a small file usually located in the PSP_GAME folder.
-    // Reading the first 500KB is usually enough to find the directory entry.
-    guard let data = try? fileHandle.read(upToCount: 500_000) else { return false }
-    
-    // 1. Search for the string "PARAM.SFO" in the directory records
-    let targetName = "PARAM.SFO".data(using: .ascii)!
-    guard let range = data.range(of: targetName) else {
+    // Checks for a PSP "PARAM.SFO" file within an ISO/Disc image
+    private static func hasPSPParameterFile(url: URL) -> Bool {
+        guard let fileHandle = try? FileHandle(forReadingFrom: url) else { return false }
+        defer { try? fileHandle.close() }
+        
+        // PARAM.SFO is a small file usually located in the PSP_GAME folder.
+        // Reading the first 500KB is usually enough to find the directory entry.
+        guard let data = try? fileHandle.read(upToCount: 500_000) else { return false }
+        
+        // 1. Search for the string "PARAM.SFO" in the directory records
+        let targetName = "PARAM.SFO".data(using: .ascii)!
+        guard let range = data.range(of: targetName) else {
+            return false
+        }
+        
+        // 2. ISO9660 Directory record logic:
+        // The LBN (Logical Block Number) is located 10 bytes before the filename.
+        let lbnOffset = range.lowerBound - 10
+        guard lbnOffset > 0 && lbnOffset + 4 < data.count else { return false }
+        
+        let lbn = data.subdata(in: lbnOffset..<lbnOffset+4).withUnsafeBytes { $0.load(as: UInt32.self) }
+        
+        // 3. Seek to the block (LBN * 2048) and verify the file starts with "\0PSF"
+        let fileOffset = UInt64(lbn) * 2048
+        try? fileHandle.seek(toOffset: fileOffset)
+        
+        if let header = try? fileHandle.read(upToCount: 4) {
+            // Verify "\0PSF" (00 50 53 46)
+            let pspMagic: [UInt8] = [0x00, 0x50, 0x53, 0x46]
+            return Array(header) == pspMagic
+        }
+        
         return false
     }
-    
-    // 2. ISO9660 Directory record logic:
-    // The LBN (Logical Block Number) is located 10 bytes before the filename.
-    let lbnOffset = range.lowerBound - 10
-    guard lbnOffset > 0 && lbnOffset + 4 < data.count else { return false }
-    
-    let lbn = data.subdata(in: lbnOffset..<lbnOffset+4).withUnsafeBytes { $0.load(as: UInt32.self) }
-    
-    // 3. Seek to the block (LBN * 2048) and verify the file starts with "\0PSF"
-    let fileOffset = UInt64(lbn) * 2048
-    try? fileHandle.seek(toOffset: fileOffset)
-    
-    if let header = try? fileHandle.read(upToCount: 4) {
-        // Verify "\0PSF" (00 50 53 46)
-        let pspMagic: [UInt8] = [0x00, 0x50, 0x53, 0x46]
-        return Array(header) == pspMagic
-    }
-    
-    return false
-}
 
     // MARK: - Scoring Methods
-private static func scoreByMetadata(url: URL, extLower: String, parentNames: [String], candidates: inout [String: Int]) {
+    private static func scoreByMetadata(url: URL, extLower: String, parentNames: [String], candidates: inout [String: Int]) {
         let allSystems = cachedSystems
         
         // A. Extension Matching
@@ -221,41 +252,31 @@ private static func scoreByMetadata(url: URL, extLower: String, parentNames: [St
             candidates[system.id, default: 0] += isUniqueExt ? 80 : 40
         }
 
+        // Pre-normalize parent names to avoid doing it inside the loop
+        let normalizedParents = parentNames.map {
+            $0.replacingOccurrences(of: " ", with: "")
+              .replacingOccurrences(of: "-", with: "")
+              .replacingOccurrences(of: "_", with: "")
+        }
+
         // B. Path Contextual Matching
         for system in allSystems {
             var pathScore = 0
+            let keywords = normalizedSystemKeywords[system.id] ?? []
             
-            for parentName in parentNames {
-                // Normalize parent by stripping spaces and common separators
-                let normalizedParent = parentName.replacingOccurrences(of: " ", with: "")
-                                                 .replacingOccurrences(of: "-", with: "")
-                                                 .replacingOccurrences(of: "_", with: "")
+            for (index, parentName) in parentNames.enumerated() {
+                let normalizedParent = normalizedParents[index]
                 
-                let exactMatch = system.pathKeywords.contains { keyword in
-                    let normalizedKeyword = keyword.lowercased()
-                        .replacingOccurrences(of: " ", with: "")
-                        .replacingOccurrences(of: "-", with: "")
-                        .replacingOccurrences(of: "_", with: "")
-                    return normalizedKeyword == normalizedParent
-                }
-                
-                let substringMatch = system.pathKeywords.contains { keyword in
-                    let normalizedKeyword = keyword.lowercased()
-                        .replacingOccurrences(of: " ", with: "")
-                        .replacingOccurrences(of: "-", with: "")
-                        .replacingOccurrences(of: "_", with: "")
-                    return !normalizedKeyword.isEmpty && normalizedParent.contains(normalizedKeyword)
-                }
+                let exactMatch = keywords.contains(normalizedParent)
+                let substringMatch = !exactMatch && keywords.contains { normalizedParent.contains($0) }
                 
                 // Strong match: Parent name matches System ID or is an exact keyword
                 if system.id.lowercased() == parentName || exactMatch {
                     pathScore += 70
-                    LoggerService.debug(category: "ROMIdentifier", "Strong path match for \(url.lastPathComponent): \(system.id) (parent: \(parentName))")
                 } 
                 // Weaker match: Parent name contains the keyword as a substring
                 else if substringMatch {
                     pathScore += 30
-                    LoggerService.debug(category: "ROMIdentifier", "Weak path match for \(url.lastPathComponent): \(system.id) (parent: \(parentName))")
                 }
             }
             
@@ -329,7 +350,7 @@ private static func scoreByMetadata(url: URL, extLower: String, parentNames: [St
             }
             
             // --- ScummVM Structural Analysis ---
-            if ["sou", "000", "001", "flac", "ogg"].contains(ext) {
+            if["sou", "000", "001", "flac", "ogg"].contains(ext) {
                 scores["scummvm", default: 0] += 10
             }
         }
@@ -532,7 +553,7 @@ private static func scoreByMetadata(url: URL, extLower: String, parentNames: [St
         var referenced: [URL] = []
 
         if ext == "cue" {
-            guard let content = try? String(contentsOf: url, encoding: .utf8) else { return [] }
+            guard let content = try? String(contentsOf: url, encoding: .utf8) else { return[] }
             let lines = content.components(separatedBy: .newlines)
             for line in lines {
                 let trimmed = line.trimmingCharacters(in: .whitespaces)

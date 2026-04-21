@@ -43,6 +43,67 @@ actor ROMScanner {
         isCancelled = false
     }
 
+    // MARK: - Bulk MAME Identification
+
+    func bulkIdentifyMAME(urls: [URL]) async -> (mameURLs: Set<URL>, remainingURLs:[URL]) {
+        // Ensure the database is loaded before doing math
+        await MAMEUnifiedService.shared.ensureLoaded()
+        
+        var zipURLs: [URL] = []
+        var remainingURLs: [URL] = []
+        
+        // 1. Split strictly .zip files from non-zip files
+        for url in urls {
+            if url.pathExtension.lowercased() == "zip" {
+                zipURLs.append(url)
+            } else {
+                // Instantly send non-zips to the remaining pool
+                remainingURLs.append(url)
+            }
+        }
+        
+        // 2. Map zip shortNames to their URLs
+        var shortNameToURL: [String: URL] = [:]
+        for url in zipURLs {
+            let shortName = url.deletingPathExtension().lastPathComponent.lowercased()
+            shortNameToURL[shortName] = url
+        }
+        
+        // 3. THE MATRIX OPERATION (Set Intersection)
+        let myShortNames = Set(shortNameToURL.keys)
+        let mameRunnable = MAMEUnifiedService.shared.runnableShortNames
+        let mameBIOS = MAMEUnifiedService.shared.biosShortNames
+        
+//        let allValidMAME = mameRunnable.union(mameBIOS)
+        let matchedMAME = myShortNames.intersection(mameRunnable)
+        let matchedMAMEBios = myShortNames.intersection(mameBIOS)
+        
+        // 4. Collect the verified MAME URLs
+        var mameURLs = Set<URL>()
+        for match in matchedMAME {
+            if let matchedURL = shortNameToURL[match] {
+                mameURLs.insert(matchedURL)
+            }
+        }
+        // 4. Collect the verified MAME URLs
+        var mameBiosURLs = Set<URL>()
+        for match in matchedMAMEBios {
+            if let matchedBiosURL = shortNameToURL[match] {
+                mameBiosURLs.insert(matchedBiosURL)
+            }
+        }
+        
+        // 5. MERGE: Subtract the matches from our zip list. 
+        // Whatever is leftover are zips that ARE NOT MAME (e.g., zipped GBA games).
+        // We append them back into the remainingURLs pool.
+        let unmatchedZips = myShortNames.subtracting(matchedMAME).compactMap { shortNameToURL[$0] }
+        remainingURLs.append(contentsOf: unmatchedZips)
+        
+        LoggerService.debug(category: "ROMScanner", "Bulk Matrix Op: Identified \(mameURLs.count) MAME ROMs out of \(zipURLs.count) zips. Passing \(remainingURLs.count) files to deep scan.")
+        
+        return (mameURLs, remainingURLs)
+    }
+
     // MARK: - Full Folder Scan
     
     func scan(folder: URL, cancellationToken: ScanCancellationToken? = nil, progress: @escaping (Double) -> Void) async -> [ROM] {
@@ -69,8 +130,36 @@ actor ROMScanner {
         var ignoredURLs = Set<String>()
         var zipURLs: [URL] = []
         var nonZipURLs: [URL] = []
+
+
+        // Procesa rapido los archivos mame
+        // 1. Split and Bulk Identify MAME roms
+        let (mameURLs, filesForDeepScan) = await bulkIdentifyMAME(urls: allURLs)
         
-        for url in allURLs {
+        // 3. Pre-load XML Metadata (O(1) lookup map for the whole folder)
+        let xmlMetadataCache = loadFolderMetadata(folder: folder)
+
+        // Fetch the MAME system info once
+        let mameSystem = SystemDatabase.system(forID: "mame") 
+
+        // 2. INSTANT TRACK: We already mathematically proved these are MAME
+        var mameROMs: [ROM] = []
+        for url in mameURLs {
+            // Add directly to library. 
+            // Do NOT call ROMIdentifier.identifySystem for these!
+            if let mameSystem = mameSystem {
+                let name = url.deletingPathExtension().lastPathComponent
+                var mameROM = ROM(id: UUID(),
+                                  name: name,
+                                  path: url,
+                                  systemID: mameSystem.id,
+                                  metadata: xmlMetadataCache[url.lastPathComponent] )
+                mameROMs.append(mameROM)
+            }
+        }
+
+
+        for url in filesForDeepScan {
             let ext = url.pathExtension.lowercased()
             
              // Only search for references inside known container files (Huge speedup)
@@ -95,8 +184,6 @@ actor ROMScanner {
         let orderedURLs = nonZipURLs + zipURLs
         let totalFiles = orderedURLs.count
         
-        // 3. Pre-load XML Metadata (O(1) lookup map for the whole folder)
-        let xmlMetadataCache = loadFolderMetadata(folder: folder)
 
         // 4. Concurrent Processing Phase (with Concurrency Limiting)
         let progressTracker = ProgressTracker(total: totalFiles, progressHandler: progress)
@@ -130,14 +217,14 @@ actor ROMScanner {
                     
                     if url.path.contains("/Contents/") || url.path.hasSuffix(".app") { return nil }
 
-                    let system = await self.identifySystem(url: url, extension: ext)
-
                     // Ignore specific PS1 BIOS files if they are identified as PS1/PSX
                     let filename = url.lastPathComponent.lowercased()
-                    if (filename == "scph5500.bin" || filename == "scph5501.bin" || filename == "scph5502.bin") &&
-                       (system?.id == "ps1" || system?.id == "psx") {
+                    if (filename == "scph5500.bin" || filename == "scph5501.bin" || filename == "scph5502.bin")  {
                         return nil
                     }
+
+                    let system = await self.identifySystem(url: url, extension: ext)
+
 
                     let name = url.deletingPathExtension().lastPathComponent
 
@@ -197,14 +284,14 @@ actor ROMScanner {
                         
                         if url.path.contains("/Contents/") || url.path.hasSuffix(".app") { return nil }
 
-                        let system = await self.identifySystem(url: url, extension: ext)
-
                         // Ignore specific PS1 BIOS files if they are identified as PS1/PSX
                         let filename = url.lastPathComponent.lowercased()
-                        if (filename == "scph5500.bin" || filename == "scph5501.bin" || filename == "scph5502.bin") &&
-                           (system?.id == "ps1" || system?.id == "psx") {
+                        if (filename == "scph5500.bin" || filename == "scph5501.bin" || filename == "scph5502.bin") {
                             return nil
                         }
+
+                        // Identify the system for the ROM
+                        let system = await self.identifySystem(url: url, extension: ext)
 
                         let name = url.deletingPathExtension().lastPathComponent
 
@@ -249,7 +336,8 @@ actor ROMScanner {
         let scanTime = Date().timeIntervalSince(scanStart)
         LoggerService.info(category: "ROMScanner", "=== SCAN COMPLETE: \(found.count) ROMs found in \(String(format: "%.2f", scanTime))s ===")
         LoggerService.info(category: "ROMScanner", "ZIPs processed: \(zipCount)")
-        return found
+        let allROMsFound = found + mameROMs
+        return allROMsFound
     }
 
     // MARK: - Smart URL Scan (For specific files)
@@ -404,13 +492,6 @@ actor ROMScanner {
         }
     }
     
-    // MARK: - Extension Filtering
-    
-    private let nonROMExtensions: Set<String> = [
-        "txt", "xml", "jpg", "jpeg", "png", "gif", "bmp", "pdf", "mp3", "mp4", "avi", "mkv", "nfo", "dat", "db", "json",
-        "py", "pyc", "pyo", "pyw", "dylib", "so", "app", "icns", "plist", "strings", "loc", "lproj", "nib", "xib",
-        "md", "rmd", "html", "htm", "css", "js", "ts", "jsx", "tsx"
-    ]
     
     nonisolated private func shouldSkipExtension(_ ext: String) -> Bool {
         // Safe to recreate locally for parallel nonisolated calls to avoid actor data isolation errors
@@ -497,6 +578,7 @@ actor ROMScanner {
         }
     }
 
+    // So this scans a single folder for ROMs
     func getROMFiles(in folder: URL, progress: @escaping (Double) -> Void) async -> [URL] {
         let scanStart = Date()
         LoggerService.info(category: "ROMScanner", "=== LIGHTWEIGHT SCAN STARTED: \(folder.path) ===")
