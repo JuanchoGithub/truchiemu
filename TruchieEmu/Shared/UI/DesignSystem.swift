@@ -110,7 +110,7 @@ struct AppColors {
     }
     
     // Glass overlay effect
-    static func glassOverlay(_ colorScheme: ColorScheme) -> Color {
+    static func glassOverlay(_ colorScheme: ColorScheme) -> some ShapeStyle {
         colorScheme == .dark ?
             LinearGradient(
                 colors: [Color.white.opacity(0.05), Color.white.opacity(0.02)],

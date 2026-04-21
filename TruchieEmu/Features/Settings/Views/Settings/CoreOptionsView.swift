@@ -46,10 +46,22 @@ class CoreOptionsViewModel: ObservableObject {
 
     private func updateFilteredData() {
         let allOptions = options.values
-        let query = searchText.trimmingCharacters(in: .whitespacesAndNewlines).lowercased()
+        var query = searchText.trimmingCharacters(in: .whitespacesAndNewlines).lowercased()
+        
+        // Handle "is:modified" shortcut
+        let modifiedKeyword = "is:modified"
+        let isSearchingModified = query.contains(modifiedKeyword)
+        if isSearchingModified {
+            query = query.replacingOccurrences(of: modifiedKeyword, with: "").trimmingCharacters(in: .whitespaces)
+        }
         
         // 1. Filter options first
         let matchingOptions = allOptions.filter { option in
+            // If modified filter is active, only include modified options
+            if isSearchingModified && !option.isModified {
+                return false
+            }
+            
             if query.isEmpty { return true }
             let optDesc = option.description.lowercased()
             let optInfo = option.info.lowercased()
@@ -196,8 +208,32 @@ class CoreOptionsViewModel: ObservableObject {
     }
     
     func discoverOptions(for coreID: String, library: ROMLibrary) async {
-        // Implementación de descubrimiento (lógica original)
-        // ... (Tu código de EmulatorRunner y manager.discoverOptions)
+        isLoading = true
+        defer { isLoading = false }
+
+        // 1. Find dylib path from installed cores
+        var dylibPath: String? = nil
+        if let core = CoreManager.shared.installedCores.first(where: { $0.id == coreID }) {
+            if let activeVersion = core.activeVersion {
+                dylibPath = activeVersion.dylibPath.path
+            }
+        }
+
+        // 2. Find rom path from library
+        var romPath: String? = nil
+        let systemIDs = CoreManager.supportedSystems(for: coreID)
+        if let sysID = systemIDs.first, let rom = library.roms.first(where: { $0.systemID == sysID }) {
+            romPath = rom.path.path
+        }
+
+        // 3. Perform discovery
+        if let dylib = dylibPath {
+            await manager.discoverOptions(for: coreID, dylibPath: dylib, romPath: romPath)
+            hasLoadedOnce = true
+            updateFilteredData()
+        } else {
+            LoggerService.error(category: "CoreOptionsViewModel", "Discovery failed: dylibPath not found for \(coreID)")
+        }
     }
 }
 
@@ -271,6 +307,20 @@ struct CoreOptionsView: View {
              .navigationTitle(viewModel.isSystemMode ? "Options: \(SystemDatabase.system(forID: viewModel.systemID ?? "")?.name ?? "")" : "Options: \(viewModel.currentCoreID)")
              .searchable(text: $viewModel.searchText, prompt: "Search options...")
              .toolbar {
+                 ToolbarItem(placement: .primaryAction) {
+                     Button {
+                         let currentSearch = viewModel.searchText
+                         if currentSearch.contains("is:modified") {
+                             viewModel.searchText = currentSearch.replacingOccurrences(of: "is:modified", with: "").trimmingCharacters(in: .whitespaces)
+                         } else {
+                             viewModel.searchText = (currentSearch.isEmpty ? "" : currentSearch + " ") + "is:modified"
+                         }
+                     } label: {
+                         Image(systemName: viewModel.searchText.contains("is:modified") ? "line.3.horizontal.decrease.circle.fill" : "line.3.horizontal.decrease.circle")
+                             .foregroundColor(viewModel.searchText.contains("is:modified") ? .blue : .secondary)
+                     }
+                     .help("Filter modified options")
+                 }
                  ToolbarItem(placement: .confirmationAction) {
                      Button("Done") { dismiss() }.keyboardShortcut(.defaultAction)
                  }

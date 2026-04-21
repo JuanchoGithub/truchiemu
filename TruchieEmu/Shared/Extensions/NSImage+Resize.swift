@@ -1,64 +1,6 @@
 import AppKit
 import Metal
 
-// Convert MTLTexture to NSImage using Metal texture bytes directly
-// This is more reliable than going through CIImage/CGImage paths
-func NSImageFromMTLTexture(_ texture: MTLTexture) -> NSImage? {
-    let width = texture.width
-    let height = texture.height
-    
-    // Only handle BGRA8888 which is what the emulator rendering uses
-    guard texture.pixelFormat == .bgra8Unorm else {
-        // Try to read anyway for close formats
-        if texture.pixelFormat != .rgba8Unorm && texture.pixelFormat != .bgra8Unorm {
-            return nil
-        }
-    }
-    
-    let bytesPerPixel = 4
-    let bytesPerRow = width * bytesPerPixel
-    let byteCount = width * height * bytesPerPixel
-    
-    // Allocate buffer
-    var byteArray = [UInt8](repeating: 0, count: byteCount)
-    
-    // Read texture data
-    let region = MTLRegionMake2D(0, 0, width, height)
-    byteArray.withUnsafeMutableBytes { pointer in
-        texture.getBytes(
-            pointer.baseAddress!,
-            bytesPerRow: bytesPerRow,
-            from: region,
-            mipmapLevel: 0
-        )
-    }
-    
-    // Create color space (sRGB)
-    guard let colorSpace = CGColorSpace(name: CGColorSpace.sRGB) else { return nil }
-    
-    // Create bitmap context - BGRA format
-    let bitmapInfo = CGBitmapInfo(rawValue: CGImageAlphaInfo.premultipliedFirst.rawValue)
-        .union(.byteOrder32Little)
-    
-    guard let context = CGContext(
-        data: byteArray,
-        width: width,
-        height: height,
-        bitsPerComponent: 8,
-        bytesPerRow: bytesPerRow,
-        space: colorSpace,
-        bitmapInfo: bitmapInfo.rawValue
-    ) else {
-        return nil
-    }
-    
-    // Create CGImage from context
-    guard let cgImage = context.makeImage() else { return nil }
-    
-    // Return NSImage
-    return NSImage(cgImage: cgImage, size: NSSize(width: width, height: height))
-}
-
 extension NSImage {
     // Resize the image to the specified size
     func resized(to targetSize: NSSize) -> NSImage {
