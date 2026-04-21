@@ -282,7 +282,7 @@ final class MAMEDependencyService: ObservableObject {
     private static let failedFetchKey = "MAMEDependencyService_failedFetchCores"
     
     // Bundled JSON fallback URL
-    private static let fallbackJSONPath = "scripts/mame_lookup/mame_rom_data.json"
+    private static let fallbackJSONPath = "mame_rom_data.json"
     
     init() {
         try? FileManager.default.createDirectory(at: storageURL, withIntermediateDirectories: true)
@@ -597,7 +597,6 @@ final class MAMEDependencyService: ObservableObject {
                 return
             }
         }
-        
         LoggerService.mameDepsWarn("No fallback MAME JSON found")
     }
     

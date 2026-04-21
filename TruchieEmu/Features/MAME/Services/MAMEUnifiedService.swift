@@ -12,8 +12,11 @@ final class MAMEUnifiedService: ObservableObject {
     
     @MainActor @Published var isLoaded = false
     @MainActor @Published var database: MAMEUnifiedDatabase?
-    
-    // In-memory lookup: shortName -> entry
+
+
+    // The master dictionary containing ALL files (needed for ZIP dependency checks)
+    nonisolated(unsafe) private var masterLookupTable: [String: MAMEUnifiedEntry] = [:]
+    // In-memory lookup strictly for RUNNABLE games (UI uses this)
     nonisolated(unsafe) private var lookupTable: [String: MAMEUnifiedEntry] = [:]
     // Set of all runnable short names across ALL cores
     nonisolated(unsafe) private var allRunnableShortNames: Set<String> = []
@@ -53,22 +56,34 @@ final class MAMEUnifiedService: ObservableObject {
 
     // Load the bundled unified database from the app resources.
     func loadDatabase() async {
+
         var jsonURL: URL?
         
-        // 1. Try main bundle (production)
-        if let url = Bundle.main.url(
-            forResource: Self.bundledResourceName,
-            withExtension: Self.bundledResourceExtension
-        ) {
-            jsonURL = url
-        }
-        
-        // 2. Try development paths
-        if jsonURL == nil {
-            let devPaths = [
-                "scripts/mame_lookup/mame_unified.json",
-                "TruchieEmu/Resources/mame_unified.json"
-            ]
+         // 1. Try main bundle (production)
+         // We check both the root and the 'Data/' subdirectory because of how the Xcode group is structured
+         if let url = Bundle.main.url(
+             forResource: Self.bundledResourceName,
+             withExtension: Self.bundledResourceExtension
+         ) ?? Bundle.main.url(
+             forResource: "\(Self.bundledResourceName)/\(Self.bundledResourceExtension)",
+             withExtension: nil
+         ) {
+             jsonURL = url
+         } else if let url = Bundle.main.url(
+             forResource: Self.bundledResourceName,
+             withExtension: Self.bundledResourceExtension,
+             subdirectory: "Data"
+         ) {
+             jsonURL = url
+         }
+         
+         // 2. Try development paths
+         if jsonURL == nil {
+             let devPaths = [
+                 "mame_unified.json",
+                 "TruchieEmu/Resources/mame_unified.json",
+                 "TruchieEmu/Resources/Data/mame_unified.json"
+             ]
             
             for path in devPaths {
                 let cwdPath = URL(fileURLWithPath: path)
@@ -92,6 +107,7 @@ final class MAMEUnifiedService: ObservableObject {
                 fileURLWithPath: "mame_unified.json"
             )
             if FileManager.default.fileExists(atPath: projectURL.path) {
+                LoggerService.debug(category: "MAMEUnifiedService", "Loading: \(projectURL) - mame_unified.json")
                 jsonURL = projectURL
             }
         }
@@ -102,76 +118,85 @@ final class MAMEUnifiedService: ObservableObject {
         }
         
         // Perform heavy decoding on a background thread
-        let result = await Task.detached(priority: .userInitiated) { () -> Result<(MAMEUnifiedDatabase, [String: MAMEUnifiedEntry], Set<String>, Set<String>, Set<String>), Error> in
+        // FIX 1: Added a second[String: MAMEUnifiedEntry] to the Result signature for the Master table
+        let result = await Task.detached(priority: .userInitiated) { () -> Result<(MAMEUnifiedDatabase, [String: MAMEUnifiedEntry],[String: MAMEUnifiedEntry], Set<String>, Set<String>, Set<String>), Error> in
             do {
                 let data = try Data(contentsOf: url)
                 let decoder = JSONDecoder()
                 let db = try decoder.decode(MAMEUnifiedDatabase.self, from: data)
                 
-                var lookupTable: [String: MAMEUnifiedEntry] = db.games
+                var newMasterLookup: [String: MAMEUnifiedEntry] = [:]
+                var newLookupTable:[String: MAMEUnifiedEntry] = [:]
                 var allBIOSShortNames: Set<String> = []
                 var allRunnableShortNames: Set<String> = []
                 var unplayableShortNames: Set<String> = []
-                
+
                 for (shortName, entry) in db.games {
-                    if entry.isBIOS || entry.description.localizedCaseInsensitiveContains("bios") 
+                    let lowerName = shortName.lowercased()
+                    
+                    // 1. Everything goes in the master table for background tasks
+                    newMasterLookup[lowerName] = entry 
+                    
+                    // 2. Sort into our specific lists
+                    if entry.isBIOS || entry.description.localizedCaseInsensitiveContains("bios")
                     || entry.description.localizedCaseInsensitiveContains("boot rom")
                     || entry.description.localizedCaseInsensitiveContains("system")
-                    || entry.players == nil 
-                    || entry.driverStatus == "preliminary" {
-                        allBIOSShortNames.insert(shortName)
+                    || entry.players == nil {
+                        allBIOSShortNames.insert(lowerName)
                     } else if entry.isRunnableInAnyCore {
-                        allRunnableShortNames.insert(shortName)
-                    } else if !entry.compatibleCores.isEmpty {
-                        // In cores but not runnable
-                        unplayableShortNames.insert(shortName)
+                        allRunnableShortNames.insert(lowerName)                        
+                        // ONLY playable games are allowed in this dictionary!
+                        newLookupTable[lowerName] = entry 
+                        
                     } else {
-                        // Not in any core at all
-                        unplayableShortNames.insert(shortName)
+                        unplayableShortNames.insert(lowerName)
                     }
                 }
-                
-                return .success((db, lookupTable, allBIOSShortNames, allRunnableShortNames, unplayableShortNames))
+                // FIX 1: Return newMasterLookup in the success tuple
+                return .success((db, newMasterLookup, newLookupTable, allBIOSShortNames, allRunnableShortNames, unplayableShortNames))
             } catch {
                 return .failure(error)
             }
         }.value
 
         switch result {
-        case .success(let (db, lookup, bios, runnable, unplayable)):
+        // FIX 1: Unpack 'master' and assign it to self.masterLookupTable
+        case .success(let (db, master, lookup, bios, runnable, unplayable)):
+            LoggerService.info(category: "MAMEUnifiedService",
+                               "Opened file \(String(describing: jsonURL))")
             await MainActor.run {
                 self.database = db
                 self.isLoaded = true
             }
             // Update nonisolated properties
+            self.masterLookupTable = master
             self.lookupTable = lookup
             self.allBIOSShortNames = bios
             self.allRunnableShortNames = runnable
             self.unplayableShortNames = unplayable
             
-            LoggerService.debug(category: "mameImport",
-                "MAMEUnifiedService: Loaded \(db.metadata.totalEntries) entries " +
+            LoggerService.debug(category: "MAMEUnifiedService",
+                "Loaded \(db.metadata.totalEntries) entries " +
                 "(\(db.metadata.entriesInAtLeastOneCore) in cores, " +
                 "\(db.metadata.entriesNotInAnyCore) not in any core)"
             )
             
         case .failure(let error):
-            LoggerService.error(category: "mameImport",
-                "MAMEUnifiedService: Failed to decode unified JSON: \(error.localizedDescription)"
+            LoggerService.error(category: "MAMEUnifiedService", "Failed to decode unified JSON: \(error.localizedDescription)"
             )
         }
     }
-    
+
     // MARK: - Query Methods
     
     // Look up a game by its short name (ZIP filename without extension).
     nonisolated func lookup(shortName: String) -> MAMEUnifiedEntry? {
-        lookupTable[shortName.lowercased()]
+        masterLookupTable[shortName.lowercased()]
     }
     
     // Check if a short name is runnable in ANY core.
     nonisolated func isRunnable(shortName: String) -> Bool {
-        allRunnableShortNames.contains(shortName.lowercased())
+        lookupTable[shortName.lowercased()] != nil
     }
     
     // Check if a short name is runnable in a specific core.
@@ -202,27 +227,33 @@ final class MAMEUnifiedService: ObservableObject {
     
     // Get all entries as an array.
     nonisolated var allEntries: [MAMEUnifiedEntry] {
-        Array(lookupTable.values)
+        Array(masterLookupTable.values)
     }
     
     // Get all runnable entries sorted by description.
     nonisolated var runnableEntries: [MAMEUnifiedEntry] {
-        lookupTable.values
-            .filter { $0.isRunnableInAnyCore && !$0.isBIOS }
-            .sorted { $0.description < $1.description }
+        // FIX 4: Beautifully simple! No filtering needed because lookupTable ONLY has playable games.
+        lookupTable.values.sorted { $0.description < $1.description }
     }
     
     // MARK: - Core Compatibility
     
     // Get all cores that can run this game.
     nonisolated func compatibleCores(for shortName: String) -> [String] {
-        lookupTable[shortName.lowercased()]?.compatibleCores ?? []
+        masterLookupTable[shortName.lowercased()]?.compatibleCores ?? []
     }
     
     // Generate compatibility tag for library display.
     // Returns "core:{coreID} compatible", "MAME BIOS", or "MAME Unplayable".
     nonisolated func compatibilityTag(for shortName: String) -> String {
-        guard let entry = lookupTable[shortName.lowercased()] else {
+        let lower = shortName.lowercased()
+        
+        // FIX 3: Check BIOS list first so BIOS files don't say "Unplayable"
+        if allBIOSShortNames.contains(lower) {
+            return "MAME BIOS"
+        }
+        
+        guard let entry = lookupTable[lower] else {
             return "MAME Unplayable"
         }
         return entry.compatibilityTag
@@ -245,7 +276,7 @@ final class MAMEUnifiedService: ObservableObject {
     
     // Get all required ZIPs for a game in a specific core.
     nonisolated func requiredZIPs(for shortName: String, coreID: String) -> [String] {
-        guard let entry = lookupTable[shortName.lowercased()] else { return [shortName] }
+        guard let entry = masterLookupTable[shortName.lowercased()] else { return [shortName] }
         return entry.requiredZIPs(for: coreID)
     }
     

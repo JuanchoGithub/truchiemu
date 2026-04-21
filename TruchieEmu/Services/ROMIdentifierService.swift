@@ -187,7 +187,9 @@ final class ROMIdentifierService: @unchecked Sendable {
             
             // First: try the unified MAME database (multi-core, 50K+ entries)
             if let unifiedEntry = await MAMEUnifiedService.shared.lookup(shortName: shortName) {
-                if unifiedEntry.isRunnableInAnyCore && !unifiedEntry.isBIOS {
+                let isRunnable = MAMEUnifiedService.shared.isRunnable(shortName: shortName) 
+                let isBIOS = MAMEUnifiedService.shared.isBIOS(shortName: shortName) 
+                if isRunnable && !isBIOS {
                     LoggerService.debug(category: "ROMIdentifier","Identify \(rom.name): MAME game → \(unifiedEntry.description) [cores: \(unifiedEntry.compatibleCores.joined(separator: ", "))]")
                     return .identified(GameInfo(
                         name: unifiedEntry.description,
@@ -198,7 +200,7 @@ final class ROMIdentifierService: @unchecked Sendable {
                         crc: "",
                         thumbnailLookupSystemID: nil
                     ))
-                } else if unifiedEntry.isBIOS {
+                } else if isBIOS {
                     LoggerService.debug(category: "ROMIdentifier","Identify \(rom.name): MAME BIOS → \(unifiedEntry.description)")
                     return .identified(GameInfo(
                         name: unifiedEntry.description,

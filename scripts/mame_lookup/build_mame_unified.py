@@ -11,6 +11,7 @@ Downloads and merges:
   - MAME 2010 XML.xml
   - MAME 2015 XML.zip
   - MAME 2016 XML (Arcade Only).xml
+  - MAME 0.287 (from 7z archive)
 
 Outputs a unified JSON where each zip maps to:
   - description, year, manufacturer
@@ -30,6 +31,8 @@ import re
 import zipfile
 import io
 import tempfile
+import subprocess
+import shutil
 
 # Core definitions: each core maps to its XML/DAT source URL
 CORE_SOURCES = {
@@ -62,12 +65,22 @@ CORE_SOURCES = {
         "url": "https://raw.githubusercontent.com/libretro/libretro-database/master/metadat/mame/MAME%202016%20XML%20%28Arcade%20Only%29.xml",
         "format": "xml",
         "displayName": "MAME 2016 (Arcade)"
+    },
+    "mame287": {
+        "url": "https://www.progettosnaps.net/download/?tipo=dat_mame&file=/dats/MAME/packs/MAME_Dats_287.7z",
+        "format": "7z",
+        "displayName": "MAME 0.287",
+        "local_path": "scripts/mame_lookup/MAME_Dats_287/DATs/MAME 0.287.dat"
     }
 }
 
 # Additional reference files
 MAME_DAT_URL = "https://raw.githubusercontent.com/libretro/libretro-database/master/metadat/mame/MAME.dat"
 MAME_BIOS_URL = "https://raw.githubusercontent.com/libretro/libretro-database/master/metadat/mame/MAME%20BIOS.dat"
+
+# Constants for 7z handling
+MAME_287_7Z_URL = "https://www.progettosnaps.net/download/?tipo=dat_mame&file=/dats/MAME/packs/MAME_Dats_287.7z"
+MAME_287_DIR = "scripts/mame_lookup/MAME_Dats_287"
 
 
 def download_file(url, desc="file"):
@@ -84,20 +97,48 @@ def download_file(url, desc="file"):
         return None
 
 
-def parse_xml_data(data, core_id):
-    """Parse MAME XML and return dict of short_name -> game data."""
+def download_and_extract_7z(url, target_dir):
+    """Download a 7z file and extract it using system 7z."""
+    print(f"  Downloading and extracting 7z: {url}")
+    archive_path = os.path.join(target_dir, "mame_287_temp.7z")
+    
     try:
-        root = ET.fromstring(data)
-    except ET.ParseError as e:
-        print(f"  WARNING: XML parse failed for {core_id}: {e}")
-        return {}
+        os.makedirs(target_dir, exist_ok=True)
+        # Download
+        req = Request(url, headers={"User-Agent": "Mozilla/5.0"})
+        with urlopen(req) as response:
+            with open(archive_path, 'wb') as f:
+                shutil.copyfileobj(response, f)
+        
+        # Extract
+        print(f"  Extracting to {target_dir}...")
+        # Using '7z x' to extract with full paths
+        result = subprocess.run(['7z', 'x', archive_path, f'-o{target_dir}', '-y'], 
+                                capture_output=True, text=True)
+        
+        if result.returncode != 0:
+            print(f"  ERROR: 7z extraction failed: {result.stderr}")
+            return False
+            
+        # Cleanup archive
+        os.remove(archive_path)
+        return True
+    except Exception as e:
+        print(f"  ERROR: Failed during 7z download/extraction: {e}")
+        return False
 
+
+def parse_xml_data(file_path_or_data, core_id):
+    """
+    Parse MAME XML and return dict of short_name -> game data.
+    Supports both raw bytes (data) and file paths for memory efficiency.
+    """
     games = {}
-    # MAME 2016+ uses <machine> instead of <game>
-    for game_elem in root.findall("game") + root.findall("machine"):
+    
+    def process_element(game_elem):
         short_name = game_elem.get("name")
         if not short_name:
-            continue
+            return
 
         runnable = game_elem.get("runnable", "yes") != "no"
         clone_of = game_elem.get("cloneof")
@@ -167,6 +208,23 @@ def parse_xml_data(data, core_id):
             "audio": audio_chips if audio_chips else None,
             "driverStatus": driver_status
         }
+
+    try:
+        if isinstance(file_path_or_data, str):
+            # It's a file path, use iterparse for memory efficiency
+            context = ET.iterparse(file_path_or_data, events=("end",))
+            for event, elem in context:
+                if elem.tag in ("game", "machine"):
+                    process_element(elem)
+                    elem.clear() # Free memory
+        else:
+            # It's raw bytes, use fromstring (less efficient but unavoidable for small chunks)
+            root = ET.fromstring(file_path_or_data)
+            for game_elem in root.findall("game") + root.findall("machine"):
+                process_element(game_elem)
+    except Exception as e:
+        print(f"  WARNING: XML parse failed for {core_id}: {e}")
+        return {}
 
     print(f"  Parsed {len(games):,} games from {core_id}")
     return games
@@ -250,13 +308,35 @@ def build_unified_database():
     print("\n[2/4] Downloading and parsing core XML files...")
     core_data = {}
     for core_id, source in CORE_SOURCES.items():
-        data = download_file(source["url"], source["displayName"])
-        if data is None:
-            print(f"  Skipping {core_id} - download failed")
+        # Check if it's a local file first (for MAME 0.287)
+        local_path = source.get("local_path")
+        if local_path and os.path.exists(local_path):
+            print(f"  Using local file for {source['displayName']}...")
+            games = parse_xml_data(local_path, core_id)
+            core_data[core_id] = {
+                "displayName": source["displayName"],
+                "games": games
+            }
             continue
+        
+        # If it's MAME 287 and not local, try downloading and extracting 7z
+        if core_id == "mame287" and source["format"] == "7z":
+            if not download_and_extract_7z(source["url"], MAME_287_DIR):
+                print(f"  Skipping {core_id} - download/extraction failed")
+                continue
+            # Re-check local path after extraction
+            if os.path.exists(local_path):
+                games = parse_xml_data(local_path, core_id)
+            else:
+                print(f"  WARNING: Local file {local_path} not found after extraction")
+                continue
+        elif source["format"] == "xml_zip":
+            # Handle ZIP format (MAME 2015)
+            data = download_file(source["url"], source["displayName"])
+            if data is None:
+                print(f"  Skipping {core_id} - download failed")
+                continue
 
-        # Handle ZIP format (MAME 2015)
-        if source["format"] == "xml_zip":
             try:
                 with zipfile.ZipFile(io.BytesIO(data)) as zf:
                     xml_files = [f for f in zf.namelist() if f.endswith(('.xml', '.dat'))]
@@ -269,11 +349,22 @@ def build_unified_database():
                 print(f"  WARNING: Failed to extract ZIP for {core_id}: {e}")
                 continue
 
-        games = parse_xml_data(data, core_id)
-        core_data[core_id] = {
-            "displayName": source["displayName"],
-            "games": games
-        }
+            games = parse_xml_data(data, core_id)
+            core_data[core_id] = {
+                "displayName": source["displayName"],
+                "games": games
+            }
+        else:
+            data = download_file(source["url"], source["displayName"])
+            if data is None:
+                print(f"  Skipping {core_id} - download failed")
+                continue
+
+            games = parse_xml_data(data, core_id)
+            core_data[core_id] = {
+                "displayName": source["displayName"],
+                "games": games
+            }
 
     # Step 3: Merge all data
     print("\n[3/4] Merging data from all sources...")

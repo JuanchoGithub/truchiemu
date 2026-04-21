@@ -332,13 +332,10 @@ enum LibretroThumbnailResolver {
             if let info = await ROMIdentifierService.shared.identifyReturningGameInfo(rom: rom) {
                 let n = info.name.trimmingCharacters(in: .whitespacesAndNewlines)
                 if !n.isEmpty {
-                    LoggerService.debug(category: logCategory, "resolveGameTitle: CRC match → '\(n)' for '\(rom.name)'")
                     return n
                 } else {
-                    LoggerService.debug(category: logCategory, "resolveGameTitle: CRC identification returned empty name for '\(rom.name)'")
                 }
             } else {
-                LoggerService.debug(category: logCategory, "resolveGameTitle: CRC identification failed for '\(rom.name)'")
             }
         } else {
             LoggerService.debug(category: logCategory, "resolveGameTitle: skipping CRC (useCRC=\(useCRC), systemID='\(systemID)')")
@@ -348,7 +345,6 @@ enum LibretroThumbnailResolver {
             let stem = rom.path.deletingPathExtension().lastPathComponent
             let stripped = stripRomFilenameTags(stem)
             if !stripped.isEmpty {
-                LoggerService.debug(category: logCategory, "resolveGameTitle: filename fallback → '\(stripped)' for '\(rom.name)'")
                 return stripped
             } else {
                 LoggerService.debug(category: logCategory, "resolveGameTitle: filename fallback produced empty string for '\(rom.name)'")

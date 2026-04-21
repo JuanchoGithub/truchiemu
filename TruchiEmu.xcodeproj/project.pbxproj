@@ -41,7 +41,6 @@
 		DD1AE6862F96D7240014A60E /* pce@132w.png in Resources */ = {isa = PBXBuildFile; fileRef = DD1AE1302F96D7240014A60E /* pce@132w.png */; };
 		DD1AE6872F96D7240014A60E /* PANASONIC.png in Resources */ = {isa = PBXBuildFile; fileRef = DD1AE18E2F96D7240014A60E /* PANASONIC.png */; };
 		DD1AE6932F96D7240014A60E /* SFCMSU.png in Resources */ = {isa = PBXBuildFile; fileRef = DD1AE1A12F96D7240014A60E /* SFCMSU.png */; };
-		DD1AE6972F96D7240014A60E /* mame_2003_plus.json in Resources */ = {isa = PBXBuildFile; fileRef = DD1AE5852F96D7240014A60E /* mame_2003_plus.json */; };
 		DD1AE69B2F96D7240014A60E /* LUTRO.png in Resources */ = {isa = PBXBuildFile; fileRef = DD1AE1792F96D7240014A60E /* LUTRO.png */; };
 		DD1AE69F2F96D7240014A60E /* n64@132w.png in Resources */ = {isa = PBXBuildFile; fileRef = DD1AE1282F96D7240014A60E /* n64@132w.png */; };
 		DD1AE6A02F96D7240014A60E /* atari800@132w.png in Resources */ = {isa = PBXBuildFile; fileRef = DD1AE1092F96D7240014A60E /* atari800@132w.png */; };
@@ -432,7 +431,7 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
-		6585DF4DC7B0FEC323F3AB80 /* TruchiEmuTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; name = TruchiEmuTests.xctest; path = /Users/jayjay/gitrepos/truchiemu/build/Debug/TruchiEmu.app/Contents/PlugIns/TruchiEmuTests.xctest; sourceTree = "<absolute>"; };
+		DD095AD62F97F8B5002A097A /* TruchiEmuTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = TruchiEmuTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		DD1AE0232F96D7240014A60E /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
 		DD1AE0242F96D7240014A60E /* GameInfoWindow.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GameInfoWindow.swift; sourceTree = "<group>"; };
 		DD1AE0252F96D7240014A60E /* TruchieEmuApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TruchieEmuApp.swift; sourceTree = "<group>"; };
@@ -787,7 +786,6 @@
 		DD1AE5812F96D7240014A60E /* Sega_-_Mega_Drive_-_Genesis.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = "Sega_-_Mega_Drive_-_Genesis.json"; sourceTree = "<group>"; };
 		DD1AE5822F96D7240014A60E /* Sony_-_PlayStation.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = "Sony_-_PlayStation.json"; sourceTree = "<group>"; };
 		DD1AE5842F96D7240014A60E /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
-		DD1AE5852F96D7240014A60E /* mame_2003_plus.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = mame_2003_plus.json; sourceTree = "<group>"; };
 		DD1AE5872F96D7240014A60E /* BoxArtPreloaderService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BoxArtPreloaderService.swift; sourceTree = "<group>"; };
 		DD1AE5882F96D7240014A60E /* BoxArtService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BoxArtService.swift; sourceTree = "<group>"; };
 		DD1AE5892F96D7240014A60E /* CheatAutoLoader.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CheatAutoLoader.swift; sourceTree = "<group>"; };
@@ -862,6 +860,7 @@
 			children = (
 				DD1AE5DA2F96D7240014A60E /* TruchieEmu */,
 				DD1AEB452F96DACB0014A60E /* TruchiEmu.app */,
+				DD095AD62F97F8B5002A097A /* TruchiEmuTests.xctest */,
 			);
 			sourceTree = "<group>";
 		};
@@ -1579,7 +1578,6 @@
 				DD1AE1BF2F96D7240014A60E /* Plist */,
 				DD1AE5832F96D7240014A60E /* ThumbnailManifests */,
 				DD1AE5842F96D7240014A60E /* Assets.xcassets */,
-				DD1AE5852F96D7240014A60E /* mame_2003_plus.json */,
 			);
 			path = Resources;
 			sourceTree = "<group>";
@@ -1806,7 +1804,7 @@
 			packageProductDependencies = (
 			);
 			productName = TruchieEmuTests;
-			productReference = 6585DF4DC7B0FEC323F3AB80 /* TruchiEmuTests.xctest */;
+			productReference = DD095AD62F97F8B5002A097A /* TruchiEmuTests.xctest */;
 			productType = "com.apple.product-type.bundle.unit-test";
 		};
 		CB3BA833402929B57F3054AB /* TruchiEmu */ = {
@@ -1900,7 +1898,6 @@
 				DD1AE6862F96D7240014A60E /* pce@132w.png in Resources */,
 				DD1AE6872F96D7240014A60E /* PANASONIC.png in Resources */,
 				DD1AE6932F96D7240014A60E /* SFCMSU.png in Resources */,
-				DD1AE6972F96D7240014A60E /* mame_2003_plus.json in Resources */,
 				DD1AE69B2F96D7240014A60E /* LUTRO.png in Resources */,
 				DD1AE69F2F96D7240014A60E /* n64@132w.png in Resources */,
 				DD1AE6A02F96D7240014A60E /* atari800@132w.png in Resources */,

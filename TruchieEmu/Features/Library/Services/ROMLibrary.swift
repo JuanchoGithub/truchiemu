@@ -328,16 +328,18 @@ class ROMLibrary: ObservableObject {
         if !newROMs.isEmpty {
             var processedROMs: [ROM] = []
             
-        // 3. Process only the new items
-        for var rom in newROMs {
-            if rom.systemID == "mame" {
-                await self.applyMAMEIdentificationInline(to: &rom, url: rom.path)
+            // 3. Process only the new items
+            for var rom in newROMs {
+                if rom.systemID == "mame" {
+                    await self.applyMAMEIdentificationInline(to: &rom, url: rom.path)
+                }
+                if (!rom.isBios && !rom.isHidden) {
+                    // Add metadata merging
+                    let merged = LibraryMetadataStore.shared.mergedROM(rom)
+                    processedROMs.append(merged)
+                }
             }
-            // Add metadata merging
-                let merged = LibraryMetadataStore.shared.mergedROM(rom)
-                processedROMs.append(merged)
-            }
-
+            
             // 4. Update UI state incrementally
             self.roms.append(contentsOf: processedROMs)
             self.lastAddedROMs = processedROMs
@@ -346,9 +348,9 @@ class ROMLibrary: ObservableObject {
             
             // 5. Persist only the new items
             repository.saveROMs(processedROMs)
-            for rom in processedROMs { 
+            for rom in processedROMs {
                 LoggerService.debug(category: "ROMLibrary", "Persisting new ROM: \(rom.displayName)")
-                LibraryMetadataStore.shared.persist(rom: rom) 
+                LibraryMetadataStore.shared.persist(rom: rom)
             }
             LibraryMetadataStore.shared.flushToSwiftData()
             
@@ -366,39 +368,21 @@ class ROMLibrary: ObservableObject {
         // 7. Automation
         if runAutomationAfter {
             guard !RunningGamesTracker.shared.isGameRunning else { return }
-            // NOTE: If these coordinators perform global scans, you should check 
+            // NOTE: If these coordinators perform global scans, you should check
             // if they can be made to only target the 'newROMs' or 'folder'
             await LibraryAutomationCoordinator.shared.runAfterLibraryUpdate(library: self, targetROMs: self.lastAddedROMs)
             await MetadataSyncCoordinator.shared.runAfterLibraryUpdate(library: self, targetROMs: self.lastAddedROMs)
         }
     }
 
-    // Apply MAME identification inline during scanning.
-    private func applyMAMEIdentificationInline(to rom: inout ROM, url: URL) async {
+// Apply MAME identification inline during scanning.
+    private func applyMAMEIdentificationInline(to rom: inout ROM, url: URL) {
         let shortName = url.deletingPathExtension().lastPathComponent.lowercased()
-        var description: String?
-        var isPlayable: Bool?
-        var type: String?
+        let mameService = MAMEUnifiedService.shared
 
-        // Check user's selected core first, if applicable
-        if let coreID = rom.selectedCoreID {
-            if let lookup = await MAMEDependencyService.shared.lookupGame(for: coreID, shortName: shortName) {
-                description = lookup.description
-                type = lookup.type
-                isPlayable = lookup.isPlayable
-            }
-        }
-
-        // Fall back to multi-core unified lookup
-        if description == nil {
-            if let unifiedEntry = await MAMEUnifiedService.shared.lookup(shortName: shortName) {
-                description = unifiedEntry.description
-                type = unifiedEntry.isBIOS ? "bios" : (unifiedEntry.isRunnableInAnyCore ? "game" : "unplayable")
-                isPlayable = unifiedEntry.isRunnableInAnyCore && !unifiedEntry.isBIOS
-            }
-        }
-
-        guard let description = description, let type = type, let isPlayable = isPlayable else {
+        // 1. Ask the Master Lookup Table what this file is
+        guard let entry = mameService.lookup(shortName: shortName) else {
+            // Not found in MAME database at all
             rom.mameRomType = nil
             rom.isHidden = true
             rom.isBios = true
@@ -406,16 +390,35 @@ class ROMLibrary: ObservableObject {
             return
         }
 
-        rom.mameRomType = type
+        // 2. Check playability (respecting the core ID if they selected one)
+        let isPlayable = rom.selectedCoreID != nil
+            ? mameService.isRunnable(shortName: shortName, in: rom.selectedCoreID!)
+            : mameService.isRunnable(shortName: shortName)
+
+        // 3. Apply the results directly to the ROM
         if isPlayable {
-            rom.name = description
+            // It's a Playable Game! 🎉
+            rom.mameRomType = "game"
+            rom.name = entry.description
             rom.isHidden = false
+            rom.isBios = false
             rom.category = "game"
+            
             if rom.metadata == nil { rom.metadata = ROMMetadata() }
-            rom.metadata?.title = description
+            rom.metadata?.title = entry.description
+            
         } else {
+            // It's a BIOS or an Unplayable machine (Hide it) 🛑
+            if MAMEUnifiedService.shared.isBIOS(shortName: shortName) {
+                rom.mameRomType = "bios"
+                rom.isBios = true
+            } else {
+                rom.mameRomType = "unplayable"
+                rom.isBios = false
+            }
+            rom.name = entry.description
             rom.isHidden = true
-            rom.isBios = true
+            // Standardize hidden files into the "bios" category like your original code did
             rom.category = "bios"
         }
     }
