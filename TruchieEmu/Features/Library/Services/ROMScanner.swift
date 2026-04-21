@@ -98,7 +98,7 @@ actor ROMScanner {
         // 3. Pre-load XML Metadata (O(1) lookup map for the whole folder)
         let xmlMetadataCache = loadFolderMetadata(folder: folder)
 
-        // 4. Concurrent Processing Phase
+        // 4. Concurrent Processing Phase (with Concurrency Limiting)
         let progressTracker = ProgressTracker(total: totalFiles, progressHandler: progress)
         var found: [ROM] = []
         found.reserveCapacity(totalFiles)
@@ -106,8 +106,15 @@ actor ROMScanner {
         var zipCount = 0
         var unknownCount = 0
         
+        // Limit concurrent I/O tasks to prevent disk thrashing
+        let maxConcurrentTasks = 16 
+        
         await withTaskGroup(of: ROM?.self) { group in
-            for url in orderedURLs {
+            var currentIndex = 0
+            
+            // Initial batch
+            while currentIndex < orderedURLs.count && currentIndex < maxConcurrentTasks {
+                let url = orderedURLs[currentIndex]
                 if isCancelled || (cancellationToken?.isCancelled ?? false) { break }
                 
                 group.addTask {
@@ -162,14 +169,74 @@ actor ROMScanner {
 
                     return rom
                 }
+                currentIndex += 1
             }
-            
+
+            // While group is running, add new tasks as they complete
             for await result in group {
                 if let rom = result {
                     found.append(rom)
                     let ext = rom.path.pathExtension.lowercased()
                     if ext == "zip" || ext == "7z" { zipCount += 1 }
                     if rom.systemID == "unknown" { unknownCount += 1 }
+                }
+                
+                // Add next task if available
+                if currentIndex < orderedURLs.count && !(isCancelled || (cancellationToken?.isCancelled ?? false)) {
+                    let url = orderedURLs[currentIndex]
+                    group.addTask {
+                        await progressTracker.incrementAndReport()
+                        
+                        // Skip ignored files
+                        if ignoredURLs.contains(url.standardized.path) { return nil }
+
+                        guard (try? url.resourceValues(forKeys: [.isRegularFileKey]))?.isRegularFile == true else { return nil }
+
+                        let ext = url.pathExtension.lowercased()
+                        guard !ext.isEmpty, !self.shouldSkipExtension(ext) else { return nil }
+                        
+                        if url.path.contains("/Contents/") || url.path.hasSuffix(".app") { return nil }
+
+                        let system = await self.identifySystem(url: url, extension: ext)
+
+                        // Ignore specific PS1 BIOS files if they are identified as PS1/PSX
+                        let filename = url.lastPathComponent.lowercased()
+                        if (filename == "scph5500.bin" || filename == "scph5501.bin" || filename == "scph5502.bin") &&
+                           (system?.id == "ps1" || system?.id == "psx") {
+                            return nil
+                        }
+
+                        let name = url.deletingPathExtension().lastPathComponent
+
+                        var rom = ROM(id: UUID(), name: name, path: url, systemID: system?.id)
+
+                        // BIOS Detection
+                        if KnownBIOS.isKnownBios(filename: url.lastPathComponent) {
+                            rom.isBios = true
+                            rom.isHidden = true
+                            rom.category = "bios"
+                        }
+
+                        // MAME ROM Identification
+                        if system?.id == "mame" {
+                            await self.applyMAMEIdentification(to: &rom, url: url)
+                        }
+
+                         // Attach cached metadata
+                         rom.metadata = xmlMetadataCache[url.lastPathComponent]
+                         
+                         // Populate derived fields
+                         rom.refreshDerivedFields()
+                         
+                         // Check local boxart and refresh if found
+                         if !rom.isBios && fm.fileExists(atPath: rom.boxArtLocalPath.path) {
+                             rom.hasBoxArt = true
+                             rom.refreshDerivedFields()
+                         }
+
+                        return rom
+                    }
+                    currentIndex += 1
                 }
             }
         }

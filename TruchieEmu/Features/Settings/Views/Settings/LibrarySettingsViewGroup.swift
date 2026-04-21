@@ -120,26 +120,27 @@ struct LibrarySettingsView: View {
                     }
                     
                     VStack(spacing: 0) {
-                        Button(action: { Task { await library.fullRescan() } }) {
-                            HStack(spacing: 12) {
-                                Image(systemName: "arrow.clockwise.circle.fill")
-                                    .foregroundStyle(Color.accentColor)
-                                VStack(alignment: .leading, spacing: 4) {
-                                    Text("Full Library Rescan")
-                                        .font(.body)
-                                    Text("Scan all folders for new or removed games")
-                                        .font(.caption)
-                                        .foregroundStyle(.secondary)
-                                }
-                                Spacer()
-                                if library.isScanning {
-                                    ProgressView()
-                                        .controlSize(.small)
-                                }
-                            }
-                            .padding(.vertical, 8)
+                Button(action: { Task { await library.fullRescan() } }) {
+                    HStack(spacing: 12) {
+                        Image(systemName: "arrow.clockwise.circle.fill")
+                            .foregroundStyle(Color.accentColor)
+                        VStack(alignment: .leading, spacing: 4) {
+                            Text("Full Library Rescan")
+                                .font(.body)
+                            Text("Scan all folders for new or removed games")
+                                .font(.caption)
+                                .foregroundStyle(.secondary)
                         }
-                        .buttonStyle(.plain)
+                        Spacer()
+                        if library.isScanning {
+                            ProgressView()
+                                .controlSize(.small)
+                        }
+                    }
+                    .padding(.vertical, 8)
+                }
+                .buttonStyle(.plain)
+                .disabled(library.isScanning)
                         
                         Divider()
                         

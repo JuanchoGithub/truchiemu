@@ -714,18 +714,53 @@ class ROMLibrary: ObservableObject {
     private func loadFileIndexFromStorage() { fileIndex = [:] }
 
     func rebuildLibrary(modes: Set<RebuildOption>) async {
-        if modes.contains(.boxartRebuild) { for i in 0..<roms.count { roms[i].hasBoxArt = false } }
-        if modes.contains(.idRebuild) {
+        // 1. Prepare for the rebuild
+        isScanning = true
+        scanProgress = 0
+        
+        // 2. Perform the heavy work. 
+        // Since ROMLibrary and ROMRepository are both @MainActor, 
+        // we can't simply move them to a background thread without a new ModelContext.
+        // However, we can break the work into smaller chunks and yield to the main loop
+        // using Task.yield(), which prevents the UI from being completely locked.
+        
+        if modes.contains(.boxartRebuild) {
             for i in 0..<roms.count {
-                roms[i].crc32 = nil; roms[i].thumbnailLookupSystemID = nil
-                roms[i].metadata?.title = nil; roms[i].metadata?.year = nil; roms[i].metadata?.publisher = nil; roms[i].metadata?.developer = nil; roms[i].metadata?.genre = nil
+                roms[i].hasBoxArt = false
+                if i % 100 == 0 { await Task.yield() }
             }
         }
+        
+        if modes.contains(.idRebuild) {
+            for i in 0..<roms.count {
+                roms[i].crc32 = nil
+                roms[i].thumbnailLookupSystemID = nil
+                roms[i].metadata?.title = nil
+                roms[i].metadata?.year = nil
+                roms[i].metadata?.publisher = nil
+                roms[i].metadata?.developer = nil
+                roms[i].metadata?.genre = nil
+                if i % 100 == 0 { await Task.yield() }
+            }
+        }
+        
         if modes.contains(.refresh) || modes.contains(.everything) || modes.contains(.idRebuild) {
+            // Save the cleared/modified state
             saveROMsToDatabase()
+            
             let folders = primaryFolders.map { $0.url }
-            for folder in folders { await scanROMs(in: folder, runAutomationAfter: folder == folders.last) }
-        } else if modes.contains(.boxartRebuild) { saveROMsToDatabase() }
+            for (index, folder) in folders.enumerated() {
+                if !isScanning { break }
+                // Update progress based on folder index
+                scanProgress = Double(index) / Double(max(folders.count, 1))
+                await scanROMs(in: folder, runAutomationAfter: folder == folders.last)
+            }
+        } else if modes.contains(.boxartRebuild) {
+            saveROMsToDatabase()
+        }
+        
+        isScanning = false
+        scanProgress = 1.0
     }
 
     @MainActor func rescanLibrary(at folderURL: URL) async {

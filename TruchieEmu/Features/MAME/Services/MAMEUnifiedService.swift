@@ -15,13 +15,13 @@ final class MAMEUnifiedService: ObservableObject {
     @Published var database: MAMEUnifiedDatabase?
     
     // In-memory lookup: shortName -> entry
-    private var lookupTable: [String: MAMEUnifiedEntry] = [:]
+    nonisolated(unsafe) private var lookupTable: [String: MAMEUnifiedEntry] = [:]
     // Set of all runnable short names across ALL cores
-    private var allRunnableShortNames: Set<String> = []
+    nonisolated(unsafe) private var allRunnableShortNames: Set<String> = []
     // Set of all BIOS short names
-    private var allBIOSShortNames: Set<String> = []
+    nonisolated(unsafe) private var allBIOSShortNames: Set<String> = []
     // Set of unplayable short names (not runnable in any core)
-    private var unplayableShortNames: Set<String> = []
+    nonisolated(unsafe) private var unplayableShortNames: Set<String> = []
     
     private var loadingTask: Task<Void, Never>?
     
@@ -140,48 +140,48 @@ final class MAMEUnifiedService: ObservableObject {
     // MARK: - Query Methods
     
     // Look up a game by its short name (ZIP filename without extension).
-    func lookup(shortName: String) -> MAMEUnifiedEntry? {
+    nonisolated func lookup(shortName: String) -> MAMEUnifiedEntry? {
         lookupTable[shortName.lowercased()]
     }
     
     // Check if a short name is runnable in ANY core.
-    func isRunnable(shortName: String) -> Bool {
+    nonisolated func isRunnable(shortName: String) -> Bool {
         allRunnableShortNames.contains(shortName.lowercased())
     }
     
     // Check if a short name is runnable in a specific core.
-    func isRunnable(shortName: String, in coreID: String) -> Bool {
+    nonisolated func isRunnable(shortName: String, in coreID: String) -> Bool {
         guard let entry = lookupTable[shortName.lowercased()] else { return false }
         return entry.isRunnable(in: coreID)
     }
     
     // Check if a short name is a BIOS entry.
-    func isBIOS(shortName: String) -> Bool {
+    nonisolated func isBIOS(shortName: String) -> Bool {
         allBIOSShortNames.contains(shortName.lowercased())
     }
     
     // Check if a short name is unplayable (not runnable in any core).
-    func isUnplayable(shortName: String) -> Bool {
+    nonisolated func isUnplayable(shortName: String) -> Bool {
         unplayableShortNames.contains(shortName.lowercased())
     }
     
     // Get all runnable game short names (for library filtering).
-    var runnableShortNames: Set<String> {
+    nonisolated var runnableShortNames: Set<String> {
         allRunnableShortNames
     }
     
     // Get all BIOS short names.
-    var biosShortNames: Set<String> {
+    nonisolated var biosShortNames: Set<String> {
         allBIOSShortNames
     }
     
     // Get all entries as an array.
-    var allEntries: [MAMEUnifiedEntry] {
+    nonisolated var allEntries: [MAMEUnifiedEntry] {
         Array(lookupTable.values)
     }
     
     // Get all runnable entries sorted by description.
-    var runnableEntries: [MAMEUnifiedEntry] {
+    nonisolated var runnableEntries: [MAMEUnifiedEntry] {
         lookupTable.values
             .filter { $0.isRunnableInAnyCore && !$0.isBIOS }
             .sorted { $0.description < $1.description }
@@ -190,13 +190,13 @@ final class MAMEUnifiedService: ObservableObject {
     // MARK: - Core Compatibility
     
     // Get all cores that can run this game.
-    func compatibleCores(for shortName: String) -> [String] {
+    nonisolated func compatibleCores(for shortName: String) -> [String] {
         lookupTable[shortName.lowercased()]?.compatibleCores ?? []
     }
     
     // Generate compatibility tag for library display.
     // Returns "core:{coreID} compatible", "MAME BIOS", or "MAME Unplayable".
-    func compatibilityTag(for shortName: String) -> String {
+    nonisolated func compatibilityTag(for shortName: String) -> String {
         guard let entry = lookupTable[shortName.lowercased()] else {
             return "MAME Unplayable"
         }
@@ -204,7 +204,7 @@ final class MAMEUnifiedService: ObservableObject {
     }
     
     // Get the best core to use for a game (first runnable core).
-    func bestCore(for shortName: String) -> String? {
+    nonisolated func bestCore(for shortName: String) -> String? {
         guard let entry = lookupTable[shortName.lowercased()] else { return nil }
         
         // Find first core where this game is runnable
@@ -219,13 +219,13 @@ final class MAMEUnifiedService: ObservableObject {
     // MARK: - Dependency Resolution
     
     // Get all required ZIPs for a game in a specific core.
-    func requiredZIPs(for shortName: String, coreID: String) -> [String] {
+    nonisolated func requiredZIPs(for shortName: String, coreID: String) -> [String] {
         guard let entry = lookupTable[shortName.lowercased()] else { return [shortName] }
         return entry.requiredZIPs(for: coreID)
     }
     
     // Check if all required ZIPs exist in the ROMs directory.
-    func checkZIPsAvailable(
+    nonisolated func checkZIPsAvailable(
         for shortName: String,
         coreID: String,
         romsDirectory: URL
@@ -241,13 +241,13 @@ final class MAMEUnifiedService: ObservableObject {
     // MARK: - Statistics
     
     // Get count of runnable games per core.
-    var runnableCountsPerCore: [String: Int] {
+    @MainActor var runnableCountsPerCore: [String: Int] {
         guard let db = database else { return [:] }
         return db.metadata.coreRunnableCounts
     }
     
     // Get display names for all cores.
-    var coreDisplayNames: [String: String] {
+    @MainActor var coreDisplayNames: [String: String] {
         guard let db = database else { return [:] }
         return db.metadata.cores
     }

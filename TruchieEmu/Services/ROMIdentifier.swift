@@ -37,19 +37,32 @@ enum ROMIdentifier {
         // Dictionary to track potential matches: [SystemID: ConfidenceScore]
         var candidates: [String: Int] = [:]
 
-        // 1. Magic Headers (Highest Confidence: 100 pts)
+    // 1. Metadata Scoring (Fast, No I/O: 80 pts for ext, 70 for path)
+    scoreByMetadata(url: url, extLower: extLower, parentNames: parentNames, candidates: &candidates)
+
+    // 2. MAME Lookup (Fast, No I/O: 90 pts)
+    if extLower == "zip" {
+        await scoreByMAME(url: url, candidates: &candidates)
+    }
+
+    // 3. Magic Headers (Expensive I/O: 100 pts)
+    // Only perform if we don't have a very strong candidate yet
+    let currentBestScore = candidates.values.max() ?? 0
+    if currentBestScore < 90 {
         let ambiguousSystems = cachedSystems.filter { system in 
             system.extensions.contains { normalize(extension: $0) == extLower }
         }
-        let isAmbiguous = ambiguousSystems.count > 1
-        if isAmbiguous {
+        if !ambiguousSystems.isEmpty {
             if let headerID = peekSystemID(url: url, systems: ambiguousSystems) {
                 candidates[headerID, default: 0] += 100
                 LoggerService.extreme(category: "ROMIdentifier", "Magic Header match for \(filename): \(headerID)")
             }
         }
+    }
 
-        // 2. Archive Analysis (High Confidence: 90 pts)
+    // 4. Archive Analysis (Expensive I/O: 90 pts)
+    // Only perform if still ambiguous
+    if currentBestScore < 90 {
         let archiveFormats = ["zip", "7z"]
         if archiveFormats.contains(extLower) {
             if let archiveSystem = identifyArchive(url: url) {
@@ -57,18 +70,13 @@ enum ROMIdentifier {
                 LoggerService.extreme(category: "ROMIdentifier", "Archive match for \(filename): \(archiveSystem.id)")
             }
         }
-        // 3. Metadata Scoring (Extension & Path)
-        scoreByMetadata(url: url, extLower: extLower, parentNames: parentNames, candidates: &candidates)
-        
-        //3.5 CD-based System Detection (PS1/PS2) via SYSTEM.CNF
-        if ["bin", "iso", "img", "cue"].contains(extLower) {
-            identifyDiscSystem(url: url, candidates: &candidates)
-        }
+    }
 
-        // 4. MAME Lookup (Specialized: 90 pts)
-        if extLower == "zip" {
-            await scoreByMAME(url: url, candidates: &candidates)
-        }
+    // 5. CD-based System Detection (Expensive I/O: 70-100 pts)
+    // Only perform if still ambiguous
+    if currentBestScore < 90 && ["bin", "iso", "img", "cue"].contains(extLower) {
+        identifyDiscSystem(url: url, candidates: &candidates)
+    }
 
         // --- FINAL DECISION ---
         var sortedCandidates = candidates.sorted { $0.value > $1.value }
