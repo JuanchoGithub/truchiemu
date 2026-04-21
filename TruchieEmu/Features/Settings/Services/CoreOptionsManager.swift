@@ -89,7 +89,7 @@ class CoreOptionsManager: ObservableObject {
         
         // 1. Load Definitions
         let defURL = definitionsDirectory.appendingPathComponent("\(coreID).json")
-        LoggerService.debug(category: "CoreOptionsManager", "Definitions file For \(currentCoreID): \(defURL)")
+        //LoggerService.debug(category: "CoreOptionsManager", "Definitions file For \(currentCoreID): \(defURL)")
     
         guard let data = try? Data(contentsOf: defURL),
               let json = try? JSONSerialization.jsonObject(with: data) as? [String: Any] else {
