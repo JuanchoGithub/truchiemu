@@ -173,6 +173,12 @@ struct ContentWithPrepopulationView: View {
             isRunningPrepopulation = false
             isPrepopulated = true
         }
+
+        // Ensure core mappings are present and up-to-date
+        if await LibretroInfoManager.shouldRefreshInfo() {
+            LoggerService.info(category: "App", "Core info is missing or stale. Refreshing during initialization...")
+            await LibretroInfoManager.shared.refreshCoreInfo()
+        }
     }
 }
 

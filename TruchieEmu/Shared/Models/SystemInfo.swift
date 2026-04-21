@@ -530,31 +530,104 @@ class LibretroInfoManager: ObservableObject {
     @Published var isRefreshing = false
     @Published var refreshStatus = ""
     
-    // Add a static dictionary to act as our "Source of Truth"
+    // Wrapper to persist both the mapping and the timestamp
+    struct CoreInfoCache: Codable {
+        let coreToSystemMap: [String: [String]]
+        let lastUpdated: Date
+    }
+    
+    // The current in-memory mapping
     static var coreToSystemMap: [String: Set<String>] = [:]
-    // Add a helper to save/load this mapping (like you did for SystemDatabase)
+    
+    // Helper to check if we have any mappings at all
+    static var hasMappings: Bool {
+        !coreToSystemMap.isEmpty
+    }
     
     static func saveMappings() {
-        if let data = try? JSONEncoder().encode(coreToSystemMap.mapValues { Array($0) }) {
-            try? data.write(to: mapURL)
-            LoggerService.debug(category: "LibretroInfoManager", "Saved core-to-system mappings")
+        do {
+            let cache = CoreInfoCache(
+                coreToSystemMap: coreToSystemMap.mapValues { Array($0) },
+                lastUpdated: Date()
+            )
+            let data = try JSONEncoder().encode(cache)
+            try data.write(to: mapURL)
+            LoggerService.debug(category: "LibretroInfoManager", "✅ Saved core-to-system mappings to \(mapURL.lastPathComponent)")
+        } catch {
+            LoggerService.error(category: "LibretroInfoManager", "❌ Failed to save core-to-system mappings: \(error.localizedDescription)")
         }
     }
-
+    
     static func loadMappings() {
-        if let data = try? Data(contentsOf: mapURL),
-           let parsed = try? JSONDecoder().decode([String: [String]].self, from: data) {
-            coreToSystemMap = parsed.mapValues { Set($0) }
-            LoggerService.debug(category: "LibretroInfoManager", "Loaded core-to-system mappings")
-        } else {
-            LoggerService.debug(category: "LibretroInfoManager", "No existing core-to-system mappings found to load")
+        do {
+            let data = try Data(contentsOf: mapURL)
+            let cache = try JSONDecoder().decode(CoreInfoCache.self, from: data)
+            coreToSystemMap = cache.coreToSystemMap.mapValues { Set($0) }
+            LoggerService.debug(category: "LibretroInfoManager", "✅ Loaded core-to-system mappings (Last updated: \(cache.lastUpdated))")
+        } catch {
+            LoggerService.debug(category: "LibretroInfoManager", "ℹ️ No existing core-to-system mappings found or failed to load: \(error.localizedDescription)")
         }
     }
-
+    
+    /// Determines if the core info needs a refresh based on age or remote changes
+    static func shouldRefreshInfo() async -> Bool {
+        // 1. If no mappings exist, we definitely need them
+        guard hasMappings else { return true }
+        
+        // 2. Check if data is older than 30 days
+        do {
+            let data = try Data(contentsOf: mapURL)
+            let cache = try JSONDecoder().decode(CoreInfoCache.self, from: data)
+            let thirtyDaysAgo = Calendar.current.date(byAdding: .day, value: -30, to: Date()) ?? Date()
+            
+            if cache.lastUpdated < thirtyDaysAgo {
+                LoggerService.debug(category: "LibretroInfoManager", "Mappings are older than 30 days. Triggering refresh.")
+                return true
+            }
+            
+            // 3. Check GitHub for updates using a HEAD request
+            let githubZipURL = URL(string: "https://github.com/libretro/libretro-core-info/archive/refs/heads/master.zip")!
+            var request = URLRequest(url: githubZipURL)
+            request.httpMethod = "HEAD"
+            request.setValue("Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36", forHTTPHeaderField: "User-Agent")
+            
+            let (_, response) = try await URLSession.shared.data(for: request)
+            if let httpResponse = response as? HTTPURLResponse,
+               let lastModifiedString = httpResponse.value(forHTTPHeaderField: "Last-Modified"),
+               let lastModifiedDate = LibretroInfoManager.parseHTTPDate(lastModifiedString) {
+                
+                if lastModifiedDate > cache.lastUpdated {
+                    LoggerService.debug(category: "LibretroInfoManager", "GitHub info is newer (\(lastModifiedDate)) than local (\(cache.lastUpdated)). Triggering refresh.")
+                    return true
+                }
+            }
+            
+            LoggerService.debug(category: "LibretroInfoManager", "Mappings are up to date.")
+            return false
+            
+        } catch {
+            LoggerService.error(category: "LibretroInfoManager", "Error during shouldRefreshInfo check: \(error.localizedDescription)")
+            // If we can't even read the cache, assume we need to refresh
+            return true
+        }
+    }
+    
     private static let mapURL: URL = {
         let appSupport = FileManager.default.urls(for: .applicationSupportDirectory, in: .userDomainMask).first!
-        return appSupport.appendingPathComponent("TruchieEmu/CoreSystemMappings.json")
+        let coreInfoDir = appSupport.appendingPathComponent("TruchieEmu/CoreInfo", isDirectory: true)
+        // Ensure directory exists
+        try? FileManager.default.createDirectory(at: coreInfoDir, withIntermediateDirectories: true)
+        return coreInfoDir.appendingPathComponent("CoreSystemMappings.json")
     }()
+
+    /// Parses an RFC 1123 date string (e.g., "Wed, 21 Oct 2015 07:28:00 GMT")
+    static func parseHTTPDate(_ dateString: String) -> Date? {
+        let formatter = DateFormatter()
+        formatter.locale = Locale(identifier: "en_US_POSIX")
+        formatter.dateFormat = "EEE, dd MMM yyyy HH:mm:ss zzz"
+        formatter.timeZone = TimeZone(secondsFromGMT: 0)
+        return formatter.date(from: dateString)
+    }
 
     private let githubZipURL = URL(string: "https://github.com/libretro/libretro-core-info/archive/refs/heads/master.zip")!
     

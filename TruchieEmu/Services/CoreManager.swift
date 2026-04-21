@@ -684,6 +684,7 @@ private func loadInstalledCores() {
     
         // Trigger a UI refresh if your views are observing SystemPreferences
         self.loadAvailableCores()
+        self.loadInstalledCores()
         SystemPreferences.shared.updateTrigger += 1
     }
 
