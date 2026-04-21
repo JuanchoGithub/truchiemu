@@ -712,7 +712,6 @@ class LibretroInfoManager: ObservableObject {
                     // value is often "nes|snes|gameboy"
                     result["systemid"] = value 
                 }
-                LoggerService.debug(category: "LibretroInfoManager", "Parsed key: \(key), value: \(value)")
             }
         }
         return result
