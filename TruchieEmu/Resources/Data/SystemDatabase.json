@@ -211,7 +211,7 @@
         "emuIconName": "GB",
         "defaultBoxType": "Box",
         "iconName": "iphone",
-        "defaultCoreID": "mgba_libretro",
+        "defaultCoreID": "gambatte_libretro",
         "manufacturer": "Nintendo"
     },
     {
@@ -245,7 +245,7 @@
         "emuIconName": "GBC",
         "defaultBoxType": "Vertical",
         "iconName": "iphone",
-        "defaultCoreID": "mgba_libretro",
+        "defaultCoreID": "gambatte_libretro",
         "manufacturer": "Nintendo"
     },
     {
@@ -669,7 +669,7 @@
         "emuIconName": "MAME",
         "defaultBoxType": "Vertical",
         "iconName": "arcade.stick",
-        "defaultCoreID": "mame2003_plus_libretro",
+        "defaultCoreID": "mame_libretro",
         "manufacturer": "Various"
     },
     {

@@ -16,6 +16,7 @@ class ShaderWindowSettings: ObservableObject {
     @Published var uniformValues: [String: Float]
     @Published var systemID: String?
     @Published var applicationMode: ShaderApplicationMode = .applyToCurrent
+    @Published var notificationMessage: String?
     
     init(shaderPresetID: String = "", 
          uniformValues: [String: Float] = [:], 
@@ -373,29 +374,40 @@ struct ShaderPresetPickerView: View {
                 presetList
                 
                 // Application Mode Footer
-                if settings.systemID != nil {
-                    Divider()
-                    VStack(spacing: 0) {
-                        Picker("Application Mode", selection: $settings.applicationMode) {
-                            Text("Default").tag(ShaderApplicationMode.applyToDefaults)
-                            Text("Override").tag(ShaderApplicationMode.applyToAll)
-                        }
-                        .pickerStyle(.segmented)
-                        .padding(10)
- 
-                        HStack {
-                            Spacer()
-                            Button("Apply") {
-                                onValueCommitted?(settings.uniformValues)
-                            }
-                            .buttonStyle(.borderedProminent)
-                            .controlSize(.small)
-                            .padding(.horizontal, 12)
-                            .padding(.vertical, 8)
-                        }
-                        .background(Color(NSColor.controlBackgroundColor))
-                    }
-                }
+                                 if settings.systemID != nil {
+                                     Divider()
+                                     VStack(spacing: 0) {
+                                         Picker("Application Mode", selection: $settings.applicationMode) {
+                                             Text("Default").tag(ShaderApplicationMode.applyToDefaults)
+                                             Text("Override").tag(ShaderApplicationMode.applyToAll)
+                                         }
+                                         .pickerStyle(.segmented)
+                                         .padding(10)
+  
+                                         VStack(spacing: 8) {
+                                             HStack {
+                                                 Spacer()
+                                                 Button("Apply") {
+                                                     onValueCommitted?(settings.uniformValues)
+                                                 }
+                                                 .buttonStyle(.borderedProminent)
+                                                 .controlSize(.small)
+                                                 .padding(.horizontal, 12)
+                                                 .padding(.vertical, 8)
+                                             }
+                                             
+                                             if let message = settings.notificationMessage {
+                                                 Text(message)
+                                                     .font(.caption)
+                                                     .foregroundColor(.secondary)
+                                                     .multilineTextAlignment(.center)
+                                                     .padding(.horizontal, 10)
+                                                     .transition(.opacity)
+                                             }
+                                         }
+                                         .background(Color(NSColor.controlBackgroundColor))
+                                     }
+                                 }
             }
             .frame(minWidth: 300, maxWidth: .infinity)
             

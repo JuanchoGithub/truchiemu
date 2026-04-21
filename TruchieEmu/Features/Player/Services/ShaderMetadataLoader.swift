@@ -61,7 +61,7 @@ class ShaderMetadataLoader {
                 metadataMap[uniform.name] = uniform
             }
             cache[shaderFile] = metadataMap
-            LoggerService.info(category: "ShaderMetadataLoader", "Decoded metadata for \(shaderFile): \(metadataMap)")
+            //LoggerService.info(category: "ShaderMetadataLoader", "Decoded metadata for \(shaderFile): \(metadataMap)")
             return metadataMap
         } catch {
             LoggerService.error(category: "ShaderMetadataLoader", "Failed to decode metadata for \(shaderFile): \(error)")
