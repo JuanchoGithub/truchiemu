@@ -360,6 +360,13 @@ struct CoreDownloadSheet: View {
             if isDownloading {
                 ProgressView().scaleEffect(0.9).padding(.trailing, 6)
                 Text("Downloading core…").foregroundColor(.secondary)
+            } else if LibretroThumbnailManifestService.shared.isRefreshing {
+                HStack {
+                    ProgressView()
+                        .padding(.trailing, 8)
+                    Text("Updating manifests...")
+                        .font(.caption)
+                }
             } else {
                 let isAvailable = selectedCoreEntry.isInstalled || coreManager.availableCores.contains(where: { $0.coreID == selectedCoreEntry.id })
                 
