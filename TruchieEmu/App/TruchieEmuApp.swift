@@ -1,5 +1,6 @@
 import SwiftUI
 import AppKit
+import UserNotifications
 
 @main
 struct TruchieEmuApp: App {
@@ -12,7 +13,7 @@ struct TruchieEmuApp: App {
         _ = LoggerService.shared
         
         // MAME dictionary loading is deferred to background tasks in ContentWithPrepopulationView
-            // 1. Connect the Bridge to your existing LoggerService
+        // 1. Connect the Bridge to your existing LoggerService
         LibretroBridgeSwift.registerCoreLogger { message, level in
             let category = "LibretroCore"
             switch level {
@@ -26,7 +27,6 @@ struct TruchieEmuApp: App {
                 LoggerService.debug(category: category, message)
             }
         }
-
     }
     
     @StateObject private var library = ROMLibrary()
@@ -35,7 +35,7 @@ struct TruchieEmuApp: App {
     @StateObject private var controllerService = ControllerService.shared
     @StateObject private var mameVerification = MAMEVerificationService.shared
     
-    // NOTE: NSApp is NOT NOT available in init() for @main App structs.
+    // NOTE: NSApp is NOT available in init() for @main App structs.
     // Activation policy is set in AppDelegate.applicationWillFinishLaunching instead.
     // This prevents crashes when NSApp is accessed during initialization.
     
@@ -176,12 +176,41 @@ struct ContentWithPrepopulationView: View {
     }
 }
 
-class AppDelegate: NSObject, NSApplicationDelegate {
+class AppDelegate: NSObject, NSApplicationDelegate, UNUserNotificationCenterDelegate {
     // Track if this instance was launched via CLI
     private var isCLILaunch: Bool {
         ProcessInfo.processInfo.arguments.contains("--launch")
     }
     
+    func applicationDidFinishLaunching(_ notification: Notification) {
+        // Set the delegate for notification center to handle foreground notifications
+        UNUserNotificationCenter.current().delegate = self
+        
+        let args = ProcessInfo.processInfo.arguments
+        if args.contains("--launch") {
+            LoggerService.info(category: "App", "CLI launch detected - will terminate when last window closes")
+            // Ensure we're still in accessory mode (no dock icon)
+            NSApp.setActivationPolicy(.accessory)
+        } else {
+            LoggerService.info(category: "App", "Normal launch - app ready")
+        }
+        
+        // Close any game-info windows that may have slipped through restoration.
+        // This runs after windows are created to catch any that were already restored.
+        DispatchQueue.main.async {
+            self.closeRestoredGameInfoWindows()
+        }
+    }
+
+    // MARK: - UNUserNotificationCenterDelegate
+
+    func userNotificationCenter(_ center: UNUserNotificationCenter, 
+                                willPresent notification: UNNotification, 
+                                withCompletionHandler completionHandler: @escaping (UNNotificationPresentationOptions) -> Void) {
+        // Allow the notification to show as a banner even when the app is in the foreground
+        completionHandler([.banner, .sound])
+    }
+
     func applicationShouldTerminateAfterLastWindowClosed(_ sender: NSApplication) -> Bool {
         // For CLI launches, terminate the app when the game window closes
         // This prevents the dock icon from staying visible after closing the game
@@ -198,23 +227,6 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         // macOS saves window state in NSQuitAlwaysKeepsWindows UserDefaults key.
         // By removing the game-info window ID from the saved state, we prevent restoration.
         clearGameInfoWindowState()
-    }
-    
-    func applicationDidFinishLaunching(_ notification: Notification) {
-        let args = ProcessInfo.processInfo.arguments
-        if args.contains("--launch") {
-            LoggerService.info(category: "App", "CLI launch detected - will terminate when last window closes")
-            // Ensure we're still in accessory mode (no dock icon)
-            NSApp.setActivationPolicy(.accessory)
-        } else {
-            LoggerService.info(category: "App", "Normal launch - app ready")
-        }
-        
-        // Close any game-info windows that may have slipped through restoration.
-        // This runs after windows are created to catch any that were already restored.
-        DispatchQueue.main.async {
-            self.closeRestoredGameInfoWindows()
-        }
     }
     
     // Remove any saved state for the game-info window to prevent restoration on launch.

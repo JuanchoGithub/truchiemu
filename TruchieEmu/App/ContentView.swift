@@ -142,23 +142,29 @@ struct ContentView: View {
 
                                           // 3. Show notification
                                           DispatchQueue.main.async {
-                                              let content = UNMutableNotificationContent()
-                                              content.title = "Shader Updated"
-                                              
+                                              let message: String
                                               switch mode {
                                               case .applyToCurrent:
-                                                  content.body = "Shader applied to current game."
+                                                  message = "Shader applied to current game."
                                               case .applyToDefaults:
-                                                  content.body = "Shader set as default, games with custom shaders not changed"
+                                                  message = "Shader set as default, games with custom shaders not changed"
                                               case .applyToAll:
-                                                  content.body = "Shader set as default for this \(system.name) and all its games."
+                                                  message = "Shader set as default for this \(system.name) and all its games."
                                               }
                                               
-                                              let request = UNNotificationRequest(identifier: UUID().uuidString, content: content, trigger: nil)
-                                              UNUserNotificationCenter.current().add(request)
+                                              // Always show in-window message as fallback/immediate feedback
+                                              settings.notificationMessage = message
                                               
-                                              // Also keep the in-window message for immediate feedback
-                                              settings.notificationMessage = content.body
+                                              // If authorized, also show system notification
+                                              if NotificationService.shared.isAuthorized {
+                                                  let content = UNMutableNotificationContent()
+                                                  content.title = "Shader Updated"
+                                                  content.body = message
+                                                  content.sound = .default
+                                                  
+                                                  let request = UNNotificationRequest(identifier: UUID().uuidString, content: content, trigger: nil)
+                                                  UNUserNotificationCenter.current().add(request)
+                                              }
                                           }
                                      }
                                      shaderController?.show()

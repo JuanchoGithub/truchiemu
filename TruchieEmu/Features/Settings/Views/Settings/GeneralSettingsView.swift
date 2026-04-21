@@ -85,14 +85,29 @@ struct GeneralSettingsView: View {
                 }
             }
             
-            Section("Application") {
-                LabeledContent("Version") {
-                    Text(Bundle.main.infoDictionary?["CFBundleShortVersionString"] as? String ?? "1.0.0")
-                }
-                LabeledContent("Build") {
-                    Text(Bundle.main.infoDictionary?["CFBundleVersion"] as? String ?? "1")
-                }
-            }
+             Section("Application") {
+                 LabeledContent("Version") {
+                     Text(Bundle.main.infoDictionary?["CFBundleShortVersionString"] as? String ?? "1.0.0")
+                 }
+                 LabeledContent("Build") {
+                     Text(Bundle.main.infoDictionary?["CFBundleVersion"] as? String ?? "1")
+                 }
+
+                 Section("Notifications") {
+                     HStack {
+                         Text("System Notifications")
+                         Spacer()
+                         Button(NotificationService.shared.isAuthorized ? "Enabled" : "Enable") {
+                             Task {
+                                 await NotificationService.shared.requestAuthorization()
+                             }
+                         }
+                         .disabled(NotificationService.shared.isAuthorized)
+                         .buttonStyle(.bordered)
+                         .controlSize(.small)
+                     }
+                 }
+             }
         }
         .formStyle(.grouped)
         .navigationTitle("General")

@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		DD095AD82F981298002A097A /* NotificationService.swift in Sources */ = {isa = PBXBuildFile; fileRef = DD095AD72F981298002A097A /* NotificationService.swift */; };
 		DD1AE5DF2F96D7240014A60E /* XRICK.png in Resources */ = {isa = PBXBuildFile; fileRef = DD1AE1B92F96D7240014A60E /* XRICK.png */; };
 		DD1AE5E32F96D7240014A60E /* fds@132w.png in Resources */ = {isa = PBXBuildFile; fileRef = DD1AE1182F96D7240014A60E /* fds@132w.png */; };
 		DD1AE5E62F96D7240014A60E /* DC.png in Resources */ = {isa = PBXBuildFile; fileRef = DD1AE1682F96D7240014A60E /* DC.png */; };
@@ -432,6 +433,7 @@
 
 /* Begin PBXFileReference section */
 		DD095AD62F97F8B5002A097A /* TruchiEmuTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = TruchiEmuTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		DD095AD72F981298002A097A /* NotificationService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotificationService.swift; sourceTree = "<group>"; };
 		DD1AE0232F96D7240014A60E /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
 		DD1AE0242F96D7240014A60E /* GameInfoWindow.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GameInfoWindow.swift; sourceTree = "<group>"; };
 		DD1AE0252F96D7240014A60E /* TruchieEmuApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TruchieEmuApp.swift; sourceTree = "<group>"; };
@@ -1585,6 +1587,7 @@
 		DD1AE59C2F96D7240014A60E /* Services */ = {
 			isa = PBXGroup;
 			children = (
+				DD095AD72F981298002A097A /* NotificationService.swift */,
 				DD1AE5872F96D7240014A60E /* BoxArtPreloaderService.swift */,
 				DD1AE5882F96D7240014A60E /* BoxArtService.swift */,
 				DD1AE5892F96D7240014A60E /* CheatAutoLoader.swift */,
@@ -2204,6 +2207,7 @@
 				DD1AEAEC2F96D7240014A60E /* ManualActionStatus.swift in Sources */,
 				DD1AEAED2F96D7240014A60E /* SetupWizardState.swift in Sources */,
 				DD1AEAEE2F96D7240014A60E /* DotMatrixLCD.metal in Sources */,
+				DD095AD82F981298002A097A /* NotificationService.swift in Sources */,
 				DD1AEAEF2F96D7240014A60E /* Controls.swift in Sources */,
 				DD1AEAF02F96D7240014A60E /* ZoomableBoxArtView.swift in Sources */,
 				DD1AEAF12F96D7240014A60E /* BezelBackgroundView.swift in Sources */,
