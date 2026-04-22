@@ -12,7 +12,7 @@ struct SidebarRowButton: View {
     @Binding var selectedFilter: LibraryFilter
     var onRefresh: (() -> Void)? = nil
     var onSettings: (() -> Void)? = nil
-    var onSystemAction: ((SystemInfo, SystemAction) -> Void)? = nil
+    var onSystemAction: ((SystemInfo, SystemAction, String?) -> Void)? = nil
     var installedCores: [LibretroCore]? = nil
     
     @State private var isHovered = false
@@ -53,7 +53,7 @@ struct SidebarRowButton: View {
             if let system = system {
                 if let onSystemAction = onSystemAction {
                     Button {
-                        onSystemAction(system, .refresh)
+                        onSystemAction(system, .refresh, nil)
                     } label: {
                         Label("Refresh", systemImage: "arrow.clockwise")
                     }
@@ -62,7 +62,7 @@ struct SidebarRowButton: View {
                         Menu {
                             ForEach(cores) { core in
                                 Button {
-                                    onSystemAction(system, .settings(core.id))
+                                    onSystemAction(system, .settings(core.id), nil)
                                 } label: {
                                     Label(core.displayName, systemImage: "cpu")
                                 }
@@ -72,50 +72,114 @@ struct SidebarRowButton: View {
                         }
                     } else if let installedCore = installedCores?.first {
                         Button {
-                            onSystemAction(system, .settings(installedCore.id))
+                            onSystemAction(system, .settings(installedCore.id), nil)
                         } label: {
                             Label("Core Options", systemImage: "gearshape")
                         }
                     } else if let coreID = system.defaultCoreID {
                         Button {
-                            onSystemAction(system, .settings(coreID))
+                            onSystemAction(system, .settings(coreID), nil)
                         } label: {
                             Label("Core Options", systemImage: "gearshape")
                         }
                     } else {
                         Button {
-                            onSystemAction(system, .selectCore(system))
+                            onSystemAction(system, .selectCore(system), nil)
                         } label: {
                             Label("Core Options", systemImage: "gearshape")
                         }
                     }
 
-                     Button {
-                         onSystemAction(system, .cheats)
-                     } label: {
-                         Label("Cheats", systemImage: "wand.and.stars")
-                     }
+                    // MARK: - Action Buttons
+                    Group {
+                        // ─── Shaders ───
+                        if let internalIDs = SystemDatabase.multiSystemGroups()[system.id] {
+                            Menu {
+                                ForEach(internalIDs, id: \.self) { id in
+                                    Button {
+                                        onSystemAction(system, .shaders, id)
+                                    } label: {
+                                        Label(SystemDatabase.system(forID: id)?.name ?? id, systemImage: "wand.and.stars")
+                                    }
+                                }
+                            } label: {
+                                Label("Shaders", systemImage: "wand.and.stars")
+                            }
+                        } else {
+                            Button {
+                                onSystemAction(system, .shaders, nil)
+                            } label: {
+                                Label("Shaders", systemImage: "wand.and.stars")
+                            }
+                        }
 
-                     Button {
-                         onSystemAction(system, .shaders)
-                     } label: {
-                         Label("Shaders", systemImage: "wand.and.stars")
-                     }
+                        // ─── Bezels ───
+                        if let internalIDs = SystemDatabase.multiSystemGroups()[system.id] {
+                            Menu {
+                                ForEach(internalIDs, id: \.self) { id in
+                                    Button {
+                                        onSystemAction(system, .bezels, id)
+                                    } label: {
+                                        Label(SystemDatabase.system(forID: id)?.name ?? id, systemImage: "rectangle.on.rectangle")
+                                    }
+                                }
+                            } label: {
+                                Label("Bezels", systemImage: "rectangle.on.rectangle")
+                            }
+                        } else {
+                            Button {
+                                onSystemAction(system, .bezels, nil)
+                            } label: {
+                                Label("Bezels", systemImage: "rectangle.on.rectangle")
+                            }
+                        }
 
-                    Button {
-                        onSystemAction(system, .bezels)
-                    } label: {
-                        Label("Bezels", systemImage: "rectangle.on.rectangle")
+                        // ─── Cheats ───
+                        if let internalIDs = SystemDatabase.multiSystemGroups()[system.id] {
+                            Menu {
+                                ForEach(internalIDs, id: \.self) { id in
+                                    Button {
+                                        onSystemAction(system, .cheats, id)
+                                    } label: {
+                                        Label(SystemDatabase.system(forID: id)?.name ?? id, systemImage: "gamecontroller")
+                                    }
+                                }
+                            } label: {
+                                Label("Cheats", systemImage: "gamecontroller")
+                            }
+                        } else {
+                            Button {
+                                onSystemAction(system, .cheats, nil)
+                            } label: {
+                                Label("Cheats", systemImage: "gamecontroller")
+                            }
+                        }
+
+                        // ─── Controllers ───
+                        if let internalIDs = SystemDatabase.multiSystemGroups()[system.id] {
+                            Menu {
+                                ForEach(internalIDs, id: \.self) { id in
+                                    Button {
+                                        onSystemAction(system, .controllers, id)
+                                    } label: {
+                                        Label(SystemDatabase.system(forID: id)?.name ?? id, systemImage: "gamecontroller.fill")
+                                    }
+                                }
+                            } label: {
+                                Label("Controllers", systemImage: "gamecontroller.fill")
+                            }
+                        } else {
+                            Button {
+                                onSystemAction(system, .controllers, nil)
+                            } label: {
+                                Label("Controllers", systemImage: "gamecontroller.fill")
+                            }
+                        }
                     }
 
-                    Button {
-                        onSystemAction(system, .controllers)
-                    } label: {
-                        Label("Controllers", systemImage: "gamecontroller")
-                    }
 
                     Button {
-                        onSystemAction(system, .library)
+                        onSystemAction(system, .library, nil)
                     } label: {
                         Label("Library", systemImage: "book")
                     }

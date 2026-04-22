@@ -1014,8 +1014,28 @@ struct LibraryGridView: View {
                     Label("Categories", systemImage: "folder.badge.plus")
                 }
 
-                Divider()
-                Button(rom.isFavorite ? "Remove from Favorites" : "Add to Favorites") {
+                    Divider()
+                    Menu("System") {
+                        Button {
+                            var updated = rom
+                            updated.systemID = "gb"
+                            library.updateROM(updated)
+                        } label: {
+                            Label("Game Boy", systemImage: "gamecontroller")
+                        }
+                        Button {
+                            var updated = rom
+                            updated.systemID = "gbc"
+                            library.updateROM(updated)
+                        } label: {
+                            Label("Game Boy Color", systemImage: "gamecontroller")
+                        }
+                    }
+                    .disabled(rom.systemID != "gb" && rom.systemID != "gbc")
+                    
+                    Divider()
+                    Button(rom.isFavorite ? "Remove from Favorites" : "Add to Favorites") {
+
                     var updated = rom
                     updated.isFavorite.toggle()
                     library.updateROM(updated)

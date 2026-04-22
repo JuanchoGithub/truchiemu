@@ -13,7 +13,27 @@ extension GameDetailView {
             
             ModernSectionCard(showHeader: false) {
                 VStack(alignment: .leading, spacing: 14) {
-                    MetadataRow(label: "System", value: system?.name ?? currentROM.systemID ?? "Not identified")
+                    HStack {
+                        Text("System")
+                        Spacer()
+                        Picker("System", selection: Binding(
+                            get: { currentROM.systemID ?? "gb" },
+                            set: { newID in
+                                var updated = currentROM
+                                updated.systemID = newID
+                                library.updateROM(updated)
+                            }
+                        )) {
+                            Text("Game Boy").tag("gb")
+                            Text("Game Boy Color").tag("gbc")
+                        }
+                        .pickerStyle(.menu)
+                        .labelsHidden()
+                        .disabled(currentROM.systemID != "gb" && currentROM.systemID != "gbc")
+                    }
+                    .padding(.vertical, 8)
+                    .foregroundColor(textColor)
+                    
                     Divider().overlay(dividerColor)
                     MetadataRow(label: "File Name", value: currentROM.path.lastPathComponent)
                     Divider().overlay(dividerColor)

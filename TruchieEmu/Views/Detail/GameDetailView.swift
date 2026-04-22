@@ -93,8 +93,9 @@ struct GameDetailView: View {
     }
     
     var systemName: String {
-        system?.name ?? currentROM.systemID ?? "Unknown"
+        SystemDatabase.systemName(forInternalID: currentROM.systemID ?? "")
     }
+
 
     var isGambatteCore: Bool {
         (activeCoreID ?? "").lowercased().contains("gambatte")

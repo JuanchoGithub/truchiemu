@@ -9,7 +9,7 @@ struct SystemSidebarView: View {
     @Binding var editingCategory: GameCategory?
     var onRefresh: ((SystemInfo) -> Void)? = nil
     var onSettings: ((String) -> Void)? = nil
-    var onSystemAction: ((SystemInfo, SystemAction) -> Void)? = nil
+    var onSystemAction: ((SystemInfo, SystemAction, String?) -> Void)? = nil
     
     // Combined system entries for the sidebar. Game Boy (gb) absorbs Game Boy Color (gbc)
     // into a single "Game Boy" display entry while keeping internal systemIDs intact.
@@ -178,13 +178,13 @@ struct SystemSidebarView: View {
             selectedFilter: $selectedFilter,
             onRefresh: system != nil ? { onRefresh?(system!) } : nil,
             onSettings: system != nil ? { onSettings?(system!.defaultCoreID ?? "") } : nil,
-            onSystemAction: system != nil ? { sys, action in
+            onSystemAction: system != nil ? { sys, action, targetID in
                 if case .refresh = action {
                     onRefresh?(sys)
                 } else if case .settings(let coreID) = action {
                     onSettings?(coreID)
                 } else {
-                    onSystemAction?(sys, action)
+                    onSystemAction?(sys, action, targetID)
                 }
             } : nil,
             installedCores: system != nil ? coreManager.installedCores.filter { core in

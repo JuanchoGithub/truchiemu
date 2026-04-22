@@ -361,6 +361,13 @@ class SystemDatabase {
         }
     }
 
+    static func systemName(forInternalID id: String) -> String {
+        switch id {
+        case "gb", "gbc": return "Game Boy"
+        default: return system(forID: id)?.name ?? id
+        }
+    }
+
     static func system(forExtension ext: String) -> SystemInfo? {
         let lower = ext.lowercased()
         return systems.first { $0.extensions.contains(lower) }
