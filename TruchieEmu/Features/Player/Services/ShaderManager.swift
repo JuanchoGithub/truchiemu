@@ -214,6 +214,7 @@ class ShaderManager: ObservableObject {
         case "LiteCRT": result = "fragmentLiteCRT"
         case "ScaleSmooth": result = "fragmentScaleSmooth"
         case "Passthrough": result = "fragmentPassthrough"
+        case "8bGameBoyColor": result = "fragment8BitGBC"
         default: result = "fragment" + shaderFile
         }
         

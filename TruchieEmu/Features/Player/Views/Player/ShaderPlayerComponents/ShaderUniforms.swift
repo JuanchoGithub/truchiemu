@@ -94,6 +94,17 @@ struct LiteCRTUniforms {
     var colorBoost: Float
 }
 
+// Game Boy Color GBC uniforms - matches GBCUniforms in 8bGameBoyColor.metal
+struct GBCUniforms {
+    var dotOpacity: Float
+    var specularShininess: Float
+    var colorBoost: Float
+    var physicalDepth: Float
+    var ghostWeights: SIMD4<Float>  // [Current, T-1, T-2, T-3]
+    var frameIndex: UInt32
+    var viewportSize: SIMD2<Float>
+}
+
 // ScaleSmooth uniforms - matches ScaleSmoothUniforms in ScaleSmooth.metal
 struct ScaleSmoothUniforms {
     var smoothness: Float

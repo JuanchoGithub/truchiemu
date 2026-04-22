@@ -259,6 +259,30 @@ extension ShaderPreset {
             recommendedSystems: ["gb", "gbc", "gg"]
         ),
 
+        // 8b Game Boy Color (Advanced GBC with temporal feedback)
+        ShaderPreset(
+            id: "builtin-8b-gameboy-color",
+            name: "8b Game Boy Color",
+            shaderType: .lcd,
+            passes: [
+                ShaderPass(
+                    shaderFile: "8bGameBoyColor",
+                    filter: .nearest,
+                    scaleX: 1.0, scaleY: 1.0,
+                    scaleTypeX: .viewport, scaleTypeY: .viewport
+                )
+            ],
+            globalUniforms: [
+                ShaderUniform(name: "dotOpacity", defaultValue: 0.85, minValue: 0.0, maxValue: 1.0),
+                ShaderUniform(name: "specularShininess", defaultValue: 8.0, minValue: 1.0, maxValue: 32.0),
+                ShaderUniform(name: "colorBoost", defaultValue: 1.44, minValue: 0.5, maxValue: 2.0),
+                ShaderUniform(name: "physicalDepth", defaultValue: 0.22, minValue: 0.0, maxValue: 1.0),
+                ShaderUniform(name: "ghostWeights", defaultValue: 0.45, minValue: 0.0, maxValue: 1.0),
+            ],
+            description: "Game Boy Color with temporal feedback, ghosting, and iridescent LCD effects.",
+            recommendedSystems: ["gbc"]
+        ),
+
         // Dot Matrix LCD (Game Boy metallic dot-matrix)
         ShaderPreset(
             id: "builtin-dot-matrix",

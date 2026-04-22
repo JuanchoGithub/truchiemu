@@ -707,9 +707,52 @@ class StandaloneGameWindowController: NSWindowController, NSWindowDelegate, Obse
         private var commandQueue: MTLCommandQueue?
         private var pipelineCache: [String: MTLRenderPipelineState] = [:]
         private var innerDrawCount = 0
+        // 4-frame temporal buffer for GBC shader (frame0-current, frame1-T1, frame2-T2, frame3-T3)
+        private var temporalTextures: [MTLTexture?] = [nil, nil, nil, nil]
+        private var temporalIndex: Int = 0  // Cycles 0-3, points to "current"
+        private var frameCounter: UInt32 = 0
 
         init(runner: EmulatorRunner) {
             self.runner = runner
+        }
+
+        private func ensureTemporalTextures(width: Int, height: Int, device: MTLDevice, sourceFormat: MTLPixelFormat) {
+            // Check if all textures are valid and match
+            var allValid = true
+            for tex in temporalTextures {
+                if tex == nil || tex!.width != width || tex!.height != height || tex!.pixelFormat != sourceFormat {
+                    allValid = false
+                    break
+                }
+            }
+            if allValid { return }
+
+            // Create all 4 temporal textures
+            let descriptor = MTLTextureDescriptor.texture2DDescriptor(
+                pixelFormat: sourceFormat,
+                width: width,
+                height: height,
+                mipmapped: false
+            )
+            descriptor.usage = [.shaderRead, .shaderWrite]
+            descriptor.storageMode = .private
+
+            temporalTextures = [nil, nil, nil, nil]
+            for i in 0..<4 {
+                if let newTex = device.makeTexture(descriptor: descriptor) {
+                    temporalTextures[i] = newTex
+                }
+            }
+            temporalIndex = 0
+            LoggerService.debug(category: "Shaders", "Created 4-frame temporal buffer: \(width)x\(height) format:\(sourceFormat)")
+        }
+
+        private func getTemporalTexture(at index: Int) -> MTLTexture? {
+            return temporalTextures[index]
+        }
+
+        private func advanceTemporalIndex() {
+            temporalIndex = (temporalIndex + 1) % 4
         }
 
         func mtkView(_ view: MTKView, drawableSizeWillChange size: CGSize) {
@@ -953,6 +996,31 @@ class StandaloneGameWindowController: NSWindowController, NSWindowDelegate, Obse
                                 lightStrength: getUniform("lightStrength", fallback: 1.0)
                             )
                             enc.setFragmentBytes(&u, length: MemoryLayout<EightBitGameBoyUniforms>.stride, index: 0)
+                        case "fragment8BitGBC":
+                            // Game Boy Color with 4-frame temporal feedback
+                            ensureTemporalTextures(width: frameTex.width, height: frameTex.height, device: device, sourceFormat: frameTex.pixelFormat)
+                            let colorB = getUniform("colorBoost", fallback: 1.44)
+                            let fw = Float(frameTex.width)
+                            let fh = Float(frameTex.height)
+                            let gw = getUniform("ghostWeights", fallback: 0.45)
+                            var u = GBCUniforms(
+                                dotOpacity: getUniform("dotOpacity", fallback: 0.85),
+                                specularShininess: getUniform("specularShininess", fallback: 8.0),
+                                colorBoost: colorB,
+                                physicalDepth: getUniform("physicalDepth", fallback: 0.22),
+                                ghostWeights: SIMD4<Float>(gw, gw * 0.56, gw * 0.4, gw * 0.27),
+                                frameIndex: frameCounter,
+                                viewportSize: SIMD2<Float>(fw, fh)
+                            )
+                            enc.setFragmentBytes(&u, length: MemoryLayout<GBCUniforms>.stride, index: 0)
+                            // Set all 4 textures: frame0=current, frame1=T-1, frame2=T-2, frame3=T-3
+                            enc.setFragmentTexture(frameTex, index: 0)
+                            for i in 1...3 {
+                                if let tex = getTemporalTexture(at: (temporalIndex - 1 + 4) % 4) {
+                                    enc.setFragmentTexture(tex, index: i)
+                                }
+                            }
+                            frameCounter += 1
                         case "fragmentLiteCRT":
                             let colorB = getUniform("colorBoost", fallback: 1.0)
                             var u = LiteCRTUniforms(
@@ -1008,6 +1076,19 @@ class StandaloneGameWindowController: NSWindowController, NSWindowDelegate, Obse
 
                         enc.drawPrimitives(type: .triangleStrip, vertexStart: 0, vertexCount: 4)
                         enc.endEncoding()
+                        
+                        // For GBC 4-frame temporal feedback: maintain rolling history
+                        // Must happen AFTER render encoder ends
+                        // Advance first, then write to that slot (becomes T-1 for next frame)
+                        if fragmentName == "fragment8BitGBC" {
+                            advanceTemporalIndex()
+                            let blit = cmdBuffer.makeBlitCommandEncoder()
+                            if let tex = temporalTextures[temporalIndex] {
+                                blit?.copy(from: frameTex, to: tex)
+                            }
+                            blit?.endEncoding()
+                        }
+                        
                         innerDrawCount += 1
                         
                         if innerDrawCount <= 3 {
@@ -1057,7 +1138,7 @@ class StandaloneGameWindowController: NSWindowController, NSWindowDelegate, Obse
                 }
                 
                 // Try individual shader files as last resort
-                let shaderFiles = ["CRTFilter", "CRTTest", "LCDGrid", "VibrantLCD", "DotMatrixLCD", "EdgeSmooth", "Composite", "Passthrough"]
+                let shaderFiles = ["CRTFilter", "CRTTest", "LCDGrid", "VibrantLCD", "DotMatrixLCD", "EdgeSmooth", "Composite", "Passthrough", "8bGameBoyColor"]
                 for file in shaderFiles {
                     let filePath = (bundlePath as NSString).appendingPathComponent("\(file).metal")
                     if let source = try? String(contentsOfFile: filePath, encoding: .utf8) {

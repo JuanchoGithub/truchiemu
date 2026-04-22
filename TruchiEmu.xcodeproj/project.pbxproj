@@ -9,6 +9,7 @@
 /* Begin PBXBuildFile section */
 		DD095AD82F981298002A097A /* NotificationService.swift in Sources */ = {isa = PBXBuildFile; fileRef = DD095AD72F981298002A097A /* NotificationService.swift */; };
 		DD095ADA2F98F394002A097A /* 8bGameBoyColor.metal in Sources */ = {isa = PBXBuildFile; fileRef = DD095AD92F98F394002A097A /* 8bGameBoyColor.metal */; };
+		DD095ADC2F98F5AF002A097A /* 8bGameBoyColor.ui in Resources */ = {isa = PBXBuildFile; fileRef = DD095ADB2F98F5AF002A097A /* 8bGameBoyColor.ui */; };
 		DD1AE5DF2F96D7240014A60E /* XRICK.png in Resources */ = {isa = PBXBuildFile; fileRef = DD1AE1B92F96D7240014A60E /* XRICK.png */; };
 		DD1AE5E32F96D7240014A60E /* fds@132w.png in Resources */ = {isa = PBXBuildFile; fileRef = DD1AE1182F96D7240014A60E /* fds@132w.png */; };
 		DD1AE5E62F96D7240014A60E /* DC.png in Resources */ = {isa = PBXBuildFile; fileRef = DD1AE1682F96D7240014A60E /* DC.png */; };
@@ -436,6 +437,7 @@
 		DD095AD62F97F8B5002A097A /* TruchiEmuTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = TruchiEmuTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		DD095AD72F981298002A097A /* NotificationService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotificationService.swift; sourceTree = "<group>"; };
 		DD095AD92F98F394002A097A /* 8bGameBoyColor.metal */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.metal; path = 8bGameBoyColor.metal; sourceTree = "<group>"; };
+		DD095ADB2F98F5AF002A097A /* 8bGameBoyColor.ui */ = {isa = PBXFileReference; lastKnownFileType = text; path = 8bGameBoyColor.ui; sourceTree = "<group>"; };
 		DD1AE0232F96D7240014A60E /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
 		DD1AE0242F96D7240014A60E /* GameInfoWindow.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GameInfoWindow.swift; sourceTree = "<group>"; };
 		DD1AE0252F96D7240014A60E /* TruchieEmuApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TruchieEmuApp.swift; sourceTree = "<group>"; };
@@ -946,6 +948,7 @@
 		DD1AE0662F96D7240014A60E /* Shaders */ = {
 			isa = PBXGroup;
 			children = (
+				DD095ADB2F98F5AF002A097A /* 8bGameBoyColor.ui */,
 				DD095AD92F98F394002A097A /* 8bGameBoyColor.metal */,
 				DD1AE0532F96D7240014A60E /* internal */,
 				DD1AE05C2F96D7240014A60E /* 8bGameBoy.metal */,
@@ -2002,6 +2005,7 @@
 				DD1AE85B2F96D7240014A60E /* Nintendo_-_Nintendo_Entertainment_System.json in Resources */,
 				DD1AE8622F96D7240014A60E /* PC98.png in Resources */,
 				DD1AE8642F96D7240014A60E /* AMIGA.png in Resources */,
+				DD095ADC2F98F5AF002A097A /* 8bGameBoyColor.ui in Resources */,
 				DD1AE86C2F96D7240014A60E /* aWw6r.jpg in Resources */,
 				DD1AE86D2F96D7240014A60E /* SUPERVISION-alt.png in Resources */,
 				DD1AE8712F96D7240014A60E /* cps3@132w.png in Resources */,
