@@ -707,7 +707,7 @@ class StandaloneGameWindowController: NSWindowController, NSWindowDelegate, Obse
         private var commandQueue: MTLCommandQueue?
         private var pipelineCache: [String: MTLRenderPipelineState] = [:]
         private var innerDrawCount = 0
-        // 4-frame temporal buffer for GBC shader (frame0-current, frame1-T1, frame2-T2, frame3-T3)
+        // 4-frame temporal buffer for GBC shader (T-1, T-2, T-3, T-4, plus current frame passed directly)
         private var temporalTextures: [MTLTexture?] = [nil, nil, nil, nil]
         private var temporalIndex: Int = 0  // Cycles 0-3, points to "current"
         private var frameCounter: UInt32 = 0
@@ -1003,20 +1003,48 @@ class StandaloneGameWindowController: NSWindowController, NSWindowDelegate, Obse
                             let fw = Float(frameTex.width)
                             let fh = Float(frameTex.height)
                             let gw = getUniform("ghostWeights", fallback: 0.45)
+                            // Compute flags from enable toggles
+                            var flags: UInt32 = 0
+                            if getUniform("enableGhost", fallback: 1.0) > 0.5 { flags |= 1 << 0 }  // FLAG_GHOSTING
+                            if getUniform("enableGrid", fallback: 1.0) > 0.5 { flags |= 1 << 1 }   // FLAG_GRID
+                            if getUniform("enableAberration", fallback: 1.0) > 0.5 { flags |= 1 << 2 }  // FLAG_ABERRATION
+                            if getUniform("enableBleed", fallback: 1.0) > 0.5 { flags |= 1 << 3 }   // FLAG_BLEED
+                            if getUniform("enableNewtonRings", fallback: 1.0) > 0.5 { flags |= 1 << 4 }  // FLAG_NEWTON_RINGS
+                            if getUniform("enableJitter", fallback: 1.0) > 0.5 { flags |= 1 << 5 }   // FLAG_JITTER
+                            if getUniform("enableReflection", fallback: 1.0) > 0.5 { flags |= 1 << 6 }  // FLAG_REFLECTION
+                            if getUniform("enableGrain", fallback: 1.0) > 0.5 { flags |= 1 << 7 }   // FLAG_GRAIN
+                            if getUniform("enableVignette", fallback: 1.0) > 0.5 { flags |= 1 << 8 }  // FLAG_VIGNETTE
+                            if getUniform("enableTopography", fallback: 1.0) > 0.5 { flags |= 1 << 9 } // FLAG_TOPOGRAPHY
+                            if getUniform("enableColorMatrix", fallback: 1.0) > 0.5 { flags |= 1 << 10 } // FLAG_COLOR_MATRIX
                             var u = GBCUniforms(
                                 dotOpacity: getUniform("dotOpacity", fallback: 0.85),
                                 specularShininess: getUniform("specularShininess", fallback: 8.0),
                                 colorBoost: colorB,
                                 physicalDepth: getUniform("physicalDepth", fallback: 0.22),
-                                ghostWeights: SIMD4<Float>(gw, gw * 0.56, gw * 0.4, gw * 0.27),
+                                ghostingWeight: gw,
                                 frameIndex: frameCounter,
-                                viewportSize: SIMD2<Float>(fw, fh)
+                                flags: flags,
+                                gridStrength: getUniform("gridStrength", fallback: 0.7),
+                                pixelSeparation: getUniform("pixelSeparation", fallback: 0.5),
+                                brightnessBoost: getUniform("brightnessBoost", fallback: 1.0),
+                                showShell: getUniform("showShell", fallback: 1.0),
+                                showStrip: getUniform("showStrip", fallback: 1.0),
+                                showLens: getUniform("showLens", fallback: 1.0),
+                                showText: getUniform("showText", fallback: 1.0),
+                                showLED: getUniform("showLED", fallback: 1.0),
+                                lightPositionIndex: getUniform("lightPositionIndex", fallback: 0.0),
+                                lightStrength: getUniform("lightStrength", fallback: 0.5),
+                                shellColorIndex: getUniform("shellColorIndex", fallback: 0.0),
+                                gridThicknessDark: getUniform("gridThicknessDark", fallback: 0.2),
+                                gridThicknessLight: getUniform("gridThicknessLight", fallback: 0.1),
+                                sourceSize: SIMD4<Float>(fw, fh, 0, 0),
+                                outputSize: SIMD4<Float>(vpW, vpH, 0, 0)
                             )
                             enc.setFragmentBytes(&u, length: MemoryLayout<GBCUniforms>.stride, index: 0)
-                            // Set all 4 textures: frame0=current, frame1=T-1, frame2=T-2, frame3=T-3
+                            // Set all 5 textures: frame0=current, frame1=T-1, frame2=T-2, frame3=T-3, frame4=T-4
                             enc.setFragmentTexture(frameTex, index: 0)
-                            for i in 1...3 {
-                                if let tex = getTemporalTexture(at: (temporalIndex - 1 + 4) % 4) {
+                            for i in 1...4 {
+                                if let tex = getTemporalTexture(at: (temporalIndex - i + 4) % 4) {
                                     enc.setFragmentTexture(tex, index: i)
                                 }
                             }

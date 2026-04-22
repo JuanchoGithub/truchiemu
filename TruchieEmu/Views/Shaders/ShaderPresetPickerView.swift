@@ -92,71 +92,102 @@ struct ShaderParameterSliders: View {
          .cornerRadius(8)
      }
      
-     private func parameterSliderRow(for uniform: ShaderUniform) -> some View {
-         Group {
-             if uniform.type == .toggle {
-                 HStack(alignment: .center) {
-                     VStack(alignment: .leading, spacing: 2) {
-                         Text(uniform.displayLabel)
-                             .font(.subheadline)
-                         if let desc = uniform.description {
-                             Text(desc)
-                                 .font(.caption2)
-                                 .foregroundColor(.secondary)
-                                 .lineLimit(2)
-                         }
-                     }
-                     
-                     Spacer()
-                     
-                     Toggle("", isOn: Binding(
-                         get: { currentUniformValue(for: uniform) > 0.5 },
-                         set: { newValue in
-                             uniformValues[uniform.name] = newValue ? 1.0 : 0.0
-                         }
-                     ))
-                     .toggleStyle(.switch)
-                     .labelsHidden()
-                     .controlSize(.small)
-                 }
-             } else {
-                 VStack(alignment: .leading, spacing: 4) {
-                     HStack(alignment: .firstTextBaseline) {
-                         VStack(alignment: .leading, spacing: 2) {
-                             Text(uniform.displayLabel)
-                                 .font(.subheadline)
-                             if let desc = uniform.description {
-                                 Text(desc)
-                                     .font(.caption2)
-                                     .foregroundColor(.secondary)
-                                     .lineLimit(2)
-                             }
-                         }
-                         
-                         Spacer()
-                         
-                         Text(String(format: "%.2f", currentUniformValue(for: uniform)))
-                             .font(.caption)
-                             .foregroundColor(.secondary)
-                             .monospacedDigit()
-                     }
-                     
-                     Slider(
-                         value: Binding(
-                             get: { currentUniformValue(for: uniform) },
-                             set: { newValue in
-                                 uniformValues[uniform.name] = newValue
-                             }
-                         ),
-                         in: uniform.minValue...uniform.maxValue,
-                         step: uniform.step,
-                         onEditingChanged: { _ in }
-                     )
-                     .controlSize(.small)
-                 }
-             }
-         }
-     }
+private func parameterSliderRow(for uniform: ShaderUniform) -> some View {
+          Group {
+              if uniform.type == .toggle {
+                  HStack(alignment: .center) {
+                      VStack(alignment: .leading, spacing: 2) {
+                          Text(uniform.displayLabel)
+                              .font(.subheadline)
+                          if let desc = uniform.description {
+                              Text(desc)
+                                  .font(.caption2)
+                                  .foregroundColor(.secondary)
+                                  .lineLimit(2)
+                          }
+                      }
+                      
+                      Spacer()
+                      
+                      Toggle("", isOn: Binding(
+                          get: { currentUniformValue(for: uniform) > 0.5 },
+                          set: { newValue in
+                              uniformValues[uniform.name] = newValue ? 1.0 : 0.0
+                          }
+                      ))
+                      .toggleStyle(.switch)
+                      .labelsHidden()
+                      .controlSize(.small)
+                  }
+              } else if uniform.type == .dropdown {
+                  VStack(alignment: .leading, spacing: 4) {
+                      HStack(alignment: .firstTextBaseline) {
+                          VStack(alignment: .leading, spacing: 2) {
+                              Text(uniform.displayLabel)
+                                  .font(.subheadline)
+                              if let desc = uniform.description {
+                                  Text(desc)
+                                      .font(.caption2)
+                                      .foregroundColor(.secondary)
+                                      .lineLimit(2)
+                              }
+                          }
+                          
+                          Spacer()
+                      }
+                      
+                      let selectedValue = currentUniformValue(for: uniform)
+                      Picker("", selection: Binding(
+                          get: { selectedValue },
+                          set: { newValue in
+                              uniformValues[uniform.name] = newValue
+                          }
+                      )) {
+                          ForEach(uniform.options ?? [], id: \.value) { option in
+                              Text(option.label).tag(option.value)
+                          }
+                      }
+                      .pickerStyle(.menu)
+                      .controlSize(.small)
+                  }
+              } else {
+                  VStack(alignment: .leading, spacing: 4) {
+                      HStack(alignment: .firstTextBaseline) {
+                          VStack(alignment: .leading, spacing: 2) {
+                              Text(uniform.displayLabel)
+                                  .font(.subheadline)
+                              if let desc = uniform.description {
+                                  Text(desc)
+                                      .font(.caption2)
+                                      .foregroundColor(.secondary)
+                                      .lineLimit(2)
+                              }
+                          }
+                          
+                          Spacer()
+                          
+                          Text(String(format: "%.2f", currentUniformValue(for: uniform)))
+                              .font(.caption)
+                              .foregroundColor(.secondary)
+                              .monospacedDigit()
+                      }
+                      
+                      Slider(
+                          value: Binding(
+                              get: { currentUniformValue(for: uniform) },
+                              set: { newValue in
+                                  uniformValues[uniform.name] = newValue
+                              }
+                          ),
+                          in: uniform.minValue...uniform.maxValue,
+                          step: uniform.step,
+                          onEditingChanged: { _ in }
+                      )
+                      .controlSize(.small)
+                  }
+              }
+          }
+      }
     
     private func currentUniformValue(for uniform: ShaderUniform) -> Float {
         uniformValues[uniform.name] ?? uniform.defaultValue ?? 0.0 as Float

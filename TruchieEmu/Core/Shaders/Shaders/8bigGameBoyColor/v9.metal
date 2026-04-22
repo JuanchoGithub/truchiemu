@@ -11,18 +11,13 @@
 using namespace metal;
 
 // --- FEATURE FLAGS ---
-#define FLAG_GHOSTING       (1 << 0)
-#define FLAG_GRID         (1 << 1)
-#define FLAG_ABERRATION   (1 << 2)
-#define FLAG_BLEED      (1 << 3)
-#define FLAG_NEWTON_RINGS (1 << 4)
-#define FLAG_JITTER     (1 << 5)
-#define FLAG_REFLECTION  (1 << 6)
-// NEW: Toggleable versions of hardcoded effects
-#define FLAG_GRAIN      (1 << 7)
-#define FLAG_VIGNETTE  (1 << 8)
-#define FLAG_TOPOGRAPHY (1 << 9)
-#define FLAG_COLOR_MATRIX (1 << 10)
+#define FLAG_GHOSTING      (1 << 0)
+#define FLAG_GRID          (1 << 1)
+#define FLAG_ABERRATION    (1 << 2)
+#define FLAG_BLEED         (1 << 3)
+#define FLAG_NEWTON_RINGS  (1 << 4)
+#define FLAG_JITTER        (1 << 5)
+#define FLAG_REFLECTION    (1 << 6)
 
 struct GBCUniforms {
     float dotOpacity;
@@ -42,25 +37,9 @@ struct GBCUniforms {
     float showLED;
     float lightPositionIndex;
     float lightStrength;
-    float shellColorIndex;
-    float gridThicknessDark;
-    float gridThicknessLight;
     float4 sourceSize;
     float4 outputSize;
 };
-
-// --- SHELL COLOR PALETTE (Original Game Boy Color Colors) ---
-float3 getShellColor(float idx) {
- if (idx < 0.5) return float3(0.55, 0.25, 0.65); // 0: Berry (translucent purple-red)
- if (idx < 1.5) return float3(0.45, 0.30, 0.60); // 1: Grape (translucent purple)
- if (idx < 2.5) return float3(0.18, 0.18, 0.20); // 2: Onyx (black)
- if (idx < 3.5) return float3(0.70, 0.85, 0.90); // 3: Glacier (translucent light blue)
- if (idx < 4.5) return float3(0.95, 0.55, 0.10); // 4: Orange (translucent orange)
- if (idx < 5.5) return float3(0.60, 0.25, 0.50); // 5: Dahlia (translucent dark purple)
- if (idx < 6.5) return float3(0.25, 0.70, 0.65); // 6: Teal (translucent cyan)
- if (idx < 7.5) return float3(0.25, 0.35, 0.70); // 7: Indigo (translucent dark blue)
- return float3(0.55, 0.25, 0.65);
-}
 
 // --- SIMULATION MODULES ---
 
@@ -146,7 +125,7 @@ float4 renderGBCShell(float2 p, constant GBCUniforms &u) {
     }
     
     float screenSDF = sdRoundRectGBC(p - screenCenter, screenSize, 1.0);
-    float3 col = getShellColor(u.shellColorIndex);
+    float3 col = float3(0.98, 0.85, 0.0);
 
     if (lensSDF < 0.0 && screenSDF > 0.0) {
         col = float3(0.16, 0.16, 0.18);
@@ -201,20 +180,15 @@ fragment float4 fragment8BitGBC(VertexOut in [[stage_in]],
             float3 c1 = frame1.sample(samp, uv).rgb;
             float3 color = mix(c0, c1, u.ghostingWeight);
 
-            // Define pixel coordinates for effects that need them
+            // TOPOGRAPHY: Pixel well depth effect
             float2 gbcRes = u.sourceSize.xy;
             float2 pCoord = uv * gbcRes;
             float2 pixelIndex = floor(uv * gbcRes);
-            float topoShimmer = 0.0;
-
-            // TOPOGRAPHY: Pixel well depth effect (toggleable)
-            if (u.flags & FLAG_TOPOGRAPHY) {
-                float2 cellUV = fract(pCoord + hardware_gold_noise(pixelIndex, 12.12) * 0.005);
-                float2 pNormal = (cellUV - 0.5) * 2.0;
-                float wellDepth = saturate(1.0 - length(pNormal * 1.1));
-                topoShimmer = pow(wellDepth, 0.5);
-                color *= (0.85 + topoShimmer * 0.15);
-            }
+            float2 cellUV = fract(pCoord + hardware_gold_noise(pixelIndex, 12.12) * 0.005);
+            float2 pNormal = (cellUV - 0.5) * 2.0;
+            float wellDepth = saturate(1.0 - length(pNormal * 1.1));
+            float topoShimmer = pow(wellDepth, 0.5);
+            color *= (0.85 + topoShimmer * 0.15);
 
             // BLEED
             if (u.flags & FLAG_BLEED) {
@@ -234,10 +208,8 @@ fragment float4 fragment8BitGBC(VertexOut in [[stage_in]],
             float shadowRight = smoothstep(70.0, 65.0, p.x - screenCenter.x);
             float shadow = shadowTop * shadowRight;
 
-            // COLOR MATRIX (toggleable)
-            if (u.flags & FLAG_COLOR_MATRIX) {
-                color = color * float3x3(0.85, 0.1, 0.05, 0.05, 0.85, 0.1, 0.1, 0.05, 0.85);
-            }
+            // COLOR MATRIX
+            color = color * float3x3(0.85, 0.1, 0.05, 0.05, 0.85, 0.1, 0.1, 0.05, 0.85);
 
             // REFLECTION: Top-right specular highlight
             if (u.flags & FLAG_REFLECTION) {
@@ -274,18 +246,14 @@ fragment float4 fragment8BitGBC(VertexOut in [[stage_in]],
                 color = color + float3(jitterNoise);
             }
 
-            // GRAIN & POLARIZER (toggleable)
-            if (u.flags & FLAG_GRAIN) {
-                float grain = (pcg_hash_gbc(uv * 1200.0) - 0.5) * 0.025;
-                float polarizer = (sin(uv.x * 800.0) * sin(uv.y * 800.0)) * 0.005;
-                color = color + float3(grain + polarizer);
-            }
+            // POLARIZER & GRAIN
+            float grain = (pcg_hash_gbc(uv * 1200.0) - 0.5) * 0.025;
+            float polarizer = (sin(uv.x * 800.0) * sin(uv.y * 800.0)) * 0.005;
+            color = color + float3(grain + polarizer);
 
-            // VIGNETTE (toggleable)
-            if (u.flags & FLAG_VIGNETTE) {
-                float vign = 1.0 - 0.08 * pow(sqDist, 2.0);
-                color *= vign;
-            }
+            // VIGNETTE
+            float vign = 1.0 - 0.08 * pow(sqDist, 2.0);
+            color *= vign;
 
             return float4(color * mix(0.74, 1.0, shadow) * u.brightnessBoost, 1.0);
         }
@@ -325,26 +293,15 @@ fragment float4 fragment8BitGBC(VertexOut in [[stage_in]],
 
     // 3. COLOR & TOPOGRAPHY
     const float3x3 gbcMat = float3x3(0.82, 0.15, 0.03, 0.10, 0.75, 0.15, 0.08, 0.10, 0.82);
-    float3 sCol;
+    float3 sCol = (proc * gbcMat) * u.colorBoost * 1.44;
+    
     float2 pCoord = uv * gbcRes;
     float2 pixelIndex = floor(uv * gbcRes);
-    float topoShimmer = 0.0;
-    
-    // COLOR MATRIX (toggleable)
-    if (u.flags & FLAG_COLOR_MATRIX) {
-        sCol = (proc * gbcMat) * u.colorBoost * 1.44;
-    } else {
-        sCol = proc * u.colorBoost;
-    }
-    
-    // TOPOGRAPHY (toggleable)
-    if (u.flags & FLAG_TOPOGRAPHY) {
-        float2 cellUV = fract(pCoord + hardware_gold_noise(pixelIndex, 12.12) * 0.005);
-        float2 pNormal = (cellUV - 0.5) * 2.0;
-        float wellDepth = saturate(1.0 - length(pNormal * 1.1));
-        topoShimmer = pow(wellDepth, 0.5);
-        sCol *= (0.85 + topoShimmer * 0.15);
-    }
+    float2 cellUV = fract(pCoord + hardware_gold_noise(pixelIndex, 12.12) * 0.005);
+    float2 pNormal = (cellUV - 0.5) * 2.0;
+    float wellDepth = saturate(1.0 - length(pNormal * 1.1));
+    float topoShimmer = pow(wellDepth, 0.5);
+    sCol *= (0.85 + topoShimmer * 0.15);
     
     if (u.flags & FLAG_BLEED) {
         float4 bleedSample = frame0.sample(s, float2(uv.x, 0.5));
@@ -359,8 +316,8 @@ fragment float4 fragment8BitGBC(VertexOut in [[stage_in]],
     float maskS = 1.0;
 
     if (u.flags & FLAG_GRID) {
-        float gridThicknessDark = u.gridThicknessDark > 0.0 ? u.gridThicknessDark : 0.2;
-        float gridThicknessLight = u.gridThicknessLight > 0.0 ? u.gridThicknessLight : 0.1;
+        float gridThicknessDark = 0.2;
+        float gridThicknessLight = 0.1;
         
         float lum = dot(proc, float3(0.299, 0.587, 0.114));
         float thick = mix(1.0 - gridThicknessDark, 1.0 - gridThicknessLight, lum);
@@ -416,17 +373,11 @@ fragment float4 fragment8BitGBC(VertexOut in [[stage_in]],
         final = final + float3(jitterNoise, jitterNoise, jitterNoise);
     }
 
-    // 6. POLARIZER & GRAIN (toggleable)
-    if (u.flags & FLAG_GRAIN) {
-        float grain = (pcg_hash_gbc(uv * 1200.0) - 0.5) * 0.025;
-        float polarizer = (sin(uv.x * 800.0) * sin(uv.y * 800.0)) * 0.005;
-        final = final + float3(grain + polarizer);
-    }
+    // 6. POLARIZER & GRAIN
+    float grain = (pcg_hash_gbc(uv * 1200.0) - 0.5) * 0.025;
+    float polarizer = (sin(uv.x * 800.0) * sin(uv.y * 800.0)) * 0.005;
+    final = final + float3(grain + polarizer);
 
-    // VIGNETTE (toggleable)
-    float vign = 1.0;
-    if (u.flags & FLAG_VIGNETTE) {
-        vign = 1.0 - 0.08 * pow(sqDist, 2.0);
-    }
+    float vign = 1.0 - 0.08 * pow(sqDist, 2.0);
     return float4(final * vign * u.brightnessBoost, 1.0);
 }

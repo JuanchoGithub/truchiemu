@@ -1,8 +1,117 @@
 [
   {
+    "name": "showShell",
+    "displayName": "Show Shell",
+    "description": "Display the Game Boy Color hardware shell around the screen.",
+    "minValue": 0.0,
+    "maxValue": 1.0,
+    "step": 1.0,
+    "type": "toggle"
+  },
+  {
+    "name": "shellColorIndex",
+    "displayName": "Shell Color",
+    "description": "Choose the color of the handheld console shell.",
+    "minValue": 0.0,
+    "maxValue": 7.0,
+    "step": 1.0,
+    "type": "dropdown",
+"options": [
+ {"value": 0.0, "label": "Berry"},
+ {"value": 1.0, "label": "Grape"},
+ {"value": 2.0, "label": "Onyx"},
+ {"value": 3.0, "label": "Glacier"},
+ {"value": 4.0, "label": "Orange"},
+ {"value": 5.0, "label": "Dahlia"},
+ {"value": 6.0, "label": "Teal"},
+ {"value": 7.0, "label": "Indigo"}
+]
+  },
+  {
+    "name": "showStrip",
+    "displayName": "Inner Strip",
+    "description": "Show the inner bezel strip around the screen.",
+    "minValue": 0.0,
+    "maxValue": 1.0,
+    "step": 1.0,
+    "type": "toggle"
+  },
+  {
+    "name": "showLens",
+    "displayName": "Glass Lens",
+    "description": "Show the outer glass lens effect.",
+    "minValue": 0.0,
+    "maxValue": 1.0,
+    "step": 1.0,
+    "type": "toggle"
+  },
+  {
+    "name": "showText",
+    "displayName": "Shell Text",
+    "description": "Show the labels and battery indicator on the shell.",
+    "minValue": 0.0,
+    "maxValue": 1.0,
+    "step": 1.0,
+    "type": "toggle"
+  },
+  {
+    "name": "showLED",
+    "displayName": "Power LED",
+    "description": "Show the red power LED indicator.",
+    "minValue": 0.0,
+    "maxValue": 1.0,
+    "step": 1.0,
+    "type": "toggle"
+  },
+  {
+    "name": "brightnessBoost",
+    "displayName": "Brightness",
+    "description": "Adjust how bright the LCD screen appears.",
+    "minValue": 0.5,
+    "maxValue": 2.0,
+    "step": 0.01,
+    "type": "slider"
+  },
+  {
+    "name": "colorBoost",
+    "displayName": "Color Saturation",
+    "description": "How vibrant the colors appear.",
+    "minValue": 0.5,
+    "maxValue": 2.0,
+    "step": 0.01,
+    "type": "slider"
+  },
+  {
     "name": "dotOpacity",
     "displayName": "Dot Opacity",
-    "description": "Controls the visibility of the LCD dot matrix pattern.",
+    "description": "How visible the pixel grid appears on the LCD.",
+    "minValue": 0.0,
+    "maxValue": 1.0,
+    "step": 0.01,
+    "type": "slider"
+  },
+  {
+    "name": "gridThicknessDark",
+    "displayName": "Dark Pixel Grid",
+    "description": "Thickness of the grid lines on dark pixels.",
+    "minValue": 0.1,
+    "maxValue": 0.9,
+    "step": 0.05,
+    "type": "slider"
+  },
+  {
+    "name": "gridThicknessLight",
+    "displayName": "Light Pixel Grid",
+    "description": "Thickness of the grid lines on light pixels.",
+    "minValue": 0.1,
+    "maxValue": 0.9,
+    "step": 0.05,
+    "type": "slider"
+  },
+  {
+    "name": "physicalDepth",
+    "displayName": "Parallax Depth",
+    "description": "Depth of the 3D parallax effect.",
     "minValue": 0.0,
     "maxValue": 1.0,
     "step": 0.01,
@@ -10,38 +119,92 @@
   },
   {
     "name": "specularShininess",
-    "displayName": "Specular Shininess",
-    "description": "Controls the sharpness of specular reflections on the LCD surface.",
+    "displayName": "Specular Highlight",
+    "description": "Sharpness of screen reflections.",
     "minValue": 1.0,
     "maxValue": 32.0,
     "step": 0.5,
     "type": "slider"
   },
   {
-    "name": "colorBoost",
-    "displayName": "Color Boost",
-    "description": "Enhances the color saturation of the GBC display.",
-    "minValue": 0.5,
+    "name": "ghostWeights",
+    "displayName": "Ghosting",
+    "description": "How long moving objects leave trails.",
+    "minValue": 0.0,
+    "maxValue": 1.0,
+    "step": 0.01,
+    "type": "slider"
+  },
+  {
+    "name": "lightPositionIndex",
+    "displayName": "Light Position",
+    "description": "Move the light source direction (0: Center, 1-8: Outer positions).",
+    "minValue": 0.0,
+    "maxValue": 8.0,
+    "step": 1.0,
+    "type": "slider"
+  },
+  {
+    "name": "lightStrength",
+    "displayName": "Reflection Strength",
+    "description": "Controls the intensity of the metallic reflections.",
+    "minValue": 0.0,
     "maxValue": 2.0,
     "step": 0.01,
     "type": "slider"
   },
   {
-    "name": "physicalDepth",
-    "displayName": "Parallax Depth",
-    "description": "Controls the depth of the parallax shadow effect.",
+    "name": "pixelSeparation",
+    "displayName": "Pixel Separation",
+    "description": "Adjusts the gap between LCD pixels.",
+    "minValue": -0.5,
+    "maxValue": 0.5,
+    "step": 0.01,
+    "type": "slider"
+  },
+  {
+    "name": "gridStrength",
+    "displayName": "Grid Strength",
+    "description": "Intensity of the LCD grid lines.",
     "minValue": 0.0,
     "maxValue": 1.0,
     "step": 0.01,
     "type": "slider"
   },
   {
-    "name": "ghostWeights",
-    "displayName": "Ghost Weights",
-    "description": "Frame persistence weights [Current, T-1, T-2, T-3]. Recommended: (0.45, 0.25, 0.18, 0.12)",
+    "name": "enableGrain",
+    "displayName": "Film Grain",
+    "description": "Simulates authentic LCD pixel noise and polarizer effect.",
     "minValue": 0.0,
     "maxValue": 1.0,
-    "step": 0.01,
-    "type": "slider"
+    "step": 1.0,
+    "type": "toggle"
+  },
+  {
+    "name": "enableVignette",
+    "displayName": "Vignette",
+    "description": "Corner darkening for CRT-style depth.",
+    "minValue": 0.0,
+    "maxValue": 1.0,
+    "step": 1.0,
+    "type": "toggle"
+  },
+  {
+    "name": "enableTopography",
+    "displayName": "LCD Topography",
+    "description": "Subtle parallax from liquid crystal layer structure.",
+    "minValue": 0.0,
+    "maxValue": 1.0,
+    "step": 1.0,
+    "type": "toggle"
+  },
+  {
+    "name": "enableColorMatrix",
+    "displayName": "Color Matrix",
+    "description": "Enable GBC color transformation matrix.",
+    "minValue": 0.0,
+    "maxValue": 1.0,
+    "step": 1.0,
+    "type": "toggle"
   }
 ]

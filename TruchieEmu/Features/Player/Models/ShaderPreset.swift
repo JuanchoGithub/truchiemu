@@ -55,24 +55,31 @@ enum ShaderFilter: String, Codable {
 // MARK: - Shader Uniform Definition
 
 enum ShaderUniformType: String, Codable {
-    case slider
-    case toggle
+  case slider
+  case toggle
+  case dropdown
+}
+
+struct ShaderUniformOption: Codable, Hashable {
+  var value: Float
+  var label: String
 }
 
 struct ShaderUniform: Codable, Hashable, Identifiable {
-    var id: String { name }
-    var name: String
-    var defaultValue: Float?
-    var minValue: Float
-    var maxValue: Float
-    var step: Float = 0.01
-    var displayName: String?
-    var description: String?
-    var type: ShaderUniformType = .slider
-    
-    var displayLabel: String {
-        displayName ?? name.replacingOccurrences(of: "_", with: " ").capitalized
-    }
+  var id: String { name }
+  var name: String
+  var defaultValue: Float?
+  var minValue: Float
+  var maxValue: Float
+  var step: Float = 0.01
+  var displayName: String?
+  var description: String?
+  var type: ShaderUniformType = .slider
+  var options: [ShaderUniformOption]? = nil
+
+  var displayLabel: String {
+    displayName ?? name.replacingOccurrences(of: "_", with: " ").capitalized
+  }
 }
 
 // MARK: - Single Shader Pass Definition
@@ -271,15 +278,50 @@ extension ShaderPreset {
                     scaleX: 1.0, scaleY: 1.0,
                     scaleTypeX: .viewport, scaleTypeY: .viewport
                 )
-            ],
-            globalUniforms: [
-                ShaderUniform(name: "dotOpacity", defaultValue: 0.85, minValue: 0.0, maxValue: 1.0),
-                ShaderUniform(name: "specularShininess", defaultValue: 8.0, minValue: 1.0, maxValue: 32.0),
-                ShaderUniform(name: "colorBoost", defaultValue: 1.44, minValue: 0.5, maxValue: 2.0),
-                ShaderUniform(name: "physicalDepth", defaultValue: 0.22, minValue: 0.0, maxValue: 1.0),
-                ShaderUniform(name: "ghostWeights", defaultValue: 0.45, minValue: 0.0, maxValue: 1.0),
-            ],
-            description: "Game Boy Color with temporal feedback, ghosting, and iridescent LCD effects.",
+],
+globalUniforms: [
+  ShaderUniform(name: "showShell", defaultValue: 1.0, minValue: 0.0, maxValue: 1.0, type: .toggle),
+ShaderUniform(name: "shellColorIndex", defaultValue: 0.0, minValue: 0.0, maxValue: 7.0, type: .dropdown,
+ options: [
+ ShaderUniformOption(value: 0.0, label: "Berry"),
+ ShaderUniformOption(value: 1.0, label: "Grape"),
+ ShaderUniformOption(value: 2.0, label: "Onyx"),
+ ShaderUniformOption(value: 3.0, label: "Glacier"),
+ ShaderUniformOption(value: 4.0, label: "Orange"),
+ ShaderUniformOption(value: 5.0, label: "Dahlia"),
+ ShaderUniformOption(value: 6.0, label: "Teal"),
+ ShaderUniformOption(value: 7.0, label: "Indigo"),
+ ]),
+  ShaderUniform(name: "showStrip", defaultValue: 1.0, minValue: 0.0, maxValue: 1.0, type: .toggle),
+  ShaderUniform(name: "showLens", defaultValue: 1.0, minValue: 0.0, maxValue: 1.0, type: .toggle),
+  ShaderUniform(name: "showText", defaultValue: 1.0, minValue: 0.0, maxValue: 1.0, type: .toggle),
+  ShaderUniform(name: "showLED", defaultValue: 1.0, minValue: 0.0, maxValue: 1.0, type: .toggle),
+  ShaderUniform(name: "brightnessBoost", defaultValue: 1.0, minValue: 0.5, maxValue: 2.0),
+  ShaderUniform(name: "colorBoost", defaultValue: 1.44, minValue: 0.5, maxValue: 2.0),
+  ShaderUniform(name: "dotOpacity", defaultValue: 0.85, minValue: 0.0, maxValue: 1.0),
+  ShaderUniform(name: "gridThicknessDark", defaultValue: 0.2, minValue: 0.1, maxValue: 0.9, step: 0.05),
+  ShaderUniform(name: "gridThicknessLight", defaultValue: 0.1, minValue: 0.1, maxValue: 0.9, step: 0.05),
+  ShaderUniform(name: "physicalDepth", defaultValue: 0.22, minValue: 0.0, maxValue: 1.0),
+  ShaderUniform(name: "specularShininess", defaultValue: 8.0, minValue: 1.0, maxValue: 32.0, step: 0.5),
+  ShaderUniform(name: "ghostWeights", defaultValue: 0.45, minValue: 0.0, maxValue: 1.0),
+  ShaderUniform(name: "lightPositionIndex", defaultValue: 0.0, minValue: 0.0, maxValue: 8.0, step: 1.0),
+  ShaderUniform(name: "lightStrength", defaultValue: 1.0, minValue: 0.0, maxValue: 2.0),
+  ShaderUniform(name: "pixelSeparation", defaultValue: 0.0, minValue: -0.5, maxValue: 0.5),
+  ShaderUniform(name: "gridStrength", defaultValue: 0.4, minValue: 0.0, maxValue: 1.0),
+  // Effect toggles (all ON by default)
+  ShaderUniform(name: "enableGhost", defaultValue: 1.0, minValue: 0.0, maxValue: 1.0, type: .toggle),
+  ShaderUniform(name: "enableGrid", defaultValue: 1.0, minValue: 0.0, maxValue: 1.0, type: .toggle),
+  ShaderUniform(name: "enableAberration", defaultValue: 1.0, minValue: 0.0, maxValue: 1.0, type: .toggle),
+  ShaderUniform(name: "enableBleed", defaultValue: 1.0, minValue: 0.0, maxValue: 1.0, type: .toggle),
+  ShaderUniform(name: "enableNewtonRings", defaultValue: 1.0, minValue: 0.0, maxValue: 1.0, type: .toggle),
+  ShaderUniform(name: "enableJitter", defaultValue: 1.0, minValue: 0.0, maxValue: 1.0, type: .toggle),
+  ShaderUniform(name: "enableReflection", defaultValue: 1.0, minValue: 0.0, maxValue: 1.0, type: .toggle),
+  ShaderUniform(name: "enableGrain", defaultValue: 1.0, minValue: 0.0, maxValue: 1.0, type: .toggle),
+  ShaderUniform(name: "enableVignette", defaultValue: 1.0, minValue: 0.0, maxValue: 1.0, type: .toggle),
+  ShaderUniform(name: "enableTopography", defaultValue: 1.0, minValue: 0.0, maxValue: 1.0, type: .toggle),
+  ShaderUniform(name: "enableColorMatrix", defaultValue: 1.0, minValue: 0.0, maxValue: 1.0, type: .toggle),
+],
+description: "Game Boy Color with temporal feedback, ghosting, and iridescent LCD effects.",
             recommendedSystems: ["gbc"]
         ),
 
