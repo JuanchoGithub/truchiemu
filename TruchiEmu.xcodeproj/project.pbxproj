@@ -8,6 +8,7 @@
 
 /* Begin PBXBuildFile section */
 		DD095AD82F981298002A097A /* NotificationService.swift in Sources */ = {isa = PBXBuildFile; fileRef = DD095AD72F981298002A097A /* NotificationService.swift */; };
+		DD095ADA2F98F394002A097A /* 8bGameBoyColor.metal in Sources */ = {isa = PBXBuildFile; fileRef = DD095AD92F98F394002A097A /* 8bGameBoyColor.metal */; };
 		DD1AE5DF2F96D7240014A60E /* XRICK.png in Resources */ = {isa = PBXBuildFile; fileRef = DD1AE1B92F96D7240014A60E /* XRICK.png */; };
 		DD1AE5E32F96D7240014A60E /* fds@132w.png in Resources */ = {isa = PBXBuildFile; fileRef = DD1AE1182F96D7240014A60E /* fds@132w.png */; };
 		DD1AE5E62F96D7240014A60E /* DC.png in Resources */ = {isa = PBXBuildFile; fileRef = DD1AE1682F96D7240014A60E /* DC.png */; };
@@ -434,6 +435,7 @@
 /* Begin PBXFileReference section */
 		DD095AD62F97F8B5002A097A /* TruchiEmuTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = TruchiEmuTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		DD095AD72F981298002A097A /* NotificationService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotificationService.swift; sourceTree = "<group>"; };
+		DD095AD92F98F394002A097A /* 8bGameBoyColor.metal */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.metal; path = 8bGameBoyColor.metal; sourceTree = "<group>"; };
 		DD1AE0232F96D7240014A60E /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
 		DD1AE0242F96D7240014A60E /* GameInfoWindow.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GameInfoWindow.swift; sourceTree = "<group>"; };
 		DD1AE0252F96D7240014A60E /* TruchieEmuApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TruchieEmuApp.swift; sourceTree = "<group>"; };
@@ -944,6 +946,7 @@
 		DD1AE0662F96D7240014A60E /* Shaders */ = {
 			isa = PBXGroup;
 			children = (
+				DD095AD92F98F394002A097A /* 8bGameBoyColor.metal */,
 				DD1AE0532F96D7240014A60E /* internal */,
 				DD1AE05C2F96D7240014A60E /* 8bGameBoy.metal */,
 				DD1AE05D2F96D7240014A60E /* 8bGameBoy.ui */,
@@ -2164,6 +2167,7 @@
 				DD1AEABD2F96D7240014A60E /* DOSRunner.swift in Sources */,
 				DD1AEABE2F96D7240014A60E /* CoreDownloadSheet.swift in Sources */,
 				DD1AEABF2F96D7240014A60E /* GameInfo.swift in Sources */,
+				DD095ADA2F98F394002A097A /* 8bGameBoyColor.metal in Sources */,
 				DD1AEAC02F96D7240014A60E /* BezelManager.swift in Sources */,
 				DD1AEAC22F96D7240014A60E /* ROMIdentifierService.swift in Sources */,
 				DD1AEAC32F96D7240014A60E /* Header.swift in Sources */,
