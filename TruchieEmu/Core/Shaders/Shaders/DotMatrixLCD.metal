@@ -28,7 +28,7 @@ fragment float4 fragmentDotMatrixLCD(VertexOut in [[stage_in]],
                                      texture2d<float> tex [[texture(0)]],
                                      constant DotMatrixLCDUniforms &u [[buffer(0)]]) {
     
-    const float2 gbcRes = float2(160.0, 144.0);
+    const float2 gbcRes = u.sourceSize.xy;
     const float2 uv = in.texCoord;
     const float2 pixelIndex = floor(uv * gbcRes);
     
