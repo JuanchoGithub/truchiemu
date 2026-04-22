@@ -341,6 +341,10 @@ class SystemDatabase {
         }
     }
 
+    static func compatibleIDs(for id: String) -> Set<String> {
+        Set(allInternalIDs(forDisplayID: id))
+    }
+
     static func multiSystemGroups() -> [String: [String]] {
         return [
             "gb": ["gb", "gbc"],

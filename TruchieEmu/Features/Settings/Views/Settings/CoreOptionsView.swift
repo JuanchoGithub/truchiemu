@@ -160,8 +160,11 @@ class CoreOptionsViewModel: ObservableObject {
     }
 
     private func discoverCoresForSystem(_ sysID: String) {
+        let compatibleIDs = SystemDatabase.compatibleIDs(for: sysID)
         let cores = LibretroInfoManager.coreToSystemMap
-            .filter { $0.value.contains(sysID) }
+            .filter { coreID, supportedSystems in
+                !supportedSystems.isDisjoint(with: compatibleIDs)
+            }
             .map { $0.key }
         
         self.availableCores = cores.map { coreID in

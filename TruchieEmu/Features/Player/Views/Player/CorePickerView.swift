@@ -69,7 +69,8 @@ struct CorePickerView: View {
         
         // Installed cores for this system
         let installed = coreManager.installedCores.filter { core in
-            core.systemIDs.contains(systemID)
+            let compatibleIDs = SystemDatabase.allInternalIDs(forDisplayID: systemID)
+            return core.systemIDs.contains { compatibleIDs.contains($0) }
         }
         
         // Sort by recommendation then displayName
@@ -87,7 +88,8 @@ struct CorePickerView: View {
         
         // Available but uninstalled cores for this system (from buildbot list)
         let availableRemote = coreManager.availableCores.filter { remote in
-            remote.systemIDs.contains(systemID)
+            let compatibleIDs = SystemDatabase.allInternalIDs(forDisplayID: systemID)
+            return remote.systemIDs.contains { compatibleIDs.contains($0) }
                 && !installed.contains { $0.id == remote.coreID }
         }
         
@@ -365,7 +367,8 @@ struct CoreSelectionSheet: View {
         var result: [CoreEntry] = []
         
         let installed = coreManager.installedCores.filter { core in
-            core.systemIDs.contains(systemID) && core.isInstalled
+            let compatibleIDs = SystemDatabase.allInternalIDs(forDisplayID: systemID)
+            return core.systemIDs.contains { compatibleIDs.contains($0) } && core.isInstalled
         }
         
         let recommendedOrder = ["mame2003_plus", "mame2010", "mame", "mame2003", "mame2000"]
@@ -382,7 +385,8 @@ struct CoreSelectionSheet: View {
         
         // Available but uninstalled
         let availableRemote = coreManager.availableCores.filter { remote in
-            remote.systemIDs.contains(systemID)
+            let compatibleIDs = SystemDatabase.allInternalIDs(forDisplayID: systemID)
+            return remote.systemIDs.contains { compatibleIDs.contains($0) }
                 && !installed.contains { $0.id == remote.coreID }
         }
         

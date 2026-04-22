@@ -586,20 +586,22 @@ private func loadInstalledCores() {
 
     static func supportedSystems(for coreID: String) -> [String] {
         // 1. Get systems that explicitly list this core as their 'defaultCoreID'
-        var ids = SystemDatabase.systems.filter { $0.defaultCoreID == coreID }.map { $0.id }
+        var ids = Set(SystemDatabase.systems.filter { $0.defaultCoreID == coreID }.map { $0.id })
 
         // 2. Dynamic map lookup
-        // Instead of stripping, try both the full coreID and the stripped version
         let strippedID = coreID.replacingOccurrences(of: "_libretro", with: "")
-        
-        // Try the lookup with the full ID first, then the stripped one
         let dynamicIDs = LibretroInfoManager.coreToSystemMap[coreID] ?? 
                         LibretroInfoManager.coreToSystemMap[strippedID] ?? []
                         
-        ids.append(contentsOf: dynamicIDs)
+        ids.formUnion(dynamicIDs)
+
+        // 3. Expand to all compatible aliases
+        var finalIDs = Set<String>()
+        for id in ids {
+            finalIDs.formUnion(SystemDatabase.compatibleIDs(for: id))
+        }
         
-        // Return unique results
-        return Array(Set(ids))
+        return Array(finalIDs)
     }
 
     // MARK: - Minimal ZIP extraction

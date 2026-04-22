@@ -215,40 +215,6 @@
         "manufacturer": "Nintendo"
     },
     {
-        "year": "1998",
-        "id": "gbc",
-        "magicHeaders": [
-            {
-                "offset": 260, 
-                "bytes": "CE ED 66 66" 
-            }
-        ],
-        "sortOrder": 6,
-        "displayInUI": false,
-        "name": "Game Boy Color",
-        "extensions": [
-            "bin",
-            "bs",
-            "cgb",
-            "dmg",
-            "fig",
-            "gb",
-            "gba",
-            "gbc",
-            "gbs",
-            "rom",
-            "sfc",
-            "sgb",
-            "smc",
-            "swc"
-        ],
-        "emuIconName": "GBC",
-        "defaultBoxType": "Vertical",
-        "iconName": "iphone",
-        "defaultCoreID": "gambatte_libretro",
-        "manufacturer": "Nintendo"
-    },
-    {
         "year": "2004",
         "id": "nds",
         "magicHeaders": [

@@ -64,7 +64,7 @@ enum RebuildOption: String, CaseIterable, Identifiable {
     }
     var icon: String {
         switch self {
-        case .refresh: "arrow.clockwise"; case .idRebuild: "fingerprint"
+        case .refresh: "arrow.clockwise"; case .idRebuild: "barcode.viewfinder"
         case .boxartRebuild: "photo"; case .everything: "gearshape.2"
         }
     }
