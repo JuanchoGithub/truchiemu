@@ -1096,13 +1096,12 @@ struct LibraryGridView: View {
         removeROMFromLibrary(rom)
     }
 
-    private func removeROMFromLibrary(_ rom: ROM) {
-        library.roms.removeAll { $0.id == rom.id }
-        LibraryMetadataStore.shared.deleteMetadata(for: rom)
-        let repo = ROMRepository(context: SwiftDataContainer.shared.mainContext)
-        repo.deleteROMsByPath([rom.path.path])
-        library.updateCounts()
-        library.saveROMsToDatabase()
+private func removeROMFromLibrary(_ rom: ROM) {
+    library.roms.removeAll { $0.id == rom.id }
+    LibraryMetadataStore.shared.deleteMetadata(for: rom)
+    let repo = ROMRepository(context: SwiftDataContainer.shared.mainContext)
+    repo.deleteROMsByPath([rom.path.path])
+    library.updateCounts()
 
         // If this ROM was selected, deselect it
         if selectedROM?.id == rom.id {
