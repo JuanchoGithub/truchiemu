@@ -7,3 +7,4 @@ xcuserdata/
 *.xcuserstate
 
 # Other common ignores
+build/
