@@ -181,10 +181,9 @@ class ROMLibrary: ObservableObject {
         }
         guard !orphans.isEmpty else { return }
 
-        let idsToPurge = orphans.map { $0.id }
-        roms.removeAll { idsToPurge.contains($0.id) }
-        repository.deleteROMs(ids: idsToPurge)
-        saveROMsToDatabase()
+let idsToPurge = orphans.map { $0.id }
+    roms.removeAll { idsToPurge.contains($0.id) }
+    repository.deleteROMs(ids: idsToPurge)
     }
 
 
@@ -291,10 +290,9 @@ class ROMLibrary: ObservableObject {
             for path in Set(removedROMs.map { $0.path.path }) { fileIndex.removeValue(forKey: path) }
         }
 
-        LibraryMetadataStore.shared.deleteMetadataEntries(Set(removedROMs.map { LibraryMetadataStore.pathKey(for: $0) }))
-        updateCounts()
-        saveROMsToDatabase()
-        cleanupScummVMCaches()
+LibraryMetadataStore.shared.deleteMetadataEntries(Set(removedROMs.map { LibraryMetadataStore.pathKey(for: $0) }))
+    updateCounts()
+    cleanupScummVMCaches()
     }
 
     // MARK: - Core Scanning Method (Optimized)
