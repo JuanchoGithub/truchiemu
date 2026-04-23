@@ -1,13 +1,10 @@
 import SwiftUI
 
-// MARK: - Shader Section Component
-
 struct ShaderSection: View {
     let rom: ROM
     let library: ROMLibrary
     @Binding var shaderWindowSettings: ShaderWindowSettings?
     @Environment(\.colorScheme) private var colorScheme
-    private var t: ThemeColors { ThemeColors.for(colorScheme) }
 
     private var shaderManager: ShaderManager { ShaderManager.shared }
 
@@ -24,16 +21,15 @@ struct ShaderSection: View {
             badge: isShaderCustomized ? "Custom" : nil
         ) {
             VStack(alignment: .leading, spacing: 14) {
-                // Current shader display
                 HStack {
                     VStack(alignment: .leading, spacing: 2) {
                         Text("Current Shader")
                             .font(.subheadline)
                             .fontWeight(.medium)
-                            .foregroundColor(t.textPrimary)
+                            .foregroundColor(AppColors.textPrimary(colorScheme))
                         Text(ShaderManager.displayName(for: rom.settings.shaderPresetID))
                             .font(.caption)
-                            .foregroundColor(t.textSecondary)
+                            .foregroundColor(AppColors.textSecondary(colorScheme))
                     }
 
                     Spacer()
@@ -44,13 +40,12 @@ struct ShaderSection: View {
                     .foregroundColor(.white)
                     .padding(.horizontal, 14)
                     .padding(.vertical, 8)
-                    .background(Color.blue.opacity(0.6))
+                    .background(Color.accentColor.opacity(0.8))
                     .cornerRadius(8)
                 }
 
-                Divider().overlay(t.divider)
+                Divider().overlay(AppColors.divider(colorScheme))
 
-                // Quick preset buttons
                 VStack(spacing: 6) {
                     let recommended = shaderManager.recommendedPresets(for: rom.systemID ?? "")
                     let presetsToShow = recommended.isEmpty
@@ -67,7 +62,7 @@ struct ShaderSection: View {
                                     .frame(width: 20)
                                 Text(preset.name)
                                     .font(.subheadline)
-                                    .foregroundColor(t.textPrimary)
+                                    .foregroundColor(AppColors.textPrimary(colorScheme))
                                 Spacer()
                                 if rom.settings.shaderPresetID == preset.id {
                                     Image(systemName: "checkmark.circle.fill")
@@ -76,7 +71,7 @@ struct ShaderSection: View {
                                 if let desc = preset.description {
                                     Text(desc)
                                         .font(.caption)
-                                        .foregroundColor(t.textMuted)
+                                        .foregroundColor(AppColors.textMuted(colorScheme))
                                         .lineLimit(1)
                                 }
                             }
@@ -93,17 +88,16 @@ struct ShaderSection: View {
                     }
                 }
 
-                Divider().overlay(t.divider)
+                Divider().overlay(AppColors.divider(colorScheme))
 
-                // Reset to system default button
                 HStack {
                     VStack(alignment: .leading, spacing: 2) {
                         Text("System Default")
                             .font(.caption)
-                            .foregroundColor(t.textSecondary)
+                            .foregroundColor(AppColors.textSecondary(colorScheme))
                         Text("Reset to default shader for this system")
                             .font(.caption)
-                            .foregroundColor(t.textMuted)
+                            .foregroundColor(AppColors.textMuted(colorScheme))
                     }
                     Spacer()
                     Button("Use Default") {
@@ -112,7 +106,7 @@ struct ShaderSection: View {
                     .foregroundColor(.white)
                     .padding(.horizontal, 12)
                     .padding(.vertical, 6)
-                    .background(t.buttonBackground)
+                    .background(AppColors.cardBackground(colorScheme))
                     .cornerRadius(6)
                     .disabled(!isShaderCustomized)
                 }

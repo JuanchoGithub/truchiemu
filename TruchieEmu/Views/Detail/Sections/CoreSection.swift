@@ -1,7 +1,5 @@
 import SwiftUI
 
-// MARK: - Core Section Component
-
 struct CoreSection: View {
     let rom: ROM
     let library: ROMLibrary
@@ -10,7 +8,6 @@ struct CoreSection: View {
     @State private var selectedCoreID: String?
     @State private var applyCoreToSystem: Bool = false
     @Environment(\.colorScheme) private var colorScheme
-    private var t: ThemeColors { ThemeColors.for(colorScheme) }
     private var sysPrefs = SystemPreferences.shared
 
     var body: some View {
@@ -18,15 +15,15 @@ struct CoreSection: View {
             VStack(alignment: .leading, spacing: 12) {
                 HStack {
                     Image(systemName: "cpu")
-                        .foregroundColor(t.textSecondary)
+                        .foregroundColor(AppColors.textSecondary(colorScheme))
                     Text("Emulation Core")
-                        .foregroundColor(t.textSecondary)
+                        .foregroundColor(AppColors.textSecondary(colorScheme))
                         .font(.caption)
                     Spacer()
                     if installedCores.isEmpty {
                         Text("No cores installed")
                             .font(.caption)
-                            .foregroundColor(t.iconMuted)
+                            .foregroundColor(AppColors.textMuted(colorScheme))
                     } else {
                         Picker("Core", selection: $selectedCoreID) {
                             ForEach(installedCores) { core in
@@ -39,14 +36,14 @@ struct CoreSection: View {
                     }
                 }
 
-                Divider().overlay(t.divider)
+                Divider().overlay(AppColors.divider(colorScheme))
 
                 Toggle(isOn: $applyCoreToSystem) {
                     HStack {
                         Image(systemName: "globe")
-                            .foregroundColor(t.textSecondary)
+                            .foregroundColor(AppColors.textSecondary(colorScheme))
                         Text("Apply to system default")
-                            .foregroundColor(t.textPrimary)
+                            .foregroundColor(AppColors.textPrimary(colorScheme))
                     }
                 }
                 .toggleStyle(SwitchToggleStyle())
@@ -54,16 +51,16 @@ struct CoreSection: View {
                 if applyCoreToSystem {
                     Text("This will change the default core for all \(systemName) games. The current game will no longer use a custom core override.")
                         .font(.caption)
-                        .foregroundColor(t.textMuted)
+                        .foregroundColor(AppColors.textMuted(colorScheme))
                         .lineSpacing(2)
                 } else {
                     Text("Only this game will use the selected core.")
                         .font(.caption)
-                        .foregroundColor(t.textMuted)
+                        .foregroundColor(AppColors.textMuted(colorScheme))
                         .lineSpacing(2)
                 }
 
-                Divider().overlay(t.divider)
+                Divider().overlay(AppColors.divider(colorScheme))
 
                 HStack {
                     Spacer()
@@ -77,7 +74,7 @@ struct CoreSection: View {
                         .foregroundColor(.white)
                         .padding(.horizontal, 16)
                         .padding(.vertical, 8)
-                        .background(Color.blue.opacity(0.6))
+                        .background(Color.accentColor.opacity(0.6))
                         .cornerRadius(8)
                     }
                     .buttonStyle(.plain)

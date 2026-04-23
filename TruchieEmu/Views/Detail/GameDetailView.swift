@@ -1,6 +1,5 @@
 import SwiftUI
 
-// MARK: - Game Detail View
 struct GameDetailView: View {
     @EnvironmentObject var library: ROMLibrary
     @EnvironmentObject var coreManager: CoreManager
@@ -9,26 +8,7 @@ struct GameDetailView: View {
     @Environment(\.dismiss) var dismiss
     @Environment(\.colorScheme) var colorScheme
     var rom: ROM
-    
-    // Theme-aware color tokens for this view
-    var t: ThemeColors { ThemeColors.for(colorScheme) }
-    
-    // Text color that adapts for light/dark mode
-    var textColor: Color { colorScheme == .dark ? .white : .primary }
-    var secondaryTextColor: Color { colorScheme == .dark ? .white.opacity(0.7) : .secondary }
-    var tertiaryTextColor: Color { colorScheme == .dark ? .white.opacity(0.5) : .secondary }
-    var mutedTextColor: Color { colorScheme == .dark ? .white.opacity(0.4) : .secondary.opacity(0.7) }
-    var subtleColor: Color { colorScheme == .dark ? .white.opacity(0.3) : .secondary.opacity(0.5) }
-    var iconColor: Color { colorScheme == .dark ? .white.opacity(0.5) : .secondary }
-    var mutedIconColor: Color { colorScheme == .dark ? .white.opacity(0.3) : .secondary.opacity(0.5) }
-    var dividerColor: Color { colorScheme == .dark ? .white.opacity(0.08) : .secondary.opacity(0.15) }
-    var cardBgColor: Color { colorScheme == .dark ? .white.opacity(0.06) : .secondary.opacity(0.05) }
-    var subtleBgColor: Color { colorScheme == .dark ? .white.opacity(0.03) : .secondary.opacity(0.03) }
-    var buttonBgColor: Color { colorScheme == .dark ? .white.opacity(0.1) : .secondary.opacity(0.12) }
-    var subtleButtonBgColor: Color { colorScheme == .dark ? .white.opacity(0.06) : .secondary.opacity(0.06) }
-    var pillBgColor: Color { colorScheme == .dark ? .white.opacity(0.1) : .secondary.opacity(0.1) }
 
-    // Section state
     @StateObject var saveStateManager = SaveStateManager()
     @StateObject var achievementsService = RetroAchievementsService.shared
     @State var showBoxArtPicker = false
@@ -55,19 +35,18 @@ struct GameDetailView: View {
     @State var infoApplyCoreToSystem: Bool = false
     @State var manualActionStatus: ManualActionStatus = .hidden
     @State var manualStatusAutoDismiss: Task<Void, Never>?
-    
+
     @State var shaderWindowSettings: ShaderWindowSettings?
     @State var selectedSection: DetailSection = .gameInfo
     @State var bezelSelectorWindowController: BezelSelectorWindowController?
     @State var localTitle: String = ""
     @State var gameDescription: String? = nil
-    
-    // Extracted state for sub-sections
+
     @State var fetchMetadataStatus: ManualActionStatus = .hidden
     @State var fetchMetadataAutoDismiss: Task<Void, Never>?
     @State var fetchBoxArtStatus: ManualActionStatus = .hidden
     @State var fetchBoxArtAutoDismiss: Task<Void, Never>?
-    @State var currentBezelImage: NSImage?
+    @State var currentBezelImage: NSImage? = nil
     @StateObject var cheatManagerService = CheatManagerService.shared
     @StateObject var cheatDownloadService = CheatDownloadService.shared
     @State var cheatCount: Int = 0
@@ -91,11 +70,10 @@ struct GameDetailView: View {
         if currentROM.useCustomCore, let sel = currentROM.selectedCoreID { return sel }
         return sysPrefs.preferredCoreID(for: sysID) ?? sys.defaultCoreID
     }
-    
+
     var systemName: String {
         SystemDatabase.systemName(forInternalID: currentROM.systemID ?? "")
     }
-
 
     var isGambatteCore: Bool {
         (activeCoreID ?? "").lowercased().contains("gambatte")
@@ -119,50 +97,47 @@ struct GameDetailView: View {
     var isShaderCustomized: Bool { currentROM.settings.shaderPresetID != systemDefaultShaderID }
 
     var body: some View {
-        ZStack {
-            immersiveBackground
-            
-            VStack(spacing: 0) {
-                compactHeaderSection
-                
+        VStack(spacing: 0) {
+            compactHeaderSection
+
+            Divider()
+                .overlay(AppColors.divider(colorScheme))
+
+            HStack(spacing: 0) {
+                sidebarNavigation
+
                 Divider()
-                    .overlay(dividerColor)
+                    .overlay(AppColors.divider(colorScheme))
 
-                HStack(spacing: 0) {
-                    sidebarNavigation
-
-                    Divider()
-                        .overlay(dividerColor)
-
-                    ScrollView {
-                        VStack(alignment: .leading, spacing: 20) {
-                            switch selectedSection {
-                            case .gameInfo: gameInfoSection
-                            case .shader: shaderSection
-                            case .bezels: bezelsSection
-                            case .controls: controlsSection
-                            case .savedStates: savedStatesSection
-                            case .cheats: cheatsSection
-                            case .core: coreSection
-                            case .achievements:
-                                if achievementsService.isEnabled {
-                                    achievementsSection
-                                }
+                ScrollView {
+                    VStack(alignment: .leading, spacing: 20) {
+                        switch selectedSection {
+                        case .gameInfo: gameInfoSection
+                        case .shader: shaderSection
+                        case .bezels: bezelsSection
+                        case .controls: controlsSection
+                        case .savedStates: savedStatesSection
+                        case .cheats: cheatsSection
+                        case .core: coreSection
+                        case .achievements:
+                            if achievementsService.isEnabled {
+                                achievementsSection
                             }
                         }
-                        .padding(24)
                     }
-                    .scrollContentBackground(.hidden)
-                    .background(Color.clear)
+                    .padding(24)
                 }
-                .frame(maxHeight: .infinity)
+                .scrollContentBackground(.hidden)
+                .background(Color.clear)
+            }
+            .frame(maxHeight: .infinity)
 
-                if manualActionStatus.isVisible {
-                    manualActionStatusBar
-                        .transition(.move(edge: .bottom).combined(with: .opacity))
-                }
+            if manualActionStatus.isVisible {
+                manualActionStatusBar
+                    .transition(.move(edge: .bottom).combined(with: .opacity))
             }
         }
+        .background(AppColors.windowBackground(colorScheme))
         .animation(.easeInOut(duration: 0.2), value: manualActionStatus.isVisible)
         .onAppear {
             loadBoxArt()
@@ -201,7 +176,7 @@ struct GameDetailView: View {
                     gameDescription = nil
                 }
             }
-            
+
             if let attrs = try? FileManager.default.attributesOfItem(atPath: currentROM.path.path),
                let size = attrs[.size] as? Int64 {
                 let formatter = ByteCountFormatter()
@@ -244,24 +219,7 @@ struct GameDetailView: View {
         .sheet(isPresented: $showBoxArtPicker) { BoxArtPickerView(rom: currentROM) }
         .sheet(isPresented: $showControlsPicker) {
             SystemControlsMappingView(systemID: currentROM.systemID ?? "", systemName: system?.name ?? "Unknown")
-            .environmentObject(controllerService)
-        }
-    }
-
-    var immersiveBackground: some View {
-        GeometryReader { geo in
-            ZStack {
-                Color(red: 0.12, green: 0.13, blue: 0.16)
-                if let img = boxArtImage {
-                    Image(nsImage: img)
-                        .resizable()
-                        .aspectRatio(contentMode: .fill)
-                        .frame(width: geo.size.width, height: geo.size.height)
-                        .blur(radius: 60, opaque: false)
-                        .scaleEffect(1.1)
-                        .opacity(0.25)
-                }
-            }
+                .environmentObject(controllerService)
         }
     }
 
@@ -275,7 +233,7 @@ struct GameDetailView: View {
         .frame(width: 180)
         .padding(.vertical, 12)
         .padding(.horizontal, 8)
-        .background(t.sidebarBackground)
+        .background(AppColors.sidebarBackground)
     }
 
     func sidebarItem(for section: DetailSection) -> some View {
@@ -296,10 +254,10 @@ struct GameDetailView: View {
                     Image(systemName: section.sectionIcon)
                         .font(.system(size: 15, weight: .medium))
                         .frame(width: 20, height: 20)
-                        .foregroundColor(isSelected ? .blue : t.iconPrimary)
+                        .foregroundColor(isSelected ? .accentColor : AppColors.textSecondary(colorScheme))
                     Text(section.rawValue)
                         .lineLimit(1)
-                        .foregroundColor(isSelected ? t.textPrimary : t.textSecondary)
+                        .foregroundColor(isSelected ? AppColors.textPrimary(colorScheme) : AppColors.textSecondary(colorScheme))
                         .fontWeight(isSelected ? .medium : .regular)
                     Spacer()
                 }
@@ -311,7 +269,7 @@ struct GameDetailView: View {
             .help(section.helpText)
             .background(
                 RoundedRectangle(cornerRadius: 6)
-                    .fill(isSelected ? Color.blue.opacity(0.2) : .clear)
+                    .fill(isSelected ? AppColors.accentBackground(colorScheme) : .clear)
             )
         )
     }
@@ -376,7 +334,7 @@ struct GameDetailView: View {
                 EmptyView()
             case .working(let title):
                 ProgressView().controlSize(.small)
-                Text(title).font(.callout).foregroundColor(.white.opacity(0.85))
+                Text(title).font(.callout).foregroundColor(AppColors.textPrimary(colorScheme))
             case .result(let message, let tone):
                 Image(systemName: tone.iconName)
                     .font(.title3)
@@ -384,7 +342,7 @@ struct GameDetailView: View {
                     .frame(width: 22, alignment: .center)
                 Text(message)
                     .font(.callout)
-                    .foregroundColor(.white.opacity(0.85))
+                    .foregroundColor(AppColors.textPrimary(colorScheme))
                     .textSelection(.enabled)
                     .frame(maxWidth: .infinity, alignment: .leading)
             }
@@ -392,7 +350,7 @@ struct GameDetailView: View {
                 Button {
                     clearManualStatus()
                 } label: {
-                    Image(systemName: "xmark.circle.fill").foregroundStyle(.white.opacity(0.4))
+                    Image(systemName: "xmark.circle.fill").foregroundStyle(AppColors.textMuted(colorScheme))
                 }
                 .buttonStyle(.plain)
                 .help("Dismiss")
@@ -401,9 +359,9 @@ struct GameDetailView: View {
         .padding(.horizontal, 16)
         .padding(.vertical, 11)
         .frame(maxWidth: .infinity, alignment: .leading)
-        .background(Color.black.opacity(0.5))
+        .background(AppColors.surface(colorScheme))
         .overlay(alignment: .top) {
-            Divider().overlay(dividerColor)
+            Divider().overlay(AppColors.divider(colorScheme))
         }
     }
 
@@ -433,21 +391,21 @@ struct GameDetailView: View {
 
     func launchGame(slotToLoad: Int? = nil) {
         guard !isLaunchingGame else { return }
-        guard let sysID = currentROM.systemID, let system = SystemDatabase.system(forID: sysID) else { 
+        guard let sysID = currentROM.systemID, let system = SystemDatabase.system(forID: sysID) else {
             isLaunchingGame = false
-            return 
+            return
         }
-        
+
         let sysPrefs = SystemPreferences.shared
         let coreID = currentROM.useCustomCore
             ? (currentROM.selectedCoreID ?? sysPrefs.preferredCoreID(for: sysID) ?? system.defaultCoreID)
             : (sysPrefs.preferredCoreID(for: sysID) ?? system.defaultCoreID)
-        
-        guard let cid = coreID else { 
+
+        guard let cid = coreID else {
             isLaunchingGame = false
-            return 
+            return
         }
-        
+
         if !coreManager.isInstalled(coreID: cid) {
             coreManager.requestCoreDownload(for: cid, systemID: sysID, romID: currentROM.id, slotToLoad: slotToLoad)
             isLaunchingGame = false

@@ -5,11 +5,11 @@ extension GameDetailView {
         ModernSectionCard(title: "Core", icon: "cpu") {
             VStack(alignment: .leading, spacing: 12) {
                 HStack {
-                    Image(systemName: "cpu").foregroundColor(.white.opacity(0.5))
-                    Text("Emulation Core").foregroundColor(.white.opacity(0.5)).font(.caption)
+                    Image(systemName: "cpu").foregroundColor(AppColors.textSecondary(colorScheme))
+                    Text("Emulation Core").foregroundColor(AppColors.textSecondary(colorScheme)).font(.caption)
                     Spacer()
                     if installedCores.isEmpty {
-                        Text("No cores installed").font(.caption).foregroundColor(.white.opacity(0.3))
+                        Text("No cores installed").font(.caption).foregroundColor(AppColors.textMuted(colorScheme))
                     } else {
                         Picker("Core", selection: $selectedCoreID) {
                             ForEach(installedCores) { core in
@@ -22,25 +22,25 @@ extension GameDetailView {
                     }
                 }
 
-                Divider().overlay(dividerColor)
+                Divider().overlay(AppColors.divider(colorScheme))
 
                 Toggle(isOn: $applyCoreToSystem) {
                     HStack {
-                        Image(systemName: "globe").foregroundColor(.white.opacity(0.5))
-                        Text("Apply to system default").foregroundColor(.white.opacity(0.85))
+                        Image(systemName: "globe").foregroundColor(AppColors.textSecondary(colorScheme))
+                        Text("Apply to system default").foregroundColor(AppColors.textPrimary(colorScheme))
                     }
                 }
                 .toggleStyle(SwitchToggleStyle())
 
                 if applyCoreToSystem {
                     Text("This will change the default core for all \(systemName) games. The current game will no longer use a custom core override.")
-                        .font(.caption).foregroundColor(.white.opacity(0.4)).lineSpacing(2)
+                        .font(.caption).foregroundColor(AppColors.textMuted(colorScheme)).lineSpacing(2)
                 } else {
                     Text("Only this game will use the selected core.")
-                        .font(.caption).foregroundColor(.white.opacity(0.4)).lineSpacing(2)
+                        .font(.caption).foregroundColor(AppColors.textMuted(colorScheme)).lineSpacing(2)
                 }
 
-                Divider().overlay(dividerColor)
+                Divider().overlay(AppColors.divider(colorScheme))
 
                 HStack {
                     Spacer()
@@ -49,7 +49,7 @@ extension GameDetailView {
                             Image(systemName: applyCoreToSystem ? "globe" : "gamecontroller")
                             Text(applyCoreToSystem ? "Set System Default" : "Set for This Game")
                         }
-                        .foregroundColor(.white).padding(.horizontal, 16).padding(.vertical, 8).background(Color.blue.opacity(0.6)).cornerRadius(8)
+                        .foregroundColor(.white).padding(.horizontal, 16).padding(.vertical, 8).background(Color.accentColor.opacity(0.6)).cornerRadius(8)
                     }
                     .buttonStyle(.plain)
                     .disabled(selectedCoreID == nil || installedCores.isEmpty)
@@ -83,38 +83,38 @@ extension GameDetailView {
                 if isAchievementsLoading {
                     HStack(spacing: 8) {
                         ProgressView().controlSize(.small)
-                        Text("Loading achievements...").font(.subheadline).foregroundColor(.white.opacity(0.5))
+                        Text("Loading achievements...").font(.subheadline).foregroundColor(AppColors.textSecondary(colorScheme))
                     }
                     .frame(maxWidth: .infinity).padding(.vertical, 16)
                 } else if gameAchievements.isEmpty {
                     VStack(spacing: 8) {
-                        Image(systemName: "trophy.circle").font(.system(size: 30)).foregroundColor(.white.opacity(0.3))
-                        Text("No achievements available").font(.subheadline).foregroundColor(.white.opacity(0.5))
-                        Text("Game may not have RetroAchievements data").font(.caption).foregroundColor(.white.opacity(0.4))
+                        Image(systemName: "trophy.circle").font(.system(size: 30)).foregroundColor(AppColors.textMuted(colorScheme))
+                        Text("No achievements available").font(.subheadline).foregroundColor(AppColors.textSecondary(colorScheme))
+                        Text("Game may not have RetroAchievements data").font(.caption).foregroundColor(AppColors.textMuted(colorScheme))
                     }
                     .frame(maxWidth: .infinity).padding(.vertical, 16)
                 } else {
                     HStack(spacing: 20) {
                         VStack(alignment: .leading, spacing: 2) {
-                            Text("\(unlockedAchievementCount)/\(gameAchievements.count)").font(.title2).fontWeight(.bold).foregroundColor(.white)
-                            Text("Achievements").font(.caption).foregroundColor(.white.opacity(0.5))
+                            Text("\(unlockedAchievementCount)/\(gameAchievements.count)").font(.title2).fontWeight(.bold).foregroundColor(AppColors.textPrimary(colorScheme))
+                            Text("Achievements").font(.caption).foregroundColor(AppColors.textSecondary(colorScheme))
                         }
                         VStack(alignment: .leading, spacing: 2) {
-                            Text("\(earnedPoints)/\(totalAchievementPoints)").font(.title2).fontWeight(.bold).foregroundColor(.white)
-                            Text("Points").font(.caption).foregroundColor(.white.opacity(0.5))
+                            Text("\(earnedPoints)/\(totalAchievementPoints)").font(.title2).fontWeight(.bold).foregroundColor(AppColors.textPrimary(colorScheme))
+                            Text("Points").font(.caption).foregroundColor(AppColors.textSecondary(colorScheme))
                         }
                         Spacer()
                         let progress = gameAchievements.isEmpty ? 0.0 : Double(unlockedAchievementCount) / Double(gameAchievements.count)
                         ProgressView(value: progress).tint(.blue).frame(width: 100)
                     }
 
-                    Divider().overlay(dividerColor)
+                    Divider().overlay(AppColors.divider(colorScheme))
 
                     ScrollView(.horizontal, showsIndicators: false) {
                         HStack(spacing: 12) {
                             ForEach(gameAchievements.prefix(6)) { achievement in AchievementBadgeView(achievement: achievement) }
                             if gameAchievements.count > 6 {
-                                Text("+\(gameAchievements.count - 6) more").font(.caption).foregroundColor(.white.opacity(0.4)).frame(width: 60)
+                                Text("+\(gameAchievements.count - 6) more").font(.caption).foregroundColor(AppColors.textMuted(colorScheme)).frame(width: 60)
                             }
                         }
                     }

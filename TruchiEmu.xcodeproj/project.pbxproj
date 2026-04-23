@@ -266,7 +266,6 @@
 		DD1AEA9A2F96D7240014A60E /* ShaderPreset.swift in Sources */ = {isa = PBXBuildFile; fileRef = DD1AE0932F96D7240014A60E /* ShaderPreset.swift */; };
 		DD1AEA9B2F96D7240014A60E /* AchievementToastView.swift in Sources */ = {isa = PBXBuildFile; fileRef = DD1AE0B62F96D7240014A60E /* AchievementToastView.swift */; };
 		DD1AEA9E2F96D7240014A60E /* LibretroBridgeImpl.mm in Sources */ = {isa = PBXBuildFile; fileRef = DD1AE0342F96D7240014A60E /* LibretroBridgeImpl.mm */; };
-		DD1AEA9F2F96D7240014A60E /* ThemeColors.swift in Sources */ = {isa = PBXBuildFile; fileRef = DD1AE5D22F96D7240014A60E /* ThemeColors.swift */; };
 		DD1AEAA02F96D7240014A60E /* CheatAutoLoader.swift in Sources */ = {isa = PBXBuildFile; fileRef = DD1AE5892F96D7240014A60E /* CheatAutoLoader.swift */; };
 		DD1AEAA12F96D7240014A60E /* CRTFilter.metal in Sources */ = {isa = PBXBuildFile; fileRef = DD1AE05E2F96D7240014A60E /* CRTFilter.metal */; };
 		DD1AEAA32F96D7240014A60E /* CoreOptionsRepository.swift in Sources */ = {isa = PBXBuildFile; fileRef = DD1AE5A02F96D7240014A60E /* CoreOptionsRepository.swift */; };
@@ -845,7 +844,6 @@
 		DD1AE5CF2F96D7240014A60E /* SavedStatesSection.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SavedStatesSection.swift; sourceTree = "<group>"; };
 		DD1AE5D02F96D7240014A60E /* Shader.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Shader.swift; sourceTree = "<group>"; };
 		DD1AE5D12F96D7240014A60E /* ShaderSection.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShaderSection.swift; sourceTree = "<group>"; };
-		DD1AE5D22F96D7240014A60E /* ThemeColors.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ThemeColors.swift; sourceTree = "<group>"; };
 		DD1AE5D42F96D7240014A60E /* GameDetailView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GameDetailView.swift; sourceTree = "<group>"; };
 		DD1AE5D62F96D7240014A60E /* ShaderPresetPickerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShaderPresetPickerView.swift; sourceTree = "<group>"; };
 		DD1AE5D92F96D7240014A60E /* GameError.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GameError.swift; sourceTree = "<group>"; };
@@ -1736,7 +1734,6 @@
 				DD1AE5CF2F96D7240014A60E /* SavedStatesSection.swift */,
 				DD1AE5D02F96D7240014A60E /* Shader.swift */,
 				DD1AE5D12F96D7240014A60E /* ShaderSection.swift */,
-				DD1AE5D22F96D7240014A60E /* ThemeColors.swift */,
 			);
 			path = Sections;
 			sourceTree = "<group>";
@@ -2128,7 +2125,6 @@
 				DD1AEA9A2F96D7240014A60E /* ShaderPreset.swift in Sources */,
 				DD1AEA9B2F96D7240014A60E /* AchievementToastView.swift in Sources */,
 				DD1AEA9E2F96D7240014A60E /* LibretroBridgeImpl.mm in Sources */,
-				DD1AEA9F2F96D7240014A60E /* ThemeColors.swift in Sources */,
 				DD1AEAA02F96D7240014A60E /* CheatAutoLoader.swift in Sources */,
 				DD1AEAA12F96D7240014A60E /* CRTFilter.metal in Sources */,
 				DD1AEAA32F96D7240014A60E /* CoreOptionsRepository.swift in Sources */,

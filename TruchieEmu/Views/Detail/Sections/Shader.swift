@@ -13,21 +13,21 @@ extension GameDetailView {
                         Text("Current Shader")
                             .font(.subheadline)
                             .fontWeight(.medium)
-                            .foregroundColor(.white.opacity(0.85))
+                            .foregroundColor(AppColors.textPrimary(colorScheme))
                         Text(ShaderManager.displayName(for: currentROM.settings.shaderPresetID))
                             .font(.caption)
-                            .foregroundColor(.white.opacity(0.5))
+                            .foregroundColor(AppColors.textSecondary(colorScheme))
                     }
                     Spacer()
                     Button("Customize") { presentShaderWindow() }
                         .foregroundColor(.white)
                         .padding(.horizontal, 14)
                         .padding(.vertical, 8)
-                        .background(Color.blue.opacity(0.6))
+                        .background(Color.accentColor.opacity(0.8))
                         .cornerRadius(8)
                 }
 
-                Divider().overlay(dividerColor)
+                Divider().overlay(AppColors.divider(colorScheme))
 
                 VStack(spacing: 6) {
                     let recommended = shaderManager.recommendedPresets(for: currentROM.systemID ?? "")
@@ -37,13 +37,13 @@ extension GameDetailView {
                             HStack {
                                 Image(systemName: shaderIcon(for: preset.shaderType))
                                     .foregroundColor(.blue).frame(width: 20)
-                                Text(preset.name).font(.subheadline).foregroundColor(.white.opacity(0.85))
+                                Text(preset.name).font(.subheadline).foregroundColor(AppColors.textPrimary(colorScheme))
                                 Spacer()
                                 if currentROM.settings.shaderPresetID == preset.id {
                                     Image(systemName: "checkmark.circle.fill").foregroundColor(.blue)
                                 }
                                 if let desc = preset.description {
-                                    Text(desc).font(.caption).foregroundColor(.white.opacity(0.4)).lineLimit(1)
+                                    Text(desc).font(.caption).foregroundColor(AppColors.textMuted(colorScheme)).lineLimit(1)
                                 }
                             }
                             .padding(.vertical, 6)
@@ -55,19 +55,19 @@ extension GameDetailView {
                     }
                 }
 
-                Divider().overlay(dividerColor)
+                Divider().overlay(AppColors.divider(colorScheme))
 
                 HStack {
                     VStack(alignment: .leading, spacing: 2) {
-                        Text("System Default").font(.caption).foregroundColor(.white.opacity(0.5))
-                        Text("Reset to default shader for this system").font(.caption).foregroundColor(.white.opacity(0.4))
+                        Text("System Default").font(.caption).foregroundColor(AppColors.textSecondary(colorScheme))
+                        Text("Reset to default shader for this system").font(.caption).foregroundColor(AppColors.textMuted(colorScheme))
                     }
                     Spacer()
                     Button("Use Default") { updateSettings { $0.shaderPresetID = systemDefaultShaderID } }
                         .foregroundColor(.white)
                         .padding(.horizontal, 12)
                         .padding(.vertical, 6)
-                        .background(buttonBgColor)
+                        .background(AppColors.cardBackground(colorScheme))
                         .cornerRadius(6)
                         .disabled(!isShaderCustomized)
                 }
@@ -110,7 +110,7 @@ extension GameDetailView {
         ShaderWindowController.shared = windowController
         windowController.show()
     }
-    
+
     func extractUniformValues(from settings: ROMSettings) -> [String: Float] {
         var values: [String: Float] = [:]
         values["scanlineIntensity"] = settings.scanlineIntensity
@@ -122,7 +122,7 @@ extension GameDetailView {
         values["phosphorEnabled"] = settings.phosphorEnabled ? 1.0 : 0.0
         return values
     }
-    
+
     func applyUniformValues(_ values: [String: Float], to settings: inout ROMSettings) {
         if let v = values["scanlineIntensity"] { settings.scanlineIntensity = v }
         if let v = values["barrelAmount"] { settings.barrelAmount = v }

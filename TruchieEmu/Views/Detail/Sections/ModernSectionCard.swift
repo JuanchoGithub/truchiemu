@@ -1,16 +1,14 @@
 import SwiftUI
 
-// MARK: - Modern Section Card Component (Non-collapsible)
-
 struct ModernSectionCard<Content: View>: View {
     let title: String?
     let icon: String?
     var badge: String? = nil
     var showHeader: Bool = true
     @ViewBuilder let content: Content
-    
+
     @Environment(\.colorScheme) private var colorScheme
-    
+
     init(
         title: String? = nil,
         icon: String? = nil,
@@ -24,77 +22,50 @@ struct ModernSectionCard<Content: View>: View {
         self.showHeader = showHeader
         self.content = content()
     }
-    
-    private var sectionTitleColor: Color {
-        colorScheme == .dark ? .white.opacity(0.6) : .primary.opacity(0.6)
-    }
-    
-    private var sectionIconColor: Color {
-        colorScheme == .dark ? .white.opacity(0.7) : .secondary
-    }
-    
-    private var dividerColor: Color {
-        colorScheme == .dark ? Color.white.opacity(0.1) : Color.secondary.opacity(0.2)
-    }
-    
-    private var cardBackground: Color {
-        colorScheme == .dark ? Color.white.opacity(0.06) : .secondary.opacity(0.05)
-    }
-    
-    private var cardBorder: Color {
-        colorScheme == .dark ? Color.white.opacity(0.1) : .secondary.opacity(0.15)
-    }
-    
-    // Accent badge color — adapts for light mode readability
-    private var badgeBackground: Color {
-        colorScheme == .dark ? Color.blue.opacity(0.3) : .blue.opacity(0.15)
-    }
-    private var badgeForeground: Color {
-        colorScheme == .dark ? .white : .blue
-    }
 
     var body: some View {
         VStack(spacing: 0) {
             if showHeader, let title = title {
-                HStack(spacing: 10) {
+                HStack(spacing: AppSpacing.sm) {
                     if let icon = icon {
                         Image(systemName: icon)
-                            .foregroundColor(sectionIconColor)
+                            .foregroundColor(AppColors.textTertiary(colorScheme))
                             .font(.body)
                     }
                     Text(title)
-                        .font(.subheadline)
+                        .font(.caption)
                         .fontWeight(.semibold)
-                        .foregroundColor(sectionTitleColor)
+                        .foregroundColor(AppColors.textTertiary(colorScheme))
                         .textCase(.uppercase)
                         .tracking(0.5)
                     if let badge = badge {
                         Text(badge)
                             .font(.caption2)
                             .fontWeight(.semibold)
-                            .padding(.horizontal, 8)
-                            .padding(.vertical, 3)
-                            .background(badgeBackground)
-                            .foregroundColor(badgeForeground)
-                            .cornerRadius(6)
+                            .padding(.horizontal, AppSpacing.sm)
+                            .padding(.vertical, AppSpacing.xxs)
+                            .background(AppColors.accentBackground(colorScheme))
+                            .foregroundColor(AppColors.accentTint(colorScheme))
+                            .clipShape(Capsule())
                     }
                     Spacer()
                 }
-                
-                Divider()
-                    .padding(.vertical, 10)
-                    .overlay(dividerColor)
+                .padding(.bottom, AppSpacing.sm)
+                .overlay(alignment: .bottom) {
+                    Divider()
+                        .overlay(AppColors.divider(colorScheme))
+                }
             }
 
             content
         }
-        .padding(16)
+        .padding(AppSpacing.xl)
         .background(
-            RoundedRectangle(cornerRadius: 12)
-                .fill(cardBackground)
+            RoundedRectangle(cornerRadius: AppRadius.xl)
+                .fill(AppColors.cardBackground(colorScheme))
                 .overlay(
-                    RoundedRectangle(cornerRadius: 12)
-                        .stroke(cardBorder, lineWidth: 1)
+                    RoundedRectangle(cornerRadius: AppRadius.xl)
+                        .stroke(AppColors.cardBorder(colorScheme), lineWidth: 1)
                 )
         )
     }

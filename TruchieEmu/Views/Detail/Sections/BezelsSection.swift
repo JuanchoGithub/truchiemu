@@ -1,13 +1,10 @@
 import SwiftUI
 
-// MARK: - Bezels Section Component
-
 struct BezelsSection: View {
     let rom: ROM
     let library: ROMLibrary
     @State private var currentBezelImage: NSImage?
     @Environment(\.colorScheme) private var colorScheme
-    private var t: ThemeColors { ThemeColors.for(colorScheme) }
 
     private var currentBezelStatusText: String {
         let bezelFileName = rom.settings.bezelFileName
@@ -39,7 +36,6 @@ struct BezelsSection: View {
             badge: currentBezelStatusText.isEmpty ? nil : currentBezelStatusText
         ) {
             VStack(alignment: .leading, spacing: 14) {
-                // Bezel preview image
                 if let bezelImage = currentBezelImage {
                     Image(nsImage: bezelImage)
                         .resizable()
@@ -48,39 +44,39 @@ struct BezelsSection: View {
                         .clipShape(RoundedRectangle(cornerRadius: 8))
                         .overlay(
                             RoundedRectangle(cornerRadius: 8)
-                                .stroke(t.cardBorder, lineWidth: 1)
+                                .stroke(AppColors.cardBorder(colorScheme), lineWidth: 1)
                         )
                 } else {
                     HStack(spacing: 8) {
                         Image(systemName: "photo.on.rectangle.angled")
                             .font(.system(size: 24))
-                            .foregroundColor(t.iconMuted)
+                            .foregroundColor(AppColors.textMuted(colorScheme))
                         VStack(alignment: .leading, spacing: 2) {
                             Text(currentBezelDisplayName)
                                 .font(.subheadline)
-                                .foregroundColor(t.textSecondary)
+                                .foregroundColor(AppColors.textSecondary(colorScheme))
                             Text("No preview available")
                                 .font(.caption)
-                                .foregroundColor(t.textMuted)
+                                .foregroundColor(AppColors.textMuted(colorScheme))
                         }
                     }
                     .frame(maxWidth: .infinity)
                     .padding(.vertical, 16)
-                    .background(t.cardBackgroundSubtle)
+                    .background(AppColors.cardBackgroundSubtle(colorScheme))
                     .cornerRadius(8)
                 }
 
-                Divider().overlay(t.divider)
+                Divider().overlay(AppColors.divider(colorScheme))
 
                 HStack {
                     VStack(alignment: .leading, spacing: 2) {
                         Text("Current Bezel")
                             .font(.subheadline)
                             .fontWeight(.medium)
-                            .foregroundColor(t.textPrimary)
+                            .foregroundColor(AppColors.textPrimary(colorScheme))
                         Text(currentBezelDisplayName)
                             .font(.caption)
-                            .foregroundColor(t.textSecondary)
+                            .foregroundColor(AppColors.textSecondary(colorScheme))
                     }
 
                     Spacer()
@@ -91,11 +87,11 @@ struct BezelsSection: View {
                     .foregroundColor(.white)
                     .padding(.horizontal, 14)
                     .padding(.vertical, 8)
-                    .background(Color.blue.opacity(0.6))
+                    .background(Color.accentColor.opacity(0.8))
                     .cornerRadius(8)
                 }
 
-                Divider().overlay(t.divider)
+                Divider().overlay(AppColors.divider(colorScheme))
 
                 VStack(spacing: 8) {
                     Button {
@@ -106,12 +102,12 @@ struct BezelsSection: View {
                                 .foregroundColor(.white)
                                 .frame(width: 20)
                             Text("Auto-Match Bezel")
-                                .foregroundColor(t.textPrimary)
+                                .foregroundColor(AppColors.textPrimary(colorScheme))
                             Spacer()
                         }
                         .padding(.vertical, 6)
                         .padding(.horizontal, 10)
-                        .background(t.buttonBackground)
+                        .background(AppColors.cardBackground(colorScheme))
                         .cornerRadius(6)
                     }
                     .buttonStyle(.plain)
@@ -124,22 +120,22 @@ struct BezelsSection: View {
                                 .foregroundColor(.white)
                                 .frame(width: 20)
                             Text("Clear Bezel")
-                                .foregroundColor(t.textPrimary)
+                                .foregroundColor(AppColors.textPrimary(colorScheme))
                             Spacer()
                         }
                         .padding(.vertical, 6)
                         .padding(.horizontal, 10)
-                        .background(t.buttonBackground)
+                        .background(AppColors.cardBackground(colorScheme))
                         .cornerRadius(6)
                     }
                     .buttonStyle(.plain)
                 }
 
-                Divider().overlay(t.divider)
+                Divider().overlay(AppColors.divider(colorScheme))
 
                 Text("Bezels are pre-downloaded before gameplay. Browse available bezels from The Bezel Project or import your own.")
                     .font(.caption)
-                    .foregroundColor(t.textMuted)
+                    .foregroundColor(AppColors.textMuted(colorScheme))
             }
         }
         .task(id: rom.id) {
@@ -153,23 +149,19 @@ struct BezelsSection: View {
         guard bezelFileName != "none" else { currentBezelImage = nil; return }
         guard let systemID = rom.systemID else { currentBezelImage = nil; return }
 
-        // Try direct path
         let directURL = BezelStorageManager.shared.bezelFilePath(systemID: systemID, gameName: bezelFileName.isEmpty ? rom.displayName : bezelFileName)
         if let image = NSImage(contentsOf: directURL) { currentBezelImage = image; return }
 
-        // Try with .png extension
         let baseName = bezelFileName.isEmpty ? rom.displayName : bezelFileName
         let fileNameWithExt = baseName.hasSuffix(".png") ? baseName : baseName + ".png"
         let urlWithExt = BezelStorageManager.shared.bezelFilePath(systemID: systemID, gameName: fileNameWithExt)
         if let image = NSImage(contentsOf: urlWithExt) { currentBezelImage = image; return }
 
-        // Try auto-match via BezelManager
         let result = BezelManager.shared.resolveBezel(systemID: systemID, rom: rom)
         if let entry = result.entry, let url = entry.localURL, FileManager.default.fileExists(atPath: url.path) {
             currentBezelImage = NSImage(contentsOf: url); return
         }
 
-        // Scan directory
         let bezelDir = BezelStorageManager.shared.systemBezelsDirectory(for: systemID)
         if FileManager.default.fileExists(atPath: bezelDir.path) {
             let searchName = bezelFileName.isEmpty ? rom.displayName : bezelFileName

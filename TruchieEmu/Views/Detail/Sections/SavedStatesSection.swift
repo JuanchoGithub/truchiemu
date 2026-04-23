@@ -1,7 +1,5 @@
 import SwiftUI
 
-// MARK: - Saved States Section Component
-
 struct SavedStatesSection: View {
     let rom: ROM
     let library: ROMLibrary
@@ -10,7 +8,6 @@ struct SavedStatesSection: View {
     var onLaunchSlot: ((Int) -> Void)? = nil
     @StateObject private var saveStateManager = SaveStateManager()
     @Environment(\.colorScheme) private var colorScheme
-    private var t: ThemeColors { ThemeColors.for(colorScheme) }
 
     var body: some View {
         ModernSectionCard(
@@ -27,13 +24,13 @@ struct SavedStatesSection: View {
                     VStack(spacing: 8) {
                         Image(systemName: "externaldrive.slash")
                             .font(.system(size: 30))
-                            .foregroundColor(t.iconMuted)
+                            .foregroundColor(AppColors.textMuted(colorScheme))
                         Text("No saved states")
                             .font(.subheadline)
-                            .foregroundColor(t.textSecondary)
+                            .foregroundColor(AppColors.textSecondary(colorScheme))
                         Text("Save states created during gameplay")
                             .font(.caption)
-                            .foregroundColor(t.textMuted)
+                            .foregroundColor(AppColors.textMuted(colorScheme))
                     }
                     .frame(maxWidth: .infinity)
                     .padding(.vertical, 16)
@@ -55,18 +52,18 @@ struct SavedStatesSection: View {
                 }
 
                 if !existingSlots.isEmpty {
-                    Divider().overlay(t.divider)
+                    Divider().overlay(AppColors.divider(colorScheme))
 
                     HStack {
                         Text("\(existingSlots.count) save state(s)")
                             .font(.caption)
-                            .foregroundColor(t.textSecondary)
+                            .foregroundColor(AppColors.textSecondary(colorScheme))
                         Spacer()
                         let totalSize = existingSlots.reduce(0) { $0 + ($1.fileSize ?? 0) }
                         if totalSize > 0 {
                             Text(Int64(totalSize).formattedByteSize)
                                 .font(.caption)
-                                .foregroundColor(t.textSecondary)
+                                .foregroundColor(AppColors.textSecondary(colorScheme))
                         }
                     }
                 }

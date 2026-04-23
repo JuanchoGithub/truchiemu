@@ -46,7 +46,7 @@ targets:
       base:
         PRODUCT_NAME: TruchieEmu
         PRODUCT_BUNDLE_IDENTIFIER: com.truchiemu.app
-        SWIFT_OBJC_BRIDGING_HEADER: TruchieEmu/Engine/TruchieEmu-Bridging-Header.h
+        SWIFT_OBJC_BRIDGING_HEADER: TruchieEmu/Core/Engine/TruchieEmu-Bridging-Header.h
         CLANG_ENABLE_OBJC_ARC: YES
         GCC_C_LANGUAGE_STANDARD: gnu17
         CLANG_CXX_LANGUAGE_STANDARD: gnu++17
@@ -63,21 +63,19 @@ targets:
       - path: TruchieEmu/App
         excludes:
           - "*.DS_Store"
-      - path: TruchieEmu/Models
+      - path: TruchieEmu/Core/Models
         type: group
-        buildPhase: sources
       - path: TruchieEmu/Services
-      - path: TruchieEmu/Engine
-      - path: TruchieEmu/Shaders
+      - path: TruchieEmu/Core/Engine
+      - path: TruchieEmu/Core/Shaders
         excludes:
           - "slang/**"
           - "internal/**"
           - "all_shaders.metal"
         buildPhase: sources
       - path: TruchieEmu/Views
-      - path: TruchieEmu/Views/Shaders
-      - path: TruchieEmu/Utilities
-      # MAME ROM database (bundled JSON)
+      - path: TruchieEmu/Shared
+      - path: TruchieEmu/Features
       - path: scripts/mame_lookup/mame_rom_data.json
         buildPhase: resources
 

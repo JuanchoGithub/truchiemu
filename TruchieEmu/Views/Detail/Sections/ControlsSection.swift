@@ -1,14 +1,11 @@
 import SwiftUI
 
-// MARK: - Controls Section Component
-
 struct ControlsSection: View {
     let systemID: String
     let systemName: String
     let rom: ROM
     @EnvironmentObject var controllerService: ControllerService
     @Environment(\.colorScheme) private var colorScheme
-    private var t: ThemeColors { ThemeColors.for(colorScheme) }
 
     @State private var showControlsPicker = false
 
@@ -24,10 +21,10 @@ struct ControlsSection: View {
                         Text("Controller Mapping")
                             .font(.subheadline)
                             .fontWeight(.medium)
-                            .foregroundColor(t.textPrimary)
+                            .foregroundColor(AppColors.textPrimary(colorScheme))
                         Text("Uses standard \(systemName) layout")
                             .font(.caption)
-                            .foregroundColor(t.textSecondary)
+                            .foregroundColor(AppColors.textSecondary(colorScheme))
                     }
 
                     Spacer()
@@ -38,7 +35,7 @@ struct ControlsSection: View {
                     .foregroundColor(.white)
                     .padding(.horizontal, 14)
                     .padding(.vertical, 8)
-                    .background(Color.blue.opacity(0.6))
+                    .background(Color.accentColor.opacity(0.8))
                     .cornerRadius(8)
                 }
 
@@ -53,29 +50,29 @@ struct ControlsSection: View {
                             Text("Default Mapping")
                                 .font(.subheadline)
                                 .fontWeight(.medium)
-                                .foregroundColor(t.textPrimary)
+                                .foregroundColor(AppColors.textPrimary(colorScheme))
                             Text("Standard \(systemName) controller")
                                 .font(.caption)
-                                .foregroundColor(t.textSecondary)
+                                .foregroundColor(AppColors.textSecondary(colorScheme))
                         }
 
                         Spacer()
                     }
                     .padding(12)
-                    .background(t.cardBackground)
+                    .background(AppColors.cardBackground(colorScheme))
                     .cornerRadius(8)
                 }
 
-                Divider().overlay(t.divider)
+                Divider().overlay(AppColors.divider(colorScheme))
 
                 HStack {
                     VStack(alignment: .leading, spacing: 2) {
                         Text("System Default Controls")
                             .font(.caption)
-                            .foregroundColor(t.textSecondary)
+                            .foregroundColor(AppColors.textSecondary(colorScheme))
                         Text("Reset to default controls")
                             .font(.caption)
-                            .foregroundColor(t.textMuted)
+                            .foregroundColor(AppColors.textMuted(colorScheme))
                     }
                     Spacer()
                     Button("Reset") {
@@ -84,7 +81,7 @@ struct ControlsSection: View {
                     .foregroundColor(.white)
                     .padding(.horizontal, 12)
                     .padding(.vertical, 6)
-                    .background(t.buttonBackground)
+                    .background(AppColors.cardBackground(colorScheme))
                     .cornerRadius(6)
                 }
             }

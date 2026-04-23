@@ -8,9 +8,9 @@ extension GameDetailView {
                 fetchBoxArtButton
                 fetchMetadataButton
             }
-            
+
             if !screenshotImages.isEmpty { screenshotsRow }
-            
+
             ModernSectionCard(showHeader: false) {
                 VStack(alignment: .leading, spacing: 14) {
                     HStack {
@@ -32,11 +32,11 @@ extension GameDetailView {
                         .disabled(currentROM.systemID != "gb" && currentROM.systemID != "gbc")
                     }
                     .padding(.vertical, 8)
-                    .foregroundColor(textColor)
-                    
-                    Divider().overlay(dividerColor)
+                    .foregroundColor(AppColors.textPrimary(colorScheme))
+
+                    Divider().overlay(AppColors.divider(colorScheme))
                     MetadataRow(label: "File Name", value: currentROM.path.lastPathComponent)
-                    Divider().overlay(dividerColor)
+                    Divider().overlay(AppColors.divider(colorScheme))
                     MetadataRow(
                         label: "Path",
                         value: currentROM.path.deletingLastPathComponent().path,
@@ -46,11 +46,11 @@ extension GameDetailView {
                         }
                     )
                     if let size = fileSize {
-                        Divider().overlay(dividerColor)
+                        Divider().overlay(AppColors.divider(colorScheme))
                         MetadataRow(label: "File Size", value: size)
                     }
                     if let crc = crcHash {
-                        Divider().overlay(dividerColor)
+                        Divider().overlay(AppColors.divider(colorScheme))
                         MetadataRow(
                             label: "CRC32",
                             value: crc,
@@ -63,37 +63,37 @@ extension GameDetailView {
                     }
                     if let meta = currentROM.metadata {
                         if let original = meta.title, currentROM.customName != nil {
-                            Divider().overlay(dividerColor)
+                            Divider().overlay(AppColors.divider(colorScheme))
                             MetadataRow(label: "Original Name", value: original)
                         }
                         if let dev = meta.developer {
-                            Divider().overlay(dividerColor)
+                            Divider().overlay(AppColors.divider(colorScheme))
                             MetadataRow(label: "Developer", value: dev)
                         }
                         if let pub = meta.publisher {
-                            Divider().overlay(dividerColor)
+                            Divider().overlay(AppColors.divider(colorScheme))
                             MetadataRow(label: "Publisher", value: pub)
                         }
                         if let genre = meta.genre {
-                            Divider().overlay(dividerColor)
+                            Divider().overlay(AppColors.divider(colorScheme))
                             MetadataRow(label: "Genre", value: genre)
                         }
-                        Divider().overlay(dividerColor)
+                        Divider().overlay(AppColors.divider(colorScheme))
                         MetadataRow(label: "Players", value: String(meta.players))
-                        Divider().overlay(dividerColor)
+                        Divider().overlay(AppColors.divider(colorScheme))
                         MetadataRow(label: "Co-op", value: meta.cooperative ? "Yes" : "No")
                         if let esrb = meta.esrbRating {
-                            Divider().overlay(dividerColor)
+                            Divider().overlay(AppColors.divider(colorScheme))
                             HStack(alignment: .top, spacing: 16) {
                                 Text("ESRB".uppercased())
                                     .font(.caption)
                                     .fontWeight(.medium)
-                                    .foregroundColor(.white.opacity(0.4))
+                                    .foregroundColor(AppColors.textTertiary(colorScheme))
                                     .frame(width: 100, alignment: .leading)
                                 Text(esrb)
                                     .font(.body)
                                     .fontWeight(.semibold)
-                                    .foregroundColor(.white.opacity(0.85))
+                                    .foregroundColor(AppColors.textPrimary(colorScheme))
                                     .padding(.horizontal, 10)
                                     .padding(.vertical, 4)
                                     .background(esrbBadgeColor(for: esrb))
@@ -105,14 +105,14 @@ extension GameDetailView {
                 }
             }
 
-             coreInfoSection
-             
-             cheatsEnabledSection
-             
-             if currentROM.systemID == "mame" || currentROM.systemID == "arcade" {
+            coreInfoSection
+
+            cheatsEnabledSection
+
+            if currentROM.systemID == "mame" || currentROM.systemID == "arcade" {
                 MAMEDependencyStatusView(rom: currentROM, coreID: activeCoreID)
             }
-            
+
             if currentROM.systemID == "gb" || currentROM.systemID == "gbc" {
                 gbColorizationSection
             }
@@ -121,23 +121,23 @@ extension GameDetailView {
                 ModernSectionCard(showHeader: false) {
                     Text(description)
                         .font(.body)
-                        .foregroundColor(.white.opacity(0.7))
+                        .foregroundColor(AppColors.textSecondary(colorScheme))
                         .lineSpacing(4)
                         .fixedSize(horizontal: false, vertical: true)
                 }
             }
         }
     }
-    
+
     var coreInfoSection: some View {
         ModernSectionCard(title: "Core", icon: "cpu") {
             VStack(alignment: .leading, spacing: 12) {
                 HStack {
-                    Image(systemName: "cpu").foregroundColor(.white.opacity(0.5))
-                    Text("Emulation Core").foregroundColor(.white.opacity(0.5)).font(.caption)
+                    Image(systemName: "cpu").foregroundColor(AppColors.textSecondary(colorScheme))
+                    Text("Emulation Core").foregroundColor(AppColors.textSecondary(colorScheme)).font(.caption)
                     Spacer()
                     if installedCores.isEmpty {
-                        Text("No cores installed").font(.caption).foregroundColor(.white.opacity(0.3))
+                        Text("No cores installed").font(.caption).foregroundColor(AppColors.textMuted(colorScheme))
                     } else {
                         Picker("Core", selection: $infoCoreID) {
                             ForEach(installedCores) { core in
@@ -150,24 +150,24 @@ extension GameDetailView {
                         .onChange(of: infoCoreID) { _, _ in }
                     }
                 }
-                Divider().overlay(dividerColor)
+                Divider().overlay(AppColors.divider(colorScheme))
                 Toggle(isOn: $infoApplyCoreToSystem) {
                     HStack {
-                        Image(systemName: "globe").foregroundColor(.white.opacity(0.5))
-                        Text("Apply to system default").foregroundColor(.white.opacity(0.85))
+                        Image(systemName: "globe").foregroundColor(AppColors.textSecondary(colorScheme))
+                        Text("Apply to system default").foregroundColor(AppColors.textPrimary(colorScheme))
                     }
                 }
                 .toggleStyle(SwitchToggleStyle())
-                
+
                 if infoApplyCoreToSystem {
                     Text("This will change the default core for all \(systemName) games. The current game will no longer use a custom core override.")
-                        .font(.caption).foregroundColor(.white.opacity(0.4)).lineSpacing(2)
+                        .font(.caption).foregroundColor(AppColors.textTertiary(colorScheme)).lineSpacing(2)
                 } else {
                     Text("Only this game will use the selected core.")
-                        .font(.caption).foregroundColor(.white.opacity(0.4)).lineSpacing(2)
+                        .font(.caption).foregroundColor(AppColors.textTertiary(colorScheme)).lineSpacing(2)
                 }
-                
-                Divider().overlay(dividerColor)
+
+                Divider().overlay(AppColors.divider(colorScheme))
                 HStack {
                     Spacer()
                     Button { applyCoreConfigurationFromInfo() } label: {
@@ -178,7 +178,7 @@ extension GameDetailView {
                         .foregroundColor(.white)
                         .padding(.horizontal, 16)
                         .padding(.vertical, 8)
-                        .background(Color.blue.opacity(0.6))
+                        .background(Color.accentColor.opacity(0.8))
                         .cornerRadius(8)
                     }
                     .buttonStyle(.plain)
@@ -208,84 +208,84 @@ extension GameDetailView {
         }
     }
 
-     var cheatsEnabledSection: some View {
-         ModernSectionCard(title: "Cheats", icon: "gamecontroller") {
-             VStack(alignment: .leading, spacing: 12) {
-                 Toggle(isOn: Binding(
-                     get: { currentROM.settings.cheatsEnabled ?? false },
-                     set: { newValue in
-                         updateSettings { $0.cheatsEnabled = newValue }
-                     }
-                 )) {
-                     HStack {
-                         Image(systemName: "gamecontroller.fill").foregroundColor(.blue)
-                         Text("Enable Cheats").foregroundColor(.white.opacity(0.85))
-                     }
-                 }
-                 .toggleStyle(SwitchToggleStyle())
-                 
-                 if currentROM.settings.cheatsEnabled ?? false {
-                     Text("When enabled, the emulator will attempt to apply active cheats during launch.")
-                         .font(.caption).foregroundColor(.white.opacity(0.4)).lineSpacing(2)
-                 }
-             }
-         }
-     }
+    var cheatsEnabledSection: some View {
+        ModernSectionCard(title: "Cheats", icon: "gamecontroller") {
+            VStack(alignment: .leading, spacing: 12) {
+                Toggle(isOn: Binding(
+                    get: { currentROM.settings.cheatsEnabled ?? false },
+                    set: { newValue in
+                        updateSettings { $0.cheatsEnabled = newValue }
+                    }
+                )) {
+                    HStack {
+                        Image(systemName: "gamecontroller.fill").foregroundColor(.blue)
+                        Text("Enable Cheats").foregroundColor(AppColors.textPrimary(colorScheme))
+                    }
+                }
+                .toggleStyle(SwitchToggleStyle())
 
-     var gbColorizationSection: some View {
-         ModernSectionCard(title: "Game Boy Colorization", icon: "paintpalette") {
-             VStack(alignment: .leading, spacing: 12) {
-                 Toggle(isOn: Binding(
-                     get: { gbColorizationEnabled },
-                     set: { newValue in
-                         gbColorizationEnabled = newValue
-                         applyGBColorizationSettings()
-                     }
-                 )) {
-                     HStack {
-                         Image(systemName: "paintpalette.fill").foregroundColor(.purple)
-                         Text("Enable Colorization").foregroundColor(.white.opacity(0.85))
-                     }
-                 }
-                 .toggleStyle(SwitchToggleStyle())
-                 
-                 if gbColorizationEnabled {
-                     Divider().overlay(dividerColor)
-                     gbPaletteModeRow
-                     if gbColorizationMode == "internal" {
-                         Divider().overlay(dividerColor)
-                         if isGambatteCore {
-                             gbInternalPaletteRow
-                         } else {
-                             gbInternalPaletteRow.opacity(0.4).disabled(true)
-                                 .help("Gambatte core only — switch to gambatte_libretro to use named palettes")
-                         }
-                     }
-                     Divider().overlay(dividerColor)
-                     gbSGBBordersRow
-                     Divider().overlay(dividerColor)
-                     if isGambatteCore {
-                         gbColorCorrectionRow
-                     } else {
-                         gbColorCorrectionRow.opacity(0.4).disabled(true)
-                             .help("Gambatte core only — switch to gambatte_libretro to use color correction")
-                     }
-                     Divider().overlay(dividerColor)
-                     Text("Apply color palettes to original Game Boy (DMG) games. 'Auto' selects the best palette for each game. 'Internal' uses a classic Game Boy or Super Game Boy palette. Named palettes and color correction require the Gambatte core.")
-                         .font(.caption).foregroundColor(.white.opacity(0.4)).lineSpacing(2)
-                 } else {
-                     Divider().overlay(dividerColor)
-                     Text("Games will display in classic Game Boy monochrome (green-tinted).")
-                         .font(.caption).foregroundColor(.white.opacity(0.4)).lineSpacing(2)
-                 }
-             }
-         }
-     }
+                if currentROM.settings.cheatsEnabled ?? false {
+                    Text("When enabled, the emulator will attempt to apply active cheats during launch.")
+                        .font(.caption).foregroundColor(AppColors.textTertiary(colorScheme)).lineSpacing(2)
+                }
+            }
+        }
+    }
+
+    var gbColorizationSection: some View {
+        ModernSectionCard(title: "Game Boy Colorization", icon: "paintpalette") {
+            VStack(alignment: .leading, spacing: 12) {
+                Toggle(isOn: Binding(
+                    get: { gbColorizationEnabled },
+                    set: { newValue in
+                        gbColorizationEnabled = newValue
+                        applyGBColorizationSettings()
+                    }
+                )) {
+                    HStack {
+                        Image(systemName: "paintpalette.fill").foregroundColor(.purple)
+                        Text("Enable Colorization").foregroundColor(AppColors.textPrimary(colorScheme))
+                    }
+                }
+                .toggleStyle(SwitchToggleStyle())
+
+                if gbColorizationEnabled {
+                    Divider().overlay(AppColors.divider(colorScheme))
+                    gbPaletteModeRow
+                    if gbColorizationMode == "internal" {
+                        Divider().overlay(AppColors.divider(colorScheme))
+                        if isGambatteCore {
+                            gbInternalPaletteRow
+                        } else {
+                            gbInternalPaletteRow.opacity(0.4).disabled(true)
+                                .help("Gambatte core only — switch to gambatte_libretro to use named palettes")
+                        }
+                    }
+                    Divider().overlay(AppColors.divider(colorScheme))
+                    gbSGBBordersRow
+                    Divider().overlay(AppColors.divider(colorScheme))
+                    if isGambatteCore {
+                        gbColorCorrectionRow
+                    } else {
+                        gbColorCorrectionRow.opacity(0.4).disabled(true)
+                            .help("Gambatte core only — switch to gambatte_libretro to use color correction")
+                    }
+                    Divider().overlay(AppColors.divider(colorScheme))
+                    Text("Apply color palettes to original Game Boy (DMG) games. 'Auto' selects the best palette for each game. 'Internal' uses a classic Game Boy or Super Game Boy palette. Named palettes and color correction require the Gambatte core.")
+                        .font(.caption).foregroundColor(AppColors.textTertiary(colorScheme)).lineSpacing(2)
+                } else {
+                    Divider().overlay(AppColors.divider(colorScheme))
+                    Text("Games will display in classic Game Boy monochrome (green-tinted).")
+                        .font(.caption).foregroundColor(AppColors.textTertiary(colorScheme)).lineSpacing(2)
+                }
+            }
+        }
+    }
 
     var gbPaletteModeRow: some View {
         HStack {
-            Image(systemName: "eyedropper").foregroundColor(.white.opacity(0.5))
-            Text("Palette Mode").foregroundColor(.white.opacity(0.5)).font(.caption)
+            Image(systemName: "eyedropper").foregroundColor(AppColors.textSecondary(colorScheme))
+            Text("Palette Mode").foregroundColor(AppColors.textSecondary(colorScheme)).font(.caption)
             Spacer()
             Picker("Palette Mode", selection: Binding(
                 get: { gbColorizationMode },
@@ -308,8 +308,8 @@ extension GameDetailView {
 
     var gbInternalPaletteRow: some View {
         HStack {
-            Image(systemName: "paintpalette").foregroundColor(.white.opacity(0.5))
-            Text("Internal Palette").foregroundColor(.white.opacity(0.5)).font(.caption)
+            Image(systemName: "paintpalette").foregroundColor(AppColors.textSecondary(colorScheme))
+            Text("Internal Palette").foregroundColor(AppColors.textSecondary(colorScheme)).font(.caption)
             Spacer()
             Picker("Internal Palette", selection: Binding(
                 get: { gbInternalPalette },
@@ -362,13 +362,13 @@ extension GameDetailView {
     var gbSGBBordersRow: some View {
         VStack(alignment: .leading, spacing: 4) {
             HStack {
-                Image(systemName: "rectangle.on.rectangle").foregroundColor(.white.opacity(0.5))
-                Text("Super Game Boy Borders").foregroundColor(.white.opacity(0.5)).font(.caption)
+                Image(systemName: "rectangle.on.rectangle").foregroundColor(AppColors.textSecondary(colorScheme))
+                Text("Super Game Boy Borders").foregroundColor(AppColors.textSecondary(colorScheme)).font(.caption)
                 Spacer()
-                Text("mGBA core").foregroundColor(.white.opacity(0.3)).font(.caption2)
+                Text("mGBA core").foregroundColor(AppColors.textMuted(colorScheme)).font(.caption2)
             }
             Text("Show decorative borders on SGB-enhanced games.")
-                .font(.caption2).foregroundColor(.white.opacity(0.3)).padding(.leading, 24)
+                .font(.caption2).foregroundColor(AppColors.textMuted(colorScheme)).padding(.leading, 24)
             Toggle("", isOn: Binding(
                 get: { gbSGBBordersEnabled },
                 set: { newValue in
@@ -384,8 +384,8 @@ extension GameDetailView {
     var gbColorCorrectionRow: some View {
         VStack(alignment: .leading, spacing: 4) {
             HStack {
-                Image(systemName: "sun.max").foregroundColor(.white.opacity(0.5))
-                Text("Color Correction").foregroundColor(.white.opacity(0.5)).font(.caption)
+                Image(systemName: "sun.max").foregroundColor(AppColors.textSecondary(colorScheme))
+                Text("Color Correction").foregroundColor(AppColors.textSecondary(colorScheme)).font(.caption)
                 Spacer()
                 Picker("Color Correction", selection: Binding(
                     get: { gbColorCorrectionMode },
@@ -403,7 +403,7 @@ extension GameDetailView {
                 .frame(width: 160)
             }
             Text("Match output colors to original Game Boy Color LCD.")
-                .font(.caption2).foregroundColor(.white.opacity(0.3)).padding(.leading, 24)
+                .font(.caption2).foregroundColor(AppColors.textMuted(colorScheme)).padding(.leading, 24)
         }
     }
 
@@ -470,10 +470,10 @@ extension GameDetailView {
                 if case .working = manualActionStatus { ProgressView().controlSize(.small) } else { Image(systemName: "qrcode.viewfinder") }
                 Text("Identify Game")
             }
-            .foregroundColor(.white.opacity(0.8))
+            .foregroundColor(AppColors.textPrimary(colorScheme))
             .padding(.horizontal, 14)
             .padding(.vertical, 8)
-            .background(buttonBgColor)
+            .background(AppColors.cardBackground(colorScheme))
             .cornerRadius(20)
         }
         .buttonStyle(.plain)
@@ -489,9 +489,9 @@ extension GameDetailView {
                         .padding(.vertical, 6)
                         .padding(.horizontal, 12)
                         .frame(maxWidth: .infinity)
-                        .background(subtleButtonBgColor)
+                        .background(AppColors.cardBackgroundSubtle(colorScheme))
                         .cornerRadius(8)
-                        .overlay(RoundedRectangle(cornerRadius: 8).stroke(Color.white.opacity(0.12), lineWidth: 1))
+                        .overlay(RoundedRectangle(cornerRadius: 8).stroke(AppColors.cardBorder(colorScheme), lineWidth: 1))
                 }
                 .buttonStyle(.plain)
             case .working(_):
@@ -500,13 +500,13 @@ extension GameDetailView {
                     .padding(.vertical, 6)
                     .padding(.horizontal, 12)
                     .frame(maxWidth: .infinity)
-                    .background(subtleButtonBgColor)
+                    .background(AppColors.cardBackgroundSubtle(colorScheme))
                     .cornerRadius(8)
             case .result(let msg, let tone):
                 Button { clearFetchMetadataStatus() } label: {
                     HStack(spacing: 6) {
                         Image(systemName: tone.iconName).font(.caption).foregroundColor(tone.foregroundColor)
-                        Text(msg).font(.caption).foregroundColor(.white.opacity(0.7))
+                        Text(msg).font(.caption).foregroundColor(AppColors.textSecondary(colorScheme))
                     }
                     .padding(.vertical, 6)
                     .padding(.horizontal, 12)
@@ -550,27 +550,27 @@ extension GameDetailView {
                         Image(systemName: "arrow.down.circle")
                         Text("Fetch Art")
                     }
-                    .foregroundColor(.white.opacity(0.8))
+                    .foregroundColor(AppColors.textPrimary(colorScheme))
                     .padding(.horizontal, 14)
                     .padding(.vertical, 8)
-                    .background(buttonBgColor)
+                    .background(AppColors.cardBackground(colorScheme))
                     .cornerRadius(20)
                 }
                 .buttonStyle(.plain)
             case .working(let msg):
                 HStack(spacing: 6) {
                     ProgressView().controlSize(.small)
-                    Text(msg).font(.caption).foregroundColor(.white.opacity(0.7))
+                    Text(msg).font(.caption).foregroundColor(AppColors.textSecondary(colorScheme))
                 }
                 .padding(.horizontal, 14)
                 .padding(.vertical, 8)
-                .background(buttonBgColor)
+                .background(AppColors.cardBackground(colorScheme))
                 .cornerRadius(20)
             case .result(let msg, let tone):
                 Button { clearFetchBoxArtStatus() } label: {
                     HStack(spacing: 6) {
                         Image(systemName: tone.iconName).font(.caption).foregroundColor(tone.foregroundColor)
-                        Text(msg).font(.caption).foregroundColor(.white.opacity(0.7))
+                        Text(msg).font(.caption).foregroundColor(AppColors.textSecondary(colorScheme))
                     }
                     .padding(.horizontal, 14)
                     .padding(.vertical, 8)
@@ -617,7 +617,7 @@ extension GameDetailView {
                             .aspectRatio(contentMode: .fill)
                             .frame(width: 180, height: 120)
                             .clipShape(RoundedRectangle(cornerRadius: 8))
-                            .overlay(RoundedRectangle(cornerRadius: 8).stroke(Color.white.opacity(0.15), lineWidth: 1))
+                            .overlay(RoundedRectangle(cornerRadius: 8).stroke(AppColors.cardBorder(colorScheme), lineWidth: 1))
                     }
                 }
             }
@@ -626,11 +626,11 @@ extension GameDetailView {
 
     func esrbBadgeColor(for rating: String) -> Color {
         switch rating.lowercased() {
-        case "ec", "e": return Color.green.opacity(0.3)
+        case "ec", "e": return AppColors.success(colorScheme).opacity(0.3)
         case "e10+": return Color.blue.opacity(0.3)
         case "t": return Color.yellow.opacity(0.3)
-        case "m", "ao": return Color.red.opacity(0.3)
-        default: return Color.white.opacity(0.1)
+        case "m", "ao": return AppColors.error(colorScheme).opacity(0.3)
+        default: return AppColors.cardBackgroundSubtle(colorScheme)
         }
     }
 }

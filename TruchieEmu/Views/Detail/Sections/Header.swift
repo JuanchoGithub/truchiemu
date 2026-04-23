@@ -12,7 +12,7 @@ extension GameDetailView {
                         library.updateROM(updated)
                     })
                     .font(.title.bold())
-                    .foregroundColor(t.textPrimary)
+                    .foregroundColor(AppColors.textPrimary(colorScheme))
                     .textFieldStyle(.plain)
                     .onAppear {
                         localTitle = currentROM.customName ?? currentROM.metadata?.title ?? currentROM.name
@@ -20,16 +20,16 @@ extension GameDetailView {
                     .onChange(of: currentROM.id) { _, _ in
                         localTitle = currentROM.customName ?? currentROM.metadata?.title ?? currentROM.name
                     }
-                    
+
                     if let year = currentROM.metadata?.year {
                         Text("(\(year))")
                             .font(.title3)
                             .fontWeight(.medium)
-                            .foregroundColor(t.textSecondary)
+                            .foregroundColor(AppColors.textSecondary(colorScheme))
                     }
                     Spacer()
                 }
-                
+
                 if let sys = system {
                     HStack(spacing: 8) {
                         if let emuImg = sys.emuImage(size: 132) {
@@ -41,20 +41,19 @@ extension GameDetailView {
                         Text(sys.name)
                             .font(.caption)
                             .fontWeight(.medium)
-                            .foregroundColor(t.textSecondary)
+                            .foregroundColor(AppColors.textSecondary(colorScheme))
                     }
                     .padding(.horizontal, 10)
                     .padding(.vertical, 4)
-                    .background(t.pillBackgroundSubtle)
+                    .background(AppColors.cardBackgroundSubtle(colorScheme))
                     .cornerRadius(6)
                 }
-                
+
                 Spacer()
                 launchButton
                 Spacer()
             }
-            .frame(maxWidth: .infinity, alignment: .leading)
-            
+
             HStack(spacing: 12) {
                 DetailBoxArtButton(
                     image: boxArtImage,
@@ -63,7 +62,7 @@ extension GameDetailView {
                 )
                 .frame(width: 110, height: 140)
                 .clipShape(RoundedRectangle(cornerRadius: 10))
-                .shadow(color: Color.black.opacity(0.5), radius: 10, y: 4)
+                .shadow(color: Color.black.opacity(0.3), radius: 8, y: 4)
                 .contextMenu {
                     Button {
                         showBoxArtPicker = true
@@ -71,7 +70,7 @@ extension GameDetailView {
                         Label("Change Box Art", systemImage: "photo")
                     }
                 }
-                
+
                 ZStack {
                     if let img = boxArtImage {
                         Image(nsImage: img)
@@ -130,7 +129,7 @@ extension GameDetailView {
                 startPoint: .topLeading,
                 endPoint: .bottomTrailing
             )
-            
+
             if let img = system?.emuImage(size: 600) {
                 Image(nsImage: img)
                     .resizable()
@@ -140,7 +139,7 @@ extension GameDetailView {
             } else {
                 Image(systemName: system?.iconName ?? "gamecontroller")
                     .font(.system(size: 40))
-                    .foregroundColor(.white.opacity(0.4))
+                    .foregroundColor(AppColors.textMuted(colorScheme))
             }
         }
     }

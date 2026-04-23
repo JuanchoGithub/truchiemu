@@ -1,16 +1,11 @@
 import SwiftUI
 
-// MARK: - Cheat List Row View
-
 struct CheatListRowView: View {
     let cheat: Cheat
     let isOn: Bool
     var onToggle: () -> Void
     @Environment(\.colorScheme) private var colorScheme
-    
-    private var cheatButtonBg: Color { colorScheme == .dark ? .white.opacity(0.1) : .secondary.opacity(0.12) }
-    private var cheatRowBg: Color { colorScheme == .dark ? .white.opacity(0.03) : .secondary.opacity(0.03) }
-    
+
     var body: some View {
         HStack(alignment: .top, spacing: 10) {
             Toggle(isOn: Binding(
@@ -20,45 +15,44 @@ struct CheatListRowView: View {
                 VStack(alignment: .leading, spacing: 2) {
                     Text(cheat.displayName)
                         .font(.subheadline)
-                        .foregroundColor(.white.opacity(0.85))
+                        .foregroundColor(AppColors.textPrimary(colorScheme))
                     if !cheat.code.isEmpty {
                         Text(cheat.codePreview)
                             .font(.system(.caption, design: .monospaced))
-                            .foregroundColor(.white.opacity(0.4))
+                            .foregroundColor(AppColors.textTertiary(colorScheme))
                     }
                 }
             }
             .toggleStyle(CheatToggleStyle())
-            
+
             Spacer()
-            
-            // Format badge
+
             Text(cheat.format.displayName)
                 .font(.caption2)
                 .padding(.horizontal, 6)
                 .padding(.vertical, 2)
-                .background(cheatButtonBg)
-                .foregroundColor(.white.opacity(0.6))
+                .background(AppColors.cardBackground(colorScheme))
+                .foregroundColor(AppColors.textSecondary(colorScheme))
                 .cornerRadius(4)
         }
         .padding(.vertical, 6)
         .padding(.horizontal, 8)
-        .background(cheatRowBg)
+        .background(AppColors.cardBackgroundSubtle(colorScheme))
         .cornerRadius(6)
     }
 }
 
-// MARK: - Cheat Toggle Style
-
 struct CheatToggleStyle: ToggleStyle {
+    @Environment(\.colorScheme) private var colorScheme
+
     func makeBody(configuration: Configuration) -> some View {
         HStack(spacing: 10) {
             Image(systemName: configuration.isOn ? "checkmark.circle.fill" : "circle")
-                .foregroundColor(configuration.isOn ? .green : .white.opacity(0.3))
+                .foregroundColor(configuration.isOn ? AppColors.success(colorScheme) : AppColors.textMuted(colorScheme))
                 .font(.body)
-            
+
             configuration.label
-            
+
             Spacer()
         }
         .contentShape(Rectangle())

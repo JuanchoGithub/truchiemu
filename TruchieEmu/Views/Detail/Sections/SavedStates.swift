@@ -14,9 +14,9 @@ extension GameDetailView {
 
                 if showSlots.isEmpty {
                     VStack(spacing: 8) {
-                        Image(systemName: "externaldrive.slash").font(.system(size: 30)).foregroundColor(.white.opacity(0.3))
-                        Text("No saved states").font(.subheadline).foregroundColor(.white.opacity(0.5))
-                        Text("Save states created during gameplay").font(.caption).foregroundColor(.white.opacity(0.4))
+                        Image(systemName: "externaldrive.slash").font(.system(size: 30)).foregroundColor(AppColors.textMuted(colorScheme))
+                        Text("No saved states").font(.subheadline).foregroundColor(AppColors.textSecondary(colorScheme))
+                        Text("Save states created during gameplay").font(.caption).foregroundColor(AppColors.textMuted(colorScheme))
                     }
                     .frame(maxWidth: .infinity)
                     .padding(.vertical, 16)
@@ -38,13 +38,13 @@ extension GameDetailView {
                 }
 
                 if !existingSlots.isEmpty {
-                    Divider().overlay(dividerColor)
+                    Divider().overlay(AppColors.divider(colorScheme))
                     HStack {
-                        Text("\(existingSlots.count) save state(s)").font(.caption).foregroundColor(.white.opacity(0.5))
+                        Text("\(existingSlots.count) save state(s)").font(.caption).foregroundColor(AppColors.textSecondary(colorScheme))
                         Spacer()
                         let totalSize = existingSlots.reduce(0) { $0 + ($1.fileSize ?? 0) }
                         if totalSize > 0 {
-                            Text(Int64(totalSize).formattedByteSize).font(.caption).foregroundColor(.white.opacity(0.5))
+                            Text(Int64(totalSize).formattedByteSize).font(.caption).foregroundColor(AppColors.textSecondary(colorScheme))
                         }
                     }
                 }

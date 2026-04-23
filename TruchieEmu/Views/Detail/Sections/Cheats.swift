@@ -9,7 +9,7 @@ extension GameDetailView {
             return searchWords.allSatisfy { word in cheatText.contains(word) }
         }
     }
-    
+
     var cheatsSection: some View {
         ModernSectionCard(
             title: "Cheats",
@@ -24,14 +24,14 @@ extension GameDetailView {
                         } else {
                             Image(systemName: downloadMessageTone.iconName).foregroundColor(downloadMessageTone.foregroundColor)
                         }
-                        Text(message).font(.caption).foregroundColor(.white.opacity(0.7))
+                        Text(message).font(.caption).foregroundColor(AppColors.textSecondary(colorScheme))
                         Spacer()
                         Button { downloadMessage = nil } label: {
-                            Image(systemName: "xmark.circle.fill").foregroundColor(.white.opacity(0.3))
+                            Image(systemName: "xmark.circle.fill").foregroundColor(AppColors.textMuted(colorScheme))
                         }
                         .buttonStyle(.plain)
                     }
-                    .padding(8).background(cardBgColor).cornerRadius(6)
+                    .padding(8).background(AppColors.cardBackground(colorScheme)).cornerRadius(6)
                 }
 
                 HStack(spacing: 6) {
@@ -74,36 +74,36 @@ extension GameDetailView {
                         .background(cheatDownloadService.isDownloading ? Color.green.opacity(0.4) : Color.green.opacity(0.6)).cornerRadius(5)
                     }
                     .disabled(cheatDownloadService.isDownloading)
-                    
+
                     Button { showImportCheatFile = true } label: {
                         HStack(spacing: 4) { Image(systemName: "square.and.arrow.down"); Text("Import") }
-                        .foregroundColor(.white).padding(.horizontal, 10).padding(.vertical, 5).background(Color.orange.opacity(0.6)).cornerRadius(5)
+                            .foregroundColor(.white).padding(.horizontal, 10).padding(.vertical, 5).background(Color.orange.opacity(0.6)).cornerRadius(5)
                     }
-                    
+
                     Spacer()
                 }
 
-                Divider().overlay(dividerColor)
+                Divider().overlay(AppColors.divider(colorScheme))
 
                 if !cheatsList.isEmpty {
                     HStack(spacing: 6) {
-                        Image(systemName: "magnifyingglass").foregroundColor(.white.opacity(0.4)).font(.caption)
+                        Image(systemName: "magnifyingglass").foregroundColor(AppColors.textMuted(colorScheme)).font(.caption)
                         TextField("Search cheats...", text: $cheatSearchText)
-                            .textFieldStyle(.plain).font(.caption).foregroundColor(.white.opacity(0.85))
+                            .textFieldStyle(.plain).font(.caption).foregroundColor(AppColors.textPrimary(colorScheme))
                         if !cheatSearchText.isEmpty {
                             Button { cheatSearchText = "" } label: {
-                                Image(systemName: "xmark.circle.fill").foregroundColor(.white.opacity(0.3)).font(.caption)
+                                Image(systemName: "xmark.circle.fill").foregroundColor(AppColors.textMuted(colorScheme)).font(.caption)
                             }.buttonStyle(.plain)
                         }
                     }
-                    .padding(6).background(cardBgColor).cornerRadius(5)
+                    .padding(6).background(AppColors.cardBackground(colorScheme)).cornerRadius(5)
                 }
 
                 if cheatsList.isEmpty {
                     VStack(spacing: 4) {
-                        Image(systemName: "wand.and.stars").font(.system(size: 20)).foregroundColor(.white.opacity(0.3))
-                        Text("No cheats available").font(.caption).foregroundColor(.white.opacity(0.5))
-                        Text("Download or import a cheat file").font(.caption2).foregroundColor(.white.opacity(0.4))
+                        Image(systemName: "wand.and.stars").font(.system(size: 20)).foregroundColor(AppColors.textMuted(colorScheme))
+                        Text("No cheats available").font(.caption).foregroundColor(AppColors.textSecondary(colorScheme))
+                        Text("Download or import a cheat file").font(.caption2).foregroundColor(AppColors.textMuted(colorScheme))
                     }
                     .frame(maxWidth: .infinity).padding(.vertical, 10)
                 } else {
@@ -119,35 +119,35 @@ extension GameDetailView {
                         }
                     }
                     .frame(maxHeight: 300)
-                    
+
                     if !cheatSearchText.isEmpty && filteredCheatsList.isEmpty {
-                        Text("No cheats match \"\(cheatSearchText)\"").font(.caption2).foregroundColor(.white.opacity(0.4)).padding(.vertical, 4)
-                    }
-                    
-                    Divider().overlay(dividerColor)
-                    
-                    HStack {
-                        Button {
-                            if enabledCheatCount > 0 { cheatManagerService.disableAllCheats(for: currentROM) }
-                            else { cheatManagerService.enableAllCheats(for: currentROM) }
-                            loadCheatsList(); updateCheatCounts()
-                        } label: {
-                            Label(enabledCheatCount > 0 ? "Disable All" : "Enable All", systemImage: enabledCheatCount > 0 ? "stop.circle" : "play.circle")
-                                .font(.caption).foregroundColor(.white.opacity(0.7))
-                        }.buttonStyle(.plain)
-                        Spacer()
-                        Text("\(enabledCheatCount) of \(cheatCount) enabled").font(.caption).foregroundColor(.white.opacity(0.5))
+                        Text("No cheats match \"\(cheatSearchText)\"").font(.caption2).foregroundColor(AppColors.textMuted(colorScheme)).padding(.vertical, 4)
                     }
                 }
 
-                Divider().overlay(dividerColor)
+                Divider().overlay(AppColors.divider(colorScheme))
+
+                HStack {
+                    Button {
+                        if enabledCheatCount > 0 { cheatManagerService.disableAllCheats(for: currentROM) }
+                        else { cheatManagerService.enableAllCheats(for: currentROM) }
+                        loadCheatsList(); updateCheatCounts()
+                    } label: {
+                        Label(enabledCheatCount > 0 ? "Disable All" : "Enable All", systemImage: enabledCheatCount > 0 ? "stop.circle" : "play.circle")
+                            .font(.caption).foregroundColor(AppColors.textSecondary(colorScheme))
+                    }.buttonStyle(.plain)
+                    Spacer()
+                    Text("\(enabledCheatCount) of \(cheatCount) enabled").font(.caption).foregroundColor(AppColors.textSecondary(colorScheme))
+                }
+
+                Divider().overlay(AppColors.divider(colorScheme))
 
                 Button { openCheatSettings() } label: {
                     HStack {
-                        Image(systemName: "gearshape").foregroundColor(.white.opacity(0.5))
-                        Text("Cheat Settings").font(.caption).foregroundColor(.white.opacity(0.5))
+                        Image(systemName: "gearshape").foregroundColor(AppColors.textSecondary(colorScheme))
+                        Text("Cheat Settings").font(.caption).foregroundColor(AppColors.textSecondary(colorScheme))
                         Spacer()
-                        Image(systemName: "chevron.right").font(.caption).foregroundColor(.white.opacity(0.3))
+                        Image(systemName: "chevron.right").font(.caption).foregroundColor(AppColors.textMuted(colorScheme))
                     }
                 }.buttonStyle(.plain)
             }
@@ -176,7 +176,7 @@ extension GameDetailView {
             }
         }
     }
-    
+
     func loadCheatsList() { cheatsList = cheatManagerService.cheats(for: currentROM) }
     func updateCheatCounts() {
         cheatCount = cheatManagerService.totalCount(for: currentROM)

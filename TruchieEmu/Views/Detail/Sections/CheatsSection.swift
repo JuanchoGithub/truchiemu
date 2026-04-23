@@ -1,7 +1,5 @@
 import SwiftUI
 
-// MARK: - Cheats Section Component
-
 struct CheatsSection: View {
     let rom: ROM
     @StateObject private var cheatManagerService = CheatManagerService.shared
@@ -15,8 +13,7 @@ struct CheatsSection: View {
     @State private var showCheatManager = false
     @State private var showImportCheatFile = false
     @Environment(\.colorScheme) private var colorScheme
-    private var t: ThemeColors { ThemeColors.for(colorScheme) }
-    
+
     private var filteredCheatsList: [Cheat] {
         guard !cheatSearchText.trimmingCharacters(in: .whitespaces).isEmpty else {
             return cheatsList
@@ -35,7 +32,6 @@ struct CheatsSection: View {
             badge: cheatCount > 0 ? "\(enabledCheatCount)/\(cheatCount)" : nil
         ) {
             VStack(spacing: 10) {
-                // Download status message
                 if let message = downloadMessage {
                     HStack(spacing: 8) {
                         if cheatDownloadService.isDownloading {
@@ -46,22 +42,21 @@ struct CheatsSection: View {
                         }
                         Text(message)
                             .font(.caption)
-                            .foregroundColor(t.textSecondary)
+                            .foregroundColor(AppColors.textSecondary(colorScheme))
                         Spacer()
                         Button {
                             downloadMessage = nil
                         } label: {
                             Image(systemName: "xmark.circle.fill")
-                                .foregroundColor(t.iconMuted)
+                                .foregroundColor(AppColors.textMuted(colorScheme))
                         }
                         .buttonStyle(.plain)
                     }
                     .padding(8)
-                    .background(t.cardBackground)
+                    .background(AppColors.cardBackground(colorScheme))
                     .cornerRadius(6)
                 }
 
-                // Download and manage buttons
                 HStack(spacing: 6) {
                     Button {
                         Task { await downloadCheats() }
@@ -81,7 +76,7 @@ struct CheatsSection: View {
                         .cornerRadius(5)
                     }
                     .disabled(cheatDownloadService.isDownloading)
-                    
+
                     Button {
                         showImportCheatFile = true
                     } label: {
@@ -95,9 +90,9 @@ struct CheatsSection: View {
                         .background(Color.orange.opacity(0.6))
                         .cornerRadius(5)
                     }
-                    
+
                     Spacer()
-                    
+
                     Button {
                         showCheatManager = true
                     } label: {
@@ -108,52 +103,49 @@ struct CheatsSection: View {
                         .foregroundColor(.white)
                         .padding(.horizontal, 10)
                         .padding(.vertical, 5)
-                        .background(Color.blue.opacity(0.6))
+                        .background(Color.accentColor.opacity(0.6))
                         .cornerRadius(5)
                     }
                 }
 
-                Divider().overlay(t.divider)
+                Divider().overlay(AppColors.divider(colorScheme))
 
-                // Search field, cheat list, and footer
                 if !cheatsList.isEmpty {
-                    // Search
                     HStack(spacing: 6) {
                         Image(systemName: "magnifyingglass")
-                            .foregroundColor(t.iconMuted)
+                            .foregroundColor(AppColors.textMuted(colorScheme))
                             .font(.caption)
                         TextField("Search cheats...", text: $cheatSearchText)
                             .textFieldStyle(.plain)
                             .font(.caption)
-                            .foregroundColor(t.textPrimary)
+                            .foregroundColor(AppColors.textPrimary(colorScheme))
                         if !cheatSearchText.isEmpty {
                             Button {
                                 cheatSearchText = ""
                             } label: {
                                 Image(systemName: "xmark.circle.fill")
-                                    .foregroundColor(t.iconMuted)
+                                    .foregroundColor(AppColors.textMuted(colorScheme))
                                     .font(.caption)
                             }
                             .buttonStyle(.plain)
                         }
                     }
                     .padding(6)
-                    .background(t.cardBackground)
+                    .background(AppColors.cardBackground(colorScheme))
                     .cornerRadius(5)
                 }
 
-                // Cheat list or empty state
                 if cheatsList.isEmpty {
                     VStack(spacing: 4) {
                         Image(systemName: "wand.and.stars")
                             .font(.system(size: 20))
-                            .foregroundColor(t.iconMuted)
+                            .foregroundColor(AppColors.textMuted(colorScheme))
                         Text("No cheats available")
                             .font(.caption)
-                            .foregroundColor(t.textSecondary)
+                            .foregroundColor(AppColors.textSecondary(colorScheme))
                         Text("Download or import a cheat file")
                             .font(.caption2)
-                            .foregroundColor(t.textMuted)
+                            .foregroundColor(AppColors.textMuted(colorScheme))
                     }
                     .frame(maxWidth: .infinity)
                     .padding(.vertical, 10)
@@ -176,56 +168,56 @@ struct CheatsSection: View {
                         }
                     }
                     .frame(maxHeight: 300)
-                    
-                    if !cheatSearchText.isEmpty && filteredCheatsList.isEmpty {
-                        Text("No cheats match \"\(cheatSearchText)\"")
-                            .font(.caption2)
-                            .foregroundColor(t.textMuted)
-                            .padding(.vertical, 4)
-                    }
-                    
-                    Divider().overlay(t.divider)
-                    
-                    HStack {
-                        Button {
-                            if enabledCheatCount > 0 {
-                                cheatManagerService.disableAllCheats(for: rom)
-                            } else {
-                                cheatManagerService.enableAllCheats(for: rom)
-                            }
-                            loadCheatsList()
-                            updateCheatCounts()
-                        } label: {
-                            Label(enabledCheatCount > 0 ? "Disable All" : "Enable All", 
-                                  systemImage: enabledCheatCount > 0 ? "stop.circle" : "play.circle")
-                                .font(.caption)
-                                .foregroundColor(t.textSecondary)
-                        }
-                        .buttonStyle(.plain)
-                        
-                        Spacer()
-                        
-                        Text("\(enabledCheatCount) of \(cheatCount) enabled")
-                            .font(.caption)
-                            .foregroundColor(t.textSecondary)
-                    }
                 }
 
-                Divider().overlay(t.divider)
+                if !cheatSearchText.isEmpty && filteredCheatsList.isEmpty {
+                    Text("No cheats match \"\(cheatSearchText)\"")
+                        .font(.caption2)
+                        .foregroundColor(AppColors.textMuted(colorScheme))
+                        .padding(.vertical, 4)
+                }
+
+                Divider().overlay(AppColors.divider(colorScheme))
+
+                HStack {
+                    Button {
+                        if enabledCheatCount > 0 {
+                            cheatManagerService.disableAllCheats(for: rom)
+                        } else {
+                            cheatManagerService.enableAllCheats(for: rom)
+                        }
+                        loadCheatsList()
+                        updateCheatCounts()
+                    } label: {
+                        Label(enabledCheatCount > 0 ? "Disable All" : "Enable All",
+                              systemImage: enabledCheatCount > 0 ? "stop.circle" : "play.circle")
+                            .font(.caption)
+                            .foregroundColor(AppColors.textSecondary(colorScheme))
+                    }
+                    .buttonStyle(.plain)
+
+                    Spacer()
+
+                    Text("\(enabledCheatCount) of \(cheatCount) enabled")
+                        .font(.caption)
+                        .foregroundColor(AppColors.textSecondary(colorScheme))
+                }
+
+                Divider().overlay(AppColors.divider(colorScheme))
 
                 Button {
                     openCheatSettings()
                 } label: {
                     HStack {
                         Image(systemName: "gearshape")
-                            .foregroundColor(t.textSecondary)
+                            .foregroundColor(AppColors.textSecondary(colorScheme))
                         Text("Cheat Settings")
                             .font(.caption)
-                            .foregroundColor(t.textSecondary)
+                            .foregroundColor(AppColors.textSecondary(colorScheme))
                         Spacer()
                         Image(systemName: "chevron.right")
                             .font(.caption)
-                            .foregroundColor(t.iconMuted)
+                            .foregroundColor(AppColors.textMuted(colorScheme))
                     }
                 }
                 .buttonStyle(.plain)
@@ -277,7 +269,7 @@ struct CheatsSection: View {
         LoggerService.info(category: "Cheats", "Download button tapped")
         downloadMessage = "Starting download..."
         downloadMessageTone = .info
-        
+
         do {
             let systemID = rom.systemID ?? ""
             guard !systemID.isEmpty else {
@@ -285,12 +277,12 @@ struct CheatsSection: View {
                 downloadMessageTone = .warning
                 return
             }
-            
+
             let cheatCountBefore = cheatManagerService.totalCount(for: rom)
             let success = try await withTimeout(seconds: 120) {
                 try await cheatDownloadService.downloadCheatForROM(rom, systemID: systemID)
             }
-            
+
             if success {
                 cheatManagerService.loadCheatsForROM(rom)
                 updateCheatCounts()

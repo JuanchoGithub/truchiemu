@@ -1,7 +1,5 @@
 import SwiftUI
 
-// MARK: - Modern Save State Slot View
-
 struct ModernSaveStateSlotView: View {
     let slot: SlotInfo
     let rom: ROM
@@ -11,15 +9,10 @@ struct ModernSaveStateSlotView: View {
     @State private var thumbnail: NSImage?
     @State private var showPlayButton = false
     @Environment(\.colorScheme) private var colorScheme
-    
-    private var slotBgColor: Color {
-        colorScheme == .dark ? .white.opacity(0.05) : .secondary.opacity(0.04)
-    }
 
     var body: some View {
         VStack(spacing: 6) {
             ZStack {
-                // Thumbnail or placeholder
                 ZStack {
                     if let thumb = thumbnail {
                         Image(nsImage: thumb)
@@ -28,18 +21,17 @@ struct ModernSaveStateSlotView: View {
                             .clipped()
                     } else {
                         Rectangle()
-                            .fill(slotBgColor)
+                            .fill(AppColors.cardBackgroundSubtle(colorScheme))
                             .overlay(
                                 Image(systemName: slot.exists ? "externaldrive.fill" : "externaldrive")
                                     .font(.system(size: 20))
-                                    .foregroundColor(.white.opacity(0.3))
+                                    .foregroundColor(AppColors.textMuted(colorScheme))
                             )
                     }
                 }
                 .frame(width: 70, height: 52)
                 .clipShape(RoundedRectangle(cornerRadius: 6))
-                
-                // Play button overlay (appears on single-click for saved slots)
+
                 if slot.exists && showPlayButton {
                     Button {
                         onLaunchSlot(slot.id)
@@ -64,29 +56,26 @@ struct ModernSaveStateSlotView: View {
             }
             .overlay(
                 RoundedRectangle(cornerRadius: 6)
-                    .stroke(slot.exists ? Color.blue.opacity(0.5) : Color.clear, lineWidth: 1.5)
+                    .stroke(slot.exists ? Color.accentColor.opacity(0.5) : Color.clear, lineWidth: 1.5)
             )
 
-            // Slot number
             Text(slot.displayName)
                 .font(.caption)
                 .fontWeight(slot.exists ? .semibold : .regular)
-                .foregroundColor(slot.exists ? .white.opacity(0.85) : .white.opacity(0.4))
+                .foregroundColor(slot.exists ? AppColors.textPrimary(colorScheme) : AppColors.textMuted(colorScheme))
 
-            // Date and size info
             if let date = slot.formattedDate {
                 Text(date)
                     .font(.system(size: 9))
-                    .foregroundColor(.white.opacity(0.4))
+                    .foregroundColor(AppColors.textMuted(colorScheme))
                     .lineLimit(1)
             } else if let fileSize = slot.fileSize {
                 Text(fileSize.formattedByteSize)
                     .font(.system(size: 9))
-                    .foregroundColor(.white.opacity(0.4))
+                    .foregroundColor(AppColors.textMuted(colorScheme))
             }
         }
         .frame(width: 74)
-        // Single tap: show play button
         .onTapGesture(count: 1) {
             if slot.exists {
                 withAnimation(.easeInOut(duration: 0.15)) {
@@ -94,10 +83,9 @@ struct ModernSaveStateSlotView: View {
                 }
             }
         }
-        // Double tap: launch game and load this slot directly
         .simultaneousGesture(
             TapGesture(count: 2)
-                .onEnded {
+                .onEnded { _ in
                     if slot.exists {
                         withAnimation(.easeInOut(duration: 0.15)) {
                             showPlayButton = false
@@ -106,10 +94,8 @@ struct ModernSaveStateSlotView: View {
                     }
                 }
         )
-        // Dismiss play button when tapping elsewhere
         .onChange(of: showPlayButton) { _, _ in
             if showPlayButton {
-                // Auto-dismiss after 5 seconds
                 DispatchQueue.main.asyncAfter(deadline: .now() + 5) {
                     withAnimation(.easeInOut(duration: 0.15)) {
                         showPlayButton = false
