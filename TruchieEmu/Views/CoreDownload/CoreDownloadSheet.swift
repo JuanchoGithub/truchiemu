@@ -456,6 +456,11 @@ struct CoreDownloadSheet: View {
             return
         }
         coreManager.pendingDownload = nil
+
+        if let sysID = rom.systemID {
+            SystemPreferences.shared.setPreferredCoreID(cid, for: sysID)
+        }
+
         gameLauncher.launchGame(
             rom: rom,
             coreID: cid,
