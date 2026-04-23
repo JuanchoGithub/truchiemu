@@ -222,30 +222,30 @@ class ShaderManager: ObservableObject {
         return result
     }
     
-    // MARK: - Preset Groups for UI
-    
-    // Get presets grouped by type for organized UI display
-    static func presetsGroupedByType() -> [(type: ShaderType, presets: [ShaderPreset])] {
-        var grouped: [ShaderType: [ShaderPreset]] = [:]
-        
-        for preset in ShaderPreset.allPresets {
-            if grouped[preset.shaderType] == nil {
-                grouped[preset.shaderType] = []
-            }
-            grouped[preset.shaderType]?.append(preset)
-        }
-        
-        return ShaderType.allCases.map { type in
-            (type: type, presets: grouped[type] ?? [])
-        }
-    }
-    
-    // Get recommended presets for a specific system
-    func recommendedPresets(for systemID: String) -> [ShaderPreset] {
-        ShaderPreset.allPresets.filter { preset in
-            preset.recommendedSystems.contains(systemID)
-        }
-    }
+// MARK: - Preset Groups for UI
+
+// Get presets grouped by type for organized UI display
+static func presetsGroupedByType() -> [(type: ShaderType, presets: [ShaderPreset])] {
+var grouped: [ShaderType: [ShaderPreset]] = [:]
+
+for preset in ShaderPreset.allPresets {
+if grouped[preset.shaderType] == nil {
+grouped[preset.shaderType] = []
+}
+grouped[preset.shaderType]?.append(preset)
+}
+
+return ShaderType.allCases.map { type in
+(type: type, presets: grouped[type] ?? [])
+}
+}
+
+// Get recommended presets for a specific system
+func recommendedPresets(for systemID: String) -> [ShaderPreset] {
+ShaderPreset.allPresets.filter { preset in
+preset.recommendedSystems.contains(systemID)
+}
+}
     
     // Get a human-readable display name for a preset
     static func displayName(for presetID: String) -> String {

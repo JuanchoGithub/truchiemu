@@ -590,13 +590,13 @@ struct ShaderPresetPickerView: View {
         }
     }
     
-    private var visiblePresets: [ShaderPreset] {
-        let categoryFiltered: [ShaderPreset]
-        if let category = selectedCategory {
-            categoryFiltered = ShaderPreset.allPresets.filter { $0.shaderType == category }
-        } else {
-            categoryFiltered = ShaderPreset.allPresets
-        }
+private var visiblePresets: [ShaderPreset] {
+let categoryFiltered: [ShaderPreset]
+if let category = selectedCategory {
+categoryFiltered = ShaderPreset.allPresets.filter { $0.shaderType == category }
+} else {
+categoryFiltered = ShaderPreset.allPresets
+}
         
         if searchText.isEmpty {
             return categoryFiltered

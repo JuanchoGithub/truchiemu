@@ -1220,6 +1220,13 @@ struct LibraryGridView: View {
                 Button {
                     sortByLastAdded.toggle()
                     AppSettings.setBool("sortByLastAdded", value: sortByLastAdded)
+                    viewModel.updateFilters(
+                        filter: filter,
+                        searchText: searchText,
+                        activeFilters: activeFilters,
+                        sortByLastPlayed: sortByLastPlayed,
+                        sortByLastAdded: sortByLastAdded
+                    )
                 } label: {
                     HStack(spacing: 4) {
                         Image(systemName: sortByLastAdded ? "calendar" : "calendar")

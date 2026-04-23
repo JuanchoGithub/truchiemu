@@ -195,21 +195,21 @@ extension ShaderPreset {
                             scaleTypeX: .viewport, scaleTypeY: .viewport
                         )
                     ],
-                    globalUniforms: [
-                        ShaderUniform(name: "scanlineIntensity", defaultValue: 0.35, minValue: 0.0, maxValue: 1.0),
-                        ShaderUniform(name: "barrelAmount", defaultValue: 0.12, minValue: 0.0, maxValue: 0.5),
-                        ShaderUniform(name: "colorBoost", defaultValue: 1.0, minValue: 0.5, maxValue: 2.0),
-                        ShaderUniform(name: "useDistort", defaultValue: 1.0, minValue: 0.0, maxValue: 1.0, type: .toggle),
-                        ShaderUniform(name: "useScan", defaultValue: 1.0, minValue: 0.0, maxValue: 1.0, type: .toggle),
-                        ShaderUniform(name: "useBleed", defaultValue: 1.0, minValue: 0.0, maxValue: 1.0, type: .toggle),
-                        ShaderUniform(name: "useSoft", defaultValue: 1.0, minValue: 0.0, maxValue: 1.0, type: .toggle),
-                        ShaderUniform(name: "useChroma", defaultValue: 1.0, minValue: 0.0, maxValue:1.0, type: .toggle),
-                        ShaderUniform(name: "useWhite", defaultValue: 1.0, minValue: 0.0, maxValue: 1.0, type: .toggle),
-                        ShaderUniform(name: "useVig", defaultValue: 1.0, minValue: 0.0, maxValue: 1.0, type: .toggle),
-                        ShaderUniform(name: "useFlick", defaultValue: 1.0, minValue: 0.0, maxValue: 1.0, type: .toggle),
-                        ShaderUniform(name: "useBezel", defaultValue: 1.0, minValue: 0.0, maxValue: 1.0, type: .toggle),
-                        ShaderUniform(name: "useBloom", defaultValue: 0.0, minValue: 0.0, maxValue: 1.0, type: .toggle),
-                    ],
+globalUniforms: [
+ShaderUniform(name: "scanlineIntensity", defaultValue: 0.35, minValue: 0.0, maxValue: 1.0, displayName: "Scanline Intensity"),
+ShaderUniform(name: "barrelAmount", defaultValue: 0.12, minValue: 0.0, maxValue: 0.5, displayName: "Barrel Distortion"),
+ShaderUniform(name: "colorBoost", defaultValue: 1.0, minValue: 0.5, maxValue: 2.0, displayName: "Color Boost"),
+ShaderUniform(name: "useDistort", defaultValue: 1.0, minValue: 0.0, maxValue: 1.0, displayName: "Distortion", type: .toggle),
+ShaderUniform(name: "useScan", defaultValue: 1.0, minValue: 0.0, maxValue: 1.0, displayName: "Scanlines", type: .toggle),
+ShaderUniform(name: "useBleed", defaultValue: 1.0, minValue: 0.0, maxValue: 1.0, displayName: "Color Bleed", type: .toggle),
+ShaderUniform(name: "useSoft", defaultValue: 1.0, minValue: 0.0, maxValue: 1.0, displayName: "Corner Softness", type: .toggle),
+ShaderUniform(name: "useChroma", defaultValue: 1.0, minValue: 0.0, maxValue: 1.0, displayName: "Chromatic Aberration", type: .toggle),
+ShaderUniform(name: "useWhite", defaultValue: 1.0, minValue: 0.0, maxValue: 1.0, displayName: "White Balance", type: .toggle),
+ShaderUniform(name: "useVig", defaultValue: 1.0, minValue: 0.0, maxValue: 1.0, displayName: "Vignette", type: .toggle),
+ShaderUniform(name: "useFlick", defaultValue: 1.0, minValue: 0.0, maxValue: 1.0, displayName: "Flicker", type: .toggle),
+ShaderUniform(name: "useBezel", defaultValue: 1.0, minValue: 0.0, maxValue: 1.0, displayName: "Bezel Mask", type: .toggle),
+ShaderUniform(name: "useBloom", defaultValue: 0.0, minValue: 0.0, maxValue: 1.0, displayName: "Scanline Bloom", type: .toggle),
+],
                     description: "Classic CRT scanlines with barrel distortion and vignette.",
                     recommendedSystems: ["nes", "snes", "genesis", "psx"]
                 ),
@@ -249,19 +249,19 @@ extension ShaderPreset {
                     scaleTypeX: .viewport, scaleTypeY: .viewport
                 )
             ],
-            globalUniforms: [
-                ShaderUniform(name: "gridStrength", defaultValue: 0.4, minValue: 0.0, maxValue: 1.0),
-                ShaderUniform(name: "pixelSeparation", defaultValue: 0.05, minValue: -0.5, maxValue: 0.5),
-                ShaderUniform(name: "brightnessBoost", defaultValue: 1.2, minValue: 0.5, maxValue: 2.0),
-                ShaderUniform(name: "colorBoost", defaultValue: 1.0, minValue: 0.5, maxValue: 2.0),
-                ShaderUniform(name: "showShell", defaultValue: 1.0, minValue: 0.0, maxValue: 1.0, type: .toggle),
-                ShaderUniform(name: "showStrip", defaultValue: 1.0, minValue: 0.0, maxValue: 1.0, type: .toggle),
-                ShaderUniform(name: "showLens", defaultValue: 1.0, minValue: 0.0, maxValue: 1.0, type: .toggle),
-                ShaderUniform(name: "showText", defaultValue: 1.0, minValue: 0.0, maxValue: 1.0, type: .toggle),
-                ShaderUniform(name: "showLED", defaultValue: 1.0, minValue: 0.0, maxValue: 1.0, type: .toggle),
-                ShaderUniform(name: "lightPositionIndex", defaultValue: 0.0, minValue: 0.0, maxValue: 8.0),
-                ShaderUniform(name: "lightStrength", defaultValue: 1.0, minValue: 0.0, maxValue: 2.0),
-            ],
+globalUniforms: [
+ShaderUniform(name: "gridStrength", defaultValue: 0.4, minValue: 0.0, maxValue: 1.0, displayName: "Grid Strength"),
+ShaderUniform(name: "pixelSeparation", defaultValue: 0.05, minValue: -0.5, maxValue: 0.5, displayName: "Pixel Separation"),
+ShaderUniform(name: "brightnessBoost", defaultValue: 1.2, minValue: 0.5, maxValue: 2.0, displayName: "Brightness Boost"),
+ShaderUniform(name: "colorBoost", defaultValue: 1.0, minValue: 0.5, maxValue: 2.0, displayName: "Color Boost"),
+ShaderUniform(name: "showShell", defaultValue: 1.0, minValue: 0.0, maxValue: 1.0, displayName: "Main Shell", type: .toggle),
+ShaderUniform(name: "showStrip", defaultValue: 1.0, minValue: 0.0, maxValue: 1.0, displayName: "Inner Strip", type: .toggle),
+ShaderUniform(name: "showLens", defaultValue: 1.0, minValue: 0.0, maxValue: 1.0, displayName: "Glass Lens", type: .toggle),
+ShaderUniform(name: "showText", defaultValue: 1.0, minValue: 0.0, maxValue: 1.0, displayName: "Shell Text", type: .toggle),
+ShaderUniform(name: "showLED", defaultValue: 1.0, minValue: 0.0, maxValue: 1.0, displayName: "Power LED", type: .toggle),
+ShaderUniform(name: "lightPositionIndex", defaultValue: 0.0, minValue: 0.0, maxValue: 8.0, displayName: "Light Position"),
+ShaderUniform(name: "lightStrength", defaultValue: 1.0, minValue: 0.0, maxValue: 2.0, displayName: "Reflection Strength"),
+],
             description: "High-fidelity Game Boy simulation with customizable bezel and dynamic lighting.",
             recommendedSystems: ["gb", "gbc", "gg"]
         ),
@@ -280,46 +280,45 @@ extension ShaderPreset {
                 )
 ],
 globalUniforms: [
-  ShaderUniform(name: "showShell", defaultValue: 1.0, minValue: 0.0, maxValue: 1.0, type: .toggle),
-ShaderUniform(name: "shellColorIndex", defaultValue: 0.0, minValue: 0.0, maxValue: 7.0, type: .dropdown,
- options: [
- ShaderUniformOption(value: 0.0, label: "Berry"),
- ShaderUniformOption(value: 1.0, label: "Grape"),
- ShaderUniformOption(value: 2.0, label: "Onyx"),
- ShaderUniformOption(value: 3.0, label: "Glacier"),
- ShaderUniformOption(value: 4.0, label: "Orange"),
- ShaderUniformOption(value: 5.0, label: "Dahlia"),
- ShaderUniformOption(value: 6.0, label: "Teal"),
- ShaderUniformOption(value: 7.0, label: "Indigo"),
- ]),
-  ShaderUniform(name: "showStrip", defaultValue: 1.0, minValue: 0.0, maxValue: 1.0, type: .toggle),
-  ShaderUniform(name: "showLens", defaultValue: 1.0, minValue: 0.0, maxValue: 1.0, type: .toggle),
-  ShaderUniform(name: "showText", defaultValue: 1.0, minValue: 0.0, maxValue: 1.0, type: .toggle),
-  ShaderUniform(name: "showLED", defaultValue: 1.0, minValue: 0.0, maxValue: 1.0, type: .toggle),
-  ShaderUniform(name: "brightnessBoost", defaultValue: 1.0, minValue: 0.5, maxValue: 2.0),
-  ShaderUniform(name: "colorBoost", defaultValue: 1.44, minValue: 0.5, maxValue: 2.0),
-  ShaderUniform(name: "dotOpacity", defaultValue: 0.85, minValue: 0.0, maxValue: 1.0),
-  ShaderUniform(name: "gridThicknessDark", defaultValue: 0.2, minValue: 0.1, maxValue: 0.9, step: 0.05),
-  ShaderUniform(name: "gridThicknessLight", defaultValue: 0.1, minValue: 0.1, maxValue: 0.9, step: 0.05),
-  ShaderUniform(name: "physicalDepth", defaultValue: 0.22, minValue: 0.0, maxValue: 1.0),
-  ShaderUniform(name: "specularShininess", defaultValue: 8.0, minValue: 1.0, maxValue: 32.0, step: 0.5),
-  ShaderUniform(name: "ghostWeights", defaultValue: 0.45, minValue: 0.0, maxValue: 1.0),
-  ShaderUniform(name: "lightPositionIndex", defaultValue: 0.0, minValue: 0.0, maxValue: 8.0, step: 1.0),
-  ShaderUniform(name: "lightStrength", defaultValue: 1.0, minValue: 0.0, maxValue: 2.0),
-  ShaderUniform(name: "pixelSeparation", defaultValue: 0.0, minValue: -0.5, maxValue: 0.5),
-  ShaderUniform(name: "gridStrength", defaultValue: 0.4, minValue: 0.0, maxValue: 1.0),
-  // Effect toggles (all ON by default)
-  ShaderUniform(name: "enableGhost", defaultValue: 1.0, minValue: 0.0, maxValue: 1.0, type: .toggle),
-  ShaderUniform(name: "enableGrid", defaultValue: 1.0, minValue: 0.0, maxValue: 1.0, type: .toggle),
-  ShaderUniform(name: "enableAberration", defaultValue: 1.0, minValue: 0.0, maxValue: 1.0, type: .toggle),
-  ShaderUniform(name: "enableBleed", defaultValue: 1.0, minValue: 0.0, maxValue: 1.0, type: .toggle),
-  ShaderUniform(name: "enableNewtonRings", defaultValue: 1.0, minValue: 0.0, maxValue: 1.0, type: .toggle),
-  ShaderUniform(name: "enableJitter", defaultValue: 1.0, minValue: 0.0, maxValue: 1.0, type: .toggle),
-  ShaderUniform(name: "enableReflection", defaultValue: 1.0, minValue: 0.0, maxValue: 1.0, type: .toggle),
-  ShaderUniform(name: "enableGrain", defaultValue: 1.0, minValue: 0.0, maxValue: 1.0, type: .toggle),
-  ShaderUniform(name: "enableVignette", defaultValue: 1.0, minValue: 0.0, maxValue: 1.0, type: .toggle),
-  ShaderUniform(name: "enableTopography", defaultValue: 1.0, minValue: 0.0, maxValue: 1.0, type: .toggle),
-  ShaderUniform(name: "enableColorMatrix", defaultValue: 1.0, minValue: 0.0, maxValue: 1.0, type: .toggle),
+    ShaderUniform(name: "showShell", defaultValue: 1.0, minValue: 0.0, maxValue: 1.0, displayName: "Main Shell", type: .toggle),
+ShaderUniform(name: "shellColorIndex", defaultValue: 0.0, minValue: 0.0, maxValue: 7.0, displayName: "Shell Color", type: .dropdown,
+options: [
+ShaderUniformOption(value: 0.0, label: "Berry"),
+ShaderUniformOption(value: 1.0, label: "Grape"),
+ShaderUniformOption(value: 2.0, label: "Onyx"),
+ShaderUniformOption(value: 3.0, label: "Glacier"),
+ShaderUniformOption(value: 4.0, label: "Orange"),
+ShaderUniformOption(value: 5.0, label: "Dahlia"),
+ShaderUniformOption(value: 6.0, label: "Teal"),
+ShaderUniformOption(value: 7.0, label: "Indigo"),
+]),
+    ShaderUniform(name: "showStrip", defaultValue: 1.0, minValue: 0.0, maxValue: 1.0, displayName: "Inner Strip", type: .toggle),
+    ShaderUniform(name: "showLens", defaultValue: 1.0, minValue: 0.0, maxValue: 1.0, displayName: "Glass Lens", type: .toggle),
+    ShaderUniform(name: "showText", defaultValue: 1.0, minValue: 0.0, maxValue: 1.0, displayName: "Shell Text", type: .toggle),
+    ShaderUniform(name: "showLED", defaultValue: 1.0, minValue: 0.0, maxValue: 1.0, displayName: "Power LED", type: .toggle),
+ShaderUniform(name: "brightnessBoost", defaultValue: 1.0, minValue: 0.5, maxValue: 2.0, displayName: "Brightness Boost"),
+ShaderUniform(name: "colorBoost", defaultValue: 1.44, minValue: 0.5, maxValue: 2.0, displayName: "Color Boost"),
+ShaderUniform(name: "dotOpacity", defaultValue: 0.85, minValue: 0.0, maxValue: 1.0, displayName: "Dot Opacity"),
+ShaderUniform(name: "gridThicknessDark", defaultValue: 0.2, minValue: 0.1, maxValue: 0.9, step: 0.05, displayName: "Dark Grid Thickness"),
+ShaderUniform(name: "gridThicknessLight", defaultValue: 0.1, minValue: 0.1, maxValue: 0.9, step: 0.05, displayName: "Light Grid Thickness"),
+ShaderUniform(name: "physicalDepth", defaultValue: 0.22, minValue: 0.0, maxValue: 1.0, displayName: "Physical Depth"),
+ShaderUniform(name: "specularShininess", defaultValue: 8.0, minValue: 1.0, maxValue: 32.0, step: 0.5, displayName: "Specular Shininess"),
+ShaderUniform(name: "ghostWeights", defaultValue: 0.45, minValue: 0.0, maxValue: 1.0, displayName: "Ghost Weight"),
+ShaderUniform(name: "lightPositionIndex", defaultValue: 0.0, minValue: 0.0, maxValue: 8.0, step: 1.0, displayName: "Light Position"),
+ShaderUniform(name: "lightStrength", defaultValue: 1.0, minValue: 0.0, maxValue: 2.0, displayName: "Reflection Strength"),
+ShaderUniform(name: "pixelSeparation", defaultValue: 0.0, minValue: -0.5, maxValue: 0.5, displayName: "Pixel Separation"),
+ShaderUniform(name: "gridStrength", defaultValue: 0.4, minValue: 0.0, maxValue: 1.0, displayName: "Grid Strength"),
+    ShaderUniform(name: "enableGhost", defaultValue: 1.0, minValue: 0.0, maxValue: 1.0, displayName: "Ghost Effect", type: .toggle),
+    ShaderUniform(name: "enableGrid", defaultValue: 1.0, minValue: 0.0, maxValue: 1.0, displayName: "Grid Effect", type: .toggle),
+    ShaderUniform(name: "enableAberration", defaultValue: 1.0, minValue: 0.0, maxValue: 1.0, displayName: "Chromatic Aberration", type: .toggle),
+    ShaderUniform(name: "enableBleed", defaultValue: 1.0, minValue: 0.0, maxValue: 1.0, displayName: "Color Bleed", type: .toggle),
+    ShaderUniform(name: "enableNewtonRings", defaultValue: 1.0, minValue: 0.0, maxValue: 1.0, displayName: "Newton's Rings", type: .toggle),
+    ShaderUniform(name: "enableJitter", defaultValue: 1.0, minValue: 0.0, maxValue: 1.0, displayName: "Jitter Effect", type: .toggle),
+    ShaderUniform(name: "enableReflection", defaultValue: 1.0, minValue: 0.0, maxValue: 1.0, displayName: "Reflection", type: .toggle),
+    ShaderUniform(name: "enableGrain", defaultValue: 1.0, minValue: 0.0, maxValue: 1.0, displayName: "Film Grain", type: .toggle),
+    ShaderUniform(name: "enableVignette", defaultValue: 1.0, minValue: 0.0, maxValue: 1.0, displayName: "Vignette", type: .toggle),
+    ShaderUniform(name: "enableTopography", defaultValue: 1.0, minValue: 0.0, maxValue: 1.0, displayName: "Topography", type: .toggle),
+    ShaderUniform(name: "enableColorMatrix", defaultValue: 1.0, minValue: 0.0, maxValue: 1.0, displayName: "Color Matrix", type: .toggle),
 ],
 description: "Game Boy Color with temporal feedback, ghosting, and iridescent LCD effects.",
             recommendedSystems: ["gbc"]
@@ -411,62 +410,9 @@ description: "Game Boy Color with temporal feedback, ghosting, and iridescent LC
         ),
     ]
     
-    // All available presets (built-in only), enriched once at startup
-    static let allPresets: [ShaderPreset] = {
-        builtinPresets.map { preset in
-            var enrichedPreset = preset
-            
-            // For each pass, try to load metadata for its shader
-            for (passIndex, pass) in preset.passes.enumerated() {
-                let metadata = ShaderMetadataLoader.shared.loadMetadata(for: pass.shaderFile)
-                if !metadata.isEmpty {
-                    var updatedPass = pass
-                    // Enrich the pass's uniforms with metadata
-                    updatedPass.uniforms = pass.uniforms.map { uniform in
-                        if let meta = metadata[uniform.name] {
-                            var enrichedUniform = uniform
-                            enrichedUniform.displayName = meta.displayName
-                            enrichedUniform.description = meta.description
-                            enrichedUniform.minValue = meta.minValue
-                                                          enrichedUniform.maxValue = meta.maxValue
-                                                          enrichedUniform.step = meta.step
-                                                          enrichedUniform.type = meta.type
-                                                          // If metadata doesn't provide a default, keep the original
-                                                          if enrichedUniform.defaultValue == nil {
-                                                              enrichedUniform.defaultValue = uniform.defaultValue
-                                                          }
-                                                          return enrichedUniform
-                                                      }
-                                                      return uniform
-                                                  }
-                    enrichedPreset.passes[passIndex] = updatedPass
-                }
-            }
-            
-            // Also enrich globalUniforms if they exist
-            let globalMetadata = preset.passes.reduce(into: [String: ShaderUniform]()) { acc, pass in
-                let meta = ShaderMetadataLoader.shared.loadMetadata(for: pass.shaderFile)
-                acc.merge(meta) { (_, new) in new }
-            }
-            
-            if !globalMetadata.isEmpty {
-                enrichedPreset.globalUniforms = enrichedPreset.globalUniforms.map { uniform in
-                    if let meta = globalMetadata[uniform.name] {
-                        var enrichedUniform = uniform
-                        enrichedUniform.displayName = meta.displayName
-                        enrichedUniform.description = meta.description
-                        enrichedUniform.minValue = meta.minValue
-                        enrichedUniform.maxValue = meta.maxValue
-                        enrichedUniform.step = meta.step
-                        enrichedUniform.type = meta.type
-                        return enrichedUniform
-                    }
-                    return uniform
-                }
-            }
-            
-            return enrichedPreset
-        }
+// All available presets
+static let allPresets: [ShaderPreset] = {
+        builtinPresets
     }()
     
     // Get preset by ID
@@ -474,6 +420,6 @@ description: "Game Boy Color with temporal feedback, ghosting, and iridescent LC
         allPresets.first(where: { $0.id == id })
     }
     
-    // Default preset (no filtering)
-    static let defaultPreset = preset(id: "builtin-none")!
+// Default preset (no filtering)
+static let defaultPreset = preset(id: "builtin-none")!
 }

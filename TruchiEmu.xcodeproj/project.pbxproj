@@ -9,7 +9,6 @@
 /* Begin PBXBuildFile section */
 		DD095AD82F981298002A097A /* NotificationService.swift in Sources */ = {isa = PBXBuildFile; fileRef = DD095AD72F981298002A097A /* NotificationService.swift */; };
 		DD095ADA2F98F394002A097A /* 8bGameBoyColor.metal in Sources */ = {isa = PBXBuildFile; fileRef = DD095AD92F98F394002A097A /* 8bGameBoyColor.metal */; };
-		DD095ADC2F98F5AF002A097A /* 8bGameBoyColor.ui in Resources */ = {isa = PBXBuildFile; fileRef = DD095ADB2F98F5AF002A097A /* 8bGameBoyColor.ui */; };
 		DD1AE5DF2F96D7240014A60E /* XRICK.png in Resources */ = {isa = PBXBuildFile; fileRef = DD1AE1B92F96D7240014A60E /* XRICK.png */; };
 		DD1AE5E32F96D7240014A60E /* fds@132w.png in Resources */ = {isa = PBXBuildFile; fileRef = DD1AE1182F96D7240014A60E /* fds@132w.png */; };
 		DD1AE5E62F96D7240014A60E /* DC.png in Resources */ = {isa = PBXBuildFile; fileRef = DD1AE1682F96D7240014A60E /* DC.png */; };
@@ -113,7 +112,6 @@
 		DD1AE7CF2F96D7240014A60E /* SATELLAVIEW.png in Resources */ = {isa = PBXBuildFile; fileRef = DD1AE19B2F96D7240014A60E /* SATELLAVIEW.png */; };
 		DD1AE7D32F96D7240014A60E /* MAME2003PLUS.png in Resources */ = {isa = PBXBuildFile; fileRef = DD1AE17C2F96D7240014A60E /* MAME2003PLUS.png */; };
 		DD1AE7D52F96D7240014A60E /* pico@132w.png in Resources */ = {isa = PBXBuildFile; fileRef = DD1AE1322F96D7240014A60E /* pico@132w.png */; };
-		DD1AE7D62F96D7240014A60E /* CRTFilter.ui in Resources */ = {isa = PBXBuildFile; fileRef = DD1AE05F2F96D7240014A60E /* CRTFilter.ui */; };
 		DD1AE7DD2F96D7240014A60E /* VIDEOS.png in Resources */ = {isa = PBXBuildFile; fileRef = DD1AE1B22F96D7240014A60E /* VIDEOS.png */; };
 		DD1AE7DE2F96D7240014A60E /* NEOGEO.png in Resources */ = {isa = PBXBuildFile; fileRef = DD1AE1892F96D7240014A60E /* NEOGEO.png */; };
 		DD1AE7E12F96D7240014A60E /* sgfx@132w.png in Resources */ = {isa = PBXBuildFile; fileRef = DD1AE13E2F96D7240014A60E /* sgfx@132w.png */; };
@@ -219,7 +217,6 @@
 		DD1AE9D32F96D7240014A60E /* SEtBX.jpg in Resources */ = {isa = PBXBuildFile; fileRef = DD1AE0DC2F96D7240014A60E /* SEtBX.jpg */; };
 		DD1AE9E02F96D7240014A60E /* PC88.png in Resources */ = {isa = PBXBuildFile; fileRef = DD1AE18F2F96D7240014A60E /* PC88.png */; };
 		DD1AE9EB2F96D7240014A60E /* AMIGACDTV.png in Resources */ = {isa = PBXBuildFile; fileRef = DD1AE14E2F96D7240014A60E /* AMIGACDTV.png */; };
-		DD1AE9EC2F96D7240014A60E /* 8bGameBoy.ui in Resources */ = {isa = PBXBuildFile; fileRef = DD1AE05D2F96D7240014A60E /* 8bGameBoy.ui */; };
 		DD1AE9EF2F96D7240014A60E /* lynx@132w.png in Resources */ = {isa = PBXBuildFile; fileRef = DD1AE1202F96D7240014A60E /* lynx@132w.png */; };
 		DD1AE9F12F96D7240014A60E /* segacd@132w.png in Resources */ = {isa = PBXBuildFile; fileRef = DD1AE13A2F96D7240014A60E /* segacd@132w.png */; };
 		DD1AE9FA2F96D7240014A60E /* MAME.dat in Resources */ = {isa = PBXBuildFile; fileRef = DD1AE0E42F96D7240014A60E /* MAME.dat */; };
@@ -325,7 +322,6 @@
 		DD1AEADD2F96D7240014A60E /* RunningGamesTracker.swift in Sources */ = {isa = PBXBuildFile; fileRef = DD1AE09E2F96D7240014A60E /* RunningGamesTracker.swift */; };
 		DD1AEADE2F96D7240014A60E /* CoreManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = DD1AE58E2F96D7240014A60E /* CoreManager.swift */; };
 		DD1AEADF2F96D7240014A60E /* MAMEUnifiedService.swift in Sources */ = {isa = PBXBuildFile; fileRef = DD1AE0892F96D7240014A60E /* MAMEUnifiedService.swift */; };
-		DD1AEAE02F96D7240014A60E /* ShaderMetadataLoader.swift in Sources */ = {isa = PBXBuildFile; fileRef = DD1AE0A02F96D7240014A60E /* ShaderMetadataLoader.swift */; };
 		DD1AEAE12F96D7240014A60E /* ControllerService.swift in Sources */ = {isa = PBXBuildFile; fileRef = DD1AE0BE2F96D7240014A60E /* ControllerService.swift */; };
 		DD1AEAE22F96D7240014A60E /* FocusableMTKView.swift in Sources */ = {isa = PBXBuildFile; fileRef = DD1AE0AF2F96D7240014A60E /* FocusableMTKView.swift */; };
 		DD1AEAE32F96D7240014A60E /* MAMEDependencyStatusView.swift in Sources */ = {isa = PBXBuildFile; fileRef = DD1AE08C2F96D7240014A60E /* MAMEDependencyStatusView.swift */; };
@@ -437,7 +433,6 @@
 		DD095AD62F97F8B5002A097A /* TruchiEmuTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = TruchiEmuTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		DD095AD72F981298002A097A /* NotificationService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotificationService.swift; sourceTree = "<group>"; };
 		DD095AD92F98F394002A097A /* 8bGameBoyColor.metal */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.metal; path = 8bGameBoyColor.metal; sourceTree = "<group>"; };
-		DD095ADB2F98F5AF002A097A /* 8bGameBoyColor.ui */ = {isa = PBXFileReference; lastKnownFileType = text; path = 8bGameBoyColor.ui; sourceTree = "<group>"; };
 		DD1AE0232F96D7240014A60E /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
 		DD1AE0242F96D7240014A60E /* GameInfoWindow.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GameInfoWindow.swift; sourceTree = "<group>"; };
 		DD1AE0252F96D7240014A60E /* TruchieEmuApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TruchieEmuApp.swift; sourceTree = "<group>"; };
@@ -470,9 +465,7 @@
 		DD1AE0512F96D7240014A60E /* ShaderCommon.h.metal */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.metal; path = ShaderCommon.h.metal; sourceTree = "<group>"; };
 		DD1AE0522F96D7240014A60E /* ShaderTypes.h.metal */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.metal; path = ShaderTypes.h.metal; sourceTree = "<group>"; };
 		DD1AE05C2F96D7240014A60E /* 8bGameBoy.metal */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.metal; path = 8bGameBoy.metal; sourceTree = "<group>"; };
-		DD1AE05D2F96D7240014A60E /* 8bGameBoy.ui */ = {isa = PBXFileReference; lastKnownFileType = text; path = 8bGameBoy.ui; sourceTree = "<group>"; };
 		DD1AE05E2F96D7240014A60E /* CRTFilter.metal */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.metal; path = CRTFilter.metal; sourceTree = "<group>"; };
-		DD1AE05F2F96D7240014A60E /* CRTFilter.ui */ = {isa = PBXFileReference; lastKnownFileType = text; path = CRTFilter.ui; sourceTree = "<group>"; };
 		DD1AE0602F96D7240014A60E /* DotMatrixLCD.metal */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.metal; path = DotMatrixLCD.metal; sourceTree = "<group>"; };
 		DD1AE0612F96D7240014A60E /* LiteCRT.metal */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.metal; path = LiteCRT.metal; sourceTree = "<group>"; };
 		DD1AE0622F96D7240014A60E /* LottesCRT.metal */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.metal; path = LottesCRT.metal; sourceTree = "<group>"; };
@@ -521,7 +514,6 @@
 		DD1AE09D2F96D7240014A60E /* GameLauncher.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GameLauncher.swift; sourceTree = "<group>"; };
 		DD1AE09E2F96D7240014A60E /* RunningGamesTracker.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RunningGamesTracker.swift; sourceTree = "<group>"; };
 		DD1AE09F2F96D7240014A60E /* ShaderManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShaderManager.swift; sourceTree = "<group>"; };
-		DD1AE0A02F96D7240014A60E /* ShaderMetadataLoader.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShaderMetadataLoader.swift; sourceTree = "<group>"; };
 		DD1AE0A22F96D7240014A60E /* BezelBrowserView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BezelBrowserView.swift; sourceTree = "<group>"; };
 		DD1AE0A32F96D7240014A60E /* BezelDownloadLogView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BezelDownloadLogView.swift; sourceTree = "<group>"; };
 		DD1AE0A42F96D7240014A60E /* BezelSelectorSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BezelSelectorSheet.swift; sourceTree = "<group>"; };
@@ -948,13 +940,10 @@
 		DD1AE0662F96D7240014A60E /* Shaders */ = {
 			isa = PBXGroup;
 			children = (
-				DD095ADB2F98F5AF002A097A /* 8bGameBoyColor.ui */,
 				DD095AD92F98F394002A097A /* 8bGameBoyColor.metal */,
 				DD1AE0532F96D7240014A60E /* internal */,
 				DD1AE05C2F96D7240014A60E /* 8bGameBoy.metal */,
-				DD1AE05D2F96D7240014A60E /* 8bGameBoy.ui */,
 				DD1AE05E2F96D7240014A60E /* CRTFilter.metal */,
-				DD1AE05F2F96D7240014A60E /* CRTFilter.ui */,
 				DD1AE0602F96D7240014A60E /* DotMatrixLCD.metal */,
 				DD1AE0612F96D7240014A60E /* LiteCRT.metal */,
 				DD1AE0622F96D7240014A60E /* LottesCRT.metal */,
@@ -1129,7 +1118,6 @@
 				DD1AE09D2F96D7240014A60E /* GameLauncher.swift */,
 				DD1AE09E2F96D7240014A60E /* RunningGamesTracker.swift */,
 				DD1AE09F2F96D7240014A60E /* ShaderManager.swift */,
-				DD1AE0A02F96D7240014A60E /* ShaderMetadataLoader.swift */,
 			);
 			path = Services;
 			sourceTree = "<group>";
@@ -1976,7 +1964,6 @@
 				DD1AE7CF2F96D7240014A60E /* SATELLAVIEW.png in Resources */,
 				DD1AE7D32F96D7240014A60E /* MAME2003PLUS.png in Resources */,
 				DD1AE7D52F96D7240014A60E /* pico@132w.png in Resources */,
-				DD1AE7D62F96D7240014A60E /* CRTFilter.ui in Resources */,
 				DD1AE7DD2F96D7240014A60E /* VIDEOS.png in Resources */,
 				DD1AE7DE2F96D7240014A60E /* NEOGEO.png in Resources */,
 				DD1AE7E12F96D7240014A60E /* sgfx@132w.png in Resources */,
@@ -2005,7 +1992,6 @@
 				DD1AE85B2F96D7240014A60E /* Nintendo_-_Nintendo_Entertainment_System.json in Resources */,
 				DD1AE8622F96D7240014A60E /* PC98.png in Resources */,
 				DD1AE8642F96D7240014A60E /* AMIGA.png in Resources */,
-				DD095ADC2F98F5AF002A097A /* 8bGameBoyColor.ui in Resources */,
 				DD1AE86C2F96D7240014A60E /* aWw6r.jpg in Resources */,
 				DD1AE86D2F96D7240014A60E /* SUPERVISION-alt.png in Resources */,
 				DD1AE8712F96D7240014A60E /* cps3@132w.png in Resources */,
@@ -2083,7 +2069,6 @@
 				DD1AE9D32F96D7240014A60E /* SEtBX.jpg in Resources */,
 				DD1AE9E02F96D7240014A60E /* PC88.png in Resources */,
 				DD1AE9EB2F96D7240014A60E /* AMIGACDTV.png in Resources */,
-				DD1AE9EC2F96D7240014A60E /* 8bGameBoy.ui in Resources */,
 				DD1AE9EF2F96D7240014A60E /* lynx@132w.png in Resources */,
 				DD1AE9F12F96D7240014A60E /* segacd@132w.png in Resources */,
 				DD1AE9FA2F96D7240014A60E /* MAME.dat in Resources */,
@@ -2200,7 +2185,6 @@
 				DD1AEADD2F96D7240014A60E /* RunningGamesTracker.swift in Sources */,
 				DD1AEADE2F96D7240014A60E /* CoreManager.swift in Sources */,
 				DD1AEADF2F96D7240014A60E /* MAMEUnifiedService.swift in Sources */,
-				DD1AEAE02F96D7240014A60E /* ShaderMetadataLoader.swift in Sources */,
 				DD1AEAE12F96D7240014A60E /* ControllerService.swift in Sources */,
 				DD1AEAE22F96D7240014A60E /* FocusableMTKView.swift in Sources */,
 				DD1AEAE32F96D7240014A60E /* MAMEDependencyStatusView.swift in Sources */,
