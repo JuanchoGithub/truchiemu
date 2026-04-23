@@ -103,34 +103,27 @@ class CheatManagerService: ObservableObject {
         saveCheats()
     }
     
-    // Load cheats from multiple sources (auto-detected + downloaded + user-defined)
+    // Load cheats for a ROM from storage (cheats are persisted in AppSettings)
+    // Use discoverAvailableCheats() to find .cht files that can be imported
     func loadCheatsForROM(_ rom: ROM) {
         isLoading = true
         
-        var mergedCheats: [Cheat] = []
+        // Simply load cheats that are already stored/persisted for this ROM
+        let storedCheats = allCheats[rom.path.path] ?? []
         
-        // Priority 1: Auto-detected cheats from ROM folder
-        let autoLoadedCheats = CheatAutoLoader.loadCheats(for: rom)
-        mergedCheats.append(contentsOf: autoLoadedCheats)
-        
-        // Priority 2: Downloaded cheats from libretro database
-        //let downloadedCheats = CheatDownloadService.shared.findCheatsForROM(rom)
-        //for cheatFile in downloadedCheats {
-        //    mergedCheats.append(contentsOf: cheatFile.cheats)
-        //}
-        
-        // Priority 3: User-defined cheats (from AppSettings)
-        let userCheats = allCheats[rom.path.path] ?? []
-        let customCheats = userCheats.filter { $0.format == .raw && $0.description.contains("Custom") }
-        mergedCheats.append(contentsOf: customCheats)
-        
-        // Merge duplicates by index (prefer user-defined state)
-        mergedCheats = mergeCheats(mergedCheats, withExisting: userCheats)
-        
-        allCheats[rom.path.path] = mergedCheats
+        // If we have stored cheats, ensure they're in the published state
+        if !storedCheats.isEmpty {
+            allCheats[rom.path.path] = storedCheats
+        }
         
         isLoading = false
-        LoggerService.info(category: "CheatManagerService", "Loaded \(mergedCheats.count) cheats for ROM: \(rom.displayName)")
+        LoggerService.info(category: "CheatManagerService", "Loaded \(storedCheats.count) cheats for ROM: \(rom.displayName)")
+    }
+    
+    // Discover available .cht files for a ROM (for presenting to user to import)
+    // This searches disk for .cht files - separate from loading stored cheats
+    func discoverAvailableCheats(for rom: ROM) -> [Cheat] {
+        return CheatAutoLoader.loadCheats(for: rom)
     }
     
     // Import a .cht file for a ROM
