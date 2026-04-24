@@ -98,6 +98,8 @@ class FocusableMTKView: MTKView {
     // MARK: - Keyboard Events
 
     override func keyDown(with event: NSEvent) {
+        LoggerService.info(category: "Input", "keyDown called: keyCode=\(event.keyCode) modifiers=\(event.modifierFlags.rawValue)")
+
         // Save state hotkeys - these are handled specially, not sent to core
         if event.modifierFlags.isEmpty || event.modifierFlags.contains(.command) {
             switch event.keyCode {
@@ -139,7 +141,9 @@ class FocusableMTKView: MTKView {
         }
 
         // 2. Raw Path: Send to Libretro core (for DOS/ScummVM)
+        LoggerService.info(category: "Input", "Calling dispatchKeyboardEvent in FocusableMTKView")
         dispatchKeyboardEvent(event, down: true)
+        LoggerService.info(category: "Input", "Finished dispatchKeyboardEvent in FocusableMTKView")
     }
 
     override func keyUp(with event: NSEvent) {
@@ -153,26 +157,24 @@ class FocusableMTKView: MTKView {
     }
 
     private func dispatchKeyboardEvent(_ event: NSEvent, down: Bool) {
-        let keycode = UInt32(event.keyCode)
+        // Translate macOS virtual keycode → libretro RETROK_* value.
+        // Without this, the core receives meaningless hardware scan codes
+        // (e.g., 'A' = 0x00) instead of the expected RETROK values
+        // (e.g., RETROK_a = 97). This is why keyboard input failed in-game.
+        let retroKey = RetroKeycodeMapper.retroKey(fromMacOS: event.keyCode)
+
+        // Skip unmapped keys (RETROK_UNKNOWN = 0)
+        guard retroKey != 0 else { return }
+
         let character = UInt32(event.charactersIgnoringModifiers?.unicodeScalars.first?.value ?? 0)
-        let modifiers = encodeModifiers(event.modifierFlags)
+        let modifiers = RetroKeycodeMapper.retroMod(from: event.modifierFlags)
 
         LibretroBridgeSwift.dispatchKeyboardEvent(
-            keycode: keycode,
+            keycode: retroKey,
             character: character,
             modifiers: modifiers,
             down: down
         )
-    }
-
-    private func encodeModifiers(_ flags: NSEvent.ModifierFlags) -> UInt32 {
-        var mod: UInt32 = 0
-        if flags.contains(.shift) { mod |= (1 << 0) }
-        if flags.contains(.control) { mod |= (1 << 1) }
-        if flags.contains(.option) { mod |= (1 << 2) }
-        if flags.contains(.command) { mod |= (1 << 3) }
-        if flags.contains(.capsLock) { mod |= (1 << 4) }
-        return mod
     }
 
 }

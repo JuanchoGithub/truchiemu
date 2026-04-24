@@ -42,6 +42,8 @@ class InputCaptureManager: NSObject, ObservableObject {
         capturedWindow = window
         isCapturing = true
 
+        LoggerService.info(category: "InputCapture", "!!! DEBUG: STARTING CAPTURE WITH NEW VERSION !!!")
+
         // Hide the cursor
         NSCursor.hide()
 
@@ -56,6 +58,14 @@ class InputCaptureManager: NSObject, ObservableObject {
         // Setup click-outside monitor to release capture
         setupClickOutsideMonitor()
 
+        // Listen for app resigning active to release capture
+        NotificationCenter.default.addObserver(
+            self,
+            selector: #selector(handleAppResignActive),
+            name: NSApplication.didResignActiveNotification,
+            object: nil
+        )
+
         // Post notification for UI to show capture indicator
         NotificationCenter.default.post(name: .inputCaptureStateChanged, object: nil, userInfo: ["isCapturing": true])
 
@@ -64,7 +74,7 @@ class InputCaptureManager: NSObject, ObservableObject {
 
     // MARK: - Stop Capture
 
-    func stopCapture() {
+    func stopCapture(reason: String = "Unknown") {
         guard isCapturing else { return }
 
         isCapturing = false
@@ -81,12 +91,19 @@ class InputCaptureManager: NSObject, ObservableObject {
         // Remove monitors
         removeClickOutsideMonitor()
 
+        // Remove app resignation observer
+        NotificationCenter.default.removeObserver(self, name: NSApplication.didResignActiveNotification, object: nil)
+
         capturedWindow = nil
 
         // Post notification for UI to hide capture indicator
         NotificationCenter.default.post(name: .inputCaptureStateChanged, object: nil, userInfo: ["isCapturing": false])
 
-        LoggerService.info(category: "InputCapture", "Input capture stopped")
+        LoggerService.info(category: "InputCapture", "Input capture stopped. Reason: \(reason)")
+    }
+
+    @objc private func handleAppResignActive() {
+        stopCapture(reason: "App resigned active")
     }
 
     // MARK: - Toggle Capture
@@ -114,7 +131,7 @@ class InputCaptureManager: NSObject, ObservableObject {
             if !windowFrame.contains(clickLocation) {
                 // Click is outside - stop capture
                 Task { @MainActor in
-                    self.stopCapture()
+                    self.stopCapture(reason: "Click outside window")
                 }
             }
         }
@@ -132,15 +149,6 @@ class InputCaptureManager: NSObject, ObservableObject {
     // Called from the window controller when Cmd+F10 is pressed
     func handleToggleHotkey(window: NSWindow) {
         toggleCapture(window: window)
-    }
-
-    // MARK: - Window Resignation Handler
-
-    // Called when the window loses key status
-    func handleWindowResignedKey() {
-        if isCapturing {
-            stopCapture()
-        }
     }
 
     // MARK: - Cleanup

@@ -122,7 +122,7 @@ import Foundation
     // MARK: - Keyboard / Mouse / Pointer Input
 
     static func dispatchKeyboardEvent(keycode: UInt32, character: UInt32, modifiers: UInt32, down: Bool) {
-        LoggerService.extreme(category: "LibretroBridge", "Keyboard event: keycode=\(keycode) char=\(character) mod=\(modifiers) down=\(down)")
+        LoggerService.info(category: "LibretroBridge", "Keyboard event: keycode=\(keycode) char=\(character) mod=\(modifiers) down=\(down)")
         LibretroBridge.dispatchKeyboardEvent(keycode, character: character, modifiers: modifiers, down: down)
     }
 

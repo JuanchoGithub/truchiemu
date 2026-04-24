@@ -413,7 +413,7 @@ int16_t bridge_input_state(unsigned port, unsigned device, unsigned index, unsig
             return g_analog_state[index][id];
 
         // RETRO_DEVICE_KEYBOARD - raw keycode polling
-        if (device == RETRO_DEVICE_KEYBOARD) {
+        if (device == RETRO_DEVICE_KEYBOARD || device == 0) {
             if (id < 512) {
                 return g_keyboard_state[id] ? 1 : 0;
             }

@@ -215,6 +215,11 @@ super.init(window: window)
         
         // Update Metal view frame to match bezel playable area
         updateMetalViewFrameForBezel()
+        
+        // Re-assert focus on the metal view after frame changes to prevent loss of keyboard input
+        DispatchQueue.main.async { [weak self] in
+            self?.window?.makeFirstResponder(self?.metalView)
+        }
     }
     
     // Updates the Metal view frame to match the playable area of the bezel.
@@ -368,6 +373,11 @@ super.init(window: window)
         
         // Launch the game
         runner?.launch(rom: rom, coreID: coreID)
+
+        // Start input capture for DOS/ScummVM games immediately upon launch
+        if let window = window, let systemID = rom.systemID?.lowercased(), (systemID == "dos" || systemID == "scummvm") {
+            InputCaptureManager.shared.startCapture(window: window)
+        }
         
         // Check if runner is running
         if !(runner?.isRunning ?? false) {
@@ -708,10 +718,9 @@ super.init(window: window)
     // MARK: - Input Capture
 
     func windowDidResignKey(_ notification: Notification) {
-        // Auto-release input capture when window loses focus
-        if InputCaptureManager.shared.isCapturing {
-            InputCaptureManager.shared.handleWindowResignedKey()
-        }
+        // We no longer call handleWindowResignedKey here because transient focus loss 
+        // (e.g. during resolution changes) was causing unintended capture stops.
+        // Input capture is now managed by App resignation and click-outside detection.
     }
 
     // Setup hotkey monitor for Cmd+F10

@@ -417,6 +417,7 @@
 		DD1AEB422F96D7240014A60E /* ShaderManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = DD1AE09F2F96D7240014A60E /* ShaderManager.swift */; };
 		DD1AEB432F96D7240014A60E /* CoreAndAchievements.swift in Sources */ = {isa = PBXBuildFile; fileRef = DD1AE5C32F96D7240014A60E /* CoreAndAchievements.swift */; };
 		DD761E152F9AE550002E0F3D /* InputCaptureManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = DD761E132F9AE550002E0F3D /* InputCaptureManager.swift */; };
+		4C4E815CF1F3498FBFD7E908 /* RetroKeycodeMapper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 02FA13AC92004870801B79A3 /* RetroKeycodeMapper.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -850,6 +851,7 @@
 		DD1AE5D92F96D7240014A60E /* GameError.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GameError.swift; sourceTree = "<group>"; };
 		DD1AEB452F96DACB0014A60E /* TruchiEmu.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = TruchiEmu.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		DD761E132F9AE550002E0F3D /* InputCaptureManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InputCaptureManager.swift; sourceTree = "<group>"; };
+		02FA13AC92004870801B79A3 /* RetroKeycodeMapper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RetroKeycodeMapper.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXGroup section */
@@ -1787,6 +1789,7 @@
 			isa = PBXGroup;
 			children = (
 				DD761E132F9AE550002E0F3D /* InputCaptureManager.swift */,
+				02FA13AC92004870801B79A3 /* RetroKeycodeMapper.swift */,
 			);
 			path = InputCapture;
 			sourceTree = "<group>";
@@ -2204,6 +2207,7 @@
 				DD1AEAEA2F96D7240014A60E /* DisplaySettingsView.swift in Sources */,
 				DD1AEAEB2F96D7240014A60E /* StandaloneGameWindowController.swift in Sources */,
 				DD761E152F9AE550002E0F3D /* InputCaptureManager.swift in Sources */,
+				4C4E815CF1F3498FBFD7E908 /* RetroKeycodeMapper.swift in Sources */,
 				DD1AEAEC2F96D7240014A60E /* ManualActionStatus.swift in Sources */,
 				DD1AEAED2F96D7240014A60E /* SetupWizardState.swift in Sources */,
 				DD1AEAEE2F96D7240014A60E /* DotMatrixLCD.metal in Sources */,

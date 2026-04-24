@@ -68,7 +68,7 @@ static int16_t input_state_stub(unsigned port, unsigned device, unsigned index, 
                 if (failureCb) failureCb(@"Failed to load core dylib.");
             }
         } @catch (NSException *e) {
-            if (failureCb) failureCb([@ "Core crashed during launch: " stringByAppendingString:e.reason]);
+            if (failureCb) failureCb([@"Core crashed during launch: " stringByAppendingString:e.reason]);
         }
 
         if (!loadSuccess && failureCb) {
@@ -440,13 +440,7 @@ character:(unsigned)character
 modifiers:(unsigned)modifiers
 down:(BOOL)down {
     unsigned device = 0; // Default to None/Any
-    if (g_coreID) {
-        NSString *lowerID = [g_coreID lowercaseString];
-        if ([lowerID rangeOfString:@"mame"].location != NSNotFound || 
-            [lowerID rangeOfString:@"dosbox"].location != NSNotFound) {
-            device = 3; // RETRO_DEVICE_KEYBOARD
-        }
-    }
+    device = 0;
     bridge_keyboard_event(down, keycode, character, modifiers, device);
 }
 
