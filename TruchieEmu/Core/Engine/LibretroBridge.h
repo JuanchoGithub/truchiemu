@@ -78,6 +78,7 @@ down:(BOOL)down;
 
 /* Mouse Input — for RETRO_DEVICE_MOUSE */
 + (void)setMouseDeltaX:(int16_t)dx Y:(int16_t)dy;
++ (void)addMouseDelta:(int16_t)dx Y:(int16_t)dy; // Accumulates between frames
 + (void)setMouseButton:(int)button pressed:(BOOL)pressed;
 + (void)addMouseWheelDelta:(int16_t)delta;
 + (void)resetMouseDeltas;

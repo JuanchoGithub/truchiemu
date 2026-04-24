@@ -6,9 +6,7 @@ class FocusableMTKView: MTKView {
     override var acceptsFirstResponder: Bool { true }
     override var isOpaque: Bool { false }
 
-    // Track last mouse position for delta calculation
-    private var lastMouseLocation: NSPoint = .zero
-    private var isMouseTrackingActive: Bool = false
+
 
     // Allow runner to be weak so we don't leak
     weak var runner: EmulatorRunner?
@@ -27,7 +25,6 @@ class FocusableMTKView: MTKView {
         }
 
         LibretroBridgeSwift.setMouseButton(0, pressed: true)
-        lastMouseLocation = event.locationInWindow
     }
 
     override func mouseUp(with event: NSEvent) {
@@ -55,13 +52,15 @@ class FocusableMTKView: MTKView {
     }
 
     private func updateMouseDelta(with event: NSEvent) {
-        let currentLocation = event.locationInWindow
-        let deltaX = Int16(currentLocation.x - lastMouseLocation.x)
-        let deltaY = Int16(lastMouseLocation.y - currentLocation.y) // Invert Y for libretro
+        // Use raw NSEvent deltas instead of window coordinates.
+        // event.deltaX/deltaY give hardware-level mouse movement that
+        // doesn't clamp at window/screen edges — critical when the
+        // cursor is hidden and captured for DOS/ScummVM games.
+        let dx = Int16(clamping: Int(event.deltaX))
+        let dy = Int16(clamping: Int(event.deltaY))  // macOS Y is already inverted for libretro
 
-        if deltaX != 0 || deltaY != 0 {
-            LibretroBridgeSwift.setMouseDeltaX(deltaX, y: deltaY)
-            lastMouseLocation = currentLocation
+        if dx != 0 || dy != 0 {
+            LibretroBridgeSwift.addMouseDelta(dx, y: dy)
         }
 
         // Update pointer position for RETRO_DEVICE_POINTER

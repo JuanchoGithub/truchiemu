@@ -1,5 +1,6 @@
 import Cocoa
 import Combine
+import CoreGraphics
 
 // MARK: - Input Capture Manager
 // Handles keyboard and mouse input capture for game windows.
@@ -47,6 +48,11 @@ class InputCaptureManager: NSObject, ObservableObject {
         // Hide the cursor
         NSCursor.hide()
 
+        // Dissociate cursor position from mouse movement.
+        // This prevents the hidden cursor from hitting screen edges,
+        // ensuring raw deltas (NSEvent.deltaX/deltaY) continue flowing.
+        CGAssociateMouseAndMouseCursorPosition(boolean_t(0))
+
         // Store fullscreen state and hide menu bar if needed
         wasInFullscreen = window.styleMask.contains(.fullScreen)
         if wasInFullscreen {
@@ -81,6 +87,9 @@ class InputCaptureManager: NSObject, ObservableObject {
 
         // Show the cursor again
         NSCursor.unhide()
+
+        // Re-associate cursor with mouse movement
+        CGAssociateMouseAndMouseCursorPosition(boolean_t(1))
 
         // Restore fullscreen state if needed
         if let window = capturedWindow, wasInFullscreen {

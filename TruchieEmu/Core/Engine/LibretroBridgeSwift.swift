@@ -131,6 +131,11 @@ import Foundation
         LibretroBridge.setMouseDeltaX(dx, y: dy)
     }
 
+    static func addMouseDelta(_ dx: Int16, y dy: Int16) {
+        LoggerService.extreme(category: "LibretroBridge", "Mouse delta (accumulate): \(dx), \(dy)")
+        LibretroBridge.addMouseDelta(dx, y: dy)
+    }
+
     static func setMouseButton(_ button: Int, pressed: Bool) {
         LoggerService.extreme(category: "LibretroBridge", "Mouse button: \(button) pressed=\(pressed)")
         LibretroBridge.setMouseButton(Int32(button), pressed: pressed)

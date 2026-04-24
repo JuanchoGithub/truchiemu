@@ -451,6 +451,15 @@ down:(BOOL)down {
     g_mouse_state.delta_y = dy;
 }
 
++ (void)addMouseDelta:(int16_t)dx Y:(int16_t)dy {
+    // Accumulate deltas — multiple mouse events fire between core frames.
+    // Clamping prevents Int16 overflow from rapid mouse movement.
+    int32_t newX = (int32_t)g_mouse_state.delta_x + (int32_t)dx;
+    int32_t newY = (int32_t)g_mouse_state.delta_y + (int32_t)dy;
+    g_mouse_state.delta_x = (int16_t)MAX(-32767, MIN(32767, newX));
+    g_mouse_state.delta_y = (int16_t)MAX(-32767, MIN(32767, newY));
+}
+
 + (void)setMouseButton:(int)button pressed:(BOOL)pressed {
     if (button == 0) {
         if (pressed) g_mouse_state.buttons |= 1;       // LEFT
