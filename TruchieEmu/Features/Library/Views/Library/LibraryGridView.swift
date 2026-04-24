@@ -337,8 +337,87 @@ ToolbarItem(placement: .primaryAction) {
             sortByLastPlayed = AppSettings.getBool("sortByLastPlayed", defaultValue: false)
             sortByLastAdded = AppSettings.getBool("sortByLastAdded", defaultValue: false)
             
+            // Initialize view mode from settings
+            if let savedMode = AppSettings.getString("gridViewMode") {
+                viewMode = savedMode == "list" ? .list : .grid
+            }
+            
             // Contextually resolve local boxarts for the current view
             handleFilterChange(filter)
+            
+            // Add notification observers for menu commands
+            setupMenuNotificationObservers()
+        }
+        .onReceive(NotificationCenter.default.publisher(for: .addROMFolder)) { _ in
+            pickFolder()
+        }
+        .onReceive(NotificationCenter.default.publisher(for: .viewModeChanged)) { notification in
+            if let mode = notification.object as? String {
+                if mode == "grid" {
+                    viewMode = .grid
+                } else if mode == "list" {
+                    viewMode = .list
+                }
+            }
+        }
+        .onReceive(NotificationCenter.default.publisher(for: .sortChanged)) { _ in
+            sortByLastPlayed = AppSettings.getBool("sortByLastPlayed", defaultValue: false)
+            sortByLastAdded = AppSettings.getBool("sortByLastAdded", defaultValue: false)
+            viewModel.updateFilters(
+                filter: filter,
+                searchText: searchText,
+                activeFilters: activeFilters,
+                sortByLastPlayed: sortByLastPlayed,
+                sortByLastAdded: sortByLastAdded
+            )
+        }
+        .onReceive(NotificationCenter.default.publisher(for: .filterToggled)) { notification in
+            if let rawValue = notification.object as? String {
+                if activeFilters.contains(rawValue) {
+                    activeFilters.remove(rawValue)
+                } else {
+                    activeFilters.insert(rawValue)
+                }
+                viewModel.updateFilters(
+                    filter: filter,
+                    searchText: searchText,
+                    activeFilters: activeFilters,
+                    sortByLastPlayed: sortByLastPlayed,
+                    sortByLastAdded: sortByLastAdded
+                )
+            }
+        }
+        .onReceive(NotificationCenter.default.publisher(for: .zoomChanged)) { notification in
+            guard let action = notification.object as? String else { return }
+            withAnimation(.interpolatingSpring(stiffness: 150, damping: 20)) {
+                switch action {
+                case "in":
+                    continuousZoom = min(1.0, continuousZoom + 0.1)
+                case "out":
+                    continuousZoom = max(0.0, continuousZoom - 0.1)
+                case "reset":
+                    continuousZoom = 0.5
+                default:
+                    break
+                }
+            }
+            applyZoomToColumnCount(animate: true)
+        }
+        .onReceive(NotificationCenter.default.publisher(for: .languageChanged)) { _ in
+            // Language changes are handled by SystemPreferences automatically via AppSettings
+        }
+        .onReceive(NotificationCenter.default.publisher(for: .boxArtStyleChanged)) { _ in
+            // Trigger UI refresh for box art style change
+        }
+        .onReceive(NotificationCenter.default.publisher(for: .boxArtVisibilityChanged)) { _ in
+            // Trigger UI refresh - handled by AppSettings getBool in view
+        }
+        .onReceive(NotificationCenter.default.publisher(for: .navigateToFilter)) { notification in
+            if let filterID = notification.object as? String {
+                if let newFilter = restoreFilter(from: filterID) {
+                    filter = newFilter
+                }
+            }
         }
         .onChange(of: filter) { _, newFilter in
             handleFilterChange(newFilter)
@@ -402,12 +481,37 @@ ToolbarItem(placement: .primaryAction) {
         let computedColumns = max(1, min(8, Int((availableWidth + spacing) / (cardWidth + spacing))))
         columnCount = computedColumns
         
-        columns = Array(
+columns = Array(
             repeating: GridItem(.flexible(minimum: cardWidth, maximum: cardWidth), spacing: spacing),
             count: columnCount
         )
     }
-
+    
+    private func setupMenuNotificationObservers() {
+        // Observers added via onReceive modifiers above
+    }
+    
+    private func restoreFilter(from id: String) -> LibraryFilter? {
+        if id == "all" { return .all }
+        if id == "favorites" { return .favorites }
+        if id == "recent" { return .recent }
+        if id == "lastAdded" { return .lastAdded }
+        if id == "playHistory" { return .recent } // Play History shows all games sorted by last played
+        if id == "hidden" { return .hidden }
+        if id == "mameNonGames" { return .mameNonGames }
+        if id.hasPrefix("category-") {
+            let catID = String(id.dropFirst("category-".count))
+            return .category(catID)
+        }
+        if id.hasPrefix("system-") {
+            let sysID = String(id.dropFirst("system-".count))
+            if let system = SystemDatabase.system(forID: sysID) {
+                return .system(system)
+            }
+        }
+        return nil
+    }
+    
     private var gridView: some View {
         ScrollView(.vertical) {
             LazyVGrid(columns: columns, spacing: gridSpacing) {

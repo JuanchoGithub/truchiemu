@@ -1,6 +1,7 @@
 import SwiftUI
 import Combine
 import GameController
+import Foundation
 
 // MARK: - Main Settings View
 struct SettingsView: View {
@@ -8,15 +9,64 @@ struct SettingsView: View {
     @EnvironmentObject var coreManager: CoreManager
     @EnvironmentObject var controllerService: ControllerService
     
-    enum Page: Hashable, Codable { case general, library, cores, controllers, boxArt, display, cheats, bezels, retroAchievements, logging, about }
+    enum Page: Hashable, Codable, RawRepresentable {
+        case general, library, cores, controllers, boxArt, display, cheats, bezels, retroAchievements, logging, about
+        
+        var rawValue: String {
+            switch self {
+            case .general: return "general"
+            case .library: return "library"
+            case .cores: return "cores"
+            case .controllers: return "controllers"
+            case .boxArt: return "boxArt"
+            case .display: return "display"
+            case .cheats: return "cheats"
+            case .bezels: return "bezels"
+            case .retroAchievements: return "retroAchievements"
+            case .logging: return "logging"
+            case .about: return "about"
+            }
+        }
+        
+        init?(rawValue: String) {
+            switch rawValue {
+            case "general": self = .general
+            case "library": self = .library
+            case "cores": self = .cores
+            case "controllers": self = .controllers
+            case "boxArt": self = .boxArt
+            case "display": self = .display
+            case "cheats": self = .cheats
+            case "bezels": self = .bezels
+            case "retroAchievements": self = .retroAchievements
+            case "logging": self = .logging
+            case "about": self = .about
+            default: return nil
+            }
+        }
+    }
+    
+    // Use @AppStorage so it persists and can be set before openSettings() is called
+    @AppStorage("settings_selectedTab") private var selectedPageRaw: String = "general"
+    
     @State private var selectedPage: Page = .general
     
     let system: SystemInfo?
-    let initialPage: Page?
-
-    init(system: SystemInfo? = nil, initialPage: Page? = nil) {
+    
+    // Sync state with AppStorage when view appears
+    private func syncWithStorage() {
+        if let page = Page(rawValue: selectedPageRaw) {
+            selectedPage = page
+        }
+    }
+    
+    // Update storage when selection changes
+    private func updateStorage() {
+        selectedPageRaw = selectedPage.rawValue
+    }
+    
+    init(system: SystemInfo? = nil) {
         self.system = system
-        self.initialPage = initialPage
     }
     
     var body: some View {
@@ -63,9 +113,15 @@ struct SettingsView: View {
         }
         .frame(minWidth: 750, minHeight: 500)
         .onAppear {
-            if let initialPage = initialPage {
-                selectedPage = initialPage
+            // For system-specific settings, override the tab selection
+            if system != nil {
+                selectedPage = .general
+            } else {
+                syncWithStorage()
             }
+        }
+        .onChange(of: selectedPage) { _, newValue in
+            updateStorage()
         }
         .sheet(item: $coreManager.pendingDownload) { pending in
             CoreDownloadSheet(pending: pending)
@@ -85,6 +141,23 @@ struct SettingsView: View {
         .frame(maxWidth: .infinity, alignment: .leading)
         .padding(.vertical, 8)
         .tag(page)
+    }
+    
+    private func pageFromID(_ id: String) -> Page? {
+        switch id {
+        case "general": return .general
+        case "library": return .library
+        case "cores": return .cores
+        case "controllers": return .controllers
+        case "boxArt": return .boxArt
+        case "display": return .display
+        case "cheats": return .cheats
+        case "bezels": return .bezels
+        case "retroAchievements": return .retroAchievements
+        case "logging": return .logging
+        case "about": return .about
+        default: return nil
+        }
     }
 }
 

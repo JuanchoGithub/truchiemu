@@ -51,10 +51,14 @@ enum AppSettings {
         UserDefaults.standard.set(value, forKey: key)
     }
 
-    static func removeObject(_ key: String) {
+static func removeObject(_ key: String) {
         UserDefaults.standard.removeObject(forKey: key)
     }
-
+    
+    static func remove(_ key: String) {
+        UserDefaults.standard.removeObject(forKey: key)
+    }
+    
     static func get<T: Codable>(_ key: String, type: T.Type) -> T? {
         guard let data = UserDefaults.standard.data(forKey: key) else { return nil }
         return try? JSONDecoder().decode(type, from: data)

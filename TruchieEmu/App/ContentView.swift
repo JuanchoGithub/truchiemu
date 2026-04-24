@@ -4,6 +4,8 @@ import UserNotifications
 
 struct ContentView: View {
     @Environment(\.modelContext) var modelContext
+    @Environment(\.openSettings) private var openSettings
+    @Environment(\.openWindow) var openWindow
     @EnvironmentObject var library: ROMLibrary
     @EnvironmentObject var categoryManager: CategoryManager
     @EnvironmentObject var coreManager: CoreManager
@@ -19,8 +21,7 @@ struct ContentView: View {
     @State private var searchText = ""
     @State private var showCreateCategorySheet = false
     @State private var editingCategory: GameCategory? = nil
-    @Environment(\.openWindow) var openWindow
-
+    
     var body: some View {
         Group {
             if !library.hasCompletedOnboarding && !wizard.hasCompletedWizard {
@@ -312,6 +313,9 @@ struct ContentView: View {
                     selectedFilter = .all
                 }
             }
+        }
+        .onReceive(NotificationCenter.default.publisher(for: .openAppSettings)) { _ in
+            openSettings()
         }
         // Set ideal window size so the window doesn't start stretched larger than needed
         .frame(minWidth: 1000, idealWidth: 1200, minHeight: 650, idealHeight: 750)

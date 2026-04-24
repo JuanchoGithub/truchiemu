@@ -2,6 +2,22 @@ import SwiftUI
 import AppKit
 import UserNotifications
 
+// MARK: - Notification Names for Menu Commands
+
+extension Notification.Name {
+    static let addROMFolder = Notification.Name("addROMFolder")
+    static let viewModeChanged = Notification.Name("viewModeChanged")
+    static let boxArtVisibilityChanged = Notification.Name("boxArtVisibilityChanged")
+    static let boxArtStyleChanged = Notification.Name("boxArtStyleChanged")
+    static let navigateToFilter = Notification.Name("navigateToFilter")
+    static let sortChanged = Notification.Name("sortChanged")
+    static let filterToggled = Notification.Name("filterToggled")
+    static let languageChanged = Notification.Name("languageChanged")
+    static let zoomChanged = Notification.Name("zoomChanged")
+    static let openAppSettings = Notification.Name("openAppSettings")
+    static let openSettingsWindow = Notification.Name("openSettingsWindow")
+}
+
 @main
 struct TruchieEmuApp: App {
     @NSApplicationDelegateAdaptor(AppDelegate.self) var appDelegate
@@ -43,6 +59,15 @@ struct TruchieEmuApp: App {
         ProcessInfo.processInfo.arguments.contains("--launch")
     }
     
+    // Systems that have games in the library
+    private var systemsWithGames: [SystemInfo] {
+        let ids = Set(library.roms.compactMap { $0.systemID })
+        return SystemDatabase.systemsForDisplay.filter { system in
+            let internalIDs = SystemDatabase.allInternalIDs(forDisplayID: system.id)
+            return internalIDs.contains { ids.contains($0) }
+        }.sorted { $0.name.localizedCaseInsensitiveCompare($1.name) == .orderedAscending }
+    }
+    
     // MARK: - MAME Verification
     
     private func startMAMEVerificationIfNeeded() {
@@ -55,7 +80,7 @@ struct TruchieEmuApp: App {
                 let modelContext = SwiftDataContainer.shared.container.mainContext
                 MAMEVerificationService.shared.startVerification(modelContext: modelContext)
             }
-        }
+}
     }
     
     var body: some Scene {
@@ -82,12 +107,189 @@ struct TruchieEmuApp: App {
             SidebarCommands()
             if !isCLILaunch {
                 CommandGroup(replacing: .newItem) {}
-                CommandMenu("Library") {
+                
+// Add Settings menu item to app menu using .appSettings placement
+                CommandGroup(after: .appTermination) {
+                    Button("Settings…") {
+                        UserDefaults.standard.set("general", forKey: "settings_selectedTab")
+                        NotificationCenter.default.post(name: .openAppSettings, object: nil)
+                    }
+                    .keyboardShortcut(",", modifiers: .command)
+                }
+                
+                // Add to the default View menu (macOS provides Zoom, Enter Full Screen)
+                CommandGroup(after: .toolbar) {
+                    Divider()
+                    
+                    // View Mode
+                    Section("View Mode") {
+                        Button("Grid") {
+                            AppSettings.set("gridViewMode", value: "grid")
+                            NotificationCenter.default.post(name: .viewModeChanged, object: "grid")
+                        }
+                        .keyboardShortcut("1", modifiers: .command)
+                        
+                        Button("List") {
+                            AppSettings.set("gridViewMode", value: "list")
+                            NotificationCenter.default.post(name: .viewModeChanged, object: "list")
+                        }
+                        .keyboardShortcut("2", modifiers: .command)
+                    }
+                    
+                    Divider()
+                    
+                    // Box Art
+                    Menu("Box Art") {
+                        Button(AppSettings.getBool("showBoxArt", defaultValue: true) ? "Hide Box Art" : "Show Box Art") {
+                            let current = AppSettings.getBool("showBoxArt", defaultValue: true)
+                            AppSettings.setBool("showBoxArt", value: !current)
+                            NotificationCenter.default.post(name: .boxArtVisibilityChanged, object: nil)
+                        }
+                        .keyboardShortcut("B", modifiers: .command)
+                        
+                        Divider()
+                        
+                        ForEach(BoxType.allCases) { type in
+                            Button(type.rawValue) {
+                                AppSettings.set("defaultBoxType", value: type.rawValue)
+                                NotificationCenter.default.post(name: .boxArtStyleChanged, object: nil)
+                            }
+                        }
+                    }
+                    
+                    Divider()
+                    
+                    // Sort
+                    Menu("Sort By") {
+                        Button("Last Played") {
+                            let current = AppSettings.getBool("sortByLastPlayed", defaultValue: false)
+                            AppSettings.setBool("sortByLastPlayed", value: !current)
+                            NotificationCenter.default.post(name: .sortChanged, object: nil)
+                        }
+                        .keyboardShortcut("P", modifiers: [.command, .shift])
+                        
+                        Button("Last Added") {
+                            let current = AppSettings.getBool("sortByLastAdded", defaultValue: false)
+                            AppSettings.setBool("sortByLastAdded", value: !current)
+                            NotificationCenter.default.post(name: .sortChanged, object: nil)
+                        }
+                        .keyboardShortcut("A", modifiers: [.command, .shift])
+                    }
+                    
+                    Divider()
+                    
+                    // Filters
+                    Menu("Filters") {
+                        ForEach(GameFilterOption.allCases) { option in
+                            Button(option.label) {
+                                NotificationCenter.default.post(name: .filterToggled, object: option.rawValue)
+                            }
+                        }
+                    }
+                    
+                    Divider()
+                    
+                    // Language
+                    Menu("Language") {
+                        ForEach(EmulatorLanguage.allCases) { lang in
+                            Button("\(lang.flagEmoji) \(lang.name)") {
+                                AppSettings.set("systemLanguage", value: lang.rawValue)
+                                NotificationCenter.default.post(name: .languageChanged, object: nil)
+                            }
+                        }
+                    }
+                }
+                
+                // Library Menu (rename to something unique to avoid conflict with macOS default)
+                CommandMenu("Games") {
+                    Button("Add ROM Folder…") {
+                        NotificationCenter.default.post(name: .addROMFolder, object: nil)
+                    }
+                    .keyboardShortcut("O", modifiers: [.command, .shift])
+                    
                     Button("Rescan Library") {
                         Task { await library.fullRescan() }
                     }
                     .keyboardShortcut("R", modifiers: [.command, .shift])
                     .disabled(library.romFolderURL == nil || library.isScanning)
+                    
+                    Divider()
+                    
+                    // Navigation section
+                    Section("Library") {
+                        Button("All Games") {
+                            NotificationCenter.default.post(name: .navigateToFilter, object: "all")
+                        }
+                        
+                        Button("Favorites") {
+                            NotificationCenter.default.post(name: .navigateToFilter, object: "favorites")
+                        }
+                        
+                        Button("Recent") {
+                            NotificationCenter.default.post(name: .navigateToFilter, object: "recent")
+                        }
+                        
+                        Divider()
+                        
+                        Button("Play History") {
+                            NotificationCenter.default.post(name: .navigateToFilter, object: "playHistory")
+                        }
+                        .keyboardShortcut("H", modifiers: [.command, .shift])
+                    }
+                    
+                    Divider()
+                    
+                    // Systems submenu - only show systems that have games
+                    Menu("Systems") {
+                        let ids = Set(library.roms.compactMap { $0.systemID })
+                        let displaySystems = SystemDatabase.systemsForDisplay.filter { system in
+                            let internalIDs = SystemDatabase.allInternalIDs(forDisplayID: system.id)
+                            return internalIDs.contains { ids.contains($0) }
+                        }.sorted { $0.name.localizedCaseInsensitiveCompare($1.name) == .orderedAscending }
+                        
+                        ForEach(displaySystems) { system in
+                            Button(system.name) {
+                                NotificationCenter.default.post(name: .navigateToFilter, object: "system-\(system.id)")
+                            }
+                        }
+                    }
+                    
+                    Divider()
+                    
+                    // Settings submenu
+                    Menu("Settings") {
+                        Button("Controllers") {
+                            UserDefaults.standard.set("controllers", forKey: "settings_selectedTab")
+                            NotificationCenter.default.post(name: .openAppSettings, object: nil)
+                        }
+                        
+                        Button("Shaders / Display") {
+                            UserDefaults.standard.set("display", forKey: "settings_selectedTab")
+                            NotificationCenter.default.post(name: .openAppSettings, object: nil)
+                        }
+                        
+                        Button("Cheats") {
+                            UserDefaults.standard.set("cheats", forKey: "settings_selectedTab")
+                            NotificationCenter.default.post(name: .openAppSettings, object: nil)
+                        }
+                        
+                        Button("Bezels") {
+                            UserDefaults.standard.set("bezels", forKey: "settings_selectedTab")
+                            NotificationCenter.default.post(name: .openAppSettings, object: nil)
+                        }
+                        
+                        Divider()
+                        
+                        Button("Cores…") {
+                            UserDefaults.standard.set("cores", forKey: "settings_selectedTab")
+                            NotificationCenter.default.post(name: .openAppSettings, object: nil)
+                        }
+                        
+                        Button("Box Art") {
+                            UserDefaults.standard.set("boxArt", forKey: "settings_selectedTab")
+                            NotificationCenter.default.post(name: .openAppSettings, object: nil)
+                        }
+                    }
                 }
             }
         }
@@ -112,12 +314,20 @@ struct TruchieEmuApp: App {
 
         WindowGroup(id: "system-settings", for: SystemSettingsRequest.self) { $request in
             if let request = request {
-                SettingsView(system: request.system, initialPage: request.page)
+                SettingsView(system: request.system)
                     .environmentObject(library)
                     .environmentObject(categoryManager)
                     .environmentObject(coreManager)
                     .environmentObject(controllerService)
             }
+        }
+        
+        WindowGroup(id: "settings") {
+            SettingsView()
+                .environmentObject(library)
+                .environmentObject(categoryManager)
+                .environmentObject(coreManager)
+                .environmentObject(controllerService)
         }
         
         Settings {
@@ -205,6 +415,7 @@ class AppDelegate: NSObject, NSApplicationDelegate, UNUserNotificationCenterDele
         // This runs after windows are created to catch any that were already restored.
         DispatchQueue.main.async {
             self.closeRestoredGameInfoWindows()
+            self.removeEditMenu()
         }
     }
 
@@ -270,6 +481,13 @@ class AppDelegate: NSObject, NSApplicationDelegate, UNUserNotificationCenterDele
         }
         for window in gameInfoWindows {
             window.close()
+        }
+    }
+    
+    // Remove the unused Edit menu from the menu bar
+    private func removeEditMenu() {
+        if let editMenu = NSApp.mainMenu?.item(withTitle: "Edit") {
+            NSApp.mainMenu?.removeItem(editMenu)
         }
     }
 }
