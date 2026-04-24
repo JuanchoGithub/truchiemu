@@ -50,52 +50,7 @@ class ScummVMRunner: EmulatorRunner, @unchecked Sendable {
     
     // MARK: - Game ID Detection Patterns
     
-    // Known ScummVM game file patterns - maps distinctive files to game IDs
-    static let gameFilePatterns: [(pattern: String, gameID: String)] = [
-        // LucasArts games
-        ("TENTACLE", "tentacle"),           // Day of the Tentacle
-        ("TENTACLE.", "tentacle"),
-        ("SAMN", "samnmax"),                // Sam & Max Hit the Road
-        ("SAMNMAX", "samnmax"),
-        ("MONKEY", "monkey"),               // The Secret of Monkey Island
-        ("MONKEY2", "monkey2"),             // Monkey Island 2
-        ("COMI", "comi"),                   // Curse of Monkey Island
-        ("INDY3", "indy3"),                 // Indiana Jones and the Last Crusade
-        ("INDYLALA", "indy4"),              // Indiana Jones and the Fate of Atlantis
-        ("LOOM", "loom"),
-        ("ZAK", "zak25"),                   // Zak McKracken and the Alien Mindbenders
-        ("MANIAC", "maniac"),               // Maniac Mansion
-        
-        // Sierra games
-        ("QFG1", "qfg1"),                   // Quest for Glory 1
-        ("QFG2", "qfg2"),                   // Quest for Glory 2
-        ("KQ1", "kq1"),                     // King's Quest 1
-        ("KQ2", "kq2"),                     // King's Quest 2
-        ("KQ3", "kq3"),                     // King's Quest 3
-        ("KQ4", "kq4"),                     // King's Quest 4
-        ("KQ5", "kq5"),                     // King's Quest 5
-        ("KQ6", "kq6"),                     // King's Quest 6
-        ("KQ7", "kq7"),                     // King's Quest 7
-        ("SQ1", "sq1"),                     // Space Quest 1
-        ("SQ2", "sq2"),                     // Space Quest 2
-        ("SQ3", "sq3"),                     // Space Quest 3
-        ("SQ4", "sq4"),                     // Space Quest 4
-        ("SQ5", "sq5"),                     // Space Quest 5
-        ("SQ6", "sq6"),                     // Space Quest 6
-        ("LH1", "lh1"),                     // Leisure Suit Larry 1
-        ("LH2", "lh2"),                     // Leisure Suit Larry 2  
-        ("LH3", "lh3"),                     // Leisure Suit Larry 3
-        ("LH5", "lh5"),                     // Leisure Suit Larry 5
-        ("LH6", "lh6"),                     // Leisure Suit Larry 6
-        
-        // Other classic games
-        ("DIG", "dig"),                     // The Dig
-        ("FULLTHROTTLE", "fullthrottle"),   // Full Throttle
-        ("FT", "fullthrottle"),
-        ("GROOVE", "groove"),               // Full Throttle (alternative)
-        ("TOUCHE", "tuche"),                // Touche: The Adventures of the 5th Musketeer
-    ]
-    
+
     // Audio file extensions that indicate ScummVM game data
     static let scummVMAudioExtensions: Set<String> = [
         "flac", "ogg", "wav", "mp3", "aif", "aiff"
@@ -222,15 +177,7 @@ class ScummVMRunner: EmulatorRunner, @unchecked Sendable {
             // First pass: look for known game file patterns
             for file in files {
                 let upperFile = file.uppercased()
-                let nameWithoutExt = (upperFile as NSString).deletingPathExtension
-                
-                // Check against known patterns
-                for (pattern, gameID) in Self.gameFilePatterns {
-                    if nameWithoutExt == pattern || nameWithoutExt.hasPrefix(pattern + ".") {
-                        LoggerService.debug(category: "ScummVM", "Detected game ID: \(gameID) from file: \(file)")
-                        return gameID
-                    }
-                }
+                let nameWithoutExt = (upperFile as NSString).deletingPathExtension               
             }
             
             // Second pass: check for audio/data files to confirm it's ScummVM
@@ -259,14 +206,6 @@ class ScummVMRunner: EmulatorRunner, @unchecked Sendable {
             .replacingOccurrences(of: " ", with: "")
             .replacingOccurrences(of: "(", with: "")
             .replacingOccurrences(of: ")", with: "")
-        
-        // Try to match from known patterns on the folder name
-        for (pattern, gameID) in Self.gameFilePatterns {
-            if folderName.contains(pattern.lowercased()) {
-                LoggerService.debug(category: "ScummVM", "Detected game ID from folder name: \(gameID)")
-                return gameID
-            }
-        }
         
         // We do not fallback to a cleaned folder name because passing an invalid
         // shortname via the hook file causes ScummVM to open the launcher GUI.
@@ -330,13 +269,7 @@ class ScummVMRunner: EmulatorRunner, @unchecked Sendable {
                 if Self.scummVMAudioExtensions.contains(ext) {
                     return true
                 }
-                
-                // Check for known game files
-                for (pattern, _) in Self.gameFilePatterns {
-                    if upperName.contains(pattern) {
-                        return true
-                    }
-                }
+
             }
         } catch {
             LoggerService.debug(category: "ScummVM", "Failed to check for game files: \(error)")
