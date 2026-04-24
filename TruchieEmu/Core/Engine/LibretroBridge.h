@@ -63,12 +63,27 @@ typedef void (^CoreLoggerBlock)(const char *message, int level);
 
 /* Direct Memory Access for Cheats */
 + (nullable void *)getMemoryData:(unsigned)type
-                            size:(size_t *_Nullable)
-                                     size; // type: RETRO_MEMORY_SYSTEM_RAM or
-                                           // RETRO_MEMORY_SAVE_RAM
+size:(size_t *_Nullable)
+size; // type: RETRO_MEMORY_SYSTEM_RAM or
+// RETRO_MEMORY_SAVE_RAM
 + (void)writeMemoryByte:(uint32_t)address value:(uint8_t)value;
 + (void)applyDirectMemoryCheats:
-    (NSArray<NSDictionary *> *)cheats; // Array of {address, value, enabled}
+(NSArray<NSDictionary *> *)cheats; // Array of {address, value, enabled}
+
+/* Keyboard Input — dispatches keyboard events to the core */
++ (void)dispatchKeyboardEvent:(unsigned)keycode
+character:(unsigned)character
+modifiers:(unsigned)modifiers
+down:(BOOL)down;
+
+/* Mouse Input — for RETRO_DEVICE_MOUSE */
++ (void)setMouseDeltaX:(int16_t)dx Y:(int16_t)dy;
++ (void)setMouseButton:(int)button pressed:(BOOL)pressed;
++ (void)addMouseWheelDelta:(int16_t)delta;
++ (void)resetMouseDeltas;
+
+/* Pointer Input — for RETRO_DEVICE_POINTER (absolute coordinates) */
++ (void)setPointerX:(int16_t)x Y:(int16_t)y pressed:(BOOL)pressed;
 @end
 
 NS_ASSUME_NONNULL_END

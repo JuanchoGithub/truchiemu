@@ -433,4 +433,51 @@ if (impl->_hwRenderEnabled && impl->_glContext) {
     [g_instance->_coreLock unlock];
 }
 
+#pragma mark - Keyboard Input
+
++ (void)dispatchKeyboardEvent:(unsigned)keycode
+character:(unsigned)character
+modifiers:(unsigned)modifiers
+down:(BOOL)down {
+    bridge_keyboard_event(down, keycode, character, modifiers, 0);
+}
+
+#pragma mark - Mouse Input
+
++ (void)setMouseDeltaX:(int16_t)dx Y:(int16_t)dy {
+    g_mouse_state.delta_x = dx;
+    g_mouse_state.delta_y = dy;
+}
+
++ (void)setMouseButton:(int)button pressed:(BOOL)pressed {
+    if (button == 0) {
+        if (pressed) g_mouse_state.buttons |= 1;       // LEFT
+        else g_mouse_state.buttons &= ~1;
+    } else if (button == 1) {
+        if (pressed) g_mouse_state.buttons |= 2;       // RIGHT
+        else g_mouse_state.buttons &= ~2;
+    } else if (button == 2) {
+        if (pressed) g_mouse_state.buttons |= 4;       // MIDDLE
+        else g_mouse_state.buttons &= ~4;
+    }
+}
+
++ (void)addMouseWheelDelta:(int16_t)delta {
+    g_mouse_state.wheel_delta += delta;
+}
+
++ (void)resetMouseDeltas {
+    g_mouse_state.delta_x = 0;
+    g_mouse_state.delta_y = 0;
+    g_mouse_state.wheel_delta = 0;
+}
+
+#pragma mark - Pointer Input
+
++ (void)setPointerX:(int16_t)x Y:(int16_t)y pressed:(BOOL)pressed {
+    g_pointer_x = x;
+    g_pointer_y = y;
+    g_pointer_pressed = pressed;
+}
+
 @end

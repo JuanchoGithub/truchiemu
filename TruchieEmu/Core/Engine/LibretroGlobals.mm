@@ -17,6 +17,17 @@ NSDictionary<NSString *, NSDictionary *> *g_optCategories = nil;
 dispatch_semaphore_t g_bridgeCompletionSemaphore = nil;
 CoreLogCallback g_coreLogCallback = NULL;
 
+// Keyboard state (RETRO_DEVICE_KEYBOARD)
+BOOL g_keyboard_state[512] = {NO};
+
+// Mouse state (RETRO_DEVICE_MOUSE)
+MouseState g_mouse_state = {0, 0, 0, 0};
+
+// Pointer state (RETRO_DEVICE_POINTER)
+int16_t g_pointer_x = 0;
+int16_t g_pointer_y = 0;
+BOOL g_pointer_pressed = NO;
+
 static void no_op_log(const char *msg, int level) {}
 
 static void swift_logger_wrapper(const char *msg, int level) {

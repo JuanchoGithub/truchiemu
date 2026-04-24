@@ -16,6 +16,8 @@ void bridge_audio_sample(int16_t left, int16_t right);
 size_t bridge_audio_sample_batch(const int16_t *data, size_t frames);
 void bridge_input_poll(void);
 int16_t bridge_input_state(unsigned port, unsigned device, unsigned index, unsigned id);
+void bridge_keyboard_event(bool down, unsigned keycode, uint32_t character, uint32_t mod, unsigned device);
+void bridge_reset_keyboard_callback(void);
 uintptr_t bridge_get_proc_address(const char *sym);
 uintptr_t bridge_get_current_framebuffer(void);
 
@@ -26,6 +28,8 @@ extern int g_turbo_counter[32];
 extern BOOL g_turbo_active[32];
 extern const int g_turbo_rate;
 extern int g_turbo_fireButton[32];
+extern struct retro_keyboard_callback g_keyboard_callback;
+extern BOOL g_keyboard_callback_registered;
 
 #ifdef __cplusplus
 }

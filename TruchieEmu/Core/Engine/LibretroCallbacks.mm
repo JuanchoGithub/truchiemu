@@ -5,11 +5,15 @@
 
 int16_t g_input_state[32] = {0};
 int16_t g_analog_state[2][2] = {0};
-BOOL g_turbo_state[32] = {NO};       
-int g_turbo_counter[32] = {0};      
-BOOL g_turbo_active[32] = {NO}; 
-const int g_turbo_rate = 6; 
+BOOL g_turbo_state[32] = {NO};
+int g_turbo_counter[32] = {0};
+BOOL g_turbo_active[32] = {NO};
+const int g_turbo_rate = 6;
 int g_turbo_fireButton[32] = {0};
+
+// Keyboard callback storage (set by RETRO_ENVIRONMENT_SET_KEYBOARD_CALLBACK)
+struct retro_keyboard_callback g_keyboard_callback = {NULL};
+BOOL g_keyboard_callback_registered = NO;
 
 uintptr_t bridge_get_proc_address(const char *sym) {
   if (!sym) return 0;
@@ -253,16 +257,27 @@ bool bridge_environment(unsigned cmd, void *data) {
       g_instance->_avInfo.geometry = *geo;
     }
     return true;
-  case RETRO_ENVIRONMENT_SET_INPUT_DESCRIPTORS:
-  case RETRO_ENVIRONMENT_SET_DISK_CONTROL_INTERFACE:
-  case RETRO_ENVIRONMENT_SET_VARIABLES: 
-  case RETRO_ENVIRONMENT_SET_SERIALIZATION_QUIRKS:
-  case RETRO_ENVIRONMENT_SET_PERFORMANCE_LEVEL:
-  case RETRO_ENVIRONMENT_SET_CONTROLLER_INFO:
-  case RETRO_ENVIRONMENT_SET_CONTENT_INFO_OVERRIDE:
-  case RETRO_ENVIRONMENT_SET_SUBSYSTEM_INFO:
-  case RETRO_ENVIRONMENT_SET_KEYBOARD_CALLBACK: 
+case RETRO_ENVIRONMENT_SET_INPUT_DESCRIPTORS:
+case RETRO_ENVIRONMENT_SET_DISK_CONTROL_INTERFACE:
+case RETRO_ENVIRONMENT_SET_VARIABLES:
+case RETRO_ENVIRONMENT_SET_SERIALIZATION_QUIRKS:
+case RETRO_ENVIRONMENT_SET_PERFORMANCE_LEVEL:
+case RETRO_ENVIRONMENT_SET_CONTROLLER_INFO:
+case RETRO_ENVIRONMENT_SET_CONTENT_INFO_OVERRIDE:
+case RETRO_ENVIRONMENT_SET_SUBSYSTEM_INFO: {
     return true;
+}
+case RETRO_ENVIRONMENT_SET_KEYBOARD_CALLBACK: {
+    struct retro_keyboard_callback *cb = (struct retro_keyboard_callback *)data;
+    if (cb) {
+        // Store the keyboard callback for event-based keyboard input
+        // The callback will be invoked via bridge_keyboard_event()
+        g_keyboard_callback = *cb;
+        g_keyboard_callback_registered = YES;
+        bridge_log_printf(RETRO_LOG_DEBUG, "Keyboard callback registered");
+    }
+    return true;
+}
   case RETRO_ENVIRONMENT_GET_DISK_CONTROL_INTERFACE_VERSION: 
     if (data) *(unsigned *)data = 1;
     return true;
@@ -391,11 +406,78 @@ void bridge_input_poll(void) {
 }
 
 int16_t bridge_input_state(unsigned port, unsigned device, unsigned index, unsigned id) {
-  if (port == 0) {
-    if (device == RETRO_DEVICE_JOYPAD)
-      return g_input_state[id & 0x1F] ? 1 : 0;
-    if (device == RETRO_DEVICE_ANALOG && index < 2 && id < 2)
-      return g_analog_state[index][id];
-  }
-  return 0;
+    if (port == 0) {
+        if (device == RETRO_DEVICE_JOYPAD)
+            return g_input_state[id & 0x1F] ? 1 : 0;
+        if (device == RETRO_DEVICE_ANALOG && index < 2 && id < 2)
+            return g_analog_state[index][id];
+
+        // RETRO_DEVICE_KEYBOARD - raw keycode polling
+        if (device == RETRO_DEVICE_KEYBOARD) {
+            if (id < 512) {
+                return g_keyboard_state[id] ? 1 : 0;
+            }
+            return 0;
+        }
+
+        // RETRO_DEVICE_MOUSE - relative mouse movement + buttons
+        if (device == RETRO_DEVICE_MOUSE) {
+            switch (id) {
+                case RETRO_DEVICE_ID_MOUSE_X:
+                    return g_mouse_state.delta_x;
+                case RETRO_DEVICE_ID_MOUSE_Y:
+                    return g_mouse_state.delta_y;
+                case RETRO_DEVICE_ID_MOUSE_LEFT:
+                    return (g_mouse_state.buttons & 1) ? 1 : 0;
+                case RETRO_DEVICE_ID_MOUSE_RIGHT:
+                    return (g_mouse_state.buttons & 2) ? 1 : 0;
+                case RETRO_DEVICE_ID_MOUSE_MIDDLE:
+                    return (g_mouse_state.buttons & 4) ? 1 : 0;
+                case RETRO_DEVICE_ID_MOUSE_WHEELUP: {
+                    int16_t w = g_mouse_state.wheel_delta;
+                    g_mouse_state.wheel_delta = 0;
+                    return (w > 0) ? 1 : 0;
+                }
+                case RETRO_DEVICE_ID_MOUSE_WHEELDOWN: {
+                    int16_t w = g_mouse_state.wheel_delta;
+                    g_mouse_state.wheel_delta = 0;
+                    return (w < 0) ? 1 : 0;
+                }
+                default:
+                    return 0;
+            }
+        }
+
+        // RETRO_DEVICE_POINTER - absolute pointer position
+        if (device == RETRO_DEVICE_POINTER) {
+            switch (id) {
+                case RETRO_DEVICE_ID_POINTER_X:
+                    return g_pointer_x;
+                case RETRO_DEVICE_ID_POINTER_Y:
+                    return g_pointer_y;
+                case RETRO_DEVICE_ID_POINTER_PRESSED:
+                    return g_pointer_pressed ? 1 : 0;
+                default:
+                    return 0;
+            }
+        }
+    }
+    return 0;
+}
+
+// Called from Swift to dispatch keyboard events to the core
+// This invokes the callback-based keyboard input if registered
+// and also updates the polling state for cores that use bridge_input_state
+void bridge_keyboard_event(bool down, unsigned keycode, uint32_t character, uint32_t mod, unsigned device) {
+    if (g_keyboard_callback_registered && g_keyboard_callback.callback) {
+        g_keyboard_callback.callback(down, keycode, character, mod, device);
+    }
+    if (keycode < 512) {
+        g_keyboard_state[keycode] = down ? YES : NO;
+    }
+}
+
+void bridge_reset_keyboard_callback(void) {
+    g_keyboard_callback_registered = NO;
+    g_keyboard_callback.callback = NULL;
 }

@@ -340,6 +340,9 @@ shutdown:
 
 - (void)stop {
   _running = NO;
+  // Reset keyboard callback to prevent dangling pointer crashes when core is unloaded
+  g_keyboard_callback_registered = NO;
+  g_keyboard_callback.callback = NULL;
 }
 
 - (NSData *)serializeState {
@@ -534,7 +537,7 @@ shutdown:
     glReadBuffer(GL_BACK);
   }
 
-  glReadPixels(0, 0, w, h, GL_BGRA, GL_UNSIGNED_INT_8_8_8_8_REV, _hwReadbackBuffer);
+   glReadPixels(0, 0, w, h, GL_BGRA, GL_UNSIGNED_INT_8_8_8_8_REV, _hwReadbackBuffer);
   glBindFramebuffer(GL_READ_FRAMEBUFFER, 0);
 
   uint32_t *pixels = (uint32_t *)_hwReadbackBuffer;

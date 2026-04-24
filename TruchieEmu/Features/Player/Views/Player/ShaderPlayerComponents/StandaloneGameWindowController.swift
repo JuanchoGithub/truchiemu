@@ -85,10 +85,11 @@ class StandaloneGameWindowController: NSWindowController, NSWindowDelegate, Obse
         window.backgroundColor = .black
         window.isReleasedWhenClosed = false
         
-        super.init(window: window)
+super.init(window: window)
         window.delegate = self
-        
+
         setupMetalView()
+        setupInputCaptureHotkey()
     }
     
     required init?(coder: NSCoder) {
@@ -670,6 +671,9 @@ class StandaloneGameWindowController: NSWindowController, NSWindowDelegate, Obse
     }
     
     func windowWillClose(_ notification: Notification) {
+        // Clean up input capture if active
+        InputCaptureManager.shared.cleanup()
+
         // Stop playtime tracking immediately so no more time accumulates
         stopPlaytimeTracking()
 
@@ -698,6 +702,29 @@ class StandaloneGameWindowController: NSWindowController, NSWindowDelegate, Obse
         // Clean up from GameLauncher's active controllers
         if let rom = trackedROM {
             GameLauncher.shared.removeController(for: rom.id)
+        }
+    }
+
+    // MARK: - Input Capture
+
+    func windowDidResignKey(_ notification: Notification) {
+        // Auto-release input capture when window loses focus
+        if InputCaptureManager.shared.isCapturing {
+            InputCaptureManager.shared.handleWindowResignedKey()
+        }
+    }
+
+    // Setup hotkey monitor for Cmd+F10
+    private func setupInputCaptureHotkey() {
+        NSEvent.addLocalMonitorForEvents(matching: .keyDown) { [weak self] event in
+            // Check for Cmd+F10 (keyCode 109 = F10)
+            if event.modifierFlags.contains(.command) && event.keyCode == 109 {
+                if let window = self?.window {
+                    InputCaptureManager.shared.handleToggleHotkey(window: window)
+                }
+                return nil // Consume the event
+            }
+            return event
         }
     }
 
@@ -809,9 +836,12 @@ class StandaloneGameWindowController: NSWindowController, NSWindowDelegate, Obse
         }
 
         func draw(in view: MTKView) {
+            // Reset mouse deltas at start of each frame
+            LibretroBridgeSwift.resetMouseDeltas()
+
             guard let device = view.device,
-                  let drawable = view.currentDrawable,
-                  let descriptor = view.currentRenderPassDescriptor else {
+            let drawable = view.currentDrawable,
+            let descriptor = view.currentRenderPassDescriptor else {
                 return
             }
             
@@ -819,18 +849,18 @@ class StandaloneGameWindowController: NSWindowController, NSWindowDelegate, Obse
             descriptor.colorAttachments[0].loadAction = .clear
             descriptor.colorAttachments[0].clearColor = MTLClearColor(red: 0, green: 0, blue: 0, alpha: 0)
             descriptor.colorAttachments[0].storeAction = .store
-
+            
             if commandQueue == nil {
                 LoggerService.debug(category: "Metal", "Initializing Command Queue...")
                 commandQueue = device.makeCommandQueue()
             }
-
+            
             guard let cmdQueue = commandQueue,
                   let cmdBuffer = cmdQueue.makeCommandBuffer() else { 
                 LoggerService.debug(category: "Metal", "Failed to create command buffer")
                 return 
             }
-
+            
             let pipeline = getPipelineState(device: device)
             if let pipeline = pipeline {
                 if let frameTex = runner.currentFrameTexture {

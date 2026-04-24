@@ -101,8 +101,13 @@
 #define RETRO_ENVIRONMENT_SET_NETPACKET_INTERFACE 78
 #define RETRO_ENVIRONMENT_GET_PLAYLIST_DIRECTORY 79
 
+#define RETRO_DEVICE_NONE 0
 #define RETRO_DEVICE_JOYPAD 1
+#define RETRO_DEVICE_MOUSE 2
+#define RETRO_DEVICE_KEYBOARD 3
+#define RETRO_DEVICE_LIGHTGUN 4
 #define RETRO_DEVICE_ANALOG 5
+#define RETRO_DEVICE_POINTER 6
 
 /* Memory constants */
 #define RETRO_MEMORY_SYSTEM_RAM 0
@@ -124,6 +129,18 @@
 #define RETRO_DEVICE_ID_JOYPAD_R2 13
 #define RETRO_DEVICE_ID_JOYPAD_L3 14
 #define RETRO_DEVICE_ID_JOYPAD_R3 15
+
+#define RETRO_DEVICE_ID_MOUSE_X 0
+#define RETRO_DEVICE_ID_MOUSE_Y 1
+#define RETRO_DEVICE_ID_MOUSE_LEFT 2
+#define RETRO_DEVICE_ID_MOUSE_RIGHT 3
+#define RETRO_DEVICE_ID_MOUSE_WHEELUP 4
+#define RETRO_DEVICE_ID_MOUSE_WHEELDOWN 5
+#define RETRO_DEVICE_ID_MOUSE_MIDDLE 6
+
+#define RETRO_DEVICE_ID_POINTER_X 0
+#define RETRO_DEVICE_ID_POINTER_Y 1
+#define RETRO_DEVICE_ID_POINTER_PRESSED 2
 
 #define RETRO_DEVICE_INDEX_ANALOG_LEFT 0
 #define RETRO_DEVICE_INDEX_ANALOG_RIGHT 1
@@ -180,7 +197,12 @@ typedef size_t (*retro_audio_sample_batch_t)(const int16_t *data,
                                              size_t frames);
 typedef void (*retro_input_poll_t)(void);
 typedef int16_t (*retro_input_state_t)(unsigned port, unsigned device,
-                                       unsigned index, unsigned id);
+unsigned index, unsigned id);
+
+struct retro_keyboard_callback {
+   void (*callback)(bool down, unsigned keycode, uint32_t character,
+                    uint16_t mod, unsigned device);
+};
 
 struct retro_system_info {
   const char *library_name;

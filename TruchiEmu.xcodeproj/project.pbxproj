@@ -416,6 +416,7 @@
 		DD1AEB412F96D7240014A60E /* CheatComponents.swift in Sources */ = {isa = PBXBuildFile; fileRef = DD1AE5BE2F96D7240014A60E /* CheatComponents.swift */; };
 		DD1AEB422F96D7240014A60E /* ShaderManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = DD1AE09F2F96D7240014A60E /* ShaderManager.swift */; };
 		DD1AEB432F96D7240014A60E /* CoreAndAchievements.swift in Sources */ = {isa = PBXBuildFile; fileRef = DD1AE5C32F96D7240014A60E /* CoreAndAchievements.swift */; };
+		DD761E152F9AE550002E0F3D /* InputCaptureManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = DD761E132F9AE550002E0F3D /* InputCaptureManager.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -848,6 +849,7 @@
 		DD1AE5D62F96D7240014A60E /* ShaderPresetPickerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShaderPresetPickerView.swift; sourceTree = "<group>"; };
 		DD1AE5D92F96D7240014A60E /* GameError.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GameError.swift; sourceTree = "<group>"; };
 		DD1AEB452F96DACB0014A60E /* TruchiEmu.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = TruchiEmu.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		DD761E132F9AE550002E0F3D /* InputCaptureManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InputCaptureManager.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXGroup section */
@@ -963,6 +965,7 @@
 		DD1AE0682F96D7240014A60E /* Core */ = {
 			isa = PBXGroup;
 			children = (
+				DD761E142F9AE550002E0F3D /* InputCapture */,
 				DD1AE03B2F96D7240014A60E /* Engine */,
 				DD1AE0442F96D7240014A60E /* Models */,
 				DD1AE0672F96D7240014A60E /* Shaders */,
@@ -1780,6 +1783,14 @@
 			path = TruchieEmu;
 			sourceTree = "<group>";
 		};
+		DD761E142F9AE550002E0F3D /* InputCapture */ = {
+			isa = PBXGroup;
+			children = (
+				DD761E132F9AE550002E0F3D /* InputCaptureManager.swift */,
+			);
+			path = InputCapture;
+			sourceTree = "<group>";
+		};
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
@@ -2192,6 +2203,7 @@
 				DD1AEAE92F96D7240014A60E /* LibraryFilterOption.swift in Sources */,
 				DD1AEAEA2F96D7240014A60E /* DisplaySettingsView.swift in Sources */,
 				DD1AEAEB2F96D7240014A60E /* StandaloneGameWindowController.swift in Sources */,
+				DD761E152F9AE550002E0F3D /* InputCaptureManager.swift in Sources */,
 				DD1AEAEC2F96D7240014A60E /* ManualActionStatus.swift in Sources */,
 				DD1AEAED2F96D7240014A60E /* SetupWizardState.swift in Sources */,
 				DD1AEAEE2F96D7240014A60E /* DotMatrixLCD.metal in Sources */,
