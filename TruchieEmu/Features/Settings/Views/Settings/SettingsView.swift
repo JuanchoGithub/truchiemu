@@ -8,8 +8,11 @@ struct SettingsView: View {
     @EnvironmentObject var library: ROMLibrary
     @EnvironmentObject var coreManager: CoreManager
     @EnvironmentObject var controllerService: ControllerService
+    @Environment(\.colorScheme) private var colorScheme
     
-    enum Page: Hashable, Codable, RawRepresentable {
+    enum Page: Hashable, Codable, RawRepresentable, Identifiable {
+        
+        var id: String { rawValue }
         case general, library, cores, controllers, boxArt, display, cheats, bezels, retroAchievements, logging, about
         
         var rawValue: String {
@@ -44,12 +47,78 @@ struct SettingsView: View {
             default: return nil
             }
         }
+        
+        var icon: String {
+            switch self {
+            case .general: return "gearshape.fill"
+            case .library: return "book.fill"
+            case .cores: return "cpu.fill"
+            case .controllers: return "gamecontroller.fill"
+            case .boxArt: return "photo.stack.fill"
+            case .display: return "tv.fill"
+            case .cheats: return "wand.and.stars"
+            case .bezels: return "rectangle.on.rectangle"
+            case .retroAchievements: return "trophy.fill"
+            case .logging: return "doc.text.fill"
+            case .about: return "info.circle.fill"
+            }
+        }
+        
+        var label: String {
+            switch self {
+            case .general: return "General"
+            case .library: return "Library"
+            case .cores: return "Cores"
+            case .controllers: return "Controllers"
+            case .boxArt: return "Box Art"
+            case .display: return "Display"
+            case .cheats: return "Cheats"
+            case .bezels: return "Bezels"
+            case .retroAchievements: return "Retro Achievements"
+            case .logging: return "Logging"
+            case .about: return "About"
+            }
+        }
+        
+        var searchKeywords: String {
+            switch self {
+            case .general:
+                return "general app application version build notifications settings preferences"
+            case .library:
+                return "library folders roms games scan rescan hidden bios"
+            case .cores:
+                return "cores emulator download update system"
+            case .controllers:
+                return "controllers gamepad keyboard mapping player buttons input"
+            case .boxArt:
+                return "box art thumbnail images pictures cover"
+            case .display:
+                return "display screen shader preset bezel"
+            case .cheats:
+                return "cheats codes cheat code action replay"
+            case .bezels:
+                return "bezel frame overlay monitor"
+            case .retroAchievements:
+                return "retro achievements achievements hardcore"
+            case .logging:
+                return "logging log debug console output"
+            case .about:
+                return "about info version truchie emu emulator"
+            }
+        }
     }
+    
+    static let allPages: [Page] = [
+        .boxArt, .cheats, .controllers, .cores, .bezels, .display,
+        .general, .library, .logging, .retroAchievements, .about
+    ]
     
     // Use @AppStorage so it persists and can be set before openSettings() is called
     @AppStorage("settings_selectedTab") private var selectedPageRaw: String = "general"
     
     @State private var selectedPage: Page = .general
+    @State private var searchText: String = ""
+    @State private var columnVisibility: NavigationSplitViewVisibility = .all
     
     let system: SystemInfo?
     
@@ -70,50 +139,26 @@ struct SettingsView: View {
     }
     
     var body: some View {
-        HStack(spacing: 0) {
-            // Custom sidebar (no NavigationSplitView = no toggle button)
-            if system == nil {
-                List(selection: $selectedPage) {
-                    sidebarItem(icon: "photo.stack.fill", label: "Box Art", page: .boxArt)
-                    sidebarItem(icon: "wand.and.stars", label: "Cheats", page: .cheats)
-                    sidebarItem(icon: "gamecontroller.fill", label: "Controllers", page: .controllers)
-                    sidebarItem(icon: "cpu.fill", label: "Cores", page: .cores)
-                    sidebarItem(icon: "rectangle.on.rectangle", label: "Bezels", page: .bezels)
-                    sidebarItem(icon: "tv.fill", label: "Display", page: .display)
-                    sidebarItem(icon: "gearshape.fill", label: "General", page: .general)
-                    sidebarItem(icon: "book.fill", label: "Library", page: .library)
-                    sidebarItem(icon: "doc.text.fill", label: "Logging", page: .logging)
-                    sidebarItem(icon: "trophy.fill", label: "RetroAchievements", page: .retroAchievements)
-                    sidebarItem(icon: "info.circle.fill", label: "About", page: .about)
+        NavigationSplitView(columnVisibility: $columnVisibility) {
+            // Sidebar - native macOS sidebar styling
+            List(selection: $selectedPage) {
+                ForEach(filteredPages) { page in
+                    sidebarItem(for: page)
+                        .tag(page)
                 }
-                .listStyle(.sidebar)
-                .frame(width: 180)
-                .scrollContentBackground(.hidden)
-                
-                Divider()
             }
-            
+            .listStyle(.sidebar)
+            .searchable(text: $searchText, placement: .sidebar, prompt: "Search")
+            .navigationTitle("Settings")
+            .toolbar(removing: .sidebarToggle)
+            .frame(minWidth: 200)
+        } detail: {
             // Content area
-            Group {
-                switch selectedPage {
-                case .general:     GeneralSettingsView()
-                case .library:     LibrarySettingsView()
-                 case .cores:       CoreSettingsView()
-                 case .controllers: ControllerSettingsView(systemID: system?.id)
-                 case .boxArt:      BoxArtSettingsView()
-                case .display:     DisplaySettingsView()
-                case .cheats:      CheatSettingsView(system: system)
-                case .bezels:      BezelSettingsView(system: system)
-                case .retroAchievements: RetroAchievementsSettingsView()
-                case .logging:     LoggingSettingsView()
-                case .about:       AboutView()
-                }
-            }
-            .frame(minWidth: 550, minHeight: 420)
+            detailContent
         }
+        .navigationSplitViewStyle(.balanced)
         .frame(minWidth: 750, minHeight: 500)
         .onAppear {
-            // For system-specific settings, override the tab selection
             if system != nil {
                 selectedPage = .general
             } else {
@@ -127,37 +172,50 @@ struct SettingsView: View {
             CoreDownloadSheet(pending: pending)
         }
     }
-
-    private func sidebarItem(icon: String, label: String, page: Page) -> some View {
-        HStack(spacing: 12) {
-            Image(systemName: icon)
-                .font(.system(size: 16, weight: .medium))
-                .symbolVariant(.fill)
-                .frame(width: 28, height: 20)
-                .fixedSize()
-            Text(label)
-                .font(.body)
+    
+    private var filteredPages: [Page] {
+        if searchText.isEmpty {
+            return Self.allPages
         }
-        .frame(maxWidth: .infinity, alignment: .leading)
-        .padding(.vertical, 8)
-        .tag(page)
+        return Self.allPages.filter { page in
+            page.label.localizedLowercase.fuzzyMatch(searchText) ||
+            page.searchKeywords.localizedLowercase.fuzzyMatch(searchText)
+        }
     }
     
-    private func pageFromID(_ id: String) -> Page? {
-        switch id {
-        case "general": return .general
-        case "library": return .library
-        case "cores": return .cores
-        case "controllers": return .controllers
-        case "boxArt": return .boxArt
-        case "display": return .display
-        case "cheats": return .cheats
-        case "bezels": return .bezels
-        case "retroAchievements": return .retroAchievements
-        case "logging": return .logging
-        case "about": return .about
-        default: return nil
+    private func sidebarItem(for page: Page) -> some View {
+        HStack(spacing: 8) {
+            Image(systemName: page.icon)
+                .font(.system(size: 14, weight: .medium))
+                .symbolVariant(.fill)
+                .frame(width: 20)
+                .fixedSize()
+            Text(page.label)
+                .font(.system(size: 13))
         }
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .padding(.vertical, 4)
+    }
+    
+    // MARK: - Detail Content
+    @ViewBuilder
+    private var detailContent: some View {
+        Group {
+            switch selectedPage {
+            case .general:     GeneralSettingsView()
+            case .library:     LibrarySettingsView()
+             case .cores:       CoreSettingsView()
+             case .controllers: ControllerSettingsView(systemID: system?.id)
+             case .boxArt:      BoxArtSettingsView()
+            case .display:     DisplaySettingsView()
+            case .cheats:      CheatSettingsView(system: system)
+            case .bezels:     BezelSettingsView(system: system)
+            case .retroAchievements: RetroAchievementsSettingsView()
+            case .logging:     LoggingSettingsView()
+            case .about:       AboutView()
+            }
+        }
+        .frame(minWidth: 550, minHeight: 420)
     }
 }
 
