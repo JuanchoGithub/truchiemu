@@ -1060,24 +1060,46 @@ columns = Array(
                     Label("Categories", systemImage: "folder.badge.plus")
                 }
 
-                    Divider()
-                    Menu("System") {
-                        Button {
-                            var updated = rom
-                            updated.systemID = "gb"
-                            library.updateROM(updated)
-                        } label: {
-                            Label("Game Boy", systemImage: "gamecontroller")
-                        }
-                        Button {
-                            var updated = rom
-                            updated.systemID = "gbc"
-                            library.updateROM(updated)
-                        } label: {
-                            Label("Game Boy Color", systemImage: "gamecontroller")
+                    let showGBMenu = ["gb", "gbc"].contains(rom.systemID)
+                    let showGCMenu = ["gc", "wii"].contains(rom.systemID)
+                    
+                    if showGBMenu || showGCMenu {
+                        Divider()
+                        Menu("System") {
+                            if showGBMenu {
+                                Button {
+                                    var updated = rom
+                                    updated.systemID = "gb"
+                                    library.updateROM(updated)
+                                } label: {
+                                    Label("Game Boy", systemImage: "gamecontroller")
+                                }
+                                Button {
+                                    var updated = rom
+                                    updated.systemID = "gbc"
+                                    library.updateROM(updated)
+                                } label: {
+                                    Label("Game Boy Color", systemImage: "gamecontroller")
+                                }
+                            }
+                            if showGCMenu {
+                                Button {
+                                    var updated = rom
+                                    updated.systemID = "gc"
+                                    library.updateROM(updated)
+                                } label: {
+                                    Label("GameCube", systemImage: "gamecontroller")
+                                }
+                                Button {
+                                    var updated = rom
+                                    updated.systemID = "wii"
+                                    library.updateROM(updated)
+                                } label: {
+                                    Label("Wii", systemImage: "gamecontroller")
+                                }
+                            }
                         }
                     }
-                    .disabled(rom.systemID != "gb" && rom.systemID != "gbc")
                     
                     Divider()
                     Button(rom.isFavorite ? "Remove from Favorites" : "Add to Favorites") {
