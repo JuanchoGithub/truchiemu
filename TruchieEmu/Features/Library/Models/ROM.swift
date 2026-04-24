@@ -159,7 +159,11 @@ struct ROMMetadata: Codable, Hashable {
     var releaseDate: String?
     var players: Int = 1
     var year: String?
-    
+
+    // User-set player count override — nil means no override (use library data or default).
+    // If set, libretro library data will overwrite it (non-nil library data takes precedence).
+    var userPlayerOverride: Int?
+
     // ESRB & other ratings
     var esrbRating: String?
     var cooperative: Bool = false

@@ -482,7 +482,18 @@ LibraryMetadataStore.shared.deleteMetadataEntries(Set(removedROMs.map { LibraryM
     @discardableResult
     func identifyROM(_ rom: ROM, preferNameMatch: Bool = true, persist: Bool = true) async -> ROMIdentifyResult {
         let result = await ROMIdentifierService.shared.identify(rom: rom, preferNameMatch: preferNameMatch)
-        applyIdentificationResult(result, to: rom, persist: persist)
+        let updated = applyIdentificationResult(result, to: rom, persist: false)
+        if let enriched = updated, let systemID = enriched.systemID {
+            await LibretroMetadataLibrary.shared.ensureLoaded(for: systemID)
+            if let _ = enriched.crc32 {
+                let finalROM = await LibretroMetadataLibrary.shared.enrich(rom: enriched)
+                if persist { updateROM(finalROM, persist: true, silent: true) }
+            } else if persist {
+                updateROM(enriched, persist: true, silent: true)
+            }
+        } else if persist, let updated = updated {
+            updateROM(updated, persist: true, silent: true)
+        }
         return result
     }
 
@@ -493,6 +504,13 @@ LibraryMetadataStore.shared.deleteMetadataEntries(Set(removedROMs.map { LibraryM
                 if updated.metadata == nil { updated.metadata = ROMMetadata() }
                 updated.metadata?.title = info.name; updated.metadata?.year = info.year
                 updated.metadata?.publisher = info.publisher; updated.metadata?.developer = info.developer; updated.metadata?.genre = info.genre
+                // Apply players from library — only if user has not set a manual override.
+                // Libretro data is authoritative; user override is preserved only when library has no data.
+                if updated.metadata?.userPlayerOverride == nil {
+                    let infoPlayers = info.players
+                    let currentPlayers = updated.metadata?.players ?? 1
+                    updated.metadata?.players = infoPlayers ?? currentPlayers
+                }
                 updateROM(updated, persist: persist, silent: silent)
                 return updated
                 

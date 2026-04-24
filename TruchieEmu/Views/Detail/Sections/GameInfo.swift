@@ -78,10 +78,7 @@ extension GameDetailView {
                             Divider().overlay(AppColors.divider(colorScheme))
                             MetadataRow(label: "Genre", value: genre)
                         }
-                        Divider().overlay(AppColors.divider(colorScheme))
-                        MetadataRow(label: "Players", value: String(meta.players))
-                        Divider().overlay(AppColors.divider(colorScheme))
-                        MetadataRow(label: "Co-op", value: meta.cooperative ? "Yes" : "No")
+                        playersRow
                         if let esrb = meta.esrbRating {
                             Divider().overlay(AppColors.divider(colorScheme))
                             HStack(alignment: .top, spacing: 16) {
@@ -631,6 +628,48 @@ extension GameDetailView {
         case "t": return Color.yellow.opacity(0.3)
         case "m", "ao": return AppColors.error(colorScheme).opacity(0.3)
         default: return AppColors.cardBackgroundSubtle(colorScheme)
+        }
+    }
+
+    var playersRow: some View {
+        Group {
+            if let meta = currentROM.metadata {
+                if meta.players != nil {
+                    Divider().overlay(AppColors.divider(colorScheme))
+                    MetadataRow(label: "Players", value: String(meta.players))
+                    if meta.players > 1 {
+                        Divider().overlay(AppColors.divider(colorScheme))
+                        MetadataRow(label: "Co-op", value: meta.cooperative ? "Yes" : "No")
+                    }
+                } else {
+                    Divider().overlay(AppColors.divider(colorScheme))
+                    HStack(alignment: .top, spacing: 16) {
+                        Text("PLAYERS".uppercased())
+                            .font(.caption)
+                            .fontWeight(.medium)
+                            .foregroundColor(AppColors.textTertiary(colorScheme))
+                            .frame(width: 100, alignment: .leading)
+                        Spacer()
+                        Picker("", selection: Binding(
+                            get: { meta.userPlayerOverride ?? 0 },
+                            set: { newValue in
+                                guard newValue > 0 else { return }
+                                var updated = currentROM
+                                if updated.metadata == nil { updated.metadata = ROMMetadata() }
+                                updated.metadata?.userPlayerOverride = newValue
+                                updated.metadata?.players = newValue
+                                library.updateROM(updated)
+                            }
+                        )) {
+                            Text("Single").tag(1)
+                            Text("Multi").tag(2)
+                        }
+                        .pickerStyle(.segmented)
+                        .labelsHidden()
+                        .frame(width: 160)
+                    }
+                }
+            }
         }
     }
 }

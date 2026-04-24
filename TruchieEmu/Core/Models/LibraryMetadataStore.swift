@@ -33,6 +33,8 @@ struct ROMMetadataRecord: Codable, Hashable {
     var customCoreID: String?
     // Manually set display name for the ROM.
     var customName: String?
+    // User-set player count override — nil means no override.
+    var userPlayerOverride: Int?
 
     init() {
         hasBoxArt = false
@@ -55,6 +57,7 @@ struct ROMMetadataRecord: Codable, Hashable {
         titleScreenPath = nil
         screenshotPaths = rom.screenshotPaths.map { $0.path }
         customName = rom.customName
+        userPlayerOverride = rom.metadata?.userPlayerOverride
     }
 
     func applying(to rom: ROM) -> ROM {
@@ -71,6 +74,7 @@ struct ROMMetadataRecord: Codable, Hashable {
         // rating field removed from ROMMetadata
         if let cooperative { meta.cooperative = cooperative }
         if let esrbRating { meta.esrbRating = esrbRating }
+        if let userPlayerOverride { meta.userPlayerOverride = userPlayerOverride }
         r.metadata = meta
         if let t = thumbnailLookupSystemID { r.thumbnailLookupSystemID = t }
         r.hasBoxArt = hasBoxArt

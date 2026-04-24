@@ -66,6 +66,7 @@ struct GameInfo: Equatable {
     let genre: String?
     let crc: String
     let thumbnailLookupSystemID: String?
+    var players: Int?
 }
 
 enum ROMIdentifyResult: Equatable {
@@ -102,6 +103,18 @@ extension LoggerService {
 
     static func libretroDBError(_ message: String) {
         error(category: "LibretroDB", message)
+    }
+
+    static func libretroMeta(_ message: String) {
+        info(category: "LibretroMeta", message)
+    }
+
+    static func libretroMetaWarn(_ message: String) {
+        warning(category: "LibretroMeta", message)
+    }
+
+    static func libretroMetaError(_ message: String) {
+        error(category: "LibretroMeta", message)
     }
 
     // MARK: - MAME Categories
@@ -198,7 +211,8 @@ final class ROMIdentifierService: @unchecked Sendable {
                         developer: unifiedEntry.manufacturer,
                         genre: nil,
                         crc: "",
-                        thumbnailLookupSystemID: nil
+                        thumbnailLookupSystemID: nil,
+                        players: unifiedEntry.players
                     ))
                 } else if isBIOS {
                     LoggerService.debug(category: "ROMIdentifier","Identify \(rom.name): MAME BIOS → \(unifiedEntry.description)")
@@ -209,7 +223,8 @@ final class ROMIdentifierService: @unchecked Sendable {
                         developer: unifiedEntry.manufacturer,
                         genre: nil,
                         crc: "",
-                        thumbnailLookupSystemID: nil
+                        thumbnailLookupSystemID: nil,
+                        players: unifiedEntry.players
                     ))
                 } else {
                     LoggerService.debug(category: "ROMIdentifier","Identify \(rom.name): MAME game '\(shortName)' found but not runnable in any core → \(unifiedEntry.description)")
@@ -788,6 +803,7 @@ struct LibretroDatGame {
     var developer: String?
     var publisher: String?
     var genre: String?
+    var players: Int?
     var crcs: [String] = []
 }
 
@@ -798,7 +814,7 @@ actor LibretroDatabaseLibrary {
     private static func isGbFamily(_ systemID: String) -> Bool { systemID == "gb" || systemID == "gbc" }
 
     private static func tagGameInfo(_ info: GameInfo, thumbnailLookupSystemID: String) -> GameInfo {
-        GameInfo(name: info.name, year: info.year, publisher: info.publisher, developer: info.developer, genre: info.genre, crc: info.crc, thumbnailLookupSystemID: thumbnailLookupSystemID)
+        GameInfo(name: info.name, year: info.year, publisher: info.publisher, developer: info.developer, genre: info.genre, crc: info.crc, thumbnailLookupSystemID: thumbnailLookupSystemID, players: info.players)
     }
 
     // TODO: make this dynamic
@@ -852,7 +868,7 @@ actor LibretroDatabaseLibrary {
             if trimmed.hasPrefix("game (") || trimmed.hasPrefix("machine (") { currentGame = LibretroDatGame() }
             else if trimmed == ")" && currentGame != nil {
                 let nameToUse = ROMIdentifierService.titleFromDatGame(name: currentGame!.name, description: currentGame!.description)
-                for crc in currentGame!.crcs { database[crc.uppercased()] = GameInfo(name: nameToUse, year: currentGame?.year, publisher: currentGame?.publisher ?? currentGame?.developer, developer: currentGame?.developer, genre: currentGame?.genre, crc: crc.uppercased(), thumbnailLookupSystemID: nil) }
+                for crc in currentGame!.crcs { database[crc.uppercased()] = GameInfo(name: nameToUse, year: currentGame?.year, publisher: currentGame?.publisher ?? currentGame?.developer, developer: currentGame?.developer, genre: currentGame?.genre, crc: crc.uppercased(), thumbnailLookupSystemID: nil, players: currentGame?.players) }
                 currentGame = nil
             } else if currentGame != nil {
                 if trimmed.hasPrefix("name ") { currentGame?.name = extractQuotes(trimmed) ?? "" }
@@ -862,6 +878,7 @@ actor LibretroDatabaseLibrary {
                 else if trimmed.hasPrefix("developer ") { currentGame?.developer = extractQuotes(trimmed) }
                 else if trimmed.hasPrefix("publisher ") { currentGame?.publisher = extractQuotes(trimmed) }
                 else if trimmed.hasPrefix("genre ") || trimmed.hasPrefix("category ") { currentGame?.genre = extractQuotes(trimmed) }
+                else if trimmed.hasPrefix("users ") { currentGame?.players = Int(trimmed.dropFirst("users ".count).trimmingCharacters(in: .whitespaces)) }
                 else if trimmed.hasPrefix("rom (") || trimmed.hasPrefix("disk (") {
                     if let crcRange = trimmed.range(of: "crc ") {
                         let substring = trimmed[crcRange.upperBound...]
@@ -1019,5 +1036,366 @@ actor LibretroDatabaseLibrary {
             let db = LibretroRDBParser.buildCRCIndex(data: data); if !db.isEmpty { return db }
         }
         return nil
+    }
+}
+
+// MARK: - Supplemental libretro metadata (maxusers, genre, developer, publisher, origin, releaseyear)
+
+struct GameMetadataSupplement: Sendable {
+    var players: Int?
+    var genre: String?
+    var developer: String?
+    var publisher: String?
+    var origin: String?
+    var releaseyear: String?
+}
+
+// Per-type cache metadata for freshness tracking
+private struct MetadataCache: Codable {
+    var etag: String?
+    var lastModified: String?
+    var expiresAt: Date
+
+    static func fresh() -> MetadataCache {
+        MetadataCache(etag: nil, lastModified: nil, expiresAt: Date().addingTimeInterval(30 * 24 * 60 * 60))
+    }
+}
+
+actor LibretroMetadataLibrary {
+    static let shared = LibretroMetadataLibrary()
+    private static let gbFamilyCacheKey = "gb+gbc"
+
+    private static func isGbFamily(_ systemID: String) -> Bool { systemID == "gb" || systemID == "gbc" }
+
+    private var databases: [String: [String: GameMetadataSupplement]] = [:]
+
+    private static let basenameOverrides: [String: String] = [
+        "nes": "Nintendo - Nintendo Entertainment System.dat", "snes": "Nintendo - Super Nintendo Entertainment System.dat",
+        "n64": "Nintendo - Nintendo 64.dat", "nds": "Nintendo - Nintendo DS.dat", "gb": "Nintendo - Game Boy.dat",
+        "gbc": "Nintendo - Game Boy Color.dat", "gba": "Nintendo - Game Boy Advance.dat", "genesis": "Sega - Mega Drive - Genesis.dat",
+        "sms": "Sega - Master System - Mark III.dat", "gamegear": "Sega - Game Gear.dat", "32x": "Sega - 32X.dat",
+        "psx": "Sony - PlayStation.dat", "atari2600": "Atari - 2600.dat", "atari5200": "Atari - 5200.dat", "atari7800": "Atari - 7800.dat",
+        "lynx": "Atari - Lynx.dat", "jaguar": "Atari - Jaguar.dat", "mame": "MAME.dat", "pce": "NEC - PC Engine - TurboGrafx 16.dat",
+        "wonderswan": "Bandai - WonderSwan.dat", "wswanc": "Bandai - WonderSwan Color.dat",
+    ]
+
+    enum MetadataType: String, CaseIterable {
+        case maxusers = "maxusers"
+        case genre = "genre"
+        case developer = "developer"
+        case publisher = "publisher"
+        case origin = "origin"
+        case releaseyear = "releaseyear"
+
+        var fieldKey: String { rawValue }
+    }
+
+    private static let metadataTypes: [MetadataType] = [
+        .maxusers, .genre, .developer, .publisher, .origin, .releaseyear
+    ]
+
+    private static func datBasename(for systemID: String) -> String? {
+        if let exact = basenameOverrides[systemID] { return exact }
+        guard let system = SystemDatabase.system(forID: systemID) else { return nil }
+        var primary = "\(system.name).dat"
+        if !system.manufacturer.isEmpty && system.manufacturer != "Various" {
+            let nameLower = system.name.lowercased(), mfrLower = system.manufacturer.lowercased()
+            if nameLower.hasPrefix(mfrLower) {
+                let remainder = system.name.dropFirst(mfrLower.count).trimmingCharacters(in: .whitespaces)
+                primary = remainder.isEmpty ? "\(system.name).dat" : "\(system.manufacturer) - \(remainder).dat"
+            } else {
+                primary = "\(system.manufacturer) - \(system.name).dat"
+            }
+        }
+        return primary
+    }
+
+    private func parseMetadataDat(contentsOf url: URL) -> [String: GameMetadataSupplement] {
+        guard let lines = try? String(contentsOf: url).components(separatedBy: .newlines) else { return [:] }
+        var database: [String: GameMetadataSupplement] = [:]
+        var currentEntry: (crcs: [String], supplement: GameMetadataSupplement)?
+        for line in lines {
+            let trimmed = line.trimmingCharacters(in: .whitespaces)
+            if trimmed.hasPrefix("game (") || trimmed.hasPrefix("machine (") {
+                currentEntry = ([], GameMetadataSupplement())
+            } else if trimmed == ")" && currentEntry != nil {
+                for crc in currentEntry!.crcs {
+                    database[crc.uppercased()] = currentEntry!.supplement
+                }
+                currentEntry = nil
+            } else if currentEntry != nil {
+                if trimmed.hasPrefix("users ") {
+                    if let val = Int(trimmed.dropFirst("users ".count).trimmingCharacters(in: .whitespaces)) {
+                        currentEntry?.supplement.players = val
+                    }
+                } else if trimmed.hasPrefix("genre ") || trimmed.hasPrefix("category ") {
+                    currentEntry?.supplement.genre = extractQuotes(trimmed)
+                } else if trimmed.hasPrefix("developer ") {
+                    currentEntry?.supplement.developer = extractQuotes(trimmed)
+                } else if trimmed.hasPrefix("publisher ") {
+                    currentEntry?.supplement.publisher = extractQuotes(trimmed)
+                } else if trimmed.hasPrefix("origin ") {
+                    currentEntry?.supplement.origin = extractQuotes(trimmed)
+                } else if trimmed.hasPrefix("releaseyear ") || trimmed.hasPrefix("year ") {
+                    currentEntry?.supplement.releaseyear = extractQuotes(trimmed)
+                } else if trimmed.hasPrefix("rom (") || trimmed.hasPrefix("disk (") {
+                    if let crcRange = trimmed.range(of: "crc ") {
+                        let substring = trimmed[crcRange.upperBound...]
+                        if let firstWord = substring.components(separatedBy: .whitespaces).first {
+                            currentEntry?.crcs.append(firstWord.trimmingCharacters(in: CharacterSet(charactersIn: ")")).uppercased())
+                        }
+                    }
+                }
+            }
+        }
+        return database
+    }
+
+    private func extractQuotes(_ string: String) -> String? {
+        if let start = string.firstIndex(of: "\""), let end = string[string.index(after: start)...].firstIndex(of: "\"") {
+            return String(string[string.index(after: start)..<end])
+        }
+        return nil
+    }
+
+    func lookup(crc: String, systemID: String) async -> GameMetadataSupplement? {
+        let key = crc.uppercased()
+        if Self.isGbFamily(systemID) {
+            if let merged = databases[Self.gbFamilyCacheKey] { return merged[key] }
+        }
+        return databases[systemID]?[key]
+    }
+
+    func enrich(rom: ROM) async -> ROM {
+        guard let systemID = rom.systemID, let crc = rom.crc32 else { return rom }
+        let supplement = await lookup(crc: crc, systemID: systemID)
+
+        var updated = rom
+        if updated.metadata == nil { updated.metadata = ROMMetadata() }
+        let meta = updated.metadata!
+
+        if let libretroPlayers = supplement?.players {
+            // Libretro data is authoritative — set players and clear any user override.
+            updated.metadata?.players = libretroPlayers
+            updated.metadata?.userPlayerOverride = nil
+            LoggerService.libretroMeta("Enriched players=\(libretroPlayers) for CRC=\(crc) (user override cleared)")
+        } else {
+            // No libretro players data — keep user's preference if set.
+            if meta.userPlayerOverride != nil {
+                LoggerService.libretroMeta("No libretro players for CRC=\(crc), preserving user override=\(meta.userPlayerOverride!)")
+            }
+        }
+
+        // Fill blanks for supplemental fields — never overwrite existing data.
+        if meta.genre == nil, let genre = supplement?.genre {
+            updated.metadata?.genre = genre
+        }
+        if meta.developer == nil, let dev = supplement?.developer {
+            updated.metadata?.developer = dev
+        }
+        if meta.publisher == nil, let pub = supplement?.publisher {
+            updated.metadata?.publisher = pub
+        }
+        if meta.releaseDate == nil, let year = supplement?.releaseyear {
+            updated.metadata?.releaseDate = year
+        }
+        if meta.year == nil, let year = supplement?.releaseyear {
+            updated.metadata?.year = year
+        }
+
+        return updated
+    }
+
+    private func loadMetadataDat(for system: SystemInfo) async {
+        if Self.isGbFamily(system.id) {
+            if databases[Self.gbFamilyCacheKey] != nil { return }
+            let partnerID = system.id == "gb" ? "gbc" : "gb"
+            guard let partner = SystemDatabase.system(forID: partnerID) else { return }
+            let primary = await fetchAndCacheDat(for: system)
+            let secondary = await fetchAndCacheDat(for: partner)
+            var merged: [String: GameMetadataSupplement] = [:]
+            for (crc, entry) in primary { merged[crc] = entry }
+            for (crc, entry) in secondary { if merged[crc] == nil { merged[crc] = entry } }
+            databases[Self.gbFamilyCacheKey] = merged
+            databases["gb"] = merged
+            databases["gbc"] = merged
+            return
+        }
+        if databases[system.id] != nil { return }
+        let loaded = await fetchAndCacheDat(for: system)
+        databases[system.id] = loaded
+    }
+
+private func fetchAndCacheDat(for system: SystemInfo) async -> [String: GameMetadataSupplement] {
+	guard let basename = Self.datBasename(for: system.id) else { return [:] }
+	guard let encodedFile = basename.addingPercentEncoding(withAllowedCharacters: .urlPathAllowed) else { return [:] }
+
+	let appSupport = FileManager.default.urls(for: .applicationSupportDirectory, in: .userDomainMask).first!
+	let metadatBase = appSupport.appendingPathComponent("TruchieEmu/Metadat", isDirectory: true)
+
+	let baseUrl = "https://raw.githubusercontent.com/libretro/libretro-database/master/"
+	var combined: [String: GameMetadataSupplement] = [:]
+	var foundAny = false
+
+	for type in Self.metadataTypes {
+		let subDir = metadatBase.appendingPathComponent(type.rawValue, isDirectory: true)
+		let localUrl = subDir.appendingPathComponent(basename)
+		let path = "metadat/\(type.rawValue)"
+		let checkUrlStr = baseUrl + path + "/" + encodedFile
+
+		guard let checkUrl = URL(string: checkUrlStr) else {
+			LoggerService.libretroMetaWarn("Skipping \(type.rawValue): invalid URL for \(basename)")
+			continue
+		}
+
+		let cache = loadCache(for: type, systemID: system.id)
+		let cacheExpired = cache == nil || cache!.expiresAt <= Date()
+
+		if !cacheExpired, FileManager.default.fileExists(atPath: localUrl.path) {
+			let db = parseMetadataDat(contentsOf: localUrl)
+			if !db.isEmpty {
+				mergeInto(&combined, from: db)
+				LoggerService.libretroMeta("Cache fresh: \(type.rawValue) \(basename) (\(db.count) entries)")
+				foundAny = true
+			}
+			continue
+		}
+
+		var request = URLRequest(url: checkUrl)
+		if let etag = cache?.etag {
+			request.addValue(etag, forHTTPHeaderField: "If-None-Match")
+		}
+		if let lastModified = cache?.lastModified {
+			request.addValue(lastModified, forHTTPHeaderField: "If-Modified-Since")
+		}
+
+		LoggerService.libretroMeta("Revalidating \(path)/\(basename)...")
+
+		let (data, response): (Data, URLResponse)
+		do {
+			(data, response) = try await URLSession.shared.data(for: request)
+		} catch {
+			LoggerService.libretroMetaWarn("Network error for \(type.rawValue): \(error.localizedDescription)")
+			if !cacheExpired, FileManager.default.fileExists(atPath: localUrl.path) {
+				let db = parseMetadataDat(contentsOf: localUrl)
+				if !db.isEmpty {
+					mergeInto(&combined, from: db)
+					LoggerService.libretroMeta("Falling back to stale cache: \(type.rawValue) (\(db.count) entries)")
+					foundAny = true
+				}
+			}
+			continue
+		}
+
+		guard let httpResp = response as? HTTPURLResponse else {
+			continue
+		}
+
+		if httpResp.statusCode == 304 {
+			LoggerService.libretroMeta("Not modified: \(type.rawValue) \(basename) — extending cache")
+
+			var newCache = cache ?? MetadataCache.fresh()
+			newCache.expiresAt = Date().addingTimeInterval(30 * 24 * 60 * 60)
+			saveCache(newCache, for: type, systemID: system.id)
+
+			if FileManager.default.fileExists(atPath: localUrl.path) {
+				let db = parseMetadataDat(contentsOf: localUrl)
+				if !db.isEmpty {
+					mergeInto(&combined, from: db)
+					LoggerService.libretroMeta("Used existing local file for \(type.rawValue) (\(db.count) entries)")
+					foundAny = true
+				}
+			}
+		} else if httpResp.statusCode == 200 {
+			guard data.count > 100,
+				let stringContent = String(data: data, encoding: .utf8),
+				stringContent.contains("game (") || stringContent.contains("machine (") else {
+				LoggerService.libretroMetaWarn("\(type.rawValue) returned invalid content for \(system.id)")
+				continue
+			}
+
+			let newEtag = httpResp.value(forHTTPHeaderField: "ETag")
+			let newLastModified = httpResp.value(forHTTPHeaderField: "Last-Modified")
+			let newExpiresAt = Date().addingTimeInterval(30 * 24 * 60 * 60)
+
+			let newCache = MetadataCache(etag: newEtag, lastModified: newLastModified, expiresAt: newExpiresAt)
+			saveCache(newCache, for: type, systemID: system.id)
+
+			try? FileManager.default.createDirectory(at: subDir, withIntermediateDirectories: true)
+			try? data.write(to: localUrl)
+
+			let db = parseMetadataDat(contentsOf: localUrl)
+			if !db.isEmpty {
+				mergeInto(&combined, from: db)
+				LoggerService.libretroMeta("Downloaded \(type.rawValue): \(basename) (\(db.count) entries)")
+				foundAny = true
+			}
+		}
+	}
+
+	if foundAny {
+		LoggerService.libretroMeta("Combined metadata for \(system.id): \(combined.count) CRC entries")
+	} else {
+		LoggerService.libretroMetaWarn("No metadata found for \(system.id)")
+	}
+
+	return combined
+}
+
+    private func mergeInto(_ target: inout [String: GameMetadataSupplement], from source: [String: GameMetadataSupplement]) {
+        for (crc, supplement) in source {
+            if var existing = target[crc] {
+                if existing.players == nil { existing.players = supplement.players }
+                if existing.genre == nil { existing.genre = supplement.genre }
+                if existing.developer == nil { existing.developer = supplement.developer }
+                if existing.publisher == nil { existing.publisher = supplement.publisher }
+                if existing.origin == nil { existing.origin = supplement.origin }
+                if existing.releaseyear == nil { existing.releaseyear = supplement.releaseyear }
+                target[crc] = existing
+            } else {
+                target[crc] = supplement
+            }
+        }
+    }
+
+    // MARK: - Cache file helpers for 30-day freshness
+
+    private func cacheFilePath(for type: MetadataType, systemID: String) -> URL {
+        let appSupport = FileManager.default.urls(for: .applicationSupportDirectory, in: .userDomainMask).first!
+        return appSupport
+            .appendingPathComponent("TruchieEmu/Metadat/\(type.rawValue)", isDirectory: true)
+            .appendingPathComponent(".cache_\(systemID).json")
+    }
+
+    private func loadCache(for type: MetadataType, systemID: String) -> MetadataCache? {
+        let path = cacheFilePath(for: type, systemID: systemID)
+        guard let data = try? Data(contentsOf: path),
+              let cache = try? JSONDecoder().decode(MetadataCache.self, from: data) else { return nil }
+        return cache
+    }
+
+    private func saveCache(_ cache: MetadataCache, for type: MetadataType, systemID: String) {
+        let path = cacheFilePath(for: type, systemID: systemID)
+        if let data = try? JSONEncoder().encode(cache) {
+            try? data.write(to: path)
+        }
+    }
+
+    func ensureLoaded(for systemID: String) async {
+        guard let system = SystemDatabase.system(forID: systemID) else { return }
+        if Self.isGbFamily(systemID) {
+            if databases[Self.gbFamilyCacheKey] != nil {
+                LoggerService.libretroMeta("Cache hit: \(systemID) (GB family merged)")
+                return
+            }
+            LoggerService.libretroMeta("Loading metadata for \(systemID) (GB family)...")
+            await loadMetadataDat(for: system)
+        } else if databases[systemID] != nil {
+            LoggerService.libretroMeta("Cache hit: \(systemID)")
+            return
+        } else {
+            LoggerService.libretroMeta("Loading metadata for \(systemID)...")
+            await loadMetadataDat(for: system)
+        }
     }
 }
