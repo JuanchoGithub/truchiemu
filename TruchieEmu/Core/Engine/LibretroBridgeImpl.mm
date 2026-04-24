@@ -174,12 +174,13 @@
     if ([ext isEqualToString:@"wbfs"] || [ext isEqualToString:@"wad"] || [ext isEqualToString:@"wia"] ||[ext isEqualToString:@"rvz"]) {
       device_type = 513;
     }
-  } else if (g_coreID && ([[g_coreID lowercaseString] containsString:@"swanstation"])) {
+  } else if (g_coreID && ([[g_coreID lowercaseString] containsString:@"swanstation"]) ||
+             (g_coreID && [[g_coreID lowercaseString] containsString:@"mednafen_psx"]) ||
+             (g_coreID && [[g_coreID lowercaseString] containsString:@"pcsx"])) {
       device_type = 1;
-  } else if (g_coreID && ([[g_coreID lowercaseString] containsString:@"mednafen_psx"])) {
-      device_type = 1;
-  } else if (g_coreID && ([[g_coreID lowercaseString] containsString:@"pcsx"])) {
-      device_type = 1;
+  } else if (g_coreID && ([[g_coreID lowercaseString] containsString:@"mame"]) ||
+             (g_coreID && [[g_coreID lowercaseString] containsString:@"dosbox"])) {
+      device_type = 3; // RETRO_DEVICE_KEYBOARD
   }
 
   if (!_retro_load_game) {

@@ -439,7 +439,15 @@ if (impl->_hwRenderEnabled && impl->_glContext) {
 character:(unsigned)character
 modifiers:(unsigned)modifiers
 down:(BOOL)down {
-    bridge_keyboard_event(down, keycode, character, modifiers, 0);
+    unsigned device = 0; // Default to None/Any
+    if (g_coreID) {
+        NSString *lowerID = [g_coreID lowercaseString];
+        if ([lowerID rangeOfString:@"mame"].location != NSNotFound || 
+            [lowerID rangeOfString:@"dosbox"].location != NSNotFound) {
+            device = 3; // RETRO_DEVICE_KEYBOARD
+        }
+    }
+    bridge_keyboard_event(down, keycode, character, modifiers, device);
 }
 
 #pragma mark - Mouse Input

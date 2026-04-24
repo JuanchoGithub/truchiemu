@@ -20,7 +20,10 @@ class FocusableMTKView: MTKView {
 
         // Start input capture on click if not already capturing
         if let window = self.window, !InputCaptureManager.shared.isCapturing {
-            InputCaptureManager.shared.startCapture(window: window)
+            let coreID = runner?.rom?.systemID?.lowercased() ?? ""
+            if coreID == "dos" || coreID == "scummvm" {
+                InputCaptureManager.shared.startCapture(window: window)
+            }
         }
 
         LibretroBridgeSwift.setMouseButton(0, pressed: true)
@@ -130,11 +133,22 @@ class FocusableMTKView: MTKView {
             }
         }
 
-        // Send keyboard event to libretro core via callback or polling state
+        // 1. Mapped Path: Send to Joypad mapping (for standard cores)
+        if let rid = runner?.mapKey(event.keyCode) {
+            runner?.setKeyState(retroID: rid, pressed: true)
+        }
+
+        // 2. Raw Path: Send to Libretro core (for DOS/ScummVM)
         dispatchKeyboardEvent(event, down: true)
     }
 
     override func keyUp(with event: NSEvent) {
+        // 1. Mapped Path: Send to Joypad mapping (for standard cores)
+        if let rid = runner?.mapKey(event.keyCode) {
+            runner?.setKeyState(retroID: rid, pressed: false)
+        }
+
+        // 2. Raw Path: Send to Libretro core (for DOS/ScummVM)
         dispatchKeyboardEvent(event, down: false)
     }
 
