@@ -8,3 +8,5 @@ xcuserdata/
 
 # Other common ignores
 build/
+.cline/
+.vscode/

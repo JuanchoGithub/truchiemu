@@ -190,73 +190,49 @@ struct LibraryGridView: View {
                 You can restore the ROM file from Trash if you change your mind.
                 """)
             }
-        }
+}
         .toolbar {
-            ToolbarItemGroup {
-                // ─── Group 0: Library Actions ───
-                Button {
-                    pickFolder()
-                } label: {
-                    Image(systemName: "folder.badge.plus")
+            ToolbarItem(placement: .primaryAction) {
+                Spacer()
+            }
+            ToolbarItem(placement: .primaryAction) {
+                Button { pickFolder() } label: { Image(systemName: "folder.badge.plus") }
+            }
+            ToolbarItem(placement: .primaryAction) {
+                HStack(spacing: 6) {
+                    Image(systemName: "minus.magnifyingglass").font(.system(size: 10))
+                    Slider(value: $continuousZoom, in: 0...1, step: 1.0/7.0,
+                           onEditingChanged: { isEditing in
+                               if viewMode == .grid, !isEditing {
+                                   withAnimation(.interpolatingSpring(stiffness: 150, damping: 20)) {
+                                       applyZoomToColumnCount(animate: true)
+                                   }
+                               }
+                           })
+                           .onChange(of: continuousZoom) { _, newZoom in
+                               if viewMode == .grid {
+                                   let newColumnCount = max(1, min(8, Int(round((1.0 - newZoom) * 7.0) + 1)))
+                                   if newColumnCount != columnCount {
+                                       columnCount = newColumnCount
+                                       updateColumns()
+                                   }
+                               }
+                           }
+                     .frame(width: 100)
+                    Image(systemName: "plus.magnifyingglass").font(.system(size: 10))
+                    Text("\(Int(continuousZoom * 100))%")
+                        .font(.system(size: 10, weight: .medium, design: .monospaced))
                 }
-                .help("Add ROM folder")
-
-                // ─── Group 1: Input (Controller + Language) ───
-                Menu {
-                    Section("Input Device") {
-                        Button(action: { controllerService.activePlayerIndex = 0 }) {
-                            Label("Keyboard", systemImage: "keyboard")
-                                .symbolVariant(controllerService.activePlayerIndex == 0 ? .fill : .none)
-                        }
-                        if !controllerService.connectedControllers.isEmpty {
-                            ForEach(controllerService.connectedControllers) { controller in
-                                Button(action: { controllerService.activePlayerIndex = controller.playerIndex }) {
-                                    Label(controller.name, systemImage: "gamecontroller")
-                                        .symbolVariant(controllerService.activePlayerIndex == controller.playerIndex ? .fill : .none)
-                                }
-                            }
-                        } else {
-                            Text("No Controllers")
-                                .font(.caption)
-                                .foregroundColor(.secondary)
-                        }
-                    }
-
-                    Section("Language") {
-                        ForEach(EmulatorLanguage.allCases) { lang in
-                            Button {
-                                prefs.systemLanguage = lang
-                            } label: {
-                                HStack {
-                                    Text("\(lang.flagEmoji) \(lang.name)")
-                                    if prefs.systemLanguage == lang {
-                                        Spacer()
-                                        Image(systemName: "checkmark")
-                                    }
-                                }
-                            }
-                        }
-                    }
-                } label: {
-                    HStack(spacing: 4) {
-                        Image(systemName: controllerService.activePlayerIndex == 0 ? "keyboard" : "gamecontroller")
-                            .font(.caption)
-                        Text(prefs.systemLanguage.flagEmoji)
-                            .font(.caption)
-                    }
-                }
-                .help("Input device and language")
-
-                // ─── Group 2: View Mode (Segmented Picker) ───
+            }
+            ToolbarItem(placement: .primaryAction) {
                 Picker("View", selection: $viewMode) {
                     Image(systemName: "square.grid.2x2").tag(ViewMode.grid)
                     Image(systemName: "list.bullet").tag(ViewMode.list)
                 }
                 .pickerStyle(.segmented)
                 .frame(width: 80)
-                .help("Switch between grid and list view")
-
-                // ─── Group 4: Box Art (Merged menu) ───
+            }
+            ToolbarItem(placement: .primaryAction) {
                 Menu {
                     Section("Box Art Style") {
                         ForEach(BoxType.allCases) { type in
@@ -268,7 +244,6 @@ struct LibraryGridView: View {
                                 HStack {
                                     Label(type.rawValue, systemImage: type.iconName)
                                     if case .system(let system) = filter, prefs.boxType(for: system.id) == type {
-                                        Spacer()
                                         Image(systemName: "checkmark")
                                     }
                                 }
@@ -276,40 +251,12 @@ struct LibraryGridView: View {
                             .disabled(!isSystemView)
                         }
                     }
-                    
                     Divider()
-                    
                     Section("Download") {
                         Button {
                             Task {
-                                let targetROMs = selectedROMs.isEmpty
-                                    ? viewModel.displayedROMs
-                                    : viewModel.displayedROMs.filter { selectedROMs.contains($0.id) || selectedROM?.id == $0.id }
-                                guard !targetROMs.isEmpty else { return }
-                                await BoxArtService.shared.batchDownloadBoxArtLibretro(for: targetROMs, library: library)
-                                await LaunchBoxGamesDBService.shared.batchDownloadBoxArt(for: targetROMs, library: library)
-                            }
-                        } label: {
-                            Label(
-                                selectedROMs.isEmpty ? "Download Missing Box Art" : "Download Box Art for Selected (\(selectedROMs.count))",
-                                systemImage: "arrow.down.circle"
-                            )
-                        }
-                        
-                        Button {
-                            Task {
-                                let romsNeedingArt = BoxArtService.shared.romsNeedingBoxArt(in: viewModel.displayedROMs)
-                                guard !romsNeedingArt.isEmpty else { return }
-                                await BoxArtService.shared.batchDownloadBoxArtLibretro(for: romsNeedingArt, library: library)
-                            }
-                        } label: {
-                            Label("Download Missing Box Art Only", systemImage: "photo.badge.plus")
-                        }
-                        
-                        Button {
-                            Task {
+                                guard !viewModel.displayedROMs.isEmpty else { return }
                                 await BoxArtService.shared.batchDownloadBoxArtLibretro(for: viewModel.displayedROMs, library: library)
-                                await LaunchBoxGamesDBService.shared.batchDownloadBoxArt(for: viewModel.displayedROMs, library: library)
                             }
                         } label: {
                             Label("Download All Box Art", systemImage: "arrow.down.circle.fill")
@@ -318,9 +265,32 @@ struct LibraryGridView: View {
                 } label: {
                     Image(systemName: "photo.stack")
                 }
-                .help("Box art options and downloads")
-
-                // ─── Group 5: Settings ───
+            }
+            ToolbarItem(placement: .primaryAction) {
+                Menu {
+                    Section("Input Device") {
+                        Button(action: { controllerService.activePlayerIndex = 0 }) {
+                            Label("Keyboard", systemImage: "keyboard")
+                        }
+                    }
+                    Section("Language") {
+                        ForEach(EmulatorLanguage.allCases) { lang in
+                            Button { prefs.systemLanguage = lang } label: {
+                                HStack {
+                                    Text("\(lang.flagEmoji) \(lang.name)")
+                                    if prefs.systemLanguage == lang { Image(systemName: "checkmark") }
+                                }
+                            }
+                        }
+                    }
+                } label: {
+                    HStack(spacing: 4) {
+                        Image(systemName: controllerService.activePlayerIndex == 0 ? "keyboard" : "gamecontroller")
+                        Text(prefs.systemLanguage.flagEmoji)
+                    }
+                }
+            }
+            ToolbarItem(placement: .primaryAction) {
                 Button {
                     if let mainMenu = NSApp.mainMenu {
                         for item in mainMenu.items {
@@ -338,52 +308,10 @@ struct LibraryGridView: View {
                     }
                     NSApp.windows.first { $0.identifier?.rawValue == "settings" }?.makeKeyAndOrderFront(nil)
                 } label: {
-                    Label("Settings", systemImage: "gearshape")
+                    Image(systemName: "gearshape")
                 }
-                .labelStyle(.iconOnly)
-                .help("Settings")
-            }
-        }
-        .toolbar {
-            ToolbarItemGroup(placement: .automatic) {
-                // Zoom slider in the toolbar (always visible)
-                HStack(spacing: 6) {
-                    Image(systemName: "minus.magnifyingglass")
-                        .font(.system(size: 10))
-                        .foregroundColor(.secondary.opacity(0.5))
-                        .frame(width: 14)
-                    
-                    Slider(value: $continuousZoom, in: 0...1, step: 1.0/7.0,
-                           onEditingChanged: { isEditing in
-                               if viewMode == .grid, !isEditing {
-                                   // On release, snap to nearest step
-                                   withAnimation(.interpolatingSpring(stiffness: 150, damping: 20)) {
-                                       applyZoomToColumnCount(animate: true)
-                                   }
-                               }
-                           })
-                           .onChange(of: continuousZoom) { _, newZoom in
-                               // Update columns in real-time during slider drag for smooth reflow
-                               if viewMode == .grid {
-                                   let newColumnCount = max(1, min(8, Int(round((1.0 - newZoom) * 7.0) + 1)))
-                                   if newColumnCount != columnCount {
-                                       columnCount = newColumnCount
-                                       updateColumns()
-                                   }
-                               }
-                           }
-                        .frame(width: 100)
-                    
-                    Image(systemName: "plus.magnifyingglass")
-                        .font(.system(size: 10))
-                        .foregroundColor(.secondary.opacity(0.5))
-                        .frame(width: 14)
-                    
-                    Text("\(Int(continuousZoom * 100))%")
-                        .font(.system(size: 10, weight: .medium, design: .monospaced))
-                        .foregroundColor(.secondary)
-                        .frame(width: 32, alignment: .trailing)
-                }
+                .buttonStyle(.borderless)
+                .frame(minWidth: 32)
             }
         }
         .sheet(item: $manualBoxArtSearchROM) { rom in
