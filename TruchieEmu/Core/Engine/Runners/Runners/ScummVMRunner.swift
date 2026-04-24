@@ -67,7 +67,6 @@ class ScummVMRunner: EmulatorRunner, @unchecked Sendable {
         ("MANIAC", "maniac"),               // Maniac Mansion
         
         // Sierra games
-        ("SIERRA", "sierra"),
         ("QFG1", "qfg1"),                   // Quest for Glory 1
         ("QFG2", "qfg2"),                   // Quest for Glory 2
         ("KQ1", "kq1"),                     // King's Quest 1
@@ -216,7 +215,7 @@ class ScummVMRunner: EmulatorRunner, @unchecked Sendable {
     // MARK: - Game ID Detection
     
     // Detect the ScummVM game ID by scanning files in the extracted folder
-    func detectGameID(in folder: URL) -> String {
+    func detectGameID(in folder: URL) -> String? {
         do {
             let files = try FileManager.default.contentsOfDirectory(atPath: folder.path)
             
@@ -247,7 +246,6 @@ class ScummVMRunner: EmulatorRunner, @unchecked Sendable {
             
             if hasAudioFiles || hasDataFiles {
                 // We have ScummVM game files but couldn't detect specific game
-                // Return "auto" to use fallback detection from the folder name
                 LoggerService.debug(category: "ScummVM", "Detected ScummVM data files but no specific game ID")
             }
             
@@ -270,20 +268,10 @@ class ScummVMRunner: EmulatorRunner, @unchecked Sendable {
             }
         }
         
-        // Last resort: use a cleaned folder name as ID
-        if !folderName.isEmpty && folderName.count > 2 {
-            let cleanID = folderName
-                .filter { $0.isLetter || $0.isNumber }
-            if !cleanID.isEmpty {
-                LoggerService.debug(category: "ScummVM", "Using fallback game ID: \(cleanID)")
-                return cleanID
-            }
-        }
-        
-        // Final fallback: use "auto" which tells scummvm_libretro to auto-detect
-        // the game by scanning the directory contents.
-        LoggerService.info(category: "ScummVM", "Could not detect specific game ID, using \"auto\" for game detection")
-        return "auto"
+        // We do not fallback to a cleaned folder name because passing an invalid
+        // shortname via the hook file causes ScummVM to open the launcher GUI.
+        LoggerService.info(category: "ScummVM", "Could not confidently detect game ID, will use auto-detect.")
+        return nil
     }
     
     // MARK: - Hook File Generation
@@ -358,6 +346,36 @@ class ScummVMRunner: EmulatorRunner, @unchecked Sendable {
     
     // MARK: - Override Launch
     
+    // Find any valid game file in the folder to trigger ScummVM auto-detect
+    private func findAnyGameFile(in folder: URL) -> URL? {
+        do {
+            let files = try FileManager.default.contentsOfDirectory(atPath: folder.path)
+            
+            // Prioritize data files
+            if let dataFile = files.first(where: { Self.scummVMDataExtensions.contains(($0 as NSString).pathExtension.lowercased()) }) {
+                return folder.appendingPathComponent(dataFile)
+            }
+            
+            // Fallback to audio files
+            if let audioFile = files.first(where: { Self.scummVMAudioExtensions.contains(($0 as NSString).pathExtension.lowercased()) }) {
+                return folder.appendingPathComponent(audioFile)
+            }
+            
+            // If none, just return the first file that is not a directory and is not a hidden file
+            for file in files {
+                if file.hasPrefix(".") { continue }
+                let filePath = folder.appendingPathComponent(file)
+                var isDir: ObjCBool = false
+                if FileManager.default.fileExists(atPath: filePath.path, isDirectory: &isDir), !isDir.boolValue {
+                    return filePath
+                }
+            }
+        } catch {
+            LoggerService.debug(category: "ScummVM", "Failed to check for game files: \(error)")
+        }
+        return nil
+    }
+    
     @MainActor
     override func launch(rom: ROM, coreID: String) {
         // Force "No Shader" (passthrough) for ScummVM.
@@ -382,26 +400,41 @@ class ScummVMRunner: EmulatorRunner, @unchecked Sendable {
                 return
             }
             
-            // Step 2: Detect game ID (always returns a value, falls back to "auto")
-            let gameID = detectGameID(in: extractedFolder)
-            
-            // Step 3: Create hook file
-            guard let hookPath = createHookFile(in: extractedFolder, gameID: gameID) else {
-                LoggerService.info(category: "ScummVM", "Failed to create hook file in: \(extractedFolder.path)")
-                return
+            // Step 2: Detect game ID
+            if let gameID = detectGameID(in: extractedFolder) {
+                // Step 3: Create hook file
+                guard let hookPath = createHookFile(in: extractedFolder, gameID: gameID) else {
+                    LoggerService.info(category: "ScummVM", "Failed to create hook file in: \(extractedFolder.path)")
+                    return
+                }
+                
+                // Step 4: Launch with hook file instead of ZIP
+                LoggerService.info(category: "ScummVM", "Launching with hook file: \(hookPath.path), gameID: \(gameID)")
+                
+                // Create a temporary ROM with the hook file path
+                var modifiedRom = rom
+                modifiedRom.path = hookPath
+                
+                // Store the hook path for the bridge
+                self.romPath = hookPath.path
+                
+                super.launch(rom: modifiedRom, coreID: coreID)
+            } else {
+                // We couldn't detect a specific ID. Let's find any valid game file in the folder 
+                // and pass it directly to let ScummVM auto-detect the game from the directory.
+                guard let fallbackFile = findAnyGameFile(in: extractedFolder) else {
+                    LoggerService.info(category: "ScummVM", "No valid game files found for auto-detect in: \(extractedFolder.path)")
+                    return
+                }
+                
+                LoggerService.info(category: "ScummVM", "Auto-detecting game using file: \(fallbackFile.path)")
+                
+                var modifiedRom = rom
+                modifiedRom.path = fallbackFile
+                self.romPath = fallbackFile.path
+                
+                super.launch(rom: modifiedRom, coreID: coreID)
             }
-            
-            // Step 4: Launch with hook file instead of ZIP
-            LoggerService.info(category: "ScummVM", "Launching with hook file: \(hookPath.path), gameID: \(gameID)")
-            
-            // Create a temporary ROM with the hook file path
-            var modifiedRom = rom
-            modifiedRom.path = hookPath
-            
-            // Store the hook path for the bridge
-            self.romPath = hookPath.path
-            
-            super.launch(rom: modifiedRom, coreID: coreID)
         } else {
             // Non-ZIP file (maybe already a .scummvm file), launch normally
             LoggerService.debug(category: "ScummVM", "Launching non-ZIP file normally")
