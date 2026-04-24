@@ -7,8 +7,8 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		4C4E815CF1F3498FBFD7E908 /* RetroKeycodeMapper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 02FA13AC92004870801B79A3 /* RetroKeycodeMapper.swift */; };
 		DD095AD82F981298002A097A /* NotificationService.swift in Sources */ = {isa = PBXBuildFile; fileRef = DD095AD72F981298002A097A /* NotificationService.swift */; };
-		DD095ADA2F98F394002A097A /* 8bGameBoyColor.metal in Sources */ = {isa = PBXBuildFile; fileRef = DD095AD92F98F394002A097A /* 8bGameBoyColor.metal */; };
 		DD1AE5DF2F96D7240014A60E /* XRICK.png in Resources */ = {isa = PBXBuildFile; fileRef = DD1AE1B92F96D7240014A60E /* XRICK.png */; };
 		DD1AE5E32F96D7240014A60E /* fds@132w.png in Resources */ = {isa = PBXBuildFile; fileRef = DD1AE1182F96D7240014A60E /* fds@132w.png */; };
 		DD1AE5E62F96D7240014A60E /* DC.png in Resources */ = {isa = PBXBuildFile; fileRef = DD1AE1682F96D7240014A60E /* DC.png */; };
@@ -245,7 +245,6 @@
 		DD1AEA7E2F96D7240014A60E /* Atari - Lynx.dat in Resources */ = {isa = PBXBuildFile; fileRef = DD1AE0E12F96D7240014A60E /* Atari - Lynx.dat */; };
 		DD1AEA822F96D7240014A60E /* CPS3.png in Resources */ = {isa = PBXBuildFile; fileRef = DD1AE1662F96D7240014A60E /* CPS3.png */; };
 		DD1AEA842F96D7240014A60E /* CoreSettingsViewGroup.swift in Sources */ = {isa = PBXBuildFile; fileRef = DD1AE0C62F96D7240014A60E /* CoreSettingsViewGroup.swift */; };
-		DD1AEA852F96D7240014A60E /* ShaderCommon.h.metal in Sources */ = {isa = PBXBuildFile; fileRef = DD1AE0512F96D7240014A60E /* ShaderCommon.h.metal */; };
 		DD1AEA872F96D7240014A60E /* Cheat.swift in Sources */ = {isa = PBXBuildFile; fileRef = DD1AE0922F96D7240014A60E /* Cheat.swift */; };
 		DD1AEA882F96D7240014A60E /* GameLauncher.swift in Sources */ = {isa = PBXBuildFile; fileRef = DD1AE09D2F96D7240014A60E /* GameLauncher.swift */; };
 		DD1AEA892F96D7240014A60E /* BezelDownloadLogView.swift in Sources */ = {isa = PBXBuildFile; fileRef = DD1AE0A32F96D7240014A60E /* BezelDownloadLogView.swift */; };
@@ -255,7 +254,6 @@
 		DD1AEA8F2F96D7240014A60E /* LibretroBridge.mm in Sources */ = {isa = PBXBuildFile; fileRef = DD1AE0322F96D7240014A60E /* LibretroBridge.mm */; };
 		DD1AEA902F96D7240014A60E /* GameDBRepository.swift in Sources */ = {isa = PBXBuildFile; fileRef = DD1AE5A12F96D7240014A60E /* GameDBRepository.swift */; };
 		DD1AEA912F96D7240014A60E /* ModernSectionCard.swift in Sources */ = {isa = PBXBuildFile; fileRef = DD1AE5CD2F96D7240014A60E /* ModernSectionCard.swift */; };
-		DD1AEA922F96D7240014A60E /* ScaleSmooth.metal in Sources */ = {isa = PBXBuildFile; fileRef = DD1AE0642F96D7240014A60E /* ScaleSmooth.metal */; };
 		DD1AEA932F96D7240014A60E /* MAMEModels.swift in Sources */ = {isa = PBXBuildFile; fileRef = DD1AE0832F96D7240014A60E /* MAMEModels.swift */; };
 		DD1AEA942F96D7240014A60E /* PersistenceMigrationFlag.swift in Sources */ = {isa = PBXBuildFile; fileRef = DD1AE5A22F96D7240014A60E /* PersistenceMigrationFlag.swift */; };
 		DD1AEA952F96D7240014A60E /* BezelSelectorSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = DD1AE0A42F96D7240014A60E /* BezelSelectorSheet.swift */; };
@@ -267,7 +265,6 @@
 		DD1AEA9B2F96D7240014A60E /* AchievementToastView.swift in Sources */ = {isa = PBXBuildFile; fileRef = DD1AE0B62F96D7240014A60E /* AchievementToastView.swift */; };
 		DD1AEA9E2F96D7240014A60E /* LibretroBridgeImpl.mm in Sources */ = {isa = PBXBuildFile; fileRef = DD1AE0342F96D7240014A60E /* LibretroBridgeImpl.mm */; };
 		DD1AEAA02F96D7240014A60E /* CheatAutoLoader.swift in Sources */ = {isa = PBXBuildFile; fileRef = DD1AE5892F96D7240014A60E /* CheatAutoLoader.swift */; };
-		DD1AEAA12F96D7240014A60E /* CRTFilter.metal in Sources */ = {isa = PBXBuildFile; fileRef = DD1AE05E2F96D7240014A60E /* CRTFilter.metal */; };
 		DD1AEAA32F96D7240014A60E /* CoreOptionsRepository.swift in Sources */ = {isa = PBXBuildFile; fileRef = DD1AE5A02F96D7240014A60E /* CoreOptionsRepository.swift */; };
 		DD1AEAA42F96D7240014A60E /* GameInfoWindow.swift in Sources */ = {isa = PBXBuildFile; fileRef = DD1AE0242F96D7240014A60E /* GameInfoWindow.swift */; };
 		DD1AEAA52F96D7240014A60E /* CheatManagerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = DD1AE0B82F96D7240014A60E /* CheatManagerView.swift */; };
@@ -288,7 +285,6 @@
 		DD1AEAB72F96D7240014A60E /* LibretroCore.swift in Sources */ = {isa = PBXBuildFile; fileRef = DD1AE0412F96D7240014A60E /* LibretroCore.swift */; };
 		DD1AEAB82F96D7240014A60E /* DesignSystem.swift in Sources */ = {isa = PBXBuildFile; fileRef = DD1AE5B12F96D7240014A60E /* DesignSystem.swift */; };
 		DD1AEAB92F96D7240014A60E /* BoxArtPreloaderService.swift in Sources */ = {isa = PBXBuildFile; fileRef = DD1AE5872F96D7240014A60E /* BoxArtPreloaderService.swift */; };
-		DD1AEABA2F96D7240014A60E /* 8bGameBoy.metal in Sources */ = {isa = PBXBuildFile; fileRef = DD1AE05C2F96D7240014A60E /* 8bGameBoy.metal */; };
 		DD1AEABC2F96D7240014A60E /* CheatManagerViews.swift in Sources */ = {isa = PBXBuildFile; fileRef = DD1AE0AE2F96D7240014A60E /* CheatManagerViews.swift */; };
 		DD1AEABD2F96D7240014A60E /* DOSRunner.swift in Sources */ = {isa = PBXBuildFile; fileRef = DD1AE0282F96D7240014A60E /* DOSRunner.swift */; };
 		DD1AEABE2F96D7240014A60E /* CoreDownloadSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = DD1AE5B92F96D7240014A60E /* CoreDownloadSheet.swift */; };
@@ -297,10 +293,8 @@
 		DD1AEAC22F96D7240014A60E /* ROMIdentifierService.swift in Sources */ = {isa = PBXBuildFile; fileRef = DD1AE5992F96D7240014A60E /* ROMIdentifierService.swift */; };
 		DD1AEAC32F96D7240014A60E /* Header.swift in Sources */ = {isa = PBXBuildFile; fileRef = DD1AE5C92F96D7240014A60E /* Header.swift */; };
 		DD1AEAC42F96D7240014A60E /* GameOverlayToolbar.swift in Sources */ = {isa = PBXBuildFile; fileRef = DD1AE0B12F96D7240014A60E /* GameOverlayToolbar.swift */; };
-		DD1AEAC52F96D7240014A60E /* SharpBilinear.metal in Sources */ = {isa = PBXBuildFile; fileRef = DD1AE0652F96D7240014A60E /* SharpBilinear.metal */; };
 		DD1AEAC62F96D7240014A60E /* ROM.swift in Sources */ = {isa = PBXBuildFile; fileRef = DD1AE06A2F96D7240014A60E /* ROM.swift */; };
 		DD1AEAC72F96D7240014A60E /* ROMScanner.swift in Sources */ = {isa = PBXBuildFile; fileRef = DD1AE06F2F96D7240014A60E /* ROMScanner.swift */; };
-		DD1AEAC92F96D7240014A60E /* ShaderTypes.h.metal in Sources */ = {isa = PBXBuildFile; fileRef = DD1AE0522F96D7240014A60E /* ShaderTypes.h.metal */; };
 		DD1AEACA2F96D7240014A60E /* MAMEVerificationRecord.swift in Sources */ = {isa = PBXBuildFile; fileRef = DD1AE0852F96D7240014A60E /* MAMEVerificationRecord.swift */; };
 		DD1AEACB2F96D7240014A60E /* LogManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = DD1AE5AE2F96D7240014A60E /* LogManager.swift */; };
 		DD1AEACC2F96D7240014A60E /* LibretroRDBParser.swift in Sources */ = {isa = PBXBuildFile; fileRef = DD1AE5932F96D7240014A60E /* LibretroRDBParser.swift */; };
@@ -334,7 +328,6 @@
 		DD1AEAEB2F96D7240014A60E /* StandaloneGameWindowController.swift in Sources */ = {isa = PBXBuildFile; fileRef = DD1AE0B32F96D7240014A60E /* StandaloneGameWindowController.swift */; };
 		DD1AEAEC2F96D7240014A60E /* ManualActionStatus.swift in Sources */ = {isa = PBXBuildFile; fileRef = DD1AE5CA2F96D7240014A60E /* ManualActionStatus.swift */; };
 		DD1AEAED2F96D7240014A60E /* SetupWizardState.swift in Sources */ = {isa = PBXBuildFile; fileRef = DD1AE59B2F96D7240014A60E /* SetupWizardState.swift */; };
-		DD1AEAEE2F96D7240014A60E /* DotMatrixLCD.metal in Sources */ = {isa = PBXBuildFile; fileRef = DD1AE0602F96D7240014A60E /* DotMatrixLCD.metal */; };
 		DD1AEAEF2F96D7240014A60E /* Controls.swift in Sources */ = {isa = PBXBuildFile; fileRef = DD1AE5C12F96D7240014A60E /* Controls.swift */; };
 		DD1AEAF02F96D7240014A60E /* ZoomableBoxArtView.swift in Sources */ = {isa = PBXBuildFile; fileRef = DD1AE0AA2F96D7240014A60E /* ZoomableBoxArtView.swift */; };
 		DD1AEAF12F96D7240014A60E /* BezelBackgroundView.swift in Sources */ = {isa = PBXBuildFile; fileRef = DD1AE0B72F96D7240014A60E /* BezelBackgroundView.swift */; };
@@ -359,7 +352,6 @@
 		DD1AEB042F96D7240014A60E /* CheatSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = DD1AE0C32F96D7240014A60E /* CheatSettingsView.swift */; };
 		DD1AEB052F96D7240014A60E /* CoreOptionsManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = DD1AE0BF2F96D7240014A60E /* CoreOptionsManager.swift */; };
 		DD1AEB062F96D7240014A60E /* BezelBrowserView.swift in Sources */ = {isa = PBXBuildFile; fileRef = DD1AE0A22F96D7240014A60E /* BezelBrowserView.swift */; };
-		DD1AEB072F96D7240014A60E /* Passthrough.metal in Sources */ = {isa = PBXBuildFile; fileRef = DD1AE0632F96D7240014A60E /* Passthrough.metal */; };
 		DD1AEB082F96D7240014A60E /* LaunchBoxGameMetadata.swift in Sources */ = {isa = PBXBuildFile; fileRef = DD1AE03F2F96D7240014A60E /* LaunchBoxGameMetadata.swift */; };
 		DD1AEB092F96D7240014A60E /* GameError.swift in Sources */ = {isa = PBXBuildFile; fileRef = DD1AE5D92F96D7240014A60E /* GameError.swift */; };
 		DD1AEB0A2F96D7240014A60E /* CheatsSection.swift in Sources */ = {isa = PBXBuildFile; fileRef = DD1AE5C02F96D7240014A60E /* CheatsSection.swift */; };
@@ -383,7 +375,6 @@
 		DD1AEB1F2F96D7240014A60E /* GameDetailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = DD1AE5D42F96D7240014A60E /* GameDetailView.swift */; };
 		DD1AEB202F96D7240014A60E /* BezelModels.swift in Sources */ = {isa = PBXBuildFile; fileRef = DD1AE0972F96D7240014A60E /* BezelModels.swift */; };
 		DD1AEB212F96D7240014A60E /* BezelsSection.swift in Sources */ = {isa = PBXBuildFile; fileRef = DD1AE5BD2F96D7240014A60E /* BezelsSection.swift */; };
-		DD1AEB222F96D7240014A60E /* LottesCRT.metal in Sources */ = {isa = PBXBuildFile; fileRef = DD1AE0622F96D7240014A60E /* LottesCRT.metal */; };
 		DD1AEB232F96D7240014A60E /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = DD1AE0232F96D7240014A60E /* ContentView.swift */; };
 		DD1AEB242F96D7240014A60E /* MAMEVerificationService.swift in Sources */ = {isa = PBXBuildFile; fileRef = DD1AE08A2F96D7240014A60E /* MAMEVerificationService.swift */; };
 		DD1AEB252F96D7240014A60E /* SlotPickerSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = DD1AE0BA2F96D7240014A60E /* SlotPickerSheet.swift */; };
@@ -403,7 +394,6 @@
 		DD1AEB342F96D7240014A60E /* LibretroThumbnailResolver.swift in Sources */ = {isa = PBXBuildFile; fileRef = DD1AE5952F96D7240014A60E /* LibretroThumbnailResolver.swift */; };
 		DD1AEB352F96D7240014A60E /* LibraryMetadataStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = DD1AE0402F96D7240014A60E /* LibraryMetadataStore.swift */; };
 		DD1AEB362F96D7240014A60E /* DetailSection.swift in Sources */ = {isa = PBXBuildFile; fileRef = DD1AE5C72F96D7240014A60E /* DetailSection.swift */; };
-		DD1AEB372F96D7240014A60E /* LiteCRT.metal in Sources */ = {isa = PBXBuildFile; fileRef = DD1AE0612F96D7240014A60E /* LiteCRT.metal */; };
 		DD1AEB382F96D7240014A60E /* SetupWizardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = DD1AE07C2F96D7240014A60E /* SetupWizardView.swift */; };
 		DD1AEB392F96D7240014A60E /* ResourceCacheInterceptor.swift in Sources */ = {isa = PBXBuildFile; fileRef = DD1AE5AF2F96D7240014A60E /* ResourceCacheInterceptor.swift */; };
 		DD1AEB3A2F96D7240014A60E /* CategoryRowButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = DD1AE0712F96D7240014A60E /* CategoryRowButton.swift */; };
@@ -417,7 +407,16 @@
 		DD1AEB422F96D7240014A60E /* ShaderManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = DD1AE09F2F96D7240014A60E /* ShaderManager.swift */; };
 		DD1AEB432F96D7240014A60E /* CoreAndAchievements.swift in Sources */ = {isa = PBXBuildFile; fileRef = DD1AE5C32F96D7240014A60E /* CoreAndAchievements.swift */; };
 		DD761E152F9AE550002E0F3D /* InputCaptureManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = DD761E132F9AE550002E0F3D /* InputCaptureManager.swift */; };
-		4C4E815CF1F3498FBFD7E908 /* RetroKeycodeMapper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 02FA13AC92004870801B79A3 /* RetroKeycodeMapper.swift */; };
+		DD761E202F9C1C0A002E0F3D /* CRTFilter.metal in Sources */ = {isa = PBXBuildFile; fileRef = DD761E182F9C1C0A002E0F3D /* CRTFilter.metal */; };
+		DD761E212F9C1C0A002E0F3D /* SharpBilinear.metal in Sources */ = {isa = PBXBuildFile; fileRef = DD761E1F2F9C1C0A002E0F3D /* SharpBilinear.metal */; };
+		DD761E222F9C1C0A002E0F3D /* Passthrough.metal in Sources */ = {isa = PBXBuildFile; fileRef = DD761E1D2F9C1C0A002E0F3D /* Passthrough.metal */; };
+		DD761E232F9C1C0A002E0F3D /* GBA.metal in Sources */ = {isa = PBXBuildFile; fileRef = DD761E1A2F9C1C0A002E0F3D /* GBA.metal */; };
+		DD761E242F9C1C0A002E0F3D /* ScaleSmooth.metal in Sources */ = {isa = PBXBuildFile; fileRef = DD761E1E2F9C1C0A002E0F3D /* ScaleSmooth.metal */; };
+		DD761E252F9C1C0A002E0F3D /* 8bGameBoy.metal in Sources */ = {isa = PBXBuildFile; fileRef = DD761E162F9C1C0A002E0F3D /* 8bGameBoy.metal */; };
+		DD761E262F9C1C0A002E0F3D /* 8bGameBoyColor.metal in Sources */ = {isa = PBXBuildFile; fileRef = DD761E172F9C1C0A002E0F3D /* 8bGameBoyColor.metal */; };
+		DD761E272F9C1C0A002E0F3D /* DotMatrixLCD.metal in Sources */ = {isa = PBXBuildFile; fileRef = DD761E192F9C1C0A002E0F3D /* DotMatrixLCD.metal */; };
+		DD761E282F9C1C0A002E0F3D /* LiteCRT.metal in Sources */ = {isa = PBXBuildFile; fileRef = DD761E1B2F9C1C0A002E0F3D /* LiteCRT.metal */; };
+		DD761E292F9C1C0A002E0F3D /* LottesCRT.metal in Sources */ = {isa = PBXBuildFile; fileRef = DD761E1C2F9C1C0A002E0F3D /* LottesCRT.metal */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -431,9 +430,9 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		02FA13AC92004870801B79A3 /* RetroKeycodeMapper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RetroKeycodeMapper.swift; sourceTree = "<group>"; };
 		DD095AD62F97F8B5002A097A /* TruchiEmuTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = TruchiEmuTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		DD095AD72F981298002A097A /* NotificationService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotificationService.swift; sourceTree = "<group>"; };
-		DD095AD92F98F394002A097A /* 8bGameBoyColor.metal */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.metal; path = 8bGameBoyColor.metal; sourceTree = "<group>"; };
 		DD1AE0232F96D7240014A60E /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
 		DD1AE0242F96D7240014A60E /* GameInfoWindow.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GameInfoWindow.swift; sourceTree = "<group>"; };
 		DD1AE0252F96D7240014A60E /* TruchieEmuApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TruchieEmuApp.swift; sourceTree = "<group>"; };
@@ -463,16 +462,6 @@
 		DD1AE0412F96D7240014A60E /* LibretroCore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LibretroCore.swift; sourceTree = "<group>"; };
 		DD1AE0422F96D7240014A60E /* RAGameCacheEntry.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RAGameCacheEntry.swift; sourceTree = "<group>"; };
 		DD1AE0432F96D7240014A60E /* ResourceCacheModels.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ResourceCacheModels.swift; sourceTree = "<group>"; };
-		DD1AE0512F96D7240014A60E /* ShaderCommon.h.metal */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.metal; path = ShaderCommon.h.metal; sourceTree = "<group>"; };
-		DD1AE0522F96D7240014A60E /* ShaderTypes.h.metal */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.metal; path = ShaderTypes.h.metal; sourceTree = "<group>"; };
-		DD1AE05C2F96D7240014A60E /* 8bGameBoy.metal */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.metal; path = 8bGameBoy.metal; sourceTree = "<group>"; };
-		DD1AE05E2F96D7240014A60E /* CRTFilter.metal */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.metal; path = CRTFilter.metal; sourceTree = "<group>"; };
-		DD1AE0602F96D7240014A60E /* DotMatrixLCD.metal */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.metal; path = DotMatrixLCD.metal; sourceTree = "<group>"; };
-		DD1AE0612F96D7240014A60E /* LiteCRT.metal */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.metal; path = LiteCRT.metal; sourceTree = "<group>"; };
-		DD1AE0622F96D7240014A60E /* LottesCRT.metal */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.metal; path = LottesCRT.metal; sourceTree = "<group>"; };
-		DD1AE0632F96D7240014A60E /* Passthrough.metal */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.metal; path = Passthrough.metal; sourceTree = "<group>"; };
-		DD1AE0642F96D7240014A60E /* ScaleSmooth.metal */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.metal; path = ScaleSmooth.metal; sourceTree = "<group>"; };
-		DD1AE0652F96D7240014A60E /* SharpBilinear.metal */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.metal; path = SharpBilinear.metal; sourceTree = "<group>"; };
 		DD1AE0692F96D7240014A60E /* GameCategory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GameCategory.swift; sourceTree = "<group>"; };
 		DD1AE06A2F96D7240014A60E /* ROM.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ROM.swift; sourceTree = "<group>"; };
 		DD1AE06C2F96D7240014A60E /* CategoryManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CategoryManager.swift; sourceTree = "<group>"; };
@@ -851,7 +840,16 @@
 		DD1AE5D92F96D7240014A60E /* GameError.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GameError.swift; sourceTree = "<group>"; };
 		DD1AEB452F96DACB0014A60E /* TruchiEmu.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = TruchiEmu.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		DD761E132F9AE550002E0F3D /* InputCaptureManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InputCaptureManager.swift; sourceTree = "<group>"; };
-		02FA13AC92004870801B79A3 /* RetroKeycodeMapper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RetroKeycodeMapper.swift; sourceTree = "<group>"; };
+		DD761E162F9C1C0A002E0F3D /* 8bGameBoy.metal */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.metal; path = 8bGameBoy.metal; sourceTree = "<group>"; };
+		DD761E172F9C1C0A002E0F3D /* 8bGameBoyColor.metal */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.metal; path = 8bGameBoyColor.metal; sourceTree = "<group>"; };
+		DD761E182F9C1C0A002E0F3D /* CRTFilter.metal */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.metal; path = CRTFilter.metal; sourceTree = "<group>"; };
+		DD761E192F9C1C0A002E0F3D /* DotMatrixLCD.metal */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.metal; path = DotMatrixLCD.metal; sourceTree = "<group>"; };
+		DD761E1A2F9C1C0A002E0F3D /* GBA.metal */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.metal; path = GBA.metal; sourceTree = "<group>"; };
+		DD761E1B2F9C1C0A002E0F3D /* LiteCRT.metal */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.metal; path = LiteCRT.metal; sourceTree = "<group>"; };
+		DD761E1C2F9C1C0A002E0F3D /* LottesCRT.metal */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.metal; path = LottesCRT.metal; sourceTree = "<group>"; };
+		DD761E1D2F9C1C0A002E0F3D /* Passthrough.metal */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.metal; path = Passthrough.metal; sourceTree = "<group>"; };
+		DD761E1E2F9C1C0A002E0F3D /* ScaleSmooth.metal */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.metal; path = ScaleSmooth.metal; sourceTree = "<group>"; };
+		DD761E1F2F9C1C0A002E0F3D /* SharpBilinear.metal */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.metal; path = SharpBilinear.metal; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXGroup section */
@@ -930,36 +928,19 @@
 			path = Models;
 			sourceTree = "<group>";
 		};
-		DD1AE0532F96D7240014A60E /* internal */ = {
-			isa = PBXGroup;
-			children = (
-				DD1AE0512F96D7240014A60E /* ShaderCommon.h.metal */,
-				DD1AE0522F96D7240014A60E /* ShaderTypes.h.metal */,
-			);
-			path = internal;
-			sourceTree = "<group>";
-		};
-		DD1AE0662F96D7240014A60E /* Shaders */ = {
-			isa = PBXGroup;
-			children = (
-				DD095AD92F98F394002A097A /* 8bGameBoyColor.metal */,
-				DD1AE0532F96D7240014A60E /* internal */,
-				DD1AE05C2F96D7240014A60E /* 8bGameBoy.metal */,
-				DD1AE05E2F96D7240014A60E /* CRTFilter.metal */,
-				DD1AE0602F96D7240014A60E /* DotMatrixLCD.metal */,
-				DD1AE0612F96D7240014A60E /* LiteCRT.metal */,
-				DD1AE0622F96D7240014A60E /* LottesCRT.metal */,
-				DD1AE0632F96D7240014A60E /* Passthrough.metal */,
-				DD1AE0642F96D7240014A60E /* ScaleSmooth.metal */,
-				DD1AE0652F96D7240014A60E /* SharpBilinear.metal */,
-			);
-			path = Shaders;
-			sourceTree = "<group>";
-		};
 		DD1AE0672F96D7240014A60E /* Shaders */ = {
 			isa = PBXGroup;
 			children = (
-				DD1AE0662F96D7240014A60E /* Shaders */,
+				DD761E162F9C1C0A002E0F3D /* 8bGameBoy.metal */,
+				DD761E172F9C1C0A002E0F3D /* 8bGameBoyColor.metal */,
+				DD761E182F9C1C0A002E0F3D /* CRTFilter.metal */,
+				DD761E192F9C1C0A002E0F3D /* DotMatrixLCD.metal */,
+				DD761E1A2F9C1C0A002E0F3D /* GBA.metal */,
+				DD761E1B2F9C1C0A002E0F3D /* LiteCRT.metal */,
+				DD761E1C2F9C1C0A002E0F3D /* LottesCRT.metal */,
+				DD761E1D2F9C1C0A002E0F3D /* Passthrough.metal */,
+				DD761E1E2F9C1C0A002E0F3D /* ScaleSmooth.metal */,
+				DD761E1F2F9C1C0A002E0F3D /* SharpBilinear.metal */,
 			);
 			path = Shaders;
 			sourceTree = "<group>";
@@ -2118,7 +2099,6 @@
 			buildActionMask = 2147483647;
 			files = (
 				DD1AEA842F96D7240014A60E /* CoreSettingsViewGroup.swift in Sources */,
-				DD1AEA852F96D7240014A60E /* ShaderCommon.h.metal in Sources */,
 				DD1AEA872F96D7240014A60E /* Cheat.swift in Sources */,
 				DD1AEA882F96D7240014A60E /* GameLauncher.swift in Sources */,
 				DD1AEA892F96D7240014A60E /* BezelDownloadLogView.swift in Sources */,
@@ -2128,7 +2108,6 @@
 				DD1AEA8F2F96D7240014A60E /* LibretroBridge.mm in Sources */,
 				DD1AEA902F96D7240014A60E /* GameDBRepository.swift in Sources */,
 				DD1AEA912F96D7240014A60E /* ModernSectionCard.swift in Sources */,
-				DD1AEA922F96D7240014A60E /* ScaleSmooth.metal in Sources */,
 				DD1AEA932F96D7240014A60E /* MAMEModels.swift in Sources */,
 				DD1AEA942F96D7240014A60E /* PersistenceMigrationFlag.swift in Sources */,
 				DD1AEA952F96D7240014A60E /* BezelSelectorSheet.swift in Sources */,
@@ -2140,7 +2119,6 @@
 				DD1AEA9B2F96D7240014A60E /* AchievementToastView.swift in Sources */,
 				DD1AEA9E2F96D7240014A60E /* LibretroBridgeImpl.mm in Sources */,
 				DD1AEAA02F96D7240014A60E /* CheatAutoLoader.swift in Sources */,
-				DD1AEAA12F96D7240014A60E /* CRTFilter.metal in Sources */,
 				DD1AEAA32F96D7240014A60E /* CoreOptionsRepository.swift in Sources */,
 				DD1AEAA42F96D7240014A60E /* GameInfoWindow.swift in Sources */,
 				DD1AEAA52F96D7240014A60E /* CheatManagerView.swift in Sources */,
@@ -2161,20 +2139,16 @@
 				DD1AEAB72F96D7240014A60E /* LibretroCore.swift in Sources */,
 				DD1AEAB82F96D7240014A60E /* DesignSystem.swift in Sources */,
 				DD1AEAB92F96D7240014A60E /* BoxArtPreloaderService.swift in Sources */,
-				DD1AEABA2F96D7240014A60E /* 8bGameBoy.metal in Sources */,
 				DD1AEABC2F96D7240014A60E /* CheatManagerViews.swift in Sources */,
 				DD1AEABD2F96D7240014A60E /* DOSRunner.swift in Sources */,
 				DD1AEABE2F96D7240014A60E /* CoreDownloadSheet.swift in Sources */,
 				DD1AEABF2F96D7240014A60E /* GameInfo.swift in Sources */,
-				DD095ADA2F98F394002A097A /* 8bGameBoyColor.metal in Sources */,
 				DD1AEAC02F96D7240014A60E /* BezelManager.swift in Sources */,
 				DD1AEAC22F96D7240014A60E /* ROMIdentifierService.swift in Sources */,
 				DD1AEAC32F96D7240014A60E /* Header.swift in Sources */,
 				DD1AEAC42F96D7240014A60E /* GameOverlayToolbar.swift in Sources */,
-				DD1AEAC52F96D7240014A60E /* SharpBilinear.metal in Sources */,
 				DD1AEAC62F96D7240014A60E /* ROM.swift in Sources */,
 				DD1AEAC72F96D7240014A60E /* ROMScanner.swift in Sources */,
-				DD1AEAC92F96D7240014A60E /* ShaderTypes.h.metal in Sources */,
 				DD1AEACA2F96D7240014A60E /* MAMEVerificationRecord.swift in Sources */,
 				DD1AEACB2F96D7240014A60E /* LogManager.swift in Sources */,
 				DD1AEACC2F96D7240014A60E /* LibretroRDBParser.swift in Sources */,
@@ -2210,7 +2184,6 @@
 				4C4E815CF1F3498FBFD7E908 /* RetroKeycodeMapper.swift in Sources */,
 				DD1AEAEC2F96D7240014A60E /* ManualActionStatus.swift in Sources */,
 				DD1AEAED2F96D7240014A60E /* SetupWizardState.swift in Sources */,
-				DD1AEAEE2F96D7240014A60E /* DotMatrixLCD.metal in Sources */,
 				DD095AD82F981298002A097A /* NotificationService.swift in Sources */,
 				DD1AEAEF2F96D7240014A60E /* Controls.swift in Sources */,
 				DD1AEAF02F96D7240014A60E /* ZoomableBoxArtView.swift in Sources */,
@@ -2236,8 +2209,17 @@
 				DD1AEB042F96D7240014A60E /* CheatSettingsView.swift in Sources */,
 				DD1AEB052F96D7240014A60E /* CoreOptionsManager.swift in Sources */,
 				DD1AEB062F96D7240014A60E /* BezelBrowserView.swift in Sources */,
-				DD1AEB072F96D7240014A60E /* Passthrough.metal in Sources */,
 				DD1AEB082F96D7240014A60E /* LaunchBoxGameMetadata.swift in Sources */,
+				DD761E202F9C1C0A002E0F3D /* CRTFilter.metal in Sources */,
+				DD761E212F9C1C0A002E0F3D /* SharpBilinear.metal in Sources */,
+				DD761E222F9C1C0A002E0F3D /* Passthrough.metal in Sources */,
+				DD761E232F9C1C0A002E0F3D /* GBA.metal in Sources */,
+				DD761E242F9C1C0A002E0F3D /* ScaleSmooth.metal in Sources */,
+				DD761E252F9C1C0A002E0F3D /* 8bGameBoy.metal in Sources */,
+				DD761E262F9C1C0A002E0F3D /* 8bGameBoyColor.metal in Sources */,
+				DD761E272F9C1C0A002E0F3D /* DotMatrixLCD.metal in Sources */,
+				DD761E282F9C1C0A002E0F3D /* LiteCRT.metal in Sources */,
+				DD761E292F9C1C0A002E0F3D /* LottesCRT.metal in Sources */,
 				DD1AEB092F96D7240014A60E /* GameError.swift in Sources */,
 				DD1AEB0A2F96D7240014A60E /* CheatsSection.swift in Sources */,
 				DD1AEB0B2F96D7240014A60E /* RAGameCacheEntry.swift in Sources */,
@@ -2260,7 +2242,6 @@
 				DD1AEB1F2F96D7240014A60E /* GameDetailView.swift in Sources */,
 				DD1AEB202F96D7240014A60E /* BezelModels.swift in Sources */,
 				DD1AEB212F96D7240014A60E /* BezelsSection.swift in Sources */,
-				DD1AEB222F96D7240014A60E /* LottesCRT.metal in Sources */,
 				DD1AEB232F96D7240014A60E /* ContentView.swift in Sources */,
 				DD1AEB242F96D7240014A60E /* MAMEVerificationService.swift in Sources */,
 				DD1AEB252F96D7240014A60E /* SlotPickerSheet.swift in Sources */,
@@ -2280,7 +2261,6 @@
 				DD1AEB342F96D7240014A60E /* LibretroThumbnailResolver.swift in Sources */,
 				DD1AEB352F96D7240014A60E /* LibraryMetadataStore.swift in Sources */,
 				DD1AEB362F96D7240014A60E /* DetailSection.swift in Sources */,
-				DD1AEB372F96D7240014A60E /* LiteCRT.metal in Sources */,
 				DD1AEB382F96D7240014A60E /* SetupWizardView.swift in Sources */,
 				DD1AEB392F96D7240014A60E /* ResourceCacheInterceptor.swift in Sources */,
 				DD1AEB3A2F96D7240014A60E /* CategoryRowButton.swift in Sources */,
