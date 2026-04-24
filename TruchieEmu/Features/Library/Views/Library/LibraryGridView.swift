@@ -315,10 +315,12 @@ ToolbarItem(placement: .primaryAction) {
                     }
                     NSApp.windows.first { $0.identifier?.rawValue == "settings" }?.makeKeyAndOrderFront(nil)
                 } label: {
-                    Image(systemName: "gearshape")
+                    Label("Settings", systemImage: "gearshape")
+                        .labelStyle(.titleAndIcon)
                 }
                 .buttonStyle(.borderless)
-                .frame(width: 36, height: 24)
+                .frame(width: 80)
+                .padding(.horizontal, 4)
             }
         }
         .sheet(item: $manualBoxArtSearchROM) { rom in
