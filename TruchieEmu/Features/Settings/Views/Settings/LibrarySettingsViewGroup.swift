@@ -9,117 +9,265 @@ struct LibrarySettingsView: View {
     @State private var scanningFolders: Set<String> = []
     @State private var rebuildTargetFolder: ROMLibraryFolder?
     @ObservedObject var prefs = SystemPreferences.shared
-
+    
+    // Search text passed from parent view (SettingsView)
+    @Binding var searchText: String
+    
+    init(searchText: Binding<String> = .constant("")) {
+        self._searchText = searchText
+    }
+    
+    // Define searchable sections with their keywords
+    private enum LibrarySection: CaseIterable, Identifiable {
+        case displayOptions
+        case libraryFolders
+        case maintenance
+        
+        var id: Self { self }
+        
+        var title: String {
+            switch self {
+            case .displayOptions: return "Display Options"
+            case .libraryFolders: return "Library Folders"
+            case .maintenance: return "Maintenance"
+            }
+        }
+        
+        var searchKeywords: String {
+            switch self {
+            case .displayOptions:
+                return "display options show bios files hidden mame game list sidebar"
+            case .libraryFolders:
+                return "library folders roms games scan rescan primary folder subfolders add folder refresh rebuild"
+            case .maintenance:
+                return "maintenance rescan scan refresh full library total games folder"
+            }
+        }
+        
+        func matches(_ query: String) -> Bool {
+            if query.isEmpty { return true }
+            return title.localizedLowercase.fuzzyMatch(query) || 
+                   searchKeywords.localizedLowercase.fuzzyMatch(query)
+        }
+    }
+    
+    // Filter sections based on search text
+    private var visibleSections: [LibrarySection] {
+        if searchText.isEmpty {
+            return LibrarySection.allCases
+        }
+        return LibrarySection.allCases.filter { $0.matches(searchText) }
+    }
+    
     var body: some View {
         ScrollView {
             VStack(alignment: .leading, spacing: 24) {
                 // Display Options Section
-                VStack(alignment: .leading, spacing: 12) {
-                    HStack(spacing: 8) {
-                        Image(systemName: "eyeglasses")
-                            .font(.body)
-                            .foregroundStyle(.secondary)
-                        Text("Display Options")
-                            .font(.headline)
-                    }
-                    
-                    VStack(spacing: 0) {
-                        Toggle(isOn: $prefs.showBiosFiles) {
-                            VStack(alignment: .leading, spacing: 4) {
-                                Text("Show BIOS Files in Game List")
-                                    .font(.body)
-                                Text("When enabled, BIOS files will appear alongside playable games")
-                                    .font(.caption)
-                                    .foregroundStyle(.secondary)
-                            }
-                        }
-                        .padding(.vertical, 8)
-
-                        Divider()
-
-                        Toggle(isOn: $prefs.showHiddenMAMEFiles) {
-                            VStack(alignment: .leading, spacing: 4) {
-                                Text("Show Hidden MAME Files")
-                                    .font(.body)
-                                Text("When enabled, a 'Hidden MAME Files' section appears in the sidebar for BIOS, device, and unknown MAME entries")
-                                    .font(.caption)
-                                    .foregroundStyle(.secondary)
-                            }
-                        }
-                        .padding(.vertical, 8)
-                    }
-                    .padding(16)
-                    .background(
-                        RoundedRectangle(cornerRadius: 12)
-                            .fill(Color(nsColor: .underPageBackgroundColor))
-                    )
+                if visibleSections.contains(.displayOptions) {
+                    DisplayOptionsSection()
                 }
                 
                 // Library Folders Section
-                VStack(alignment: .leading, spacing: 12) {
-                    HStack(spacing: 8) {
-                        Image(systemName: "folder.fill")
-                            .font(.body)
-                            .foregroundStyle(.secondary)
-                        Text("Library Folders")
-                            .font(.headline)
-                        Spacer()
-                        Button(action: addLibraryFolder) {
-                            Label("Add Folder", systemImage: "plus")
-                        }
-                        .buttonStyle(.bordered)
-                        .controlSize(.small)
-                    }
-                    
-                    if library.primaryFolders.isEmpty {
-                        ContentUnavailableView {
-                            Label("No Library Folders", systemImage: "folder")
-                        } description: {
-                            Text("Add folders containing your ROM files. TruchieEmu will scan them and organize games by console system.")
-                        }
-                        .padding(16)
-                        .background(
-                            RoundedRectangle(cornerRadius: 12)
-                                .fill(Color(nsColor: .underPageBackgroundColor))
-                        )
-                    } else {
-                        VStack(spacing: 12) {
-                            ForEach(library.primaryFolders) { folder in
-                                PrimaryFolderRow(
-                                    folder: folder,
-                                    isScanning: scanningFolders.contains(folder.url.path),
-                                    onRescan: {
-                                        Task {
-                                            scanningFolders.insert(folder.url.path)
-                                            await library.refreshFolder(at: folder.url)
-                                            scanningFolders.remove(folder.url.path)
-                                        }
-                                    },
-                                    onRebuild: { target in
-                                        rebuildTargetFolder = target
-                                    }
-                                )
-                            }
-                        }
-                        .padding(16)
-                        .background(
-                            RoundedRectangle(cornerRadius: 12)
-                                .fill(Color(nsColor: .underPageBackgroundColor))
-                        )
-                    }
+                if visibleSections.contains(.libraryFolders) {
+                    LibraryFoldersSection(
+                        scanningFolders: $scanningFolders,
+                        rebuildTargetFolder: $rebuildTargetFolder,
+                        searchText: searchText
+                    )
                 }
                 
                 // Maintenance Section
-                VStack(alignment: .leading, spacing: 12) {
-                    HStack(spacing: 8) {
-                        Image(systemName: "wrench.and.screwdriver")
-                            .font(.body)
-                            .foregroundStyle(.secondary)
-                        Text("Maintenance")
-                            .font(.headline)
+                if visibleSections.contains(.maintenance) {
+                    MaintenanceSection()
+                }
+                
+                // Show "No results" message when searching and no sections match
+                if !searchText.isEmpty && visibleSections.isEmpty {
+                    ContentUnavailableView {
+                        Label("No Results", systemImage: "magnifyingglass")
+                    } description: {
+                        Text("No settings match '\(searchText)'")
                     }
-                    
-                    VStack(spacing: 0) {
+                    .padding(32)
+                }
+            }
+            .padding(16)
+        }
+        .navigationTitle("Library")
+        .sheet(item: $rebuildTargetFolder) { folder in
+            RebuildOptionsSheet(folder: folder, library: library)
+        }
+    }
+    
+    private func addLibraryFolder() {
+        let panel = NSOpenPanel()
+        panel.canChooseDirectories = true
+        panel.canChooseFiles = false
+        panel.prompt = "Add Folder"
+        if panel.runModal() == .OK, let url = panel.url {
+            library.addPrimaryFolder(url: url)
+        }
+    }
+}
+
+// MARK: - Display Options Section
+struct DisplayOptionsSection: View {
+    @ObservedObject var prefs = SystemPreferences.shared
+    
+    var body: some View {
+        VStack(alignment: .leading, spacing: 12) {
+            HStack(spacing: 8) {
+                Image(systemName: "eyeglasses")
+                    .font(.body)
+                    .foregroundStyle(.secondary)
+                Text("Display Options")
+                    .font(.headline)
+            }
+            
+            VStack(spacing: 0) {
+                Toggle(isOn: $prefs.showBiosFiles) {
+                    VStack(alignment: .leading, spacing: 4) {
+                        Text("Show BIOS Files in Game List")
+                            .font(.body)
+                        Text("When enabled, BIOS files will appear alongside playable games")
+                            .font(.caption)
+                            .foregroundStyle(.secondary)
+                    }
+                }
+                .padding(.vertical, 8)
+
+                Divider()
+
+                Toggle(isOn: $prefs.showHiddenMAMEFiles) {
+                    VStack(alignment: .leading, spacing: 4) {
+                        Text("Show Hidden MAME Files")
+                            .font(.body)
+                        Text("When enabled, a 'Hidden MAME Files' section appears in the sidebar for BIOS, device, and unknown MAME entries")
+                            .font(.caption)
+                            .foregroundStyle(.secondary)
+                    }
+                }
+                .padding(.vertical, 8)
+            }
+            .padding(16)
+            .background(
+                RoundedRectangle(cornerRadius: 12)
+                    .fill(Color(nsColor: .underPageBackgroundColor))
+            )
+        }
+    }
+}
+
+// MARK: - Library Folders Section
+struct LibraryFoldersSection: View {
+    @EnvironmentObject var library: ROMLibrary
+    @Binding var scanningFolders: Set<String>
+    @Binding var rebuildTargetFolder: ROMLibraryFolder?
+    var searchText: String
+    
+    // Filter folders based on search text
+    private var filteredFolders: [ROMLibraryFolder] {
+        if searchText.isEmpty {
+            return library.primaryFolders
+        }
+        return library.primaryFolders.filter { folder in
+            folder.url.path.localizedLowercase.fuzzyMatch(searchText)
+        }
+    }
+    
+    var body: some View {
+        VStack(alignment: .leading, spacing: 12) {
+            HStack(spacing: 8) {
+                Image(systemName: "folder.fill")
+                    .font(.body)
+                    .foregroundStyle(.secondary)
+                Text("Library Folders")
+                    .font(.headline)
+                Spacer()
+                Button(action: addLibraryFolder) {
+                    Label("Add Folder", systemImage: "plus")
+                }
+                .buttonStyle(.bordered)
+                .controlSize(.small)
+            }
+            
+            if library.primaryFolders.isEmpty {
+                ContentUnavailableView {
+                    Label("No Library Folders", systemImage: "folder")
+                } description: {
+                    Text("Add folders containing your ROM files. TruchieEmu will scan them and organize games by console system.")
+                }
+                .padding(16)
+                .background(
+                    RoundedRectangle(cornerRadius: 12)
+                        .fill(Color(nsColor: .underPageBackgroundColor))
+                )
+            } else if filteredFolders.isEmpty {
+                ContentUnavailableView {
+                    Label("No Folders Match", systemImage: "folder")
+                } description: {
+                    Text("No library folders match '\(searchText)'")
+                }
+                .padding(16)
+                .background(
+                    RoundedRectangle(cornerRadius: 12)
+                        .fill(Color(nsColor: .underPageBackgroundColor))
+                )
+            } else {
+                VStack(spacing: 12) {
+                    ForEach(filteredFolders) { folder in
+                        PrimaryFolderRow(
+                            folder: folder,
+                            isScanning: scanningFolders.contains(folder.url.path),
+                            searchText: searchText,
+                            onRescan: {
+                                Task {
+                                    scanningFolders.insert(folder.url.path)
+                                    await library.refreshFolder(at: folder.url)
+                                    scanningFolders.remove(folder.url.path)
+                                }
+                            },
+                            onRebuild: { target in
+                                rebuildTargetFolder = target
+                            }
+                        )
+                    }
+                }
+                .padding(16)
+                .background(
+                    RoundedRectangle(cornerRadius: 12)
+                        .fill(Color(nsColor: .underPageBackgroundColor))
+                )
+            }
+        }
+    }
+    
+    private func addLibraryFolder() {
+        let panel = NSOpenPanel()
+        panel.canChooseDirectories = true
+        panel.canChooseFiles = false
+        panel.prompt = "Add Folder"
+        if panel.runModal() == .OK, let url = panel.url {
+            library.addPrimaryFolder(url: url)
+        }
+    }
+}
+
+// MARK: - Maintenance Section
+struct MaintenanceSection: View {
+    @EnvironmentObject var library: ROMLibrary
+    
+    var body: some View {
+        VStack(alignment: .leading, spacing: 12) {
+            HStack(spacing: 8) {
+                Image(systemName: "wrench.and.screwdriver")
+                    .font(.body)
+                    .foregroundStyle(.secondary)
+                Text("Maintenance")
+                    .font(.headline)
+            }
+            
+            VStack(spacing: 0) {
                 Button(action: { Task { await library.fullRescan() } }) {
                     HStack(spacing: 12) {
                         Image(systemName: "arrow.clockwise.circle.fill")
@@ -142,40 +290,23 @@ struct LibrarySettingsView: View {
                 .buttonStyle(.plain)
                 .disabled(library.isScanning)
                         
-                        Divider()
+                Divider()
                         
-                        VStack(alignment: .leading, spacing: 8) {
-                            Text("Total Games: \(library.roms.count)")
-                                .font(.caption)
-                                .foregroundStyle(.secondary)
-                            Text("Primary Folders: \(library.primaryFolders.count)")
-                                .font(.caption)
-                                .foregroundStyle(.secondary)
-                        }
-                        .padding(.bottom, 8)
-                    }
-                    .padding(16)
-                    .background(
-                        RoundedRectangle(cornerRadius: 12)
-                            .fill(Color(nsColor: .underPageBackgroundColor))
-                    )
+                VStack(alignment: .leading, spacing: 8) {
+                    Text("Total Games: \(library.roms.count)")
+                        .font(.caption)
+                        .foregroundStyle(.secondary)
+                    Text("Primary Folders: \(library.primaryFolders.count)")
+                        .font(.caption)
+                        .foregroundStyle(.secondary)
                 }
+                .padding(.bottom, 8)
             }
             .padding(16)
-        }
-        .navigationTitle("Library")
-        .sheet(item: $rebuildTargetFolder) { folder in
-            RebuildOptionsSheet(folder: folder, library: library)
-        }
-    }
-    
-    private func addLibraryFolder() {
-        let panel = NSOpenPanel()
-        panel.canChooseDirectories = true
-        panel.canChooseFiles = false
-        panel.prompt = "Add Folder"
-        if panel.runModal() == .OK, let url = panel.url {
-            library.addPrimaryFolder(url: url)
+            .background(
+                RoundedRectangle(cornerRadius: 12)
+                    .fill(Color(nsColor: .underPageBackgroundColor))
+            )
         }
     }
 }
@@ -184,6 +315,7 @@ struct LibrarySettingsView: View {
 struct PrimaryFolderRow: View {
     let folder: ROMLibraryFolder
     let isScanning: Bool
+    var searchText: String
     let onRescan: () -> Void
     let onRebuild: (ROMLibraryFolder) -> Void
     
@@ -199,6 +331,16 @@ struct PrimaryFolderRow: View {
         let folderPath = folder.url.path
         let prefix = folderPath.hasSuffix("/") ? folderPath : folderPath + "/"
         return library.roms.filter { $0.path.path == folderPath || $0.path.path.hasPrefix(prefix) }.count
+    }
+    
+    // Filter subfolders based on search text
+    private var filteredSubfolders: [ROMLibraryFolder] {
+        if searchText.isEmpty {
+            return subfolders
+        }
+        return subfolders.filter { subfolder in
+            subfolder.url.path.localizedLowercase.fuzzyMatch(searchText)
+        }
     }
     
     var body: some View {
@@ -306,13 +448,20 @@ struct PrimaryFolderRow: View {
                             .foregroundColor(.secondary)
                             .padding(.horizontal, 40)
                             .padding(.vertical, 8)
+                    } else if filteredSubfolders.isEmpty {
+                        Text("No subfolders match '\(searchText)'")
+                            .font(.caption)
+                            .foregroundColor(.secondary)
+                            .padding(.horizontal, 40)
+                            .padding(.vertical, 8)
                     } else {
-                        ForEach(subfolders) { subfolder in
+                        ForEach(filteredSubfolders) { subfolder in
                             SubfolderRow(
                                 folder: subfolder,
                                 parentPath: folder.url.path,
                                 isPrimary: subfolder.isPrimary,
                                 depth: 0,
+                                searchText: searchText,
                                 onRebuild: onRebuild
                             )
                         }
@@ -380,6 +529,7 @@ struct SubfolderRow: View {
     let parentPath: String
     let isPrimary: Bool // true if this subfolder was independently added as primary
     let depth: Int // nesting depth for indentation
+    var searchText: String
     let onRebuild: (ROMLibraryFolder) -> Void
     
     @EnvironmentObject var library: ROMLibrary
@@ -399,6 +549,16 @@ struct SubfolderRow: View {
     private var compactPathDisplay: String {
         let relative = relativePathDisplay
         return "\(relative) (\(romCount) game\(romCount == 1 ? "" : "s"))"
+    }
+    
+    // Filter subfolders based on search text
+    private var filteredSubfolders: [ROMLibraryFolder] {
+        if searchText.isEmpty {
+            return subfolders
+        }
+        return subfolders.filter { subfolder in
+            subfolder.url.path.localizedLowercase.fuzzyMatch(searchText)
+        }
     }
     
     var body: some View {
@@ -531,13 +691,20 @@ struct SubfolderRow: View {
                             .foregroundColor(.secondary)
                             .padding(.horizontal, 40)
                             .padding(.vertical, 8)
+                    } else if filteredSubfolders.isEmpty {
+                        Text("No subfolders match '\(searchText)'")
+                            .font(.caption)
+                            .foregroundColor(.secondary)
+                            .padding(.horizontal, 40)
+                            .padding(.vertical, 8)
                     } else {
-                        ForEach(subfolders) { subfolder in
+                        ForEach(filteredSubfolders) { subfolder in
                             SubfolderRow(
                                 folder: subfolder,
                                 parentPath: folder.url.path,
                                 isPrimary: subfolder.isPrimary,
                                 depth: depth + 1,
+                                searchText: searchText,
                                 onRebuild: onRebuild
                             )
                         }

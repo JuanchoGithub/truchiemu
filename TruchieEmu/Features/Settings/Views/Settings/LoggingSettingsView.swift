@@ -6,20 +6,55 @@ import AppKit
 struct LoggingSettingsView: View {
     @StateObject private var viewModel = LoggingSettingsViewModel()
     
+    @Binding var searchText: String
+    
+    init(searchText: Binding<String> = .constant("")) {
+        self._searchText = searchText
+    }
+    
+    private var isSearching: Bool {
+        !searchText.isEmpty
+    }
+    
+    private func matchesSearch(_ keywords: String) -> Bool {
+        if searchText.isEmpty { return true }
+        return keywords.localizedLowercase.fuzzyMatch(searchText) || 
+               keywords.localizedLowercase.contains(searchText.lowercased())
+    }
+    
     var body: some View {
         ScrollView {
             VStack(alignment: .leading, spacing: 24) {
                 // Log Level Section
-                logLevelSection
+                if !isSearching || matchesSearch("logging log debug console output level verbosity info extreme") {
+                    logLevelSection
+                }
                 
                 // Core Logging Section
-                coreLoggingSection
+                if !isSearching || matchesSearch("logging core libretro emulation debug") {
+                    coreLoggingSection
+                }
                 
                 // Log File Location Section
-                logFileSection
+                if !isSearching || matchesSearch("logging file folder location path size archive") {
+                    logFileSection
+                }
                 
                 // Log Maintenance Section
-                logMaintenanceSection
+                if !isSearching || matchesSearch("logging maintenance clear trim delete archive rotation size") {
+                    logMaintenanceSection
+                }
+                
+                // No results message
+                if isSearching && !hasMatchingSections {
+                    VStack {
+                        Text("No matching settings found for \"\(searchText)\"")
+                            .font(.caption)
+                            .foregroundStyle(.secondary)
+                            .frame(maxWidth: .infinity, alignment: .center)
+                            .padding(.vertical, 20)
+                    }
+                }
             }
             .padding(16)
         }
@@ -27,6 +62,13 @@ struct LoggingSettingsView: View {
         .onAppear {
             viewModel.refreshInfo()
         }
+    }
+    
+    private var hasMatchingSections: Bool {
+        matchesSearch("logging log debug console output level verbosity info extreme") ||
+        matchesSearch("logging core libretro emulation debug") ||
+        matchesSearch("logging file folder location path size archive") ||
+        matchesSearch("logging maintenance clear trim delete archive rotation size")
     }
     
     // MARK: - Log Level Section

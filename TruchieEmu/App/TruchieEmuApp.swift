@@ -314,7 +314,16 @@ struct TruchieEmuApp: App {
 
         WindowGroup(id: "system-settings", for: SystemSettingsRequest.self) { $request in
             if let request = request {
-                SettingsView(system: request.system)
+                let initialPage: SettingsView.Page? = {
+                    switch request.page {
+                    case .bezels: return .bezels
+                    case .controllers: return .controllers
+                    case .cheats: return .cheats
+                    case .general, .library, .cores, .boxArt, .display, .retroAchievements, .logging, .about:
+                        return request.page
+                    }
+                }()
+                SettingsView(system: request.system, initialPage: initialPage)
                     .environmentObject(library)
                     .environmentObject(categoryManager)
                     .environmentObject(coreManager)

@@ -134,8 +134,12 @@ struct SettingsView: View {
         selectedPageRaw = selectedPage.rawValue
     }
     
-    init(system: SystemInfo? = nil) {
+    init(system: SystemInfo? = nil, initialPage: SettingsView.Page? = nil) {
         self.system = system
+        
+        if let initial = initialPage {
+            _selectedPage = State(initialValue: initial)
+        }
     }
     
     var body: some View {
@@ -160,7 +164,10 @@ struct SettingsView: View {
         .frame(minWidth: 750, minHeight: 500)
         .onAppear {
             if system != nil {
-                selectedPage = .general
+                // Only sync if no initialPage was provided
+                if selectedPage == .general && selectedPageRaw == "general" {
+                    // First appearance, potentially show initialPage from init
+                }
             } else {
                 syncWithStorage()
             }
@@ -202,16 +209,16 @@ struct SettingsView: View {
     private var detailContent: some View {
         Group {
             switch selectedPage {
-            case .general:     GeneralSettingsView()
-            case .library:     LibrarySettingsView()
-             case .cores:       CoreSettingsView()
-             case .controllers: ControllerSettingsView(systemID: system?.id)
-             case .boxArt:      BoxArtSettingsView()
-            case .display:     DisplaySettingsView()
-            case .cheats:      CheatSettingsView(system: system)
-            case .bezels:     BezelSettingsView(system: system)
-            case .retroAchievements: RetroAchievementsSettingsView()
-            case .logging:     LoggingSettingsView()
+            case .general:     GeneralSettingsView(searchText: $searchText)
+            case .library:     LibrarySettingsView(searchText: $searchText)
+            case .cores:       CoreSettingsView(searchText: $searchText)
+            case .controllers: ControllerSettingsView(systemID: system?.id, searchText: $searchText)
+            case .boxArt:      BoxArtSettingsView(searchText: $searchText)
+            case .display:     DisplaySettingsView(searchText: $searchText)
+            case .cheats:      CheatSettingsView(system: system, searchText: $searchText)
+            case .bezels:     BezelSettingsView(system: system, searchText: $searchText)
+            case .retroAchievements: RetroAchievementsSettingsView(searchText: $searchText, system: system)
+            case .logging:     LoggingSettingsView(searchText: $searchText)
             case .about:       AboutView()
             }
         }

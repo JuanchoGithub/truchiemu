@@ -12,105 +12,157 @@ struct CheatSettingsView: View {
     @State private var selectedSystem: String = "all"
     @State private var isExporting = false
     
+    @Binding var searchText: String
+    
     let system: SystemInfo?
-
-    init(system: SystemInfo? = nil) {
+    
+    let searchKeywords = "cheats codes cheat code action replay"
+    
+    private var isSearching: Bool {
+        !searchText.isEmpty
+    }
+    
+    private func matchesSearch(_ keywords: String) -> Bool {
+        if searchText.isEmpty { return true }
+        return keywords.localizedLowercase.fuzzyMatch(searchText) ||
+               keywords.localizedLowercase.contains(searchText.lowercased())
+    }
+    
+    private var hasAnyResults: Bool {
+        matchesSearch("Cheat Library Summary files storage custom") ||
+        matchesSearch("Online Database download network") ||
+        matchesSearch("Apply Cheats on Launch Behavior notifications") ||
+        matchesSearch("Actions Show in Finder Clear Downloaded Cheats")
+    }
+    
+    init(system: SystemInfo? = nil, searchText: Binding<String> = .constant("")) {
         self.system = system
+        self._searchText = searchText
     }
     
     var body: some View {
         Form {
             // MARK: - Statistics Dashboard
-            Section {
-                HStack(spacing: 20) {
-                    statTile(
-                        value: "\(downloadService.getDownloadedCheatCount())",
-                        label: "Files",
-                        icon: "doc.on.doc.fill",
-                        color: .blue
-                    )
-                    Divider().frame(height: 40)
-                    statTile(
-                        value: formatByteSize(downloadService.getDownloadedCheatSize()),
-                        label: "Storage",
-                        icon: "internaldrive.fill",
-                        color: .purple
-                    )
-                    Divider().frame(height: 40)
-                    statTile(
-                        value: AppSettings.getData("cheats_v2") != nil ? "Active" : "None",
-                        label: "Custom",
-                        icon: "wand.and.stars",
-                        color: .orange
-                    )
+            if !isSearching || matchesSearch("Cheat Library Summary files storage custom") {
+                Section {
+                    HStack(spacing: 20) {
+                        statTile(
+                            value: "\(downloadService.getDownloadedCheatCount())",
+                            label: "Files",
+                            icon: "doc.on.doc.fill",
+                            color: .blue
+                        )
+                        Divider().frame(height: 40)
+                        statTile(
+                            value: formatByteSize(downloadService.getDownloadedCheatSize()),
+                            label: "Storage",
+                            icon: "internaldrive.fill",
+                            color: .purple
+                        )
+                        Divider().frame(height: 40)
+                        statTile(
+                            value: AppSettings.getData("cheats_v2") != nil ? "Active" : "None",
+                            label: "Custom",
+                            icon: "wand.and.stars",
+                            color: .orange
+                        )
+                    }
+                    .padding(.vertical, 8)
+                    .frame(maxWidth: .infinity)
+                } header: {
+                    Text("Cheat Library Summary")
                 }
-                .padding(.vertical, 8)
-                .frame(maxWidth: .infinity)
-            } header: {
-                Text("Cheat Library Summary")
             }
 
             // MARK: - Download Section
-            Section {
-                VStack(alignment: .leading, spacing: 12) {
-                    if let lastDate = downloadService.lastDownloadDate {
-                        LabeledContent("Last Updated") {
-                            Text(lastDate.formatted(date: .abbreviated, time: .shortened))
-                                .font(.system(.caption, design: .monospaced))
-                                .foregroundStyle(.secondary)
+            if !isSearching || matchesSearch("Online Database download network") {
+                Section {
+                    VStack(alignment: .leading, spacing: 12) {
+                        if let lastDate = downloadService.lastDownloadDate {
+                            LabeledContent("Last Updated") {
+                                Text(lastDate.formatted(date: .abbreviated, time: .shortened))
+                                    .font(.system(.caption, design: .monospaced))
+                                    .foregroundStyle(.secondary)
+                            }
+                        }
+                        
+                        if downloadService.isDownloading {
+                            downloadProgressView
+                        } else {
+                            downloadActionButtons
                         }
                     }
-                    
-                    if downloadService.isDownloading {
-                        downloadProgressView
-                    } else {
-                        downloadActionButtons
-                    }
+                } header: {
+                    Label("Online Database", systemImage: "network")
+                } footer: {
+                    Text("Downloads cheat files from the Libretro-Database repository. Files are automatically organized by system core.")
                 }
-            } header: {
-                Label("Online Database", systemImage: "network")
-            } footer: {
-                Text("Downloads cheat files from the Libretro-Database repository. Files are automatically organized by system core.")
             }
 
             // MARK: - Preferences Section
-            Section("Behavior") {
-                Toggle(isOn: $prefs.applyCheatsOnLaunch) {
-                    VStack(alignment: .leading, spacing: 2) {
-                        Text("Apply Cheats on Launch")
-                        Text("Automatically apply enabled cheats when starting a game")
-                            .font(.caption)
-                            .foregroundStyle(.secondary)
+            if !isSearching || matchesSearch("Apply Cheats on Launch Behavior notifications") {
+                Section("Behavior") {
+                    Toggle(isOn: $prefs.applyCheatsOnLaunch) {
+                        VStack(alignment: .leading, spacing: 2) {
+                            Text("Apply Cheats on Launch")
+                            Text("Automatically apply enabled cheats when starting a game")
+                                .font(.caption)
+                                .foregroundStyle(.secondary)
+                        }
                     }
-                }
-                .onChange(of: prefs.applyCheatsOnLaunch) { 
-                    AppSettings.setBool("applyCheatsOnLaunch", value: prefs.applyCheatsOnLaunch)
-                }
-                
-                Toggle(isOn: $prefs.showCheatNotifications) {
-                    VStack(alignment: .leading, spacing: 2) {
-                        Text("Cheat Notifications")
-                        Text("Show OSD notifications when cheats are activated")
-                            .font(.caption)
-                            .foregroundStyle(.secondary)
+                    .onChange(of: prefs.applyCheatsOnLaunch) { 
+                        AppSettings.setBool("applyCheatsOnLaunch", value: prefs.applyCheatsOnLaunch)
                     }
+                    
+                    Toggle(isOn: $prefs.showCheatNotifications) {
+                        VStack(alignment: .leading, spacing: 2) {
+                            Text("Cheat Notifications")
+                            Text("Show OSD notifications when cheats are activated")
+                                .font(.caption)
+                                .foregroundStyle(.secondary)
+                        }
+                    }
+                    .onChange(of: prefs.showCheatNotifications) {
+                        AppSettings.setBool("showCheatNotifications", value: prefs.showCheatNotifications)
+                    }   
                 }
-                .onChange(of: prefs.showCheatNotifications) {
-                    AppSettings.setBool("showCheatNotifications", value: prefs.showCheatNotifications)
-                }   
             }
 
             // MARK: - Maintenance Section
-            Section("Actions") {
-                Button(action: openCheatDirectory) {
-                    Label("Show in Finder", systemImage: "folder")
+            if !isSearching || matchesSearch("Actions Show in Finder Clear Downloaded Cheats") {
+                Section("Actions") {
+                    Button(action: openCheatDirectory) {
+                        Label("Show in Finder", systemImage: "folder")
+                    }
+                    
+                    Button(role: .destructive) {
+                        showClearConfirmation = true
+                    } label: {
+                        Label("Clear Downloaded Cheats", systemImage: "trash")
+                            .foregroundStyle(.red)
+                    }
                 }
-                
-                Button(role: .destructive) {
-                    showClearConfirmation = true
-                } label: {
-                    Label("Clear Downloaded Cheats", systemImage: "trash")
-                        .foregroundStyle(.red)
+            }
+            
+            // MARK: - No Results
+            if isSearching && !hasAnyResults {
+                Section {
+                    HStack {
+                        Spacer()
+                        VStack(spacing: 8) {
+                            Image(systemName: "magnifyingglass")
+                                .font(.largeTitle)
+                                .foregroundStyle(.secondary)
+                            Text("No results")
+                                .font(.headline)
+                                .foregroundStyle(.secondary)
+                            Text("Try a different search term")
+                                .font(.caption)
+                                .foregroundStyle(.tertiary)
+                        }
+                        .padding(.vertical, 40)
+                        Spacer()
+                    }
                 }
             }
         }

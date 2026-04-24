@@ -7,12 +7,11 @@ struct CoreSettingsView: View {
     @EnvironmentObject var coreManager: CoreManager
     @ObservedObject private var prefs = SystemPreferences.shared 
 
-    @Binding var searchText: String
-    let searchKeywords: [String] = ["systems cores emulator download update"]
-
     @State private var selectedSystemID: String? = nil
     @State private var expandedCoreID: String? = nil
     @State private var systemsPanelWidth: CGFloat = 250
+    
+    @State private var searchText: String = ""
 
     private var selectedSystem: SystemInfo? {
         if let id = selectedSystemID {

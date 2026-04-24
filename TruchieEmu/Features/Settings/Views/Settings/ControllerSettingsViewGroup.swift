@@ -16,7 +16,12 @@ struct ControllerSettingsView: View {
     @State private var activeTab = 0
     @State private var isReadOnly: Bool = false
 
-    init(systemID: String? = nil) {
+    @Binding var searchText: String
+
+    static let searchKeywords: String = "controllers gamepad keyboard mapping player buttons input"
+
+    init(systemID: String? = nil, searchText: Binding<String> = .constant("")) {
+        _searchText = searchText
         if let sid = systemID {
             _selectedSystemID = State(initialValue: sid)
             let groups = SystemDatabase.multiSystemGroups()
@@ -30,6 +35,15 @@ struct ControllerSettingsView: View {
 
     var body: some View {
         VStack(spacing: 12) {
+            // Search indicator for deep search
+            if !searchText.isEmpty {
+                SearchResultIndicator(
+                    searchText: searchText,
+                    sectionKeywords: Self.searchKeywords,
+                    sectionName: "Controllers"
+                )
+            }
+
             // Segmented control for tab switching (inside content area)
             Picker("Tab", selection: $activeTab) {
                 Text("Controllers").tag(0)
@@ -56,7 +70,7 @@ struct ControllerSettingsView: View {
 
     @ViewBuilder
     private var keyboardContent: some View {
-        KeyboardContentView(systemID: selectedSystemID, isReadOnly: isReadOnly)
+        KeyboardContentView(systemID: selectedSystemID, isReadOnly: isReadOnly, searchText: $searchText)
             .environmentObject(controllerService)
     }
 
@@ -253,6 +267,44 @@ struct ControllerSettingsView: View {
      private func saveConfigsToDisk() {
         if let data = try? JSONEncoder().encode(savedConfigs) {
             AppSettings.setData("controller_saved_configs", value: data)
+        }
+    }
+}
+
+
+// MARK: - Search Result Indicator
+struct SearchResultIndicator: View {
+    let searchText: String
+    let sectionKeywords: String
+    let sectionName: String
+
+    private var matchesKeywords: Bool {
+        let searchLower = searchText.lowercased()
+        let keywordsLower = sectionKeywords.lowercased()
+        let searchTerms = searchLower.split(separator: " ").map { String($0) }
+        return searchTerms.contains { term in
+            keywordsLower.contains(term)
+        }
+    }
+
+    var body: some View {
+        if matchesKeywords {
+            HStack(spacing: 8) {
+                Image(systemName: "magnifyingglass")
+                    .font(.caption)
+                Text("Searching within \(sectionName) section")
+                    .font(.caption)
+                Spacer()
+                if let firstMatch = searchText.split(separator: " ").map({ String($0) }).first(where: { sectionKeywords.lowercased().contains($0.lowercased()) }) {
+                    Text("Matched: \"\(firstMatch)\"")
+                        .font(.caption2)
+                        .foregroundColor(.secondary)
+                }
+            }
+            .padding(.horizontal, 12)
+            .padding(.vertical, 6)
+            .background(Color.accentColor.opacity(0.1))
+            .cornerRadius(6)
         }
     }
 }
@@ -781,6 +833,16 @@ struct KeyboardContentView: View {
     let systemID: String
     let isReadOnly: Bool
     @State private var listeningFor: RetroButton? = nil
+
+    var searchText: Binding<String>
+
+    static let searchKeywords: String = "controllers gamepad keyboard mapping player buttons input"
+
+    init(systemID: String, isReadOnly: Bool, searchText: Binding<String> = .constant("")) {
+        self.systemID = systemID
+        self.isReadOnly = isReadOnly
+        self.searchText = searchText
+    }
 
     var body: some View {
         VStack(alignment: .leading, spacing: 0) {
