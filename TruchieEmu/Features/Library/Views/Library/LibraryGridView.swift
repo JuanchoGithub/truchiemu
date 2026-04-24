@@ -197,6 +197,7 @@ struct LibraryGridView: View {
             }
 ToolbarItem(placement: .primaryAction) {
                 Button { pickFolder() } label: { Image(systemName: "folder.badge.plus") }
+                    .help("Add ROM folder")
             }
             ToolbarItem(placement: .primaryAction) {
                 Color.clear
@@ -238,6 +239,7 @@ ToolbarItem(placement: .primaryAction) {
                 }
                 .pickerStyle(.segmented)
                 .frame(width: 80)
+                .help("Switch between grid and list view")
             }
             ToolbarItem(placement: .primaryAction) {
                 Menu {
@@ -272,6 +274,7 @@ ToolbarItem(placement: .primaryAction) {
                 } label: {
                     Image(systemName: "photo.stack")
                 }
+                .help("Box art options")
             }
             ToolbarItem(placement: .primaryAction) {
                 Menu {
@@ -296,6 +299,7 @@ ToolbarItem(placement: .primaryAction) {
                         Text(prefs.systemLanguage.flagEmoji)
                     }
                 }
+                .help("Input device and language")
             }
             ToolbarItem(placement: .primaryAction) {
                 Button {
@@ -321,6 +325,7 @@ ToolbarItem(placement: .primaryAction) {
                 .buttonStyle(.borderless)
                 .frame(width: 80)
                 .padding(.horizontal, 4)
+                .help("Settings")
             }
         }
         .sheet(item: $manualBoxArtSearchROM) { rom in
