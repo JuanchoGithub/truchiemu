@@ -195,12 +195,17 @@ struct LibraryGridView: View {
             ToolbarItem(placement: .primaryAction) {
                 Spacer()
             }
-            ToolbarItem(placement: .primaryAction) {
+ToolbarItem(placement: .primaryAction) {
                 Button { pickFolder() } label: { Image(systemName: "folder.badge.plus") }
             }
             ToolbarItem(placement: .primaryAction) {
+                Color.clear
+                    .frame(width: 8)
+            }
+            ToolbarItem(placement: .primaryAction) {
                 HStack(spacing: 6) {
-                    Image(systemName: "minus.magnifyingglass").font(.system(size: 10))
+                    Image(systemName: "minus.magnifyingglass")
+                        .font(.system(size: 10))
                     Slider(value: $continuousZoom, in: 0...1, step: 1.0/7.0,
                            onEditingChanged: { isEditing in
                                if viewMode == .grid, !isEditing {
@@ -218,10 +223,12 @@ struct LibraryGridView: View {
                                    }
                                }
                            }
-                     .frame(width: 100)
-                    Image(systemName: "plus.magnifyingglass").font(.system(size: 10))
+.frame(width: 160)
+                    Image(systemName: "plus.magnifyingglass")
+                        .font(.system(size: 10))
                     Text("\(Int(continuousZoom * 100))%")
-                        .font(.system(size: 10, weight: .medium, design: .monospaced))
+                        .font(.system(size: 9, weight: .medium, design: .monospaced))
+                        .frame(width: 36)
                 }
             }
             ToolbarItem(placement: .primaryAction) {
@@ -311,7 +318,7 @@ struct LibraryGridView: View {
                     Image(systemName: "gearshape")
                 }
                 .buttonStyle(.borderless)
-                .frame(minWidth: 32)
+                .frame(width: 36, height: 24)
             }
         }
         .sheet(item: $manualBoxArtSearchROM) { rom in
