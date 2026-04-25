@@ -37,6 +37,39 @@ struct CRTUniforms {
     var padding: Float
 }
 
+// CRT Multipass uniforms - matches CRTMultipassUniforms in CRTFilter_multipass.metal
+struct CRTMultipassUniforms {
+    var scanlineIntensity: Float
+    var barrelAmount: Float
+    var colorBoost: Float
+    var time: Float
+    var ghostingWeight: Float
+    var bleedAmount: Float
+    var texSizeX: Float
+    var texSizeY: Float
+    var vignetteStrength: Float
+    var flickerStrength: Float
+    var bloomStrength: Float
+    var chromaAmount: Float
+    var softnessAmount: Float
+    var bezelRounding: Float
+    var bezelGlow: Float
+    var tintR: Float
+    var tintG: Float
+    var tintB: Float
+    var useDistort: Float
+    var useScan: Float
+    var useBleed: Float
+    var useSoft: Float
+    var useChroma: Float
+    var useWhite: Float
+    var useVig: Float
+    var useFlick: Float
+    var useBezel: Float
+    var useBloom: Float
+    var padding: Float
+}
+
 // Dot Matrix LCD uniforms (48 bytes) - matches DotMatrixLCDUniforms in DotMatrixLCD.metal
 struct DotMatrixLCDUniforms {
     var dotOpacity: Float
@@ -125,6 +158,19 @@ struct ScaleSmoothUniforms {
     var smoothness: Float
     var colorBoost: Float
     var sourceSize: SIMD4<Float>
+}
+
+// GBA uniforms - matches GBAUniforms in GBA.metal
+struct GBAUniforms {
+    var dotOpacity: Float
+    var specularShininess: Float
+    var colorBoost: Float
+    var ghostingWeight: Float
+    var physicalDepth: Float
+    var frameIndex: UInt32
+    var sourceSize: SIMD4<Float>
+    var outputSize: SIMD4<Float>
+    var lightPositionIndex: Float
 }
 
 // Legacy alias for CRT passthrough

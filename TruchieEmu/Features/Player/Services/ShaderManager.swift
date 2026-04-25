@@ -215,6 +215,8 @@ class ShaderManager: ObservableObject {
         case "ScaleSmooth": result = "fragmentScaleSmooth"
         case "Passthrough": result = "fragmentPassthrough"
         case "8bGameBoyColor": result = "fragment8BitGBC"
+        case "GBA": result = "fragmentGBAShader"
+        case "CRTFilter_multipass": result = "fragmentCRTMultipass"
         default: result = "fragment" + shaderFile
         }
         

@@ -1105,6 +1105,70 @@ super.init(window: window)
                                 sourceSize: SIMD4<Float>(fw, fh, 1.0/fw, 1.0/fh)
                             )
                             enc.setFragmentBytes(&u, length: MemoryLayout<ScaleSmoothUniforms>.stride, index: 0)
+                        case "fragmentGBAShader":
+                            ensureTemporalTextures(width: frameTex.width, height: frameTex.height, device: device, sourceFormat: frameTex.pixelFormat)
+                            let colorB = getUniform("colorBoost", fallback: 1.0)
+                            var u = GBAUniforms(
+                                dotOpacity: getUniform("dotOpacity", fallback: 0.8),
+                                specularShininess: getUniform("specularShininess", fallback: 1.0),
+                                colorBoost: colorB,
+                                ghostingWeight: getUniform("ghostingWeight", fallback: 0.25),
+                                physicalDepth: getUniform("physicalDepth", fallback: 0.2),
+                                frameIndex: UInt32(frameCounter % 60),
+                                sourceSize: SIMD4<Float>(fw, fh, 1.0/fw, 1.0/fh),
+                                outputSize: SIMD4<Float>(vpW, vpH, 0.0, 0.0),
+                                lightPositionIndex: getUniform("lightPositionIndex", fallback: 0.0)
+                            )
+                            enc.setFragmentBytes(&u, length: MemoryLayout<GBAUniforms>.stride, index: 0)
+                            enc.setFragmentTexture(frameTex, index: 0)
+                            for i in 1...2 {
+                                if let tex = getTemporalTexture(at: (temporalIndex - i + 4) % 4) {
+                                    enc.setFragmentTexture(tex, index: i)
+                                }
+                            }
+                            frameCounter += 1
+                        case "fragmentCRTMultipass":
+                            ensureTemporalTextures(width: frameTex.width, height: frameTex.height, device: device, sourceFormat: frameTex.pixelFormat)
+                            let colorB = getUniform("colorBoost", fallback: 1.0)
+                            var u = CRTMultipassUniforms(
+                                scanlineIntensity: getUniform("scanlineIntensity", fallback: 0.45),
+                                barrelAmount: getUniform("barrelAmount", fallback: 0.15),
+                                colorBoost: colorB,
+                                time: time,
+                                ghostingWeight: getUniform("ghostingWeight", fallback: 0.3),
+                                bleedAmount: getUniform("bleedAmount", fallback: 0.0),
+                                texSizeX: fw,
+                                texSizeY: fh,
+                                vignetteStrength: getUniform("vignetteStrength", fallback: 0.6),
+                                flickerStrength: getUniform("flickerStrength", fallback: 0.05),
+                                bloomStrength: getUniform("bloomStrength", fallback: 0.25),
+                                chromaAmount: getUniform("chromaAmount", fallback: 0.4),
+                                softnessAmount: getUniform("softnessAmount", fallback: 0.2),
+                                bezelRounding: getUniform("bezelRounding", fallback: 0.1),
+                                bezelGlow: getUniform("bezelGlow", fallback: 0.5),
+                                tintR: getUniform("tintR", fallback: 1.0),
+                                tintG: getUniform("tintG", fallback: 1.0),
+                                tintB: getUniform("tintB", fallback: 1.0),
+                                useDistort: getUniform("useDistort", fallback: 1.0),
+                                useScan: getUniform("useScan", fallback: 1.0),
+                                useBleed: getUniform("useBleed", fallback: 1.0),
+                                useSoft: getUniform("useSoft", fallback: 1.0),
+                                useChroma: getUniform("useChroma", fallback: 1.0),
+                                useWhite: getUniform("useWhite", fallback: 1.0),
+                                useVig: getUniform("useVig", fallback: 1.0),
+                                useFlick: getUniform("useFlick", fallback: 1.0),
+                                useBezel: getUniform("useBezel", fallback: 1.0),
+                                useBloom: getUniform("useBloom", fallback: 1.0),
+                                padding: 0.0
+                            )
+                            enc.setFragmentBytes(&u, length: MemoryLayout<CRTMultipassUniforms>.stride, index: 0)
+                            enc.setFragmentTexture(frameTex, index: 0)
+                            for i in 1...4 {
+                                if let tex = getTemporalTexture(at: (temporalIndex - i + 4) % 4) {
+                                    enc.setFragmentTexture(tex, index: i)
+                                }
+                            }
+                            frameCounter += 1
                         default:
                             // Fallback to basic passthrough/CRT style
                             let colorB = getUniform("colorBoost", fallback: 1.0)
@@ -1144,10 +1208,10 @@ super.init(window: window)
                         enc.drawPrimitives(type: .triangleStrip, vertexStart: 0, vertexCount: 4)
                         enc.endEncoding()
                         
-                        // For GBC 4-frame temporal feedback: maintain rolling history
+                        // For shaders with temporal feedback: maintain rolling history
                         // Must happen AFTER render encoder ends
                         // Advance first, then write to that slot (becomes T-1 for next frame)
-                        if fragmentName == "fragment8BitGBC" {
+                        if fragmentName == "fragment8BitGBC" || fragmentName == "fragmentGBAShader" || fragmentName == "fragmentCRTMultipass" {
                             advanceTemporalIndex()
                             let blit = cmdBuffer.makeBlitCommandEncoder()
                             if let tex = temporalTextures[temporalIndex] {

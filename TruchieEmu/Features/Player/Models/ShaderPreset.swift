@@ -324,6 +324,41 @@ description: "Game Boy Color with temporal feedback, ghosting, and iridescent LC
             recommendedSystems: ["gbc"]
         ),
 
+        // GBA (Advanced LCD)
+        ShaderPreset(
+            id: "builtin-gba",
+            name: "GBA (Advanced LCD)",
+            shaderType: .lcd,
+            passes: [
+                ShaderPass(
+                    shaderFile: "GBA",
+                    filter: .nearest,
+                    scaleX: 1.0, scaleY: 1.0,
+                    scaleTypeX: .viewport, scaleTypeY: .viewport
+                )
+            ],
+            globalUniforms: [
+                ShaderUniform(name: "dotOpacity", defaultValue: 0.8, minValue: 0.0, maxValue: 1.0, displayName: "Grid Opacity"),
+                ShaderUniform(name: "specularShininess", defaultValue: 1.0, minValue: 0.0, maxValue: 5.0, displayName: "Reflection Intensity"),
+                ShaderUniform(name: "colorBoost", defaultValue: 1.0, minValue: 0.5, maxValue: 2.0, displayName: "Color Boost"),
+                ShaderUniform(name: "ghostingWeight", defaultValue: 0.25, minValue: 0.0, maxValue: 1.0, displayName: "Ghosting Weight"),
+                ShaderUniform(name: "physicalDepth", defaultValue: 0.2, minValue: 0.0, maxValue: 1.0, displayName: "Physical Depth"),
+                ShaderUniform(name: "lightPositionIndex", defaultValue: 0.0, minValue: 0.0, maxValue: 8.0, step: 1.0, displayName: "Light Position", type: .dropdown, options: [
+                    ShaderUniformOption(value: 0.0, label: "Top Right"),
+                    ShaderUniformOption(value: 1.0, label: "Top Left"),
+                    ShaderUniformOption(value: 2.0, label: "Top Center"),
+                    ShaderUniformOption(value: 3.0, label: "Center"),
+                    ShaderUniformOption(value: 4.0, label: "Center Left"),
+                    ShaderUniformOption(value: 5.0, label: "Center Right"),
+                    ShaderUniformOption(value: 6.0, label: "Bottom Left"),
+                    ShaderUniformOption(value: 7.0, label: "Bottom Center"),
+                    ShaderUniformOption(value: 8.0, label: "Bottom Right"),
+                ]),
+            ],
+            description: "Advanced GBA LCD simulation with ghosting, grid, and metallic reflections.",
+            recommendedSystems: ["gba"]
+        ),
+
         // Dot Matrix LCD (Game Boy metallic dot-matrix)
         ShaderPreset(
             id: "builtin-dot-matrix",
@@ -370,6 +405,45 @@ description: "Game Boy Color with temporal feedback, ghosting, and iridescent LC
             recommendedSystems: ["nes", "snes", "genesis"]
         ),
         
+        // CRT Multipass (High Quality)
+        ShaderPreset(
+            id: "builtin-crt-multipass",
+            name: "CRT Multipass",
+            shaderType: .crt,
+            passes: [
+                ShaderPass(
+                    shaderFile: "CRTFilter_multipass",
+                    filter: .linear,
+                    scaleX: 1.0, scaleY: 1.0,
+                    scaleTypeX: .viewport, scaleTypeY: .viewport
+                )
+            ],
+            globalUniforms: [
+                ShaderUniform(name: "scanlineIntensity", defaultValue: 0.45, minValue: 0.0, maxValue: 1.0, displayName: "Scanline Intensity"),
+                ShaderUniform(name: "barrelAmount", defaultValue: 0.15, minValue: 0.0, maxValue: 0.5, displayName: "Barrel Distortion"),
+                ShaderUniform(name: "colorBoost", defaultValue: 1.0, minValue: 0.5, maxValue: 2.0, displayName: "Color Boost"),
+                ShaderUniform(name: "ghostingWeight", defaultValue: 0.3, minValue: 0.0, maxValue: 1.0, displayName: "Phosphor Persistence"),
+                ShaderUniform(name: "bloomStrength", defaultValue: 0.25, minValue: 0.0, maxValue: 1.0, displayName: "Scanline Bloom"),
+                ShaderUniform(name: "vignetteStrength", defaultValue: 0.6, minValue: 0.0, maxValue: 1.0, displayName: "Vignette Strength"),
+                ShaderUniform(name: "chromaAmount", defaultValue: 0.4, minValue: 0.0, maxValue: 1.0, displayName: "Chroma Shift"),
+                ShaderUniform(name: "softnessAmount", defaultValue: 0.2, minValue: 0.0, maxValue: 1.0, displayName: "Corner Softness"),
+                ShaderUniform(name: "bezelRounding", defaultValue: 0.1, minValue: 0.0, maxValue: 0.5, displayName: "Bezel Rounding"),
+                ShaderUniform(name: "bezelGlow", defaultValue: 0.5, minValue: 0.0, maxValue: 2.0, displayName: "Bezel Glow"),
+                ShaderUniform(name: "useDistort", defaultValue: 1.0, minValue: 0.0, maxValue: 1.0, displayName: "Distortion", type: .toggle),
+                ShaderUniform(name: "useScan", defaultValue: 1.0, minValue: 0.0, maxValue: 1.0, displayName: "Scanlines", type: .toggle),
+                ShaderUniform(name: "useBleed", defaultValue: 1.0, minValue: 0.0, maxValue: 1.0, displayName: "Color Bleed", type: .toggle),
+                ShaderUniform(name: "useSoft", defaultValue: 1.0, minValue: 0.0, maxValue: 1.0, displayName: "Corner Softness", type: .toggle),
+                ShaderUniform(name: "useChroma", defaultValue: 1.0, minValue: 0.0, maxValue: 1.0, displayName: "Chromatic Aberration", type: .toggle),
+                ShaderUniform(name: "useWhite", defaultValue: 1.0, minValue: 0.0, maxValue: 1.0, displayName: "White Balance", type: .toggle),
+                ShaderUniform(name: "useVig", defaultValue: 1.0, minValue: 0.0, maxValue: 1.0, displayName: "Vignette", type: .toggle),
+                ShaderUniform(name: "useFlick", defaultValue: 1.0, minValue: 0.0, maxValue: 1.0, displayName: "Flicker", type: .toggle),
+                ShaderUniform(name: "useBezel", defaultValue: 1.0, minValue: 0.0, maxValue: 1.0, displayName: "Bezel Mask", type: .toggle),
+                ShaderUniform(name: "useBloom", defaultValue: 1.0, minValue: 0.0, maxValue: 1.0, displayName: "Scanline Bloom", type: .toggle),
+            ],
+            description: "Professional CRT simulation with temporal phosphor persistence and high-quality masking.",
+            recommendedSystems: ["nes", "snes", "genesis", "psx", "arcade"]
+        ),
+
         // Smooth Upscale (ScaleFX style)
         ShaderPreset(
             id: "builtin-smooth-upscale",
@@ -409,6 +483,7 @@ description: "Game Boy Color with temporal feedback, ghosting, and iridescent LC
             recommendedSystems: ["nes", "gb", "snes", "genesis", "scummvm"]
         ),
     ]
+
     
 // All available presets
 static let allPresets: [ShaderPreset] = {
