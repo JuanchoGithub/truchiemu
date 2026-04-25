@@ -1,10 +1,10 @@
 /*
- * TruchieEmu: 8bit Game Boy Color Hardware Simulation (Dandelion + Hybrid Interference)
+ * TruchieEmu: 8bit Game Boy Color Hardware Simulation (Dandelion Edition)
  * VERSION HISTORY:
- * v24.2: THE IRIS MERGE
- * - RESTORED: All original v22.4 features (Topography, Dust Glints, Shell, Shimmer)
- * - UPGRADED: Replaced v22.4 Newton's Rings with v24.1 Natural Interference (Iris Noise)
- * - MAINTAINED: Refined Exponential Ghosting & Metallic Reflector
+ * v22.4: THE OMNI-MERGE
+ * - RESTORED: All original v21.0 features (Newton's Rings, Topography, Dust Glints, Shell)
+ * - INTEGRATED: Refined Exponential Ghosting
+ * - INTEGRATED: DMG-Style Metallic Reflector (Light Position + Interference Waves)
  * - FIXED: drawStringGBC Address Space mismatch
  */
 
@@ -71,22 +71,6 @@ float hardware_gold_noise(float2 p, float seed) {
     return fract(tan(distance(p * 1.61803398875, p) * seed) * (p.x + seed));
 }
 
-// Better Rainbow Components
-float irisNoise(float2 p) {
-    float n = sin(p.x * 0.15) * sin(p.y * 0.15);
-    n += sin(p.x * 0.4 + p.y * 0.3) * 0.5;
-    n += sin(p.x * 1.1 - p.y * 0.9) * 0.25;
-    return n;
-}
-
-float3 applyNaturalInterference(float2 uv, float intensity) {
-    float2 center = float2(0.65, 0.35);
-    float d = length(uv - center);
-    float ringField = d * 28.0 + irisNoise(uv * 12.0) * 1.8;
-    float3 rings = float3(sin(ringField), sin(ringField + 2.09), sin(ringField + 4.18)) * 0.5 + 0.5;
-    return rings * intensity * smoothstep(0.9, 0.1, d);
-}
-
 // Ported Metallic Reflector Logic
 float3 applyMetallicReflector(float3 color, float2 p, float2 res, constant GBCUniforms &u) {
     float2 lightPos;
@@ -108,7 +92,7 @@ float3 applyMetallicReflector(float3 color, float2 p, float2 res, constant GBCUn
     float sheen = smoothstep(-res.x * 0.6, res.x * 1.1, p.x - p.y);
     float glare = smoothstep(res.x * 0.8, 0.0, distToLight);
     float luma = dot(color, float3(0.299, 0.587, 0.114));
-    float reflectionMask = smoothstep(0.05, 0.5, luma);
+    float reflectionMask = smoothstep(0.05, 0.5, luma); 
     
     return (glare * 0.25 + sheen * 0.10 + metallicGrain * 0.02) * float3(0.9, 0.95, 1.0) * reflectionMask * u.lightStrength;
 }
@@ -268,7 +252,8 @@ fragment float4 fragment8BitGBC(VertexOut in [[stage_in]],
             }
 
             if (u.flags & FLAG_NEWTON_RINGS) {
-                color += applyNaturalInterference(uv, 0.07);
+                float rDist = distance(uv, float2(1.1, -0.1));
+                color += pow(saturate(float3(sin(rDist*18.0), sin(rDist*18.0+2.0), sin(rDist*18.0+4.0))*0.5+0.5), 2.0)*0.045;
                 float flicker = (pcg_hash_gbc(float2(float(u.frameIndex % 60u) * 0.01)) * 0.1) + 0.9;
                 color.r += (1.0 - smoothstep(0.0, 0.15, uv.x)) * 0.015 * flicker;
             }
@@ -342,7 +327,8 @@ fragment float4 fragment8BitGBC(VertexOut in [[stage_in]],
     float3 final = mix(bg, sCol, maskG * u.dotOpacity + (1.0 - u.dotOpacity)) * 0.65;
 
     if (u.flags & FLAG_NEWTON_RINGS) {
-        final += applyNaturalInterference(uv, 0.07);
+        float rDist = distance(uv, float2(1.1, -0.1));
+        final += pow(saturate(float3(sin(rDist*18.0), sin(rDist*18.0+2.0), sin(rDist*18.0+4.0))*0.5+0.5), 2.0)*0.045;
         final.r += (1.0 - smoothstep(0.0, 0.15, uv.x)) * 0.015 * ((pcg_hash_gbc(float2(float(u.frameIndex % 60u) * 0.01)) * 0.1) + 0.9);
     }
 

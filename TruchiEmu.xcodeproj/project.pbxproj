@@ -417,6 +417,7 @@
 		DD761E272F9C1C0A002E0F3D /* DotMatrixLCD.metal in Sources */ = {isa = PBXBuildFile; fileRef = DD761E192F9C1C0A002E0F3D /* DotMatrixLCD.metal */; };
 		DD761E282F9C1C0A002E0F3D /* LiteCRT.metal in Sources */ = {isa = PBXBuildFile; fileRef = DD761E1B2F9C1C0A002E0F3D /* LiteCRT.metal */; };
 		DD761E292F9C1C0A002E0F3D /* LottesCRT.metal in Sources */ = {isa = PBXBuildFile; fileRef = DD761E1C2F9C1C0A002E0F3D /* LottesCRT.metal */; };
+		DD761E2D2F9C45DC002E0F3D /* CRTFilter_multipass.metal in Sources */ = {isa = PBXBuildFile; fileRef = DD761E2C2F9C45DC002E0F3D /* CRTFilter_multipass.metal */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -850,6 +851,7 @@
 		DD761E1D2F9C1C0A002E0F3D /* Passthrough.metal */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.metal; path = Passthrough.metal; sourceTree = "<group>"; };
 		DD761E1E2F9C1C0A002E0F3D /* ScaleSmooth.metal */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.metal; path = ScaleSmooth.metal; sourceTree = "<group>"; };
 		DD761E1F2F9C1C0A002E0F3D /* SharpBilinear.metal */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.metal; path = SharpBilinear.metal; sourceTree = "<group>"; };
+		DD761E2C2F9C45DC002E0F3D /* CRTFilter_multipass.metal */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.metal; path = CRTFilter_multipass.metal; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXGroup section */
@@ -931,6 +933,7 @@
 		DD1AE0672F96D7240014A60E /* Shaders */ = {
 			isa = PBXGroup;
 			children = (
+				DD761E2C2F9C45DC002E0F3D /* CRTFilter_multipass.metal */,
 				DD761E162F9C1C0A002E0F3D /* 8bGameBoy.metal */,
 				DD761E172F9C1C0A002E0F3D /* 8bGameBoyColor.metal */,
 				DD761E182F9C1C0A002E0F3D /* CRTFilter.metal */,
@@ -2236,6 +2239,7 @@
 				DD1AEB172F96D7240014A60E /* Achievement.swift in Sources */,
 				DD1AEB182F96D7240014A60E /* SwiftDataContainer.swift in Sources */,
 				DD1AEB192F96D7240014A60E /* SystemSidebarView.swift in Sources */,
+				DD761E2D2F9C45DC002E0F3D /* CRTFilter_multipass.metal in Sources */,
 				DD1AEB1A2F96D7240014A60E /* LibretroGlobals.mm in Sources */,
 				DD1AEB1C2F96D7240014A60E /* N64Runner.swift in Sources */,
 				DD1AEB1D2F96D7240014A60E /* SwiftDataModels.swift in Sources */,
