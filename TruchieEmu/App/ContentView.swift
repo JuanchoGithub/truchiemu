@@ -114,51 +114,62 @@ struct ContentView: View {
                                       let encoder = JSONEncoder()
                                       let decoder = JSONDecoder()
                                       
-                                      let targetSystemID = targetSystem.id
-                                      let oldSystemDefault = SystemDatabase.system(forID: targetSystemID)?.defaultShaderPresetID ?? ""
-                                      
-                                      // NEW: Update system default if applying to defaults or all
-                                      if mode == .applyToDefaults || mode == .applyToAll {
-                                          if let index = SystemDatabase.systems.firstIndex(where: { $0.id == targetSystemID }) {
-                                              SystemDatabase.systems[index].defaultShaderPresetID = newPresetID
-                                              SystemDatabase.saveSystems(SystemDatabase.systems)
-                                          }
-                                      }
-                                      
-                                      let descriptor = FetchDescriptor<ROMEntry>(predicate: #Predicate { $0.systemID == targetSystemID })
-                                      guard let entries = try? modelContext.fetch(descriptor) else { return }
-                                      
-                                      for entry in entries {
-                                          var settings: ROMSettings
-                                          if let json = entry.settingsJSON, let data = json.data(using: .utf8), let decoded = try? decoder.decode(ROMSettings.self, from: data) {
-                                              settings = decoded
-                                          } else {
-                                              settings = ROMSettings()
-                                          }
-                                          
-                                          let shouldUpdate: Bool
-                                          switch mode {
-                                          case .applyToCurrent:
-                                              // Only update if this is the currently selected ROM
-                                              shouldUpdate = (entry.id == selectedROM?.id)
-                                          case .applyToDefaults:
-                                              // Update only if it has no specific preference (using the system's default ID)
-                                              shouldUpdate = (settings.shaderPresetID == oldSystemDefault || settings.shaderPresetID.isEmpty)
-                                          case .applyToAll:
-                                              shouldUpdate = true
-                                          }
-                                          
-                                          if shouldUpdate {
-                                              settings.shaderPresetID = newPresetID
-                                              
-                                              if let encoded = try? encoder.encode(settings), let json = String(data: encoded, encoding: .utf8) {
-                                                  entry.settingsJSON = json
-                                              }
-                                          }
-                                      }
-                                      try? modelContext.save()
-
-                                      // 3. Show notification
+                                        let targetSystemID = targetSystem.id
+                                        let oldSystemDefault = SystemDatabase.system(forID: targetSystemID)?.defaultShaderPresetID ?? ""
+                                        
+                                        // NEW: Update system default if applying to defaults or all
+                                        if mode == .applyToDefaults || mode == .applyToAll {
+                                            if let index = SystemDatabase.systems.firstIndex(where: { $0.id == targetSystemID }) {
+                                                SystemDatabase.systems[index].defaultShaderPresetID = newPresetID
+                                                SystemDatabase.saveSystems(SystemDatabase.systems)
+                                            }
+                                        }
+                                        
+                                        let descriptor = FetchDescriptor<ROMEntry>(predicate: #Predicate { $0.systemID == targetSystemID })
+                                        guard let entries = try? modelContext.fetch(descriptor) else { return }
+                                        
+                                        var overriddenGames: [String] = []
+                                        
+                                        for entry in entries {
+                                            var settings: ROMSettings
+                                            if let json = entry.settingsJSON, let data = json.data(using: .utf8), let decoded = try? decoder.decode(ROMSettings.self, from: data) {
+                                                settings = decoded
+                                            } else {
+                                                settings = ROMSettings()
+                                            }
+                                            
+                                            let shouldUpdate: Bool
+                                            switch mode {
+                                            case .applyToCurrent:
+                                                // Only update if this is the currently selected ROM
+                                                shouldUpdate = (entry.id == selectedROM?.id)
+                                            case .applyToDefaults:
+                                                // Update only if it has no specific preference (using the system's default ID)
+                                                shouldUpdate = (settings.shaderPresetID == oldSystemDefault || settings.shaderPresetID.isEmpty)
+                                            case .applyToAll:
+                                                // In OVERRIDE mode, we check if the game had a custom shader
+                                                let isCustom = !settings.shaderPresetID.isEmpty && settings.shaderPresetID != oldSystemDefault
+                                                if isCustom {
+                                                    overriddenGames.append(entry.name)
+                                                }
+                                                shouldUpdate = true
+                                            }
+                                            
+                                            if shouldUpdate && settings.shaderPresetID != newPresetID {
+                                                settings.shaderPresetID = newPresetID
+                                                
+                                                if let encoded = try? encoder.encode(settings), let json = String(data: encoded, encoding: .utf8) {
+                                                    entry.settingsJSON = json
+                                                }
+                                            }
+                                        }
+                                        try? modelContext.save()
+                                        
+                                        if !overriddenGames.isEmpty {
+                                            LoggerService.info(category: "Shaders", "Overriding custom shaders for \(overriddenGames.count) games: \(overriddenGames.joined(separator: ", "))")
+                                        }
+                                        
+                                        // 3. Show notification
                                       DispatchQueue.main.async {
                                           let message: String
                                           switch mode {

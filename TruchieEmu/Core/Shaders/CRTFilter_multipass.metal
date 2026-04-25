@@ -134,63 +134,77 @@ fragment float4 fragmentCRTMultipass(VertexOut in [[stage_in]],
     
     constexpr sampler s(filter::linear, address::clamp_to_edge);
 
-    const bool DISTORT = u.useDistort > 0.5;
-    const bool SCAN    = u.useScan > 0.5;
-    const bool BLEED   = u.useBleed > 0.5;
-    const bool SOFT    = u.useSoft > 0.5;
-    const bool CHROMA  = u.useChroma > 0.5;
-    const bool WHITE   = u.useWhite > 0.5;
-    const bool VIG     = u.useVig > 0.5;
-    const bool FLICK   = u.useFlick > 0.5;
-    const bool BEZEL   = u.useBezel > 0.5;
-    const bool BLOOM   = u.useBloom > 0.5;
+    // 1. Geometry & Barrel Distortion
+    float2 uv = in.texCoord;
+    float2 centered = (uv - float2(0.5, 0.52)) * 2.0;
+    centered *= float2(1.06, 1.08);
+    float2 offset = centered * centered;
+    
+    float2 distortedUV = uv;
+    if (u.useDistort > 0.5) {
+        distortedUV = centered + (centered * (offset.yx * u.barrelAmount));
+        distortedUV = distortedUV * 0.5 + 0.5;
+    }
 
-    // 1. Preparation
-    CRT_MP_Context ctx = crt_mp_prepareContext(in.texCoord, SOFT, CHROMA, VIG, DISTORT);
+    // 2. Align Context
+    float2 finalCentered = (distortedUV - 0.5) * 2.0;
+    float distSq = dot(finalCentered, finalCentered);
 
-    // 2. Geometry
-    float2 distortedUV = crt_mp_getDistortedUV(in.texCoord, ctx, u.barrelAmount, DISTORT);
     float2 sampleUV = distortedUV;
     sampleUV.y = distortedUV.y * CRT_MP_V_SCALE + CRT_MP_V_TRIM;
     
     float jitter = sin(in.position.y * 0.1 + u.time * 60.0) * CRT_MP_JITTER_AMOUNT;
     sampleUV.x += floor(jitter * 4096.0) * CRT_MP_INV_RES_X;
 
-    // 3. Temporal Ghosting Samples
-    float3 f0 = frame0.sample(s, sampleUV).rgb;
-    float3 f1 = frame1.sample(s, sampleUV).rgb;
-    float3 f2 = frame2.sample(s, sampleUV).rgb;
-    float3 f3 = frame3.sample(s, sampleUV).rgb;
-    float3 f4 = frame4.sample(s, sampleUV).rgb;
+    // 3. Pre-calculate Chroma Offsets
+    // This is the CRITICAL FIX: The entire temporal stack must use these.
+    float2 uvR = sampleUV;
+    float2 uvG = sampleUV;
+    float2 uvB = sampleUV;
 
-    // Apply spatial effects (Soft/Chroma) to f0 before mixing
-    float blurAmt = SOFT ? (ctx.distSq * ctx.distSq) * 0.0008 : 0.0;
-    float pShift = floor((0.0012 * ctx.distSq) * 4096.0) * CRT_MP_INV_RES_X;
-    
-    if (SOFT) f0.g = (f0.g + frame0.sample(s, sampleUV + float2(blurAmt)).g) * 0.5;
-    
-    if (CHROMA) {
+    if (u.useChroma > 0.5) {
+        float pShift = floor((0.0012 * distSq) * 4096.0) * CRT_MP_INV_RES_X;
         float chromaShift = pShift * (u.chromaAmount / 0.0012);
-        f0.r = frame0.sample(s, sampleUV + float2(chromaShift, 0)).r;
-        f0.b = frame0.sample(s, sampleUV - float2(chromaShift, 0)).b;
+        uvR.x += chromaShift;
+        uvB.x -= chromaShift;
     }
 
-    // 4. Phosphor Trail Mix (Exponential Decay)
+    // 4. Sample Temporal Frames WITH Chroma Offsets
+    // Since all frames use the shifted UVs, static objects will perfectly align with themselves.
+    float3 f0 = float3(frame0.sample(s, uvR).r, frame0.sample(s, uvG).g, frame0.sample(s, uvB).b);
+    float3 f1 = float3(frame1.sample(s, uvR).r, frame1.sample(s, uvG).g, frame1.sample(s, uvB).b);
+    float3 f2 = float3(frame2.sample(s, uvR).r, frame2.sample(s, uvG).g, frame2.sample(s, uvB).b);
+    float3 f3 = float3(frame3.sample(s, uvR).r, frame3.sample(s, uvG).g, frame3.sample(s, uvB).b);
+    float3 f4 = float3(frame4.sample(s, uvR).r, frame4.sample(s, uvG).g, frame4.sample(s, uvB).b);
+
+    // Phosphor Decay Mix
     float3 trail = mix(f1, mix(f2, mix(f3, f4, 0.3), 0.4), 0.5);
     float3 rgb = mix(f0, trail, u.ghostingWeight);
 
-    // 5. Analog Artifacts
+    // 5. Softness
+    if (u.useSoft > 0.5) {
+        float blurAmt = (distSq * distSq) * 0.0008;
+        float gBlur = mix(frame0.sample(s, uvG + float2(blurAmt)).g,
+                          frame1.sample(s, uvG + float2(blurAmt)).g, u.ghostingWeight);
+        rgb.g = (rgb.g + gBlur) * 0.5;
+    }
+
+    // 6. Analog Finishing Passes
     float spread = 1.0 / u.texSizeX;
     float3 colL = frame0.sample(s, sampleUV - float2(spread, 0)).rgb;
     float3 colR = frame0.sample(s, sampleUV + float2(spread, 0)).rgb;
     
-    rgb = crt_mp_applyDitherBleed(rgb, colL, colR, BLEED);
-    rgb = crt_mp_applyAnalogFinishing(rgb, ctx, u.colorBoost, float3(u.tintR, u.tintG, u.tintB), u.vignetteStrength, u.time, u.flickerStrength, WHITE, VIG, FLICK);
+    rgb = crt_mp_applyDitherBleed(rgb, colL, colR, u.useBleed > 0.5);
     
-    if (SCAN) rgb = crt_mp_applyScanlines(rgb, f0, in.position.y, u.scanlineIntensity, u.bloomStrength, BLOOM);
+    CRT_MP_Context alignedCtx;
+    alignedCtx.centered = finalCentered;
+    alignedCtx.distSq = distSq;
+
+    rgb = crt_mp_applyAnalogFinishing(rgb, alignedCtx, u.colorBoost, float3(u.tintR, u.tintG, u.tintB), u.vignetteStrength, u.time, u.flickerStrength, u.useWhite > 0.5, u.useVig > 0.5, u.useFlick > 0.5);
     
-    // 6. Final Composite
-    float3 finalOut = crt_mp_applyMaskAndBezel(rgb, distortedUV, sampleUV, frame0, s, u.colorBoost, u.texSizeX, u.bezelRounding, u.bezelGlow, BEZEL);
+    if (u.useScan > 0.5) rgb = crt_mp_applyScanlines(rgb, f0, in.position.y, u.scanlineIntensity, u.bloomStrength, u.useBloom > 0.5);
+    
+    float3 finalOut = crt_mp_applyMaskAndBezel(rgb, distortedUV, sampleUV, frame0, s, u.colorBoost, u.texSizeX, u.bezelRounding, u.bezelGlow, u.useBezel > 0.5);
 
     return float4(saturate(finalOut), 1.0);
 }

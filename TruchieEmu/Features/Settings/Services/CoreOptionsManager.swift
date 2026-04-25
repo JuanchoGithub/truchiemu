@@ -107,7 +107,6 @@ class CoreOptionsManager: ObservableObject {
             self.categories = cats.reduce(into: [:]) { res, entry in
                 res[entry.key] = CoreOptionCategory(key: entry.key, description: entry.value["desc"] ?? entry.key, info: entry.value["info"] ?? "")
             }
-            LoggerService.debug(category: "CoreOptionsManager", "For \(currentCoreID): loaded these categories: \(categories)")
         }        
  
         // 2. Load Options
@@ -140,7 +139,6 @@ class CoreOptionsManager: ObservableObject {
                 options[vKey]?.currentValue = value
             }
         }
-        LoggerService.debug(category: "CoreOptionsManager", "Options For \(currentCoreID): \(options)")
     }
 
     private func makeInternalKey(baseKey: String, version: CoreOptionVersion) -> String {
