@@ -1,11 +1,11 @@
 /*
- * TruchieEmu: 8bit Game Boy Color Hardware Simulation (Dandelion + Hybrid Interference)
+ * TruchieEmu: 8bit Game Boy Color Hardware Simulation (Dandelion + Spectral Interference)
  * VERSION HISTORY:
- * v24.2: THE IRIS MERGE
- * - RESTORED: All original v22.4 features (Topography, Dust Glints, Shell, Shimmer)
- * - UPGRADED: Replaced v22.4 Newton's Rings with v24.1 Natural Interference (Iris Noise)
- * - MAINTAINED: Refined Exponential Ghosting & Metallic Reflector
- * - FIXED: drawStringGBC Address Space mismatch
+ * v24.3: THE SPECTRAL UPDATE
+ * - REPLACED: Sine-wave Newton's Rings with Physical Spectral Interference
+ * - ADDED: Fractal Brownian Motion (fBM) and Domain Warping for organic glints
+ * - MAINTAINED: Refined Exponential Ghosting, Metallic Reflector, and GBC Shell
+ * - CONTROL: Aggression now scales with u.lightStrength (defaults to slight glint)
  */
 
 #include <metal_stdlib>
@@ -13,16 +13,16 @@
 using namespace metal;
 
 // --- FEATURE FLAGS ---
-#define FLAG_GHOSTING       (1 << 0)
+#define FLAG_GHOSTING     (1 << 0)
 #define FLAG_GRID         (1 << 1)
 #define FLAG_ABERRATION   (1 << 2)
-#define FLAG_BLEED      (1 << 3)
+#define FLAG_BLEED        (1 << 3)
 #define FLAG_NEWTON_RINGS (1 << 4)
-#define FLAG_JITTER     (1 << 5)
-#define FLAG_REFLECTION  (1 << 6)
-#define FLAG_GRAIN      (1 << 7)
-#define FLAG_VIGNETTE  (1 << 8)
-#define FLAG_TOPOGRAPHY (1 << 9)
+#define FLAG_JITTER       (1 << 5)
+#define FLAG_REFLECTION   (1 << 6)
+#define FLAG_GRAIN        (1 << 7)
+#define FLAG_VIGNETTE     (1 << 8)
+#define FLAG_TOPOGRAPHY   (1 << 9)
 #define FLAG_COLOR_MATRIX (1 << 10)
 
 struct GBCUniforms {
@@ -52,11 +52,6 @@ struct GBCUniforms {
 
 // --- SIMULATION MODULES ---
 
-float3 apply_ghosting_refinedGBC(float3 f0, float3 f1, float3 f2, float3 f3, float3 f4, float weight) {
-    float3 trail = mix(f1, mix(f2, mix(f3, f4, 0.3), 0.4), 0.5);
-    return mix(f0, trail, weight);
-}
-
 float pcg_hash_gbc(float2 p) {
     uint2 v = uint2(p);
     v = v * 1664525u + 1013904223u;
@@ -71,7 +66,6 @@ float hardware_gold_noise(float2 p, float seed) {
     return fract(tan(distance(p * 1.61803398875, p) * seed) * (p.x + seed));
 }
 
-// Better Rainbow Components
 float irisNoise(float2 p) {
     float n = sin(p.x * 0.15) * sin(p.y * 0.15);
     n += sin(p.x * 0.4 + p.y * 0.3) * 0.5;
@@ -79,15 +73,44 @@ float irisNoise(float2 p) {
     return n;
 }
 
-float3 applyNaturalInterference(float2 uv, float intensity) {
-    float2 center = float2(0.65, 0.35);
-    float d = length(uv - center);
-    float ringField = d * 28.0 + irisNoise(uv * 12.0) * 1.8;
-    float3 rings = float3(sin(ringField), sin(ringField + 2.09), sin(ringField + 4.18)) * 0.5 + 0.5;
-    return rings * intensity * smoothstep(0.9, 0.1, d);
+// Fractal Brownian Motion for "Organic" variation
+float fbm_gbc(float2 p) {
+    float v = 0.0;
+    float a = 0.5;
+    for (int i = 0; i < 3; i++) {
+        v += a * irisNoise(p);
+        p *= 2.2;
+        a *= 0.5;
+    }
+    return v;
 }
 
-// Ported Metallic Reflector Logic
+// Approximates RGB interference (Newton's Rings)
+float3 spectral_gbc(float t) {
+    float3 w = float3(6.1, 5.2, 4.4); // Wavelength scaling
+    float3 c = 0.5 + 0.5 * cos(6.28318 * (t / w));
+    return saturate(c);
+}
+
+float3 applyNaturalInterference(float2 uv, float intensity) {
+    float2 center = float2(0.5, 0.5);
+    float d = length(uv - center);
+
+    // Domain Warping: Fractal noise distorts the noise field itself
+    float2 warp = float2(fbm_gbc(uv * 4.0), fbm_gbc(uv * 4.0 + float2(1.7)));
+    float thickness = d * 18.0 + fbm_gbc(uv * 10.0 + warp) * 3.5;
+
+    float3 iris = spectral_gbc(thickness);
+    float mask = smoothstep(0.9, 0.4, d) * smoothstep(0.0, 0.3, d);
+    
+    return iris * (intensity * 0.15) * mask;
+}
+
+float3 apply_ghosting_refinedGBC(float3 f0, float3 f1, float3 f2, float3 f3, float3 f4, float weight) {
+    float3 trail = mix(f1, mix(f2, mix(f3, f4, 0.3), 0.4), 0.5);
+    return mix(f0, trail, weight);
+}
+
 float3 applyMetallicReflector(float3 color, float2 p, float2 res, constant GBCUniforms &u) {
     float2 lightPos;
     int idx = int(u.lightPositionIndex);
@@ -249,8 +272,7 @@ fragment float4 fragment8BitGBC(VertexOut in [[stage_in]],
                 float4 bleedSample = frame0.sample(samp, float2(uv.x, 0.5));
                 float bleedVal = (bleedSample.a < 1.0) ? bleedSample.a : bleedSample.g;
                 color -= float3(bleedVal * 0.008);
-                float h = pcg_hash_gbc(pixelIndex * 3.3);
-                color *= (0.97 + h * 0.06);
+                color *= (0.97 + pcg_hash_gbc(pixelIndex * 3.3) * 0.06);
             }
 
             float2 grid = abs(fract(uv * u.sourceSize.xy - 0.5) - 0.5) / fwidth(uv * u.sourceSize.xy);
@@ -268,7 +290,8 @@ fragment float4 fragment8BitGBC(VertexOut in [[stage_in]],
             }
 
             if (u.flags & FLAG_NEWTON_RINGS) {
-                color += applyNaturalInterference(uv, 0.07);
+                float aggression = (u.lightStrength > 0.0) ? u.lightStrength : 1.0;
+                color += applyNaturalInterference(uv, 0.07 * aggression);
                 float flicker = (pcg_hash_gbc(float2(float(u.frameIndex % 60u) * 0.01)) * 0.1) + 0.9;
                 color.r += (1.0 - smoothstep(0.0, 0.15, uv.x)) * 0.015 * flicker;
             }
@@ -342,7 +365,8 @@ fragment float4 fragment8BitGBC(VertexOut in [[stage_in]],
     float3 final = mix(bg, sCol, maskG * u.dotOpacity + (1.0 - u.dotOpacity)) * 0.65;
 
     if (u.flags & FLAG_NEWTON_RINGS) {
-        final += applyNaturalInterference(uv, 0.07);
+        float aggression = (u.lightStrength > 0.0) ? u.lightStrength : 1.0;
+        final += applyNaturalInterference(uv, 0.07 * aggression);
         final.r += (1.0 - smoothstep(0.0, 0.15, uv.x)) * 0.015 * ((pcg_hash_gbc(float2(float(u.frameIndex % 60u) * 0.01)) * 0.1) + 0.9);
     }
 
