@@ -9,6 +9,7 @@ final class LibraryAutomationCoordinator: ObservableObject {
     enum Phase: Equatable {
         case idle
         case identifying
+        case enriching
         case downloadingArt
     }
 
@@ -123,16 +124,81 @@ final class LibraryAutomationCoordinator: ObservableObject {
             progress = 1
             statusLine = "Identifying games: 100% — done"
 
-            // Save ONLY the ROMs that were modified in this phase.
-            // This avoids a massive MainActor hang by saving 1000 items instead of 4250.
+            // Save identification results before enrichment phase
             library.saveROMsToDatabase(only: modifiedIDs)
         }
 
-        // Brief pause between phases to give the MainActor runloop time to process UI updates
-        try? await Task.sleep(nanoseconds: 500_000_000)
-        await Task.yield()
+        // Phase 2: Enrichment — batch metadata (players, genre) from cached LibretroMetadataLibrary
+        // This is pure in-memory O(1) dictionary lookups — no I/O, no network
+        if !batchModifiedROMs.isEmpty {
+            let identifiedROMs = batchModifiedROMs.filter { $0.crc32 != nil }
+            if identifiedROMs.isEmpty {
+                statusLine = "Enrichment skipped: no CRC data"
+            } else {
+                phase = .enriching
+                progress = 0
+                statusLine = "Enriching metadata: 0% — …"
+                
+                let total = Double(identifiedROMs.count)
+                var enrichedCount = 0
+                var enrichedROMs: [ROM] = []
+                
+                let groupedBySystem = Dictionary(grouping: identifiedROMs) { $0.systemID ?? "unknown" }
+                
+                for (systemID, romsForSystem) in groupedBySystem {
+                    guard SystemDatabase.system(forID: systemID) != nil else { continue }
+                    
+                    await LibretroMetadataLibrary.shared.ensureLoaded(for: systemID)
+                    
+                    for var rom in romsForSystem {
+                        guard rom.crc32 != nil else { continue }
+                        
+                        if rom.enrichmentAttempted {
+                            enrichedCount += 1
+                            progress = Double(enrichedCount) / total
+                            continue
+                        }
+                        
+                        var enriched = await LibretroMetadataLibrary.shared.enrich(rom: rom)
+                        enriched.enrichmentAttempted = true
+                        
+                        if enriched.metadata?.players != rom.metadata?.players ||
+                           enriched.metadata?.genre != rom.metadata?.genre {
+                            enriched.enrichmentFailed = false
+                        } else {
+                            enriched.enrichmentFailed = true
+                        }
+                        enrichedROMs.append(enriched)
+                        
+                        enrichedCount += 1
+                        progress = Double(enrichedCount) / total
+                        if enrichedCount % 100 == 0 {
+                            statusLine = "Enriching metadata: \(Int(progress * 100))% — \(systemID)"
+                        }
+                    }
+                    
+                    await Task.yield()
+                }
+                
+                if !enrichedROMs.isEmpty {
+                    let enrichedIDs = enrichedROMs.map { $0.id }
+                    for enriched in enrichedROMs {
+                        if let idx = library.roms.firstIndex(where: { $0.id == enriched.id }) {
+                            library.roms[idx] = enriched
+                        }
+                    }
+                    library.saveROMsToDatabase(only: enrichedIDs)
+                }
+                
+                progress = 1
+                statusLine = "Enriching metadata: 100% — done"
+                
+                try? await Task.sleep(nanoseconds: 500_000_000)
+                await Task.yield()
+            }
+        }
 
-        // Phase 2: Box art downloads (skip hidden ROMs)
+        // Phase 3: Box art downloads (skip hidden ROMs)
         let artTargets = scope.filter { $0.needsAutomaticBoxArt && !$0.isHidden }
         guard !artTargets.isEmpty else { return }
 

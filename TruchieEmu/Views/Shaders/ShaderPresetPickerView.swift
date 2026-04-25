@@ -199,7 +199,7 @@ private func parameterSliderRow(for uniform: ShaderUniform) -> some View {
 // Native macOS window controller for the shader preset picker.
 class ShaderWindowController: NSWindowController, NSWindowDelegate {
     private var settings: ShaderWindowSettings
-    private var onPresetChanged: ((String, [String: Float], ShaderApplicationMode) -> Void)?
+    var onPresetChanged: ((String, [String: Float], ShaderApplicationMode) -> Void)?  // Made public for external assignment
     private var settingsCancellable: AnyCancellable?
     
     static var shared: ShaderWindowController?
@@ -428,7 +428,11 @@ struct ShaderPresetPickerView: View {
                         Button("Apply") {
                             LoggerService.debug(category: "ShaderPicker", "=== APPLY BUTTON CLICKED ===")
                             LoggerService.debug(category: "ShaderPicker", "Apply: shaderPresetID=\(settings.shaderPresetID), mode=\(String(describing: settings.applicationMode)), systemID=\(String(describing: settings.systemID))")
-                            onPresetChanged?(settings.shaderPresetID, settings.uniformValues, settings.applicationMode)
+                            // Call the callback from ShaderWindowController.shared (not settings)
+                            if let controller = ShaderWindowController.shared {
+                                controller.onPresetChanged?(settings.shaderPresetID, settings.uniformValues, settings.applicationMode)
+                                controller.close()
+                            }
                         }
                         .buttonStyle(.borderedProminent)
                         .controlSize(.small)

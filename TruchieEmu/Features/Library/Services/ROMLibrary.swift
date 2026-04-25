@@ -481,20 +481,49 @@ LibraryMetadataStore.shared.deleteMetadataEntries(Set(removedROMs.map { LibraryM
 
     @discardableResult
     func identifyROM(_ rom: ROM, preferNameMatch: Bool = true, persist: Bool = true) async -> ROMIdentifyResult {
-        let result = await ROMIdentifierService.shared.identify(rom: rom, preferNameMatch: preferNameMatch)
-        let updated = applyIdentificationResult(result, to: rom, persist: false)
-        if let enriched = updated, let systemID = enriched.systemID {
-            await LibretroMetadataLibrary.shared.ensureLoaded(for: systemID)
-            if let _ = enriched.crc32 {
-                let finalROM = await LibretroMetadataLibrary.shared.enrich(rom: enriched)
-                if persist { updateROM(finalROM, persist: true, silent: true) }
-            } else if persist {
-                updateROM(enriched, persist: true, silent: true)
+        // Clear enrichment flags on re-identify — treat as fresh attempt in new system context
+        var updatedROM = rom
+        if updatedROM.enrichmentAttempted {
+            updatedROM.enrichmentAttempted = false
+            updatedROM.enrichmentFailed = false
+        }
+        
+        let result = await ROMIdentifierService.shared.identify(rom: updatedROM, preferNameMatch: preferNameMatch)
+        let enriched = applyIdentificationResult(result, to: updatedROM, persist: false)
+        if let finalROM = enriched {
+            if persist {
+                await enrichMetadata(for: finalROM, updateLibrary: true)
+                updateROM(finalROM, persist: true, silent: true)
+            } else {
+                if let idx = roms.firstIndex(where: { $0.id == finalROM.id }) {
+                    roms[idx] = finalROM
+                }
             }
-        } else if persist, let updated = updated {
-            updateROM(updated, persist: true, silent: true)
         }
         return result
+    }
+    
+    private func enrichMetadata(for rom: ROM, updateLibrary: Bool = false) async {
+        guard let systemID = rom.systemID, let crc = rom.crc32 else { return }
+        if rom.enrichmentAttempted { return }
+        
+        await LibretroMetadataLibrary.shared.ensureLoaded(for: systemID)
+        var enriched = await LibretroMetadataLibrary.shared.enrich(rom: rom)
+        
+        enriched.enrichmentAttempted = true
+        
+        if enriched.metadata?.players != rom.metadata?.players ||
+           enriched.metadata?.genre != rom.metadata?.genre {
+            enriched.enrichmentFailed = false
+        } else {
+            enriched.enrichmentFailed = true
+        }
+        
+        if updateLibrary {
+            if let idx = roms.firstIndex(where: { $0.id == enriched.id }) {
+                roms[idx] = enriched
+            }
+        }
     }
 
     func applyIdentificationResult(_ result: ROMIdentifyResult, to rom: ROM, persist: Bool = true, silent: Bool = false) -> ROM? {
@@ -824,6 +853,59 @@ LibraryMetadataStore.shared.deleteMetadataEntries(Set(removedROMs.map { LibraryM
 
     @MainActor func rebuildFolder(folder: ROMLibraryFolder, option: RebuildOption) async { await rebuildLibrary(modes: [option]) }
 
+    func fillMetadataForExistingROMs() async {
+        guard !roms.isEmpty else { return }
+        
+        let needsEnrichment = roms.filter { rom in
+            !rom.isHidden &&
+            rom.crc32 != nil &&
+            !rom.enrichmentAttempted
+        }
+        guard !needsEnrichment.isEmpty else { return }
+        
+        LoggerService.info(category: "ROMLibrary", "Enriching metadata for \(needsEnrichment.count) existing ROMs with CRC but no enrichment attempt")
+        
+        let groupedBySystem = Dictionary(grouping: needsEnrichment) { $0.systemID ?? "unknown" }
+        var enrichedCount = 0
+        var enrichedIDs: [UUID] = []
+        
+        for (systemID, romsForSystem) in groupedBySystem {
+            guard let system = SystemDatabase.system(forID: systemID) else { continue }
+            
+            await LibretroMetadataLibrary.shared.ensureLoaded(for: systemID)
+            
+            for var rom in romsForSystem {
+                var enriched = await LibretroMetadataLibrary.shared.enrich(rom: rom)
+                enriched.enrichmentAttempted = true
+                
+                if enriched.metadata?.players != rom.metadata?.players ||
+                   enriched.metadata?.genre != rom.metadata?.genre {
+                    enriched.enrichmentFailed = false
+                } else {
+                    enriched.enrichmentFailed = true
+                }
+                
+                if let idx = roms.firstIndex(where: { $0.id == enriched.id }) {
+                    roms[idx] = enriched
+                }
+                enrichedIDs.append(enriched.id)
+                enrichedCount += 1
+                
+                if enrichedCount % 500 == 0 {
+                    LoggerService.debug(category: "ROMLibrary", "Enrichment progress: \(enrichedCount)/\(needsEnrichment.count)")
+                    await Task.yield()
+                }
+            }
+            
+            await Task.yield()
+        }
+        
+        if !enrichedIDs.isEmpty {
+            saveROMsToDatabase(only: enrichedIDs)
+            LoggerService.info(category: "ROMLibrary", "Enrichment complete: \(enrichedCount) ROMs processed")
+        }
+    }
+
     private func initializeLibrary() {
         migrateLegacyUserDefaultsToSwiftData()
         restoreLibraryAccess()
@@ -834,9 +916,8 @@ LibraryMetadataStore.shared.deleteMetadataEntries(Set(removedROMs.map { LibraryM
         updateCounts()
         
         Task {
-            //Stop refreshing the library on every launch
-            //await LibraryAutomationCoordinator.shared.runAfterLibraryUpdate(library: self)
-            //await MetadataSyncCoordinator.shared.runAfterLibraryUpdate(library: self)
+            // Background fill of metadata for existing ROMs that have CRC but no enrichment attempt
+            await self.fillMetadataForExistingROMs()
         }
     }
 

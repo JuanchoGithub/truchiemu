@@ -27,8 +27,10 @@ final class ROMEntry {
     var screenshotPathsJSON: String?
     var settingsJSON: String?
     var isIdentified: Bool
+    var enrichmentAttempted: Bool
+    var enrichmentFailed: Bool
     var raGameId: Int?
-    var raMatchStatus: String? // Values: "matched", "mismatch:<expected_hash>", "not_supported"
+    var raMatchStatus: String?
 
     // Relationships
     // Note: inverse relationships with @Relationship can cause circular reference issues
@@ -64,6 +66,8 @@ final class ROMEntry {
         screenshotPathsJSON: String? = nil,
         settingsJSON: String? = nil,
         isIdentified: Bool = false,
+        enrichmentAttempted: Bool = false,
+        enrichmentFailed: Bool = false,
         raGameId: Int? = nil,
         raMatchStatus: String? = nil
     ) {
@@ -89,6 +93,8 @@ final class ROMEntry {
         self.screenshotPathsJSON = screenshotPathsJSON
         self.settingsJSON = settingsJSON
         self.isIdentified = isIdentified
+        self.enrichmentAttempted = enrichmentAttempted
+        self.enrichmentFailed = enrichmentFailed
         self.raGameId = raGameId
         self.raMatchStatus = raMatchStatus
     }

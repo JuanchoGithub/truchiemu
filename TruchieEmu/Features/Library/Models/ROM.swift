@@ -48,6 +48,8 @@ struct ROM: Identifiable, Codable, Hashable, Sendable {
     // RetroAchievements metadata
     var raGameId: Int?
     var raMatchStatus: String?
+    var enrichmentAttempted: Bool = false
+    var enrichmentFailed: Bool = false
 
     // Updates all stored derived properties based on current state.
     mutating func refreshDerivedFields() {

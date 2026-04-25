@@ -350,7 +350,9 @@ final class ROMRepository {
             screenshotPaths: screenshotPaths,
             settings: settings ?? ROMSettings(),
             raGameId: entry.raGameId,
-            raMatchStatus: entry.raMatchStatus
+            raMatchStatus: entry.raMatchStatus,
+            enrichmentAttempted: entry.enrichmentAttempted,
+            enrichmentFailed: entry.enrichmentFailed
         )
     }
 
@@ -396,7 +398,9 @@ final class ROMRepository {
             thumbnailLookupSystemID: rom.thumbnailLookupSystemID,
             screenshotPathsJSON: screenshotPathsJSON,
             settingsJSON: settingsJSON,
-            isIdentified: false
+            isIdentified: false,
+            enrichmentAttempted: rom.enrichmentAttempted,
+            enrichmentFailed: rom.enrichmentFailed
         )
     }
 
@@ -420,6 +424,8 @@ final class ROMRepository {
         if entry.thumbnailLookupSystemID != rom.thumbnailLookupSystemID { entry.thumbnailLookupSystemID = rom.thumbnailLookupSystemID }
         if entry.raGameId != rom.raGameId { entry.raGameId = rom.raGameId }
         if entry.raMatchStatus != rom.raMatchStatus { entry.raMatchStatus = rom.raMatchStatus }
+        if entry.enrichmentAttempted != rom.enrichmentAttempted { entry.enrichmentAttempted = rom.enrichmentAttempted }
+        if entry.enrichmentFailed != rom.enrichmentFailed { entry.enrichmentFailed = rom.enrichmentFailed }
 
         // Update JSON fields only if they changed
         let newMetadataJSON: String? = rom.metadata.flatMap {

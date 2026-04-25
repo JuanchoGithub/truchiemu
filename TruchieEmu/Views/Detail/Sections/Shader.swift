@@ -101,7 +101,8 @@ extension GameDetailView {
 
         let windowController = ShaderWindowController(
             settings: shaderWindowSettings!
-        ) { [self] newPresetID, newUniformValues, mode in
+        )
+        windowController.onPresetChanged = { [self] newPresetID, newUniformValues, mode in
             // DEBUG: Log callback invocation
             LoggerService.debug(category: "ShaderPicker", "=== APPLY BUTTON PRESSED ===")
             LoggerService.debug(category: "ShaderPicker", "Received: presetID=\(newPresetID), mode=\(String(describing: mode)), uniformCount=\(newUniformValues.count)")
@@ -131,6 +132,8 @@ extension GameDetailView {
             if let preset = ShaderPreset.preset(id: newPresetID) {
                 ShaderManager.shared.activatePreset(preset)
             }
+            // Close window after applying
+            ShaderWindowController.shared?.close()
         }
         ShaderWindowController.shared = windowController
         windowController.show()
@@ -168,11 +171,20 @@ extension GameDetailView {
             if let encoded = try? encoder.encode(settings),
                let json = String(data: encoded, encoding: .utf8) {
                 entry.settingsJSON = json
+                
+                // Also update in-memory library for each ROM
+                if let rom = library.roms.first(where: { $0.id == entry.id }) {
+                    var updatedROM = rom
+                    updatedROM.settings.shaderPresetID = presetID
+                    applyUniformValues(uniforms, to: &updatedROM.settings)
+                    library.updateROM(updatedROM, persist: false, silent: true)
+                }
             }
         }
         
         do {
             try modelContext.save()
+            LibraryMetadataStore.shared.flushDirtyToSwiftData()
             LoggerService.debug(category: "ShaderPicker", "Saved \(entries.count) entries with shader: \(presetID)")
         } catch {
             LoggerService.error(category: "ShaderPicker", "Failed to save: \(error.localizedDescription)")
