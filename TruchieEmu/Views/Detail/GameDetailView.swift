@@ -93,7 +93,9 @@ struct GameDetailView: View {
     var unlockedAchievementCount: Int { gameAchievements.filter { $0.isUnlocked }.count }
     var totalAchievementPoints: Int { gameAchievements.reduce(0) { $0 + $1.points } }
     var earnedPoints: Int { gameAchievements.filter { $0.isUnlocked }.reduce(0) { $0 + $1.points } }
-    var systemDefaultShaderID: String { "" }
+    var systemDefaultShaderID: String {
+        SystemDatabase.system(forID: currentROM.systemID ?? "")?.defaultShaderPresetID ?? ""
+    }
     var isShaderCustomized: Bool { currentROM.settings.shaderPresetID != systemDefaultShaderID }
 
     var body: some View {
@@ -386,6 +388,7 @@ struct GameDetailView: View {
     func updateSettings(_ action: (inout ROMSettings) -> Void) {
         var updated = currentROM
         action(&updated.settings)
+        LoggerService.debug(category: "ShaderPicker", "updateSettings: about to call library.updateROM for ROM: \(updated.id), shaderPresetID: \(updated.settings.shaderPresetID)")
         library.updateROM(updated)
     }
 
@@ -413,7 +416,8 @@ struct GameDetailView: View {
         }
 
         isLaunchingGame = true
-        gameLauncher.launchGame(rom: currentROM, coreID: cid, slotToLoad: slotToLoad, library: library) { _ in
+        let freshROM = library.roms.first { $0.id == currentROM.id } ?? currentROM
+        gameLauncher.launchGame(rom: freshROM, coreID: cid, slotToLoad: slotToLoad, library: library) { _ in
             self.isLaunchingGame = false
         }
     }

@@ -6,8 +6,12 @@ struct BezelsSection: View {
     @State private var currentBezelImage: NSImage?
     @Environment(\.colorScheme) private var colorScheme
 
+    private var currentROM: ROM {
+        library.roms.first { $0.id == rom.id } ?? rom
+    }
+
     private var currentBezelStatusText: String {
-        let bezelFileName = rom.settings.bezelFileName
+        let bezelFileName = currentROM.settings.bezelFileName
         if bezelFileName == "none" {
             return "Off"
         } else if bezelFileName.isEmpty {
@@ -18,7 +22,7 @@ struct BezelsSection: View {
     }
 
     private var currentBezelDisplayName: String {
-        let bezelFileName = rom.settings.bezelFileName
+        let bezelFileName = currentROM.settings.bezelFileName
         if bezelFileName == "none" {
             return "Bezels are disabled"
         } else if bezelFileName.isEmpty {
@@ -145,26 +149,26 @@ struct BezelsSection: View {
 
     @MainActor
     private func loadCurrentBezelImage() async {
-        let bezelFileName = rom.settings.bezelFileName
+        let bezelFileName = currentROM.settings.bezelFileName
         guard bezelFileName != "none" else { currentBezelImage = nil; return }
-        guard let systemID = rom.systemID else { currentBezelImage = nil; return }
+        guard let systemID = currentROM.systemID else { currentBezelImage = nil; return }
 
-        let directURL = BezelStorageManager.shared.bezelFilePath(systemID: systemID, gameName: bezelFileName.isEmpty ? rom.displayName : bezelFileName)
+        let directURL = BezelStorageManager.shared.bezelFilePath(systemID: systemID, gameName: bezelFileName.isEmpty ? currentROM.displayName : bezelFileName)
         if let image = NSImage(contentsOf: directURL) { currentBezelImage = image; return }
 
-        let baseName = bezelFileName.isEmpty ? rom.displayName : bezelFileName
+        let baseName = bezelFileName.isEmpty ? currentROM.displayName : bezelFileName
         let fileNameWithExt = baseName.hasSuffix(".png") ? baseName : baseName + ".png"
         let urlWithExt = BezelStorageManager.shared.bezelFilePath(systemID: systemID, gameName: fileNameWithExt)
         if let image = NSImage(contentsOf: urlWithExt) { currentBezelImage = image; return }
 
-        let result = BezelManager.shared.resolveBezel(systemID: systemID, rom: rom)
+        let result = BezelManager.shared.resolveBezel(systemID: systemID, rom: currentROM)
         if let entry = result.entry, let url = entry.localURL, FileManager.default.fileExists(atPath: url.path) {
             currentBezelImage = NSImage(contentsOf: url); return
         }
 
         let bezelDir = BezelStorageManager.shared.systemBezelsDirectory(for: systemID)
         if FileManager.default.fileExists(atPath: bezelDir.path) {
-            let searchName = bezelFileName.isEmpty ? rom.displayName : bezelFileName
+            let searchName = bezelFileName.isEmpty ? currentROM.displayName : bezelFileName
             let searchNameLower = searchName.lowercased()
             if let fileURLs = try? FileManager.default.contentsOfDirectory(at: bezelDir, includingPropertiesForKeys: nil) {
                 for fileURL in fileURLs where fileURL.pathExtension.lowercased() == "png" {
@@ -180,10 +184,10 @@ struct BezelsSection: View {
 
     @MainActor
     private func autoMatchBezel() {
-        guard let systemID = rom.systemID else { return }
-        let result = BezelManager.shared.resolveBezel(systemID: systemID, rom: rom, preferAutoMatch: true)
+        guard let systemID = currentROM.systemID else { return }
+        let result = BezelManager.shared.resolveBezel(systemID: systemID, rom: currentROM, preferAutoMatch: true)
         if let entry = result.entry {
-            var updated = rom
+            var updated = currentROM
             updated.settings.bezelFileName = entry.filename
             library.updateROM(updated)
             Task { await loadCurrentBezelImage() }
@@ -191,7 +195,7 @@ struct BezelsSection: View {
     }
 
     private func clearBezel() {
-        var updated = rom
+        var updated = currentROM
         updated.settings.bezelFileName = ""
         library.updateROM(updated)
     }

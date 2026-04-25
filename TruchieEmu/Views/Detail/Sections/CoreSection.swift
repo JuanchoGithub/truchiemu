@@ -10,6 +10,10 @@ struct CoreSection: View {
     @Environment(\.colorScheme) private var colorScheme
     private var sysPrefs = SystemPreferences.shared
 
+    private var currentROM: ROM {
+        library.roms.first { $0.id == rom.id } ?? rom
+    }
+
     var body: some View {
         ModernSectionCard(title: "Core", icon: "cpu") {
             VStack(alignment: .leading, spacing: 12) {
@@ -83,8 +87,8 @@ struct CoreSection: View {
             }
         }
         .onAppear {
-            selectedCoreID = rom.selectedCoreID ?? sysPrefs.preferredCoreID(for: rom.systemID ?? "") ?? system?.defaultCoreID
-            applyCoreToSystem = !rom.useCustomCore
+            selectedCoreID = currentROM.selectedCoreID ?? sysPrefs.preferredCoreID(for: currentROM.systemID ?? "") ?? system?.defaultCoreID
+            applyCoreToSystem = !currentROM.useCustomCore
         }
     }
 
@@ -93,18 +97,18 @@ struct CoreSection: View {
     }
 
     private func applyCoreConfiguration() {
-        guard let sysID = rom.systemID,
+        guard let sysID = currentROM.systemID,
               let coreID = selectedCoreID,
               !coreID.isEmpty else { return }
 
         if applyCoreToSystem {
             sysPrefs.setPreferredCoreID(coreID, for: sysID)
-            var updated = rom
+            var updated = currentROM
             updated.useCustomCore = false
             updated.selectedCoreID = nil
             library.updateROM(updated)
         } else {
-            var updated = rom
+            var updated = currentROM
             updated.useCustomCore = true
             updated.selectedCoreID = coreID
             library.updateROM(updated)

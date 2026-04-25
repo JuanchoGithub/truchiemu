@@ -59,7 +59,7 @@ class GameLauncher: ObservableObject {
             let system = SystemDatabase.system(forID: rom.systemID ?? "")
             let defaultShader = system?.defaultShaderPresetID ?? ""
             let romShader = rom.settings.shaderPresetID.isEmpty ? defaultShader : rom.settings.shaderPresetID
-            LoggerService.debug(category: "GameLauncher", "Resolved shader preset: \(romShader) (System default: \(defaultShader))")
+            LoggerService.debug(category: "GameLauncher", "Resolved shader for '\(rom.displayName)' [\(rom.id.uuidString.prefix(8))]: preset=\(romShader.isEmpty ? "(none)" : romShader), systemDefault=\(defaultShader.isEmpty ? "(none)" : defaultShader)")
             self.shaderPresetID = shaderPresetID ?? romShader
             
             // Resolve achievements

@@ -1,4 +1,5 @@
 import SwiftUI
+import SwiftData
 
 extension GameDetailView {
     var shaderSection: some View {
@@ -90,18 +91,42 @@ extension GameDetailView {
         if shaderWindowSettings == nil {
             shaderWindowSettings = ShaderWindowSettings(
                 shaderPresetID: currentROM.settings.shaderPresetID,
-                uniformValues: extractUniformValues(from: currentROM.settings)
+                uniformValues: extractUniformValues(from: currentROM.settings),
+                systemID: nil  // Don't pass systemID to hide Application Mode picker in Game Info
             )
         } else {
             shaderWindowSettings?.shaderPresetID = currentROM.settings.shaderPresetID
+            shaderWindowSettings?.systemID = nil
         }
 
         let windowController = ShaderWindowController(
             settings: shaderWindowSettings!
-        ) { [self] newPresetID, newUniformValues, _ in
-            updateSettings { romSettings in
-                romSettings.shaderPresetID = newPresetID
-                applyUniformValues(newUniformValues, to: &romSettings)
+        ) { [self] newPresetID, newUniformValues, mode in
+            // DEBUG: Log callback invocation
+            LoggerService.debug(category: "ShaderPicker", "=== APPLY BUTTON PRESSED ===")
+            LoggerService.debug(category: "ShaderPicker", "Received: presetID=\(newPresetID), mode=\(String(describing: mode)), uniformCount=\(newUniformValues.count)")
+            LoggerService.debug(category: "ShaderPicker", "Settings context: systemID=\(String(describing: shaderWindowSettings?.systemID)), initialPresetID=\(shaderWindowSettings?.shaderPresetID ?? "nil")")
+            
+            // Handle application mode
+            switch mode {
+            case .applyToAll:
+                // Override all games in system - update system default
+                if let sysID = currentROM.systemID,
+                   let sysIndex = SystemDatabase.systems.firstIndex(where: { $0.id == sysID }) {
+                    SystemDatabase.systems[sysIndex].defaultShaderPresetID = newPresetID
+                    SystemDatabase.saveSystems(SystemDatabase.systems)
+                    // Also update all ROMs in this system that don't have custom shaders
+                    applyToAllGamesInSystem(systemID: sysID, presetID: newPresetID, uniforms: newUniformValues)
+                }
+            case .applyToCurrent, .applyToDefaults:
+                // Apply to single game
+                fallthrough
+            @unknown default:
+                LoggerService.debug(category: "ShaderPicker", "updateSettings called - about to save shader: \(newPresetID) for currentROM ID: \(currentROM.id)")
+                updateSettings { romSettings in
+                    romSettings.shaderPresetID = newPresetID
+                    applyUniformValues(newUniformValues, to: &romSettings)
+                }
             }
             if let preset = ShaderPreset.preset(id: newPresetID) {
                 ShaderManager.shared.activatePreset(preset)
@@ -109,6 +134,49 @@ extension GameDetailView {
         }
         ShaderWindowController.shared = windowController
         windowController.show()
+    }
+
+    private func applyToAllGamesInSystem(systemID: String, presetID: String, uniforms: [String: Float]) {
+        let decoder = JSONDecoder()
+        let encoder = JSONEncoder()
+        guard let modelContext = try? SwiftDataContainer.shared.container.mainContext else { 
+            LoggerService.error(category: "ShaderPicker", "Failed to get modelContext")
+            return 
+        }
+        
+        let descriptor = FetchDescriptor<ROMEntry>(predicate: #Predicate { $0.systemID == systemID })
+        guard let entries = try? modelContext.fetch(descriptor) else { 
+            LoggerService.error(category: "ShaderPicker", "Failed to fetch ROM entries for systemID: \(systemID)")
+            return 
+        }
+        
+        LoggerService.debug(category: "ShaderPicker", "applyToAllGamesInSystem: systemID=\(systemID), entries found=\(entries.count)")
+        
+        for entry in entries {
+            var settings: ROMSettings
+            if let json = entry.settingsJSON, let data = json.data(using: .utf8),
+               let decoded = try? decoder.decode(ROMSettings.self, from: data) {
+                settings = decoded
+            } else {
+                settings = ROMSettings()
+            }
+            
+            // Override even custom settings
+            settings.shaderPresetID = presetID
+            applyUniformValues(uniforms, to: &settings)
+            
+            if let encoded = try? encoder.encode(settings),
+               let json = String(data: encoded, encoding: .utf8) {
+                entry.settingsJSON = json
+            }
+        }
+        
+        do {
+            try modelContext.save()
+            LoggerService.debug(category: "ShaderPicker", "Saved \(entries.count) entries with shader: \(presetID)")
+        } catch {
+            LoggerService.error(category: "ShaderPicker", "Failed to save: \(error.localizedDescription)")
+        }
     }
 
     func extractUniformValues(from settings: ROMSettings) -> [String: Float] {

@@ -385,6 +385,8 @@ struct ShaderPresetPickerView: View {
     
     // Callback fired when user releases any slider (not during drag)
     var onValueCommitted: (([String: Float]) -> Void)?
+    // Callback fired when Apply is clicked with all settings
+    var onPresetChanged: ((String, [String: Float], ShaderApplicationMode) -> Void)?
     
     var body: some View {
         HStack(spacing: 0) {
@@ -401,44 +403,49 @@ struct ShaderPresetPickerView: View {
                 
                 Divider()
                 
-                // Preset list
+// Preset list
                 presetList
                 
-                // Application Mode Footer
-                                 if settings.systemID != nil {
-                                     Divider()
-                                     VStack(spacing: 0) {
-                                         Picker("Application Mode", selection: $settings.applicationMode) {
-                                             Text("Default").tag(ShaderApplicationMode.applyToDefaults)
-                                             Text("Override").tag(ShaderApplicationMode.applyToAll)
-                                         }
-                                         .pickerStyle(.segmented)
-                                         .padding(10)
-  
-                                         VStack(spacing: 8) {
-                                             HStack {
-                                                 Spacer()
-                                                 Button("Apply") {
-                                                     onValueCommitted?(settings.uniformValues)
-                                                 }
-                                                 .buttonStyle(.borderedProminent)
-                                                 .controlSize(.small)
-                                                 .padding(.horizontal, 12)
-                                                 .padding(.vertical, 8)
-                                             }
-                                             
-                                             if let message = settings.notificationMessage {
-                                                 Text(message)
-                                                     .font(.caption)
-                                                     .foregroundColor(.secondary)
-                                                     .multilineTextAlignment(.center)
-                                                     .padding(.horizontal, 10)
-                                                     .transition(.opacity)
-                                             }
-                                         }
-                                         .background(Color(NSColor.controlBackgroundColor))
-                                     }
-                                 }
+                // Application Mode (only shown for system context)
+                if settings.systemID != nil {
+                    Divider()
+                    VStack(spacing: 0) {
+                        Picker("Application Mode", selection: $settings.applicationMode) {
+                            Text("Default").tag(ShaderApplicationMode.applyToDefaults)
+                            Text("Override").tag(ShaderApplicationMode.applyToAll)
+                        }
+                        .pickerStyle(.segmented)
+                        .padding(10)
+                    }
+                    .background(Color(NSColor.controlBackgroundColor))
+                }
+                
+                // Apply button - always visible
+                Divider()
+                VStack(spacing: 8) {
+                    HStack {
+                        Spacer()
+                        Button("Apply") {
+                            LoggerService.debug(category: "ShaderPicker", "=== APPLY BUTTON CLICKED ===")
+                            LoggerService.debug(category: "ShaderPicker", "Apply: shaderPresetID=\(settings.shaderPresetID), mode=\(String(describing: settings.applicationMode)), systemID=\(String(describing: settings.systemID))")
+                            onPresetChanged?(settings.shaderPresetID, settings.uniformValues, settings.applicationMode)
+                        }
+                        .buttonStyle(.borderedProminent)
+                        .controlSize(.small)
+                        .padding(.horizontal, 12)
+                        .padding(.vertical, 8)
+                    }
+                   
+                    if let message = settings.notificationMessage {
+                        Text(message)
+                            .font(.caption)
+                            .foregroundColor(.secondary)
+                            .multilineTextAlignment(.center)
+                            .padding(.horizontal, 10)
+                            .transition(.opacity)
+                    }
+                }
+                .background(Color(NSColor.controlBackgroundColor))
             }
             .frame(minWidth: 300, maxWidth: .infinity)
             

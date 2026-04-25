@@ -342,6 +342,15 @@ ToolbarItem(placement: .primaryAction) {
                 viewMode = savedMode == "list" ? .list : .grid
             }
             
+            // Sync view model with restored sort settings
+            viewModel.updateFilters(
+                filter: filter,
+                searchText: searchText,
+                activeFilters: activeFilters,
+                sortByLastPlayed: sortByLastPlayed,
+                sortByLastAdded: sortByLastAdded
+            )
+            
             // Contextually resolve local boxarts for the current view
             handleFilterChange(filter)
             
@@ -1420,7 +1429,7 @@ private func removeROMFromLibrary(_ rom: ROM) {
         }
 
         gameLauncher.launchGame(
-            rom: rom,
+            rom: library.roms.first { $0.id == rom.id } ?? rom,
             coreID: cid,
             library: library
         )
