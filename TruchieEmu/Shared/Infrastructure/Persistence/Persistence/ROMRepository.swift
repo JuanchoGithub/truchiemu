@@ -58,6 +58,19 @@ final class ROMRepository {
         }
     }
 
+    // Fetch ROMs by IDs and map them to ROM structs.
+    func roms(ids: [UUID]) -> [ROM] {
+        let idSet = Set(ids)
+        let descriptor = FetchDescriptor<ROMEntry>()
+        do {
+            let entries = try context.fetch(descriptor)
+            return entries.filter { idSet.contains($0.id) }.compactMap { rom(from: $0) }
+        } catch {
+            LoggerService.error(category: "ROMRepository", "Failed to fetch ROMs by IDs: \(error.localizedDescription)")
+            return []
+        }
+    }
+
     // Bulk upsert ROM entries into the store.
     // Uses a single batch fetch + dictionary lookup to avoid N+1 queries.
     // All inserts/updates happen before a single context.save() to minimize WAL flushes.

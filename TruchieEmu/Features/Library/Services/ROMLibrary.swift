@@ -167,6 +167,15 @@ class ROMLibrary: ObservableObject {
         } else { repository.saveROMs(roms) }
     }
 
+    func refreshROMs(ids: [UUID]) {
+        let refreshedROMs = repository.roms(ids: ids)
+        for refreshed in refreshedROMs {
+            if let idx = roms.firstIndex(where: { $0.id == refreshed.id }) {
+                roms[idx] = refreshed
+            }
+        }
+    }
+
     // This method is called after any folder removal to ensure we don't keep orphaned ROM entries
     private func purgeROMsOutsideLibraryFolders() {
         let validPaths = primaryFolders.map { $0.url.path } + subfolderMap.values.flatMap { $0.map { $0.url.path } }
