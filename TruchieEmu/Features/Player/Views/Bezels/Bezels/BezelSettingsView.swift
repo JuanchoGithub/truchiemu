@@ -7,6 +7,7 @@ struct BezelSettingsView: View {
     // MARK: - Dependencies
     @ObservedObject private var apiService = BezelAPIService.shared
     @ObservedObject private var storageManager = BezelStorageManager.shared
+    @Environment(SystemDatabaseWrapper.self) private var systemDatabase
     
     // MARK: - State
     @State private var downloadResult: String?
@@ -155,7 +156,7 @@ struct BezelSettingsView: View {
                     Picker("System", selection: $selectedSystem) {
                         Text("All Systems").tag("all")
                         Divider()
-                        ForEach(SystemDatabase.systemsForDisplay.sorted(by: { $0.name < $1.name })) { sys in
+                        ForEach(systemDatabase.systemsForDisplay.sorted(by: { $0.name < $1.name })) { sys in
                             Text(sys.name).tag(sys.id)
                         }
                     }

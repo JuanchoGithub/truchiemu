@@ -5,6 +5,7 @@ import GameController
 struct ControllerSettingsView: View {
     @EnvironmentObject var controllerService: ControllerService
     @EnvironmentObject var library: ROMLibrary
+    @Environment(SystemDatabaseWrapper.self) private var systemDatabase
     @State private var selectedPlayer: Int = 1
     @State private var selectedSystemID: String
     @State private var configName: String = ""
@@ -257,7 +258,7 @@ struct ControllerSettingsView: View {
      }
 
      private var filteredSystemsForDisplay: [SystemInfo] {
-         SystemDatabase.systemsForDisplay
+         systemDatabase.systemsForDisplay
              .filter { sys in
                  (library.romCounts[sys.id] ?? 0) > 0
              }

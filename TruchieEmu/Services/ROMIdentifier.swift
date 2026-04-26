@@ -8,8 +8,8 @@ enum ROMIdentifier {
     // MARK: - Private Properties
 
     private static let cachedSystems:[SystemInfo] = {
-        let systems = SystemDatabase.systems
-        return systems.isEmpty ? SystemDatabase.loadSystems() : systems
+        let systems = SystemDatabaseWrapper.shared.systems
+        return systems.isEmpty ? SystemDatabase._loadSystems() : systems
     }()
 
     // Cache normalized path keywords to avoid millions of expensive string 
@@ -332,7 +332,7 @@ enum ROMIdentifier {
         // 1. Scoring Registry
         var scores: [String: Int] = [:]
         
-        let systemDB = SystemDatabase.loadSystems()
+        let systemDB = SystemDatabase._loadSystems()
         
         // 2. Analyze files
         for file in files {

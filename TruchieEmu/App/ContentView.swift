@@ -11,6 +11,7 @@ struct ContentView: View {
     @EnvironmentObject var coreManager: CoreManager
     @EnvironmentObject var libraryAutomation: LibraryAutomationCoordinator
     @EnvironmentObject var controllerService: ControllerService
+    @Environment(SystemDatabaseWrapper.self) private var systemDatabase
     @StateObject private var metadataSync = MetadataSyncCoordinator.shared
     @ObservedObject var wizard = SetupWizardState.shared
     
@@ -101,29 +102,32 @@ struct ContentView: View {
                                       systemID: targetSystem.id,
                                       applicationMode: .applyToDefaults
                                   )
-                                  shaderController = ShaderWindowController(settings: settings) { newPresetID, newUniforms, mode in
-                                      let preset = ShaderPreset.preset(id: newPresetID) ?? ShaderPreset.defaultPreset
-                                      
-                                      // 1. Update global manager state (for the next game launched)
-                                      ShaderManager.shared.activatePreset(preset)
-                                      for (name, value) in newUniforms {
-                                          ShaderManager.shared.updateUniform(name, value: value)
-                                      }
-                                      
-                                      // 2. Apply to database based on mode
-                                      let encoder = JSONEncoder()
-                                      let decoder = JSONDecoder()
-                                      
-                                        let targetSystemID = targetSystem.id
-                                        let oldSystemDefault = SystemDatabase.system(forID: targetSystemID)?.defaultShaderPresetID ?? ""
-                                        
-                                        // NEW: Update system default if applying to defaults or all
-                                        if mode == .applyToDefaults || mode == .applyToAll {
-                                            if let index = SystemDatabase.systems.firstIndex(where: { $0.id == targetSystemID }) {
-                                                SystemDatabase.systems[index].defaultShaderPresetID = newPresetID
-                                                SystemDatabase.saveSystems(SystemDatabase.systems)
-                                            }
-                                        }
+shaderController = ShaderWindowController(settings: settings) { newPresetID, newUniforms, mode in
+                                       LoggerService.debug(category: "ShaderPicker", "=== CONTENTVIEW CALLBACK ===")
+                                       LoggerService.debug(category: "ShaderPicker", "newPresetID=\(newPresetID), mode=\(String(describing: mode)), targetSystemID=\(targetSystem.id)")
+                                       
+                                       let preset = ShaderPreset.preset(id: newPresetID) ?? ShaderPreset.defaultPreset
+                                       
+                                       // 1. Update global manager state (for the next game launched)
+                                       ShaderManager.shared.activatePreset(preset)
+                                       for (name, value) in newUniforms {
+                                           ShaderManager.shared.updateUniform(name, value: value)
+                                       }
+                                       
+                                       // 2. Apply to database based on mode
+                                       let encoder = JSONEncoder()
+                                       let decoder = JSONDecoder()
+                                       
+                                       let targetSystemID = targetSystem.id
+                                          let oldSystemDefault = systemDatabase.system(forID: targetSystemID)?.defaultShaderPresetID ?? ""
+                                          
+                                          LoggerService.debug(category: "ShaderPicker", "oldSystemDefault=\(oldSystemDefault)")
+                                          
+                                          // NEW: Update system default if applying to defaults or all
+                                          if mode == .applyToDefaults || mode == .applyToAll {
+                                              LoggerService.debug(category: "ShaderPicker", "About to call updateSystemShaderPreset")
+                                              systemDatabase.updateSystemShaderPreset(systemID: targetSystemID, presetID: newPresetID)
+                                          }
                                         
                                         let descriptor = FetchDescriptor<ROMEntry>(predicate: #Predicate { $0.systemID == targetSystemID })
                                         guard let entries = try? modelContext.fetch(descriptor) else { return }
@@ -195,20 +199,17 @@ struct ContentView: View {
                                               UNUserNotificationCenter.current().add(request)
                                           }
                                       }
-                                  }
-                                  shaderController?.show()
-                              case .defaultShadersForDefaults(let systemID, let shaderID):
-                                  // Update system default
-                                  if let index = SystemDatabase.systems.firstIndex(where: { $0.id == systemID }) {
-                                      SystemDatabase.systems[index].defaultShaderPresetID = shaderID
-                                      SystemDatabase.saveSystems(SystemDatabase.systems)
-                                  }
-                                  
-                                  let descriptor = FetchDescriptor<ROMEntry>(predicate: #Predicate { $0.systemID == systemID })
-                                  if let entries = try? modelContext.fetch(descriptor) {
-                                      let encoder = JSONEncoder()
-                                      let decoder = JSONDecoder()
-                                      let oldSystemDefault = SystemDatabase.system(forID: systemID)?.defaultShaderPresetID ?? ""
+}
+                                   ShaderWindowController.shared = shaderController
+                                   shaderController?.show()
+case .defaultShadersForDefaults(let systemID, let shaderID):
+                                  systemDatabase.updateSystemShaderPreset(systemID: systemID, presetID: shaderID)
+                                   
+                                   let descriptor = FetchDescriptor<ROMEntry>(predicate: #Predicate { $0.systemID == systemID })
+                                   if let entries = try? modelContext.fetch(descriptor) {
+                                       let encoder = JSONEncoder()
+                                       let decoder = JSONDecoder()
+                                       let oldSystemDefault = systemDatabase.system(forID: systemID)?.defaultShaderPresetID ?? ""
                                       for entry in entries {
                                           var settings: ROMSettings
                                           if let json = entry.settingsJSON, let data = json.data(using: .utf8), let decoded = try? decoder.decode(ROMSettings.self, from: data) {
@@ -226,12 +227,8 @@ struct ContentView: View {
                                       }
                                       try? modelContext.save()
                                   }
-                              case .defaultShadersForAll(let systemID, let shaderID):
-                                  // Update system default
-                                  if let index = SystemDatabase.systems.firstIndex(where: { $0.id == systemID }) {
-                                      SystemDatabase.systems[index].defaultShaderPresetID = shaderID
-                                      SystemDatabase.saveSystems(SystemDatabase.systems)
-                                  }
+case .defaultShadersForAll(let systemID, let shaderID):
+                                  systemDatabase.updateSystemShaderPreset(systemID: systemID, presetID: shaderID)
                                   
                                   let descriptor = FetchDescriptor<ROMEntry>(predicate: #Predicate { $0.systemID == systemID })
                                   if let entries = try? modelContext.fetch(descriptor) {

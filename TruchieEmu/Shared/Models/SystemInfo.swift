@@ -233,7 +233,10 @@ struct SystemInfo: Identifiable, Codable, Hashable {
 
 // MARK: - SystemDatabase
 class SystemDatabase {
-    static var systems: [SystemInfo] = loadSystems()
+    static var systems: [SystemInfo] {
+        get { SystemDatabaseWrapper.shared.systems }
+        set { SystemDatabaseWrapper.shared.systems = newValue }
+    }
 
     private static let cacheURL: URL = {
         let appSupport = FileManager.default.urls(for: .applicationSupportDirectory, in: .userDomainMask).first!
@@ -242,7 +245,7 @@ class SystemDatabase {
         return appDir.appendingPathComponent("SystemDatabase.json")
     }()
 
-    static func loadSystems() -> [SystemInfo] {
+    static func _loadSystems() -> [SystemInfo] {
         // 1. Load the BASE systems from the App Bundle (Source of Truth for hardcoded data)
         var bundledSystems: [String: SystemInfo] = [:]
         if let bundleURL = Bundle.main.url(forResource: "SystemDatabase", withExtension: "json") {
@@ -323,12 +326,15 @@ class SystemDatabase {
         return finalSystems.sorted { $0.sortOrder < $1.sortOrder }
     }
 
-    static func saveSystems(_ updatedSystems: [SystemInfo]) {
+    static func _saveSystems(_ updatedSystems: [SystemInfo]) {
         LoggerService.debug(category: "SystemDatabase", "Saving systems")
-        self.systems = updatedSystems.sorted { $0.sortOrder < $1.sortOrder }
-        if let data = try? JSONEncoder().encode(self.systems) {
+        if let data = try? JSONEncoder().encode(updatedSystems) {
             try? data.write(to: cacheURL)
         }
+    }
+
+    static func saveSystems(_ updatedSystems: [SystemInfo]) {
+        SystemDatabaseWrapper.shared.systems = updatedSystems
     }
 
     static var systemsForDisplay: [SystemInfo] { systems.filter { $0.displayInUI } }

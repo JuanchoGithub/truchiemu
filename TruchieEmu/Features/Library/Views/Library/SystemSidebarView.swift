@@ -4,6 +4,7 @@ struct SystemSidebarView: View {
     @EnvironmentObject var library: ROMLibrary
     @EnvironmentObject var categoryManager: CategoryManager
     @EnvironmentObject var coreManager: CoreManager
+    @Environment(SystemDatabaseWrapper.self) private var systemDatabase
     @Binding var selectedFilter: LibraryFilter
     @Binding var showCreateCategorySheet: Bool
     @Binding var editingCategory: GameCategory?
@@ -16,12 +17,12 @@ struct SystemSidebarView: View {
     private var combinedSystemsWithROMs: [(system: SystemInfo, combinedCount: Int)] {
         let ids = Set(library.roms.compactMap { $0.systemID })
         // Only include display-visible systems (gb visible, gbc hidden)
-        let displaySystems = SystemDatabase.systemsForDisplay
+        let displaySystems = systemDatabase.systemsForDisplay
         
         var result: [(SystemInfo, Int)] = []
         for sys in displaySystems {
             // Check if any ROM exists for this system or its merged partners
-            let internalIDs = SystemDatabase.allInternalIDs(forDisplayID: sys.id)
+            let internalIDs = systemDatabase.allInternalIDs(forDisplayID: sys.id)
             let total = internalIDs.reduce(0) { sum, id in
                 sum + (ids.contains(id) ? (library.romCounts[id] ?? 0) : 0)
             }

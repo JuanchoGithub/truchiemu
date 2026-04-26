@@ -418,6 +418,7 @@
 		DD761E282F9C1C0A002E0F3D /* LiteCRT.metal in Sources */ = {isa = PBXBuildFile; fileRef = DD761E1B2F9C1C0A002E0F3D /* LiteCRT.metal */; };
 		DD761E292F9C1C0A002E0F3D /* LottesCRT.metal in Sources */ = {isa = PBXBuildFile; fileRef = DD761E1C2F9C1C0A002E0F3D /* LottesCRT.metal */; };
 		DD761E2D2F9C45DC002E0F3D /* CRTFilter_multipass.metal in Sources */ = {isa = PBXBuildFile; fileRef = DD761E2C2F9C45DC002E0F3D /* CRTFilter_multipass.metal */; };
+		DD761E2F2F9E6C3B002E0F3D /* SystemDatabaseWrapper.swift in Sources */ = {isa = PBXBuildFile; fileRef = DD761E2E2F9E6C3B002E0F3D /* SystemDatabaseWrapper.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -852,6 +853,7 @@
 		DD761E1E2F9C1C0A002E0F3D /* ScaleSmooth.metal */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.metal; path = ScaleSmooth.metal; sourceTree = "<group>"; };
 		DD761E1F2F9C1C0A002E0F3D /* SharpBilinear.metal */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.metal; path = SharpBilinear.metal; sourceTree = "<group>"; };
 		DD761E2C2F9C45DC002E0F3D /* CRTFilter_multipass.metal */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.metal; path = CRTFilter_multipass.metal; sourceTree = "<group>"; };
+		DD761E2E2F9E6C3B002E0F3D /* SystemDatabaseWrapper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SystemDatabaseWrapper.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXGroup section */
@@ -1633,6 +1635,7 @@
 		DD1AE5AB2F96D7240014A60E /* Models */ = {
 			isa = PBXGroup;
 			children = (
+				DD761E2E2F9E6C3B002E0F3D /* SystemDatabaseWrapper.swift */,
 				DD1AE5A92F96D7240014A60E /* SwiftDataModels.swift */,
 				DD1AE5AA2F96D7240014A60E /* SystemInfo.swift */,
 			);
@@ -2199,6 +2202,7 @@
 				DD1AEAF72F96D7240014A60E /* GitHubAPIModels.swift in Sources */,
 				DD1AEAF82F96D7240014A60E /* CoreOptionsView.swift in Sources */,
 				DD1AEAF92F96D7240014A60E /* BoxArtPickerView.swift in Sources */,
+				DD761E2F2F9E6C3B002E0F3D /* SystemDatabaseWrapper.swift in Sources */,
 				DD1AEAFA2F96D7240014A60E /* BezelSettingsView.swift in Sources */,
 				DD1AEAFB2F96D7240014A60E /* CoreSection.swift in Sources */,
 				DD1AEAFC2F96D7240014A60E /* MAMEImportService.swift in Sources */,

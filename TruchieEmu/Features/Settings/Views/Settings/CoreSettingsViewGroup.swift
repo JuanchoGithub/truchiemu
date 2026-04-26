@@ -6,6 +6,7 @@ import GameController
 struct CoreSettingsView: View {
     @EnvironmentObject var coreManager: CoreManager
     @ObservedObject private var prefs = SystemPreferences.shared 
+    @Environment(SystemDatabaseWrapper.self) private var systemDatabase
 
     @Binding var searchText: String
     let searchKeywords: [String] = ["systems cores emulator download update"]
@@ -16,7 +17,7 @@ struct CoreSettingsView: View {
 
     private var selectedSystem: SystemInfo? {
         if let id = selectedSystemID {
-            return SystemDatabase.system(forID: id)
+            return systemDatabase.system(forID: id)
         }
         return nil
     }
@@ -25,7 +26,7 @@ struct CoreSettingsView: View {
         let _ = prefs.updateTrigger // Subscribes to database updates
 
         // 1. Start with the base list
-        var filteredList = SystemDatabase.systemsForDisplay
+        var filteredList = systemDatabase.systemsForDisplay
         
         // 2. Apply Fuzzy Search Filter
         if !searchText.isEmpty {

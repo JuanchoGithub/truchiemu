@@ -6,6 +6,7 @@ struct CheatSettingsView: View {
     @StateObject private var downloadService = CheatDownloadService.shared
     @StateObject private var cheatManager = CheatManagerService.shared
     @ObservedObject var prefs = SystemPreferences.shared
+    @Environment(SystemDatabaseWrapper.self) private var systemDatabase
     
     @State private var downloadResult: String?
     @State private var showClearConfirmation = false
@@ -256,7 +257,7 @@ struct CheatSettingsView: View {
                 }
             } else {
                 Menu("Update Specific...") {
-                    ForEach(SystemDatabase.systemsForDisplay.sorted(by: { $0.name < $1.name })) { sys in
+                    ForEach(systemDatabase.systemsForDisplay.sorted(by: { $0.name < $1.name })) { sys in
                         Button(sys.name) {
                             downloadForSystem(sys.id, name: sys.name)
                         }

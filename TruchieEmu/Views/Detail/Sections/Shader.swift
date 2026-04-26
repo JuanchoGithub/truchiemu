@@ -109,13 +109,14 @@ extension GameDetailView {
             LoggerService.debug(category: "ShaderPicker", "Settings context: systemID=\(String(describing: shaderWindowSettings?.systemID)), initialPresetID=\(shaderWindowSettings?.shaderPresetID ?? "nil")")
             
             // Handle application mode
+            LoggerService.debug(category: "ShaderPicker", "Processing mode: \(String(describing: mode))")
             switch mode {
             case .applyToAll:
                 // Override all games in system - update system default
-                if let sysID = currentROM.systemID,
-                   let sysIndex = SystemDatabase.systems.firstIndex(where: { $0.id == sysID }) {
-                    SystemDatabase.systems[sysIndex].defaultShaderPresetID = newPresetID
-                    SystemDatabase.saveSystems(SystemDatabase.systems)
+                LoggerService.debug(category: "ShaderPicker", "applyToAll case - currentROM.systemID=\(String(describing: currentROM.systemID))")
+                if let sysID = currentROM.systemID {
+                    LoggerService.debug(category: "ShaderPicker", "Calling updateSystemShaderPreset for system: \(sysID)")
+                    SystemDatabaseWrapper.shared.updateSystemShaderPreset(systemID: sysID, presetID: newPresetID)
                     // Also update all ROMs in this system that don't have custom shaders
                     applyToAllGamesInSystem(systemID: sysID, presetID: newPresetID, uniforms: newUniformValues)
                 }

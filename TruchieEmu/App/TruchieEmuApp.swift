@@ -50,6 +50,7 @@ struct TruchieEmuApp: App {
     @StateObject private var coreManager = CoreManager()
     @StateObject private var controllerService = ControllerService.shared
     @StateObject private var mameVerification = MAMEVerificationService.shared
+    @State private var systemDatabase = SystemDatabaseWrapper.shared
     
     // NOTE: NSApp is NOT available in init() for @main App structs.
     // Activation policy is set in AppDelegate.applicationWillFinishLaunching instead.
@@ -62,8 +63,8 @@ struct TruchieEmuApp: App {
     // Systems that have games in the library
     private var systemsWithGames: [SystemInfo] {
         let ids = Set(library.roms.compactMap { $0.systemID })
-        return SystemDatabase.systemsForDisplay.filter { system in
-            let internalIDs = SystemDatabase.allInternalIDs(forDisplayID: system.id)
+        return systemDatabase.systemsForDisplay.filter { system in
+            let internalIDs = systemDatabase.allInternalIDs(forDisplayID: system.id)
             return internalIDs.contains { ids.contains($0) }
         }.sorted { $0.name.localizedCaseInsensitiveCompare($1.name) == .orderedAscending }
     }
@@ -92,6 +93,7 @@ struct TruchieEmuApp: App {
                 .environmentObject(controllerService)
                 .environmentObject(LibraryAutomationCoordinator.shared)
                 .environmentObject(mameVerification)
+                .environment(systemDatabase)
                 .onAppear {
                     // Start MAME verification when app becomes idle
                     startMAMEVerificationIfNeeded()
