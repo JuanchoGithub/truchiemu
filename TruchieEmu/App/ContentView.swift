@@ -139,15 +139,13 @@ shaderController = ShaderWindowController(settings: settings) { newPresetID, new
                                          guard let entries = try? modelContext.fetch(descriptor) else { return }
                                          LoggerService.debug(category: "ShaderPicker", "Found \(entries.count) ROM entries for system \(targetSystemID)")
                                         
-var overriddenGames: [String] = []
-                                         var updatedROMIDs: [UUID] = []
-                                         
- for entry in entries {
-                                              LoggerService.debug(category: "ShaderPicker", "Processing entry: \(entry.name), current shader: \(settings.shaderPresetID)")
+                                        var overriddenGames: [String] = []
+                                        var updatedROMIDs: [UUID] = []
+                                         for entry in entries {
                                               var settings: ROMSettings
                                               if let json = entry.settingsJSON, let data = json.data(using: .utf8), let decoded = try? decoder.decode(ROMSettings.self, from: data) {
                                                   settings = decoded
-} else {
+                                                } else {
                                                    settings = ROMSettings()
                                                }
                                                
@@ -159,27 +157,43 @@ var overriddenGames: [String] = []
                                                case .applyToDefaults:
                                                    // Update only if it has no specific preference (using the system's default ID)
                                                    shouldUpdate = (settings.shaderPresetID == oldSystemDefault || settings.shaderPresetID.isEmpty)
-                                               case .applyToAll:
-                                                   // In OVERRIDE mode, only update ROMs that have a custom shader
-                                                   // ROMs without custom shaders will naturally use the system default
-                                                   let isCustom = !settings.shaderPresetID.isEmpty && settings.shaderPresetID != oldSystemDefault
-                                                   shouldUpdate = isCustom
-                                                   if isCustom {
-                                                       overriddenGames.append(entry.name)
-                                                   }
-                                               }
-                                               
-                                               LoggerService.debug(category: "ShaderPicker", "Entry \(entry.name): shouldUpdate=\(shouldUpdate), currentShader=\(settings.shaderPresetID), newPresetID=\(newPresetID)")
-                                               
-                                               if shouldUpdate && settings.shaderPresetID != newPresetID {
-                                                   settings.shaderPresetID = newPresetID
-                                                   
-                                                   if let encoded = try? encoder.encode(settings), let json = String(data: encoded, encoding: .utf8) {
-                                                       entry.settingsJSON = json
-                                                       updatedROMIDs.append(entry.id)
-                                                       LoggerService.debug(category: "ShaderPicker", "Updated entry \(entry.name) with shader \(newPresetID)")
-                                                   }
-                                               }
+                                                case .applyToAll:
+                                                            // In OVERRIDE mode, clear custom shaders so all ROMs use the system default
+                                                            // Only process ROMs that currently have a custom shader set
+                                                            let hasCustomShader = !settings.shaderPresetID.isEmpty
+                                                            shouldUpdate = hasCustomShader
+                                                            if hasCustomShader {
+                                                            overriddenGames.append(entry.name)
+                                                            }
+                                                                                            }
+                                                                                            
+                                                                                            
+                                                if shouldUpdate {
+                                                        // For Override mode, clear the custom shader so ROM uses system default
+                                                        if mode == .applyToAll {
+                                                            settings.shaderPresetID = ""
+                                                            // Reset shader uniforms to defaults
+                                                            settings.crtEnabled = true
+                                                            settings.scanlinesEnabled = true
+                                                            settings.scanlineIntensity = 0.35
+                                                            settings.barrelEnabled = true
+                                                            settings.barrelAmount = 0.12
+                                                            settings.phosphorEnabled = true
+                                                            settings.scanlineSmooth = false
+                                                            settings.colorBoost = 1.0
+                                                            settings.bezelFileName = ""
+                                                            LoggerService.debug(category: "ShaderPicker", "Cleared custom shader for entry \(entry.name), will use system default: \(newPresetID)")
+                                                        } else {
+                                                            // For other modes, set the shader preset
+                                                            settings.shaderPresetID = newPresetID
+                                                            LoggerService.debug(category: "ShaderPicker", "Updated entry \(entry.name) with shader \(newPresetID)")
+                                                        }
+
+                                                        if let encoded = try? encoder.encode(settings), let json = String(data: encoded, encoding: .utf8) {
+                                                            entry.settingsJSON = json
+                                                            updatedROMIDs.append(entry.id)
+                                                        }
+                                                        }
                                            }
                                            try? modelContext.save()
                                            LoggerService.debug(category: "ShaderPicker", "Saved modelContext, overriddenGames count: \(overriddenGames.count)")
@@ -195,15 +209,19 @@ var overriddenGames: [String] = []
                                         
                                         // 3. Show notification
                                       DispatchQueue.main.async {
-                                          let message: String
-                                          switch mode {
-                                          case .applyToCurrent:
-                                              message = "Shader applied to current game."
-                                          case .applyToDefaults:
-                                              message = "Shader set as default, games with custom shaders not changed"
-                                          case .applyToAll:
-                                              message = "Shader set as default for this \(targetSystem.name) and all its games."
-                                          }
+let message: String
+        switch mode {
+        case .applyToCurrent:
+          message = "Shader applied to current game."
+        case .applyToDefaults:
+          message = "Shader set as default, games with custom shaders not changed"
+        case .applyToAll:
+          if !overriddenGames.isEmpty {
+            message = "Cleared \(overriddenGames.count) custom shaders for \(targetSystem.name). All games now use system default."
+          } else {
+            message = "Shader set as default for \(targetSystem.name). No custom shaders to clear."
+          }
+        }
                                           
                                           // Always show in-window message as fallback/immediate feedback
                                           settings.notificationMessage = message
