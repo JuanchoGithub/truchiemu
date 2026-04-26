@@ -309,6 +309,7 @@
 		DD1AEAD62F96D7240014A60E /* GameCategory.swift in Sources */ = {isa = PBXBuildFile; fileRef = DD1AE0692F96D7240014A60E /* GameCategory.swift */; };
 		DD1AEAD72F96D7240014A60E /* ShaderPresetPickerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = DD1AE5D62F96D7240014A60E /* ShaderPresetPickerView.swift */; };
 		DD1AEAD82F96D7240014A60E /* AppSettings.swift in Sources */ = {isa = PBXBuildFile; fileRef = DD1AE5B32F96D7240014A60E /* AppSettings.swift */; };
+	1CB050B135EE48BCF0567992 /* ShaderGameOverrideView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 13DB6202C4940AA68803A3EB /* ShaderGameOverrideView.swift */; };
 		DD1AEADA2F96D7240014A60E /* Cheats.swift in Sources */ = {isa = PBXBuildFile; fileRef = DD1AE5BF2F96D7240014A60E /* Cheats.swift */; };
 		DD1AEADB2F96D7240014A60E /* LaunchBoxGamesDBService.swift in Sources */ = {isa = PBXBuildFile; fileRef = DD1AE5922F96D7240014A60E /* LaunchBoxGamesDBService.swift */; };
 		DD1AEADC2F96D7240014A60E /* RetroAchievementsService.swift in Sources */ = {isa = PBXBuildFile; fileRef = DD1AE5972F96D7240014A60E /* RetroAchievementsService.swift */; };
@@ -839,6 +840,7 @@
 		DD1AE5D12F96D7240014A60E /* ShaderSection.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShaderSection.swift; sourceTree = "<group>"; };
 		DD1AE5D42F96D7240014A60E /* GameDetailView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GameDetailView.swift; sourceTree = "<group>"; };
 		DD1AE5D62F96D7240014A60E /* ShaderPresetPickerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShaderPresetPickerView.swift; sourceTree = "<group>"; };
+	13DB6202C4940AA68803A3EB /* ShaderGameOverrideView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShaderGameOverrideView.swift; sourceTree = "<group>"; };
 		DD1AE5D92F96D7240014A60E /* GameError.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GameError.swift; sourceTree = "<group>"; };
 		DD1AEB452F96DACB0014A60E /* TruchiEmu.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = TruchiEmu.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		DD761E132F9AE550002E0F3D /* InputCaptureManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InputCaptureManager.swift; sourceTree = "<group>"; };
@@ -1743,6 +1745,7 @@
 			isa = PBXGroup;
 			children = (
 				DD1AE5D62F96D7240014A60E /* ShaderPresetPickerView.swift */,
+		13DB6202C4940AA68803A3EB /* ShaderGameOverrideView.swift */,
 			);
 			path = Shaders;
 			sourceTree = "<group>";
@@ -2168,6 +2171,7 @@
 				DD1AEAD52F96D7240014A60E /* ROMIdentifier.swift in Sources */,
 				DD1AEAD62F96D7240014A60E /* GameCategory.swift in Sources */,
 				DD1AEAD72F96D7240014A60E /* ShaderPresetPickerView.swift in Sources */,
+		1CB050B135EE48BCF0567992 /* ShaderGameOverrideView.swift in Sources */,
 				DD1AEAD82F96D7240014A60E /* AppSettings.swift in Sources */,
 				DD1AEADA2F96D7240014A60E /* Cheats.swift in Sources */,
 				DD1AEADB2F96D7240014A60E /* LaunchBoxGamesDBService.swift in Sources */,

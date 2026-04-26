@@ -99,43 +99,23 @@ extension GameDetailView {
             shaderWindowSettings?.systemID = nil
         }
 
-        let windowController = ShaderWindowController(
-            settings: shaderWindowSettings!
-        )
-        windowController.onPresetChanged = { [self] newPresetID, newUniformValues, mode in
-            // DEBUG: Log callback invocation
-            LoggerService.debug(category: "ShaderPicker", "=== APPLY BUTTON PRESSED ===")
-            LoggerService.debug(category: "ShaderPicker", "Received: presetID=\(newPresetID), mode=\(String(describing: mode)), uniformCount=\(newUniformValues.count)")
-            LoggerService.debug(category: "ShaderPicker", "Settings context: systemID=\(String(describing: shaderWindowSettings?.systemID)), initialPresetID=\(shaderWindowSettings?.shaderPresetID ?? "nil")")
-            
-            // Handle application mode
-            LoggerService.debug(category: "ShaderPicker", "Processing mode: \(String(describing: mode))")
-            switch mode {
-            case .applyToAll:
-                // Override all games in system - update system default
-                LoggerService.debug(category: "ShaderPicker", "applyToAll case - currentROM.systemID=\(String(describing: currentROM.systemID))")
-                if let sysID = currentROM.systemID {
-                    LoggerService.debug(category: "ShaderPicker", "Calling updateSystemShaderPreset for system: \(sysID)")
-                    SystemDatabaseWrapper.shared.updateSystemShaderPreset(systemID: sysID, presetID: newPresetID)
-                    // Also update all ROMs in this system that don't have custom shaders
-                    applyToAllGamesInSystem(systemID: sysID, presetID: newPresetID, uniforms: newUniformValues)
-                }
-            case .applyToCurrent, .applyToDefaults:
-                // Apply to single game
-                fallthrough
-            @unknown default:
-                LoggerService.debug(category: "ShaderPicker", "updateSettings called - about to save shader: \(newPresetID) for currentROM ID: \(currentROM.id)")
-                updateSettings { romSettings in
-                    romSettings.shaderPresetID = newPresetID
-                    applyUniformValues(newUniformValues, to: &romSettings)
-                }
-            }
-            if let preset = ShaderPreset.preset(id: newPresetID) {
-                ShaderManager.shared.activatePreset(preset)
-            }
-            // Close window after applying
-            ShaderWindowController.shared?.close()
-        }
+let windowController = ShaderWindowController(
+settings: shaderWindowSettings!
+)
+windowController.onPresetChanged = { [self] newPresetID, newUniformValues, selectedGameIDs in
+LoggerService.debug(category: "ShaderPicker", "=== APPLY BUTTON PRESSED ===")
+LoggerService.debug(category: "ShaderPicker", "Received: presetID=\(newPresetID), uniformCount=\(newUniformValues.count)")
+LoggerService.debug(category: "ShaderPicker", "Settings context: systemID=\(String(describing: shaderWindowSettings?.systemID)), initialPresetID=\(shaderWindowSettings?.shaderPresetID ?? "nil")")
+
+updateSettings { romSettings in
+romSettings.shaderPresetID = newPresetID
+applyUniformValues(newUniformValues, to: &romSettings)
+}
+if let preset = ShaderPreset.preset(id: newPresetID) {
+ShaderManager.shared.activatePreset(preset)
+}
+ShaderWindowController.shared?.close()
+}
         ShaderWindowController.shared = windowController
         windowController.show()
     }

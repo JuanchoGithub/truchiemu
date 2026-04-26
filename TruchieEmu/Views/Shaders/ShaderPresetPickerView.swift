@@ -2,31 +2,21 @@ import SwiftUI
 import AppKit
 import Combine
 
-// MARK: - Shader Application Mode
-enum ShaderApplicationMode {
-    case applyToCurrent
-    case applyToDefaults
-    case applyToAll
-}
-
 // MARK: - Shader Window Settings (Observable)
 // Settings container for the shader picker window, shared between StandaloneGameWindowController and picker.
 class ShaderWindowSettings: ObservableObject {
-    @Published var shaderPresetID: String
-    @Published var uniformValues: [String: Float]
-    @Published var systemID: String?
-    @Published var applicationMode: ShaderApplicationMode = .applyToCurrent
-    @Published var notificationMessage: String?
-    
-    init(shaderPresetID: String = "", 
-         uniformValues: [String: Float] = [:], 
-         systemID: String? = nil,
-         applicationMode: ShaderApplicationMode = .applyToCurrent) {
-        self.shaderPresetID = shaderPresetID
-        self.uniformValues = uniformValues
-        self.systemID = systemID
-        self.applicationMode = applicationMode
-    }
+@Published var shaderPresetID: String
+@Published var uniformValues: [String: Float]
+@Published var systemID: String?
+@Published var notificationMessage: String?
+
+init(shaderPresetID: String = "",
+uniformValues: [String: Float] = [:],
+systemID: String? = nil) {
+self.shaderPresetID = shaderPresetID
+self.uniformValues = uniformValues
+self.systemID = systemID
+}
 }
 
 // MARK: - Key Window Panel
@@ -198,13 +188,13 @@ private func parameterSliderRow(for uniform: ShaderUniform) -> some View {
 // MARK: - Shader Window Controller
 // Native macOS window controller for the shader preset picker.
 class ShaderWindowController: NSWindowController, NSWindowDelegate {
-    private var settings: ShaderWindowSettings
-    var onPresetChanged: ((String, [String: Float], ShaderApplicationMode) -> Void)?  // Made public for external assignment
-    private var settingsCancellable: AnyCancellable?
-    
-    static var shared: ShaderWindowController?
-    
-    init(settings: ShaderWindowSettings, onPresetChanged: ((String, [String: Float], ShaderApplicationMode) -> Void)? = nil) {
+private var settings: ShaderWindowSettings
+var onPresetChanged: ((String, [String: Float], Set<String>) -> Void)?
+private var settingsCancellable: AnyCancellable?
+
+static var shared: ShaderWindowController?
+
+init(settings: ShaderWindowSettings, onPresetChanged: ((String, [String: Float], Set<String>) -> Void)? = nil) {
         self.settings = settings
         self.onPresetChanged = onPresetChanged
         
@@ -235,13 +225,13 @@ class ShaderWindowController: NSWindowController, NSWindowDelegate {
         
         window.delegate = self
         
-        let hostingView = NSHostingView(rootView: ShaderPresetPickerView(
-            settings: settings,
-            onValueCommitted: { [weak self] values in
-                guard let self = self else { return }
-                self.onPresetChanged?(self.settings.shaderPresetID, values, self.settings.applicationMode)
-            }
-        ))
+let hostingView = NSHostingView(rootView: ShaderPresetPickerView(
+settings: settings,
+onValueCommitted: { [weak self] values in
+guard let self = self else { return }
+self.onPresetChanged?(self.settings.shaderPresetID, values, [])
+}
+))
         hostingView.translatesAutoresizingMaskIntoConstraints = true
         hostingView.autoresizingMask = [.width, .height]
         window.contentView = hostingView
@@ -378,15 +368,13 @@ struct ShaderPresetRowView: View {
 
 // MARK: - Shader Preset Picker View
 struct ShaderPresetPickerView: View {
-    @ObservedObject var settings: ShaderWindowSettings
-    
-    @State private var selectedCategory: ShaderType?
-    @State private var searchText: String = ""
-    
-    // Callback fired when user releases any slider (not during drag)
-    var onValueCommitted: (([String: Float]) -> Void)?
-    // Callback fired when Apply is clicked with all settings
-    var onPresetChanged: ((String, [String: Float], ShaderApplicationMode) -> Void)?
+@ObservedObject var settings: ShaderWindowSettings
+
+@State private var selectedCategory: ShaderType?
+@State private var searchText: String = ""
+
+// Callback fired when user releases any slider (not during drag)
+var onValueCommitted: (([String: Float]) -> Void)?
     
     var body: some View {
         HStack(spacing: 0) {
@@ -404,36 +392,22 @@ struct ShaderPresetPickerView: View {
                 Divider()
                 
 // Preset list
-                presetList
-                
-                // Application Mode (only shown for system context)
-                if settings.systemID != nil {
-                    Divider()
-                    VStack(spacing: 0) {
-                        Picker("Application Mode", selection: $settings.applicationMode) {
-                            Text("Default").tag(ShaderApplicationMode.applyToDefaults)
-                            Text("Override").tag(ShaderApplicationMode.applyToAll)
-                        }
-                        .pickerStyle(.segmented)
-                        .padding(10)
-                    }
-                    .background(Color(NSColor.controlBackgroundColor))
-                }
-                
-                // Apply button - always visible
+presetList
+
+// Apply button - always visible
                 Divider()
                 VStack(spacing: 8) {
                     HStack {
                         Spacer()
-                        Button("Apply") {
-                            LoggerService.debug(category: "ShaderPicker", "=== APPLY BUTTON CLICKED ===")
-                            LoggerService.debug(category: "ShaderPicker", "Apply: shaderPresetID=\(settings.shaderPresetID), mode=\(String(describing: settings.applicationMode)), systemID=\(String(describing: settings.systemID))")
-                            // Call the callback from ShaderWindowController.shared (not settings)
-                            if let controller = ShaderWindowController.shared {
-                                controller.onPresetChanged?(settings.shaderPresetID, settings.uniformValues, settings.applicationMode)
-                                controller.close()
-                            }
-                        }
+Button("Apply") {
+LoggerService.debug(category: "ShaderPicker", "=== APPLY BUTTON CLICKED ===")
+LoggerService.debug(category: "ShaderPicker", "Apply: shaderPresetID=\(settings.shaderPresetID), systemID=\(String(describing: settings.systemID))")
+// Call the callback from ShaderWindowController.shared (not settings)
+if let controller = ShaderWindowController.shared {
+controller.onPresetChanged?(settings.shaderPresetID, settings.uniformValues, [])
+controller.close()
+}
+}
                         .buttonStyle(.borderedProminent)
                         .controlSize(.small)
                         .padding(.horizontal, 12)

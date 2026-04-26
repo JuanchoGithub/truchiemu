@@ -2,6 +2,14 @@ import SwiftUI
 import SwiftData
 import UserNotifications
 
+struct ShaderOverrideData: Identifiable {
+let id = UUID()
+let systemID: String
+let systemName: String
+let newShaderPresetID: String
+let games: [ROM]
+}
+
 struct ContentView: View {
     @Environment(\.modelContext) var modelContext
     @Environment(\.openSettings) private var openSettings
@@ -15,13 +23,14 @@ struct ContentView: View {
     @StateObject private var metadataSync = MetadataSyncCoordinator.shared
     @ObservedObject var wizard = SetupWizardState.shared
     
-    @State private var selectedFilter: LibraryFilter = .recent
-    @State private var selectedROM: ROM? = nil
-    @State private var showOnboarding = false
-    @State private var shaderController: ShaderWindowController? = nil
-    @State private var searchText = ""
-    @State private var showCreateCategorySheet = false
-    @State private var editingCategory: GameCategory? = nil
+@State private var selectedFilter: LibraryFilter = .recent
+@State private var selectedROM: ROM? = nil
+@State private var showOnboarding = false
+@State private var shaderController: ShaderWindowController? = nil
+@State private var searchText = ""
+@State private var showCreateCategorySheet = false
+@State private var editingCategory: GameCategory? = nil
+@State private var shaderOverrideData: ShaderOverrideData?
     
     var body: some View {
         Group {
@@ -91,155 +100,47 @@ struct ContentView: View {
                                       targetSystem = target
                                   }
                                   openWindow(id: "system-settings", value: SystemSettingsRequest(system: targetSystem, page: .controllers))
-                              case .shaders:
-                                  var targetSystem = system
-                                  if let target = SystemDatabase.system(forID: resolvedSystemID) {
-                                      targetSystem = target
-                                  }
-                                  let settings = ShaderWindowSettings(
-                                      shaderPresetID: targetSystem.defaultShaderPresetID ?? "",
-                                      uniformValues: ShaderManager.shared.uniformValues,
-                                      systemID: targetSystem.id,
-                                      applicationMode: .applyToDefaults
-                                  )
-shaderController = ShaderWindowController(settings: settings) { newPresetID, newUniforms, mode in
-                                       LoggerService.debug(category: "ShaderPicker", "=== CONTENTVIEW CALLBACK ===")
-                                       LoggerService.debug(category: "ShaderPicker", "newPresetID=\(newPresetID), mode=\(String(describing: mode)), targetSystemID=\(targetSystem.id)")
-                                       
-                                       let preset = ShaderPreset.preset(id: newPresetID) ?? ShaderPreset.defaultPreset
-                                       
-                                       // 1. Update global manager state (for the next game launched)
-                                       ShaderManager.shared.activatePreset(preset)
-                                       for (name, value) in newUniforms {
-                                           ShaderManager.shared.updateUniform(name, value: value)
-                                       }
-                                       
-                                       // 2. Apply to database based on mode
-                                       let encoder = JSONEncoder()
-                                       let decoder = JSONDecoder()
-                                       
-                                       let targetSystemID = targetSystem.id
-                                          let oldSystemDefault = systemDatabase.system(forID: targetSystemID)?.defaultShaderPresetID ?? ""
-                                          
-                                          LoggerService.debug(category: "ShaderPicker", "oldSystemDefault=\(oldSystemDefault)")
-                                          
-// NEW: Update system default if applying to defaults or all
-                                          if mode == .applyToDefaults || mode == .applyToAll {
-                                              LoggerService.debug(category: "ShaderPicker", "About to call updateSystemShaderPreset")
-                                              systemDatabase.updateSystemShaderPreset(systemID: targetSystemID, presetID: newPresetID)
-                                          }
-                                         
-                                         guard let modelContext = try? SwiftDataContainer.shared.container.mainContext else {
-                                             LoggerService.error(category: "ShaderPicker", "Failed to get modelContext")
-                                             return
-                                         }
-                                         LoggerService.debug(category: "ShaderPicker", "Got modelContext successfully")
-                                         
-                                         let descriptor = FetchDescriptor<ROMEntry>(predicate: #Predicate { $0.systemID == targetSystemID })
-                                         guard let entries = try? modelContext.fetch(descriptor) else { return }
-                                         LoggerService.debug(category: "ShaderPicker", "Found \(entries.count) ROM entries for system \(targetSystemID)")
-                                        
-                                        var overriddenGames: [String] = []
-                                        var updatedROMIDs: [UUID] = []
-                                         for entry in entries {
-                                              var settings: ROMSettings
-                                              if let json = entry.settingsJSON, let data = json.data(using: .utf8), let decoded = try? decoder.decode(ROMSettings.self, from: data) {
-                                                  settings = decoded
-                                                } else {
-                                                   settings = ROMSettings()
-                                               }
-                                               
-                                               let shouldUpdate: Bool
-                                               switch mode {
-                                               case .applyToCurrent:
-                                                   // Only update if this is the currently selected ROM
-                                                   shouldUpdate = (entry.id == selectedROM?.id)
-                                               case .applyToDefaults:
-                                                   // Update only if it has no specific preference (using the system's default ID)
-                                                   shouldUpdate = (settings.shaderPresetID == oldSystemDefault || settings.shaderPresetID.isEmpty)
-                                                case .applyToAll:
-                                                            // In OVERRIDE mode, clear custom shaders so all ROMs use the system default
-                                                            // Only process ROMs that currently have a custom shader set
-                                                            let hasCustomShader = !settings.shaderPresetID.isEmpty
-                                                            shouldUpdate = hasCustomShader
-                                                            if hasCustomShader {
-                                                            overriddenGames.append(entry.name)
-                                                            }
-                                                                                            }
-                                                                                            
-                                                                                            
-                                                if shouldUpdate {
-                                                        // For Override mode, clear the custom shader so ROM uses system default
-                                                        if mode == .applyToAll {
-                                                            settings.shaderPresetID = ""
-                                                            // Reset shader uniforms to defaults
-                                                            settings.crtEnabled = true
-                                                            settings.scanlinesEnabled = true
-                                                            settings.scanlineIntensity = 0.35
-                                                            settings.barrelEnabled = true
-                                                            settings.barrelAmount = 0.12
-                                                            settings.phosphorEnabled = true
-                                                            settings.scanlineSmooth = false
-                                                            settings.colorBoost = 1.0
-                                                            settings.bezelFileName = ""
-                                                            LoggerService.debug(category: "ShaderPicker", "Cleared custom shader for entry \(entry.name), will use system default: \(newPresetID)")
-                                                        } else {
-                                                            // For other modes, set the shader preset
-                                                            settings.shaderPresetID = newPresetID
-                                                            LoggerService.debug(category: "ShaderPicker", "Updated entry \(entry.name) with shader \(newPresetID)")
-                                                        }
-
-                                                        if let encoded = try? encoder.encode(settings), let json = String(data: encoded, encoding: .utf8) {
-                                                            entry.settingsJSON = json
-                                                            updatedROMIDs.append(entry.id)
-                                                        }
-                                                        }
-                                           }
-                                           try? modelContext.save()
-                                           LoggerService.debug(category: "ShaderPicker", "Saved modelContext, overriddenGames count: \(overriddenGames.count)")
-                                         
-                                         // Refresh library cache with updated ROMs
-                                         if !updatedROMIDs.isEmpty {
-                                             library.refreshROMs(ids: updatedROMIDs)
-                                         }
-                                        
-                                        if !overriddenGames.isEmpty {
-                                            LoggerService.info(category: "Shaders", "Overriding custom shaders for \(overriddenGames.count) games: \(overriddenGames.joined(separator: ", "))")
-                                        }
-                                        
-                                        // 3. Show notification
-                                      DispatchQueue.main.async {
-let message: String
-        switch mode {
-        case .applyToCurrent:
-          message = "Shader applied to current game."
-        case .applyToDefaults:
-          message = "Shader set as default, games with custom shaders not changed"
-        case .applyToAll:
-          if !overriddenGames.isEmpty {
-            message = "Cleared \(overriddenGames.count) custom shaders for \(targetSystem.name). All games now use system default."
-          } else {
-            message = "Shader set as default for \(targetSystem.name). No custom shaders to clear."
-          }
-        }
-                                          
-                                          // Always show in-window message as fallback/immediate feedback
-                                          settings.notificationMessage = message
-                                          
-                                          // If authorized, also show system notification
-                                          if NotificationService.shared.isAuthorized {
-                                              let content = UNMutableNotificationContent()
-                                              content.title = "Shader Updated"
-                                              content.body = message
-                                              content.sound = .default
-                                              
-                                              let request = UNNotificationRequest(identifier: UUID().uuidString, content: content, trigger: nil)
-                                              UNUserNotificationCenter.current().add(request)
-                                          }
-                                      }
+case .shaders:
+var targetSystem = system
+if let target = SystemDatabase.system(forID: resolvedSystemID) {
+targetSystem = target
 }
-                                   ShaderWindowController.shared = shaderController
-                                   shaderController?.show()
+let settings = ShaderWindowSettings(
+shaderPresetID: targetSystem.defaultShaderPresetID ?? "",
+uniformValues: ShaderManager.shared.uniformValues,
+systemID: targetSystem.id
+)
+shaderController = ShaderWindowController(settings: settings) { [self] newPresetID, newUniforms, selectedGameIDs in
+LoggerService.debug(category: "ShaderPicker", "=== CONTENTVIEW CALLBACK ===")
+LoggerService.debug(category: "ShaderPicker", "newPresetID=\(newPresetID), targetSystemID=\(targetSystem.id)")
+
+let preset = ShaderPreset.preset(id: newPresetID) ?? ShaderPreset.defaultPreset
+
+ShaderManager.shared.activatePreset(preset)
+for (name, value) in newUniforms {
+ShaderManager.shared.updateUniform(name, value: value)
+}
+
+let targetSystemID = targetSystem.id
+systemDatabase.updateSystemShaderPreset(systemID: targetSystemID, presetID: newPresetID)
+
+let gamesWithCustomShaders = library.roms.filter { rom in
+rom.systemID == targetSystemID &&
+!rom.settings.shaderPresetID.isEmpty &&
+rom.settings.shaderPresetID != newPresetID
+}.sorted(by: { $0.displayName < $1.displayName })
+
+if !gamesWithCustomShaders.isEmpty {
+shaderOverrideData = ShaderOverrideData(
+systemID: targetSystemID,
+systemName: targetSystem.name,
+newShaderPresetID: newPresetID,
+games: gamesWithCustomShaders
+)
+}
+}
+ShaderWindowController.shared = shaderController
+shaderController?.show()
 case .defaultShadersForDefaults(let systemID, let shaderID):
                                   systemDatabase.updateSystemShaderPreset(systemID: systemID, presetID: shaderID)
                                    
@@ -335,9 +236,18 @@ case .defaultShadersForAll(let systemID, let shaderID):
             // Confetti overlay for celebration moments
             ConfettiOverlay()
         }
-        .sheet(item: $coreManager.pendingDownload) { pending in
-            CoreDownloadSheet(pending: pending)
-        }
+.sheet(item: $coreManager.pendingDownload) { pending in
+CoreDownloadSheet(pending: pending)
+}
+.sheet(item: $shaderOverrideData) { data in
+ShaderGameOverrideView(
+systemID: data.systemID,
+newShaderPresetID: data.newShaderPresetID,
+games: data.games
+) { selectedGameIDs in
+applyShaderOverrides(systemID: data.systemID, shaderID: data.newShaderPresetID, selectedGameIDs: selectedGameIDs)
+}
+}
         .task {
             // Initialize the ROM library asynchronously after the view appears.
             // This defers expensive database loads to after the UI is visible.
@@ -363,11 +273,47 @@ case .defaultShadersForAll(let systemID, let shaderID):
         .onReceive(NotificationCenter.default.publisher(for: .openAppSettings)) { _ in
             openSettings()
         }
-        // Set ideal window size so the window doesn't start stretched larger than needed
-        .frame(minWidth: 1000, idealWidth: 1200, minHeight: 650, idealHeight: 750)
-    }
+// Set ideal window size so the window doesn't start stretched larger than needed
+.frame(minWidth: 1000, idealWidth: 1200, minHeight: 650, idealHeight: 750)
+}
 
-    // Shows whichever background task is currently active (library automation takes precedence).
+private func applyShaderOverrides(systemID: String, shaderID: String, selectedGameIDs: Set<UUID>) {
+guard let modelContext = try? SwiftDataContainer.shared.container.mainContext else { return }
+
+let descriptor = FetchDescriptor<ROMEntry>(predicate: #Predicate { $0.systemID == systemID })
+guard let entries = try? modelContext.fetch(descriptor) else { return }
+
+let encoder = JSONEncoder()
+let decoder = JSONDecoder()
+var updatedROMIDs: [UUID] = []
+
+for entry in entries {
+if selectedGameIDs.contains(entry.id) {
+var settings: ROMSettings
+if let json = entry.settingsJSON, let data = json.data(using: .utf8), let decoded = try? decoder.decode(ROMSettings.self, from: data) {
+settings = decoded
+} else {
+settings = ROMSettings()
+}
+
+settings.shaderPresetID = shaderID
+
+if let encoded = try? encoder.encode(settings), let json = String(data: encoded, encoding: .utf8) {
+entry.settingsJSON = json
+updatedROMIDs.append(entry.id)
+}
+}
+}
+
+try? modelContext.save()
+
+if !updatedROMIDs.isEmpty {
+library.refreshROMs(ids: updatedROMIDs)
+LoggerService.info(category: "Shaders", "Updated shader for \(updatedROMIDs.count) games in system \(systemID)")
+}
+}
+
+// Shows whichever background task is currently active (library automation takes precedence).
     private var activeBackgroundTask: (progress: Double, statusLine: String)? {
         if libraryAutomation.isActive {
             return (libraryAutomation.progress, libraryAutomation.statusLine)
