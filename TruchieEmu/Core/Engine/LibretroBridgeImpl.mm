@@ -227,6 +227,11 @@
 
   _saveStatePath =[romPath stringByAppendingString:@".state"];
 
+  // Notify Swift that game is loaded - it will handle SRAM loading
+  if (g_gameLoadedCallback) {
+    g_gameLoadedCallback(_retainedRomPath.UTF8String);
+  }
+
   _running = YES;
 
   while (_running) {

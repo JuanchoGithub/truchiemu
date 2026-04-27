@@ -15,6 +15,8 @@ extern "C" {
 typedef void (*LogFunc)(const char *, int);
 
 extern CoreLoggerBlock g_swiftLoggerBlock;
+extern GameLoadedBlock g_gameLoadedCallback;
+extern unsigned g_currentSaveRAMType;
 extern LogFunc g_active_log_func;
 
 extern LibretroBridgeImpl *g_instance;

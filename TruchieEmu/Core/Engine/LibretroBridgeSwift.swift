@@ -16,6 +16,14 @@ import Foundation
         }
     }
 
+    static func registerGameLoadedCallback(handler: @escaping (String) -> Void) {
+        LibretroBridge.registerGameLoadedCallback { romPathPtr in
+            if let romPath = String(validatingUTF8: romPathPtr) {
+                handler(romPath)
+            }
+        }
+    }
+
 
     // MARK: - Launch & Lifecycle
 
@@ -192,6 +200,46 @@ import Foundation
     static func resetAllOptionsToDefaults() {
         LoggerService.debug(category: "LibretroBridge", "Resetting all options to defaults")
         LibretroBridge.resetAllOptionsToDefaults()
+    }
+
+    // MARK: - Save RAM (SRAM) Access
+
+    static func getSaveRAMData() -> Data? {
+        guard let data = LibretroBridge.getSaveRAMData() else {
+            LoggerService.debug(category: "LibretroBridge", "No SAVE_RAM data available")
+            return nil
+        }
+        LoggerService.info(category: "LibretroBridge", "Retrieved SAVE_RAM: \(data.count) bytes")
+        return data
+    }
+
+    static func loadSaveRAMData(_ data: Data) -> Bool {
+        let result = LibretroBridge.loadSaveRAMData(data)
+        LoggerService.info(category: "LibretroBridge", "Loaded SAVE_RAM (\(data.count) bytes): \(result)")
+        return result
+    }
+
+    static func saveDirectoryPath() -> String {
+        let path = LibretroBridge.saveDirectoryPath()
+        LoggerService.debug(category: "LibretroBridge", "Save directory: \(path)")
+        return path
+    }
+
+    static func preloadSaveRAM(from path: String) -> Bool {
+        guard FileManager.default.fileExists(atPath: path) else {
+            LoggerService.debug(category: "LibretroBridge", "No SRAM file to preload: \(path)")
+            return false
+        }
+
+        do {
+            let data = try Data(contentsOf: URL(fileURLWithPath: path))
+            let result = LibretroBridge.loadSaveRAMData(data)
+            LoggerService.info(category: "LibretroBridge", "Preloaded SRAM (\(data.count) bytes) from: \(path) - success: \(result)")
+            return result
+        } catch {
+            LoggerService.error(category: "LibretroBridge", "Failed to preload SRAM: \(error.localizedDescription)")
+            return false
+        }
     }
 
     static func getOptionsDictionary() -> [String: Any]? {

@@ -4,11 +4,13 @@ NS_ASSUME_NONNULL_BEGIN
 
 // Define a type for the callback
 typedef void (^CoreLoggerBlock)(const char *message, int level);
+typedef void (^GameLoadedBlock)(const char *romPath);
 
 @interface LibretroBridge : NSObject
 
 // The function Swift will call
 + (void)registerCoreLogger:(CoreLoggerBlock)block;
++ (void)registerGameLoadedCallback:(GameLoadedBlock)block;
 
 + (void)launchWithDylibPath:(NSString *)dylibPath
                     romPath:(NSString *)romPath
@@ -66,6 +68,13 @@ typedef void (^CoreLoggerBlock)(const char *message, int level);
 size:(size_t *_Nullable)
 size; // type: RETRO_MEMORY_SYSTEM_RAM or
 // RETRO_MEMORY_SAVE_RAM
+
+/* Save RAM Access - returns SAVE_RAM data as NSData for saving to disk */
++ (nullable NSData *)getSaveRAMData;
++ (BOOL)loadSaveRAMData:(nullable NSData *)data;
+
+/* Save Directory Path - returns the configured save directory */
++ (NSString *)saveDirectoryPath;
 + (void)writeMemoryByte:(uint32_t)address value:(uint8_t)value;
 + (void)applyDirectMemoryCheats:
 (NSArray<NSDictionary *> *)cheats; // Array of {address, value, enabled}

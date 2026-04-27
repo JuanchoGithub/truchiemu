@@ -2,6 +2,7 @@
 #import "LibretroBridgeImpl.h"
 #import "LibretroGlobals.h"
 #import "LibretroCallbacks.h"
+#import "SaveDirectoryBridge.h"
 
 // --- Global State ---
 static dispatch_queue_t g_bridgeQueue = nil;
@@ -24,6 +25,10 @@ static int16_t input_state_stub(unsigned port, unsigned device, unsigned index, 
 + (void)registerCoreLogger:(CoreLoggerBlock)block {
     // Just store the block. LibretroGlobals handles execution safety.
     g_swiftLoggerBlock = block;
+}
+
++ (void)registerGameLoadedCallback:(GameLoadedBlock)block {
+    g_gameLoadedCallback = block;
 }
 
 + (void)launchWithDylibPath:(NSString *)dylibPath
@@ -393,6 +398,77 @@ if (impl->_hwRenderEnabled && impl->_glContext) {
         if (ram && address < memSize) ram[address] = value;
     }
     [g_instance->_coreLock unlock];
+}
+
++ (NSData *)getSaveRAMData {
+    if (!g_instance || !g_instance->_retro_get_memory_data || !g_instance->_retro_get_memory_size) {
+        bridge_log_printf(RETRO_LOG_WARN, "SRAM: No instance or memory functions available");
+        return nil;
+    }
+    [g_instance->_coreLock lock];
+
+    // Find the first memory type with non-zero data
+    unsigned memoryTypes[] = {0, 1, 2, 3, 4}; // SYSTEM_RAM, SAVE_RAM, VIDEO_RAM, RTC, SYSTEM_RAM_B
+    const char *typeNames[] = {"SYSTEM_RAM", "SAVE_RAM", "VIDEO_RAM", "RTC", "SYSTEM_RAM_B"};
+    NSData *foundData = nil;
+    NSString *foundType = nil;
+    unsigned foundTypeId = 0;
+
+    for (int i = 0; i < 5; i++) {
+        size_t size = g_instance->_retro_get_memory_size(memoryTypes[i]);
+        if (size > 0 && size < 10*1024*1024) { // Reasonable size limit
+            uint8_t *data = (uint8_t *)g_instance->_retro_get_memory_data(memoryTypes[i]);
+            if (data) {
+                bridge_log_printf(RETRO_LOG_INFO, "SRAM: Found %s with %zu bytes", typeNames[i], size);
+                // Save the first one with data (prefer SYSTEM_RAM for GBA)
+                if (!foundData) {
+                    foundData = [NSData dataWithBytes:data length:size];
+                    foundType = [NSString stringWithUTF8String:typeNames[i]];
+                    foundTypeId = memoryTypes[i];
+                }
+            }
+        }
+    }
+
+    [g_instance->_coreLock unlock];
+
+    if (foundData) {
+        // Store the type for later load
+        g_currentSaveRAMType = foundTypeId;
+        bridge_log_printf(RETRO_LOG_INFO, "SRAM: Using %@ with %zu bytes (type %u)", foundType, foundData.length, foundTypeId);
+    } else {
+        bridge_log_printf(RETRO_LOG_WARN, "SRAM: No memory data available from any type");
+    }
+    return foundData;
+}
+
++ (NSString *)saveDirectoryPath {
+    return [SaveDirectoryBridge libretroSaveDirectoryPath];
+}
+
++ (BOOL)loadSaveRAMData:(NSData *)data {
+    if (!g_instance || !g_instance->_retro_get_memory_data || !data) return NO;
+    [g_instance->_coreLock lock];
+
+    unsigned memType = g_currentSaveRAMType > 0 ? g_currentSaveRAMType : RETRO_MEMORY_SYSTEM_RAM;
+    size_t memSize = g_instance->_retro_get_memory_size(memType);
+    if (memSize == 0) {
+        bridge_log_printf(RETRO_LOG_WARN, "SRAM load: No memory at type %u", memType);
+        [g_instance->_coreLock unlock];
+        return NO;
+    }
+    uint8_t *ram = (uint8_t *)g_instance->_retro_get_memory_data(memType);
+    if (!ram) {
+        bridge_log_printf(RETRO_LOG_WARN, "SRAM load: No pointer at type %u", memType);
+        [g_instance->_coreLock unlock];
+        return NO;
+    }
+    // Don't write more than the core's save RAM size
+    size_t copySize = MIN(memSize, data.length);
+    memcpy(ram, data.bytes, copySize);
+    bridge_log_printf(RETRO_LOG_INFO, "SRAM load: Wrote %zu bytes to type %u", copySize, memType);
+    [g_instance->_coreLock unlock];
+    return YES;
 }
 
 + (void)applyDirectMemoryCheats:(NSArray<NSDictionary *> *)cheats {

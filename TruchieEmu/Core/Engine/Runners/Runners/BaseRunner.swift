@@ -268,9 +268,17 @@ class EmulatorRunner: ObservableObject, @unchecked Sendable {
         
         // Track last loaded core so Options view knows which file to persist to
         AppSettings.set("lastLoadedCoreID", value: coreID)
-        
+
         // Get the bundled slang shader directory path
         let shaderDir = Bundle.main.resourceURL?.appendingPathComponent("slang").path
+
+        // Register callback to load SRAM when game is loaded
+        LibretroBridgeSwift.registerGameLoadedCallback { [weak self] romPath in
+            self?.loadSRAMOnGameLoad(romPath: romPath)
+        }
+
+        let savedDir = LibretroBridgeSwift.saveDirectoryPath()
+        LoggerService.info(category: "Runner", "Using save directory: \(savedDir)")
         
   emulationQueue.async {
     LibretroBridgeSwift.setLanguage(selectedLang)
@@ -312,17 +320,102 @@ class EmulatorRunner: ObservableObject, @unchecked Sendable {
     // MARK: - Pause State
     @MainActor @Published var isPaused: Bool = false
     
+    @MainActor
     func stop() {
         LoggerService.info(category: "Runner", "Stopping emulation thread")
         isRunning = false
+
+        // Save SRAM before stopping the core
+        saveSRAMIfAvailable()
+
         LibretroBridgeSwift.stop()
-        
+
         // Wait for the core to fully terminate (retro_unload_game + retro_deinit)
         // This ensures the core is completely killed before proceeding
         LibretroBridgeSwift.waitForCompletion()
-        
+
         hookedController?.extendedGamepad?.valueChangedHandler = nil
         hookedController = nil
+    }
+
+// MARK: - SRAM Save/Load
+
+    private func loadSRAMOnGameLoad(romPath: String) {
+        let romURL = URL(fileURLWithPath: romPath)
+        let saveDir = LibretroBridgeSwift.saveDirectoryPath()
+        let baseName = romURL.deletingPathExtension().lastPathComponent
+
+        let extensions = ["srm", "sav", "save"]
+        for ext in extensions {
+            let sramURL = URL(fileURLWithPath: saveDir).appendingPathComponent("\(baseName).\(ext)")
+            if FileManager.default.fileExists(atPath: sramURL.path) {
+                do {
+                    let sramData = try Data(contentsOf: sramURL)
+                    if LibretroBridgeSwift.loadSaveRAMData(sramData) {
+                        LoggerService.info(category: "Runner", "Loaded SRAM (\(sramData.count) bytes) from: \(sramURL.path)")
+                    }
+                } catch {
+                    LoggerService.error(category: "Runner", "Failed to load SRAM: \(error.localizedDescription)")
+                }
+                return
+            }
+        }
+
+        LoggerService.debug(category: "Runner", "No SRAM file found for: \(baseName)")
+    }
+
+    @MainActor
+    private func sramFilePath(for rom: ROM) -> URL {
+        let saveDir = URL(fileURLWithPath: LibretroBridgeSwift.saveDirectoryPath())
+        let baseName = rom.path.deletingPathExtension().lastPathComponent
+        return saveDir.appendingPathComponent("\(baseName).srm")
+    }
+
+    @MainActor
+    private func saveSRAMIfAvailable() {
+        guard let gameRom = rom else {
+            LoggerService.debug(category: "Runner", "No ROM loaded, skipping SRAM save")
+            return
+        }
+
+        guard let sramData = LibretroBridgeSwift.getSaveRAMData(), !sramData.isEmpty else {
+            LoggerService.debug(category: "Runner", "No SAVE_RAM to save for \(gameRom.displayName)")
+            return
+        }
+
+        let sramPath = sramFilePath(for: gameRom)
+        let saveDir = sramPath.deletingLastPathComponent()
+        LoggerService.info(category: "Runner", "SRAM save directory: \(saveDir.path)")
+
+        do {
+            try FileManager.default.createDirectory(at: saveDir, withIntermediateDirectories: true)
+
+            try sramData.write(to: sramPath)
+            LoggerService.info(category: "Runner", "Saved SRAM (\(sramData.count) bytes) to: \(sramPath.path)")
+        } catch {
+            LoggerService.error(category: "Runner", "Failed to save SRAM: \(error.localizedDescription)")
+        }
+    }
+
+    @MainActor
+    private func loadSRAMIfAvailable(for rom: ROM) {
+        let sramPath = sramFilePath(for: rom)
+
+        guard FileManager.default.fileExists(atPath: sramPath.path) else {
+            LoggerService.debug(category: "Runner", "No SRAM file found at: \(sramPath.path)")
+            return
+        }
+
+        do {
+            let sramData = try Data(contentsOf: sramPath)
+            guard LibretroBridgeSwift.loadSaveRAMData(sramData) else {
+                LoggerService.error(category: "Runner", "Failed to load SRAM into core")
+                return
+            }
+            LoggerService.info(category: "Runner", "Loaded SRAM (\(sramData.count) bytes) from: \(sramPath.path)")
+        } catch {
+            LoggerService.error(category: "Runner", "Failed to load SRAM: \(error.localizedDescription)")
+        }
     }
     
     // Toggle pause state

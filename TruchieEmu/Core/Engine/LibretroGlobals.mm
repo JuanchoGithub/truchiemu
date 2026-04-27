@@ -1,6 +1,8 @@
 #import "LibretroGlobals.h"
 
 CoreLoggerBlock g_swiftLoggerBlock = nil;
+GameLoadedBlock g_gameLoadedCallback = nil;
+unsigned g_currentSaveRAMType = 0;
 LibretroBridgeImpl *g_instance = nil;
 int g_selectedLanguage = 0; // RETRO_LANGUAGE_ENGLISH
 int g_logLevel = 1;         // 1 = Warn & Error
