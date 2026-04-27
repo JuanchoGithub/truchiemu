@@ -23,16 +23,25 @@ public struct SaveDirectorySettingsView: View {
     Form {
       Section("Save Files Location") {
         HStack {
-          Text("Save Directory")
+          Text("Save Files (SRAM)")
           Spacer()
-          Text(directoryManager.activeSaveDirectory.path)
+          Text(directoryManager.savefilesDirectory.path)
             .lineLimit(1)
             .truncationMode(.middle)
             .foregroundColor(.secondary)
         }
-        
+
         HStack {
-          Text("System Directory")
+          Text("Save States")
+          Spacer()
+          Text(directoryManager.statesDirectory.path)
+            .lineLimit(1)
+            .truncationMode(.middle)
+            .foregroundColor(.secondary)
+        }
+
+        HStack {
+          Text("System / BIOS")
           Spacer()
           Text(directoryManager.activeSystemDirectory.path)
             .lineLimit(1)

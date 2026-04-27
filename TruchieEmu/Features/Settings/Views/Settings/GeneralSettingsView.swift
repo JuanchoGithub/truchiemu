@@ -36,9 +36,20 @@ struct GeneralSettingsView: View {
                     Toggle("Auto-save on game exit", isOn: $autoSaveOnExit)
                     Toggle("Auto-load on game start", isOn: $autoLoadOnStart)
                     Toggle("Compress save states (LZ4)", isOn: $compressSaveStates)
-                    
+
                     LabeledContent("Save states location") {
-                        Text("~/Library/Application Support/TruchieEmu/saves/states/")
+                        Text(SaveDirectoryManager.shared.statesDirectory.path)
+                            .font(.caption.monospaced())
+                            .textSelection(.enabled)
+                    }
+                }
+            }
+
+            // Save Files Section
+            if !isSearching || matchesSearch("Save Files SRAM") {
+                Section("Save Files (SRAM)") {
+                    LabeledContent("Game saves location") {
+                        Text(SaveDirectoryManager.shared.savefilesDirectory.path)
                             .font(.caption.monospaced())
                             .textSelection(.enabled)
                     }
