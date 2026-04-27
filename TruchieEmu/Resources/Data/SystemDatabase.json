@@ -281,7 +281,14 @@
                 "offset": 256,
                 "bytes": "53 45 47 41"
             }
-        ],
+            ,{
+                "offset": 0,
+                "bytes": "SEGA SEGACD"
+            },
+            {
+                "offset": 256,
+                "bytes": "SEGA"
+            }        ],
         "pathKeywords": [
             "genesis",
             "mega drive",
@@ -294,16 +301,6 @@
             "megacd",
             "sega cd",
             "mega cd"
-        ],
-        "magicHeaders": [
-            {
-                "offset": 0,
-                "bytes": "SEGA SEGACD"
-            },
-            {
-                "offset": 256,
-                "bytes": "SEGA"
-            }
         ],
         "filenamePatterns": [],
         "sortOrder": 10,
@@ -323,7 +320,7 @@
         "emuIconName": "MD",
         "defaultBoxType": "Vertical",
         "iconName": "gamecontroller.fill",
-        "defaultCoreID": "genesis_plus_gx_libretro",
+        "defaultCoreID": "picodrive_libretro",
         "manufacturer": "Sega"
     },
     {
