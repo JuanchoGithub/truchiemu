@@ -358,7 +358,6 @@
 		DD1AEB0A2F96D7240014A60E /* CheatsSection.swift in Sources */ = {isa = PBXBuildFile; fileRef = DD1AE5C02F96D7240014A60E /* CheatsSection.swift */; };
 		DD1AEB0B2F96D7240014A60E /* RAGameCacheEntry.swift in Sources */ = {isa = PBXBuildFile; fileRef = DD1AE0422F96D7240014A60E /* RAGameCacheEntry.swift */; };
 		DD1AEB0C2F96D7240014A60E /* SettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = DD1AE0CC2F96D7240014A60E /* SettingsView.swift */; };
-		DD761E412F9ED0FB002E0F3D /* SaveDirectoriesSection.swift in Sources */ = {isa = PBXBuildFile; fileRef = DD761E402F9ED0FB002E0F3D /* SaveDirectoriesSection.swift */; };
 		DD1AEB0E2F96D7240014A60E /* MAMEMissingROMsAlert.swift in Sources */ = {isa = PBXBuildFile; fileRef = DD1AE08D2F96D7240014A60E /* MAMEMissingROMsAlert.swift */; };
 		DD1AEB0F2F96D7240014A60E /* BezelSystemMapping.swift in Sources */ = {isa = PBXBuildFile; fileRef = DD1AE0992F96D7240014A60E /* BezelSystemMapping.swift */; };
 		DD1AEB102F96D7240014A60E /* GridCardZoomableFullScreenView.swift in Sources */ = {isa = PBXBuildFile; fileRef = DD1AE0762F96D7240014A60E /* GridCardZoomableFullScreenView.swift */; };
@@ -425,6 +424,8 @@
 		DD761E332F9EC540002E0F3D /* SaveMigrationService.swift in Sources */ = {isa = PBXBuildFile; fileRef = DD761E312F9EC540002E0F3D /* SaveMigrationService.swift */; };
 		DD761E362F9EC553002E0F3D /* SaveDirectoryBridge.swift in Sources */ = {isa = PBXBuildFile; fileRef = DD761E352F9EC553002E0F3D /* SaveDirectoryBridge.swift */; };
 		DD761E392F9ED0FA002E0F3D /* SaveDirectorySettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = DD761E372F9ED0FA002E0F3D /* SaveDirectorySettingsView.swift */; };
+		DD761E3B2F9F6F0A002E0F3D /* CursorAutoHideManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = DD761E3A2F9F6F0A002E0F3D /* CursorAutoHideManager.swift */; };
+		DD761E412F9ED0FB002E0F3D /* SaveDirectoriesSection.swift in Sources */ = {isa = PBXBuildFile; fileRef = DD761E402F9ED0FB002E0F3D /* SaveDirectoriesSection.swift */; };
 		DD761E432F9ED0FC002E0F3D /* EnvironmentDiagnostics.swift in Sources */ = {isa = PBXBuildFile; fileRef = DD761E422F9ED0FC002E0F3D /* EnvironmentDiagnostics.swift */; };
 /* End PBXBuildFile section */
 
@@ -548,7 +549,6 @@
 		DD1AE0CA2F96D7240014A60E /* LoggingSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoggingSettingsView.swift; sourceTree = "<group>"; };
 		DD1AE0CB2F96D7240014A60E /* RetroAchievementsSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RetroAchievementsSettingsView.swift; sourceTree = "<group>"; };
 		DD1AE0CC2F96D7240014A60E /* SettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsView.swift; sourceTree = "<group>"; };
-		DD761E402F9ED0FB002E0F3D /* SaveDirectoriesSection.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SaveDirectoriesSection.swift; sourceTree = "<group>"; };
 		DD1AE0D12F96D7240014A60E /* 7vYdW.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = 7vYdW.jpg; sourceTree = "<group>"; };
 		DD1AE0D22F96D7240014A60E /* appIcon16.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = appIcon16.jpg; sourceTree = "<group>"; };
 		DD1AE0D32F96D7240014A60E /* appIcon32.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = appIcon32.jpg; sourceTree = "<group>"; };
@@ -868,6 +868,8 @@
 		DD761E342F9EC553002E0F3D /* SaveDirectoryBridge.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SaveDirectoryBridge.h; sourceTree = "<group>"; };
 		DD761E352F9EC553002E0F3D /* SaveDirectoryBridge.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SaveDirectoryBridge.swift; sourceTree = "<group>"; };
 		DD761E372F9ED0FA002E0F3D /* SaveDirectorySettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SaveDirectorySettingsView.swift; sourceTree = "<group>"; };
+		DD761E3A2F9F6F0A002E0F3D /* CursorAutoHideManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CursorAutoHideManager.swift; sourceTree = "<group>"; };
+		DD761E402F9ED0FB002E0F3D /* SaveDirectoriesSection.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SaveDirectoriesSection.swift; sourceTree = "<group>"; };
 		DD761E422F9ED0FC002E0F3D /* EnvironmentDiagnostics.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EnvironmentDiagnostics.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -1119,6 +1121,7 @@
 		DD1AE0A12F96D7240014A60E /* Services */ = {
 			isa = PBXGroup;
 			children = (
+				DD761E3A2F9F6F0A002E0F3D /* CursorAutoHideManager.swift */,
 				DD1AE09B2F96D7240014A60E /* Bezels */,
 				DD1AE09C2F96D7240014A60E /* CheatManagerService.swift */,
 				DD1AE09D2F96D7240014A60E /* GameLauncher.swift */,
@@ -2193,6 +2196,7 @@
 				DD1AEAC72F96D7240014A60E /* ROMScanner.swift in Sources */,
 				DD1AEACA2F96D7240014A60E /* MAMEVerificationRecord.swift in Sources */,
 				DD1AEACB2F96D7240014A60E /* LogManager.swift in Sources */,
+				DD761E3B2F9F6F0A002E0F3D /* CursorAutoHideManager.swift in Sources */,
 				DD1AEACC2F96D7240014A60E /* LibretroRDBParser.swift in Sources */,
 				DD1AEACD2F96D7240014A60E /* ROMLibrary.swift in Sources */,
 				DD1AEACE2F96D7240014A60E /* GameNameFormatter.swift in Sources */,

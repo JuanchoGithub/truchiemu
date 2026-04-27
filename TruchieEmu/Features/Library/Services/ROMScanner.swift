@@ -264,7 +264,8 @@ actor ROMScanner {
         
         for url in containerURLs {
             let system = await identifySystem(url: url, extension: url.pathExtension.lowercased())
-            if system?.isDiskBased == true {
+            // If it's a disk-based system OR we know it's a container (cue/m3u), ignore its references
+            if system?.isDiskBased == true || url.pathExtension.lowercased() == "cue" || url.pathExtension.lowercased() == "m3u" {
                 for ref in getReferencedFiles(in: url) {
                     ignoredURLs.insert(ref.standardized.path)
                 }

@@ -102,10 +102,23 @@ enum ROMIdentifier {
             }
         }
 
-        // 5. CD-based System Detection (Expensive I/O: 70-100 pts)
-        if currentBestScore < 90 && ["bin", "iso", "img", "cue", "chd"].contains(extLower) {
+    // 5. CD-based System Detection (Expensive I/O: 70-100 pts)
+    if currentBestScore < 90 && ["bin", "iso", "img", "cue", "chd"].contains(extLower) {
+        if extLower == "cue" || extLower == "m3u" {
+            // For container files, we don't scan for SYSTEM.CNF.
+            // Instead, we rely on the fact that these extensions are primarily used for disk-based systems.
+            // We'll trigger a boost for common disc-based systems.
+            let discSystems = ["psx", "ps1", "ps2", "saturn", "dreamcast", "3do", "psp"]
+            for sysID in discSystems {
+                if let system = cachedSystems.first(where: { $0.id == sysID }) {
+                    candidates[sysID, default: 0] += 50 // Significant boost to suggest a disc-based system
+                }
+            }
+        } else {
             _ = identifyDiscSystem(url: url, candidates: &candidates)
         }
+    }
+
 
         // --- FINAL DECISION ---
         var sortedCandidates = candidates.sorted { $0.value > $1.value }
@@ -574,8 +587,8 @@ enum ROMIdentifier {
                         filename = temp as NSString
                     }
 
-                    if let name = filename as String? {
-                        let fileURL = url.deletingLastPathComponent().appendingPathComponent(name)
+    if let name = filename as String? {
+                        let fileURL = url.deletingLastPathComponent().appendingPathComponent(name).standardized
                         referenced.append(fileURL)
                     }
                 }
@@ -586,7 +599,7 @@ enum ROMIdentifier {
             for line in lines {
                 let trimmed = line.trimmingCharacters(in: .whitespaces)
                 if !trimmed.isEmpty && !trimmed.hasPrefix("#") {
-                    let fileURL = url.deletingLastPathComponent().appendingPathComponent(trimmed)
+                    let fileURL = url.deletingLastPathComponent().appendingPathComponent(trimmed).standardized
                     referenced.append(fileURL)
                 }
             }

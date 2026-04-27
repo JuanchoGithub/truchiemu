@@ -67,11 +67,12 @@ class StandaloneGameWindowController: NSWindowController, NSWindowDelegate, Obse
     private var bezelBackgroundLayer: BezelBackgroundLayer?
     private var bezelViewModel: BezelViewModel?
     
-    // Toolbar auto-hide state
-    @MainActor @Published var isToolbarVisible: Bool = true
-    @MainActor @Published var isFullscreen: Bool = false
-    private var toolbarView: NSHostingView<AnyView>?
-    private var hideToolbarTimer: Timer?
+  // Toolbar auto-hide state
+  @MainActor @Published var isToolbarVisible: Bool = true
+  @MainActor @Published var isFullscreen: Bool = false
+  private var windowedFrame: NSRect = .zero  // Store pre-fullscreen frame for instant toggle
+  private var toolbarView: NSHostingView<AnyView>?
+  private var hideToolbarTimer: Timer?
     
     init(runner: EmulatorRunner) {
         self.runner = runner
@@ -183,13 +184,19 @@ super.init(window: window)
             self?.onWindowMoved()
         }
         
-        // Initially hide toolbar after 2 seconds
-        DispatchQueue.main.asyncAfter(deadline: .now() + 2) { [weak self] in
-            self?.hideToolbar()
-        }
-        
-        LoggerService.info(category: "Metal", "MetalView setup complete, isPaused=true")
+    // Initially hide toolbar after 2 seconds
+    DispatchQueue.main.asyncAfter(deadline: .now() + 2) { [weak self] in
+      self?.hideToolbar()
     }
+
+  // Start cursor auto-hide after initial setup delay
+  DispatchQueue.main.asyncAfter(deadline: .now() + 3.0) { [weak self] in
+    let isFullscreen = self?.window?.styleMask.contains(.fullScreen) ?? false
+    CursorAutoHideManager.shared.startMonitoring(isFullscreen: isFullscreen)
+  }
+  
+  LoggerService.info(category: "Metal", "MetalView setup complete, isPaused=true")
+}
     
     @objc private func windowDidChangeScreen() {
         DispatchQueue.main.async { [weak self] in
@@ -249,12 +256,15 @@ super.init(window: window)
         onWindowResized()
     }
     
-    // Toggle macOS native fullscreen mode
-    @MainActor
-    func toggleFullscreen() {
-        window?.toggleFullScreen(nil)
-        isFullscreen = window?.styleMask.contains(.fullScreen) ?? false
-    }
+  // Toggle instant fullscreen mode (no animation)
+  @MainActor
+  func toggleFullscreen() {
+    window?.toggleFullScreen(nil)
+    isFullscreen = window?.styleMask.contains(.fullScreen) ?? false
+    
+    // Update cursor auto-hide delay for new fullscreen state
+    CursorAutoHideManager.shared.updateFullscreenState(isFullscreen: isFullscreen)
+  }
     
     @MainActor
     func onMouseActivity() {
@@ -681,15 +691,19 @@ super.init(window: window)
         window.maxSize = NSSize(width: screenFrame.width, height: screenFrame.height)
     }
     
-    func windowWillClose(_ notification: Notification) {
-        // Clean up input capture if active
-        InputCaptureManager.shared.cleanup()
+  func windowWillClose(_ notification: Notification) {
+    // Clean up input capture if active
+    InputCaptureManager.shared.cleanup()
 
-        // Stop playtime tracking immediately so no more time accumulates
-        stopPlaytimeTracking()
+    // Stop playtime tracking immediately so no more time accumulates
+    stopPlaytimeTracking()
+    
+    // Stop cursor auto-hide and restore cursor visibility
+    CursorAutoHideManager.shared.stopMonitoring()
+    CursorAutoHideManager.shared.showCursor()
 
-        // 1. Check the setting (Default to false for safety)
-        let shouldAutoSave = AppSettings.getBool("saveState_autoSaveOnExit", defaultValue: false)
+    // 1. Check the setting (Default to false for safety)
+    let shouldAutoSave = AppSettings.getBool("saveState_autoSaveOnExit", defaultValue: false)
         
         if shouldAutoSave {
             if let runner = runner {
