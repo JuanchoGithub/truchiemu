@@ -302,6 +302,7 @@ struct TruchieEmuApp: App {
                 .environmentObject(categoryManager)
                 .environmentObject(coreManager)
                 .environmentObject(controllerService)
+                .environment(systemDatabase)
         }
 
         WindowGroup(id: "core-options", for: String.self) { $coreID in
@@ -311,6 +312,7 @@ struct TruchieEmuApp: App {
                     .environmentObject(categoryManager)
                     .environmentObject(coreManager)
                     .environmentObject(controllerService)
+                    .environment(systemDatabase)
             }
         }
 
@@ -330,6 +332,7 @@ struct TruchieEmuApp: App {
                     .environmentObject(categoryManager)
                     .environmentObject(coreManager)
                     .environmentObject(controllerService)
+                    .environment(systemDatabase)
             }
         }
         
@@ -339,6 +342,7 @@ struct TruchieEmuApp: App {
                 .environmentObject(categoryManager)
                 .environmentObject(coreManager)
                 .environmentObject(controllerService)
+                .environment(systemDatabase)
         }
         
         Settings {
@@ -347,6 +351,7 @@ struct TruchieEmuApp: App {
                 .environmentObject(categoryManager)
                 .environmentObject(coreManager)
                 .environmentObject(controllerService)
+                .environment(systemDatabase)
         }
     }
 }

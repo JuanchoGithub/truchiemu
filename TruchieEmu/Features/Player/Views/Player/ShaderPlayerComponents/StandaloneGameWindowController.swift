@@ -70,7 +70,7 @@ class StandaloneGameWindowController: NSWindowController, NSWindowDelegate, Obse
     // Toolbar auto-hide state
     @MainActor @Published var isToolbarVisible: Bool = true
     @MainActor @Published var isFullscreen: Bool = false
-    private var toolbarView: NSHostingView<GameOverlayToolbar>?
+    private var toolbarView: NSHostingView<AnyView>?
     private var hideToolbarTimer: Timer?
     
     init(runner: EmulatorRunner) {
@@ -139,10 +139,10 @@ super.init(window: window)
         containerView.updateTrackingAreas()
         
         // Add SwiftUI overlay toolbar
-        let hostingView = NSHostingView(rootView: GameOverlayToolbar(
+        let hostingView = NSHostingView(rootView: AnyView(GameOverlayToolbar(
             runner: runner,
             windowController: self
-        ))
+        ).environment(SystemDatabaseWrapper.shared)))
         hostingView.translatesAutoresizingMaskIntoConstraints = false
         hostingView.wantsLayer = true
         containerView.addSubview(hostingView)
@@ -627,6 +627,7 @@ super.init(window: window)
         sheetWindow.isReleasedWhenClosed = true
         sheetWindow.contentView = NSHostingView(rootView:
             CheatManagerViewWrapper(rom: rom, windowController: self)
+                .environment(SystemDatabaseWrapper.shared)
         )
         
         cheatManagerSheetWindow = sheetWindow

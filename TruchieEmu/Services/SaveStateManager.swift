@@ -3,6 +3,7 @@ import Foundation
 import AppKit
 import UniformTypeIdentifiers
 import Compression
+import Combine
 
 // MARK: - Slot Info
 
@@ -23,52 +24,53 @@ struct SlotInfo: Identifiable, Equatable {
 // MARK: - Save State Manager
 
 // Centralized manager for save state file I/O and directory management.
-// 
-// Directory structure:
-// ```
-// ~/Library/Application Support/TruchieEmu/saves/states/<SystemID>/
-//     GameName.state          (slot 0)
-//     GameName.state1         (slot 1)
-//     GameName.state2         (slot 2)
-//     GameName.state1.png     (thumbnail for slot 1)
-// ```
-// 
+// State saves are stored in subdirectories organized by system.
+//
 // Marked `@unchecked Sendable` because all file operations are thread-safe (FileManager handles them).
 class SaveStateManager: ObservableObject, @unchecked Sendable {
     
-    // MARK: - Published State
-    
-    // Base directory for all save states
-    let savesDirectory: URL
-    
-    // MARK: - Initialization
-    
-    init() {
-        let appSupport = FileManager.default.urls(
-            for: .applicationSupportDirectory,
-            in: .userDomainMask
-        ).first!
-        self.savesDirectory = appSupport
-            .appendingPathComponent("TruchieEmu")
-            .appendingPathComponent("saves")
-            .appendingPathComponent("states")
-        
-        ensureDirectoriesExist()
-    }
+  // MARK: - Published State
+
+  // Base directory for all save states (computed from SaveDirectoryManager)
+  var savesDirectory: URL {
+    SaveDirectoryManager.shared.statesDirectory
+  }
+  
+  private var cancellables = Set<AnyCancellable>()
+
+  // MARK: - Initialization
+
+  init() {
+    // Observe for directory changes
+    SaveDirectoryManager.shared.$activeSaveDirectory
+      .sink { [weak self] _ in
+        self?.updateDirectoryPaths()
+      }
+      .store(in: &cancellables)
+
+    ensureDirectoriesExist()
+  }
     
     // MARK: - Directory Management
     
-    // Ensures the base save states directory exists
-    private func ensureDirectoriesExist() {
-        do {
-            try FileManager.default.createDirectory(
-                at: savesDirectory,
-                withIntermediateDirectories: true
-            )
-        } catch {
-            LoggerService.info(category: "SaveStateManager", "ERROR creating base directory: \(error)")
-        }
+  // Ensures the base save states directory exists
+  private func ensureDirectoriesExist() {
+    do {
+      try FileManager.default.createDirectory(
+        at: savesDirectory,
+        withIntermediateDirectories: true
+      )
+    } catch {
+      LoggerService.info(category: "SaveStateManager", "ERROR creating base directory: \(error)")
     }
+  }
+  
+  // Updates directory paths when save directory changes
+  private func updateDirectoryPaths() {
+    // The savesDirectory is now immutable after init, but we can
+    // trigger a refresh of any cached data if needed
+    LoggerService.debug(category: "SaveStateManager", "Save directory changed: \(savesDirectory.path)")
+  }
     
     // Returns the system-specific subdirectory, creating it if needed
     func systemDirectory(systemID: String) -> URL {

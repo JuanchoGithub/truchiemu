@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		1CB050B135EE48BCF0567992 /* ShaderGameOverrideView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 13DB6202C4940AA68803A3EB /* ShaderGameOverrideView.swift */; };
 		4C4E815CF1F3498FBFD7E908 /* RetroKeycodeMapper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 02FA13AC92004870801B79A3 /* RetroKeycodeMapper.swift */; };
 		DD095AD82F981298002A097A /* NotificationService.swift in Sources */ = {isa = PBXBuildFile; fileRef = DD095AD72F981298002A097A /* NotificationService.swift */; };
 		DD1AE5DF2F96D7240014A60E /* XRICK.png in Resources */ = {isa = PBXBuildFile; fileRef = DD1AE1B92F96D7240014A60E /* XRICK.png */; };
@@ -309,7 +310,6 @@
 		DD1AEAD62F96D7240014A60E /* GameCategory.swift in Sources */ = {isa = PBXBuildFile; fileRef = DD1AE0692F96D7240014A60E /* GameCategory.swift */; };
 		DD1AEAD72F96D7240014A60E /* ShaderPresetPickerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = DD1AE5D62F96D7240014A60E /* ShaderPresetPickerView.swift */; };
 		DD1AEAD82F96D7240014A60E /* AppSettings.swift in Sources */ = {isa = PBXBuildFile; fileRef = DD1AE5B32F96D7240014A60E /* AppSettings.swift */; };
-	1CB050B135EE48BCF0567992 /* ShaderGameOverrideView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 13DB6202C4940AA68803A3EB /* ShaderGameOverrideView.swift */; };
 		DD1AEADA2F96D7240014A60E /* Cheats.swift in Sources */ = {isa = PBXBuildFile; fileRef = DD1AE5BF2F96D7240014A60E /* Cheats.swift */; };
 		DD1AEADB2F96D7240014A60E /* LaunchBoxGamesDBService.swift in Sources */ = {isa = PBXBuildFile; fileRef = DD1AE5922F96D7240014A60E /* LaunchBoxGamesDBService.swift */; };
 		DD1AEADC2F96D7240014A60E /* RetroAchievementsService.swift in Sources */ = {isa = PBXBuildFile; fileRef = DD1AE5972F96D7240014A60E /* RetroAchievementsService.swift */; };
@@ -358,6 +358,7 @@
 		DD1AEB0A2F96D7240014A60E /* CheatsSection.swift in Sources */ = {isa = PBXBuildFile; fileRef = DD1AE5C02F96D7240014A60E /* CheatsSection.swift */; };
 		DD1AEB0B2F96D7240014A60E /* RAGameCacheEntry.swift in Sources */ = {isa = PBXBuildFile; fileRef = DD1AE0422F96D7240014A60E /* RAGameCacheEntry.swift */; };
 		DD1AEB0C2F96D7240014A60E /* SettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = DD1AE0CC2F96D7240014A60E /* SettingsView.swift */; };
+		DD761E412F9ED0FB002E0F3D /* SaveDirectoriesSection.swift in Sources */ = {isa = PBXBuildFile; fileRef = DD761E402F9ED0FB002E0F3D /* SaveDirectoriesSection.swift */; };
 		DD1AEB0E2F96D7240014A60E /* MAMEMissingROMsAlert.swift in Sources */ = {isa = PBXBuildFile; fileRef = DD1AE08D2F96D7240014A60E /* MAMEMissingROMsAlert.swift */; };
 		DD1AEB0F2F96D7240014A60E /* BezelSystemMapping.swift in Sources */ = {isa = PBXBuildFile; fileRef = DD1AE0992F96D7240014A60E /* BezelSystemMapping.swift */; };
 		DD1AEB102F96D7240014A60E /* GridCardZoomableFullScreenView.swift in Sources */ = {isa = PBXBuildFile; fileRef = DD1AE0762F96D7240014A60E /* GridCardZoomableFullScreenView.swift */; };
@@ -420,6 +421,11 @@
 		DD761E292F9C1C0A002E0F3D /* LottesCRT.metal in Sources */ = {isa = PBXBuildFile; fileRef = DD761E1C2F9C1C0A002E0F3D /* LottesCRT.metal */; };
 		DD761E2D2F9C45DC002E0F3D /* CRTFilter_multipass.metal in Sources */ = {isa = PBXBuildFile; fileRef = DD761E2C2F9C45DC002E0F3D /* CRTFilter_multipass.metal */; };
 		DD761E2F2F9E6C3B002E0F3D /* SystemDatabaseWrapper.swift in Sources */ = {isa = PBXBuildFile; fileRef = DD761E2E2F9E6C3B002E0F3D /* SystemDatabaseWrapper.swift */; };
+		DD761E322F9EC540002E0F3D /* SaveDirectoryManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = DD761E302F9EC540002E0F3D /* SaveDirectoryManager.swift */; };
+		DD761E332F9EC540002E0F3D /* SaveMigrationService.swift in Sources */ = {isa = PBXBuildFile; fileRef = DD761E312F9EC540002E0F3D /* SaveMigrationService.swift */; };
+		DD761E362F9EC553002E0F3D /* SaveDirectoryBridge.swift in Sources */ = {isa = PBXBuildFile; fileRef = DD761E352F9EC553002E0F3D /* SaveDirectoryBridge.swift */; };
+		DD761E392F9ED0FA002E0F3D /* SaveDirectorySettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = DD761E372F9ED0FA002E0F3D /* SaveDirectorySettingsView.swift */; };
+		DD761E432F9ED0FC002E0F3D /* EnvironmentDiagnostics.swift in Sources */ = {isa = PBXBuildFile; fileRef = DD761E422F9ED0FC002E0F3D /* EnvironmentDiagnostics.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -434,6 +440,7 @@
 
 /* Begin PBXFileReference section */
 		02FA13AC92004870801B79A3 /* RetroKeycodeMapper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RetroKeycodeMapper.swift; sourceTree = "<group>"; };
+		13DB6202C4940AA68803A3EB /* ShaderGameOverrideView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShaderGameOverrideView.swift; sourceTree = "<group>"; };
 		DD095AD62F97F8B5002A097A /* TruchiEmuTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = TruchiEmuTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		DD095AD72F981298002A097A /* NotificationService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotificationService.swift; sourceTree = "<group>"; };
 		DD1AE0232F96D7240014A60E /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
@@ -541,6 +548,7 @@
 		DD1AE0CA2F96D7240014A60E /* LoggingSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoggingSettingsView.swift; sourceTree = "<group>"; };
 		DD1AE0CB2F96D7240014A60E /* RetroAchievementsSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RetroAchievementsSettingsView.swift; sourceTree = "<group>"; };
 		DD1AE0CC2F96D7240014A60E /* SettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsView.swift; sourceTree = "<group>"; };
+		DD761E402F9ED0FB002E0F3D /* SaveDirectoriesSection.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SaveDirectoriesSection.swift; sourceTree = "<group>"; };
 		DD1AE0D12F96D7240014A60E /* 7vYdW.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = 7vYdW.jpg; sourceTree = "<group>"; };
 		DD1AE0D22F96D7240014A60E /* appIcon16.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = appIcon16.jpg; sourceTree = "<group>"; };
 		DD1AE0D32F96D7240014A60E /* appIcon32.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = appIcon32.jpg; sourceTree = "<group>"; };
@@ -840,7 +848,6 @@
 		DD1AE5D12F96D7240014A60E /* ShaderSection.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShaderSection.swift; sourceTree = "<group>"; };
 		DD1AE5D42F96D7240014A60E /* GameDetailView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GameDetailView.swift; sourceTree = "<group>"; };
 		DD1AE5D62F96D7240014A60E /* ShaderPresetPickerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShaderPresetPickerView.swift; sourceTree = "<group>"; };
-	13DB6202C4940AA68803A3EB /* ShaderGameOverrideView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShaderGameOverrideView.swift; sourceTree = "<group>"; };
 		DD1AE5D92F96D7240014A60E /* GameError.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GameError.swift; sourceTree = "<group>"; };
 		DD1AEB452F96DACB0014A60E /* TruchiEmu.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = TruchiEmu.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		DD761E132F9AE550002E0F3D /* InputCaptureManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InputCaptureManager.swift; sourceTree = "<group>"; };
@@ -856,6 +863,12 @@
 		DD761E1F2F9C1C0A002E0F3D /* SharpBilinear.metal */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.metal; path = SharpBilinear.metal; sourceTree = "<group>"; };
 		DD761E2C2F9C45DC002E0F3D /* CRTFilter_multipass.metal */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.metal; path = CRTFilter_multipass.metal; sourceTree = "<group>"; };
 		DD761E2E2F9E6C3B002E0F3D /* SystemDatabaseWrapper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SystemDatabaseWrapper.swift; sourceTree = "<group>"; };
+		DD761E302F9EC540002E0F3D /* SaveDirectoryManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SaveDirectoryManager.swift; sourceTree = "<group>"; };
+		DD761E312F9EC540002E0F3D /* SaveMigrationService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SaveMigrationService.swift; sourceTree = "<group>"; };
+		DD761E342F9EC553002E0F3D /* SaveDirectoryBridge.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SaveDirectoryBridge.h; sourceTree = "<group>"; };
+		DD761E352F9EC553002E0F3D /* SaveDirectoryBridge.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SaveDirectoryBridge.swift; sourceTree = "<group>"; };
+		DD761E372F9ED0FA002E0F3D /* SaveDirectorySettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SaveDirectorySettingsView.swift; sourceTree = "<group>"; };
+		DD761E422F9ED0FC002E0F3D /* EnvironmentDiagnostics.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EnvironmentDiagnostics.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXGroup section */
@@ -902,6 +915,8 @@
 		DD1AE03B2F96D7240014A60E /* Engine */ = {
 			isa = PBXGroup;
 			children = (
+				DD761E342F9EC553002E0F3D /* SaveDirectoryBridge.h */,
+				DD761E352F9EC553002E0F3D /* SaveDirectoryBridge.swift */,
 				DD1AE02E2F96D7240014A60E /* Runners */,
 				DD1AE02F2F96D7240014A60E /* AudioRingBuffer.hpp */,
 				DD1AE0302F96D7240014A60E /* libretro.h */,
@@ -1222,6 +1237,7 @@
 				DD1AE0CA2F96D7240014A60E /* LoggingSettingsView.swift */,
 				DD1AE0CB2F96D7240014A60E /* RetroAchievementsSettingsView.swift */,
 				DD1AE0CC2F96D7240014A60E /* SettingsView.swift */,
+				DD761E402F9ED0FB002E0F3D /* SaveDirectoriesSection.swift */,
 			);
 			path = Settings;
 			sourceTree = "<group>";
@@ -1572,6 +1588,8 @@
 		DD1AE59C2F96D7240014A60E /* Services */ = {
 			isa = PBXGroup;
 			children = (
+				DD761E302F9EC540002E0F3D /* SaveDirectoryManager.swift */,
+				DD761E312F9EC540002E0F3D /* SaveMigrationService.swift */,
 				DD095AD72F981298002A097A /* NotificationService.swift */,
 				DD1AE5872F96D7240014A60E /* BoxArtPreloaderService.swift */,
 				DD1AE5882F96D7240014A60E /* BoxArtService.swift */,
@@ -1745,7 +1763,7 @@
 			isa = PBXGroup;
 			children = (
 				DD1AE5D62F96D7240014A60E /* ShaderPresetPickerView.swift */,
-		13DB6202C4940AA68803A3EB /* ShaderGameOverrideView.swift */,
+				13DB6202C4940AA68803A3EB /* ShaderGameOverrideView.swift */,
 			);
 			path = Shaders;
 			sourceTree = "<group>";
@@ -1753,6 +1771,7 @@
 		DD1AE5D82F96D7240014A60E /* Views */ = {
 			isa = PBXGroup;
 			children = (
+				DD761E382F9ED0FA002E0F3D /* Settings */,
 				DD1AE5BA2F96D7240014A60E /* CoreDownload */,
 				DD1AE5D52F96D7240014A60E /* Detail */,
 				DD1AE5D72F96D7240014A60E /* Shaders */,
@@ -1782,6 +1801,15 @@
 				02FA13AC92004870801B79A3 /* RetroKeycodeMapper.swift */,
 			);
 			path = InputCapture;
+			sourceTree = "<group>";
+		};
+		DD761E382F9ED0FA002E0F3D /* Settings */ = {
+			isa = PBXGroup;
+			children = (
+				DD761E372F9ED0FA002E0F3D /* SaveDirectorySettingsView.swift */,
+				DD761E422F9ED0FC002E0F3D /* EnvironmentDiagnostics.swift */,
+			);
+			path = Settings;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -2127,10 +2155,14 @@
 				DD1AEA9A2F96D7240014A60E /* ShaderPreset.swift in Sources */,
 				DD1AEA9B2F96D7240014A60E /* AchievementToastView.swift in Sources */,
 				DD1AEA9E2F96D7240014A60E /* LibretroBridgeImpl.mm in Sources */,
+				DD761E322F9EC540002E0F3D /* SaveDirectoryManager.swift in Sources */,
+				DD761E332F9EC540002E0F3D /* SaveMigrationService.swift in Sources */,
 				DD1AEAA02F96D7240014A60E /* CheatAutoLoader.swift in Sources */,
 				DD1AEAA32F96D7240014A60E /* CoreOptionsRepository.swift in Sources */,
 				DD1AEAA42F96D7240014A60E /* GameInfoWindow.swift in Sources */,
 				DD1AEAA52F96D7240014A60E /* CheatManagerView.swift in Sources */,
+				DD761E392F9ED0FA002E0F3D /* SaveDirectorySettingsView.swift in Sources */,
+				DD761E432F9ED0FC002E0F3D /* EnvironmentDiagnostics.swift in Sources */,
 				DD1AEAA72F96D7240014A60E /* ShaderSection.swift in Sources */,
 				DD1AEAA82F96D7240014A60E /* BaseRunner.swift in Sources */,
 				DD1AEAAA2F96D7240014A60E /* BezelSelectorWindow.swift in Sources */,
@@ -2141,6 +2173,7 @@
 				DD1AEAB02F96D7240014A60E /* SaveStateManager.swift in Sources */,
 				DD1AEAB12F96D7240014A60E /* LibretroBridgeSwift.swift in Sources */,
 				DD1AEAB22F96D7240014A60E /* ResourceCacheRepository.swift in Sources */,
+				DD761E362F9EC553002E0F3D /* SaveDirectoryBridge.swift in Sources */,
 				DD1AEAB32F96D7240014A60E /* CLIManager.swift in Sources */,
 				DD1AEAB42F96D7240014A60E /* SNESRunner.swift in Sources */,
 				DD1AEAB52F96D7240014A60E /* ShaderUniforms.swift in Sources */,
@@ -2171,7 +2204,7 @@
 				DD1AEAD52F96D7240014A60E /* ROMIdentifier.swift in Sources */,
 				DD1AEAD62F96D7240014A60E /* GameCategory.swift in Sources */,
 				DD1AEAD72F96D7240014A60E /* ShaderPresetPickerView.swift in Sources */,
-		1CB050B135EE48BCF0567992 /* ShaderGameOverrideView.swift in Sources */,
+				1CB050B135EE48BCF0567992 /* ShaderGameOverrideView.swift in Sources */,
 				DD1AEAD82F96D7240014A60E /* AppSettings.swift in Sources */,
 				DD1AEADA2F96D7240014A60E /* Cheats.swift in Sources */,
 				DD1AEADB2F96D7240014A60E /* LaunchBoxGamesDBService.swift in Sources */,
@@ -2235,6 +2268,7 @@
 				DD1AEB0A2F96D7240014A60E /* CheatsSection.swift in Sources */,
 				DD1AEB0B2F96D7240014A60E /* RAGameCacheEntry.swift in Sources */,
 				DD1AEB0C2F96D7240014A60E /* SettingsView.swift in Sources */,
+				DD761E412F9ED0FB002E0F3D /* SaveDirectoriesSection.swift in Sources */,
 				DD1AEB0E2F96D7240014A60E /* MAMEMissingROMsAlert.swift in Sources */,
 				DD1AEB0F2F96D7240014A60E /* BezelSystemMapping.swift in Sources */,
 				DD1AEB102F96D7240014A60E /* GridCardZoomableFullScreenView.swift in Sources */,

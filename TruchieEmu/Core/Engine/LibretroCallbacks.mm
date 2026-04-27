@@ -1,6 +1,7 @@
 #import "LibretroCallbacks.h"
 #import "LibretroGlobals.h"
 #import "LibretroBridgeImpl.h"
+#import "SaveDirectoryBridge.h"
 #import <dlfcn.h>
 
 int16_t g_input_state[32] = {0};
@@ -51,8 +52,8 @@ bool bridge_environment(unsigned cmd, void *data) {
 
   case RETRO_ENVIRONMENT_GET_SYSTEM_DIRECTORY: {
     static char s_sysPath[1024];
-    NSString *path =[NSSearchPathForDirectoriesInDomains(NSApplicationSupportDirectory, NSUserDomainMask, YES) firstObject];
-    path =[path stringByAppendingPathComponent:@"TruchieEmu/System"];
+    // Use dynamic path from SaveDirectoryManager
+    NSString *path = [SaveDirectoryBridge libretroSystemDirectoryPath];
     [[NSFileManager defaultManager] createDirectoryAtPath:path withIntermediateDirectories:YES attributes:nil error:nil];
     strncpy(s_sysPath, path.UTF8String, sizeof(s_sysPath) - 1);
     if (data) *(const char **)data = s_sysPath;
@@ -60,8 +61,8 @@ bool bridge_environment(unsigned cmd, void *data) {
   }
   case RETRO_ENVIRONMENT_GET_SAVE_DIRECTORY: {
     static char s_savePath[1024];
-    NSString *path =[NSSearchPathForDirectoriesInDomains(NSApplicationSupportDirectory, NSUserDomainMask, YES) firstObject];
-    path =[path stringByAppendingPathComponent:@"TruchieEmu"];
+    // Use dynamic path from SaveDirectoryManager
+    NSString *path = [SaveDirectoryBridge libretroSaveDirectoryPath];
     [[NSFileManager defaultManager] createDirectoryAtPath:path withIntermediateDirectories:YES attributes:nil error:nil];
     strncpy(s_savePath, path.UTF8String, sizeof(s_savePath) - 1);
     if (data) *(const char **)data = s_savePath;

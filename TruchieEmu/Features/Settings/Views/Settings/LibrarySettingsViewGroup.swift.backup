@@ -72,23 +72,18 @@ private enum LibrarySection: CaseIterable, Identifiable {
                 }
                 
                 // Library Folders Section
-  if visibleSections.contains(.libraryFolders) {
-    LibraryFoldersSection(
-      scanningFolders: $scanningFolders,
-      rebuildTargetFolder: $rebuildTargetFolder,
-      searchText: searchText
-    )
-  }
-  
-  // Save Directories Section
-  if visibleSections.contains(.saveDirectories) {
-    SaveDirectoriesSection()
-  }
-  
-  // Maintenance Section
-  if visibleSections.contains(.maintenance) {
-    MaintenanceSection()
-  }
+                if visibleSections.contains(.libraryFolders) {
+                    LibraryFoldersSection(
+                        scanningFolders: $scanningFolders,
+                        rebuildTargetFolder: $rebuildTargetFolder,
+                        searchText: searchText
+                    )
+                }
+                
+                // Maintenance Section
+                if visibleSections.contains(.maintenance) {
+                    MaintenanceSection()
+                }
                 
                 // Show "No results" message when searching and no sections match
                 if !searchText.isEmpty && visibleSections.isEmpty {
@@ -934,4 +929,3 @@ struct LibraryFolderRow: View {
         .cornerRadius(10)
     }
 }
-

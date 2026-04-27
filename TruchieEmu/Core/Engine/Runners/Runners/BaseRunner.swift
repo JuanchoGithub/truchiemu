@@ -272,16 +272,19 @@ class EmulatorRunner: ObservableObject, @unchecked Sendable {
         // Get the bundled slang shader directory path
         let shaderDir = Bundle.main.resourceURL?.appendingPathComponent("slang").path
         
-        emulationQueue.async {
-            LibretroBridgeSwift.setLanguage(selectedLang)
-            LibretroBridgeSwift.setLogLevel(Int(selectedLogLevel))
-            
-            let dylibPath = self.findCoreLib(coreID: coreID) ?? coreID
-            
-            // We don't have a direct way to catch a SIGSEGV here, 
-            // but we can catch potential Swift errors if the bridge was designed to throw.
-            // For now, we ensure we handle the launch result.
-            LibretroBridgeSwift.launch(
+  emulationQueue.async {
+    LibretroBridgeSwift.setLanguage(selectedLang)
+    LibretroBridgeSwift.setLogLevel(Int(selectedLogLevel))
+    
+    // Ensure save directories are created and configured
+    SaveDirectoryBridge.ensureDirectoriesExist()
+
+    let dylibPath = self.findCoreLib(coreID: coreID) ?? coreID
+
+    // We don't have a direct way to catch a SIGSEGV here,
+    // but we can catch potential Swift errors if the bridge was designed to throw.
+    // For now, we ensure we handle the launch result.
+    LibretroBridgeSwift.launch(
                 dylibPath: dylibPath, 
                 romPath: self.rom!.path.path,
                 coreID: coreID,

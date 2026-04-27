@@ -55,25 +55,63 @@ static func removeObject(_ key: String) {
         UserDefaults.standard.removeObject(forKey: key)
     }
     
-    static func remove(_ key: String) {
-        UserDefaults.standard.removeObject(forKey: key)
-    }
-    
-    static func get<T: Codable>(_ key: String, type: T.Type) -> T? {
-        guard let data = UserDefaults.standard.data(forKey: key) else { return nil }
-        return try? JSONDecoder().decode(type, from: data)
-    }
+static func remove(_ key: String) {
+    UserDefaults.standard.removeObject(forKey: key)
+  }
 
-    static func set<T: Codable>(_ key: String, value: T) {
-        guard let data = try? JSONEncoder().encode(value) else { return }
-        UserDefaults.standard.set(data, forKey: key)
-    }
+  static func get<T: Codable>(_ key: String, type: T.Type) -> T? {
+    guard let data = UserDefaults.standard.data(forKey: key) else { return nil }
+    return try? JSONDecoder().decode(type, from: data)
+  }
 
-    static func setDate(_ key: String, value: Date) {
-        UserDefaults.standard.set(value, forKey: key)
-    }
+  static func set<T: Codable>(_ key: String, value: T) {
+    guard let data = try? JSONEncoder().encode(value) else { return }
+    UserDefaults.standard.set(data, forKey: key)
+  }
 
-    static func getDate(_ key: String) -> Date? {
-        UserDefaults.standard.object(forKey: key) as? Date
+  static func setDate(_ key: String, value: Date) {
+    UserDefaults.standard.set(value, forKey: key)
+  }
+
+  static func getDate(_ key: String) -> Date? {
+    UserDefaults.standard.object(forKey: key) as? Date
+  }
+  
+  // MARK: - Save Directory Settings
+  enum SaveDirectoryKey {
+    static let userSaveDirectory = "customSaveDirectoryPath"
+    static let userSystemDirectory = "customSystemDirectoryPath"
+    static let lastMigrationDate = "saveDirectoryLastMigration"
+  }
+  
+  static func getCustomSaveDirectory() -> URL? {
+    guard let path = getString(SaveDirectoryKey.userSaveDirectory) else {
+      return nil
     }
+    let url = URL(fileURLWithPath: path)
+    return FileManager.default.fileExists(atPath: url.path) ? url : nil
+  }
+  
+  static func setCustomSaveDirectory(_ url: URL?) {
+    setString(SaveDirectoryKey.userSaveDirectory, value: url?.path)
+    NotificationCenter.default.post(name: .saveDirectorySettingChanged, object: nil)
+  }
+  
+  static func getCustomSystemDirectory() -> URL? {
+    guard let path = getString(SaveDirectoryKey.userSystemDirectory) else {
+      return nil
+    }
+    let url = URL(fileURLWithPath: path)
+    return FileManager.default.fileExists(atPath: url.path) ? url : nil
+  }
+  
+  static func setCustomSystemDirectory(_ url: URL?) {
+    setString(SaveDirectoryKey.userSystemDirectory, value: url?.path)
+    NotificationCenter.default.post(name: .saveDirectorySettingChanged, object: nil)
+  }
+}
+
+// MARK: - Notification Names
+extension Notification.Name {
+  static let saveDirectorySettingChanged = Notification.Name("SaveDirectorySettingChanged")
 }

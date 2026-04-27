@@ -161,6 +161,7 @@ struct SettingsView: View {
             detailContent
         }
         .navigationSplitViewStyle(.balanced)
+        .environment(SystemDatabaseWrapper.shared)
         .frame(minWidth: 750, minHeight: 500)
         .onAppear {
             if system != nil {
