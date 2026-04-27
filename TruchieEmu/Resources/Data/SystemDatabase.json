@@ -215,6 +215,26 @@
         "manufacturer": "Nintendo"
     },
     {
+        "year": "1998",
+        "id": "gbc",
+        "pathKeywords": [
+            "gbc",
+            "game boy color",
+            "gameboy color"
+        ],
+        "sortOrder": 6,
+        "displayInUI": true,
+        "name": "Game Boy Color",
+        "extensions": [
+            "gbc"
+        ],
+        "emuIconName": "GBC",
+        "defaultBoxType": "Box",
+        "iconName": "iphone",
+        "defaultCoreID": "gambatte_libretro",
+        "manufacturer": "Nintendo"
+    },
+    {
         "year": "2004",
         "id": "nds",
         "magicHeaders": [
