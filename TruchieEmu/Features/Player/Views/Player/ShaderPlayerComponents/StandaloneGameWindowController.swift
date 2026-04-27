@@ -67,12 +67,11 @@ class StandaloneGameWindowController: NSWindowController, NSWindowDelegate, Obse
     private var bezelBackgroundLayer: BezelBackgroundLayer?
     private var bezelViewModel: BezelViewModel?
     
-  // Toolbar auto-hide state
-  @MainActor @Published var isToolbarVisible: Bool = true
-  @MainActor @Published var isFullscreen: Bool = false
-  private var windowedFrame: NSRect = .zero  // Store pre-fullscreen frame for instant toggle
-  private var toolbarView: NSHostingView<AnyView>?
-  private var hideToolbarTimer: Timer?
+    // Toolbar auto-hide state
+    @MainActor @Published var isToolbarVisible: Bool = true
+    @MainActor @Published var isFullscreen: Bool = false
+    private var toolbarView: NSHostingView<AnyView>?
+    private var hideToolbarTimer: Timer?
     
     init(runner: EmulatorRunner) {
         self.runner = runner
@@ -184,27 +183,32 @@ super.init(window: window)
             self?.onWindowMoved()
         }
         
-    // Initially hide toolbar after 2 seconds
-    DispatchQueue.main.asyncAfter(deadline: .now() + 2) { [weak self] in
-      self?.hideToolbar()
-    }
+  // Initially hide toolbar after 2 seconds
+  DispatchQueue.main.asyncAfter(deadline: .now() + 2) { [weak self] in
+    self?.hideToolbar()
+  }
 
   // Start cursor auto-hide after initial setup delay
-  DispatchQueue.main.asyncAfter(deadline: .now() + 3.0) { [weak self] in
+  DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) { [weak self] in
     let isFullscreen = self?.window?.styleMask.contains(.fullScreen) ?? false
     CursorAutoHideManager.shared.startMonitoring(isFullscreen: isFullscreen)
   }
-  
+
   LoggerService.info(category: "Metal", "MetalView setup complete, isPaused=true")
 }
     
-    @objc private func windowDidChangeScreen() {
-        DispatchQueue.main.async { [weak self] in
-            self?.isFullscreen = self?.window?.styleMask.contains(.fullScreen) ?? false
-            // Rescale bezel for new screen
-            self?.onWindowMoved()
-        }
+  @objc private func windowDidChangeScreen() {
+    DispatchQueue.main.async { [weak self] in
+      let isFullscreen = self?.window?.styleMask.contains(.fullScreen) ?? false
+      self?.isFullscreen = isFullscreen
+      
+      // Update cursor auto-hide fullscreen state
+      CursorAutoHideManager.shared.updateFullscreenState(isFullscreen: isFullscreen)
+      
+      // Rescale bezel for new screen
+      self?.onWindowMoved()
     }
+  }
     
     // Called when the window is resized. Dynamically scales bezel to fit new window size.
     private func onWindowResized() {
@@ -256,15 +260,12 @@ super.init(window: window)
         onWindowResized()
     }
     
-  // Toggle instant fullscreen mode (no animation)
-  @MainActor
-  func toggleFullscreen() {
-    window?.toggleFullScreen(nil)
-    isFullscreen = window?.styleMask.contains(.fullScreen) ?? false
-    
-    // Update cursor auto-hide delay for new fullscreen state
-    CursorAutoHideManager.shared.updateFullscreenState(isFullscreen: isFullscreen)
-  }
+    // Toggle macOS native fullscreen mode
+    @MainActor
+    func toggleFullscreen() {
+        window?.toggleFullScreen(nil)
+        isFullscreen = window?.styleMask.contains(.fullScreen) ?? false
+    }
     
     @MainActor
     func onMouseActivity() {
@@ -752,22 +753,46 @@ super.init(window: window)
         }
     }
 
-    @MainActor
-    class MetalCoordinator: NSObject, MTKViewDelegate {
-        let runner: EmulatorRunner
-        private var commandQueue: MTLCommandQueue?
-        private var pipelineCache: [String: MTLRenderPipelineState] = [:]
-        private var innerDrawCount = 0
-        // 4-frame temporal buffer for GBC shader (T-1, T-2, T-3, T-4, plus current frame passed directly)
-        private var temporalTextures: [MTLTexture?] = [nil, nil, nil, nil]
-        private var temporalIndex: Int = 0  // Cycles 0-3, points to "current"
-        private var frameCounter: UInt32 = 0
+  @MainActor
+  class MetalCoordinator: NSObject, MTKViewDelegate {
+    let runner: EmulatorRunner
+    private var commandQueue: MTLCommandQueue?
+    private var pipelineCache: [String: MTLRenderPipelineState] = [:]
+    private var innerDrawCount = 0
+    // 4-frame temporal buffer for GBC shader (T-1, T-2, T-3, T-4, plus current frame passed directly)
+    private var temporalTextures: [MTLTexture?] = [nil, nil, nil, nil]
+    private var temporalIndex: Int = 0 // Cycles 0-3, points to "current"
+    private var frameCounter: UInt32 = 0
+    
+    // Viewport debouncing to prevent warping during resize
+    private var stableViewportSize: CGSize = .zero
+    private var resizeTimer: Timer?
+    private let resizeSettleInterval: TimeInterval = 0.15 // 150ms
 
-        init(runner: EmulatorRunner) {
-            self.runner = runner
-        }
+    init(runner: EmulatorRunner) {
+      self.runner = runner
+    }
+    
+ // MARK: - Viewport Debouncing   
+ private var lastStableAspect: CGFloat = 0.0
+ private var aspectStableTimer: Timer?
+ private var lastUsedDrawableSize: CGSize = .zero
+   
+ private func shouldUpdateAspect(for view: MTKView) -> Bool {
+   // Return true if aspect should update, false if should keep stable
+   let currentSize = view.drawableSize
+   
+   // If significantly different from last used, update
+   if abs(currentSize.width - lastUsedDrawableSize.width) > 50 || 
+      abs(currentSize.height - lastUsedDrawableSize.height) > 50 {
+     lastUsedDrawableSize = currentSize
+     return true
+   }
+   
+return false
+  }
 
-        private func ensureTemporalTextures(width: Int, height: Int, device: MTLDevice, sourceFormat: MTLPixelFormat) {
+    private func ensureTemporalTextures(width: Int, height: Int, device: MTLDevice, sourceFormat: MTLPixelFormat) {
             // Check if all textures are valid and match
             var allValid = true
             for tex in temporalTextures {
@@ -889,16 +914,20 @@ super.init(window: window)
             if let pipeline = pipeline {
                 if let frameTex = runner.currentFrameTexture {
                     if let enc = cmdBuffer.makeRenderCommandEncoder(descriptor: descriptor) {
-                        // ASPECT RATIO — multi-tier fallback:
-                        // 1. Core-provided aspect ratio from retro_system_av_info (preferred for N64, PS1, etc.)
-                        // 2. Pixel dimensions from frame texture (frameW/frameH)
-                        // 3. System's known display aspect ratio (final fallback for consoles with fixed display output)
-                        let viewWidth = view.drawableSize.width
-                        let viewHeight = view.drawableSize.height
-                        let isRotated = (runner.currentFrameRotation == 1 || runner.currentFrameRotation == 3)
-                        let frameW = CGFloat(frameTex.width)
-                        let frameH = CGFloat(frameTex.height)
-                        var targetAspect: CGFloat
+      // ASPECT RATIO — multi-tier fallback:
+      // 1. Core-provided aspect ratio from retro_system_av_info (preferred for N64, PS1, etc.)
+      // 2. Pixel dimensions from frame texture (frameW/frameH)
+      // 3. System's known display aspect ratio (final fallback for consoles with fixed display output)
+      // Use current drawable size for viewport (to maintain proper centering and scaling)
+      let viewWidth = view.drawableSize.width
+      let viewHeight = view.drawableSize.height
+      let isRotated = (runner.currentFrameRotation == 1 || runner.currentFrameRotation == 3)
+      let frameW = CGFloat(frameTex.width)
+      let frameH = CGFloat(frameTex.height)
+      var targetAspect: CGFloat
+      
+      // Track drawable size for aspect stability
+      _ = shouldUpdateAspect(for: view)
                         
                         // Try core-provided aspect ratio first (preferred for N64, PS1, etc.)
                         let coreAspect = LibretroBridgeSwift.aspectRatio()
@@ -940,11 +969,11 @@ super.init(window: window)
                                                    znear: 0.0, zfar: 1.0)
                         enc.setViewport(viewport)
                         
-                        let fw = Float(frameTex.width)
-                        let fh = Float(frameTex.height)
-                        let vpW = Float(view.drawableSize.width)
-                        let vpH = Float(view.drawableSize.height)
-                        let time = Float(CACurrentMediaTime().truncatingRemainder(dividingBy: 100))
+      let fw = Float(frameTex.width)
+      let fh = Float(frameTex.height)
+      let vpW = Float(view.drawableSize.width)
+      let vpH = Float(view.drawableSize.height)
+      let time = Float(CACurrentMediaTime().truncatingRemainder(dividingBy: 100))
                         let fragmentName = getFragmentFunctionName()
                         
                          // Helper: get a uniform value from the thread-safe snapshot

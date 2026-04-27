@@ -97,7 +97,6 @@ class FocusableMTKView: MTKView {
     // MARK: - Keyboard Events
 
     override func keyDown(with event: NSEvent) {
-        LoggerService.info(category: "Input", "keyDown called: keyCode=\(event.keyCode) modifiers=\(event.modifierFlags.rawValue)")
 
         // Save state hotkeys - these are handled specially, not sent to core
         if event.modifierFlags.isEmpty || event.modifierFlags.contains(.command) {
@@ -140,9 +139,7 @@ class FocusableMTKView: MTKView {
         }
 
         // 2. Raw Path: Send to Libretro core (for DOS/ScummVM)
-        LoggerService.info(category: "Input", "Calling dispatchKeyboardEvent in FocusableMTKView")
         dispatchKeyboardEvent(event, down: true)
-        LoggerService.info(category: "Input", "Finished dispatchKeyboardEvent in FocusableMTKView")
     }
 
     override func keyUp(with event: NSEvent) {

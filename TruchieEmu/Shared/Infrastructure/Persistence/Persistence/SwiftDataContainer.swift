@@ -63,9 +63,9 @@ final class SwiftDataContainer: ObservableObject {
     
     // MARK: - Initialization (private)
     private init() {
-        LoggerService.info(category: "SwiftDataContainer", "Initializing SwiftData container…")
+        // Don't log during init - could cause circular dependency with AppSettings
         
-       let schema = Schema([
+        let schema = Schema([
             ROMEntry.self,
             ROMMetadataEntry.self,
             GameDBEntry.self,
@@ -86,7 +86,9 @@ final class SwiftDataContainer: ObservableObject {
             // MAME ROM database and verification tracking
             MAMERomEntry.self,
             MAMEDatabaseInfo.self,
-            MAMEVerificationRecord.self
+            MAMEVerificationRecord.self,
+            // Generic settings storage
+            SettingsEntry.self
         ])
 
         // --- NEW LOGIC START ---
@@ -104,9 +106,8 @@ final class SwiftDataContainer: ObservableObject {
         do {
             container = try ModelContainer(for: schema, configurations: [config])
             migrationFlag = PersistenceMigrationFlag()
-            LoggerService.info(category: "SwiftDataContainer", "ModelContainer created successfully at: \(storeURL.path)")
         } catch {
-            LoggerService.warning(category: "SwiftDataContainer", "Failed to create ModelContainer: \(error.localizedDescription). Attempting store reset…")
+            // Try recovery without logging (to avoid circular deps)
             
             Self.deleteStoreFiles()
             
@@ -119,7 +120,6 @@ final class SwiftDataContainer: ObservableObject {
                 migrationFlag = PersistenceMigrationFlag()
             } catch {
                 // If schema migration fails, delete the store file and try again
-                LoggerService.warning(category: "SwiftDataContainer", "Failed to create ModelContainer: \(error.localizedDescription). Attempting store reset…")
                 Self.deleteStoreFiles()
                 let retryConfig = ModelConfiguration(schema: schema, isStoredInMemoryOnly: false)
                 do {
@@ -127,14 +127,11 @@ final class SwiftDataContainer: ObservableObject {
                     migrationFlag = PersistenceMigrationFlag()
                 } catch {
                     // Last resort: in-memory only
-                    LoggerService.warning(category: "SwiftDataContainer", "Persistent store still failed after reset, using in-memory fallback")
                     let fallbackConfig = ModelConfiguration(schema: schema, isStoredInMemoryOnly: true)
                     do {
                         container = try ModelContainer(for: schema, configurations: [fallbackConfig])
                         migrationFlag = PersistenceMigrationFlag()
-                        LoggerService.info(category: "SwiftDataContainer", "ModelContainer created with in-memory fallback")
                     } catch {
-                        LoggerService.error(category: "SwiftDataContainer", "Fatal: ModelContainer creation failed even with in-memory fallback: \(error.localizedDescription)")
                         fatalError("Unable to initialize SwiftData container: \(error)")
                     }
                 }

@@ -761,20 +761,42 @@ class EmulatorRunner: ObservableObject, @unchecked Sendable {
 
     @MainActor
     func setupGamepadInput() {
-        let activeIdx = ControllerService.shared.activePlayerIndex
+        // Ensure ControllerService is initialized
+        let cs = ControllerService.shared
+        
+        // Debug: Log controller state
+        LoggerService.info(category: "Runner", "setupGamepadInput: activePlayerIndex=\(cs.activePlayerIndex), connectedControllers=\(cs.connectedControllers.map { $0.name })")
+        
+        // Auto-select first controller if none selected
+        if cs.activePlayerIndex == 0 && !cs.connectedControllers.isEmpty {
+            cs.activePlayerIndex = 1
+        }
+        
+        let activeIdx = cs.activePlayerIndex
+        LoggerService.info(category: "Runner", "setupGamepadInput: after auto-select, activeIdx=\(activeIdx)")
+        
         if activeIdx == 0 { return } // Keyboard
         
-        guard let player = ControllerService.shared.connectedControllers.first(where: { $0.playerIndex == activeIdx }),
+        guard let player = cs.connectedControllers.first(where: { $0.playerIndex == activeIdx }),
               let controller = player.gcController else { return }
         
         let sysID = rom?.systemID ?? "default"
-        let mapping = ControllerService.shared.mapping(for: controller.vendorName ?? "Unknown", systemID: sysID) as ControllerGamepadMapping
+        let mapping = cs.mapping(for: controller.vendorName ?? "Unknown", systemID: sysID) as ControllerGamepadMapping
         
-        LoggerService.debug(category: "Runner", "Hooking gamepad: \(controller.vendorName ?? "Unknown") for system: \(sysID)")
+        guard let extendedGamepad = controller.extendedGamepad else {
+            LoggerService.info(category: "Runner", "ERROR: No extendedGamepad on controller!")
+            return
+        }
+        
+        LoggerService.info(category: "Runner", "Hooking gamepad: \(controller.vendorName ?? "Unknown") for system: \(sysID)")
         self.hookedController = controller
         
-        controller.extendedGamepad?.valueChangedHandler = { [weak self] _, element in
+extendedGamepad.valueChangedHandler = { [weak self] _, element in
             guard let self = self else { return }
+            
+            // Debug: log every input event
+            let elemName = element.localizedName ?? "unknown"
+            let isPressed = (element as? GCControllerButtonInput)?.isPressed ?? false
             
             // If it's a DPad or Stick, we want to handle its 4 directions
             if let dpad = element as? GCControllerDirectionPad {

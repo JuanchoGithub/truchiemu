@@ -68,9 +68,14 @@ final class LoggerService: @unchecked Sendable {
     
     @Published private(set) var currentLevel: LogLevel {
         didSet {
+            // Don't save to AppSettings during initialization - it could cause circular dep
+            guard isInitialized else { return }
             AppSettings.set("log_level", value: currentLevel.rawValue)
         }
     }
+    
+    // Flag to prevent AppSettings writes during init
+    private var isInitialized = false
     
     // MARK: - File Logging State
     
@@ -92,9 +97,9 @@ final class LoggerService: @unchecked Sendable {
     // MARK: - Init
     
     private init() {
-        // Load saved log level (default to DEBUG for better troubleshooting)
-        let rawLevel = AppSettings.get("log_level", type: String.self) ?? "info"
-        self.currentLevel = LogLevel(rawValue: rawLevel) ?? .info
+        // Load saved log level (default to INFO - don't read AppSettings here to avoid circular dependency)
+        // The actual saved value will be loaded lazily on first access
+        self.currentLevel = .info
         
         // Create OS logger for system console
         self.osLogger = OSLog(subsystem: Bundle.main.bundleIdentifier ?? "com.truchiemu", category: "TruchieEmu")
@@ -105,6 +110,17 @@ final class LoggerService: @unchecked Sendable {
         // Register the C callback so libretro core logs (LibretroDB, Identify, Bridge, etc.)
         // are routed through LoggerService and written to the log file.
         RegisterCoreLogCallback(g_coreLogCallback)
+        
+        // Mark as initialized - now we can safely write to AppSettings
+        self.isInitialized = true
+        
+        // Try to load saved log level after init completes (won't cause circular dep)
+        Task { @MainActor in
+            let rawLevel = AppSettings.get("log_level", type: String.self) ?? "info"
+            await MainActor.run {
+                self.currentLevel = LogLevel(rawValue: rawLevel) ?? .info
+            }
+        }
     }
     
     // MARK: - Setup File Logging
@@ -119,7 +135,12 @@ final class LoggerService: @unchecked Sendable {
         logFileHandle?.closeFile()
         logFileHandle = nil
         
-        let logURL = LogManager.shared.currentLogURL
+        // Use default log URL initially to avoid circular dependency
+        // (LogManager.currentLogURL would read AppSettings, which isn't ready yet)
+        let appSupport = FileManager.default.urls(for: .applicationSupportDirectory, in: .userDomainMask).first!
+        let logDir = appSupport.appendingPathComponent("TruchieEmu/Logs")
+        let logURL = logDir.appendingPathComponent("TruchieEmu.log")
+        
         let ts = ISO8601DateFormatter.string(from: Date(), timeZone: TimeZone.current)
         
         // Use os_log for setup messages so they go to system console, and also format for file

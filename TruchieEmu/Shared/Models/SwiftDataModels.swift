@@ -618,3 +618,22 @@ final class BoxArtResolutionEntry {
     }
 }
 
+// MARK: - Settings Entry (Generic Key-Value Storage)
+
+@Model
+final class SettingsEntry {
+    @Attribute(.unique) var key: String
+    var value: String // Base64-encoded Data
+    
+    init(key: String, value: Data) {
+        self.key = key
+        self.value = value.base64EncodedString()
+    }
+    
+    // Convenience property to get/set Data directly
+    var dataValue: Data {
+        get { Data(base64Encoded: value) ?? Data() }
+        set { value = newValue.base64EncodedString() }
+    }
+}
+

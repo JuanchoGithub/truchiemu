@@ -42,6 +42,37 @@ struct LibraryGridView: View {
         ))
     }
 
+    @ViewBuilder
+    private var inputDeviceButtons: some View {
+        Button(action: { controllerService.activePlayerIndex = 0 }) {
+            Label("Keyboard", systemImage: "keyboard")
+        }
+        ForEach(Array(controllerService.connectedControllers.enumerated()), id: \.element.playerIndex) { index, player in
+            Button(action: { controllerService.activePlayerIndex = player.playerIndex }) {
+                Label(player.name, systemImage: "gamecontroller")
+            }
+        }
+        Divider()
+        Button {
+            UserDefaults.standard.set("controllers", forKey: "settings_selectedTab")
+            NotificationCenter.default.post(name: .openAppSettings, object: nil)
+        } label: {
+            Label("Configure...", systemImage: "gear")
+        }
+    }
+
+    @ViewBuilder
+    private var languageButtons: some View {
+        ForEach(EmulatorLanguage.allCases) { lang in
+            Button { prefs.systemLanguage = lang } label: {
+                HStack {
+                    Text("\(lang.flagEmoji) \(lang.name)")
+                    if prefs.systemLanguage == lang { Image(systemName: "checkmark") }
+                }
+            }
+        }
+    }
+
 
 
 
@@ -279,19 +310,10 @@ ToolbarItem(placement: .primaryAction) {
             ToolbarItem(placement: .primaryAction) {
                 Menu {
                     Section("Input Device") {
-                        Button(action: { controllerService.activePlayerIndex = 0 }) {
-                            Label("Keyboard", systemImage: "keyboard")
-                        }
+                        inputDeviceButtons
                     }
                     Section("Language") {
-                        ForEach(EmulatorLanguage.allCases) { lang in
-                            Button { prefs.systemLanguage = lang } label: {
-                                HStack {
-                                    Text("\(lang.flagEmoji) \(lang.name)")
-                                    if prefs.systemLanguage == lang { Image(systemName: "checkmark") }
-                                }
-                            }
-                        }
+                        languageButtons
                     }
                 } label: {
                     HStack(spacing: 4) {

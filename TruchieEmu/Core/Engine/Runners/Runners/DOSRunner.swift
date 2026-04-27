@@ -66,7 +66,14 @@ class DOSRunner: EmulatorRunner, @unchecked Sendable {
     
     @MainActor
     override func setupGamepadInput() {
-        let activeIdx = ControllerService.shared.activePlayerIndex
+        let cs = ControllerService.shared
+        
+        // Auto-select first controller if none selected
+        if cs.activePlayerIndex == 0 && !cs.connectedControllers.isEmpty {
+            cs.activePlayerIndex = 1
+        }
+        
+        let activeIdx = cs.activePlayerIndex
         if activeIdx == 0 {
             // Keyboard mode - DOSBox-Pure handles keyboard natively
             LoggerService.debug(category: "DOSRunner", "Using keyboard input for DOS")

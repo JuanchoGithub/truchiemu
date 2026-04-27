@@ -118,49 +118,40 @@ import Foundation
     }
 
     static func setTurboState(turboIdx: Int, active: Bool, targetButton: Int) {
-        LoggerService.extreme(category: "LibretroBridge", "Setting turbo state: \(turboIdx) = \(active) = \(targetButton)")
         LibretroBridge.setTurboState(Int32(turboIdx), active: active, targetButton: Int32(targetButton))
     }
 
     static func setAnalogState(_ index: Int, id: Int, value: Int32) {
-        LoggerService.extreme(category: "LibretroBridge", "Setting analog state: \(index) = \(id) = \(value)")
         LibretroBridge.setAnalogState(Int32(index), id: Int32(id), value: value)
     }
 
     // MARK: - Keyboard / Mouse / Pointer Input
 
     static func dispatchKeyboardEvent(keycode: UInt32, character: UInt32, modifiers: UInt32, down: Bool) {
-        LoggerService.info(category: "LibretroBridge", "Keyboard event: keycode=\(keycode) char=\(character) mod=\(modifiers) down=\(down)")
         LibretroBridge.dispatchKeyboardEvent(keycode, character: character, modifiers: modifiers, down: down)
     }
 
     static func setMouseDeltaX(_ dx: Int16, y dy: Int16) {
-        LoggerService.extreme(category: "LibretroBridge", "Mouse delta: \(dx), \(dy)")
         LibretroBridge.setMouseDeltaX(dx, y: dy)
     }
 
     static func addMouseDelta(_ dx: Int16, y dy: Int16) {
-        LoggerService.extreme(category: "LibretroBridge", "Mouse delta (accumulate): \(dx), \(dy)")
         LibretroBridge.addMouseDelta(dx, y: dy)
     }
 
     static func setMouseButton(_ button: Int, pressed: Bool) {
-        LoggerService.extreme(category: "LibretroBridge", "Mouse button: \(button) pressed=\(pressed)")
         LibretroBridge.setMouseButton(Int32(button), pressed: pressed)
     }
 
     static func addMouseWheelDelta(_ delta: Int16) {
-        LoggerService.extreme(category: "LibretroBridge", "Mouse wheel delta: \(delta)")
         LibretroBridge.addMouseWheelDelta(delta)
     }
 
     static func resetMouseDeltas() {
-        LoggerService.extreme(category: "LibretroBridge", "Resetting mouse deltas")
         LibretroBridge.resetMouseDeltas()
     }
 
     static func setPointerPosition(_ x: Int16, y: Int16, pressed: Bool) {
-        LoggerService.extreme(category: "LibretroBridge", "Pointer: \(x), \(y) pressed=\(pressed)")
         LibretroBridge.setPointerX(x, y: y, pressed: pressed)
     }
 
@@ -168,12 +159,10 @@ import Foundation
     
     static func currentRotation() -> Int {
         let rotation = LibretroBridge.currentRotation()
-        LoggerService.extreme(category: "LibretroBridge", "Getting current rotation: \(rotation)")
         return Int(rotation)
     }
 
     static func aspectRatio() -> Float {
-        LoggerService.extreme(category: "LibretroBridge", "Getting aspect ratio")
         return LibretroBridge.aspectRatio()
     }
 

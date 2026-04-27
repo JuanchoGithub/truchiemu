@@ -426,6 +426,7 @@
 		DD761E392F9ED0FA002E0F3D /* SaveDirectorySettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = DD761E372F9ED0FA002E0F3D /* SaveDirectorySettingsView.swift */; };
 		DD761E3B2F9F6F0A002E0F3D /* CursorAutoHideManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = DD761E3A2F9F6F0A002E0F3D /* CursorAutoHideManager.swift */; };
 		DD761E412F9ED0FB002E0F3D /* SaveDirectoriesSection.swift in Sources */ = {isa = PBXBuildFile; fileRef = DD761E402F9ED0FB002E0F3D /* SaveDirectoriesSection.swift */; };
+		DD761E412F9FB4F8002E0F3D /* SettingsRepository.swift in Sources */ = {isa = PBXBuildFile; fileRef = DD761E402F9FB4F8002E0F3D /* SettingsRepository.swift */; };
 		DD761E432F9ED0FC002E0F3D /* EnvironmentDiagnostics.swift in Sources */ = {isa = PBXBuildFile; fileRef = DD761E422F9ED0FC002E0F3D /* EnvironmentDiagnostics.swift */; };
 /* End PBXBuildFile section */
 
@@ -870,6 +871,7 @@
 		DD761E372F9ED0FA002E0F3D /* SaveDirectorySettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SaveDirectorySettingsView.swift; sourceTree = "<group>"; };
 		DD761E3A2F9F6F0A002E0F3D /* CursorAutoHideManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CursorAutoHideManager.swift; sourceTree = "<group>"; };
 		DD761E402F9ED0FB002E0F3D /* SaveDirectoriesSection.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SaveDirectoriesSection.swift; sourceTree = "<group>"; };
+		DD761E402F9FB4F8002E0F3D /* SettingsRepository.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsRepository.swift; sourceTree = "<group>"; };
 		DD761E422F9ED0FC002E0F3D /* EnvironmentDiagnostics.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EnvironmentDiagnostics.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -1629,6 +1631,7 @@
 		DD1AE5A62F96D7240014A60E /* Persistence */ = {
 			isa = PBXGroup;
 			children = (
+				DD761E402F9FB4F8002E0F3D /* SettingsRepository.swift */,
 				DD1AE5A02F96D7240014A60E /* CoreOptionsRepository.swift */,
 				DD1AE5A12F96D7240014A60E /* GameDBRepository.swift */,
 				DD1AE5A22F96D7240014A60E /* PersistenceMigrationFlag.swift */,
@@ -2290,6 +2293,7 @@
 				DD1AEB1C2F96D7240014A60E /* N64Runner.swift in Sources */,
 				DD1AEB1D2F96D7240014A60E /* SwiftDataModels.swift in Sources */,
 				DD1AEB1F2F96D7240014A60E /* GameDetailView.swift in Sources */,
+				DD761E412F9FB4F8002E0F3D /* SettingsRepository.swift in Sources */,
 				DD1AEB202F96D7240014A60E /* BezelModels.swift in Sources */,
 				DD1AEB212F96D7240014A60E /* BezelsSection.swift in Sources */,
 				DD1AEB232F96D7240014A60E /* ContentView.swift in Sources */,

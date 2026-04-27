@@ -22,11 +22,7 @@ struct SlotInfo: Identifiable, Equatable {
 }
 
 // MARK: - Save State Manager
-
-// Centralized manager for save state file I/O and directory management.
-// State saves are stored in subdirectories organized by system.
-//
-// Marked `@unchecked Sendable` because all file operations are thread-safe (FileManager handles them).
+// Thread-safe for concurrent access.
 class SaveStateManager: ObservableObject, @unchecked Sendable {
     
   // MARK: - Published State

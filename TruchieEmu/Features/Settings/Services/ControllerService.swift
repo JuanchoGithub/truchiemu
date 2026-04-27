@@ -59,6 +59,11 @@ class ControllerService: ObservableObject {
             ))
         }
         connectedControllers = players
+        
+        // Auto-detect: If no player selected (keyboard mode) and controllers are available, select first controller
+        if activePlayerIndex == 0 && !players.isEmpty {
+            activePlayerIndex = 1
+        }
     }
 
     // MARK: - Mappings

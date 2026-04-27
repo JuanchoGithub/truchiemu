@@ -16,7 +16,7 @@ public class SaveDirectoryBridge: NSObject {
     @objc static func libretroSystemDirectoryPath() -> String {
         SaveDirectoryManager.shared.systemDirectory.path
     }
-    
+
   // Called to ensure directory structure is created
   @objc static func ensureDirectoriesExist() {
     _ = SaveDirectoryManager.shared
