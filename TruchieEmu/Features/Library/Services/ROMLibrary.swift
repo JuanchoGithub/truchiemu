@@ -499,16 +499,15 @@ LibraryMetadataStore.shared.deleteMetadataEntries(Set(removedROMs.map { LibraryM
         
         let result = await ROMIdentifierService.shared.identify(rom: updatedROM, preferNameMatch: preferNameMatch)
         let enriched = applyIdentificationResult(result, to: updatedROM, persist: false)
-        if let finalROM = enriched {
-            if persist {
-                await enrichMetadata(for: finalROM, updateLibrary: true)
-                updateROM(finalROM, persist: true, silent: true)
-            } else {
-                if let idx = roms.firstIndex(where: { $0.id == finalROM.id }) {
-                    roms[idx] = finalROM
-                }
-            }
+if let finalROM = enriched {
+    if persist {
+        await enrichMetadata(for: finalROM, updateLibrary: true)
+    } else {
+        if let idx = roms.firstIndex(where: { $0.id == finalROM.id }) {
+            roms[idx] = finalROM
         }
+    }
+}
         return result
     }
     
