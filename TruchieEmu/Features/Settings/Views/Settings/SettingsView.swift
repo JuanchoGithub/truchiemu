@@ -13,7 +13,7 @@ struct SettingsView: View {
     enum Page: Hashable, Codable, RawRepresentable, Identifiable {
         
         var id: String { rawValue }
-        case general, library, cores, controllers, boxArt, display, cheats, bezels, retroAchievements, logging, about
+        case general, library, cores, controllers, boxArt, display, cheats, bezels, retroAchievements, genre, logging, about
         
         var rawValue: String {
             switch self {
@@ -26,6 +26,7 @@ struct SettingsView: View {
             case .cheats: return "cheats"
             case .bezels: return "bezels"
             case .retroAchievements: return "retroAchievements"
+            case .genre: return "genre"
             case .logging: return "logging"
             case .about: return "about"
             }
@@ -42,6 +43,7 @@ struct SettingsView: View {
             case "cheats": self = .cheats
             case "bezels": self = .bezels
             case "retroAchievements": self = .retroAchievements
+            case "genre": self = .genre
             case "logging": self = .logging
             case "about": self = .about
             default: return nil
@@ -59,6 +61,7 @@ struct SettingsView: View {
             case .cheats: return "wand.and.stars"
             case .bezels: return "rectangle.on.rectangle"
             case .retroAchievements: return "trophy.fill"
+            case .genre: return "tag.fill"
             case .logging: return "doc.text.fill"
             case .about: return "info.circle.fill"
             }
@@ -75,6 +78,7 @@ struct SettingsView: View {
             case .cheats: return "Cheats"
             case .bezels: return "Bezels"
             case .retroAchievements: return "Retro Achievements"
+            case .genre: return "Genres"
             case .logging: return "Logging"
             case .about: return "About"
             }
@@ -100,6 +104,8 @@ struct SettingsView: View {
                 return "bezel frame overlay monitor"
             case .retroAchievements:
                 return "retro achievements achievements hardcore"
+            case .genre:
+                return "genre genres tag categories merge rename"
             case .logging:
                 return "logging log debug console output"
             case .about:
@@ -110,7 +116,7 @@ struct SettingsView: View {
     
     static let allPages: [Page] = [
         .boxArt, .cheats, .controllers, .cores, .bezels, .display,
-        .general, .library, .logging, .retroAchievements, .about
+        .general, .genre, .library, .logging, .retroAchievements, .about
     ]
     
     // Use @AppStorage so it persists and can be set before openSettings() is called
@@ -219,6 +225,7 @@ struct SettingsView: View {
             case .cheats:      CheatSettingsView(system: system, searchText: $searchText)
             case .bezels:     BezelSettingsView(system: system, searchText: $searchText)
             case .retroAchievements: RetroAchievementsSettingsView(searchText: $searchText, system: system)
+            case .genre:       GenreSettingsView(searchText: $searchText)
             case .logging:     LoggingSettingsView(searchText: $searchText)
             case .about:       AboutView()
             }

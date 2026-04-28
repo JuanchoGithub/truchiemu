@@ -323,7 +323,7 @@ struct TruchieEmuApp: App {
                     case .bezels: return .bezels
                     case .controllers: return .controllers
                     case .cheats: return .cheats
-                    case .general, .library, .cores, .boxArt, .display, .retroAchievements, .logging, .about:
+                    case .general, .library, .cores, .boxArt, .display, .retroAchievements, .genre, .logging, .about:
                         return request.page
                     }
                 }()

@@ -23,6 +23,10 @@ final class GenreManager: ObservableObject {
         return Array(Set(names)).sorted()
     }
 
+    var allMappings: [(original: String, display: String)] {
+        mappings.map { (original: $0.key, display: $0.value) }
+    }
+
     func mergeGenres(from originals: Set<String>, to display: String) {
         for original in originals {
             mappings[original] = display

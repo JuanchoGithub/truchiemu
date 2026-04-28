@@ -430,6 +430,7 @@
 		DD761E432F9ED0FC002E0F3D /* EnvironmentDiagnostics.swift in Sources */ = {isa = PBXBuildFile; fileRef = DD761E422F9ED0FC002E0F3D /* EnvironmentDiagnostics.swift */; };
 		DD761E452FA04E07002E0F3D /* GenreManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = DD761E442FA04E07002E0F3D /* GenreManager.swift */; };
 		DD761E472FA04E15002E0F3D /* GenrePickerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = DD761E462FA04E15002E0F3D /* GenrePickerView.swift */; };
+		DD761E492FA0BCD0002E0F3D /* GenreSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = DD761E482FA0BCD0002E0F3D /* GenreSettingsView.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -877,6 +878,7 @@
 		DD761E422F9ED0FC002E0F3D /* EnvironmentDiagnostics.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EnvironmentDiagnostics.swift; sourceTree = "<group>"; };
 		DD761E442FA04E07002E0F3D /* GenreManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GenreManager.swift; sourceTree = "<group>"; };
 		DD761E462FA04E15002E0F3D /* GenrePickerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GenrePickerView.swift; sourceTree = "<group>"; };
+		DD761E482FA0BCD0002E0F3D /* GenreSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GenreSettingsView.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXGroup section */
@@ -1236,6 +1238,7 @@
 		DD1AE0CD2F96D7240014A60E /* Settings */ = {
 			isa = PBXGroup;
 			children = (
+				DD761E482FA0BCD0002E0F3D /* GenreSettingsView.swift */,
 				DD1AE0C12F96D7240014A60E /* AboutView.swift */,
 				DD1AE0C22F96D7240014A60E /* BoxArtSettingsView.swift */,
 				DD1AE0C32F96D7240014A60E /* CheatSettingsView.swift */,
@@ -2189,6 +2192,7 @@
 				DD1AEAB32F96D7240014A60E /* CLIManager.swift in Sources */,
 				DD1AEAB42F96D7240014A60E /* SNESRunner.swift in Sources */,
 				DD1AEAB52F96D7240014A60E /* ShaderUniforms.swift in Sources */,
+				DD761E492FA0BCD0002E0F3D /* GenreSettingsView.swift in Sources */,
 				DD1AEAB62F96D7240014A60E /* GeneralSettingsView.swift in Sources */,
 				DD1AEAB72F96D7240014A60E /* LibretroCore.swift in Sources */,
 				DD1AEAB82F96D7240014A60E /* DesignSystem.swift in Sources */,
