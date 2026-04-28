@@ -1,22 +1,22 @@
-name: TruchieEmu
+name: TruchiEmu
 options:
-  bundleIdPrefix: com.truchiemu
+  bundleIdPrefix: com.TruchiEmu
   deploymentTarget:
     macOS: "14.0"
   createIntermediateGroups: true
   xcodeVersion: "15"
 schemes:
-  TruchieEmu:
+  TruchiEmu:
     build:
       targets:
-        TruchieEmu: all
-        TruchieEmuTests: [test]
+        TruchiEmu: all
+        TruchiEmuTests: [test]
     test:
       targets:
-        - TruchieEmuTests
+        - TruchiEmuTests
 
 targets:
-  TruchieEmu:
+  TruchiEmu:
     type: application
     platform: macOS
     deploymentTarget: "14.0"
@@ -25,14 +25,14 @@ targets:
       - SwiftData
 
     info:
-      path: TruchieEmu/Resources/Info.plist
+      path: TruchiEmu/Resources/Info.plist
       properties:
-        CFBundleName: TruchieEmu
-        CFBundleDisplayName: TruchieEmu
-        CFBundleIdentifier: com.truchiemu.app
+        CFBundleName: TruchiEmu
+        CFBundleDisplayName: TruchiEmu
+        CFBundleIdentifier: com.TruchiEmu.app
         CFBundleVersion: "1"
         CFBundleShortVersionString: "1.0.0"
-        NSHumanReadableCopyright: "© 2026 TruchieEmu"
+        NSHumanReadableCopyright: "© 2026 TruchiEmu"
         NSPrincipalClass: NSApplication
         NSHighResolutionCapable: true
         NSSupportsAutomaticGraphicsSwitching: true
@@ -40,48 +40,59 @@ targets:
           NSAllowsArbitraryLoads: true
 
     entitlements:
-      path: TruchieEmu/Resources/TruchieEmu.entitlements
+      path: TruchiEmu/Resources/TruchiEmu.entitlements
 
     settings:
       base:
-        PRODUCT_NAME: TruchieEmu
-        PRODUCT_BUNDLE_IDENTIFIER: com.truchiemu.app
-        SWIFT_OBJC_BRIDGING_HEADER: TruchieEmu/Core/Engine/TruchieEmu-Bridging-Header.h
+        PRODUCT_NAME: TruchiEmu
+        PRODUCT_BUNDLE_IDENTIFIER: com.TruchiEmu.app
+        SWIFT_OBJC_BRIDGING_HEADER: TruchiEmu/Core/Engine/TruchiEmu-Bridging-Header.h
         CLANG_ENABLE_OBJC_ARC: YES
         GCC_C_LANGUAGE_STANDARD: gnu17
         CLANG_CXX_LANGUAGE_STANDARD: gnu++17
         CLANG_CXX_LIBRARY: libc++
         MACOSX_DEPLOYMENT_TARGET: "14.0"
         ARCHS: "$(ARCHS_STANDARD)"
-        CODE_SIGN_ENTITLEMENTS: TruchieEmu/Resources/TruchieEmu.entitlements
+        CODE_SIGN_ENTITLEMENTS: TruchiEmu/Resources/TruchiEmu.entitlements
         CODE_SIGN_STYLE: Automatic
         ENABLE_HARDENED_RUNTIME: NO
         SWIFT_VERSION: "5.9"
         OTHER_LDFLAGS: "-framework Metal -framework MetalKit -framework GameController -framework AVFoundation -framework WebKit -framework OpenGL -framework SwiftData"
 
     sources:
-      - path: TruchieEmu/App
+      - path: TruchiEmu/App
         excludes:
           - "*.DS_Store"
-      - path: TruchieEmu/Core/Models
+      - path: TruchiEmu/Core/Models
         type: group
-      - path: TruchieEmu/Services
-      - path: TruchieEmu/Core/Engine
-      - path: TruchieEmu/Core/Shaders
+      - path: TruchiEmu/Services
+      - path: TruchiEmu/Core/Engine
+        type: group
+      - path: TruchiEmu/Core/Shaders
         excludes:
           - "slang/**"
           - "internal/**"
           - "all_shaders.metal"
         buildPhase: sources
-      - path: TruchieEmu/Views
-      - path: TruchieEmu/Shared
-      - path: TruchieEmu/Features
+      - path: TruchiEmu/Views
+      - path: TruchiEmu/Shared
+      - path: TruchiEmu/Features
+      - path: TruchiEmu/Resources/Config
+        buildPhase: resources
+      - path: TruchiEmu/Resources/Data
+        buildPhase: resources
+      - path: TruchiEmu/Resources/EmulatorIcons
+        buildPhase: resources
+      - path: TruchiEmu/Resources/ThumbnailManifests
+        buildPhase: resources
+      - path: TruchiEmu/Resources/retroarch
+        buildPhase: resources
       - path: scripts/mame_lookup/mame_rom_data.json
         buildPhase: resources
 
     preBuildScripts: []
 
-  TruchieEmuTests:
+  TruchiEmuTests:
     type: bundle.unit-test
     platform: macOS
     deploymentTarget: "14.0"
@@ -91,13 +102,13 @@ targets:
 
     settings:
       base:
-        PRODUCT_NAME: TruchieEmuTests
-        PRODUCT_BUNDLE_IDENTIFIER: com.truchiemu.tests
+        PRODUCT_NAME: TruchiEmuTests
+        PRODUCT_BUNDLE_IDENTIFIER: com.TruchiEmu.tests
         SWIFT_VERSION: "5.9"
         GENERATE_INFOPLIST_FILE: YES
 
     sources:
-      - path: TruchieEmuTests
+      - path: TruchiEmuTests
 
     dependencies:
-      - target: TruchieEmu
+      - target: TruchiEmu

@@ -1,0 +1,98 @@
+{
+  "comment": "Core-specific option overrides for optimal compatibility and performance",
+  "overrides": {
+    "pcsx_rearmed_libretro": {
+      "override_description": "Force 60Hz for PCSX-ReARMed",
+      "pcsx_rearmed_region": "NTSC"
+    },
+    "mednafen_psx_libretro": {
+      "override_description": "Mednafen PSX Software Renderer optimizations",
+      "beetle_psx_analog_toggle": "disabled",
+      "beetle_psx_gpu_overclock": "2x",
+      "beetle_psx_skip_bios": "enabled",
+      "beetle_psx_internal_resolution": "4x",
+      "beetle_psx_cd_fastload": "4x"
+    },
+    "mednafen_psx_hw_libretro": {
+      "override_description": "Mednafen PSX HW Renderer optimizations",
+      "beetle_psx_hw_analog_toggle": "disabled",
+      "beetle_psx_hw_gpu_overclock": "2x",
+      "beetle_psx_hw_skip_bios": "enabled",
+      "beetle_psx_hw_internal_resolution": "4x",
+      "beetle_psx_hw_cd_fastload": "4x"
+    },
+    "swanstation_libretro": {
+      "override_description": "SwanStation performance optimized settings",
+      "swanstation_CPU_Overclock": "200",
+      "swanstation_60hz": "true",
+      "swanstation_GPU_Renderer": "Software",
+      "swanstation_GPU_SoftwareRendererResolution": "1x",
+      "swanstation_CDROM_LoadImageToRAM": "enabled",
+      "swanstation_CDROM_ReadSpeedup": "8",
+      "swanstation_GPU_DownsampleMode": "Disabled",
+      "swanstation_GPU.ColorBuffer32Bit": "enabled"
+    },
+    "duckstation_libretro": {
+      "override_description": "DuckStation performance optimized settings",
+      "duckstation_60hz": "true"
+    },
+    "flycast_libretro": {
+      "override_description": "Flycast Dreamcast emulator optimizations",
+      "flycast_threaded_rendering": "disabled",
+      "flycast_cpu_mode": "interpreter",
+      "flycast_mmu_enabled": "enabled",
+      "flycast_alpha_sorting": "per-triangle"
+    },
+    "reicast_libretro": {
+      "override_description": "Reicast Dreamcast emulator optimizations",
+      "reicast_threaded_rendering": "disabled",
+      "reicast_cpu_mode": "interpreter",
+      "reicast_mmu_enabled": "enabled",
+      "reicast_alpha_sorting": "per-triangle"
+    },
+    "dolphin_libretro": {
+      "override_description": "Dolphin GameCube/Wii emulator optimizations",
+      "dolphin_gfx_backend": "OGL",
+      "dolphin_vertex_rounding": "disabled",
+      "dolphin_fastmem": "enabled"
+    },
+    "mupen64plus_libretro": {
+      "override_description": "Mupen64Plus N64 emulator optimizations (Software fallback)",
+      "mupen64plus-cpucore": "pure_interpreter",
+      "mupen64plus-rdp-plugin": "angrylion",
+      "mupen64plus-next-aspect": "4:3"
+    },
+    "mupen64plus_next_libretro": {
+      "override_description": "Mupen64Plus-Next N64 emulator optimizations (Software fallback)",
+      "mupen64plus-next-cpucore": "pure_interpreter",
+      "mupen64plus-next-rdp-plugin": "angrylion",
+      "mupen64plus-next-aspect": "4:3",
+      "mupen64plus-next-ThreadedRenderer": "Disabled",
+      "mupen64plus-next-parallel-rdp-synchronous": "Disabled",
+      "mupen64plus-next-ExpansionPak": "Enabled",
+      "mupen64plus-next-EnableFBEmulation": "True",
+      "mupen64plus-next-EnableCopyColorToRDRAM": "Off",
+      "mupen64plus-next-EnableCopyDepthToRDRAM": "Off"
+    },
+    "mame2003_plus_libretro": {
+      "override_description": "MAME 2003-Plus arcade emulator defaults",
+      "mame2003-plus-throttle": "enabled",
+      "mame2003-plus-skip_disclaimer": "enabled",
+      "mame2003-plus-skip_warnings": "enabled"
+    },
+    "mame2010_libretro": {
+      "override_description": "MAME 2010 arcade emulator defaults",
+      "mame2010-throttle": "enabled",
+      "mame2010-skip_disclaimer": "enabled",
+      "mame2010-skip_warnings": "enabled"
+    },
+    "mame_libretro": {
+      "override_description": "MAME current arcade emulator defaults",
+      "mame-throttle": "enabled"
+    },
+    "mame2000_libretro": {
+      "override_description": "MAME 2000 arcade emulator defaults",
+      "mame2000-throttle": "enabled"
+    }
+  }
+}
