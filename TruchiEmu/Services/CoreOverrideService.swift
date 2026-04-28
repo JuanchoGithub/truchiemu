@@ -54,12 +54,20 @@ overrides = container.overrides
     
     /// Gets all overrides for a specific core
     func getOverrides(for coreID: String) -> [String: String] {
-        return overrides[coreID] ?? [:]
+        let result = overrides[coreID] ?? [:]
+        if result.isEmpty {
+            logger.debug("No overrides found for coreID: '\(coreID)'. Available keys: \(self.overrides.keys.joined(separator: ", "))")
+        }
+        return result
     }
     
     /// Gets a specific override value for a core option
     func getOverride(for coreID: String, optionKey: String) -> String? {
-        return overrides[coreID]?[optionKey]
+        let val = overrides[coreID]?[optionKey]
+        if val != nil {
+            logger.info("Match found for \(coreID)[\(optionKey)] = \(val!)")
+        }
+        return val
     }
     
     /// Checks if any overrides exist for a core

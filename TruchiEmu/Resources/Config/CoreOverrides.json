@@ -65,9 +65,13 @@
     "mupen64plus_next_libretro": {
       "override_description": "Mupen64Plus-Next N64 emulator optimizations (Software fallback)",
       "mupen64plus-next-cpucore": "pure_interpreter",
+      "mupen64plus-cpucore": "pure_interpreter",
       "mupen64plus-next-rdp-plugin": "angrylion",
+      "mupen64plus-rdp-plugin": "angrylion",
       "mupen64plus-next-aspect": "4:3",
+      "mupen64plus-aspect": "4:3",
       "mupen64plus-next-ThreadedRenderer": "Disabled",
+      "mupen64plus-ThreadedRenderer": "Disabled",
       "mupen64plus-next-parallel-rdp-synchronous": "Disabled",
       "mupen64plus-next-ExpansionPak": "Enabled",
       "mupen64plus-next-EnableFBEmulation": "True",

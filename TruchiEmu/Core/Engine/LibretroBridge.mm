@@ -51,6 +51,7 @@ static int16_t input_state_stub(unsigned port, unsigned device, unsigned index, 
         cleanCoreID = [cleanCoreID stringByDeletingPathExtension];
     }
     g_coreID = [cleanCoreID copy];
+    NSLog(@"[Bridge] Active CoreID set to: '%@'", g_coreID);
     g_shaderDir = [shaderDir copy];
     initOptStorage();
     [g_optValues removeAllObjects];

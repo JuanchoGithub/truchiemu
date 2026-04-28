@@ -92,20 +92,7 @@ bool bridge_environment(unsigned cmd, void *data) {
 
     // Apply core-specific overrides from CoreOverrideService
     if (var && var->key && g_coreID) {
-        // --- HARDCODED SANITY OVERRIDES (Diagnostic Fallback) ---
-        // These ensure N64 works even if CoreOverrides.json fails to load
-        if (strcmp(var->key, "mupen64plus-next-cpucore") == 0 || strcmp(var->key, "mupen64plus-cpucore") == 0) {
-            var->value = "pure_interpreter";
-            return true;
-        }
-        if (strcmp(var->key, "mupen64plus-rdp-plugin") == 0 || strcmp(var->key, "mupen64plus-next-rdp-plugin") == 0) {
-            var->value = "angrylion";
-            return true;
-        }
-        if (strcmp(var->key, "mupen64plus-next-ThreadedRenderer") == 0) {
-            var->value = "Disabled";
-            return true;
-        }
+        bridge_log_printf(RETRO_LOG_DEBUG, "[Override-DGB] Checking override for core: %s, key: %s", [((NSString *)g_coreID) UTF8String], var->key);
 
         const char* overrideValue = core_override_get_value([((NSString *)g_coreID) UTF8String], var->key);
         if (overrideValue) {
@@ -113,8 +100,10 @@ bool bridge_environment(unsigned cmd, void *data) {
             strncpy(g_overrideBuf, overrideValue, sizeof(g_overrideBuf) - 1);
             g_overrideBuf[sizeof(g_overrideBuf) - 1] = '\0';
             var->value = g_overrideBuf;
-            bridge_log_printf(RETRO_LOG_INFO, "Override: %s = %s", var->key, var->value);
+            bridge_log_printf(RETRO_LOG_INFO, "[Override-JSON] %s = %s", var->key, var->value);
             return true;
+        } else {
+            bridge_log_printf(RETRO_LOG_DEBUG, "[Override-DGB] No JSON override for %s", var->key);
         }
     }
     
