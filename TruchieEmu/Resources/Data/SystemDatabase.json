@@ -157,7 +157,7 @@
             "sgb"
         ],
         "emuIconName": "GBA",
-        "defaultBoxType": "Vertical",
+        "defaultBoxType": "Box",
         "iconName": "iphone",
         "defaultCoreID": "mgba_libretro",
         "manufacturer": "Nintendo"
