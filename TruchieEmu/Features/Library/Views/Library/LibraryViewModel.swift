@@ -16,9 +16,10 @@ class LibraryViewModel: ObservableObject {
     var currentFilter: LibraryFilter = .all
     var currentSearchText: String = ""
     var activeFilters: Set<String> = []
-    var sortByLastPlayed: Bool = false
+var sortByLastPlayed: Bool = false
     var sortByLastAdded: Bool = false
-    
+    var selectedGenres: Set<String> = []
+
     private var cancellables = Set<AnyCancellable>()
     
     init(
@@ -54,13 +55,14 @@ class LibraryViewModel: ObservableObject {
             .store(in: &cancellables)
     }
     
-    func updateFilters(filter: LibraryFilter, searchText: String, activeFilters: Set<String>, sortByLastPlayed: Bool, sortByLastAdded: Bool) {
+func updateFilters(filter: LibraryFilter, searchText: String, activeFilters: Set<String>, sortByLastPlayed: Bool, sortByLastAdded: Bool, selectedGenres: Set<String> = []) {
         self.currentFilter = filter
         self.currentSearchText = searchText
         self.activeFilters = activeFilters
         self.sortByLastPlayed = sortByLastPlayed
         self.sortByLastAdded = sortByLastAdded
-        
+        self.selectedGenres = selectedGenres
+
         refreshData()
     }
     
@@ -76,41 +78,42 @@ class LibraryViewModel: ObservableObject {
             
             isProcessing = true
             
-            // Capture current state
-            let filter = currentFilter
-            let searchText = currentSearchText
-            let activeFilters = activeFilters
-            let sortByLastPlayed = sortByLastPlayed
-            let sortByLastAdded = sortByLastAdded
-            let allRoms = library.roms
-            let categories = categoryManager.categories
-            
-            let filtered = await Task.detached(priority: .userInitiated) {
-                return self.computeFilteredAndSorted(
-                    roms: allRoms,
-                    categories: categories,
-                    filter: filter,
-                    searchText: searchText,
-                    activeFilters: activeFilters,
-                    sortByLastPlayed: sortByLastPlayed,
-                    sortByLastAdded: sortByLastAdded
-                )
-            }.value
+// Capture current state
+        let filter = currentFilter
+        let searchText = currentSearchText
+        let activeFilters = activeFilters
+        let sortByLastPlayed = sortByLastPlayed
+        let sortByLastAdded = sortByLastAdded
+        let selectedGenres = selectedGenres
+        let allRoms = library.roms
+        let categories = categoryManager.categories
+
+        let filtered = computeFilteredAndSorted(
+            roms: allRoms,
+            categories: categories,
+            filter: filter,
+            searchText: searchText,
+            activeFilters: activeFilters,
+            sortByLastPlayed: sortByLastPlayed,
+            sortByLastAdded: sortByLastAdded,
+            selectedGenres: selectedGenres
+        )
             
             self.displayedROMs = filtered
             self.isProcessing = false
         }
     }
     
-    // This method is now nonisolated and takes all necessary data as parameters
-    nonisolated private func computeFilteredAndSorted(
+    // This method runs on main actor to access GenreManager
+    private func computeFilteredAndSorted(
         roms: [ROM],
         categories: [GameCategory],
         filter: LibraryFilter,
         searchText: String,
         activeFilters: Set<String>,
         sortByLastPlayed: Bool,
-        sortByLastAdded: Bool
+        sortByLastAdded: Bool,
+        selectedGenres: Set<String>
     ) -> [ROM] {
         // 1. Base Filtering
         var base: [ROM]
@@ -165,17 +168,25 @@ class LibraryViewModel: ObservableObject {
             }
         }
         
-        // 3. Search Text
-        if !searchText.isEmpty {
-            let searchTerms = searchText.split(separator: " ")
-            filtered = filtered.filter { rom in
-                searchTerms.allSatisfy { term in
-                    rom.displayName.localizedCaseInsensitiveContains(term)
-                }
+// 3. Search Text
+    let searchTerms = searchText.split(separator: " ").map(String.init)
+    if !searchText.isEmpty {
+        filtered = filtered.filter { rom in
+            searchTerms.allSatisfy { term in
+                rom.displayName.localizedCaseInsensitiveContains(term)
             }
         }
-        
-        // 4. Sorting
+    }
+
+    // 4. Genre Filter
+    if !selectedGenres.isEmpty {
+        filtered = filtered.filter { rom in
+            let displayGenre = GenreManager.shared.effectiveDisplayName(for: rom.metadata?.genre)
+            return selectedGenres.contains(displayGenre)
+        }
+    }
+
+    // 5. Sorting
         return applySorting(to: filtered, sortByLastPlayed: sortByLastPlayed, sortByLastAdded: sortByLastAdded)
     }
     

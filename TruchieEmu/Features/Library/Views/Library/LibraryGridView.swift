@@ -116,6 +116,8 @@ struct LibraryGridView: View {
     @State private var activeFilters: Set<String> = []
     @State private var sortByLastPlayed: Bool = false
     @State private var sortByLastAdded: Bool = false
+    @State private var selectedGenres: Set<String> = []
+    @State private var showGenrePicker: Bool = false
 
     private enum ViewMode: String { case grid, list }
 
@@ -125,6 +127,17 @@ struct LibraryGridView: View {
     // MARK: - Focused field for Cmd+F
     enum FocusableField: Hashable { case search }
     @FocusState private var focusedField: FocusableField?
+
+    private var activeFilterDisplayText: String {
+        let filterNames: [String] = activeFilters.compactMap { rawValue -> String? in
+            GameFilterOption(rawValue: rawValue)?.label
+        }
+        var allNames = filterNames
+        if !selectedGenres.isEmpty {
+            allNames.append(contentsOf: selectedGenres.sorted())
+        }
+        return allNames.joined(separator: ", ")
+    }
     
     var body: some View {
         VStack(spacing: 0) {
@@ -365,14 +378,15 @@ ToolbarItem(placement: .primaryAction) {
             }
             
             // Sync view model with restored sort settings
-            viewModel.updateFilters(
+viewModel.updateFilters(
                 filter: filter,
                 searchText: searchText,
                 activeFilters: activeFilters,
                 sortByLastPlayed: sortByLastPlayed,
-                sortByLastAdded: sortByLastAdded
+                sortByLastAdded: sortByLastAdded,
+                selectedGenres: selectedGenres
             )
-            
+
             // Contextually resolve local boxarts for the current view
             handleFilterChange(filter)
             
@@ -399,7 +413,8 @@ ToolbarItem(placement: .primaryAction) {
                 searchText: searchText,
                 activeFilters: activeFilters,
                 sortByLastPlayed: sortByLastPlayed,
-                sortByLastAdded: sortByLastAdded
+                sortByLastAdded: sortByLastAdded,
+                selectedGenres: selectedGenres
             )
         }
         .onReceive(NotificationCenter.default.publisher(for: .filterToggled)) { notification in
@@ -414,7 +429,8 @@ ToolbarItem(placement: .primaryAction) {
                     searchText: searchText,
                     activeFilters: activeFilters,
                     sortByLastPlayed: sortByLastPlayed,
-                    sortByLastAdded: sortByLastAdded
+                    sortByLastAdded: sortByLastAdded,
+                    selectedGenres: selectedGenres
                 )
             }
         }
@@ -457,7 +473,8 @@ ToolbarItem(placement: .primaryAction) {
                 searchText: searchText,
                 activeFilters: activeFilters,
                 sortByLastPlayed: sortByLastPlayed,
-                sortByLastAdded: sortByLastAdded
+                sortByLastAdded: sortByLastAdded,
+                selectedGenres: selectedGenres
             )
         }
         .onChange(of: searchText) { _, newValue in
@@ -466,7 +483,8 @@ ToolbarItem(placement: .primaryAction) {
                 searchText: newValue,
                 activeFilters: activeFilters,
                 sortByLastPlayed: sortByLastPlayed,
-                sortByLastAdded: sortByLastAdded
+                sortByLastAdded: sortByLastAdded,
+                selectedGenres: selectedGenres
             )
         }
 
@@ -1365,10 +1383,57 @@ private func removeROMFromLibrary(_ rom: ROM) {
                         action: { toggleFilter(option) }
                     )
                 }
-                
-                if !activeFilters.isEmpty {
+
+                // Genre filter chip
+                Button {
+                    showGenrePicker.toggle()
+                } label: {
+                    HStack(spacing: 4) {
+                        Image(systemName: selectedGenres.isEmpty ? "tag" : "tag.fill")
+                            .font(.system(size: 10, weight: .medium))
+                        Text("Genre")
+                            .font(.system(size: 11, weight: .medium))
+                        if !selectedGenres.isEmpty {
+                            Text("(\(selectedGenres.count))")
+                                .font(.system(size: 10))
+                        }
+                    }
+                    .foregroundColor(selectedGenres.isEmpty ? .secondary : .white)
+                    .padding(.horizontal, 10)
+                    .padding(.vertical, 6)
+                    .frame(minHeight: 30)
+                    .background(Capsule().fill(selectedGenres.isEmpty ? Color.secondary.opacity(0.12) : Color.accentColor))
+                }
+                .buttonStyle(.plain)
+                .popover(isPresented: $showGenrePicker) {
+                    GenrePickerView(
+                        selectedGenres: $selectedGenres,
+                        allGenres: GenreManager.shared.getAllDisplayGenres(from: library.roms),
+                        onApply: {
+                            viewModel.updateFilters(
+                                filter: filter,
+                                searchText: searchText,
+                                activeFilters: activeFilters,
+                                sortByLastPlayed: sortByLastPlayed,
+                                sortByLastAdded: sortByLastAdded,
+                                selectedGenres: selectedGenres
+                            )
+                        }
+                    )
+                }
+
+                if !activeFilters.isEmpty || !selectedGenres.isEmpty {
                     Button {
                         activeFilters.removeAll()
+                        selectedGenres.removeAll()
+                        viewModel.updateFilters(
+                            filter: filter,
+                            searchText: searchText,
+                            activeFilters: activeFilters,
+                            sortByLastPlayed: sortByLastPlayed,
+                            sortByLastAdded: sortByLastAdded,
+                            selectedGenres: selectedGenres
+                        )
                     } label: {
                         HStack(spacing: 3) {
                             Image(systemName: "xmark")
@@ -1398,11 +1463,7 @@ private func removeROMFromLibrary(_ rom: ROM) {
                 .foregroundColor(.accentColor)
                 .font(.caption)
             
-            let activeNames = activeFilters.compactMap { rawValue -> String? in
-                GameFilterOption(rawValue: rawValue)?.label
-            }
-            
-            Text("Filtering: " + activeNames.joined(separator: ", "))
+            Text("Filtering: " + activeFilterDisplayText)
                 .font(.caption)
                 .foregroundColor(.secondary)
                 .lineLimit(1)

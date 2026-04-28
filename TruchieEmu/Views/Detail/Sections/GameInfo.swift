@@ -74,10 +74,10 @@ extension GameDetailView {
                             Divider().overlay(AppColors.divider(colorScheme))
                             MetadataRow(label: "Publisher", value: pub)
                         }
-                        if let genre = meta.genre {
-                            Divider().overlay(AppColors.divider(colorScheme))
-                            MetadataRow(label: "Genre", value: genre)
-                        }
+if meta.genre != nil {
+        Divider().overlay(AppColors.divider(colorScheme))
+        MetadataRow(label: "Genre", value: GenreManager.shared.effectiveDisplayName(for: meta.genre))
+    }
                         playersRow
                         if let esrb = meta.esrbRating {
                             Divider().overlay(AppColors.divider(colorScheme))

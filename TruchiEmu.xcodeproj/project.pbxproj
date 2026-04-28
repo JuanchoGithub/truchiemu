@@ -428,6 +428,8 @@
 		DD761E412F9ED0FB002E0F3D /* SaveDirectoriesSection.swift in Sources */ = {isa = PBXBuildFile; fileRef = DD761E402F9ED0FB002E0F3D /* SaveDirectoriesSection.swift */; };
 		DD761E412F9FB4F8002E0F3D /* SettingsRepository.swift in Sources */ = {isa = PBXBuildFile; fileRef = DD761E402F9FB4F8002E0F3D /* SettingsRepository.swift */; };
 		DD761E432F9ED0FC002E0F3D /* EnvironmentDiagnostics.swift in Sources */ = {isa = PBXBuildFile; fileRef = DD761E422F9ED0FC002E0F3D /* EnvironmentDiagnostics.swift */; };
+		DD761E452FA04E07002E0F3D /* GenreManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = DD761E442FA04E07002E0F3D /* GenreManager.swift */; };
+		DD761E472FA04E15002E0F3D /* GenrePickerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = DD761E462FA04E15002E0F3D /* GenrePickerView.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -873,6 +875,8 @@
 		DD761E402F9ED0FB002E0F3D /* SaveDirectoriesSection.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SaveDirectoriesSection.swift; sourceTree = "<group>"; };
 		DD761E402F9FB4F8002E0F3D /* SettingsRepository.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsRepository.swift; sourceTree = "<group>"; };
 		DD761E422F9ED0FC002E0F3D /* EnvironmentDiagnostics.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EnvironmentDiagnostics.swift; sourceTree = "<group>"; };
+		DD761E442FA04E07002E0F3D /* GenreManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GenreManager.swift; sourceTree = "<group>"; };
+		DD761E462FA04E15002E0F3D /* GenrePickerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GenrePickerView.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXGroup section */
@@ -994,6 +998,7 @@
 		DD1AE0702F96D7240014A60E /* Services */ = {
 			isa = PBXGroup;
 			children = (
+				DD761E442FA04E07002E0F3D /* GenreManager.swift */,
 				DD1AE06C2F96D7240014A60E /* CategoryManager.swift */,
 				DD1AE06D2F96D7240014A60E /* LibraryAutomationCoordinator.swift */,
 				DD1AE06E2F96D7240014A60E /* ROMLibrary.swift */,
@@ -1005,6 +1010,7 @@
 		DD1AE0802F96D7240014A60E /* Library */ = {
 			isa = PBXGroup;
 			children = (
+				DD761E462FA04E15002E0F3D /* GenrePickerView.swift */,
 				DD1AE0712F96D7240014A60E /* CategoryRowButton.swift */,
 				DD1AE0722F96D7240014A60E /* CategoryViews.swift */,
 				DD1AE0732F96D7240014A60E /* FilterChipView.swift */,
@@ -2210,6 +2216,7 @@
 				DD1AEAD42F96D7240014A60E /* ResourceCacheModels.swift in Sources */,
 				DD1AEAD52F96D7240014A60E /* ROMIdentifier.swift in Sources */,
 				DD1AEAD62F96D7240014A60E /* GameCategory.swift in Sources */,
+				DD761E452FA04E07002E0F3D /* GenreManager.swift in Sources */,
 				DD1AEAD72F96D7240014A60E /* ShaderPresetPickerView.swift in Sources */,
 				1CB050B135EE48BCF0567992 /* ShaderGameOverrideView.swift in Sources */,
 				DD1AEAD82F96D7240014A60E /* AppSettings.swift in Sources */,
@@ -2278,6 +2285,7 @@
 				DD761E412F9ED0FB002E0F3D /* SaveDirectoriesSection.swift in Sources */,
 				DD1AEB0E2F96D7240014A60E /* MAMEMissingROMsAlert.swift in Sources */,
 				DD1AEB0F2F96D7240014A60E /* BezelSystemMapping.swift in Sources */,
+				DD761E472FA04E15002E0F3D /* GenrePickerView.swift in Sources */,
 				DD1AEB102F96D7240014A60E /* GridCardZoomableFullScreenView.swift in Sources */,
 				DD1AEB112F96D7240014A60E /* BoxArtService.swift in Sources */,
 				DD1AEB122F96D7240014A60E /* CheatDownloadService.swift in Sources */,
