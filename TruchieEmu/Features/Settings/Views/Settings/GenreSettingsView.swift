@@ -8,37 +8,50 @@ struct GenreSettingsView: View {
     @State private var showAddSheet: Bool = false
     @State private var editingOriginal: String = ""
     @State private var editingDisplay: String = ""
+    @State private var isCreatingNew: Bool = false
     @State private var refreshID: UUID = UUID()
 
     private var originalGenres: [String] {
-        let genres = library.roms.compactMap { $0.metadata?.genre }
-        return Array(Set(genres)).compactMap { $0 }.sorted()
+        Array(Set(library.roms.compactMap { $0.metadata?.genre })).sorted()
     }
 
-    private var unmappedGenres: [String] {
-        originalGenres.filter { GenreManager.shared.effectiveDisplayName(for: $0) == $0 }
-    }
-
-    private var mappedGenres: [(original: String, display: String)] {
-        GenreManager.shared.mappings.compactMap { original, display in
-            (original: original, display: display)
-        }.sorted { $0.original < $1.original }
-    }
-
-    private var filteredMappedGenres: [(original: String, display: String)] {
-        if searchText.isEmpty {
-            return mappedGenres
+    private var allGenresDisplay: [(type: GenreType, original: String, display: String)] {
+        var result: [(type: GenreType, original: String, display: String)] = []
+        
+        for original in originalGenres {
+            let display = GenreManager.shared.effectiveDisplayName(for: original)
+            let isMapped = display != original
+            let genreType: GenreType = isMapped ? .mapped : .unmapped
+            result.append((type: genreType, original: original, display: display))
         }
-        return mappedGenres.filter {
+        
+        for (original, display) in GenreManager.shared.mappings {
+            if !originalGenres.contains(original) {
+                result.append((type: .custom, original: original, display: display))
+            }
+        }
+        
+        return result.sorted { a, b in
+            if a.display != b.display {
+                return a.display < b.display
+            }
+            return a.original < b.original
+        }
+    }
+
+    private var filteredGenres: [(type: GenreType, original: String, display: String)] {
+        if searchText.isEmpty {
+            return allGenresDisplay
+        }
+        return allGenresDisplay.filter {
             $0.original.fuzzyMatch(searchText) || $0.display.fuzzyMatch(searchText)
         }
     }
 
-    private var filteredUnmappedGenres: [String] {
-        if searchText.isEmpty {
-            return unmappedGenres
-        }
-        return unmappedGenres.filter { $0.fuzzyMatch(searchText) }
+    enum GenreType {
+        case mapped
+        case unmapped
+        case custom
     }
 
     var body: some View {
@@ -55,17 +68,20 @@ struct GenreSettingsView: View {
     private var header: some View {
         HStack {
             VStack(alignment: .leading, spacing: 2) {
-                Text("Genre Mappings")
+                Text("Genres")
                     .font(.headline)
-                Text("Merge or rename original genres from ROM metadata")
+                Text("Map ROM genres to custom display names")
                     .font(.caption)
                     .foregroundColor(.secondary)
             }
             Spacer()
             Button {
-                addMapping()
+                isCreatingNew = true
+                editingOriginal = ""
+                editingDisplay = ""
+                showAddSheet = true
             } label: {
-                Label("Add Mapping", systemImage: "plus")
+                Label("New Genre", systemImage: "plus")
             }
         }
         .padding()
@@ -73,156 +89,183 @@ struct GenreSettingsView: View {
 
     private var content: some View {
         ScrollView {
-            VStack(alignment: .leading, spacing: 20) {
-                if !mappedGenres.isEmpty {
-                    mappedSection
-                }
-
-                if !unmappedGenres.isEmpty {
-                    unmappedSection
+            LazyVStack(spacing: 0) {
+                ForEach(filteredGenres, id: \.original) { item in
+                    genreRow(item: item)
                 }
             }
-            .padding()
         }
         .id(refreshID)
     }
 
-    private var mappedSection: some View {
-        VStack(alignment: .leading, spacing: 10) {
-            Text("Mapped (\(mappedGenres.count))")
-                .font(.subheadline)
-                .fontWeight(.medium)
-                .foregroundColor(.secondary)
-
-            ForEach(filteredMappedGenres, id: \.original) { item in
-                mappingRow(original: item.original, display: item.display)
+    private func genreRow(item: (type: GenreType, original: String, display: String)) -> some View {
+        let bgColor: Color = {
+            switch item.type {
+            case .mapped: return Color.accentColor.opacity(0.05)
+            case .custom: return Color.green.opacity(0.05)
+            case .unmapped: return Color.clear
+            }
+        }()
+        
+        return HStack(spacing: 12) {
+            if item.type == .custom {
+                customLabel(item.display, editable: true)
+            } else {
+                originalLabel(item.original)
             }
 
-            if filteredMappedGenres.isEmpty && !searchText.isEmpty {
-                Text("No matches")
-                    .font(.caption)
-                    .foregroundColor(.secondary)
+            if item.type != .custom {
+                arrowLabel
+                displayLabel(item)
             }
-        }
-    }
-
-    private var unmappedSection: some View {
-        VStack(alignment: .leading, spacing: 10) {
-            Text("Unmapped (\(unmappedGenres.count))")
-                .font(.subheadline)
-                .fontWeight(.medium)
-                .foregroundColor(.secondary)
-
-            LazyVGrid(columns: [GridItem(.adaptive(minimum: 120))], spacing: 8) {
-                ForEach(filteredUnmappedGenres, id: \.self) { genre in
-                    unmappedGenreChip(genre: genre)
-                }
-            }
-
-            if filteredUnmappedGenres.isEmpty && !searchText.isEmpty {
-                Text("No matches")
-                    .font(.caption)
-                    .foregroundColor(.secondary)
-            }
-        }
-    }
-
-    private func mappingRow(original: String, display: String) -> some View {
-        HStack {
-            Text(original)
-                .font(.system(.body, design: .monospaced))
-                .foregroundColor(.secondary)
-                .lineLimit(1)
-
-            Image(systemName: "arrow.right")
-                .font(.caption)
-                .foregroundColor(.secondary)
-
-            Text(display)
-                .font(.body)
-                .fontWeight(.medium)
 
             Spacer()
+            
+            if item.type == .custom {
+                Button {
+                    deleteCustomGenre(original: item.original)
+                } label: {
+                    Text("Delete")
+                        .font(.caption)
+                        .foregroundColor(.red)
+                        .padding(.horizontal, 8)
+                        .padding(.vertical, 4)
+                        .background(Color.red.opacity(0.1))
+                        .cornerRadius(6)
+                }
+                .buttonStyle(.plain)
+            }
+        }
+        .padding(.horizontal, 16)
+        .padding(.vertical, 8)
+        .background(bgColor)
+        .contentShape(Rectangle())
+        .onTapGesture {
+            editGenre(type: item.type, original: item.original, display: item.display)
+        }
+    }
 
-            Button {
-                editingOriginal = original
-                editingDisplay = display
-                showAddSheet = true
-            } label: {
+    private func customLabel(_ text: String, editable: Bool) -> some View {
+        HStack(spacing: 4) {
+            Text(text)
+                .font(.body)
+                .foregroundColor(.green)
+                .lineLimit(1)
+            if editable {
                 Image(systemName: "pencil")
-                    .font(.caption)
+                    .font(.caption2)
+                    .foregroundColor(.green.opacity(0.7))
             }
-            .buttonStyle(.plain)
-
-            Button {
-                removeMapping(original: original)
-            } label: {
-                Image(systemName: "trash")
-                    .font(.caption)
-                    .foregroundColor(.red)
-            }
-            .buttonStyle(.plain)
         }
-        .padding(.vertical, 4)
     }
 
-    private func unmappedGenreChip(genre: String) -> some View {
-        Button {
-            editingOriginal = genre
-            editingDisplay = genre
-            showAddSheet = true
-        } label: {
-            Text(genre)
-                .font(.caption)
-                .padding(.horizontal, 8)
-                .padding(.vertical, 4)
-                .background(Color.secondary.opacity(0.1))
-                .cornerRadius(4)
-        }
-        .buttonStyle(.plain)
+    private func originalLabel(_ text: String) -> some View {
+        Text(text)
+            .font(.system(.body, design: .monospaced))
+            .foregroundColor(Color.secondary.opacity(0.7))
+            .lineLimit(1)
+            .frame(minWidth: 100, alignment: .leading)
     }
 
-    private func addMapping() {
+    private var arrowLabel: some View {
+        Image(systemName: "arrow.right")
+            .font(.caption)
+            .foregroundColor(.secondary)
+    }
+
+    private func displayLabel(_ item: (type: GenreType, original: String, display: String)) -> some View {
+        Text(item.display)
+            .font(.body)
+            .fontWeight(item.type == .mapped ? .medium : .regular)
+            .foregroundColor(item.type == .mapped ? .primary : .secondary)
+            .lineLimit(1)
+    }
+
+    private func editGenre(type: GenreType, original: String, display: String) {
+        isCreatingNew = false
+        editingOriginal = type == .custom ? display : original
+        editingDisplay = display
         showAddSheet = true
     }
 
-    private func saveMapping() {
-        guard !editingOriginal.isEmpty, !editingDisplay.isEmpty else { return }
-        if editingOriginal == editingDisplay {
-            GenreManager.shared.removeMapping(for: editingOriginal)
-        } else {
-            GenreManager.shared.mergeGenres(from: [editingOriginal], to: editingDisplay)
-        }
-        refreshID = UUID()
-        showAddSheet = false
-    }
-
-    private func removeMapping(original: String) {
+    private func deleteCustomGenre(original: String) {
         GenreManager.shared.removeMapping(for: original)
         refreshID = UUID()
     }
 
+    private func saveMapping() {
+        guard !editingDisplay.isEmpty else { return }
+        
+        if isCreatingNew {
+            GenreManager.shared.mergeGenres(from: [editingDisplay], to: editingDisplay)
+        } else if editingOriginal == editingDisplay {
+            GenreManager.shared.removeMapping(for: editingOriginal)
+        } else {
+            GenreManager.shared.mergeGenres(from: [editingOriginal], to: editingDisplay)
+        }
+        
+        refreshID = UUID()
+        showAddSheet = false
+    }
+
     private var editMappingSheet: some View {
         VStack(spacing: 16) {
-            Text("Edit Genre Mapping")
+            Text(isCreatingNew ? "Create Custom Genre" : "Edit Genre Mapping")
                 .font(.headline)
 
-            VStack(alignment: .leading, spacing: 8) {
-                Text("Original (from ROM)")
-                    .font(.caption)
-                    .foregroundColor(.secondary)
+            if isCreatingNew {
+                VStack(alignment: .leading, spacing: 8) {
+                    Text("Custom Genre Name")
+                        .font(.caption)
+                        .foregroundColor(.secondary)
 
-                TextField("Original genre", text: $editingOriginal)
-                    .textFieldStyle(.roundedBorder)
-            }
+                    TextField("Genre name", text: $editingDisplay)
+                        .textFieldStyle(.roundedBorder)
+                }
+            } else if editingOriginal.isEmpty {
+                VStack(alignment: .leading, spacing: 8) {
+                    HStack {
+                        Text("Genre Name")
+                            .font(.caption)
+                            .foregroundColor(.secondary)
+                        Spacer()
+                        Text("editable")
+                            .font(.caption2)
+                            .foregroundColor(.secondary)
+                    }
 
-            VStack(alignment: .leading, spacing: 8) {
-                Text("Display (shown in app)")
-                    .font(.caption)
-                    .foregroundColor(.secondary)
+                    TextField("Genre name", text: $editingDisplay)
+                        .textFieldStyle(.roundedBorder)
+                }
+            } else {
+                VStack(alignment: .leading, spacing: 8) {
+                    HStack {
+                        Text("Original (from ROM)")
+                            .font(.caption)
+                            .foregroundColor(.secondary)
+                        Spacer()
+                        Text("read-only")
+                            .font(.caption2)
+                            .foregroundColor(.secondary)
+                    }
 
-                TextField("Display genre", text: $editingDisplay)
-                    .textFieldStyle(.roundedBorder)
+                    Text(editingOriginal)
+                        .font(.system(.body, design: .monospaced))
+                        .foregroundColor(.secondary)
+                        .padding(8)
+                        .frame(maxWidth: .infinity, alignment: .leading)
+                        .background(Color.secondary.opacity(0.1))
+                        .cornerRadius(6)
+                }
+
+                VStack(alignment: .leading, spacing: 8) {
+                    Text("Display (shown in app)")
+                        .font(.caption)
+                        .foregroundColor(.secondary)
+
+                    TextField("Display genre", text: $editingDisplay)
+                        .textFieldStyle(.roundedBorder)
+                }
             }
 
             HStack {
@@ -237,7 +280,7 @@ struct GenreSettingsView: View {
                     saveMapping()
                 }
                 .buttonStyle(.borderedProminent)
-                .disabled(editingOriginal.isEmpty || editingDisplay.isEmpty)
+                .disabled(editingDisplay.isEmpty)
             }
         }
         .padding()
