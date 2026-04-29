@@ -578,13 +578,15 @@ struct DownloadableCoreRowView: View {
             } else if let inst = installed, inst.isInstalled {
                 Image(systemName: "checkmark.circle.fill")
                     .foregroundColor(.green)
-            } else {
-                Button("Download") {
-                    coreManager.requestCoreDownload(for: remoteCore.coreID)
-                }
-                .buttonStyle(.bordered)
-                .controlSize(.small)
-            }
+      } else {
+        Button("Download") {
+          Task {
+            await coreManager.downloadCore(remoteCore)
+          }
+        }
+        .buttonStyle(.bordered)
+        .controlSize(.small)
+      }
         }
         .frame(minHeight: 48)
         .padding(.horizontal, 12)
