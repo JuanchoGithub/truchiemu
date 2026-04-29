@@ -48,12 +48,12 @@ static bool bridge_set_rumble_state(unsigned port, unsigned effect, uint16_t str
 }
 
 static void bridge_sensor_get_input(unsigned port, unsigned id, float *value) {
-    // No-op: no sensor support
-    if (value) *value = 0.0f;
+    if (!value) return;
+    *value = 0.0f;
 }
 
 static void bridge_sensor_set_state(unsigned port, unsigned sensor_action, unsigned rate) {
-    // No-op: no sensor support
+    bridge_log_printf(RETRO_LOG_DEBUG, "Sensor: port=%u action=%u rate=%u (unsupported)", port, sensor_action, rate);
 }
 
 static void bridge_led_set_led_state(unsigned port, unsigned led, int16_t state) {
