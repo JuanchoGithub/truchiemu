@@ -488,7 +488,7 @@ LibraryMetadataStore.shared.deleteMetadataEntries(Set(removedROMs.map { LibraryM
         }
     }
 
-    @discardableResult
+@discardableResult
     func identifyROM(_ rom: ROM, preferNameMatch: Bool = true, persist: Bool = true) async -> ROMIdentifyResult {
         // Clear enrichment flags on re-identify — treat as fresh attempt in new system context
         var updatedROM = rom
@@ -496,18 +496,51 @@ LibraryMetadataStore.shared.deleteMetadataEntries(Set(removedROMs.map { LibraryM
             updatedROM.enrichmentAttempted = false
             updatedROM.enrichmentFailed = false
         }
-        
+
         let result = await ROMIdentifierService.shared.identify(rom: updatedROM, preferNameMatch: preferNameMatch)
         let enriched = applyIdentificationResult(result, to: updatedROM, persist: false)
-if let finalROM = enriched {
-    if persist {
-        await enrichMetadata(for: finalROM, updateLibrary: true)
-    } else {
-        if let idx = roms.firstIndex(where: { $0.id == finalROM.id }) {
-            roms[idx] = finalROM
+
+        if let finalROM = enriched {
+            // Apply MAME genre from Progetto-SNAPS (only if genre is still nil - LaunchBox priority)
+            if MAMEGenreService.shared.isMAME(finalROM.systemID) && finalROM.metadata?.genre == nil {
+                // Ensure metadata is downloaded
+                if !ProgettoSnapsService.shared.isMetadataAvailable {
+                    await ProgettoSnapsService.shared.downloadMetadata()
+                }
+
+                let shortName = finalROM.shortNameForMAME.lowercased()
+
+                if let genre = await ProgettoSnapsService.shared.getGenre(for: shortName) {
+                    LoggerService.info(category: "Identify", "Applied MAME genre '\(genre)' to \(shortName)")
+                    var withGenre = finalROM
+                    if withGenre.metadata == nil { withGenre.metadata = ROMMetadata() }
+                    withGenre.metadata?.genre = genre
+                    if persist {
+                        updateROM(withGenre, persist: persist, silent: true)
+                    } else {
+                        if let idx = roms.firstIndex(where: { $0.id == withGenre.id }) {
+                            roms[idx] = withGenre
+                        }
+                    }
+                    if persist {
+                        await enrichMetadata(for: withGenre, updateLibrary: true)
+                    } else {
+                        if let idx = roms.firstIndex(where: { $0.id == withGenre.id }) {
+                            roms[idx] = withGenre
+                        }
+                    }
+                    return result
+                }
+            }
+
+            if persist {
+                await enrichMetadata(for: finalROM, updateLibrary: true)
+            } else {
+                if let idx = roms.firstIndex(where: { $0.id == finalROM.id }) {
+                    roms[idx] = finalROM
+                }
+            }
         }
-    }
-}
         return result
     }
     

@@ -128,6 +128,50 @@ final class LibraryAutomationCoordinator: ObservableObject {
             library.saveROMsToDatabase(only: modifiedIDs)
         }
 
+        // Phase 1.5: Apply MAME genre metadata from Progetto-SNAPS
+        // This runs after identification but before enrichment so LaunchBox can override
+        // First, ensure metadata is available (download if needed)
+        if ProgettoSnapsService.shared.autoUpdateEnabled {
+            _ = await ProgettoSnapsService.shared.downloadMetadataIfNeeded()
+
+            let mamEROMs = scope.filter { rom in
+                MAMEGenreService.shared.isMAME(rom.systemID) && rom.metadata?.genre == nil
+            }
+            if !mamEROMs.isEmpty {
+                phase = .identifying
+                progress = 0
+                statusLine = "Downloading MAME metadata..."
+
+                // Ensure metadata is downloaded
+                if !ProgettoSnapsService.shared.isMetadataAvailable {
+                    await ProgettoSnapsService.shared.downloadMetadata()
+                }
+
+                statusLine = "Applying MAME genres: 0% — …"
+                let total = Double(mamEROMs.count)
+                for (index, rom) in mamEROMs.enumerated() {
+                    let shortName = rom.shortNameForMAME.lowercased()
+                    if let genre = await ProgettoSnapsService.shared.getGenre(for: shortName),
+                       let idx = library.roms.firstIndex(where: { $0.id == rom.id }) {
+                        if library.roms[idx].metadata == nil {
+                            library.roms[idx].metadata = ROMMetadata()
+                        }
+                        library.roms[idx].metadata?.genre = genre
+                    }
+
+                    let frac = Double(index + 1) / total
+                    progress = frac
+                    statusLine = "Applying MAME genres: \(Int(frac * 100))% — \(shortName)"
+
+                    if index % 50 == 0 { await Task.yield() }
+                }
+
+                progress = 1
+                statusLine = "Applying MAME genres: 100% — done"
+                library.saveROMsToDatabase(only: mamEROMs.map { $0.id })
+            }
+        }
+
         // Phase 2: Enrichment — batch metadata (players, genre) from cached LibretroMetadataLibrary
         // This is pure in-memory O(1) dictionary lookups — no I/O, no network
         if !batchModifiedROMs.isEmpty {

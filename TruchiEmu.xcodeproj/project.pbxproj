@@ -395,6 +395,8 @@
 		DD192ED52FA20AFD00CC543D /* InputCaptureManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = DD192ED22FA20AFD00CC543D /* InputCaptureManager.swift */; };
 		DD192ED62FA20AFD00CC543D /* RetroKeycodeMapper.swift in Sources */ = {isa = PBXBuildFile; fileRef = DD192ED32FA20AFD00CC543D /* RetroKeycodeMapper.swift */; };
 		DD192ED82FA20B0900CC543D /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = DD192ED72FA20B0900CC543D /* Assets.xcassets */; };
+		DD192EDA2FA24E2A00CC543D /* MAMEGenreService.swift in Sources */ = {isa = PBXBuildFile; fileRef = DD192ED92FA24E2A00CC543D /* MAMEGenreService.swift */; };
+		DD192EDC2FA24E5400CC543D /* ProgettoSnapsService.swift in Sources */ = {isa = PBXBuildFile; fileRef = DD192EDB2FA24E5400CC543D /* ProgettoSnapsService.swift */; };
 		DEF1DDA46E59570FAE57D442 /* vdp@132w.png in Resources */ = {isa = PBXBuildFile; fileRef = D755FBFFC3BD76093815B71D /* vdp@132w.png */; };
 		DFF2C66041E018B1D7319306 /* CHAILOVE.png in Resources */ = {isa = PBXBuildFile; fileRef = 579FF46D161EC2DD3CE4C105 /* CHAILOVE.png */; };
 		E0BD0AA661359907DC9D17FF /* N64.png in Resources */ = {isa = PBXBuildFile; fileRef = 5B369817A06C01C6361538D0 /* N64.png */; };
@@ -833,6 +835,8 @@
 		DD192ED22FA20AFD00CC543D /* InputCaptureManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InputCaptureManager.swift; sourceTree = "<group>"; };
 		DD192ED32FA20AFD00CC543D /* RetroKeycodeMapper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RetroKeycodeMapper.swift; sourceTree = "<group>"; };
 		DD192ED72FA20B0900CC543D /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
+		DD192ED92FA24E2A00CC543D /* MAMEGenreService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MAMEGenreService.swift; sourceTree = "<group>"; };
+		DD192EDB2FA24E5400CC543D /* ProgettoSnapsService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProgettoSnapsService.swift; sourceTree = "<group>"; };
 		DD476D63A6BB92961004D98F /* GitHubAPIModels.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GitHubAPIModels.swift; sourceTree = "<group>"; };
 		DDA440915145AB1C4D850872 /* LogManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LogManager.swift; sourceTree = "<group>"; };
 		DDCACEF2DA4CC526B3582217 /* ps@132w.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "ps@132w.png"; sourceTree = "<group>"; };
@@ -1189,6 +1193,7 @@
 		445D67DF28C52386025D5CD5 /* Services */ = {
 			isa = PBXGroup;
 			children = (
+				DD192ED92FA24E2A00CC543D /* MAMEGenreService.swift */,
 				B54516F131621A68EEC7EBC0 /* MAMEDependencyService.swift */,
 				D8AD6A0A6955FFF8B544B69B /* MAMEImportService.swift */,
 				BE01BAE4649B80275FA1BBAB /* MAMEUnifiedService.swift */,
@@ -1602,6 +1607,7 @@
 		9F2C69E1B66B505D39D78A65 /* Services */ = {
 			isa = PBXGroup;
 			children = (
+				DD192EDB2FA24E5400CC543D /* ProgettoSnapsService.swift */,
 				7BC9EB4BBB881879FB8BA782 /* BoxArtPreloaderService.swift */,
 				2A96AAF72C7F18D45D235347 /* BoxArtService.swift */,
 				9DA4F37BD28429972F9DC82D /* CheatAutoLoader.swift */,
@@ -2358,6 +2364,7 @@
 				487D415E3A60D766E5C55314 /* DetailBoxArtComponents.swift in Sources */,
 				92931B26614CCBD73F498965 /* DetailSection.swift in Sources */,
 				0448CE19B61670132722282B /* DisplaySettingsView.swift in Sources */,
+				DD192EDA2FA24E2A00CC543D /* MAMEGenreService.swift in Sources */,
 				FC372B713FBF4FAF94510511 /* DotMatrixLCD.metal in Sources */,
 				A25031037FC355CB33AC84F3 /* EnvironmentDiagnostics.swift in Sources */,
 				10A813FD9AC06B780E931816 /* FilterChipView.swift in Sources */,
@@ -2464,6 +2471,7 @@
 				45B66EECA434F3285FEC8AED /* Shader.swift in Sources */,
 				6ABC82537DE8675B429B507F /* ShaderGameOverrideView.swift in Sources */,
 				E7DE528E6B1FE12752FF94F3 /* ShaderManager.swift in Sources */,
+				DD192EDC2FA24E5400CC543D /* ProgettoSnapsService.swift in Sources */,
 				E213A2100429C6C27FBF0C30 /* ShaderPreset.swift in Sources */,
 				CA01FA6DBAD5615E6EE293E8 /* ShaderPresetPickerView.swift in Sources */,
 				BDC87CD59F17869B68CFE5EF /* ShaderSection.swift in Sources */,
