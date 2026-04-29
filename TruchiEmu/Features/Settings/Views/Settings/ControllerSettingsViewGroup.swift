@@ -34,35 +34,55 @@ struct ControllerSettingsView: View {
         }
     }
 
-    var body: some View {
-        VStack(spacing: 12) {
-            // Search indicator for deep search
-            if !searchText.isEmpty {
-                SearchResultIndicator(
-                    searchText: searchText,
-                    sectionKeywords: Self.searchKeywords,
-                    sectionName: "Controllers"
-                )
-            }
+ var body: some View {
+ VStack(spacing: 12) {
+ // Search indicator for deep search
+ if !searchText.isEmpty {
+ SearchResultIndicator(
+ searchText: searchText,
+ sectionKeywords: Self.searchKeywords,
+ sectionName: "Controllers"
+ )
+ }
 
-            // Segmented control for tab switching (inside content area)
-            Picker("Tab", selection: $activeTab) {
-                Text("Controllers").tag(0)
-                Text("Keyboard").tag(1)
-            }
-            .pickerStyle(.segmented)
-            .frame(maxWidth: 300)
+ // Segmented control for tab switching (inside content area)
+ Picker("Tab", selection: $activeTab) {
+ Text("Controllers").tag(0)
+ Text("Keyboard").tag(1)
+ }
+ .pickerStyle(.segmented)
+ .frame(maxWidth: 300)
 
-            // Tab content
-            Group {
-                if activeTab == 0 {
-                    controllerContent
-                } else {
-                    keyboardContent
-                }
-            }
-        }
-    }
+ // System picker (visible for both tabs)
+ if !filteredSystemsForDisplay.isEmpty {
+ HStack(spacing: 12) {
+ Text("System")
+ .font(.body)
+ .foregroundColor(.secondary)
+
+ Picker("System", selection: $selectedSystemID) {
+ Text("Global / Default").tag("default")
+ Divider()
+ ForEach(filteredSystemsForDisplay, id: \.id) { sys in
+ Text(sys.name).tag(sys.id)
+ }
+ }
+ .frame(width: 220)
+ }
+ .padding(.horizontal)
+ .padding(.top, 4)
+ }
+
+ // Tab content
+ Group {
+ if activeTab == 0 {
+ controllerContent
+ } else {
+ keyboardContent
+ }
+ }
+ }
+ }
 
     @ViewBuilder
     private var controllerContent: some View {
@@ -108,11 +128,10 @@ struct ControllerSettingsView: View {
                                Divider()
                                ForEach(filteredSystemsForDisplay, id: \.id) { sys in
                                    Text(sys.name).tag(sys.id)
-                               }
-                           }
-                           .frame(width: 180)
-
-                        Spacer()
+ }
+ }
+ 
+ Spacer()
 
                         // Reset to default
                         Button("Back to Default") {
