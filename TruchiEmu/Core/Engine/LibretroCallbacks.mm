@@ -17,6 +17,62 @@ int g_turbo_fireButton[32] = {0};
 struct retro_keyboard_callback g_keyboard_callback = {NULL};
 BOOL g_keyboard_callback_registered = NO;
 
+// Local struct definitions for interfaces not defined in libretro.h
+// These are used by the core to determine which features are supported
+struct retro_rumble_interface {
+    bool (*set_rumble_state)(unsigned port, unsigned effect, uint16_t strength);
+};
+
+struct retro_sensor_interface {
+    void (*set_sensor_state)(unsigned port, unsigned sensor_action, unsigned rate);
+    void (*get_sensor_input)(unsigned port, unsigned id, float *value);
+};
+
+struct retro_led_interface {
+    void (*set_led_state)(unsigned port, unsigned led, int16_t state);
+};
+
+struct retro_midi_interface {
+    bool output_enabled;
+    bool input_enabled;
+    bool (*write)(uint8_t byte, uint32_t delta_time);
+    bool (*read)(uint8_t *byte);
+    bool (*flush)(void);
+};
+
+// Stub interface implementations (prevent crashes when cores try to use these features)
+static bool bridge_set_rumble_state(unsigned port, unsigned effect, uint16_t strength) {
+    // No-op: no hardware rumble support
+    bridge_log_printf(RETRO_LOG_DEBUG, "Rumble: port=%u effect=%u strength=%u (stub)", port, effect, strength);
+    return false;
+}
+
+static void bridge_sensor_get_input(unsigned port, unsigned id, float *value) {
+    // No-op: no sensor support
+    if (value) *value = 0.0f;
+}
+
+static void bridge_sensor_set_state(unsigned port, unsigned sensor_action, unsigned rate) {
+    // No-op: no sensor support
+}
+
+static void bridge_led_set_led_state(unsigned port, unsigned led, int16_t state) {
+    // No-op: no LED support
+}
+
+static bool bridge_midi_write(uint8_t byte, uint32_t delta_time) {
+    // No-op: no MIDI support
+    return false;
+}
+static bool bridge_midi_read(uint8_t *byte) {
+    // No-op: no MIDI support
+    return false;
+}
+static bool bridge_midi_flush(void) {
+    // No-op: no MIDI support
+    return false;
+}
+
 uintptr_t bridge_get_proc_address(const char *sym) {
   if (!sym) return 0;
   static void *glHandle = NULL;
@@ -226,16 +282,54 @@ case RETRO_ENVIRONMENT_SET_KEYBOARD_CALLBACK: {
     }
     return false;
   }
-  case RETRO_ENVIRONMENT_GET_PERF_INTERFACE:
-  case RETRO_ENVIRONMENT_GET_RUMBLE_INTERFACE:
-  case RETRO_ENVIRONMENT_GET_SENSOR_INTERFACE:
-  case RETRO_ENVIRONMENT_GET_HW_RENDER_INTERFACE:
-  case RETRO_ENVIRONMENT_GET_LED_INTERFACE:
-  case RETRO_ENVIRONMENT_GET_MIDI_INTERFACE:
-  case RETRO_ENVIRONMENT_SET_HW_RENDER_CONTEXT_NEGOTIATION_INTERFACE: {
+case RETRO_ENVIRONMENT_GET_RUMBLE_INTERFACE: {
+      if (data) {
+        struct retro_rumble_interface *rumble = (struct retro_rumble_interface *)data;
+        rumble->set_rumble_state = bridge_set_rumble_state;
+        bridge_log_printf(RETRO_LOG_DEBUG, "Rumble interface provided to core");
+        return true;
+      }
+      return false;
+    }
+    case RETRO_ENVIRONMENT_GET_SENSOR_INTERFACE: {
+      if (data) {
+        struct retro_sensor_interface *sensor = (struct retro_sensor_interface *)data;
+        sensor->set_sensor_state = bridge_sensor_set_state;
+        sensor->get_sensor_input = bridge_sensor_get_input;
+        bridge_log_printf(RETRO_LOG_DEBUG, "Sensor interface provided to core");
+        return true;
+      }
+      return false;
+    }
+    case RETRO_ENVIRONMENT_GET_LED_INTERFACE: {
+      if (data) {
+        struct retro_led_interface *led = (struct retro_led_interface *)data;
+        led->set_led_state = bridge_led_set_led_state;
+        bridge_log_printf(RETRO_LOG_DEBUG, "LED interface provided to core");
+        return true;
+      }
+      return false;
+    }
+    case RETRO_ENVIRONMENT_GET_MIDI_INTERFACE: {
+      if (data) {
+        struct retro_midi_interface *midi = (struct retro_midi_interface *)data;
+        midi->output_enabled = false;
+        midi->input_enabled = false;
+        midi->write = bridge_midi_write;
+        midi->read = bridge_midi_read;
+        midi->flush = bridge_midi_flush;
+        bridge_log_printf(RETRO_LOG_DEBUG, "MIDI interface provided to core");
+        return true;
+      }
+      return false;
+    }
+    case RETRO_ENVIRONMENT_GET_PERF_INTERFACE:
+    case RETRO_ENVIRONMENT_GET_HW_RENDER_INTERFACE:
+    case RETRO_ENVIRONMENT_SET_HW_RENDER_CONTEXT_NEGOTIATION_INTERFACE: {
       // This is used by some cores (like Mupen64Plus-Next) to negotiate context versions
-      return true; 
-  }
+      // Not all interfaces need to be fully implemented - some just need a positive response
+      return true;
+    }
   case RETRO_ENVIRONMENT_GET_INPUT_BITMASKS:
     return false;
   case RETRO_ENVIRONMENT_GET_AUDIO_VIDEO_ENABLE:
