@@ -68,7 +68,6 @@ targets:
       - path: TruchiEmu/Services
       - path: TruchiEmu/Core/Engine
         type: group
-      - path: TruchiEmu/Core/InputCapture
       - path: TruchiEmu/Core/Shaders
         excludes:
           - "slang/**"
