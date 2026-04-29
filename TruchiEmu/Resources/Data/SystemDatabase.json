@@ -2177,7 +2177,7 @@
             "zcci",
             "zcxi"
         ],
-        "defaultBoxType": "Landscape",
+        "defaultBoxType": "Box",
         "iconName": "gamecontroller",
         "sortOrder": 80,
         "manufacturer": "Nintendo"
@@ -2216,7 +2216,7 @@
         "extensions": [
             "chd"
         ],
-        "defaultBoxType": "Landscape",
+        "defaultBoxType": "Box",
         "iconName": "gamecontroller",
         "sortOrder": 80,
         "manufacturer": "Philips"
