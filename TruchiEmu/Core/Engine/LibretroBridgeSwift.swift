@@ -55,13 +55,24 @@ import Foundation
         LibretroBridge.stop()
     }
 
-    static func waitForCompletion() {
-        let result: Void = LibretroBridge.waitForCompletion()
-        LoggerService.debug(category: "LibretroBridge", "Waiting for LibretroBridge to complete: \(result)")
-        return result
-    }
+  static func waitForCompletion() {
+    let result: Void = LibretroBridge.waitForCompletion()
+    LoggerService.debug(category: "LibretroBridge", "Waiting for LibretroBridge to complete: \(result)")
+    return result
+  }
 
-    // MARK: - Global State & Settings
+  static func loadCoreForOptions(_ dylibPath: String, coreID: String, romPath: String?) {
+    LoggerService.debug(category: "LibretroBridge", "Loading core for options: \(coreID) from \(dylibPath)")
+      LibretroBridge.loadCore(forOptions: dylibPath, coreID: coreID, romPath: romPath)
+  }
+
+  static func isCoreLoadedForOptions() -> Bool {
+    let loaded = LibretroBridge.isCoreLoadedForOptions()
+    LoggerService.debug(category: "LibretroBridge", "Is core loaded for options: \(loaded)")
+    return loaded
+  }
+
+  // MARK: - Global State & Settings
     
     static func setLanguage(_ language: Int) {
         LoggerService.debug(category: "LibretroBridge", "Setting language to: \(language)")

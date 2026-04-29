@@ -39,6 +39,9 @@ targets:
         NSAppTransportSecurity:
           NSAllowsArbitraryLoads: true
 
+
+   NSDownloadsFolderUsageDescription: "TruchiEmu needs access to Downloads to load ROMs and save states."
+   NSDocumentsFolderUsageDescription: "TruchiEmu needs access to Documents to store emulator saves and configuration."
     entitlements:
       path: TruchiEmu/Resources/TruchiEmu.entitlements
 
@@ -46,6 +49,7 @@ targets:
       base:
         PRODUCT_NAME: TruchiEmu
         PRODUCT_BUNDLE_IDENTIFIER: com.TruchiEmu.app
+        DEVELOPMENT_TEAM: "TruchiSoft" # ← Add your Team ID here to reduce permission prompts
         SWIFT_OBJC_BRIDGING_HEADER: TruchiEmu/Core/Engine/TruchiEmu-Bridging-Header.h
         CLANG_ENABLE_OBJC_ARC: YES
         GCC_C_LANGUAGE_STANDARD: gnu17
@@ -68,7 +72,6 @@ targets:
       - path: TruchiEmu/Services
       - path: TruchiEmu/Core/Engine
         type: group
-      - path: TruchiEmu/Core/InputCapture
       - path: TruchiEmu/Core/Shaders
         excludes:
           - "slang/**"

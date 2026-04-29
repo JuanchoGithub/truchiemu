@@ -681,15 +681,16 @@ class EmulatorRunner: ObservableObject, @unchecked Sendable {
         LibretroBridgeSwift.setKeyState(retroID: retroID, pressed: pressed)
     }
 
-    func findCoreLib(coreID: String) -> String? {
-        let base = FileManager.default.urls(for: .applicationSupportDirectory, in: .userDomainMask)
-            .first!.appendingPathComponent("TruchiEmu/Cores/\(coreID)")
-        guard let versionDirs = try? FileManager.default.contentsOfDirectory(at: base, includingPropertiesForKeys: nil),
-              let latest = versionDirs.sorted(by: { $0.lastPathComponent > $1.lastPathComponent }).first else { return nil }
-        let dylibName = "\(coreID).dylib"
-        let path = latest.appendingPathComponent(dylibName).path
-        return FileManager.default.fileExists(atPath: path) ? path : nil
-    }
+  func findCoreLib(coreID: String) -> String? {
+    let base = FileManager.default.urls(for: .applicationSupportDirectory, in: .userDomainMask)
+      .first!.appendingPathComponent("TruchiEmu/Cores/\(coreID)")
+    guard let versionDirs = try? FileManager.default.contentsOfDirectory(at: base, includingPropertiesForKeys: nil, options: .skipsHiddenFiles)
+            .filter({ $0.hasDirectoryPath }),
+          let latest = versionDirs.sorted(by: { $0.lastPathComponent > $1.lastPathComponent }).first else { return nil }
+    let dylibName = "\(coreID).dylib"
+    let path = latest.appendingPathComponent(dylibName).path
+    return FileManager.default.fileExists(atPath: path) ? path : nil
+  }
 
     internal func updateFrame(data: UnsafeRawPointer?, width: Int, height: Int, pitch: Int, format: Int) {
         guard let data = data, width > 0, height > 0 else { return }

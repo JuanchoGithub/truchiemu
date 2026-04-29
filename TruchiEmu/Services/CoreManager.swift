@@ -555,29 +555,35 @@ class CoreManager: ObservableObject {
             // Continue even if symlink fails - core is still usable
         }
 
-        if let idx = installedCores.firstIndex(where: { $0.id == info.coreID }) {
-            // Ensure no duplicate path entries exist
-            installedCores[idx].installedVersions.removeAll { $0.dylibPath.path == dylibDest.path }
-            installedCores[idx].installedVersions.append(coreVersion)
-            installedCores[idx].activeVersionTag = coreVersion.tag
-            installedCores[idx].isDownloading = false
-            installedCores[idx].downloadProgress = 0
-        } else {
-            // New core installation
-            let newCore = LibretroCore(
-                id: info.coreID,
-                displayName: info.displayName,
-                systemIDs: info.systemIDs,
-                installedVersions: [coreVersion],
-                activeVersionTag: coreVersion.tag,
-                isDownloading: false,
-                downloadProgress: 0
-            )
-            installedCores.append(newCore)
-        }
-        LoggerService.debug(category: "CoreManager", "Installed cores: \(installedCores)")
-        saveInstalledCores()
-        LoggerService.info(category: "CoreManager", "Successfully installed \(info.coreID) version \(versionString)")
+    if let idx = installedCores.firstIndex(where: { $0.id == info.coreID }) {
+      // Ensure no duplicate path entries exist
+      installedCores[idx].installedVersions.removeAll { $0.dylibPath.path == dylibDest.path }
+      installedCores[idx].installedVersions.append(coreVersion)
+      installedCores[idx].activeVersionTag = coreVersion.tag
+      installedCores[idx].isDownloading = false
+      installedCores[idx].downloadProgress = 0
+    } else {
+      // New core installation
+      let newCore = LibretroCore(
+        id: info.coreID,
+        displayName: info.displayName,
+        systemIDs: info.systemIDs,
+        installedVersions: [coreVersion],
+        activeVersionTag: coreVersion.tag,
+        isDownloading: false,
+        downloadProgress: 0
+      )
+      installedCores.append(newCore)
+    }
+    
+    // Immediately load the core into the bridge to prevent race condition
+    // This ensures the Objective-C layer knows about the new core right away
+    LoggerService.debug(category: "CoreManager", "Loading core into bridge: \(dylibDest.path)")
+    LibretroBridgeSwift.loadCoreForOptions(dylibDest.path, coreID: info.coreID, romPath: nil)
+    
+    LoggerService.debug(category: "CoreManager", "Installed cores: \(installedCores)")
+    saveInstalledCores()
+    LoggerService.info(category: "CoreManager", "Successfully installed \(info.coreID) version \(versionString)")
         } catch {
             LoggerService.error(category: "CoreManager", "Download failed for \(info.coreID): \(error.localizedDescription)")
             if let idx = installedCores.firstIndex(where: { $0.id == info.coreID }) {
