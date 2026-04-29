@@ -503,7 +503,9 @@ viewModel.updateFilters(
         // Return launches selected game
         .onSubmit {
             if let rom = selectedROM {
-                launchGame(rom)
+                Task {
+                    await launchGame(rom)
+                }
             }
         }
         // Note: Delete key handling via onKeyPress requires macOS 14+
@@ -593,12 +595,14 @@ columns = Array(
                             let provider = NSItemProvider(object: NSString(string: draggedItemsForCard.map { $0.id.uuidString }.joined(separator: ",")))
                             return provider
                         }
-                    )                    
-                    .simultaneousGesture(
-                        TapGesture(count: 2).onEnded {
-                            launchGame(rom)
-                        }
-                    )
+)
+        .simultaneousGesture(
+            TapGesture(count: 2).onEnded {
+                Task {
+                    await launchGame(rom)
+                }
+            }
+        )
                 }
             }
             .padding(gridPadding)
@@ -696,15 +700,17 @@ columns = Array(
                 GameListRowView(rom: rom, isSelected: isSelected, zoomLevel: zoomLevel)
                     .tag(rom)
                     .contentShape(Rectangle())
-                    .onTapGesture {
-                        handleListTap(on: rom, at: index)
-                    }
-                    .simultaneousGesture(
-                        TapGesture(count: 2).onEnded {
-                            launchGame(rom)
-                        }
-                    )
-                    .contextMenu { contextMenu(for: rom) }
+.onTapGesture {
+                handleListTap(on: rom, at: index)
+            }
+            .simultaneousGesture(
+            TapGesture(count: 2).onEnded {
+                Task {
+                    await launchGame(rom)
+                }
+            }
+        )
+            .contextMenu { contextMenu(for: rom) }
                     .onDrag {
                         let items: [ROM]
                         if isSelected {
@@ -1042,7 +1048,9 @@ columns = Array(
                 }
 
                 Button {
-                    launchGame(rom)
+                    Task {
+                        await launchGame(rom)
+                    }
                 } label: {
                     Label("Launch Game", systemImage: "play.fill")
                 }
@@ -1496,20 +1504,20 @@ private func removeROMFromLibrary(_ rom: ROM) {
     }
 
 
-    @MainActor
-    private func launchGame(_ rom: ROM) {
+@MainActor
+    private func launchGame(_ rom: ROM) async {
         guard let sysID = rom.systemID,
               let system = SystemDatabase.system(forID: sysID) else { return }
-        
+
         // Use centralized helper to resolve core ID (eliminates code duplication)
         let cid = coreManager.resolveCoreID(for: rom, system: system)
-        
+
         if !coreManager.isInstalled(coreID: cid) {
             coreManager.requestCoreDownload(for: cid, systemID: sysID, romID: rom.id, slotToLoad: nil)
             return
         }
 
-        gameLauncher.launchGame(
+        await gameLauncher.launchGame(
             rom: library.roms.first { $0.id == rom.id } ?? rom,
             coreID: cid,
             library: library

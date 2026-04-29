@@ -417,8 +417,10 @@ struct GameDetailView: View {
 
         isLaunchingGame = true
         let freshROM = library.roms.first { $0.id == currentROM.id } ?? currentROM
-        gameLauncher.launchGame(rom: freshROM, coreID: cid, slotToLoad: slotToLoad, library: library) { _ in
-            self.isLaunchingGame = false
+        Task {
+            await gameLauncher.launchGame(rom: freshROM, coreID: cid, slotToLoad: slotToLoad, library: library) { _ in
+                self.isLaunchingGame = false
+            }
         }
     }
 }

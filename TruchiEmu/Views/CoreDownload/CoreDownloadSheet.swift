@@ -445,7 +445,9 @@ struct CoreDownloadSheet: View {
     private func startDownload() {
         // If the selected core is already installed, skip download and launch directly
         if selectedCoreEntry.isInstalled {
-            launchWithCoreID(selectedCoreEntry.id)
+            Task {
+                await launchWithCoreID(selectedCoreEntry.id)
+            }
             return
         }
 
@@ -488,14 +490,16 @@ struct CoreDownloadSheet: View {
                     isDownloading = false
                     downloadError = "Core download failed — please try again."
                 }
-                return
+return
             }
 
             await MainActor.run {
                 isDownloading = false
-                launchWithCoreID(selectedCoreEntry.id)
+                Task {
+                    await launchWithCoreID(selectedCoreEntry.id)
+                }
             }
-    }
+        }
   }
   
   @MainActor
@@ -525,7 +529,7 @@ struct CoreDownloadSheet: View {
     }
   }
   
-  private func launchWithCoreID(_ cid: String) {
+  private func launchWithCoreID(_ cid: String) async {
         guard let rom = pendingROM else {
             coreManager.pendingDownload = nil
             return
@@ -536,7 +540,7 @@ struct CoreDownloadSheet: View {
             SystemPreferences.shared.setPreferredCoreID(cid, for: sysID)
         }
 
-        gameLauncher.launchGame(
+        await gameLauncher.launchGame(
             rom: rom,
             coreID: cid,
             slotToLoad: pending.slotToLoad,

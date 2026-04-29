@@ -87,6 +87,8 @@ targets:
         buildPhase: resources
       - path: TruchiEmu/Resources/retroarch
         buildPhase: resources
+      - path: TruchiEmu/Resources/System
+        buildPhase: resources
       - path: scripts/mame_lookup/mame_rom_data.json
         buildPhase: resources
 

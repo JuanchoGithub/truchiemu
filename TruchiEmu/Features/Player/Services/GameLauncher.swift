@@ -107,23 +107,23 @@ class GameLauncher: ObservableObject {
         shaderUniformOverrides: [String: Float] = [:],
         checkMAMEDeps: Bool = true,
         completion: ((StandaloneGameWindowController?) -> Void)? = nil
-    ) -> StandaloneGameWindowController? {
+) async {
         // Check if already launching
         LoggerService.extreme(category: "GameLauncher", "Checking if already launching")
         guard !isLaunching else {
             LoggerService.extreme(category: "GameLauncher", "Already launching, ignoring duplicate request")
-            return nil
+            return
         }
-        
+
         // Check if this ROM is already running
         LoggerService.extreme(category: "GameLauncher", "Checking if ROM is already running")
         if RunningGamesTracker.shared.isRunning(romPath: rom.path.path) {
             RunningGamesTracker.shared.notifyDuplicateLaunch(romName: rom.displayName)
             completion?(nil)
             LoggerService.extreme(category: "GameLauncher", "ROM is already running, ignoring duplicate request")
-            return nil
+            return
         }
-        
+
         // MAME dependency check
         LoggerService.extreme(category: "GameLauncher", "Checking MAME dependencies")
         if checkMAMEDeps && MAMEDependencyService.isMAMECore(coreID) {
@@ -134,7 +134,24 @@ class GameLauncher: ObservableObject {
                 isLaunching = false
                 currentLaunchROM = nil
                 completion?(nil)
-                return nil
+                return
+            }
+        }
+
+        // PPSSPP asset check
+        if coreID.lowercased().contains("ppsspp") {
+            if !PPSSPAssetService.shared.hasAssets {
+                do {
+                    try PPSSPAssetService.shared.ensureAssetsCopied()
+                } catch {
+                    LoggerService.warning(category: "GameLauncher", "Failed to copy bundled PPSSPP assets: \(error.localizedDescription)")
+                }
+                if !PPSSPAssetService.shared.hasAssets {
+                    let shouldDownload = await showPPSSPAssetMissingAlertAsync()
+                    if shouldDownload {
+                        await PPSSPAssetService.shared.downloadAssets()
+                    }
+                }
             }
         }
         
@@ -178,13 +195,12 @@ class GameLauncher: ObservableObject {
         // Launch the game (window will be shown by controller when ready)
         controller.launch(rom: rom, coreID: coreID, slotToLoad: slotToLoad)
         
-        // Cleanup
+// Cleanup
         isLaunching = false
         currentLaunchROM = nil
-        
+
         LoggerService.debug(category: "GameLauncher", "Launch complete: \(rom.displayName)")
         completion?(controller)
-        return controller
     }
     
     // MARK: - Settings Application
@@ -402,6 +418,35 @@ class GameLauncher: ObservableObject {
         let response = alert.runModal()
         if response == .alertFirstButtonReturn {
             NSWorkspace.shared.open(romsDirectory)
+        }
+    }
+    
+    // MARK: - PPSSPP Asset Alert
+    
+    // Show an alert when PPSSPP assets are missing.
+    // Returns true to download, false to skip or cancel
+    private func showPPSSPAssetMissingAlertAsync() async -> Bool {
+        let alert = NSAlert()
+        alert.alertStyle = .warning
+        alert.messageText = "PPSSPP Assets Missing"
+        alert.informativeText = "PPSSPP requires asset files to run games.\n\nThese include UI textures, fonts, and language files.\n\nWould you like to download them now?"
+        LoggerService.warning(category: "GameLauncher", "PPSSPP assets missing, prompting user")
+        
+        alert.addButton(withTitle: "Download Assets")
+        alert.addButton(withTitle: "Continue Without Assets")
+        alert.addButton(withTitle: "Cancel")
+        
+        let response = alert.runModal()
+        
+        if response == .alertFirstButtonReturn {
+            LoggerService.info(category: "GameLauncher", "User requested PPSSPP asset download")
+            return true
+        } else if response == .alertSecondButtonReturn {
+            LoggerService.warning(category: "GameLauncher", "User chose to continue without PPSSPP assets")
+            return false
+        } else {
+            LoggerService.info(category: "GameLauncher", "User cancelled PPSSPP launch")
+            return false
         }
     }
     

@@ -33,7 +33,7 @@ class CLIManager: ObservableObject {
     // Handle CLI commands - call this at app startup
     // - Returns: true if CLI handled the command (app should not show main window)
     @MainActor
-    func handleStartupCommands() -> Bool {
+    func handleStartupCommands() async -> Bool {
         let options = parseArguments()
         
         // Show help
@@ -60,10 +60,10 @@ class CLIManager: ObservableObject {
             return true
         }
         
-        // Launch game
-        if options.hasLaunchCommand {
-            return handleLaunch(options: options)
-        }
+// Launch game
+    if options.hasLaunchCommand {
+        return await handleLaunch(options: options)
+    }
         
         return false
     }
@@ -225,7 +225,7 @@ class CLIManager: ObservableObject {
     // MARK: - Command Handlers
     
     @MainActor
-    private func handleLaunch(options: CLILaunchOptions) -> Bool {
+    private func handleLaunch(options: CLILaunchOptions) async -> Bool {
         guard let romPath = options.romPath else {
             LoggerService.info(category: "CLI", "Error: No ROM path specified")
             return false
@@ -332,22 +332,25 @@ class CLIManager: ObservableObject {
         
         // Reset running games tracker for CLI launches (since app is fresh each time)
         // NOTE: The ROM is registered later by StandaloneGameWindowController.launch()
-        // Do NOT register here - it would cause GameLauncher.launchGame() to detect a "duplicate"
+// Do NOT register here - it would cause GameLauncher.launchGame() to detect a "duplicate"
         RunningGamesTracker.shared.resetAll()
-        
+
         // Normal UI mode - use unified GameLauncher for consistent launch behavior
         LoggerService.info(category: "CLI", "Creating game window (system: \(systemID), core: \(coreID))")
-        
-        // Use unified GameLauncher for all launch paths
-        let controller = GameLauncher.shared.launchGame(
+
+        // Use unified GameLauncher for all launch paths - capture controller via completion
+        var capturedController: StandaloneGameWindowController?
+        await GameLauncher.shared.launchGame(
             rom: rom,
             coreID: coreID,
             slotToLoad: options.slot,
             library: library,
             shaderUniformOverrides: options.shaderUniformOverrides
-        )
-        
-        guard let controller = controller, let gameWindow = controller.window else {
+        ) { controller in
+            capturedController = controller
+        }
+
+        guard let controller = capturedController, let gameWindow = controller.window else {
             LoggerService.info(category: "CLI", "Error: Failed to create game window")
             isHandlingCLI = false
             currentCLICommand = nil

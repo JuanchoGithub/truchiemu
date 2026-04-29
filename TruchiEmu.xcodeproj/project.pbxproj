@@ -150,6 +150,7 @@
 		4B94C244C68FFB5B7611ED77 /* VECTREX.png in Resources */ = {isa = PBXBuildFile; fileRef = CE108305F82ABE87D2BE7D7D /* VECTREX.png */; };
 		4C84BDF7E8CB95BF9C8AB8F7 /* LoggingSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = FE784389751B61D2018470B8 /* LoggingSettingsView.swift */; };
 		4CA1ADD6AF2BB22A2B63C595 /* COLECO.png in Resources */ = {isa = PBXBuildFile; fileRef = D2DFAEA2F7A4795FA6CE34C5 /* COLECO.png */; };
+		4D0A2323136FD611E75CB0D4 /* .gitkeep in Resources */ = {isa = PBXBuildFile; fileRef = 5B109C0AC5EC5655765DAC84 /* .gitkeep */; };
 		4D2C939C9523A6227617C5E6 /* POKEMINI.png in Resources */ = {isa = PBXBuildFile; fileRef = 8A2E2704F5FE6300EED10653 /* POKEMINI.png */; };
 		4DE4616CC04E04F0BF73AC72 /* TYRQUAKE.png in Resources */ = {isa = PBXBuildFile; fileRef = EA7858DE5D0204111DF21E0B /* TYRQUAKE.png */; };
 		51315A3F08E40B90B5F97DD6 /* MEGADUCK.png in Resources */ = {isa = PBXBuildFile; fileRef = B5B1D330F958A092AFBD96F0 /* MEGADUCK.png */; };
@@ -235,6 +236,7 @@
 		7BC9F2B7264429F92FD2D48F /* GameLauncher.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9ED1634F62412DF880052D27 /* GameLauncher.swift */; };
 		7E1281194B7150DB55497A7A /* CheatManagerService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7442198CF891F84CE81220FA /* CheatManagerService.swift */; };
 		7F3A0AF55C70223F0AD9607C /* SCUMMVM.png in Resources */ = {isa = PBXBuildFile; fileRef = A208B8C6B2BCD2197F46362D /* SCUMMVM.png */; };
+		802243197EC4A31177770310 /* PPSSPAssetService.swift in Sources */ = {isa = PBXBuildFile; fileRef = BCF5F2A331B01D152BE6194C /* PPSSPAssetService.swift */; };
 		80302B82D3E5BDD2727925C2 /* Atari - Jaguar.dat in Resources */ = {isa = PBXBuildFile; fileRef = FE0B66FC56188D97A9C356AE /* Atari - Jaguar.dat */; };
 		803EACFA754C4D83757A278A /* LibretroThumbnailResolver.swift in Sources */ = {isa = PBXBuildFile; fileRef = 205860E15724E191A9B42460 /* LibretroThumbnailResolver.swift */; };
 		80A39D87DE63BCEE28E5D5BA /* 5200@132w.png in Resources */ = {isa = PBXBuildFile; fileRef = 792339AAED9566FF74EDBF6D /* 5200@132w.png */; };
@@ -389,11 +391,10 @@
 		DCBCEE45C7C74C4F9687B563 /* vb@132w.png in Resources */ = {isa = PBXBuildFile; fileRef = 5E90C52AEDC3AC23BA35B915 /* vb@132w.png */; };
 		DCC432C8DC5EA9D19CA13B14 /* PICO.png in Resources */ = {isa = PBXBuildFile; fileRef = 895E4313F6A502B39E0267B1 /* PICO.png */; };
 		DD0DDF8856A8056172004CA0 /* Sega - Dreamcast.dat in Resources */ = {isa = PBXBuildFile; fileRef = A93547318848E19981032FE8 /* Sega - Dreamcast.dat */; };
-		DD7629D42FA136EE002E0F3D /* ShaderCommon.h.metal in Sources */ = {isa = PBXBuildFile; fileRef = DD7629D12FA136EE002E0F3D /* ShaderCommon.h.metal */; };
-		DD7629D52FA136EE002E0F3D /* ShaderTypes.h.metal in Sources */ = {isa = PBXBuildFile; fileRef = DD7629D22FA136EE002E0F3D /* ShaderTypes.h.metal */; };
-		DD7629D92FA13764002E0F3D /* InputCaptureManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = DD7629D62FA13764002E0F3D /* InputCaptureManager.swift */; };
-		DD7629DA2FA13764002E0F3D /* RetroKeycodeMapper.swift in Sources */ = {isa = PBXBuildFile; fileRef = DD7629D72FA13764002E0F3D /* RetroKeycodeMapper.swift */; };
-		DD7629DD2FA13A77002E0F3D /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = DD7629DC2FA13A77002E0F3D /* Assets.xcassets */; };
+		DD7629E12FA14295002E0F3D /* InputCaptureManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = DD7629DE2FA14295002E0F3D /* InputCaptureManager.swift */; };
+		DD7629E22FA14295002E0F3D /* RetroKeycodeMapper.swift in Sources */ = {isa = PBXBuildFile; fileRef = DD7629DF2FA14295002E0F3D /* RetroKeycodeMapper.swift */; };
+		DD7629E42FA189BA002E0F3D /* PPSSPP_assets.zip in Resources */ = {isa = PBXBuildFile; fileRef = DD7629E32FA189BA002E0F3D /* PPSSPP_assets.zip */; };
+		DD7629E62FA189CC002E0F3D /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = DD7629E52FA189CC002E0F3D /* Assets.xcassets */; };
 		DEF1DDA46E59570FAE57D442 /* vdp@132w.png in Resources */ = {isa = PBXBuildFile; fileRef = D755FBFFC3BD76093815B71D /* vdp@132w.png */; };
 		DFF2C66041E018B1D7319306 /* CHAILOVE.png in Resources */ = {isa = PBXBuildFile; fileRef = 579FF46D161EC2DD3CE4C105 /* CHAILOVE.png */; };
 		E0BD0AA661359907DC9D17FF /* N64.png in Resources */ = {isa = PBXBuildFile; fileRef = 5B369817A06C01C6361538D0 /* N64.png */; };
@@ -614,6 +615,7 @@
 		58F6C2A68F840683B84E80DB /* Bezels.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Bezels.swift; sourceTree = "<group>"; };
 		5A32D090BDCC70201F06FE5A /* vectrex@132w.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "vectrex@132w.png"; sourceTree = "<group>"; };
 		5AE1CBC695D134E3FF153854 /* ms@132w.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "ms@132w.png"; sourceTree = "<group>"; };
+		5B109C0AC5EC5655765DAC84 /* .gitkeep */ = {isa = PBXFileReference; lastKnownFileType = text; path = .gitkeep; sourceTree = "<group>"; };
 		5B369817A06C01C6361538D0 /* N64.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = N64.png; sourceTree = "<group>"; };
 		5B75DCBF03080C5A3D54BFAB /* cps1@132w.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "cps1@132w.png"; sourceTree = "<group>"; };
 		5B8B59C768B0762CFFBFDCE3 /* pcecd@132w.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "pcecd@132w.png"; sourceTree = "<group>"; };
@@ -776,6 +778,7 @@
 		BB105E50D82536CAF16A0A2F /* ShaderPreset.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShaderPreset.swift; sourceTree = "<group>"; };
 		BB17C2D1779CEF170931556A /* SEGACD.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = SEGACD.png; sourceTree = "<group>"; };
 		BBBE129C442492A957F9A0AC /* NSImage+Resize.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "NSImage+Resize.swift"; sourceTree = "<group>"; };
+		BCF5F2A331B01D152BE6194C /* PPSSPAssetService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PPSSPAssetService.swift; sourceTree = "<group>"; };
 		BE01BAE4649B80275FA1BBAB /* MAMEUnifiedService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MAMEUnifiedService.swift; sourceTree = "<group>"; };
 		BE8AAC49E7AC25911394118F /* N64DD.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = N64DD.png; sourceTree = "<group>"; };
 		BF4D3CED7C7C18FB8375C015 /* AppSettings.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppSettings.swift; sourceTree = "<group>"; };
@@ -827,12 +830,10 @@
 		DB371ABEE63BE1D87FA4114E /* ScaleSmooth.metal */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.metal; path = ScaleSmooth.metal; sourceTree = "<group>"; };
 		DC11E976179410D451158A7A /* AMIGA.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = AMIGA.png; sourceTree = "<group>"; };
 		DD476D63A6BB92961004D98F /* GitHubAPIModels.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GitHubAPIModels.swift; sourceTree = "<group>"; };
-		DD7629D12FA136EE002E0F3D /* ShaderCommon.h.metal */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.metal; path = ShaderCommon.h.metal; sourceTree = "<group>"; };
-		DD7629D22FA136EE002E0F3D /* ShaderTypes.h.metal */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.metal; path = ShaderTypes.h.metal; sourceTree = "<group>"; };
-		DD7629D62FA13764002E0F3D /* InputCaptureManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InputCaptureManager.swift; sourceTree = "<group>"; };
-		DD7629D72FA13764002E0F3D /* RetroKeycodeMapper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RetroKeycodeMapper.swift; sourceTree = "<group>"; };
-		DD7629DB2FA13A63002E0F3D /* TruchiEmu.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = TruchiEmu.entitlements; sourceTree = "<group>"; };
-		DD7629DC2FA13A77002E0F3D /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
+		DD7629DE2FA14295002E0F3D /* InputCaptureManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InputCaptureManager.swift; sourceTree = "<group>"; };
+		DD7629DF2FA14295002E0F3D /* RetroKeycodeMapper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RetroKeycodeMapper.swift; sourceTree = "<group>"; };
+		DD7629E32FA189BA002E0F3D /* PPSSPP_assets.zip */ = {isa = PBXFileReference; lastKnownFileType = archive.zip; path = PPSSPP_assets.zip; sourceTree = "<group>"; };
+		DD7629E52FA189CC002E0F3D /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		DDA440915145AB1C4D850872 /* LogManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LogManager.swift; sourceTree = "<group>"; };
 		DDCACEF2DA4CC526B3582217 /* ps@132w.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "ps@132w.png"; sourceTree = "<group>"; };
 		DDD3D6FBAD9DBDFEA74CC420 /* GameLauncherRegressionTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GameLauncherRegressionTests.swift; sourceTree = "<group>"; };
@@ -906,6 +907,13 @@
 				A114583ECF04F5D5E431DCF5 /* BoxArt */,
 			);
 			path = BoxArt;
+			sourceTree = "<group>";
+		};
+		00DD5E5610D92A41D1BD67D7 /* System */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			path = System;
 			sourceTree = "<group>";
 		};
 		01A09E410677DCE1916971A7 /* Views */ = {
@@ -1191,7 +1199,6 @@
 		46BDCE9B569EB867076866AC /* Shaders */ = {
 			isa = PBXGroup;
 			children = (
-				DD7629D32FA136EE002E0F3D /* internal */,
 				7CC6E52ACF63E0F4B9AD638C /* 8bGameBoy.metal */,
 				2FF46494B22F41F5D1CD519B /* 8bGameBoyColor.metal */,
 				62B4EE0802A69845537290E2 /* CRTFilter_multipass.metal */,
@@ -1399,14 +1406,24 @@
 			path = Library;
 			sourceTree = "<group>";
 		};
+		5CFBFBBBCCFE2EF7D12DE2D9 /* retroarch */ = {
+			isa = PBXGroup;
+			children = (
+				5B109C0AC5EC5655765DAC84 /* .gitkeep */,
+			);
+			path = retroarch;
+			sourceTree = "<group>";
+		};
 		6030CD98AFCCAA9A068217A1 /* Resources */ = {
 			isa = PBXGroup;
 			children = (
-				DD7629DC2FA13A77002E0F3D /* Assets.xcassets */,
-				DD7629DB2FA13A63002E0F3D /* TruchiEmu.entitlements */,
+				DD7629E52FA189CC002E0F3D /* Assets.xcassets */,
+				DD7629E32FA189BA002E0F3D /* PPSSPP_assets.zip */,
 				993EF4980E6D59693590061E /* Config */,
 				35AF3E1D0EA8DD7BDA67C06A /* Data */,
 				0CBD37D03C917E1671224137 /* EmulatorIcons */,
+				5CFBFBBBCCFE2EF7D12DE2D9 /* retroarch */,
+				00DD5E5610D92A41D1BD67D7 /* System */,
 				54FD9E210FE30BDD7A83138A /* ThumbnailManifests */,
 			);
 			path = Resources;
@@ -1603,6 +1620,7 @@
 				205860E15724E191A9B42460 /* LibretroThumbnailResolver.swift */,
 				6DD7CC96F0ABCF2CCDC217E4 /* MetadataSyncCoordinator.swift */,
 				6B6CDE91A09406AE67921521 /* NotificationService.swift */,
+				BCF5F2A331B01D152BE6194C /* PPSSPAssetService.swift */,
 				F21660AD9FFF6D840095815C /* RetroAchievementsService.swift */,
 				9367BEFF9A7137645C911103 /* ROMIdentifier.swift */,
 				C30A37AE0117299098C190A1 /* ROMIdentifierService.swift */,
@@ -1696,7 +1714,7 @@
 		AECB9CA72CA854445BE4CB7E /* Core */ = {
 			isa = PBXGroup;
 			children = (
-				DD7629D82FA13764002E0F3D /* InputCapture */,
+				DD7629E02FA14295002E0F3D /* InputCapture */,
 				AE83B388D11F6EB80FFF6EB1 /* Engine */,
 				A91B50FB81A02744966462D0 /* Models */,
 				46BDCE9B569EB867076866AC /* Shaders */,
@@ -1846,20 +1864,11 @@
 			path = UI;
 			sourceTree = "<group>";
 		};
-		DD7629D32FA136EE002E0F3D /* internal */ = {
+		DD7629E02FA14295002E0F3D /* InputCapture */ = {
 			isa = PBXGroup;
 			children = (
-				DD7629D12FA136EE002E0F3D /* ShaderCommon.h.metal */,
-				DD7629D22FA136EE002E0F3D /* ShaderTypes.h.metal */,
-			);
-			path = internal;
-			sourceTree = "<group>";
-		};
-		DD7629D82FA13764002E0F3D /* InputCapture */ = {
-			isa = PBXGroup;
-			children = (
-				DD7629D62FA13764002E0F3D /* InputCaptureManager.swift */,
-				DD7629D72FA13764002E0F3D /* RetroKeycodeMapper.swift */,
+				DD7629DE2FA14295002E0F3D /* InputCaptureManager.swift */,
+				DD7629DF2FA14295002E0F3D /* RetroKeycodeMapper.swift */,
 			);
 			path = InputCapture;
 			sourceTree = "<group>";
@@ -2021,6 +2030,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				4D0A2323136FD611E75CB0D4 /* .gitkeep in Resources */,
 				00519852497AFB9C2EDDE91D /* 32X@132w.png in Resources */,
 				80A39D87DE63BCEE28E5D5BA /* 5200@132w.png in Resources */,
 				A1C0C58CC5B0490B58568955 /* 7800@132w.png in Resources */,
@@ -2032,6 +2042,7 @@
 				4AA67BC43FA47C5341267E55 /* ARCADE_FBNEO.png in Resources */,
 				0B7B6E70EFA78DA521D214DE /* ARDUBOY.png in Resources */,
 				B4AE5A61C004F934F96B9772 /* ATARI2600.png in Resources */,
+				DD7629E42FA189BA002E0F3D /* PPSSPP_assets.zip in Resources */,
 				4086A0488F4BCB86674B277F /* ATARI5200.png in Resources */,
 				0B91DB75B67F7778CEFDD3F6 /* ATARI7800.png in Resources */,
 				9369EAC462BDE91DFE8486CB /* ATARI800-alt.png in Resources */,
@@ -2041,6 +2052,7 @@
 				CB831D47C977190D3DED0273 /* Atari - 2600.dat in Resources */,
 				89569FC0E343B9ADAA4377E0 /* Atari - 7800.dat in Resources */,
 				80302B82D3E5BDD2727925C2 /* Atari - Jaguar.dat in Resources */,
+				DD7629E62FA189CC002E0F3D /* Assets.xcassets in Resources */,
 				D8F34291962A372509308FEC /* Atari - Lynx.dat in Resources */,
 				DB0C28440F1BD8B86D3B7EFE /* Bandai - WonderSwan Color.dat in Resources */,
 				7A1EEE1CD4955A4C7B4BA1CF /* Bandai - WonderSwan.dat in Resources */,
@@ -2159,7 +2171,6 @@
 				6BD6BF15F314107230D2070E /* TI83.png in Resources */,
 				B28BAC855B3AE12F271C2CE4 /* TIC.png in Resources */,
 				4DE4616CC04E04F0BF73AC72 /* TYRQUAKE.png in Resources */,
-				DD7629DD2FA13A77002E0F3D /* Assets.xcassets in Resources */,
 				0534376041F4D70FCA2D9893 /* UZEBOX.png in Resources */,
 				97CCC29A6F7E7CD81BB53C1A /* VB.png in Resources */,
 				4B94C244C68FFB5B7611ED77 /* VECTREX.png in Resources */,
@@ -2277,8 +2288,6 @@
 			buildActionMask = 2147483647;
 			files = (
 				10CAEA190350353BB1B6796B /* 8bGameBoy.metal in Sources */,
-				DD7629D92FA13764002E0F3D /* InputCaptureManager.swift in Sources */,
-				DD7629DA2FA13764002E0F3D /* RetroKeycodeMapper.swift in Sources */,
 				09E4EEA593CB6502548B5B5B /* 8bGameBoyColor.metal in Sources */,
 				8EE6078DB034AB7CB9AE5801 /* AboutView.swift in Sources */,
 				7087D0F7B70E84B687E4E97A /* Achievement.swift in Sources */,
@@ -2369,6 +2378,8 @@
 				886D1903700E00DE7F11523C /* GameNameFormatter.swift in Sources */,
 				27F9277272450FDAE20B690D /* GameOverlayToolbar.swift in Sources */,
 				CC4C936CF4AAB9EBE49E8F47 /* GeneralSettingsView.swift in Sources */,
+				DD7629E12FA14295002E0F3D /* InputCaptureManager.swift in Sources */,
+				DD7629E22FA14295002E0F3D /* RetroKeycodeMapper.swift in Sources */,
 				5DC85C85056E986328B9BC36 /* GenreManager.swift in Sources */,
 				749F189B703826A160DAAD4E /* GenrePickerView.swift in Sources */,
 				D4A5C3EA0A548DBEF9EDE4AE /* GenreSettingsView.swift in Sources */,
@@ -2394,8 +2405,6 @@
 				B92C279B92CA3EEE474DB163 /* LibretroGlobals.mm in Sources */,
 				F6BCD9E30F0D6EC1CA4B9F0C /* LibretroRDBParser.swift in Sources */,
 				76CC37645550ACEC08D6927C /* LibretroThumbnailManifestService.swift in Sources */,
-				DD7629D42FA136EE002E0F3D /* ShaderCommon.h.metal in Sources */,
-				DD7629D52FA136EE002E0F3D /* ShaderTypes.h.metal in Sources */,
 				803EACFA754C4D83757A278A /* LibretroThumbnailResolver.swift in Sources */,
 				81294D07B34834F13769FF30 /* LiteCRT.metal in Sources */,
 				B16B623DEBA2208B2DFEBF1A /* LogManager.swift in Sources */,
@@ -2421,6 +2430,7 @@
 				989CF6FDFAD02F5AE425ABA4 /* NSImage+Resize.swift in Sources */,
 				87B10EFAD98B1F06174C53D9 /* NotificationService.swift in Sources */,
 				7326A987ECCC8D533CBE6E7F /* OnboardingView.swift in Sources */,
+				802243197EC4A31177770310 /* PPSSPAssetService.swift in Sources */,
 				0731BAFCEC49AC5E62BA3474 /* Passthrough.metal in Sources */,
 				97532B79D1C03B1230BDB004 /* PersistenceMigrationFlag.swift in Sources */,
 				18F76F5459F43096381CEEF0 /* RAGameCacheEntry.swift in Sources */,
