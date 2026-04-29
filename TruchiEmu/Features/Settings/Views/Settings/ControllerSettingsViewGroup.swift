@@ -45,7 +45,9 @@ struct ControllerSettingsView: View {
  )
  }
 
- // Segmented control for tab switching (inside content area)
+ // Top bar: Tab selector and System selector in one row
+ HStack(spacing: 20) {
+ // Segmented control for tab switching
  Picker("Tab", selection: $activeTab) {
  Text("Controllers").tag(0)
  Text("Keyboard").tag(1)
@@ -53,9 +55,11 @@ struct ControllerSettingsView: View {
  .pickerStyle(.segmented)
  .frame(maxWidth: 300)
 
+ Spacer()
+
  // System picker (visible for both tabs)
  if !filteredSystemsForDisplay.isEmpty {
- HStack(spacing: 12) {
+ HStack(spacing: 8) {
  Text("System")
  .font(.body)
  .foregroundColor(.secondary)
@@ -67,11 +71,11 @@ struct ControllerSettingsView: View {
  Text(sys.name).tag(sys.id)
  }
  }
- .frame(width: 220)
+ .frame(width: 200)
+ }
+ }
  }
  .padding(.horizontal)
- .padding(.top, 4)
- }
 
  // Tab content
  Group {
@@ -864,15 +868,23 @@ struct KeyboardContentView: View {
         self.searchText = searchText
     }
 
-    var body: some View {
-        VStack(alignment: .leading, spacing: 0) {
-            HStack(spacing: 20) {
-                Text("Keyboard Mapping").font(.title3.weight(.semibold))
-                Spacer()
-            }
-            .padding()
+ var body: some View {
+ VStack(alignment: .leading, spacing: 0) {
+ HStack(spacing: 20) {
+ Text("Keyboard Mapping").font(.title3.weight(.semibold))
 
-            Divider()
+ Spacer()
+
+ Button("Reset to Defaults") {
+ let defaults = KeyboardMapping.defaults(for: systemID, handedness: controllerService.handedness)
+ controllerService.updateKeyboardMapping(defaults, for: systemID)
+ }
+ .buttonStyle(.bordered)
+ .controlSize(.small)
+ }
+ .padding()
+
+ Divider()
 
             ScrollView {
                 let buttons = RetroButton.availableButtons(for: systemID)
@@ -941,13 +953,23 @@ struct KeyCaptureButton: NSViewRepresentable {
         }
     }
 
-    private func keyName(for keyCode: UInt16) -> String {
-        let names: [UInt16: String] = [
-            0:"A",1:"S",2:"D",3:"F",4:"H",5:"G",6:"Z",7:"X",8:"C",9:"V",
-            11:"B",12:"Q",13:"W",14:"E",15:"R",17:"T",16:"Y",32:"U",34:"I",
-            31:"O",35:"P",36:"↩",53:"⎋",123:"←",124:"→",125:"↓",126:"↑",
-            49:"Space",48:"⇥"
-        ]
-        return names[keyCode] ?? "Key\(keyCode)"
-    }
+ private func keyName(for keyCode: UInt16) -> String {
+ let names: [UInt16: String] = [
+ // Letters (top row)
+ 0:"A", 11:"B", 8:"C", 2:"D", 14:"E", 3:"F", 5:"G", 4:"H", 34:"I", 38:"J",
+ 40:"K", 37:"L", 46:"M", 45:"N", 31:"O", 35:"P", 12:"Q", 15:"R", 1:"S", 17:"T",
+ 32:"U", 9:"V", 13:"W", 7:"X", 16:"Y", 6:"Z",
+ // Numbers (top row)
+ 18:"1", 19:"2", 20:"3", 21:"4", 22:"5", 23:"6", 24:"7", 25:"8", 26:"9", 27:"0",
+ // Special keys
+ 36:"Return", 48:"Tab", 49:"Space", 53:"Esc",
+ 51:"Delete", 117:"Del", 123:"←", 124:"→", 125:"↓", 126:"↑",
+ // Modifier keys
+ 55:"Cmd", 56:"Shift", 57:"Caps", 58:"Option", 59:"Ctrl", 60:"R Shift", 61:"R Opt", 62:"R Ctrl",
+ // Punctuation
+ 41:"`", 50:"`", 33:"F1", 122:"F1", 120:"F2", 99:"F3", 118:"F4", 96:"F5", 97:"F6",
+ 98:"F7", 100:"F8", 101:"F9", 109:"F10", 103:"F11", 111:"F12"
+ ]
+ return names[keyCode] ?? "Key\(keyCode)"
+ }
 }
