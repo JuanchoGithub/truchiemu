@@ -97,6 +97,19 @@
     "mame2000_libretro": {
       "override_description": "MAME 2000 arcade emulator defaults",
       "mame2000-throttle": "enabled"
+    },
+    "dosbox_pure_libretro": {
+      "override_description": "DOSBox-Pure optimized for macOS ARM (M1/M2/M3)",
+      "dosbox_pure_cpu_core": "normal",
+      "dosbox_pure_cycles": "auto",
+      "dosbox_pure_cpu_type": "auto",
+      "dosbox_pure_latency": "Default",
+      "dosbox_pure_start_menu": "enabled",
+      "dosbox_pure_mouse": "enabled",
+      "dosbox_pure_oplrate": "44100",
+      "dosbox_pure_pcrate": "44100",
+      "dosbox_pure_tandyrate": "44100",
+      "dosbox_pure_joysticktype": "auto"
     }
   }
 }
