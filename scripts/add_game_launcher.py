@@ -6,7 +6,7 @@ file_ref_uuid = "A1B2C3D4E5F6A7B8C9D0E1F2"
 build_file_uuid = "F2E1D0C9B8A7F6E5D4C3B2A1"
 
 # Read the project file
-with open('TruchieEmu.xcodeproj/project.pbxproj', 'r') as f:
+with open('TruchiEmu.xcodeproj/project.pbxproj', 'r') as f:
     content = f.read()
 
 # 1. Add PBXBuildFile entry
@@ -30,7 +30,7 @@ new_sources = old_sources + '\n\t\t\t\t' + build_file_uuid + ' /* GameLauncher.s
 content = content.replace(old_sources, new_sources)
 
 # Write back
-with open('TruchieEmu.xcodeproj/project.pbxproj', 'w') as f:
+with open('TruchiEmu.xcodeproj/project.pbxproj', 'w') as f:
     f.write(content)
 
 print(f'Added GameLauncher.swift with fileRef={file_ref_uuid} buildFile={build_file_uuid}')

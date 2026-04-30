@@ -4,8 +4,8 @@ import shutil
 
 def organize_pngs():
     mapping_file = 'system_png_mapping.md'
-    source_dir = 'TruchieEmu/Resources/retroarch/dot-art/png'
-    target_dir = 'TruchieEmu/Resources/retroarch/dot-art/systems'
+    source_dir = 'TruchiEmu/Resources/retroarch/dot-art/png'
+    target_dir = 'TruchiEmu/Resources/retroarch/dot-art/systems'
 
     if not os.path.exists(mapping_file):
         print(f"Error: {mapping_file} not found")

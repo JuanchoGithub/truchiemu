@@ -1,5 +1,5 @@
 /*
- * TruchieEmu: 8bit Game Boy Color Hardware Simulation (Final Elite)
+ * TruchiEmu: 8bit Game Boy Color Hardware Simulation (Final Elite)
  * Multi-Frame Temporal Response Edition - White-Point Moiré Fix
  * Developed by JayJay & Gemini
  */

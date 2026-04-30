@@ -1,5 +1,5 @@
 /*
- * TruchieEmu: 8bit Game Boy Color Hardware Simulation (Hybrid Elite)
+ * TruchiEmu: 8bit Game Boy Color Hardware Simulation (Hybrid Elite)
  * Multi-Frame Temporal Response + Dynamic Organic Grid
  * Developed by JayJay & Gemini
  */

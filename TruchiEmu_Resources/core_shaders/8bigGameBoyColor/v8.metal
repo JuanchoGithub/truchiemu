@@ -1,5 +1,5 @@
 /*
- * TruchieEmu: 8bit Game Boy Color Hardware Simulation (Dandelion Edition)
+ * TruchiEmu: 8bit Game Boy Color Hardware Simulation (Dandelion Edition)
  * VERSION HISTORY:
  * v20.9: Shadow moved to Top-Right/Top-Bottom to simulate physical recess.
  * Added dark inner bezel line. Perfectly parallel vertical lens sides.

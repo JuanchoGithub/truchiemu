@@ -1,6 +1,6 @@
 import Foundation
 import XCTest
-@testable import TruchieEmu
+@testable import TruchiEmu
 
 /// Regression tests for Game Launcher - prevents launch failures
 final class GameLauncherRegressionTests: XCTestCase {

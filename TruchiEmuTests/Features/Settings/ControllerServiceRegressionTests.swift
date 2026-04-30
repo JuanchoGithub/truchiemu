@@ -1,6 +1,6 @@
 import Foundation
 import XCTest
-@testable import TruchieEmu
+@testable import TruchiEmu
 
 /// Regression tests for Controller Service - prevents controller mapping corruption
 final class ControllerServiceRegressionTests: XCTestCase {

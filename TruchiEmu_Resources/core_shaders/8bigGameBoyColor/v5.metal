@@ -1,5 +1,5 @@
 /*
- * TruchieEmu: 8bit Game Boy Color Hardware Simulation
+ * TruchiEmu: 8bit Game Boy Color Hardware Simulation
  * * VERSION HISTORY:
  * v16.2: Full Physical Response Model + Tightened Grid.
  * - Chained EMA (Exponential Moving Average) for 60Hz flicker "Burn-in".

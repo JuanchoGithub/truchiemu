@@ -1,6 +1,6 @@
 import Foundation
 import XCTest
-@testable import TruchieEmu
+@testable import TruchiEmu
 
 /// Regression tests for Shader Manager - prevents shader system failures
 final class ShaderManagerRegressionTests: XCTestCase {

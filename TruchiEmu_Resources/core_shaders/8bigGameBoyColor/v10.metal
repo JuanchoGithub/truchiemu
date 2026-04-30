@@ -1,5 +1,5 @@
 /*
- * TruchieEmu: 8bit Game Boy Color Hardware Simulation (Dandelion Edition)
+ * TruchiEmu: 8bit Game Boy Color Hardware Simulation (Dandelion Edition)
  * VERSION HISTORY:
  * v22.4: THE OMNI-MERGE
  * - RESTORED: All original v21.0 features (Newton's Rings, Topography, Dust Glints, Shell)

@@ -1,5 +1,5 @@
 /*
- * TruchieEmu: 8bit Game Boy Color Hardware Simulation (Dandelion + Spectral Interference)
+ * TruchiEmu: 8bit Game Boy Color Hardware Simulation (Dandelion + Spectral Interference)
  * VERSION HISTORY:
  * v24.3: THE SPECTRAL UPDATE
  * - REPLACED: Sine-wave Newton's Rings with Physical Spectral Interference

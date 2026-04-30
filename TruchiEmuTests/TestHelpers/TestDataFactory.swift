@@ -1,5 +1,5 @@
 import Foundation
-@testable import TruchieEmu
+@testable import TruchiEmu
 
 /// Centralized test data factory for consistent test data across the test suite
 class TestDataFactory {

@@ -1,6 +1,6 @@
 import Foundation
 import XCTest
-@testable import TruchieEmu
+@testable import TruchiEmu
 
 /// Regression tests for Core Manager - prevents core download/install failures
 final class CoreManagerRegressionTests: XCTestCase {

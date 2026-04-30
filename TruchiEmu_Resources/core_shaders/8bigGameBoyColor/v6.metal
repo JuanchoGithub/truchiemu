@@ -1,5 +1,5 @@
 /*
- * TruchieEmu: 8bit Game Boy Color Hardware Simulation
+ * TruchiEmu: 8bit Game Boy Color Hardware Simulation
  * VERSION HISTORY:
  * v17.8: Hybrid Elite Effects Port
  * - Added Power LED flicker effect (left edge glow)

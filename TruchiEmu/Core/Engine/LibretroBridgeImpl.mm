@@ -556,12 +556,11 @@ shutdown:
     // Log debug info
     GLenum status = glCheckFramebufferStatus(GL_READ_FRAMEBUFFER);
     if (status != GL_FRAMEBUFFER_COMPLETE) {
-        NSLog(@"[Core-ERR] FBO incomplete: 0x%X (FBO ID: %d, width: %d, height: %d), falling back to FBO 0", status, _hwFBO, w, h);
+        //NSLog(@"[Core-ERR] FBO incomplete: 0x%X (FBO ID: %d, width: %d, height: %d), falling back to FBO 0", status, _hwFBO, w, h);
         glBindFramebuffer(GL_READ_FRAMEBUFFER, 0);
         glReadBuffer(GL_BACK);
     } else {
-        NSLog(@"[Core-DGB] FBO is complete (ID: %d, size: %dx%d, wasRead=%d, wasDraw=%d)", 
-              _hwFBO, w, h, boundReadFBOBefore, boundDrawFBOBefore);
+        //NSLog(@"[Core-DGB] FBO is complete (ID: %d, size: %dx%d, wasRead=%d, wasDraw=%d)", _hwFBO, w, h, boundReadFBOBefore, boundDrawFBOBefore);
     }
 
     glReadPixels(0, 0, w, h, GL_BGRA, GL_UNSIGNED_INT_8_8_8_8_REV, _hwReadbackBuffer);
@@ -569,7 +568,7 @@ shutdown:
     // Debug: Check if we got any non-zero pixels
     uint32_t firstPixel = ((uint32_t *)_hwReadbackBuffer)[0];
     uint32_t lastPixel = ((uint32_t *)_hwReadbackBuffer)[w*h - 1];
-    NSLog(@"[Core-DGB] Readback pixels - first: 0x%08X, last: 0x%08X", firstPixel, lastPixel);
+    //NSLog(@"[Core-DGB] Readback pixels - first: 0x%08X, last: 0x%08X", firstPixel, lastPixel);
   glBindFramebuffer(GL_READ_FRAMEBUFFER, 0);
 
   uint32_t *pixels = (uint32_t *)_hwReadbackBuffer;

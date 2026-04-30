@@ -1,6 +1,6 @@
 import Foundation
 import XCTest
-@testable import TruchieEmu
+@testable import TruchiEmu
 
 /// Integration tests for full game launch workflow
 final class FullGameLaunchWorkflowTests: XCTestCase {

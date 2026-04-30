@@ -1,5 +1,5 @@
 import XCTest
-@testable import TruchieEmu
+@testable import TruchiEmu
 
 /// Regression tests for ROM Identifier Service - prevents ROM identification from breaking
 final class ROMIdentifierServiceRegressionTests: XCTestCase {

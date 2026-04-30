@@ -1,5 +1,5 @@
 import XCTest
-@testable import TruchieEmu
+@testable import TruchiEmu
 
 /// Regression tests for Save State Manager - prevents save state corruption
 final class SaveStateManagerRegressionTests: XCTestCase {

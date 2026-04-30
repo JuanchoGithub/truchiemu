@@ -1,6 +1,6 @@
 import Foundation
 import XCTest
-@testable import TruchieEmu
+@testable import TruchiEmu
 
 /// Regression tests for RetroAchievements Service - prevents achievement sync failures
 final class RetroAchievementsRegressionTests: XCTestCase {

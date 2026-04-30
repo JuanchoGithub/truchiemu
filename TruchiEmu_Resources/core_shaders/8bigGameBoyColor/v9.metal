@@ -1,5 +1,5 @@
 /*
- * TruchieEmu: 8bit Game Boy Color Hardware Simulation (Dandelion Edition)
+ * TruchiEmu: 8bit Game Boy Color Hardware Simulation (Dandelion Edition)
  * VERSION HISTORY:
  * v21.0: Merged core visual effects with GBC screen rendering
  * - Kept: ghosting, aberration, grid, reflection, Newton's rings, jitter, polarizer

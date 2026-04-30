@@ -1,6 +1,6 @@
 import Foundation
 import XCTest
-@testable import TruchieEmu
+@testable import TruchiEmu
 
 /// Integration tests for save state workflow
 final class SaveStateWorkflowRegressionTests: XCTestCase {

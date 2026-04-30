@@ -529,7 +529,7 @@ def build_unified_database():
 
     # Write output
     output_path = os.path.join(os.path.dirname(__file__), "mame_unified.json")
-    resources_path = os.path.join(os.path.dirname(__file__), "..", "..", "TruchieEmu", "Resources", "mame_unified.json")
+    resources_path = os.path.join(os.path.dirname(__file__), "..", "..", "TruchiEmu", "Resources", "mame_unified.json")
 
     with open(output_path, "w", encoding="utf-8") as f:
         json.dump(output, f, indent=2, ensure_ascii=False)

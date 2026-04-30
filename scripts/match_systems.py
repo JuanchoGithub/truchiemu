@@ -3,8 +3,8 @@ import os
 import re
 
 def match_systems():
-    json_path = 'TruchieEmu/Resources/SystemDatabase.json'
-    png_dir = 'TruchieEmu/Resources/retroarch/dot-art/png'
+    json_path = 'TruchiEmu/Resources/SystemDatabase.json'
+    png_dir = 'TruchiEmu/Resources/retroarch/dot-art/png'
     output_path = 'system_png_mapping.md'
 
     if not os.path.exists(json_path):

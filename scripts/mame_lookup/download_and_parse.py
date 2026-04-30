@@ -3,7 +3,7 @@
 MAME ROM Database Downloader
 
 Downloads MAME.dat (games) and MAME BIOS.dat from libretro-database,
-then produces a combined JSON database for use in TruchieEmu.
+then produces a combined JSON database for use in TruchiEmu.
 """
 
 import json

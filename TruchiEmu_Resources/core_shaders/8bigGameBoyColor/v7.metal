@@ -1,5 +1,5 @@
 /*
- * TruchieEmu: 8bit Game Boy Color Hardware Simulation
+ * TruchiEmu: 8bit Game Boy Color Hardware Simulation
  * VERSION HISTORY:
  * v17.9: Hybrid Elite + Final Elite Features
  * - Added topography/well effect

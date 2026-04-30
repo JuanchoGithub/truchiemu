@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """
 Download all DAT/RDB files from libretro-database and produce a seed SQLite database
-that can be shipped with TruchieEmu for first-run game identification.
+that can be shipped with TruchiEmu for first-run game identification.
 
 Usage:
     python3 download_all_dats.py [--output output.sqlite] [--dats-dir ./dats]
@@ -243,7 +243,7 @@ def download_file(url, dest):
     """Download a file from URL to dest."""
     try:
         print(f"  Downloading: {url}")
-        req = urllib.request.Request(url, headers={'User-Agent': 'TruchieEmu/1.0 (Seed Script)'})
+        req = urllib.request.Request(url, headers={'User-Agent': 'TruchiEmu/1.0 (Seed Script)'})
         with urllib.request.urlopen(req, timeout=60) as response:
             data = response.read()
 

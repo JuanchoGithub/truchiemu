@@ -1,5 +1,5 @@
 import Foundation
-@testable import TruchieEmu
+@testable import TruchiEmu
 
 /// Mock URLProtocol for network testing - intercepts network requests and provides mock responses
 /// Used for RetroAchievements, BoxArt, Core downloads, and other external API calls

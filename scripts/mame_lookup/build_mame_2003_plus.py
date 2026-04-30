@@ -376,7 +376,7 @@ def main():
     output_path = os.path.join(os.path.dirname(__file__), "mame_2003_plus.json")
 
     # Also copy to Resources if the script is being run from the project root
-    resources_path = os.path.join(os.path.dirname(__file__), "..", "..", "TruchieEmu", "Resources", "mame_2003_plus.json")
+    resources_path = os.path.join(os.path.dirname(__file__), "..", "..", "TruchiEmu", "Resources", "mame_2003_plus.json")
 
     with open(output_path, "w", encoding="utf-8") as f:
         json.dump(output, f, indent=2, ensure_ascii=False)

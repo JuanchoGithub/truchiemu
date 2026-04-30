@@ -1,6 +1,6 @@
 import XCTest
 import SwiftData
-@testable import TruchieEmu
+@testable import TruchiEmu
 
 /// Regression tests for ROM Library - prevents ROM collection corruption
 final class ROMLibraryRegressionTests: XCTestCase {

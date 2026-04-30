@@ -1,5 +1,5 @@
 /*
- * TruchieEmu: 8bit Game Boy Color Hardware Simulation (Final Elite)
+ * TruchiEmu: 8bit Game Boy Color Hardware Simulation (Final Elite)
  * Neutral Transflective Model - Color-Correct Edition
  * Fixed: Removed "Pea-Soup" Green DMG tint.
  * Developed by JayJay & Gemini
