@@ -110,6 +110,14 @@
       "dosbox_pure_pcrate": "44100",
       "dosbox_pure_tandyrate": "44100",
       "dosbox_pure_joysticktype": "auto"
+    },
+    "mupen64plus_next_libretro": {
+      "override_description": "Mupen64Plus-Next hw_render_context_negotiation enabled",
+      "hw_render_context_negotiation": "enabled"
+    },
+    "mupen64plus_libretro": {
+      "override_description": "Mupen64Plus hw_render_context_negotiation enabled",
+      "hw_render_context_negotiation": "enabled"
     }
   }
 }

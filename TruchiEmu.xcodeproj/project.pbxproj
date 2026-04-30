@@ -396,7 +396,7 @@
 		DCBCEE45C7C74C4F9687B563 /* vb@132w.png in Resources */ = {isa = PBXBuildFile; fileRef = 5E90C52AEDC3AC23BA35B915 /* vb@132w.png */; };
 		DCC432C8DC5EA9D19CA13B14 /* PICO.png in Resources */ = {isa = PBXBuildFile; fileRef = 895E4313F6A502B39E0267B1 /* PICO.png */; };
 		DD0DDF8856A8056172004CA0 /* Sega - Dreamcast.dat in Resources */ = {isa = PBXBuildFile; fileRef = A93547318848E19981032FE8 /* Sega - Dreamcast.dat */; };
-		DD1932452FA2E10800CC543D /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = DD1932442FA2E10800CC543D /* Assets.xcassets */; };
+		DD193D8A2FA3AD9100CC543D /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = DD193D892FA3AD9100CC543D /* Assets.xcassets */; };
 		DEF1DDA46E59570FAE57D442 /* vdp@132w.png in Resources */ = {isa = PBXBuildFile; fileRef = D755FBFFC3BD76093815B71D /* vdp@132w.png */; };
 		DFF2C66041E018B1D7319306 /* CHAILOVE.png in Resources */ = {isa = PBXBuildFile; fileRef = 579FF46D161EC2DD3CE4C105 /* CHAILOVE.png */; };
 		E0BD0AA661359907DC9D17FF /* N64.png in Resources */ = {isa = PBXBuildFile; fileRef = 5B369817A06C01C6361538D0 /* N64.png */; };
@@ -836,7 +836,7 @@
 		D9CE94667031F54D1573ACBE /* pce@132w.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "pce@132w.png"; sourceTree = "<group>"; };
 		DB371ABEE63BE1D87FA4114E /* ScaleSmooth.metal */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.metal; path = ScaleSmooth.metal; sourceTree = "<group>"; };
 		DC11E976179410D451158A7A /* AMIGA.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = AMIGA.png; sourceTree = "<group>"; };
-		DD1932442FA2E10800CC543D /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
+		DD193D892FA3AD9100CC543D /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		DD476D63A6BB92961004D98F /* GitHubAPIModels.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GitHubAPIModels.swift; sourceTree = "<group>"; };
 		DDA440915145AB1C4D850872 /* LogManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LogManager.swift; sourceTree = "<group>"; };
 		DDCACEF2DA4CC526B3582217 /* ps@132w.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "ps@132w.png"; sourceTree = "<group>"; };
@@ -1423,7 +1423,7 @@
 		6030CD98AFCCAA9A068217A1 /* Resources */ = {
 			isa = PBXGroup;
 			children = (
-				DD1932442FA2E10800CC543D /* Assets.xcassets */,
+				DD193D892FA3AD9100CC543D /* Assets.xcassets */,
 				993EF4980E6D59693590061E /* Config */,
 				35AF3E1D0EA8DD7BDA67C06A /* Data */,
 				0CBD37D03C917E1671224137 /* EmulatorIcons */,
@@ -2053,7 +2053,7 @@
 				89569FC0E343B9ADAA4377E0 /* Atari - 7800.dat in Resources */,
 				80302B82D3E5BDD2727925C2 /* Atari - Jaguar.dat in Resources */,
 				D8F34291962A372509308FEC /* Atari - Lynx.dat in Resources */,
-				DD1932452FA2E10800CC543D /* Assets.xcassets in Resources */,
+				DD193D8A2FA3AD9100CC543D /* Assets.xcassets in Resources */,
 				DB0C28440F1BD8B86D3B7EFE /* Bandai - WonderSwan Color.dat in Resources */,
 				7A1EEE1CD4955A4C7B4BA1CF /* Bandai - WonderSwan.dat in Resources */,
 				86E1C292EC5C940FF5103A8F /* C64.png in Resources */,

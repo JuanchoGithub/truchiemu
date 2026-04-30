@@ -322,11 +322,20 @@ case RETRO_ENVIRONMENT_GET_RUMBLE_INTERFACE: {
     }
     case RETRO_ENVIRONMENT_GET_PERF_INTERFACE:
     case RETRO_ENVIRONMENT_GET_HW_RENDER_INTERFACE:
-    case RETRO_ENVIRONMENT_SET_HW_RENDER_CONTEXT_NEGOTIATION_INTERFACE: {
-      // This is used by some cores (like Mupen64Plus-Next) to negotiate context versions
-      // Not all interfaces need to be fully implemented - some just need a positive response
-      return true;
-    }
+     case RETRO_ENVIRONMENT_SET_HW_RENDER_CONTEXT_NEGOTIATION_INTERFACE: {
+       // This is used by some cores (like Mupen64Plus-Next) to negotiate context versions
+       // Not all interfaces need to be fully implemented - some just need a positive response
+       // Check core-specific override for hw_render_context_negotiation
+       if (g_coreID && g_optValues && g_optValues.count > 0) {
+         NSString *keyStr = [NSString stringWithUTF8String:"hw_render_context_negotiation"];
+         NSString *valStr = g_optValues[keyStr];
+         if (valStr && [valStr caseInsensitiveCompare:@"enabled"] == NSOrderedSame) {
+           return true;
+         }
+       }
+       // Default to false for safety (prevents crashes in cores like dosbox)
+       return false;
+     }
   case RETRO_ENVIRONMENT_GET_INPUT_BITMASKS:
     return false;
   case RETRO_ENVIRONMENT_GET_AUDIO_VIDEO_ENABLE:
