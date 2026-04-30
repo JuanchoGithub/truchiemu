@@ -579,13 +579,21 @@ shutdown:
   BOOL isDolphin = (g_coreID && [[g_coreID lowercaseString] containsString:@"dolphin"]);
   BOOL isDOSBox = (g_coreID && [[g_coreID lowercaseString] containsString:@"dosbox"]);
   BOOL isDreamcast = (g_coreID && [[g_coreID lowercaseString] containsString:@"flycast"]);
+  BOOL is3DS = (g_coreID && [[g_coreID lowercaseString] containsString:@"panda3ds"]);
   BOOL isN64 = NO;
   if (g_coreID) {
       NSString *cid = [(id)g_coreID lowercaseString];
       if ([cid containsString:@"mupen64plus"]) isN64 = YES;
   }
 
-  if (isPSP || isPS2_play || isDolphin || isDOSBox || isDreamcast || isPS1_swanstation || isN64) {
+  if (isPSP || 
+      isPS2_play || 
+      isDolphin || 
+      isDOSBox || 
+      isDreamcast || 
+      isPS1_swanstation || 
+      isN64 ||
+      is3DS) {
     for (int y = 0; y < h / 2; y++) {
       uint32_t *rowTop = pixels + (y * w);
       uint32_t *rowBottom = pixels + ((h - 1 - y) * w);

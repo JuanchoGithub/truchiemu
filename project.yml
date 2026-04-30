@@ -40,8 +40,8 @@ targets:
           NSAllowsArbitraryLoads: true
 
 
-   NSDownloadsFolderUsageDescription: "TruchiEmu needs access to Downloads to load ROMs and save states."
-   NSDocumentsFolderUsageDescription: "TruchiEmu needs access to Documents to store emulator saves and configuration."
+        NSDownloadsFolderUsageDescription: "TruchiEmu needs access to Downloads to load ROMs and save states."
+        NSDocumentsFolderUsageDescription: "TruchiEmu needs access to Documents to store emulator saves and configuration."
     entitlements:
       path: TruchiEmu/Resources/TruchiEmu.entitlements
 
@@ -71,6 +71,8 @@ targets:
         type: group
       - path: TruchiEmu/Services
       - path: TruchiEmu/Core/Engine
+        type: group
+      - path: TruchiEmu/Core/InputCapture
         type: group
       - path: TruchiEmu/Core/Shaders
         excludes:

@@ -71,6 +71,7 @@
 		1C2204D9530B77517743DCD2 /* NEOGEO.png in Resources */ = {isa = PBXBuildFile; fileRef = B3DD3B4C59CFC316674ECA82 /* NEOGEO.png */; };
 		1C53253267EF0CA0E9731752 /* SlotPickerSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = C50E20B4080419F263BC42F7 /* SlotPickerSheet.swift */; };
 		1D42E0EBE1B6FD7FE8F892D7 /* ADVMAME.png in Resources */ = {isa = PBXBuildFile; fileRef = 88A5AA6240BCC78ED370440C /* ADVMAME.png */; };
+		1D74BFC265809AEF5ED3C30F /* RetroKeycodeMapper.swift in Sources */ = {isa = PBXBuildFile; fileRef = ACC607903568B8A010CB23C1 /* RetroKeycodeMapper.swift */; };
 		1EEBCE84D193149AF4817D65 /* SGB.png in Resources */ = {isa = PBXBuildFile; fileRef = 3438679C8A46772B45D51C7A /* SGB.png */; };
 		1F0BBBAEEFE038AAAECECF73 /* SG1000.png in Resources */ = {isa = PBXBuildFile; fileRef = 61EE2306C49C20631F9B6071 /* SG1000.png */; };
 		1F78DA68429EEE70B308C499 /* psp@132w.png in Resources */ = {isa = PBXBuildFile; fileRef = F5324FC711713455B3AFAC54 /* psp@132w.png */; };
@@ -100,6 +101,7 @@
 		29CE32FC2F6F901B6183456D /* SATURN.png in Resources */ = {isa = PBXBuildFile; fileRef = F6BC2D971B660ACD5CC70339 /* SATURN.png */; };
 		2A1BA04A963F634CA857256A /* SystemControlsMappingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D32A0CBEAB6D23E203608BCB /* SystemControlsMappingView.swift */; };
 		2A4C1FDA0C8991B98B6E9CBA /* NDS.png in Resources */ = {isa = PBXBuildFile; fileRef = 1F755B4BB35962969772AE5B /* NDS.png */; };
+		2B2B0A84C8FA0EC3F94F0ADB /* InputCaptureManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 26E4F7172EFA2D0F141FFA63 /* InputCaptureManager.swift */; };
 		2C0B2084279F991E2305FE51 /* CursorAutoHideManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7DAF1E2107BE928D81F50371 /* CursorAutoHideManager.swift */; };
 		2D7A0AE77EB1ABA4229BE4C9 /* Sega - Saturn.dat in Resources */ = {isa = PBXBuildFile; fileRef = 82C9F6E2C2EF214C1E23E569 /* Sega - Saturn.dat */; };
 		2FB5053BAF95CD050D0864DD /* gw@132w.png in Resources */ = {isa = PBXBuildFile; fileRef = FA897462D8DF8DDA8C9792CB /* gw@132w.png */; };
@@ -228,6 +230,7 @@
 		77242750CB1E266FCE80BF71 /* WSC.png in Resources */ = {isa = PBXBuildFile; fileRef = 816EC3B058096F41BD785C25 /* WSC.png */; };
 		77542C8AE9ED8AC003E6B035 /* ControlsSection.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2FD6A5FBF95F102464F674D3 /* ControlsSection.swift */; };
 		78C5A07EC76C01818E6CC4E2 /* SaveStateManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8F335963F669B717AE38BB24 /* SaveStateManager.swift */; };
+		791402ABB260460A0380E845 /* ProgettoSnapsService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 112A0F3619B6C52925987F75 /* ProgettoSnapsService.swift */; };
 		797743C7B0984ACD8054042A /* DC.png in Resources */ = {isa = PBXBuildFile; fileRef = 4E990F214B18E1F3D2CB9948 /* DC.png */; };
 		7A1EEE1CD4955A4C7B4BA1CF /* Bandai - WonderSwan.dat in Resources */ = {isa = PBXBuildFile; fileRef = C36FD4AFFE5DBE5CB18FEB53 /* Bandai - WonderSwan.dat */; };
 		7AB6C958DA92C9CDF9A93EEF /* quake@132w.png in Resources */ = {isa = PBXBuildFile; fileRef = 466CFD903A62D1110AFF0C9B /* quake@132w.png */; };
@@ -271,6 +274,7 @@
 		929ADF909A2FA78A3D8A03EA /* LibretroCore.swift in Sources */ = {isa = PBXBuildFile; fileRef = AE565CF1103447CBA9B353C0 /* LibretroCore.swift */; };
 		92AF35262FCFF411ECCA2360 /* BezelsSection.swift in Sources */ = {isa = PBXBuildFile; fileRef = 407BD2D2FC535B983EBC0EB7 /* BezelsSection.swift */; };
 		9369EAC462BDE91DFE8486CB /* ATARI800-alt.png in Resources */ = {isa = PBXBuildFile; fileRef = CD2FE1ECA3ADA9DB03225538 /* ATARI800-alt.png */; };
+		936CB95671EC28D1BF799322 /* MAMEGenreService.swift in Sources */ = {isa = PBXBuildFile; fileRef = B5D30E06BD1B8444F1AC5E41 /* MAMEGenreService.swift */; };
 		9445955AEA22BF215BC4A705 /* ZXS.png in Resources */ = {isa = PBXBuildFile; fileRef = 3FE9A86B3E8DEBB7247CD073 /* ZXS.png */; };
 		94E0DA548FB08FF30BABB657 /* msumd@132w.png in Resources */ = {isa = PBXBuildFile; fileRef = 1025434DD2AD0DB5E24C9527 /* msumd@132w.png */; };
 		94F18E1F0634E807A991FED7 /* cpc-alt.png in Resources */ = {isa = PBXBuildFile; fileRef = CFA7EE5F0E680257ECC8A1E4 /* cpc-alt.png */; };
@@ -392,11 +396,7 @@
 		DCBCEE45C7C74C4F9687B563 /* vb@132w.png in Resources */ = {isa = PBXBuildFile; fileRef = 5E90C52AEDC3AC23BA35B915 /* vb@132w.png */; };
 		DCC432C8DC5EA9D19CA13B14 /* PICO.png in Resources */ = {isa = PBXBuildFile; fileRef = 895E4313F6A502B39E0267B1 /* PICO.png */; };
 		DD0DDF8856A8056172004CA0 /* Sega - Dreamcast.dat in Resources */ = {isa = PBXBuildFile; fileRef = A93547318848E19981032FE8 /* Sega - Dreamcast.dat */; };
-		DD192ED52FA20AFD00CC543D /* InputCaptureManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = DD192ED22FA20AFD00CC543D /* InputCaptureManager.swift */; };
-		DD192ED62FA20AFD00CC543D /* RetroKeycodeMapper.swift in Sources */ = {isa = PBXBuildFile; fileRef = DD192ED32FA20AFD00CC543D /* RetroKeycodeMapper.swift */; };
-		DD192ED82FA20B0900CC543D /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = DD192ED72FA20B0900CC543D /* Assets.xcassets */; };
-		DD192EDA2FA24E2A00CC543D /* MAMEGenreService.swift in Sources */ = {isa = PBXBuildFile; fileRef = DD192ED92FA24E2A00CC543D /* MAMEGenreService.swift */; };
-		DD192EDC2FA24E5400CC543D /* ProgettoSnapsService.swift in Sources */ = {isa = PBXBuildFile; fileRef = DD192EDB2FA24E5400CC543D /* ProgettoSnapsService.swift */; };
+		DD1932452FA2E10800CC543D /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = DD1932442FA2E10800CC543D /* Assets.xcassets */; };
 		DEF1DDA46E59570FAE57D442 /* vdp@132w.png in Resources */ = {isa = PBXBuildFile; fileRef = D755FBFFC3BD76093815B71D /* vdp@132w.png */; };
 		DFF2C66041E018B1D7319306 /* CHAILOVE.png in Resources */ = {isa = PBXBuildFile; fileRef = 579FF46D161EC2DD3CE4C105 /* CHAILOVE.png */; };
 		E0BD0AA661359907DC9D17FF /* N64.png in Resources */ = {isa = PBXBuildFile; fileRef = 5B369817A06C01C6361538D0 /* N64.png */; };
@@ -474,6 +474,7 @@
 		1025434DD2AD0DB5E24C9527 /* msumd@132w.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "msumd@132w.png"; sourceTree = "<group>"; };
 		10DDFFD32FD0252CCB85E6E7 /* Sega_-_Mega_Drive_-_Genesis.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = "Sega_-_Mega_Drive_-_Genesis.json"; sourceTree = "<group>"; };
 		10E5DB3815AC2744949AE9A7 /* ShaderManagerRegressionTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShaderManagerRegressionTests.swift; sourceTree = "<group>"; };
+		112A0F3619B6C52925987F75 /* ProgettoSnapsService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProgettoSnapsService.swift; sourceTree = "<group>"; };
 		112A893BD9353D23D809A9EF /* CoreDownloadSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CoreDownloadSheet.swift; sourceTree = "<group>"; };
 		120784B10F8B6A3BCD6618F9 /* SaveDirectoryBridge.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SaveDirectoryBridge.h; sourceTree = "<group>"; };
 		1243D5911A71789DFD45D8CA /* SaveDirectoryManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SaveDirectoryManager.swift; sourceTree = "<group>"; };
@@ -518,6 +519,7 @@
 		264FB90DD6CD26D513E6C58C /* N64Runner.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = N64Runner.swift; sourceTree = "<group>"; };
 		2675119555C6336734D8ADD9 /* Sega - Game Gear.dat */ = {isa = PBXFileReference; lastKnownFileType = text; path = "Sega - Game Gear.dat"; sourceTree = "<group>"; };
 		26D95B905CF18035469C4C59 /* CRTFilter.metal */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.metal; path = CRTFilter.metal; sourceTree = "<group>"; };
+		26E4F7172EFA2D0F141FFA63 /* InputCaptureManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InputCaptureManager.swift; sourceTree = "<group>"; };
 		26FDC27EC587284954CC9370 /* supervision@132w.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "supervision@132w.png"; sourceTree = "<group>"; };
 		277669A6BC99D1D9EB64F0F1 /* CheatComponents.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CheatComponents.swift; sourceTree = "<group>"; };
 		283FFD6FCF919837FDB9BB39 /* mame_rom_data.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = mame_rom_data.json; sourceTree = "<group>"; };
@@ -755,6 +757,7 @@
 		AAF6B6A776725D5CDA965EBB /* AchievementListView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AchievementListView.swift; sourceTree = "<group>"; };
 		ABE60205F14183C120DDC8AA /* DesignSystem.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DesignSystem.swift; sourceTree = "<group>"; };
 		AC76D35E66386E6C5D242961 /* GenrePickerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GenrePickerView.swift; sourceTree = "<group>"; };
+		ACC607903568B8A010CB23C1 /* RetroKeycodeMapper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RetroKeycodeMapper.swift; sourceTree = "<group>"; };
 		ACE37A7C1452E07BFBF3FE1F /* CPET.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = CPET.png; sourceTree = "<group>"; };
 		ADE34CAD80144C808D1FC81D /* OPENBOR.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = OPENBOR.png; sourceTree = "<group>"; };
 		AE2C09D3C56810B2B9CCD08F /* LibretroGlobals.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; path = LibretroGlobals.mm; sourceTree = "<group>"; };
@@ -773,6 +776,7 @@
 		B54516F131621A68EEC7EBC0 /* MAMEDependencyService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MAMEDependencyService.swift; sourceTree = "<group>"; };
 		B5B1D330F958A092AFBD96F0 /* MEGADUCK.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = MEGADUCK.png; sourceTree = "<group>"; };
 		B5CA00A8090C98179839D7C0 /* NEOCD.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = NEOCD.png; sourceTree = "<group>"; };
+		B5D30E06BD1B8444F1AC5E41 /* MAMEGenreService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MAMEGenreService.swift; sourceTree = "<group>"; };
 		B5E3E5DB793CCE1800B8C7BE /* GenreSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GenreSettingsView.swift; sourceTree = "<group>"; };
 		B624916CC58B4F2C2A93E827 /* GameDBLookupResult.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GameDBLookupResult.swift; sourceTree = "<group>"; };
 		B6CE8DDABCE1ABFA58C62123 /* Shader.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Shader.swift; sourceTree = "<group>"; };
@@ -832,11 +836,7 @@
 		D9CE94667031F54D1573ACBE /* pce@132w.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "pce@132w.png"; sourceTree = "<group>"; };
 		DB371ABEE63BE1D87FA4114E /* ScaleSmooth.metal */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.metal; path = ScaleSmooth.metal; sourceTree = "<group>"; };
 		DC11E976179410D451158A7A /* AMIGA.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = AMIGA.png; sourceTree = "<group>"; };
-		DD192ED22FA20AFD00CC543D /* InputCaptureManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InputCaptureManager.swift; sourceTree = "<group>"; };
-		DD192ED32FA20AFD00CC543D /* RetroKeycodeMapper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RetroKeycodeMapper.swift; sourceTree = "<group>"; };
-		DD192ED72FA20B0900CC543D /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
-		DD192ED92FA24E2A00CC543D /* MAMEGenreService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MAMEGenreService.swift; sourceTree = "<group>"; };
-		DD192EDB2FA24E5400CC543D /* ProgettoSnapsService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProgettoSnapsService.swift; sourceTree = "<group>"; };
+		DD1932442FA2E10800CC543D /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		DD476D63A6BB92961004D98F /* GitHubAPIModels.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GitHubAPIModels.swift; sourceTree = "<group>"; };
 		DDA440915145AB1C4D850872 /* LogManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LogManager.swift; sourceTree = "<group>"; };
 		DDCACEF2DA4CC526B3582217 /* ps@132w.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "ps@132w.png"; sourceTree = "<group>"; };
@@ -1193,8 +1193,8 @@
 		445D67DF28C52386025D5CD5 /* Services */ = {
 			isa = PBXGroup;
 			children = (
-				DD192ED92FA24E2A00CC543D /* MAMEGenreService.swift */,
 				B54516F131621A68EEC7EBC0 /* MAMEDependencyService.swift */,
+				B5D30E06BD1B8444F1AC5E41 /* MAMEGenreService.swift */,
 				D8AD6A0A6955FFF8B544B69B /* MAMEImportService.swift */,
 				BE01BAE4649B80275FA1BBAB /* MAMEUnifiedService.swift */,
 				C8150011A3202237E7584D4C /* MAMEVerificationService.swift */,
@@ -1423,7 +1423,7 @@
 		6030CD98AFCCAA9A068217A1 /* Resources */ = {
 			isa = PBXGroup;
 			children = (
-				DD192ED72FA20B0900CC543D /* Assets.xcassets */,
+				DD1932442FA2E10800CC543D /* Assets.xcassets */,
 				993EF4980E6D59693590061E /* Config */,
 				35AF3E1D0EA8DD7BDA67C06A /* Data */,
 				0CBD37D03C917E1671224137 /* EmulatorIcons */,
@@ -1607,7 +1607,6 @@
 		9F2C69E1B66B505D39D78A65 /* Services */ = {
 			isa = PBXGroup;
 			children = (
-				DD192EDB2FA24E5400CC543D /* ProgettoSnapsService.swift */,
 				7BC9EB4BBB881879FB8BA782 /* BoxArtPreloaderService.swift */,
 				2A96AAF72C7F18D45D235347 /* BoxArtService.swift */,
 				9DA4F37BD28429972F9DC82D /* CheatAutoLoader.swift */,
@@ -1627,6 +1626,7 @@
 				6DD7CC96F0ABCF2CCDC217E4 /* MetadataSyncCoordinator.swift */,
 				6B6CDE91A09406AE67921521 /* NotificationService.swift */,
 				BCF5F2A331B01D152BE6194C /* PPSSPAssetService.swift */,
+				112A0F3619B6C52925987F75 /* ProgettoSnapsService.swift */,
 				F21660AD9FFF6D840095815C /* RetroAchievementsService.swift */,
 				9367BEFF9A7137645C911103 /* ROMIdentifier.swift */,
 				C30A37AE0117299098C190A1 /* ROMIdentifierService.swift */,
@@ -1720,12 +1720,21 @@
 		AECB9CA72CA854445BE4CB7E /* Core */ = {
 			isa = PBXGroup;
 			children = (
-				DD192ED42FA20AFD00CC543D /* InputCapture */,
 				AE83B388D11F6EB80FFF6EB1 /* Engine */,
+				B027B71E3F4DEA5643F3D368 /* InputCapture */,
 				A91B50FB81A02744966462D0 /* Models */,
 				46BDCE9B569EB867076866AC /* Shaders */,
 			);
 			path = Core;
+			sourceTree = "<group>";
+		};
+		B027B71E3F4DEA5643F3D368 /* InputCapture */ = {
+			isa = PBXGroup;
+			children = (
+				26E4F7172EFA2D0F141FFA63 /* InputCaptureManager.swift */,
+				ACC607903568B8A010CB23C1 /* RetroKeycodeMapper.swift */,
+			);
+			path = InputCapture;
 			sourceTree = "<group>";
 		};
 		B25EB5586EA89D564C31571B /* MAME */ = {
@@ -1870,15 +1879,6 @@
 			path = UI;
 			sourceTree = "<group>";
 		};
-		DD192ED42FA20AFD00CC543D /* InputCapture */ = {
-			isa = PBXGroup;
-			children = (
-				DD192ED22FA20AFD00CC543D /* InputCaptureManager.swift */,
-				DD192ED32FA20AFD00CC543D /* RetroKeycodeMapper.swift */,
-			);
-			path = InputCapture;
-			sourceTree = "<group>";
-		};
 		DFFF9FFBB78EA64551D01B64 /* Products */ = {
 			isa = PBXGroup;
 			children = (
@@ -2005,11 +2005,6 @@
 			attributes = {
 				BuildIndependentTargetsInParallel = YES;
 				LastUpgradeCheck = 1500;
-				TargetAttributes = {
-					C342292B3D93C9DCE165854D = {
-						ProvisioningStyle = Automatic;
-					};
-				};
 			};
 			buildConfigurationList = 6E82A081688B36841B054CBC /* Build configuration list for PBXProject "TruchiEmu" */;
 			developmentRegion = en;
@@ -2058,7 +2053,7 @@
 				89569FC0E343B9ADAA4377E0 /* Atari - 7800.dat in Resources */,
 				80302B82D3E5BDD2727925C2 /* Atari - Jaguar.dat in Resources */,
 				D8F34291962A372509308FEC /* Atari - Lynx.dat in Resources */,
-				DD192ED82FA20B0900CC543D /* Assets.xcassets in Resources */,
+				DD1932452FA2E10800CC543D /* Assets.xcassets in Resources */,
 				DB0C28440F1BD8B86D3B7EFE /* Bandai - WonderSwan Color.dat in Resources */,
 				7A1EEE1CD4955A4C7B4BA1CF /* Bandai - WonderSwan.dat in Resources */,
 				86E1C292EC5C940FF5103A8F /* C64.png in Resources */,
@@ -2364,7 +2359,6 @@
 				487D415E3A60D766E5C55314 /* DetailBoxArtComponents.swift in Sources */,
 				92931B26614CCBD73F498965 /* DetailSection.swift in Sources */,
 				0448CE19B61670132722282B /* DisplaySettingsView.swift in Sources */,
-				DD192EDA2FA24E2A00CC543D /* MAMEGenreService.swift in Sources */,
 				FC372B713FBF4FAF94510511 /* DotMatrixLCD.metal in Sources */,
 				A25031037FC355CB33AC84F3 /* EnvironmentDiagnostics.swift in Sources */,
 				10A813FD9AC06B780E931816 /* FilterChipView.swift in Sources */,
@@ -2385,8 +2379,6 @@
 				886D1903700E00DE7F11523C /* GameNameFormatter.swift in Sources */,
 				27F9277272450FDAE20B690D /* GameOverlayToolbar.swift in Sources */,
 				CC4C936CF4AAB9EBE49E8F47 /* GeneralSettingsView.swift in Sources */,
-				DD192ED52FA20AFD00CC543D /* InputCaptureManager.swift in Sources */,
-				DD192ED62FA20AFD00CC543D /* RetroKeycodeMapper.swift in Sources */,
 				5DC85C85056E986328B9BC36 /* GenreManager.swift in Sources */,
 				749F189B703826A160DAAD4E /* GenrePickerView.swift in Sources */,
 				D4A5C3EA0A548DBEF9EDE4AE /* GenreSettingsView.swift in Sources */,
@@ -2395,6 +2387,7 @@
 				BCF6E7FD69063759D0607C29 /* HardcoreModeManager.swift in Sources */,
 				4596D0538A126CE340A86004 /* Header.swift in Sources */,
 				D3BF624E6D643A9C9E0976FF /* ImageCache.swift in Sources */,
+				2B2B0A84C8FA0EC3F94F0ADB /* InputCaptureManager.swift in Sources */,
 				D1987AB001C52B7301D88FF8 /* LaunchBoxGameMetadata.swift in Sources */,
 				C18E5BE81E68BF2BD3405575 /* LaunchBoxGamesDBService.swift in Sources */,
 				A88B029EDF9B982AD0A805D9 /* LibraryAnimations.swift in Sources */,
@@ -2420,6 +2413,7 @@
 				6A51B989E35F07D719A17594 /* LottesCRT.metal in Sources */,
 				FE4BE8535C891352EBF145CC /* MAMEDependencyService.swift in Sources */,
 				C8B7E5E0C4BAC2F30CAF5DC5 /* MAMEDependencyStatusView.swift in Sources */,
+				936CB95671EC28D1BF799322 /* MAMEGenreService.swift in Sources */,
 				31FC1BD5BB58A71829C03B7F /* MAMEImportService.swift in Sources */,
 				CEDEE26F9187602FC4A1BEEA /* MAMEMissingROMsAlert.swift in Sources */,
 				67C743A310732131F33EF222 /* MAMEModels.swift in Sources */,
@@ -2440,6 +2434,7 @@
 				802243197EC4A31177770310 /* PPSSPAssetService.swift in Sources */,
 				0731BAFCEC49AC5E62BA3474 /* Passthrough.metal in Sources */,
 				97532B79D1C03B1230BDB004 /* PersistenceMigrationFlag.swift in Sources */,
+				791402ABB260460A0380E845 /* ProgettoSnapsService.swift in Sources */,
 				18F76F5459F43096381CEEF0 /* RAGameCacheEntry.swift in Sources */,
 				EDE4BB61E389A4300B2DFCC8 /* ROM.swift in Sources */,
 				D3BDBD850AC3E23AE43A266B /* ROMIdentifier.swift in Sources */,
@@ -2452,6 +2447,7 @@
 				562FE8460EC832F3319BAB35 /* ResourceCacheRepository.swift in Sources */,
 				29210C88A814413EAAA45AA1 /* RetroAchievementsService.swift in Sources */,
 				452E0E7F7A9630C725D08395 /* RetroAchievementsSettingsView.swift in Sources */,
+				1D74BFC265809AEF5ED3C30F /* RetroKeycodeMapper.swift in Sources */,
 				9D1FE1B871BDDD7FC953E9FF /* RunningGamesTracker.swift in Sources */,
 				C59DDF27D423766DAF059D49 /* SNESRunner.swift in Sources */,
 				415C748D5C83A34B12C70590 /* SaveDirectoriesSection.swift in Sources */,
@@ -2471,7 +2467,6 @@
 				45B66EECA434F3285FEC8AED /* Shader.swift in Sources */,
 				6ABC82537DE8675B429B507F /* ShaderGameOverrideView.swift in Sources */,
 				E7DE528E6B1FE12752FF94F3 /* ShaderManager.swift in Sources */,
-				DD192EDC2FA24E5400CC543D /* ProgettoSnapsService.swift in Sources */,
 				E213A2100429C6C27FBF0C30 /* ShaderPreset.swift in Sources */,
 				CA01FA6DBAD5615E6EE293E8 /* ShaderPresetPickerView.swift in Sources */,
 				BDC87CD59F17869B68CFE5EF /* ShaderSection.swift in Sources */,
@@ -2531,8 +2526,9 @@
 				CLANG_CXX_LIBRARY = "libc++";
 				CLANG_ENABLE_OBJC_ARC = YES;
 				CODE_SIGN_ENTITLEMENTS = TruchiEmu/Resources/TruchiEmu.entitlements;
-				CODE_SIGN_STYLE = Automatic;
+				CODE_SIGN_STYLE = Manual;
 				COMBINE_HIDPI_IMAGES = YES;
+				DEVELOPMENT_TEAM = "";
 				ENABLE_HARDENED_RUNTIME = NO;
 				GCC_C_LANGUAGE_STANDARD = gnu17;
 				INFOPLIST_FILE = TruchiEmu/Resources/Info.plist;
@@ -2559,6 +2555,7 @@
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = com.TruchiEmu.app;
 				PRODUCT_NAME = TruchiEmu;
+				PROVISIONING_PROFILE_SPECIFIER = "";
 				SDKROOT = macosx;
 				SWIFT_OBJC_BRIDGING_HEADER = "TruchiEmu/Core/Engine/TruchiEmu-Bridging-Header.h";
 				SWIFT_VERSION = 5.9;
@@ -2637,8 +2634,9 @@
 				CLANG_CXX_LIBRARY = "libc++";
 				CLANG_ENABLE_OBJC_ARC = YES;
 				CODE_SIGN_ENTITLEMENTS = TruchiEmu/Resources/TruchiEmu.entitlements;
-				CODE_SIGN_STYLE = Automatic;
+				CODE_SIGN_STYLE = Manual;
 				COMBINE_HIDPI_IMAGES = YES;
+				DEVELOPMENT_TEAM = "";
 				ENABLE_HARDENED_RUNTIME = NO;
 				GCC_C_LANGUAGE_STANDARD = gnu17;
 				INFOPLIST_FILE = TruchiEmu/Resources/Info.plist;
@@ -2665,6 +2663,7 @@
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = com.TruchiEmu.app;
 				PRODUCT_NAME = TruchiEmu;
+				PROVISIONING_PROFILE_SPECIFIER = "";
 				SDKROOT = macosx;
 				SWIFT_OBJC_BRIDGING_HEADER = "TruchiEmu/Core/Engine/TruchiEmu-Bridging-Header.h";
 				SWIFT_VERSION = 5.9;

@@ -4,6 +4,8 @@
 #import "SaveDirectoryBridge.h"
 #import "CoreOverrideBridge.h"
 #import <dlfcn.h>
+#include <unordered_map>
+#include <string>
 
 int16_t g_input_state[32] = {0};
 int16_t g_analog_state[2][2] = {0};
@@ -145,38 +147,33 @@ bool bridge_environment(unsigned cmd, void *data) {
   case RETRO_ENVIRONMENT_GET_VARIABLE: {
     struct retro_variable *var = (struct retro_variable *)data;
     if (var && var->key) {
+        static std::unordered_map<std::string, std::string> s_varCache;
 
-    // Apply core-specific overrides from CoreOverrideService
-    if (var && var->key && g_coreID) {
-        bridge_log_printf(RETRO_LOG_DEBUG, "[Override-DGB] Checking override for core: %s, key: %s", [((NSString *)g_coreID) UTF8String], var->key);
-
-        const char* overrideValue = core_override_get_value([((NSString *)g_coreID) UTF8String], var->key);
-        if (overrideValue) {
-            static __thread char g_overrideBuf[512];
-            strncpy(g_overrideBuf, overrideValue, sizeof(g_overrideBuf) - 1);
-            g_overrideBuf[sizeof(g_overrideBuf) - 1] = '\0';
-            var->value = g_overrideBuf;
-            bridge_log_printf(RETRO_LOG_INFO, "[Override-JSON] %s = %s", var->key, var->value);
-            return true;
-        } else {
-            bridge_log_printf(RETRO_LOG_DEBUG, "[Override-DGB] No JSON override for %s", var->key);
+        // Apply core-specific overrides from CoreOverrideService
+        if (g_coreID) {
+            const char* overrideValue = core_override_get_value([((NSString *)g_coreID) UTF8String], var->key);
+            if (overrideValue) {
+                s_varCache[var->key] = overrideValue;
+                var->value = s_varCache[var->key].c_str();
+                bridge_log_printf(RETRO_LOG_INFO, "[Override-JSON] %s = %s", var->key, var->value);
+                return true;
+            } else {
+                bridge_log_printf(RETRO_LOG_DEBUG, "[Override-DGB] No JSON override for %s", var->key);
+            }
         }
-    }
-    
-    // Apply registered option values from Swift layer
-    static __thread char g_varBuf[512];
-    if (g_optValues && g_optValues.count > 0) {
-        NSString *keyStr =[NSString stringWithUTF8String:var->key];
-        NSString *valStr = g_optValues[keyStr];
-        if (valStr && valStr.length > 0) {
-            strncpy(g_varBuf, valStr.UTF8String, sizeof(g_varBuf) - 1);
-            g_varBuf[sizeof(g_varBuf) - 1] = '\0';
-            var->value = g_varBuf;
-            return true;
+        
+        // Apply registered option values from Swift layer
+        if (g_optValues && g_optValues.count > 0) {
+            NSString *keyStr = [NSString stringWithUTF8String:var->key];
+            NSString *valStr = g_optValues[keyStr];
+            if (valStr && valStr.length > 0) {
+                s_varCache[var->key] = valStr.UTF8String;
+                var->value = s_varCache[var->key].c_str();
+                return true;
+            }
         }
-    }
-    
-    var->value = NULL;
+        
+        var->value = NULL;
     }
     return false;
   }

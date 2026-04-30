@@ -25,6 +25,10 @@
 		<key>NSAllowsArbitraryLoads</key>
 		<true/>
 	</dict>
+	<key>NSDocumentsFolderUsageDescription</key>
+	<string>TruchiEmu needs access to Documents to store emulator saves and configuration.</string>
+	<key>NSDownloadsFolderUsageDescription</key>
+	<string>TruchiEmu needs access to Downloads to load ROMs and save states.</string>
 	<key>NSHighResolutionCapable</key>
 	<true/>
 	<key>NSHumanReadableCopyright</key>
