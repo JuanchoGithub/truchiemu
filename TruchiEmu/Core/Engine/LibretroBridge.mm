@@ -192,7 +192,20 @@ static int16_t input_state_stub(unsigned port, unsigned device, unsigned index, 
     memset(&gi, 0, sizeof(gi));
     if (romPath != nil) {
         bridge_log_printf(RETRO_LOG_INFO, "Discovery: Loading content: %@", romPath.lastPathComponent);
-        gi.path = [romPath UTF8String];
+        // Create a persistent copy of the UTF8 string to prevent dangling pointer
+        const char *utf8Path = [romPath UTF8String];
+        if (utf8Path) {
+            size_t pathLength = strlen(utf8Path) + 1;
+            gi.path = (char *)malloc(pathLength);
+            if (gi.path) {
+                memcpy((void *)gi.path, utf8Path, pathLength);
+            } else {
+                bridge_log_printf(RETRO_LOG_ERROR, "Discovery: Failed to allocate memory for ROM path");
+                gi.path = NULL;
+            }
+        } else {
+            gi.path = NULL;
+        }
     }
 
     BOOL gameLoaded = impl->_retro_load_game(&gi);
@@ -242,6 +255,12 @@ if (gameLoaded) {
         // This triggers internal cleanup. We don't call context_destroy manually
         // afterwards because it leads to a double-free crash in PPSSPP.
         impl->_retro_unload_game();
+        
+        // Free the persistent copy of the ROM path to prevent memory leak
+        if (gi.path) {
+            free((void *)gi.path);
+            gi.path = NULL;
+        }
         
         // Wait for IoManager and UPnP threads to exit
         [NSThread sleepForTimeInterval:0.2];

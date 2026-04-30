@@ -468,7 +468,7 @@ class CoreManager: ObservableObject {
     
     // MARK: - Download (user must authorize via pendingDownload)
     
-    func downloadCore(_ info: RemoteCoreInfo) async {
+    func downloadCore(_ info: RemoteCoreInfo, romPath: String? = nil) async {
         LoggerService.debug(category: "CoreManager", "Starting download: \(info.coreID) from \(info.downloadURL)")
 
         let BiosDownloaderService = BiosDownloader()
@@ -576,10 +576,10 @@ class CoreManager: ObservableObject {
       installedCores.append(newCore)
     }
     
-    // Immediately load the core into the bridge to prevent race condition
-    // This ensures the Objective-C layer knows about the new core right away
-    LoggerService.debug(category: "CoreManager", "Loading core into bridge: \(dylibDest.path)")
-    LibretroBridgeSwift.loadCoreForOptions(dylibDest.path, coreID: info.coreID, romPath: nil)
+ // Immediately load the core into the bridge to prevent race condition
+ // This ensures the Objective-C layer knows about the new core right away
+ LoggerService.debug(category: "CoreManager", "Loading core into bridge: \(dylibDest.path)")
+ LibretroBridgeSwift.loadCoreForOptions(dylibDest.path, coreID: info.coreID, romPath: romPath)
     
     LoggerService.debug(category: "CoreManager", "Installed cores: \(installedCores)")
     saveInstalledCores()

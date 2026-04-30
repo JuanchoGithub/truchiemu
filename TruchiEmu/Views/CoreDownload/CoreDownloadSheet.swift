@@ -477,8 +477,9 @@ struct CoreDownloadSheet: View {
                 }
             }()
 
-            // Download the core
-            await coreManager.downloadCore(remote)
+ // Download the core (with ROM path for safe introspection)
+ let romPath = pendingROM?.path.path
+ await coreManager.downloadCore(remote, romPath: romPath)
 
             if isMAME {
                 _ = await depsTask
