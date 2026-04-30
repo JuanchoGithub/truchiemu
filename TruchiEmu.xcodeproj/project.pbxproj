@@ -131,7 +131,6 @@
 		4066B00A028CB072D858AD6B /* MSX2.png in Resources */ = {isa = PBXBuildFile; fileRef = 6187410E8087793214025773 /* MSX2.png */; };
 		4086A0488F4BCB86674B277F /* ATARI5200.png in Resources */ = {isa = PBXBuildFile; fileRef = B44078E0AECA665DAEA958FE /* ATARI5200.png */; };
 		415C748D5C83A34B12C70590 /* SaveDirectoriesSection.swift in Sources */ = {isa = PBXBuildFile; fileRef = DF2042329F720EF6B53E084E /* SaveDirectoriesSection.swift */; };
-		423A0828FF72A21FB35F7865 /* LibretroCallbacks.mm.new in Resources */ = {isa = PBXBuildFile; fileRef = 6CB68376978D5B4D0931E769 /* LibretroCallbacks.mm.new */; };
 		42756557E183E1F20047A790 /* SystemInfo.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F5CE615271A48E5586B5F5A /* SystemInfo.swift */; };
 		432C72199BADE2C292701E17 /* SaveMigrationService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2611034E085B7C5ABC03ACFB /* SaveMigrationService.swift */; };
 		433AEF333D6DB128C5125EA3 /* NAOMI.png in Resources */ = {isa = PBXBuildFile; fileRef = 24F34C2C75CBC27CAFF82647 /* NAOMI.png */; };
@@ -302,7 +301,6 @@
 		A0308F2C1C92B881A7FDF247 /* LibretroBridge.mm in Sources */ = {isa = PBXBuildFile; fileRef = 4D90AF78F9CB2BB5DFA4EA42 /* LibretroBridge.mm */; };
 		A09C8307DE97887156851C76 /* GitHubAPIModels.swift in Sources */ = {isa = PBXBuildFile; fileRef = DD476D63A6BB92961004D98F /* GitHubAPIModels.swift */; };
 		A1C0C58CC5B0490B58568955 /* 7800@132w.png in Resources */ = {isa = PBXBuildFile; fileRef = 6006412EE5B93EFE2FE713E8 /* 7800@132w.png */; };
-		A1C27F63D92CB0F3DA1F7CD0 /* LibretroCallbacks.mm.backup in Resources */ = {isa = PBXBuildFile; fileRef = CBCCCBDE9D3B98DB8F37E26A /* LibretroCallbacks.mm.backup */; };
 		A25031037FC355CB33AC84F3 /* EnvironmentDiagnostics.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6C573244D57BD4CCBD762D0F /* EnvironmentDiagnostics.swift */; };
 		A26ACC8D96E3331141948232 /* SaveDirectoryManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1243D5911A71789DFD45D8CA /* SaveDirectoryManager.swift */; };
 		A28322A5953298E4ADE4B54C /* DINOTHAWR.png in Resources */ = {isa = PBXBuildFile; fileRef = 19BE5184F223C9FB5AAB7A18 /* DINOTHAWR.png */; };
@@ -661,7 +659,6 @@
 		6C4C61168B31EC18C33BE903 /* ResourceCacheRepository.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ResourceCacheRepository.swift; sourceTree = "<group>"; };
 		6C573244D57BD4CCBD762D0F /* EnvironmentDiagnostics.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EnvironmentDiagnostics.swift; sourceTree = "<group>"; };
 		6C6B0BA0A81DA9E4BCBBA1EC /* atarist@132w.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "atarist@132w.png"; sourceTree = "<group>"; };
-		6CB68376978D5B4D0931E769 /* LibretroCallbacks.mm.new */ = {isa = PBXFileReference; lastKnownFileType = text; path = LibretroCallbacks.mm.new; sourceTree = "<group>"; };
 		6D1011120B2354F025D56623 /* CPC.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = CPC.png; sourceTree = "<group>"; };
 		6D2E7590ADE099B0FFD7ADF7 /* Atari - 7800.dat */ = {isa = PBXFileReference; lastKnownFileType = text; path = "Atari - 7800.dat"; sourceTree = "<group>"; };
 		6DD7CC96F0ABCF2CCDC217E4 /* MetadataSyncCoordinator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MetadataSyncCoordinator.swift; sourceTree = "<group>"; };
@@ -812,7 +809,6 @@
 		CAF725CB1D9794720A0059E7 /* ScummVM.dat */ = {isa = PBXFileReference; lastKnownFileType = text; path = ScummVM.dat; sourceTree = "<group>"; };
 		CB1B9C3D41BC2F6BE626F54D /* gbc@132w.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "gbc@132w.png"; sourceTree = "<group>"; };
 		CB274110F7281D8DBC58FA5C /* itv@132w.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "itv@132w.png"; sourceTree = "<group>"; };
-		CBCCCBDE9D3B98DB8F37E26A /* LibretroCallbacks.mm.backup */ = {isa = PBXFileReference; lastKnownFileType = text; path = LibretroCallbacks.mm.backup; sourceTree = "<group>"; };
 		CBFE3A9E877C2D62FEDDB15E /* SetupWizardView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SetupWizardView.swift; sourceTree = "<group>"; };
 		CD2FE1ECA3ADA9DB03225538 /* ATARI800-alt.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "ATARI800-alt.png"; sourceTree = "<group>"; };
 		CE108305F82ABE87D2BE7D7D /* VECTREX.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = VECTREX.png; sourceTree = "<group>"; };
@@ -1692,8 +1688,6 @@
 				67D8E99941A946620FF8D608 /* LibretroBridgeSwift.swift */,
 				2FE49842060623217A4EC976 /* LibretroCallbacks.h */,
 				C0F5DA53816F3DA50BB5CBF4 /* LibretroCallbacks.mm */,
-				CBCCCBDE9D3B98DB8F37E26A /* LibretroCallbacks.mm.backup */,
-				6CB68376978D5B4D0931E769 /* LibretroCallbacks.mm.new */,
 				9351B675335D9BA7F783E15B /* LibretroGlobals.h */,
 				AE2C09D3C56810B2B9CCD08F /* LibretroGlobals.mm */,
 				120784B10F8B6A3BCD6618F9 /* SaveDirectoryBridge.h */,
@@ -2088,8 +2082,6 @@
 				4ABA13771D06AE503D7724CE /* LOWRESNX.png in Resources */,
 				515D1B24DC823EA60E658044 /* LUTRO.png in Resources */,
 				1B1B7F8F93C0331659D10F5A /* LYNX.png in Resources */,
-				A1C27F63D92CB0F3DA1F7CD0 /* LibretroCallbacks.mm.backup in Resources */,
-				423A0828FF72A21FB35F7865 /* LibretroCallbacks.mm.new in Resources */,
 				1995F4AE56BD3E881058DBB3 /* MAME.dat in Resources */,
 				F8CFC020A02C9FFE1F7C80AD /* MAME.png in Resources */,
 				35967BF2295B9DEF7EF76932 /* MAME2003PLUS.png in Resources */,
