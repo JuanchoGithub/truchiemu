@@ -576,10 +576,9 @@ class CoreManager: ObservableObject {
       installedCores.append(newCore)
     }
     
- // Immediately load the core into the bridge to prevent race condition
- // This ensures the Objective-C layer knows about the new core right away
- LoggerService.debug(category: "CoreManager", "Loading core into bridge: \(dylibDest.path)")
- LibretroBridgeSwift.loadCoreForOptions(dylibDest.path, coreID: info.coreID, romPath: romPath)
+// Discover core options immediately after download to make them available as soon as the core is installed
+        LoggerService.debug(category: "CoreManager", "Discovering core options for: \(info.coreID)")
+        await CoreOptionsManager.shared.discoverOptions(for: info.coreID, dylibPath: dylibDest.path, romPath: romPath)
     
     LoggerService.debug(category: "CoreManager", "Installed cores: \(installedCores)")
     saveInstalledCores()
