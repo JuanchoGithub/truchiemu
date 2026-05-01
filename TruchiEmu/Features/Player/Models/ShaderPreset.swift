@@ -319,6 +319,7 @@ ShaderUniform(name: "gridStrength", defaultValue: 0.4, minValue: 0.0, maxValue: 
     ShaderUniform(name: "enableVignette", defaultValue: 1.0, minValue: 0.0, maxValue: 1.0, displayName: "Vignette", type: .toggle),
     ShaderUniform(name: "enableTopography", defaultValue: 1.0, minValue: 0.0, maxValue: 1.0, displayName: "Topography", type: .toggle),
     ShaderUniform(name: "enableColorMatrix", defaultValue: 1.0, minValue: 0.0, maxValue: 1.0, displayName: "Color Matrix", type: .toggle),
+   ShaderUniform(name: "transparencyControl", defaultValue: 0.0, minValue: 0.0, maxValue: 1.0, displayName: "Pixel Transparency"),
 ],
 description: "Game Boy Color with temporal feedback, ghosting, and iridescent LCD effects.",
             recommendedSystems: ["gbc"]
