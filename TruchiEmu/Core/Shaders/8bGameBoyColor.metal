@@ -44,10 +44,11 @@ struct GBCUniforms {
     float lightPositionIndex;
     float lightStrength;
     float shellColorIndex;
-    float gridThicknessDark;
-    float gridThicknessLight;
-    float4 sourceSize;
-    float4 outputSize;
+   float gridThicknessDark;
+   float gridThicknessLight;
+   float4 sourceSize;
+   float4 outputSize;
+   float transparencyControl;
 };
 
 // --- SIMULATION MODULES ---
@@ -181,12 +182,29 @@ float sdRoundRectGBC(float2 p, float2 b, float r) {
 }
 
 float4 renderGBCShell(float2 p, constant GBCUniforms &u) {
-    float2 screenCenter = float2(0.0, -8.0);
-    float2 screenSize = float2(70.0, 52.0);
-    float2 lensCenter = float2(0.0, 3.0);
-    float2 lensSize = float2(83.0, 72.0);
-    float2 lensP = p - lensCenter;
-    float lensSDF = sdRoundRectGBC(lensP, lensSize, 10.0);
+   float2 screenCenter = float2(0.0, -8.0);
+   float2 screenSize = float2(70.0, 52.0);
+   float2 lensCenter = float2(0.0, 3.0);
+   float2 lensSize = float2(83.0, 72.0);
+   
+   // Apply curvature to shell coordinates (warp bottom upward)
+   float curvature = 0.20; // Match screen curvature
+   float2 lensP = p - lensCenter;
+   float2 screenP = p - screenCenter;
+   
+   // Only curve the bottom portion (y > -10 to bottom)
+   if (lensP.y > -10.0) {
+      float t = (lensP.y + 10.0) / (lensSize.y + 10.0); // normalized position [0,1]
+      float curveAmount = curvature * t * (1.0 - t) * 4.0; // Quadratic curve, max at middle
+      lensP.y = lensP.y + curveAmount;
+   }
+   if (screenP.y > -10.0) {
+      float t = (screenP.y + 10.0) / (screenSize.y + 10.0);
+      float curveAmount = curvature * t * (1.0 - t) * 4.0;
+      screenP.y = screenP.y + curveAmount;
+   }
+   
+   float lensSDF = sdRoundRectGBC(lensP, lensSize, 10.0);
     
     if (lensP.y > 45.0) {
         float flare = 12.0 * smoothstep(45.0, 72.0, lensP.y);
@@ -224,17 +242,31 @@ fragment float4 fragment8BitGBC(VertexOut in [[stage_in]],
                                 texture2d<float> frame4 [[texture(4)]],
                                 constant GBCUniforms &u [[buffer(0)]]) {
     
-    if (u.showShell > 0.5) {
-        float scale = min(u.outputSize.x / 165.0, u.outputSize.y / 155.0);
-        float2 p = (in.position.xy - (u.outputSize.xy * 0.5)) / scale;
-        float2 screenCenter = float2(0.0, -8.0);
-        float2 screenSize = float2(70.0, 52.0);
-        float screenSDF = sdRoundRectGBC(p - screenCenter, screenSize, 1.0);
+   if (u.showShell > 0.5) {
+      float scale = min(u.outputSize.x / 165.0, u.outputSize.y / 155.0);
+      float2 p = (in.position.xy - (u.outputSize.xy * 0.5)) / scale;
+      float2 screenCenter = float2(0.0, -8.0);
+      float2 screenSize = float2(70.0, 52.0);
+      
+   // Create gap - outer SDF is screen size, inner is 2 GBC pixels (half of before)
+   float gapSizeUnits = 2.0 * (70.0 / 160.0); // 2 GBC pixels converted to shader units
+   float2 innerScreenSize = screenSize - float2(gapSizeUnits * 2.0);
+   float outerSDF = sdRoundRectGBC(p - screenCenter, screenSize, 1.0);
+   float innerSDF = sdRoundRectGBC(p - screenCenter, innerScreenSize, 1.0);
 
-        if (screenSDF < 0.0) {
-            constexpr sampler samp(coord::normalized, address::clamp_to_edge, filter::linear);
-            float2 uv = (p - (screenCenter - screenSize)) / (screenSize * 2.0);
-            float2 centeredUV = uv - float2(0.5, 0.5);
+   if (outerSDF < 0.0) {
+      // Check if this is the gap area (between outer and inner)
+      if (innerSDF > 0.0) {
+      // Render gap with authentic GBC screen background color
+      float3 gapColor = float3(0.593, 0.622, 0.604); // Authentic GBC screen color (also used for pixel gaps)
+         return float4(gapColor, 1.0);
+      }
+      
+      // Inside inner area - render actual screen content
+         constexpr sampler samp(coord::normalized, address::clamp_to_edge, filter::linear);
+         // Map p coordinates to 0..1 UV across the inner screen area
+         float2 uv = (p - (screenCenter - screenSize)) / (screenSize * 2.0);
+         float2 centeredUV = uv - float2(0.5, 0.5);
             float sqDist = dot(centeredUV, centeredUV);
 
             float3 f0 = frame0.sample(samp, uv).rgb;
@@ -296,13 +328,24 @@ fragment float4 fragment8BitGBC(VertexOut in [[stage_in]],
                 color.r += (1.0 - smoothstep(0.0, 0.15, uv.x)) * 0.015 * flicker;
             }
 
-            if (u.flags & FLAG_JITTER) color += (pcg_hash_gbc(uv * 4000.0 + float(u.frameIndex % 60u) * 0.01) - 0.5) * 0.015;
-            if (u.flags & FLAG_GRAIN) color += (pcg_hash_gbc(uv * 1200.0) - 0.5) * 0.025 + (sin(uv.x * 800.0) * sin(uv.y * 800.0)) * 0.005;
-            if (u.flags & FLAG_VIGNETTE) color *= (1.0 - 0.08 * pow(sqDist, 2.0));
+         if (u.flags & FLAG_JITTER) color += (pcg_hash_gbc(uv * 4000.0 + float(u.frameIndex % 60u) * 0.01) - 0.5) * 0.015;
+         if (u.flags & FLAG_GRAIN) color += (pcg_hash_gbc(uv * 1200.0) - 0.5) * 0.025 + (sin(uv.x * 800.0) * sin(uv.y * 800.0)) * 0.005;
+         if (u.flags & FLAG_VIGNETTE) color *= (1.0 - 0.08 * pow(sqDist, 2.0));
 
-            return float4(color * mix(0.74, 1.0, shadow) * u.brightnessBoost, 1.0);
-        }
-        return renderGBCShell(p, u);
+         float3 finalColor = color * mix(0.74, 1.0, shadow) * u.brightnessBoost;
+         return float4(finalColor, 1.0);
+      }
+      
+      // Apply curvature to shell bottom
+      float2 screenP = p - screenCenter;
+      if (screenP.y > -10.0) {
+         float t = (screenP.y + 10.0) / (screenSize.y + 10.0);
+         float curveAmount = 0.20 * t * (1.0 - t) * 4.0;
+         float2 curvedP = p;
+         curvedP.y = curvedP.y + curveAmount;
+         return renderGBCShell(curvedP, u);
+      }
+      return renderGBCShell(p, u);
     }
 
     // --- CORE EFFECT PIPELINE ---
@@ -359,9 +402,10 @@ fragment float4 fragment8BitGBC(VertexOut in [[stage_in]],
         maskG = smoothstep(thick, 0.0, abs(fract(pCoord) - 0.5).x) * smoothstep(thick, 0.0, abs(fract(pCoord) - 0.5).y);
         float2 sOffset = normalize(centeredUV) * (u.physicalDepth > 0.0 ? u.physicalDepth : 0.22);
         maskS = smoothstep(thick, 0.0, abs(fract(pCoord + sOffset) - 0.5).x) * smoothstep(thick, 0.0, abs(fract(pCoord + sOffset) - 0.5).y);
-    }
+   }
 
-    float3 bg = mix(float3(0.10, 0.10, 0.09), float3(0.20, 0.21, 0.18), maskS) + (sCol * 0.05);
+   // GBC screen background color for authentic pixel gaps
+   float3 bg = mix(float3(0.593, 0.622, 0.604), float3(0.20, 0.21, 0.18), maskS) + (sCol * 0.05);
     float3 final = mix(bg, sCol, maskG * u.dotOpacity + (1.0 - u.dotOpacity)) * 0.65;
 
     if (u.flags & FLAG_NEWTON_RINGS) {

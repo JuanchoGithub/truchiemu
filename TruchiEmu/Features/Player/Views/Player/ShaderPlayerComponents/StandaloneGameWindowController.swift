@@ -1119,10 +1119,11 @@ return false
                                 lightStrength: getUniform("lightStrength", fallback: 0.5),
                                 shellColorIndex: getUniform("shellColorIndex", fallback: 0.0),
                                 gridThicknessDark: getUniform("gridThicknessDark", fallback: 0.2),
-                                gridThicknessLight: getUniform("gridThicknessLight", fallback: 0.1),
-                                sourceSize: SIMD4<Float>(fw, fh, 0, 0),
-                                outputSize: SIMD4<Float>(vpW, vpH, 0, 0)
-                            )
+   gridThicknessLight: getUniform("gridThicknessLight", fallback: 0.1),
+   sourceSize: SIMD4<Float>(fw, fh, 0, 0),
+   outputSize: SIMD4<Float>(vpW, vpH, 0, 0),
+   transparencyControl: getUniform("transparencyControl", fallback: 0.0)
+)
                             enc.setFragmentBytes(&u, length: MemoryLayout<GBCUniforms>.stride, index: 0)
                             // Set all 5 textures: frame0=current, frame1=T-1, frame2=T-2, frame3=T-3, frame4=T-4
                             enc.setFragmentTexture(frameTex, index: 0)

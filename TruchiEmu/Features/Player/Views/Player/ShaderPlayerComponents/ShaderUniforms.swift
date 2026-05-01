@@ -147,10 +147,11 @@ struct GBCUniforms {
     var lightPositionIndex: Float
     var lightStrength: Float
     var shellColorIndex: Float
-    var gridThicknessDark: Float
-    var gridThicknessLight: Float
-    var sourceSize: SIMD4<Float>
-    var outputSize: SIMD4<Float>
+   var gridThicknessDark: Float
+   var gridThicknessLight: Float
+   var sourceSize: SIMD4<Float>
+   var outputSize: SIMD4<Float>
+   var transparencyControl: Float
 }
 
 // ScaleSmooth uniforms - matches ScaleSmoothUniforms in ScaleSmooth.metal
