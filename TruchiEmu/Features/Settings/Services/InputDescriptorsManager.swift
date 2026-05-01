@@ -67,7 +67,20 @@ class InputDescriptorsManager {
             12: .l2,
             13: .r2,
             14: .l3,
-            15: .r3
+            15: .r3,
+            // Analog sticks (mapped from RETRO_DEVICE_ANALOG)
+            // Left stick X: 16=+, 17=-
+            // Left stick Y: 18=+, 19=-
+            // Right stick X: 20=+, 21=-
+            // Right stick Y: 22=+, 23=-
+            16: .lStickRight,
+            17: .lStickLeft,
+            18: .lStickUp,
+            19: .lStickDown,
+            20: .rStickRight,
+            21: .rStickLeft,
+            22: .rStickUp,
+            23: .rStickDown
         ]
 
         for desc in inputDescriptors {

@@ -346,7 +346,11 @@ super.init(window: window)
     
     // MARK: - Normal Launch
     
-    func launch(rom: ROM, coreID: String, slotToLoad: Int? = nil) {
+    func launch(rom: ROM, coreID: String, slotToLoad: Int? = nil, shaderUniformOverrides: [String: Float] = [:]) {
+        // Store shader uniforms for later use in _doLaunch
+        self.pendingShaderUniforms = shaderUniformOverrides
+        LoggerService.info(category: "GameLauncher", "launch() received \(shaderUniformOverrides.count) shader uniforms, key shellColorIndex=\(shaderUniformOverrides["shellColorIndex"] ?? -1)")
+        
         // Check if this same ROM is already running in another window
         if RunningGamesTracker.shared.isRunning(romPath: rom.path.path) {
             RunningGamesTracker.shared.notifyDuplicateLaunch(romName: rom.displayName)
@@ -370,6 +374,9 @@ super.init(window: window)
         }
     }
     
+    // Store pending shader uniforms
+    private var pendingShaderUniforms: [String: Float] = [:]
+    
     private func _doLaunch(rom: ROM, coreID: String, slotToLoad: Int? = nil) {
         // Store ROM reference before launching (used by toolbar + cheat manager)
         runner?.rom = rom
@@ -382,8 +389,11 @@ super.init(window: window)
         // Unpause the metal view and start emulation
         metalView?.isPaused = false
         
-        // Launch the game
-        runner?.launch(rom: rom, coreID: coreID)
+        // Use pending shader uniforms from launch parameters
+        let shaderUniforms = pendingShaderUniforms
+        
+        // Launch the game with current shader uniforms
+        runner?.launch(rom: rom, coreID: coreID, shaderUniformOverrides: shaderUniforms)
 
         // Start input capture for DOS/ScummVM games immediately upon launch
         if let window = window, let systemID = rom.systemID?.lowercased(), (systemID == "dos" || systemID == "scummvm") {
@@ -974,13 +984,14 @@ return false
       let vpW = Float(view.drawableSize.width)
       let vpH = Float(view.drawableSize.height)
       let time = Float(CACurrentMediaTime().truncatingRemainder(dividingBy: 100))
-                        let fragmentName = getFragmentFunctionName()
-                        
-                         // Helper: get a uniform value from the thread-safe snapshot
-                         func getUniform(_ name: String, fallback: Float) -> Float {
-                             let snapshot = ShaderManager.shared.getUniformSnapshot()
-                             return snapshot[name] ?? fallback
-                         }
+let fragmentName = getFragmentFunctionName()
+                         LoggerService.info(category: "Shaders", "Using fragment: \(fragmentName)")
+                         
+                          // Helper: get a uniform value from the thread-safe snapshot
+                          func getUniform(_ name: String, fallback: Float) -> Float {
+                              let snapshot = ShaderManager.shared.getUniformSnapshot()
+                              return snapshot[name] ?? fallback
+                          }
 
                         enc.setRenderPipelineState(pipeline)
                         enc.setFragmentTexture(frameTex, index: 0)
@@ -1086,19 +1097,31 @@ return false
                             let fw = Float(frameTex.width)
                             let fh = Float(frameTex.height)
                             let gw = getUniform("ghostWeights", fallback: 0.45)
-                            // Compute flags from enable toggles
-                            var flags: UInt32 = 0
-                            if getUniform("enableGhost", fallback: 1.0) > 0.5 { flags |= 1 << 0 }  // FLAG_GHOSTING
-                            if getUniform("enableGrid", fallback: 1.0) > 0.5 { flags |= 1 << 1 }   // FLAG_GRID
-                            if getUniform("enableAberration", fallback: 1.0) > 0.5 { flags |= 1 << 2 }  // FLAG_ABERRATION
-                            if getUniform("enableBleed", fallback: 1.0) > 0.5 { flags |= 1 << 3 }   // FLAG_BLEED
-                            if getUniform("enableNewtonRings", fallback: 1.0) > 0.5 { flags |= 1 << 4 }  // FLAG_NEWTON_RINGS
-                            if getUniform("enableJitter", fallback: 1.0) > 0.5 { flags |= 1 << 5 }   // FLAG_JITTER
-                            if getUniform("enableReflection", fallback: 1.0) > 0.5 { flags |= 1 << 6 }  // FLAG_REFLECTION
-                            if getUniform("enableGrain", fallback: 1.0) > 0.5 { flags |= 1 << 7 }   // FLAG_GRAIN
-                            if getUniform("enableVignette", fallback: 1.0) > 0.5 { flags |= 1 << 8 }  // FLAG_VIGNETTE
-                            if getUniform("enableTopography", fallback: 1.0) > 0.5 { flags |= 1 << 9 } // FLAG_TOPOGRAPHY
-                            if getUniform("enableColorMatrix", fallback: 1.0) > 0.5 { flags |= 1 << 10 } // FLAG_COLOR_MATRIX
+   // Compute flags from enable toggles
+   var flags: UInt32 = 0
+   let ghostEnabled = getUniform("enableGhost", fallback: 1.0) > 0.5
+   let gridEnabled = getUniform("enableGrid", fallback: 1.0) > 0.5
+   let aberrationEnabled = getUniform("enableAberration", fallback: 1.0) > 0.5
+   let bleedEnabled = getUniform("enableBleed", fallback: 1.0) > 0.5
+   let newtonRingsEnabled = getUniform("enableNewtonRings", fallback: 1.0) > 0.5
+   let jitterEnabled = getUniform("enableJitter", fallback: 1.0) > 0.5
+   let reflectionEnabled = getUniform("enableReflection", fallback: 1.0) > 0.5
+   let grainEnabled = getUniform("enableGrain", fallback: 1.0) > 0.5
+   let vignetteEnabled = getUniform("enableVignette", fallback: 1.0) > 0.5
+   let topographyEnabled = getUniform("enableTopography", fallback: 1.0) > 0.5
+   let colorMatrixEnabled = getUniform("enableColorMatrix", fallback: 1.0) > 0.5
+   if ghostEnabled { flags |= 1 << 0 } // FLAG_GHOSTING
+   if gridEnabled { flags |= 1 << 1 } // FLAG_GRID
+   if aberrationEnabled { flags |= 1 << 2 } // FLAG_ABERRATION
+   if bleedEnabled { flags |= 1 << 3 } // FLAG_BLEED
+   if newtonRingsEnabled { flags |= 1 << 4 } // FLAG_NEWTON_RINGS
+   if jitterEnabled { flags |= 1 << 5 } // FLAG_JITTER
+   if reflectionEnabled { flags |= 1 << 6 } // FLAG_REFLECTION
+   if grainEnabled { flags |= 1 << 7 } // FLAG_GRAIN
+   if vignetteEnabled { flags |= 1 << 8 } // FLAG_VIGNETTE
+   if topographyEnabled { flags |= 1 << 9 } // FLAG_TOPOGRAPHY
+   if colorMatrixEnabled { flags |= 1 << 10 } // FLAG_COLOR_MATRIX
+   LoggerService.info(category: "Shaders", "GBC flags: ghost=\(ghostEnabled) grid=\(gridEnabled) aberration=\(aberrationEnabled) bleed=\(bleedEnabled) newtonRings=\(newtonRingsEnabled) jitter=\(jitterEnabled) reflection=\(reflectionEnabled) grain=\(grainEnabled) vignette=\(vignetteEnabled) topography=\(topographyEnabled) colorMatrix=\(colorMatrixEnabled) -> flags=\(flags)")
                             var u = GBCUniforms(
                                 dotOpacity: getUniform("dotOpacity", fallback: 0.85),
                                 specularShininess: getUniform("specularShininess", fallback: 8.0),
@@ -1107,22 +1130,19 @@ return false
                                 ghostingWeight: gw,
                                 frameIndex: frameCounter,
                                 flags: flags,
-                                gridStrength: getUniform("gridStrength", fallback: 0.7),
-                                pixelSeparation: getUniform("pixelSeparation", fallback: 0.5),
                                 brightnessBoost: getUniform("brightnessBoost", fallback: 1.0),
                                 showShell: getUniform("showShell", fallback: 1.0),
-                                showStrip: getUniform("showStrip", fallback: 1.0),
-                                showLens: getUniform("showLens", fallback: 1.0),
-                                showText: getUniform("showText", fallback: 1.0),
-                                showLED: getUniform("showLED", fallback: 1.0),
                                 lightPositionIndex: getUniform("lightPositionIndex", fallback: 0.0),
-                                lightStrength: getUniform("lightStrength", fallback: 0.5),
-                                shellColorIndex: getUniform("shellColorIndex", fallback: 0.0),
+                                lightStrength: getUniform("lightStrength", fallback: 1.0),
+                                shellColorIndex: {
+                                let val = getUniform("shellColorIndex", fallback: 0.0)
+                                LoggerService.info(category: "Shaders", "GBC shellColorIndex=\(val)")
+                                return val
+                            }(),
                                 gridThicknessDark: getUniform("gridThicknessDark", fallback: 0.2),
-   gridThicknessLight: getUniform("gridThicknessLight", fallback: 0.1),
-   sourceSize: SIMD4<Float>(fw, fh, 0, 0),
-   outputSize: SIMD4<Float>(vpW, vpH, 0, 0),
-   transparencyControl: getUniform("transparencyControl", fallback: 0.0)
+                                gridThicknessLight: getUniform("gridThicknessLight", fallback: 0.1),
+                                sourceSize: SIMD4<Float>(fw, fh, 0, 0),
+                                outputSize: SIMD4<Float>(vpW, vpH, 0, 0)
 )
                             enc.setFragmentBytes(&u, length: MemoryLayout<GBCUniforms>.stride, index: 0)
                             // Set all 5 textures: frame0=current, frame1=T-1, frame2=T-2, frame3=T-3, frame4=T-4

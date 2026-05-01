@@ -417,8 +417,9 @@ struct GameDetailView: View {
 
         isLaunchingGame = true
         let freshROM = library.roms.first { $0.id == currentROM.id } ?? currentROM
+        let currentShaderUniforms = freshROM.settings.shaderUniformOverrides
         Task {
-            await gameLauncher.launchGame(rom: freshROM, coreID: cid, slotToLoad: slotToLoad, library: library) { _ in
+            await gameLauncher.launchGame(rom: freshROM, coreID: cid, slotToLoad: slotToLoad, library: library, shaderUniformOverrides: currentShaderUniforms) { _ in
                 self.isLaunchingGame = false
             }
         }

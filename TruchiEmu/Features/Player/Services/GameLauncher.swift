@@ -193,7 +193,7 @@ class GameLauncher: ObservableObject {
         activeControllers[rom.id] = controller
         
         // Launch the game (window will be shown by controller when ready)
-        controller.launch(rom: rom, coreID: coreID, slotToLoad: slotToLoad)
+        controller.launch(rom: rom, coreID: coreID, slotToLoad: slotToLoad, shaderUniformOverrides: config.shaderUniformOverrides)
         
 // Cleanup
         isLaunching = false
@@ -207,10 +207,15 @@ class GameLauncher: ObservableObject {
     
     // Apply all launch settings before the game starts
     private func applyLaunchConfiguration(_ config: LaunchConfig) {
-        // 1. Apply shader preset
+        // 1. Apply shader preset - only if different from current to avoid resetting uniforms
+        let currentPresetID = ShaderManager.shared.activePreset.id
         if let preset = ShaderPreset.preset(id: config.shaderPresetID), !config.shaderPresetID.isEmpty {
-            ShaderManager.shared.activatePreset(preset)
-            LoggerService.debug(category: "GameLauncher", "Activated shader: \(preset.name)")
+            if config.shaderPresetID != currentPresetID {
+                ShaderManager.shared.activatePreset(preset)
+                LoggerService.debug(category: "GameLauncher", "Activated shader: \(preset.name)")
+            } else {
+                LoggerService.debug(category: "GameLauncher", "Shader already active: \(preset.name)")
+            }
         } else {
             // If no shader is specified, we must explicitly reset the manager to prevent "leaking" the last used shader
             ShaderManager.shared.resetToDefault()
@@ -223,7 +228,6 @@ class GameLauncher: ObservableObject {
             for (name, value) in config.shaderUniformOverrides {
                 ShaderManager.shared.updateUniform(name, value: value)
             }
-            LoggerService.debug(category: "GameLauncher", "Applied \(config.shaderUniformOverrides.count) shader uniform override(s): \(config.shaderUniformOverrides)")
         }
         
         // 2. Apply core options (persisted overrides are loaded automatically by the bridge)

@@ -242,7 +242,7 @@ class EmulatorRunner: ObservableObject, @unchecked Sendable {
 
 
     @MainActor
-    func launch(rom: ROM, coreID: String) {
+    func launch(rom: ROM, coreID: String, shaderUniformOverrides: [String: Float] = [:]) {
         if findCoreLib(coreID: coreID) == nil {
             LoggerService.error(category: "Runner", "Core dylib not found: \(coreID)")
             isRunning = false

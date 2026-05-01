@@ -33,22 +33,15 @@ struct GBCUniforms {
     float ghostingWeight;
     uint  frameIndex;
     uint  flags;
-    float gridStrength;
-    float pixelSeparation;
     float brightnessBoost;
     float showShell;
-    float showStrip;
-    float showLens;
-    float showText;
-    float showLED;
     float lightPositionIndex;
     float lightStrength;
     float shellColorIndex;
-   float gridThicknessDark;
-   float gridThicknessLight;
-   float4 sourceSize;
-   float4 outputSize;
-   float transparencyControl;
+    float gridThicknessDark;
+    float gridThicknessLight;
+    float4 sourceSize;
+    float4 outputSize;
 };
 
 // --- SIMULATION MODULES ---
@@ -310,8 +303,13 @@ fragment float4 fragment8BitGBC(VertexOut in [[stage_in]],
             float2 grid = abs(fract(uv * u.sourceSize.xy - 0.5) - 0.5) / fwidth(uv * u.sourceSize.xy);
             color *= mix(1.0, 0.85, (1.0 - smoothstep(0.0, 1.0, min(grid.x, grid.y)))) * u.dotOpacity;
 
-            float shadow = smoothstep(-52.0, -47.0, p.y - screenCenter.y) * smoothstep(70.0, 65.0, p.x - screenCenter.x);
-            if (u.flags & FLAG_COLOR_MATRIX) color = color * float3x3(0.85, 0.1, 0.05, 0.05, 0.85, 0.1, 0.1, 0.05, 0.85);
+         // Only apply grid when FLAG_GRID is enabled
+         if (u.flags & FLAG_GRID) {
+            float2 grid = abs(fract(uv * u.sourceSize.xy - 0.5) - 0.5) / fwidth(uv * u.sourceSize.xy);
+            color *= mix(1.0, 0.85, (1.0 - smoothstep(0.0, 1.0, min(grid.x, grid.y)))) * u.dotOpacity;
+         }
+         float shadow = smoothstep(-52.0, -47.0, p.y - screenCenter.y) * smoothstep(70.0, 65.0, p.x - screenCenter.x);
+         if (u.flags & FLAG_COLOR_MATRIX) color = color * float3x3(0.85, 0.1, 0.05, 0.05, 0.85, 0.1, 0.1, 0.05, 0.85);
 
             if (u.flags & FLAG_REFLECTION) {
                 float reflVal = (u.specularShininess * 0.038) * (1.0 - smoothstep(0.0, 0.79, length(uv - float2(1.0, 0.0)))) * 0.2;

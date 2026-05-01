@@ -173,7 +173,6 @@ class ShaderManager: ObservableObject {
         uniformValues[name] = value
         Self.parameterStore.update(name: name, value: value)
         
-        LoggerService.debug(category: "ShaderManager", "Updated uniform '\(name)' to \(value)")
     }
     
     // Get current value for a uniform

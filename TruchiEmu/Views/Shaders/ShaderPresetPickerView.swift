@@ -99,15 +99,15 @@ private func parameterSliderRow(for uniform: ShaderUniform) -> some View {
                       
                       Spacer()
                       
-                      Toggle("", isOn: Binding(
-                          get: { currentUniformValue(for: uniform) > 0.5 },
-                          set: { newValue in
-                              uniformValues[uniform.name] = newValue ? 1.0 : 0.0
-                          }
-                      ))
-                      .toggleStyle(.switch)
-                      .labelsHidden()
-                      .controlSize(.small)
+Toggle("", isOn: Binding(
+                           get: { currentUniformValue(for: uniform) > 0.5 },
+                           set: { newValue in
+                               uniformValues[uniform.name] = newValue ? 1.0 : 0.0
+                           }
+                       ))
+                       .toggleStyle(.switch)
+                       .labelsHidden()
+                       .controlSize(.small)
                   }
               } else if uniform.type == .dropdown {
                   VStack(alignment: .leading, spacing: 4) {
@@ -126,19 +126,19 @@ private func parameterSliderRow(for uniform: ShaderUniform) -> some View {
                           Spacer()
                       }
                       
-                      let selectedValue = currentUniformValue(for: uniform)
-                      Picker("", selection: Binding(
-                          get: { selectedValue },
-                          set: { newValue in
-                              uniformValues[uniform.name] = newValue
-                          }
-                      )) {
-                          ForEach(uniform.options ?? [], id: \.value) { option in
-                              Text(option.label).tag(option.value)
-                          }
-                      }
-                      .pickerStyle(.menu)
-                      .controlSize(.small)
+let selectedValue = currentUniformValue(for: uniform)
+                       Picker("", selection: Binding(
+                           get: { selectedValue },
+                           set: { newValue in
+                               uniformValues[uniform.name] = newValue
+                           }
+                       )) {
+                           ForEach(uniform.options ?? [], id: \.value) { option in
+                               Text(option.label).tag(option.value)
+                           }
+                       }
+                       .pickerStyle(.menu)
+                       .controlSize(.small)
                   }
               } else {
                   VStack(alignment: .leading, spacing: 4) {
@@ -162,18 +162,18 @@ private func parameterSliderRow(for uniform: ShaderUniform) -> some View {
                               .monospacedDigit()
                       }
                       
-                      Slider(
-                          value: Binding(
-                              get: { currentUniformValue(for: uniform) },
-                              set: { newValue in
-                                  uniformValues[uniform.name] = newValue
-                              }
-                          ),
-                          in: uniform.minValue...uniform.maxValue,
-                          step: uniform.step,
-                          onEditingChanged: { _ in }
-                      )
-                      .controlSize(.small)
+Slider(
+                           value: Binding(
+                               get: { currentUniformValue(for: uniform) },
+                               set: { newValue in
+                                   uniformValues[uniform.name] = newValue
+                               }
+                           ),
+                           in: uniform.minValue...uniform.maxValue,
+                           step: uniform.step,
+                           onEditingChanged: { _ in }
+                       )
+                       .controlSize(.small)
                   }
               }
           }
@@ -400,8 +400,8 @@ presetList
                     HStack {
                         Spacer()
 Button("Apply") {
-LoggerService.debug(category: "ShaderPicker", "=== APPLY BUTTON CLICKED ===")
-LoggerService.debug(category: "ShaderPicker", "Apply: shaderPresetID=\(settings.shaderPresetID), systemID=\(String(describing: settings.systemID))")
+LoggerService.info(category: "ShaderPicker", "=== APPLY BUTTON CLICKED ===")
+LoggerService.info(category: "ShaderPicker", "Apply: shaderPresetID=\(settings.shaderPresetID), uniformValues=\(settings.uniformValues)")
 // Call the callback from ShaderWindowController.shared (not settings)
 if let controller = ShaderWindowController.shared {
 controller.onPresetChanged?(settings.shaderPresetID, settings.uniformValues, [])

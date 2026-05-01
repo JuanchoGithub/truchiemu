@@ -120,12 +120,12 @@ struct DisplaySettingsView: View {
         let windowController = ShaderWindowController(
             settings: shaderWindowSettings!
         ) { [self] newPresetID, newUniformValues, _ in
-            selectedPresetID = newPresetID
-            if let preset = ShaderPreset.preset(id: newPresetID) {
-                shaderManager.activatePreset(preset)
-            }
-            // Update shader manager uniform values
+            LoggerService.info(category: "ShaderPicker", "Callback received: presetID=\(newPresetID), uniformValues=\(newUniformValues)")
+            
+            // Only update uniforms - DON'T call activatePreset here as it resets everything
+            // The preset will be activated when the game launches via GameLauncher
             for (key, value) in newUniformValues {
+                LoggerService.info(category: "ShaderPicker", "Updating uniform: \(key)=\(value)")
                 shaderManager.updateUniform(key, value: value)
             }
         }
@@ -135,11 +135,8 @@ struct DisplaySettingsView: View {
     }
     
     private func extractUniformValuesFromSettings() -> [String: Float] {
-        var values: [String: Float] = [:]
-        values["scanlineIntensity"] = 0.35 // default
-        values["barrelAmount"] = 0.12 // default
-        values["colorBoost"] = 1.0 // default
-        return values
+        // Get actual current uniform values from ShaderManager
+        return ShaderManager.shared.uniformValues
     }
     
     private func shaderIcon(for type: ShaderType) -> String {

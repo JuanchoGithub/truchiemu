@@ -27,7 +27,7 @@ class DOSRunner: EmulatorRunner, @unchecked Sendable {
     // MARK: - Launch Override
     
     @MainActor
-    override func launch(rom: ROM, coreID: String) {
+    override func launch(rom: ROM, coreID: String, shaderUniformOverrides: [String: Float] = [:]) {
         // DOSBox-Pure handles ZIP files natively - no extraction needed
         // The core will mount the ZIP as a C: drive automatically
         LoggerService.info(category: "DOSRunner", "Launching DOS game: \(rom.name), cycles: \(cyclesSetting)")
@@ -35,7 +35,7 @@ class DOSRunner: EmulatorRunner, @unchecked Sendable {
         // Set DOS-specific core options before launch
         configureCoreOptions()
         
-        super.launch(rom: rom, coreID: coreID)
+        super.launch(rom: rom, coreID: coreID, shaderUniformOverrides: shaderUniformOverrides)
     }
     
     // MARK: - Core Options Configuration

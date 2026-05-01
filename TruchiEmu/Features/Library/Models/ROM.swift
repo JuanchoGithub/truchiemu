@@ -124,6 +124,9 @@ struct ROMSettings: Codable, Hashable {
     // New shader preset system
     var shaderPresetID: String = ""
     
+    // Shader uniform overrides (persisted per-ROM)
+    var shaderUniformOverrides: [String: Float] = [:]
+    
     // Bezel: filename of the selected bezel, empty = auto-detect, "none" = disabled
     var bezelFileName: String = ""
     

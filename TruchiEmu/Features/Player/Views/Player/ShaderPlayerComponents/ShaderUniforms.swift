@@ -136,22 +136,15 @@ struct GBCUniforms {
     var ghostingWeight: Float
     var frameIndex: UInt32
     var flags: UInt32
-    var gridStrength: Float
-    var pixelSeparation: Float
     var brightnessBoost: Float
     var showShell: Float
-    var showStrip: Float
-    var showLens: Float
-    var showText: Float
-    var showLED: Float
     var lightPositionIndex: Float
     var lightStrength: Float
     var shellColorIndex: Float
-   var gridThicknessDark: Float
-   var gridThicknessLight: Float
-   var sourceSize: SIMD4<Float>
-   var outputSize: SIMD4<Float>
-   var transparencyControl: Float
+    var gridThicknessDark: Float
+    var gridThicknessLight: Float
+    var sourceSize: SIMD4<Float>
+    var outputSize: SIMD4<Float>
 }
 
 // ScaleSmooth uniforms - matches ScaleSmoothUniforms in ScaleSmooth.metal

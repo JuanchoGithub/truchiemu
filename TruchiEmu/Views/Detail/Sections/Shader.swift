@@ -108,11 +108,9 @@ LoggerService.debug(category: "ShaderPicker", "Received: presetID=\(newPresetID)
 LoggerService.debug(category: "ShaderPicker", "Settings context: systemID=\(String(describing: shaderWindowSettings?.systemID)), initialPresetID=\(shaderWindowSettings?.shaderPresetID ?? "nil")")
 
 updateSettings { romSettings in
-romSettings.shaderPresetID = newPresetID
-applyUniformValues(newUniformValues, to: &romSettings)
-}
-if let preset = ShaderPreset.preset(id: newPresetID) {
-ShaderManager.shared.activatePreset(preset)
+    romSettings.shaderPresetID = newPresetID
+    romSettings.shaderUniformOverrides = newUniformValues
+    applyUniformValues(newUniformValues, to: &romSettings)
 }
 ShaderWindowController.shared?.close()
 }

@@ -310,7 +310,7 @@ class ScummVMRunner: EmulatorRunner, @unchecked Sendable {
     }
     
     @MainActor
-    override func launch(rom: ROM, coreID: String) {
+    override func launch(rom: ROM, coreID: String, shaderUniformOverrides: [String: Float] = [:]) {
         // Force "No Shader" (passthrough) for ScummVM.
         // ScummVM renders point-and-click adventure games at higher resolutions (320x200, 640x480+)
         // that look best with raw pixels — CRT scanlines, barrel distortion, and phosphor masks
@@ -351,7 +351,7 @@ class ScummVMRunner: EmulatorRunner, @unchecked Sendable {
                 // Store the hook path for the bridge
                 self.romPath = hookPath.path
                 
-                super.launch(rom: modifiedRom, coreID: coreID)
+                super.launch(rom: modifiedRom, coreID: coreID, shaderUniformOverrides: shaderUniformOverrides)
             } else {
                 // We couldn't detect a specific ID. Let's find any valid game file in the folder 
                 // and pass it directly to let ScummVM auto-detect the game from the directory.
@@ -366,12 +366,12 @@ class ScummVMRunner: EmulatorRunner, @unchecked Sendable {
                 modifiedRom.path = fallbackFile
                 self.romPath = fallbackFile.path
                 
-                super.launch(rom: modifiedRom, coreID: coreID)
+                super.launch(rom: modifiedRom, coreID: coreID, shaderUniformOverrides: shaderUniformOverrides)
             }
         } else {
             // Non-ZIP file (maybe already a .scummvm file), launch normally
             LoggerService.debug(category: "ScummVM", "Launching non-ZIP file normally")
-            super.launch(rom: rom, coreID: coreID)
+            super.launch(rom: rom, coreID: coreID, shaderUniformOverrides: shaderUniformOverrides)
         }
     }
 }
