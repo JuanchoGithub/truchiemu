@@ -12,10 +12,11 @@ struct GameCardView: View {
 
     @State private var isHovered = false
     @State private var image: NSImage?
-    @ObservedObject private var prefs = SystemPreferences.shared
-    @ObservedObject var dragState = GameDragState.shared
-    @EnvironmentObject private var library: ROMLibrary
-    @EnvironmentObject private var categoryManager: CategoryManager
+ @ObservedObject private var prefs = SystemPreferences.shared
+ @ObservedObject var dragState = GameDragState.shared
+ @ObservedObject private var boxArtService = BoxArtService.shared
+ @EnvironmentObject private var library: ROMLibrary
+ @EnvironmentObject private var categoryManager: CategoryManager
 
     private var boxType: BoxType {
         prefs.boxType(for: rom.systemID ?? "")
@@ -83,9 +84,9 @@ struct GameCardView: View {
       contextMenu?()
     }
     .animation(.spring(), value: isHovered)
-        .accessibilityLabel(rom.displayName)
-        .accessibilityAddTraits(.isButton)
-        .task(id: rom.id) {
+ .accessibilityLabel(rom.displayName)
+ .accessibilityAddTraits(.isButton)
+ .task(id: "\(rom.id)-\(boxArtService.boxArtUpdated)") {
             var artPath = rom.boxArtLocalPath
             if !FileManager.default.fileExists(atPath: artPath.path) {
                 if let resolved = BoxArtService.shared.resolveLocalBoxArt(for: rom) {

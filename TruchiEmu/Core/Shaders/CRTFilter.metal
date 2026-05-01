@@ -13,16 +13,15 @@ using namespace metal;
 
 // JITTER_AMOUNT: Small horizontal "shiver" typical of analog signals.
 // Range: 0.0 (still) to 0.001 (noticeable shake). 0.00015 is subtle.
-constant float JITTER_AMOUNT = 0.00015;
-
+static constant float JITTER_AMOUNT = 0.00015;
 // V_TRIM & V_SCALE: Adjusts the vertical "Overscan." 
 // CRTs often cut off the top/bottom 5-10% of the signal.
-constant float V_TRIM = 0.033333;      
-constant float V_SCALE = 0.933334;     
-
+static constant float V_TRIM = 0.033333;      
+//
+static constant float V_SCALE = 0.933334;     
 // INV_RES_X: Reciprocal of the target texture width (4096px). 
 // Used to ensure jitter/chroma offsets align with pixel boundaries.
-constant float INV_RES_X = 0.00024414; 
+static constant float INV_RES_X = 0.00024414; 
 
 // --- [ STRUCTURES ] ---
 
@@ -68,7 +67,7 @@ struct ShaderContext {
  * prepareContext: Sets up the coordinate system for radial effects.
  * Centered at (0.5, 0.52) to give a slight "bottom-heavy" weight common in TV tubes.
  */
-ShaderContext prepareContext(float2 screenUV, bool soft, bool chroma, bool vig, bool distort) {
+static ShaderContext prepareContext(float2 screenUV, bool soft, bool chroma, bool vig, bool distort) {
     ShaderContext ctx;
     if (soft || chroma || vig || distort) {
         ctx.centered = (screenUV - float2(0.5, 0.52)) * 2.0;
@@ -85,7 +84,7 @@ ShaderContext prepareContext(float2 screenUV, bool soft, bool chroma, bool vig, 
  * Variables: 
  * - amount: 0.0 (Flat) | 0.15 (Standard) | 0.35 (Fish-eye).
  */
-float2 getDistortedUV(float2 screenUV, ShaderContext ctx, float amount, bool active) {
+static float2 getDistortedUV(float2 screenUV, ShaderContext ctx, float amount, bool active) {
     if (!active) return screenUV;
     float2 offset = ctx.centered * ctx.centered;
     // Warps the coordinates based on their distance from the center.
@@ -99,7 +98,7 @@ float2 getDistortedUV(float2 screenUV, ShaderContext ctx, float amount, bool act
  * applyDitherBleed: Simulates low-bandwidth signals where colors smear horizontally.
  * This makes harsh pixel art look more like a continuous analog image.
  */
-float3 applyDitherBleed(float3 rgb, float3 leftColor, float3 rightColor, bool active) {
+static float3 applyDitherBleed(float3 rgb, float3 leftColor, float3 rightColor, bool active) {
     if (!active) return rgb;
     float3 bleed = (rgb + leftColor + rightColor) * 0.3;//;33;
     float luma = dot(rgb, float3(0.2126, 0.7152, 0.0722));
@@ -116,7 +115,7 @@ float3 applyDitherBleed(float3 rgb, float3 leftColor, float3 rightColor, bool ac
  * - vStr (Vignette): 0.1 (Subtle) to 0.7 (Deep shadows in corners).
  * - fStr (Flicker): 0.005 (Standard) to 0.02 (High/Noticeable).
  */
-float3 applyAnalogFinishing(float3 rgb, ShaderContext ctx, float boost, float3 tint, float vStr, float time, float fStr, bool useWhite, bool useVig, bool useFlick) {
+static float3 applyAnalogFinishing(float3 rgb, ShaderContext ctx, float boost, float3 tint, float vStr, float time, float fStr, bool useWhite, bool useVig, bool useFlick) {
     float3 out = rgb * (boost * 1.1);
     if (useWhite) out *= tint;
     if (useVig)   out *= saturate(1.0 - (ctx.distSq * vStr * vStr));
@@ -129,7 +128,7 @@ float3 applyAnalogFinishing(float3 rgb, ShaderContext ctx, float boost, float3 t
  * - baseInt: Darkness. 0.3 (PVM) | 0.5 (Arcade) | 0.8 (Cheap TV).
  * - bloomStr: 1.0 (Static) | 1.5+ (Scanlines fade out in bright white areas).
  */
-float3 applyScanlines(float3 rgb, float3 sourceColor, float posY, float baseInt, float bloomStr, bool useBloom) {
+static float3 applyScanlines(float3 rgb, float3 sourceColor, float posY, float baseInt, float bloomStr, bool useBloom) {
     float scanline = sin(posY * 70.0) * 0.5 + 0.5;
     float intensity = baseInt;
     
@@ -150,7 +149,7 @@ float3 applyScanlines(float3 rgb, float3 sourceColor, float posY, float baseInt,
  * - rounding: 0.02 (Sharp) to 0.1 (Circular). 0.04 is typical.
  * - glowInt: Reflection intensity of the screen image against the plastic bezel.
  */
-float3 applyMaskAndBezel(float3 rgb, float2 distortUV, float2 sampleUV, texture2d<float> tex, sampler s, float boost, float texX, float rounding, float glowInt, bool bezel) {
+static float3 applyMaskAndBezel(float3 rgb, float2 distortUV, float2 sampleUV, texture2d<float> tex, sampler s, float boost, float texX, float rounding, float glowInt, bool bezel) {
     float2 maskEdge = abs(distortUV - 0.5) * 2.0;
     float2 m2 = maskEdge * maskEdge;
     float2 m4 = m2 * m2;
