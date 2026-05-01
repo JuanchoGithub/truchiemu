@@ -576,10 +576,10 @@ class CoreManager: ObservableObject {
       installedCores.append(newCore)
     }
     
-// Discover core options immediately after download to make them available as soon as the core is installed
-        LoggerService.debug(category: "CoreManager", "Discovering core options for: \(info.coreID)")
+// Discover core options and input descriptors in one shot (both captured during core init)
+        LoggerService.debug(category: "CoreManager", "Discovering core options and input descriptors for: \(info.coreID)")
         await CoreOptionsManager.shared.discoverOptions(for: info.coreID, dylibPath: dylibDest.path, romPath: romPath)
-    
+
     LoggerService.debug(category: "CoreManager", "Installed cores: \(installedCores)")
     saveInstalledCores()
     LoggerService.info(category: "CoreManager", "Successfully installed \(info.coreID) version \(versionString)")

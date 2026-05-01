@@ -31,6 +31,12 @@ extern GLuint g_hwFBO;
 extern NSMutableDictionary<NSString *, NSString *> *g_optValues;
 extern NSDictionary<NSString *, NSDictionary *> *g_optDefinitions;
 extern NSDictionary<NSString *, NSDictionary *> *g_optCategories;
+extern BOOL g_loadingForOptions;
+
+// Input descriptors (RETRO_ENVIRONMENT_SET_INPUT_DESCRIPTORS)
+extern NSDictionary<NSString *, NSArray *> *g_inputDescriptors;
+
+void parseInputDescriptors(const struct retro_input_descriptor *descriptors);
 
 extern dispatch_semaphore_t g_bridgeCompletionSemaphore;
 

@@ -15,6 +15,8 @@ GLuint g_hwFBO = 0;
 NSMutableDictionary<NSString *, NSString *> *g_optValues = nil;
 NSDictionary<NSString *, NSDictionary *> *g_optDefinitions = nil;
 NSDictionary<NSString *, NSDictionary *> *g_optCategories = nil;
+NSDictionary<NSString *, NSArray *> *g_inputDescriptors = nil;
+BOOL g_loadingForOptions = NO;
 
 dispatch_semaphore_t g_bridgeCompletionSemaphore = nil;
 CoreLogCallback g_coreLogCallback = NULL;
@@ -182,6 +184,36 @@ void parseCoreOptionsV1(struct retro_core_options *opts) {
   }
   g_optCategories = @{};
   g_optDefinitions = [defs copy];
+}
+
+void parseInputDescriptors(const struct retro_input_descriptor *descriptors) {
+  if (!descriptors) return;
+  
+  NSMutableDictionary *result = [NSMutableDictionary dictionary];
+  const struct retro_input_descriptor *desc = descriptors;
+  
+  while (desc->port != 0 || desc->device != 0 || desc->index != 0 || desc->id != 0 || desc->description != NULL) {
+    // Only process RETRO_DEVICE_JOYPAD for now (most common)
+    if (desc->device == RETRO_DEVICE_JOYPAD) {
+      NSString *portKey = [NSString stringWithFormat:@"%u", desc->port];
+      NSMutableArray *buttons = result[portKey];
+      if (!buttons) {
+        buttons = [NSMutableArray array];
+        result[portKey] = buttons;
+      }
+      
+      // Store button info as dictionary
+      NSDictionary *buttonInfo = @{
+        @"id" : @(desc->id),
+        @"description" : desc->description ? [NSString stringWithUTF8String:desc->description] : @""
+      };
+      [buttons addObject:buttonInfo];
+    }
+    desc++;
+  }
+  
+  g_inputDescriptors = [result copy];
+  bridge_log_printf(RETRO_LOG_INFO, "Parsed %lu input descriptors", (unsigned long)result.count);
 }
 
 void applyPersistedOverrides(void) {

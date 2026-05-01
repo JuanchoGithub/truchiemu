@@ -149,11 +149,11 @@ class CoreOptionsManager: ObservableObject {
         return "\(baseKey)\(suffix)" // Add it (for other cores)
     }
 
-    /// Triggers the discovery of core options by launching a headless core session.
+    /// Triggers the discovery of core options AND input descriptors by launching a headless core session.
     /// This is used when definitions are missing.
     func discoverOptions(for coreID: String, dylibPath: String, romPath: String?) async {
         LoggerService.debug(category: "CoreOptionsManager", "Starting discovery for core: \(coreID)")
-        
+
         // 1. Launch the core in headless mode to trigger environment callbacks.
         // We provide a dummy ROM path if possible to prevent crashes in cores that require a valid game context.
         var dummyRomPath: String? = nil
@@ -166,16 +166,17 @@ class CoreOptionsManager: ObservableObject {
 
         await LibretroBridge.loadCore(forOptions: dylibPath, coreID: coreID, romPath: dummyRomPath)
         LoggerService.debug(category: "CoreOptionsManager", "For: \(coreID), Core loaded")
-        
-        // 2. Fetch the captured options and categories from the bridge
+
+        // 2. Fetch the captured options, categories, AND input descriptors from the bridge
         let optionsDict = LibretroBridge.getOptionsDictionary() ?? [:]
         let categoriesDict = LibretroBridge.getCategoriesDictionary() ?? [:]
-        LoggerService.debug(category: "CoreOptionsManager", "For: \(coreID), options: \(optionsDict), categories: \(categoriesDict)")
-        
+        let rawDescriptors = LibretroBridge.getInputDescriptorsDictionary() ?? [:]
+        LoggerService.debug(category: "CoreOptionsManager", "For: \(coreID), options: \(optionsDict), categories: \(categoriesDict), inputDescriptors: \(rawDescriptors)")
+
         // 3. Convert the bridge dictionaries into our internal models
         var newOptions: [CoreOption] = []
         var newCategories: [CoreOptionCategory] = []
-        
+
         // Parse Categories
         for (catKey, catData) in categoriesDict {
             let desc = catData["description"] as? String ?? catKey
@@ -183,7 +184,7 @@ class CoreOptionsManager: ObservableObject {
             newCategories.append(CoreOptionCategory(key: catKey, description: desc, info: info))
         }
         LoggerService.debug(category: "CoreOptionsManager", "For: \(coreID), new Categories: \(newCategories)")
-        
+
         // Parse Options
         for (key, optData) in optionsDict {
             let desc = optData["description"] as? String ?? key
@@ -191,18 +192,18 @@ class CoreOptionsManager: ObservableObject {
             let catKey = optData["category"] as? String
             let defaultVal = optData["defaultValue"] as? String ?? ""
             let currentVal = optData["currentValue"] as? String ?? defaultVal
-            
+
             var values: [CoreOptionValue] = []
             if let valsArr = optData["values"] as? [[String: String]] {
                 for v in valsArr {
                     values.append(CoreOptionValue(value: v["value"] ?? "", label: v["label"] ?? v["value"] ?? ""))
                 }
             }
-            
+
             if values.isEmpty {
                 values = [CoreOptionValue(value: currentVal, label: currentVal)]
             }
-            
+
             newOptions.append(CoreOption(
                 key: key,
                 description: desc,
@@ -215,12 +216,30 @@ class CoreOptionsManager: ObservableObject {
             ))
         }
         LoggerService.debug(category: "CoreOptionsManager", "For: \(coreID), Parsed options")
-        
-        // 4. Update the manager and persist
+
+        // 4. Parse Input Descriptors
+        var buttonDescriptors: [InputButtonDescriptor] = []
+        for (_, buttons) in rawDescriptors {
+            for buttonDict in buttons {
+                if let dict = buttonDict as? [String: Any],
+                   let id = dict["id"] as? Int,
+                   let desc = dict["description"] as? String {
+                    buttonDescriptors.append(InputButtonDescriptor(id: id, description: desc))
+                }
+            }
+        }
+        LoggerService.debug(category: "CoreOptionsManager", "For: \(coreID), parsed \(buttonDescriptors.count) input descriptors")
+
+        // 5. Update the manager, persist options, and persist input descriptors
         await MainActor.run {
             self.prepareForCore(coreID: coreID)
             self.setOptions(newOptions, categories: newCategories)
             LoggerService.debug(category: "CoreOptionsManager", "Discovery complete. Persisted \(newOptions.count) options.")
+
+            if !buttonDescriptors.isEmpty {
+                InputDescriptorsManager.shared.setDescriptors(buttonDescriptors, for: coreID)
+                LoggerService.debug(category: "CoreOptionsManager", "Discovery complete. Persisted \(buttonDescriptors.count) input descriptors.")
+            }
         }
     }
     

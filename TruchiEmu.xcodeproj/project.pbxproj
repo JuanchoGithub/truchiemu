@@ -79,6 +79,7 @@
 		1FAE94BFDF65CF2154B39875 /* ws@132w.png in Resources */ = {isa = PBXBuildFile; fileRef = F54FE75C7494DC94970ADDC0 /* ws@132w.png */; };
 		200CE510F205AAD9599C098E /* atarist@132w.png in Resources */ = {isa = PBXBuildFile; fileRef = 6C6B0BA0A81DA9E4BCBBA1EC /* atarist@132w.png */; };
 		20BA97ABF5B6C7FBD1ECF76E /* CoreManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 79F9C29D41593BD0666D4215 /* CoreManager.swift */; };
+		21A571C012E0EEAB3DB1B142 /* InputDescriptorsManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 81561F32B974014E52E04793 /* InputDescriptorsManager.swift */; };
 		2258AA6844B74EE1BB9B5289 /* ffplay@132w.png in Resources */ = {isa = PBXBuildFile; fileRef = 1004B788B680D89D08A2C4B6 /* ffplay@132w.png */; };
 		22FBDC836930C16AC02CBA03 /* BoxArtPreloaderService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7BC9EB4BBB881879FB8BA782 /* BoxArtPreloaderService.swift */; };
 		235451B34A912C340CB018EE /* XRICK.png in Resources */ = {isa = PBXBuildFile; fileRef = 1C15A2A6F35E894F51393AE9 /* XRICK.png */; };
@@ -394,7 +395,6 @@
 		DCBCEE45C7C74C4F9687B563 /* vb@132w.png in Resources */ = {isa = PBXBuildFile; fileRef = 5E90C52AEDC3AC23BA35B915 /* vb@132w.png */; };
 		DCC432C8DC5EA9D19CA13B14 /* PICO.png in Resources */ = {isa = PBXBuildFile; fileRef = 895E4313F6A502B39E0267B1 /* PICO.png */; };
 		DD0DDF8856A8056172004CA0 /* Sega - Dreamcast.dat in Resources */ = {isa = PBXBuildFile; fileRef = A93547318848E19981032FE8 /* Sega - Dreamcast.dat */; };
-		DD193D8A2FA3AD9100CC543D /* (null) in Resources */ = {isa = PBXBuildFile; };
 		DEF1DDA46E59570FAE57D442 /* vdp@132w.png in Resources */ = {isa = PBXBuildFile; fileRef = D755FBFFC3BD76093815B71D /* vdp@132w.png */; };
 		DFF2C66041E018B1D7319306 /* CHAILOVE.png in Resources */ = {isa = PBXBuildFile; fileRef = 579FF46D161EC2DD3CE4C105 /* CHAILOVE.png */; };
 		E0BD0AA661359907DC9D17FF /* N64.png in Resources */ = {isa = PBXBuildFile; fileRef = 5B369817A06C01C6361538D0 /* N64.png */; };
@@ -690,6 +690,7 @@
 		7E3EFA7FF680E96BA5E3719A /* segacd@132w.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "segacd@132w.png"; sourceTree = "<group>"; };
 		7FE2570126C33B65ED8FBC84 /* SettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsView.swift; sourceTree = "<group>"; };
 		806BE1821C31A13BF1B1177D /* RAGameCacheEntry.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RAGameCacheEntry.swift; sourceTree = "<group>"; };
+		81561F32B974014E52E04793 /* InputDescriptorsManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InputDescriptorsManager.swift; sourceTree = "<group>"; };
 		815D192F8CB04965D710AD1F /* CPS2.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = CPS2.png; sourceTree = "<group>"; };
 		816EC3B058096F41BD785C25 /* WSC.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = WSC.png; sourceTree = "<group>"; };
 		823B1FD3E319074A9926700C /* TruchiEmu.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = TruchiEmu.app; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -1039,6 +1040,7 @@
 			children = (
 				0DF9540BCE224E456A3FA60E /* ControllerService.swift */,
 				007D62D59B68855828E28A77 /* CoreOptionsManager.swift */,
+				81561F32B974014E52E04793 /* InputDescriptorsManager.swift */,
 			);
 			path = Services;
 			sourceTree = "<group>";
@@ -2045,7 +2047,6 @@
 				89569FC0E343B9ADAA4377E0 /* Atari - 7800.dat in Resources */,
 				80302B82D3E5BDD2727925C2 /* Atari - Jaguar.dat in Resources */,
 				D8F34291962A372509308FEC /* Atari - Lynx.dat in Resources */,
-				DD193D8A2FA3AD9100CC543D /* (null) in Resources */,
 				DB0C28440F1BD8B86D3B7EFE /* Bandai - WonderSwan Color.dat in Resources */,
 				7A1EEE1CD4955A4C7B4BA1CF /* Bandai - WonderSwan.dat in Resources */,
 				86E1C292EC5C940FF5103A8F /* C64.png in Resources */,
@@ -2378,6 +2379,7 @@
 				4596D0538A126CE340A86004 /* Header.swift in Sources */,
 				D3BF624E6D643A9C9E0976FF /* ImageCache.swift in Sources */,
 				2B2B0A84C8FA0EC3F94F0ADB /* InputCaptureManager.swift in Sources */,
+				21A571C012E0EEAB3DB1B142 /* InputDescriptorsManager.swift in Sources */,
 				D1987AB001C52B7301D88FF8 /* LaunchBoxGameMetadata.swift in Sources */,
 				C18E5BE81E68BF2BD3405575 /* LaunchBoxGamesDBService.swift in Sources */,
 				A88B029EDF9B982AD0A805D9 /* LibraryAnimations.swift in Sources */,

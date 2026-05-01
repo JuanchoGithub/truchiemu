@@ -50,6 +50,9 @@ typedef void (^GameLoadedBlock)(const char *romPath);
 + (NSDictionary<NSString *, NSDictionary *> *_Nullable)getOptionsDictionary;
 + (NSDictionary<NSString *, NSDictionary *> *_Nullable)getCategoriesDictionary;
 
+/* Input Descriptors — returns descriptors captured during core load */
++ (NSDictionary<NSString *, NSArray *> *_Nullable)getInputDescriptorsDictionary;
+
 /* Rotation — returns 0, 1, 2, or 3 (0/90/180/270 degrees clockwise) */
 + (int)currentRotation;
 

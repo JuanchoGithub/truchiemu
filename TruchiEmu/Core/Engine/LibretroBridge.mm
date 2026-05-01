@@ -8,7 +8,6 @@
 static dispatch_queue_t g_bridgeQueue = nil;
 static dispatch_queue_t g_optAccessQueue = nil;
 static dispatch_once_t g_optAccessQueueOnce;
-static BOOL g_loadingForOptions = NO;
 static NSString *_Nullable g_optionsDylibPath = nil;
 
 // --- Callback Stubs for Headless Mode ---
@@ -140,8 +139,16 @@ static int16_t input_state_stub(unsigned port, unsigned device, unsigned index, 
 
 // --- Load a core to initialize its options (Headless Mode) ---
 + (void)loadCoreForOptions:(NSString *)dylibPath coreID:(NSString *)coreID romPath:(nullable NSString *)romPath {
+    // Guard against concurrent calls - only one discovery session at a time
+    static BOOL discoveryInProgress = NO;
+    if (discoveryInProgress) {
+        bridge_log_printf(RETRO_LOG_WARN, "Discovery: Skipping - another discovery is already in progress");
+        return;
+    }
+    discoveryInProgress = YES;
+
     bridge_log_printf(RETRO_LOG_INFO, "Discovery: Starting headless session for %@", coreID);
-    
+
     g_loadingForOptions = YES;
     NSString *cleanCoreID = coreID;
     if ([cleanCoreID hasSuffix:@".dylib"]) {
@@ -152,6 +159,7 @@ static int16_t input_state_stub(unsigned port, unsigned device, unsigned index, 
     g_optValues = nil;
     g_optDefinitions = nil;
     g_optCategories = nil;
+    g_inputDescriptors = nil;
 
     LibretroBridgeImpl *impl = [[LibretroBridgeImpl alloc] init];
     g_instance = impl;
@@ -159,10 +167,10 @@ static int16_t input_state_stub(unsigned port, unsigned device, unsigned index, 
     bridge_log_printf(RETRO_LOG_DEBUG, "Discovery: Loading dylib: %@", dylibPath.lastPathComponent);
     if (![impl loadDylib:dylibPath]) {
         bridge_log_printf(RETRO_LOG_ERROR, "Discovery: Failed to load dylib for %@", coreID);
-        g_optCategories = @{}; 
-        g_optDefinitions = @{}; 
+        g_optCategories = @{};
+        g_optDefinitions = @{};
         g_optValues = [NSMutableDictionary dictionary];
-        g_instance = nil; 
+        g_instance = nil;
         g_loadingForOptions = NO;
         return;
     }
@@ -175,8 +183,9 @@ static int16_t input_state_stub(unsigned port, unsigned device, unsigned index, 
     impl->_retro_set_input_poll(input_poll_stub);
     impl->_retro_set_input_state(input_state_stub);
 
-    bridge_log_printf(RETRO_LOG_DEBUG, "Discovery: Initializing core...");
+    bridge_log_printf(RETRO_LOG_DEBUG, "Discovery: Calling retro_init...");
     impl->_retro_init();
+    bridge_log_printf(RETRO_LOG_DEBUG, "Discovery: retro_init complete.");
 
     struct retro_system_av_info avInfo;
     avInfo.geometry.base_width = 640; avInfo.geometry.base_height = 480;
@@ -185,59 +194,35 @@ static int16_t input_state_stub(unsigned port, unsigned device, unsigned index, 
     avInfo.timing.fps = 60.0; avInfo.timing.sample_rate = 44100.0;
     impl->_avInfo = avInfo;
 
+    bridge_log_printf(RETRO_LOG_DEBUG, "Discovery: Setting SUPPORT_NO_GAME...");
     BOOL supportsNoGame = NO;
     bridge_environment(RETRO_ENVIRONMENT_SET_SUPPORT_NO_GAME, &supportsNoGame);
+    bridge_log_printf(RETRO_LOG_DEBUG, "Discovery: SUPPORT_NO_GAME=%d", supportsNoGame);
+
+    bridge_log_printf(RETRO_LOG_DEBUG, "Discovery: Checking input descriptors captured so far: %lu", (unsigned long)g_inputDescriptors.count);
+
+    // Try loading a fake ROM path to trigger SET_INPUT_DESCRIPTORS during load
+    // Use a minimal path that the core can reject quickly
+    const char *fakePath = "/tmp/TruchiEmu_discovery_rom";
+    bridge_log_printf(RETRO_LOG_INFO, "Discovery: Attempting retro_load_game with fake path: %s", fakePath);
 
     struct retro_game_info gi;
     memset(&gi, 0, sizeof(gi));
-    if (romPath != nil) {
-        bridge_log_printf(RETRO_LOG_INFO, "Discovery: Loading content: %@", romPath.lastPathComponent);
-        // Create a persistent copy of the UTF8 string to prevent dangling pointer
-        const char *utf8Path = [romPath UTF8String];
-        if (utf8Path) {
-            size_t pathLength = strlen(utf8Path) + 1;
-            gi.path = (char *)malloc(pathLength);
-            if (gi.path) {
-                memcpy((void *)gi.path, utf8Path, pathLength);
-            } else {
-                bridge_log_printf(RETRO_LOG_ERROR, "Discovery: Failed to allocate memory for ROM path");
-                gi.path = NULL;
-            }
-        } else {
-            gi.path = NULL;
-        }
-    }
+    gi.path = (char *)fakePath;
+    gi.data = NULL;
+    gi.size = 0;
+    gi.meta = NULL;
 
     BOOL gameLoaded = impl->_retro_load_game(&gi);
-    
-if (gameLoaded) {
-        bridge_log_printf(RETRO_LOG_INFO, "Discovery: Content loaded.");
-        
-        // Only run the stabilization loop for HW-accelerated cores (like PPSSPP).
-        // Software cores (like Virtual Jaguar) don't need this and might crash 
-        // if they execute 0x0 instructions.
-        if (impl->_hwRenderEnabled) {
-            bridge_log_printf(RETRO_LOG_INFO, "Discovery: HW core detected. Starting stabilization loop...");
-            [impl->_coreLock lock];
-            
-            if (impl->_hw_callback.context_reset) {
-                if (impl->_glContext) CGLSetCurrentContext(impl->_glContext);
-                impl->_hw_callback.context_reset();
-            }
+    bridge_log_printf(RETRO_LOG_INFO, "Discovery: retro_load_game returned %d", gameLoaded);
 
-            for(int i = 0; i < 5; i++) {
-                if (impl->_retro_run) impl->_retro_run();
-            }
-            
-            [NSThread sleepForTimeInterval:0.2];
-            
-            if (impl->_glContext) CGLSetCurrentContext(NULL);
-            [impl->_coreLock unlock];
-        } else {
-            bridge_log_printf(RETRO_LOG_INFO, "Discovery: Software core. Skipping execution loop.");
-            // Give the core a tiny moment to settle after load_game
-            [NSThread sleepForTimeInterval:0.1];
-        }
+    // Check input descriptors after load attempt
+    bridge_log_printf(RETRO_LOG_DEBUG, "Discovery: Input descriptors after load attempt: %lu", (unsigned long)g_inputDescriptors.count);
+
+    if (gameLoaded) {
+        bridge_log_printf(RETRO_LOG_INFO, "Discovery: Game unexpectedly loaded (should not happen with fake path).");
+    } else {
+        bridge_log_printf(RETRO_LOG_INFO, "Discovery: Game load failed as expected (no valid ROM).");
     }
 
     // --- TEARDOWN SEQUENCE ---
@@ -245,43 +230,54 @@ if (gameLoaded) {
     [[NSUserDefaults standardUserDefaults] setObject:coreID forKey:@"lastLoadedCoreID"];
 
     [impl->_coreLock lock];
-    
+
     if (impl->_hwRenderEnabled && impl->_glContext) {
         CGLSetCurrentContext(impl->_glContext);
     }
-    
+
+    // Only call retro_unload_game if game was actually loaded (not with fake path)
     if (gameLoaded) {
         bridge_log_printf(RETRO_LOG_DEBUG, "Discovery: Unloading game...");
-        // This triggers internal cleanup. We don't call context_destroy manually
-        // afterwards because it leads to a double-free crash in PPSSPP.
         impl->_retro_unload_game();
-        
-        // Free the persistent copy of the ROM path to prevent memory leak
-        if (gi.path) {
-            free((void *)gi.path);
-            gi.path = NULL;
-        }
-        
-        // Wait for IoManager and UPnP threads to exit
         [NSThread sleepForTimeInterval:0.2];
+    } else {
+        bridge_log_printf(RETRO_LOG_DEBUG, "Discovery: Skipping retro_unload_game (no game loaded).");
     }
-    
-    bridge_log_printf(RETRO_LOG_DEBUG, "Discovery: Finalizing retro_deinit");
-    impl->_retro_deinit();
-    
-if (impl->_hwRenderEnabled && impl->_glContext) {
+
+    bridge_log_printf(RETRO_LOG_DEBUG, "Discovery: Calling retro_deinit with timeout...");
+
+    __block BOOL deinitCompleted = NO;
+    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+        impl->_retro_deinit();
+        deinitCompleted = YES;
+        bridge_log_printf(RETRO_LOG_DEBUG, "Discovery: retro_deinit completed normally");
+    });
+
+    // Wait for deinit with timeout
+    for (int i = 0; i < 20; i++) {
+        [NSThread sleepForTimeInterval:0.25];
+        if (deinitCompleted) break;
+        bridge_log_printf(RETRO_LOG_DEBUG, "Discovery: Waiting for retro_deinit... %d/5s", (i+1)*25/100);
+    }
+
+    if (!deinitCompleted) {
+        bridge_log_printf(RETRO_LOG_WARN, "Discovery: retro_deinit timed out after 5s, forcing cleanup");
+    }
+
+    if (impl->_hwRenderEnabled && impl->_glContext) {
         CGLSetCurrentContext(NULL);
     }
-    
+
     [impl->_coreLock unlock];
 
-    // CRITICAL: Neutralize the hardware callback struct so that 
+    // CRITICAL: Neutralize the hardware callback struct so that
     // impl's dealloc doesn't try to call context_destroy()
     memset(&(impl->_hw_callback), 0, sizeof(struct retro_hw_render_callback));
 
     g_instance = nil;
     g_loadingForOptions = NO;
     bridge_log_printf(RETRO_LOG_INFO, "Discovery: Headless session complete for %@.", coreID);
+    discoveryInProgress = NO;
 }
 
 
@@ -372,6 +368,17 @@ if (impl->_hwRenderEnabled && impl->_glContext) {
     });
     __block NSDictionary *result = nil;
     dispatch_sync(g_optAccessQueue, ^{ result = [g_optCategories copy] ?: @{}; });
+    return result;
+}
+
++ (NSDictionary<NSString *, NSArray *> *)getInputDescriptorsDictionary {
+    dispatch_once(&g_optAccessQueueOnce, ^{
+        g_optAccessQueue = dispatch_queue_create("com.truchiemu.bridge.options", DISPATCH_QUEUE_SERIAL);
+    });
+    __block NSDictionary *result = nil;
+    dispatch_sync(g_optAccessQueue, ^{
+        result = [g_inputDescriptors copy];
+    });
     return result;
 }
 

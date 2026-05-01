@@ -372,3 +372,15 @@ struct retro_core_options_display {
   const char *key; /* Option key to show/hide                            */
   bool visible;    /* true = show, false = hide                          */
 };
+
+/* ========================================================================
+ * Input Descriptors — describes the input layout exposed by a core
+ * ======================================================================== */
+
+struct retro_input_descriptor {
+  unsigned port;
+  unsigned device;
+  unsigned index;
+  unsigned id;
+  const char *description;
+};

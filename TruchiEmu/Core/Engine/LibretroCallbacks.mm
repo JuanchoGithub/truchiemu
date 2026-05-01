@@ -51,6 +51,7 @@ static bool bridge_set_rumble_state(unsigned port, unsigned effect, uint16_t str
 
 static void bridge_sensor_get_input(unsigned port, unsigned id, float *value) {
     if (!value) return;
+    if (g_loadingForOptions) return;
     *value = 0.0f;
 }
 
@@ -183,16 +184,35 @@ bool bridge_environment(unsigned cmd, void *data) {
       g_instance->_avInfo.geometry = *geo;
     }
     return true;
-case RETRO_ENVIRONMENT_SET_INPUT_DESCRIPTORS:
-case RETRO_ENVIRONMENT_SET_DISK_CONTROL_INTERFACE:
-case RETRO_ENVIRONMENT_SET_VARIABLES:
-case RETRO_ENVIRONMENT_SET_SERIALIZATION_QUIRKS:
-case RETRO_ENVIRONMENT_SET_PERFORMANCE_LEVEL:
-case RETRO_ENVIRONMENT_SET_CONTROLLER_INFO:
-case RETRO_ENVIRONMENT_SET_CONTENT_INFO_OVERRIDE:
-case RETRO_ENVIRONMENT_SET_SUBSYSTEM_INFO: {
+  case RETRO_ENVIRONMENT_SET_INPUT_DESCRIPTORS: {
+    if (data) {
+      parseInputDescriptors((const struct retro_input_descriptor *)data);
+      bridge_log_printf(RETRO_LOG_DEBUG, "SET_INPUT_DESCRIPTORS called! Count: %lu", (unsigned long)g_inputDescriptors.count);
+    }
     return true;
-}
+  }
+case RETRO_ENVIRONMENT_SET_DISK_CONTROL_INTERFACE:
+    return true;
+  case RETRO_ENVIRONMENT_SET_VARIABLES: {
+    bridge_log_printf(RETRO_LOG_DEBUG, "SET_VARIABLES called!");
+    return true;
+  }
+  case RETRO_ENVIRONMENT_SET_PERFORMANCE_LEVEL: {
+    if (data) {
+      unsigned level = *(unsigned *)data;
+      bridge_log_printf(RETRO_LOG_DEBUG, "SET_PERFORMANCE_LEVEL called! Level: %u", level);
+    }
+    return true;
+  }
+  case RETRO_ENVIRONMENT_SET_CONTROLLER_INFO: {
+    bridge_log_printf(RETRO_LOG_DEBUG, "SET_CONTROLLER_INFO called!");
+    return true;
+  }
+  case RETRO_ENVIRONMENT_SET_SERIALIZATION_QUIRKS:
+  case RETRO_ENVIRONMENT_SET_CONTENT_INFO_OVERRIDE:
+  case RETRO_ENVIRONMENT_SET_SUBSYSTEM_INFO: {
+    return true;
+  }
 case RETRO_ENVIRONMENT_SET_KEYBOARD_CALLBACK: {
     struct retro_keyboard_callback *cb = (struct retro_keyboard_callback *)data;
     if (cb) {
@@ -219,26 +239,30 @@ case RETRO_ENVIRONMENT_SET_KEYBOARD_CALLBACK: {
     }
     return true;
   }
-  case RETRO_ENVIRONMENT_SET_CORE_OPTIONS: {
+case RETRO_ENVIRONMENT_SET_CORE_OPTIONS: {
     if (data) parseCoreOptionsV1((struct retro_core_options *)data);
     applyPersistedOverrides();
+    bridge_log_printf(RETRO_LOG_DEBUG, "SET_CORE_OPTIONS (v1) called! Options count: %lu", (unsigned long)g_optDefinitions.count);
     return true;
   }
   case RETRO_ENVIRONMENT_SET_CORE_OPTIONS_INTL: {
     struct retro_core_options_intl *intl = (struct retro_core_options_intl *)data;
     if (intl) parseCoreOptionsV1(intl->us ? intl->us : intl->local);
     applyPersistedOverrides();
+    bridge_log_printf(RETRO_LOG_DEBUG, "SET_CORE_OPTIONS_INTL called!");
     return true;
   }
   case RETRO_ENVIRONMENT_SET_CORE_OPTIONS_V2: {
     if (data) parseCoreOptionsV2((struct retro_core_options_v2 *)data);
     applyPersistedOverrides();
+    bridge_log_printf(RETRO_LOG_DEBUG, "SET_CORE_OPTIONS_V2 called! Options count: %lu", (unsigned long)g_optDefinitions.count);
     return true;
   }
   case RETRO_ENVIRONMENT_SET_CORE_OPTIONS_V2_INTL: {
     struct retro_core_options_v2_intl *intl = (struct retro_core_options_v2_intl *)data;
     if (intl) parseCoreOptionsV2(intl->us ? intl->us : intl->local);
     applyPersistedOverrides();
+    bridge_log_printf(RETRO_LOG_DEBUG, "SET_CORE_OPTIONS_V2_INTL called!");
     return true;
   }
   case RETRO_ENVIRONMENT_GET_GAME_INFO_EXT:

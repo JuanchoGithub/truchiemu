@@ -783,7 +783,18 @@ enum RetroButton: String, Codable, CaseIterable {
     
     // Returns the list of buttons that are relevant/available for a given system.
     // This limits the UI to only show buttons that can be mapped for that system.
+    // First tries to get buttons from InputDescriptorsManager (captured from core),
+    // falls back to hardcoded system defaults.
     static func availableButtons(for systemID: String) -> [RetroButton] {
+        if let buttons = InputDescriptorsManager.shared.availableButtons(for: systemID), !buttons.isEmpty {
+            return buttons
+        }
+        return systemDefaultButtons(for: systemID)
+    }
+
+    // Hardcoded system-specific button defaults. Used as fallback when core
+    // input descriptors are not available.
+    static func systemDefaultButtons(for systemID: String) -> [RetroButton] {
         switch systemID.lowercased() {
         // MARK: - NES Family (8-bit Nintendo)
         case "nes":
