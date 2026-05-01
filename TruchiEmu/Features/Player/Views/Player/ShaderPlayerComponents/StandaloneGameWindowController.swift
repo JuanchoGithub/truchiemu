@@ -984,8 +984,7 @@ return false
       let vpW = Float(view.drawableSize.width)
       let vpH = Float(view.drawableSize.height)
       let time = Float(CACurrentMediaTime().truncatingRemainder(dividingBy: 100))
-let fragmentName = getFragmentFunctionName()
-                         LoggerService.info(category: "Shaders", "Using fragment: \(fragmentName)")
+        let fragmentName = getFragmentFunctionName()
                          
                           // Helper: get a uniform value from the thread-safe snapshot
                           func getUniform(_ name: String, fallback: Float) -> Float {

@@ -723,9 +723,6 @@ class EmulatorRunner: ObservableObject, @unchecked Sendable {
         #if DEBUG
         if systemID == "n64" {
             let firstPixelPtr = data.bindMemory(to: UInt32.self, capacity: 1)
-            if firstPixelPtr.pointee == 0 {
-                LoggerService.warning(category: "Runner", "N64 frame pixel[0] is 0x00000000 - possible readback failure")
-            }
         }
         #endif
 

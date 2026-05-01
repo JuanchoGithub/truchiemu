@@ -34,7 +34,7 @@ final class CoreOverrideService {
             let decoder = JSONDecoder()
             let container = try decoder.decode(CoreOverridesContainer.self, from: data)
             
-overrides = container.overrides
+        overrides = container.overrides
         logger.info("Loaded \(self.overrides.count) core override configurations")
         
         // Log loaded overrides for debugging

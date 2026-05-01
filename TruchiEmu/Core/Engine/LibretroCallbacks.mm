@@ -45,7 +45,7 @@ struct retro_midi_interface {
 // Stub interface implementations (prevent crashes when cores try to use these features)
 static bool bridge_set_rumble_state(unsigned port, unsigned effect, uint16_t strength) {
     // No-op: no hardware rumble support
-    bridge_log_printf(RETRO_LOG_DEBUG, "Rumble: port=%u effect=%u strength=%u (stub)", port, effect, strength);
+    //bridge_log_printf(RETRO_LOG_DEBUG, "Rumble: port=%u effect=%u strength=%u (stub)", port, effect, strength);
     return false;
 }
 
@@ -56,7 +56,7 @@ static void bridge_sensor_get_input(unsigned port, unsigned id, float *value) {
 }
 
 static void bridge_sensor_set_state(unsigned port, unsigned sensor_action, unsigned rate) {
-    bridge_log_printf(RETRO_LOG_DEBUG, "Sensor: port=%u action=%u rate=%u (unsupported)", port, sensor_action, rate);
+    //bridge_log_printf(RETRO_LOG_DEBUG, "Sensor: port=%u action=%u rate=%u (unsupported)", port, sensor_action, rate);
 }
 
 static void bridge_led_set_led_state(unsigned port, unsigned led, int16_t state) {
@@ -158,8 +158,6 @@ bool bridge_environment(unsigned cmd, void *data) {
                 var->value = s_varCache[var->key].c_str();
                 bridge_log_printf(RETRO_LOG_INFO, "[Override-JSON] %s = %s", var->key, var->value);
                 return true;
-            } else {
-                bridge_log_printf(RETRO_LOG_DEBUG, "[Override-DGB] No JSON override for %s", var->key);
             }
         }
         
