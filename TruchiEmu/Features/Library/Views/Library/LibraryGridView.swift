@@ -581,21 +581,27 @@ columns = Array(
                         }
                     }()
 
-                    GameCardView(
-                        rom: rom, 
-                        isSelected: isSelected, 
-                        isMultiSelected: selectedROMs.contains(rom.id), 
-                        zoomLevel: continuousZoom,
-                        draggedROMs: draggedItemsForCard,
-                        onTap: { handleTap(on: rom, at: index) },
-                        contextMenu: { contextMenu(for: rom) },
-                        onDrag: {
-                            draggedROMs = draggedItemsForCard
-                            dragState.startDrag(gameIDs: draggedItemsForCard.map { $0.id })
-                            let provider = NSItemProvider(object: NSString(string: draggedItemsForCard.map { $0.id.uuidString }.joined(separator: ",")))
-                            return provider
-                        }
-)
+        GameCardView(
+          rom: rom,
+          isSelected: isSelected,
+          isMultiSelected: selectedROMs.contains(rom.id),
+          zoomLevel: continuousZoom,
+          onTap: { handleTap(on: rom, at: index) },
+          contextMenu: { contextMenu(for: rom) }
+        )
+        .onDrag {
+          draggedROMs = draggedItemsForCard
+          dragState.startDrag(gameIDs: draggedItemsForCard.map { $0.id })
+          let provider = NSItemProvider(object: NSString(string: draggedItemsForCard.map { $0.id.uuidString }.joined(separator: ",")))
+          return provider
+        } preview: {
+          DragPreviewStack(
+            mainROM: rom,
+            mainImage: nil,
+            draggedROMs: draggedItemsForCard.filter { $0.id != rom.id },
+            zoomLevel: continuousZoom
+          )
+        }
         .simultaneousGesture(
             TapGesture(count: 2).onEnded {
                 Task {
@@ -710,24 +716,37 @@ columns = Array(
                 }
             }
         )
-            .contextMenu { contextMenu(for: rom) }
-                    .onDrag {
-                        let items: [ROM]
-                        if isSelected {
-                            var dragIDs = selectedROMs
-                            if let singleSelection = selectedROM {
-                                dragIDs.insert(singleSelection.id)
-                            }
-                            items = viewModel.displayedROMs.filter { dragIDs.contains($0.id) }
-                        } else {
-                            items = [rom]
-                        }
-                        
-                        draggedROMs = items
-                        dragState.startDrag(gameIDs: items.map { $0.id })
-                        let provider = NSItemProvider(object: NSString(string: items.map { $0.id.uuidString }.joined(separator: ",")))
-                        return provider
-                    }
+        .contextMenu { contextMenu(for: rom) }
+        .onDrag {
+          let items: [ROM]
+          if isSelected {
+            var dragIDs = selectedROMs
+            if let singleSelection = selectedROM {
+              dragIDs.insert(singleSelection.id)
+            }
+            items = viewModel.displayedROMs.filter { dragIDs.contains($0.id) }
+          } else {
+            items = [rom]
+          }
+
+          draggedROMs = items
+          dragState.startDrag(gameIDs: items.map { $0.id })
+          let provider = NSItemProvider(object: NSString(string: items.map { $0.id.uuidString }.joined(separator: ",")))
+          return provider
+        } preview: {
+          DragPreviewStack(
+            mainROM: rom,
+            mainImage: nil,
+            draggedROMs: (isSelected ? viewModel.displayedROMs.filter { 
+              var dragIDs = selectedROMs
+              if let singleSelection = selectedROM {
+                dragIDs.insert(singleSelection.id)
+              }
+              return dragIDs.contains($0.id) && $0.id != rom.id
+            } : []),
+            zoomLevel: zoomLevel
+          )
+        }
             }
         }
         .listStyle(.inset(alternatesRowBackgrounds: true))

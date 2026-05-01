@@ -7,10 +7,8 @@ struct GameCardView: View {
     let isSelected: Bool
     let isMultiSelected: Bool
     let zoomLevel: Double
-    var draggedROMs: [ROM] = [] // NEW: Provides context for the multi-item drag stack
-    let onTap: () -> Void 
+    let onTap: () -> Void
     var contextMenu: (() -> AnyView)?
-    var onDrag: (() -> NSItemProvider?)? 
 
     @State private var isHovered = false
     @State private var image: NSImage?
@@ -79,23 +77,12 @@ struct GameCardView: View {
         Button(action: onTap) {
             cardContent
         }
-        .buttonStyle(CardButtonStyle())
-        .onHover { isHovered = $0 }
-        .contextMenu {
-            contextMenu?()
-        }
-        .onDrag {
-            return onDrag?() ?? NSItemProvider()
-        } preview: {
-            // The animated drag stack, passing the fully loaded image synchronously
-            DragPreviewStack(
-                mainROM: rom,
-                mainImage: self.image,
-                draggedROMs: draggedROMs.filter { $0.id != rom.id },
-                zoomLevel: zoomLevel
-            )
-        }
-        .animation(.spring(), value: isHovered)
+    .buttonStyle(CardButtonStyle())
+    .onHover { isHovered = $0 }
+    .contextMenu {
+      contextMenu?()
+    }
+    .animation(.spring(), value: isHovered)
         .accessibilityLabel(rom.displayName)
         .accessibilityAddTraits(.isButton)
         .task(id: rom.id) {
@@ -277,119 +264,13 @@ struct CardButtonStyle: ButtonStyle {
 }
 
 struct CategoryBadgesRow: View {
-    let badges: [GameCategory]
+  let badges: [GameCategory]
 
-    var body: some View {
-        HStack(spacing: 4) {
-            ForEach(badges) { category in
-                CategoryBadgeView(category: category, isCompact: badges.count > 1)
-            }
-        }
+  var body: some View {
+    HStack(spacing: 4) {
+      ForEach(badges) { category in
+        CategoryBadgeView(category: category, isCompact: badges.count > 1)
+      }
     }
-}
-
-// MARK: - Animated Drag Preview stack
-
-struct DragPreviewStack: View {
-    let mainROM: ROM
-    let mainImage: NSImage?
-    let draggedROMs: [ROM]
-    let zoomLevel: Double
-    
-    @State private var isAnimating = false
-    
-    var body: some View {
-        let cardWidth = 80 + (zoomLevel * 200)
-        let boxSize = cardWidth + 50 // Fixed bounding box to prevent macOS from trimming
-        
-        ZStack {
-            // Invisible background locks the bounding box size
-            // macOS trims purely transparent pixels. Opacity 0.01 is invisible but prevents trimming,
-            // ensuring the 25% scale down actually looks small relative to the cursor!
-            Color.white.opacity(0.01)
-                .frame(width: boxSize, height: boxSize)
-
-            // Background scattered cards
-            ForEach(Array(draggedROMs.prefix(4).enumerated()), id: \.element.id) { index, otherRom in
-                DragPreviewCard(rom: otherRom, preloadedImage: nil)
-                    .frame(width: cardWidth)
-                    .scaleEffect(isAnimating ? 0.25 : 1.0) // Shrink to 25%
-                    // Start perfectly straight behind main card, fan out slightly
-                    .rotationEffect(.degrees(isAnimating ? 0 : Double.random(in: -30...30)))
-                    // Hide perfectly behind the main card (offset 0), slide them out as it shrinks
-                    .offset(
-                        x: isAnimating ? CGFloat((index + 1) * 3) : 0,
-                        y: isAnimating ? CGFloat((index + 1) * 3) : 0
-                    )
-                    .zIndex(Double(-index))
-            }
-            
-            // The main card the user actually clicked
-            DragPreviewCard(rom: mainROM, preloadedImage: mainImage)
-                .frame(width: cardWidth)
-                .scaleEffect(isAnimating ? 0.25 : 1.0) // Shrink to 25%
-                .zIndex(100)
-            
-            // Item count badge showing how many games are being dragged
-            if !draggedROMs.isEmpty {
-                Text("\(draggedROMs.count + 1)")
-                    .font(.system(size: 14, weight: .bold))
-                    .foregroundColor(.white)
-                    .frame(width: 24, height: 24)
-                    .background(Circle().fill(Color.red).shadow(radius: 2))
-                    .offset(x: (cardWidth * 0.125) + 8, y: -(cardWidth * 0.125) - 15)
-                    // Always opaque, but pops from invisible tiny scale (0.001) to full size
-                    .scaleEffect(isAnimating ? 1.0 : 0.001)
-                    .zIndex(101)
-            }
-        }
-        .frame(width: boxSize, height: boxSize)
-        .onAppear {
-            // A 0.02s async delay ensures the OS dragging session is fully 
-            // initialized before we tell SwiftUI to shrink and animate the stack.
-            DispatchQueue.main.asyncAfter(deadline: .now() + 0.02) {
-                withAnimation(.spring(response: 0.5, dampingFraction: 0.75)) {
-                    isAnimating = true
-                }
-            }
-        }
-    }
-}
-
-// A simplified, performance-friendly card strictly for the dragging stack
-struct DragPreviewCard: View {
-    let rom: ROM
-    let preloadedImage: NSImage?
-    
-    var body: some View {
-        ZStack {
-            RoundedRectangle(cornerRadius: 12)
-                .fill(Color(nsColor: .windowBackgroundColor).opacity(0.9))
-                .shadow(color: .black.opacity(0.4), radius: 8, y: 4)
-            
-            // Fast, synchronous path so macOS accepts the drag view immediately
-            if let img = preloadedImage {
-                Image(nsImage: img)
-                    .resizable()
-                    .scaledToFit()
-                    .clipShape(RoundedRectangle(cornerRadius: 8))
-                    .padding(1)
-            } else {
-                // Instant fallback UI for background stack items
-                VStack {
-                    Image(systemName: "gamecontroller.fill")
-                        .font(.largeTitle)
-                        .foregroundColor(.gray)
-                        .padding(.bottom, 4)
-                    Text(rom.displayName)
-                        .font(.system(size: 10, weight: .medium))
-                        .foregroundColor(.primary)
-                        .lineLimit(2)
-                        .multilineTextAlignment(.center)
-                        .padding(.horizontal, 8)
-                }
-            }
-        }
-        .aspectRatio(0.75, contentMode: .fit) // Lock aspect ratio so the preview frame is perfectly predictable
-    }
+  }
 }

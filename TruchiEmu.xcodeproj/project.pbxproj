@@ -157,6 +157,7 @@
 		4DE4616CC04E04F0BF73AC72 /* TYRQUAKE.png in Resources */ = {isa = PBXBuildFile; fileRef = EA7858DE5D0204111DF21E0B /* TYRQUAKE.png */; };
 		51315A3F08E40B90B5F97DD6 /* MEGADUCK.png in Resources */ = {isa = PBXBuildFile; fileRef = B5B1D330F958A092AFBD96F0 /* MEGADUCK.png */; };
 		515D1B24DC823EA60E658044 /* LUTRO.png in Resources */ = {isa = PBXBuildFile; fileRef = DF7DEE8C655EE9C9F76AEDD8 /* LUTRO.png */; };
+		5283D5F00AED8BC54D66A48F /* DragPreviewStack.swift in Sources */ = {isa = PBXBuildFile; fileRef = CC6AB7FF503B33DE09A41088 /* DragPreviewStack.swift */; };
 		52A57D38AEDD3C34E1221A0A /* wolf@132w.png in Resources */ = {isa = PBXBuildFile; fileRef = 215743F22EAFAC281FD18BD6 /* wolf@132w.png */; };
 		53610C7E863EC39935522D46 /* DOSRunner.swift in Sources */ = {isa = PBXBuildFile; fileRef = F0173607FC9D5E57349DD932 /* DOSRunner.swift */; };
 		543B34C593F66B5B4A04DE1A /* ScaleSmooth.metal in Sources */ = {isa = PBXBuildFile; fileRef = DB371ABEE63BE1D87FA4114E /* ScaleSmooth.metal */; };
@@ -811,6 +812,7 @@
 		CB1B9C3D41BC2F6BE626F54D /* gbc@132w.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "gbc@132w.png"; sourceTree = "<group>"; };
 		CB274110F7281D8DBC58FA5C /* itv@132w.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "itv@132w.png"; sourceTree = "<group>"; };
 		CBFE3A9E877C2D62FEDDB15E /* SetupWizardView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SetupWizardView.swift; sourceTree = "<group>"; };
+		CC6AB7FF503B33DE09A41088 /* DragPreviewStack.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DragPreviewStack.swift; sourceTree = "<group>"; };
 		CD2FE1ECA3ADA9DB03225538 /* ATARI800-alt.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "ATARI800-alt.png"; sourceTree = "<group>"; };
 		CE108305F82ABE87D2BE7D7D /* VECTREX.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = VECTREX.png; sourceTree = "<group>"; };
 		CECB63EE0225C02723607DB6 /* zxs@132w.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "zxs@132w.png"; sourceTree = "<group>"; };
@@ -1846,6 +1848,7 @@
 		D312A527B5D5559AC4A8B225 /* Shared */ = {
 			isa = PBXGroup;
 			children = (
+				CC6AB7FF503B33DE09A41088 /* DragPreviewStack.swift */,
 				EE471B05F9191D15C52ADAA8 /* GameError.swift */,
 				765163A6375E43C30AD7BD7E /* Extensions */,
 				D86886CF5F2C1B51C4BAA909 /* Infrastructure */,
@@ -2351,6 +2354,7 @@
 				92931B26614CCBD73F498965 /* DetailSection.swift in Sources */,
 				0448CE19B61670132722282B /* DisplaySettingsView.swift in Sources */,
 				FC372B713FBF4FAF94510511 /* DotMatrixLCD.metal in Sources */,
+				5283D5F00AED8BC54D66A48F /* DragPreviewStack.swift in Sources */,
 				A25031037FC355CB33AC84F3 /* EnvironmentDiagnostics.swift in Sources */,
 				10A813FD9AC06B780E931816 /* FilterChipView.swift in Sources */,
 				92800B5A7288EC0F30C67F0B /* FocusableMTKView.swift in Sources */,
