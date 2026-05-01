@@ -500,14 +500,6 @@ viewModel.updateFilters(
         // Cmd+F focuses search field
         .onReceive(NotificationCenter.default.publisher(for: NSWindow.didBecomeKeyNotification)) { _ in }
         .keyboardShortcut(KeyEquivalent("f"), modifiers: .command)
-        // Return launches selected game
-        .onSubmit {
-            if let rom = selectedROM {
-                Task {
-                    await launchGame(rom)
-                }
-            }
-        }
         // Note: Delete key handling via onKeyPress requires macOS 14+
         // For macOS 13, users can use context menu or confirm delete action
     }
