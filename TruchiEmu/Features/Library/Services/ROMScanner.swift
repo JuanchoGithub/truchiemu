@@ -236,6 +236,11 @@ actor ROMScanner {
         let folder = url.deletingLastPathComponent()
         rom.metadata = xmlCache[folder]?[url.lastPathComponent]
         
+        // Also set CRC on the ROM if it exists in metadata (from games.xml)
+        if let crcFromMeta = rom.metadata?.crc32 {
+            rom.crc32 = crcFromMeta
+        }
+        
         rom.refreshDerivedFields()
         if !rom.isBios && FileManager.default.fileExists(atPath: rom.boxArtLocalPath.path) {
             rom.hasBoxArt = true
@@ -382,6 +387,11 @@ actor ROMScanner {
             meta.developer = gameNode.elements(forName: "developer").first?.stringValue
             meta.genre = gameNode.elements(forName: "genre").first?.stringValue
             meta.description = gameNode.elements(forName: "desc").first?.stringValue
+            meta.crc32 = gameNode.elements(forName: "crc").first?.stringValue
+            if let playersStr = gameNode.elements(forName: "players").first?.stringValue,
+               let players = Int(playersStr) {
+                meta.players = players
+            }
             
             metadataMap[filename] = meta
         }

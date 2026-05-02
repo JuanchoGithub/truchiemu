@@ -185,9 +185,7 @@ struct GameDetailView: View {
                 formatter.countStyle = .file
                 fileSize = formatter.string(fromByteCount: size)
             }
-            if let crc = ROMIdentifierService.shared.computeCRC(for: currentROM.path, systemID: currentROM.systemID ?? "") {
-                crcHash = crc
-            }
+            crcHash = currentROM.crc32
         }
         .onChange(of: currentROM.hasBoxArt) { _, _ in loadBoxArt() }
         .onChange(of: currentROM.screenshotPaths) { _, _ in loadScreenshots() }

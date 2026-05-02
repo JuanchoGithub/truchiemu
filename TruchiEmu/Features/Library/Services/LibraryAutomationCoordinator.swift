@@ -172,10 +172,72 @@ final class LibraryAutomationCoordinator: ObservableObject {
             }
         }
 
+        // Phase 1.75: Re-identify ROMs that have title but are missing libretro metadata (genre, publisher, etc.)
+        // These ROMs were previously identified (e.g., via games.xml or earlier scan) but never enriched.
+        // They skip Phase 1 because needsAutomaticIdentification = false (title exists), but need enrichment.
+        let romsMissingLibretroMetadata = scope.filter { rom in
+            rom.metadata?.title != nil && !rom.metadata!.title!.isEmpty &&
+            rom.metadata?.genre == nil && !rom.isHidden
+        }
+        
+        if !romsMissingLibretroMetadata.isEmpty {
+            phase = .identifying
+            progress = 0
+            statusLine = "Identifying ROMs with missing metadata: 0% — …"
+            
+            let total = Double(romsMissingLibretroMetadata.count)
+            var reidentifiedCount = 0
+            var reidentifiedROMs: [ROM] = []
+            
+            let groupedBySystem = Dictionary(grouping: romsMissingLibretroMetadata) { $0.systemID ?? "unknown" }
+            
+            for (systemID, romsForSystem) in groupedBySystem {
+                let systemName = SystemDatabase.system(forID: systemID)?.name ?? systemID
+                
+                for rom in romsForSystem {
+                    let result = await ROMIdentifierService.shared.identify(rom: rom, preferNameMatch: true)
+                    if let updated = library.applyIdentificationResult(result, to: rom, persist: false, silent: true) {
+                        var refreshed = updated
+                        refreshed.enrichmentAttempted = false  // Will be enriched in Phase 2
+                        refreshed.refreshDerivedFields()
+                        reidentifiedROMs.append(refreshed)
+                    }
+                    
+                    reidentifiedCount += 1
+                    let frac = Double(reidentifiedCount) / total
+                    progress = frac
+                    statusLine = "Identifying ROMs with missing metadata: \(Int(frac * 100))% — \(systemName)"
+                    
+                    if reidentifiedCount % 50 == 0 { await Task.yield() }
+                }
+            }
+            
+            // Update library with re-identified ROMs
+            if !reidentifiedROMs.isEmpty {
+                let reidentifiedIDs = reidentifiedROMs.map { $0.id }
+                for reidentified in reidentifiedROMs {
+                    if let idx = library.roms.firstIndex(where: { $0.id == reidentified.id }) {
+                        library.roms[idx] = reidentified
+                    }
+                }
+                library.saveROMsToDatabase(only: reidentifiedIDs)
+            }
+            
+            progress = 1
+            statusLine = "Identifying ROMs with missing metadata: 100% — done"
+        }
+
         // Phase 2: Enrichment — batch metadata (players, genre) from cached LibretroMetadataLibrary
         // This is pure in-memory O(1) dictionary lookups — no I/O, no network
-        if !batchModifiedROMs.isEmpty {
-            let identifiedROMs = batchModifiedROMs.filter { $0.crc32 != nil }
+        // Run enrichment on ALL ROMs in scope that have CRC and haven't had enrichment attempted,
+        // not just the ones newly identified in Phase 1 (some ROMs may have been previously identified
+        // but still need enrichment to get libretro metadata like genre).
+        let romsNeedingEnrichment = scope.filter { rom in
+            rom.crc32 != nil && !rom.enrichmentAttempted && !rom.isHidden
+        }
+        
+        if !romsNeedingEnrichment.isEmpty {
+            let identifiedROMs = romsNeedingEnrichment
             if identifiedROMs.isEmpty {
                 statusLine = "Enrichment skipped: no CRC data"
             } else {

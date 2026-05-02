@@ -160,11 +160,22 @@ class ROMLibrary: ObservableObject {
 
     private func loadROMsFromRepository() { roms = repository.allROMs() }
 
-    func saveROMsToDatabase(only ids: [UUID]? = nil) {
+    func saveROMsToDatabase(only ids: [UUID]? = nil, updateXML: Bool = true) {
+        let romsToSave: [ROM]
         if let ids = ids {
             let idSet = Set(ids)
-            repository.saveROMs(roms.filter { idSet.contains($0.id) })
-        } else { repository.saveROMs(roms) }
+            romsToSave = roms.filter { idSet.contains($0.id) }
+        } else {
+            romsToSave = roms
+        }
+        repository.saveROMs(romsToSave)
+        
+        // Also update games.xml for any modified ROMs
+        if updateXML {
+            for rom in romsToSave {
+                updateGamesXML(for: rom)
+            }
+        }
     }
 
     func refreshROMs(ids: [UUID]) {
@@ -645,6 +656,8 @@ LibraryMetadataStore.shared.deleteMetadataEntries(Set(removedROMs.map { LibraryM
         if let developer = rom.metadata?.developer { node.addChild(XMLElement(name: "developer", stringValue: developer)) }
         if let genre = rom.metadata?.genre { node.addChild(XMLElement(name: "genre", stringValue: genre)) }
         if let desc = rom.metadata?.description { node.addChild(XMLElement(name: "desc", stringValue: desc)) }
+        if let crc = rom.crc32 { node.addChild(XMLElement(name: "crc", stringValue: crc)) }
+        if let players = rom.metadata?.players { node.addChild(XMLElement(name: "players", stringValue: String(players))) }
 
         try? xml.xmlData(options: .nodePrettyPrint).write(to: xmlPath)
     }
