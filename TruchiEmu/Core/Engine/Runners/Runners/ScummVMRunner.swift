@@ -79,8 +79,10 @@ class ScummVMRunner: EmulatorRunner, @unchecked Sendable {
     
     // Get the .scummvm hook file path for a given ZIP file
     private func hookFilePath(in gameFolder: URL) -> URL {
-        let gameID = detectGameID(in: gameFolder)
-        return gameFolder.appendingPathComponent("\(gameID).scummvm")
+        if let gameID = detectGameID(in: gameFolder) {
+            return gameFolder.appendingPathComponent("\(gameID).scummvm")
+        }
+        return gameFolder.appendingPathComponent("unknown.scummvm")
     }
     
     // MARK: - ZIP Extraction
@@ -177,7 +179,7 @@ class ScummVMRunner: EmulatorRunner, @unchecked Sendable {
             // First pass: look for known game file patterns
             for file in files {
                 let upperFile = file.uppercased()
-                let nameWithoutExt = (upperFile as NSString).deletingPathExtension               
+                _ = (upperFile as NSString).deletingPathExtension               
             }
             
             // Second pass: check for audio/data files to confirm it's ScummVM
@@ -201,7 +203,7 @@ class ScummVMRunner: EmulatorRunner, @unchecked Sendable {
         }
         
         // Fallback: derive game ID from the folder/ZIP name
-        let folderName = (folder.lastPathComponent as NSString).deletingPathExtension
+        _ = (folder.lastPathComponent as NSString).deletingPathExtension
             .lowercased()
             .replacingOccurrences(of: " ", with: "")
             .replacingOccurrences(of: "(", with: "")
@@ -260,7 +262,7 @@ class ScummVMRunner: EmulatorRunner, @unchecked Sendable {
             
             for file in files {
                 let ext = (file as NSString).pathExtension.lowercased()
-                let upperName = file.uppercased()
+                _ = file.uppercased()
                 
                 // Check for common game file indicators
                 if Self.scummVMDataExtensions.contains(ext) {

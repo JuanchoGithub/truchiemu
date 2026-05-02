@@ -20,8 +20,8 @@ class ShaderManager: ObservableObject {
     // Current uniform values (updated by UI sliders)
     @Published private(set) var uniformValues: [String: Float] = [:]
     
-    // Thread-safe storage for the renderer
-    private static let parameterStore = ShaderParameterStore()
+    // Thread-safe storage for the renderer (nonisolated for thread-safe renderer access)
+    private nonisolated(unsafe) static let parameterStore = ShaderParameterStore()
     
     init() {
         setupDevice()

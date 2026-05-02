@@ -164,7 +164,7 @@ class CoreOptionsManager: ObservableObject {
             }
         }
 
-        await LibretroBridge.loadCore(forOptions: dylibPath, coreID: coreID, romPath: dummyRomPath)
+        LibretroBridge.loadCore(forOptions: dylibPath, coreID: coreID, romPath: dummyRomPath)
         LoggerService.debug(category: "CoreOptionsManager", "For: \(coreID), Core loaded")
 
         // 2. Fetch the captured options, categories, AND input descriptors from the bridge
@@ -328,7 +328,7 @@ class CoreOptionsManager: ObservableObject {
     
     // Update a single option value and persist.
     func updateValue(_ value: String, for key: String) {
-        LoggerService.debug(category: "CoreOptionsManager", "For \(currentCoreID): updating key: \(key), value \(value)")
+        LoggerService.debug(category: "CoreOptionsManager", "For \(currentCoreID ?? "unknown"): updating key: \(key), value \(value)")
         
         // We find all versioned keys that match this base key and update them.
         // This ensures that if the UI is showing both V1 and V2, they both update.
@@ -344,7 +344,7 @@ class CoreOptionsManager: ObservableObject {
     
     // Reset a single option to its core-default.
     func resetToDefault(key: String) {
-        LoggerService.debug(category: "CoreOptionsManager", "For \(currentCoreID): resetting key: \(key)")
+        LoggerService.debug(category: "CoreOptionsManager", "For \(currentCoreID ?? "unknown"): resetting key: \(key)")
         
         // Find all versioned keys that match this base key and reset them.
         let matchingKeys = options.keys.filter { $0.hasPrefix("\(key)_") }
@@ -359,7 +359,7 @@ class CoreOptionsManager: ObservableObject {
     
     // Reset ALL options to their core-defined defaults.
     func resetAllToDefaults() {
-        LoggerService.debug(category: "CoreOptionsManager", "For \(currentCoreID): resetting ALL KEYS")
+        LoggerService.debug(category: "CoreOptionsManager", "For \(currentCoreID ?? "unknown"): resetting ALL KEYS")
         for key in options.keys {
             options[key]!.currentValue = options[key]!.defaultValue
         }
@@ -422,7 +422,7 @@ class CoreOptionsManager: ObservableObject {
                 }
             }
         }
-        LoggerService.debug(category: "CoreOptionsManager", "For \(currentCoreID): Loaded user overrides: \(result)")        
+        LoggerService.debug(category: "CoreOptionsManager", "For \(currentCoreID ?? "unknown"): Loaded user overrides: \(result)")        
         return result
     }
     
@@ -467,7 +467,7 @@ class CoreOptionsManager: ObservableObject {
     
     // Export options in RetroArch-compatible .cfg format
     func exportAsRetroArchConfig() -> String {
-        LoggerService.debug(category: "CoreOptionsManager", "For \(currentCoreID): Exporting data as retroarch config")
+        LoggerService.debug(category: "CoreOptionsManager", "For \(currentCoreID ?? "unknown"): Exporting data as retroarch config")
         let lines = options.values.map { opt in
             "\(opt.key) = \"\(opt.currentValue)\""
         }

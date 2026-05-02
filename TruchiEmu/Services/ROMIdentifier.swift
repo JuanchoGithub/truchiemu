@@ -73,7 +73,7 @@ enum ROMIdentifier {
         // 2. MAME Lookup (Potentially slow I/O: 90 pts)
         // Only perform if we don't have a very strong candidate from metadata matching
         if currentBestScore < 90 && extLower == "zip" {
-            await scoreByMAME(url: url, candidates: &candidates)
+            scoreByMAME(url: url, candidates: &candidates)
             currentBestScore = candidates.values.max() ?? 0
         }
 
@@ -110,7 +110,7 @@ enum ROMIdentifier {
             // We'll trigger a boost for common disc-based systems.
             let discSystems = ["psx", "ps1", "ps2", "saturn", "dreamcast", "3do", "psp"]
             for sysID in discSystems {
-                if let system = cachedSystems.first(where: { $0.id == sysID }) {
+                if cachedSystems.contains(where: { $0.id == sysID }) {
                     candidates[sysID, default: 0] += 50 // Significant boost to suggest a disc-based system
                 }
             }
@@ -299,10 +299,10 @@ enum ROMIdentifier {
         }
     }
 
-    private static func scoreByMAME(url: URL, candidates: inout [String: Int]) async {
+    private static func scoreByMAME(url: URL, candidates: inout [String: Int]) {
         let shortName = url.deletingPathExtension().lastPathComponent.lowercased()
         LoggerService.debug(category: "ROMIdentifier", "Performing MAME lookup for \(url.lastPathComponent) with short name: \(shortName)")
-        if let mameEntry = await MAMEUnifiedService.shared.lookup(shortName: shortName), 
+        if let mameEntry = MAMEUnifiedService.shared.lookup(shortName: shortName), 
            mameEntry.isRunnableInAnyCore && !mameEntry.isBIOS {
             candidates["mame", default: 0] += 90
             LoggerService.debug(category: "ROMIdentifier", "MAME lookup match for \(url.lastPathComponent): \(mameEntry.shortName)")
@@ -351,7 +351,6 @@ enum ROMIdentifier {
         for file in files {
             let fileURL = URL(fileURLWithPath: file)
             let ext = fileURL.pathExtension.lowercased()
-            let fileName = fileURL.lastPathComponent.uppercased()
             
             // --- System Extension/ID Scoring ---
             for system in systemDB {
@@ -439,7 +438,7 @@ enum ROMIdentifier {
                     let headerBytes = magicHeader.bytes
                     let offset = magicHeader.offset 
                     
-                    let expectedData = parseHeaderBytes(headerBytes ?? "", url.lastPathComponent ?? "")
+                    let expectedData = parseHeaderBytes(headerBytes ?? "", url.lastPathComponent)
                     if expectedData.isEmpty { continue }
 
                     // 2. Seek to the offset

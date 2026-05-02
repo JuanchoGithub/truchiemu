@@ -143,7 +143,7 @@ class RetroAchievementsService: ObservableObject {
         let raGames = try JSONDecoder().decode([RARAGameListResponse].self, from: data)
 
         // Transactional update to the local cache
-        try await context.transaction {
+        try context.transaction {
             // Clear old cache to ensure a clean, up-to-date list
             try context.delete(model: RAGameCacheEntry.self)
 
@@ -308,7 +308,7 @@ class RetroAchievementsService: ObservableObject {
         ]
         
         let (data, _) = try await URLSession.shared.data(from: components.url!)
-        LoggerService.debug(category: "RetroAchievements", "Requesting Game, url: \(components.url)")
+        LoggerService.debug(category: "RetroAchievements", "Requesting Game, url: \(components.url?.absoluteString ?? "unknown")")
         // Check for error in JSON
         let json = try JSONSerialization.jsonObject(with: data) as? [String: Any]
         if let errorMsg = json?["Error"] as? String {

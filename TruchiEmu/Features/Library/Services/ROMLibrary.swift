@@ -338,7 +338,7 @@ LibraryMetadataStore.shared.deleteMetadataEntries(Set(removedROMs.map { LibraryM
             // 3. Process only the new items
             for var rom in newROMs {
                 if rom.systemID == "mame" {
-                    await self.applyMAMEIdentificationInline(to: &rom, url: rom.path)
+                    self.applyMAMEIdentificationInline(to: &rom, url: rom.path)
                 }
                 if (!rom.isBios && !rom.isHidden) {
                     // Add metadata merging
@@ -510,7 +510,7 @@ LibraryMetadataStore.shared.deleteMetadataEntries(Set(removedROMs.map { LibraryM
 
                 let shortName = finalROM.shortNameForMAME.lowercased()
 
-                if let genre = await ProgettoSnapsService.shared.getGenre(for: shortName) {
+                if let genre = ProgettoSnapsService.shared.getGenre(for: shortName) {
                     LoggerService.info(category: "Identify", "Applied MAME genre '\(genre)' to \(shortName)")
                     var withGenre = finalROM
                     if withGenre.metadata == nil { withGenre.metadata = ROMMetadata() }
@@ -545,7 +545,7 @@ LibraryMetadataStore.shared.deleteMetadataEntries(Set(removedROMs.map { LibraryM
     }
     
     private func enrichMetadata(for rom: ROM, updateLibrary: Bool = false) async {
-        guard let systemID = rom.systemID, let crc = rom.crc32 else { return }
+        guard let systemID = rom.systemID else { return }
         if rom.enrichmentAttempted { return }
         
         await LibretroMetadataLibrary.shared.ensureLoaded(for: systemID)
@@ -911,11 +911,11 @@ LibraryMetadataStore.shared.deleteMetadataEntries(Set(removedROMs.map { LibraryM
         var enrichedIDs: [UUID] = []
         
         for (systemID, romsForSystem) in groupedBySystem {
-            guard let system = SystemDatabase.system(forID: systemID) else { continue }
+            guard SystemDatabase.system(forID: systemID) != nil else { continue }
             
             await LibretroMetadataLibrary.shared.ensureLoaded(for: systemID)
             
-            for var rom in romsForSystem {
+            for rom in romsForSystem {
                 var enriched = await LibretroMetadataLibrary.shared.enrich(rom: rom)
                 enriched.enrichmentAttempted = true
                 

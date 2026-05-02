@@ -164,7 +164,7 @@ struct GameDetailView: View {
             if currentROM.systemID == "mame" || currentROM.systemID == "arcade" {
                 await MAMEUnifiedService.shared.ensureLoaded()
                 let shortName = currentROM.shortNameForMAME
-                if let unifiedEntry = await MAMEUnifiedService.shared.lookup(shortName: shortName) {
+                if let unifiedEntry = MAMEUnifiedService.shared.lookup(shortName: shortName) {
                     gameDescription = unifiedEntry.description
                 }
             }

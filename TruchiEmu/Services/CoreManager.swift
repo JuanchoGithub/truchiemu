@@ -292,7 +292,7 @@ class CoreManager: ObservableObject {
         // Now fetch .info files in parallel for version info
         LoggerService.debug(category: "CoreManager", "Fetching version info for \(cores.count) cores...")
         await withTaskGroup(of: Void.self) { group in
-            for (index, var core) in cores.enumerated() {
+            for (index, core) in cores.enumerated() {
                 group.addTask {
                     let version = await self.determineVersion(for: core.coreID, buildDate: core.version ?? "")
                     await MainActor.run {
@@ -415,7 +415,6 @@ class CoreManager: ObservableObject {
         romID: UUID? = nil,
         slotToLoad: Int? = nil
     ) {
-        let sysStr = systemID ?? "nil"
         LoggerService.debug(category: "CoreManager", "[REQUEST] RequestCoreDownload called with coreID=\\(coreID), systemID=\\(sysStr), availableCores.count=\\(availableCores.count)")
     
     // Find in available list
@@ -714,7 +713,6 @@ class CoreManager: ObservableObject {
                     // Scan version folders
                     let versionFolders = try FileManager.default.contentsOfDirectory(at: coreFolder, includingPropertiesForKeys: nil)
                     var installedVersions: [CoreVersion] = []
-                    var activeVersion: CoreVersion?
                     var activeVersionTag: String?
 
                     // Look for latest symlink
@@ -754,7 +752,6 @@ class CoreManager: ObservableObject {
                             installedVersions.append(coreVersion)
 
                                 if isActive {
-                                    activeVersion = coreVersion
                                     activeVersionTag = coreVersion.tag
                                 }
 

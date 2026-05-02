@@ -38,8 +38,8 @@ final class CoreOverrideService {
         logger.info("Loaded \(self.overrides.count) core override configurations")
         
         // Log loaded overrides for debugging
-        for (coreID, options) in self.overrides {
-            logger.debug("Overrides for \(coreID): \(options.count) options")
+        for _ in self.overrides {
+            // do nothing
         }
         } catch {
             logger.error("Failed to load CoreOverrides.json: \(error.localizedDescription)")
@@ -151,7 +151,7 @@ struct CoreOverrideUpdate {
         if overrides.isEmpty {
             logger.debug("No overrides for core: \(coreID)")
         } else {
-            logger.info("Overrides for \(coreID): \(overrides.count) options")
+            //logger.info("Overrides for \(coreID): \(overrides.count) options")
             for (key, value) in overrides {
                 logger.debug(" \(key) = \(value)")
             }

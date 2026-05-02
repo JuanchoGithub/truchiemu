@@ -84,7 +84,7 @@ struct MAMEDependencyStatusView: View {
         let romsDirectory = rom.path.deletingLastPathComponent()
         
         // 1. Check missing dependencies from the service
-        let missing = await MAMEDependencyService.shared.checkMissingDependencies(
+        let missing = MAMEDependencyService.shared.checkMissingDependencies(
             for: shortName,
             coreID: coreID,
             romsDirectory: romsDirectory
@@ -102,7 +102,7 @@ struct MAMEDependencyStatusView: View {
         ))
         
         // Check for parent ROM dependency
-        if let unifiedEntry = await MAMEUnifiedService.shared.lookup(shortName: shortName),
+        if let unifiedEntry = MAMEUnifiedService.shared.lookup(shortName: shortName),
            let parentROM = unifiedEntry.coreDeps?.values.compactMap({ $0.cloneOf }).first, !parentROM.isEmpty {
             let parentPath = romsDirectory.appendingPathComponent("\(parentROM).zip")
             deps.append(MAMEDependencyInfo(

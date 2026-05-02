@@ -462,8 +462,10 @@ super.init(window: window)
                     
                     // Dont show window, terminate the emulation instead
                     self.window?.close()
-                    self.runner?.stop()
-                    self.runner = nil
+                    MainActor.assumeIsolated {
+                        self.runner?.stop()
+                        self.runner = nil
+                    }
                     
                     // Show error alert to the user
                     DispatchQueue.main.async {
@@ -954,7 +956,7 @@ return false
                         // This catches cases where PS1 cores report non-4:3 internal resolutions (e.g. 368x240).
                         if let systemID = runner.rom?.systemID,
                            let systemInfo = SystemDatabase.system(forID: systemID) {
-                            let systemAR = systemInfo.displayAspectRatio
+                            _ = systemInfo.displayAspectRatio
 
                             //If the aspect ratio is wider than the Macbook screen, force it to 16:10
                             // FIXME: this should be an option in settings
@@ -1000,7 +1002,6 @@ return false
                             // Use preset defaults for all uniforms - no ROMSettings fallback
                             // Genesis bleeding is quite noticeable.
                             let scanInt = getUniform("scanlineIntensity", fallback: 0.6) 
-                            let bleed = getUniform("bleedAmount", fallback: 0.8) // Increase this to 0.8+
                             let barrelAmt = getUniform("barrelAmount", fallback: 0.05)
                             let colorB = getUniform("colorBoost", fallback: 1.1)
                             LoggerService.extreme(category: "Shaders", "scanInt=\(scanInt) barrelAmt=\(barrelAmt) colorBoost=\(colorB)")

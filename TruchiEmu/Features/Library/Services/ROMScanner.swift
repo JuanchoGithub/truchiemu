@@ -279,7 +279,7 @@ actor ROMScanner {
     
     nonisolated private func applyMAMEIdentification(to rom: inout ROM, url: URL) async {
         let shortName = url.deletingPathExtension().lastPathComponent.lowercased()
-        if let unifiedEntry = await MAMEUnifiedService.shared.lookup(shortName: shortName) {
+        if let unifiedEntry = MAMEUnifiedService.shared.lookup(shortName: shortName) {
             await applyUnifiedMAMEIdentification(to: &rom, entry: unifiedEntry, shortName: shortName)
         }
     }

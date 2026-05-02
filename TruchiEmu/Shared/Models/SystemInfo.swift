@@ -648,11 +648,10 @@ class LibretroInfoManager: ObservableObject {
 
     private let githubZipURL = URL(string: "https://github.com/libretro/libretro-core-info/archive/refs/heads/master.zip")!
     
+    @MainActor
     func refreshCoreInfo() async {
-        DispatchQueue.main.async {
-            self.isRefreshing = true
-            self.refreshStatus = "Downloading libretro info..."
-        }
+        isRefreshing = true
+        refreshStatus = "Downloading libretro info..."
         do {
             let (zipData, _) = try await URLSession.shared.data(from: githubZipURL)
             LoggerService.info(category: "LibretroInfoManager", "Downloading libretro info from \(githubZipURL)")
@@ -662,7 +661,7 @@ class LibretroInfoManager: ObservableObject {
             try zipData.write(to: zipPath)
             LoggerService.debug(category: "LibretroInfoManager", "Downloaded libretro info to \(zipPath)")
             
-            DispatchQueue.main.async { self.refreshStatus = "Extracting files..." }
+            refreshStatus = "Extracting files..."
             
             let process = Process()
             process.executableURL = URL(fileURLWithPath: "/usr/bin/unzip")
@@ -671,7 +670,7 @@ class LibretroInfoManager: ObservableObject {
             process.waitUntilExit()
             LoggerService.debug(category: "LibretroInfoManager", "Extracted libretro info to \(tempDir)")
             
-            DispatchQueue.main.async { self.refreshStatus = "Parsing system info..." }
+            refreshStatus = "Parsing system info..."
             
             let extractedFolder = tempDir.appendingPathComponent("libretro-core-info-master")
             var newExtensionsDict: [String: Set<String>] = [:] 
@@ -681,8 +680,8 @@ class LibretroInfoManager: ObservableObject {
             var systemMfgFromInfo: [String: String] = [:]
             
             LoggerService.debug(category: "LibretroInfoManager", "Parsing system info from \(extractedFolder)")
-            if let enumerator = FileManager.default.enumerator(at: extractedFolder, includingPropertiesForKeys: nil) {
-                for case let fileURL as URL in enumerator where fileURL.pathExtension == "info" {
+            if let contents = try? FileManager.default.contentsOfDirectory(at: extractedFolder, includingPropertiesForKeys: nil) {
+                for fileURL in contents where fileURL.pathExtension == "info" {
                     let infoDict = parseInfoFile(at: fileURL)
         
                     // 1. Handle System/Core Mapping & Discovery
@@ -720,7 +719,7 @@ class LibretroInfoManager: ObservableObject {
                 }
             }
             
-            DispatchQueue.main.async { self.refreshStatus = "Updating database..." }
+            refreshStatus = "Updating database..."
             LoggerService.debug(category: "LibretroInfoManager", "Updating database...")
             
             var currentSystems = SystemDatabase.systems
@@ -767,19 +766,15 @@ class LibretroInfoManager: ObservableObject {
             
             LoggerService.debug(category: "LibretroInfoManager", "Removed temporary directory")
             
-            DispatchQueue.main.async {
-                LoggerService.info(category: "LibretroInfoManager", "Update Complete!")
-                self.isRefreshing = false
-                self.refreshStatus = "Update Complete!"
-                SystemPreferences.shared.updateTrigger += 1
-            }
+            LoggerService.info(category: "LibretroInfoManager", "Update Complete!")
+            isRefreshing = false
+            refreshStatus = "Update Complete!"
+            SystemPreferences.shared.updateTrigger += 1
             
         } catch {
             LoggerService.error(category: "LibretroInfoManager", "Failed to refresh libretro info: \(error.localizedDescription)")
-            DispatchQueue.main.async {
-                self.isRefreshing = false
-                self.refreshStatus = "Failed: \(error.localizedDescription)"
-            }
+            isRefreshing = false
+            refreshStatus = "Failed: \(error.localizedDescription)"
         }
     }
     

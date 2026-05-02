@@ -147,9 +147,6 @@ struct SetupWizardView: View {
         // Capture main actor-isolated values before entering detached task
         let downloadBezels = wizard.downloadBezels
         let downloadCheats = wizard.downloadCheats
-        let achievementsEnabled = wizard.achievementsEnabled
-        let achievementsUsername = wizard.achievementsUsername
-        let achievementsPassword = wizard.achievementsPassword
         
         // Kick off background tasks without blocking the UI
         Task.detached(priority: .utility) {

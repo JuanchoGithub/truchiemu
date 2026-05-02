@@ -34,12 +34,6 @@ BOOL g_pointer_pressed = NO;
 
 static void no_op_log(const char *msg, int level) {}
 
-static void swift_logger_wrapper(const char *msg, int level) {
-  if (g_swiftLoggerBlock) {
-    g_swiftLoggerBlock(msg, level);
-  }
-}
-
 LogFunc g_active_log_func = no_op_log;
 
 void bridge_log_printf(enum retro_log_level level, const char *fmt, ...) {

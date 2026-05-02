@@ -74,11 +74,6 @@ actor ImageCache {
         // Use ImageIO for more robust loading than NSImage(contentsOf:)
         // This is much harder to crash with corrupted files.
         return await Task.detached(priority: .userInitiated) {
-            let options: [CFString: Any] = [
-                kCGImageSourceShouldCache: true,
-                kCGImageSourceShouldAllowFloat: true
-            ]
-            
             guard let source = CGImageSourceCreateWithURL(url as CFURL, nil) else {
                 return nil
             }

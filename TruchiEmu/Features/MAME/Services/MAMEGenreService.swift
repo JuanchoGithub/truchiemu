@@ -57,7 +57,7 @@ final class MAMEGenreService: ObservableObject {
         let shortName = extractShortName(from: rom.name)
 
         // Get genre from Progetto-SNAPS
-        guard let genre = await snapsService.getGenre(for: shortName) else {
+        guard let genre = snapsService.getGenre(for: shortName) else {
             LoggerService.debug(category: "MAMEGenre", "No genre found for \(shortName)")
             return
         }

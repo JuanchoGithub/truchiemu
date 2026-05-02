@@ -633,14 +633,12 @@ if meta.genre != nil {
 
     var playersRow: some View {
         Group {
-            if let meta = currentROM.metadata {
-                if meta.players != nil {
-                    Divider().overlay(AppColors.divider(colorScheme))
-                    MetadataRow(label: "Players", value: String(meta.players))
-                    if meta.players > 1 {
+            if let meta = currentROM.metadata, meta.players > 0 {
+                Divider().overlay(AppColors.divider(colorScheme))
+                MetadataRow(label: "Players", value: String(meta.players))
+                if meta.players > 1 {
                         Divider().overlay(AppColors.divider(colorScheme))
                         MetadataRow(label: "Co-op", value: meta.cooperative ? "Yes" : "No")
-                    }
                 } else {
                     Divider().overlay(AppColors.divider(colorScheme))
                     HStack(alignment: .top, spacing: 16) {

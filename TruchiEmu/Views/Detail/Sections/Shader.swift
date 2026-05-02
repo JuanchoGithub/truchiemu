@@ -121,10 +121,7 @@ ShaderWindowController.shared?.close()
     private func applyToAllGamesInSystem(systemID: String, presetID: String, uniforms: [String: Float]) {
         let decoder = JSONDecoder()
         let encoder = JSONEncoder()
-        guard let modelContext = try? SwiftDataContainer.shared.container.mainContext else { 
-            LoggerService.error(category: "ShaderPicker", "Failed to get modelContext")
-            return 
-        }
+        let modelContext = SwiftDataContainer.shared.container.mainContext
         
         let descriptor = FetchDescriptor<ROMEntry>(predicate: #Predicate { $0.systemID == systemID })
         guard let entries = try? modelContext.fetch(descriptor) else { 

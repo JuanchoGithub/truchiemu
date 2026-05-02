@@ -98,7 +98,6 @@ class GameLauncher: ObservableObject {
     //   - library: Reference to ROMLibrary for marking as played
     //   - completion: Called when launch is complete
     // - Returns: The window controller if launch was successful
-    @discardableResult
     func launchGame(
         rom: ROM,
         coreID: String,
@@ -141,15 +140,11 @@ class GameLauncher: ObservableObject {
         // PPSSPP asset check
         if coreID.lowercased().contains("ppsspp") {
             if !PPSSPAssetService.shared.hasAssets {
-                do {
-                    try PPSSPAssetService.shared.ensureAssetsCopied()
-                } catch {
-                    LoggerService.warning(category: "GameLauncher", "Failed to copy bundled PPSSPP assets: \(error.localizedDescription)")
-                }
+                _ = PPSSPAssetService.shared.ensureAssetsCopied()
                 if !PPSSPAssetService.shared.hasAssets {
                     let shouldDownload = await showPPSSPAssetMissingAlertAsync()
                     if shouldDownload {
-                        await PPSSPAssetService.shared.downloadAssets()
+                        _ = await PPSSPAssetService.shared.downloadAssets()
                     }
                 }
             }

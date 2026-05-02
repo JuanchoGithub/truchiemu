@@ -54,27 +54,6 @@ struct CRT_MP_Context {
     float distSq;
 };
 
-// --- [ UNIQUE HELPER FUNCTIONS ] ---
-
-static inline CRT_MP_Context crt_mp_prepareContext(float2 screenUV, bool soft, bool chroma, bool vig, bool distort) {
-    CRT_MP_Context ctx;
-    if (soft || chroma || vig || distort) {
-        ctx.centered = (screenUV - float2(0.5, 0.52)) * 2.0;
-        ctx.centered *= float2(1.06, 1.08);
-        ctx.distSq = dot(ctx.centered, ctx.centered);
-    } else {
-        ctx.centered = 0; ctx.distSq = 0;
-    }
-    return ctx;
-}
-
-static inline float2 crt_mp_getDistortedUV(float2 screenUV, CRT_MP_Context ctx, float amount, bool active) {
-    if (!active) return screenUV;
-    float2 offset = ctx.centered * ctx.centered;
-    float2 distort = ctx.centered + (ctx.centered * (offset.yx * amount));
-    return distort * 0.5 + 0.5;
-}
-
 static inline float3 crt_mp_applyDitherBleed(float3 rgb, float3 leftColor, float3 rightColor, bool active) {
     if (!active) return rgb;
     float3 bleed = (rgb + leftColor + rightColor) * 0.3;

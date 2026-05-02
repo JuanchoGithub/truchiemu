@@ -167,7 +167,7 @@ final class ProgettoSnapsService: ObservableObject {
     func loadCachedDictionary() -> [String: String]? {
         guard FileManager.default.fileExists(atPath: catverCachePath.path),
               let data = try? Data(contentsOf: catverCachePath),
-              let content = String(data: data, encoding: .utf8) else {
+              String(data: data, encoding: .utf8) != nil else {
             return nil
         }
 

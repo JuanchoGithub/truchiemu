@@ -666,7 +666,7 @@ final class MAMEDependencyService: ObservableObject {
         }
 
         // Fallback: try the unified MAME database
-        if let unifiedEntry = await MAMEUnifiedService.shared.lookup(shortName: shortName) {
+        if let unifiedEntry = MAMEUnifiedService.shared.lookup(shortName: shortName) {
             return (
                 description: unifiedEntry.description,
                 type: unifiedEntry.isBIOS ? "bios" : (unifiedEntry.isRunnableInAnyCore ? "game" : "unplayable"),

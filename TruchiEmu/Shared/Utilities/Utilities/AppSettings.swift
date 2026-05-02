@@ -20,7 +20,7 @@ final class AppSettingsCache {
     }
     
     private func loadFromSwiftData() {
-        guard let container = try? SwiftDataContainer.shared else { return }
+        let container = SwiftDataContainer.shared
         let context = container.mainContext
         let descriptor = FetchDescriptor<SettingsEntry>()
         

@@ -509,22 +509,15 @@ return
     refreshError = nil
     
     Task {
-      do {
-        await coreManager.fetchAvailableCores()
+      await coreManager.fetchAvailableCores()
+      
+      await MainActor.run {
+        isRefreshingCores = false
         
-        await MainActor.run {
-          isRefreshingCores = false
-          
-          // Check if we found cores for this system
-          let isNowAvailable = selectedCoreEntry.isInstalled || coreManager.availableCores.contains(where: { $0.coreID == selectedCoreEntry.id })
-          if !isNowAvailable {
-            refreshError = "No cores found for this system. Please try again later."
-          }
-        }
-      } catch {
-        await MainActor.run {
-          isRefreshingCores = false
-          refreshError = "Failed to refresh core list. Check your internet connection."
+        // Check if we found cores for this system
+        let isNowAvailable = selectedCoreEntry.isInstalled || coreManager.availableCores.contains(where: { $0.coreID == selectedCoreEntry.id })
+        if !isNowAvailable {
+          refreshError = "No cores found for this system. Please try again later."
         }
       }
     }

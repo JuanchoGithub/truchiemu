@@ -123,7 +123,7 @@ public final class SaveMigrationService {
         
         while let fileURL = enumerator.nextObject() as? URL {
             let resourceValues = try fileURL.resourceValues(forKeys: [.isDirectoryKey])
-            if try resourceValues.isDirectory != true {
+            if resourceValues.isDirectory != true {
                 files.append(fileURL)
             }
         }

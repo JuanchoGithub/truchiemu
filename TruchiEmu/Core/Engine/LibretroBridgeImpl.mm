@@ -174,12 +174,12 @@
     if ([ext isEqualToString:@"wbfs"] || [ext isEqualToString:@"wad"] || [ext isEqualToString:@"wia"] ||[ext isEqualToString:@"rvz"]) {
       device_type = 513;
     }
-  } else if (g_coreID && ([[g_coreID lowercaseString] containsString:@"swanstation"]) ||
-             (g_coreID && [[g_coreID lowercaseString] containsString:@"mednafen_psx"]) ||
-             (g_coreID && [[g_coreID lowercaseString] containsString:@"pcsx"])) {
-      device_type = 1;
-  } else if (g_coreID && ([[g_coreID lowercaseString] containsString:@"mame"]) ||
-             (g_coreID && [[g_coreID lowercaseString] containsString:@"dosbox"])) {
+} else if ((g_coreID && [[g_coreID lowercaseString] containsString:@"swanstation"]) ||
+              (g_coreID && [[g_coreID lowercaseString] containsString:@"mednafen_psx"]) ||
+              (g_coreID && [[g_coreID lowercaseString] containsString:@"pcsx"])) {
+       device_type = 1;
+   } else if ((g_coreID && [[g_coreID lowercaseString] containsString:@"mame"]) ||
+              (g_coreID && [[g_coreID lowercaseString] containsString:@"dosbox"])) {
       device_type = 3; // RETRO_DEVICE_KEYBOARD
   }
 
@@ -565,9 +565,6 @@ shutdown:
 
     glReadPixels(0, 0, w, h, GL_BGRA, GL_UNSIGNED_INT_8_8_8_8_REV, _hwReadbackBuffer);
     
-    // Debug: Check if we got any non-zero pixels
-    uint32_t firstPixel = ((uint32_t *)_hwReadbackBuffer)[0];
-    uint32_t lastPixel = ((uint32_t *)_hwReadbackBuffer)[w*h - 1];
     //NSLog(@"[Core-DGB] Readback pixels - first: 0x%08X, last: 0x%08X", firstPixel, lastPixel);
   glBindFramebuffer(GL_READ_FRAMEBUFFER, 0);
 

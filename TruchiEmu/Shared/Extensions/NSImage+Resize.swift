@@ -30,8 +30,7 @@ extension NSImage {
         let ciContext = CIContext(options: nil)
         
         // Use MTKTextureLoader to get a CIImage
-        guard let textureLoader = try? MTKTextureLoader(device: MTLCreateSystemDefaultDevice()!),
-              let cgImage = texture.toCGImage() else {
+        guard let cgImage = texture.toCGImage() else {
             return nil
         }
         

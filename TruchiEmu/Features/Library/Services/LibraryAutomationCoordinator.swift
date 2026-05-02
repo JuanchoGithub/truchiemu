@@ -151,7 +151,7 @@ final class LibraryAutomationCoordinator: ObservableObject {
                 let total = Double(mamEROMs.count)
                 for (index, rom) in mamEROMs.enumerated() {
                     let shortName = rom.shortNameForMAME.lowercased()
-                    if let genre = await ProgettoSnapsService.shared.getGenre(for: shortName),
+                    if let genre = ProgettoSnapsService.shared.getGenre(for: shortName),
                        let idx = library.roms.firstIndex(where: { $0.id == rom.id }) {
                         if library.roms[idx].metadata == nil {
                             library.roms[idx].metadata = ROMMetadata()
@@ -194,7 +194,7 @@ final class LibraryAutomationCoordinator: ObservableObject {
                     
                     await LibretroMetadataLibrary.shared.ensureLoaded(for: systemID)
                     
-                    for var rom in romsForSystem {
+                    for rom in romsForSystem {
                         guard rom.crc32 != nil else { continue }
                         
                         if rom.enrichmentAttempted {

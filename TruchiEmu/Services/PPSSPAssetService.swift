@@ -180,7 +180,6 @@ downloadProgress = 0.6
     logger.info("Downloaded \(zipData.count) bytes, written to \(zipFileURL.path)")
 
     // Extract zip using native Foundation ZIP handling to avoid process issues
-    var extractionSucceeded = false
     let fileManager = FileManager.default
 
     // First, list the zip contents to understand structure
@@ -285,7 +284,7 @@ return .ok
 }
 
 // Try bundled zip extraction first
-let bundledSuccess = ensureAssetsCopied()
+_ = ensureAssetsCopied()
 if hasAssets {
 let now = Date()
 lastCheckDate = now

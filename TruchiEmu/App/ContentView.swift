@@ -278,7 +278,7 @@ applyShaderOverrides(systemID: data.systemID, shaderID: data.newShaderPresetID, 
 }
 
 private func applyShaderOverrides(systemID: String, shaderID: String, selectedGameIDs: Set<UUID>) {
-guard let modelContext = try? SwiftDataContainer.shared.container.mainContext else { return }
+let modelContext = SwiftDataContainer.shared.container.mainContext
 
 let descriptor = FetchDescriptor<ROMEntry>(predicate: #Predicate { $0.systemID == systemID })
 guard let entries = try? modelContext.fetch(descriptor) else { return }
@@ -316,10 +316,14 @@ LoggerService.info(category: "Shaders", "Updated shader for \(updatedROMIDs.coun
 // Shows whichever background task is currently active (library automation takes precedence).
     private var activeBackgroundTask: (progress: Double, statusLine: String)? {
         if libraryAutomation.isActive {
-            return (libraryAutomation.progress, libraryAutomation.statusLine)
+            let prog: Double = libraryAutomation.progress
+            let status: String = libraryAutomation.statusLine
+            return (prog, status)
         }
         if metadataSync.isActive {
-            return (metadataSync.progress, metadataSync.statusLine)
+            let prog: Double = metadataSync.progress
+            let status: String = metadataSync.statusLine
+            return (prog, status)
         }
         return nil
     }

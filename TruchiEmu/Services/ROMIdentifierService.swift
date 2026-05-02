@@ -199,7 +199,7 @@ final class ROMIdentifierService: @unchecked Sendable {
             await MAMEUnifiedService.shared.ensureLoaded()
             
             // First: try the unified MAME database (multi-core, 50K+ entries)
-            if let unifiedEntry = await MAMEUnifiedService.shared.lookup(shortName: shortName) {
+            if let unifiedEntry = MAMEUnifiedService.shared.lookup(shortName: shortName) {
                 let isRunnable = MAMEUnifiedService.shared.isRunnable(shortName: shortName) 
                 let isBIOS = MAMEUnifiedService.shared.isBIOS(shortName: shortName) 
                 if isRunnable && !isBIOS {
@@ -467,7 +467,7 @@ static func titleFromDatGame(name: String, description: String) -> String {
         for (a, t) in arabicToText { let p = "(?<![a-zA-Z])\\b" + String(a) + "\\b(?![a-zA-Z0-9])"; let s = normalized.replacingOccurrences(of: p, with: t, options: .regularExpression); if s != normalized { variants.insert(s) } }
         for (r, a) in romanToArabic { let esc = NSRegularExpression.escapedPattern(for: r); let p = r.count == 1 ? "(?<![a-zA-Z])\\b" + esc + "\\b(?![-'a-zA-Z0-9])" : "(?<![a-zA-Z])\\b" + esc + "\\b(?![a-zA-Z0-9])"; let s = normalized.replacingOccurrences(of: p, with: String(a), options: .regularExpression); if s != normalized { variants.insert(s) } }
         for (r, a) in romanToArabic { if let tf = arabicToText[a] { let esc = NSRegularExpression.escapedPattern(for: r); let p = "(?<![a-zA-Z])\\b" + esc + "\\b(?![a-zA-Z0-9])"; let s = normalized.replacingOccurrences(of: p, with: tf, options: .regularExpression); if s != normalized { variants.insert(s) } } }
-        for (t, a) in textToArabic { let esc = NSRegularExpression.escapedPattern(for: t); let p = "(?<![a-zA-Z])\\b" + String(a) + "\\b(?![a-zA-Z0-9])"; let s = normalized.replacingOccurrences(of: p, with: String(a), options: .regularExpression); if s != normalized { variants.insert(s) } }
+        for (_, a) in textToArabic { let p = "(?<![a-zA-Z])\\b" + String(a) + "\\b(?![a-zA-Z0-9])"; let s = normalized.replacingOccurrences(of: p, with: String(a), options: .regularExpression); if s != normalized { variants.insert(s) } }
         for (t, a) in textToArabic { if let rf = arabicToRoman[a] { let esc = NSRegularExpression.escapedPattern(for: t); let p = "(?<![a-zA-Z])\\b" + esc + "\\b(?![a-zA-Z0-9])"; let s = normalized.replacingOccurrences(of: p, with: rf, options: .regularExpression); if s != normalized { variants.insert(s) } } } // wait, typo here in the source content provided by error
         let t = normalized.trimmingCharacters(in: .whitespaces)
         for pat in [" 1$", " (?i:i)(?-i)$", " (?i:one)(?-i)$"] { let s = t.replacingOccurrences(of: pat, with: "", options: .regularExpression).trimmingCharacters(in: .whitespaces); if s != t && s.count >= 2 { variants.insert(s) } }
@@ -960,7 +960,7 @@ actor LibretroDatabaseLibrary {
         }
         LoggerService.debug(category: "LibretroDB", "No local DAT found for systemID=\(system.id) (tried: \(localNames.joined(separator: ", ")))")  
 
-        LoggerService.debug(category: "LibretroDB", "=== STEP 2: Looking for resource bundle dats at \(Bundle.main.resourcePath) ===")
+        LoggerService.debug(category: "LibretroDB", "=== STEP 2: Looking for resource bundle dats at \(Bundle.main.resourcePath ?? "unknown") ===")
         // Get the dat from the resources <system.id>.dat if it exists, and write it to the datsDir for future use. This is because some of the older DATs are not available in the main libretro-database repo but are still very useful for identification.
         for fileName in localNames {
             // strip extension for resource lookup since bundled resources don's have to match the exact filename

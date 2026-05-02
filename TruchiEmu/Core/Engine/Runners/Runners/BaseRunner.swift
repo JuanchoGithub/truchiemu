@@ -242,7 +242,7 @@ class EmulatorRunner: ObservableObject, @unchecked Sendable {
 
 
     @MainActor
-    func launch(rom: ROM, coreID: String, shaderUniformOverrides: [String: Float] = [:]) {
+    open func launch(rom: ROM, coreID: String, shaderUniformOverrides: [String: Float] = [:]) {
         if findCoreLib(coreID: coreID) == nil {
             LoggerService.error(category: "Runner", "Core dylib not found: \(coreID)")
             isRunning = false
@@ -280,6 +280,9 @@ class EmulatorRunner: ObservableObject, @unchecked Sendable {
         let savedDir = LibretroBridgeSwift.saveDirectoryPath()
         LoggerService.info(category: "Runner", "Using save directory: \(savedDir)")
         
+    let rom = self.rom
+    let dylibPath = self.findCoreLib(coreID: coreID) ?? coreID
+        
   emulationQueue.async {
     LibretroBridgeSwift.setLanguage(selectedLang)
     LibretroBridgeSwift.setLogLevel(Int(selectedLogLevel))
@@ -287,16 +290,19 @@ class EmulatorRunner: ObservableObject, @unchecked Sendable {
     // Ensure save directories are created and configured
     SaveDirectoryBridge.ensureDirectoriesExist()
 
-    let dylibPath = self.findCoreLib(coreID: coreID) ?? coreID
+    guard let rom = rom else { return }
+
+    let romPath = rom.path.path
+    let systemID = rom.systemID
 
     // We don't have a direct way to catch a SIGSEGV here,
     // but we can catch potential Swift errors if the bridge was designed to throw.
     // For now, we ensure we handle the launch result.
     LibretroBridgeSwift.launch(
-                dylibPath: dylibPath, 
-                romPath: self.rom!.path.path,
+                dylibPath: dylibPath,
+                romPath: romPath,
                 coreID: coreID,
-                systemID: self.rom!.systemID,
+                systemID: systemID,
                 shaderDir: shaderDir,
                 videoCallback: { [weak self] data, width, height, pitch, format in
                     self?.updateFrame(data: data, width: width, height: height, pitch: pitch, format: format)
@@ -722,7 +728,7 @@ class EmulatorRunner: ObservableObject, @unchecked Sendable {
 
         #if DEBUG
         if systemID == "n64" {
-            let firstPixelPtr = data.bindMemory(to: UInt32.self, capacity: 1)
+            _ = data.bindMemory(to: UInt32.self, capacity: 1)
         }
         #endif
 
@@ -767,7 +773,7 @@ class EmulatorRunner: ObservableObject, @unchecked Sendable {
     }
 
     @MainActor
-    func setupGamepadInput() {
+    open func setupGamepadInput() {
         // Ensure ControllerService is initialized
         let cs = ControllerService.shared
         
@@ -800,10 +806,6 @@ class EmulatorRunner: ObservableObject, @unchecked Sendable {
         
 extendedGamepad.valueChangedHandler = { [weak self] _, element in
             guard let self = self else { return }
-            
-            // Debug: log every input event
-            let elemName = element.localizedName ?? "unknown"
-            let isPressed = (element as? GCControllerButtonInput)?.isPressed ?? false
             
             // If it's a DPad or Stick, we want to handle its 4 directions
             if let dpad = element as? GCControllerDirectionPad {
