@@ -13,28 +13,29 @@ extension GameDetailView {
 
             ModernSectionCard(showHeader: false) {
                 VStack(alignment: .leading, spacing: 14) {
-                    HStack {
-                        Text("System")
-                        Spacer()
-                        Picker("System", selection: Binding(
-                            get: { currentROM.systemID ?? "gb" },
-                            set: { newID in
-                                var updated = currentROM
-                                updated.systemID = newID
-                                library.updateROM(updated)
+                    if currentROM.systemID == "gb" || currentROM.systemID == "gbc" {
+                        HStack {
+                            Text("System")
+                            Spacer()
+                            Picker("System", selection: Binding(
+                                get: { currentROM.systemID ?? "gb" },
+                                set: { newID in
+                                    var updated = currentROM
+                                    updated.systemID = newID
+                                    library.updateROM(updated)
+                                }
+                            )) {
+                                Text("Game Boy").tag("gb")
+                                Text("Game Boy Color").tag("gbc")
                             }
-                        )) {
-                            Text("Game Boy").tag("gb")
-                            Text("Game Boy Color").tag("gbc")
+                            .pickerStyle(.menu)
+                            .labelsHidden()
                         }
-                        .pickerStyle(.menu)
-                        .labelsHidden()
-                        .disabled(currentROM.systemID != "gb" && currentROM.systemID != "gbc")
-                    }
-                    .padding(.vertical, 8)
-                    .foregroundColor(AppColors.textPrimary(colorScheme))
+                        .padding(.vertical, 8)
+                        .foregroundColor(AppColors.textPrimary(colorScheme))
 
-                    Divider().overlay(AppColors.divider(colorScheme))
+                        Divider().overlay(AppColors.divider(colorScheme))
+                    }
                     MetadataRow(label: "File Name", value: currentROM.path.lastPathComponent)
                     Divider().overlay(AppColors.divider(colorScheme))
                     MetadataRow(
@@ -137,6 +138,7 @@ if meta.genre != nil {
                         Text("No cores installed").font(.caption).foregroundColor(AppColors.textMuted(colorScheme))
                     } else {
                         Picker("Core", selection: $infoCoreID) {
+                            Text("Select Core").tag(nil as String?)
                             ForEach(installedCores) { core in
                                 Text(core.metadata.displayName).tag(core.id as String?)
                             }
@@ -634,40 +636,49 @@ if meta.genre != nil {
     var playersRow: some View {
         Group {
             if let meta = currentROM.metadata, meta.players > 0 {
-                Divider().overlay(AppColors.divider(colorScheme))
-                MetadataRow(label: "Players", value: String(meta.players))
-                if meta.players > 1 {
+                let playersIdentifiedFromLibretro = meta.userPlayerOverride == nil && meta.players > 1
+                if playersIdentifiedFromLibretro {
+                    Divider().overlay(AppColors.divider(colorScheme))
+                    MetadataRow(label: "Players", value: String(meta.players))
+                    if meta.players > 1 {
                         Divider().overlay(AppColors.divider(colorScheme))
                         MetadataRow(label: "Co-op", value: meta.cooperative ? "Yes" : "No")
+                    }
                 } else {
                     Divider().overlay(AppColors.divider(colorScheme))
-                    HStack(alignment: .top, spacing: 16) {
-                        Text("PLAYERS".uppercased())
-                            .font(.caption)
-                            .fontWeight(.medium)
-                            .foregroundColor(AppColors.textTertiary(colorScheme))
-                            .frame(width: 100, alignment: .leading)
-                        Spacer()
-                        Picker("", selection: Binding(
-                            get: { meta.userPlayerOverride ?? 0 },
-                            set: { newValue in
-                                guard newValue > 0 else { return }
-                                var updated = currentROM
-                                if updated.metadata == nil { updated.metadata = ROMMetadata() }
-                                updated.metadata?.userPlayerOverride = newValue
-                                updated.metadata?.players = newValue
-                                library.updateROM(updated)
-                            }
-                        )) {
-                            Text("Single").tag(1)
-                            Text("Multi").tag(2)
-                        }
-                        .pickerStyle(.segmented)
-                        .labelsHidden()
-                        .frame(width: 160)
-                    }
+                    playersPickerView(meta: meta)
                 }
             }
+        }
+    }
+
+    private func playersPickerView(meta: ROMMetadata) -> some View {
+        HStack(alignment: .top, spacing: 16) {
+            Text("PLAYERS".uppercased())
+                .font(.caption)
+                .fontWeight(.medium)
+                .foregroundColor(AppColors.textTertiary(colorScheme))
+                .frame(width: 100, alignment: .leading)
+            Spacer()
+            Picker("", selection: Binding(
+                get: { meta.userPlayerOverride ?? 1 },
+                set: { newValue in
+                    guard newValue > 0 else { return }
+                    Task { @MainActor in
+                        var updated = self.currentROM
+                        if updated.metadata == nil { updated.metadata = ROMMetadata() }
+                        updated.metadata?.userPlayerOverride = newValue
+                        updated.metadata?.players = newValue
+                        self.library.updateROM(updated)
+                    }
+                }
+            )) {
+                Text("Single").tag(1)
+                Text("Multi").tag(2)
+            }
+            .pickerStyle(.segmented)
+            .labelsHidden()
+            .frame(width: 160)
         }
     }
 }

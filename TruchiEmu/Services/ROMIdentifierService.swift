@@ -826,10 +826,11 @@ actor LibretroDatabaseLibrary {
         "psx": "Sony - PlayStation.dat", "atari2600": "Atari - 2600.dat", "atari5200": "Atari - 5200.dat", "atari7800": "Atari - 7800.dat",
         "lynx": "Atari - Lynx.dat", "jaguar": "Atari - Jaguar.dat", "mame": "MAME.dat", "pce": "NEC - PC Engine - TurboGrafx 16.dat",
         "wonderswan": "Bandai - WonderSwan.dat", "wswanc": "Bandai - WonderSwan Color.dat",
+        "gamecube": "Nintendo - GameCube.dat", "wii": "Nintendo - Wii.dat",
     ]
 
     // TODO: make this dynamic
-    private static let redumpOnlySystems: Set<String> = ["psx", "ps2", "psp", "psvita", "ps3", "segacd", "pcecd", "pcfx", "pc98", "jaguar_cd", "cd32", "cdtv", "wii", "gcn"]
+    private static let redumpOnlySystems: Set<String> = ["psx", "ps2", "psp", "psvita", "ps3", "segacd", "pcecd", "pcfx", "pc98", "jaguar_cd", "cd32", "cdtv", "gcn"]
 
     private static let mameRdbBasenames: [String] = ["MAME.rdb", "MAME 2016.rdb", "MAME 2015.rdb", "MAME 2010.rdb", "MAME 2003-Plus.rdb", "MAME 2003.rdb", "MAME 2000.rdb"]
 
@@ -1077,6 +1078,7 @@ actor LibretroMetadataLibrary {
         "psx": "Sony - PlayStation.dat", "atari2600": "Atari - 2600.dat", "atari5200": "Atari - 5200.dat", "atari7800": "Atari - 7800.dat",
         "lynx": "Atari - Lynx.dat", "jaguar": "Atari - Jaguar.dat", "mame": "MAME.dat", "pce": "NEC - PC Engine - TurboGrafx 16.dat",
         "wonderswan": "Bandai - WonderSwan.dat", "wswanc": "Bandai - WonderSwan Color.dat",
+        "gamecube": "Nintendo - GameCube.dat", "wii": "Nintendo - Wii.dat",
     ]
 
     enum MetadataType: String, CaseIterable {
@@ -1178,12 +1180,6 @@ actor LibretroMetadataLibrary {
             // Libretro data is authoritative — set players and clear any user override.
             updated.metadata?.players = libretroPlayers
             updated.metadata?.userPlayerOverride = nil
-            LoggerService.libretroMeta("Enriched players=\(libretroPlayers) for CRC=\(crc) (user override cleared)")
-        } else {
-            // No libretro players data — keep user's preference if set.
-            if meta.userPlayerOverride != nil {
-                LoggerService.libretroMeta("No libretro players for CRC=\(crc), preserving user override=\(meta.userPlayerOverride!)")
-            }
         }
 
         // Fill blanks for supplemental fields — never overwrite existing data.
@@ -1251,11 +1247,16 @@ private func fetchAndCacheDat(for system: SystemInfo) async -> [String: GameMeta
 		let cache = loadCache(for: type, systemID: system.id)
 		let cacheExpired = cache == nil || cache!.expiresAt <= Date()
 
-		if !cacheExpired, FileManager.default.fileExists(atPath: localUrl.path) {
+		// Use local file if it exists - even if cache is expired, use it as fallback (don't require network)
+		if FileManager.default.fileExists(atPath: localUrl.path) {
 			let db = parseMetadataDat(contentsOf: localUrl)
 			if !db.isEmpty {
+				if cacheExpired {
+					LoggerService.libretroMeta("Using stale cache (expired): \(type.rawValue) \(basename) (\(db.count) entries)")
+				} else {
+					LoggerService.libretroMeta("Cache fresh: \(type.rawValue) \(basename) (\(db.count) entries)")
+				}
 				mergeInto(&combined, from: db)
-				LoggerService.libretroMeta("Cache fresh: \(type.rawValue) \(basename) (\(db.count) entries)")
 				foundAny = true
 			}
 			continue

@@ -342,7 +342,6 @@ class SystemDatabase {
     static func allInternalIDs(forDisplayID id: String) -> [String] {
         switch id {
         case "gb", "gbc": return ["gb", "gbc"]
-        case "gc", "wii": return ["gc", "wii"]
         default: return [id]
         }
     }
@@ -355,8 +354,6 @@ class SystemDatabase {
         return [
             "gb": ["gb", "gbc"],
             "gbc": ["gb", "gbc"],
-            "gc": ["gc", "wii"],
-            "wii": ["gc", "wii"]
         ]
     }
 

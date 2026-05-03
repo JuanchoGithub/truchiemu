@@ -2422,7 +2422,7 @@
         "sortOrder": 80,
         "manufacturer": "Id Software"
     },
-    {
+{
         "displayInUI": true,
         "id": "gamecube",
         "pathKeywords": [
@@ -2435,7 +2435,7 @@
         "filenamePatterns": [
             "(?i)\\(disc\\s?\\d+\\)"
         ],
-        "name": "GameCube \/ Wii",
+        "name": "GameCube",
         "extensions": [
             "ciso",
             "dff",
@@ -2446,14 +2446,40 @@
             "iso",
             "m3u",
             "rvz",
-            "tgc",
+            "tgc"
+        ],
+        "defaultBoxType": "Vertical",
+        "iconName": "gamecontroller",
+        "sortOrder": 80,
+        "manufacturer": "Nintendo"
+    },
+    {
+        "displayInUI": true,
+        "id": "wii",
+        "pathKeywords": [
+            "wii",
+            "nintendo wii"
+        ],
+        "magicHeaders": [],
+        "filenamePatterns": [
+            "(?i)\\(disc\\s?\\d+\\)"
+        ],
+        "name": "Wii",
+        "extensions": [
+            "ciso",
+            "dff",
+            "dol",
+            "elf",
+            "iso",
+            "m3u",
+            "rvz",
             "wad",
             "wbfs",
             "wia"
         ],
         "defaultBoxType": "Vertical",
         "iconName": "gamecontroller",
-        "sortOrder": 80,
+        "sortOrder": 81,
         "manufacturer": "Nintendo"
     },
     {
