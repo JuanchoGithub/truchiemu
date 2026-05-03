@@ -126,14 +126,18 @@ class GameLauncher: ObservableObject {
         // MAME dependency check
         LoggerService.extreme(category: "GameLauncher", "Checking MAME dependencies")
         if checkMAMEDeps && MAMEDependencyService.isMAMECore(coreID) {
+            LoggerService.info(category: "GameLauncher", "Running MAME dependency check for \(rom.displayName) (\(coreID))")
             let checkResult = checkMAMEDependencies(rom: rom, coreID: coreID)
-            if case .missingFiles(let gameName, let missing, let romsDir) = checkResult {
-                LoggerService.info(category: "GameLauncher", "MAME ROM missing files for \(gameName): \(missing.map(\.sourceZIP))")
-                showMAMEMissingFilesAlert(gameName: gameName, missing: missing, romsDirectory: romsDir)
+            switch checkResult {
+            case .missingFiles(let gameName, let required, let missing, let romsDir):
+                LoggerService.info(category: "GameLauncher", "MAME ROM missing files for \(gameName): \(missing.joined(separator: ", "))")
+                showMAMEMissingFilesAlert(gameName: gameName, required: required, missing: missing, romsDirectory: romsDir)
                 isLaunching = false
                 currentLaunchROM = nil
                 completion?(nil)
                 return
+            case .canLaunch:
+                LoggerService.info(category: "GameLauncher", "MAME dependency check passed, launching \(rom.displayName)")
             }
         }
 
@@ -404,18 +408,26 @@ class GameLauncher: ObservableObject {
     // MARK: - MAME Missing Files Alert
     
     // Show an alert when MAME ROM files are missing.
-    private func showMAMEMissingFilesAlert(gameName: String, missing: [MissingROMItem], romsDirectory: URL) {
+    private func showMAMEMissingFilesAlert(gameName: String, required: [String], missing: [String], romsDirectory: URL) {
         let alert = NSAlert()
         alert.alertStyle = .warning
         alert.messageText = "Missing ROM Files"
-        alert.informativeText = "\"\(gameName)\" requires additional ROM files to run.\n\nMissing files:\n\(missing.map { $0.sourceZIP }.joined(separator: "\n"))"
-        LoggerService.error(category: "GameLauncher", "Missing ROM files for \(gameName): \(missing.map { $0.sourceZIP }.joined(separator: ", "))")
+        alert.informativeText = "\"\(gameName)\" requires additional ROM files to run.\n\nRequired: \(required.joined(separator: ", "))\n\nMissing: \(missing.joined(separator: ", "))"
+        LoggerService.error(category: "GameLauncher", "Missing ROM files for \(gameName): \(missing.joined(separator: ", "))")
         
+        // Add buttons
+        alert.addButton(withTitle: "Copy Missing Files")
         alert.addButton(withTitle: "Open ROMs Folder")
         alert.addButton(withTitle: "Cancel")
         
         let response = alert.runModal()
+        
         if response == .alertFirstButtonReturn {
+            // Copy missing files to clipboard
+            let pasteboard = NSPasteboard.general
+            pasteboard.clearContents()
+            pasteboard.setString(missing.joined(separator: "\n"), forType: .string)
+        } else if response == .alertSecondButtonReturn {
             NSWorkspace.shared.open(romsDirectory)
         }
     }

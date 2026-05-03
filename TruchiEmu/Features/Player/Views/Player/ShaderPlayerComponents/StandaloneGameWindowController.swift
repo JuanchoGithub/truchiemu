@@ -268,6 +268,25 @@ super.init(window: window)
     }
     
     @MainActor
+    private func showMAMEDependenciesAlert() {
+        let alert = NSAlert()
+        alert.alertStyle = .warning
+        alert.messageText = "Missing ROM Files"
+        
+        // Try to get game name from pendingROM
+        var gameName = "this MAME game"
+        if let rom = pendingROM {
+            gameName = "\"\(rom.displayName)\""
+        }
+        
+        alert.informativeText = "\(gameName) requires additional ROM files that were not found (parent ROM, samples, etc.).\n\nCheck the Game Info tab to see which files are required and missing."
+        
+        alert.addButton(withTitle: "OK")
+        
+        alert.runModal()
+    }
+    
+    @MainActor
     func onMouseActivity() {
         showToolbar()
     }
@@ -447,9 +466,23 @@ super.init(window: window)
             let isRunning = state.2
             let timedOut = attempts >= maxAttempts
             
+            // Check for MAME missing dependencies (set during load via log callback)
+            // NOTE: Removed - conflicts with pre-launch check. We handle this in GameLauncher now.
+            // let mameMissingDeps = LibretroBridgeSwift.getMameMissingDependencies()
+            
             if isReady || hasError || !isRunning || timedOut {
                 timer.invalidate()
+                
+                // Removed: Runtime MAME dependency check conflicts with pre-launch check
+                // if mameMissingDeps {
+                //     LoggerService.warning(category: "Runner", "MAME reported missing dependencies, showing alert and closing")
+                //     self.showMAMEDependenciesAlert()
+                //     self.window?.close()
+                //     return
+                // }
+                
                 if !isReady {
+                    
                     let errorToDisplay: GameError? = MainActor.assumeIsolated { self.runner?.lastError }
 
                     if hasError {

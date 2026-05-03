@@ -118,11 +118,11 @@ struct MAMEMissingROMsAlert: View {
 // Result of checking MAME ROM dependencies before launch.
 enum MAMEPreLaunchCheck {
     case canLaunch
-    case missingFiles(gameName: String, missing: [MissingROMItem], romsDirectory: URL)
+    case missingFiles(gameName: String, required: [String], missing: [String], romsDirectory: URL)
 }
 
 // Check MAME ROM dependencies before launch.
-// Returns `.canLaunch` if all required files exist, or `.missingFiles` with details.
+// Uses MAMEUnifiedService (loaded at startup) - fast O(1) lookup.
 func checkMAMEDependencies(rom: ROM, coreID: String) -> MAMEPreLaunchCheck {
     // Only check MAME cores
     guard MAMEDependencyService.isMAMECore(coreID) else {
@@ -130,23 +130,80 @@ func checkMAMEDependencies(rom: ROM, coreID: String) -> MAMEPreLaunchCheck {
     }
     
     let shortName = rom.shortNameForMAME
-    // Use the ROM's actual parent directory to find sibling ZIPs
     let romsDirectory = rom.path.deletingLastPathComponent()
     
-    let missing = MAMEDependencyService.shared.checkMissingDependencies(
-        for: shortName,
-        coreID: coreID,
-        romsDirectory: romsDirectory
-    )
+    LoggerService.info(category: "MAMEDep", "Checking dependencies for \(shortName)")
     
-    if missing.isEmpty {
-        return .canLaunch
+    // Fast lookup from MAMEUnifiedService (loaded at startup)
+    if let entry = MAMEUnifiedService.shared.lookup(shortName: shortName),
+       let coreDeps = entry.coreDeps {
+        LoggerService.info(category: "MAMEDep", "Found \(coreDeps.count) core deps for \(shortName)")
+        for (core, dep) in coreDeps {
+            LoggerService.info(category: "MAMEDep", "Core \(core): cloneOf=\(dep.cloneOf ?? "nil"), romOf=\(dep.romOf ?? "nil"), sampleOf=\(dep.sampleOf ?? "nil"), merged=\(dep.mergedROMs?.joined(separator: ",") ?? "nil")")
+        }
+        
+        var requiredFiles: [String] = []
+        var missingFiles: [String] = []
+        
+        // Check all dependency types for each core
+        for (_, dep) in coreDeps {
+            // Parent ROM (clone)
+            if let cloneOf = dep.cloneOf, !cloneOf.isEmpty {
+                let path = romsDirectory.appendingPathComponent("\(cloneOf).zip")
+                let zipName = "\(cloneOf).zip"
+                requiredFiles.append(zipName)
+                if !FileManager.default.fileExists(atPath: path.path) {
+                    missingFiles.append(zipName)
+                }
+            }
+            
+            // ROM of (device requires this ROM)
+            if let romOf = dep.romOf, !romOf.isEmpty {
+                let path = romsDirectory.appendingPathComponent("\(romOf).zip")
+                let zipName = "\(romOf).zip"
+                requiredFiles.append(zipName)
+                if !FileManager.default.fileExists(atPath: path.path) {
+                    missingFiles.append(zipName)
+                }
+            }
+            
+            // Sample ROM
+            if let sampleOf = dep.sampleOf, !sampleOf.isEmpty {
+                let path = romsDirectory.appendingPathComponent("\(sampleOf).zip")
+                let zipName = "\(sampleOf).zip"
+                requiredFiles.append(zipName)
+                if !FileManager.default.fileExists(atPath: path.path) {
+                    missingFiles.append(zipName)
+                }
+            }
+            
+            // Merged ROMs (additional ROMs needed for merged set)
+            if let merged = dep.mergedROMs {
+                for mergedName in merged {
+                    let path = romsDirectory.appendingPathComponent("\(mergedName).zip")
+                    let zipName = "\(mergedName).zip"
+                    requiredFiles.append(zipName)
+                    if !FileManager.default.fileExists(atPath: path.path) {
+                        missingFiles.append(zipName)
+                    }
+                }
+            }
+        }
+        
+        LoggerService.info(category: "MAMEDep", "Required: \(requiredFiles.joined(separator: ",")), Missing: \(missingFiles.joined(separator: ","))")
+        
+        if !missingFiles.isEmpty {
+            return .missingFiles(
+                gameName: rom.displayName,
+                required: requiredFiles,
+                missing: missingFiles,
+                romsDirectory: romsDirectory
+            )
+        }
+    } else {
+        LoggerService.warning(category: "MAMEDep", "No entry found in MAMEUnifiedService for \(shortName)")
     }
     
-    return .missingFiles(
-        gameName: rom.displayName,
-        missing: missing,
-        romsDirectory: romsDirectory
-    )
+    return .canLaunch
 }
 

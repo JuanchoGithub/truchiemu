@@ -503,15 +503,13 @@ final class MAMEDependencyService: ObservableObject {
         return MAMEXMLParser.getRunnableGames(from: db)
     }
     
-    // Check missing dependencies for a specific game.
-    // Returns a list of missing ZIP files the user needs to obtain.
-    func checkMissingDependencies(for shortName: String, coreID: String, romsDirectory: URL) -> [MissingROMItem] {
-        let baseID = Self.baseCoreID(coreID)
-        guard let db = dependencyCache[baseID],
-              let deps = db.games[shortName] else {
-            return []
-        }
-        
+// Check missing dependencies for a specific game.
+// Fast path: uses local directory check only - no database needed.
+func checkMissingDependencies(for shortName: String, coreID: String, romsDirectory: URL) -> [MissingROMItem] {
+    // First try: check if database has info about parent ROM (if loaded)
+    let baseID = Self.baseCoreID(coreID)
+    if let db = dependencyCache[baseID],
+       let deps = db.games[shortName] {
         var missing: [MissingROMItem] = []
         
         // Determine which ZIPs this game needs
@@ -535,6 +533,34 @@ final class MAMEDependencyService: ObservableObject {
         
         return missing
     }
+    
+    // No database - try to use fallback database which is loaded at startup
+    if let fallback = dependencyCache["mame_fallback"],
+       let deps = fallback.games[shortName] {
+        var missing: [MissingROMItem] = []
+        var requiredZIPs: Set<String> = [deps.romOf ?? shortName]
+        if let sampleOf = deps.sampleOf, !sampleOf.isEmpty {
+            requiredZIPs.insert(sampleOf)
+        }
+        
+        for zipName in requiredZIPs.sorted() {
+            let zipURL = romsDirectory.appendingPathComponent("\(zipName).zip")
+            if !FileManager.default.fileExists(atPath: zipURL.path) {
+                missing.append(MissingROMItem(
+                    romName: zipName,
+                    sourceZIP: "\(zipName).zip",
+                    crc: nil,
+                    size: nil
+                ))
+            }
+        }
+        
+        return missing
+    }
+    
+    // No data available - skip check to avoid blocking (MAME will report at runtime)
+    return []
+}
     
     // MARK: - Persistence
     

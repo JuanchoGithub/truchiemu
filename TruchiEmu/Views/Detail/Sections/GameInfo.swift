@@ -107,9 +107,7 @@ if meta.genre != nil {
 
             cheatsEnabledSection
 
-            if currentROM.systemID == "mame" || currentROM.systemID == "arcade" {
-                MAMEDependencyStatusView(rom: currentROM, coreID: activeCoreID)
-            }
+            MAMEDependencyStatusView(rom: currentROM, coreID: activeCoreID)
 
             if currentROM.systemID == "gb" || currentROM.systemID == "gbc" {
                 gbColorizationSection

@@ -51,7 +51,8 @@ final class GenreManager: ObservableObject {
                 "Adventure / Point & Click": "Point & Click",
                 "Adventure / Point & Click / Education": "Point & Click",
                 "Adventure / Point & Click / Role-Playing": "Point & Click",
-                "Music / Dancing": "Music"
+                "Music / Dancing": "Music",
+                "Fighter": "Fighting"
             ]
             saveMappings()
         }

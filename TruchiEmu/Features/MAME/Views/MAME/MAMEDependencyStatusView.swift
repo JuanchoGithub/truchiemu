@@ -8,10 +8,6 @@ struct MAMEDependencyStatusView: View {
     @Environment(\.colorScheme) private var colorScheme
     @State private var dependencies: [MAMEDependencyInfo] = []
     
-    private var isMAMEGame: Bool {
-        rom.systemID == "mame" || rom.systemID == "arcade"
-    }
-    
     private var hasMissingDependencies: Bool {
         dependencies.contains { !$0.isAvailable }
     }
@@ -20,55 +16,56 @@ struct MAMEDependencyStatusView: View {
     private var secondaryTextColor: Color { colorScheme == .dark ? .white.opacity(0.7) : .secondary }
     private var mutedTextColor: Color { colorScheme == .dark ? .white.opacity(0.4) : .secondary.opacity(0.7) }
     private var dividerColor: Color { colorScheme == .dark ? .white.opacity(0.08) : .secondary.opacity(0.15) }
-    private var cardBgColor: Color { colorScheme == .dark ? .white.opacity(0.06) : .secondary.opacity(0.05) }
     private var subtleBgColor: Color { colorScheme == .dark ? .white.opacity(0.03) : .secondary.opacity(0.03) }
     
     var body: some View {
-        Group {
-            if isMAMEGame && !dependencies.isEmpty {
-                ModernSectionCard(title: "ROM Dependencies", icon: "folder.badge.gearshape") {
-                    VStack(alignment: .leading, spacing: 12) {
-                        // Status header
-                        HStack(spacing: 8) {
-                            Image(systemName: hasMissingDependencies ? "exclamationmark.triangle.fill" : "checkmark.circle.fill")
-                                .foregroundColor(hasMissingDependencies ? .orange : .green)
-                                .font(.title3)
-                            
-                            Text(hasMissingDependencies ? "Missing required files" : "All dependencies available")
-                                .font(.subheadline)
-                                .fontWeight(.medium)
-                                .foregroundColor(hasMissingDependencies ? .orange : .green)
-                            
-                            Spacer()
-                        }
-                        
-                        Divider().overlay(dividerColor)
-                        
-                        // Dependency list
-                        ForEach(dependencies) { dep in
-                            dependencyRow(dep)
-                        }
-                        
-                        // Help text if missing
-                        if hasMissingDependencies {
-                            Divider().overlay(dividerColor)
-                            
-                            VStack(alignment: .leading, spacing: 6) {
-                                Text("To fix:")
-                                    .font(.caption)
-                                    .fontWeight(.medium)
-                                    .foregroundColor(secondaryTextColor)
-                                
-                                Text("Copy the missing ROM files to your ROMs folder. Files must be named exactly as shown above.")
-                                    .font(.caption)
-                                    .foregroundColor(mutedTextColor)
-                                    .lineSpacing(2)
-                            }
-                            .padding(10)
-                            .background(subtleBgColor)
-                            .cornerRadius(8)
-                        }
+        ModernSectionCard(title: "ROM Dependencies", icon: "folder.badge.gearshape") {
+            VStack(alignment: .leading, spacing: 12) {
+                // Status header
+                HStack(spacing: 8) {
+                    Image(systemName: hasMissingDependencies ? "exclamationmark.triangle.fill" : "checkmark.circle.fill")
+                        .foregroundColor(hasMissingDependencies ? .orange : .green)
+                        .font(.title3)
+                    
+                    Text(hasMissingDependencies ? "Missing required files" : "All dependencies available")
+                        .font(.subheadline)
+                        .fontWeight(.medium)
+                        .foregroundColor(hasMissingDependencies ? .orange : .green)
+                    
+                    Spacer()
+                }
+                
+                Divider().overlay(dividerColor)
+                
+                // Dependency list
+                if dependencies.isEmpty {
+                    Text("Loading dependency info...")
+                        .font(.caption)
+                        .foregroundColor(secondaryTextColor)
+                } else {
+                    ForEach(dependencies) { dep in
+                        dependencyRow(dep)
                     }
+                }
+                
+                // Help text if missing
+                if hasMissingDependencies {
+                    Divider().overlay(dividerColor)
+                    
+                    VStack(alignment: .leading, spacing: 6) {
+                        Text("To fix:")
+                            .font(.caption)
+                            .fontWeight(.medium)
+                            .foregroundColor(secondaryTextColor)
+                        
+                        Text("Copy the missing ROM files to your ROMs folder. Files must be named exactly as shown above.")
+                            .font(.caption)
+                            .foregroundColor(mutedTextColor)
+                            .lineSpacing(2)
+                    }
+                    .padding(10)
+                    .background(subtleBgColor)
+                    .cornerRadius(8)
                 }
             }
         }
@@ -78,19 +75,9 @@ struct MAMEDependencyStatusView: View {
     }
     
     private func loadDependencies() async {
-        guard isMAMEGame, let coreID = coreID else { return }
-        
         let shortName = rom.shortNameForMAME
         let romsDirectory = rom.path.deletingLastPathComponent()
         
-        // 1. Check missing dependencies from the service
-        let missing = MAMEDependencyService.shared.checkMissingDependencies(
-            for: shortName,
-            coreID: coreID,
-            romsDirectory: romsDirectory
-        )
-        
-        // 2. Build dependency info list
         var deps: [MAMEDependencyInfo] = []
         
         // Main ROM (the game itself)
@@ -101,27 +88,55 @@ struct MAMEDependencyStatusView: View {
             isRequired: true
         ))
         
-        // Check for parent ROM dependency
-        if let unifiedEntry = MAMEUnifiedService.shared.lookup(shortName: shortName),
-           let parentROM = unifiedEntry.coreDeps?.values.compactMap({ $0.cloneOf }).first, !parentROM.isEmpty {
-            let parentPath = romsDirectory.appendingPathComponent("\(parentROM).zip")
-            deps.append(MAMEDependencyInfo(
-                name: "\(parentROM).zip",
-                description: "Parent ROM (clone)",
-                isAvailable: FileManager.default.fileExists(atPath: parentPath.path),
-                isRequired: true
-            ))
-        }
-        
-        // Add missing dependencies from the service
-        for missingItem in missing {
-            if !deps.contains(where: { $0.name == missingItem.sourceZIP }) {
-                deps.append(MAMEDependencyInfo(
-                    name: missingItem.sourceZIP,
-                    description: "Required ROM",
-                    isAvailable: false,
-                    isRequired: true
-                ))
+        // Check for parent ROM, sample, device ROM, and merged dependencies
+        if let entry = MAMEUnifiedService.shared.lookup(shortName: shortName),
+           let coreDeps = entry.coreDeps {
+            for (_, dep) in coreDeps {
+                // Parent ROM (clone)
+                if let cloneOf = dep.cloneOf, !cloneOf.isEmpty {
+                    let parentPath = romsDirectory.appendingPathComponent("\(cloneOf).zip")
+                    deps.append(MAMEDependencyInfo(
+                        name: "\(cloneOf).zip",
+                        description: "Parent ROM (clone)",
+                        isAvailable: FileManager.default.fileExists(atPath: parentPath.path),
+                        isRequired: true
+                    ))
+                }
+                
+                // Device ROM required
+                if let romOf = dep.romOf, !romOf.isEmpty {
+                    let devicePath = romsDirectory.appendingPathComponent("\(romOf).zip")
+                    deps.append(MAMEDependencyInfo(
+                        name: "\(romOf).zip",
+                        description: "Device ROM",
+                        isAvailable: FileManager.default.fileExists(atPath: devicePath.path),
+                        isRequired: true
+                    ))
+                }
+                
+                // Sample ROM
+                if let sampleOf = dep.sampleOf, !sampleOf.isEmpty {
+                    let samplePath = romsDirectory.appendingPathComponent("\(sampleOf).zip")
+                    deps.append(MAMEDependencyInfo(
+                        name: "\(sampleOf).zip",
+                        description: "Sample ROM",
+                        isAvailable: FileManager.default.fileExists(atPath: samplePath.path),
+                        isRequired: false
+                    ))
+                }
+                
+                // Merged ROMs
+                if let merged = dep.mergedROMs {
+                    for mergedName in merged {
+                        let mergedPath = romsDirectory.appendingPathComponent("\(mergedName).zip")
+                        deps.append(MAMEDependencyInfo(
+                            name: "\(mergedName).zip",
+                            description: "Merged ROM",
+                            isAvailable: FileManager.default.fileExists(atPath: mergedPath.path),
+                            isRequired: true
+                        ))
+                    }
+                }
             }
         }
         
@@ -133,13 +148,11 @@ struct MAMEDependencyStatusView: View {
     @ViewBuilder
     private func dependencyRow(_ dep: MAMEDependencyInfo) -> some View {
         HStack(spacing: 10) {
-            // Status icon
             Image(systemName: dep.isAvailable ? "checkmark.circle.fill" : "xmark.circle.fill")
                 .foregroundColor(dep.isAvailable ? .green : .red)
                 .font(.system(size: 14))
                 .frame(width: 18)
             
-            // File info
             VStack(alignment: .leading, spacing: 2) {
                 Text(dep.name)
                     .font(.body)
@@ -153,7 +166,6 @@ struct MAMEDependencyStatusView: View {
             
             Spacer()
             
-            // Status badge
             Text(dep.isAvailable ? "Available" : "Missing")
                 .font(.caption2)
                 .fontWeight(.semibold)
