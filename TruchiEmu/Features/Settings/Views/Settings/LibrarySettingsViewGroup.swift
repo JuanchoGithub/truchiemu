@@ -104,7 +104,7 @@ private enum LibrarySection: CaseIterable, Identifiable {
         }
         .navigationTitle("Library")
         .sheet(item: $rebuildTargetFolder) { folder in
-            RebuildOptionsSheet(folder: folder, library: library)
+            RebuildOptionsSheet(folder: folder, library: library, automation: LibraryAutomationCoordinator.shared)
         }
     }
     
@@ -768,12 +768,44 @@ struct SubfolderRow: View {
 struct RebuildOptionsSheet: View {
     let folder: ROMLibraryFolder
     @ObservedObject var library: ROMLibrary
+    @ObservedObject var automation: LibraryAutomationCoordinator
     @Environment(\.dismiss) private var dismiss
     @State private var selectedOption: RebuildOption? = nil
     @State private var isRebuilding = false
+    @State private var rebuildStarted = false
     @State private var showConfirmation = false
     
     var body: some View {
+        VStack(alignment: .leading, spacing: 20) {
+            if isRebuilding {
+                rebuildingView
+            } else {
+                optionsView
+            }
+        }
+        .padding()
+        .frame(width: 440, height: 420)
+            .confirmationDialog(
+                "Confirm Rebuild",
+                isPresented: $showConfirmation,
+                titleVisibility: .visible
+            ) {
+                Button("Rebuild", role: .destructive) {
+                    Task {
+                        isRebuilding = true
+                        rebuildStarted = true
+                        await library.rebuildFolder(folder: folder, option: selectedOption!)
+                        dismiss()
+                    }
+                }
+                Button("Cancel", role: .cancel) {}
+            } message: {
+                Text("This will \(selectedOption?.description.lowercased() ?? "") for '\(folder.url.lastPathComponent)'.\n\nContinue?")
+            }
+    }
+    
+    @ViewBuilder
+    private var optionsView: some View {
         VStack(alignment: .leading, spacing: 20) {
             Text("Rebuild: \(folder.url.lastPathComponent)")
                 .font(.title2)
@@ -825,37 +857,64 @@ struct RebuildOptionsSheet: View {
                 Spacer()
                 
                 Button(action: { showConfirmation = true }) {
-                    if isRebuilding {
-                        ProgressView()
-                            .controlSize(.small)
-                        Text("Rebuilding...")
-                    } else {
-                        Text("Apply")
-                    }
+                    Text("Apply")
                 }
                 .buttonStyle(.borderedProminent)
-                .disabled(selectedOption == nil || isRebuilding)
+                .disabled(selectedOption == nil)
             }
         }
-        .padding()
-        .frame(width: 440, height: 420)
-            .confirmationDialog(
-                "Confirm Rebuild",
-                isPresented: $showConfirmation,
-                titleVisibility: .visible
-            ) {
-                Button("Rebuild", role: .destructive) {
-                    Task {
-                        isRebuilding = true
-                        await library.rebuildFolder(folder: folder, option: selectedOption!)
-                        isRebuilding = false
-                        dismiss()
-                    }
-                }
-                Button("Cancel", role: .cancel) {}
-            } message: {
-                Text("This will \(selectedOption?.description.lowercased() ?? "") for '\(folder.url.lastPathComponent)'.\n\nContinue?")
+    }
+    
+    @ViewBuilder
+    private var rebuildingView: some View {
+        VStack(alignment: .center, spacing: 24) {
+            Spacer()
+            
+            ProgressView()
+                .scaleEffect(1.5)
+            
+            VStack(spacing: 8) {
+                Text("Rebuilding...")
+                    .font(.title2)
+                    .fontWeight(.semibold)
+                
+                Text("This may take a while depending on the number of ROMs")
+                    .font(.subheadline)
+                    .foregroundColor(.secondary)
+                    .multilineTextAlignment(.center)
             }
+            
+            Spacer()
+            
+            rebuildStatusBar
+            
+            HStack {
+                Spacer()
+                
+                Button("Close") { dismiss() }
+                    .buttonStyle(.borderedProminent)
+                    .keyboardShortcut(.defaultAction)
+            }
+        }
+    }
+    
+    private var rebuildStatusBar: some View {
+        HStack(spacing: 10) {
+            if automation.isActive {
+                ProgressView()
+                    .controlSize(.small)
+            }
+            
+            Text(automation.statusLine)
+                .font(.callout)
+                .foregroundColor(.primary)
+                .textSelection(.enabled)
+                .frame(maxWidth: .infinity, alignment: .leading)
+        }
+        .padding(.horizontal, 16)
+        .padding(.vertical, 11)
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .background(Color(nsColor: .controlBackgroundColor))
     }
 }
 
