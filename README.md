@@ -1,4 +1,4 @@
-<img width="1112" height="850" alt="image" src="https://github.com/user-attachments/assets/b2165b71-f097-4cd2-9660-33f21ff6af5a" /># TruchiEmu 🕹️
+# TruchiEmu 🕹️
 
 <img width="1112" height="850" alt="image" src="https://github.com/user-attachments/assets/ebc735f3-c6ec-4edd-b677-fa2e159d1ead" />
 
