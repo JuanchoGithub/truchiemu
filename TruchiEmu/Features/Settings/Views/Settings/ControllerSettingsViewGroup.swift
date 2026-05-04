@@ -1,6 +1,8 @@
 import SwiftUI
 import Combine
 import GameController
+import Foundation
+
 // MARK: - Controllers
 struct ControllerSettingsView: View {
     @EnvironmentObject var controllerService: ControllerService

@@ -19,7 +19,7 @@ struct LibraryGridView: View {
 
 
     @Environment(\.openWindow) private var openWindow
-    
+
     init(
         showCreateCategorySheet: Binding<Bool>,
         filter: Binding<LibraryFilter>,
@@ -54,8 +54,12 @@ struct LibraryGridView: View {
         }
         Divider()
         Button {
-            UserDefaults.standard.set("controllers", forKey: "settings_selectedTab")
-            NotificationCenter.default.post(name: .openAppSettings, object: nil)
+            if case .system(let system) = filter {
+                openWindow(id: "system-settings", value: SystemSettingsRequest(system: system, page: .controllers))
+            } else {
+                UserDefaults.standard.set("controllers", forKey: "settings_selectedTab")
+                NotificationCenter.default.post(name: .openAppSettings, object: nil)
+            }
         } label: {
             Label("Configure...", systemImage: "gear")
         }
@@ -1006,9 +1010,11 @@ columns = Array(
                 .tint(.accentColor)
                 .opacity(emptyStateAppeared ? 1 : 0)
                 .offset(y: emptyStateAppeared ? 0 : 8)
-            }
+}
         }
-        .frame(maxWidth: .infinity, maxHeight: .infinity)
+        .sheet(item: $manualBoxArtSearchROM) { rom in
+            BoxArtPickerView(rom: rom)
+        }
         .onAppear {
             withAnimation(.easeOut(duration: 0.35).delay(0.1)) {
                 emptyStateAppeared = true
