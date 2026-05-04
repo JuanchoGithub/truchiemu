@@ -1065,7 +1065,7 @@ extension ControllerGamepadMapping {
         case "n64":
             map(.z, to: .l2) 
             map(.a, to: .a) 
-            map(.b, to: .x) // Standard N64-to-modern mapping: B on X
+            map(.b, to: .b) 
             // Map C-buttons to Right Stick
             map(.cUp, to: .rStickUp)
             map(.cDown, to: .rStickDown)

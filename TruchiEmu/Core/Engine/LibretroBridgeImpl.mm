@@ -22,8 +22,8 @@
     _avInfo.geometry.max_height = 1080;
     _avInfo.geometry.aspect_ratio = 4.0f / 3.0f;
     memset(g_input_state, 0, sizeof(g_input_state));
-  }
-  return self;
+}
+return self;
 }
 
 - (void)setControllerPortDevice:(unsigned)port device:(unsigned)device {
@@ -178,12 +178,15 @@
               (g_coreID && [[g_coreID lowercaseString] containsString:@"mednafen_psx"]) ||
               (g_coreID && [[g_coreID lowercaseString] containsString:@"pcsx"])) {
        device_type = 1;
-   } else if ((g_coreID && [[g_coreID lowercaseString] containsString:@"mame"]) ||
+    } else if ((g_coreID && [[g_coreID lowercaseString] containsString:@"mame"]) ||
               (g_coreID && [[g_coreID lowercaseString] containsString:@"dosbox"])) {
-      device_type = 3; // RETRO_DEVICE_KEYBOARD
-  }
+        device_type = 3; // RETRO_DEVICE_KEYBOARD
+    } else if ((g_coreID && [[g_coreID lowercaseString] containsString:@"mupen64"]) ||
+              (g_coreID && [[g_coreID lowercaseString] containsString:@"parallel_n64"])) {
+        device_type = 5; // RETRO_DEVICE_ANALOG for proper N64 analog + digital input
+    }
 
-  if (!_retro_load_game) {
+    if (!_retro_load_game) {
     return NO;
   }
 
@@ -576,11 +579,7 @@ shutdown:
   BOOL isDOSBox = (g_coreID && [[g_coreID lowercaseString] containsString:@"dosbox"]);
   BOOL isDreamcast = (g_coreID && [[g_coreID lowercaseString] containsString:@"flycast"]);
   BOOL is3DS = (g_coreID && [[g_coreID lowercaseString] containsString:@"panda3ds"]);
-  BOOL isN64 = NO;
-  if (g_coreID) {
-      NSString *cid = [(id)g_coreID lowercaseString];
-      if ([cid containsString:@"mupen64plus"]) isN64 = YES;
-  }
+  BOOL isN64 = (g_coreID && [[g_coreID lowercaseString] containsString:@"mupen64"]);
 
   if (isPSP || 
       isPS2_play || 

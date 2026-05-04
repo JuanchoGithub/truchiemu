@@ -27,13 +27,11 @@ struct ControllerSettingsView: View {
         _searchText = searchText
         if let sid = systemID {
             _selectedSystemID = State(initialValue: sid)
-            let groups = SystemDatabase.multiSystemGroups()
-            let isMulti = groups.values.contains(where: { $0.contains(sid) })
-            _isReadOnly = State(initialValue: !isMulti)
         } else {
             _selectedSystemID = State(initialValue: "default")
-            _isReadOnly = State(initialValue: false)
         }
+        // Always allow editing keyboard settings for any system
+        _isReadOnly = State(initialValue: false)
     }
 
  var body: some View {
