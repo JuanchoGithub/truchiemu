@@ -1,13 +1,13 @@
-# TruchiEmu 🕹️
+<img width="1112" height="850" alt="image" src="https://github.com/user-attachments/assets/b2165b71-f097-4cd2-9660-33f21ff6af5a" /># TruchiEmu 🕹️
 
-<img width="1112" height="814" alt="TruchiEmu main interface" src="https://github.com/user-attachments/assets/3a61adcc-a9c8-469d-a9c7-b2a3249f82df" />
+<img width="1112" height="850" alt="image" src="https://github.com/user-attachments/assets/ebc735f3-c6ec-4edd-b677-fa2e159d1ead" />
+
 
 **The ultimate retro gaming experience, beautifully reimagined for macOS.**
 
 TruchiEmu is a modern, high-performance emulator built from the ground up with SwiftUI. It brings your favorite classic consoles to life with a stunning interface, immersive visuals, and effortless library management.
 
-
-https://github.com/user-attachments/assets/d5a99324-a778-49b9-8d86-79127bbe5b59
+https://github.com/user-attachments/assets/c59b9283-b5bd-49d0-9631-f0d6bc247d60
 
 ---
 
@@ -16,21 +16,25 @@ https://github.com/user-attachments/assets/d5a99324-a778-49b9-8d86-79127bbe5b59
 ### 🎨 Beautifully Designed
 Forget clunky, outdated menus. TruchiEmu features a polished, native macOS interface. Browse your collection with high-quality box art, detailed game information, and a seamless, modern navigation experience.
 
-<img width="1112" height="814" alt="List view" src="https://github.com/user-attachments/assets/45cdd5d0-1898-4ba2-afd4-0e3d9857757c" />
-
+<img width="1112" height="850" alt="image" src="https://github.com/user-attachments/assets/8cddaf00-24ab-40df-b651-1c648fe07cae" />
 
 ### 📺 Immersive Visuals
 
-https://github.com/user-attachments/assets/55b87d35-dcf3-4591-80ab-c26fc22c6112
+https://github.com/user-attachments/assets/4add1a22-27d2-4778-9e0b-7b5667a049cb
 
 Relive the golden age of gaming with advanced Metal-powered shaders. Whether you want the warm glow of a classic CRT, the sharp look of an LCD, or custom scanline effects, TruchiEmu makes every pixel feel authentic.
 
-<img width="1136" height="866" alt="Custom Shaders!" src="https://github.com/user-attachments/assets/a2a0f14a-f867-45dd-8c61-c9750e1f9231" />
+<img width="965" height="704" alt="image" src="https://github.com/user-attachments/assets/676e6773-7f5b-4f17-91a1-59e3bc49580d" />
 
 ### 🚀 Effortless Setup
 Getting started is a breeze. Our guided setup wizard walks you through your first launch, and our automated library services handle the heavy lifting—syncing metadata and downloading beautiful box art for your entire collection.
 
 <img width="1012" height="644" alt="Every Libretro Core supported (not all tested), including core options" src="https://github.com/user-attachments/assets/ad5d22f4-812f-4794-abbf-254c26c8fa10" />
+
+<img width="812" height="644" alt="image" src="https://github.com/user-attachments/assets/8ba9d183-25e3-4cb1-84fb-e7b79e98bafe" />
+
+<img width="754" height="563" alt="image" src="https://github.com/user-attachments/assets/9ef473de-610a-4a5d-bd0b-c4d1faafb4d2" />
+
 
 ### 🏆 RetroAchievements
 Take your nostalgia to the next level. TruchiEmu supports RetroAchievements, allowing you to earn trophies and compete for glory while playing the classics.
@@ -96,8 +100,18 @@ MIT, etc, thanks to LibRetro and a countless other teams around the web.
 
 © 2026 TruchiEmu
 
-Now for some more images:
+Now for some more media:
 
-<img width="1112" height="814" alt="Custom categories" src="https://github.com/user-attachments/assets/b681a4a5-0caf-4ea6-8c4e-c954bd6b50df" />
 
-<img width="1453" height="866" alt="Custom Bezels, bezel search and discovery and automatic download" src="https://github.com/user-attachments/assets/c2f845a9-81d5-4a56-9719-2acfdbce3a79" />
+
+https://github.com/user-attachments/assets/8657fe30-b08d-4a3c-a907-dfc633d63afe
+
+
+
+https://github.com/user-attachments/assets/1363458c-d316-434b-bd46-ed926ab21919
+
+
+
+https://github.com/user-attachments/assets/480b1cc8-73d4-40fb-b8f5-062311610426
+
+
