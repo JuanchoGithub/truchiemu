@@ -106,6 +106,9 @@ struct GameOverlayToolbar: View {
 
             // Fullscreen Button
             FullscreenButton(windowController: windowController)
+            
+            // Auto Fullscreen Toggle Button
+            AutoFullscreenButton(windowController: windowController)
         }
         .padding(.horizontal, 16)
         .padding(.vertical, 10)

@@ -892,6 +892,11 @@ LibraryMetadataStore.shared.deleteMetadataEntries(Set(removedROMs.map { LibraryM
         if !newROMsToAdd.isEmpty {
             withAnimation(.easeInOut(duration: 0.3)) { self.roms.append(contentsOf: newROMsToAdd); self.roms.sort { $0.displayName < $1.displayName } }
             repository.saveROMs(newROMsToAdd)
+
+            if !RunningGamesTracker.shared.isGameRunning {
+                await LibraryAutomationCoordinator.shared.runAfterLibraryUpdate(library: self, targetROMs: newROMsToAdd)
+                await MetadataSyncCoordinator.shared.runAfterLibraryUpdate(library: self, targetROMs: newROMsToAdd)
+            }
         }
 
         if !deletedROMs.isEmpty {

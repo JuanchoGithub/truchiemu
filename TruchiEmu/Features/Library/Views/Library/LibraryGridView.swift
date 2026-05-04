@@ -309,6 +309,21 @@ ToolbarItem(placement: .primaryAction) {
                         Button {
                             Task {
                                 guard !viewModel.displayedROMs.isEmpty else { return }
+
+                                let needIdentify = viewModel.displayedROMs.filter { $0.needsAutomaticIdentification && !$0.isHidden }
+                                if !needIdentify.isEmpty {
+                                    for rom in needIdentify {
+                                        let result = await ROMIdentifierService.shared.identify(rom: rom, preferNameMatch: true)
+                                        if let updated = library.applyIdentificationResult(result, to: rom, persist: true, silent: true) {
+                                            var refreshed = updated
+                                            refreshed.refreshDerivedFields()
+                                            if let idx = viewModel.displayedROMs.firstIndex(where: { $0.id == rom.id }) {
+                                                viewModel.displayedROMs[idx] = refreshed
+                                            }
+                                        }
+                                    }
+                                }
+
                                 await BoxArtService.shared.batchDownloadBoxArtLibretro(for: viewModel.displayedROMs, library: library)
                             }
                         } label: {

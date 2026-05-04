@@ -203,6 +203,28 @@ struct ReloadButton: View {
     }
 }
 
+// MARK: - Auto Fullscreen Toggle Button
+struct AutoFullscreenButton: View {
+    @ObservedObject var windowController: StandaloneGameWindowController
+    
+    var body: some View {
+        Button(action: {
+            windowController.toggleAutoFullscreen()
+        }) {
+            VStack(spacing: 4) {
+                Image(systemName: windowController.autoFullscreenEnabled ? "rectangle.expand.vertical" : "rectangle")
+                    .font(.system(size: 16, weight: .semibold))
+                Text(windowController.autoFullscreenEnabled ? "Auto-FS" : "Auto-FS")
+                    .font(.system(size: 10, weight: .medium))
+                    .lineLimit(1)
+            }
+            .frame(minWidth: 50)
+        }
+        .buttonStyle(ToolbarButtonStyle())
+        .foregroundColor(windowController.autoFullscreenEnabled ? .green : .white)
+    }
+}
+
 // MARK: - Slot Selector Button
 struct SlotSelectorButton: View {
     let currentSlot: Int

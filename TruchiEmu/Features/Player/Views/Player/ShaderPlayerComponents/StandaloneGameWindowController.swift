@@ -70,11 +70,15 @@ class StandaloneGameWindowController: NSWindowController, NSWindowDelegate, Obse
     // Toolbar auto-hide state
     @MainActor @Published var isToolbarVisible: Bool = true
     @MainActor @Published var isFullscreen: Bool = false
+    @MainActor @Published var autoFullscreenEnabled: Bool = false
     private var toolbarView: NSHostingView<AnyView>?
     private var hideToolbarTimer: Timer?
     
     init(runner: EmulatorRunner) {
         self.runner = runner
+        
+        // Load auto-fullscreen setting
+        autoFullscreenEnabled = AppSettings.getBool("autoFullscreenEnabled", defaultValue: false)
         
         let window = NSWindow(
             contentRect: NSRect(x: 0, y: 0, width: 1024, height: 768),
@@ -265,6 +269,17 @@ super.init(window: window)
     func toggleFullscreen() {
         window?.toggleFullScreen(nil)
         isFullscreen = window?.styleMask.contains(.fullScreen) ?? false
+    }
+    
+    // Toggle auto-fullscreen setting
+    @MainActor
+    func toggleAutoFullscreen() {
+        autoFullscreenEnabled.toggle()
+        AppSettings.setBool("autoFullscreenEnabled", value: autoFullscreenEnabled)
+        // Also enter fullscreen when enabling
+        if autoFullscreenEnabled && !isFullscreen {
+            toggleFullscreen()
+        }
     }
     
     @MainActor
@@ -531,6 +546,11 @@ super.init(window: window)
         window?.orderFrontRegardless()
         window?.makeKeyAndOrderFront(nil)
         NSApp.activate(ignoringOtherApps: true)
+        
+        // Auto-fullscreen on launch if enabled
+        if autoFullscreenEnabled {
+            toggleFullscreen()
+        }
         
         // Load from the specified slot after launch completes
         if let slotToLoad = slotToLoad {
