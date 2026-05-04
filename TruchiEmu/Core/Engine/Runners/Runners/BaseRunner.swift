@@ -456,6 +456,9 @@ class EmulatorRunner: ObservableObject, @unchecked Sendable {
         // Small delay to ensure cleanup
         Thread.sleep(forTimeInterval: 0.1)
         
+        // Re-setup controller input after reload
+        setupGamepadInput()
+        
         // Relaunch
         isRunning = true
         let shaderDir = Bundle.main.resourceURL?.appendingPathComponent("slang").path
