@@ -61,7 +61,10 @@
       "mupen64plus-cpucore": "pure_interpreter",
       "mupen64plus-rdp-plugin": "angrylion",
       "mupen64plus-next-aspect": "4:3",
-      "hw_render_context_negotiation": "enabled"
+      "hw_render_context_negotiation": "enabled",
+      "mupen64plus-angrylion-vioverlay": "Unfiltered",
+      "mupen64plus-angrylion-overscan": "enabled"
+
     },
     "mupen64plus_next_libretro": {
       "override_description": "Mupen64Plus-Next N64 emulator optimizations (Software fallback)",
@@ -78,7 +81,9 @@
       "mupen64plus-next-EnableFBEmulation": "True",
       "mupen64plus-next-EnableCopyColorToRDRAM": "Off",
       "mupen64plus-next-EnableCopyDepthToRDRAM": "Off",
-      "hw_render_context_negotiation": "enabled"
+      "hw_render_context_negotiation": "enabled",
+      "mupen64plus-angrylion-vioverlay": "Unfiltered",
+      "mupen64plus-angrylion-overscan": "enabled"
     },
     "mame2003_plus_libretro": {
       "override_description": "MAME 2003-Plus arcade emulator defaults",
