@@ -70,3 +70,6 @@ social:
 
 # Analytics disabled by default (enable if needed)
 analytics: false
+
+# Site URL
+url: "https://juanchogithub.github.io"
