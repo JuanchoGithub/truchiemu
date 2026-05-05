@@ -429,13 +429,20 @@ class AppDelegate: NSObject, NSApplicationDelegate, UNUserNotificationCenterDele
             LoggerService.info(category: "App", "Normal launch - app ready")
         }
         
-        // Close any game-info windows that may have slipped through restoration.
-        // This runs after windows are created to catch any that were already restored.
-        DispatchQueue.main.async {
-            self.closeRestoredGameInfoWindows()
-            self.removeEditMenu()
-        }
+    // Close any game-info windows that may have slipped through restoration.
+    // This runs after windows are created to catch any that were already restored.
+    DispatchQueue.main.async {
+      self.closeRestoredGameInfoWindows()
+      self.removeEditMenu()
     }
+    
+    // Setup periodic log maintenance timer (every 12 hours)
+    Timer.scheduledTimer(withTimeInterval: 12 * 60 * 60, repeats: true) { _ in
+      LoggerService.debug(category: "App", "Running periodic log maintenance")
+      LogManager.shared.cleanupOldRotatedLogs()
+      LogManager.shared.quickTrimLog()
+    }
+  }
 
     // MARK: - UNUserNotificationCenterDelegate
 

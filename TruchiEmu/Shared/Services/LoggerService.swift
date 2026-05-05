@@ -77,12 +77,13 @@ final class LoggerService: @unchecked Sendable {
     // Flag to prevent AppSettings writes during init
     private var isInitialized = false
     
-    // MARK: - File Logging State
-    
-    private var logFileHandle: FileHandle?
-    fileprivate let logFileQueue = DispatchQueue(label: "com.truchiemu.logger", qos: .utility)
-    private let maxLogSizeBytes: Int64 = 5 * 1024 * 1024 // 5 MB
-    private let maxLogAgeDays: Int = 7
+  // MARK: - File Logging State
+
+  private var logFileHandle: FileHandle?
+  private var currentLogURL: URL?
+  fileprivate let logFileQueue = DispatchQueue(label: "com.truchiemu.logger", qos: .utility)
+  private let maxLogSizeBytes: Int64 = 5 * 1024 * 1024 // 5 MB
+  private let maxLogAgeDays: Int = 7
     
     // MARK: - OS Logger (for info-level, always visible in Console.app)
     private let osLogger: OSLog
@@ -155,16 +156,17 @@ final class LoggerService: @unchecked Sendable {
                 try FileManager.default.createDirectory(at: directoryURL, withIntermediateDirectories: true)
             }
             
-            // Open file for appending
-            if !FileManager.default.fileExists(atPath: logURL.path) {
-                print("\(ts) [SETUP] [Logger] Creating log file at: \(logURL.path)")
-                FileManager.default.createFile(atPath: logURL.path, contents: nil)
-            }
-            
-            logFileHandle = try FileHandle(forWritingTo: logURL)
-            logFileHandle?.seekToEndOfFile()
-            
-            print("\(ts) [SETUP] [Logger] File handle opened successfully, log file ready")
+  // Open file for appending
+  if !FileManager.default.fileExists(atPath: logURL.path) {
+    print("\(ts) [SETUP] [Logger] Creating log file at: \(logURL.path)")
+    FileManager.default.createFile(atPath: logURL.path, contents: nil)
+  }
+
+  logFileHandle = try FileHandle(forWritingTo: logURL)
+  currentLogURL = logURL  // Cache the URL for thread-safe access
+  logFileHandle?.seekToEndOfFile()
+
+  print("\(ts) [SETUP] [Logger] File handle opened successfully, log file ready")
             
             // Write start marker directly (not through writeToFile to avoid recursion)
             let startMarker = "// Logging started at \(dateFormatter.string(from: Date())) //\n"
@@ -309,46 +311,50 @@ final class LoggerService: @unchecked Sendable {
     
     // MARK: - File Writing
     
-    fileprivate func writeToFile(_ text: String) {
-        guard let handle = logFileHandle else {
-            return
-        }
-        
-        guard let data = text.data(using: .utf8) else {
-            return
-        }
-        
-        // Check file size and trim if needed
-        do {
-            try handle.seekToEnd()
-        } catch {
-            // File handle is stale (file was deleted/rotated), reopen it
-            _rebuildFileHandle()
-            guard let freshHandle = logFileHandle else { return }
-            do {
-                try freshHandle.seekToEnd()
-                freshHandle.write(data)
-            } catch {}
-            return
-        }
-        handle.write(data)
+  fileprivate func writeToFile(_ text: String) {
+    guard let data = text.data(using: .utf8) else {
+      return
     }
+
+    // Check file size and trim if needed, then write
+    do {
+      // Use the current handle (may be rebuilt by rotation)
+      guard let handle = logFileHandle else { return }
+      try handle.seekToEnd()
+      // Check if file needs rotation before writing (may rebuild handle)
+      checkAndTrimLogFile(handle: handle)
+      // Get fresh handle in case it was replaced during rotation
+      guard let freshHandle = logFileHandle else { return }
+      freshHandle.write(data)
+    } catch {
+      // File handle is stale (file was deleted/rotated), reopen it
+      _rebuildFileHandle()
+      guard let freshHandle = logFileHandle else { return }
+      do {
+        try freshHandle.seekToEnd()
+        freshHandle.write(data)
+      } catch {}
+    }
+  }
     
-    // Rebuild the file handle if it becomes stale (e.g., after file deletion).
-    private func _rebuildFileHandle() {
-        logFileHandle?.closeFile()
-        logFileHandle = nil
-        let logURL = LogManager.shared.currentLogURL
-        do {
-            if !FileManager.default.fileExists(atPath: logURL.path) {
-                FileManager.default.createFile(atPath: logURL.path, contents: nil)
-            }
-            logFileHandle = try FileHandle(forWritingTo: logURL)
-            try logFileHandle?.seekToEnd()
-        } catch {
-            // If reopening fails, leave handle as nil; writeToFile will be a no-op
-        }
+  // Rebuild the file handle if it becomes stale (e.g., after file deletion).
+  private func _rebuildFileHandle() {
+    logFileHandle?.closeFile()
+    logFileHandle = nil
+    guard let logURL = currentLogURL else {
+      LoggerService.warning(category: "Logger", "Cannot rebuild handle: URL not cached")
+      return
     }
+    do {
+      if !FileManager.default.fileExists(atPath: logURL.path) {
+        FileManager.default.createFile(atPath: logURL.path, contents: nil)
+      }
+      logFileHandle = try FileHandle(forWritingTo: logURL)
+      try logFileHandle?.seekToEnd()
+    } catch {
+      // If reopening fails, leave handle as nil; writeToFile will be a no-op
+    }
+  }
     
     private func checkAndTrimLogFile(handle: FileHandle) {
         // Check file size
@@ -367,33 +373,36 @@ final class LoggerService: @unchecked Sendable {
         }
     }
     
-    private func rotateLogFile() {
-        let logURL = LogManager.shared.currentLogURL
-        
-        // Remove oldest rotated file (log.2)
-        let oldestURL = logURL.appendingPathExtension("2")
-        try? FileManager.default.removeItem(at: oldestURL)
-        
-        // Move current .log.1 to .log.2
-        let middleURL = logURL.appendingPathExtension("1")
-        if FileManager.default.fileExists(atPath: middleURL.path) {
-            try? FileManager.default.moveItem(at: middleURL, to: oldestURL)
-        }
-        
-        // Close current handle
-        logFileHandle?.closeFile()
-        logFileHandle = nil
-        
-        // Move current log to .log.1
-        if FileManager.default.fileExists(atPath: logURL.path) {
-            try? FileManager.default.moveItem(at: logURL, to: middleURL)
-            // Truncate the .log.1 file content to only keep recent entries if it's large
-            trimFileToRecentEntries(at: middleURL, maxLines: 500)
-        }
-        
-        // Re-open file logging
-        _setupFileLoggingSync()
+  private func rotateLogFile() {
+    guard let logURL = currentLogURL else {
+      LoggerService.warning(category: "Logger", "Cannot rotate log: URL not cached")
+      return
     }
+    
+    // Remove oldest rotated file (log.2)
+    let oldestURL = logURL.appendingPathExtension("2")
+    try? FileManager.default.removeItem(at: oldestURL)
+    
+    // Move current .log.1 to .log.2
+    let middleURL = logURL.appendingPathExtension("1")
+    if FileManager.default.fileExists(atPath: middleURL.path) {
+      try? FileManager.default.moveItem(at: middleURL, to: oldestURL)
+    }
+    
+    // Close current handle
+    logFileHandle?.closeFile()
+    logFileHandle = nil
+    
+    // Move current log to .log.1
+    if FileManager.default.fileExists(atPath: logURL.path) {
+      try? FileManager.default.moveItem(at: logURL, to: middleURL)
+      // Truncate the .log.1 file content to only keep recent entries if it's large
+      trimFileToRecentEntries(at: middleURL, maxLines: 500)
+    }
+    
+    // Re-open file logging
+    _setupFileLoggingSync()
+  }
     
     // Trim a log file to keep only the most recent N lines.
     private func trimFileToRecentEntries(at url: URL, maxLines: Int) {
@@ -413,46 +422,53 @@ final class LoggerService: @unchecked Sendable {
         }
     }
     
-    private func _trimOldEntriesSync(olderThanDays days: Int) {
-        let logURL = LogManager.shared.currentLogURL
-        guard let content = try? String(contentsOf: logURL, encoding: .utf8) else { return }
-        
-        let cutoffDate = Date().addingTimeInterval(-Double(days) * 24 * 60 * 60)
-        let cutoffStr = ISO8601DateFormatter.string(from: cutoffDate, timeZone: TimeZone.current)
-        
-        let lines = content.components(separatedBy: .newlines)
-        let keptLines = lines.filter { line in
-            // Keep lines that are newer than cutoff, or start with "//" (markers)
-            guard !line.hasPrefix("//"), let firstSpace = line.firstIndex(of: " ") else { return true }
-            let dateStr = String(line[..<firstSpace])
-            return dateStr >= cutoffStr
-        }
-        
-        let trimmed = keptLines.joined(separator: "\n")
-        try? trimmed.write(to: logURL, atomically: true, encoding: .utf8)
-        
-        // Write marker
-        writeToFile("// Trimmed entries older than \(cutoffDate.description) //\n")
+  private func _trimOldEntriesSync(olderThanDays days: Int) {
+    guard let logURL = currentLogURL else {
+      LoggerService.warning(category: "Logger", "Cannot trim entries: URL not cached")
+      return
     }
+    guard let content = try? String(contentsOf: logURL, encoding: .utf8) else { return }
+
+    let cutoffDate = Date().addingTimeInterval(-Double(days) * 24 * 60 * 60)
+    let cutoffStr = ISO8601DateFormatter.string(from: cutoffDate, timeZone: TimeZone.current)
+
+    let lines = content.components(separatedBy: .newlines)
+    let keptLines = lines.filter { line in
+      // Keep lines that are newer than cutoff, or start with "//" (markers)
+      guard !line.hasPrefix("//"), let firstSpace = line.firstIndex(of: " ") else { return true }
+      let dateStr = String(line[..<firstSpace])
+      return dateStr >= cutoffStr
+    }
+
+    let trimmed = keptLines.joined(separator: "\n")
+    try? trimmed.write(to: logURL, atomically: true, encoding: .utf8)
+
+    // Write marker
+    writeToFile("// Trimmed entries older than \(cutoffDate.description) //\n")
+  }
     
-    // Clear all log files (current and rotated).
-    func clearAllLogs() {
-        logFileQueue.async { [weak self] in
-            let logURL = LogManager.shared.currentLogURL
-            
-            // Close current handle
-            self?.logFileHandle?.closeFile()
-            self?.logFileHandle = nil
-            
-            // Remove all log files
-            try? FileManager.default.removeItem(at: logURL)
-            try? FileManager.default.removeItem(at: logURL.appendingPathExtension("1"))
-            try? FileManager.default.removeItem(at: logURL.appendingPathExtension("2"))
-            
-            // Re-setup logging
-            self?._setupFileLoggingSync()
-        }
+  // Clear all log files (current and rotated).
+  func clearAllLogs() {
+    logFileQueue.async { [weak self] in
+      guard let self = self else { return }
+      guard let logURL = self.currentLogURL else {
+        LoggerService.warning(category: "Logger", "Cannot clear logs: URL not cached")
+        return
+      }
+
+      // Close current handle
+      self.logFileHandle?.closeFile()
+      self.logFileHandle = nil
+
+      // Remove all log files
+      try? FileManager.default.removeItem(at: logURL)
+      try? FileManager.default.removeItem(at: logURL.appendingPathExtension("1"))
+      try? FileManager.default.removeItem(at: logURL.appendingPathExtension("2"))
+
+      // Re-setup logging
+      self._setupFileLoggingSync()
     }
+  }
     
     // Get the current log file size in bytes.
     func currentLogFileSize() -> Int64 {

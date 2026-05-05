@@ -63,45 +63,81 @@ private enum LibrarySection: CaseIterable, Identifiable {
         return LibrarySection.allCases.filter { $0.matches(searchText) }
     }
     
-    var body: some View {
-        ScrollView {
-            VStack(alignment: .leading, spacing: 24) {
-                // Display Options Section
-                if visibleSections.contains(.displayOptions) {
-                    DisplayOptionsSection()
+var body: some View {
+        Form {
+            // Maintenance Section - put at top
+            if visibleSections.contains(.maintenance) {
+                Section {
+                    Button(action: { Task { await library.fullRescan() } }) {
+                        HStack {
+                            Label("Full Library Rescan", systemImage: "arrow.clockwise.circle.fill")
+                            Spacer()
+                            if library.isScanning {
+                                ProgressView()
+                                    .controlSize(.small)
+                            }
+                        }
+                    }
+                    .disabled(library.isScanning)
+                    
+                    LabeledContent("Total Games") {
+                        Text("\(library.roms.count)")
+                            .foregroundStyle(.secondary)
+                    }
+                    
+                    LabeledContent("Primary Folders") {
+                        Text("\(library.primaryFolders.count)")
+                            .foregroundStyle(.secondary)
+                    }
+                } header: {
+                    Label("Maintenance", systemImage: "wrench.and.screwdriver")
                 }
-                
-                // Library Folders Section
-  if visibleSections.contains(.libraryFolders) {
-    LibraryFoldersSection(
-      scanningFolders: $scanningFolders,
-      rebuildTargetFolder: $rebuildTargetFolder,
-      searchText: searchText
-    )
-  }
-  
-  // Save Directories Section
-  if visibleSections.contains(.saveDirectories) {
-    SaveDirectoriesSection()
-  }
-  
-  // Maintenance Section
-  if visibleSections.contains(.maintenance) {
-    MaintenanceSection()
-  }
-                
-                // Show "No results" message when searching and no sections match
-                if !searchText.isEmpty && visibleSections.isEmpty {
+            }
+            
+            // Display Options Section
+            if visibleSections.contains(.displayOptions) {
+                Section {
+                    Toggle("Show BIOS Files in Game List", isOn: $prefs.showBiosFiles)
+                    Text("When enabled, BIOS files will appear alongside playable games")
+                        .font(.caption)
+                        .foregroundStyle(.secondary)
+                    
+                    Toggle("Show Hidden MAME Files", isOn: $prefs.showHiddenMAMEFiles)
+                    Text("When enabled, a 'Hidden MAME Files' section appears in the sidebar for BIOS, device, and unknown MAME entries")
+                        .font(.caption)
+                        .foregroundStyle(.secondary)
+                } header: {
+                    Label("Display Options", systemImage: "eyeglasses")
+                }
+            }
+            
+            // Library Folders Section
+            if visibleSections.contains(.libraryFolders) {
+                LibraryFoldersSection(
+                    scanningFolders: $scanningFolders,
+                    rebuildTargetFolder: $rebuildTargetFolder,
+                    searchText: searchText
+                )
+            }
+            
+            // Save Directories Section
+            if visibleSections.contains(.saveDirectories) {
+                SaveDirectoriesSection()
+            }
+            
+            // Show "No results" message when searching and no sections match
+            if !searchText.isEmpty && visibleSections.isEmpty {
+                Section {
                     ContentUnavailableView {
                         Label("No Results", systemImage: "magnifyingglass")
                     } description: {
                         Text("No settings match '\(searchText)'")
                     }
-                    .padding(32)
+                    .padding(.vertical, 20)
                 }
             }
-            .padding(16)
         }
+        .formStyle(.grouped)
         .navigationTitle("Library")
         .sheet(item: $rebuildTargetFolder) { folder in
             RebuildOptionsSheet(folder: folder, library: library, automation: LibraryAutomationCoordinator.shared)
@@ -115,54 +151,6 @@ private enum LibrarySection: CaseIterable, Identifiable {
         panel.prompt = "Add Folder"
         if panel.runModal() == .OK, let url = panel.url {
             library.addPrimaryFolder(url: url)
-        }
-    }
-}
-
-// MARK: - Display Options Section
-struct DisplayOptionsSection: View {
-    @ObservedObject var prefs = SystemPreferences.shared
-    
-    var body: some View {
-        VStack(alignment: .leading, spacing: 12) {
-            HStack(spacing: 8) {
-                Image(systemName: "eyeglasses")
-                    .font(.body)
-                    .foregroundStyle(.secondary)
-                Text("Display Options")
-                    .font(.headline)
-            }
-            
-            VStack(spacing: 0) {
-                Toggle(isOn: $prefs.showBiosFiles) {
-                    VStack(alignment: .leading, spacing: 4) {
-                        Text("Show BIOS Files in Game List")
-                            .font(.body)
-                        Text("When enabled, BIOS files will appear alongside playable games")
-                            .font(.caption)
-                            .foregroundStyle(.secondary)
-                    }
-                }
-                .padding(.vertical, 8)
-
-                Divider()
-
-                Toggle(isOn: $prefs.showHiddenMAMEFiles) {
-                    VStack(alignment: .leading, spacing: 4) {
-                        Text("Show Hidden MAME Files")
-                            .font(.body)
-                        Text("When enabled, a 'Hidden MAME Files' section appears in the sidebar for BIOS, device, and unknown MAME entries")
-                            .font(.caption)
-                            .foregroundStyle(.secondary)
-                    }
-                }
-                .padding(.vertical, 8)
-            }
-            .padding(16)
-            .background(
-                RoundedRectangle(cornerRadius: 12)
-                    .fill(Color(nsColor: .underPageBackgroundColor))
-            )
         }
     }
 }
@@ -185,69 +173,47 @@ struct LibraryFoldersSection: View {
     }
     
     var body: some View {
-        VStack(alignment: .leading, spacing: 12) {
-            HStack(spacing: 8) {
-                Image(systemName: "folder.fill")
-                    .font(.body)
-                    .foregroundStyle(.secondary)
-                Text("Library Folders")
-                    .font(.headline)
-                Spacer()
-                Button(action: addLibraryFolder) {
-                    Label("Add Folder", systemImage: "plus")
-                }
-                .buttonStyle(.bordered)
-                .controlSize(.small)
-            }
-            
+        Section {
             if library.primaryFolders.isEmpty {
                 ContentUnavailableView {
                     Label("No Library Folders", systemImage: "folder")
                 } description: {
                     Text("Add folders containing your ROM files. TruchiEmu will scan them and organize games by console system.")
                 }
-                .padding(16)
-                .background(
-                    RoundedRectangle(cornerRadius: 12)
-                        .fill(Color(nsColor: .underPageBackgroundColor))
-                )
+                .padding(.vertical, 20)
             } else if filteredFolders.isEmpty {
                 ContentUnavailableView {
                     Label("No Folders Match", systemImage: "folder")
                 } description: {
                     Text("No library folders match '\(searchText)'")
                 }
-                .padding(16)
-                .background(
-                    RoundedRectangle(cornerRadius: 12)
-                        .fill(Color(nsColor: .underPageBackgroundColor))
-                )
+                .padding(.vertical, 20)
             } else {
-                VStack(spacing: 12) {
-                    ForEach(filteredFolders) { folder in
-                        PrimaryFolderRow(
-                            folder: folder,
-                            isScanning: scanningFolders.contains(folder.url.path),
-                            searchText: searchText,
-                            onRescan: {
-                                Task {
-                                    scanningFolders.insert(folder.url.path)
-                                    await library.refreshFolder(at: folder.url)
-                                    scanningFolders.remove(folder.url.path)
-                                }
-                            },
-                            onRebuild: { target in
-                                rebuildTargetFolder = target
+                ForEach(filteredFolders) { folder in
+                    PrimaryFolderRow(
+                        folder: folder,
+                        isScanning: scanningFolders.contains(folder.url.path),
+                        searchText: searchText,
+                        onRescan: {
+                            Task {
+                                scanningFolders.insert(folder.url.path)
+                                await library.refreshFolder(at: folder.url)
+                                scanningFolders.remove(folder.url.path)
                             }
-                        )
-                    }
+                        },
+                        onRebuild: { target in
+                            rebuildTargetFolder = target
+                        }
+                    )
                 }
-                .padding(16)
-                .background(
-                    RoundedRectangle(cornerRadius: 12)
-                        .fill(Color(nsColor: .underPageBackgroundColor))
-                )
             }
+            
+            Button(action: addLibraryFolder) {
+                Label("Add Folder", systemImage: "plus")
+            }
+            .padding(.top, 8)
+        } header: {
+            Label("Library Folders", systemImage: "folder.fill")
         }
     }
     
@@ -267,55 +233,30 @@ struct MaintenanceSection: View {
     @EnvironmentObject var library: ROMLibrary
     
     var body: some View {
-        VStack(alignment: .leading, spacing: 12) {
-            HStack(spacing: 8) {
-                Image(systemName: "wrench.and.screwdriver")
-                    .font(.body)
+        Section {
+            Button(action: { Task { await library.fullRescan() } }) {
+                HStack {
+                    Text("Full Library Rescan")
+                    Spacer()
+                    if library.isScanning {
+                        ProgressView()
+                            .controlSize(.small)
+                    }
+                }
+            }
+            .disabled(library.isScanning)
+            
+            LabeledContent("Total Games") {
+                Text("\(library.roms.count)")
                     .foregroundStyle(.secondary)
-                Text("Maintenance")
-                    .font(.headline)
             }
             
-            VStack(spacing: 0) {
-                Button(action: { Task { await library.fullRescan() } }) {
-                    HStack(spacing: 12) {
-                        Image(systemName: "arrow.clockwise.circle.fill")
-                            .foregroundStyle(Color.accentColor)
-                        VStack(alignment: .leading, spacing: 4) {
-                            Text("Full Library Rescan")
-                                .font(.body)
-                            Text("Scan all folders for new or removed games")
-                                .font(.caption)
-                                .foregroundStyle(.secondary)
-                        }
-                        Spacer()
-                        if library.isScanning {
-                            ProgressView()
-                                .controlSize(.small)
-                        }
-                    }
-                    .padding(.vertical, 8)
-                }
-                .buttonStyle(.plain)
-                .disabled(library.isScanning)
-                        
-                Divider()
-                        
-                VStack(alignment: .leading, spacing: 8) {
-                    Text("Total Games: \(library.roms.count)")
-                        .font(.caption)
-                        .foregroundStyle(.secondary)
-                    Text("Primary Folders: \(library.primaryFolders.count)")
-                        .font(.caption)
-                        .foregroundStyle(.secondary)
-                }
-                .padding(.bottom, 8)
+            LabeledContent("Primary Folders") {
+                Text("\(library.primaryFolders.count)")
+                    .foregroundStyle(.secondary)
             }
-            .padding(16)
-            .background(
-                RoundedRectangle(cornerRadius: 12)
-                    .fill(Color(nsColor: .underPageBackgroundColor))
-            )
+        } header: {
+            Label("Maintenance", systemImage: "wrench.and.screwdriver")
         }
     }
 }

@@ -52,27 +52,19 @@ struct BezelSettingsView: View {
     var body: some View {
         Form {
             if searchText.isEmpty {
-                // Show all sections normally
                 storageSection
-                Divider()
                 downloadsSection
-                Divider()
                 statisticsSection
-                Divider()
                 dangerZoneSection
             } else {
-                // Show filtered sections
                 if showStorageSection {
                     storageSection
-                    Divider()
                 }
                 if showDownloadsSection {
                     downloadsSection
-                    Divider()
                 }
                 if showStatisticsSection {
                     statisticsSection
-                    Divider()
                 }
                 if showDangerZoneSection {
                     dangerZoneSection
@@ -99,14 +91,16 @@ struct BezelSettingsView: View {
         }
     }
     
-    // MARK: - Section Views
+// MARK: - Section Views
     
     private var storageSection: some View {
-        Section(header: Text("Storage").font(.headline)) {
+        Section {
             LabeledContent("Current Path") {
                 Text(storageManager.bezelRootDirectory.path)
                     .font(.caption.monospaced())
-                    .foregroundColor(.secondary)
+                    .foregroundStyle(.secondary)
+                    .lineLimit(1)
+                    .truncationMode(.middle)
                     .help(storageManager.bezelRootDirectory.path)
             }
             
@@ -120,84 +114,99 @@ struct BezelSettingsView: View {
                     Text(mode.displayName).tag(mode)
                 }
             }
-            .pickerStyle(.radioGroup)
+            .pickerStyle(.menu)
             
-            Button("Show in Finder") {
-                storageManager.openInFinder()
+            Button(action: { storageManager.openInFinder() }) {
+                Label("Show in Finder", systemImage: "folder")
             }
-            .buttonStyle(.link)
+            .buttonStyle(.bordered)
             .controlSize(.small)
+        } header: {
+            Label("Storage", systemImage: "folder.fill")
         }
     }
     
     private var downloadsSection: some View {
-        Section(header: Text("Downloads").font(.headline)) {
-            HStack(alignment: .top, spacing: 12) {
-                VStack(alignment: .leading, spacing: 4) {
-                    Text("The Bezel Project")
-                        .font(.subheadline)
-                        .fontWeight(.medium)
-                    Text("Download 1080p overlays for authentic console artwork.")
-                        .font(.caption)
-                        .foregroundColor(.secondary)
+        Section {
+            VStack(alignment: .leading, spacing: 4) {
+                Text("The Bezel Project")
+                    .font(.subheadline)
+                    .fontWeight(.medium)
+                Text("Download 1080p overlays for authentic console artwork.")
+                    .font(.caption)
+                    .foregroundStyle(.secondary)
+            }
+            
+            if let lastDate = apiService.progressTracker.lastDownloadDate {
+                Text("Updated: \(lastDate.formatted(.dateTime.month().day().year()))")
+                    .font(.caption2)
+                    .foregroundStyle(.secondary)
+            }
+            
+            HStack {
+                Picker("System", selection: $selectedSystem) {
+                    Text("All Systems").tag("all")
+                    Divider()
+                    ForEach(systemDatabase.systemsForDisplay.sorted(by: { $0.name < $1.name })) { sys in
+                        Text(sys.name).tag(sys.id)
+                    }
                 }
+                .labelsHidden()
+                .disabled(apiService.progressTracker.isRunning)
                 
                 Spacer()
                 
-                if let lastDate = apiService.progressTracker.lastDownloadDate {
-                    Text("Updated: \(lastDate.formatted(.dateTime.month().day().year()))")
-                        .font(.caption2)
-                        .foregroundColor(.secondary)
-                }
-            }
-
-            VStack(spacing: 12) {
-                HStack {
-                    Picker("System", selection: $selectedSystem) {
-                        Text("All Systems").tag("all")
-                        Divider()
-                        ForEach(systemDatabase.systemsForDisplay.sorted(by: { $0.name < $1.name })) { sys in
-                            Text(sys.name).tag(sys.id)
-                        }
+                Button(action: runDownload) {
+                    if apiService.progressTracker.isRunning {
+                        ProgressView().controlSize(.small).padding(.horizontal, 4)
+                    } else {
+                        Label(downloadButtonLabel, systemImage: "arrow.down.circle")
                     }
-                    .labelsHidden()
-                    .disabled(apiService.progressTracker.isRunning)
-                    
-                    Button(action: runDownload) {
-                        if apiService.progressTracker.isRunning {
-                            ProgressView().controlSize(.small).padding(.horizontal, 4)
-                        } else {
-                            Label(downloadButtonLabel, systemImage: "arrow.down.circle")
-                        }
-                    }
-                    .buttonStyle(.borderedProminent)
-                    .disabled(apiService.progressTracker.isRunning)
                 }
-                
-                if apiService.progressTracker.isRunning {
-                    downloadProgressBlock
-                }
+                .buttonStyle(.borderedProminent)
+                .disabled(apiService.progressTracker.isRunning)
             }
-            .padding(10)
-            .background(Color(nsColor: .textBackgroundColor).opacity(0.5))
-            .cornerRadius(8)
+            
+            if apiService.progressTracker.isRunning {
+                downloadProgressBlock
+            }
             
             if let result = downloadResult {
                 resultBanner(result: result)
             }
+        } header: {
+            Label("Downloads", systemImage: "arrow.down.circle.fill")
         }
     }
     
     private var statisticsSection: some View {
-        Section(header: Text("Statistics").font(.headline)) {
-            Grid(alignment: .leading, horizontalSpacing: 40, verticalSpacing: 10) {
-                GridRow {
-                    statItem(label: "Files", value: "\(storageManager.downloadedBezelCount())", icon: "photo")
-                    statItem(label: "Space", value: formatByteSize(storageManager.bezelStorageSize()), icon: "internaldrive")
-                    statItem(label: "Supported", value: "\(BezelSystemMapping.configurations.count)", icon: "gamecontroller")
-                }
+        Section {
+            HStack(spacing: 20) {
+                statTile(
+                    value: "\(storageManager.downloadedBezelCount())",
+                    label: "Files",
+                    icon: "photo.fill",
+                    color: .blue
+                )
+                Divider().frame(height: 40)
+                statTile(
+                    value: formatByteSize(storageManager.bezelStorageSize()),
+                    label: "Storage",
+                    icon: "internaldrive.fill",
+                    color: .purple
+                )
+                Divider().frame(height: 40)
+                statTile(
+                    value: "\(BezelSystemMapping.configurations.count)",
+                    label: "Supported",
+                    icon: "gamecontroller.fill",
+                    color: .orange
+                )
             }
             .padding(.vertical, 8)
+            .frame(maxWidth: .infinity)
+        } header: {
+            Label("Statistics", systemImage: "chart.bar.fill")
         }
     }
     
@@ -206,25 +215,22 @@ struct BezelSettingsView: View {
             Button(role: .destructive) {
                 showClearConfirmation = true
             } label: {
-                Label("Delete All Bezels", systemImage: "trash")
-                    .foregroundColor(.red)
+                Label("Delete All Bezels", systemImage: "trash.fill")
             }
-            .buttonStyle(.plain)
+            .buttonStyle(.bordered)
+            .tint(.red)
+            .controlSize(.small)
+        } header: {
+            Label("Danger Zone", systemImage: "exclamationmark.triangle.fill")
         }
     }
     
     private var noResultsView: some View {
-        VStack(spacing: 12) {
-            Image(systemName: "magnifyingglass")
-                .font(.system(size: 40))
-                .foregroundColor(.secondary)
-            Text("No Results")
-                .font(.headline)
+        ContentUnavailableView {
+            Label("No Results", systemImage: "magnifyingglass")
+        } description: {
             Text("No settings match '\(searchText)'")
-                .font(.caption)
-                .foregroundColor(.secondary)
         }
-        .frame(maxWidth: .infinity)
         .padding(.vertical, 40)
     }
 }
@@ -241,7 +247,7 @@ private extension BezelSettingsView {
             HStack {
                 Text(apiService.progressTracker.downloadStatus)
                     .font(.caption2)
-                    .foregroundColor(.secondary)
+                    .foregroundStyle(.secondary)
                 Spacer()
                 Text("\(apiService.progressTracker.currentDownloadedCount)/\(apiService.progressTracker.totalItemsToDownload)")
                     .font(.caption2.monospacedDigit())
@@ -255,11 +261,25 @@ private extension BezelSettingsView {
         }
     }
 
+    func statTile(value: String, label: String, icon: String, color: Color) -> some View {
+        VStack(spacing: 4) {
+            Image(systemName: icon)
+                .font(.title2)
+                .foregroundStyle(color)
+            Text(value)
+                .font(.headline.monospacedDigit())
+            Text(label)
+                .font(.caption)
+                .foregroundStyle(.secondary)
+        }
+        .frame(maxWidth: .infinity)
+    }
+
     func statItem(label: String, value: String, icon: String) -> some View {
         HStack(spacing: 8) {
             Image(systemName: icon)
                 .font(.title2)
-                .foregroundColor(.accentColor)
+                .foregroundStyle(Color.accentColor)
                 .frame(width: 30)
             
             VStack(alignment: .leading, spacing: 2) {
@@ -267,7 +287,7 @@ private extension BezelSettingsView {
                     .font(.headline)
                 Text(label)
                     .font(.caption2)
-                    .foregroundColor(.secondary)
+                    .foregroundStyle(.secondary)
             }
         }
     }
