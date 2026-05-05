@@ -905,6 +905,12 @@ class CoreManager: ObservableObject {
             finalIDs.formUnion(SystemDatabase.compatibleIDs(for: id))
         }
         
+        // 4. Handle Dolphin case: if it only has gamecube, also include wii
+        if coreID == "dolphin_libretro" && finalIDs.contains("gamecube") && !finalIDs.contains("wii") {
+            finalIDs.insert("wii")
+            finalIDs.formUnion(SystemDatabase.compatibleIDs(for: "wii"))
+        }
+        
         return Array(finalIDs)
     }
 

@@ -114,7 +114,7 @@ struct BezelSettingsView: View {
                     Text(mode.displayName).tag(mode)
                 }
             }
-            .pickerStyle(.menu)
+            .pickerStyle(.segmented)
             
             Button(action: { storageManager.openInFinder() }) {
                 Label("Show in Finder", systemImage: "folder")

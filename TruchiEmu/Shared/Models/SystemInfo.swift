@@ -684,7 +684,18 @@ class LibretroInfoManager: ObservableObject {
                     // 1. Handle System/Core Mapping & Discovery
                     if let sysIDString = infoDict["systemid"] { 
                         let coreID = fileURL.deletingPathExtension().lastPathComponent 
-                        let ids = sysIDString.components(separatedBy: "|").map { SystemDatabase.normalizeSystemID($0) }
+                        var ids = sysIDString.components(separatedBy: "|").map { SystemDatabase.normalizeSystemID($0) }
+                        
+                        // Handle cores like Dolphin that declare a single systemid but have compound systemname like "GameCube / Wii"
+                        if let systemName = infoDict["systemname"], systemName.contains("/") && ids.count == 1 {
+                            let firstID = ids[0]
+                            if firstID == "gamecube" && systemName.lowercased().contains("wii") {
+                                ids.append("wii")
+                            } else if firstID == "wii" && systemName.lowercased().contains("gamecube") {
+                                ids.append("gamecube")
+                            }
+                        }
+                        
                         LibretroInfoManager.coreToSystemMap[coreID] = Set(ids)
                         
                         // Extract human-readable names and manufacturer

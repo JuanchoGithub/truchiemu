@@ -52,7 +52,11 @@ static bool bridge_set_rumble_state(unsigned port, unsigned effect, uint16_t str
 static void bridge_sensor_get_input(unsigned port, unsigned id, float *value) {
     if (!value) return;
     if (g_loadingForOptions) return;
-    *value = 0.0f;
+    @try {
+        *value = 0.0f;
+    } @catch (NSException *exception) {
+        bridge_log_printf(RETRO_LOG_WARN, "Sensor: exception at port=%u id=%u: %s", port, id, exception.reason.UTF8String);
+    }
 }
 
 static void bridge_sensor_set_state(unsigned port, unsigned sensor_action, unsigned rate) {
@@ -311,13 +315,9 @@ case RETRO_ENVIRONMENT_GET_RUMBLE_INTERFACE: {
       return false;
     }
     case RETRO_ENVIRONMENT_GET_SENSOR_INTERFACE: {
-      if (data) {
-        struct retro_sensor_interface *sensor = (struct retro_sensor_interface *)data;
-        sensor->set_sensor_state = bridge_sensor_set_state;
-        sensor->get_sensor_input = bridge_sensor_get_input;
-        bridge_log_printf(RETRO_LOG_DEBUG, "Sensor interface provided to core");
-        return true;
-      }
+      // Disable sensor interface for Dolphin to prevent Wii crash
+      // The core crashes in sensor handling for unknown reason
+      bridge_log_printf(RETRO_LOG_DEBUG, "Sensor interface disabled (Dolphin workaround)");
       return false;
     }
     case RETRO_ENVIRONMENT_GET_LED_INTERFACE: {
