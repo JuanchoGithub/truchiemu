@@ -1,0 +1,31 @@
+<header class="site-header">
+  <div class="container">
+    <div class="header-content">
+      <a href="{{ '/' | relative_url }}" class="logo">
+        <img src="{{ '/media/logo-icon.png' | relative_url }}" alt="TruchiEmu" width="32" height="32">
+        <span>TruchiEmu</span>
+      </a>
+      
+      <nav class="main-nav">
+        {% for item in site.nav %}
+          <a href="{{ item.url | relative_url }}" class="nav-link {% if page.url == item.url %}active{% endif %}">
+            {{ item.title }}
+          </a>
+        {% endfor %}
+      </nav>
+      
+      <div class="header-actions">
+        <a href="https://github.com/JuanchoGithub/truchiemu" class="btn btn-outline" target="_blank">
+          🦈 GitHub
+        </a>
+      </div>
+    </div>
+  </div>
+</header>
+<div class="search-overlay" id="search-overlay">
+  <div class="search-container">
+    <input type="text" id="search-input" placeholder="Search documentation..." autofocus>
+    <button id="search-close" class="search-close">&times;</button>
+    <div id="search-results"></div>
+  </div>
+</div>

@@ -1,0 +1,72 @@
+# Jekyll configuration for TruchiEmu documentation site
+
+title: "TruchiEmu Documentation"
+description: "Complete documentation for the ultimate macOS retro gaming emulator"
+author: "TruchiEmu Team"
+baseurl: "/truchiemu"
+repository: "JuanchoGithub/truchiemu"
+
+# Theme settings
+markdown: kramdown
+highlighter: rouge
+permalink: /:name/
+
+# Plugins
+plugins:
+  - jekyll-sitemap
+  - jekyll-seo-tag
+  - jekyll-feed
+  - jekyll-optional-front-matter
+
+# Exclude files
+exclude:
+  - Gemfile
+  - Gemfile.lock
+  - vendor
+  - LICENSE.txt
+  - scripts
+
+# Defaults
+defaults:
+  - scope:
+      path: ""
+    values:
+      layout: "default"
+      sidebar: true
+
+# Sass config
+sass:
+  sass_dir: _sass
+  style: compressed
+
+# Kramdown config
+kramdown:
+  input: GFM
+  hard_wrap: false
+  syntax_highlighter: rouge
+
+# Site variables
+vars:
+  version: "1.0.0"
+  icon: "/media/logo-icon.png"
+
+# Navigation
+nav:
+  - title: "Getting Started"
+    url: "/getting-started.html"
+  - title: "Features"
+    url: "/features.html"
+  - title: "Supported Systems"
+    url: "/systems.html"
+  - title: "Troubleshooting"
+    url: "/troubleshooting.html"
+  - title: "Development"
+    url: "/development.html"
+
+# Social
+social:
+  github: JuanchoGithub/truchiemu
+  website: https://github.com/JuanchoGithub/truchiemu
+
+# Analytics disabled by default (enable if needed)
+analytics: false
