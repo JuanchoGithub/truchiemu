@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PSP - PlayStation Portable - TruchiEmu Guide</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            line-height: 1.6;
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 20px;
+            background: #f5f5f5;
+            color: #333;
+        }
+        .header {
+            background: linear-gradient(135deg, #0f172a, #1e293b);
+            color: white;
+            padding: 30px;
+            border-radius: 10px;
+            margin-bottom: 30px;
+            text-align: center;
+        }
+        .system-banner {
+            width: 100%;
+            max-width: 800px;
+            height: 200px;
+            background: #ddd;
+            margin: 0 auto 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 8px;
+            font-size: 24px;
+            color: #666;
+        }
+        h1, h2, h3 {color: #1e293b;}
+        .section {
+            background: white;
+            padding: 25px;
+            margin-bottom: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .warning {
+            background: #fff3cd;
+            border-left: 4px solid #ffc107;
+            padding: 15px; margin: 15px 0;
+        }
+        .tip {
+            background: #d4edda;
+            border-left: 4px solid #28a745;
+            padding: 15px; margin: 15px 0;
+        }
+        code {
+            background: #f8f9fa;
+            padding: 2px 6px;
+            border-radius: 3px;
+            font-family: 'Courier New', monospace;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 15px 0;
+        }
+        th, td {
+            border: 1px solid #ddd;
+            padding: 12px;
+            text-align: left;
+        }
+        th {
+            background: #f8f9fa;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>PlayStation Portable (PSP)</h1>
+        <p>Handheld gaming meets console power</p>
+    </div>
+
+    <div class="system-banner">
+        [PSP System Banner Placeholder]
+    </div>
+
+    <div class="section">
+        <h2>Hardware Overview</h2>
+        <p>The PSP, released in 2004, packed console-quality hardware into a handheld form factor. Central processing came from a MIPS R4000-based CPU running at 333 MHz, with a dedicated GPU (Graphics Processing Unit) handling 3D graphics acceleration capable of rendering approximately 33 million polygons per second.</p>
+        
+        <p>The GPU supported transform and lighting with hardware clipping, and featured a 512-bit floating-point engine with vertex and pixel processing capabilities. The display was a 4.3-inch TFT LCD with 480x272 resolution and 16.77 million colors, featuring high-quality widescreen aspect ratio perfect for cinematic gaming experiences.</p>
+        
+        <p>Memory architecture included 32MB main RAM (64MB in PSP-2000 and later models), 4MB embedded DRAM, and Memory Stick PRO Duo expansion slots for save data and game storage. The system featured both Universal Media Disc (UMD) drive for physical games and digital distribution capabilities.</p>
+        
+        <p>Audio capabilities included 3D surround sound with 16-bit digital audio, supporting multiple codec formats. Wireless networking featured 802.11b Wi-Fi for multiplayer and digital downloads, while USB connectivity enabled PC communication and peripheral support.</p>
+    </div>
+
+    <div class="section">
+        <h2>Core Selection</h2>
+        <p>PPSSPP is the dominant PSP emulator, optimized for performance and compatibility:</p>
+        <table>
+            <tr><th>Core</th><th>Accuracy</th><th>Performance</th><th>Special Features</th></tr>
+            <tr><td><strong>ppsspp</strong></td><td>Very High</td><td>Excellent</td><td>HD upscaling, texture filtering, save states, fast forward</td></tr>
+            <tr><td>ad hoc experimental</td><td>Medium</td><td>Good</td><td>Network multiplayer (limited)</td></tr>
+        </table>
+
+        <h3>PPSSPP Advantages:</h3>
+        <ul>
+            <li><strong>JIT compilation:</strong> Dynamic recompilation for massive speed boost</li>
+            <li><strong>Resolution upscaling:</strong> Render at 2x-10x native resolution</li>
+            <li><strong>Texture scaling:</strong> Enhance texture quality with xBRZ</li>
+            <li><strong>Post-processing shaders:</strong> FXAA, CRT, and other effects</li>
+        </ul>
+    </div>
+
+    <div class="section">
+        <h2>ROM Format Support</h2>
+        <h3>Supported Formats:</h3>
+        <ul>
+            <li><strong>.iso</strong> - Standard ISO format</li>
+            <li><strong>.cso</strong> - Compressed ISO (reduces size significantly)</li>
+            <li><strong>.prx</strong> - PRX plugin files</li>
+            <li><strong>.elf</strong> - Executable ELF files (homebrew)</li>
+            <li><strong>.pbp</strong> - PBP format (extraction recommended)</li>
+        </ul>
+
+        <h3>Game Structure:</h3>
+        <ul>
+            <li><strong>PSP_GAME/SYSDIR:</strong> System directory</li>
+            <li><strong>PSP_GAME/USRDIR:</strong> Main game data</li>
+            <li><strong>PARAM.SFO:</strong> Game metadata and version info</li>
+        </ul>
+
+        <div class="tip">
+            <strong>Compression:</strong> Convert .iso to .cso format to save 40-70% storage space with no gameplay impact.
+        </div>
+    </div>
+
+    <div class="section">
+        <h2>Controller Mapping</h2>
+        <h3>PSP Control Layout:</h3>
+        <table>
+            <tr><th>PSP Control</th><th>Function</th><th>Keyboard</th><th>Modern Gamepad</th></tr>
+            <tr><td>Triangle</td><td>Menu/secondary</td><td>S key</td><td>Triangle/Y Top</td></tr>
+            <tr><td>Square</td><td>Action</td><td>A key</td><td>Square/X Left</td></tr>
+            <tr><td>Circle</td><td>Cancel/Back</td><td>X key</td><td>Circle/A Bottom</td></tr>
+            <tr><td>Cross</td><td>Accept/Move</td><td>Z key</td><td>Cross/B Right</td></tr>
+            <tr><td>D-Pad</td><td>Movement/Select</td><td>Arrow keys</td><td>D-Pad</td></tr>
+            <tr><td>Analog nub</td><td>Smooth movement</td><td>WASD</td><td>Left stick</td></tr>
+            <tr><td>L Trigger</td><td>Shoulder</td><td>Q key</td><td>Left bumper</td></tr>
+            <tr><td>R Trigger</td><td>Shoulder</td><td>W key</td><td>Right bumper</td></tr>
+            <tr><td>START</td><td>Pause</td><td>Enter</td><td>Start</td></tr>
+            <tr><td>SELECT</td><td>Select</td><td>Right Shift</td><td>Select/View</td></tr>
+        </table>
+
+        <h3>Additional Controls:</h3>
+        <ul>
+            <li><strong>Home button:</strong> Quick menu (not mapped by default)</li>
+            <li><strong>Volume:</strong> Hardware-level (affects all audio)</li>
+            <li><strong>Brightness:</strong> Screen brightness control</li>
+            <li><strong>Note button:</strong> Not used in most games</li>
+        </ul>
+    </div>
+
+    <div class="section">
+        <h2>Best Shader Recommendations</h2>
+        <h3>Enhancement Options:</h3>
+        <ul>
+            <li><strong>FXAA:</strong> Anti-aliasing for 3D games</li>
+            <li><strong>SMAA:</strong> Superior edge detection</li>
+            <li><strong>Sharpen:</strong> Enhance texture clarity</li>
+            <li><strong>GRACE:</strong> Natural color enhancement</li>
+            <li><strong>CRT:</strong> CRT simulation for that handheld feel</li>
+        </ul>
+
+        <h3>Rendering Resolution:</h3>
+        <p>PPSSPP shines when rendering above native resolution:</p>
+        <ul>
+            <li><strong>2x PSP (960x544):</strong> Default enhancement</li>
+            <li><strong>3x PSP (1440x816):</strong> Good balance</li>
+            <li><strong>4x PSP (1920x1088):</strong> High quality, requires GPU</li>
+            <li><strong>5x+ PSP:</strong> Extreme quality, powerful GPU needed</li>
+        </ul>
+    </div>
+
+    <div class="section">
+        <h2>Performance Optimization</h2>
+        <h3>Core Speed Hacks:</h3>
+        <ul>
+            <li><strong>I/O Timing:</strong> Set to Fast for most games</li>
+            <li><strong>CPU Clock:</strong> Auto (333MHz) typically sufficient</li>
+            <li><strong>Forced first frame:</strong> Enable to fix black screen intros</li>
+            <li><strong>Rendering resolution:</strong> Match your display resolution</li>
+        </ul>
+
+        <h3>Hardware Requirements:</h3>
+        <ul>
+            <li><strong>Apple Silicon:</strong> M1/M2 handle up to 10x resolution flawlessly</li>
+            <li><strong>Intel Integrated:</strong> 2-3x resolution max on integrated graphics</li>
+            <li><strong>Older Macs:</strong> Native resolution or 2x maximum</li>
+            <li><strong>GPU Memory:</strong> 2GB+ VRAM for 4x+ rendering</li>
+        </ul>
+    </div>
+
+    <div class="section">
+        <h2>Known Issues and Workarounds</h2>
+        
+        <h3>Networking Support:</h3>
+        <p><strong>Issue:</strong> Ad-hoc multiplayer features generally unsupported.</p>
+        <p><strong>Workaround:</strong> Some local network functionality works via PPSSPP's experimental adhoc, but compatibility is limited.</p>
+
+        <h3>UMD Video:</h3>
+        <p><strong>Issue:</strong> UMD Video discs not supported.</p>
+        <p><strong>Workaround:</strong> Extract video content separately using PC utilities. PPSSPP only emulates game UMDs.</p>
+
+        <h3>Save Encryption:</h3>
+        <p><strong>Issue:</strong> PSP saves encrypted differently per game.</p>
+        <p><strong>Workaround:</strong> PPSSPP handles encryption transparently. Use DecryptSave tool if extracting saves for real PSP use.</p>
+
+        <h3>PSPhomebrew Compatibility:</h3>
+        <p><strong>Issue:</strong> Some homebrew uses undocumented syscalls.</p>
+        <p><strong>Workaround:</strong> Enable "PSP-2000/3000" model setting for expanded homebrew compatibility.</p>
+
+        <h3>Memory Stick Space:</h3>
+        <p><strong>Issue:</strong> Games may report insufficient Memory Stick space.</p>
+        <p><strong>Workaround:</strong> Configure MemStick directory with adequate free space. Format checks are emulated.</p>
+    </div>
+</body>
+</html>

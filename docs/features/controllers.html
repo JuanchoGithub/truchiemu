@@ -1,0 +1,121 @@
+---
+layout: default
+title: Controller Support - TruchiEmu Documentation
+permalink: /features/controllers/
+---
+
+<div class="feature-docs">
+    <h1>Controller Support</h1>
+    
+    <div class="feature-overview">
+        <img src="/docs/media/features/controllers-hero.png" alt="Controller Support Overview" class="hero-image">
+        <p class="lead">TruchiEmu provides comprehensive controller support with automatic mapping, per-game configurations, advanced deadzone calibration, and macro recording. Experience authentic gameplay with any controller from classic gamepads to modern arcade sticks, with full button remapping and turbo functionality.</p>
+    </div>
+
+    <section id="service-explanation">
+        <h2>Service Overview</h2>
+        <p>The controller system in TruchiEmu offers native support for HID-compatible controllers with intelligent auto-mapping based on the connected device. Our advanced input processing includes individual deadzone calibration per-controller, analog stick curve customization, and macro recording for complex input sequences.</p>
+        
+        <div class="architecture-diagram">
+            <img src="/docs/media/features/controller-architecture.png" alt="Controller Architecture">
+            <p class="caption">Input pipeline from controller hardware through mapping layer to emulation core</p>
+        </div>
+
+        <h3>Core Features</h3>
+        <ul class="feature-list">
+            <li><strong>Auto-Discovery:</strong> Instant recognition of USB and Bluetooth controllers</li>
+            <li><strong>Smart Mapping:</strong> Automatic button mapping based on controller type and game system</li>
+            <li><strong>Per-Controller Profiles:</strong> Individual settings for each connected controller</li>
+            <li><strong>Advanced Calibration:</strong> Per-axis deadzone, sensitivity, and response curve adjustment</li>
+            <li><strong>Macro Recording:</strong> Record and playback complex input sequences with timing</li>
+            <li><strong>Turbo Functionality:</strong> Programmable rapid fire on any button with adjustable rate</li>
+            <li><strong>Hotkey Support:</strong> Map controller buttons to emulator functions</li>
+        </ul>
+    </section>
+
+    <section id="step-by-step-guide">
+        <h2>Step-by-Step Configuration Guide</h2>
+        
+        <h3>Basic Controller Setup</h3>
+        <ol class="setup-steps">
+            <li>
+                <strong>Connect Controller</strong>
+                <p>Connect your controller via USB or pair via Bluetooth. TruchiEmu automatically detects the controller and shows a notification with the detected controller type.</p>
+            </li>
+            <li>
+                <strong>Verify Connection</strong>
+                <p>Open <code>Settings → Controllers → Connected Devices</code> to see your controller listed. Connected controllers show battery level if supported.</p>
+            </li>
+            <li>
+                <strong>Test Button Mapping</strong>
+                <p>Click "Test Controller" to open the input test panel. Press buttons and move sticks to verify all inputs register correctly.</p>
+            </li>
+            <li>
+                <strong>Adjust Global Settings</strong>
+                <p>In <code>Settings → Controllers → General</code>, configure global deadzone, vibration intensity, and LED settings for supported controllers.</p>
+            </li>
+        </ol>
+
+        <h3>Advanced Configuration</h3>
+        <ol class="setup-steps">
+            <li>
+                <strong>Custom Button Mapping</strong>
+                <p>Go to <code>Settings → Controllers → Button Mapping</code> and select your controller. Click any button and press the desired input to remap. Save as profile for reuse.</p>
+            </li>
+            <li>
+                <strong>Analog Stick Calibration</strong>
+                <p>Access calibration in <code>Settings → Controllers → Calibration</code>. Adjust individual deadzones per axis and modify sensitivity curves to eliminate drift.</p>
+            </li>
+            <li>
+                <strong>Configure Hotkeys</strong>
+                <p>Map controller buttons to emulator functions in <code>Settings → Controllers → Hotkeys</code>. This allows save state creation, fast forward, and menu access from your controller.</p>
+            </li>
+            <li>
+                <strong>Enable Turbo Mode</strong>
+                <p>In <code>Settings → Controllers → Turbo</code>, enable turbo for buttons that need rapid fire. Set frequency for 5-30 presses per second based on your needs.</p>
+            </li>
+        </ol>
+    </section>
+
+    <section id="troubleshooting">
+        <h2>Troubleshooting</h2>
+        
+        <div class="troubleshooting-grid">
+            <div class="troubleshooting-item">
+                <h3>Controller Not Detected</h3>
+                <p><strong>Symptom:</strong> Controller connected but not showing.</p>
+                <p><strong>Solution:</strong> Check macOS Privacy settings for input permissions. Try re-pairing Bluetooth controllers. Verify USB cable supports data.</p>
+            </div>
+            
+            <div class="troubleshooting-item">
+                <h3>Analog Stick Drift</h3>
+                <p><strong>Symptom:</strong> Character moves without input.</p>
+                <p><strong>Solution:</strong> Increase deadzone to 15-20% in calibration settings. Clean controller sticks with compressed air. Run calibration wizard.</p>
+            </div>
+            
+            <div class="troubleshooting-item">
+                <h3>Mapping Not Saving</h3>
+                <p><strong>Symptom:</strong> Custom mappings reset on restart.</p>
+                <p><strong>Solution:</strong> Save settings via main menu, not in-game. Create per-game profile in settings. Check config folder permissions.</p>
+            </div>
+            
+            <div class="troubleshooting-item">
+                <h3>Input Lag</h3>
+                <p><strong>Symptom:</strong> Delay between press and response.</p>
+                <p><strong>Solution:</strong> Reduce audio buffer size. Use wired connection instead of Bluetooth. Disable many shader effects. Check CPU usage.</p>
+            </div>
+            
+            <div class="troubleshooting-item">
+                <h3>Vibration Not Working</h3>
+                <p><strong>Symptom:</strong> No force feedback.</p>
+                <p><strong>Solution:</strong> Enable in controller settings. Check game supports vibration. Verify controller has adequate battery. Some cores require per-core enabling.</p>
+            </div>
+            
+            <div class="troubleshooting-item">
+                <h3>Hotkey Conflicts</h3>
+                <p><strong>Symptom:</strong> Controller triggers emulator functions accidentally.</p>
+                <p><strong>Solution:</strong> Review hotkey settings. Use Game Focus Mode to disable hotkeys. Change combinations to avoid conflicts.</p>
+            </div>
+        </div>
+    </section>
+</div>

@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GBA - Game Boy Advance - TruchiEmu Guide</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            line-height: 1.6;
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 20px;
+            background: #f5f5f5;
+            color: #333;
+        }
+        .header {
+            background: linear-gradient(135deg, #8b5cf6, #6d28d9);
+            color: white;
+            padding: 30px;
+            border-radius: 10px;
+            margin-bottom: 30px;
+            text-align: center;
+        }
+        .system-banner {
+            width: 100%;
+            max-width: 800px;
+            height: 200px;
+            background: #ddd;
+            margin: 0 auto 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 8px;
+            font-size: 24px;
+            color: #666;
+        }
+        h1, h2, h3 {color: #6d28d9;}
+        .section {
+            background: white;
+            padding: 25px;
+            margin-bottom: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .warning {
+            background: #fff3cd;
+            border-left: 4px solid #ffc107;
+            padding: 15px; margin: 15px 0;
+        }
+        .tip {
+            background: #d4edda;
+            border-left: 4px solid #28a745;
+            padding: 15px; margin: 15px 0;
+        }
+        code {
+            background: #f8f9fa;
+            padding: 2px 6px;
+            border-radius: 3px;
+            font-family: 'Courier New', monospace;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 15px 0;
+        }
+        th, td {
+            border: 1px solid #ddd;
+            padding: 12px;
+            text-align: left;
+        }
+        th {
+            background: #f8f9fa;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>Game Boy Advance (GBA)</h1>
+        <p>32-bit handheld evolution with ARM architecture</p>
+    </div>
+
+    <div class="system-banner">
+        [GBA System Banner Placeholder]
+    </div>
+
+    <div class="section">
+        <h2>Hardware Overview</h2>
+        <p>The Game Boy Advance, released in 2001, represented a massive leap from the Game Boy Color. Powered by a 32-bit ARM7TDMI RISC processor running at 16.78 MHz, the GBA delivered console-quality gaming in a portable format. The ARM7 core operates in both 32-bit ARM mode and 16-bit Thumb mode for code density optimization.</p>
+        
+        <p>The graphics subsystem featured the PPU (Picture Processing Unit) capable of rendering up to 128 sprites simultaneously with maximum dimensions of 64x64 pixels. The system supported three tile map modes: rotated/scaled backgrounds (Mode 0), normal backgrounds (Mode 1-2), and bitmap modes (Mode 3-5). Resolution reached 240x160 pixels with a palette of 32,768 colors, displaying up to 512 colors simultaneously through 16 different palettes.</p>
+        
+        <p>Audio capability arrived through dual DMA-driven channels, including two 8-bit PCM channels with sampling rates from 8kHz to 64kHz. The system's approach to audio, while limited compared to the SNES, enabled surprisingly sophisticated compositions through clever programming and sample streaming.</p>
+        
+        <p>Memory architecture included 32KB of workspace memory (WRAM) on-chip, 256KB of external RAM (ERAM), and 96KB of video memory (VRAM). Cartridge-based storage ranged from 4MB to 32MB.</p>
+    </div>
+
+    <div class="section">
+        <h2>Core Selection</h2>
+        <p>GBA emulation has advanced significantly, with multiple highly accurate cores available:</p>
+        
+        <table>
+            <tr><th>Core</th><th>Accuracy</th><th>Performance</th><th>Special Features</th><th>Best Use Case</th></tr>
+            <tr><td><strong>mgba</strong></td><td>Extremely High</td><td>Excellent</td><td>Debugger, accurate</td><td>Recommended default</td></tr>
+            <tr><td><strong>vba-next</strong></td><td>High</td><td>Very High</td><td>Fast forward rewind</td><td>Speed, mobile</td></tr>
+            <tr><td>gba</td><td>Medium</td><td>Very High</td><td>Legacy compatibility</td><td>Low-end hardware</td></tr>
+            <tr><td>meteor</td><td>Medium</td><td>High</td><td>Cycle accurate</td><td>Development testing</td></tr>
+        </table>
+    </div>
+
+    <div class="section">
+        <h2>ROM Format Support</h2>
+        <h3>Supported Formats:</h3>
+        <ul>
+            <li><strong>.gba</strong> - Native GBA format (preferred)</li>
+            <li><strong>.agb</strong> - Alternative GBA format</li>
+            <li><strong>.bin</strong> - Binary dumps</li>
+            <li><strong>.elf</strong> - Homebrew and development files</li>
+            <li><strong>.mb</strong> - Multiboot ROMs for wireless play</li>
+        </ul>
+
+        <h3>Save Types:</h3>
+        <ul>
+            <li><strong>EEPROM:</strong> 512B to 8KB, used in early games</li>
+            <li><strong>SRAM:</strong> 32KB, most common save format</li>
+            <li><strong>Flash:</strong> 64KB or 128KB, later games</li>
+            <li><strong>RTC:</strong> Real-time clock for Pokemon and similar games</li>
+        </ul>
+    </div>
+
+    <div class="section">
+        <h2>Controller Mapping</h2>
+        <h3>GBA Buttons:</h3>
+        <table>
+            <tr><th>GBA Button</th><th>Function</th><th>Keyboard</th><th>Modern Gamepad</th></tr>
+            <tr><td>D-Pad</td><td>Movement</td><td>Arrow keys</td><td>D-Pad/Left Stick</td></tr>
+            <tr><td>A Button</td><td>Primary action</td><td>X key</td><td>Bottom button</td></tr>
+            <tr><td>B Button</td><td>Secondary action</td><td>Z key</td><td>Right button</td></tr>
+            <tr><td>L Shoulder</td><td>Left trigger</td><td>Q key</td><td>Left bumper</td></tr>
+            <tr><td>R Shoulder</td><td>Right trigger</td><td>W key</td><td>Right bumper</td></tr>
+            <tr><td>START</td><td>Pause</td><td>Enter</td><td>Start button</td></tr>
+            <tr><td>SELECT</td><td>Select/menu</td><td>Right Shift</td><td>Back button</td></tr>
+        </table>
+    </div>
+
+    <div class="section">
+        <h2>Best Shader Recommendations</h2>
+        <h3>LCD Display Simulation:</h3>
+        <ul>
+            <li><strong>LCD3x:</strong> Simulates Game Boy Advance SP screen</li>
+            <li><strong>Grid:</strong> Pixel grid overlay for handheld feel</li>
+            <li><strong>Color-Grid:</strong> Enhanced with interpolated color</li>
+        </ul>
+
+        <h3>Upscale and Enhance:</h3>
+        <ul>
+            <li><strong>xBRZ:</strong> High-quality pixel art scaling</li>
+            <li><strong>ScaleFX:</strong> Smooth scaling with edge preservation</li>
+            <li><strong>HQx:</strong> Classic upscaling algorithm</li>
+        </ul>
+    </div>
+
+    <div class"section">
+        <h2>Performance Optimization</h2>
+        <ul>
+            <li>GBA emulation is lightweight, runs on most hardware</li>
+            <li>Enable "Boot to BIOS" for authentic startup (if BIOS available)</li>
+            <li>Use "Skip BIOS" for faster loading</li>
+            <li>Audio buffer: 64ms recommended for minimum latency</li>
+        </ul>
+    </div>
+</body>
+</html>

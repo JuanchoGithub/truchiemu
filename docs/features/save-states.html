@@ -1,0 +1,360 @@
+---
+layout: default
+title: Save State System - TruchiEmu Documentation
+permalink: /features/save-states/
+---
+
+<div class="feature-docs">
+    <h1>Save State System</h1>
+    
+    <div class="feature-overview">
+        <img src="/docs/media/features/save-states-hero.png" alt="Save State System Overview" class="hero-image">
+        <p class="lead">TruchiEmu's advanced save state system provides instant game saves and loads with visual thumbnails, metadata tracking, and cloud synchronization. Create checkpoints at any moment, organize saves into slot banks, and never lose progress with our automatic backup system.</p>
+    </div>
+
+    <section id="service-explanation">
+        <h2>Service Overview</h2>
+        <p>The Save State system captures complete emulator state including RAM, CPU registers, GPU state, and audio buffers. Unlike traditional save states, TruchiEmu's implementation includes rich metadata, screenshot thumbnails, and integration with your game library for seamless organization and retrieval.</p>
+        
+        <div class="architecture-diagram">
+            <img src="/docs/media/features/save-state-architecture.png" alt="Save State Architecture">
+            <p class="caption">Save state capture and restore pipeline with thumbnail generation and backup</p>
+        </div>
+
+        <h3>Core Features</h3>
+        <ul class="feature-list">
+            <li><strong>Instant Captures:</strong> Save and load in less than 100ms with zero gameplay interruption</li>
+            <li><strong>Visual Thumbnails:</strong> Automatic screenshot capture with customizable compression</li>
+            <li><strong>Metadata Tracking:</strong> Track creation time, game position, and playtime between saves</li>
+            <li><strong>Slot Banking:</strong> Organize saves into customizable banks for different playthroughs</li>
+            <li><strong>Cloud Sync:</strong> Synchronize save states across devices via iCloud or custom providers</li>
+            <li><strong>Backwards Compatibility:</strong> Import save states from other emulators with automatic conversion</li>
+        </ul>
+
+        <h3>Technical Architecture</h3>
+        <p>The save state system is built on several core components:</p>
+        <ul>
+            <li><strong>Core Serializer:</strong> Captures complete emulator state from libretro cores</li>
+            <li><strong>Compression Engine:</strong> LZ4-based compression for fast save/load operations</li>
+            <li><strong>Thumbnail Generator:</strong> GPU-accelerated screenshot capture in real-time</li>
+            <li><strong>Metadata Manager:</strong> Maintains save state database with rich indexing</li>
+            <li><strong>Backup Scheduler:</strong> Automatic backup rotation with configurable retention policies</li>
+            <li><strong>Cross-Platform Sync:</strong> Universal save state format compatible across macOS and iOS</li>
+        </ul>
+    </section>
+
+    <section id="step-by-step-guide">
+        <h2>Step-by-Step Configuration Guide</h2>
+        
+        <h3>Basic Save State Usage</h3>
+        <ol class="setup-steps">
+            <li>
+                <strong>Save State Creation</strong>
+                <p>Press <code>Cmd+F1</code> (or your configured hotkey) to save to slot 1. The screen will flash briefly and a notification appears showing the saved thumbnail. You can configure up to 99 slots per bank.</p>
+                <img src="/docs/media/screenshots/save-state-create.png" alt="Save State Creation">
+            </li>
+            <li>
+                <strong>Load Save State</strong>
+                <p>Press <code>F1</code> to load slot 1. Loading is instant - the game resumes exactly where saved. Use <code>F2-F12</code> for slots 2-12, or use the save state browser for higher slot numbers.</p>
+            </li>
+            <li>
+                <strong>View Save State Browser</strong>
+                <p>Open the save state browser with <code>Cmd+Shift+S</code> to see all save states with thumbnails. Hover over states for metadata preview showing creation time, game location, and playtime.</p>
+                <img src="/docs/media/screenshots/save-state-browser.png" alt="Save State Browser">
+            </li>
+            <li>
+                <strong>Organize with Slot Banks</strong>
+                <p>Create slot banks by pressing <code>Cmd+B</code> for Bank View. Organize saves by playthrough (e.g., Bank 1 for Speedrun, Bank 2 for 100% completion).</p>
+            </li>
+        </ol>
+
+        <h3>Advanced Save State Management</h3>
+        <ol class="setup-steps">
+            <li>
+                <strong>Configure Rotate Mode</strong>
+                <p>In <code>Settings → Save States → Rotate Mode</code>, enable automatic slot rotation. Each new save automatically advances to the next slot, useful for quicksave checkpoints during difficult sections.</p>
+            </li>
+            <li>
+                <strong>Set Up Cloud Synchronization</strong>
+                <p>Enable iCloud sync under <code>Settings → Save States → Cloud Sync</code>. Choose sync frequency (immediate, hourly, daily) and which slot banks to synchronize. Configure conflict resolution preferences.</p>
+                <img src="/docs/media/screenshots/save-state-sync.png" alt="Save State Cloud Sync">
+            </li>
+            <li>
+                <strong>Enable Automatic Backup</strong>
+                <p>Configure automatic backups in <code>Settings → Save States → Backups</code>. Set backup frequency (per save, hourly, daily) and retention count. Automatic backups prevent accidental overwriting.</p>
+            </li>
+            <li>
+                <strong>Configure Thumbnail Quality</strong>
+                <p>Adjust thumbnail compression and resolution in save state settings. Higher quality uses more disk space but provides better visual previews.</p>
+            </li>
+            <li>
+                <strong>Import External Save States</strong>
+                <p>Drag and drop save state files from other emulators into the save state browser. TruchiEmu automatically detects format (SRM, SV, etc.) and converts as needed. Manual mapping available for ambiguous conversions.</p>
+                <img src="/docs/media/screenshots/import-save-states.png" alt="Import Save State">
+            </li>
+        </ol>
+
+        <h3>Save State Organization</h3>
+        <ol class="setup-steps">
+            <li>
+                <strong>Name Save States</strong>
+                <p>Right-click any save state and select "Rename" to add descriptive labels. Use names like "Before Boss Fight", "Collected Secret Item", or "Speedrun Checkpoint" for easy identification.
+            </li>
+            <li>
+                <strong>Create Save State Notes</strong>
+                <p>Add detailed notes to save states by double-clicking the state and entering text in the notes field. Document strategies, item locations, or completion goals.</p>
+            </li>
+            <li>
+                <strong>Auto-Cleanup Configuration</strong>
+                <p>Set up automatic cleanup in <code>Settings → Save States → Cleanup</code> to remove old states based on age or count. Configure rules to keep recent saves while removing outdated ones.</p>
+                <img src="/docs/media/screenshots/save-state-cleanup.png" alt="Save State Cleanup Settings">
+            </li>
+            <li>
+                <strong>Export Save States</strong>
+                <p>Select save states in browser and choose <code>File → Export → Save States</code>. Create shareable bundles for specific game sections or backup entire collections.</p>
+            </li>
+        </ol>
+    </section>
+
+    <section id="configuration-examples">
+        <h2>Configuration Examples</h2>
+        
+        <h3>Example 1: Speedrunning Setup</h3>
+        <div class="config-example">
+            <pre><code>// Save State Configuration
+general {
+    hotkey_save = "Cmd+F1"
+    hotkey_load = "F1"
+    show_notifications = true
+    show_thumbnails = false         // Minimal HUD for speedruns
+}
+
+// Rotate Mode for Checkpoint Segments
+rotate_mode {
+    enabled = true
+    slots_per_bank = 10
+    auto_advance = true
+    reset_on_bank_change = false
+}
+
+// Backup for Safety
+backups {
+    enable = true
+    frequency = "per_save"          // Backup every single save
+    retention_count = 5
+    backup_location = "~/Documents/TruchiEmu/SaveBackups"
+}
+
+// Cloud Sync
+cloud_sync {
+    provider = "icloud"
+    sync_on_save = true
+    sync_on_load = false
+    conflict_resolution = "prefer_newest"
+}
+
+// Performance
+compression {
+    algorithm = "lz4_fast"
+    level = 1                       // Fastest compression
+}
+
+metadata {
+    track_playtime = true
+    track_location = true           // Document progress for practice
+    add_timestamps = true
+}</code></pre>
+        </div>
+
+        <h3>Example 2: Casual Gaming with Extensive Checkpoints</h3>
+        <div class="config-example">
+            <pre><code>// Save State Configuration
+general {
+    hotkey_save = "Cmd+S"
+    hotkey_load = "Cmd+L"
+    show_notifications = true
+    show_thumbnails = true          // Visual previews important
+    thumbnail_quality = "high"      // High quality screenshots
+}
+
+// Slot Banking for Different Play Styles
+banking {
+    current_bank = 1
+    max_banks = 9
+    bank_names = [
+        "Main Playthrough",
+        "Exploration",
+        "Hard Mode",
+        "Collectibles Hunt"
+    ]
+}
+
+// Auto-Save Configuration
+auto_save {
+    enabled = true
+    interval_minutes = 10
+    slot = 99                       // Dedicated auto-save slot
+    keep_count = 3                  // Keep last 3 auto-saves
+}
+
+// Thumbnails
+thumbnails {
+    quality = "medium"
+    compression = 0.85              // 85% JPEG quality
+    dimensions = "320x240"
+    include_overlay = true          // Show slot number and timestamp
+}
+
+// Cleanup to Manage Space
+cleanup {
+    enabled = true
+    max_age_days = 30
+    max_states_per_game = 50
+    exclude_named = true            // Keep named saves always
+    prompt_before_delete = false    // Silent cleanup
+}
+
+// Import/Export
+import {
+    convert_legacy = true           // auto-convert old formats
+    backup_original = true
+    auto_categorize = true
+}</code></pre>
+        </div>
+
+        <h3>Example 3: Mobile Sync Setup</h3>
+        <div class="config-example">
+            <pre><code>// Save State Configuration
+sync {
+    provider = "icloud"             // Also supports dropbox, gdrive
+    sync_interval = 300             // Sync every 5 minutes
+    sync_on_app_launch = true
+    sync_on_app_close = true
+    only_when_on_wifi = true
+    
+    include_banks = [1, 2, 3]       // Only sync main banks
+    exclude_patterns = ["*backup*", "*temp*"]
+}
+
+// Compression for Mobile
+compression {
+    algorithm = "zstd"
+    level = 6                       // Higher compression for mobile data
+    enable_checksum = true
+}
+
+// Reduced Thumbnail Quality for Space
+thumbnails {
+    quality = "low"
+    dimensions = "160x120"
+    format = "jpeg"
+    compression = 0.75
+}
+
+// Simplified State Management
+interface {
+    show_save_menu = false          // Quick save/load only
+    confirm_overwrite = true        // Prevent accidents
+    auto_slot = false               // Manual slot selection
+    remember_last_slot = true       // Use last used slot
+}
+
+// Mobile-Specific Performance
+performance {
+    async_save = true               // Save in background
+    parallel_compression = false    // Save battery
+    memory_limit = 100_000_000      // 100MB memory limit
+}</code></pre>
+        </div>
+    </section>
+
+    <section id="troubleshooting">
+        <h2>Troubleshooting</h2>
+        
+        <div class="troubleshooting-grid">
+            <div class="troubleshooting-item">
+                <h3>Save State Creation Fails</h3>
+                <p><strong>Symptom:</strong> Error message or crash when creating save state.</p>
+                <p><strong>Solution:</strong> Check available disk space. Verify write permissions to save state directory. Try disabling compression in settings to isolate compression-related issues.</p>
+            </div>
+            
+            <div class="troubleshooting-item">
+                <h3>Save State Corruption</h3>
+                <p><strong>Symptom:</strong> Save state appears in browser but fails to load or crashes game.</p>
+                <p><strong>Solution:</strong> Check for corrupted backup files in backup directory. Try importing save state into different emulator version. Verificationsum on save state files is missing or incorrect.</p>
+            </div>
+            
+            <div class="troubleshooting-item">
+                <h3>Cloud Sync Conflicts</h3>
+                <p><strong>Symptom:</strong> Error messages about conflicting save states during sync.</p>
+                <p><strong>Solution:</strong> Review conflict resolution settings. Manually resolve conflicts in the sync dashboard. Consider using different slot banks for different devices to avoid conflicts.</p>
+            </div>
+            
+            <div class="troubleshooting-item">
+                <h3>Import/Export Problems</h3>
+                <p><strong>Symptom:</strong> Cannot import save states from other emulators.</p>
+                <p><strong>Solution:</strong> Verify save state format is supported (SRM, SV, etc.). Check that ROM used matches the save state's ROM. Try manual conversion using tools → convert save state.</p>
+            </div>
+            
+            <div class="troubleshooting-item">
+                <h3>Thumbnail Generation Fails</h3>
+                <p><strong>Symptom:</strong> Save states appear without thumbnails in browser.</p>
+                <p><strong>Solution:</strong> Check GPU drivers and Metal compatibility. Verify screenshot capture permissions in macOS Privacy settings. Try reducing thumbnail quality in settings.</p>
+            </div>
+            
+            <div class="troubleshooting-item">
+                <h3>Performance Impact</h3>
+                <p><strong>Symptom:</strong> Frame drops when creating save states frequently.</p>
+                <p><strong>Solution:</strong> Enable asynchronous save state creation in advanced settings. Use faster compression algorithm (lz4 instead of zstd). Disable thumbnail generation for frequent saves.</p>
+            </div>
+            
+            <div class="troubleshooting-item">
+                <h3>Achievements Blocked</h3>
+                <p><strong>Symptom:</strong> Achievements not unlocking when loading save states.</p>
+                <p><strong>Solution:</strong> You must be playing in Casual mode. Hardcore mode disables save states for achievement eligibility. Check your achievement settings to ensure save states are allowed.</p>
+            </div>
+            
+            <div class="troubleshooting-item">
+                <h3>Disk Space Issues</h3>
+                <p><strong>Symptom:</strong> Large collection of save states consuming too much disk space.</p>
+                <p><strong>Solution:</strong> Enable automatic cleanup in settings. Enable stronger compression for existing saves. Consider reducing thumbnail quality or disabling screenshots for older states.</p>
+            </div>
+        </div>
+    </section>
+
+    <section id="references">
+        <h2>Related Services</h2>
+        
+        <div class="related-services">
+            <div class="service-card">
+                <h3><a href="/features/achievements/">RetroAchievements</a></h3>
+                <p>Understand how save state usage affects achievement eligibility in Hardcore mode.</p>
+            </div>
+            
+            <div class="service-card">
+                <h3><a href="/features/cheats/">Cheat System</a></h3>
+                <p>Save states work seamlessly with cheat codes to create specific practice scenarios.</p>
+            </div>
+            
+            <div class="service-card">
+                <h3><a href="/library/">Game Library</a></h3>
+                <p>Save states are automatically organized in your game library with thumbnails and metadata.</p>
+            </div>
+            
+            <div class="service-card">
+                <h3><a href="/docs/api/save-state-api">Save State API</a></h3>
+                <p>Programmatic access to save state creation, loading, and management in custom scripts.</p>
+            </div>
+            
+            <div class="service-card">
+                <h3><a href="/tools/converter">Save State Converter</a></h3>
+                <p>Command-line utility for converting save states between different emulator formats.</p>
+            </div>
+            
+            <div class="service-card">
+                <h3><a href="/community/saves">Community Save State Repository</a></h3>
+                <p>Download curated save states for practice segments, boss fights, and challenge runs created by the community.</p>
+            </div>
+        </div>
+    </section>
+</div>

@@ -1,0 +1,376 @@
+---
+layout: default
+title: Library Management - TruchiEmu Documentation
+permalink: /features/library/
+---
+
+<div class="feature-docs">
+    <h1>Library Management</h1>
+    
+    <div class="feature-overview">
+        <img src="/docs/media/features/library-hero.png" alt="Library Management Overview" class="hero-image">
+        <p class="lead">TruchiEmu's intelligent library management system automatically organizes your game collection with metadata scraping, artwork downloading, and advanced filtering capabilities. Transform your ROM collection into a beautiful, searchable library with rich game information and box art.</p>
+    </div>
+
+    <section id="service-explanation">
+        <h2>Service Overview</h2>
+        <p>The Library Management service provides comprehensive organization and discovery tools for your game collection. Using machine learning-based metadata matching and integration with multiple game databases, TruchiEmu automatically identifies games, downloads high-quality artwork, and creates an immersive browsing experience that rivals modern game launchers.</p>
+        
+        <div class="architecture-diagram">
+            <img src="/docs/media/features/library-architecture.png" alt="Library Architecture">
+            <p class="caption">Library data flow from ROM scanning to metadata enrichment and UI display</p>
+        </div>
+
+        <h3>Core Features</h3>
+        <ul class="feature-list">
+            <li><strong>Automatic Game Detection:</strong> AI-powered ROM identification using multiple database sources</li>
+            <li><strong>Metadata Scraping:</strong> Pulls game info, descriptions, release dates, and developer information</li>
+            <li><strong>Artwork Management:</strong> Automatic download of box art, screenshots, and fan art</li>
+            <li><strong>Smart Collections:</strong> Dynamic grouping by system, genre, year, or custom rules</li>
+            <li><strong>Import/Export:</strong> Bulk library management with CSV and JSON support</li>
+            <li><strong>Duplicate Detection:</strong> Intelligent duplicate finder with region/version differentiation</li>
+        </ul>
+
+        <h3>Technical Architecture</h3>
+        <p>The library system comprises several integrated components:</p>
+        <ul>
+            <li><strong>ROM Scanner:</strong> Recursive directory scanning with file hash calculation and header extraction</li>
+            <li><strong>Metadata Engine:</strong> Multi-source data aggregation from LaunchBox, IGDB, and custom databases</li>
+            <li><strong>Artwork Pipeline:</strong> Parallel downloading with format optimization and caching</li>
+            <li><strong>Duplicate Analyzer:</strong> Fuzzy matching algorithm to identify true duplicates vs. regional variants</li>
+            <li><strong>SwiftData Backend:</strong> Persistent storage with fast search and filtering capabilities</li>
+            <li><strong>Index Service:</strong> Full-text search across titles, descriptions, and metadata tags</li>
+        </ul>
+    </section>
+
+    <section id="step-by-step-guide">
+        <h2>Step-by-Step Configuration Guide</h2>
+        
+        <h3>Initial Library Setup</h3>
+        <ol class="setup-steps">
+            <li>
+                <strong>Add ROM Directories</strong>
+                <p>Navigate to <code>Settings → Library → ROM Directories</code> and click "Add Directory". Select folders containing your game ROMs. TruchiEmu supports recursive scanning of subdirectories.</p>
+                <img src="/docs/media/screenshots/library-directories.png" alt="ROM Directories Configuration">
+            </li>
+            <li>
+                <strong>Initial Scan Configuration</strong>
+                <p>Configure scan options: file extensions to include (nes, smc, gb, gba, etc.), exclude patterns for beta/prototype versions, and maximum file size limits for known bad dumps.</p>
+            </li>
+            <li>
+                <strong>Enable Metadata Sources</strong>
+                <p>In <code>Settings → Library → Metadata</code>, select your preferred metadata providers. LaunchBox is recommended for accuracy, with IGDB as fallback for newer titles.</p>
+                <img src="/docs/media/screenshots/metadata-sources.png" alt="Metadata Sources Configuration">
+            </li>
+            <li>
+                <strong>Start Library Scan</strong>
+                <p>Click "Scan for New ROMs" in the main Library view. The scanner will calculate hashes, identify games, and fetch metadata. Progress is shown in real-time with estimated completion time.</p>
+            </li>
+            <li>
+                <strong>Review Scan Results</strong>
+                <p>After scanning, review the "Unidentified Games" section. Manually match unrecognized ROMs by selecting the correct game from search results or creating custom entries.</p>
+            </li>
+        </ol>
+
+        <h3>Advanced Library Organization</h3>
+        <ol class="setup-steps">
+            <li>
+                <strong>Create Smart Collections</strong>
+                <p>Navigate to <code>Library → Smart Collections → New Collection</code>. Define rules based on system, genre, release year, playtime, or achievement completion status.</p>
+                <img src="/docs/media/screenshots/smart-collections.png" alt="Smart Collection Configuration">
+            </li>
+            <li>
+                <strong>Configure Artwork Preferences</strong>
+                <p>In <code>Settings → Library → Artwork</code>, set your preferences for box art regions (USA, Europe, Japan), artwork quality (Standard, High, Ultra), and download parallelization settings for faster fetching.</p>
+            </li>
+            <li>
+                <strong>Set Up Automatic Artwork Download</strong>
+                <p>Enable "Auto-download Missing Artwork" to automatically fetch artwork for new games added to the library. Configure bandwidth limits to prevent network saturation during downloads.</p>
+            </li>
+            <li>
+                <strong>Configure Duplicate Detection</strong>
+                <p>Adjust duplicate detection sensitivity in <code>Settings → Library → Advanced</code>. Set thresholds for considering games duplicates based on title similarity and file content matching.</p>
+            </li>
+            <li>
+                <strong>Create Custom Metadata Fields</strong>
+                <p>Add custom tags and metadata fields for personal organization. In <code>Settings → Library → Custom Fields</a>, define fields like "Condition", "Purchase Date", or "Rating".</p>
+                <img src="/docs/media/screenshots/custom-fields.png" alt="Custom Metadata Fields">
+            </li>
+        </ol>
+
+        <h3>Import and Export Workflows</h3>
+        <ol class="setup-steps">
+            <li>
+                <strong>Export Library Data</strong>
+                <p>Go to <code>File → Export → Library Data</code> and choose format (JSON, CSV, or XML). Select which fields to include and whether to embed artwork data.</p>
+            </li>
+            <li>
+                <strong>Import from Other Launchers</strong>
+                <p>Use <code>File → Import</code> to bring libraries from other applications. Supported formats include LaunchBox XML, RetroArch playlists, and generic ROM lists.</p>
+            </li>
+            <li>
+                <strong>Batch Metadata Refresh</strong>
+                <p>Select multiple games and choose <code>Refresh Metadata</code> from the context menu. This updates all metadata fields and artwork for the selected games.</p>
+            </li>
+            <li>
+                <strong>Duplicate Management</strong>
+                <p>Run <code>Tools → Find Duplicates</code> to identify duplicate games. Choose to hide, merge, or delete duplicates with intelligent suggestions based on region and version quality.</p>
+                <img src="/docs/media/screenshots/duplicate-finder.png" alt="Duplicate Finder Results">
+            </li>
+        </ol>
+    </section>
+
+    <section id="configuration-examples">
+        <h2>Configuration Examples</h2>
+        
+        <h3>Example 1: Complete Library Scan Configuration</h3>
+        <div class="config-example">
+            <pre><code>// Library Scanner Configuration
+scanning {
+    directories = [
+        "/Users/name/Games/NES",
+        "/Users/name/Games/SNES",
+        "/Users/name/Games/Genesis"
+    ]
+    
+    file_extensions = ["nes", "smc", "sfc", "gen", "smd", "bin"]
+    
+    exclude_patterns = [
+        "*beta*",
+        "*proto*",
+        "*(*hack*)*",
+        "*[b]*"           // Bad dumps
+    ]
+    
+    max_file_size = 50_000_000      // 50MB limit
+    recursive_scan = true
+    follow_symlinks = false
+    
+    checksum_algorithm = "sha256"
+    streaming_checksum = true        // Memory-efficient for large collections
+}</code></pre>
+        </div>
+
+        <h3>Example 2: Multi-Source Metadata Configuration</h3>
+        <div class="config-example">
+            <pre><code>// Metadata Sources Configuration
+metadata {
+    primary_source = "launchbox"
+    fallback_sources = ["igdb", "custom_db"]
+    
+    // LaunchBox Preferences
+    launchbox {
+        api_key = "YourLaunchBoxAPIKey"
+        region_preference = ["usa", "world", "europe", "japan"]
+        prioritize_official = true
+    }
+    
+    // IGDB Configuration
+    igdb {
+        client_id = "YourClientID"
+        client_secret = "YourClientSecret"
+        max_daily_requests = 5000
+    }
+    
+    // Field Priority
+    field_priority {
+        description = ["launchbox", "igdb"]
+        genres = ["igdb", "launchbox"]
+        release_date = ["launchbox"]
+        developer = ["igdb"]
+    }
+    
+    // Update Behavior
+    auto_refresh_age = 30             // Days before metadata refresh
+    overwrite_existing = false        // Only fill missing fields
+}</code></pre>
+        </div>
+
+        <h3>Example 3: Artwork Download Pipeline</h3>
+        <div class="config-example">
+            <pre><code>// Artwork Download Configuration
+artwork {
+    // Download Settings
+    parallel_downloads = 5
+    bandwidth_limit = 10_000_000      // 10MB/s (0 for unlimited)
+    retry_attempts = 3
+    timeout_seconds = 30
+    
+    // Artwork Preferences
+    quality = "high"                  // Options: low, standard, high, ultra
+    region_preference = ["usa", "europe", "japan"]
+    
+    // Cover Images
+    cover {
+        enabled = true
+        dimensions = "800x1000"         // Target dimensions
+        format = "jpg"                  // Options: jpg, png, webp
+        include_3D_boxes = true
+    }
+    
+    // Screenshots
+    screenshot {
+        enabled = true
+        count = 3                       // Max screenshots per game
+        dimensions = "1024x768"
+        format = "png"
+    }
+    
+    // Fan Art
+    fanart {
+        enabled = false                 // Disable to save bandwidth
+        count = 2
+        dimensions = "1920x1080"
+    }
+    
+    // Cache Management
+    cache_location = "~/Documents/TruchiEmu/Cache"
+    max_cache_size = 5_000_000_000    // 5GB cache limit
+    auto_cleanup = true               // Remove unused artwork
+}</code></pre>
+        </div>
+
+        <h3>Example 4: Smart Collection Definitions</h3>
+        <div class="config-example">
+            <pre><code>// Smart Collection Configuration
+smart_collections [
+    {
+        name = "Recently Played"
+        icon = "recent"
+        rules = [
+            {
+                field = "last_played"
+                operator = "not_older_than"
+                value = "7_days"
+            }
+        ]
+        sort_by = "last_played"
+        sort_descending = true
+    },
+    
+    {
+        name = "Unfinished Games"
+        icon = "incomplete"
+        rules = [
+            {
+                field = "playtime_minutes"
+                operator = "greater_than"
+                value = 5
+            },
+            {
+                field = "completion_percentage"
+                operator = "less_than"
+                value = 100
+            }
+        ]
+        exclude_rules = [
+            {
+                field = "genres"
+                operator = "contains"
+                value = "Demo"          // Exclude demos
+            }
+        ]
+    },
+    
+    {
+        name = "Favorites"
+        icon = "heart"
+        rules = [
+            {
+                field = "tags"
+                operator = "contains"
+                value = "favorite"
+            }
+        ]
+        sort_by = "play_count"
+        sort_descending = true
+    }
+]</code></pre>
+        </div>
+    </section>
+
+    <section id="troubleshooting">
+        <h2>Troubleshooting</h2>
+        
+        <div class="troubleshooting-grid">
+            <div class="troubleshooting-item">
+                <h3>Games Not Identified</h3>
+                <p><strong>Symptom:</strong> ROMs appear as "Unknown Game" in library.</p>
+                <p><strong>Solution:</strong> Verify ROM file integrity by checking checksum. Ensure file extensions are in the allowed list. Try manual lookup via right-click → Identify Game.</p>
+            </div>
+            
+            <div class="troubleshooting-item">
+                <h3>Artwork Download Failures</h3>
+                <p><strong>Symptom:</strong> Box art and screenshots not downloading.</p>
+                <p><strong>Solution:</strong> Check internet connection and firewall settings. Verify API credentials for metadata sources in settings. Try reducing parallel downloads to avoid rate limiting.</p>
+            </div>
+            
+            <div class="troubleshooting-item">
+                <h3>Duplicate Games in Library</h3>
+                <p><strong>Symptom:</strong> Same game appearing multiple times in library.</p>
+                <p><strong>Solution:</strong> Run duplicate finder with adjusted sensitivity. Check for different ROM versions (USA vs Europe) which may be legitimate. Use smart collections to filter by region.</p>
+            </div>
+            
+            <div class="troubleshooting-item">
+                <h3>Scanning Performance Issues</h3>
+                <p><strong>Symptom:</strong> Library scan taking extremely long or freezing.</p>
+                <p><strong>Solution:</strong> Disable streaming checksum for large files. Reduce parallel operations in advanced settings. Scan directories in smaller batches instead of entire collection at once.</p>
+            </div>
+            
+            <div class="troubleshooting-item">
+                <h3>Metadata Missing or Incorrect</h3>
+                <p><strong>Symptom:</strong> Game information wrong or incomplete.</p>
+                <p><strong>Solution:</strong> Refresh metadata from different source using right-click menu. Add missing information manually using Edit Game dialog. Report incorrect data to metadata providers.</p>
+            </div>
+            
+            <div class="troubleshooting-item">
+                <h3>Smart Collection Not Updating</h3>
+                <p><strong>Symptom:</strong> Smart collections showing outdated game lists.</p>
+                <p><strong>Solution:</strong> Smart collections update automatically when games are played. Manual refresh with Cmd+R. Check rule syntax for errors that might prevent matching.</p>
+            </div>
+            
+            <div class="troubleshooting-item">
+                <h3>Import/Export Errors</h3>
+                <p><strong>Symptom:</strong> Error messages when importing libraries from other applications.</p>
+                <p><strong>Solution:</strong> Ensure file format matches expected schema. Check for encoding issues in text files. Validate JSON syntax using external tools before importing.</p>
+            </div>
+            
+            <div class="troubleshooting-item">
+                <h3>Library Corruption</h3>
+                <p><strong>Symptom:</strong> Library showing incorrect data or crashing on launch.</p>
+                <p><strong>Solution:</strong> Rebuild library database from <code>Tools → Repair Library</code>. Backup your library first. If issues persist, consider manual database rebuild by removing and re-adding game directories.</p>
+            </div>
+        </div>
+    </section>
+
+    <section id="references">
+        <h2>Related Services</h2>
+        
+        <div class="related-services">
+            <div class="service-card">
+                <h3><a href="/features/save-states/">Save State System</a></h3>
+                <p>Learn how save states integrate with library metadata to track game progress automatically.</p>
+            </div>
+            
+            <div class="service-card">
+                <h3><a href="/features/achievements/">RetroAchievements</a></h3>
+                <p>Achievement progress is automatically tracked and displayed in your game library views.</p>
+            </div>
+            
+            <div class="service-card">
+                <h3><a href="/docs/api/library-api">Library API Reference</a></h3>
+                <p>Complete API documentation for programmatically accessing and managing your game library.</p>
+            </div>
+            
+            <div class="service-card">
+                <h3><a href="/community/databases">Custom Database Guide</a></h3>
+                <p>Create custom metadata databases for rare or homebrew games not in commercial databases.</p>
+            </div>
+            
+            <div class="service-card">
+                <h3><a href="/tools/importer">ROM Import Utilities</a></h3>
+                <p>Use command-line tools for bulk ROM importing and library management automation.</p>
+            </div>
+        </div>
+    </section>
+</div>

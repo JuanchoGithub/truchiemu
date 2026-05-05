@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Genesis - Sega Genesis - TruchiEmu Guide</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            line-height: 1.6;
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 20px;
+            background: #f5f5f5;
+            color: #333;
+        }
+        .header {
+            background: linear-gradient(135deg, #1e3a8a, #7e22ce);
+            color: white;
+            padding: 30px;
+            border-radius: 10px;
+            margin-bottom: 30px;
+            text-align: center;
+        }
+        .system-banner {
+            width: 100%;
+            max-width: 800px;
+            height: 200px;
+            background: #ddd;
+            margin: 0 auto 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 8px;
+            font-size: 24px;
+            color: #666;
+        }
+        h1, h2, h3 {color: #1e3a8a;}
+        .section {
+            background: white;
+            padding: 25px;
+            margin-bottom: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .warning {
+            background: #fff3cd;
+            border-left: 4px solid #ffc107;
+            padding: 15px; margin: 15px 0;
+        }
+        .tip {
+            background: #d4edda;
+            border-left: 4px solid #28a745;
+            padding: 15px; margin: 15px 0;
+        }
+        code {
+            background: #f8f9fa;
+            padding: 2px 6px;
+            border-radius: 3px;
+            font-family: 'Courier New', monospace;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 15px 0;
+        }
+        th, td {
+            border: 1px solid #ddd;
+            padding: 12px;
+            text-align: left;
+        }
+        th {
+            background: #f8f9fa;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>Sega Genesis / Mega Drive</h1>
+        <p>16-bit powerhouse with Motorola 68000 architecture</p>
+    </div>
+
+    <div class="system-banner">
+        [Genesis System Banner Placeholder]
+    </div>
+
+    <div class="section">
+        <h2>Hardware Overview</h2>
+        <p>The Sega Genesis, known as Mega Drive outside North America, launched in 1988 (Japan) with a Motorola 68000 CPU running at 7.67 MHz. This 16-bit processor, paired with a Zilog Z80 coprocessor at 3.58 MHz for audio, created a powerful architecture that competed directly with the SNES.</p>
+        
+        <p>The graphics system featured Tile and Sprite engines capable of displaying 64 sprites with max dimensions of 32x32 pixels, and up to 80 sprites total. Resolution modes included 320x224 pixels (H40 mode) and 256x224 pixels (H32 mode), with a master palette of 512 colors including highlight and shadow effects.</p>
+        
+        <p>Audio came courtesy of the Yamaha YM2612, a 6-channel FM synthesizer plus the Texas Instruments SN76489 PSG providing 3 square wave channels and 1 noise channel. The Z80 coprocessor accessed 8KB of dedicated audio RAM, enabling sophisticated compositions from artists like Yuzo Koshiro.</p>
+        
+        <p>Memory included 64KB main RAM, 64KB Video RAM, and 8KB Audio RAM. The cartridge system supported various enhancement chips including the Sega Virtua Processor (SVP) for enhanced 3D gameplay in titles like Virtua Racing.</p>
+        
+        <p>Notable features included hardware scrolling across two planes, tilemaps for backgrounds and foregrounds, extensive sprite capabilities, and backward compatibility with Master System through the Power Base Converter.</p>
+    </div>
+
+    <div class="section">
+        <h2>Core Selection</h2>
+        <p>Genesis emulation has mature options with varying accuracy and compatibility levels:</p>
+        
+        <table>
+            <tr>
+                <th>Core</th>
+                <th>Accuracy</th>
+                <th>Performance</th>
+                <th>Special Features</th>
+                <th>Best Use Case</th>
+            </tr>
+            <tr>
+                <td><strong>genesis_plus_gx</strong></td>
+                <td>Very High</td>
+                <td>Excellent</td>
+                <td>Master System, Game Gear, 32X, CD</td>
+                <td>Recommended default</td>
+            </tr>
+            <tr>
+                <td><strong>blastem</strong></td>
+                <td>Extremely High</td>
+                <td>Moderate</td>
+                <td>Cycle accurate</td>
+                <td>Accuracy-focused</td>
+            </tr>
+            <tr>
+                <td>picodrive</td>
+                <td>High</td>
+                <td>Very High</td>
+                <td>Multi-system, fast</td>
+                <td>Mobile, low-end hardware</td>
+            </tr>
+            <tr>
+                <td>genplus-gx</td>
+                <td>High</td>
+                <td>Good</td>
+                <td>Classic emulation</td>
+                <td>Legacy use</td>
+            </tr>
+        </table>
+    </div>
+
+    <div class="section">
+        <h2>ROM Format Support</h2>
+        <h3>Supported Formats:</h3>
+        <ul>
+            <li><strong>.gen</strong> - Sega Genesis format</li>
+            <li><strong>.smd</strong> - Super Magic Drive format</li>
+            <li><strong>.bin</strong> - Binary dumps</li>
+            <li><strong>.md</strong> - Mega Drive format</li>
+        </ul>
+
+        <h3>Specialized Formats:</h3>
+        <ul>
+            <li><strong>.32x</strong> - 32X ROMs</li>
+            <li><strong>.cue/.bin</strong> - Sega CD images</li>
+            <li><strong>.68k</strong> - Homebrew format</li>
+            <li><strong>.sgd</strong> - Sega Mega Drive enhanced format</li>
+        </ul>
+
+        <h3>Multi-Disk Support:</h3>
+        <ul>
+            <li>M3U playlist files for multi-CD games</li>
+            <li>CHD format for compressed CD images</li>
+            <li>BIOS files required for Sega CD</li>
+        </ul>
+    </div>
+
+    <div class="section">
+        <h2>Controller Mapping</h2>
+        <h3>3-Button Controller (Original):</h3>
+        <table>
+            <tr><th>Genesis Button</th><th>Keyboard</th><th>Modern Gamepad</th></tr>
+            <tr><td>D-Pad</td><td>Arrow keys</td><td>D-Pad</td></tr>
+            <tr><td>A Button</td><td>Z key</td><td>Right button/B</td></tr>
+            <tr><td>B Button</td><td>X key</td><td>Bottom button/A</td></tr>
+            <tr><td>C Button</td><td>C key</td><td>Left button/X</td></tr>
+            <tr><td>START</td><td>Enter</td><td>Start button</td></tr>
+        </table>
+
+        <h3>6-Button Controller:</h3>
+        <table>
+            <tr><th>Button</th><th>Keyboard</th><th>Modern Gamepad</th></tr>
+            <tr><td>X, Y, Z</td><td>S, A, W keys</td><td>Top row buttons</td></tr>
+            <tr><td>MODE</td><td>D key</td><td>Center button</td></tr>
+        </table>
+    </div>
+
+    <div class="section">
+        <h2>Best Shader Recommendations</h2>
+        <h3>CRT Authenticity:</h3>
+        <ul>
+            <li><strong>CRT-Royale-SBC:</strong> Optimized for 16-bit games</li>
+            <li><strong>CRT-Geom:</strong> Good balance</li>
+            <li><strong>MDAPT:</strong> Dither pattern blending</li>
+        </ul>
+
+        <h3>Scaling Options:</h3>
+        <ul>
+            <li><strong>xBRZ:</strong> Enhanced pixels</li>
+            <li><strong>ScaleFX:</strong> Smooth scaling</li>
+            <li><strong>HQx:</strong> Classic scaler</li>
+        </ul>
+    </div>
+
+    <div class="section">
+        <h2>Performance Optimization</h2>
+        <ul>
+            <li>Genesis emulation is lightweight</li>
+            <li>Enable "System C2 overclock" for reduced slowdowns</li>
+            <li>Audio buffer: 64ms for low latency</li>
+            <li>Timer hack for specific games if needed</li>
+        </ul>
+    </div>
+
+    <div class="section">
+        <h2>Known Issues and Workarounds</h2>
+        
+        <h3>Sonic 3 Lock-On Technology:</h3>
+        <p><strong>Issue:</strong> Lock-On cartridges with Sonic & Knuckles may not work properly.</p>
+        <p><strong>Workaround:</strong> Use specific patches or load games separately. Proper ROM header merging required.</p>
+
+        <h3>Sega CD FMV Sync:</h3>
+        <p><strong>Issue:</strong> FMV cutscenes may have audio/video sync issues.</p>
+        <p><strong>Workaround:</strong> Enable "CD Load Speed" adjustment or use bios delay settings.</p>
+
+        <h3>32X Compatibility:</h3>
+        <p><strong>Issue:</strong> 32X games generally have poor compatibility across all cores.</p>
+        <p><strong>Workaround:</strong> Use picodrive for best 32X support, but expect glitches and crashes.</p>
+    </div>
+</body>
+</html>

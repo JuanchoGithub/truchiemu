@@ -1,0 +1,379 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>N64 - Nintendo 64 - TruchiEmu Guide</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            line-height: 1.6;
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 20px;
+            background: #f5f5f5;
+            color: #333;
+        }
+        .header {
+            background: linear-gradient(135deg, #4a90e2, #1e3a8a);
+            color: white;
+            padding: 30px;
+            border-radius: 10px;
+            margin-bottom: 30px;
+            text-align: center;
+        }
+        .system-banner {
+            width: 100%;
+            max-width: 800px;
+            height: 200px;
+            background: #ddd;
+            margin: 0 auto 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 8px;
+            font-size: 24px;
+            color: #666;
+        }
+        h1, h2, h3 {
+            color: #1e3a8a;
+        }
+        .section {
+            background: white;
+            padding: 25px;
+            margin-bottom: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .warning {
+            background: #fff3cd;
+            border-left: 4px solid #ffc107;
+            padding: 15px;
+            margin: 15px 0;
+        }
+        .tip {
+            background: #d4edda;
+            border-left: 4px solid #28a745;
+            padding: 15px;
+            margin: 15px 0;
+        }
+        code {
+            background: #f8f9fa;
+            padding: 2px 6px;
+            border-radius: 3px;
+            font-family: 'Courier New', monospace;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 15px 0;
+        }
+        th, td {
+            border: 1px solid #ddd;
+            padding: 12px;
+            text-align: left;
+        }
+        th {
+            background: #f8f9fa;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>Nintendo 64 (N64)</h1>
+        <p>Revolutionary 3D gaming console with unique architecture</p>
+    </div>
+
+    <div class="system-banner">
+        [N64 System Banner Placeholder]
+    </div>
+
+    <div class="section">
+        <h2>Hardware Overview</h2>
+        <p>The Nintendo 64, released in 1996 (Japan), marked Nintendo's first foray into 3D gaming. Central to the system was the NEC VR4300 CPU, a customized R4300i MIPS R4000-based processor running at 93.75 MHz. This processor featured a 32-bit system bus with 64-bit register capabilities and a 24KB L1 cache.</p>
+        
+        <p>The graphics subsystem was powered by the SGI Reality Co-Processor (RCP), a groundbreaking chip running at 62.5 MHz. The RCP was divided into two main components: the Reality Display Processor (RDP) for rendering and the Reality Signal Processor (RSP) for geometry transformations and audio processing. This unified architecture allowed the N64 to perform 500,000 polygons per second, or up to 1 million with hardware lighting and clipping optimization.</p>
+        
+        <p>Memory consisted of 4MB of RDRAM (expandable to 8MB with the Expansion Pak), running at a blistering 250MHz effective speed. The system also featured 3-way mipmapping, Z-buffering, sub-pixel correction, and hardware anti-aliasing—features unheard of in consumer consoles at the time.</p>
+        
+        <p>Audio processing was handled by the RSP, providing 3D spatial audio with up to 100 PCM channels and support for various compression formats. The system could output high-quality audio while processing complex 3D geometry, a testament to the RCP's sophisticated design.</p>
+        
+        <p>Notable hardware features included the cartridge-based system (eliminating load times but limiting storage capacity), the unique 64-bit data path (though primarily 32-bit in practice), and the innovative controller design that introduced the analog stick to mainstream gaming.</p>
+    </div>
+
+    <div class="section">
+        <h2>Core Selection</h2>
+        <p>N64 emulation is challenging due to the complex RCP and various microcodes. TruchiEmu provides multiple approaches:</p>
+        
+        <table>
+            <tr>
+                <th>Core</th>
+                <th>Accuracy</th>
+                <th>Performance</th>
+                <th>Graphics Plugin</th>
+                <th>Best Use Case</th>
+            </tr>
+            <tr>
+                <td><strong>parallel-n64</strong></td>
+                <td>High</td>
+                <td>Excellent</td>
+                <td>Angrylion, Glide64, Rice</td>
+                <td>General use, recommended default</td>
+            </tr>
+            <tr>
+                <td><strong>mupen64plus-next</strong></td>
+                <td>Very High</td>
+                <td>Good</td>
+                <td>GLideN64, ANGRY</td>
+                <td>Enhanced graphics, accurate emulation</td>
+            </tr>
+            <tr>
+                <td>mupen64plus</td>
+                <td>Medium-High</td>
+                <td>Very High</td>
+                <td>Various</td>
+                <td>Maximum performance, older hardware</td>
+            </tr>
+            <tr>
+                <td>ares-n64</td>
+                <td>Extremely High</td>
+                <td>Moderate</td>
+                <td>Software renderer</td>
+                <td>Accuracy-focused, development</td>
+            </tr>
+        </table>
+
+        <h3>Key Differences:</h3>
+        <ul>
+            <li><strong>parallel-n64:</strong> Modern fork with dynarec and multi-threading optimizations</li>
+            <li><strong>mupen64plus-next:</strong> Strives for accuracy while maintaining good performance</li>
+            <li><strong>Graphics Plugins:</strong> GLideN64 for enhanced graphics, Angrylion for pixel-accurate software rendering</li>
+            <li><strong>RDP Emulation:</strong> LLE for accuracy, HLE for performance</li>
+        </ul>
+    </div>
+
+    <div class="section">
+        <h2>ROM Format Support</h2>
+        <p>N64 ROMs come in several formats, each with specific characteristics:</p>
+        
+        <h3>Supported Formats:</h3>
+        <ul>
+            <li><strong>.z64</strong> - Big-endian format (native format, preferred)</li>
+            <li><strong>.n64</strong> - Little-endian format (needs byte-swapping)</li>
+            <li><strong>.v64</strong> - Byte-swapped format (copier format)</li>
+            <li><strong>.ndd</strong> - 64DD disk images</li>
+            <li><strong>.u64</strong> - UltraHL compressed format</li>
+        </ul>
+
+        <h3>Format Identification:</h3>
+        <ul>
+            <li><strong>.z64:</strong> Starts with 0x8037 or 0x8030 (most compatible)</li>
+            <li><strong>.n64:</strong> Starts with 0x3780 or 0x3080 (requires conversion)</li>
+            <li><strong>.v64:</strong> Starts with 0x7C4F or 0x4F4C (copier format)</li>
+        </ul>
+
+        <h3>64DD Support:</h3>
+        <p>The Nintendo 64 Disk Drive expansion requires additional configuration:</p>
+        <ul>
+            <li>64DD BIOS file required (e.g., <code>64ddboot.bin</code>)</li>
+            <li>Disk images in .ndd or .d64 format</li>
+            <li>RIP cartridges for combined disk+cart games</li>
+            <li>Expansion Pak enabled for some enhanced 64DD games</li>
+        </ul>
+
+        <div class="tip">
+            <strong>Conversion Commands:</strong>
+            <p>Convert .n64 to .z64: <code>dd if=game.n64 of=game.z64 conv=swab</code></p>
+            <p>Convert .v64 to .z64 requires specialized tools like uCON64.</p>
+        </div>
+    </div>
+
+    <div class="section">
+        <h2>Controller Mapping</h2>
+        <p>The N64 controller was revolutionary but complex. Modern mapping requires careful consideration:</p>
+        
+        <h3>Trident Controller Layout:</h3>
+        <table>
+            <tr>
+                <th>N64 Control</th>
+                <th>Function</th>
+                <th>Keyboard Default</th>
+                <th>Modern Gamepad</th>
+            </tr>
+            <tr>
+                <td>Analog Stick</td>
+                <td>Primary movement</td>
+                <td>WASD + Arrow keys (split)</td>
+                <td>Left Analog Stick</td>
+            </tr>
+            <tr>
+                <td>D-Pad</td>
+                <td>Secondary/weapon select</td>
+                <td>Arrow keys (alternative)</td>
+                <td>D-Pad</td>
+            </tr>
+            <tr>
+                <td>A Button</td>
+                <td>Primary action</td>
+                <td>X key</td>
+                <td>Bottom face button</td>
+            </tr>
+            <tr>
+                <td>B Button</td>
+                <td>Secondary action</td>
+                <td>Z key</td>
+                <td>Right face button</td>
+            </tr>
+            <tr>
+                <td>C Buttons (4)</td>
+                <td>Camera/action modifiers</td>
+                <td>IJKL keys</td>
+                <td>Right Analog Stick (configurable)</td>
+            </tr>
+            <tr>
+                <td>L Trigger</td>
+                <td>Left shoulder</td>
+                <td>Q key</td>
+                <td>Left bumper</td>
+            </tr>
+            <tr>
+                <td>R Trigger</td>
+                <td>Right shoulder/z-target</td>
+                <td>W key</td>
+                <td>Right bumper</td>
+            </tr>
+            <tr>
+                <td>Z Trigger</td>
+                <td>Back trigger</td>
+                <td>E key</td>
+                <td>Left trigger</td>
+            </tr>
+            <tr>
+                <td>START</td>
+                <td>Pause/menu</td>
+                <td>Enter</td>
+                <td>Start/Menu button</td>
+            </tr>
+        </table>
+
+        <h3>Analog Stick Specifics:</h3>
+        <ul>
+            <li><strong>Range:</strong> 80 units radius with octagonal restrictor gate</li>
+            <li><strong>Deadzone:</strong> 5-15% recommended for modern controllers</li>
+            <li><strong>Response Curve:</strong> Linear recommended, custom for specific games</li>
+            <li><strong>Modern Adaptations:</strong> Map to left stick with increased deadzone</li>
+        </ul>
+
+        <h3>Accessory Support:</h3>
+        <ul>
+            <li><strong>Rumble Pak:</strong> Haptic feedback emulation</li>
+            <li><strong>Controller Pak:</strong> Memory card emulation (saves to .mpk files)</li>
+            <li><strong>Transfer Pak:</strong> Game Boy to N64 data transfer (limited support)</li>
+            <li><strong>V64 Backup:</strong> Copier device emulation for homebrew</li>
+        </ul>
+
+        <div class="tip">
+            <strong>C Button Mapping:</strong> The most challenging aspect. Map to right analog stick for games needing camera control, or face buttons for games using them as action buttons.
+        </div>
+    </div>
+
+    <div class="section">
+        <h2>Best Shader Recommendations</h2>
+        <p>N64 3D graphics benefit from shaders that enhance or restore the intended look:</p>
+        
+        <h3>Enhanced 3D:</h3>
+        <ul>
+            <li><strong>FXAA:</strong> Fast anti-aliasing for smoothing jagged edges</li>
+            <li><strong>SMAA:</strong> Superior anti-aliasing with better quality</li>
+            <li><strong>SSAO:</strong> Screen-space ambient occlusion for depth</li>
+            <li><strong>Bloom:</strong> Adds subtle light bloom effects</li>
+        </ul>
+
+        <h3>CRT/Retro Authenticity:</h3>
+        <ul>
+            <li><strong>CRT-Guest-Advanced:</strong> Highly configurable CRT effect</li>
+            <li><strong>CRT-Shadowmask:</strong> Simulates CRT phosphor arrangement</li>
+            <li><strong>NTSC-N64:</strong> Replicates composite video characteristics</li>
+        </ul>
+
+        <h3>Resolution and Clarity:</h3>
+        <ul>
+            <li><strong>ScaleFX:</strong> Upscaling without texture distortion</li>
+            <li><strong>NNEDI3:</strong> Neural network upscaling for textures</li>
+            <li><strong>Bicubic Scaling:</strong> Smooth interpolation for higher resolutions</li>
+        </ul>
+
+        <div class="tip">
+            <strong>Texture Enhancement:</strong> TruchiEmu supports HD texture packs in Angrylion and GLideN64 plugins. Place textures in the appropriate system directory for enhanced visuals.
+        </div>
+    </div>
+
+    <div class="section">
+        <h2>Performance Optimization</h2>
+        <p>N64 emulation is demanding due to complex RCP emulation and 3D rendering:</p>
+        
+        <h3>Critical Settings:</h3>
+        <ul>
+            <li><strong>Frame Buffer:</strong> Enable for accurate rendering, disable for speed</li>
+            <li><strong>Audio Buffer:</strong> 128-256ms for stability (higher than 2D systems)</li>
+            <li><strong>Dynamic Recompiler:</strong> Always enable for acceptable performance</li>
+            <li><strong>Threaded Graphics:</strong> Enable for multi-core systems</li>
+        </ul>
+
+        <h3>Graphics Plugin Selection:</h3>
+        <ul>
+            <li><strong>GLideN64 (HLE):</strong> Best balance of compatibility and enhancements</li>
+            <li><strong>Angrylion (LLE):</strong> Perfect accuracy but very demanding</li>
+            <li><strong>Rice:</strong> Fast but less accurate, suitable for less demanding games</li>
+            <li><strong>ParaLLEl-RDP:</strong> Vulkan-based renderer, very fast and accurate</li>
+        </ul>
+
+        <h3>Per-Core Configuration:</h3>
+        <ul>
+            <li><strong>parallel-n64:</strong> Enable "Parallel-RDP" for best performance/quality ratio</li>
+            <li><strong>mupen64plus-next:</strong> Use "GLideN64" plugin for enhanced graphics</li>
+            <li><strong>ares:</strong> Expect high CPU usage, use only on powerful systems</li>
+            <li><strong>CPU Core:</strong> Set to "Dynarec" for all cores except development</li>
+        </ul>
+
+        <h3>Hardware Requirements:</h3>
+        <ul>
+            <li><strong>Apple Silicon:</strong> M1/M2 run all cores well, M1 Pro/Max recommended for LLE</li>
+            <li><strong>Intel Macs:</strong> Quad-core+ recommended, dedicated GPU strongly preferred</li>
+            <li><strong>Older Systems:</strong> GLES 3.0 support required, minimum 4GB RAM</li>
+        </ul>
+    </div>
+
+    <div class="section">
+        <h2>Known Issues and Workarounds</h2>
+        
+        <h3>Majora's Mask and Expansion Pak:</h3>
+        <p><strong>Issue:</strong> Majora's Mask may hang or crash without Expansion Pak.</p>
+        <p><strong>Workaround:</strong> Enable "Expansion Pak" in core options before loading the game. This enables 8MB RAM mode.</p>
+
+        <h3>Paper Mario Background Issues:</h3>
+        <p><strong>Issue:</strong> Background layers may appear garbled or missing in Paper Mario.</p>
+        <p><strong>Workaround:</strong> Use GLideN64 plugin with "Copy Aux Color Buffers" enabled, or switch to Angrylion for perfect accuracy.</p>
+
+        <h3>GoldenEye/Perfect Dark Performance:</h3>
+        <p><strong>Issue:</strong> Rare's games may run poorly or have graphical glitches.</p>
+        <p><strong>Workaround:</strong> Enable "Super VI Refresh Rate" or use dedicated speed patches. Use parallel-n64 for best performance.</p>
+
+        <h3>Auxiliary CPU Timing:</h3>
+        <p><strong>Issue:</strong> Games with co-processor chips (Mario No Photopi, 64DD games) may have timing issues.</p>
+        <p><strong>Workaround:</strong> Use CPU overclocking or specific emulation hacks for these titles. Consult game-specific documentation.</p>
+
+        <h3>Controller Pak Saves:</h3>
+        <p><strong>Issue:</strong> Controller Pak (.mpk) saves may not persist or load correctly.</p>
+        <p><strong>Workaround:</strong> Ensure Controller Pak is enabled in core options. Check that save directory is writable. Use per-game Controller Pak files.</p>
+
+        <h3>Audio Synchronization:</h3>
+        <p><strong>Issue:</strong> Audio may drift or crackle, especially in games with variable framerates.</p>
+        <p><strong>Workaround:</strong> Enable "Fixed Audio Timing" and set audio buffer to 256ms. Some games require specific audio plugin settings.</p>
+
+        <div class="tip">
+            <strong>RAM Disks:</strong> For 64DD development or specific homebrew, ensure the Development IPL is loaded before attempting to boot disk images. Not all commercial 64DD disks work without specific hardware emulation.
+        </div>
+    </div>
+</body>
+</html>

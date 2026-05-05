@@ -1,0 +1,982 @@
+---
+layout: default
+title: Features
+description: Comprehensive overview of TruchiEmu's features including shaders, achievements, library management, and advanced emulation capabilities
+---
+
+<section class="page-header">
+    <div class="container">
+        <h1>TruchiEmu Features</h1>
+        <p class="lead">Discover the powerful features that make TruchiEmu the premier emulation experience on macOS</p>
+    </div>
+</section>
+
+<nav class="toc">
+    <div class="container">
+        <h3>On This Page</h3>
+        <ul>
+            <li><a href="#shaders">Shader Collection</a></li>
+            <li><a href="#library">Library Management</a></li>
+            <li><a href="#achievements">Achievements</a></li>
+            <li><a href="#cores">Core System</a></li>
+            <li><a href="#savestates">Save Features</a></li>
+            <li><a href="#advanced">Advanced Features</a></li>
+        </ul>
+    </div>
+</nav>
+
+<section id="shaders" class="content-section">
+    <div class="container">
+        <h2>Shader Collection</h2>
+        <p>Transform your gaming experience with our curated collection of 11 high-quality Metal shaders. Each shader is optimized for macOS and designed to enhance or authentically reproduce classic gaming visuals.</p>
+
+        <div class="screenshot-frame">
+            <img src="{{ '/media/screenshots/shader-picker.png' | relative_url }}" alt="Shader Picker Interface" class="screenshot">
+            <p class="screenshot-caption">The shader picker interface allows real-time preview and adjustment</p>
+        </div>
+
+        <div class="shader-grid">
+            <div class="shader-card">
+                <div class="shader-image">
+                    <img src="{{ '/media/features/passthrough.png' | relative_url }}" alt="Passthrough Shader">
+                </div>
+                <h3>Passthrough</h3>
+                <p class="shader-description">The default shader that renders pixels exactly as the original hardware intended. Perfect for purists who want unfiltered, authentic visuals with sharp pixel edges.</p>
+                <div class="shader-specs">
+                    <span class="spec-tag">No Processing</span>
+                    <span class="spec-tag">Sharp Pixels</span>
+                    <span class="spec-tag">Low CPU</span>
+                </div>
+                <p><strong>Use Case:</strong> Development, pixel-perfect reproduction, speedrunning</p>
+            </div>
+
+            <div class="shader-card">
+                <div class="shader-image">
+                    <img src="{{ '/media/features/scale-smooth.png' | relative_url }}" alt="Smooth Scale Shader">
+                </div>
+                <h3>Scale Smooth</h3>
+                <p class="shader-description">High-quality bicubic scaling that smooths pixel edges while preserving detail. Ideal for modern displays where raw pixels appear too blocky.</p>
+                <div class="shader-specs">
+                    <span class="spec-tag">Smoothing</span>
+                    <span class="spec-tag">Bicubic</span>
+                    <span class="spec-tag">Universal</span>
+                </div>
+                <p><strong>Use Case:</strong> General gaming, modern displays, reduced pixelation</p>
+            </div>
+
+            <div class="shader-card">
+                <div class="shader-image">
+                    <img src="{{ '/media/features/sharp-bilinear.png' | relative_url }}" alt="Sharp Bilinear Shader">
+                </div>
+                <h3>Sharp Bilinear</h3>
+                <p class="shader-description">Combines bilinear filtering with edge detection to create smooth gradients while keeping important edges crisp. Perfect for games with mixed sprite and background art.</p>
+                <div class="shader-specs">
+                    <span class="spec-tag">Edge-Preserving</span>
+                    <span class="spec-tag">Adaptive</span>
+                    <span class="spec-tag">Balanced</span>
+                </div>
+                <p><strong>Use Case:</strong> RPGs with detailed backgrounds, mixed art styles</p>
+            </div>
+
+            <div class="shader-card">
+                <div class="shader-image">
+                    <img src="{{ '/media/features/crt-multipass.png' | relative_url }}" alt="CRT Multipass Shader">
+                </div>
+                <h3>CRT Multipass</h3>
+                <p class="shader-description">Multi-pass CRT simulation with phosphor glow, scanlines, and curvature. Our most authentic CRT recreation for users seeking the true retro experience.</p>
+                <div class="shader-specs">
+                    <span class="spec-tag">Multi-Pass</span>
+                    <span class="spec-tag">Authentic</span>
+                    <span class="spec-tag">Heavy</span>
+                </div>
+                <p><strong>Use Case:</strong> Authentic retro experience, CRT enthusiasts, nostalgia</p>
+            </div>
+
+            <div class="shader-card">
+                <div class="shader-image">
+                    <img src="{{ '/media/features/lite-crt.png' | relative_url }}" alt="Lite CRT Shader">
+                </div>
+                <h3>Lite CRT</h3>
+                <p class="shader-description">Lightweight CRT simulation that adds subtle scanlines and phosphor effects without the performance cost of full multipass rendering.</p>
+                <div class="shader-specs">
+                    <span class="spec-tag">Scanlines</span>
+                    <span class="spec-tag">Lightweight</span>
+                    <span class="spec-tag">Performance</span>
+                </div>
+                <p><strong>Use Case:</strong> CRT aesthetic on lower-end hardware, subtle effect</p>
+            </div>
+
+            <div class="shader-card">
+                <div class="shader-image">
+                    <img src="{{ '/media/features/crt-lottes-before.png' | relative_url }}" alt="CRT Lottes Before">
+                    <img src="{{ '/media/features/crt-lottes-after.png' | relative_url }}" alt="CRT Lottes After">
+                </div>
+                <h3>CRT Lottes</h3>
+                <p class="shader-description">Advanced CRT simulation using Lottes' algorithm with mask effects, curvature, and bloom. Creates the most realistic CRT monitor appearance available.</p>
+                <div class="shader-specs">
+                    <span class="spec-tag">Phosphor Mask</span>
+                    <span class="spec-tag">Bloom</span>
+                    <span class="spec-tag">Premium</span>
+                </div>
+                <p><strong>Use Case:</strong> Professional CRT simulation, content creation, preservation</p>
+            </div>
+
+            <div class="shader-card">
+                <div class="shader-image">
+                    <img src="{{ '/media/features/dot-matrix.png' | relative_url }}" alt="Dot Matrix Shader">
+                </div>
+                <h3>Dot Matrix</h3>
+                <p class="shader-description">Simulates the distinctive dot matrix display of classic handheld systems like the Game Boy. Features the characteristic grid pattern and subpixel arrangement.</p>
+                <div class="shader-specs">
+                    <span class="spec-tag">Handheld</span>
+                    <span class="spec-tag">Grid Pattern</span>
+                    <span class="spec-tag">Nostalgic</span>
+                </div>
+                <p><strong>Use Case:</strong> Game Boy games, handheld emulation, authentic portable体验</p>
+            </div>
+
+            <div class="shader-card">
+                <div class="shader-image">
+                    <img src="{{ '/media/features/lcd-dmg-before.png' | relative_url }}" alt="LCD DMG Before">
+                    <img src="{{ '/media/features/lcd-dmg-after.png' | relative_url }}" alt="LCD DMG After">
+                </div>
+                <h3>LCD DMG</h3>
+                <p class="shader-description">Faithful Game Boy DMG (Dot Matrix Game) LCD simulation with the iconic green-tinted monochrome display, pixel persistence, and characteristic motion blur.</p>
+                <div class="shader-specs">
+                    <span class="spec-tag">Game Boy</span>
+                    <span class="spec-tag">Monochrome</span>
+                    <span class="spec-tag">Authentic</span>
+                </div>
+                <p><strong>Use Case:</strong> Original Game Boy games, pure nostalgia, authentic reproduction</p>
+            </div>
+
+            <div class="shader-card">
+                <div class="shader-image">
+                    <img src="{{ '/media/features/gbc-shader.png' | relative_url }}" alt="Game Boy Color Shader">
+                </div>
+                <h3>Game Boy Color</h3>
+                <p class="shader-description">Accurate Game Boy Color LCD reproduction with the correct color palette, pixel arrangement, and backlight characteristics of the original hardware.</p>
+                <div class="shader-specs">
+                    <span class="spec-tag">Color</span>
+                    <span class="spec-tag">Handheld</span>
+                    <span class="spec-tag">Accurate</span>
+                </div>
+                <p><strong>Use Case:</strong> Game Boy Color games, accurate color representation</p>
+            </div>
+
+            <div class="shader-card">
+                <div class="shader-image">
+                    <img src="{{ '/media/features/gba-shader.png' | relative_url }}" alt="Game Boy Advance Shader">
+                </div>
+                <h3>Game Boy Advance</h3>
+                <p class="shader-description">True-to-life Game Boy Advance LCD simulation with the distinctive color temperature, pixel structure, and motion characteristics of the GBA screen.</p>
+                <div class="shader-specs">
+                    <span class="spec-tag">GBA</span>
+                    <span class="spec-tag">Backlit</span>
+                    <span class="spec-tag">Portable</span>
+                </div>
+                <p><strong>Use Case:</strong> GBA games, accurate portable gaming experience</p>
+            </div>
+
+            <div class="shader-card">
+                <div class="shader-image">
+                    <img src="{{ '/media/features/crt-multipass.png' | relative_url }}" alt="Curvature Shader">
+                </div>
+                <h3>Curvature</h3>
+                <p class="shader-description">Simulates the subtle screen curvature of CRT monitors. Adds barrel distortion and corner softness that mimics how games looked on vintage tube displays.</p>
+                <div class="shader-specs">
+                    <span class="spec-tag">Curvature</span>
+                    <span class="spec-tag">Vintage</span>
+                    <span class="spec-tag">Subtle</span>
+                </div>
+                <p><strong>Use Case:</strong> Authentic CRT appearance, nostalgic immersion</p>
+            </div>
+
+            <div class="shader-card">
+                <div class="shader-image">
+                    <img src="{{ '/media/features/sharp-bilinear.png' | relative_url }}" alt="Vignette Shader">
+                </div>
+                <h3>Vignette</h3>
+                <p class="shader-description">Adds subtle darkening around the edges of the screen, creating a focused viewing area. Reduces eye strain during long gaming sessions.</p>
+                <div class="shader-specs">
+                    <span class="spec-tag">Focus</span>
+                    <span class="spec-tag">Eye Comfort</span>
+                    <span class="spec-tag">Lightweight</span>
+                </div>
+                <p><strong>Use Case:</strong> Reducing eye strain, creating focus, atmospheric enhancement</p>
+            </div>
+        </div>
+
+        <h3>Shader Customization</h3>
+        <p>Each shader includes adjustable parameters to fine-tune the effect:</p>
+        <ul class="feature-list">
+            <li><strong>Intensity Sliders:</strong> Adjust the strength of each effect</li>
+            <li><strong>Parameter Presets:</strong> Quick settings for different display types</li>
+            <li><strong>Real-time Preview:</strong> See changes instantly as you adjust</li>
+            <li><strong>Per-Game Settings:</strong> Save shader preferences for individual games</li>
+            <li><strong>Global Defaults:</strong> Set system-wide shader preferences</li>
+        </ul>
+
+        <div class="info-box">
+            <p><strong>Performance Impact:</strong> Passthrough, Scale Smooth, and Vignette have minimal performance impact. CRT shaders and LCD simulations use more GPU resources. Most modern Macs can run any shader at full speed.</p>
+        </div>
+
+        <h3>Recommended Shader Pairings</h3>
+        <table class="recommendation-table">
+            <thead>
+                <tr>
+                    <th>System Type</th>
+                    <th>Primary Shader</th>
+                    <th>Secondary Options</th>
+                    <th>Use Case</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>8-bit Consoles</td>
+                    <td>CRT Multipass</td>
+                    <td>Lite CRT, CRT Lottes</td>
+                    <td>Classic TV experience</td>
+                </tr>
+                <tr>
+                    <td>16-bit Consoles</td>
+                    <td>CRT Lottes</td>
+                    <td>Sharp Bilinear, CRT Multipass</td>
+                    <td>Authentic arcade/TV feel</td>
+                </tr>
+                <tr>
+                    <td>Game Boy</td>
+                    <td>LCD DMG</td>
+                    <td>Dot Matrix, Passthrough</td>
+                    <td>True portable experience</td>
+                </tr>
+                <tr>
+                    <td>Game Boy Advance</td>
+                    <td>Game Boy Advance</td>
+                    <td>Scale Smooth, Sharp Bilinear</td>
+                    <td>Authentic GBA screen</td>
+                </tr>
+                <tr>
+                    <td>Handheld Games</td>
+                    <td>Dot Matrix</td>
+                    <td>Scale Smooth</td>
+                    <td>Grid pattern simulation</td>
+                </tr>
+                <tr>
+                    <td>Modern Displays</td>
+                    <td>Scale Smooth</td>
+                    <td>Sharp Bilinear, Passthrough</td>
+                    <td>Clean, modern look</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</section>
+
+<section id="library" class="content-section">
+    <div class="container">
+        <h2>Library Management</h2>
+        <p>Organize your game collection with powerful library management features designed for serious collectors and casual gamers alike.</p>
+
+        <div class="screenshot-frame">
+            <img src="{{ '/media/screenshots/library-grid.png' | relative_url }}" alt="Library Grid Interface" class="screenshot">
+            <p class="screenshot-caption">Your games are automatically organized with cover art and metadata</p>
+        </div>
+
+        <h3>Automatic Organization</h3>
+        <ul class="feature-list">
+            <li><strong>Smart Detection:</strong> Automatically identifies games from ROM file hashes</li>
+            <li><strong>Metadata Fetching:</strong> Downloads game descriptions, release dates, and details</li>
+            <li><strong>Cover Art:</strong> Automatically downloads high-quality box art and screenshots</li>
+            <li><strong>System Categorization:</strong> Groups games by original console/system</li>
+            <li><strong>Achievement Detection:</strong> Identifies games with RetroAchievements support</li>
+        </ul>
+
+        <h3>View Modes</h3>
+        <div class="view-modes">
+            <div class="view-mode">
+                <h4>📊 Grid View</h4>
+                <p>Visual grid with cover art thumbnails. Perfect for browsing large collections.</p>
+                <ul>
+                    <li>Adjustable grid size (small, medium, large tiles)</li>
+                    <li>Sort by name, system, play time, or last played</li>
+                    <li>Quick search and filter</li>
+                </ul>
+            </div>
+            
+            <div class="view-mode">
+                <h4>📋 List View</h4>
+                <p>Detailed list with sortable columns. Great for sorting and organizing.</p>
+                <ul>
+                    <li>Sortable columns (name, system, year, rating)</li>
+                    <li>Compact display for large libraries</li>
+                    <li>Quick status indicators</li>
+                </ul>
+            </div>
+            
+            <div class="view-mode">
+                <h4>🎮 Cover Flow</h4>
+                <p>3D cover browsing experience. Most immersive visual browsing.</p>
+                <ul>
+                    <li>Smooth 3D transitions between games</li>
+                    <li>Large cover display</li>
+                    <li>Auto-advance option</li>
+                </ul>
+            </div>
+        </div>
+
+        <h3>Collections & Playlists</h3>
+        <p>Create custom collections to organize games by genre, favorites, or any criteria you choose:</p>
+        <ul class="feature-list">
+            <li><strong>Smart Playlists:</strong> Auto-populate based on criteria (genre, publisher, year)</li>
+            <li><strong>Manual Collections:</strong> Hand-pick games for custom groups</li>
+            <li><strong>Favorites:</strong> Quick access to your most-played games</li>
+            <li><strong>Recently Played:</strong> Automatically tracks and displays recently accessed games</li>
+            <li><strong>Custom Tags:</strong> Tag games with your own categories</li>
+        </ul>
+
+        <h3>Advanced Library Features</h3>
+        <table class="feature-table">
+            <thead>
+                <tr>
+                    <th>Feature</th>
+                    <th>Description</th>
+                    <th>Benefit</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>Duplicate Detection</td>
+                    <td>Identifies and merges duplicate ROMs</td>
+                    <td>Clean library without duplicates</td>
+                </tr>
+                <tr>
+                    <td>Multi-File Games</td>
+                    <td>Automatically groups multi-disc games</td>
+                    <td>Proper organization of CD-based games</td>
+                </tr>
+                <tr>
+                    <td>BIOS Management</td>
+                    <td>Validates and manages required BIOS files</td>
+                    <td>Proper system emulation</td>
+                </tr>
+                <tr>
+                    <td>Region Detection</td>
+                    <td>Identifies game region (USA, Europe, Japan)</td>
+                    <td>Sort and filter by region</td>
+                </tr>
+                <tr>
+                    <td>ROM Verification</td>
+                    <td>Validates ROMs against No-Intro database</td>
+                    <td>Ensure you have verified dumps</td>
+                </tr>
+                <tr>
+                    <td>File Size Display</td>
+                    <td>Shows ROM file sizes in library</td>
+                    <td>Storage management</td>
+                </tr>
+                <tr>
+                    <td>Last Played Tracking</td>
+                    <td>Records when each game was last launched</td>
+                    <td>Resume long sessions, track activity</td>
+                </tr>
+                <tr>
+                    <td>Play Time Tracking</td>
+                    <td>Tracks total time spent in each game</td>
+                    <td>Gaming statistics, completion tracking</td>
+                </tr>
+            </tbody>
+        </table>
+
+        <h3>Search & Filter</h3>
+        <p>Find games instantly with powerful search capabilities:</p>
+        <ul class="feature-list">
+            <li><strong>Text Search:</strong> Search by game name, publisher, or description</li>
+            <li><strong>System Filter:</strong> Show only games from specific consoles</li>
+            <li><strong>Genre Filter:</strong> Filter by game genre categories</li>
+            <li><strong>Year Range:</strong> Show games from specific release years</li>
+            <li><strong>Player Count:</strong> Filter by single-player or multiplayer</li>
+            <li><strong> Achievement Support:</strong> Show games with RetroAchievements</li>
+            <li><strong>Play Status:</strong> Filter by played, unplayed, or favorites</li>
+        </ul>
+
+        <h3>Import & Export</h3>
+        <div class="import-export">
+            <div class="import-section">
+                <h4>Import Options</h4>
+                <ul>
+                    <li>Drag and drop ROM files</li>
+                    <li>Import from folders (including subfolders)</li>
+                    <li>Scan and import from watch folder</li>
+                    <li>Import playlists from other frontends</li>
+                </ul>
+            </div>
+            <div class="export-section">
+                <h4>Export Options</h4>
+                <ul>
+                    <li>Export game lists as CSV</li>
+                    <li>Backup library metadata</li>
+                    <li>Export playlist files</li>
+                    <li>Generate collection reports</li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="tip-box">
+            <p><strong>💡 Organization Tip:</strong> Start with Smart Playlists based on systems, then create custom collections for favorites, genres, or playthrough status. Use tags to mark games for specific purposes like "Speedrun Practice" or "Co-op".</p>
+        </div>
+    </div>
+</section>
+
+<section id="achievements" class="content-section">
+    <div class="container">
+        <h2>RetroAchievements Integration</h2>
+        <p>Earn achievements while playing classic games! TruchiEmu integrates seamlessly with RetroAchievements.org to add modern achievement hunting to retro gaming.</p>
+
+        <div class="screenshot-frame">
+            <img src="{{ '/media/screenshots/achievements-list.png' | relative_url }}" alt="Achievements Interface" class="screenshot">
+            <p class="screenshot-caption">Track your progress and compare with friends on the global leaderboard</p>
+        </div>
+
+        <h3>Getting Started with Achievements</h3>
+        <div class="setup-steps">
+            <div class="step">
+                <h4>Step 1: Create RetroAchievements Account</h4>
+                <p>Visit <a href="https://retroachievements.org/" target="_blank">RetroAchievements.org</a> and create a free account.</p>
+            </div>
+            <div class="step">
+                <h4>Step 2: Link Account in TruchiEmu</h4>
+                <p>Navigate to Settings → Achievements and enter your RetroAchievements username and API key.</p>
+            </div>
+            <div class="step">
+                <h4>Step 3: Test Connection</h4>
+                <p>Use the "Test Connection" button to verify your credentials work properly.</p>
+            </div>
+            <div class="step">
+                <h4>Step 4: Play Supported Games</h4>
+                <p>Launch any game with achievement support. You'll see achievement notifications appear as you progress.</p>
+            </div>
+        </div>
+
+        <h3>Achievement Types</h3>
+        <div class="achievement-types">
+            <div class="achievement-type">
+                <h4>🏆 Progress Achievements</h4>
+                <p>Awarded for reaching specific points in games</p>
+                <ul>
+                    <li>Complete levels or worlds</li>
+                    <li>Reach specific story milestones</li>
+                    <li>Defeat bosses or major enemies</li>
+                </ul>
+            </div>
+            <div class="achievement-type">
+                <h4>🎯 Skill Achievements</h4>
+                <p>Reward mastery and skillful play</p>
+                <ul>
+                    <li>Speedrun challenges</li>
+                    <li>No-death runs</li>
+                    <li>High score achievements</li>
+                </ul>
+            </div>
+            <div class="achievement-type">
+                <h4>🔍 Collection Achievements</h4>
+                <p>For completionists who explore everything</p>
+                <ul>
+                    <li>Collect all items or power-ups</li>
+                    <li>Find hidden secrets or easter eggs</li>
+                    <li>100% game completion</li>
+                </ul>
+            </div>
+            <div class="achievement-type">
+                <h4>🎮 Challenge Achievements</h4>
+                <p>Difficult challenges for expert players</p>
+                <ul>
+                    <li>Hard mode completions</li>
+                    <li>Restrictive playthroughs</li>
+                    <li>Technical demonstrations</li>
+                </ul>
+            </div>
+        </div>
+
+        <h3>Supported Systems</h3>
+        <p>RetroAchievements support varies by system. Here are the currently supported platforms:</p>
+        <table class="systems-table">
+            <thead>
+                <tr>
+                    <th>System</th>
+                    <th>Achievement Support</th>
+                    <th>Points Available</th>
+                    <th>Games Supported</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>NES/Famicom</td>
+                    <td>✅ Full Support</td>
+                    <td>5-400+ per game</td>
+                    <td>1,200+ games</td>
+                </tr>
+                <tr>
+                    <td>SNES/Super Famicom</td>
+                    <td>✅ Full Support</td>
+                    <td>5-400+ per game</td>
+                    <td>800+ games</td>
+                </tr>
+                <tr>
+                    <td>Game Boy / Color</td>
+                    <td>✅ Full Support</td>
+                    <td>5-400+ per game</td>
+                    <td>600+ games</td>
+                </tr>
+                <tr>
+                    <td>Game Boy Advance</td>
+                    <td>✅ Full Support</td>
+                    <td>5-400+ per game</td>
+                    <td>400+ games</td>
+                </tr>
+                <tr>
+                    <td>Genesis/Mega Drive</td>
+                    <td>✅ Full Support</td>
+                    <td>5-400+ per game</td>
+                    <td>500+ games</td>
+                </tr>
+                <tr>
+                    <td>Nintendo 64</td>
+                    <td>✅ Limited Support</td>
+                    <td>5-200+ per game</td>
+                    <td>100+ games</td>
+                </tr>
+                <tr>
+                    <td>PlayStation 1</td>
+                    <td>✅ Experimental</td>
+                    <td>5-200+ per game</td>
+                    <td>50+ games</td>
+                </tr>
+                <tr>
+                    <td>PC Engine/TurboGrafx</td>
+                    <td>✅ Full Support</td>
+                    <td>5-300+ per game</td>
+                    <td>300+ games</td>
+                </tr>
+            </tbody>
+        </table>
+
+        <h3>In-Game Features</h3>
+        <ul class="feature-list">
+            <li><strong>Rich Presence:</strong> Show friends what game you're playing</li>
+            <li><strong>Mastery Tracking:</strong> See which games you've mastered (100% completion)</li>
+            <li><nstrong>Achievement Notifications:</strong> Toast notifications when achievements unlock</li>
+            <li><strong>Progress Tracking:</strong> View achievement progress in real-time</li>
+            <li><strong>Leaderboards:</strong> Compare scores and times with other players</li>
+            <li><strong>Hardcore Mode:</strong> Earn more points by disabling save states</li>
+        </ul>
+
+        <div class="info-box">
+            <p><strong>💡 Achievement Tips:</strong></p>
+            <ul>
+                <li>Play in Hardcore mode (disabled save states) for double points</li>
+                <li>Check achievement lists before playing to plan your approach</li>
+                <li>Join the RetroAchievements Discord for tips and community</li>
+                <li>Look for unofficial achievements (marked with 🔧) for extra challenges</li>
+            </ul>
+        </div>
+
+        <h3>Offline & Online Modes</h3>
+        <p>TruchiEmu supports both online and offline achievement tracking:</p>
+        <ul>
+            <li><strong>Online Mode:</strong> Achievements sync to RetroAchievements.org immediately</li>
+            <li><strong>Offline Mode:</strong> Achievements stored locally, sync when reconnected</li>
+            <li><strong>Delayed Sync:</strong> Queue achievements when offline, upload later</li>
+        </ul>
+
+        <div class="warning-box">
+            <p><strong>⚠️ Important:</strong> Achievements only work with verified ROM files that match the RetroAchievements database hashes. Use No-Intro verified dumps for best compatibility.</p>
+        </div>
+    </div>
+</section>
+
+<section id="cores" class="content-section">
+    <div class="container">
+        <h2>Core System Architecture</h2>
+        <p>TruchiEmu uses a powerful core-based architecture powered by libretro, allowing support for multiple emulation backends optimized for different systems.</p>
+
+        <div class="screenshot-frame">
+            <img src="{{ '/media/screenshots/core-settings.png' | relative_url }}" alt="Core Settings Interface" class="screenshot">
+            <p class="screenshot-caption">Each core has extensive customization options for accuracy vs performance</p>
+        </div>
+
+        <h3>What Are Cores?</h3>
+        <p>Cores are individual emulator engines that power each system. Think of them as plug-ins that provide emulation for specific consoles:</p>
+        <ul class="feature-list">
+            <li><strong>Specialized:</strong> Each core is optimized for one system or family of systems</li>
+            <li><strong>Independently Developed:</strong> Cores come from the libretro community</li>
+            <li><strong>Regular Updates:</strong> Cores receive updates independently of TruchiEmu</li>
+            <li><strong>Configurable:</strong> Each core has unique options and settings</li>
+            <li><strong>Swappable:</strong> Try different cores for the same system</li>
+        </ul>
+
+        <h3>Default Cores</h3>
+        <p>TruchiEmu comes pre-configured with recommended cores for each system:</p>
+        <table class="cores-table">
+            <thead>
+                <tr>
+                    <th>System</th>
+                    <th>Core Name</th>
+                    <th>Accuracy</th>
+                    <th>Performance</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>NES/Famicom</td>
+                    <td>Mesen</td>
+                    <td>⭐⭐⭐⭐⭐ Cycle-accurate</td>
+                    <td>⭐⭐⭐⭐⭐ Excellent</td>
+                </tr>
+                <tr>
+                    <td>SNES</td>
+                    <td>Snes9x</td>
+                    <td>⭐⭐⭐⭐ Very High</td>
+                    <td>⭐⭐⭐⭐⭐ Excellent</td>
+                </tr>
+                <tr>
+                    <td>Game Boy/Color</td>
+                    <td>Gambatte</td>
+                    <td>⭐⭐⭐⭐⭐ Cycle-accurate</td>
+                    <td>⭐⭐⭐⭐⭐ Excellent</td>
+                </tr>
+                <tr>
+                    <td>Game Boy Advance</td>
+                    <td>mGBA</td>
+                    <td>⭐⭐⭐⭐ High</td>
+                    <td>⭐⭐⭐⭐ Very Good</td>
+                </tr>
+                <tr>
+                    <td>Genesis/Mega Drive</td>
+                    <td>Genesis Plus GX</td>
+                    <td>⭐⭐⭐⭐⭐ Cycle-accurate</td>
+                    <td>⭐⭐⭐⭐⭐ Excellent</td>
+                </tr>
+                <tr>
+                    <td>Nintendo 64</td>
+                    <td>ParaLLEl</td>
+                    <td>⭐⭐⭐⭐ High</td>
+                    <td>⭐⭐⭐ Good (requires decent GPU)</td>
+                </tr>
+                <tr>
+                    <td>PlayStation 1</td>
+                    <td>DuckStation</td>
+                    <td>⭐⭐⭐⭐ High</td>
+                    <td>⭐⭐⭐⭐ Very Good</td>
+                </tr>
+                <tr>
+                    <td>Arcade</td>
+                    <td>MAME 2003+</td>
+                    <td>⭐⭐⭐ Good</td>
+                    <td>⭐⭐⭐⭐ Very Good</td>
+                </tr>
+            </tbody>
+        </table>
+
+        <h3>Core Management</h3>
+        <p>Manage your cores through the Core Downloader:</p>
+        <div class="core-management">
+            <div class="core-feature">
+                <h4>Download Cores</h4>
+                <ul>
+                    <li>Browse available cores by system</li>
+                    <li>One-click download and installation</li>
+                    <li>Automatic updates</li>
+                    <li>Core information and descriptions</li>
+                </ul>
+            </div>
+            
+            <div class="core-feature">
+                <h4>Update Cores</h4>
+                <ul>
+                    <li>Check for core updates</li>
+                    <li>Batch update all cores</li>
+                    <li>View changelogs</li>
+                    <li>Rollback to previous versions</li>
+                </ul>
+            </div>
+            
+            <div class="core-feature">
+                <h4>Configure Cores</h4>
+                <ul>
+                    <li>Per-core settings and options</li>
+                    <li>Bias configuration (accuracy vs speed)</li>
+                    <li>Video and audio settings</li>
+                    <li>Save configuration profiles</li>
+                </ul>
+            </div>
+        </div>
+
+        <h3>Core Configuration Examples</h3>
+        <div class="config-examples">
+            <div class="config-example">
+                <h4>⚡ Performance Mode</h4>
+                <p>Lower accuracy, higher speed</p>
+                <ul>
+                    <li>Reduced audio latency</li>
+                    <li>Frame skipping if needed</li>
+                    <li>Lower internal resolution</li>
+                </ul>
+                <p><strong>Best For:</strong> Lower-end hardware, fast-paced action games</p>
+            </div>
+            
+            <div class="config-example">
+                <h4>🎯 Balanced Mode</h4>
+                <p>Good balance of accuracy and performance</p>
+                <ul>
+                    <li>Standard settings</li>
+                    <li>Most accurate default settings</li>
+                    <li>Automatic frame delay</li>
+                </ul>
+                <p><strong>Best For:</strong> Most users, general gaming</p>
+            </div>
+            
+            <div class="config-example">
+                <h4>🎨 Accuracy Mode</h4>
+                <p>Highest accuracy, lower performance</p>
+                <ul>
+                    <li>Cycle-accurate emulation</li>
+                    <li>High-resolution rendering</li>
+                    <li>Perfect synchronization</li>
+                </ul>
+                <p><strong>Best For:</strong> Preservation, development, high-end hardware</p>
+            </div>
+        </div>
+
+        <div class="info-box">
+            <p><strong>💡 Core Selection Tip:</strong> Start with the default core for each system. If you experience issues or want different behavior (better performance, higher accuracy, or specific features), try alternative cores. The bee.cfg andqu.Quick Menu → Options menu provides easy access to core-specific tweaks.rom having the right BIOS files often resolves compatibility issues.</p>
+        </div>
+    </div>
+</section>
+
+<section id="savestates" class="content-section">
+    <div class="container">
+        <h2>Advanced Save Features</h2>
+        <p>Save states, rewind, and netplay features provide modern convenience while preserving the classic gaming experience.</p>
+
+        <div class="screenshot-frame">
+            <img src="{{ '/media/screenshots/save-state-browser.png' | relative_url }}" alt="Advanced Save Features" class="screenshot">
+            <p class="screenshot-caption">Visual save state management with thumbnails and timestamps</p>
+        </div>
+
+        <h3>Save State Features</h3>
+        <div class="save-features">
+            <div class="save-feature">
+                <h4>📸 Visual Save States</h4>
+                <ul>
+                    <li>Screenshot preview for each save</li>
+                    <li>Timestamp showing when saved</li>
+                    <li>8 slots per game</li>
+                    <li>Custom naming support</li>
+                </ul>
+            </div>
+            
+            <div class="save-feature">
+                <h4>🔁 Auto Save States</h4>
+                <ul>
+                    <li>Automatic save on exit</li>
+                    <li>Periodic auto-save</li>
+                    <li>Never lose progress again</li>
+                    <li>Background operation</li>
+                </ul>
+            </div>
+            
+            <div class="save-feature">
+                <h4>🔄 Rewind Feature</h4>
+                <ul>
+                    <li>Rewind gameplay (15 minutes max)</li>
+                    <li>Frame-by-frame control</li>
+                    <li>Instant replay moments</li>
+                    <li>Practice difficult sections</li>
+                </ul>
+            </div>
+            
+            <div class="save-feature">
+                <h4>☁️ State Transfer</h4>
+                <ul>
+                    <li>Export/import save states</li>
+                    <li>Share states with others</li>
+                    <li>Cloud backup compatible</li>
+                    <li>Cross-device synchronization</li>
+                </ul>
+            </div>
+        </div>
+
+        <h3>Save State Manager</h3>
+        <p>The visual save state browser provides comprehensive save management:</p>
+        <ul class="feature-list">
+            <li><strong>Thumbnail Grid:</strong> Visual preview of all save states</li>
+            <li><strong>Metadata Display:</strong> Date, time, and play duration</li>
+            <li><strong>Search & Filter:</strong> Find saves by date or game</li>
+            <li><strong>Batch Operations:</strong> Delete, export, or backup multiple saves</li>
+            <li><strong>Backup Integration:</strong> Automatic backup to prevent loss</li>
+        </ul>
+
+        <h3>Rewind Technology</h3>
+        <p>Rewind allows you to reverse gameplay in real-time, perfect for practicing difficult sections or recovering from mistakes:</p>
+        <table class="rewind-table">
+            <thead>
+                <tr>
+                    <th>Setting</th>
+                    <th>Description</th>
+                    <th>Memory Usage</th>
+                    <th>Recommendation</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>Off</td>
+                    <td>Rewind disabled</td>
+                    <td>0 MB</td>
+                    <td>Low RAM systems</td>
+                </tr>
+                <tr>
+                    <td>30 Seconds</td>
+                    <td>Save last 30 seconds</td>
+                    <td>50-100 MB</td>
+                    <td>Quick mistake recovery</td>
+                </tr>
+                <tr>
+                    <td>2 Minutes</td>
+                    <td>Save last 2 minutes</td>
+                    <td>200-400 MB</td>
+                    <td>Balanced option</td>
+                </tr>
+                <tr>
+                    <td>5 Minutes</td>
+                    <td>Save last 5 minutes</td>
+                    <td>500-1000 MB</td>
+                    <td>Practice sessions</td>
+                </tr>
+                <tr>
+                    <td>15 Minutes</td>
+                    <td>Save last 15 minutes</td>
+                    <td>1500-3000 MB</td>
+                    <td>Hardcore mode backup</td>
+                </tr>
+            </tbody>
+        </table>
+
+        <div class="info-box">
+            <p><strong>💡 Rewind Best Practices:</strong></p>
+            <ul>
+                <li>2-5 minutes is ideal for most users and games</li>
+                <li>Use rewind to practice difficult sections repeatedly</li>
+                <li>Combine with save states for maximum safety</li>
+                <li>Memory usage varies by system complexity</li>
+                <li>Disable rewind for competitive play or streaming</li>
+            </ul>
+        </div>
+
+        <h3>Cross-Platform Compatibility</h3>
+        <p>Save states work across different platforms that support the libretro format:</p>
+        <ul class="feature-list">
+            <li><strong>Standard Format:</strong> Uses libretro-compatible save state format</li>
+            <li><strong>Version Compatibility:</strong> Works across different TruchiEmu versions</li>
+            <li><strong>Transfer Tools:</strong> Import/export tools for compatibility</li>
+            <li><strong>Validation:</strong> Checks state integrity before loading</li>
+        </ul>
+    </div>
+</section>
+
+<section id="advanced" class="content-section">
+    <div class="container">
+        <h2>Advanced Features</h2>
+        <p>Explore professional-grade features for power users, content creators, and developers.</p>
+
+        <h3>Streaming & Recording</h3>
+        <div class="streaming-features">
+            <div class="feature">
+                <h4>📹 Built-in Recording</h4>
+                <ul>
+                    <li>Record gameplay to MP4</li>
+                    <li>Hardware-accelerated encoding</li>
+                    <li>Configurable quality settings</li>
+                    <li>Automatic file naming</li>
+                </ul>
+            </div>
+            
+            <div class="feature">
+                <h4>🎬 Frame-by-Frame Advance</h4>
+                <ul>
+                    <li>Advance one frame at a time</li>
+                    <li>Perfect for capturing screenshots</li>
+                    <li>Tool-assisted speedrunning</li>
+                    <li>Bug hunting and analysis</li>
+                </ul>
+            </div>
+            
+            <div class="feature">
+                <h4>🎮 Input Display</h4>
+                <ul>
+                    <li>Show button inputs on screen</li>
+                    <li>Custom overlay graphics</li>
+                    <li>Great for tutorials</li>
+                    <li>Educational content creation</li>
+                </ul>
+            </div>
+            
+            <div class="feature">
+                <h4>📏 On-Screen Display</h4>
+                <ul>
+                    <li>Display FPS, frame time, stats</li>
+                    <li>Customizable position and style</li>
+                    <li>Performance monitoring</li>
+                    <li>System information</li>
+                </ul>
+            </div>
+        </div>
+
+        <h3>Netplay (Multiplayer)</h3>
+        <p>Play multiplayer games online with friends using integrated netplay:</p>
+        <ul class="feature-list">
+            <li><strong>Lag Compensation:</strong> Advanced rollback netcode</li>
+            <li><strong>Host or Join:</strong> Easy hosting and connection</li>
+            <li><strong>Session Browser:</strong> Find public game sessions</li>
+            <li><strong>Voice Chat:</strong> Built-in voice communication</li>
+            <li><strong>Game Genie:</strong> Cheat code support for practice</li>
+        </ul>
+
+        <h3>Development Tools</h3>
+        <div class="dev-tools">
+            <div class="dev-tool">
+                <h4>🔍 Debugging</h4>
+                <ul>
+                    <li>Memory viewer and editor</li>
+                    <li>CPU register inspection</li>
+                    <li>Break points and watchpoints</li>
+                    <li>Trace logging</li>
+                </ul>
+            </div>
+            
+            <div class="dev-tool">
+                <h4>📊 Performance Monitoring</h4>
+                <ul>
+                    <li>Frame time graphs</li>
+                    <li>Audio latency measurement</li>
+                    <li>Input lag analysis</li>
+                    <li>Core performance metrics</li>
+                </ul>
+            </div>
+        </div>
+
+        <h3>Accessibility Features</h3>
+        <p>TruchiEmu includes accessibility options for users with disabilities:</p>
+        <ul class="feature-list">
+            <li><strong>Screen Reader Support:</strong> Full VoiceOver compatibility</li>
+            <li><strong>High Contrast Mode:</strong> Enhanced UI contrast</li>
+            <li><strong>Remappable Controls:</strong> Any input method supported</li>
+            <li><strong>Slow Motion:</strong> Reduce game speed for easier play</li>
+            <li><strong>Color Blind Support:</strong> Adjust colors for visibility</li>
+        </ul>
+
+        <div class="success-box">
+            <p><strong>🎉 Features Summary:</strong> TruchiEmu combines authentic emulation with modern features like shaders, achievements, and advanced save systems. Whether you're a casual player or hardcore enthusiast, you'll find tools to enhance your retro gaming experience.</p>
+        </div>
+    </div>
+</section>

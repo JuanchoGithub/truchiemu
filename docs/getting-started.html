@@ -1,0 +1,556 @@
+---
+layout: default
+title: Getting Started
+description: Complete beginner's guide to installing, setting up, and using TruchiEmu emulator for macOS
+---
+
+<section class="page-header">
+    <div class="container">
+        <h1>Getting Started with TruchiEmu</h1>
+        <p class="lead">Your complete beginner's guide to installing, setting up, and running your first game in TruchiEmu</p>
+    </div>
+</section>
+
+<nav class="toc">
+    <div class="container">
+        <h3>On This Page</h3>
+        <ul>
+            <li><a href="#requirements">System Requirements</a></li>
+            <li><a href="#installation">Installation Methods</a></li>
+            <li><a href="#first-launch">First Launch Setup</a></li>
+            <li><a href="#adding-games">Adding Your First Game</a></li>
+            <li><a href="#basic-controls">Basic Controls</a></li>
+            <li><a href="#save-states">Save States & Memory</a></li>
+            <li><a href="#next-steps">Next Steps</a></li>
+        </ul>
+    </div>
+</nav>
+
+<section id="requirements" class="content-section">
+    <div class="container">
+        <h2>System Requirements</h2>
+        
+        <div class="info-box">
+            <h3>🖥️ macOS Compatibility</h3>
+            <p><strong>Minimum:</strong> macOS 14.0 (Sonoma) or later with Swift 5.9+</p>
+            <p><strong>Recommended:</strong> macOS 15.0 (Sequoia) or later for optimal performance</p>
+        </div>
+        
+        <h3>Hardware Requirements</h3>
+        <table class="requirements-table">
+            <thead>
+                <tr>
+                    <th>Component</th>
+                    <th>Minimum</th>
+                    <th>Recommended</th>
+                    <th>Notes</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>Processor</td>
+                    <td>Intel Core i5 or Apple M1</td>
+                    <td>Apple M1 Pro/Max/Ultra or Intel Core i7+</td>
+                    <td>ARM64 native on Apple Silicon</td>
+                </tr>
+                <tr>
+                    <td>RAM</td>
+                    <td>8 GB</td>
+                    <td>16 GB or more</td>
+                    <td>More RAM enables larger game libraries</td>
+                </tr>
+                <tr>
+                    <td>Storage</td>
+                    <td>2 GB free space</td>
+                    <td>10 GB+ free space</td>
+                    <td>For game ROMs and save states</td>
+                </tr>
+                <tr>
+                    <td>Graphics</td>
+                    <td>Intel Iris Plus or Apple M1 GPU</td>
+                    <td>Dedicated GPU or Apple M1 Pro+</td>
+                    <td>Required for shaders and upscaling</td>
+                </tr>
+            </tbody>
+        </table>
+
+        <h3>Software Dependencies</h3>
+        <ul class="feature-list">
+            <li><strong>Xcode Command Line Tools:</strong> Required for building from source</li>
+            <li><strong>Metal-compatible GPU:</strong> For shader rendering and hardware acceleration</li>
+            <li><strong>Network access:</strong> For downloading cores, thumbnails, and updates</li>
+            <li><strong>ROM files:</strong> Legally obtained game backups (we do not provide ROMs)</li>
+        </ul>
+
+        <div class="warning-box">
+            <p><strong>⚠️ Important:</strong> TruchiEmu requires macOS 14.0 or later. The application uses modern SwiftUI features and Metal shaders that are not compatible with older macOS versions. Ensure your system is up to date before proceeding with installation.</p>
+        </div>
+    </div>
+</section>
+
+<section id="installation" class="content-section">
+    <div class="container">
+        <h2>Installation Methods</h2>
+        
+        <div class="tabs">
+            <button class="tab-btn active" data-tab="download">Pre-built Binary</button>
+            <button class="tab-btn" data-tab="homebrew">Homebrew</button>
+            <button class="tab-btn" data-tab="source">Build from Source</button>
+        </div>
+
+        <div class="tab-content active" id="download">
+            <h3>Method 1: Download Pre-built Binary (Recommended)</h3>
+            <p>The easiest way to get started with TruchiEmu is to download the latest pre-built release from our GitHub releases page.</p>
+            
+            <div class="code-box">
+                <h4>Step-by-Step Installation:</h4>
+                <ol>
+                    <li>Visit <a href="https://github.com/JuanchoGithub/truchiemu/releases">our GitHub releases page</a></li>
+                    <li>Download the latest <code>TruchiEmu-x.x.x.dmg</code> file</li>
+                    <li>Open the DMG file and drag TruchiEmu to your Applications folder</li>
+                    <li>Launch TruchiEmu from Applications or Launchpad</li>
+                    <li>If you see a security warning, right-click the app and select "Open"</li>
+                </ol>
+            </div>
+
+            <div class="info-box">
+                <p><strong>💡 Tip:</strong> The DMG installation is cryptographically signed and notarized by Apple, ensuring it's safe to run on your Mac without disabling Gatekeeper security features.</p>
+            </div>
+        </div>
+
+        <div class="tab-content" id="homebrew">
+            <h3>Method 2: Install via Homebrew</h3>
+            <p>For users who prefer package management, TruchiEmu is available through Homebrew.</p>
+            
+            <div class="code-box">
+                <pre><code>brew tap juancho-github/truchiemu
+brew install truchiemu</code></pre>
+            </div>
+
+            <div class="code-box">
+                <h4>To upgrade to the latest version:</h4>
+                <pre><code>brew update
+brew upgrade truchiemu</code></pre>
+            </div>
+
+            <h4>Advantages of Homebrew Installation:</h4>
+            <ul>
+                <li>Automatic updates through <code>brew upgrade</code></li>
+                <li>Easy uninstall with <code>brew uninstall truchiemu</code></li>
+                <li>Command-line integration</li>
+                <li>Dependencies handled automatically</li>
+            </ul>
+        </div>
+
+        <div class="tab-content" id="source">
+            <h3>Method 3: Build from Source</h3>
+            <p>For developers and advanced users who want the latest features or want to contribute to the project.</p>
+            
+            <div class="code-box">
+                <h4>Prerequisites:</h4>
+                <pre><code>xcode-select --install  # Install Xcode Command Line Tools
+brew install cmake xcodegen  # Install build dependencies</code></pre>
+            </div>
+
+            <div class="code-box">
+                <h4>Build Steps:</h4>
+                <pre><code>git clone https://github.com/JuanchoGithub/truchiemu.git
+cd truchiemu
+xcodegen generate  # Generate Xcode project
+open TruchiEmu.xcodeproj  # Open in Xcode
+# Build in Xcode (⌘+B) or run:
+xcodebuild -scheme TruchiEmu -configuration Debug build</code></pre>
+            </div>
+
+            <div class="warning-box">
+                <p><strong>⚠️ Note:</strong> Building from source requires approximately 10 GB of free disk space and may take 15-30 minutes depending on your system.</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section id="first-launch" class="content-section">
+    <div class="container">
+        <h2>First Launch Setup</h2>
+        <p>When you launch TruchiEmu for the first time, you'll be guided through an initial setup wizard to configure your emulation environment.</p>
+
+        <div class="screenshot-frame">
+            <img src="{{ '/media/screenshots/settings-main.png' | relative_url }}" alt="TruchiEmu Settings Interface" class="screenshot">
+            <p class="screenshot-caption">The main settings interface where you configure global preferences</p>
+        </div>
+
+        <h3>Setup Wizard Steps</h3>
+        <div class="step-box">
+            <div class="step">
+                <h4>Step 1: Welcome & Privacy</h4>
+                <p>Review and accept the privacy policy and data collection settings. TruchiEmu collects anonymous usage statistics to improve the app but never collects personal information or ROM data.</p>
+            </div>
+            
+            <div class="step">
+                <h4>Step 2: Library Location</h4>
+                <p>Choose where to store your game library and save files. The default location is <code>~/Documents/TruchiEmu/</code>. This directory will contain:</p>
+                <ul>
+                    <li><code>ROMs/</code> - Your game files</li>
+                    <li><code>Saves/</code> - Save states and battery saves</li>
+                    <li><code>Cores/</code> - Downloaded emulation cores</li>
+                    <li><code>Thumbnails/</code> - Game artwork and screenshots</li>
+                </ul>
+            </div>
+            
+            <div class="step">
+                <h4>Step 3: Controller Setup</h4>
+                <p>Connect and configure your preferred input method. TruchiEmu supports:</p>
+                <ul>
+                    <li>Keyboard input (default)</li>
+                    <li>Popular controllers (Xbox, PlayStation, Nintendo Switch)</li>
+                    <li>Generic USB gamepads</li>
+                    <li>Custom button mapping per system</li>
+                </ul>
+            </div>
+            
+            <div class="step">
+                <h4>Step 4: Core Download</h4>
+                <p>Download essential emulation cores. We recommend starting with popular systems like NES, SNES, Game Boy, and Genesis. Additional cores can be downloaded later from the Core Management menu.</p>
+            </div>
+        </div>
+
+        <div class="screenshot-frame">
+            <img src="{{ '/media/screenshots/controller-mapping.png' | relative_url }}" alt="Controller Mapping Interface" class="screenshot">
+            <p class="screenshot-caption">The intuitive controller mapping interface supports per-system configuration</p>
+        </div>
+
+        <div class="tip-box">
+            <p><strong>💡 Pro Tip:</strong> Take time to properly configure your controller during first setup. A well-mapped controller significantly improves the gaming experience, especially for complex systems like N64 or PlayStation.</p>
+        </div>
+    </div>
+</section>
+
+<section id="adding-games" class="content-section">
+    <div class="container">
+        <h2>Adding Your First Game</h2>
+        <p>Once you've completed the initial setup, it's time to add games to your library. TruchiEmu supports drag-and-drop import and automatic game detection.</p>
+
+        <div class="screenshot-frame">
+            <img src="{{ '/media/screenshots/library-grid.png' | relative_url }}" alt="TruchiEmu Library Grid View" class="screenshot">
+            <p class="screenshot-caption">The library grid view automatically organizes your games with cover art</p>
+        </div>
+
+        <h3>Import Methods</h3>
+        
+        <h4>Method 1: Drag and Drop</h4>
+        <ol>
+            <li>Open the TruchiEmu library window</li>
+            <li>Locate your legally obtained ROM files in Finder</li>
+            <li>Drag and drop ROM files directly into the TruchiEmu window</li>
+            <li>The games will automatically be scanned, identified, and added to your library</li>
+            <li>Cover art and metadata will be downloaded automatically</li>
+        </ol>
+
+        <h4>Method 2: Manual Import</h4>
+        <ol>
+            <li>Click the "+" button in the library toolbar</li>
+            <li>Select "Import ROMs..." from the menu</li>
+            <li>Browse to your ROM files location</li>
+            <li>Select one or multiple ROM files</li>
+            <li>Click "Open" to import</li>
+        </ol>
+
+        <h4>Method 3: Watch Folder</h4>
+        <ol>
+            <li>Open Preferences (⌘+,)</li>
+            <li>Navigate to the Library tab</li>
+            <li>Enable "Watch for new ROMs in library folder"</li>
+            <li>Any ROMs added to your library folder will be automatically imported</li>
+        </ol>
+
+        <h3>Supported File Formats</h3>
+        <div class="format-grid">
+            <div class="format-category">
+                <h4>📦 Archives</h4>
+                <ul>
+                    <li><code>.zip</code> - Compressed ROM archives</li>
+                    <li><code>.7z</code> - 7-Zip compressed files</li>
+                    <li><code>.rar</code> - RAR compressed files</li>
+                </ul>
+            </div>
+            <div class="format-category">
+                <h4>🎮 Raw ROMs</h4>
+                <ul>
+                    <li><code>.nes</code> - Nintendo Entertainment System</li>
+                    <li><code>.sfc</code>, <code>.smc</code> - Super Nintendo</li>
+                    <li><code>.gba</code> - Game Boy Advance</li>
+                    <li><code>.gbc</code>, <code>.gb</code> - Game Boy</li>
+                    <li><code>.md</code>, <code>.smd</code> - Sega Genesis/Mega Drive</li>
+                </ul>
+            </div>
+            <div class="format-category">
+                <h4>💿 Disc Images</h4>
+                <ul>
+                    <li><code>.iso</code> - CD/DVD images</li>
+                    <li><code>.cue</code> + <code>.bin</code> - Multi-track images</li>
+                    <li><code>.chd</code> - Compressed Hunks of Data</li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="warning-box">
+            <p><strong>⚠️ Legal Notice:</strong> TruchiEmu does not provide or distribute copyrighted ROM files. You must legally obtain game backups from cartridges or discs you own. We do not condone piracy.</p>
+        </div>
+
+        <div class="screenshot-frame">
+            <img src="{{ '/media/screenshots/game-detail.png' | relative_url }}" alt="Game Detail View with Metadata" class="screenshot">
+            <p class="screenshot-caption">Each game displays rich metadata, screenshots, and achievements</p>
+        </div>
+    </div>
+</section>
+
+<section id="basic-controls" class="content-section">
+    <div class="container">
+        <h2>Basic Controls</h2>
+        <p>Understanding the control scheme is essential for enjoying your games. TruchiEmu provides default mappings that work across most game types.</p>
+
+        <h3>Keyboard Defaults</h3>
+        <table class="controls-table">
+            <thead>
+                <tr>
+                    <th>Key</th>
+                    <th>Action</th>
+                    <th>Notes</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>Arrow Keys</td>
+                    <td>D-Pad / Directional Input</td>
+                    <td>Configurable in settings</td>
+                </tr>
+                <tr>
+                    <td>Z, X</td>
+                    <td>Action Buttons (A, B)</td>
+                    <td>Common for most 2-button systems</td>
+                </tr>
+                <tr>
+                    <td>A, S</td>
+                    <td>Action Buttons (X, Y)</td>
+                    <td>For systems with 4+ buttons</td>
+                </tr>
+                <tr>
+                    <td>Enter</td>
+                    <td>Start / Pause</td>
+                    <td>Menu navigation</td>
+                </tr>
+                <tr>
+                    <td>Shift</td>
+                    <td>Select / Back</td>
+                    <td>Secondary menu button</td>
+                </tr>
+                <tr>
+                    <td>Space</td>
+                    <td>Fast Forward</td>
+                    <td>Hold to speed up gameplay</td>
+                </tr>
+                <tr>
+                    <td>Tab</td>
+                    <td>Quick Save State</td>
+                    <td>Instant save current position</td>
+                </tr>
+                <tr>
+                    <td>R</td>
+                    <td>Quick Load State</td>
+                    <td>Load most recent save</td>
+                </tr>
+                <tr>
+                    <td>Escape</td>
+                    <td>Pause Menu</td>
+                    <td>Access in-game options</td>
+                </tr>
+                <tr>
+                    <td>F1-F8</td>
+                    <td>Save State Slots</td>
+                    <td>Multiple save slots</td>
+                </tr>
+            </tbody>
+        </table>
+
+        <h3>Controller Support</h3>
+        <p>TruchiEmu automatically detects most popular controllers when connected via USB or Bluetooth:</p>
+        <ul>
+            <li><strong>Xbox Controllers:</strong> Perfect support for Xbox One, Xbox Series X|S controllers</li>
+            <li><strong>PlayStation Controllers:</strong> DualShock 4 and DualSense (PS5) supported</li>
+            <li><strong>Nintendo Switch:</strong> Joy-Cons and Pro Controller (with proper mapping)</li>
+            <li><strong>Generic USB:</strong> Most DirectInput and XInput controllers work out of the box</li>
+        </ul>
+
+        <div class="tip-box">
+            <p><strong>💡 Controller Tip:</strong> For the best experience, we recommend using a modern controller like the Xbox Series X controller or PlayStation DualSense. These offer excellent D-pads, responsive buttons, and wireless connectivity that works seamlessly with macOS.</p>
+        </div>
+
+        <h3>Per-System Customization</h3>
+        <p>Each emulator core can have its own control mapping:</p>
+        <ol>
+            <li>Open a game for the system you want to configure</li>
+            <li>Access the Quick Menu (F1 or Escape)</li>
+            <li>Navigate to Controls</li>
+            <li>Adjust button mappings as needed</li>
+            <li>Save as Core Remap File for persistent settings</li>
+        </ol>
+    </div>
+</section>
+
+<section id="save-states" class="content-section">
+    <div class="container">
+        <h2>Save States & Memory Management</h2>
+        <p>Save states allow you to save and load your exact position in a game at any moment, while battery saves work like the original hardware.</p>
+
+        <div class="screenshot-frame">
+            <img src="{{ '/media/screenshots/save-state-browser.png' | relative_url }}" alt="Save State Browser Interface" class="screenshot">
+            <p class="screenshot-caption">The visual save state browser shows thumbnails and timestamps</p>
+        </div>
+
+        <h3>Save States vs. Battery Saves</h3>
+        <div class="comparison-table">
+            <div class="comparison-column">
+                <h4>Save States</h4>
+                <ul>
+                    <li>Save exact emulator state</li>
+                    <li>Instant save and load</li>
+                    <li>8 slots per game</li>
+                    <li>Screenshot preview</li>
+                    <li>Cross-platform compatible</li>
+                </ul>
+            </div>
+            <div class="comparison-column">
+                <h4>Battery Saves</h4>
+                <ul>
+                    <li>Save like original hardware</li>
+                    <li>Compatible with real hardware</li>
+                    <li>Automatic saving</li>
+                    <li>No preview images</li>
+                    <li>Used by save points in-game</li>
+                </ul>
+            </div>
+        </div>
+
+        <h3>Save State Features</h3>
+        <ul class="feature-list">
+            <li><strong>8 Save Slots:</strong> Each game has 8 save state slots (F1-F8)</li>
+            <li><strong>Visual Previews:</strong> Each save state shows a screenshot thumbnail</li>
+            <li><strong>Timestamps:</strong> See exactly when each save was created</li>
+            <li><strong>Automatic Backups:</strong> Save states are backed up to prevent loss</li>
+            <li><strong>Compression:</strong> Save states are compressed to save disk space</li>
+            <li><strong>Portability:</strong> Move save states between computers easily</li>
+        </ul>
+
+        <h3>How to Use Save States</h3>
+        <table class="controls-table">
+            <thead>
+                <tr>
+                    <th>Action</th>
+                    <th>Keyboard</th>
+                    <th>Menu Path</th>
+                    <th>Description</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>Save to Slot 1</td>
+                    <td>F1</td>
+                    <td>Quick Menu → Save State → Slot 1</td>
+                    <td>Instant save to primary slot</td>
+                </tr>
+                <tr>
+                    <td>Load from Slot 1</td>
+                    <td>Alt+F1</td>
+                    <td>Quick Menu → Load State → Slot 1</td>
+                    <td>Restore from primary slot</td>
+                </tr>
+                <tr>
+                    <td>Quick Save</td>
+                    <td>Tab</td>
+                    <td>System → Quick Save</td>
+                    <td>Save to last used slot</td>
+                </tr>
+                <tr>
+                    <td>Quick Load</td>
+                    <td>R</td>
+                    <td>System → Quick Load</td>
+                    <td>Load from last used slot</td>
+                </tr>
+                <tr>
+                    <td>Save State Browser</td>
+                    <td>F2</td>
+                    <td>Quick Menu → Save State Browser</td>
+                    <td>Visual save state manager</td>
+                </tr>
+            </tbody>
+        </table>
+
+        <div class="tip-box">
+            <p><strong>💡 Save State Best Practices:</strong></p>
+            <ul>
+                <li>Use Slot 1 (F1) for critical progress points</li>
+                <li>Use higher slots (F2-F8) for experimental or practice saves</li>
+                <li>Create manual save states before difficult sections</li>
+                <li>Don't rely solely on save states - use battery saves too</li>
+                <li>Backup your <code>Saves/</code> folder periodically</li>
+            </ul>
+        </div>
+    </div>
+</section>
+
+<section id="next-steps" class="content-section">
+    <div class="container">
+        <h2>Next Steps</h2>
+        <p>Congratulations! You've successfully installed TruchiEmu and launched your first game. Here are some recommended next steps to enhance your emulation experience:</p>
+
+        <div class="next-steps-grid">
+            <div class="next-step-card">
+                <h4>🎨 Explore Shaders</h4>
+                <p>Enhance your visuals with built-in shaders and filters. Access the shader menu (F1 → Shaders) to try different effects like CRT simulation, smoothing, and upscaling.</p>
+                <a href="features.html#shaders" class="btn btn-primary">Learn About Shaders</a>
+            </div>
+            
+            <div class="next-step-card">
+                <h4>🏆 Set Up Achievements</h4>
+                <p>Enable RetroAchievements integration to earn achievements while playing classic games. Link your account in Settings → Achievements.</p>
+                <a href="features.html#achievements" class="btn btn-primary">Achievements Guide</a>
+            </div>
+            
+            <div class="next-step-card">
+                <h4>🎮 Configure Controllers</h4>
+                <p>Fine-tune your controller settings for each system. Create custom profiles and explore advanced mapping options.</p>
+                <a href="troubleshooting.html#controllers" class="btn btn-primary">Controller Setup</a>
+            </div>
+            
+            <div class="next-step-card">
+                <h4>📚 Build Your Library</h4>
+                <p>Organize your collection with playlists, favorites, and custom categories. Learn advanced library management techniques.</p>
+                <a href="features.html#library" class="btn btn-primary">Library Features</a>
+            </div>
+            
+            <div class="next-step-card">
+                <h4>⚡ Optimize Performance</h4>
+                <p>Adjust settings for the best balance of visual quality and performance on your specific hardware.</p>
+                <a href="troubleshooting.html#performance" class="btn btn-primary">Performance Tips</a>
+            </div>
+            
+            <div class="next-step-card">
+                <h4>🔧 Join Development</h4>
+                <p>Interested in contributing? Check out our development guide and join the community of contributors.</p>
+                <a href="development.html" class="btn btn-primary">Developer Guide</a>
+            </div>
+        </div>
+
+        <h3>Community Resources</h3>
+        <ul class="resource-list">
+            <li><strong>GitHub Issues:</strong> <a href="https://github.com/JuanchoGithub/truchiemu/issues">Report bugs and request features</a></li>
+            <li><strong>Discussions:</strong> <a href="https://github.com/JuanchoGithub/truchiemu/discussions">Ask questions and share tips</a></li>
+            <li><strong>Wiki:</strong> <a href="https://github.com/JuanchoGithub/truchiemu/wiki">Community-maintained documentation</a></li>
+            <li><strong>Discord:</strong> Join our community server for real-time help</li>
+        </ul>
+
+        <div class="success-box">
+            <p><strong>🎉 You're All Set!</strong> You've completed the getting started guide and should now have a working TruchiEmu installation. Remember that emulation is about preserving gaming history - always respect copyright and only play games you legally own.</p>
+        </div>
+    </div>
+</section>

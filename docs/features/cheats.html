@@ -1,0 +1,330 @@
+---
+layout: default
+title: Cheat System - TruchiEmu Documentation
+permalink: /features/cheats/
+---
+
+<div class="feature-docs">
+    <h1>Cheat System</h1>
+    
+    <div class="feature-overview">
+        <img src="/docs/media/features/cheats-hero.png" alt="Cheat System Overview" class="hero-image">
+        <p class="lead">TruchiEmu's comprehensive cheat system provides Game Genie, Pro Action Replay, and GameShark code support with real-time cheat search, memory watching, and code creation tools. Enhance your gameplay experience with infinite lives, power-ups, level skips, and custom modifications.</p>
+    </div>
+
+    <section id="service-explanation">
+        <h2>Service Overview</h2>
+        <p>The cheat system in TruchiEmu supports multiple cheat code formats and includes advanced features like memory scanning, cheat creation, and real-time editing. Our implementation provides accurate emulation of classic cheat devices with modern conveniences like cheat databases, automatic code activation, and conflict detection.</p>
+        
+        <div class="architecture-diagram">
+            <img src="/docs/media/features/cheat-architecture.png" alt="Cheat System Architecture">
+            <p class="caption">Cheat system pipeline from code parsing to memory injection</p>
+        </div>
+
+        <h3>Core Features</h3>
+        <ul class="feature-list">
+            <li><strong>Multi-Format Support:</strong> Game Genie, Pro Action Replay, GameShark, and raw memory codes</li>
+            <li><strong>Real-Time Memory Search:</strong> Find cheats by searching memory values during gameplay</li>
+            <li><strong>Cheat Database:</strong> Built-in database with thousands of pre-made cheats</li>
+            <li><strong>Code Creation:</strong> Create custom cheats with visual memory editor</li>
+            <li><strong>Auto-Activation:</strong> Cheats automatically activate when game loads</li>
+            <li><strong>Conflict Detection:</strong> Warns about incompatible cheat combinations</li>
+            <li><strong>Save State Integration:</strong> Save states preserve cheat state</li>
+        </ul>
+
+        <h3>Supported Cheat Formats</h3>
+        <p>TruchiEmu supports multiple cheat code formats: Game Genie (6-8 character alphanumeric codes), Pro Action Replay (hexadecimal codes with addresses), GameShark (various formats by system), and raw memory codes for advanced users. Each format is automatically detected and parsed correctly.</p>
+
+        <h3>Technical Architecture</h3>
+        <p>The cheat system consists of several integrated components:</p>
+        <ul>
+            <li><strong>Code Parser:</strong> Parses various cheat code formats into memory operations</li>
+            <li><strong>Memory Scanner:</strong> Searches game memory for values (equal, not equal, greater, less)</li>
+            <li><strong>Patch Engine:</strong> Applies memory patches in real-time without game crashes</li>
+            <li><strong>Database Manager:</strong> Manages cheat databases with search and filtering</li>
+            <li><strong>Watch Points:</strong> Monitors memory addresses and shows real-time values</li>
+            <li><strong>Conflict Detector:</strong> Analyzes cheat combinations for conflicts</li>
+        </ul>
+    </section>
+
+    <section id="step-by-step-guide">
+        <h2>Step-by-Step Configuration Guide</h2>
+        
+        <h3>Basic Cheat Usage</h3>
+        <ol class="setup-steps">
+            <li>
+                <strong>Access Cheat Menu</strong>
+                <p>Open the cheat menu by selecting <code>Tools → Cheats</code> or pressing <code>Cmd+Shift+C</code>. The cheat management window displays available cheats for the current game.</p>
+                <img src="/docs/media/screenshots/cheat-menu.png" alt="Cheat Menu Interface">
+            </li>
+            <li>
+                <strong>Browse Cheat Database</strong>
+                <p>Use the search bar to find specific cheats or browse by category. Popular categories include Infinite Lives, Infinite Health, Level Select, Power-Ups, and Unlockables.</p>
+            </li>
+            <li>
+                <strong>Enable Cheats</strong>
+                <p>Check the box next to any cheat to activate it immediately. Enabled cheats show a green indicator. Multiple cheats can be active simultaneously.</p>
+            </li>
+            <li>
+                <strong>Test in Game</strong>
+                <p>Return to your game and verify the cheat works as expected. Some cheats require specific conditions (e.g., must be at title screen, requires reset).</p>
+                <img src="/docs/media/screenshots/cheat-enabled.png" alt="Cheat Enabled Warning">
+            </li>
+            <li>
+                <strong>Save Cheat Configuration</strong>
+                <p>Your cheat selections are automatically saved when you close the menu. Next time you load the game, previously enabled cheats will automatically reactivate.</p>
+            </li>
+        </ol>
+
+        <h3>Manual Cheat Entry</h3>
+        <ol class="setup-steps">
+            <li>
+                <strong>Add New Cheat</strong>
+                <p>In the cheat menu, click "Add Cheat" and enter a descriptive name. Select the cheat format (Game Genie, Action Replay, etc.) from the dropdown.</p>
+            </li>
+            <li>
+                <strong>Enter Cheat Code</strong>
+                <p>Type or paste the cheat code into the code field. TruchiEmu validates codes in real-time and shows a green checkmark for valid formats.</p>
+                <img src="/docs/media/screenshots/cheat-entry.png" alt="Cheat Code Entry">
+            </li>
+            <li>
+                <strong>Description and Notes</strong>
+                <p>Add a description explaining what the cheat does and any special conditions. This helps organize large cheat collections.</p>
+            </li>
+            <li>
+                <strong>Test and Refine</strong>
+                <p>Enable the cheat and test in game. If it doesn't work, verify the code format and ensure it matches your game version and region.</p>
+            </li>
+        </ol>
+
+        <h3>Memory Search for Custom Cheats</h3>
+        <ol class="setup-steps">
+            <li>
+                <strong>Open Memory Search</strong>
+                <p>From the cheat menu, select <code>Tools → Memory Search</code>. This opens the memory search interface showing current memory values.</p>
+                <img src="/docs/media/screenshots/memory-search.png" alt="Memory Search Tool">
+            </li>
+            <li>
+                <strong>Define Search Parameters</strong>
+                <p>Set search type: Exact Value for known numbers (like lives), or Unknown Value if searching for hidden values. Select data size (8-bit, 16-bit, 32-bit) based on game architecture.</p>
+            </li>
+            <li>
+                <strong>Initial Search</strong>
+                <p>Click "First Search" to scan the entire memory space. This creates a baseline snapshot of memory values.</p>
+            </li>
+            <li>
+                <strong>Modify Value and Search Again</strong>
+                <p>In game, change the value you want to modify (e.g., lose a life). Return to memory search and select "Search Again" with the new value or difference type.</p>
+            </li>
+            <li>
+                <strong>Repeat Until Found</strong>
+                <p>Continue changing the value and searching until you narrow down to few addresses (ideally 1-3). Each search reduces the candidate addresses.</p>
+            </li>
+            <li>
+                <strong>Create Cheat from Address</strong>
+                <p>Right-click the final address and select "Create Cheat". Choose freeze value or specific value to set. The cheat is automatically added to your cheat list.</p>
+            </li>
+        </ol>
+    </section>
+
+    <section id="configuration-examples">
+        <h2>Configuration Examples</h2>
+        
+        <h3>Example 1: Game Genie Code Entry</h3>
+        <div class="config-example">
+            <pre><code>// Game Genie Code Example for Super Mario Bros (NES)
+cheat {
+    name = "Infinite Lives"
+    code = "SXOUGXAG"          // Game Genie format
+    format = "game_genie"
+    system = "NES"
+    
+    description = "Mario never runs out of lives"
+    enabled = true
+    auto_enable = true         // Enable on game load
+}
+
+cheat {
+    name = "Invincibility"
+    code = "SLXPLOVS"
+    format = "game_genie"
+    system = "NES"
+    
+    description = "Mario is invincible to enemies"
+    file_trigger = "SMB1"      // Only for Super Mario Bros 1
+}</code></pre>
+        </div>
+
+        <h3>Example 2: Action Replay Codes</h3>
+        <div class="config-example">
+            <pre><code>// Action Replay code with conditional logic
+cheat {
+    name = "Infinite Health"
+    code = "7E0F4A-FF"         // Write 255 to address F4A
+    format = "par"             // Pro Action Replay
+    
+    conditions = [
+        "game_state == in_play"
+    ]
+    
+    description = "Always have max health during gameplay"
+    enabled = true
+}
+
+cheat {
+    name = "All Weapons"
+    code = "7E1234-FF,7E1235-FF,7E1236-FF"
+    format = "par"
+    
+    multiple_addresses = true
+    description = "Unlock all weapons (3 bytes)"
+}</code></pre>
+        </div>
+
+        <h3>Example 3: Memory Freeze Cheat</h3>
+        <div class="config-example">
+            <pre><code>// Custom memory-based cheat from search
+cheat {
+    name = "Freeze Timer"
+    
+    // Memory address found via search
+    address = "0x7E1234"
+    size = "16-bit"            // 2 bytes
+    value = "0x09C4"           // Freeze at 2500
+    
+    operation = "freeze"       // Keep at this value
+    description = "Timer stays at constant value"
+    
+    // Advanced freeze with range
+    freeze_range = {
+        min = 2400
+        max = 2600
+        action = "clamp"       // Clamp value within range
+    }
+}</code></pre>
+        </div>
+
+        <h3>Example 4: Conditional Cheat</h3>
+        <div class="config-example">
+            <pre><code>// Complex cheat with multiple conditions
+cheat_set {
+    name = "Smart Invincibility"
+    
+    // Lives adjustment
+    cheat_1 {
+        address = "0x7E0155"
+        condition = "lives < 3"
+        action = "add 5 lives"
+        value = "+5"
+    }
+    
+    // Health regeneration
+    cheat_2 {
+        address = "0x7E0156"
+        condition = "health < 50"
+        action = "regenerate"
+        rate = "+2/sec"
+    }
+    
+    // Disable during cutscenes
+    global_conditions = [
+        "game_mode == gameplay",
+        "paused == false"
+    ]
+    
+    description = "Automatically helps when needed"
+    enabled = true
+}</code></pre>
+        </div>
+    </section>
+
+    <section id="troubleshooting">
+        <h2>Troubleshooting</h2>
+        
+        <div class="troubleshooting-grid">
+            <div class="troubleshooting-item">
+                <h3>Cheat Not Working</h3>
+                <p><strong>Symptom:</strong> Cheat enabled but has no effect in game.</p>
+                <p><strong>Solution:</strong> Verify cheat matches your game version and region. Some cheats only work at title screen or require game reset. Check if cheats are disabled in RetroAchievements Hardcore mode.</p>
+            </div>
+            
+            <div class="troubleshooting-item">
+                <h3>Game Crashes with Cheats</h3>
+                <p><strong>Symptom:</strong> Game crashes when specific cheats are enabled.</p>
+                <p><strong>Solution:</strong> Disable conflicting cheats. Some cheats modify critical memory addresses that cause instability. Try enabling cheats one at a time to identify the problematic code.</p>
+            </div>
+            
+            <div class="troubleshooting-item">
+                <h3>Memory Search Too Slow</h3>
+                <p><strong>Symptom:</strong> Memory search takes very long for large games.</p>
+                <p><strong>Solution:</strong> Narrow search range by selecting specific memory banks. Use exact value searches instead of unknown. Disable unnecessary background processes to free CPU resources.</p>
+            </div>
+            
+            <div class="troubleshooting-item">
+                <h3>Cheat Database Not Loading</h3>
+                <p><strong>Symptom:</strong> Cheat database shows no cheats for supported games.</p>
+                <p><strong>Solution:</strong> Update cheat database from <code>Tools → Update Cheat Database</code>. Check internet connection for database download. Verify ROM hash matches known good dumps in database.</p>
+            </div>
+            
+            <div class="troubleshooting-item">
+                <h3>Cheat Codes Lost After Update</h3>
+                <p><strong>Symptom:</strong> Custom cheat codes disappeared after TruchiEmu update.</p>
+                <p><strong>Solution:</strong> Export custom cheats before updating. Check <code>~/Documents/TruchiEmu/Cheats/</code> for backup files. Re-import cheat collection from exported files.</p>
+            </div>
+            
+            <div class="troubleshooting-item">
+                <h3>Memory Address Changes</h3>
+                <p><strong>Symptom:</strong> Custom memory cheats stop working randomly.</p>
+                <p><strong>Solution:</strong> Some games use dynamic memory allocation. Use pointer-based cheats if available. Search for new addresses or use relative addressing methods.</p>
+            </div>
+            
+            <div class="troubleshooting-item">
+                <h3>Cheat Name Duplicates</h3>
+                <p><strong>Symptom:</strong> Multiple cheats with same name causing confusion.</p>
+                <p><strong>Solution:</strong> Rename custom cheats with descriptive names including version info. Organize cheats into categories or use the description field for details.</p>
+            </div>
+            
+            <div class="troubleshooting-item">
+                <h3>Performance Issues</h3>
+                <p><strong>Symptom:</strong> Game runs slower with many cheats enabled.</p>
+                <p><strong>Solution:</strong> Disable unused cheats. Each active cheat requires CPU cycles. Consider consolidating multiple cheats into single combined cheat when possible.</p>
+            </div>
+        </div>
+    </section>
+
+    <section id="references">
+        <h2>Related Services</h2>
+        
+        <div class="related-services">
+            <div class="service-card">
+                <h3><a href="/features/achievements/">RetroAchievements</a></h3>
+                <p>Cheats are automatically disabled in Hardcore mode to maintain achievement integrity.</p>
+            </div>
+            
+            <div class="service-card">
+                <h3><a href="/features/save-states/">Save State System</a></h3>
+                <p>Combine cheat codes with save states to test specific game scenarios.</p>
+            </div>
+            
+            <div class="service-card">
+                <h3><a href="/features/shaders/">Shader System</a></h3>
+                <p>Cheat notifications are displayed using the shader overlay system.</p>
+            </div>
+            
+            <div class="service-card">
+                <h3><a href="/docs/api/cheat-api">Cheat API Reference</a></h3>
+                <p>Programmatic access to cheat system for custom tools and automation.</p>
+            </div>
+            
+            <div class="service-card">
+                <h3><a href="/community/cheats">Community Cheat Database</a></h3>
+                <p>Contribute and download user-created cheat codes for various games and systems.</p>
+            </div>
+            
+            <div class="service-card">
+                <h3><a href="/tools/memory-editor">Memory Editor</a></h3>
+                <p>Advanced memory editing tools for creating complex cheat codes and game modifications.</p>
+            </div>
+        </div>
+    </section>
+</div>
