@@ -67,6 +67,14 @@ struct CRTMultipassUniforms {
     var useFlick: Float
     var useBezel: Float
     var useBloom: Float
+    
+    // New additions
+    var phosphorDecay: Float
+    var maskPixelSpacingH: Float
+    var maskPixelSpacingV: Float
+    var maskSubpixelGap: Float
+    var useMask: Float
+    
     var padding: Float
 }
 

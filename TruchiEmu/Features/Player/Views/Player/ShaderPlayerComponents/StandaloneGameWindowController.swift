@@ -824,9 +824,9 @@ super.init(window: window)
     private var commandQueue: MTLCommandQueue?
     private var pipelineCache: [String: MTLRenderPipelineState] = [:]
     private var innerDrawCount = 0
-    // 4-frame temporal buffer for GBC shader (T-1, T-2, T-3, T-4, plus current frame passed directly)
-    private var temporalTextures: [MTLTexture?] = [nil, nil, nil, nil]
-    private var temporalIndex: Int = 0 // Cycles 0-3, points to "current"
+    // 5-frame temporal buffer for CRT phosphor persistence (T-1, T-2, T-3, T-4, plus current frame passed directly to texture(0))
+    private var temporalTextures: [MTLTexture?] = [nil, nil, nil, nil, nil]
+    private var temporalIndex: Int = 0 // Cycles 0-4, points to "current" frame
     private var frameCounter: UInt32 = 0
     
     // Viewport debouncing to prevent warping during resize
@@ -868,7 +868,7 @@ return false
             }
             if allValid { return }
 
-            // Create all 4 temporal textures
+            // Create all 5 temporal textures
             let descriptor = MTLTextureDescriptor.texture2DDescriptor(
                 pixelFormat: sourceFormat,
                 width: width,
@@ -878,14 +878,14 @@ return false
             descriptor.usage = [.shaderRead, .shaderWrite]
             descriptor.storageMode = .private
 
-            temporalTextures = [nil, nil, nil, nil]
-            for i in 0..<4 {
+            temporalTextures = [nil, nil, nil, nil, nil]
+            for i in 0..<5 {
                 if let newTex = device.makeTexture(descriptor: descriptor) {
                     temporalTextures[i] = newTex
                 }
             }
             temporalIndex = 0
-            LoggerService.debug(category: "Shaders", "Created 4-frame temporal buffer: \(width)x\(height) format:\(sourceFormat)")
+            LoggerService.debug(category: "Shaders", "Created 5-frame temporal buffer: \(width)x\(height) format:\(sourceFormat)")
         }
 
         private func getTemporalTexture(at index: Int) -> MTLTexture? {
@@ -893,7 +893,7 @@ return false
         }
 
         private func advanceTemporalIndex() {
-            temporalIndex = (temporalIndex + 1) % 4
+            temporalIndex = (temporalIndex + 1) % 5
         }
 
         func mtkView(_ view: MTKView, drawableSizeWillChange size: CGSize) {
@@ -1201,7 +1201,7 @@ return false
                             // Set all 5 textures: frame0=current, frame1=T-1, frame2=T-2, frame3=T-3, frame4=T-4
                             enc.setFragmentTexture(frameTex, index: 0)
                             for i in 1...4 {
-                                if let tex = getTemporalTexture(at: (temporalIndex - i + 4) % 4) {
+                                if let tex = getTemporalTexture(at: (temporalIndex - i + 5) % 5) {
                                     enc.setFragmentTexture(tex, index: i)
                                 }
                             }
@@ -1240,7 +1240,7 @@ return false
                             enc.setFragmentBytes(&u, length: MemoryLayout<GBAUniforms>.stride, index: 0)
                             enc.setFragmentTexture(frameTex, index: 0)
                             for i in 1...2 {
-                                if let tex = getTemporalTexture(at: (temporalIndex - i + 4) % 4) {
+                                if let tex = getTemporalTexture(at: (temporalIndex - i + 5) % 5) {
                                     enc.setFragmentTexture(tex, index: i)
                                 }
                             }
@@ -1277,12 +1277,20 @@ return false
                                 useFlick: getUniform("useFlick", fallback: 1.0),
                                 useBezel: getUniform("useBezel", fallback: 1.0),
                                 useBloom: getUniform("useBloom", fallback: 1.0),
+                                
+                                // New additions
+                                phosphorDecay: getUniform("phosphorDecay", fallback: 0.5),
+                                maskPixelSpacingH: getUniform("maskPixelSpacingH", fallback: 3.0),
+                                maskPixelSpacingV: getUniform("maskPixelSpacingV", fallback: 3.0),
+                                maskSubpixelGap: getUniform("maskSubpixelGap", fallback: 0.3),
+                                useMask: getUniform("useMask", fallback: 1.0),
+                                
                                 padding: 0.0
                             )
                             enc.setFragmentBytes(&u, length: MemoryLayout<CRTMultipassUniforms>.stride, index: 0)
                             enc.setFragmentTexture(frameTex, index: 0)
                             for i in 1...4 {
-                                if let tex = getTemporalTexture(at: (temporalIndex - i + 4) % 4) {
+                                if let tex = getTemporalTexture(at: (temporalIndex - i + 5) % 5) {
                                     enc.setFragmentTexture(tex, index: i)
                                 }
                             }

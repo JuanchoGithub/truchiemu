@@ -98,9 +98,9 @@ static float2 getDistortedUV(float2 screenUV, ShaderContext ctx, float amount, b
  * applyDitherBleed: Simulates low-bandwidth signals where colors smear horizontally.
  * This makes harsh pixel art look more like a continuous analog image.
  */
-static float3 applyDitherBleed(float3 rgb, float3 leftColor, float3 rightColor, bool active) {
+static float3 applyDitherBleed(float3 rgb, float3 leftColor, float3 rightColor, bool active, float bleedAmt) {
     if (!active) return rgb;
-    float3 bleed = (rgb + leftColor + rightColor) * 0.3;//;33;
+    float3 bleed = (rgb + leftColor + rightColor) * bleedAmt;
     float luma = dot(rgb, float3(0.2126, 0.7152, 0.0722));
     // Bleed is stronger in darker areas and reduced in highlights for clarity.
     return mix(mix(rgb, bleed, 2.0), rgb, 0.5 + (luma * 0.5));
@@ -300,7 +300,7 @@ fragment float4 fragmentCRT(VertexOut in [[stage_in]],
     }
     
     // BLEED & ANALOG: Dithering, Vignette, and Flicker.
-    rgb = applyDitherBleed(rgb, colL, colR, BLEED);
+    rgb = applyDitherBleed(rgb, colL, colR, BLEED, u.bleedAmount);
     rgb = applyAnalogFinishing(rgb, ctx, u.colorBoost, float3(u.tintR, u.tintG, u.tintB), u.vignetteStrength, u.time, u.flickerStrength, WHITE, VIG, FLICK);
     
     // SCANLINES: Horizontal darkened lines with adaptive bloom.

@@ -26,6 +26,13 @@ extension GameDetailView {
                         .padding(.vertical, 8)
                         .background(Color.accentColor.opacity(0.8))
                         .cornerRadius(8)
+
+                    Button("Live Shader Edit ▶") { presentLiveShaderEdit() }
+                        .foregroundColor(.white)
+                        .padding(.horizontal, 14)
+                        .padding(.vertical, 8)
+                        .background(Color.green.opacity(0.8))
+                        .cornerRadius(8)
                 }
 
                 Divider().overlay(AppColors.divider(colorScheme))
@@ -116,6 +123,19 @@ ShaderWindowController.shared?.close()
 }
         ShaderWindowController.shared = windowController
         windowController.show()
+    }
+
+    @MainActor
+    func presentLiveShaderEdit() {
+        guard let sysID = currentROM.systemID, let system = SystemDatabase.system(forID: sysID) else { return }
+        let cid = activeCoreID ?? system.defaultCoreID ?? ""
+
+        LiveShaderEditManager.shared.start(
+            rom: currentROM,
+            coreID: cid,
+            library: library,
+            shaderUniformOverrides: currentROM.settings.shaderUniformOverrides
+        )
     }
 
     private func applyToAllGamesInSystem(systemID: String, presetID: String, uniforms: [String: Float]) {

@@ -168,6 +168,23 @@ class ShaderManager: ObservableObject {
         LoggerService.info(category: "ShaderManager", "Activated shader preset: \(preset.name)")
     }
     
+    // Activate preset and apply saved uniform overrides (used by saved presets)
+    func activatePresetWithOverrides(presetID: String, overrides: [String: Float]) {
+        guard let preset = ShaderPreset.preset(id: presetID) else { return }
+        activePreset = preset
+        clearPipelineCache()
+
+        var merged: [String: Float] = [:]
+        for uniform in preset.globalUniforms {
+            merged[uniform.name] = overrides[uniform.name] ?? uniform.defaultValue
+        }
+        uniformValues = merged
+        Self.parameterStore.update(with: merged)
+
+        let fragmentName = deriveFragmentFunctionName(from: preset)
+        Self.parameterStore.updateFragmentFunctionName(fragmentName)
+    }
+
     // Update a uniform value
     func updateUniform(_ name: String, value: Float) {
         uniformValues[name] = value
