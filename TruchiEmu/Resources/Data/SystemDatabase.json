@@ -1769,6 +1769,7 @@
             "neo",
             "zip"
         ],
+        "emuIconName": "NEOGEO",
         "defaultBoxType": "Landscape",
         "iconName": "gamecontroller",
         "sortOrder": 80,
@@ -2177,6 +2178,7 @@
             "zcci",
             "zcxi"
         ],
+        "emuIconName": "3DS",
         "defaultBoxType": "Box",
         "iconName": "gamecontroller",
         "sortOrder": 80,
