@@ -1,0 +1,63 @@
+/* TruchiEmu Documentation Styles */
+
+:root {
+  --color-blue: #007AFF;
+  --color-gray: #8E8E93;
+  --bg-primary: #FFFFFF;
+  --bg-secondary: #F2F2F7;
+  --text-primary: #000000;
+  --text-secondary: #3C3C43;
+}
+
+body {
+  font-family: -apple-system, BlinkMacSystemFont, sans-serif;
+  color: var(--text-primary);
+  background: var(--bg-secondary);
+  margin: 0;
+}
+
+.site-header {
+  padding: 20px;
+  background: var(--bg-primary);
+}
+
+.hero {
+  padding: 60px 20px;
+  text-align: center;
+}
+
+.hero-logo {
+  width: 80px;
+  height: 80px;
+}
+
+.features-grid {
+  display: grid;
+  gap: 20px;
+  padding: 40px 20px;
+}
+
+.sidebar {
+  width: 280px;
+  padding: 20px;
+  background: var(--bg-secondary);
+}
+
+.main-content {
+  padding: 40px 20px;
+  max-width: 800px;
+}
+
+.site-footer {
+  padding: 40px 20px;
+  text-align: center;
+  background: var(--bg-secondary);
+}
+
+.btn {
+  padding: 12px 24px;
+  background: var(--color-blue);
+  color: white;
+  text-decoration: none;
+  border-radius: 8px;
+}
