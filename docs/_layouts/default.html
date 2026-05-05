@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  {% include head.html %}
+  <link rel="stylesheet" href="{{ '/assets/css/main.css' | relative_url }}">
+</head>
+<body>
+  {% include header.html %}
+  
+  <div class="site-container">
+    {% if page.sidebar != false %}
+      {% include sidebar.html %}
+    {% endif %}
+    
+    <main class="main-content" id="content">
+      <div class="content-wrapper">
+        {{ content }}
+      </div>
+      
+      {% if page.last_updated %}
+        <div class="page-meta">
+          <small>Last updated: {{ page.last_updated }}</small>
+        </div>
+      {% endif %}
+    </main>
+  </div>
+  
+  {% include footer.html %}
+</body>
+</html>
