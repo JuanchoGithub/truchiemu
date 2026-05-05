@@ -1,2 +1,15 @@
-# Main CSS
-body { font-family: -apple-system, BlinkMacSystemFont, sans-serif; }
+/* Main stylesheet for TruchiEmu */
+
+:root {
+  --color-blue: #007AFF;
+  --bg-primary: #FFFFFF;
+}
+
+body {
+  font-family: -apple-system, BlinkMacSystemFont, sans-serif;
+}
+
+.site-header {
+  padding: 20px;
+}
+EOF && git add /Users/jayjay/gitrepos/truchiemu/docs/assets/css/main.css
