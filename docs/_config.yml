@@ -53,15 +53,15 @@ vars:
 # Navigation
 nav:
   - title: "Getting Started"
-    url: "/getting-started.html"
+    url: "/getting-started/"
   - title: "Features"
-    url: "/features.html"
+    url: "/features/"
   - title: "Supported Systems"
-    url: "/systems.html"
+    url: "/systems/"
   - title: "Troubleshooting"
-    url: "/troubleshooting.html"
+    url: "/troubleshooting/"
   - title: "Development"
-    url: "/development.html"
+    url: "/development/"
 
 # Social
 social:
