@@ -400,6 +400,22 @@
 		DCC432C8DC5EA9D19CA13B14 /* PICO.png in Resources */ = {isa = PBXBuildFile; fileRef = 895E4313F6A502B39E0267B1 /* PICO.png */; };
 		DD0DDF8856A8056172004CA0 /* Sega - Dreamcast.dat in Resources */ = {isa = PBXBuildFile; fileRef = A93547318848E19981032FE8 /* Sega - Dreamcast.dat */; };
 		DD193D962FAA10C800CC543D /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = DD193D952FAA10C800CC543D /* Assets.xcassets */; };
+		DD193DA92FAA1A9600CC543D /* SEtBX.jpg in Resources */ = {isa = PBXBuildFile; fileRef = DD193DA22FAA1A9600CC543D /* SEtBX.jpg */; };
+		DD193DAA2FAA1A9600CC543D /* Sony_-_PlayStation.json in Resources */ = {isa = PBXBuildFile; fileRef = DD193DA72FAA1A9600CC543D /* Sony_-_PlayStation.json */; };
+		DD193DAB2FAA1A9600CC543D /* aWw6r.jpg in Resources */ = {isa = PBXBuildFile; fileRef = DD193D9F2FAA1A9600CC543D /* aWw6r.jpg */; };
+		DD193DAC2FAA1A9600CC543D /* appIcon256.jpg in Resources */ = {isa = PBXBuildFile; fileRef = DD193D9C2FAA1A9600CC543D /* appIcon256.jpg */; };
+		DD193DAD2FAA1A9600CC543D /* Sega_-_Mega_Drive_-_Genesis.json in Resources */ = {isa = PBXBuildFile; fileRef = DD193DA62FAA1A9600CC543D /* Sega_-_Mega_Drive_-_Genesis.json */; };
+		DD193DAE2FAA1A9600CC543D /* appIcon64.jpg in Resources */ = {isa = PBXBuildFile; fileRef = DD193D9A2FAA1A9600CC543D /* appIcon64.jpg */; };
+		DD193DAF2FAA1A9600CC543D /* appIcon16.jpg in Resources */ = {isa = PBXBuildFile; fileRef = DD193D982FAA1A9600CC543D /* appIcon16.jpg */; };
+		DD193DB02FAA1A9600CC543D /* appIcon128.jpg in Resources */ = {isa = PBXBuildFile; fileRef = DD193D9B2FAA1A9600CC543D /* appIcon128.jpg */; };
+		DD193DB12FAA1A9600CC543D /* Nintendo_-_Nintendo_Entertainment_System.json in Resources */ = {isa = PBXBuildFile; fileRef = DD193DA42FAA1A9600CC543D /* Nintendo_-_Nintendo_Entertainment_System.json */; };
+		DD193DB22FAA1A9600CC543D /* Nintendo_-_Super_Nintendo_Entertainment_System.json in Resources */ = {isa = PBXBuildFile; fileRef = DD193DA52FAA1A9600CC543D /* Nintendo_-_Super_Nintendo_Entertainment_System.json */; };
+		DD193DB32FAA1A9600CC543D /* 7vYdW.jpg in Resources */ = {isa = PBXBuildFile; fileRef = DD193D972FAA1A9600CC543D /* 7vYdW.jpg */; };
+		DD193DB42FAA1A9600CC543D /* appIcon1024.jpg in Resources */ = {isa = PBXBuildFile; fileRef = DD193D9E2FAA1A9600CC543D /* appIcon1024.jpg */; };
+		DD193DB52FAA1A9600CC543D /* j7C3Q.jpg in Resources */ = {isa = PBXBuildFile; fileRef = DD193DA02FAA1A9600CC543D /* j7C3Q.jpg */; };
+		DD193DB62FAA1A9600CC543D /* NTbe4.jpg in Resources */ = {isa = PBXBuildFile; fileRef = DD193DA12FAA1A9600CC543D /* NTbe4.jpg */; };
+		DD193DB72FAA1A9600CC543D /* appIcon32.jpg in Resources */ = {isa = PBXBuildFile; fileRef = DD193D992FAA1A9600CC543D /* appIcon32.jpg */; };
+		DD193DB82FAA1A9600CC543D /* appIcon512.jpg in Resources */ = {isa = PBXBuildFile; fileRef = DD193D9D2FAA1A9600CC543D /* appIcon512.jpg */; };
 		DEF1DDA46E59570FAE57D442 /* vdp@132w.png in Resources */ = {isa = PBXBuildFile; fileRef = D755FBFFC3BD76093815B71D /* vdp@132w.png */; };
 		DFF2C66041E018B1D7319306 /* CHAILOVE.png in Resources */ = {isa = PBXBuildFile; fileRef = 579FF46D161EC2DD3CE4C105 /* CHAILOVE.png */; };
 		E0BD0AA661359907DC9D17FF /* N64.png in Resources */ = {isa = PBXBuildFile; fileRef = 5B369817A06C01C6361538D0 /* N64.png */; };
@@ -843,6 +859,22 @@
 		DB371ABEE63BE1D87FA4114E /* ScaleSmooth.metal */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.metal; path = ScaleSmooth.metal; sourceTree = "<group>"; };
 		DC11E976179410D451158A7A /* AMIGA.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = AMIGA.png; sourceTree = "<group>"; };
 		DD193D952FAA10C800CC543D /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
+		DD193D972FAA1A9600CC543D /* 7vYdW.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = 7vYdW.jpg; sourceTree = "<group>"; };
+		DD193D982FAA1A9600CC543D /* appIcon16.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = appIcon16.jpg; sourceTree = "<group>"; };
+		DD193D992FAA1A9600CC543D /* appIcon32.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = appIcon32.jpg; sourceTree = "<group>"; };
+		DD193D9A2FAA1A9600CC543D /* appIcon64.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = appIcon64.jpg; sourceTree = "<group>"; };
+		DD193D9B2FAA1A9600CC543D /* appIcon128.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = appIcon128.jpg; sourceTree = "<group>"; };
+		DD193D9C2FAA1A9600CC543D /* appIcon256.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = appIcon256.jpg; sourceTree = "<group>"; };
+		DD193D9D2FAA1A9600CC543D /* appIcon512.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = appIcon512.jpg; sourceTree = "<group>"; };
+		DD193D9E2FAA1A9600CC543D /* appIcon1024.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = appIcon1024.jpg; sourceTree = "<group>"; };
+		DD193D9F2FAA1A9600CC543D /* aWw6r.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = aWw6r.jpg; sourceTree = "<group>"; };
+		DD193DA02FAA1A9600CC543D /* j7C3Q.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = j7C3Q.jpg; sourceTree = "<group>"; };
+		DD193DA12FAA1A9600CC543D /* NTbe4.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = NTbe4.jpg; sourceTree = "<group>"; };
+		DD193DA22FAA1A9600CC543D /* SEtBX.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = SEtBX.jpg; sourceTree = "<group>"; };
+		DD193DA42FAA1A9600CC543D /* Nintendo_-_Nintendo_Entertainment_System.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = "Nintendo_-_Nintendo_Entertainment_System.json"; sourceTree = "<group>"; };
+		DD193DA52FAA1A9600CC543D /* Nintendo_-_Super_Nintendo_Entertainment_System.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = "Nintendo_-_Super_Nintendo_Entertainment_System.json"; sourceTree = "<group>"; };
+		DD193DA62FAA1A9600CC543D /* Sega_-_Mega_Drive_-_Genesis.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = "Sega_-_Mega_Drive_-_Genesis.json"; sourceTree = "<group>"; };
+		DD193DA72FAA1A9600CC543D /* Sony_-_PlayStation.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = "Sony_-_PlayStation.json"; sourceTree = "<group>"; };
 		DD476D63A6BB92961004D98F /* GitHubAPIModels.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GitHubAPIModels.swift; sourceTree = "<group>"; };
 		DDA440915145AB1C4D850872 /* LogManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LogManager.swift; sourceTree = "<group>"; };
 		DDCACEF2DA4CC526B3582217 /* ps@132w.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "ps@132w.png"; sourceTree = "<group>"; };
@@ -1432,6 +1464,8 @@
 		6030CD98AFCCAA9A068217A1 /* Resources */ = {
 			isa = PBXGroup;
 			children = (
+				DD193DA32FAA1A9600CC543D /* AppIcons */,
+				DD193DA82FAA1A9600CC543D /* ThumbnailManifests */,
 				DD193D952FAA10C800CC543D /* Assets.xcassets */,
 				993EF4980E6D59693590061E /* Config */,
 				35AF3E1D0EA8DD7BDA67C06A /* Data */,
@@ -1888,6 +1922,36 @@
 			path = UI;
 			sourceTree = "<group>";
 		};
+		DD193DA32FAA1A9600CC543D /* AppIcons */ = {
+			isa = PBXGroup;
+			children = (
+				DD193D972FAA1A9600CC543D /* 7vYdW.jpg */,
+				DD193D982FAA1A9600CC543D /* appIcon16.jpg */,
+				DD193D992FAA1A9600CC543D /* appIcon32.jpg */,
+				DD193D9A2FAA1A9600CC543D /* appIcon64.jpg */,
+				DD193D9B2FAA1A9600CC543D /* appIcon128.jpg */,
+				DD193D9C2FAA1A9600CC543D /* appIcon256.jpg */,
+				DD193D9D2FAA1A9600CC543D /* appIcon512.jpg */,
+				DD193D9E2FAA1A9600CC543D /* appIcon1024.jpg */,
+				DD193D9F2FAA1A9600CC543D /* aWw6r.jpg */,
+				DD193DA02FAA1A9600CC543D /* j7C3Q.jpg */,
+				DD193DA12FAA1A9600CC543D /* NTbe4.jpg */,
+				DD193DA22FAA1A9600CC543D /* SEtBX.jpg */,
+			);
+			path = AppIcons;
+			sourceTree = "<group>";
+		};
+		DD193DA82FAA1A9600CC543D /* ThumbnailManifests */ = {
+			isa = PBXGroup;
+			children = (
+				DD193DA42FAA1A9600CC543D /* Nintendo_-_Nintendo_Entertainment_System.json */,
+				DD193DA52FAA1A9600CC543D /* Nintendo_-_Super_Nintendo_Entertainment_System.json */,
+				DD193DA62FAA1A9600CC543D /* Sega_-_Mega_Drive_-_Genesis.json */,
+				DD193DA72FAA1A9600CC543D /* Sony_-_PlayStation.json */,
+			);
+			path = ThumbnailManifests;
+			sourceTree = "<group>";
+		};
 		DFFF9FFBB78EA64551D01B64 /* Products */ = {
 			isa = PBXGroup;
 			children = (
@@ -2224,6 +2288,22 @@
 				331E5D4313517BFC79FF693A /* itv@132w.png in Resources */,
 				024AA9F0C40AE97D1A17D252 /* lynx@132w.png in Resources */,
 				0B8C1186E8119651761AD034 /* mame@132w.png in Resources */,
+				DD193DA92FAA1A9600CC543D /* SEtBX.jpg in Resources */,
+				DD193DAA2FAA1A9600CC543D /* Sony_-_PlayStation.json in Resources */,
+				DD193DAB2FAA1A9600CC543D /* aWw6r.jpg in Resources */,
+				DD193DAC2FAA1A9600CC543D /* appIcon256.jpg in Resources */,
+				DD193DAD2FAA1A9600CC543D /* Sega_-_Mega_Drive_-_Genesis.json in Resources */,
+				DD193DAE2FAA1A9600CC543D /* appIcon64.jpg in Resources */,
+				DD193DAF2FAA1A9600CC543D /* appIcon16.jpg in Resources */,
+				DD193DB02FAA1A9600CC543D /* appIcon128.jpg in Resources */,
+				DD193DB12FAA1A9600CC543D /* Nintendo_-_Nintendo_Entertainment_System.json in Resources */,
+				DD193DB22FAA1A9600CC543D /* Nintendo_-_Super_Nintendo_Entertainment_System.json in Resources */,
+				DD193DB32FAA1A9600CC543D /* 7vYdW.jpg in Resources */,
+				DD193DB42FAA1A9600CC543D /* appIcon1024.jpg in Resources */,
+				DD193DB52FAA1A9600CC543D /* j7C3Q.jpg in Resources */,
+				DD193DB62FAA1A9600CC543D /* NTbe4.jpg in Resources */,
+				DD193DB72FAA1A9600CC543D /* appIcon32.jpg in Resources */,
+				DD193DB82FAA1A9600CC543D /* appIcon512.jpg in Resources */,
 				8C23ACCDC85F2907BC1D6137 /* mame_rom_data.json in Resources */,
 				74F1CF08EB0401B13785252B /* mame_unified.json in Resources */,
 				04961661863DFA1705CF8482 /* md@132w.png in Resources */,
@@ -2629,6 +2709,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
+				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.games";
 				MACOSX_DEPLOYMENT_TARGET = 14.0;
 				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
 				MTL_FAST_MATH = YES;
@@ -2756,6 +2837,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
+				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.games";
 				MACOSX_DEPLOYMENT_TARGET = 14.0;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				MTL_FAST_MATH = YES;
