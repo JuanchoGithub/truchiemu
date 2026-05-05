@@ -14,21 +14,21 @@
       <div class="footer-section">
         <h4>Resources</h4>
         <ul>
-          <li><a href="{{ '/getting-started.html' | relative_url }}">Getting Started</a></li>
-          <li><a href="{{ '/features.html' | relative_url }}">Features</a></li>
-          <li><a href="{{ '/troubleshooting.html' | relative_url }}">Troubleshooting</a></li>
-          <li><a href="{{ '/development.html' | relative_url }}">Development</a></li>
+          <li><a href="{{ '/getting-started/' | relative_url }}">Getting Started</a></li>
+          <li><a href="{{ '/features/' | relative_url }}">Features</a></li>
+          <li><a href="{{ '/troubleshooting/' | relative_url }}">Troubleshooting</a></li>
+          <li><a href="{{ '/development/' | relative_url }}">Development</a></li>
         </ul>
       </div>
       
       <div class="footer-section">
         <h4>Supported Systems</h4>
         <ul>
-          <li><a href="{{ '/systems.htmlnes/' | relative_url }}">NES</a></li>
-          <li><a href="{{ '/systems.htmlsnes/' | relative_url }}">SNES</a></li>
-          <li><a href="{{ '/systems.htmln64/' | relative_url }}">N64</a></li>
-          <li><a href="{{ '/systems.htmlgba/' | relative_url }}">GBA</a></li>
-          <li><a href="{{ '/systems.html' | relative_url }}">All Systems →</a></li>
+          <li><a href="{{ '/systems/nes/' | relative_url }}">NES</a></li>
+          <li><a href="{{ '/systems/snes/' | relative_url }}">SNES</a></li>
+          <li><a href="{{ '/systems/n64/' | relative_url }}">N64</a></li>
+          <li><a href="{{ '/systems/gba/' | relative_url }}">GBA</a></li>
+          <li><a href="{{ '/systems/' | relative_url }}">All Systems →</a></li>
         </ul>
       </div>
       
@@ -37,7 +37,7 @@
         <ul>
           <li><a href="https://github.com/JuanchoGithub/truchiemu/releases" target="_blank">Downloads</a></li>
           <li><a href="https://github.com/JuanchoGithub/truchiemu/issues" target="_blank">Issues</a></li>
-          <li><a href="{{ '/development.html' | relative_url }}">Contribute</a></li>
+          <li><a href="{{ '/development/' | relative_url }}">Contribute</a></li>
           <li><a href="{{ '/license/' | relative_url }}">License</a></li>
         </ul>
       </div>

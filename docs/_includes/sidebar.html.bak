@@ -1,0 +1,50 @@
+<aside class="sidebar">
+  <div class="sidebar-section">
+    <h3>Getting Started</h3>
+    <ul class="sidebar-nav">
+  <li><a href="{{ '/getting-started/' | relative_url }}">Installation</a></li>
+  <li><a href="{{ '/getting-started/' | relative_url }}#quick-start">Quick Start</a></li>
+  <li><a href="{{ '/getting-started/' | relative_url }}#next-steps">Next Steps</a></li>
+    </ul>
+  </div>
+  
+  <div class="sidebar-section">
+    <h3>Core Features</h3>
+    <ul class="sidebar-nav">
+  <li><a href="{{ '/features/shaders/' | relative_url }}">Shaders</a></li>
+  <li><a href="{{ '/features/library/' | relative_url }}">Library Management</a></li>
+  <li><a href="{{ '/features/achievements/' | relative_url }}">Achievements</a></li>
+  <li><a href="{{ '/features/save-states/' | relative_url }}">Save States</a></li>
+  <li><a href="{{ '/features/controllers/' | relative_url }}">Controllers</a></li>
+  <li><a href="{{ '/features/cheats/' | relative_url }}">Cheats</a></li>
+    </ul>
+  </div>
+  
+  <div class="sidebar-section">
+    <h3>Supported Systems</h3>
+    <ul class="sidebar-nav">
+  <li><a href="{{ '/systems/nes/' | relative_url }}">NES</a></li>
+  <li><a href="{{ '/systems/snes/' | relative_url }}">SNES</a></li>
+  <li><a href="{{ '/systems/n64/' | relative_url }}">Nintendo 64</a></li>
+  <li><a href="{{ '/systems/gba/' | relative_url }}">GBA</a></li>
+  <li><a href="{{ '/systems/genesis/' | relative_url }}">Genesis</a></li>
+  <li><a href="{{ '/systems/mame/' | relative_url }}">Arcade</a></li>
+  <li><a href="{{ '/systems/' | relative_url }}">All Systems →</a></li>
+    </ul>
+  </div>
+  
+  <div class="sidebar-section">
+    <h3>Development</h3>
+    <ul class="sidebar-nav">
+  <li><a href="{{ '/development/' | relative_url }}">Architecture</a></li>
+  <li><a href="{{ '/dev/building/' | relative_url }}">Building</a></li>
+  <li><a href="{{ '/dev/contributing/' | relative_url }}">Contributing</a></li>
+    </ul>
+  </div>
+  
+  <div class="sidebar-sticky-footer">
+    <button id="search-toggle" class="btn btn-block">
+      🔎 Search Docs
+    </button>
+  </div>
+</aside>
