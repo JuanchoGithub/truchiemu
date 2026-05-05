@@ -9,7 +9,7 @@ repository: "JuanchoGithub/truchiemu"
 # Theme settings
 markdown: kramdown
 highlighter: rouge
-permalink: /:name/
+permalink: /:name.html
 
 # Plugins
 plugins:
