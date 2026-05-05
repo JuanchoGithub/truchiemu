@@ -178,9 +178,9 @@ return self;
               (g_coreID && [[g_coreID lowercaseString] containsString:@"mednafen_psx"]) ||
               (g_coreID && [[g_coreID lowercaseString] containsString:@"pcsx"])) {
        device_type = 1;
-    } else if ((g_coreID && [[g_coreID lowercaseString] containsString:@"mame"]) ||
-              (g_coreID && [[g_coreID lowercaseString] containsString:@"dosbox"])) {
-        device_type = 3; // RETRO_DEVICE_KEYBOARD
+} else if ((g_coreID && [[g_coreID lowercaseString] containsString:@"mame"]) ||
+               (g_coreID && [[g_coreID lowercaseString] containsString:@"dosbox"])) {
+         device_type = 1; // RETRO_DEVICE_JOYPAD - DOSBox-Pure supports gamepad natively
     } else if ((g_coreID && [[g_coreID lowercaseString] containsString:@"mupen64"]) ||
               (g_coreID && [[g_coreID lowercaseString] containsString:@"parallel_n64"])) {
         device_type = 5; // RETRO_DEVICE_ANALOG for proper N64 analog + digital input
@@ -428,7 +428,10 @@ shutdown:
 }
 
 - (void)setKeyState:(int)idx pressed:(BOOL)p {
-  if (idx >= 0 && idx < 32) g_input_state[idx] = p ? 1 : 0;
+  if (idx >= 0 && idx < 32) {
+    g_input_state[idx] = p ? 1 : 0;
+    NSLog(@"[DEBUG setKeyState] idx=%d, pressed=%d", idx, p);
+  }
 }
 
 - (void)setTurboState:(int)idx active:(BOOL)active targetButton:(int)targetIdx {

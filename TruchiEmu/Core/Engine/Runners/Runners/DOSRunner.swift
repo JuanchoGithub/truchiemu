@@ -96,21 +96,24 @@ class DOSRunner: EmulatorRunner, @unchecked Sendable {
     }
     
     // Handle gamepad input in standard DOS game mode
-    // Maps: D-Pad → Arrow keys, Buttons → Enter/Space/Alt/Ctrl
+    // Maps: D-Pad → JOYPAD buttons 4-7 (up/down/left/right), Buttons → JOYPAD 8-9 (A/B)
     private func handleGamepadInput(_ element: GCControllerElement) {
         if let dpad = element as? GCControllerDirectionPad {
             // DOSBox-Pure handles keyboard mapping internally
-            // We just forward the D-Pad as arrow keys
-            if dpad.up.isPressed { setKeyState(retroID: 19, pressed: true) } // RETROK_UP
-            else { setKeyState(retroID: 19, pressed: false) }
-            if dpad.down.isPressed { setKeyState(retroID: 20, pressed: true) } // RETROK_DOWN
-            else { setKeyState(retroID: 20, pressed: false) }
-            if dpad.left.isPressed { setKeyState(retroID: 18, pressed: true) } // RETROK_LEFT
-            else { setKeyState(retroID: 18, pressed: false) }
-            if dpad.right.isPressed { setKeyState(retroID: 17, pressed: true) } // RETROK_RIGHT
-            else { setKeyState(retroID: 17, pressed: false) }
+            // Forward D-Pad as JOYPAD button IDs
+            let upPressed = dpad.up.isPressed
+            let downPressed = dpad.down.isPressed
+            let leftPressed = dpad.left.isPressed
+            let rightPressed = dpad.right.isPressed
+            
+            LoggerService.debug(category: "DOSRunner", "DPad: up=\(upPressed), down=\(downPressed), left=\(leftPressed), right=\(rightPressed)")
+            
+            setKeyState(retroID: 4, pressed: upPressed) // JOYPAD_UP
+            setKeyState(retroID: 5, pressed: downPressed) // JOYPAD_DOWN
+            setKeyState(retroID: 6, pressed: leftPressed) // JOYPAD_LEFT
+            setKeyState(retroID: 7, pressed: rightPressed) // JOYPAD_RIGHT
         } else if let btn = element as? GCControllerButtonInput {
-            // Map common buttons to Enter/Space
+            // Map common buttons to JOYPAD A/B (buttons 8 and 9)
             let name = btn.localizedName ?? ""
             if name.contains("A") || name.contains("X") {
                 setKeyState(retroID: 13, pressed: btn.isPressed) // RETROK_RETURN
