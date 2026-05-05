@@ -71,6 +71,7 @@ class StandaloneGameWindowController: NSWindowController, NSWindowDelegate, Obse
     @MainActor @Published var isToolbarVisible: Bool = true
     @MainActor @Published var isFullscreen: Bool = false
     @MainActor @Published var autoFullscreenEnabled: Bool = false
+    var onWindowWillClose: (() -> Void)?
     private var toolbarView: NSHostingView<AnyView>?
     private var hideToolbarTimer: Timer?
     
@@ -794,6 +795,9 @@ super.init(window: window)
         if let rom = trackedROM {
             GameLauncher.shared.removeController(for: rom.id)
         }
+
+        // Call external callback (e.g., for live shader edit cleanup)
+        onWindowWillClose?()
     }
 
     // MARK: - Input Capture

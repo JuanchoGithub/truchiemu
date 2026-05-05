@@ -200,6 +200,7 @@ Slider(
 class ShaderWindowController: NSWindowController, NSWindowDelegate {
 private var settings: ShaderWindowSettings
 var onPresetChanged: ((String, [String: Float], Set<String>) -> Void)?
+var onWindowWillClose: (() -> Void)?
 private var settingsCancellable: AnyCancellable?
 
 static var shared: ShaderWindowController?
@@ -277,6 +278,7 @@ self.onPresetChanged?(self.settings.shaderPresetID, values, [])
         if let window = window {
             ShaderWindowPosition.shared.savePosition(window.frame.origin)
         }
+        onWindowWillClose?()
     }
 }
 

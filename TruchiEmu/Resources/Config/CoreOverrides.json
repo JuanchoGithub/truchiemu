@@ -54,7 +54,10 @@
       "override_description": "Dolphin GameCube/Wii emulator optimizations",
       "dolphin_gfx_backend": "OGL",
       "dolphin_vertex_rounding": "disabled",
-      "dolphin_fastmem": "enabled"
+      "dolphin_fastmem": "enabled",
+      "dolphin_crop_overscan": "enabled",
+      "dolphin_fast_disc_speed": "enabled",
+      "dolphin_osd_enabled": "disabled"
     },
     "mupen64plus_libretro": {
       "override_description": "Mupen64Plus N64 emulator optimizations (Software fallback)",

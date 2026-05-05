@@ -10,6 +10,7 @@ class LiveShaderEditManager: ObservableObject {
     private var activeROMSettings: ROMSettings?
     private var activeRomID: UUID?
     private weak var library: ROMLibrary?
+    private var isActive: Bool = false
 
     private init() {}
 
@@ -41,6 +42,17 @@ class LiveShaderEditManager: ObservableObject {
             ) { [weak self] controller in
                 guard let self = self, let controller = controller else { return }
                 self.activeGameController = controller
+
+                // Mark as active live edit session
+                self.isActive = true
+
+                // Disable auto-fullscreen for live shader edit sessions
+                controller.autoFullscreenEnabled = false
+
+                // Set up callback to close both windows when either closes
+                controller.onWindowWillClose = { [weak self] in
+                    self?.cleanup()
+                }
 
                 // Open the shader picker after the game window appears
                 DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
@@ -78,18 +90,34 @@ class LiveShaderEditManager: ObservableObject {
             self.activeShaderController = nil
         }
 
+        // Set up delegate to catch window close
+        controller.onWindowWillClose = { [weak self] in
+            self?.cleanup()
+        }
+
         ShaderWindowController.shared = controller
         activeShaderController = controller
         controller.show()
     }
 
     func stop() {
+        // Clear callbacks first to prevent re-entrancy when closing windows
+        activeGameController?.onWindowWillClose = nil
+        activeShaderController?.onWindowWillClose = nil
+
         activeGameController?.window?.close()
         activeGameController = nil
         activeShaderController?.window?.close()
         activeShaderController = nil
         activeRomID = nil
         activeROMSettings = nil
+        isActive = false
+    }
+
+    private func cleanup() {
+        guard isActive else { return }
+        isActive = false  // Set flag first to prevent re-entrancy
+        stop()
     }
 
     private func extractCurrentUniformValues(from settings: ROMSettings) -> [String: Float] {
