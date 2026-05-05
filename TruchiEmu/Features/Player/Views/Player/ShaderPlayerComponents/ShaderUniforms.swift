@@ -34,6 +34,13 @@ struct CRTUniforms {
     var useFlick: Float
     var useBezel: Float
     var useBloom: Float
+    
+    // Subpixel mask controls
+    var maskPixelSpacingH: Float
+    var maskPixelSpacingV: Float
+    var maskSubpixelGap: Float
+    var useMask: Float
+    
     var padding: Float
 }
 

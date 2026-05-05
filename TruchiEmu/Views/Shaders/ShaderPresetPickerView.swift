@@ -162,17 +162,18 @@ Spacer()
                       }
 
 Slider(
-                           value: Binding(
-                               get: { currentUniformValue(for: uniform) },
-                               set: { newValue in
-                                   uniformValues[uniform.name] = newValue
-                                   ShaderManager.shared.updateUniform(uniform.name, value: newValue)
-                               }
-                           ),
-                           in: uniform.minValue...uniform.maxValue,
-                           step: uniform.step,
-                           onEditingChanged: { _ in }
-                       )
+                            value: Binding(
+                                get: { currentUniformValue(for: uniform) },
+                                set: { newValue in
+                                    let steppedValue = (newValue / uniform.step).rounded() * uniform.step
+                                    uniformValues[uniform.name] = steppedValue
+                                    ShaderManager.shared.updateUniform(uniform.name, value: steppedValue)
+                                }
+                            ),
+                            in: uniform.minValue...uniform.maxValue,
+                            step: uniform.step,
+                            onEditingChanged: { _ in }
+                        )
                        .controlSize(.small)
                   }
               }

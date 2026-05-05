@@ -53,7 +53,14 @@ struct CRTUniforms {
     float useFlick;          // 0.0 or 1.0
     float useBezel;          // 0.0 or 1.0
     float useBloom;          // 0.0 or 1.0
-    float padding;           // Alignment
+    
+    // Subpixel mask controls
+    float maskPixelSpacingH;
+    float maskPixelSpacingV;
+    float maskSubpixelGap;
+    float useMask;
+    
+    float padding;
 };
 
 struct ShaderContext {
@@ -90,6 +97,35 @@ static float2 getDistortedUV(float2 screenUV, ShaderContext ctx, float amount, b
     // Warps the coordinates based on their distance from the center.
     float2 distort = ctx.centered + (ctx.centered * (offset.yx * amount));
     return distort * 0.5 + 0.5;
+}
+
+/**
+ * applyPhosphorMask: CRT subpixel mask (RGB phosphor triad simulation)
+ */
+static float3 applyPhosphorMask(float3 rgb, float2 fragCoord, float hSpacing, float vSpacing, float subpixelGap, bool active) {
+    if (!active) return rgb;
+    
+    float cellX = fmod(fragCoord.x, max(1.0, hSpacing)) / max(1.0, hSpacing);
+    float cellY = fmod(fragCoord.y, max(1.0, vSpacing)) / max(1.0, vSpacing);
+    
+    float vActive = 1.0;
+    if (vSpacing > 1.5) {
+        vActive = mix(0.5, 1.0, sin(cellY * 3.14159)); 
+    }
+    
+    float subX = cellX * 3.0;
+    float subFract = fract(subX);
+    
+    float halfGap = clamp(subpixelGap, 0.0, 0.9) * 0.5;
+    float phosphorActive = smoothstep(halfGap, halfGap + 0.05, subFract) * 
+                           (1.0 - smoothstep(1.0 - halfGap - 0.05, 1.0 - halfGap, subFract));
+                           
+    float3 mask = float3(0.0);
+    if (subX < 1.0) mask.r = phosphorActive;
+    else if (subX < 2.0) mask.g = phosphorActive;
+    else mask.b = phosphorActive;
+    
+    return rgb * mask * vActive * 2.5; 
 }
 
 // --- [ 2. COLOR & SAMPLING ] ---
@@ -261,6 +297,7 @@ fragment float4 fragmentCRT(VertexOut in [[stage_in]],
     const bool FLICK = u.useFlick > 0.5;
     const bool BEZEL = u.useBezel > 0.5;
     const bool BLOOM = u.useBloom > 0.5;
+    const bool MASK = u.useMask > 0.5;
 
     // 1. Preparation: Handle math context.
     ShaderContext ctx = prepareContext(in.texCoord, SOFT, CHROMA, VIG, DISTORT);
@@ -305,6 +342,9 @@ fragment float4 fragmentCRT(VertexOut in [[stage_in]],
     
     // SCANLINES: Horizontal darkened lines with adaptive bloom.
     if (SCAN) rgb = applyScanlines(rgb, mainColor, in.position.y, u.scanlineIntensity, u.bloomStrength, BLOOM);
+    
+    // SUBPIXEL MASK: CRT phosphor mask
+    if (MASK) rgb = applyPhosphorMask(rgb, in.position.xy, u.maskPixelSpacingH, u.maskPixelSpacingV, u.maskSubpixelGap, MASK);
     
     // 5. Final Composite: Add bezel mask and glass glow.
     float3 finalOut = applyMaskAndBezel(rgb, distortedUV, sampleUV, tex, s, u.colorBoost, u.texSizeX, u.bezelRounding, u.bezelGlow, BEZEL);

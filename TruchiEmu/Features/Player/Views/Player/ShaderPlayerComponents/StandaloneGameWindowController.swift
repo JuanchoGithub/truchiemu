@@ -1084,10 +1084,17 @@ return false
                                  useWhite: getUniform("useWhite", fallback: 1.0),
                                  useVig: getUniform("useVig", fallback: 1.0),
                                  useFlick: getUniform("useFlick", fallback: 1.0),
-                                 useBezel: getUniform("useBezel", fallback: 1.0),
-                                 useBloom: getUniform("useBloom", fallback: 0.0),
-                                 padding: 0.0
-                            )
+useBezel: getUniform("useBezel", fallback: 1.0),
+                                  useBloom: getUniform("useBloom", fallback: 0.0),
+                                  
+                                  // Subpixel mask controls
+                                  maskPixelSpacingH: getUniform("maskPixelSpacingH", fallback: 3.0),
+                                  maskPixelSpacingV: getUniform("maskPixelSpacingV", fallback: 3.0),
+                                  maskSubpixelGap: getUniform("maskSubpixelGap", fallback: 0.3),
+                                  useMask: getUniform("useMask", fallback: 0.0),
+                                  
+                                  padding: 0.0
+                             )
                             enc.setFragmentBytes(&u, length: MemoryLayout<CRTUniforms>.stride, index: 0)
                         case "fragmentDotMatrixLCD":
                             // Use preset defaults for all uniforms
@@ -1326,6 +1333,13 @@ return false
                                 useFlick: 0.0,
                                 useBezel: 0.0,
                                 useBloom: 0.0,
+                                
+                                // Subpixel mask controls
+                                maskPixelSpacingH: 3.0,
+                                maskPixelSpacingV: 3.0,
+                                maskSubpixelGap: 0.3,
+                                useMask: 0.0,
+                                
                                 padding: 0.0
                             )
                             enc.setFragmentBytes(&u, length: MemoryLayout<CRTUniforms>.stride, index: 0)
