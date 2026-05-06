@@ -1,32 +1,97 @@
 ---
-layout: default  
+layout: default
 title: Development
-description: Development guide for contributing to TruchiEmu
+description: Development guide for TruchiEmu - architecture overview, building from source, and contributing to the project
 ---
 
-# Development
+<div class="feature-docs">
+    <h1>Development</h1>
 
-This page is under construction. Information about TruchiEmu development:
+    <div class="feature-overview">
+        <p class="lead">TruchiEmu is built with a modern, modular architecture combining SwiftUI for the interface, Metal for shader effects, and the libretro API for emulation core integration.</p>
+    </div>
 
-## Architecture
+    <section id="architecture">
+        <h2>Architecture Overview</h2>
+        <p>TruchiEmu's architecture is organized into several key layers:</p>
 
-TruchiEmu is built with:
-- **SwiftUI** for the native macOS interface
-- **Metal** for shader effects
-- **Libretro** for emulation cores
-- **SwiftData** for data persistence
+        <h3>App Layer (SwiftUI)</h3>
+        <ul>
+            <li><strong>App entrypoint:</strong> <code>TruchiEmuApp.swift</code> and <code>ContentView.swift</code></li>
+            <li><strong>Views:</strong> SwiftUI views in <code>TruchiEmu/Views/</code> and <code>TruchiEmu/Features/</code></li>
+            <li><strong>Data layer:</strong> SwiftData models in <code>TruchiEmu/Core/Models/</code></li>
+        </ul>
 
-## Building from Source
+        <h3>Emulation Engine (Objective-C++ / C)</h3>
+        <ul>
+            <li><strong>Libretro bridge:</strong> <code>TruchiEmu/Core/Engine/</code> — mixed ObjC++/C with a Swift bridging header</li>
+            <li><strong>Swift-ObjC bridge:</strong> <code>LibretroBridge.mm</code> / <code>LibretroBridgeSwift.swift</code></li>
+        </ul>
 
-See the main [repository README](https://github.com/JuanchoGithub/truchiemu) for build instructions.
+        <h3>Graphics (Metal)</h3>
+        <ul>
+            <li><strong>Shader files:</strong> <code>TruchiEmu/Core/Shaders/</code></li>
+            <li><strong>Runtime shaders</strong> compiled and executed on the GPU via Metal</li>
+        </ul>
 
-## Contributing
+        <h3>Services</h3>
+        <ul>
+            <li><strong>Save management:</strong> <code>SaveDirectoryManager</code> and <code>SaveMigrationService</code></li>
+            <li><strong>Library management:</strong> ROM scanning, metadata fetching, artwork management</li>
+        </ul>
+    </section>
 
-We welcome contributions! Please see our GitHub repository for:
-- Issue tracking
-- Pull request guidelines
-- Code style guidelines
+    <section id="building">
+        <h2>Building from Source</h2>
 
-## Technical Documentation
+        <h3>Prerequisites</h3>
+        <ul>
+            <li>macOS 14.0 (Sonoma) or later</li>
+            <li>Xcode 15+ with Swift 5.9+</li>
+            <li>XcodeGen (install via <code>brew install xcodegen</code>)</li>
+            <li>Xcode Command Line Tools (<code>xcode-select --install</code>)</li>
+        </ul>
 
-For detailed development information, see the project documentation in the main repository.
+        <h3>Build Steps</h3>
+        <ol>
+            <li>Clone the repository: <code>git clone https://github.com/JuanchoGithub/truchiemu.git</code></li>
+            <li>Navigate to the project: <code>cd truchiemu</code></li>
+            <li>Generate Xcode project: <code>xcodegen generate</code></li>
+            <li>Open <code>TruchiEmu.xcodeproj</code> in Xcode</li>
+            <li>Build with Cmd+B or: <code>xcodebuild -scheme TruchiEmu -configuration Debug build</code></li>
+        </ol>
+
+        <h3>Important Notes</h3>
+        <ul>
+            <li>Do not edit the <code>.xcodeproj</code> directly — edit <code>project.yml</code> and run <code>xcodegen generate</code></li>
+            <li>When adding source files, add paths under the appropriate target's sources in <code>project.yml</code></li>
+            <li>C++ standard: gnu17/gnu++17 (not LLVM default)</li>
+            <li>Bridging header: <code>TruchiEmu-Bridging-Header.h</code> exposes ObjC++ symbols to Swift</li>
+        </ul>
+
+        <h3>Running Tests</h3>
+        <p>Tests live in <code>TruchiEmuTests/</code> and can be run with: <code>xcodebuild test -scheme TruchiEmuTests -destination 'platform=macOS'</code></p>
+    </section>
+
+    <section id="tech-stack">
+        <h2>Technology Stack</h2>
+        <table>
+            <thead>
+                <tr><th>Component</th><th>Technology</th></tr>
+            </thead>
+            <tbody>
+                <tr><td>UI Framework</td><td>SwiftUI (native macOS)</td></tr>
+                <tr><td>Emulation API</td><td>Libretro (via Objective-C++ bridge)</td></tr>
+                <tr><td>Graphics</td><td>Metal (shader effects and rendering)</td></tr>
+                <tr><td>Data Persistence</td><td>SwiftData</td></tr>
+                <tr><td>Project Generation</td><td>XcodeGen</td></tr>
+                <tr><td>Build System</td><td>Xcode (with gnu++17 standard)</td></tr>
+            </tbody>
+        </table>
+    </section>
+
+    <section id="contributing">
+        <h2>Contributing</h2>
+        <p>We welcome contributions to TruchiEmu! See <a href="{{ '/dev/contributing.html' | relative_url }}">the contributing guide</a> for detailed information on how to get involved.</p>
+    </section>
+</div>

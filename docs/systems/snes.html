@@ -1,343 +1,110 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SNES - Super Nintendo - TruchiEmu Guide</title>
-    <style>
-        body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-            line-height: 1.6;
-            max-width: 1000px;
-            margin: 0 auto;
-            padding: 20px;
-            background: #f5f5f5;
-            color: #333;
-        }
-        .header {
-            background: linear-gradient(135deg, #4a8bfc, #2c5aa0);
-            color: white;
-            padding: 30px;
-            border-radius: 10px;
-            margin-bottom: 30px;
-            text-align: center;
-        }
-        .system-banner {
-            width: 100%;
-            max-width: 800px;
-            height: 200px;
-            background: #ddd;
-            margin: 0 auto 20px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            border-radius: 8px;
-            font-size: 24px;
-            color: #666;
-        }
-        h1, h2, h3 {
-            color: #4a8bfc;
-        }
-        .section {
-            background: white;
-            padding: 25px;
-            margin-bottom: 20px;
-            border-radius: 8px;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-        }
-        .warning {
-            background: #fff3cd;
-            border-left: 4px solid #ffc107;
-            padding: 15px;
-            margin: 15px 0;
-        }
-        .tip {
-            background: #d4edda;
-            border-left: 4px solid #28a745;
-            padding: 15px;
-            margin: 15px 0;
-        }
-        code {
-            background: #f8f9fa;
-            padding: 2px 6px;
-            border-radius: 3px;
-            font-family: 'Courier New', monospace;
-        }
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            margin: 15px 0;
-        }
-        th, td {
-            border: 1px solid #ddd;
-            padding: 12px;
-            text-align: left;
-        }
-        th {
-            background: #f8f9fa;
-        }
-    </style>
-</head>
-<body>
-    <div class="header">
-        <h1>Super Nintendo Entertainment System (SNES)</h1>
-        <p>16-bit powerhouse that defined a generation</p>
+---
+layout: default
+title: SNES - Super Nintendo Entertainment System - TruchiEmu Documentation
+description: Complete guide to SNES/Super Famicom emulation in TruchiEmu - core selection, ROM formats, controller mapping, shader recommendations, and troubleshooting
+---
+
+<div class="feature-docs">
+    <h1>Super Nintendo Entertainment System (SNES)</h1>
+
+    <div class="feature-overview">
+        <p class="lead">The Super Nintendo Entertainment System, released in 1990 (Japan) and 1991 (North America), represented a significant leap forward in console technology. At its heart was the Ricoh 5A22 CPU, a custom 16-bit processor based on the WDC 65C816, running at 3.58 MHz (2.68 MHz during memory access).</p>
     </div>
 
-    <div class="system-banner">
-        [SNES System Banner Placeholder]
-    </div>
-
-    <div class="section">
+    <section id="hardware">
         <h2>Hardware Overview</h2>
-        <p>The Super Nintendo Entertainment System, released in 1990 (Japan) and 1991 (North America), represented a significant leap forward in console technology. At its heart was the Ricoh 5A22 CPU, a custom 16-bit processor based on the WDC 65C816, running at 3.58 MHz (2.68 MHz during memory access).</p>
-        
-        <p>The system's graphics were powered by the Picture Processing Unit (PPU), actually composed of two chips: PPU1 and PPU2. This allowed the SNES to display 256×224 resolution (512×448 in high-resolution mode) with 32,768 colors available, though only 256 could be displayed simultaneously from a single palette. The system supported up to 128 sprites on screen, with a maximum sprite size of 64×64 pixels.</p>
-        
-        <p>Audio capabilities were revolutionary for the time, featuring the Sony SPC700 audio CPU running at 1.024 MHz, paired with a 16-bit DSP. This configuration provided eight audio channels capable of producing high-quality stereo sound with advanced effects like echo, reverb, and pitch modulation.</p>
-        
+        <p>The system's graphics were powered by the Picture Processing Unit (PPU), actually composed of two chips: PPU1 and PPU2. This allowed the SNES to display 256x224 resolution (512x448 in high-resolution mode) with 32,768 colors available, though only 256 could be displayed simultaneously. The system supported up to 128 sprites on screen, with a maximum sprite size of 64x64 pixels.</p>
+        <p>Audio capabilities were revolutionary, featuring the Sony SPC700 audio CPU running at 1.024 MHz, paired with a 16-bit DSP. This configuration provided eight audio channels capable of producing high-quality stereo sound with advanced effects like echo, reverb, and pitch modulation.</p>
         <p>Memory architecture included 128KB of RAM, 64KB of Video RAM, and 64KB of Audio RAM. The cartridge-based system allowed for additional enhancement chips, including the Super FX chip for 3D graphics, SA-1 for enhanced processing, and DSP chips for various mathematical operations.</p>
-    </div>
+    </section>
 
-    <div class="section">
+    <section id="cores">
         <h2>Core Selection</h2>
         <p>TruchiEmu offers multiple SNES cores, each optimized for different priorities:</p>
-        
         <table>
-            <tr>
-                <th>Core</th>
-                <th>Accuracy</th>
-                <th>Performance</th>
-                <th>Special Features</th>
-                <th>Best Use Case</th>
-            </tr>
-            <tr>
-                <td><strong>snes9x</strong></td>
-                <td>High</td>
-                <td>Excellent</td>
-                <td>Fast PPU, good compatibility</td>
-                <td>General use, recommended default</td>
-            </tr>
-            <tr>
-                <td><strong>bsnes/higan</strong></td>
-                <td>Extremely High</td>
-                <td>Moderate</td>
-                <td>Cycle-accurate, enhancement chip support</td>
-                <td>Accuracy enthusiasts, debugging</td>
-            </tr>
-            <tr>
-                <td>bsnes-mercury</td>
-                <td>Very High</td>
-                <td>Good</td>
-                <td>Higan fork with better performance</td>
-                <td>Balance between accuracy and speed</td>
-            </tr>
-            <tr>
-                <td>mesen-s</td>
-                <td>Very High</td>
-                <td>Good</td>
-                <td>HLE and LLE modes</td>
-                <td>Enhanced debugging, netplay</td>
-            </tr>
+            <thead>
+                <tr><th>Core</th><th>Accuracy</th><th>Performance</th><th>Best Use Case</th></tr>
+            </thead>
+            <tbody>
+                <tr><td><strong>snes9x</strong></td><td>High</td><td>Excellent</td><td>General use, recommended default</td></tr>
+                <tr><td><strong>bsnes/higan</strong></td><td>Extremely High</td><td>Moderate</td><td>Accuracy enthusiasts, debugging</td></tr>
+                <tr><td>bsnes-mercury</td><td>Very High</td><td>Good</td><td>Balance between accuracy and speed</td></tr>
+                <tr><td>mesen-s</td><td>Very High</td><td>Good</td><td>Enhanced debugging, netplay</td></tr>
+            </tbody>
         </table>
-    </div>
+    </section>
 
-    <div class="section">
+    <section id="rom-formats">
         <h2>ROM Format Support</h2>
-        <p>SNES ROM management requires attention to format and header types:</p>
-        
-        <h3>Supported Formats:</h3>
+        <h3>Supported Formats</h3>
         <ul>
-            <li><strong>.sfc</strong> - Super Famicom (raw ROM dump, preferred format)</li>
-            <li><strong>.smc</strong> - Super Magicom (common, but may have headers)</li>
+            <li><strong>.sfc</strong> - Super Famicom (raw ROM dump, preferred)</li>
+            <li><strong>.smc</strong> - Super Magicom (common, may have headers)</li>
             <li><strong>.fig</strong> - Multi Game Hunter format</li>
             <li><strong>.swc</strong> - Super Wild Card format</li>
             <li><strong>.bs</strong> - Satellaview (BS-X) downloads</li>
             <li><strong>.st</strong> - Sufami Turbo</li>
         </ul>
+        <p><strong>Tip:</strong> Always prefer .sfc format when possible, as it has no headers or copier remnants. Many SMC files contain a 512-byte header you can strip with: <code>dd if=input.smc of=output.sfc bs=512 skip=1</code></p>
+    </section>
 
-        <h3>Header Considerations:</h3>
-        <p>Many SMC files contain a 512-byte header. TruchiEmu automatically detects and handles headers, but you may need to strip them for maximum compatibility:</p>
-        <code>dd if=input.smc of=output.sfc bs=512 skip=1</code>
-
-        <h3>Special Formats:</h3>
-        <ul>
-            <li><strong>Satellaview (BS-X):</strong> Requires BIOS file for menu functionality</li>
-            <li><strong>Sufami Turbo:</strong> Connects to SA-1 base cartridge</li>
-            <li><strong>Super Game Boy:</strong> Enhanced Game Boy games (requires SGB mode)</li>
-            <li><strong>DSP Games:</strong> Various enhancement chips for audio/math processing</li>
-        </ul>
-
-        <div class="warning">
-            <strong>Important:</strong> Always prefer .sfc format when possible, as it's the cleanest format without headers or copier remnants.
-        </div>
-    </div>
-
-    <div class="section">
+    <section id="controllers">
         <h2>Controller Mapping</h2>
-        <p>The SNES controller introduced many innovations that became industry standards:</p>
-        
-        <h3>Standard Controller Layout:</h3>
         <table>
-            <tr>
-                <th>SNES Button</th>
-                <th>Function</th>
-                <th>Default Keyboard</th>
-                <th>Modern Gamepad</th>
-            </tr>
-            <tr>
-                <td>D-Pad</td>
-                <td>Directional input</td>
-                <td>Arrow keys</td>
-                <td>D-Pad/Left Stick</td>
-            </tr>
-            <tr>
-                <td>A Button</td>
-                <td>Primary action</td>
-                <td>X key</td>
-                <td>Bottom face button</td>
-            </tr>
-            <tr>
-                <td>B Button</td>
-                <td>Secondary action</td>
-                <td>Z key</td>
-                <td>Right face button</td>
-            </tr>
-            <tr>
-                <td>X Button</td>
-                <td>Tertiary action</td>
-                <td>S key</td>
-                <td>Left face button</td>
-            </tr>
-            <tr>
-                <td>Y Button</td>
-                <td>Quaternary action</td>
-                <td>A key</td>
-                <td>Top face button</td>
-            </tr>
-            <tr>
-                <td>L Shoulder</td>
-                <td>Left shoulder</td>
-                <td>Q key</td>
-                <td>Left bumper/trigger</td>
-            </tr>
-            <tr>
-                <td>R Shoulder</td>
-                <td>Right shoulder</td>
-                <td>W key</td>
-                <td>Right bumper/trigger</td>
-            </tr>
-            <tr>
-                <td>SELECT</td>
-                <td>Menu/selection</td>
-                <td>Right Shift</td>
-                <td>Select/View button</td>
-            </tr>
-            <tr>
-                <td>START</td>
-                <td>Pause/menu</td>
-                <td>Enter</td>
-                <td>Start/Menu button</td>
-            </tr>
+            <thead>
+                <tr><th>SNES Button</th><th>Function</th><th>Default Keyboard</th></tr>
+            </thead>
+            <tbody>
+                <tr><td>D-Pad</td><td>Directional input</td><td>Arrow keys</td></tr>
+                <tr><td>A Button</td><td>Primary action</td><td>X key</td></tr>
+                <tr><td>B Button</td><td>Secondary action</td><td>Z key</td></tr>
+                <tr><td>X Button</td><td>Tertiary action</td><td>S key</td></tr>
+                <tr><td>Y Button</td><td>Quaternary action</td><td>A key</td></tr>
+                <tr><td>L Shoulder</td><td>Left shoulder</td><td>Q key</td></tr>
+                <tr><td>R Shoulder</td><td>Right shoulder</td><td>W key</td></tr>
+                <tr><td>SELECT</td><td>Menu/selection</td><td>Right Shift</td></tr>
+                <tr><td>START</td><td>Pause/menu</td><td>Enter</td></tr>
+            </tbody>
         </table>
+        <p><strong>Mapping Tip:</strong> For modern controllers, map SNES buttons to their Xbox/PlayStation equivalents: A=B, B=A, X=Y, Y=X, maintaining the diamond button layout.</p>
+    </section>
 
-        <h3>Special Controllers:</h3>
-        <ul>
-            <li><strong>Super Scope:</strong> Light gun for specific games like Battle Clash</li>
-            <li><strong>Mouse:</strong> Used with Mario Paint and other creative software</li>
-            <li><strong>Multi-Tap:</strong> Four-player adapter for games like Super Bomberman</li>
-            <li><strong>Super Game Boy Controller:</strong> Optional enhanced Game Boy features</li>
-        </ul>
-
-        <div class="tip">
-            <strong>Mapping Tip:</strong> For modern controllers, map SNES buttons to their Xbox/PlayStation equivalents: A=B, B=A, X=Y, Y=X, maintaining the diamond button layout.
-        </div>
-    </div>
-
-    <div class="section">
+    <section id="shaders">
         <h2>Best Shader Recommendations</h2>
-        <p>SNES graphics benefit from sophisticated shaders that enhance the 16-bit aesthetic:</p>
-        
-        <h3>Authentic CRT Experience:</h3>
+        <h3>Authentic CRT Experience</h3>
         <ul>
             <li><strong>CRT-Royale-Kurozumi:</strong> Premium CRT simulation with phosphor bloom</li>
             <li><strong>CRT-Lottes:</strong> Fast CRT simulation with good performance</li>
             <li><strong>CRT-Guest-Advanced:</strong> Highly customizable CRT shader</li>
         </ul>
-
-        <h3>Modern HD Experience:</h3>
+        <h3>Modern HD Experience</h3>
         <ul>
             <li><strong>xBRZ-Freescale:</strong> Superior upscaling with detail preservation</li>
             <li><strong>ScaleFX:</strong> Smooth scaling optimized for 16-bit art</li>
             <li><strong>MDAPT:</strong> Reverse dithering for transparency effects</li>
         </ul>
+        <p><strong>HD Mode 7:</strong> Many cores support enhanced Mode 7 graphics. Enable in core options for dramatically improved perspective effects in games like F-Zero and Pilotwings.</p>
+    </section>
 
-        <h3>Specialty Options:</h3>
-        <ul>
-            <li><strong>PhosphorLUT:</strong> Accurate phosphor color reproduction</li>
-            <li><strong>Scanlines:</strong> Simple scanline overlay for retro feel</li>
-            <li><strong>SABR:</strong> Edge-detection based scaling</li>
-        </ul>
-
-        <div class="tip">
-            <strong>HD Mode 7:</strong> Many cores support enhanced Mode 7 graphics. Enable "HD Mode 7" in core options for dramatically improved perspective effects in games like F-Zero and Pilotwings.
-        </div>
-    </div>
-
-    <div class="section">
+    <section id="performance">
         <h2>Performance Optimization</h2>
-        <p>SNES emulation requires more resources than 8-bit systems but remains accessible on most hardware:</p>
-        
-        <h3>General Recommendations:</h3>
         <ul>
             <li><strong>Runahead Frames:</strong> Enable 1-2 frames for reduced input latency</li>
-            <li><strong>Video Threading:</strong> Enabled for smoother video playback</li>
-            <li><strong>Audio Sync:</strong> Enabled to prevent audio crackling</li>
-            <li><strong>Hard GPU Sync:</strong> 0-1 frames for minimum latency</li>
-        </ul>
-
-        <h3>Core-Specific Settings:</h3>
-        <ul>
-            <li><strong>snes9x:</strong> Enable "Use Blargg's NTSC filter" for color accuracy</li>
-            <li><strong>bsnes/higan:</strong> Use "Balanced" profile for performance-accuracy balance</li>
-            <li><strong>mesen-s:</strong> Enable "Reduce Slowdown" for consistent performance</li>
-            <li><strong>Enhancement chips:</strong> Enable high-level emulation for maximum compatibility</li>
-        </ul>
-
-        <h3>Hardware Considerations:</h3>
-        <ul>
+            <li><strong>Audio Buffer:</strong> 64-128ms recommended</li>
             <li><strong>Apple Silicon:</strong> All cores run flawlessly, bsnes recommended for accuracy</li>
             <li><strong>Intel Integrated:</strong> Use snes9x with lighter shaders for 4K displays</li>
-            <li><strong>Older Systems:</strong> snes9x or bsnes-mercury recommended for pre-2015 Macs</li>
         </ul>
-    </div>
+    </section>
 
-    <div class="section">
-        <h2>Known Issues and Workarounds</h2>
-        
-        <h3>Audio Crackling in DSP Games:</h3>
-        <p><strong>Issue:</strong> Games using DSP enhancement chips (Pilotwings, Super Mario Kart) may have audio issues.</p>
-        <p><strong>Workaround:</strong> Use snes9x core with "DSP Audio Fix" enabled, or increase audio buffer to 128ms.</p>
-
-        <h3>Super FX Performance:</h3>
-        <p><strong>Issue:</strong> Super FX games (Star Fox, Stunt Race FX) may run slowly on low-end systems.</p>
-        <p><strong>Workaround:</strong> Enable "Super FX Overclock" in core options, or use snes9x for better performance.</p>
-
-        <h3>PAL Timing Issues:</h3>
-        <p><strong>Issue:</strong> PAL region games run at incorrect speed or have audio synchronization problems.</p>
-        <p><strong>Workaround:</strong> Enable "PAL Mode" in video settings and set refresh rate to 50Hz. Use bsnes for most accurate PAL timing.</p>
-
-        <h3>MSU-1 Audio:</h3>
-        <p><strong>Issue:</strong> MSU-1 enhanced games may not play CD-quality audio.</p>
-        <p><strong>Workaround:</strong> Ensure .pcm files are in the correct directory structure. Use snes9x or bsnes-mercury cores with MSU-1 support enabled.</p>
-
-        <h3>Satellaview Games:</h3>
-        <p><strong>Issue:</strong> Satellaview (BS-X) games may fail to boot or show BIOS screen only.</p>
-        <p><strong>Workaround:</strong> Load the BS-X BIOS first, then load the BS game. Use snes9x with "BS-X BIOS" properly configured in system directory.</p>
-
-        <div class="tip">
-            <strong>Enhancement Chips:</strong> Many SNES games used special chips. TruchiEmu supports most: Super FX, SA-1, DSP, C4, OBC1, S-DD1, S-RTC, SPC7110, and ST010/011. Enable high-level emulation in core options for best compatibility.
-        </div>
-    </div>
-</body>
-</html>
+    <section id="troubleshooting">
+        <h2>Known Issues</h2>
+        <h3>Audio Crackling in DSP Games</h3>
+        <p>Games using DSP enhancement chips (Pilotwings, Super Mario Kart) may have audio issues. Use snes9x core with "DSP Audio Fix" enabled.</p>
+        <h3>Super FX Performance</h3>
+        <p>Super FX games (Star Fox, Stunt Race FX) may run slowly. Enable "Super FX Overclock" in core options.</p>
+        <h3>PAL Timing Issues</h3>
+        <p>PAL region games may run at incorrect speed. Enable "PAL Mode" in video settings and set refresh rate to 50Hz.</p>
+        <h3>MSU-1 Audio</h3>
+        <p>Ensure PCM files are in the correct directory structure. Use snes9x or bsnes-mercury cores with MSU-1 support enabled.</p>
+    </section>
+</div>

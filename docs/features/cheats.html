@@ -8,7 +8,7 @@ title: Cheat System - TruchiEmu Documentation
     <h1>Cheat System</h1>
     
     <div class="feature-overview">
-        <img src="/docs/media/features/cheats-hero.png" alt="Cheat System Overview" class="hero-image">
+        <img src="{{ '/media/features/cheats-hero.png' | relative_url }}" alt="Cheat System Overview" class="hero-image">
         <p class="lead">TruchiEmu's comprehensive cheat system provides Game Genie, Pro Action Replay, and GameShark code support with real-time cheat search, memory watching, and code creation tools. Enhance your gameplay experience with infinite lives, power-ups, level skips, and custom modifications.</p>
     </div>
 
@@ -17,7 +17,7 @@ title: Cheat System - TruchiEmu Documentation
         <p>The cheat system in TruchiEmu supports multiple cheat code formats and includes advanced features like memory scanning, cheat creation, and real-time editing. Our implementation provides accurate emulation of classic cheat devices with modern conveniences like cheat databases, automatic code activation, and conflict detection.</p>
         
         <div class="architecture-diagram">
-            <img src="/docs/media/features/cheat-architecture.png" alt="Cheat System Architecture">
+            <img src="{{ '/media/features/cheat-architecture.png' | relative_url }}" alt="Cheat System Architecture">
             <p class="caption">Cheat system pipeline from code parsing to memory injection</p>
         </div>
 
@@ -55,7 +55,7 @@ title: Cheat System - TruchiEmu Documentation
             <li>
                 <strong>Access Cheat Menu</strong>
                 <p>Open the cheat menu by selecting <code>Tools → Cheats</code> or pressing <code>Cmd+Shift+C</code>. The cheat management window displays available cheats for the current game.</p>
-                <img src="/docs/media/screenshots/cheat-menu.png" alt="Cheat Menu Interface">
+                <img src="{{ '/media/screenshots/cheat-menu.png' | relative_url }}" alt="Cheat Menu Interface">
             </li>
             <li>
                 <strong>Browse Cheat Database</strong>
@@ -68,7 +68,7 @@ title: Cheat System - TruchiEmu Documentation
             <li>
                 <strong>Test in Game</strong>
                 <p>Return to your game and verify the cheat works as expected. Some cheats require specific conditions (e.g., must be at title screen, requires reset).</p>
-                <img src="/docs/media/screenshots/cheat-enabled.png" alt="Cheat Enabled Warning">
+                <img src="{{ '/media/screenshots/cheat-enabled.png' | relative_url }}" alt="Cheat Enabled Warning">
             </li>
             <li>
                 <strong>Save Cheat Configuration</strong>
@@ -85,7 +85,7 @@ title: Cheat System - TruchiEmu Documentation
             <li>
                 <strong>Enter Cheat Code</strong>
                 <p>Type or paste the cheat code into the code field. TruchiEmu validates codes in real-time and shows a green checkmark for valid formats.</p>
-                <img src="/docs/media/screenshots/cheat-entry.png" alt="Cheat Code Entry">
+                <img src="{{ '/media/screenshots/cheat-entry.png' | relative_url }}" alt="Cheat Code Entry">
             </li>
             <li>
                 <strong>Description and Notes</strong>
@@ -102,7 +102,7 @@ title: Cheat System - TruchiEmu Documentation
             <li>
                 <strong>Open Memory Search</strong>
                 <p>From the cheat menu, select <code>Tools → Memory Search</code>. This opens the memory search interface showing current memory values.</p>
-                <img src="/docs/media/screenshots/memory-search.png" alt="Memory Search Tool">
+                <img src="{{ '/media/screenshots/memory-search.png' | relative_url }}" alt="Memory Search Tool">
             </li>
             <li>
                 <strong>Define Search Parameters</strong>
@@ -297,32 +297,32 @@ cheat_set {
         
         <div class="related-services">
             <div class="service-card">
-                <h3><a href="/features/achievements/">RetroAchievements</a></h3>
+                <h3><a href="/features/achievements.html">RetroAchievements</a></h3>
                 <p>Cheats are automatically disabled in Hardcore mode to maintain achievement integrity.</p>
             </div>
             
             <div class="service-card">
-                <h3><a href="/features/save-states/">Save State System</a></h3>
+                <h3><a href="/features/save-states.html">Save State System</a></h3>
                 <p>Combine cheat codes with save states to test specific game scenarios.</p>
             </div>
             
             <div class="service-card">
-                <h3><a href="/features/shaders/">Shader System</a></h3>
+                <h3><a href="#">Shader System</a></h3>
                 <p>Cheat notifications are displayed using the shader overlay system.</p>
             </div>
             
             <div class="service-card">
-                <h3><a href="/docs/api/cheat-api">Cheat API Reference</a></h3>
+                <h3><a href="#">Cheat API Reference</a></h3>
                 <p>Programmatic access to cheat system for custom tools and automation.</p>
             </div>
             
             <div class="service-card">
-                <h3><a href="/community/cheats">Community Cheat Database</a></h3>
+                <h3><a href="#">Community Cheat Database</a></h3>
                 <p>Contribute and download user-created cheat codes for various games and systems.</p>
             </div>
             
             <div class="service-card">
-                <h3><a href="/tools/memory-editor">Memory Editor</a></h3>
+                <h3><a href="#">Memory Editor</a></h3>
                 <p>Advanced memory editing tools for creating complex cheat codes and game modifications.</p>
             </div>
         </div>

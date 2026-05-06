@@ -8,7 +8,7 @@ title: Save State System - TruchiEmu Documentation
     <h1>Save State System</h1>
     
     <div class="feature-overview">
-        <img src="/docs/media/features/save-states-hero.png" alt="Save State System Overview" class="hero-image">
+        <img src="{{ '/media/features/save-states-hero.png' | relative_url }}" alt="Save State System Overview" class="hero-image">
         <p class="lead">TruchiEmu's advanced save state system provides instant game saves and loads with visual thumbnails, metadata tracking, and cloud synchronization. Create checkpoints at any moment, organize saves into slot banks, and never lose progress with our automatic backup system.</p>
     </div>
 
@@ -17,7 +17,7 @@ title: Save State System - TruchiEmu Documentation
         <p>The Save State system captures complete emulator state including RAM, CPU registers, GPU state, and audio buffers. Unlike traditional save states, TruchiEmu's implementation includes rich metadata, screenshot thumbnails, and integration with your game library for seamless organization and retrieval.</p>
         
         <div class="architecture-diagram">
-            <img src="/docs/media/features/save-state-architecture.png" alt="Save State Architecture">
+            <img src="{{ '/media/features/save-state-architecture.png' | relative_url }}" alt="Save State Architecture">
             <p class="caption">Save state capture and restore pipeline with thumbnail generation and backup</p>
         </div>
 
@@ -51,7 +51,7 @@ title: Save State System - TruchiEmu Documentation
             <li>
                 <strong>Save State Creation</strong>
                 <p>Press <code>Cmd+F1</code> (or your configured hotkey) to save to slot 1. The screen will flash briefly and a notification appears showing the saved thumbnail. You can configure up to 99 slots per bank.</p>
-                <img src="/docs/media/screenshots/save-state-create.png" alt="Save State Creation">
+                <img src="{{ '/media/screenshots/save-state-create.png' | relative_url }}" alt="Save State Creation">
             </li>
             <li>
                 <strong>Load Save State</strong>
@@ -60,7 +60,7 @@ title: Save State System - TruchiEmu Documentation
             <li>
                 <strong>View Save State Browser</strong>
                 <p>Open the save state browser with <code>Cmd+Shift+S</code> to see all save states with thumbnails. Hover over states for metadata preview showing creation time, game location, and playtime.</p>
-                <img src="/docs/media/screenshots/save-state-browser.png" alt="Save State Browser">
+                <img src="{{ '/media/screenshots/save-state-browser.png' | relative_url }}" alt="Save State Browser">
             </li>
             <li>
                 <strong>Organize with Slot Banks</strong>
@@ -77,7 +77,7 @@ title: Save State System - TruchiEmu Documentation
             <li>
                 <strong>Set Up Cloud Synchronization</strong>
                 <p>Enable iCloud sync under <code>Settings → Save States → Cloud Sync</code>. Choose sync frequency (immediate, hourly, daily) and which slot banks to synchronize. Configure conflict resolution preferences.</p>
-                <img src="/docs/media/screenshots/save-state-sync.png" alt="Save State Cloud Sync">
+                <img src="{{ '/media/screenshots/save-state-sync.png' | relative_url }}" alt="Save State Cloud Sync">
             </li>
             <li>
                 <strong>Enable Automatic Backup</strong>
@@ -90,7 +90,7 @@ title: Save State System - TruchiEmu Documentation
             <li>
                 <strong>Import External Save States</strong>
                 <p>Drag and drop save state files from other emulators into the save state browser. TruchiEmu automatically detects format (SRM, SV, etc.) and converts as needed. Manual mapping available for ambiguous conversions.</p>
-                <img src="/docs/media/screenshots/import-save-states.png" alt="Import Save State">
+                <img src="{{ '/media/screenshots/import-save-states.png' | relative_url }}" alt="Import Save State">
             </li>
         </ol>
 
@@ -107,7 +107,7 @@ title: Save State System - TruchiEmu Documentation
             <li>
                 <strong>Auto-Cleanup Configuration</strong>
                 <p>Set up automatic cleanup in <code>Settings → Save States → Cleanup</code> to remove old states based on age or count. Configure rules to keep recent saves while removing outdated ones.</p>
-                <img src="/docs/media/screenshots/save-state-cleanup.png" alt="Save State Cleanup Settings">
+                <img src="{{ '/media/screenshots/save-state-cleanup.png' | relative_url }}" alt="Save State Cleanup Settings">
             </li>
             <li>
                 <strong>Export Save States</strong>
@@ -327,32 +327,32 @@ performance {
         
         <div class="related-services">
             <div class="service-card">
-                <h3><a href="/features/achievements/">RetroAchievements</a></h3>
+                <h3><a href="/features/achievements.html">RetroAchievements</a></h3>
                 <p>Understand how save state usage affects achievement eligibility in Hardcore mode.</p>
             </div>
             
             <div class="service-card">
-                <h3><a href="/features/cheats/">Cheat System</a></h3>
+                <h3><a href="/features/cheats.html">Cheat System</a></h3>
                 <p>Save states work seamlessly with cheat codes to create specific practice scenarios.</p>
             </div>
             
             <div class="service-card">
-                <h3><a href="/library/">Game Library</a></h3>
+                <h3><a href="/features/library.html">Game Library</a></h3>
                 <p>Save states are automatically organized in your game library with thumbnails and metadata.</p>
             </div>
             
             <div class="service-card">
-                <h3><a href="/docs/api/save-state-api">Save State API</a></h3>
+                <h3><a href="#">Save State API</a></h3>
                 <p>Programmatic access to save state creation, loading, and management in custom scripts.</p>
             </div>
             
             <div class="service-card">
-                <h3><a href="/tools/converter">Save State Converter</a></h3>
+                <h3><a href="#">Save State Converter</a></h3>
                 <p>Command-line utility for converting save states between different emulator formats.</p>
             </div>
             
             <div class="service-card">
-                <h3><a href="/community/saves">Community Save State Repository</a></h3>
+                <h3><a href="#">Community Save State Repository</a></h3>
                 <p>Download curated save states for practice segments, boss fights, and challenge runs created by the community.</p>
             </div>
         </div>

@@ -1,224 +1,114 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ScummVM - Point-and-Click Adventure Engine - TruchiEmu Guide</title>
-    <style>
-        body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-            line-height: 1.6;
-            max-width: 1000px;
-            margin: 0 auto;
-            padding: 20px;
-            background: #f5f5f5;
-            color: #333;
-        }
-        .header {
-            background: linear-gradient(135deg, #7c3aed, #5b21b6);
-            color: white;
-            padding: 30px;
-            border-radius: 10px;
-            margin-bottom: 30px;
-            text-align: center;
-        }
-        .system-banner {
-            width: 100%;
-            max-width: 800px;
-            height: 200px;
-            background: #ddd;
-            margin: 0 auto 20px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            border-radius: 8px;
-            font-size: 24px;
-            color: #666;
-        }
-        h1, h2, h3 {color: #7c3aed;}
-        .section {
-            background: white;
-            padding: 25px;
-            margin-bottom: 20px;
-            border-radius: 8px;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-        }
-        .warning {
-            background: #fff3cd;
-            border-left: 4px solid #ffc107;
-            padding: 15px; margin: 15px 0;
-        }
-        .tip {
-            background: #d4edda;
-            border-left: 4px solid #28a745;
-            padding: 15px; margin: 15px 0;
-        }
-        code {
-            background: #f8f9fa;
-            padding: 2px 6px;
-            border-radius: 3px;
-            font-family: 'Courier New', monospace;
-        }
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            margin: 15px 0;
-        }
-        th, td {
-            border: 1px solid #ddd;
-            padding: 12px;
-            text-align: left;
-        }
-        th {
-            background: #f8f9fa;
-        }
-    </style>
-</head>
-<body>
-    <div class="header">
-        <h1>ScummVM</h1>
-        <p>Point-and-click adventure game engine</p>
+---
+layout: default
+title: ScummVM - Point-and-Click Adventure Engine - TruchiEmu Documentation
+description: Complete guide to ScummVM adventure game engine in TruchiEmu - supported games, control mapping, graphics enhancements, and troubleshooting
+---
+
+<div class="feature-docs">
+    <h1>ScummVM</h1>
+
+    <div class="feature-overview">
+        <p class="lead">ScummVM is not a traditional emulator but a game engine reimplementation. It runs various point-and-click adventure games from LucasArts, Sierra, and other developers by replacing the original executable with a modern, portable engine. This approach offers enhanced compatibility, modern conveniences, and preservation of classic adventure titles.</p>
     </div>
 
-    <div class="system-banner">
-        [ScummVM System Banner Placeholder]
-    </div>
-
-    <div class="section">
+    <section id="overview">
         <h2>System Overview</h2>
-        <p>ScummVM is not a traditional emulator but a game engine reimplementation. It runs various point-and-click adventure games from LucasArts, Sierra, and other developers by replacing the original executable with a modern, portable engine. This approach offers enhanced compatibility, modern conveniences, and preservation of classic adventure titles.</p>
         <p>By reimplementing the game logic in platform-independent C++, ScummVM achieves perfect compatibility without emulating the original hardware, offering advantages like infinite save slots, enhanced graphics filtering, subtitle improvements, and modern controller support.</p>
-    </div>
+    </section>
 
-    <div class="section">
+    <section id="engines">
         <h2>Supported Game Engines</h2>
         <p>ScummVM supports over 200 games across multiple engines:</p>
         <table>
-            <tr><th>Engine</th><th>Examples</th><th>Notes</th></tr>
-            <tr><td>SCUMM</td><td>Monkey Island, DOTT, Sam & Max</td><td>LucasArts classics</td></tr>
-            <tr><td>SCI</td><td>King's Quest, Space Quest, Quest for Glory</td><td>Sierra 1988-1996</td></tr>
-            <tr><td>AGI</td><td>Early Sierra games</td><td>King's Quest I-III</td></tr>
-            <tr><td>Kyra</td><td>Legend of Kyrandia</td><td>Westwood Studios</td></tr>
-            <tr><td>TASK</td><td>Amazon, Ringworld</td><td>Coktel Vision</td></tr>
-            <tr><td>Gob</td><td>Gobliiins series</td><td>Coktel Vision</td></tr>
-            <tr><td>SAGA</td><td>Inherit the Earth</td><td>Adventure Soft</td></tr>
-            <tr><td>Tinsel</td><td>Discworld</td><td>Perfect Entertainment</td></tr>
+            <thead>
+                <tr><th>Engine</th><th>Examples</th><th>Notes</th></tr>
+            </thead>
+            <tbody>
+                <tr><td>SCUMM</td><td>Monkey Island, DOTT, Sam & Max</td><td>LucasArts classics</td></tr>
+                <tr><td>SCI</td><td>King's Quest, Space Quest</td><td>Sierra 1988-1996</td></tr>
+                <tr><td>AGI</td><td>King's Quest I-III</td><td>Early Sierra games</td></tr>
+                <tr><td>Kyra</td><td>Legend of Kyrandia</td><td>Westwood Studios</td></tr>
+                <tr><td>SAGA</td><td>Inherit the Earth</td><td>Adventure Soft</td></tr>
+                <tr><td>Tinsel</td><td>Discworld</td><td>Perfect Entertainment</td></tr>
+            </tbody>
         </table>
-    </div>
+    </section>
 
-    <div class="section">
+    <section id="formats">
         <h2>Content Format Support</h2>
         <p>ScummVM accepts game data files directly - no ROM conversion needed:</p>
-        
-        <h3>Supported Platforms:</h3>
         <ul>
             <li><strong>[Game Folder]</strong> - Directory containing original game files</li>
             <li><strong>.scummvm</strong> - Shortcut files for game launching</li>
-            <li><strong>Multiple file types:</strong> .000, .001, .exe, .bat, .hep</li>
             <li><strong>CD images:</strong> Supported for CD-based games</li>
         </ul>
+        <p><strong>Tip:</strong> Many game assets compress well with 7-ZIP. ScummVM supports compressed files directly, saving disk space without performance impact.</p>
+    </section>
 
-        <h3>Required Files:</h3>
-        <p>ScummVM requires specific data files from original installations. Common requirements:</p>
-        <ul>
-            <li>Extract all files from original media</li>
-            <li>Include voice/bitmap files with extensions like .vox, .bun</li>
-            <li>Subtitles/text files for text-based games</li>
-            <li>Game patches or updates when applicable</li>
-        </ul>
-
-        <div class="tip">
-            <strong>Compression:</strong> Many game assets compress well with 7-ZIP. ScummVM supports compressed files directly, saving disk space without performance impact.
-        </div>
-    </div>
-
-    <div class="section">
+    <section id="controllers">
         <h2>Control Mapping</h2>
         <p>ScummVM modernizes controls while maintaining original game feel:</p>
-        
-        <h3>Point-and-Click Games:</h3>
         <table>
-            <tr><th>Action</th><th>Keyboard</th><th>Gamepad</th><th>Mouse</th></tr>
-            <tr><td>Move cursor</td><td>Arrow keys</td><td>Left stick/D-pad</td><td>Mouse movement</td></tr>
-            <tr><td>Left click</td><td>Enter/Z</td><td>A button</td><td>Left mouse</td></tr>
-            <tr><td>Right click</td><td>Space/X</td><td>B button</td><td>Right mouse</td></tr>
-            <tr><td>Skip dialogue</td><td>Escape</td><td>Start</td><td>Esc key</td></tr>
-            <tr><td>Show menu</td><td>F5</td><td>Select/Back</td><td>Game menu</td></tr>
-            <tr><td>Save/load</td><td>Ctrl+F5</td><td>L/R triggers</td><td>ScummVM GUI</td></tr>
+            <thead>
+                <tr><th>Action</th><th>Keyboard</th><th>Mouse</th></tr>
+            </thead>
+            <tbody>
+                <tr><td>Move cursor</td><td>Arrow keys</td><td>Mouse movement</td></tr>
+                <tr><td>Left click</td><td>Enter/Z</td><td>Left mouse</td></tr>
+                <tr><td>Right click</td><td>Space/X</td><td>Right mouse</td></tr>
+                <tr><td>Skip dialogue</td><td>Escape</td><td>Esc key</td></tr>
+                <tr><td>Show menu</td><td>F5</td><td>Game menu</td></tr>
+                <tr><td>Save/load</td><td>Ctrl+F5</td><td>ScummVM GUI</td></tr>
+            </tbody>
         </table>
-
-        <h3>Enhanced Functionality:</h3>
+        <h3>Enhanced Functionality</h3>
         <ul>
             <li><strong>Hotspot indicator:</strong> Hold down key to show interactable areas</li>
             <li><strong>Subtitle speed:</strong> Adjustable in game settings</li>
-            <li><strong>Engine-specific controls:</strong> Each game may have unique commands</li>
         </ul>
-    </div>
+    </section>
 
-    <div class="section">
+    <section id="graphics">
         <h2>Graphics and Audio Enhancements</h2>
-        <h3>Graphics Filtering:</h3>
+        <h3>Graphics Filtering</h3>
         <ul>
             <li><strong>HQx:</strong> High-quality scaling for low-res artwork</li>
             <li><strong>SAI:</strong> Super-2xSaI for smoother sprite edges</li>
             <li><strong>Scanlines:</strong> CRT-like display simulation</li>
-            <li><strong>Edge:</strong> Sharp bilinear for crisp text</li>
         </ul>
-
-        <h3>Audio Options:</h3>
+        <h3>Audio Options</h3>
         <ul>
             <li><strong>MIDI emulation:</strong> Use built-in emulators for Adlib, MT-32, General MIDI</li>
             <li><strong>Digital audio:</strong> CD-quality playback from compressed files</li>
-            <li><strong>Subtitle sync:</strong> Automatic synchronization of text with speech</li>
+            <li><strong>MT-32:</strong> Requires ROM files for authentic Roland sound</li>
         </ul>
-
-        <h3>Quality of Life Improvements:</h3>
+        <h3>Quality of Life Improvements</h3>
         <ul>
             <li><strong>Skip dialogue:</strong> Speed through lines you've already seen</li>
             <li><strong>Boost mode:</strong> Double-click to run or walk faster</li>
             <li><strong>Cloud saves:</strong> Save game synchronization</li>
-            <li><strong>Autosave:</strong> Periodic backup saves</li>
         </ul>
-    </div>
+    </section>
 
-    <div class="section">
+    <section id="performance">
         <h2>Performance Optimization</h2>
         <p>ScummVM runs efficiently on most hardware:</p>
-        
-        <h3>General Settings:</h3>
         <ul>
-            <li><strong>Graphics mode:</strong> OpenGL, SDL Surface, OpenGL with shaders</li>
+            <li><strong>Graphics mode:</strong> OpenGL, SDL Surface, or OpenGL with shaders</li>
             <li><strong>Filtering:</strong> Disable for performance on low-end systems</li>
             <li><strong>Aspect ratio:</strong> Correct for non-square pixels</li>
-            <li><strong>Subtitle speed:</strong> Adjust for reading comfort</li>
         </ul>
+    </section>
 
-        <h3>Per-Game Configuration:</h3>
-        <ul>
-            <li>DIP switches in MT-32 emulation</li>
-            <li>MT-32 ROM files for authentic sound</li>
-            <li>Game-specific paths for alternative art</li>
-        </ul>
-    </div>
-
-    <div class="section">
-        <h2>Known Issues and Workaroutines</h2>
-        
-        <h3>Game Version Detection:</h3>
-        <p><strong>Issue:</strong> ScummVM fails to recognize game files.</p>
-        <p><strong>Workaround:</strong> Ensure all game files are present from original media. Use ScummVM's file detector tool to verify metadata.</p>
-
-        <h3>MT-32 Audio:</h3>
-        <p><strong>Issue:</strong> MT-32 music sounds incorrect or fails to play.</p>
-        <p><strong>Workaround:</strong> Requires MT-32 ROM files (CM32L, MT32) placed in system directory. Enable "True Roland MT-32" for accurate behavior.</p>
-
-        <h3>Palette Issues:</h3>
-        <p><strong>Issue:</strong> Colors appear incorrect or washed out.</p>
-            <p><strong>Workaround:</strong> Some games use non-standard palette setups. Enable "aspect ratio correction" or try alternate graphics mode.</p>
-
-        <h3>Save Game Compatibility:</h3>
-        <p><strong>Issue:</strong> Saves from older ScummVM versions not recognized.</p>
-        <p><strong>Workaround:</strong> Use older core version temporarily to export saves. Some games provide format migration.</p>
-    </div>
-</body>
-</html>
+    <section id="troubleshooting">
+        <h2>Known Issues</h2>
+        <h3>Game Version Detection</h3>
+        <p>If ScummVM fails to recognize game files, ensure all required files are present from original media.</p>
+        <h3>MT-32 Audio</h3>
+        <p>Requires MT-32 ROM files (CM32L, MT32) placed in system directory. Enable "True Roland MT-32" for accurate behavior.</p>
+        <h3>Palette Issues</h3>
+        <p>Colors may appear incorrect. Enable "aspect ratio correction" or try alternate graphics mode.</p>
+        <h3>Save Game Compatibility</h3>
+        <p>Saves from older ScummVM versions may not be recognized. Use older core version temporarily to export saves.</p>
+    </section>
+</div>

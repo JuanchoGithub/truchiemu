@@ -1,32 +1,87 @@
 ---
 layout: default
-title: Contributing
-description: How to contribute to TruchiEmu
+title: Contributing to TruchiEmu
+description: How to contribute to TruchiEmu - code contributions, documentation, bug reports, and community guidelines
 ---
 
-# Contributing
+<div class="feature-docs">
+    <h1>Contributing to TruchiEmu</h1>
 
-This page is under construction. We welcome contributions to TruchiEmu!
+    <div class="feature-overview">
+        <p class="lead">Thank you for your interest in contributing to TruchiEmu! Whether you're fixing bugs, adding features, improving documentation, or helping with testing, your contributions are welcome.</p>
+    </div>
 
-## How to Contribute
+    <section id="ways-to-contribute">
+        <h2>Ways to Contribute</h2>
 
-1. Fork the repository
-2. Create a feature branch
-3. Make your changes
-4. Submit a pull request
+        <h3>Code Contributions</h3>
+        <ul>
+            <li><strong>Bug fixes:</strong> Check <a href="https://github.com/JuanchoGithub/truchiemu/issues">GitHub Issues</a> for open bugs</li>
+            <li><strong>New features:</strong> Propose features via GitHub Discussions first</li>
+            <li><strong>Performance improvements:</strong> Optimize emulation core integration or UI</li>
+            <li><strong>Shader development:</strong> Create custom Metal shaders</li>
+        </ul>
 
-## Areas for Contribution
+        <h3>Non-Code Contributions</h3>
+        <ul>
+            <li><strong>Documentation:</strong> Improve guides, add examples, fix typos</li>
+            <li><strong>Testing:</strong> Test games across different systems and report compatibility</li>
+            <li><strong>Bug reports:</strong> File detailed issues with reproduction steps</li>
+            <li><strong>Community support:</strong> Help other users in Discussions and issues</li>
+        </ul>
+    </section>
 
-- Bug fixes
-- Feature improvements
-- Documentation
-- Testing
-- Performance optimization
+    <section id="getting-started">
+        <h2>Getting Started</h2>
+        <ol>
+            <li>Fork the <a href="https://github.com/JuanchoGithub/truchiemu">TruchiEmu repository</a></li>
+            <li>Clone your fork: <code>git clone https://github.com/YOUR_USERNAME/truchiemu.git</code></li>
+            <li>Create a feature branch: <code>git checkout -b feature/your-feature-name</code></li>
+            <li>Make your changes following the project's code style</li>
+            <li>Build and test your changes locally</li>
+            <li>Submit a pull request</li>
+        </ol>
+    </section>
 
-## Getting Started
+    <section id="guidelines">
+        <h2>Contribution Guidelines</h2>
 
-- Check out our [GitHub Issues](https://github.com/JuanchoGithub/truchiemu/issues)
-- Review the [Getting Started](/getting-started.html) guide
-- Read the [Development](/development.html) overview
+        <h3>Code Style</h3>
+        <ul>
+            <li>Follow existing code patterns and naming conventions</li>
+            <li>Use SwiftUI best practices for UI changes</li>
+            <li>Keep ObjC++ bridging to a minimum — prefer Swift where possible</li>
+            <li>Document public APIs with appropriate comments</li>
+        </ul>
 
-Thank you for your interest in improving TruchiEmu!
+        <h3>Pull Request Process</h3>
+        <ol>
+            <li>Ensure your PR addresses a single concern</li>
+            <li>Include a clear description of the changes</li>
+            <li>Reference any related issues</li>
+            <li>Update documentation if needed</li>
+            <li>Ensure the project builds successfully</li>
+        </ol>
+
+        <h3>Reporting Issues</h3>
+        <p>When filing a bug report, please include:</p>
+        <ul>
+            <li>macOS version and hardware (Apple Silicon or Intel)</li>
+            <li>TruchiEmu version</li>
+            <li>Steps to reproduce the issue</li>
+            <li>Expected vs actual behavior</li>
+            <li>Crash logs or screenshots if applicable</li>
+        </ul>
+    </section>
+
+    <section id="areas">
+        <h2>Areas Needing Help</h2>
+        <ul>
+            <li><strong>Core integration:</strong> Improve compatibility with additional libretro cores</li>
+            <li><strong>Shader effects:</strong> Create new Metal shaders for different display types</li>
+            <li><strong>Documentation:</strong> Expand the docs site with more examples and guides</li>
+            <li><strong>Testing:</strong> Test game compatibility across different systems</li>
+            <li><strong>UI/UX:</strong> Refine the SwiftUI interface and add new features</li>
+        </ul>
+    </section>
+</div>

@@ -1,219 +1,103 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>MAME - Multiple Arcade Machine Emulator - TruchiEmu Guide</title>
-    <style>
-        body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-            line-height: 1.6;
-            max-width: 1000px;
-            margin: 0 auto;
-            padding: 20px;
-            background: #f5f5f5;
-            color: #333;
-        }
-        .header {
-            background: linear-gradient(135deg, #dc2626, #991b1b);
-            color: white;
-            padding: 30px;
-            border-radius: 10px;
-            margin-bottom: 30px;
-            text-align: center;
-        }
-        .system-banner {
-            width: 100%;
-            max-width: 800px;
-            height: 200px;
-            background: #ddd;
-            margin: 0 auto 20px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            border-radius: 8px;
-            font-size: 24px;
-            color: #666;
-        }
-        h1, h2, h3 {color: #dc2626;}
-        .section {
-            background: white;
-            padding: 25px;
-            margin-bottom: 20px;
-            border-radius: 8px;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-        }
-        .warning {
-            background: #fff3cd;
-            border-left: 4px solid #ffc107;
-            padding: 15px; margin: 15px 0;
-        }
-        .tip {
-            background: #d4edda;
-            border-left: 4px solid #28a745;
-            padding: 15px; margin: 15px 0;
-        }
-        code {
-            background: #f8f9fa;
-            padding: 2px 6px;
-            border-radius: 3px;
-            font-family: 'Courier New', monospace;
-        }
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            margin: 15px 0;
-        }
-        th, td {
-            border: 1px solid #ddd;
-            padding: 12px;
-            text-align: left;
-        }
-        th {
-            background: #f8f9fa;
-        }
-    </style>
-</head>
-<body>
-    <div class="header">
-        <h1>MAME - Multiple Arcade Machine Emulator</h1>
-        <p>The gold standard in arcade preservation</p>
+---
+layout: default
+title: MAME - Multiple Arcade Machine Emulator - TruchiEmu Documentation
+description: Complete guide to MAME arcade emulation in TruchiEmu - core selection, ROM formats, controller mapping, shader recommendations, and troubleshooting
+---
+
+<div class="feature-docs">
+    <h1>MAME - Multiple Arcade Machine Emulator</h1>
+
+    <div class="feature-overview">
+        <p class="lead">MAME (Multiple Arcade Machine Emulator) is a preservation project covering thousands of arcade systems. Instead of emulating a specific hardware platform, MAME emulates the original arcade hardware, ROMs, and CPU architectures of countless arcade machines spanning from 1975 to the modern era.</p>
     </div>
 
-    <div class="system-banner">
-        [MAME System Banner Placeholder]
-    </div>
-
-    <div class="section">
-        <h2>System Overview</h2>
-        <p>MAME (Multiple Arcade Machine Emulator) is not a single system but a preservation project covering thousands of arcade systems. Instead of emulating a specific hardware platform, MAME emulates the original arcade hardware, ROMs, and CPU architectures of countless arcade machines spanning from 1975 to the modern era.</p>
-    </div>
-
-    <div class="section">
+    <section id="cores">
         <h2>Core Selection</h2>
-        <p>TruchiEmu typically uses MAME cores optimized for libretro integration:</p>
+        <p>TruchiEmu uses MAME cores optimized for libretro integration:</p>
         <table>
-            <tr><th>Core</th><th>MAME Version</th><th>Performance</th><th>Best Use Case</th></tr>
-            <tr><td><strong>mame</strong></td><td>Current</td><td>Moderate</td><td>Latest compatibility, recent ROMs</td></tr>
-            <tr><td><strong>mame2003</strong></td><td>0.78</td><td>High</td><td>Older ROM sets, speed</td></tr>
-            <tr><td><strong>mame2003-plus</strong></td><td>0.78+</td><td>High</td><td>Enhanced 0.78 with added games</td></tr>
-            <tr><td>mame2010</td><td>0.139</td><td>Good</td><td>Mid-era compatibility</td></tr>
-            <tr><td>mame2016</td><td>0.174</td><td>Moderate</td><td>Balance of compatibility and age</td></tr>
+            <thead>
+                <tr><th>Core</th><th>MAME Version</th><th>Performance</th><th>Best Use Case</th></tr>
+            </thead>
+            <tbody>
+                <tr><td><strong>mame</strong></td><td>Current</td><td>Moderate</td><td>Latest compatibility, recent ROMs</td></tr>
+                <tr><td><strong>mame2003-plus</strong></td><td>0.78+</td><td>High</td><td>Enhanced 0.78 with added games</td></tr>
+                <tr><td>mame2010</td><td>0.139</td><td>Good</td><td>Mid-era compatibility</td></tr>
+                <tr><td>mame2016</td><td>0.174</td><td>Moderate</td><td>Balance of compatibility and performance</td></tr>
+            </tbody>
         </table>
-    </div>
+    </section>
 
-    <div class="section">
+    <section id="rom-formats">
         <h2>ROM Format Support</h2>
-        <h3>ROM Set Types:</h3>
+        <h3>ROM Set Types</h3>
         <ul>
             <li><strong>Split:</strong> Common files shared across clones</li>
             <li><strong>Non-Merged:</strong> All files in single archive</li>
             <li><strong>Merged:</strong> Parent and clones combined</li>
         </ul>
-
-        <h3>Compression Formats:</h3>
+        <h3>Compression Formats</h3>
         <ul>
             <li><strong>.zip</strong> - Standard compression</li>
             <li><strong>.7z</strong> - Advanced compressed archives</li>
             <li><strong>.chd</strong> - Compressed hard disk for media (CDs, HDD)</li>
-            <li><strong>.bin</strong> - Binary dumps</li>
         </ul>
+        <h3>BIOS Requirements</h3>
+        <p>Many systems require specific BIOS files in the system directory: neogeo.zip for Neo Geo, cps2.zip for Capcom CPS2 games, and various others for different hardware sets.</p>
+    </section>
 
-        <h3>BIOS Requirements:</h3>
-        <p>Many systems require specific BIOS files in the system directory. Examples include:</p>
-        <ul>
-            <li>neogeo.zip for Neo Geo games</li>
-            <li>cps2.zip for various Capcom games</li>
-            <li>Various BIOS files for different hardware sets</li>
-        </ul>
-    </div>
-
-    <div class="section">
+    <section id="controllers">
         <h2>Controller Mapping</h2>
         <p>MAME features a complex input system handling button mapping, coin insertion, service buttons, and player controls:</p>
-        
-        <h3>Common Arcade Controls:</h3>
         <table>
-            <tr><th>Function</th><th>Default Key</th><th>Purpose</th></tr>
-            <tr><td>Coin 1-2</td><td>5, 6</td><td>Insert coins/credits</td></tr>
-            <tr><td>Start 1-2</td><td>1, 2</td><td>Player start</td></tr>
-            <tr><td>Service Mode</td><td>F2</td><td>DIP switch config</td></tr>
-            <tr><td>Service</td><td>9</td><td>Service button</td></tr>
-            <tr><td>Tilt</td><td>T</td><td>Tilt switch</td></tr>
-            <tr><td>P1 Controls</td><td>Arrow keys + Z,X,C</td><td>Movement + action layout</td></tr>
+            <thead>
+                <tr><th>Function</th><th>Default Key</th></tr>
+            </thead>
+            <tbody>
+                <tr><td>Coin 1-2</td><td>5, 6</td></tr>
+                <tr><td>Start 1-2</td><td>1, 2</td></tr>
+                <tr><td>Service Mode</td><td>F2</td></tr>
+                <tr><td>Tilt</td><td>T</td></tr>
+                <tr><td>P1 Controls</td><td>Arrow keys + Z,X,C</td></tr>
+            </tbody>
         </table>
-    </div>
+    </section>
 
-    <div class="section">
+    <section id="shaders">
         <h2>Best Shader Recommendations</h2>
-        <p>Arcade games spanned multiple decades and technologies. Choose shaders based on original display:</p>
-        
-        <h3>Early Raster Games (1975-1990):</h3>
+        <p>Choose shaders based on the original display technology of your arcade game:</p>
         <ul>
-            <li><strong>CRT-Geom:</strong> Standard CRT simulation</li>
-            <li><strong>CRT-PI:</strong> Lightweight with scanlines</li>
+            <li><strong>Early Raster Games (1975-1990):</strong> CRT-Geom, CRT-PI for scanlines</li>
+            <li><strong>Late 80s/Early 90s:</strong> CRT-Royale-Aperture, MDAPT for dithering</li>
+            <li><strong>3D Games (Mid-90s+):</strong> FXAA/SMAA for edge smoothing, ScaleFX for upscaling</li>
         </ul>
+    </section>
 
-        <h3>Late 80s/Early 90s:</h3>
-        <ul>
-            <li><strong>CRT-Royale-Aperture:</strong> High-end CRT</li>
-            <li><strong>MDAPT:</strong> Fixes dithering artifacts</li>
-        </ul>
-
-        <h3>3D Games (Mid-90s+):</h3>
-        <ul>
-            <li><strong>FXAA/SMAA:</strong> Edge smoothing</li>
-            <li><strong>ScaleFX:</strong> Upscaling for low-res textures</li>
-        </ul>
-    </div>
-
-    <div class="section">
+    <section id="performance">
         <h2>Performance Optimization</h2>
         <p>MAME's accuracy comes at a significant CPU cost:</p>
-        
-        <h3>System Requirements:</h3>
         <ul>
             <li><strong>z80-based games:</strong> Low CPU requirement</li>
             <li><strong>68k-based games:</strong> Moderate CPU</li>
             <li><strong>3D hardware:</strong> High CPU, GPU accelerated rendering preferred</li>
-            <li><strong>Modern MAME:</strong> Heaviest, requires current hardware</li>
         </ul>
-
-        <h3>Speed Optimization:</h3>
+        <h3>Speed Optimization</h3>
         <ul>
             <li>Frame skipping: 0 or 1 maximum</li>
             <li>Audio latency: 128-256ms</li>
             <li>DRC (Dynamic Recompiler): Enable when available</li>
-            <li>HLE vs LLE: Use HLE for performance when available</li>
+            <li>Use HLE over LLE for performance when accuracy is less critical</li>
         </ul>
-    </div>
+    </section>
 
-    <div class="section">
-        <h2>Known Issues and Workarounds</h2>
-        
-        <h3>ROM Set Mismatch:</h3>
-        <p><strong>Issue:</strong> Games fail to load with "missing files" errors.</p>
-        <p><strong>Workaround:</strong> Ensure ROM version matches MAME core version exactly. Use ROM managers like ClrMamePro to verify sets.</p>
-
-        <h3>CHD Format Nuances:</h3>
-        <p><strong>Issue:</strong> CHD files incorrectly compressed or structured.</p>
-        <p><strong>Workaround:</strong> Use chdman tool from MAME distribution to create CHDs. Store in path matching MAME's expected structure.</p>
-
-        <h3>Input Mapping Complexity:</h3>
-        <p><strong>Issue:</strong> Complex control schemes with multiple players, coin inputs, etc.</p>
-        <p><strong>Workaround:</strong> Map coin buttons to shoulder triggers, service buttons to F-keys. Use core input remapping per-game.</p>
-
-        <h3>Vector Games Performance:</h3>
-        <p><strong>Issue:</strong> Vector games (Asteroids, Battlezone) run slowly at high resolutions.</p>
-        <p><strong>Workaround:</strong> Lower internal resolution, enable "Antialias" for vector beam simulation, use shaders for phosphor glow.</p>
-
-        <div class="warning">
-            <strong>System Selection:</strong> Not all games run well in all MAME cores. Older cores may run some games better but lack compatibility with newer ROM dumps.
-        </div>
-
-        <h3>Save State Support:</h3>
-        <p><strong>Issue:</strong> Some drivers lack save state support, causing crashes.</p>
-        <p><strong>Workaround:</strong> Verify save state support in core info. Use nvram saves for games with modified NVRAM storage.</p>
-    </div>
-</body>
-</html>
+    <section id="troubleshooting">
+        <h2>Known Issues</h2>
+        <h3>ROM Set Mismatch</h3>
+        <p>Games fail to load with "missing files" errors. Ensure ROM version matches MAME core version exactly. Use ROM managers like ClrMamePro to verify sets.</p>
+        <h3>CHD Format Nuances</h3>
+        <p>Use chdman tool from MAME distribution to create CHDs. Store in path matching MAME's expected structure.</p>
+        <h3>Vector Games Performance</h3>
+        <p>Vector games (Asteroids, Battlezone) may run slowly at high resolutions. Lower internal resolution and enable antialiasing for vector beam simulation.</p>
+        <h3>Save State Support</h3>
+        <p>Some drivers lack save state support. Use nvram saves for games with modified NVRAM storage.</p>
+    </section>
+</div>

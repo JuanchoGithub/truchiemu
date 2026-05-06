@@ -8,7 +8,7 @@ title: RetroAchievements Integration - TruchiEmu Documentation
     <h1>RetroAchievements Integration</h1>
     
     <div class="feature-overview">
-        <img src="/docs/media/features/achievements-hero.png" alt="RetroAchievements Overview" class="hero-image">
+        <img src="{{ '/media/features/achievements-hero.png' | relative_url }}" alt="RetroAchievements Overview" class="hero-image">
         <p class="lead">TruchiEmu's deep RetroAchievements integration brings modern achievement hunting to classic retro games. Track your progress, earn badges, and compete with players worldwide while enjoying your favorite emulated titles with full synchronization to the RetroAchievements.org platform.</p>
     </div>
 
@@ -17,7 +17,7 @@ title: RetroAchievements Integration - TruchiEmu Documentation
         <p>The RetroAchievements service in TruchiEmu provides seamless integration with the RetroAchievements.org platform, allowing you to earn achievements in thousands of supported classic games. Our implementation includes real-time achievement tracking, rich presence integration, and automatic save state management when achievements are earned.</p>
         
         <div class="architecture-diagram">
-            <img src="/docs/media/features/achievements-architecture.png" alt="Achievements Architecture">
+            <img src="{{ '/media/features/achievements-architecture.png' | relative_url }}" alt="Achievements Architecture">
             <p class="caption">Achievement detection pipeline from game memory to RetroAchievements.org synchronization</p>
         </div>
 
@@ -54,12 +54,12 @@ title: RetroAchievements Integration - TruchiEmu Documentation
             <li>
                 <strong>Create RetroAchievements Account</strong>
                 <p>Visit <a href="https://retroachievements.org/">RetroAchievements.org</a> and create a free account. Verify your email address to unlock full functionality.</p>
-                <img src="/docs/media/screenshots/ra-account-setup.png" alt="RA Account Creation">
+                <img src="{{ '/media/screenshots/ra-account-setup.png' | relative_url }}" alt="RA Account Creation">
             </li>
             <li>
                 <strong>Configure TruchiEmu Credentials</strong>
                 <p>In TruchiEmu, go to <code>Settings → Achievements → Account</code> and enter your RetroAchievements username and API key. Generate your API key from the RetroAchievements website under Account Settings.</p>
-                <img src="/docs/media/screenshots/ra-credentials.png" alt="RA Credentials Configuration">
+                <img src="{{ '/media/screenshots/ra-credentials.png' | relative_url }}" alt="RA Credentials Configuration">
             </li>
             <li>
                 <strong>Test Connection</strong>
@@ -88,7 +88,7 @@ title: RetroAchievements Integration - TruchiEmu Documentation
             <li>
                 <strong>Automatic Screenshots</strong>
                 <p>Enable "Capture Screenshot on Achievement" to automatically save proof images when earning achievements. Configure the save location and image format in the settings panel.</p>
-                <img src="/docs/media/screenshots/achievement-screenshot.png" alt="Achievement Screenshot Example">
+                <img src="{{ '/media/screenshots/achievement-screenshot.png' | relative_url }}" alt="Achievement Screenshot Example">
             </li>
             <li>
                 <strong>Sound Pack Customization</strong>
@@ -109,7 +109,7 @@ title: RetroAchievements Integration - TruchiEmu Documentation
             <li>
                 <strong>View Achievement List</strong>
                 <p>Press <code>Cmd+A</code> or select <code>View → Achievement List</code> to see all available achievements for the current game. The list shows progress, difficulty, and completion status.</p>
-                <img src="/docs/media/screenshots/achievement-list.png" alt="Achievement List View">
+                <img src="{{ '/media/screenshots/achievement-list.png' | relative_url }}" alt="Achievement List View">
             </li>
             <li>
                 <strong>Track Achievement Progress</strong>
@@ -268,27 +268,27 @@ show_offline_indicator = true     // Show offline status in UI</code></pre>
         
         <div class="related-services">
             <div class="service-card">
-                <h3><a href="/features/save-states/">Save State System</a></h3>
+                <h3><a href="/features/save-states.html">Save State System</a></h3>
                 <p>Learn how save states interact with achievement detection and Hardcore mode restrictions.</p>
             </div>
             
             <div class="service-card">
-                <h3><a href="/features/cheats/">Cheat System</a></h3>
+                <h3><a href="/features/cheats.html">Cheat System</a></h3>
                 <p>Understand how cheat codes are disabled in Hardcore mode to maintain achievement integrity.</p>
             </div>
             
             <div class="service-card">
-                <h3><a href="/features/controllers/">Controller Support</a></h3>
+                <h3><a href="/features/controllers.html">Controller Support</a></h3>
                 <p>Map achievement list and notification controls to controller buttons for console-like experience.</p>
             </div>
             
             <div class="service-card">
-                <h3><a href="/docs/api/achievements-api">Achievements API Reference</a></h3>
+                <h3><a href="#">Achievements API Reference</a></h3>
                 <p>Complete API documentation for RetroAchievements integration and custom achievement development.</p>
             </div>
             
             <div class="service-card">
-                <h3><a href="/community/achievements">Community Achievement Guides</a></h3>
+                <h3><a href="#">Community Achievement Guides</a></h3>
                 <p>Join the community to share achievement hunting strategies and discover tips for difficult achievements.</p>
             </div>
             

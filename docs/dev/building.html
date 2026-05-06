@@ -1,30 +1,76 @@
 ---
 layout: default
-title: Building TruchiEmu
-description: How to build TruchiEmu from source
+title: Building TruchiEmu from Source
+description: How to build TruchiEmu from source code - prerequisites, build steps, and common build issues
 ---
 
-# Building TruchiEmu
+<div class="feature-docs">
+    <h1>Building TruchiEmu from Source</h1>
 
-This page is under construction. Building TruchiEmu from source requires:
+    <div class="feature-overview">
+        <p class="lead">Building TruchiEmu from source allows you to access the latest features, contribute to development, or customize the emulator for your needs.</p>
+    </div>
 
-## Prerequisites
+    <section id="prerequisites">
+        <h2>Prerequisites</h2>
+        <ul>
+            <li><strong>macOS 14.0 (Sonoma)</strong> or later</li>
+            <li><strong>Xcode 15+</strong> with Swift 5.9+ support</li>
+            <li><strong>XcodeGen</strong> — install via Homebrew: <code>brew install xcodegen</code></li>
+            <li><strong>Xcode Command Line Tools</strong> — install via: <code>xcode-select --install</code></li>
+            <li><strong>CMake</strong> — install via: <code>brew install cmake</code></li>
+        </ul>
+    </section>
 
-- macOS 14.0 or later
-- Xcode with Swift 5.9+  
-- XcodeGen (for project generation)
+    <section id="steps">
+        <h2>Build Steps</h2>
+        <ol>
+            <li>
+                <strong>Clone the repository</strong>
+                <pre><code>git clone https://github.com/JuanchoGithub/truchiemu.git
+cd truchiemu</code></pre>
+            </li>
+            <li>
+                <strong>Generate the Xcode project</strong>
+                <p>Edit <code>project.yml</code> if needed, then run:</p>
+                <pre><code>xcodegen generate</code></pre>
+                <p>This creates <code>TruchiEmu.xcodeproj</code> from the project specification.</p>
+            </li>
+            <li>
+                <strong>Open in Xcode</strong>
+                <pre><code>open TruchiEmu.xcodeproj</code></pre>
+            </li>
+            <li>
+                <strong>Build the project</strong>
+                <p>In Xcode: Product > Build (Cmd+B), or from the terminal:</p>
+                <pre><code>xcodebuild -project TruchiEmu.xcodeproj -scheme TruchiEmu -configuration Debug build</code></pre>
+            </li>
+        </ol>
+    </section>
 
-## Build Steps
+    <section id="dependencies">
+        <h2>Dependencies</h2>
+        <p>TruchiEmu relies on the following dependencies:</p>
+        <ul>
+            <li><strong>Libretro cores:</strong> Emulation backends downloaded and managed at runtime</li>
+            <li><strong>SwiftData:</strong> Apple's persistent data framework (bundled with Swift)</li>
+            <li><strong>Metal:</strong> Apple's GPU framework for shader rendering (bundled with macOS)</li>
+        </ul>
+    </section>
 
-1. Clone the repository
-2. Run `xcodegen generate` to create the Xcode project
-3. Open `TruchiEmu.xcodeproj` in Xcode
-4. Build the project
+    <section id="troubleshooting">
+        <h2>Common Build Issues</h2>
 
-## Dependencies
+        <h3>XcodeGen Not Found</h3>
+        <p>Install via Homebrew: <code>brew install xcodegen</code>. If already installed, ensure it's in your PATH.</p>
 
-- Libretro cores
-- SwiftData
-- Metal shaders
+        <h3>Swift Compiler Errors</h3>
+        <p>Ensure you have Xcode 15+ installed and selected: <code>sudo xcode-select -s /Applications/Xcode.app</code>. Verify Swift version with <code>swift --version</code>.</p>
 
-See the main [repository README](https://github.com/JuanchoGithub/truchiemu) for complete instructions.
+        <h3>C++ Standard Errors</h3>
+        <p>This project requires gnu++17 (not the LLVM default). Check that <code>project.yml</code> specifies the correct C++ standard under the target's settings.</p>
+
+        <h3>Missing Bridging Header</h3>
+        <p>If you see ObjC import errors in Swift files, ensure <code>TruchiEmu-Bridging-Header.h</code> is properly configured in the build settings.</p>
+    </section>
+</div>

@@ -1,153 +1,48 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>NES - Nintendo Entertainment System - TruchiEmu Guide</title>
-    <style>
-        body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-            line-height: 1.6;
-            max-width: 1000px;
-            margin: 0 auto;
-            padding: 20px;
-            background: #f5f5f5;
-            color: #333;
-        }
-        .header {
-            background: linear-gradient(135deg, #e70012, #c4000e);
-            color: white;
-            padding: 30px;
-            border-radius: 10px;
-            margin-bottom: 30px;
-            text-align: center;
-        }
-        .system-banner {
-            width: 100%;
-            max-width: 800px;
-            height: 200px;
-            background: #ddd;
-            margin: 0 auto 20px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            border-radius: 8px;
-            font-size: 24px;
-            color: #666;
-        }
-        h1, h2, h3 {
-            color: #e70012;
-        }
-        .section {
-            background: white;
-            padding: 25px;
-            margin-bottom: 20px;
-            border-radius: 8px;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-        }
-        .warning {
-            background: #fff3cd;
-            border-left: 4px solid #ffc107;
-            padding: 15px;
-            margin: 15px 0;
-        }
-        .tip {
-            background: #d4edda;
-            border-left: 4px solid #28a745;
-            padding: 15px;
-            margin: 15px 0;
-        }
-        code {
-            background: #f8f9fa;
-            padding: 2px 6px;
-            border-radius: 3px;
-            font-family: 'Courier New', monospace;
-        }
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            margin: 15px 0;
-        }
-        th, td {
-            border: 1px solid #ddd;
-            padding: 12px;
-            text-align: left;
-        }
-        th {
-            background: #f8f9fa;
-        }
-    </style>
-</head>
-<body>
-    <div class="header">
-        <h1>Nintendo Entertainment System (NES)</h1>
-        <p>The 8-bit console that revolutionized home gaming</p>
+---
+layout: default
+title: NES - Nintendo Entertainment System - TruchiEmu Documentation
+description: Complete guide to NES/Famicom emulation in TruchiEmu - core selection, ROM formats, controller mapping, shader recommendations, and troubleshooting
+---
+
+<div class="feature-docs">
+    <h1>Nintendo Entertainment System (NES)</h1>
+
+    <div class="feature-overview">
+        <p class="lead">The Nintendo Entertainment System, released in 1983 (as Famicom in Japan) and 1985 (as NES in North America), featured a Ricoh 2A03 CPU running at 1.79 MHz (NTSC) or 1.66 MHz (PAL). This 8-bit processor was based on the MOS Technology 6502 architecture and included integrated sound generation capabilities.</p>
     </div>
 
-    <div class="system-banner">
-        [NES System Banner Placeholder]
-    </div>
-
-    <div class="section">
+    <section id="hardware">
         <h2>Hardware Overview</h2>
-        <p>The Nintendo Entertainment System, released in 1983 (as Famicom in Japan) and 1985 (as NES in North America), featured a Ricoh 2A03 CPU running at 1.79 MHz (NTSC) or 1.66 MHz (PAL). This 8-bit processor was based on the MOS Technology 6502 architecture and included integrated sound generation capabilities.</p>
-        
-        <p>The system's Picture Processing Unit (PPU) handled graphics rendering, supporting a resolution of 256×240 pixels with a color palette of 52 colors. The NES could display up to 25 colors simultaneously from its palette, with support for up to 64 sprites on screen at once.</p>
-        
+        <p>The system's Picture Processing Unit (PPU) handled graphics rendering, supporting a resolution of 256x240 pixels with a color palette of 52 colors. The NES could display up to 25 colors simultaneously from its palette, with support for up to 64 sprites on screen at once.</p>
         <p>Memory architecture consisted of 2KB of onboard RAM, with games utilizing additional memory mappers within cartridges to expand capabilities. The audio system featured five channels: two pulse wave channels, one triangle wave channel, one noise channel, and a DPCM sample channel for digital audio playback.</p>
-    </div>
+    </section>
 
-    <div class="section">
+    <section id="cores">
         <h2>Core Selection</h2>
-        <p>TruchiEmu primarily utilizes <strong>nestoopia</strong> as its default NES core, offering excellent compatibility and accuracy. Alternative cores available include:</p>
-        
+        <p>TruchiEmu primarily utilizes <strong>nestopia</strong> as its default NES core, offering excellent compatibility and accuracy. Alternative cores available include:</p>
         <table>
-            <tr>
-                <th>Core</th>
-                <th>Accuracy</th>
-                <th>Performance</th>
-                <th>Best Use Case</th>
-            </tr>
-            <tr>
-                <td><strong>nestopia</strong></td>
-                <td>High</td>
-                <td>Excellent</td>
-                <td>General use, recommended default</td>
-            </tr>
-            <tr>
-                <td>fceumm</td>
-                <td>Medium-High</td>
-                <td>Excellent</td>
-                <td>Lower-end hardware, speedruns</td>
-            </tr>
-            <tr>
-                <td>mesen</td>
-                <td>Very High</td>
-                <td>Good</td>
-                <td>Accuracy-focused emulation, debugging</td>
-            </tr>
-            <tr>
-                <td>quicknes</td>
-                <td>Medium</td>
-                <td>Very High</td>
-                <td>Maximum performance, mobile devices</td>
-            </tr>
+            <thead>
+                <tr><th>Core</th><th>Accuracy</th><th>Performance</th><th>Best Use Case</th></tr>
+            </thead>
+            <tbody>
+                <tr><td><strong>nestopia</strong></td><td>High</td><td>Excellent</td><td>General use, recommended default</td></tr>
+                <tr><td>fceumm</td><td>Medium-High</td><td>Excellent</td><td>Lower-end hardware, speedruns</td></tr>
+                <tr><td>mesen</td><td>Very High</td><td>Good</td><td>Accuracy-focused emulation, debugging</td></tr>
+                <tr><td>quicknes</td><td>Medium</td><td>Very High</td><td>Maximum performance, older hardware</td></tr>
+            </tbody>
         </table>
-    </div>
+    </section>
 
-    <div class="section">
+    <section id="rom-formats">
         <h2>ROM Format Support</h2>
-        <p>The NES supports several cartridge formats, which TruchiEmu handles through proper ROM identification and loading:</p>
-        
-        <h3>Supported Formats:</h3>
+        <h3>Supported Formats</h3>
         <ul>
             <li><strong>.nes</strong> - iNES format (most common)</li>
             <li><strong>.nez</strong> - Compressed NES format</li>
             <li><strong>.unf/.unif</strong> - Universal NES Interchange Format</li>
             <li><strong>.fds</strong> - Famicom Disk System images</li>
         </ul>
-
-        <h3>Mapper Support:</h3>
+        <h3>Mapper Support</h3>
         <p>Mapper compatibility is crucial for NES emulation. TruchiEmu supports over 100 mappers, including:</p>
         <ul>
             <li>Mapper 0 (NROM) - Early titles like Super Mario Bros.</li>
@@ -155,146 +50,61 @@
             <li>Mapper 4 (MMC3) - Super Mario Bros. 3, Mega Man series</li>
             <li>Mapper 7 (AxROM) - Rare early titles</li>
         </ul>
+    </section>
 
-        <div class="warning">
-            <strong>Warning:</strong> Some homebrew and unlicensed games use custom mappers that may not be fully supported. Always verify mapper compatibility with your specific core.
-        </div>
-    </div>
-
-    <div class="section">
+    <section id="controllers">
         <h2>Controller Mapping</h2>
-        <p>The NES featured a simple but iconic controller design. TruchiEmu provides flexible mapping options:</p>
-        
-        <h3>Original Controller Layout:</h3>
         <table>
-            <tr>
-                <th>NES Button</th>
-                <th>Modern Equivalent</th>
-                <th>Default Keyboard</th>
-            </tr>
-            <tr>
-                <td>D-Pad</td>
-                <td>Directional input</td>
-                <td>Arrow keys</td>
-            </tr>
-            <tr>
-                <td>A Button</td>
-                <td>Primary action</td>
-                <td>X key</td>
-            </tr>
-            <tr>
-                <td>B Button</td>
-                <td>Secondary action</td>
-                <td>Z key</td>
-            </tr>
-            <tr>
-                <td>SELECT</td>
-                <td>Menu/selection</td>
-                <td>Right Shift</td>
-            </tr>
-            <tr>
-                <td>START</td>
-                <td>Pause/menu</td>
-                <td>Enter</td>
-            </tr>
+            <thead>
+                <tr><th>NES Button</th><th>Modern Equivalent</th><th>Default Keyboard</th></tr>
+            </thead>
+            <tbody>
+                <tr><td>D-Pad</td><td>Directional input</td><td>Arrow keys</td></tr>
+                <tr><td>A Button</td><td>Primary action</td><td>X key</td></tr>
+                <tr><td>B Button</td><td>Secondary action</td><td>Z key</td></tr>
+                <tr><td>SELECT</td><td>Menu/selection</td><td>Right Shift</td></tr>
+                <tr><td>START</td><td>Pause/menu</td><td>Enter</td></tr>
+            </tbody>
         </table>
+        <p><strong>Tip:</strong> For authentic gameplay, map the NES A/B buttons to the bottom/right face buttons on modern controllers (X/A on Xbox layout, Square/Cross on PlayStation layout).</p>
+    </section>
 
-        <h3>Advanced Controllers:</h3>
-        <ul>
-            <li><strong>NES Zapper:</strong> Light gun support through mouse/touch input</li>
-            <li><strong>Family Keyboard:</strong> Famicom keyboard emulation for specific games</li>
-            <li><strong>Four Score:</strong> Four-player adapter support for multitap games</li>
-        </ul>
-
-        <div class="tip">
-            <strong>Tip:</strong> For authentic gameplay, map the NES A/B buttons to the bottom/right face buttons on modern controllers (X/A on Xbox layout, Square/Cross on PlayStation layout).
-        </div>
-    </div>
-
-    <div class="section">
+    <section id="shaders">
         <h2>Best Shader Recommendations</h2>
-        <p>Enhance your NES experience with appropriate shaders that replicate CRT displays or provide modern clarity:</p>
-        
-        <h3>CRT/Retro Authenticity:</h3>
+        <h3>CRT / Retro Authenticity</h3>
         <ul>
             <li><strong>CRT-Royale:</strong> Advanced CRT simulation with phosphor glow and scanlines</li>
             <li><strong>CRT-Geom:</strong> Geometric CRT simulation with curvature and scanlines</li>
             <li><strong>NTSC-256:</strong> Replicates composite video artifacts and color bleed</li>
         </ul>
-
-        <h3>Modern Enhancements:</h3>
+        <h3>Modern Enhancements</h3>
         <ul>
             <li><strong>ScaleFX:</strong> Smooth scaling with edge preservation</li>
             <li><strong>xBRZ:</strong> High-quality upscaling for pixel art</li>
             <li><strong>HQx:</strong> Classic pixel art smoothing algorithm</li>
         </ul>
+    </section>
 
-        <h3>Specialized Options:</h3>
-        <ul>
-            <li><strong>Pixel AA:</strong> Sub-pixel anti-aliasing for LCD displays</li>
-            <li><strong>NTSC Color:</strong> Accurate color reproduction for NTSC regions</li>
-            <li><strong>Blend:</strong> Dithering pattern blending for transparency effects</li>
-        </ul>
-
-        <div class="tip">
-            <strong>Performance Note:</strong> CRT-Royale and xBRZ are GPU-intensive. Use ScaleFX or HQx for better performance on integrated graphics.
-        </div>
-    </div>
-
-    <div class="section">
+    <section id="performance">
         <h2>Performance Optimization</h2>
-        <p>NES emulation is generally lightweight, but optimization ensures smooth gameplay across all devices:</p>
-        
-        <h3>Recommended Settings:</h3>
+        <p>NES emulation is generally lightweight. Recommended settings:</p>
         <ul>
-            <li><strong>Frameskip:</strong> 0 (auto) for most systems, 1 for very low-end hardware</li>
-            <li><strong>Audio Buffer:</strong> 64ms for low latency, 128ms for stability</li>
+            <li><strong>Frameskip:</strong> 0 (auto) for most systems</li>
+            <li><strong>Audio Buffer:</strong> 64ms for low latency</li>
             <li><strong>Video Sync:</strong> Enabled for tear-free display</li>
-            <li><strong>Threaded Rendering:</strong> Enabled for multi-core systems</li>
         </ul>
+        <p><strong>Platform Notes:</strong> All cores run at full speed on Apple Silicon. Intel integrated graphics users should use lighter shaders like ScaleFX or HQ2x.</p>
+    </section>
 
-        <h3>Core-Specific Tweaks:</h3>
-        <ul>
-            <li><strong>nestopia:</strong> Enable "Overclock CPU" for reduced slowdown in intense scenes</li>
-            <li><strong>fceumm:</strong> Use "Old PPU" mode for maximum compatibility</li>
-            <li><strong>mesen:</strong> Disable "HD Packs" if unused for better performance</li>
-            <li><strong>quicknes:</strong> Enable "Low Quality Audio" for minimal CPU usage</li>
-        </ul>
-
-        <h3>Platform-Specific Notes:</h3>
-        <ul>
-            <li><strong>Apple Silicon:</strong> All cores run at full speed without compromise</li>
-            <li><strong>Intel Integrated Graphics:</strong> Use lighter shaders like ScaleFX or HQ2x</li>
-            <li><strong>Older Macs:</strong> fceumm or quicknes recommended for pre-2015 hardware</li>
-        </ul>
-    </div>
-
-    <div class="section">
-        <h2>Known Issues and Workarounds</h2>
-        
-        <h3>Audio Popping/Crackling:</h3>
-        <p><strong>Issue:</strong> Occasional audio distortion, especially during scene transitions.</p>
-        <p><strong>Workaround:</strong> Increase audio buffer size to 96ms or 128ms in settings. Disable "Reduce Audio Latency" if enabled.</p>
-
-        <h3>Sprite Flickering:</h3>
-        <p><strong>Issue:</strong> Sprites appearing and disappearing rapidly in games with many on-screen objects.</p>
-        <p><strong>Workaround:</strong> This is actually accurate NES behavior (sprite limit is 8 per scanline). Enable "Remove Sprite Limit" in core options if desired, though this deviates from authentic hardware behavior.</p>
-
-        <h3>Save State Compatibility:</h3>
-        <p><strong>Issue:</strong> Save states created with one core may not work with another.</p>
-        <p><strong>Workaround:</strong> Use the same core for loading that was used for saving. Use in-game saves for cross-core compatibility.</p>
-
-        <h3>Zapper/Light Gun Games:</h3>
-        <p><strong>Issue:</strong> Duck Hunt and other Zapper games may not register hits correctly.</p>
-        <p><strong>Workaround:</strong> Ensure mouse cursor is visible and within the emulation window. Some cores require specific settings for Zapper emulation.</p>
-
-        <h3>Famicom Disk System:</h3>
-        <p><strong>Issue:</strong> FDS games may show disk errors or fail to load.</p>
-        <p><strong>Workaround:</strong> Ensure you have the correct BIOS file (disksys.rom) placed in the system directory. Some games require specific loading sequences.</p>
-
-        <div class="tip">
-            <strong>General Tip:</strong> Regularly update your cores through TruchiEmu's core updater to benefit from the latest compatibility fixes and performance improvements.
-        </div>
-    </div>
-</body>
-</html>
+    <section id="troubleshooting">
+        <h2>Known Issues</h2>
+        <h3>Audio Popping</h3>
+        <p>Occasional audio distortion during scene transitions. Increase audio buffer to 96-128ms to resolve.</p>
+        <h3>Sprite Flickering</h3>
+        <p>This is accurate NES behavior (8 sprite per scanline limit). Enable "Remove Sprite Limit" in core options if desired.</p>
+        <h3>Save State Compatibility</h3>
+        <p>Save states created with one core may not work with another. Use the same core for loading that was used for saving.</p>
+        <h3>Famicom Disk System</h3>
+        <p>Ensure you have the correct BIOS file (disksys.rom) placed in the system directory.</p>
+    </section>
+</div>

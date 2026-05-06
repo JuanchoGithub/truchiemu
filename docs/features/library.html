@@ -8,7 +8,7 @@ title: Library Management - TruchiEmu Documentation
     <h1>Library Management</h1>
     
     <div class="feature-overview">
-        <img src="/docs/media/features/library-hero.png" alt="Library Management Overview" class="hero-image">
+        <img src="{{ '/media/features/library-hero.png' | relative_url }}" alt="Library Management Overview" class="hero-image">
         <p class="lead">TruchiEmu's intelligent library management system automatically organizes your game collection with metadata scraping, artwork downloading, and advanced filtering capabilities. Transform your ROM collection into a beautiful, searchable library with rich game information and box art.</p>
     </div>
 
@@ -17,7 +17,7 @@ title: Library Management - TruchiEmu Documentation
         <p>The Library Management service provides comprehensive organization and discovery tools for your game collection. Using machine learning-based metadata matching and integration with multiple game databases, TruchiEmu automatically identifies games, downloads high-quality artwork, and creates an immersive browsing experience that rivals modern game launchers.</p>
         
         <div class="architecture-diagram">
-            <img src="/docs/media/features/library-architecture.png" alt="Library Architecture">
+            <img src="{{ '/media/features/library-architecture.png' | relative_url }}" alt="Library Architecture">
             <p class="caption">Library data flow from ROM scanning to metadata enrichment and UI display</p>
         </div>
 
@@ -51,7 +51,7 @@ title: Library Management - TruchiEmu Documentation
             <li>
                 <strong>Add ROM Directories</strong>
                 <p>Navigate to <code>Settings → Library → ROM Directories</code> and click "Add Directory". Select folders containing your game ROMs. TruchiEmu supports recursive scanning of subdirectories.</p>
-                <img src="/docs/media/screenshots/library-directories.png" alt="ROM Directories Configuration">
+                <img src="{{ '/media/screenshots/library-directories.png' | relative_url }}" alt="ROM Directories Configuration">
             </li>
             <li>
                 <strong>Initial Scan Configuration</strong>
@@ -60,7 +60,7 @@ title: Library Management - TruchiEmu Documentation
             <li>
                 <strong>Enable Metadata Sources</strong>
                 <p>In <code>Settings → Library → Metadata</code>, select your preferred metadata providers. LaunchBox is recommended for accuracy, with IGDB as fallback for newer titles.</p>
-                <img src="/docs/media/screenshots/metadata-sources.png" alt="Metadata Sources Configuration">
+                <img src="{{ '/media/screenshots/metadata-sources.png' | relative_url }}" alt="Metadata Sources Configuration">
             </li>
             <li>
                 <strong>Start Library Scan</strong>
@@ -77,7 +77,7 @@ title: Library Management - TruchiEmu Documentation
             <li>
                 <strong>Create Smart Collections</strong>
                 <p>Navigate to <code>Library → Smart Collections → New Collection</code>. Define rules based on system, genre, release year, playtime, or achievement completion status.</p>
-                <img src="/docs/media/screenshots/smart-collections.png" alt="Smart Collection Configuration">
+                <img src="{{ '/media/screenshots/smart-collections.png' | relative_url }}" alt="Smart Collection Configuration">
             </li>
             <li>
                 <strong>Configure Artwork Preferences</strong>
@@ -94,7 +94,7 @@ title: Library Management - TruchiEmu Documentation
             <li>
                 <strong>Create Custom Metadata Fields</strong>
                 <p>Add custom tags and metadata fields for personal organization. In <code>Settings → Library → Custom Fields</a>, define fields like "Condition", "Purchase Date", or "Rating".</p>
-                <img src="/docs/media/screenshots/custom-fields.png" alt="Custom Metadata Fields">
+                <img src="{{ '/media/screenshots/custom-fields.png' | relative_url }}" alt="Custom Metadata Fields">
             </li>
         </ol>
 
@@ -115,7 +115,7 @@ title: Library Management - TruchiEmu Documentation
             <li>
                 <strong>Duplicate Management</strong>
                 <p>Run <code>Tools → Find Duplicates</code> to identify duplicate games. Choose to hide, merge, or delete duplicates with intelligent suggestions based on region and version quality.</p>
-                <img src="/docs/media/screenshots/duplicate-finder.png" alt="Duplicate Finder Results">
+                <img src="{{ '/media/screenshots/duplicate-finder.png' | relative_url }}" alt="Duplicate Finder Results">
             </li>
         </ol>
     </section>
@@ -348,27 +348,27 @@ smart_collections [
         
         <div class="related-services">
             <div class="service-card">
-                <h3><a href="/features/save-states/">Save State System</a></h3>
+                <h3><a href="/features/save-states.html">Save State System</a></h3>
                 <p>Learn how save states integrate with library metadata to track game progress automatically.</p>
             </div>
             
             <div class="service-card">
-                <h3><a href="/features/achievements/">RetroAchievements</a></h3>
+                <h3><a href="/features/achievements.html">RetroAchievements</a></h3>
                 <p>Achievement progress is automatically tracked and displayed in your game library views.</p>
             </div>
             
             <div class="service-card">
-                <h3><a href="/docs/api/library-api">Library API Reference</a></h3>
+                <h3><a href="#">Library API Reference</a></h3>
                 <p>Complete API documentation for programmatically accessing and managing your game library.</p>
             </div>
             
             <div class="service-card">
-                <h3><a href="/community/databases">Custom Database Guide</a></h3>
+                <h3><a href="#">Custom Database Guide</a></h3>
                 <p>Create custom metadata databases for rare or homebrew games not in commercial databases.</p>
             </div>
             
             <div class="service-card">
-                <h3><a href="/tools/importer">ROM Import Utilities</a></h3>
+                <h3><a href="#">ROM Import Utilities</a></h3>
                 <p>Use command-line tools for bulk ROM importing and library management automation.</p>
             </div>
         </div>
