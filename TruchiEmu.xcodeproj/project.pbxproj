@@ -15,17 +15,14 @@
 		024AA9F0C40AE97D1A17D252 /* lynx@132w.png in Resources */ = {isa = PBXBuildFile; fileRef = 1C15E93AD0BC5E8C99A37FA9 /* lynx@132w.png */; };
 		02648E51BB763E3EAD39203D /* ATOMISWAVE.png in Resources */ = {isa = PBXBuildFile; fileRef = 1EE18489B15F3771442DAF5F /* ATOMISWAVE.png */; };
 		0264BA41980DD15079BBA731 /* N64Runner.swift in Sources */ = {isa = PBXBuildFile; fileRef = 264FB90DD6CD26D513E6C58C /* N64Runner.swift */; };
-		0265937F6F84CA860FFF5F05 /* ControllerServiceRegressionTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 412F12A7BB2072B4748502FA /* ControllerServiceRegressionTests.swift */; };
 		02DF787B73D553215029DA5B /* GridCardZoomableFullScreenView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 67513DC1F7CC071810CCC098 /* GridCardZoomableFullScreenView.swift */; };
 		0448CE19B61670132722282B /* DisplaySettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2E230D511858D1AC3B20502D /* DisplaySettingsView.swift */; };
-		04868E4FAAE563B3BDF32AB1 /* ShaderManagerRegressionTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 10E5DB3815AC2744949AE9A7 /* ShaderManagerRegressionTests.swift */; };
 		04961661863DFA1705CF8482 /* md@132w.png in Resources */ = {isa = PBXBuildFile; fileRef = D364FBBF3C523EEE767B3D65 /* md@132w.png */; };
 		0534376041F4D70FCA2D9893 /* UZEBOX.png in Resources */ = {isa = PBXBuildFile; fileRef = 55C2586F126544666FE181BC /* UZEBOX.png */; };
 		05703F353B80FB8175ACF6E8 /* BezelSelectorSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 47A009E54347F61469205751 /* BezelSelectorSheet.swift */; };
 		057E612106E85C4790AD81B3 /* SUPERVISION-alt.png in Resources */ = {isa = PBXBuildFile; fileRef = 9193295DAA1AD6AEF81EA1ED /* SUPERVISION-alt.png */; };
 		061763CC2FC485C981DA6AF2 /* SFC.png in Resources */ = {isa = PBXBuildFile; fileRef = EF4EE9662C25333E518E3670 /* SFC.png */; };
 		0731BAFCEC49AC5E62BA3474 /* Passthrough.metal in Sources */ = {isa = PBXBuildFile; fileRef = 2181ADA6355FD20750F4E018 /* Passthrough.metal */; };
-		092C0C8A632D7DB6778B4692 /* FullGameLaunchWorkflowTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = E66721A41A1A0CA79061A91A /* FullGameLaunchWorkflowTests.swift */; };
 		093A0D5881AA5FCDDD7AEDFF /* DesignSystem.swift in Sources */ = {isa = PBXBuildFile; fileRef = ABE60205F14183C120DDC8AA /* DesignSystem.swift */; };
 		096CA59BF84AD898558DC0BA /* sgb@132w.png in Resources */ = {isa = PBXBuildFile; fileRef = 2231DAB08AA4E579AE706E39 /* sgb@132w.png */; };
 		09E4EEA593CB6502548B5B5B /* 8bGameBoyColor.metal in Sources */ = {isa = PBXBuildFile; fileRef = 2FF46494B22F41F5D1CD519B /* 8bGameBoyColor.metal */; };
@@ -94,9 +91,7 @@
 		27F9277272450FDAE20B690D /* GameOverlayToolbar.swift in Sources */ = {isa = PBXBuildFile; fileRef = A9258394F027EC5364CFCE39 /* GameOverlayToolbar.swift */; };
 		2811FBD9D258AEF2FBCF4933 /* SFX.png in Resources */ = {isa = PBXBuildFile; fileRef = 46F6462CAACE85FBE4E9A152 /* SFX.png */; };
 		28369A531757A82F734AA1E0 /* ResourceCacheInterceptor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9769C4055F2EEF4740C52157 /* ResourceCacheInterceptor.swift */; };
-		2880742282219111D0E0289F /* RetroAchievementsRegressionTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 320DE15E1EA404B1AAE56186 /* RetroAchievementsRegressionTests.swift */; };
 		289701A17ACB8C8BF034D959 /* CheatComponents.swift in Sources */ = {isa = PBXBuildFile; fileRef = 277669A6BC99D1D9EB64F0F1 /* CheatComponents.swift */; };
-		28CD8B1B6E1A208409EC9DDD /* TestDataFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 76DB335DF96BBB0E41D12348 /* TestDataFactory.swift */; };
 		28E34086CA98978C08104975 /* ARCADE.png in Resources */ = {isa = PBXBuildFile; fileRef = EBA408AB90EB95504B2DA54F /* ARCADE.png */; };
 		29210C88A814413EAAA45AA1 /* RetroAchievementsService.swift in Sources */ = {isa = PBXBuildFile; fileRef = F21660AD9FFF6D840095815C /* RetroAchievementsService.swift */; };
 		2965348A08F9398C535D9D9F /* VIDEOS.png in Resources */ = {isa = PBXBuildFile; fileRef = 44DA75A39BC660DA2C3C1257 /* VIDEOS.png */; };
@@ -144,7 +139,6 @@
 		45B66EECA434F3285FEC8AED /* Shader.swift in Sources */ = {isa = PBXBuildFile; fileRef = B6CE8DDABCE1ABFA58C62123 /* Shader.swift */; };
 		48214494B7986684DD7B290F /* CPLUS4.png in Resources */ = {isa = PBXBuildFile; fileRef = F5369A161FCED90D05A60B6A /* CPLUS4.png */; };
 		487D415E3A60D766E5C55314 /* DetailBoxArtComponents.swift in Sources */ = {isa = PBXBuildFile; fileRef = A75E11DE818FADB9C12751AD /* DetailBoxArtComponents.swift */; };
-		48B83A8E184027064CBF1143 /* SaveStateWorkflowRegressionTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4F6A5F5FEFEC372EBE7C3BB1 /* SaveStateWorkflowRegressionTests.swift */; };
 		491C9513DBAA5D3CCB72EF03 /* ody@132w.png in Resources */ = {isa = PBXBuildFile; fileRef = 1DDAC49B62FA6270AEA1A1A0 /* ody@132w.png */; };
 		4961AAFA6178F84713B2D7FC /* CPET.png in Resources */ = {isa = PBXBuildFile; fileRef = ACE37A7C1452E07BFBF3FE1F /* CPET.png */; };
 		497FF7B2E2F1E1B1A3B6141A /* ConfettiView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6FE5AC794E01A00A6401CA78 /* ConfettiView.swift */; };
@@ -217,7 +211,6 @@
 		6FDA4EA2B500E084E4CC26F9 /* CoreOverrideBridge.mm in Sources */ = {isa = PBXBuildFile; fileRef = 98F77865FDC40E9A9F11706F /* CoreOverrideBridge.mm */; };
 		7087D0F7B70E84B687E4E97A /* Achievement.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4EE1FAA370EEA90A7E3D3CC5 /* Achievement.swift */; };
 		70F4DB83A82880E7F2A28D97 /* atari7800@132w.png in Resources */ = {isa = PBXBuildFile; fileRef = 15A5E5BF6348143202BAA8F9 /* atari7800@132w.png */; };
-		71682ECAEFD64769A9890655 /* GameLauncherRegressionTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = DDD3D6FBAD9DBDFEA74CC420 /* GameLauncherRegressionTests.swift */; };
 		7326A987ECCC8D533CBE6E7F /* OnboardingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6788E1B34FDC8AE5B0094B07 /* OnboardingView.swift */; };
 		73696D7B956826FDEFCE569F /* OPENBOR.png in Resources */ = {isa = PBXBuildFile; fileRef = ADE34CAD80144C808D1FC81D /* OPENBOR.png */; };
 		739E1E9110A94DEA08756FA9 /* MetadataSyncCoordinator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6DD7CC96F0ABCF2CCDC217E4 /* MetadataSyncCoordinator.swift */; };
@@ -226,7 +219,6 @@
 		7434085E6FF5A204AA202F19 /* SetupWizardState.swift in Sources */ = {isa = PBXBuildFile; fileRef = 537B577BF88C9F9050CD1FCF /* SetupWizardState.swift */; };
 		749F189B703826A160DAAD4E /* GenrePickerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC76D35E66386E6C5D242961 /* GenrePickerView.swift */; };
 		74F1CF08EB0401B13785252B /* mame_unified.json in Resources */ = {isa = PBXBuildFile; fileRef = A673278170E78C1235D11B09 /* mame_unified.json */; };
-		7501A00762641797B80835AE /* ROMIdentifierServiceRegressionTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = FA2739267D590F647C4EEFCE /* ROMIdentifierServiceRegressionTests.swift */; };
 		75B4B48217E691148224321B /* GameCardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C0D8487DF2A9BB2EAB70BAB /* GameCardView.swift */; };
 		75DB8119CB923BCF15B5EA51 /* BezelDownloadLogView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F645ED4DE6CD88AC15BF09B1 /* BezelDownloadLogView.swift */; };
 		760CEE6FA5D1E10FD242F2B4 /* wsc@132w.png in Resources */ = {isa = PBXBuildFile; fileRef = 99BF3D56E25B2CDB100C0D10 /* wsc@132w.png */; };
@@ -284,7 +276,6 @@
 		94E0DA548FB08FF30BABB657 /* msumd@132w.png in Resources */ = {isa = PBXBuildFile; fileRef = 1025434DD2AD0DB5E24C9527 /* msumd@132w.png */; };
 		94F18E1F0634E807A991FED7 /* cpc-alt.png in Resources */ = {isa = PBXBuildFile; fileRef = CFA7EE5F0E680257ECC8A1E4 /* cpc-alt.png */; };
 		95DF320E0D3AA286DA9CB885 /* CPS3.png in Resources */ = {isa = PBXBuildFile; fileRef = 2C1283F9FDAB03FC63950043 /* CPS3.png */; };
-		96CACCF529CD7E48976E0A28 /* SaveStateManagerRegressionTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 68188676D3103D0DC491D4AE /* SaveStateManagerRegressionTests.swift */; };
 		970C82707C0A9DEE473877A3 /* SavedShaderPreset.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8B2AEF2FFA96556BE1A55529 /* SavedShaderPreset.swift */; };
 		97532B79D1C03B1230BDB004 /* PersistenceMigrationFlag.swift in Sources */ = {isa = PBXBuildFile; fileRef = FD9A1772372E4EED4D48A027 /* PersistenceMigrationFlag.swift */; };
 		97CCC29A6F7E7CD81BB53C1A /* VB.png in Resources */ = {isa = PBXBuildFile; fileRef = 8A73903CC89F4E5F785FF99D /* VB.png */; };
@@ -373,18 +364,15 @@
 		CDC8133D2C03E637999E2155 /* CheatSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = FD4DF5D2F13617BDA825F6F3 /* CheatSettingsView.swift */; };
 		CE0CB7B49E978CFA4F591675 /* PC98.png in Resources */ = {isa = PBXBuildFile; fileRef = 7A121397290660B21B099AD4 /* PC98.png */; };
 		CEDEE26F9187602FC4A1BEEA /* MAMEMissingROMsAlert.swift in Sources */ = {isa = PBXBuildFile; fileRef = C15804655F28F2866DFA7C49 /* MAMEMissingROMsAlert.swift */; };
-		CEF0032BA0263F87F2502F28 /* CoreManagerRegressionTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CA8F02146B4CAEEE06E6785 /* CoreManagerRegressionTests.swift */; };
 		CF2022F4F944C17F5741AE01 /* CAVESTORY.png in Resources */ = {isa = PBXBuildFile; fileRef = B046DA0D84C6F163569AF09D /* CAVESTORY.png */; };
 		D0439304429F0CDCB80B2E16 /* SystemDatabaseWrapper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3F13225A0D533F3EF41CEB80 /* SystemDatabaseWrapper.swift */; };
 		D043AC1102CEA3E496547366 /* CoreSection.swift in Sources */ = {isa = PBXBuildFile; fileRef = 96E7B988FEC51FAECBC548FD /* CoreSection.swift */; };
 		D0D14BB46406932F82A06897 /* MetadataRow.swift in Sources */ = {isa = PBXBuildFile; fileRef = 76A50CEAE48F1F659CE03FFC /* MetadataRow.swift */; };
 		D196F27B2F8EF147261CE358 /* Nintendo_-_Super_Nintendo_Entertainment_System.json in Resources */ = {isa = PBXBuildFile; fileRef = B2B270A2A2E79100CB5BD105 /* Nintendo_-_Super_Nintendo_Entertainment_System.json */; };
 		D1987AB001C52B7301D88FF8 /* LaunchBoxGameMetadata.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6217E554433F50B53DE94A02 /* LaunchBoxGameMetadata.swift */; };
-		D271F4CB3B76708A96AB189C /* MockURLProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = 22329F774534FA1F9889F338 /* MockURLProtocol.swift */; };
 		D3BDBD850AC3E23AE43A266B /* ROMIdentifier.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9367BEFF9A7137645C911103 /* ROMIdentifier.swift */; };
 		D3BF624E6D643A9C9E0976FF /* ImageCache.swift in Sources */ = {isa = PBXBuildFile; fileRef = C8861B6D319A016F2FDA15DD /* ImageCache.swift */; };
 		D4A5C3EA0A548DBEF9EDE4AE /* GenreSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B5E3E5DB793CCE1800B8C7BE /* GenreSettingsView.swift */; };
-		D4AF3AFFB8D03E359735A811 /* ROMLibraryRegressionTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2311668EBAD3E32500D10312 /* ROMLibraryRegressionTests.swift */; };
 		D66B93781AA1F09200B679BE /* MSX.png in Resources */ = {isa = PBXBuildFile; fileRef = 7593A3081245E3AFB23AD3B9 /* MSX.png */; };
 		D7F0A5F6F85DF830F94E10BC /* SUPERVISION.png in Resources */ = {isa = PBXBuildFile; fileRef = 5FD91CADCD44C206B8BF2C38 /* SUPERVISION.png */; };
 		D804D2B87362CD5BD3DDCD85 /* GameInfoWindow.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9DB287DD57B0134E27B1041F /* GameInfoWindow.swift */; };
@@ -404,6 +392,7 @@
 		DCC432C8DC5EA9D19CA13B14 /* PICO.png in Resources */ = {isa = PBXBuildFile; fileRef = 895E4313F6A502B39E0267B1 /* PICO.png */; };
 		DD0DDF8856A8056172004CA0 /* Sega - Dreamcast.dat in Resources */ = {isa = PBXBuildFile; fileRef = A93547318848E19981032FE8 /* Sega - Dreamcast.dat */; };
 		DDB9825C2FAB889500F7A4A1 /* saturn_bios.bin in Resources */ = {isa = PBXBuildFile; fileRef = DDB9825B2FAB889500F7A4A1 /* saturn_bios.bin */; };
+		DDB982602FABD4E700F7A4A1 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = DDB9825F2FABD4E700F7A4A1 /* Assets.xcassets */; };
 		DEF1DDA46E59570FAE57D442 /* vdp@132w.png in Resources */ = {isa = PBXBuildFile; fileRef = D755FBFFC3BD76093815B71D /* vdp@132w.png */; };
 		DFF2C66041E018B1D7319306 /* CHAILOVE.png in Resources */ = {isa = PBXBuildFile; fileRef = 579FF46D161EC2DD3CE4C105 /* CHAILOVE.png */; };
 		E0BD0AA661359907DC9D17FF /* N64.png in Resources */ = {isa = PBXBuildFile; fileRef = 5B369817A06C01C6361538D0 /* N64.png */; };
@@ -472,7 +461,6 @@
 		0AAB5D5A95A7C55141064B08 /* AudioRingBuffer.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = AudioRingBuffer.hpp; sourceTree = "<group>"; };
 		0B6E64CAC32E5F8FE49FE85C /* VIDEOPAC.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = VIDEOPAC.png; sourceTree = "<group>"; };
 		0C64F8151FBFA058A68B1FE8 /* pico@132w.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "pico@132w.png"; sourceTree = "<group>"; };
-		0CA8F02146B4CAEEE06E6785 /* CoreManagerRegressionTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CoreManagerRegressionTests.swift; sourceTree = "<group>"; };
 		0CDA1D3810E1E4D29E9DF02A /* VIDEOPAC-alt.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "VIDEOPAC-alt.png"; sourceTree = "<group>"; };
 		0DF9540BCE224E456A3FA60E /* ControllerService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ControllerService.swift; sourceTree = "<group>"; };
 		0E6B12634B8DE1E6D75BAD86 /* SwiftDataModels.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SwiftDataModels.swift; sourceTree = "<group>"; };
@@ -481,7 +469,6 @@
 		1004B788B680D89D08A2C4B6 /* ffplay@132w.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "ffplay@132w.png"; sourceTree = "<group>"; };
 		1025434DD2AD0DB5E24C9527 /* msumd@132w.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "msumd@132w.png"; sourceTree = "<group>"; };
 		10DDFFD32FD0252CCB85E6E7 /* Sega_-_Mega_Drive_-_Genesis.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = "Sega_-_Mega_Drive_-_Genesis.json"; sourceTree = "<group>"; };
-		10E5DB3815AC2744949AE9A7 /* ShaderManagerRegressionTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShaderManagerRegressionTests.swift; sourceTree = "<group>"; };
 		112A0F3619B6C52925987F75 /* ProgettoSnapsService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProgettoSnapsService.swift; sourceTree = "<group>"; };
 		112A893BD9353D23D809A9EF /* CoreDownloadSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CoreDownloadSheet.swift; sourceTree = "<group>"; };
 		120784B10F8B6A3BCD6618F9 /* SaveDirectoryBridge.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SaveDirectoryBridge.h; sourceTree = "<group>"; };
@@ -516,11 +503,9 @@
 		215743F22EAFAC281FD18BD6 /* wolf@132w.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "wolf@132w.png"; sourceTree = "<group>"; };
 		2181ADA6355FD20750F4E018 /* Passthrough.metal */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.metal; path = Passthrough.metal; sourceTree = "<group>"; };
 		2231DAB08AA4E579AE706E39 /* sgb@132w.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "sgb@132w.png"; sourceTree = "<group>"; };
-		22329F774534FA1F9889F338 /* MockURLProtocol.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MockURLProtocol.swift; sourceTree = "<group>"; };
 		229C521334BCA5CB8DE046E8 /* SwiftDataContainer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SwiftDataContainer.swift; sourceTree = "<group>"; };
 		22D1B16C6AA1228BE917DC86 /* NESRunner.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NESRunner.swift; sourceTree = "<group>"; };
 		22FA8E8E21C89757A8B286C1 /* SettingsRepository.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsRepository.swift; sourceTree = "<group>"; };
-		2311668EBAD3E32500D10312 /* ROMLibraryRegressionTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ROMLibraryRegressionTests.swift; sourceTree = "<group>"; };
 		24020D18A3CFC76C3A13F218 /* TIC.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = TIC.png; sourceTree = "<group>"; };
 		24667B16B733A9A54FBF645A /* COLSGM.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = COLSGM.png; sourceTree = "<group>"; };
 		24F34C2C75CBC27CAFF82647 /* NAOMI.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = NAOMI.png; sourceTree = "<group>"; };
@@ -551,7 +536,6 @@
 		30CC526A551953B4E9BB08C9 /* LoggerService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoggerService.swift; sourceTree = "<group>"; };
 		31018212011E14042F08F694 /* ngp@132w.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "ngp@132w.png"; sourceTree = "<group>"; };
 		312DD29D6B77A5CC9B13F942 /* Header.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Header.swift; sourceTree = "<group>"; };
-		320DE15E1EA404B1AAE56186 /* RetroAchievementsRegressionTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RetroAchievementsRegressionTests.swift; sourceTree = "<group>"; };
 		321219DD370DD3E4709FFD21 /* Atari - 2600.dat */ = {isa = PBXFileReference; lastKnownFileType = text; path = "Atari - 2600.dat"; sourceTree = "<group>"; };
 		3230EB435232A6B5AC4FBC1E /* ControllerSettingsViewGroup.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ControllerSettingsViewGroup.swift; sourceTree = "<group>"; };
 		335FB3D776E0D41A27C64844 /* RetroAchievementsSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RetroAchievementsSettingsView.swift; sourceTree = "<group>"; };
@@ -579,7 +563,6 @@
 		407BD2D2FC535B983EBC0EB7 /* BezelsSection.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BezelsSection.swift; sourceTree = "<group>"; };
 		40DA7086C981032D0B98C415 /* NGP.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = NGP.png; sourceTree = "<group>"; };
 		40FDC856DB192502B6962553 /* BoxArtPickerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BoxArtPickerView.swift; sourceTree = "<group>"; };
-		412F12A7BB2072B4748502FA /* ControllerServiceRegressionTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ControllerServiceRegressionTests.swift; sourceTree = "<group>"; };
 		41FF1637DD9235B253AB5FC0 /* neogeo@132w.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "neogeo@132w.png"; sourceTree = "<group>"; };
 		42295729EC633AC1ABE32DBF /* 32X@132w.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "32X@132w.png"; sourceTree = "<group>"; };
 		4379C651DF62956D8B2BA04A /* MAMERomEntry.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MAMERomEntry.swift; sourceTree = "<group>"; };
@@ -610,7 +593,6 @@
 		4EE1FAA370EEA90A7E3D3CC5 /* Achievement.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Achievement.swift; sourceTree = "<group>"; };
 		4F4FFF99693B5067FAC8EBAB /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
 		4F53077604BB39D00D189CA1 /* MD.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = MD.png; sourceTree = "<group>"; };
-		4F6A5F5FEFEC372EBE7C3BB1 /* SaveStateWorkflowRegressionTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SaveStateWorkflowRegressionTests.swift; sourceTree = "<group>"; };
 		4FC481ECF89B1A27B4C2917F /* Nintendo - Nintendo 64.dat */ = {isa = PBXFileReference; lastKnownFileType = text; path = "Nintendo - Nintendo 64.dat"; sourceTree = "<group>"; };
 		5049F3EC03369C598CE5BBB2 /* atari800@132w.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "atari800@132w.png"; sourceTree = "<group>"; };
 		50F0C395AC7AC42E3144C256 /* CoreSettingsViewGroup.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CoreSettingsViewGroup.swift; sourceTree = "<group>"; };
@@ -660,7 +642,6 @@
 		67513DC1F7CC071810CCC098 /* GridCardZoomableFullScreenView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GridCardZoomableFullScreenView.swift; sourceTree = "<group>"; };
 		6788E1B34FDC8AE5B0094B07 /* OnboardingView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OnboardingView.swift; sourceTree = "<group>"; };
 		67D8E99941A946620FF8D608 /* LibretroBridgeSwift.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LibretroBridgeSwift.swift; sourceTree = "<group>"; };
-		68188676D3103D0DC491D4AE /* SaveStateManagerRegressionTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SaveStateManagerRegressionTests.swift; sourceTree = "<group>"; };
 		68FCDB2F2D63BB67CFF418B5 /* Nintendo - Game Boy Color.dat */ = {isa = PBXFileReference; lastKnownFileType = text; path = "Nintendo - Game Boy Color.dat"; sourceTree = "<group>"; };
 		6945192EA6E5F63E47868C66 /* Sony - PlayStation 2.dat */ = {isa = PBXFileReference; lastKnownFileType = text; path = "Sony - PlayStation 2.dat"; sourceTree = "<group>"; };
 		6983EA32B13EE9D1F93A6893 /* GameDetailView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GameDetailView.swift; sourceTree = "<group>"; };
@@ -685,7 +666,6 @@
 		7593A3081245E3AFB23AD3B9 /* MSX.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = MSX.png; sourceTree = "<group>"; };
 		764D6A71F6401BE53D60A3FE /* PCE.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = PCE.png; sourceTree = "<group>"; };
 		76A50CEAE48F1F659CE03FFC /* MetadataRow.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MetadataRow.swift; sourceTree = "<group>"; };
-		76DB335DF96BBB0E41D12348 /* TestDataFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TestDataFactory.swift; sourceTree = "<group>"; };
 		773ACBC3221E440B0363F02D /* cps3@132w.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "cps3@132w.png"; sourceTree = "<group>"; };
 		78131EAC3F8B4141AAFC799F /* LOWRESNX.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = LOWRESNX.png; sourceTree = "<group>"; };
 		794825E4A27DACE1EB61F442 /* easyrpg@132w.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "easyrpg@132w.png"; sourceTree = "<group>"; };
@@ -855,8 +835,8 @@
 		DD476D63A6BB92961004D98F /* GitHubAPIModels.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GitHubAPIModels.swift; sourceTree = "<group>"; };
 		DDA440915145AB1C4D850872 /* LogManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LogManager.swift; sourceTree = "<group>"; };
 		DDB9825B2FAB889500F7A4A1 /* saturn_bios.bin */ = {isa = PBXFileReference; lastKnownFileType = archive.macbinary; path = saturn_bios.bin; sourceTree = "<group>"; };
+		DDB9825F2FABD4E700F7A4A1 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		DDCACEF2DA4CC526B3582217 /* ps@132w.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "ps@132w.png"; sourceTree = "<group>"; };
-		DDD3D6FBAD9DBDFEA74CC420 /* GameLauncherRegressionTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GameLauncherRegressionTests.swift; sourceTree = "<group>"; };
 		DDFFDFCC5969E427805C3248 /* arduboy@132w.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "arduboy@132w.png"; sourceTree = "<group>"; };
 		DE2600DCA812DC4AA5557013 /* Sega - SG-1000.dat */ = {isa = PBXFileReference; lastKnownFileType = text; path = "Sega - SG-1000.dat"; sourceTree = "<group>"; };
 		DF2042329F720EF6B53E084E /* SaveDirectoriesSection.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SaveDirectoriesSection.swift; sourceTree = "<group>"; };
@@ -873,7 +853,6 @@
 		E51DBD3DD1DC68C0749E4F9F /* CheatParser.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CheatParser.swift; sourceTree = "<group>"; };
 		E63A6A6C48F198B32AD2A84F /* ROMRepository.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ROMRepository.swift; sourceTree = "<group>"; };
 		E65528ABEAB97C567F9B73A1 /* FilterChipView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FilterChipView.swift; sourceTree = "<group>"; };
-		E66721A41A1A0CA79061A91A /* FullGameLaunchWorkflowTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FullGameLaunchWorkflowTests.swift; sourceTree = "<group>"; };
 		EA7858DE5D0204111DF21E0B /* TYRQUAKE.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = TYRQUAKE.png; sourceTree = "<group>"; };
 		EA89EEC9F4C8F40F3BDC9E2D /* CoreOption.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CoreOption.swift; sourceTree = "<group>"; };
 		EB775F5E7D4CB3DFCACA89A5 /* GameDragState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GameDragState.swift; sourceTree = "<group>"; };
@@ -906,7 +885,6 @@
 		F85405AF2804CF2BF04FAD6D /* CheatManagerViews.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CheatManagerViews.swift; sourceTree = "<group>"; };
 		F9E6973D2682AC9B98A71D5A /* TruchiEmu-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "TruchiEmu-Bridging-Header.h"; sourceTree = "<group>"; };
 		FA0A29E765851D2607353290 /* AchievementBadgeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AchievementBadgeView.swift; sourceTree = "<group>"; };
-		FA2739267D590F647C4EEFCE /* ROMIdentifierServiceRegressionTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ROMIdentifierServiceRegressionTests.swift; sourceTree = "<group>"; };
 		FA897462D8DF8DDA8C9792CB /* gw@132w.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "gw@132w.png"; sourceTree = "<group>"; };
 		FCAB65F47C4E26FC16B426CF /* MDMSU.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = MDMSU.png; sourceTree = "<group>"; };
 		FD4DF5D2F13617BDA825F6F3 /* CheatSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CheatSettingsView.swift; sourceTree = "<group>"; };
@@ -1195,14 +1173,6 @@
 			path = Detail;
 			sourceTree = "<group>";
 		};
-		3C228FD85E0ECE9B3F87B7E0 /* Settings */ = {
-			isa = PBXGroup;
-			children = (
-				412F12A7BB2072B4748502FA /* ControllerServiceRegressionTests.swift */,
-			);
-			path = Settings;
-			sourceTree = "<group>";
-		};
 		3EA63703B94C8E15DB3416FA /* Models */ = {
 			isa = PBXGroup;
 			children = (
@@ -1382,7 +1352,6 @@
 			children = (
 				CBE1FBAFA74363E848F3F948 /* scripts */,
 				489FE131C30B6A8C5A523FE0 /* TruchiEmu */,
-				AE8B6DB265D0283E1BC22D2F /* TruchiEmuTests */,
 				DFFF9FFBB78EA64551D01B64 /* Products */,
 			);
 			sourceTree = "<group>";
@@ -1419,14 +1388,6 @@
 			path = ThumbnailManifests;
 			sourceTree = "<group>";
 		};
-		596EFEBB7ED19FE4B0D31141 /* Library */ = {
-			isa = PBXGroup;
-			children = (
-				2311668EBAD3E32500D10312 /* ROMLibraryRegressionTests.swift */,
-			);
-			path = Library;
-			sourceTree = "<group>";
-		};
 		5BE55A1DE39FF8B3E1936E9F /* Library */ = {
 			isa = PBXGroup;
 			children = (
@@ -1447,6 +1408,7 @@
 		6030CD98AFCCAA9A068217A1 /* Resources */ = {
 			isa = PBXGroup;
 			children = (
+				DDB9825F2FABD4E700F7A4A1 /* Assets.xcassets */,
 				993EF4980E6D59693590061E /* Config */,
 				35AF3E1D0EA8DD7BDA67C06A /* Data */,
 				0CBD37D03C917E1671224137 /* EmulatorIcons */,
@@ -1537,25 +1499,6 @@
 				01A09E410677DCE1916971A7 /* Views */,
 			);
 			path = Settings;
-			sourceTree = "<group>";
-		};
-		8F988AB99D42247533F56000 /* Features */ = {
-			isa = PBXGroup;
-			children = (
-				596EFEBB7ED19FE4B0D31141 /* Library */,
-				CFDAA139DB4CB1440FCF9347 /* Player */,
-				3C228FD85E0ECE9B3F87B7E0 /* Settings */,
-			);
-			path = Features;
-			sourceTree = "<group>";
-		};
-		910E0E3470B9EDEFEAA86A60 /* TestHelpers */ = {
-			isa = PBXGroup;
-			children = (
-				22329F774534FA1F9889F338 /* MockURLProtocol.swift */,
-				76DB335DF96BBB0E41D12348 /* TestDataFactory.swift */,
-			);
-			path = TestHelpers;
 			sourceTree = "<group>";
 		};
 		928F72DDE10F60698F881839 /* Library */ = {
@@ -1728,17 +1671,6 @@
 			path = Engine;
 			sourceTree = "<group>";
 		};
-		AE8B6DB265D0283E1BC22D2F /* TruchiEmuTests */ = {
-			isa = PBXGroup;
-			children = (
-				8F988AB99D42247533F56000 /* Features */,
-				FCA8BD1194AD9959E560437E /* Integration */,
-				F4ABDA3CBA5566020F5DE650 /* Services */,
-				910E0E3470B9EDEFEAA86A60 /* TestHelpers */,
-			);
-			path = TruchiEmuTests;
-			sourceTree = "<group>";
-		};
 		AECB9CA72CA854445BE4CB7E /* Core */ = {
 			isa = PBXGroup;
 			children = (
@@ -1864,14 +1796,6 @@
 			path = Models;
 			sourceTree = "<group>";
 		};
-		CFDAA139DB4CB1440FCF9347 /* Player */ = {
-			isa = PBXGroup;
-			children = (
-				DDD3D6FBAD9DBDFEA74CC420 /* GameLauncherRegressionTests.swift */,
-			);
-			path = Player;
-			sourceTree = "<group>";
-		};
 		D312A527B5D5559AC4A8B225 /* Shared */ = {
 			isa = PBXGroup;
 			children = (
@@ -1959,27 +1883,6 @@
 				7FE2570126C33B65ED8FBC84 /* SettingsView.swift */,
 			);
 			path = Settings;
-			sourceTree = "<group>";
-		};
-		F4ABDA3CBA5566020F5DE650 /* Services */ = {
-			isa = PBXGroup;
-			children = (
-				0CA8F02146B4CAEEE06E6785 /* CoreManagerRegressionTests.swift */,
-				320DE15E1EA404B1AAE56186 /* RetroAchievementsRegressionTests.swift */,
-				FA2739267D590F647C4EEFCE /* ROMIdentifierServiceRegressionTests.swift */,
-				68188676D3103D0DC491D4AE /* SaveStateManagerRegressionTests.swift */,
-				10E5DB3815AC2744949AE9A7 /* ShaderManagerRegressionTests.swift */,
-			);
-			path = Services;
-			sourceTree = "<group>";
-		};
-		FCA8BD1194AD9959E560437E /* Integration */ = {
-			isa = PBXGroup;
-			children = (
-				E66721A41A1A0CA79061A91A /* FullGameLaunchWorkflowTests.swift */,
-				4F6A5F5FEFEC372EBE7C3BB1 /* SaveStateWorkflowRegressionTests.swift */,
-			);
-			path = Integration;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -2106,6 +2009,7 @@
 				00B6060ADE54C2D0E1CF4ABF /* FBNEO.png in Resources */,
 				344C3B2FC92CD9C2453BBF37 /* FC.png in Resources */,
 				F48355FB81AA8B6DFAB815CB /* FDS.png in Resources */,
+				DDB982602FABD4E700F7A4A1 /* Assets.xcassets in Resources */,
 				3506553C6450AF207476A3D9 /* FLASHBACK.png in Resources */,
 				AE3C8C27D0E5677524695ADF /* GB.png in Resources */,
 				F6B1CD58B333E79E40B72069 /* GBA.png in Resources */,
@@ -2300,18 +2204,6 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				0265937F6F84CA860FFF5F05 /* ControllerServiceRegressionTests.swift in Sources */,
-				CEF0032BA0263F87F2502F28 /* CoreManagerRegressionTests.swift in Sources */,
-				092C0C8A632D7DB6778B4692 /* FullGameLaunchWorkflowTests.swift in Sources */,
-				71682ECAEFD64769A9890655 /* GameLauncherRegressionTests.swift in Sources */,
-				D271F4CB3B76708A96AB189C /* MockURLProtocol.swift in Sources */,
-				7501A00762641797B80835AE /* ROMIdentifierServiceRegressionTests.swift in Sources */,
-				D4AF3AFFB8D03E359735A811 /* ROMLibraryRegressionTests.swift in Sources */,
-				2880742282219111D0E0289F /* RetroAchievementsRegressionTests.swift in Sources */,
-				96CACCF529CD7E48976E0A28 /* SaveStateManagerRegressionTests.swift in Sources */,
-				48B83A8E184027064CBF1143 /* SaveStateWorkflowRegressionTests.swift in Sources */,
-				04868E4FAAE563B3BDF32AB1 /* ShaderManagerRegressionTests.swift in Sources */,
-				28CD8B1B6E1A208409EC9DDD /* TestDataFactory.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
