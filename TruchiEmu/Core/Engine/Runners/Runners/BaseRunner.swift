@@ -232,8 +232,9 @@ class EmulatorRunner: ObservableObject, @unchecked Sendable {
         case "snes":     runner = SNESRunner()
         case "n64":      runner = N64Runner()
         case "dos":      runner = DOSRunner()
-        case "scummvm":  runner = ScummVMRunner()
-        default:         runner = EmulatorRunner()
+case "scummvm": runner = ScummVMRunner()
+        case "saturn": runner = SaturnRunner()
+        default: runner = EmulatorRunner()
         }
         runner.systemID = systemID ?? "default"
         return runner

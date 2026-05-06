@@ -13,17 +13,17 @@ schemes:
         TruchiEmuTests: [test]
     test:
       targets:
-      - TruchiEmuTests
+        - TruchiEmuTests
 
 targets:
   TruchiEmu:
     type: application
     platform: macOS
     deploymentTarget: "14.0"
-    
+
     frameworks:
-    - SwiftData
-    
+      - SwiftData
+
     info:
       path: TruchiEmu/Resources/Info.plist
       properties:
@@ -38,19 +38,19 @@ targets:
         NSSupportsAutomaticGraphicsSwitching: true
         NSAppTransportSecurity:
           NSAllowsArbitraryLoads: true
-        
-        
+
+
         NSDownloadsFolderUsageDescription: "TruchiEmu needs access to Downloads to load ROMs and save states."
         NSDocumentsFolderUsageDescription: "TruchiEmu needs access to Documents to store emulator saves and configuration."
     entitlements:
       path: TruchiEmu/Resources/TruchiEmu.entitlements
-    
-    settings:
-      base:
-        PRODUCT_NAME: TruchiEmu
-        PRODUCT_BUNDLE_IDENTIFIER: com.TruchiEmu.app
-        SWIFT_OBJC_BRIDGING_HEADER: TruchiEmu/Core/Engine/TruchiEmu-Bridging-Header.h
-        CLANG_ENABLE_OBJC_ARC: YES
+
+settings:
+  base:
+    PRODUCT_NAME: TruchiEmu
+    PRODUCT_BUNDLE_IDENTIFIER: com.TruchiEmu.app
+    SWIFT_OBJC_BRIDGING_HEADER: TruchiEmu/Core/Engine/TruchiEmu-Bridging-Header.h
+CLANG_ENABLE_OBJC_ARC: YES
         GCC_C_LANGUAGE_STANDARD: gnu17
         CLANG_CXX_LANGUAGE_STANDARD: gnu++17
         CLANG_CXX_LIBRARY: libc++
@@ -61,67 +61,61 @@ targets:
         ENABLE_HARDENED_RUNTIME: NO
         SWIFT_VERSION: "5.9"
         OTHER_LDFLAGS: "-framework Metal -framework MetalKit -framework GameController -framework AVFoundation -framework WebKit -framework OpenGL -framework SwiftData"
-    
+
     sources:
-    - path: TruchiEmu/App
-      excludes:
-      - "*.DS_Store"
-    - path: TruchiEmu/Core/Models
-      type: group
-    - path: TruchiEmu/Services
-    - path: TruchiEmu/Core/Engine
-      type: group
-    - path: TruchiEmu/Core/InputCapture
-      type: group
-    - path: TruchiEmu/Core/Shaders
-      excludes:
-      - "slang/**"
-      - "internal/**"
-      - "all_shaders.metal"
-      buildPhase: sources
-    - path: TruchiEmu/Views
-    - path: TruchiEmu/Shared
-    - path: TruchiEmu/Features
-    - path: TruchiEmu/Resources/Config
-      buildPhase: resources
-    - path: TruchiEmu/Resources/Data
-      buildPhase: resources
-    - path: TruchiEmu/Resources/EmulatorIcons
-      buildPhase: resources
-    - path: TruchiEmu/Resources/ThumbnailManifests
-      buildPhase: resources
-- path: TruchiEmu/Resources/retroarch
-    buildPhase: resources
-  - path: TruchiEmu/Resources/System/mpr-17933.bin
-    buildPhase: resources
-  - path: TruchiEmu/Resources/System/sega_101.bin
-    buildPhase: resources
-  - path: TruchiEmu/Resources/System/saturn_bios.bin
-    buildPhase: resources
-  - path: TruchiEmu/Resources/System/PPSSPP_assets.zip
-    buildPhase: resources
-  - path: scripts/mame_lookup/mame_rom_data.json
-    buildPhase: resources
-    
+      - path: TruchiEmu/App
+        excludes:
+          - "*.DS_Store"
+      - path: TruchiEmu/Core/Models
+        type: group
+      - path: TruchiEmu/Services
+      - path: TruchiEmu/Core/Engine
+        type: group
+      - path: TruchiEmu/Core/InputCapture
+        type: group
+      - path: TruchiEmu/Core/Shaders
+        excludes:
+          - "slang/**"
+          - "internal/**"
+          - "all_shaders.metal"
+        buildPhase: sources
+      - path: TruchiEmu/Views
+      - path: TruchiEmu/Shared
+      - path: TruchiEmu/Features
+      - path: TruchiEmu/Resources/Config
+        buildPhase: resources
+      - path: TruchiEmu/Resources/Data
+        buildPhase: resources
+      - path: TruchiEmu/Resources/EmulatorIcons
+        buildPhase: resources
+      - path: TruchiEmu/Resources/ThumbnailManifests
+        buildPhase: resources
+      - path: TruchiEmu/Resources/retroarch
+        buildPhase: resources
+      - path: TruchiEmu/Resources/System
+        buildPhase: resources
+      - path: scripts/mame_lookup/mame_rom_data.json
+        buildPhase: resources
+
     preBuildScripts: []
-    
+
   TruchiEmuTests:
     type: bundle.unit-test
     platform: macOS
     deploymentTarget: "14.0"
-    
+
     frameworks:
-    - SwiftData
-    
+      - SwiftData
+
     settings:
       base:
         PRODUCT_NAME: TruchiEmuTests
         PRODUCT_BUNDLE_IDENTIFIER: com.TruchiEmu.tests
         SWIFT_VERSION: "5.9"
         GENERATE_INFOPLIST_FILE: YES
-    
+
     sources:
-    - path: TruchiEmuTests
-    
+      - path: TruchiEmuTests
+
     dependencies:
-    - target: TruchiEmu
+      - target: TruchiEmu

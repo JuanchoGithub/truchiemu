@@ -539,35 +539,40 @@ static func titleFromDatGame(name: String, description: String) -> String {
 
         var candidates = exact
         if candidates.isEmpty {
-            LoggerService.debug(category: "ROMIdentifier", "IdentifyByName \(rom.name): PASS 4 — substring/fuzzy matching")
+            LoggerService.debug(category: "ROMIdentifier", "IdentifyByName \(rom.name): PASS 4 — dice-only fuzzy matching")
             var pass4Candidates:[(info: GameInfo, score: Double)] = []
             
-            // Gather the query and all its aggressively normalized/roman numeral variants
             let aggressiveQuery = Self.aggressivelyNormalizedTitle(stem)
             var queryVariants = Set([queryBase, aggressiveQuery])
             queryVariants.formUnion(Self.romanNumeralVariants(of: queryBase))
             queryVariants.formUnion(Self.romanNumeralVariants(of: aggressiveQuery))
             
-            // Filter out short queries and pre-tokenize them into sets of words
             let validQueries = queryVariants.filter { $0.count >= 3 }
             let queryTokensList = validQueries.map { q -> Set<String> in
-                // FIX: Ensure the query (and any generated Roman Numerals) are completely lowercased before tokenizing
                 let sanitized = q.lowercased().replacingOccurrences(of: "'", with: "").components(separatedBy: CharacterSet.alphanumerics.inverted).joined(separator: " ")
                 return Set(sanitized.components(separatedBy: .whitespaces).filter { !$0.isEmpty })
             }
+            
+            let queryNumericTokens = queryTokensList.flatMap { tokens -> [String] in
+                tokens.filter { token in
+                    if let n = Int(token) { return n > 0 }
+                    let romanPattern = "^[IVXLCDM]+$"
+                    if let regex = try? NSRegularExpression(pattern: "^" + romanPattern + "$", options: []), regex.numberOfMatches(in: token, options: [], range: NSRange(token.startIndex..., in: token)) > 0 { return true }
+                    return false
+                }
+            }
+            let queryNumericSet = Set(queryNumericTokens)
             
             for info in index.allEntries {
                 let datBase = Self.normalizedComparableTitle(info.name).lowercased()
                 guard datBase.count >= 3 else { continue }
                 
-                // Keep the existing protection against "Sonic" matching "Sonic 2"
                 if validQueries.contains(where: { Self.isProblematicNumberSuffixPartialMatch(query: $0.lowercased(), candidate: datBase) }) {
                     continue
                 }
                 
                 var bestScore: Double = 0.0
                 
-// 1) Token Overlap Matching (Highly resilient to subtitles and out-of-order words)
                 let sanitizedC = datBase.replacingOccurrences(of: "'", with: "").components(separatedBy: CharacterSet.alphanumerics.inverted).joined(separator: " ")
                 let cTokens = Set(sanitizedC.components(separatedBy: .whitespaces).filter { !$0.isEmpty })
                 
@@ -577,74 +582,40 @@ static func titleFromDatGame(name: String, description: String) -> String {
                         let intersection = qTokens.intersection(cTokens)
                         if intersection.isEmpty { continue }
                         
-                        let candidateMatchRatio = Double(intersection.count) / Double(cTokens.count)
-                        
-                        // Use Sørensen–Dice coefficient for balanced length weighting
-                        var score = (2.0 * Double(intersection.count)) / Double(qTokens.count + cTokens.count)
-                        
-                        // Subset Bonus: If the database title's words are completely contained within the query
-                        if candidateMatchRatio == 1.0 {
-                            if cTokens.count >= 2 {
-                                score += 0.3 // Strong bonus for multi-word exact subsets (handles Base Game + Subtitle)
-                            } else {
-                                score += 0.1 // Minor bonus for single-word exact subsets
-                            }
+                        let cNumericTokens = cTokens.filter { token in
+                            if let n = Int(token) { return n > 0 }
+                            let romanPattern = "^[IVXLCDM]+$"
+                            if let regex = try? NSRegularExpression(pattern: "^" + romanPattern + "$", options: []), regex.numberOfMatches(in: token, options: [], range: NSRange(token.startIndex..., in: token)) > 0 { return true }
+                            return false
+                        }
+                        let cNumericSet = Set(cNumericTokens)
+                        if !queryNumericSet.isEmpty && !cNumericSet.isEmpty && queryNumericSet != cNumericSet {
+                            continue
                         }
                         
-                        score = min(1.0, score) // Cap at 1.0
+                        let score = (2.0 * Double(intersection.count)) / Double(qTokens.count + cTokens.count)
                         if score > bestScore { bestScore = score }
                     }
                 }
                 
-                // 1.5) Space-Agnostic Exact Match (Catches "Open Quest" vs "OpenQuest")
-                for q in validQueries {
-                    let qNoSpaces = q.lowercased().replacingOccurrences(of: " ", with: "")
-                    let cNoSpaces = datBase.replacingOccurrences(of: " ", with: "")
-                    if qNoSpaces == cNoSpaces && qNoSpaces.count >= 4 {
-                        bestScore = 1.0
-                        break
-                    }
-                }
-                
-                // 2) Word-Bounded Substring Fallback (Prevents "ace quest" from triggering inside "space quest")
-                for q in validQueries {
-                    let qLower = q.lowercased()
-                    if datBase.contains(qLower) || qLower.contains(datBase) {
-                        let isWordBounded = datBase.range(of: "\\b" + NSRegularExpression.escapedPattern(for: qLower) + "\\b", options:[.regularExpression, .caseInsensitive]) != nil
-                        let reverseWordBounded = qLower.range(of: "\\b" + NSRegularExpression.escapedPattern(for: datBase) + "\\b", options:[.regularExpression, .caseInsensitive]) != nil
-                        
-                        if isWordBounded || reverseWordBounded {
-                            let minLen = Double(min(qLower.count, datBase.count))
-                            let maxLen = Double(max(qLower.count, datBase.count))
-                            let lengthRatio = maxLen > 0 ? (minLen / maxLen) : 0
-                            
-                            // Base score of 0.2, up to 0.95 for a near-identical string
-                            var substringScore = 0.2 + (0.75 * lengthRatio)
-                            
-                            // Prefix Bonus: Base games often act as literal prefixes to their subtitled versions
-                            if qLower.hasPrefix(datBase + " ") || datBase.hasPrefix(qLower + " ") || 
-                               qLower.hasPrefix(datBase + ":") || datBase.hasPrefix(qLower + ":") {
-                                substringScore += 0.35
-                            } else if qLower.hasPrefix(datBase) || datBase.hasPrefix(qLower) {
-                                substringScore += 0.25
-                            }
-                            
-                            substringScore = min(1.0, substringScore) // Cap at 1.0
-                            if substringScore > bestScore { bestScore = substringScore }
+                if bestScore < 1.0 {
+                    for q in validQueries {
+                        let qNoSpaces = q.lowercased().replacingOccurrences(of: " ", with: "")
+                        let cNoSpaces = datBase.replacingOccurrences(of: " ", with: "")
+                        if qNoSpaces == cNoSpaces && qNoSpaces.count >= 4 {
+                            bestScore = 1.0
+                            break
                         }
                     }
                 }
                 
-                // Threshold: Needs at least a 65% overlap score to be considered a viable match
-                if bestScore >= 0.65 {
+                if bestScore >= 0.60 {
                     pass4Candidates.append((info: info, score: bestScore))
                 }
             }
             
             if !pass4Candidates.isEmpty {
                 let maxScore = pass4Candidates.map { $0.score }.max() ?? 0.0
-                // Keep only matches within 5% of the top score. 
-                // This prevents the subsequent region tie-breaker from favoring a low-quality fuzzy match just because it has a (USA) tag.
                 let topCandidates = pass4Candidates.filter { maxScore - $0.score <= 0.05 }
                 candidates = topCandidates.map { $0.info }
                 LoggerService.debug(category: "ROMIdentifier", "IdentifyByName \(rom.name): PASS 4 found \(pass4Candidates.count) fuzzy match(es), sending top \(candidates.count) (score ~\(String(format: "%.2f", maxScore))) to region tie-breaker.")

@@ -1,18 +1,14 @@
 #!/usr/bin/env python3
 """
-ROM Matching Algorithm Tester
+ROM Matching Algorithm Tester - Optimized Version
 
-Tests multiple string matching algorithms against the ROM database to find
-the best approach for identifying games by name.
+Tests multiple string matching algorithms against the ROM database.
 
 Usage:
     python3 rom_matching_tester.py [--systems genesis,nes,snes] [--output results.csv]
 
-This script:
-1. Loads ROMs from the TruchiEmu SQLite database
-2. Parses DAT files for ground truth (CRC -> game title)
-3. Implements multiple matching algorithms
-4. Compares results and outputs detailed analysis
+    # Run threshold sweep analysis:
+    python3 rom_matching_tester.py --threshold-sweep [--systems genesis,nes,snes]
 """
 
 import argparse
@@ -22,134 +18,94 @@ import re
 import sqlite3
 import sys
 from collections import defaultdict
-from difflib import SequenceMatcher
-from pathlib import Path
 
 # Database and DAT paths
 DB_PATH = os.path.expanduser("~/Library/Application Support/TruchiEmu/TruchiEmu.sqlite")
 DAT_DIR = os.path.expanduser("~/Library/Application Support/TruchiEmu/Dats")
 REPO_DAT_DIR = "/Users/jayjay/gitrepos/truchiemu/TruchiEmu/Resources/Data/LibretroDats/LibretroDats"
 
-# Systems to test
 SYSTEMS_WITH_DAT = {
     "genesis": "Sega - Mega Drive - Genesis.dat",
     "nes": "Nintendo - Nintendo Entertainment System.dat",
     "snes": "Nintendo - Super Nintendo Entertainment System.dat",
+    "nds": "Nintendo - Nintendo DS.dat",
+    "sms": "Sega - Master System - Mark III.dat",
+    "scummvm": "ScummVM.dat",
+    "mame": "MAME.dat",
 }
+
+THRESHOLD_SWEEP_VALUES = [0.50, 0.55, 0.60, 0.65, 0.70, 0.75, 0.80, 0.85, 0.90]
 
 
 # =============================================================================
-# ALGORITHM IMPLEMENTATIONS
+# STRING NORMALIZATION
 # =============================================================================
 
 def strip_parentheses(s):
-    """Strip parenthetical content from a title (matching Swift implementation)."""
-    result = s
-    result = re.sub(r'\s*\([^)]*\)\s*', ' ', result)
+    """Strip parenthetical content."""
+    result = re.sub(r'\s*\([^)]*\)\s*', ' ', s)
     result = re.sub(r'\s*\[[^\]]*\]\s*', ' ', result)
-    result = ' '.join(result.split()).lower().strip()
-    return result
+    return ' '.join(result.split()).lower().strip()
 
 
 def aggressively_normalized_title(s):
-    """Aggressive normalization - strip all brackets, lowercase, replace & with 'and'."""
-    result = s
-    result = re.sub(r'\s*\([^)]*\)\s*', ' ', result)
-    result = re.sub(r'\s*\[[^\]]*\]\s*', ' ', result)
+    """Aggressive normalization."""
+    result = re.sub(r'\s*\([^)]*\)\s*', ' ', s)
+    result = re.sub(r'\s*\[[^\]]*\]\s*', ' ', s)
     result = re.sub(r'\{[^}]*\}', '', result)
-    result = result.lower()
-    result = result.replace("'", "")
-    result = result.replace("&", "and")
+    result = result.lower().replace("'", "").replace("&", "and")
     result = re.sub(r'[^a-z0-9\s]', ' ', result)
-    result = ' '.join(result.split()).strip()
-    return result
+    return ' '.join(result.split()).strip()
 
 
 def normalized_comparable_title(s):
-    """Simple normalization - strip parentheses and lowercase."""
+    """Simple normalization."""
     return strip_parentheses(s).lower()
 
 
-def roman_numeral_variants(normalized):
-    """Generate variants with roman numeral <-> number conversions."""
-    variants = set()
-    arabic_to_roman = {1: "I", 2: "II", 3: "III", 4: "IV", 5: "V", 6: "VI", 7: "VII", 8: "VIII", 9: "IX", 10: "X"}
-    arabic_to_text = {1: "one", 2: "two", 3: "three", 4: "four", 5: "five", 6: "six", 7: "seven", 8: "eight", 9: "nine", 10: "ten"}
-    roman_to_arabic = {r.lower(): a for a, r in arabic_to_roman.items()}
-    text_to_arabic = {t: a for a, t in arabic_to_text.items()}
-    text_to_arabic.update({t.capitalize(): a for a, t in arabic_to_text.items()})
+def tokenize(s):
+    """Tokenize a string into words."""
+    s = s.lower().replace("'", "")
+    return set(t for t in re.split(r'[^a-z0-9]+', s) if t)
 
-    # Number -> Roman
-    for a, r in arabic_to_roman.items():
-        pattern = r'(?<![a-zA-Z])\b' + str(a) + r'\b(?![a-zA-Z0-9])'
-        new_s = re.sub(pattern, r, normalized, flags=re.IGNORECASE)
-        if new_s != normalized:
-            variants.add(new_s)
 
-    # Number -> Text
-    for a, t in arabic_to_text.items():
-        pattern = r'(?<![a-zA-Z])\b' + str(a) + r'\b(?![a-zA-Z0-9])'
-        new_s = re.sub(pattern, t, normalized, flags=re.IGNORECASE)
-        if new_s != normalized:
-            variants.add(new_s)
+ROMAN_NUMERALS = {'i', 'ii', 'iii', 'iv', 'v', 'vi', 'vii', 'viii', 'ix', 'x',
+                   'I', 'II', 'III', 'IV', 'V', 'VI', 'VII', 'VIII', 'IX', 'X'}
 
-    # Roman -> Number
-    for r, a in roman_to_arabic.items():
-        esc = re.escape(r)
-        if len(r) == 1:
-            pattern = r'(?<![a-zA-Z])' + esc + r'(?![a-zA-Z0-9\'])'
-        else:
-            pattern = r'(?<![a-zA-Z])' + esc + r'(?![a-zA-Z0-9])'
-        new_s = re.sub(pattern, str(a), normalized, flags=re.IGNORECASE)
-        if new_s != normalized:
-            variants.add(new_s)
+def is_roman_numeral(token):
+    """Check if token is a roman numeral."""
+    return token.lower() in ROMAN_NUMERALS
 
-    # Roman -> Text
-    for r, a in roman_to_arabic.items():
-        if a in arabic_to_text:
-            esc = re.escape(r)
-            pattern = r'(?<![a-zA-Z])' + esc + r'(?![a-zA-Z0-9])'
-            new_s = re.sub(pattern, arabic_to_text[a], normalized, flags=re.IGNORECASE)
-            if new_s != normalized:
-                variants.add(new_s)
 
-    # Text -> Roman
-    for t, a in text_to_arabic.items():
-        if a in arabic_to_roman:
-            esc = re.escape(t)
-            pattern = r'(?<![a-zA-Z])' + esc + r'(?![a-zA-Z0-9])'
-            new_s = re.sub(pattern, arabic_to_roman[a], normalized, flags=re.IGNORECASE)
-            if new_s != normalized:
-                variants.add(new_s)
+def is_numeric_token(token):
+    """Check if token is a numeric token (arabic or roman numeral)."""
+    return token.isdigit() or is_roman_numeral(token)
 
-    # Remove common suffixes like " 1", " i"
-    t = normalized.strip()
-    for pat in [r' 1$', r' i$', r' one$']:
-        new_s = re.sub(pat, '', t, flags=re.IGNORECASE).strip()
-        if new_s != t and len(new_s) >= 2:
-            variants.add(new_s)
 
-    return list(variants)
+def extract_numeric_tokens(tokens):
+    """Extract only numeric tokens (arabic numbers and roman numerals)."""
+    return frozenset(t for t in tokens if is_numeric_token(t))
 
 
 def strip_common_suffixes(token):
-    """Strip common English suffixes from a token for better matching."""
-    suffixes = ['s', 'es', 'ed', 'ing', 'er', 'est', 'ly']
-    for suffix in suffixes:
+    """Strip common English suffixes, but NOT roman numerals.
+
+    This allows 'Aliens' -> 'Alien' (stripping plural 's')
+    but prevents 'III' from being stripped and causing
+    'Dragon Quest III' to match 'Dragon Quest I & II'
+    """
+    # Don't strip roman numerals - they're game numbers, not word suffixes
+    if is_roman_numeral(token):
+        return token
+
+    for suffix in ['s', 'es', 'ed', 'ing', 'er', 'est', 'ly']:
         if token.endswith(suffix) and len(token) > len(suffix) + 1:
             return token[:-len(suffix)]
     return token
 
 
-def tokenize(s):
-    """Tokenize a string into a set of words."""
-    s = s.lower().replace("'", "")
-    tokens = re.split(r'[^a-z0-9]+', s)
-    return set(t for t in tokens if t)
-
-
 def dice_coefficient(set1, set2):
-    """Sørensen-Dice coefficient between two sets."""
+    """Sørensen-Dice coefficient."""
     if not set1 or not set2:
         return 0.0
     intersection = len(set1 & set2)
@@ -157,50 +113,44 @@ def dice_coefficient(set1, set2):
 
 
 def levenshtein_distance(s1, s2):
-    """Compute Levenshtein edit distance between two strings."""
+    """Levenshtein edit distance."""
     if len(s1) < len(s2):
         return levenshtein_distance(s2, s1)
     if len(s2) == 0:
         return len(s1)
 
-    previous_row = range(len(s2) + 1)
+    prev = list(range(len(s2) + 1))
     for i, c1 in enumerate(s1):
-        current_row = [i + 1]
+        curr = [i + 1]
         for j, c2 in enumerate(s2):
-            insertions = previous_row[j + 1] + 1
-            deletions = current_row[j] + 1
-            substitutions = previous_row[j] + (c1 != c2)
-            current_row.append(min(insertions, deletions, substitutions))
-        previous_row = current_row
-    return previous_row[-1]
+            curr.append(min(prev[j + 1] + 1, curr[j] + 1, prev[j] + (c1 != c2)))
+        prev = curr
+    return prev[-1]
 
 
 def jaro_winkler_similarity(s1, s2):
-    """Jaro-Winkler similarity (0-1, higher is better)."""
+    """Jaro-Winkler similarity (0-1)."""
     if s1 == s2:
         return 1.0
-
-    len1, len2 = len(s1), len(s2)
-    if len1 == 0 or len2 == 0:
+    if not s1 or not s2:
         return 0.0
 
-    match_distance = max(len1, len2) // 2 - 1
-    if match_distance < 0:
-        match_distance = 0
+    len1, len2 = len(s1), len(s2)
+    match_dist = max(len1, len2) // 2 - 1
+    if match_dist < 0:
+        match_dist = 0
 
     s1_matches = [False] * len1
     s2_matches = [False] * len2
-    matches = 0
-    transpositions = 0
+    matches = transpositions = 0
 
     for i in range(len1):
-        start = max(0, i - match_distance)
-        end = min(i + match_distance + 1, len2)
+        start = max(0, i - match_dist)
+        end = min(i + match_dist + 1, len2)
         for j in range(start, end):
             if s2_matches[j] or s1[i] != s2[j]:
                 continue
-            s1_matches[i] = True
-            s2_matches[j] = True
+            s1_matches[i] = s2_matches[j] = True
             matches += 1
             break
 
@@ -217,260 +167,302 @@ def jaro_winkler_similarity(s1, s2):
             transpositions += 1
         k += 1
 
-    jaro = (matches / len1 + matches / len2 + (matches - transpositions / 2) / matches) / 3
-    # Winkler modification
-    prefix_len = 0
-    for i in range(min(len1, len2, 4)):
-        if s1[i] == s2[i]:
-            prefix_len += 1
-        else:
-            break
-
-    return jaro + prefix_len * 0.1 * (1 - jaro)
+    jaro = (matches/len1 + matches/len2 + (matches - transpositions/2)/matches) / 3
+    prefix = sum(1 for i in range(min(len1, len2, 4)) if s1[i] == s2[i])
+    return jaro + prefix * 0.1 * (1 - jaro)
 
 
 # =============================================================================
-# MATCHING ALGORITHMS
+# ALGORITHMS
 # =============================================================================
 
-class MatchingAlgorithm:
-    """Base class for matching algorithms."""
-
-    name = "base"
-
-    def match(self, query, candidates):
-        """Return best match for query from candidates list, or None."""
-        raise NotImplementedError
-
-
-class CurrentAlgorithm(MatchingAlgorithm):
-    """Current Sørensen-Dice approach from TruchiEmu."""
-
+class CurrentDice:
+    """Current Sørensen-Dice approach."""
     name = "current_dice_065"
 
-    def __init__(self, dat_entries):
-        self.dat_entries = dat_entries
+    def __init__(self, entries):
         self.exact_map = defaultdict(list)
         self.aggressive_map = defaultdict(list)
         self.all_entries = []
 
-        for entry in dat_entries:
-            normalized = normalized_comparable_title(entry['name'])
-            aggressive = aggressively_normalized_title(entry['name'])
+        for e in entries:
+            n = normalized_comparable_title(e['name'])
+            a = aggressively_normalized_title(e['name'])
+            self.exact_map[n].append(e)
+            self.aggressive_map[a].append(e)
+            if len(n) >= 3:
+                self.all_entries.append(e)
 
-            self.exact_map[normalized].append(entry)
-            if len(normalized) >= 3:
-                self.all_entries.append(entry)
-
-            self.aggressive_map[aggressive].append(entry)
-
-    def match(self, query, candidates=None):
-        """Match using current Dice approach with 0.65 threshold."""
-        query_base = normalized_comparable_title(query)
-        if len(query_base) < 2:
+    def match(self, query):
+        q = normalized_comparable_title(query)
+        if len(q) < 2:
             return None
 
-        # PASS 1: Exact normalized match
-        exact = self.exact_map.get(query_base, [])
+        # Try exact
+        if self.exact_map[q]:
+            return self.exact_map[q][0]
 
-        # PASS 2: Roman numeral variants
-        if not exact:
-            for variant in roman_numeral_variants(query_base):
-                exact = self.exact_map.get(variant, [])
-                if exact:
-                    break
+        # Try roman numeral variants
+        for variant in self._roman_variants(q):
+            if self.exact_map.get(variant):
+                return self.exact_map[variant][0]
 
-        # PASS 3: Aggressive normalization
-        if not exact:
-            aggressive_query = aggressively_normalized_title(query)
-            if len(aggressive_query) >= 2:
-                exact = self.aggressive_map.get(aggressive_query, [])
-                if not exact:
-                    for variant in roman_numeral_variants(aggressive_query):
-                        exact = self.aggressive_map.get(variant, [])
-                        if exact:
-                            break
+        # Try aggressive
+        a = aggressively_normalized_title(query)
+        if len(a) >= 2:
+            if self.aggressive_map.get(a):
+                return self.aggressive_map[a][0]
+            for variant in self._roman_variants(a):
+                if self.aggressive_map.get(variant):
+                    return self.aggressive_map[variant][0]
 
-        return exact[0] if exact else None
+        return None
+
+    def _roman_variants(self, s):
+        """Generate roman numeral variants."""
+        variants = set()
+        ar2rom = {1:"I",2:"II",3:"III",4:"IV",5:"V",6:"VI",7:"VII",8:"VIII",9:"IX",10:"X"}
+        rom2ar = {r.lower():a for a,r in ar2rom.items()}
+        ar2text = {1:"one",2:"two",3:"three",4:"four",5:"five",6:"six",7:"seven",8:"eight",9:"nine",10:"ten"}
+        text2ar = {t:a for a,t in ar2text.items()}
+        text2ar.update({t.capitalize():a for a,t in ar2text.items()})
+
+        for a,r in ar2rom.items():
+            ns = re.sub(r'(?<![a-zA-Z])\b' + str(a) + r'\b(?![a-zA-Z0-9])', r, s, flags=re.IGNORECASE)
+            if ns != s: variants.add(ns)
+        for a,t in ar2text.items():
+            ns = re.sub(r'(?<![a-zA-Z])\b' + str(a) + r'\b(?![a-zA-Z0-9])', t, s, flags=re.IGNORECASE)
+            if ns != s: variants.add(ns)
+        for r,a in rom2ar.items():
+            ns = re.sub(r'(?<![a-zA-Z])' + re.escape(r) + r'(?![a-zA-Z0-9])', str(a), s, flags=re.IGNORECASE)
+            if ns != s: variants.add(ns)
+
+        return variants
 
 
-class SuffixStripDice(MatchingAlgorithm):
-    """Dice with suffix stripping for plural/tense handling."""
-
+class SuffixStripDice:
+    """Dice with suffix stripping."""
     name = "suffix_strip_dice"
 
-    def __init__(self, dat_entries):
-        self.dat_entries = dat_entries
-        self.entries_by_normalized = defaultdict(list)
+    def __init__(self, entries):
+        self.exact_map = defaultdict(list)
 
-        for entry in dat_entries:
-            normalized = normalized_comparable_title(entry['name'])
-            tokens = tokenize(normalized)
-            # Also store with suffix-stripped tokens
-            stripped_tokens = {strip_common_suffixes(t) for t in tokens if len(t) > 2}
-            if stripped_tokens:
-                key = ' '.join(sorted(stripped_tokens))
-                self.entries_by_normalized[key].append(entry)
-            # Original
-            self.entries_by_normalized[normalized].append(entry)
+        for e in entries:
+            n = normalized_comparable_title(e['name'])
+            tokens = tokenize(n)
+            stripped = {' '.join(sorted(strip_common_suffixes(t) for t in tokens if len(t) > 2))}
+            for key in [n] + list(stripped):
+                self.exact_map[key].append(e)
 
-    def match(self, query, candidates=None):
-        query_base = normalized_comparable_title(query)
-        if len(query_base) < 2:
+    def match(self, query):
+        q = normalized_comparable_title(query)
+        if len(q) < 2:
             return None
 
-        # Try with suffix stripping
-        tokens = tokenize(query_base)
-        stripped_tokens = {strip_common_suffixes(t) for t in tokens if len(t) > 2}
+        tokens = tokenize(q)
+        stripped = ' '.join(sorted(strip_common_suffixes(t) for t in tokens if len(t) > 2))
 
-        # Build variants to try
-        variants = set()
-        variants.add(query_base)
-        variants.add(' '.join(sorted(stripped_tokens)))
-
-        for variant in roman_numeral_variants(query_base):
-            variants.add(variant)
-            tokens = tokenize(variant)
-            stripped = {strip_common_suffixes(t) for t in tokens if len(t) > 2}
-            variants.add(' '.join(sorted(stripped)))
-
-        for variant in variants:
-            if variant in self.entries_by_normalized:
-                return self.entries_by_normalized[variant][0]
+        for key in [q, stripped]:
+            if self.exact_map.get(key):
+                return self.exact_map[key][0]
 
         return None
 
 
-class TokenLevenshtein(MatchingAlgorithm):
-    """Token-level Levenshtein matching for handling small typos."""
+class DiceWithSuffixStrip:
+    """Dice coefficient with suffix stripping on both query and candidate."""
+    name = "dice_suffix_strip"
 
-    name = "token_levenshtein"
+    def __init__(self, entries):
+        self.entries = []
+        for e in entries:
+            n = normalized_comparable_title(e['name'])
+            tokens = tokenize(n)
+            self.entries.append({
+                'entry': e,
+                'normalized': n,
+                'stripped_tokens': frozenset(strip_common_suffixes(t) for t in tokens if len(t) > 2),
+                'tokens': frozenset(tokens)
+            })
 
-    def __init__(self, dat_entries):
-        self.dat_entries = dat_entries
-        self.entries_for_match = []
-
-        for entry in dat_entries:
-            normalized = normalized_comparable_title(entry['name'])
-            if len(normalized) >= 3:
-                self.entries_for_match.append({
-                    'entry': entry,
-                    'normalized': normalized,
-                    'tokens': tokenize(normalized)
-                })
-
-    def match(self, query, candidates=None):
-        query_base = normalized_comparable_title(query)
-        if len(query_base) < 2:
+    def match(self, query):
+        q = normalized_comparable_title(query)
+        if len(q) < 2:
             return None
 
-        query_tokens = tokenize(query_base)
-        best_match = None
-        best_score = 0.0
+        query_tokens = tokenize(q)
+        query_numeric = extract_numeric_tokens(query_tokens)
+        query_stripped = frozenset(strip_common_suffixes(t) for t in query_tokens if len(t) > 2)
 
-        for item in self.entries_for_match:
-            # Check for exact token match first
-            if query_tokens == item['tokens']:
-                return item['entry']
+        best = None
+        best_score = 0
 
-            # Try Levenshtein on individual tokens
-            match_score = 0.0
-            matched_tokens = 0
+        for e in self.entries:
+            entry_tokens = e['tokens']
+            entry_numeric = extract_numeric_tokens(entry_tokens)
 
-            for qt in query_tokens:
-                qt_stripped = strip_common_suffixes(qt)
-                for dt in item['tokens']:
-                    dt_stripped = strip_common_suffixes(dt)
-                    dist = levenshtein_distance(qt_stripped, dt_stripped)
-                    max_len = max(len(qt_stripped), len(dt_stripped), 1)
-                    similarity = 1.0 - (dist / max_len)
-                    if similarity >= 0.75:  # 75% similarity threshold
-                        matched_tokens += 1
-                        match_score += similarity
+            # Exact match first
+            if entry_tokens == frozenset(query_tokens):
+                return e['entry']
 
-            if matched_tokens > 0 and match_score > best_score:
-                # Require at least half the tokens to match reasonably
-                if matched_tokens >= min(len(query_tokens), len(item['tokens'])) / 2:
-                    best_score = match_score
-                    best_match = item['entry']
+            # Numeric token validation: if both have numeric tokens, they must match
+            if query_numeric and entry_numeric and query_numeric != entry_numeric:
+                continue  # Different numeric tokens = likely different game, skip
 
-        return best_match
+            # Conservative exact stripped match: only accept if stripped tokens are a subset
+            # This prevents "Star Fleet" (star, fleet) from matching "Phantasy Star II" (phantasy, star, ii)
+            # because {star, fleet} is NOT a subset of {phantasy, star, ii}
+            if query_stripped and query_stripped.issubset(entry_tokens):
+                return e['entry']
+
+            # Stripped token match (exact equality)
+            if query_stripped and e['stripped_tokens'] == query_stripped:
+                return e['entry']
+
+            # Dice score - only if Dice >= 0.6 for more confidence
+            score = dice_coefficient(query_stripped, e['stripped_tokens'])
+            if score > best_score and score >= 0.6:
+                best_score = score
+                best = e['entry']
+
+        return best
 
 
-class JaroWinklerMatch(MatchingAlgorithm):
-    """Jaro-Winkler similarity for short string matching."""
+class LevenshteinMatch:
+    """Token-level Levenshtein matching."""
+    name = "levenshtein"
 
+    def __init__(self, entries):
+        self.entries = []
+        for e in entries:
+            n = normalized_comparable_title(e['name'])
+            tokens = [t for t in re.split(r'[^a-z0-9]+', n) if t]
+            self.entries.append({
+                'entry': e,
+                'normalized': n,
+                'tokens': tokens
+            })
+
+    def match(self, query):
+        q = normalized_comparable_title(query)
+        if len(q) < 2:
+            return None
+
+        query_tokens = [t for t in re.split(r'[^a-z0-9]+', q) if t]
+
+        best = None
+        best_score = 0
+
+        for e in self.entries:
+            # Exact match
+            if q == e['normalized']:
+                return e['entry']
+
+            # Token-level Levenshtein
+            if len(query_tokens) == len(e['tokens']) or abs(len(query_tokens) - len(e['tokens'])) <= 1:
+                matched = 0
+                for qt in query_tokens:
+                    qt_s = strip_common_suffixes(qt)
+                    for et in e['tokens']:
+                        et_s = strip_common_suffixes(et)
+                        dist = levenshtein_distance(qt_s, et_s)
+                        max_len = max(len(qt_s), len(et_s), 1)
+                        if 1 - (dist / max_len) >= 0.75:
+                            matched += 1
+                            break
+
+                if matched >= min(len(query_tokens), len(e['tokens'])) / 2:
+                    score = matched / max(len(query_tokens), len(e['tokens']))
+                    if score > best_score:
+                        best_score = score
+                        best = e['entry']
+
+        return best
+
+
+class JaroWinklerMatch:
+    """Jaro-Winkler similarity."""
     name = "jaro_winkler"
 
-    def __init__(self, dat_entries):
-        self.dat_entries = dat_entries
-        self.entries_for_match = []
-
-        for entry in dat_entries:
-            normalized = normalized_comparable_title(entry['name'])
-            if len(normalized) >= 3:
-                self.entries_for_match.append({
-                    'entry': entry,
-                    'normalized': normalized
+    def __init__(self, entries):
+        self.entries = []
+        for e in entries:
+            n = normalized_comparable_title(e['name'])
+            if len(n) >= 3:
+                self.entries.append({
+                    'entry': e,
+                    'normalized': n
                 })
 
-    def match(self, query, candidates=None):
-        query_base = normalized_comparable_title(query)
-        if len(query_base) < 2:
+    def match(self, query):
+        q = normalized_comparable_title(query)
+        if len(q) < 2:
             return None
 
-        best_match = None
-        best_score = 0.0
+        best = None
+        best_score = 0
 
-        for item in self.entries_for_match:
-            # Exact match
-            if query_base == item['normalized']:
-                return item['entry']
+        for e in self.entries:
+            if q == e['normalized']:
+                return e['entry']
 
-            # Try full string Jaro-Winkler
-            score = jaro_winkler_similarity(query_base, item['normalized'])
+            score = jaro_winkler_similarity(q, e['normalized'])
             if score > best_score and score >= 0.85:
                 best_score = score
-                best_match = item['entry']
+                best = e['entry']
 
-            # Try on stripped versions (without parentheses)
-            query_stripped = strip_parentheses(query)
-            item_stripped = strip_parentheses(item['normalized'])
-            if query_stripped != query_base or item_stripped != item['normalized']:
-                score2 = jaro_winkler_similarity(query_stripped, item_stripped)
-                if score2 > best_score and score2 >= 0.85:
-                    best_score = score2
-                    best_match = item['entry']
-
-        return best_match
+        return best
 
 
-class HybridBestOf(MatchingAlgorithm):
-    """Run all algorithms and take the best result with confidence scoring."""
+class SpaceAgnostic:
+    """Match by removing spaces."""
+    name = "space_agnostic"
 
-    name = "hybrid_best_of"
+    def __init__(self, entries):
+        self.entries = []
+        for e in entries:
+            n = normalized_comparable_title(e['name'])
+            no_space = n.replace(' ', '')
+            if len(no_space) >= 4:
+                self.entries.append({
+                    'entry': e,
+                    'no_space': no_space,
+                    'normalized': n
+                })
 
-    def __init__(self, dat_entries):
+    def match(self, query):
+        q = normalized_comparable_title(query)
+        if len(q) < 3:
+            return None
+
+        q_ns = q.replace(' ', '')
+
+        for e in self.entries:
+            if q_ns == e['no_space']:
+                return e['entry']
+
+        return None
+
+
+class CombinedAlgorithm:
+    """Combined best-of approach."""
+    name = "combined"
+
+    def __init__(self, entries):
         self.algorithms = [
-            SuffixStripDice(dat_entries),
-            TokenLevenshtein(dat_entries),
-            JaroWinklerMatch(dat_entries),
-            CurrentAlgorithm(dat_entries),  # Include current as fallback
+            SpaceAgnostic(entries),  # Fast exact match for no-space variants
+            SuffixStripDice(entries),  # Handles plurals
+            DiceWithSuffixStrip(entries),  # Dice with suffix stripping
+            JaroWinklerMatch(entries),  # Good for short strings
+            CurrentDice(entries),  # Fallback to current
         ]
 
-    def match(self, query, candidates=None):
-        results = []
+    def match(self, query):
         for algo in self.algorithms:
             result = algo.match(query)
             if result:
-                results.append((algo.name, result))
-
-        if not results:
-            return None
-
-        # For now, just return the first successful match (suffix strip has priority)
-        # In a more sophisticated implementation, we'd do confidence voting
-        return results[0][1]
+                return result
+        return None
 
 
 # =============================================================================
@@ -478,10 +470,9 @@ class HybridBestOf(MatchingAlgorithm):
 # =============================================================================
 
 def parse_dat_file(dat_path):
-    """Parse a ClrMamePro .dat file and return list of game entries."""
+    """Parse a ClrMamePro .dat file."""
     entries = []
-    current_game = None
-    in_game = False
+    current = None
 
     try:
         with open(dat_path, 'r', encoding='utf-8', errors='replace') as f:
@@ -489,41 +480,26 @@ def parse_dat_file(dat_path):
                 line = line.strip()
 
                 if line.startswith('game (') or line.startswith('machine ('):
-                    current_game = {
-                        'name': '',
-                        'description': '',
-                        'crc': None,
-                    }
-                    in_game = True
-                elif line == ')' and current_game:
-                    # Determine title
-                    if current_game['description'] and len(current_game['description']) < 150:
-                        name = current_game['description']
-                    else:
-                        name = current_game['name']
-
-                    if current_game['crc']:
+                    current = {'name': '', 'description': '', 'crc': None}
+                elif line == ')' and current:
+                    name = current['description'] if current['description'] and len(current['description']) < 150 else current['name']
+                    if current['crc']:
                         entries.append({
                             'name': name,
-                            'crc': current_game['crc'].upper(),
-                            'stripped_name': normalized_comparable_title(name),
-                            'aggressive_name': aggressively_normalized_title(name),
+                            'crc': current['crc'].upper(),
                         })
-                    current_game = None
-                    in_game = False
-                elif in_game and current_game:
+                    current = None
+                elif current:
                     if line.startswith('name '):
-                        current_game['name'] = line[5:].strip('" ')
+                        current['name'] = line[5:].strip('" ')
                     elif line.startswith('description '):
-                        current_game['description'] = line[12:].strip('" ')
-                    elif line.startswith('rom '):
-                        # Extract CRC from rom line
-                        match = re.search(r'crc\s+([0-9A-Fa-f]{8})', line)
-                        if match:
-                            current_game['crc'] = match.group(1)
-
+                        current['description'] = line[12:].strip('" ')
+                    elif 'crc ' in line:
+                        m = re.search(r'crc\s+([0-9A-Fa-f]{8})', line)
+                        if m:
+                            current['crc'] = m.group(1)
     except FileNotFoundError:
-        print(f"Warning: DAT file not found: {dat_path}")
+        print(f"Warning: {dat_path} not found")
         return []
 
     return entries
@@ -534,18 +510,17 @@ def parse_dat_file(dat_path):
 # =============================================================================
 
 def load_roms_from_db(systems):
-    """Load ROMs from the TruchiEmu database."""
+    """Load ROMs from database."""
     conn = sqlite3.connect(DB_PATH)
     cursor = conn.cursor()
 
     roms = []
-    for system_id in systems:
+    for sys_id in systems:
         cursor.execute("""
-            SELECT e.ZNAME, e.ZPATH, e.ZSYSTEMID, e.ZCRC32, m.ZTITLE, m.ZCRC32
+            SELECT e.ZNAME, e.ZPATH, e.ZSYSTEMID, e.ZCRC32
             FROM ZROMENTRY e
-            LEFT JOIN ZROMMETADATAENTRY m ON e.ZPATH = m.ZPATHKEY
             WHERE e.ZSYSTEMID = ?
-        """, (system_id,))
+        """, (sys_id,))
 
         for row in cursor.fetchall():
             roms.append({
@@ -553,8 +528,6 @@ def load_roms_from_db(systems):
                 'path': row[1],
                 'system_id': row[2],
                 'crc': row[3],
-                'metadata_title': row[4],
-                'metadata_crc': row[5],
             })
 
     conn.close()
@@ -562,181 +535,674 @@ def load_roms_from_db(systems):
 
 
 # =============================================================================
-# MAIN TEST LOGIC
+# MAIN TEST
 # =============================================================================
 
 def run_tests(systems, output_file=None):
-    """Run matching algorithm tests on specified systems."""
+    """Run tests on specified systems."""
 
     all_results = []
 
-    for system_id in systems:
+    for sys_id in systems:
         print(f"\n{'='*60}")
-        print(f"Testing system: {system_id}")
+        print(f"System: {sys_id}")
         print(f"{'='*60}")
 
-        # Find DAT file
-        dat_filename = SYSTEMS_WITH_DAT.get(system_id)
-        if not dat_filename:
-            print(f"No DAT mapping for {system_id}, skipping")
+        dat_file = SYSTEMS_WITH_DAT.get(sys_id)
+        if not dat_file:
+            print(f"No DAT mapping for {sys_id}")
             continue
 
-        dat_path = os.path.join(REPO_DAT_DIR, dat_filename)
+        dat_path = os.path.join(REPO_DAT_DIR, dat_file)
         if not os.path.exists(dat_path):
-            # Try App Support Dats dir
-            dat_path = os.path.join(DAT_DIR, dat_filename)
+            dat_path = os.path.join(DAT_DIR, dat_file)
 
-        print(f"Using DAT: {dat_path}")
+        entries = parse_dat_file(dat_path)
+        print(f"DAT entries: {len(entries)}")
 
-        # Parse DAT
-        dat_entries = parse_dat_file(dat_path)
-        print(f"Parsed {len(dat_entries)} entries from DAT")
+        roms = [r for r in load_roms_from_db([sys_id]) if r['system_id'] == sys_id]
+        print(f"ROMs in DB: {len(roms)}")
 
-        if not dat_entries:
+        if not roms:
             continue
-
-        # Create CRC lookup for ground truth
-        crc_to_entry = {}
-        for entry in dat_entries:
-            if entry['crc']:
-                crc_to_entry[entry['crc']] = entry
-
-        # Load ROMs
-        roms = [r for r in load_roms_from_db([system_id]) if r['system_id'] == system_id]
-        print(f"Loaded {len(roms)} ROMs from database")
 
         # Create algorithms
-        algorithms = [
-            CurrentAlgorithm(dat_entries),
-            SuffixStripDice(dat_entries),
-            TokenLevenshtein(dat_entries),
-            JaroWinklerMatch(dat_entries),
-            HybridBestOf(dat_entries),
+        algos = [
+            CurrentDice(entries),
+            SuffixStripDice(entries),
+            DiceWithSuffixStrip(entries),
+            LevenshteinMatch(entries),
+            JaroWinklerMatch(entries),
+            SpaceAgnostic(entries),
+            CombinedAlgorithm(entries),
         ]
 
-        # Run tests
-        system_results = {
-            'system': system_id,
-            'total_roms': len(roms),
-            'by_algorithm': {},
-            'differences': []
-        }
+        # Test each algorithm
+        results_by_algo = {a.name: {'matched': 0, 'crc_correct': 0} for a in algos}
+        differences = []
 
-        for algo in algorithms:
-            matched = 0
-            crc_correct = 0
-            for rom in roms:
+        for i, rom in enumerate(roms):
+            if i % 50 == 0:
+                print(f"  Progress: {i}/{len(roms)}")
+
+            rom_crc = rom['crc']
+            algo_results = {}
+
+            for algo in algos:
                 result = algo.match(rom['name'])
+                algo_results[algo.name] = result
                 if result:
-                    matched += 1
-                    # Check CRC if available
-                    if rom['crc'] and result['crc'] == rom['crc']:
-                        crc_correct += 1
+                    results_by_algo[algo.name]['matched'] += 1
+                    if rom_crc and result['crc'] == rom_crc:
+                        results_by_algo[algo.name]['crc_correct'] += 1
 
-            system_results['by_algorithm'][algo.name] = {
-                'matched': matched,
-                'match_rate': matched / len(roms) if roms else 0,
-                'crc_correct': crc_correct,
-            }
+            # Find differences between current and combined
+            current = algo_results.get('current_dice_065')
+            combined = algo_results.get('combined')
 
-        # Find differences between current and improved algorithms
-        current_algo = algorithms[0]  # CurrentAlgorithm
-        improved_algo = algorithms[3]  # JaroWinklerMatch (often best for fuzzy)
-
-        for rom in roms:
-            current_result = current_algo.match(rom['name'])
-            improved_result = improved_algo.match(rom['name'])
-
-            # Check if they differ
-            differs = False
-            if current_result is None and improved_result is not None:
-                differs = True
-                diff_type = 'improvement'
-            elif current_result is not None and improved_result is None:
-                differs = True
-                diff_type = 'regression'
-            elif current_result is not None and improved_result is not None:
-                if current_result['name'] != improved_result['name']:
-                    differs = True
-                    # Check if improved is actually better (matches CRC)
-                    if rom['crc']:
-                        if improved_result['crc'] == rom['crc'] and current_result['crc'] != rom['crc']:
-                            diff_type = 'improvement'
-                        elif current_result['crc'] == rom['crc'] and improved_result['crc'] != rom['crc']:
-                            diff_type = 'regression'
-                        else:
-                            diff_type = 'different_match'
-                    else:
-                        diff_type = 'different_match'
-
-            if differs:
-                system_results['differences'].append({
+            if current != combined:
+                differences.append({
                     'rom_name': rom['name'],
-                    'path': rom['path'],
-                    'crc': rom['crc'],
-                    'current_match': current_result['name'] if current_result else None,
-                    'current_crc': current_result['crc'] if current_result else None,
-                    'improved_match': improved_result['name'] if improved_result else None,
-                    'improved_crc': improved_result['crc'] if improved_result else None,
-                    'diff_type': diff_type,
+                    'rom_path': rom['path'],
+                    'rom_crc': rom_crc,
+                    'current_match': current['name'] if current else None,
+                    'current_crc': current['crc'] if current else None,
+                    'combined_match': combined['name'] if combined else None,
+                    'combined_crc': combined['crc'] if combined else None,
                 })
 
-        # Print summary
-        print(f"\nResults for {system_id}:")
-        print(f"{'Algorithm':<25} {'Matched':<10} {'Rate':<10} {'CRC Correct':<15}")
-        print("-" * 60)
-        for algo in algorithms:
-            stats = system_results['by_algorithm'][algo.name]
-            print(f"{algo.name:<25} {stats['matched']:<10} {stats['match_rate']:.2%}     {stats['crc_correct']}")
+        # Print results
+        print(f"\nResults:")
+        print(f"{'Algorithm':<22} {'Matched':>8} {'%':>6} {'CRC OK':>8}")
+        print("-" * 50)
+        for algo in algos:
+            stats = results_by_algo[algo.name]
+            pct = (stats['matched'] / len(roms) * 100) if roms else 0
+            print(f"{algo.name:<22} {stats['matched']:>8} {pct:>5.1f}% {stats['crc_correct']:>8}")
 
-        print(f"\nDifferences found: {len(system_results['differences'])}")
-        if system_results['differences']:
-            print("\nSample differences:")
-            for diff in system_results['differences'][:10]:
-                print(f"  {diff['rom_name']}")
-                print(f"    Current:  {diff['current_match']} (CRC: {diff['current_crc']})")
-                print(f"    Improved: {diff['improved_match']} (CRC: {diff['improved_crc']})")
-                print(f"    Type: {diff['diff_type']}")
+        print(f"\nDifferences (current vs combined): {len(differences)}")
 
-        all_results.append(system_results)
+        # Show specific differences
+        if differences:
+            improvements = [d for d in differences if d['combined_match'] and not d['current_match']]
+            regressions = [d for d in differences if d['current_match'] and not d['combined_match']]
+            other = [d for d in differences if d['current_match'] and d['combined_match']]
 
-    # Write CSV output if requested
+            print(f"  Improvements: {len(improvements)}")
+            print(f"  Regressions: {len(regressions)}")
+            print(f"  Other differences: {len(other)}")
+
+            if improvements:
+                print("\n  Sample improvements:")
+                for d in improvements[:5]:
+                    print(f"    {d['rom_name']}")
+                    print(f"      Current:  {d['current_match']}")
+                    print(f"      Combined: {d['combined_match']}")
+
+        all_results.append({
+            'system': sys_id,
+            'total': len(roms),
+            'by_algo': results_by_algo,
+            'differences': differences
+        })
+
+    # Write CSV
     if output_file:
         with open(output_file, 'w', newline='') as f:
-            writer = csv.writer(f)
-            writer.writerow(['System', 'ROM Name', 'Path', 'CRC', 'Current Match', 'Improved Match', 'Diff Type'])
-
-            for result in all_results:
-                for diff in result['differences']:
+            writer = csv.writer(f, quoting=csv.QUOTE_ALL)
+            writer.writerow(['System', 'ROM', 'Path', 'CRC', 'Current', 'Combined', 'Type'])
+            for r in all_results:
+                for d in r['differences']:
+                    diff_type = 'improvement' if (d['combined_match'] and not d['current_match']) else \
+                                'regression' if (d['current_match'] and not d['combined_match']) else 'other'
                     writer.writerow([
-                        result['system'],
-                        diff['rom_name'],
-                        diff['path'],
-                        diff['crc'] or '',
-                        diff['current_match'] or '',
-                        diff['improved_match'] or '',
-                        diff['diff_type']
+                        r['system'], d['rom_name'], d['rom_path'], d['rom_crc'] or '',
+                        d['current_match'] or '', d['combined_match'] or '', diff_type
                     ])
-
         print(f"\nResults written to {output_file}")
 
     return all_results
 
 
-def main():
-    parser = argparse.ArgumentParser(description='Test ROM matching algorithms')
-    parser.add_argument('--systems', default='genesis,nes,snes',
-                        help='Comma-separated list of systems to test')
-    parser.add_argument('--output', default=None,
-                        help='Output CSV file for differences')
+def run_threshold_sweep(systems):
+    """Run the matching algorithm with different thresholds to find optimal value."""
 
+    print("\n" + "=" * 80)
+    print("THRESHOLD SWEEP ANALYSIS")
+    print("=" * 80)
+    print(f"Testing thresholds: {THRESHOLD_SWEEP_VALUES}")
+    print()
+
+    all_results = {}
+
+    for sys_id in systems:
+        print(f"\n{'='*60}")
+        print(f"System: {sys_id}")
+        print(f"{'='*60}")
+
+        dat_file = SYSTEMS_WITH_DAT.get(sys_id)
+        if not dat_file:
+            continue
+
+        dat_path = os.path.join(REPO_DAT_DIR, dat_file)
+        if not os.path.exists(dat_path):
+            dat_path = os.path.join(DAT_DIR, dat_file)
+
+        entries = parse_dat_file(dat_path)
+        roms = [r for r in load_roms_from_db([sys_id]) if r['system_id'] == sys_id]
+
+        print(f"DAT entries: {len(entries)}, ROMs: {len(roms)}")
+
+        # Get current matches for baseline
+        current_algo = CurrentDice(entries)
+        current_matches = set()
+        for rom in roms:
+            result = current_algo.match(rom['name'])
+            if result:
+                current_matches.add(rom['name'])
+
+        print(f"Current algorithm matches: {len(current_matches)}")
+
+        # Test each threshold
+        for threshold in THRESHOLD_SWEEP_VALUES:
+            algo = ThresholdSweepAlgo(entries, threshold)
+            matched = 0
+            matched_names = []
+
+            for rom in roms:
+                result = algo.match(rom['name'])
+                if result:
+                    matched += 1
+                    matched_names.append((rom['name'], result['name']))
+
+            new_matches = matched - len(current_matches)
+
+            if sys_id not in all_results:
+                all_results[sys_id] = {}
+
+            all_results[sys_id][threshold] = {
+                'matched': matched,
+                'new_matches': new_matches,
+                'match_rate': matched / len(roms) if roms else 0,
+                'samples': matched_names[-20:]  # Last 20 for inspection
+            }
+
+    # Print summary table
+    print("\n" + "=" * 100)
+    print("THRESHOLD SWEEP RESULTS")
+    print("=" * 100)
+
+    # Header
+    header = f"{'Threshold':<12}"
+    for sys_id in systems:
+        short = sys_id[:6]
+        header += f"{short} Match{'':5}{'':4}{short} +New{'':3}"
+    header += f"{'Total':<12}{'Total +New':<12}"
+    print(header)
+    print("-" * 100)
+
+    for threshold in THRESHOLD_SWEEP_VALUES:
+        row = f"{threshold:<12.2f}"
+        total_matched = 0
+        total_new = 0
+
+        for sys_id in systems:
+            if sys_id in all_results and threshold in all_results[sys_id]:
+                r = all_results[sys_id][threshold]
+                matched_str = str(r['matched'])
+                new_str = str(r['new_matches'])
+                row += f"{matched_str:<15}{new_str:<10}"
+                total_matched += r['matched']
+                total_new += r['new_matches']
+            else:
+                row += f"{'N/A':<15}{'N/A':<10}"
+
+        row += f"{total_matched:<12}{total_new:<12}"
+        print(row)
+
+    print("\n" + "=" * 100)
+    print("SAMPLE MATCHES BY THRESHOLD")
+    print("=" * 100)
+
+    for threshold in THRESHOLD_SWEEP_VALUES:
+        print(f"\n>>> Threshold: {threshold:.2f}")
+        for sys_id in systems:
+            if sys_id in all_results and threshold in all_results[sys_id]:
+                samples = all_results[sys_id][threshold]['samples']
+                if samples:
+                    print(f"  {sys_id}: {samples[:5]}")
+
+    return all_results
+
+
+class DiceOnlyAlgo:
+    """Algorithm WITHOUT subset matching - uses only exact + Dice matching."""
+
+    name = "dice_only"
+
+    def __init__(self, entries, threshold=0.6):
+        self.entries = []
+        self.threshold = threshold
+        for e in entries:
+            n = normalized_comparable_title(e['name'])
+            tokens = tokenize(n)
+            self.entries.append({
+                'entry': e,
+                'normalized': n,
+                'tokens': frozenset(tokens),
+                'stripped_tokens': frozenset(strip_common_suffixes(t) for t in tokens if len(t) > 2)
+            })
+
+    def match(self, query):
+        q = normalized_comparable_title(query)
+        if len(q) < 2:
+            return None
+
+        query_tokens = tokenize(q)
+        query_numeric = extract_numeric_tokens(query_tokens)
+        query_stripped = frozenset(strip_common_suffixes(t) for t in query_tokens if len(t) > 2)
+
+        best = None
+        best_score = 0
+
+        for e in self.entries:
+            # Exact match
+            if e['tokens'] == frozenset(query_tokens):
+                return e['entry']
+
+            # Numeric token validation
+            entry_numeric = extract_numeric_tokens(e['tokens'])
+            if query_numeric and entry_numeric and query_numeric != entry_numeric:
+                continue
+
+            # NO subset match here - only Dice
+
+            # Dice score only
+            score = dice_coefficient(query_stripped, e['stripped_tokens'])
+            if score > best_score and score >= self.threshold:
+                best_score = score
+                best = e['entry']
+
+        return best
+
+
+def run_dice_only_test(systems):
+    """Test algorithm WITHOUT subset matching - uses only exact + Dice."""
+
+    print("\n" + "=" * 80)
+    print("TESTING: Dice-Only Algorithm (NO SUBSET MATCHING)")
+    print("=" * 80)
+
+    all_results = {}
+
+    for sys_id in systems:
+        print(f"\n{'='*60}")
+        print(f"System: {sys_id}")
+        print(f"{'='*60}")
+
+        dat_file = SYSTEMS_WITH_DAT.get(sys_id)
+        if not dat_file:
+            continue
+
+        dat_path = os.path.join(REPO_DAT_DIR, dat_file)
+        if not os.path.exists(dat_path):
+            dat_path = os.path.join(DAT_DIR, dat_file)
+
+        entries = parse_dat_file(dat_path)
+        roms = [r for r in load_roms_from_db([sys_id]) if r['system_id'] == sys_id]
+
+        print(f"DAT entries: {len(entries)}, ROMs: {len(roms)}")
+
+        current_algo = CurrentDice(entries)
+        dice_algo = DiceOnlyAlgo(entries, threshold=0.6)
+
+        current_matches = {}
+        dice_matches = {}
+        differences = []
+
+        for rom in roms:
+            current = current_algo.match(rom['name'])
+            dice_result = dice_algo.match(rom['name'])
+
+            if current:
+                current_matches[rom['name']] = current['name']
+            if dice_result:
+                dice_matches[rom['name']] = dice_result['name']
+
+            if current is None and dice_result is not None:
+                differences.append(('new', rom['name'], '', dice_result['name']))
+            elif current is not None and dice_result is None:
+                differences.append(('lost', rom['name'], current['name'], ''))
+            elif current is not None and dice_result is not None and current['name'] != dice_result['name']:
+                differences.append(('diff', rom['name'], current['name'], dice_result['name']))
+
+        print(f"Current algorithm matches: {len(current_matches)}")
+        print(f"Dice-only matches: {len(dice_matches)}")
+        print(f"New matches found: {sum(1 for d in differences if d[0] == 'new')}")
+        print(f"Lost matches: {sum(1 for d in differences if d[0] == 'lost')}")
+        print(f"Different matches: {sum(1 for d in differences if d[0] == 'diff')}")
+
+        all_results[sys_id] = {
+            'current': len(current_matches),
+            'dice': len(dice_matches),
+            'differences': differences
+        }
+
+    # Print summary
+    print("\n" + "=" * 80)
+    print("SUMMARY")
+    print("=" * 80)
+    print(f"{'System':<15}{'Current':<12}{'DiceOnly':<12}{'New':<10}{'Lost':<10}{'Diff':<10}")
+    print("-" * 70)
+
+    total_current = total_dice = total_new = total_lost = total_diff = 0
+
+    for sys_id, r in all_results.items():
+        diffs = r['differences']
+        new_c = sum(1 for d in diffs if d[0] == 'new')
+        lost_c = sum(1 for d in diffs if d[0] == 'lost')
+        diff_c = sum(1 for d in diffs if d[0] == 'diff')
+        print(f"{sys_id:<15}{r['current']:<12}{r['dice']:<12}{new_c:<10}{lost_c:<10}{diff_c:<10}")
+        total_current += r['current']
+        total_dice += r['dice']
+        total_new += new_c
+        total_lost += lost_c
+        total_diff += diff_c
+
+    print("-" * 70)
+    print(f"{'TOTAL':<15}{total_current:<12}{total_dice:<12}{total_new:<10}{total_lost:<10}{total_diff:<10}")
+
+    # Check for false positives
+    print("\n" + "=" * 80)
+    print("CHECKING FOR FALSE POSITIVES")
+    print("=" * 80)
+
+    KNOWN_WRONG = [
+        ('Star Fleet', 'Phantasy Star'),
+        ('Commandos', 'Papi Commando'),
+        ('Outland', 'Outlander'),
+        ('Dyna Head', 'Dyna Brothers'),
+        ('Sonic 4', 'Sonic The Hedgehog'),
+    ]
+
+    for sys_id, r in all_results.items():
+        fps = []
+        for diff_type, rom, old_match, new_match in r['differences']:
+            if new_match:
+                for bad_rom, bad_fragment in KNOWN_WRONG:
+                    if bad_rom.lower() == rom.lower() and bad_fragment.lower() in new_match.lower():
+                        fps.append((rom, new_match))
+                        break
+        if fps:
+            print(f"\n{sys_id} FALSE POSITIVES:")
+            for rom, match in fps:
+                print(f"  {rom} -> {match[:60]}")
+
+    if not any(fps for fps_list in [r['differences'] for r in all_results.values()] for fps in fps_list):
+        print("  (none found!)")
+
+    print("\n" + "=" * 80)
+    print("SAMPLE NEW MATCHES")
+    print("=" * 80)
+
+    for sys_id, r in all_results.items():
+        new_matches = [(d[1], d[3]) for d in r['differences'] if d[0] == 'new']
+        if new_matches:
+            print(f"\n{sys_id} (first 10 new matches):")
+            for rom, match in new_matches[:10]:
+                print(f"  {rom} -> {match[:60]}")
+
+    return all_results
+
+
+class SubsetOnlyAlgo:
+    """Algorithm WITHOUT Dice matching - uses only exact/subset matching."""
+
+    name = "subset_only"
+
+    def __init__(self, entries):
+        self.entries = []
+        for e in entries:
+            n = normalized_comparable_title(e['name'])
+            tokens = tokenize(n)
+            self.entries.append({
+                'entry': e,
+                'normalized': n,
+                'tokens': frozenset(tokens),
+                'stripped_tokens': frozenset(strip_common_suffixes(t) for t in tokens if len(t) > 2)
+            })
+
+    def match(self, query):
+        q = normalized_comparable_title(query)
+        if len(q) < 2:
+            return None
+
+        query_tokens = tokenize(q)
+        query_numeric = extract_numeric_tokens(query_tokens)
+        query_stripped = frozenset(strip_common_suffixes(t) for t in query_tokens if len(t) > 2)
+
+        for e in self.entries:
+            # Exact match
+            if e['tokens'] == frozenset(query_tokens):
+                return e['entry']
+
+            # Numeric token validation
+            entry_numeric = extract_numeric_tokens(e['tokens'])
+            if query_numeric and entry_numeric and query_numeric != entry_numeric:
+                continue
+
+            # Stripped subset match only (NO Dice fallback)
+            if query_stripped and query_stripped.issubset(e['tokens']):
+                return e['entry']
+
+        return None
+
+
+class ThresholdSweepAlgo:
+    """Test algorithm with configurable threshold."""
+
+    name = "threshold_sweep"
+
+    def __init__(self, entries, threshold):
+        self.entries = []
+        self.threshold = threshold
+
+        for e in entries:
+            n = normalized_comparable_title(e['name'])
+            tokens = tokenize(n)
+            self.entries.append({
+                'entry': e,
+                'normalized': n,
+                'tokens': frozenset(tokens),
+                'stripped_tokens': frozenset(strip_common_suffixes(t) for t in tokens if len(t) > 2)
+            })
+
+    def match(self, query):
+        q = normalized_comparable_title(query)
+        if len(q) < 2:
+            return None
+
+        query_tokens = tokenize(q)
+        query_numeric = extract_numeric_tokens(query_tokens)
+        query_stripped = frozenset(strip_common_suffixes(t) for t in query_tokens if len(t) > 2)
+
+        best = None
+        best_score = 0
+
+        for e in self.entries:
+            # Exact match
+            if e['tokens'] == frozenset(query_tokens):
+                return e['entry']
+
+            # Numeric token validation
+            entry_numeric = extract_numeric_tokens(e['tokens'])
+            if query_numeric and entry_numeric and query_numeric != entry_numeric:
+                continue
+
+            # Stripped subset match (conservative)
+            if query_stripped and query_stripped.issubset(e['tokens']):
+                return e['entry']
+
+            # Dice score
+            score = dice_coefficient(query_stripped, e['stripped_tokens'])
+            if score > best_score and score >= self.threshold:
+                best_score = score
+                best = e['entry']
+
+        return best
+
+
+def run_subset_only_test(systems):
+    """Test algorithm WITHOUT Dice matching - uses only exact/subset matching."""
+
+    print("\n" + "=" * 80)
+    print("TESTING: Subset-Only Algorithm (NO DICE MATCHING)")
+    print("=" * 80)
+
+    all_results = {}
+
+    for sys_id in systems:
+        print(f"\n{'='*60}")
+        print(f"System: {sys_id}")
+        print(f"{'='*60}")
+
+        dat_file = SYSTEMS_WITH_DAT.get(sys_id)
+        if not dat_file:
+            continue
+
+        dat_path = os.path.join(REPO_DAT_DIR, dat_file)
+        if not os.path.exists(dat_path):
+            dat_path = os.path.join(DAT_DIR, dat_file)
+
+        entries = parse_dat_file(dat_path)
+        roms = [r for r in load_roms_from_db([sys_id]) if r['system_id'] == sys_id]
+
+        print(f"DAT entries: {len(entries)}, ROMs: {len(roms)}")
+
+        current_algo = CurrentDice(entries)
+        subset_algo = SubsetOnlyAlgo(entries)
+
+        current_matches = {}
+        subset_matches = {}
+        differences = []
+
+        for rom in roms:
+            current = current_algo.match(rom['name'])
+            subset = subset_algo.match(rom['name'])
+
+            if current:
+                current_matches[rom['name']] = current['name']
+            if subset:
+                subset_matches[rom['name']] = subset['name']
+
+            if current is None and subset is not None:
+                differences.append(('new', rom['name'], '', subset['name']))
+            elif current is not None and subset is None:
+                differences.append(('lost', rom['name'], current['name'], ''))
+            elif current is not None and subset is not None and current['name'] != subset['name']:
+                differences.append(('diff', rom['name'], current['name'], subset['name']))
+
+        print(f"Current algorithm matches: {len(current_matches)}")
+        print(f"Subset-only matches: {len(subset_matches)}")
+        print(f"New matches found: {sum(1 for d in differences if d[0] == 'new')}")
+        print(f"Lost matches: {sum(1 for d in differences if d[0] == 'lost')}")
+        print(f"Different matches: {sum(1 for d in differences if d[0] == 'diff')}")
+
+        all_results[sys_id] = {
+            'current': len(current_matches),
+            'subset': len(subset_matches),
+            'differences': differences
+        }
+
+    # Print summary
+    print("\n" + "=" * 80)
+    print("SUMMARY")
+    print("=" * 80)
+    print(f"{'System':<15}{'Current':<12}{'Subset':<12}{'New':<10}{'Lost':<10}{'Diff':<10}")
+    print("-" * 70)
+
+    total_current = total_subset = total_new = total_lost = total_diff = 0
+
+    for sys_id, r in all_results.items():
+        diffs = r['differences']
+        new_c = sum(1 for d in diffs if d[0] == 'new')
+        lost_c = sum(1 for d in diffs if d[0] == 'lost')
+        diff_c = sum(1 for d in diffs if d[0] == 'diff')
+        print(f"{sys_id:<15}{r['current']:<12}{r['subset']:<12}{new_c:<10}{lost_c:<10}{diff_c:<10}")
+        total_current += r['current']
+        total_subset += r['subset']
+        total_new += new_c
+        total_lost += lost_c
+        total_diff += diff_c
+
+    print("-" * 70)
+    print(f"{'TOTAL':<15}{total_current:<12}{total_subset:<12}{total_new:<10}{total_lost:<10}{total_diff:<10}")
+
+    # Check for false positives
+    print("\n" + "=" * 80)
+    print("CHECKING FOR FALSE POSITIVES")
+    print("=" * 80)
+
+    KNOWN_WRONG = [
+        ('Star Fleet', 'Phantasy Star'),
+        ('Commandos', 'Papi Commando'),
+        ('Outland', 'Outlander'),
+        ('Dyna Head', 'Dyna Brothers'),
+        ('Sonic 4', 'Sonic The Hedgehog'),
+    ]
+
+    for sys_id, r in all_results.items():
+        fps = []
+        for diff_type, rom, old_match, new_match in r['differences']:
+            if new_match:
+                for bad_rom, bad_fragment in KNOWN_WRONG:
+                    if bad_rom.lower() == rom.lower() and bad_fragment.lower() in new_match.lower():
+                        fps.append((rom, new_match))
+                        break
+        if fps:
+            print(f"\n{sys_id} FALSE POSITIVES:")
+            for rom, match in fps:
+                print(f"  {rom} -> {match[:60]}")
+
+    if not any(fps for fps_list in [r['differences'] for r in all_results.values()] for fps in fps_list):
+        print("  (none found!)")
+
+    print("\n" + "=" * 80)
+    print("SAMPLE NEW MATCHES")
+    print("=" * 80)
+
+    for sys_id, r in all_results.items():
+        new_matches = [(d[1], d[3]) for d in r['differences'] if d[0] == 'new']
+        if new_matches:
+            print(f"\n{sys_id} (first 10 new matches):")
+            for rom, match in new_matches[:10]:
+                print(f"  {rom} -> {match[:60]}")
+
+    return all_results
+
+
+def main():
+    parser = argparse.ArgumentParser()
+    parser.add_argument('--systems', default='genesis,nes,snes')
+    parser.add_argument('--output', default=None)
+    parser.add_argument('--threshold-sweep', action='store_true',
+                        help='Run threshold sweep analysis')
+    parser.add_argument('--subset-only', action='store_true',
+                        help='Test algorithm without Dice matching')
+    parser.add_argument('--dice-only', action='store_true',
+                        help='Test algorithm without subset matching')
     args = parser.parse_args()
+
     systems = args.systems.split(',')
 
-    print(f"Testing systems: {systems}")
-    print(f"Database: {DB_PATH}")
-
-    run_tests(systems, args.output)
+    if args.subset_only:
+        run_subset_only_test(systems)
+    elif args.dice_only:
+        run_dice_only_test(systems)
+    elif args.threshold_sweep:
+        run_threshold_sweep(systems)
+    else:
+        run_tests(systems, args.output)
 
 
 if __name__ == '__main__':
