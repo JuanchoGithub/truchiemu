@@ -430,7 +430,6 @@ shutdown:
 - (void)setKeyState:(int)idx pressed:(BOOL)p {
   if (idx >= 0 && idx < 32) {
     g_input_state[idx] = p ? 1 : 0;
-    NSLog(@"[DEBUG setKeyState] idx=%d, pressed=%d", idx, p);
   }
 }
 
