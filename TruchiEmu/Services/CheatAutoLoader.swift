@@ -33,7 +33,7 @@ class CheatAutoLoader {
     // MARK: - Auto-Loading
     
     // Build list of possible cheat filenames for a ROM (includes filename, metadata title, and display name).
-    private static func possibleFilenames(for rom: ROM) -> [String] {
+    static func possibleFilenames(for rom: ROM) -> [String] {
         var names: [String] = []
         
         // 1. ROM filename without extension
@@ -93,26 +93,26 @@ class CheatAutoLoader {
             }
         }
         
-        // Priority 2: System cheats directory
-        let systemDir = systemCheatsDirectory(for: systemID)
-        if let sysCheats = tryLoadFromDirectory(directory: systemDir, names: possibleNames, label: "P2 System cheats", source: .libretroDatabase) {
-            allCheats.append(contentsOf: sysCheats)
-        }
-        
-        // Priority 3: Downloaded cheats directory (system-specific)
+// Priority 2: Downloaded cheats directory (system-specific) - loaded first, lower priority
         let downloadedDir = downloadedCheatsDirectory(for: systemID)
-        if let dlCheats = tryLoadFromDirectory(directory: downloadedDir, names: possibleNames, label: "P3 Downloaded cheats", source: .libretroDatabase) {
+        if let dlCheats = tryLoadFromDirectory(directory: downloadedDir, names: possibleNames, label: "P2 Downloaded cheats", source: .libretroDatabase) {
             allCheats.append(contentsOf: dlCheats)
         }
-        
-        // Priority 4: Global cheats directory
-        if let globalCheats = tryLoadFromDirectory(directory: systemCheatsDirectory, names: possibleNames, label: "P4 Global cheats", source: .libretroDatabase) {
-            allCheats.append(contentsOf: globalCheats)
+
+        // Priority 3: System cheats directory (custom user cheats) - loaded second, higher priority
+        let systemDir = systemCheatsDirectory(for: systemID)
+        if let sysCheats = tryLoadFromDirectory(directory: systemDir, names: possibleNames, label: "P3 Custom cheats", source: .libretroDatabase) {
+            allCheats.append(contentsOf: sysCheats)
         }
-        
-        // Priority 5: Global downloaded cheats directory
-        if let globalDlCheats = tryLoadFromDirectory(directory: downloadedCheatsDirectory, names: possibleNames, label: "P5 Global downloaded", source: .libretroDatabase) {
+
+        // Priority 4: Global downloaded cheats directory
+        if let globalDlCheats = tryLoadFromDirectory(directory: downloadedCheatsDirectory, names: possibleNames, label: "P4 Global downloaded", source: .libretroDatabase) {
             allCheats.append(contentsOf: globalDlCheats)
+        }
+
+        // Priority 5: Global cheats directory (global custom cheats)
+        if let globalCheats = tryLoadFromDirectory(directory: systemCheatsDirectory, names: possibleNames, label: "P5 Global custom", source: .libretroDatabase) {
+            allCheats.append(contentsOf: globalCheats)
         }
         
         // Merge duplicates (prefer later sources)
@@ -182,6 +182,59 @@ class CheatAutoLoader {
     }
     
     // MARK: - Cheat Discovery
+    
+    // Save cheats to the custom cheats directory (cheats/{systemID}/{romName}.cht)
+    // Saves to ALL possible filenames so they match on next load
+    static func saveCustomCheats(_ cheats: [Cheat], for rom: ROM) -> Bool {
+        let systemID = rom.systemID ?? "unknown"
+        let possibleNames = possibleFilenames(for: rom)
+        
+        let customDir = systemCheatsDirectory(for: systemID)
+        
+        // Ensure directory exists
+        var isDir: ObjCBool = false
+        if !FileManager.default.fileExists(atPath: customDir.path, isDirectory: &isDir) || !isDir.boolValue {
+            do {
+                try FileManager.default.createDirectory(at: customDir, withIntermediateDirectories: true)
+            } catch {
+                LoggerService.error(category: "CheatAutoLoader", "Failed to create custom cheats directory: \(error.localizedDescription)")
+                return false
+            }
+        }
+        
+        // Save to all possible filenames - ensures we find it on next load
+        var anySuccess = false
+        for name in possibleNames {
+            let chtPath = customDir.appendingPathComponent("\(name).cht")
+            if saveCheatsToFile(cheats, url: chtPath) {
+                anySuccess = true
+            }
+        }
+        
+        return anySuccess
+    }
+    
+    // Save cheats to a specific .cht file
+    private static func saveCheatsToFile(_ cheats: [Cheat], url: URL) -> Bool {
+        var content = "cheats = \(cheats.count)\n\n"
+        
+        for (index, cheat) in cheats.enumerated() {
+            content += "cheat\(index)_desc = \"\(cheat.description)\"\n"
+            content += "cheat\(index)_code = \"\(cheat.code)\"\n"
+            content += "cheat\(index)_enable = \(cheat.enabled ? "true" : "false")\n"
+            content += "cheat\(index)_type = \"\(cheat.format.displayName)\"\n"
+            content += "\n"
+        }
+        
+        do {
+            try content.write(to: url, atomically: true, encoding: .utf8)
+            LoggerService.info(category: "CheatAutoLoader", "Saved \(cheats.count) cheats to: \(url.path)")
+            return true
+        } catch {
+            LoggerService.error(category: "CheatAutoLoader", "Failed to save cheats to \(url.path): \(error.localizedDescription)")
+            return false
+        }
+    }
     
     // Find all available .cht files for a ROM (searching multiple filename variants).
     static func findAvailableCheatFiles(for rom: ROM) -> [URL] {

@@ -10,8 +10,11 @@ class CheatManagerService: ObservableObject {
     
     // MARK: - Published State
     
-    // All cheats keyed by ROM path
+    // All cheats keyed by ROM path (loaded fresh from disk on demand)
     @Published private var allCheats: [String: [Cheat]] = [:]
+    
+    // Enabled cheat indices keyed by ROM path (persisted in AppSettings)
+    private var enabledIndices: [String: Set<Int>] = [:]
     
     // Whether cheats are currently applied to the running game
     @Published var areCheatsApplied = false
@@ -19,12 +22,13 @@ class CheatManagerService: ObservableObject {
     // Loading state
     @Published var isLoading = false
     
-    private let saveKey = "cheats_v2"
+    private let enabledIndicesKey = "cheat_enabled_indices_v1"
     
     // MARK: - Initialization
     
     init() {
-        loadCheats()
+        // Load enabled state from AppSettings (cheats definitions loaded on-demand from disk)
+        loadEnabledIndices()
     }
     
     // MARK: - Public Methods
@@ -58,7 +62,7 @@ class CheatManagerService: ObservableObject {
             cheats.append(cheat)
         }
         allCheats[rom.path.path] = cheats
-        saveCheats()
+        saveEnabledIndices(for: rom, cheats: cheats)
         LoggerService.info(category: "CheatManagerService", "Updated cheat: \(cheat.displayName) for \(rom.displayName)")
     }
     
@@ -74,7 +78,7 @@ class CheatManagerService: ObservableObject {
         var cheats = allCheats[rom.path.path] ?? []
         cheats.append(cheat)
         allCheats[rom.path.path] = cheats
-        saveCheats()
+        saveEnabledIndices(for: rom, cheats: cheats)
         LoggerService.info(category: "CheatManagerService", "Added cheat: \(cheat.displayName) for \(rom.displayName)")
     }
     
@@ -83,7 +87,7 @@ class CheatManagerService: ObservableObject {
         var cheats = allCheats[rom.path.path] ?? []
         cheats.removeAll { $0.id == cheat.id }
         allCheats[rom.path.path] = cheats
-        saveCheats()
+        saveEnabledIndices(for: rom, cheats: cheats)
         LoggerService.info(category: "CheatManagerService", "Removed cheat: \(cheat.displayName) from \(rom.displayName)")
     }
     
@@ -92,7 +96,7 @@ class CheatManagerService: ObservableObject {
         var cheats = cheats(for: rom)
         cheats.indices.forEach { cheats[$0].enabled = true }
         allCheats[rom.path.path] = cheats
-        saveCheats()
+        saveEnabledIndices(for: rom, cheats: cheats)
     }
     
     // Disable all cheats for a ROM
@@ -100,24 +104,29 @@ class CheatManagerService: ObservableObject {
         var cheats = cheats(for: rom)
         cheats.indices.forEach { cheats[$0].enabled = false }
         allCheats[rom.path.path] = cheats
-        saveCheats()
+        saveEnabledIndices(for: rom, cheats: cheats)
     }
     
-    // Load cheats for a ROM from storage (cheats are persisted in AppSettings)
-    // Use discoverAvailableCheats() to find .cht files that can be imported
+    // Load cheats for a ROM from disk (always fresh, not from internal storage)
+    // Searches both cheats/ (custom) and cheats_downloaded/ (libretro) directories
+    // Applies enabled state from AppSettings (persists across app restarts)
     func loadCheatsForROM(_ rom: ROM) {
         isLoading = true
         
-        // Simply load cheats that are already stored/persisted for this ROM
-        let storedCheats = allCheats[rom.path.path] ?? []
+        // Load fresh from disk - combines both downloaded and custom cheats
+        var loadedCheats = CheatAutoLoader.loadCheats(for: rom)
         
-        // If we have stored cheats, ensure they're in the published state
-        if !storedCheats.isEmpty {
-            allCheats[rom.path.path] = storedCheats
+        // Apply enabled state from AppSettings
+        let enabledSet = enabledIndices[rom.path.path] ?? []
+        for i in loadedCheats.indices {
+            loadedCheats[i].enabled = enabledSet.contains(loadedCheats[i].index)
         }
         
+        // Store in memory for session
+        allCheats[rom.path.path] = loadedCheats
+        
         isLoading = false
-        LoggerService.info(category: "CheatManagerService", "Loaded \(storedCheats.count) cheats for ROM: \(rom.displayName)")
+        LoggerService.info(category: "CheatManagerService", "Loaded \(loadedCheats.count) cheats for ROM: \(rom.displayName)")
     }
     
     // Discover available .cht files for a ROM (for presenting to user to import)
@@ -158,7 +167,7 @@ class CheatManagerService: ObservableObject {
         }
         
         allCheats[rom.path.path] = existing
-        saveCheats()
+        saveEnabledIndices(for: rom, cheats: existing)
         
         LoggerService.info(category: "CheatManagerService", "Imported cheats: \(addedCount) added, \(updatedCount) updated")
         return true
@@ -216,10 +225,23 @@ class CheatManagerService: ObservableObject {
         }
     }
     
-    // Clear all cheats for a ROM
+    // Clear all custom cheats for a ROM (delete custom .cht file and enabled state)
     func clearCheats(for rom: ROM) {
         allCheats[rom.path.path] = nil
-        saveCheats()
+        
+        // Remove enabled indices from AppSettings
+        enabledIndices[rom.path.path] = nil
+        saveAllEnabledIndices()
+        
+        // Delete custom cheats file
+        let systemID = rom.systemID ?? "unknown"
+        let possibleNames = CheatAutoLoader.possibleFilenames(for: rom)
+        let customDir = CheatAutoLoader.systemCheatsDirectory(for: systemID)
+        
+        for name in possibleNames {
+            let chtPath = customDir.appendingPathComponent("\(name).cht")
+            try? FileManager.default.removeItem(at: chtPath)
+        }
     }
     
     // Get cheats formatted for libretro (applied to the core)
@@ -295,19 +317,30 @@ class CheatManagerService: ObservableObject {
         }
     }
     
-    // MARK: - Persistence
+    // MARK: - Persistence (Enabled State Only)
     
-    private func saveCheats() {
-        guard let data = try? JSONEncoder().encode(allCheats) else { return }
-        AppSettings.setData(saveKey, value: data)
+    // Save enabled indices for a ROM to AppSettings
+    private func saveEnabledIndices(for rom: ROM, cheats: [Cheat]) {
+        let enabledSet = Set(cheats.filter { $0.enabled }.map { $0.index })
+        enabledIndices[rom.path.path] = enabledSet
+        saveAllEnabledIndices()
     }
     
-    private func loadCheats() {
-        guard let data = AppSettings.getData(saveKey),
-              let decoded = try? JSONDecoder().decode([String: [Cheat]].self, from: data) else {
+    // Save all enabled indices to AppSettings
+    private func saveAllEnabledIndices() {
+        // Convert [String: Set<Int>] to [String: [Int]] for JSON
+        let encodable = enabledIndices.mapValues { Array($0) }
+        guard let data = try? JSONEncoder().encode(encodable) else { return }
+        AppSettings.setData(enabledIndicesKey, value: data)
+    }
+    
+    // Load enabled indices from AppSettings on init
+    private func loadEnabledIndices() {
+        guard let data = AppSettings.getData(enabledIndicesKey),
+              let decoded = try? JSONDecoder().decode([String: [Int]].self, from: data) else {
             return
         }
-        self.allCheats = decoded
-        LoggerService.info(category: "CheatManagerService", "Loaded \(self.allCheats.count) ROM cheat configurations")
+        self.enabledIndices = decoded.mapValues { Set($0) }
+        LoggerService.info(category: "CheatManagerService", "Loaded enabled indices for \(self.enabledIndices.count) ROMs")
     }
 }
