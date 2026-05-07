@@ -1,7 +1,6 @@
 ---
 layout: default
 title: Cheat System - TruchiEmu Documentation
-
 ---
 
 <div class="feature-docs">
@@ -9,8 +8,117 @@ title: Cheat System - TruchiEmu Documentation
     
     <div class="feature-overview">
         <img src="{{ '/media/features/cheats-hero.png' | relative_url }}" alt="Cheat System Overview" class="hero-image">
-        <p class="lead">TruchiEmu's comprehensive cheat system provides Game Genie, Pro Action Replay, and GameShark code support with real-time cheat search, memory watching, and code creation tools. Enhance your gameplay experience with infinite lives, power-ups, level skips, and custom modifications.</p>
+        <p class="lead">TruchiEmu provides a streamlined system for managing and applying cheat codes, supporting standard Libretro formats and automated database downloads to enhance your gaming experience.</p>
     </div>
+    
+    <section id="service-explanation">
+        <h2>Service Overview</h2>
+        <p>The cheat system allows users to import, manage, and activate cheat codes for their games. By leveraging the Libretro core architecture and the community-driven RetroArch cheat format, TruchiEmu makes it easy to apply modifications like infinite lives or unlocked content without needing to manually edit memory.</p>
+        
+        <h3>Core Features</h3>
+        <ul class="feature-list">
+            <li><strong>Multi-Format Support:</strong> Support for Game Genie, Pro Action Replay, and standard .cht files</li>
+            <li><strong>Automated Database:</strong> Download pre-made cheat collections from the Libretro community database</li>
+            <li><strong>Auto-Activation:</strong> Cheats are automatically discovered and applied based on the loaded ROM</li>
+            <li><strong>Custom Cheat Entry:</strong> Manually add your own codes and descriptions to your library</li>
+            <li><strong>Direct Memory Access:</strong> Ability to apply cheats via direct memory writes to the emulation core</li>
+        </ul>
+        
+        <h3>Supported Cheat Formats</h3>
+        <p>TruchiEmu primarily uses the <code>.cht</code> format (developed by RetroArch). It can parse these files to identify cheat names, descriptions, and the specific memory addresses they modify. It also includes specific parsers for classic formats like Game Genie for NES and SNES.</p>
+        
+        <h3>Technical Architecture</h3>
+        <p>The cheat system is built around several key components:</p>
+        <ul>
+            <li><strong>Cheat Parser:</strong> Translates .cht files and classic codes into actionable memory operations</li>
+            <li><strong>Download Service:</strong> Integrates with GitHub to fetch the latest community cheat databases</li>
+            <li><strong>Auto-Loader:</strong> Scans the local cheats directory for files matching the currently loaded ROM</li>
+            <li><strong>Libretro Bridge:</strong> Communicates with the emulation core using <code>retro_cheat_set</code> to enable or disable modifications in real-time</li>
+        </ul>
+    </section>
+    
+    <section id="step-by-step-guide">
+        <h2>Configuration Guide</h2>
+        
+        <h3>Basic Cheat Usage</h3>
+        <ol class="setup-steps">
+            <li>
+                <strong>Access Cheat Menu</strong>
+                <p>Open the cheat management window from the game options. Here you can see all available cheats for the current game.</p>
+                <img src="{{ '/media/screenshots/cheat-menu.png' | relative_url }}" alt="Cheat Menu Interface">
+            </li>
+            <li>
+                <strong>Browse and Search</strong>
+                <p>Use the search bar to find specific cheats. If no cheats are found, you can use the "Download Cheats" option to fetch them from the community database.</p>
+            </li>
+            <li>
+                <strong>Enable Cheats</strong>
+                <p>Toggle the switch next to any cheat to activate it. The change is applied immediately to the game memory.</p>
+            </li>
+            <li>
+                <strong>Save Configuration</strong>
+                <p>Your enabled cheats are saved automatically and will be reapplied the next time you launch the game.</p>
+            </li>
+        </ol>
+        
+        <h3>Manual Cheat Entry</h3>
+        <ol class="setup-steps">
+            <li>
+                <strong>Add New Cheat</strong>
+                <p>Click "Add Cheat" and provide a descriptive name. Select the format (e.g., Game Genie) from the dropdown menu.</p>
+            </li>
+            <li>
+                <strong>Enter the Code</strong>
+                <p>Enter the alphanumeric or hexadecimal code. The app validates the format before saving.</p>
+            </li>
+            <li>
+                <strong>Assign Description</strong>
+                <p>Add a note about what the cheat does to help you remember its effect during gameplay.</p>
+            </li>
+        </ol>
+    </section>
+    
+    <section id="troubleshooting">
+        <h2>Troubleshooting</h2>
+        
+        <div class="troubleshooting-grid">
+            <div class="troubleshooting-item">
+                <h3>Cheat Not Working</h3>
+                <p><strong>Symptom:</strong> Cheat enabled but has no effect in game.</p>
+                <p><strong>Solution:</strong> Verify that the cheat matches your game's region (USA, Europe, Japan) and version. Some cheats require a game reset after activation to take effect.</p>
+            </div>
+            
+            <div class="troubleshooting-item">
+                <h3>Game Instability</h3>
+                <p><strong>Symptom:</strong> Game crashes or behaves erratically with cheats enabled.</p>
+                <p><strong>Solution:</strong> Disable all cheats and enable them one by one to identify the conflicting code. Some cheats modify critical system memory and can cause crashes.</p>
+            </div>
+            
+            <div class="troubleshooting-item">
+                <h3>Database Not Loading</h3>
+                <p><strong>Symptom:</strong> "Download Cheats" fails or returns no results.</p>
+                <p><strong>Solution:</strong> Ensure you have an active internet connection. Verify that your ROM hash matches the database's known dumps.</p>
+            </div>
+        </div>
+    </section>
+    
+    <section id="references">
+        <h2>Related Services</h2>
+        
+        <div class="related-services">
+            <div class="service-card">
+                <h3><a href="/features/achievements.html">RetroAchievements</a></h3>
+                <p>Note: Using cheats typically disables achievement earning in Hardcore mode.</p>
+            </div>
+            
+            <div class="service-card">
+                <h3><a href="/features/save-states.html">Save State System</a></h3>
+                <p>Use save states to test different cheat combinations without losing progress.</p>
+            </div>
+        </div>
+    </section>
+</div>
+
 
     <section id="service-explanation">
         <h2>Service Overview</h2>

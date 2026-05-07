@@ -1,97 +1,125 @@
 ---
 layout: default
-title: Development
-description: Development guide for TruchiEmu - architecture overview, building from source, and contributing to the project
+title: Developer Guide
+description: Technical guide for contributing to TruchiEmu, building from source, and project architecture.
 ---
 
-<div class="feature-docs">
-    <h1>Development</h1>
-
-    <div class="feature-overview">
-        <p class="lead">TruchiEmu is built with a modern, modular architecture combining SwiftUI for the interface, Metal for shader effects, and the libretro API for emulation core integration.</p>
+<section class="page-header">
+    <div class="container">
+        <h1>Developer Guide</h1>
+        <p class="lead">Contributing to the ultimate macOS retro gaming experience</p>
     </div>
+</section>
 
-    <section id="architecture">
-        <h2>Architecture Overview</h2>
-        <p>TruchiEmu's architecture is organized into several key layers:</p>
-
-        <h3>App Layer (SwiftUI)</h3>
+<nav class="toc">
+    <div class="container">
+        <h3>On This Page</h3>
         <ul>
-            <li><strong>App entrypoint:</strong> <code>TruchiEmuApp.swift</code> and <code>ContentView.swift</code></li>
-            <li><strong>Views:</strong> SwiftUI views in <code>TruchiEmu/Views/</code> and <code>TruchiEmu/Features/</code></li>
-            <li><strong>Data layer:</strong> SwiftData models in <code>TruchiEmu/Core/Models/</code></li>
+            <li><a href="#environment">Development Environment</a></li>
+            <li><a href="#build-pipeline">The Build Pipeline</a></li>
+            <li><a href="#adding-files">Adding Source Files</a></li>
+            <li><a href="#architecture">Project Architecture</a></li>
+            <li><a href="#testing">Testing & QA</a></li>
         </ul>
+    </div>
+</nav>
 
-        <h3>Emulation Engine (Objective-C++ / C)</h3>
-        <ul>
-            <li><strong>Libretro bridge:</strong> <code>TruchiEmu/Core/Engine/</code> — mixed ObjC++/C with a Swift bridging header</li>
-            <li><strong>Swift-ObjC bridge:</strong> <code>LibretroBridge.mm</code> / <code>LibretroBridgeSwift.swift</code></li>
+<section id="environment" class="content-section">
+    <div class="container">
+        <h2>Development Environment</h2>
+        <p>TruchiEmu is a modern macOS application. To contribute, you will need:</p>
+        <ul class="feature-list">
+            <li><strong>macOS:</strong> 14.0 (Sonoma) or later</li>
+            <li><strong>Xcode:</strong> Latest stable version (supporting Swift 5.9+)</li>
+            <li><strong>XcodeGen:</strong> Required for project generation (<code>brew install xcodegen</code>)</li>
+            <li><strong>C++ Standard:</strong> gnu++17 / gnu17</li>
         </ul>
+    </div>
+</section>
 
-        <h3>Graphics (Metal)</h3>
-        <ul>
-            <li><strong>Shader files:</strong> <code>TruchiEmu/Core/Shaders/</code></li>
-            <li><strong>Runtime shaders</strong> compiled and executed on the GPU via Metal</li>
-        </ul>
+<section id="build-pipeline" class="content-section">
+    <div class="container">
+        <h2>The Build Pipeline</h2>
+        <p>We use <strong>XcodeGen</strong> to manage the project structure. This prevents merge conflicts in the <code>.xcodeproj</code> file and keeps the repository clean.</p>
+        
+        <div class="code-box">
+            <h4>Standard Build Workflow</h4>
+            <pre><code># 1. Clone the repository
+git clone https://github.com/JuanchoGithub/truchiemu.git
+cd truchiemu
 
-        <h3>Services</h3>
-        <ul>
-            <li><strong>Save management:</strong> <code>SaveDirectoryManager</code> and <code>SaveMigrationService</code></li>
-            <li><strong>Library management:</strong> ROM scanning, metadata fetching, artwork management</li>
-        </ul>
-    </section>
+# 2. Generate the Xcode project
+xcodegen generate
 
-    <section id="building">
-        <h2>Building from Source</h2>
+# 3. Build the project
+xcodebuild -project TruchiEmu.xcodeproj -scheme TruchiEmu -configuration Debug build</code></pre>
+        </div>
+        <p>Alternatively, you can run <code>open TruchiEmu.xcodeproj</code> and build using <strong>⌘+B</strong> in Xcode.</p>
+    </div>
+</section>
 
-        <h3>Prerequisites</h3>
-        <ul>
-            <li>macOS 14.0 (Sonoma) or later</li>
-            <li>Xcode 15+ with Swift 5.9+</li>
-            <li>XcodeGen (install via <code>brew install xcodegen</code>)</li>
-            <li>Xcode Command Line Tools (<code>xcode-select --install</code>)</li>
-        </ul>
+<section id="adding-files" class="content-section">
+    <div class="container">
+        <h2>Adding Source Files</h2>
+        <p>Adding new files to the project requires a specific step because the Xcode project is generated dynamically.</p>
+        
+        <div class="warning-box">
+            <p><strong>⚠️ Critical:</strong> Simply adding a file to a folder in Finder will NOT include it in the Xcode build.</p>
+        </div>
 
-        <h3>Build Steps</h3>
-        <ol>
-            <li>Clone the repository: <code>git clone https://github.com/JuanchoGithub/truchiemu.git</code></li>
-            <li>Navigate to the project: <code>cd truchiemu</code></li>
-            <li>Generate Xcode project: <code>xcodegen generate</code></li>
-            <li>Open <code>TruchiEmu.xcodeproj</code> in Xcode</li>
-            <li>Build with Cmd+B or: <code>xcodebuild -scheme TruchiEmu -configuration Debug build</code></li>
+        <ol class="step-list">
+            <li>Add your <code>.swift</code>, <code>.mm</code>, or <code>.metal</code> file to the appropriate directory.</li>
+            <li>Run <code>xcodegen generate</code> in the terminal.</li>
+            <li>The file will now appear in the Xcode project navigator and be included in the next build.</li>
         </ol>
+    </div>
+</section>
 
-        <h3>Important Notes</h3>
-        <ul>
-            <li>Do not edit the <code>.xcodeproj</code> directly — edit <code>project.yml</code> and run <code>xcodegen generate</code></li>
-            <li>When adding source files, add paths under the appropriate target's sources in <code>project.yml</code></li>
-            <li>C++ standard: gnu17/gnu++17 (not LLVM default)</li>
-            <li>Bridging header: <code>TruchiEmu-Bridging-Header.h</code> exposes ObjC++ symbols to Swift</li>
-        </ul>
+<section id="architecture" class="content-section">
+    <div class="container">
+        <h2>Project Architecture</h2>
+        <p>TruchiEmu follows a modular architecture to separate the emulation engine from the native macOS UI.</p>
+        
+        <div class="feature-grid">
+            <div class="feature-card">
+                <h3>Core Engine</h3>
+                <p>Located in <code>TruchiEmu/Core/Engine/</code>. A mix of Objective-C++ and C that interfaces with libretro via a bridging header.</p>
+            </div>
+            <div class="feature-card">
+                <h3>SwiftUI Layer</h3>
+                <p>Located in <code>TruchiEmu/Views/</code> and <code>TruchiEmu/Features/</code>. Handles all user interaction and visual presentation.</p>
+            </div>
+            <div class="feature-card">
+                <h3>Services Layer</h3>
+                <p>Located in <code>TruchiEmu/Services/</code>. Manages business logic like save directories, ROM identification, and API integrations.</p>
+            </div>
+        </div>
+    </div>
+</section>
 
-        <h3>Running Tests</h3>
-        <p>Tests live in <code>TruchiEmuTests/</code> and can be run with: <code>xcodebuild test -scheme TruchiEmuTests -destination 'platform=macOS'</code></p>
-    </section>
+<section id="testing" class="content-section">
+    <div class="container">
+        <h2>Testing & QA</h2>
+        <p>We maintain a suite of unit tests to ensure stability across updates.</p>
+        
+        <div class="code-box">
+            <h4>Running Tests via CLI</h4>
+            <pre><code>xcodebuild test -scheme TruchiEmuTests -destination 'platform=macOS'</code></pre>
+        </div>
+        <p>Tests are located in the <code>TruchiEmuTests/</code> directory and cover critical services like ROM identification and DAT prepopulation.</p>
+    </div>
+</section>
 
-    <section id="tech-stack">
-        <h2>Technology Stack</h2>
-        <table>
-            <thead>
-                <tr><th>Component</th><th>Technology</th></tr>
-            </thead>
-            <tbody>
-                <tr><td>UI Framework</td><td>SwiftUI (native macOS)</td></tr>
-                <tr><td>Emulation API</td><td>Libretro (via Objective-C++ bridge)</td></tr>
-                <tr><td>Graphics</td><td>Metal (shader effects and rendering)</td></tr>
-                <tr><td>Data Persistence</td><td>SwiftData</td></tr>
-                <tr><td>Project Generation</td><td>XcodeGen</td></tr>
-                <tr><td>Build System</td><td>Xcode (with gnu++17 standard)</td></tr>
-            </tbody>
-        </table>
-    </section>
-
-    <section id="contributing">
-        <h2>Contributing</h2>
-        <p>We welcome contributions to TruchiEmu! See <a href="{{ '/dev/contributing.html' | relative_url }}">the contributing guide</a> for detailed information on how to get involved.</p>
-    </section>
-</div>
+<section id="cli-reference" class="content-section">
+    <div class="container">
+        <h2>CLI Reference</h2>
+        <p>TruchiEmu provides a command-line interface (CLI) for power users to launch games and manage the application externally.</p>
+        
+        <div class="code-box">
+            <h4>CLI Launch Example</h4>
+            <pre><code># Launch the application with a specific ROM path
+./TruchiEmu --launch "/path/to/game.nes"</code></pre>
+        </div>
+        <p>The CLI is handled by <code>CLIManager</code> and <code>CLILauncher</code>, allowing for integration with macOS Shortcuts or third-party launchers.</p>
+    </div>
+</section>

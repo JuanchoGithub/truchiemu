@@ -56,8 +56,6 @@ nav:
     url: "/getting-started.html"
   - title: "Features"
     url: "/features.html"
-  - title: "Supported Systems"
-    url: "/systems.html"
   - title: "Troubleshooting"
     url: "/troubleshooting.html"
   - title: "Development"
