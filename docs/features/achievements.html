@@ -28,7 +28,6 @@ title: RetroAchievements Integration - TruchiEmu Documentation
             <li><strong>Hardcore Mode:</strong> Earn achievements without save states, rewinds, or cheats for maximum prestige</li>
             <li><strong>Leaderboard Integration:</strong> Compete in time trials, high scores, and challenge leaderboards</li>
             <li><strong>Automatic Backups:</strong> Save state created automatically when earning achievements for proof</li>
-            <li><strong>Offline Queue:</strong> Achievements earned offline are synced when connection is restored</li>
         </ul>
 
         <h3>Technical Architecture</h3>
@@ -39,7 +38,6 @@ title: RetroAchievements Integration - TruchiEmu Documentation
             <li><strong>API Client:</strong> Secure HTTPS client for communicating with RetroAchievements.org API</li>
             <li><strong>Rich Presence Manager:</strong> Updates your Discord and RA profile with current game status</li>
             <li><strong>Authentication Service:</strong> Secure token-based authentication with encrypted credential storage</li>
-            <li><strong>Sync Manager:</strong> Handles offline achievement queuing and background synchronization</li>
         </ul>
 
         <h3>Supported Systems</h3>
@@ -84,15 +82,6 @@ title: RetroAchievements Integration - TruchiEmu Documentation
             <li>
                 <strong>Leaderboard Notifications</strong>
                 <p>Configure leaderboard notification settings under <code>Settings → Achievements → Leaderboards</code>. Set audio alerts, popup duration, and notification position on screen.</p>
-            </li>
-            <li>
-                <strong>Automatic Screenshots</strong>
-                <p>Enable "Capture Screenshot on Achievement" to automatically save proof images when earning achievements. Configure the save location and image format in the settings panel.</p>
-                <img src="{{ '/media/screenshots/achievement-screenshot.png' | relative_url }}" alt="Achievement Screenshot Example">
-            </li>
-            <li>
-                <strong>Sound Pack Customization</strong>
-                <p>Customize achievement unlock sounds by placing audio files in <code>~/Documents/TruchiEmu/Sounds/</code>. Supported formats: WAV, MP3, and FLAC.</p>
             </li>
             <li>
                 <strong>Notification Positioning</strong>
@@ -218,6 +207,37 @@ show_offline_indicator = true     // Show offline status in UI</code></pre>
                 <p><strong>Symptom:</strong> Playing a supported game but achievements aren't being detected.</p>
                 <p><strong>Solution:</strong> Verify your ROM is the correct version (usually USA/World). Check ROM hash against RetroAchievements database. Ensure achievement detection is enabled in settings.</p>
             </div>
+            <div class="troubleshooting-item">
+                <h3>Connection Errors</h3>
+                <p><strong>Symptom:</strong> "Failed to connect to RetroAchievements.org" error message.</p>
+                <p><strong>Solution:</strong> Check your internet connection and firewall settings. Verify API key is correct and hasn't expired. Try generating a new API key from the RA website.</p>
+            </div>
+            <div class="troubleshooting-item">
+                <h3>Rich Presence Not Working</h3>
+                <p><strong>Symptom:</strong> Discord or RA profile not showing current game status.</p>
+                <p><strong>Solution:</strong> Enable rich presence in settings. Check that you're not in Hardcore mode (some platforms disable rich presence for competitive integrity). Verify Discord connection in macOS Privacy settings.</p>
+            </div>
+            <div class="troubleshooting-item">
+                <h3>Hardcore Mode Restrictions</h3>
+                <p><strong>Symptom:</strong> Can't use save states or rewind after enabling Hardcore mode.</p>
+                <p><strong>Solution:</strong> This is intended behavior. Hardcore mode disables these features for competitive fairness. Disable Hardcore mode to restore functionality.</p>
+            </div>
+            <div class="troubleshooting-item">
+                <h3>Memory Scanner Performance</h3>
+                <p><strong>Symptom:</strong> Game stuttering or frame drops with achievement detection enabled.</p>
+                <p><strong>Solution:</strong> Reduce memory scan frequency in settings. Enable scan efficiency mode. Close unnecessary background applications to free up CPU resources.</p>
+            </div>
+            <div class="troubleshooting-item">
+                <h3>Wrong Game Detected</h3>
+                <p><strong>Symptom:</strong> Achievements for a different game are showing up.</p>
+                <p><strong>Solution:</strong> This usually indicates a bad ROM dump or misidentified game. Verify your ROM hash matches RetroAchievements database. Try a different ROM dump from a verified source.</p>
+            </div>
+            <div class="troubleshooting-item">
+                <h3>Duplicate Achievement Unlocks</h3>
+                <p><strong>Symptom:</strong> Same achievement unlocking multiple times.</p>
+                <p><strong>Solution:</strong> Clear local achievement cache in <code>Settings → Achievements → Advanced → Clear Cache</code>. This prevents duplicate unlocks from cached data.</p>
+            </div>
+        </div>
             
             <div class="troubleshooting-item">
                 <h3>Connection Errors</h3>

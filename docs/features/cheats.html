@@ -132,11 +132,9 @@ title: Cheat System - TruchiEmu Documentation
         <h3>Core Features</h3>
         <ul class="feature-list">
             <li><strong>Multi-Format Support:</strong> Game Genie, Pro Action Replay, GameShark, and raw memory codes</li>
-            <li><strong>Real-Time Memory Search:</strong> Find cheats by searching memory values during gameplay</li>
             <li><strong>Cheat Database:</strong> Built-in database with thousands of pre-made cheats</li>
             <li><strong>Code Creation:</strong> Create custom cheats with visual memory editor</li>
             <li><strong>Auto-Activation:</strong> Cheats automatically activate when game loads</li>
-            <li><strong>Conflict Detection:</strong> Warns about incompatible cheat combinations</li>
             <li><strong>Save State Integration:</strong> Save states preserve cheat state</li>
         </ul>
 
@@ -147,11 +145,8 @@ title: Cheat System - TruchiEmu Documentation
         <p>The cheat system consists of several integrated components:</p>
         <ul>
             <li><strong>Code Parser:</strong> Parses various cheat code formats into memory operations</li>
-            <li><strong>Memory Scanner:</strong> Searches game memory for values (equal, not equal, greater, less)</li>
             <li><strong>Patch Engine:</strong> Applies memory patches in real-time without game crashes</li>
             <li><strong>Database Manager:</strong> Manages cheat databases with search and filtering</li>
-            <li><strong>Watch Points:</strong> Monitors memory addresses and shows real-time values</li>
-            <li><strong>Conflict Detector:</strong> Analyzes cheat combinations for conflicts</li>
         </ul>
     </section>
 
@@ -202,35 +197,6 @@ title: Cheat System - TruchiEmu Documentation
             <li>
                 <strong>Test and Refine</strong>
                 <p>Enable the cheat and test in game. If it doesn't work, verify the code format and ensure it matches your game version and region.</p>
-            </li>
-        </ol>
-
-        <h3>Memory Search for Custom Cheats</h3>
-        <ol class="setup-steps">
-            <li>
-                <strong>Open Memory Search</strong>
-                <p>From the cheat menu, select <code>Tools → Memory Search</code>. This opens the memory search interface showing current memory values.</p>
-                <img src="{{ '/media/screenshots/memory-search.png' | relative_url }}" alt="Memory Search Tool">
-            </li>
-            <li>
-                <strong>Define Search Parameters</strong>
-                <p>Set search type: Exact Value for known numbers (like lives), or Unknown Value if searching for hidden values. Select data size (8-bit, 16-bit, 32-bit) based on game architecture.</p>
-            </li>
-            <li>
-                <strong>Initial Search</strong>
-                <p>Click "First Search" to scan the entire memory space. This creates a baseline snapshot of memory values.</p>
-            </li>
-            <li>
-                <strong>Modify Value and Search Again</strong>
-                <p>In game, change the value you want to modify (e.g., lose a life). Return to memory search and select "Search Again" with the new value or difference type.</p>
-            </li>
-            <li>
-                <strong>Repeat Until Found</strong>
-                <p>Continue changing the value and searching until you narrow down to few addresses (ideally 1-3). Each search reduces the candidate addresses.</p>
-            </li>
-            <li>
-                <strong>Create Cheat from Address</strong>
-                <p>Right-click the final address and select "Create Cheat". Choose freeze value or specific value to set. The cheat is automatically added to your cheat list.</p>
             </li>
         </ol>
     </section>
@@ -295,20 +261,46 @@ cheat {
 cheat {
     name = "Freeze Timer"
     
-    // Memory address found via search
+    // Memory address
     address = "0x7E1234"
     size = "16-bit"            // 2 bytes
     value = "0x09C4"           // Freeze at 2500
     
     operation = "freeze"       // Keep at this value
     description = "Timer stays at constant value"
+}</code></pre>
+        </div>
+        
+        <h3>Example 4: Conditional Cheat</h3>
+        <div class="config-example">
+            <pre><code>// Complex cheat with multiple conditions
+cheat_set {
+    name = "Smart Invincibility"
     
-    // Advanced freeze with range
-    freeze_range = {
-        min = 2400
-        max = 2600
-        action = "clamp"       // Clamp value within range
+    // Lives adjustment
+    cheat_1 {
+        address = "0x7E0155"
+        condition = "lives < 3"
+        action = "add 5 lives"
+        value = "+5"
     }
+    
+    // Health regeneration
+    cheat_2 {
+        address = "0x7E0156"
+        condition = "health < 50"
+        action = "regenerate"
+        rate = "+2/sec"
+    }
+    
+    // Disable during cutscenes
+    global_conditions = [
+        "game_mode == gameplay",
+        "paused == false"
+    ]
+    
+    description = "Automatically helps when needed"
+    enabled = true
 }</code></pre>
         </div>
 
@@ -355,6 +347,37 @@ cheat_set {
                 <p><strong>Symptom:</strong> Cheat enabled but has no effect in game.</p>
                 <p><strong>Solution:</strong> Verify cheat matches your game version and region. Some cheats only work at title screen or require game reset. Check if cheats are disabled in RetroAchievements Hardcore mode.</p>
             </div>
+            <div class="troubleshooting-item">
+                <h3>Game Crashes with Cheats</h3>
+                <p><strong>Symptom:</strong> Game crashes when specific cheats are enabled.</p>
+                <p><strong>Solution:</strong> Disable conflicting cheats. Some cheats modify critical memory addresses that cause instability. Try enabling cheats one at a time to identify the problematic code.</p>
+            </div>
+            <div class="troubleshooting-item">
+                <h3>Cheat Database Not Loading</h3>
+                <p><strong>Symptom:</strong> Cheat database shows no cheats for supported games.</p>
+                <p><strong>Solution:</strong> Update cheat database from <code>Tools → Update Cheat Database</code>. Check internet connection for database download. Verify ROM hash matches known good dumps in database.</p>
+            </div>
+            <div class="troubleshooting-item">
+                <h3>Cheat Codes Lost After Update</h3>
+                <p><strong>Symptom:</strong> Custom cheat codes disappeared after TruchiEmu update.</p>
+                <p><strong>Solution:</strong> Export custom cheats before updating. Check <code>~/Documents/TruchiEmu/Cheats/</code> for backup files. Re-import cheat collection from exported files.</p>
+            </div>
+            <div class="troubleshooting-item">
+                <h3>Memory Address Changes</h3>
+                <p><strong>Symptom:</strong> Custom memory cheats stop working randomly.</p>
+                <p><strong>Solution:</strong> Some games use dynamic memory allocation. Use pointer-based cheats if available. Search for new addresses or use relative addressing methods.</p>
+            </div>
+            <div class="troubleshooting-item">
+                <h3>Cheat Name Duplicates</h3>
+                <p><strong>Symptom:</strong> Multiple cheats with same name causing confusion.</p>
+                <p><strong>Solution:</strong> Rename custom cheats with descriptive names including version info. Organize cheats into categories or use the description field for details.</p>
+            </div>
+            <div class="troubleshooting-item">
+                <h3>Performance Issues</h3>
+                <p><strong>Symptom:</strong> Game runs slower with many cheats enabled.</p>
+                <p><strong>Solution:</strong> Disable unused cheats. Each active cheat requires CPU cycles. Consider consolidating multiple cheats into single combined cheat when possible.</p>
+            </div>
+        </div>
             
             <div class="troubleshooting-item">
                 <h3>Game Crashes with Cheats</h3>
