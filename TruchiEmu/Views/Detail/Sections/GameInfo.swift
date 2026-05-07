@@ -226,6 +226,7 @@ if meta.genre != nil {
                         .font(.caption).foregroundColor(AppColors.textTertiary(colorScheme)).lineSpacing(2)
                 }
             }
+            .frame(maxWidth: .infinity, alignment: .leading)
         }
     }
 

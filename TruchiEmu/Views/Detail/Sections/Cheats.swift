@@ -2,9 +2,13 @@ import SwiftUI
 
 extension GameDetailView {
     var filteredCheatsList: [Cheat] {
-        guard !cheatSearchText.trimmingCharacters(in: .whitespaces).isEmpty else { return cheatsList }
+        var result = cheatsList
+        if showEnabledOnlyCheats {
+            result = result.filter { $0.enabled }
+        }
+        guard !cheatSearchText.trimmingCharacters(in: .whitespaces).isEmpty else { return result }
         let searchWords = cheatSearchText.lowercased().split(separator: " ").map { String($0) }
-        return cheatsList.filter { cheat in
+        return result.filter { cheat in
             let cheatText = cheat.displayName.lowercased()
             return searchWords.allSatisfy { word in cheatText.contains(word) }
         }
@@ -17,6 +21,21 @@ extension GameDetailView {
             badge: cheatCount > 0 ? "\(enabledCheatCount)/\(cheatCount)" : nil
         ) {
             VStack(spacing: 10) {
+                Toggle(isOn: Binding(
+                    get: { currentROM.settings.cheatsEnabled ?? false },
+                    set: { newValue in
+                        updateSettings { $0.cheatsEnabled = newValue }
+                    }
+                )) {
+                    HStack {
+                        Image(systemName: "gamecontroller.fill").foregroundColor(.blue)
+                        Text("Enable Cheats").foregroundColor(AppColors.textPrimary(colorScheme))
+                    }
+                }
+                .toggleStyle(SwitchToggleStyle())
+
+                Divider().overlay(AppColors.divider(colorScheme))
+
                 if let message = downloadMessage {
                     HStack(spacing: 8) {
                         if cheatDownloadService.isDownloading {
@@ -95,6 +114,14 @@ extension GameDetailView {
                                 Image(systemName: "xmark.circle.fill").foregroundColor(AppColors.textMuted(colorScheme)).font(.caption)
                             }.buttonStyle(.plain)
                         }
+                        Button {
+                            showEnabledOnlyCheats.toggle()
+                        } label: {
+                            Image(systemName: showEnabledOnlyCheats ? "checkmark.circle.fill" : "circle")
+                                .foregroundColor(showEnabledOnlyCheats ? .green : AppColors.textMuted(colorScheme))
+                                .font(.caption)
+                        }
+                        .buttonStyle(.plain)
                     }
                     .padding(6).background(AppColors.cardBackground(colorScheme)).cornerRadius(5)
                 }

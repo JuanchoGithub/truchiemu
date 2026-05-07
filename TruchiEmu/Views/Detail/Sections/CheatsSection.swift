@@ -2,6 +2,7 @@ import SwiftUI
 
 struct CheatsSection: View {
     let rom: ROM
+    @ObservedObject var library: ROMLibrary
     @StateObject private var cheatManagerService = CheatManagerService.shared
     @StateObject private var cheatDownloadService = CheatDownloadService.shared
     @State private var cheatCount: Int = 0
@@ -12,14 +13,19 @@ struct CheatsSection: View {
     @State private var cheatSearchText: String = ""
     @State private var showCheatManager = false
     @State private var showImportCheatFile = false
+    @State private var showEnabledOnly: Bool = false
     @Environment(\.colorScheme) private var colorScheme
 
     private var filteredCheatsList: [Cheat] {
+        var result = cheatsList
+        if showEnabledOnly {
+            result = result.filter { $0.enabled }
+        }
         guard !cheatSearchText.trimmingCharacters(in: .whitespaces).isEmpty else {
-            return cheatsList
+            return result
         }
         let searchWords = cheatSearchText.lowercased().split(separator: " ").map { String($0) }
-        return cheatsList.filter { cheat in
+        return result.filter { cheat in
             let cheatText = cheat.displayName.lowercased()
             return searchWords.allSatisfy { word in cheatText.contains(word) }
         }
@@ -32,6 +38,23 @@ struct CheatsSection: View {
             badge: cheatCount > 0 ? "\(enabledCheatCount)/\(cheatCount)" : nil
         ) {
             VStack(spacing: 10) {
+                Toggle(isOn: Binding(
+                    get: { rom.settings.cheatsEnabled ?? false },
+                    set: { newValue in
+                        var updatedROM = rom
+                        updatedROM.settings.cheatsEnabled = newValue
+                        library.updateROM(updatedROM)
+                    }
+                )) {
+                    HStack {
+                        Image(systemName: "gamecontroller.fill").foregroundColor(.blue)
+                        Text("Enable Cheats").foregroundColor(AppColors.textPrimary(colorScheme))
+                    }
+                }
+                .toggleStyle(SwitchToggleStyle())
+
+                Divider().overlay(AppColors.divider(colorScheme))
+
                 if let message = downloadMessage {
                     HStack(spacing: 8) {
                         if cheatDownloadService.isDownloading {
@@ -129,6 +152,14 @@ struct CheatsSection: View {
                             }
                             .buttonStyle(.plain)
                         }
+                        Button {
+                            showEnabledOnly.toggle()
+                        } label: {
+                            Image(systemName: showEnabledOnly ? "checkmark.circle.fill" : "circle")
+                                .foregroundColor(showEnabledOnly ? .green : AppColors.textMuted(colorScheme))
+                                .font(.caption)
+                        }
+                        .buttonStyle(.plain)
                     }
                     .padding(6)
                     .background(AppColors.cardBackground(colorScheme))

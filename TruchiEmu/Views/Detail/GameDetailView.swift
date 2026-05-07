@@ -55,6 +55,7 @@ struct GameDetailView: View {
     @State var downloadMessageTone: ManualStatusTone = .info
     @State var cheatsList: [Cheat] = []
     @State var cheatSearchText: String = ""
+    @State var showEnabledOnlyCheats: Bool = false
     @State var isLaunchingGame = false
 
     var currentROM: ROM {
