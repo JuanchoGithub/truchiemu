@@ -90,14 +90,14 @@ xcodebuild -project TruchiEmu.xcodeproj -scheme TruchiEmu -configuration Debug b
         <h3>Environment Setup</h3>
         <div class="step-box">
             <div class="step">
-                <h4>Library Location</h4>
-                <p>The application will ask you to define your root library folder. By default, TruchiEmu stores its data in the standard macOS Application Support directory: <code>~/Library/Application Support/TruchiEmu/</code>.</p>
-                <p>This directory will automatically organize your data into:</p>
+                <h4>Library & Data Location</h4>
+                <p>TruchiEmu separates your game library from its internal application data. While you can choose any folder for your ROMs, the application stores its configuration, save states, and system files in the standard macOS Application Support directory: <code>~/Library/Application Support/TruchiEmu/</code>.</p>
+                <p>Within the Application Support folder, TruchiEmu automatically organizes technical data into:</p>
                 <ul>
-                    <li><code>ROMs/</code> - Where your game files are stored</li>
                     <li><code>Saves/</code> - Your save states and battery save files</li>
                     <li><code>Cores/</code> - The libretro cores used for emulation</li>
                     <li><code>Thumbnails/</code> - Game artwork and cached screenshots</li>
+                    <li><code>System/</code> - Required BIOS and system files</li>
                 </ul>
             </div>
             
@@ -114,20 +114,32 @@ xcodebuild -project TruchiEmu.xcodeproj -scheme TruchiEmu -configuration Debug b
         <h2>Adding Your First Game</h2>
         <p>TruchiEmu supports simple import methods to get your library ready.</p>
         
-        <h3>Import Methods</h3>
+        <h3>Importing Games</h3>
+        <p>TruchiEmu supports simple import methods to get your library ready.</p>
         <ol>
-            <li><strong>Drag and Drop:</strong> Drag ROM files from Finder directly into the TruchiEmu library window.</li>
-            <li><strong>Manual Import:</strong> Use the <strong>"+"</strong> button in the library toolbar to browse for files.</li>
+            <li><strong>Drag and Drop:</strong> Drag ROM files or folders from Finder directly into the TruchiEmu library window.</li>
+            <li><strong>Manual Import:</strong> Use the import button in the library toolbar to browse for files.</li>
         </ol>
 
-        <h3>Supported File Formats</h3>
+
+        <h3>File Handling & Compatibility</h3>
+        <p>TruchiEmu leverages the libretro API, meaning it supports virtually any file format accepted by the active emulator core. Rather than relying on simple file extensions, the app uses CRC32 hashing and DAT databases to identify games accurately.</p>
+        
         <div class="format-grid">
             <div class="format-category">
-                <h4>📦 Archives</h4>
-                <ul>
-                    <li><code>.zip</code>, <code>.7z</code>, <code>.rar</code></li>
-                </ul>
+                <h4>📦 Compressed ROMs</h4>
+                <p>Full support for compressed archives (<code>.zip</code>, <code>.7z</code>, <code>.rar</code>). For arcade systems like MAME, <code>.zip</code> is the primary expected format and is handled natively by the library.</p>
             </div>
+            <div class="format-category">
+                <h4>💿 Disc Images</h4>
+                <p>Intelligent handling of disc images. When a <code>.cue</code> file is detected, TruchiEmu prioritizes it and automatically hides the associated <code>.bin</code> files from the library to prevent duplicate entries.</p>
+            </div>
+            <div class="format-category">
+                <h4>🛠️ Library Filtering</h4>
+                <p>To keep your collection clean, the application automatically filters out system BIOS files and metadata assets, displaying only playable game entries in the library view.</p>
+            </div>
+        </div>
+
             <div class="format-category">
                 <h4>🎮 Raw ROMs</h4>
                 <ul>
@@ -223,8 +235,8 @@ xcodebuild -project TruchiEmu.xcodeproj -scheme TruchiEmu -configuration Debug b
                 <h4>Save States</h4>
                 <ul>
                     <li>Instant snapshot of emulator memory</li>
-                    <li>Multiple slots per game (F1-F8)</li>
-                    <li>Quick Save (Tab) / Quick Load (R)</li>
+                    <li>Visual slot-based management (Slots 0-9 + Auto)</li>
+                    <li>Managed via the Game Detail view with thumbnail previews</li>
                 </ul>
             </div>
             <div class="comparison-column">
