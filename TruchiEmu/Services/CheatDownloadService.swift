@@ -24,7 +24,7 @@ struct CheatDownloadLogEntry: Identifiable {
                 return true
             case (.failed(let lhsError), .failed(let rhsError)):
                 return lhsError == rhsError
-            default:
+default:
                 return false
             }
         }
@@ -267,9 +267,10 @@ class CheatDownloadService: ObservableObject {
     }
     
     // Download cheats for a specific system (throws on error, returns count on success)
+    // HYBRID APPROACH: Uses bundled zip first, then delta from libretro
     @MainActor
     func downloadCheatsForSystem(_ systemID: String) async throws -> Int {
-        LoggerService.info(category: "CheatDownloadService", "=== Starting download for system: \(systemID) ===")
+        LoggerService.info(category: "CheatDownloadService", "=== Starting HYBRID download for system: \(systemID) ===")
         
         guard !isDownloading else {
             LoggerService.warning(category: "CheatDownloadService", "Download already in progress, rejecting request")
@@ -293,47 +294,202 @@ class CheatDownloadService: ObservableObject {
         let systemFolderName = mapSystemIDToFolderName(systemID)
         LoggerService.info(category: "CheatDownloadService", "Mapped system ID '\(systemID)' to folder name: '\(systemFolderName)'")
         
-        let encodedFolderName = systemFolderName.addingPercentEncoding(withAllowedCharacters: .urlPathAllowed) ?? systemFolderName
-        let folderURL = apiBaseURL + "/" + encodedFolderName
-        LoggerService.info(category: "CheatDownloadService", "GitHub API URL: \(folderURL)")
+        var totalDownloaded = 0
         
-        guard let url = URL(string: folderURL) else {
-            LoggerService.error(category: "CheatDownloadService", "Invalid URL constructed: \(folderURL)")
+        // STEP 1: Extract bundled zip if available (fast path)
+        let bundledCount = try await extractBundledSystemCheats(systemID: systemID)
+        totalDownloaded += bundledCount
+        downloadProgress = bundledCount > 0 ? 0.3 : 0.0
+        downloadStatus = bundledCount > 0 ? "Extracted \(bundledCount) cheats from bundle" : "No bundle found, downloading from libretro..."
+        
+        // STEP 2: Get remote file list via GitHub Trees API
+        let remoteFiles = try await fetchRemoteCheatFiles(systemFolderName: systemFolderName)
+        
+        // STEP 3: Find missing files (delta)
+        let localDir = systemCheatDirectory(for: systemID)
+        let missingFiles = findMissingFiles(localDir: localDir, remoteFiles: remoteFiles)
+        
+        if missingFiles.isEmpty {
+            LoggerService.info(category: "CheatDownloadService", "All cheats already present!")
+            downloadProgress = 1.0
+            downloadStatus = "Complete! \(totalDownloaded) cheats available"
+            lastDownloadDate = Date()
+            return totalDownloaded
+        }
+        
+        // STEP 4: Download missing files only
+        downloadStatus = "Downloading \(missingFiles.count) missing cheats..."
+        totalItemsToDownload = missingFiles.count
+        
+        let downloadedDelta = try await downloadMissingCheats(
+            missingFiles: missingFiles,
+            to: localDir,
+            systemName: systemID,
+            systemFolderName: systemFolderName
+        )
+        totalDownloaded += downloadedDelta
+        
+        downloadProgress = 1.0
+        downloadStatus = "Complete! \(totalDownloaded) cheats (\(downloadedDelta) new from libretro)"
+        lastDownloadDate = Date()
+        
+        LoggerService.info(category: "CheatDownloadService", "=== Download complete: \(totalDownloaded) total (\(downloadedDelta) new) ===")
+        return totalDownloaded
+    }
+    
+    // MARK: - Hybrid Download Methods
+    
+    // Extract bundled cheat zip for a system
+    private func extractBundledSystemCheats(systemID: String) async throws -> Int {
+        let zipFileName = "\(systemID)-cheats.zip"
+        
+        guard let bundleURL = Bundle.main.url(forResource: zipFileName, withExtension: nil) else {
+            LoggerService.info(category: "CheatDownloadService", "No bundled zip found: \(zipFileName)")
+            return 0
+        }
+        
+        LoggerService.info(category: "CheatDownloadService", "Found bundled zip: \(bundleURL.path)")
+        
+        let destinationDir = localCheatsDirectory.appendingPathComponent(systemID)
+        
+        try FileManager.default.createDirectory(at: destinationDir, withIntermediateDirectories: true)
+        
+        // Use ditto to extract (faster than unzip)
+        let process = Process()
+        process.executableURL = URL(fileURLWithPath: "/usr/bin/ditto")
+        process.arguments = ["-xk", bundleURL.path, destinationDir.path]
+        
+        let pipe = Pipe()
+        process.standardOutput = pipe
+        process.standardError = pipe
+        
+        try process.run()
+        process.waitUntilExit()
+        
+        if process.terminationStatus == 0 {
+            // Count extracted files
+            let extractedCount = try FileManager.default.contentsOfDirectory(
+                at: destinationDir,
+                includingPropertiesForKeys: nil
+            ).filter { $0.pathExtension == "cht" }.count
+            
+            LoggerService.info(category: "CheatDownloadService", "Extracted \(extractedCount) files from bundle")
+            return extractedCount
+        } else {
+            let errorData = pipe.fileHandleForReading.readDataToEndOfFile()
+            let errorMsg = String(data: errorData, encoding: .utf8) ?? "Unknown error"
+            LoggerService.warning(category: "CheatDownloadService", "Extraction warning: \(errorMsg)")
+            return 0
+        }
+    }
+    
+    // Fetch remote cheat files for a system folder using GitHub Trees API
+    private func fetchRemoteCheatFiles(systemFolderName: String) async throws -> [String] {
+        // Don't URL-encode for tree API - use raw folder name
+        let prefix = "cht/\(systemFolderName)/"
+        
+        let urlString = "https://api.github.com/repos/libretro/libretro-database/git/trees/master?recursive=1"
+        
+        guard let url = URL(string: urlString) else {
             throw CheatDownloadError.invalidURL
         }
         
-        // Count total files first
-        LoggerService.info(category: "CheatDownloadService", "Counting cheat files in folder...")
-        self.totalItemsToDownload = await countCheatFilesInFolder(url, maxDepth: 1)
-        LoggerService.info(category: "CheatDownloadService", "Found \(self.totalItemsToDownload) cheat files for \(systemID)")
-        downloadStatus = "Found \(self.totalItemsToDownload) cheat files for \(systemID)"
+        var request = URLRequest(url: url)
+        request.setValue("application/vnd.github.v3+json", forHTTPHeaderField: "Accept")
+        request.setValue("TruchiEmu/1.0", forHTTPHeaderField: "User-Agent")
         
-        // Download from main folder
-        LoggerService.info(category: "CheatDownloadService", "Downloading cheats from main folder...")
-        var totalDownloaded = try await downloadCheatsFromFolder(url, to: systemCheatDirectory(for: systemID), systemName: systemID)
-        LoggerService.info(category: "CheatDownloadService", "Downloaded \(totalDownloaded) files from main folder")
+        let (data, response) = try await URLSession.shared.data(for: request)
         
-        // Check for subdirectories and download them too
-        LoggerService.info(category: "CheatDownloadService", "Checking for subdirectories...")
-        let contents = try await fetchGitHubContents(url.absoluteString)
-        let subDirs = contents.filter { $0.type == .directory }
-        LoggerService.info(category: "CheatDownloadService", "Found \(subDirs.count) subdirectories")
+        guard let httpResponse = response as? HTTPURLResponse, httpResponse.statusCode == 200 else {
+            throw CheatDownloadError.networkError
+        }
         
-        for item in subDirs {
-            LoggerService.info(category: "CheatDownloadService", "Processing subdirectory: \(item.name)")
-            let encodedItemName = item.name.addingPercentEncoding(withAllowedCharacters: .urlPathAllowed) ?? item.name
-            let subFolderURL = "\(url.absoluteString)/\(encodedItemName)"
-            if let subURL = URL(string: subFolderURL) {
-                let subCount = try await downloadCheatsFromFolder(subURL, to: systemCheatDirectory(for: systemID), systemName: systemID)
-                LoggerService.info(category: "CheatDownloadService", "Downloaded \(subCount) files from subdirectory: \(item.name)")
-                totalDownloaded += subCount
+        guard let json = try JSONSerialization.jsonObject(with: data) as? [String: Any],
+              let tree = json["tree"] as? [[String: Any]] else {
+            throw CheatDownloadError.parseError
+        }
+        
+        // Filter for files in the cht/systemFolderName/ path (case-insensitive)
+        let prefixLower = "cht/\(systemFolderName.lowercased())/"
+        var fileNames: [String] = []
+        
+        for item in tree {
+            guard let path = item["path"] as? String,
+                  item["type"] as? String == "blob",
+                  path.lowercased().hasPrefix(prefixLower),
+                  path.lowercased().hasSuffix(".cht") else {
+                continue
+            }
+            
+            // Extract just the filename (keep original case)
+            let fileName = String(path.dropFirst(prefixLower.count))
+            fileNames.append(fileName)
+        }
+        
+        LoggerService.info(category: "CheatDownloadService", "Found \(fileNames.count) remote cheat files for \(systemFolderName)")
+        return fileNames
+    }
+    
+    // Find files that exist remotely but not locally
+    private func findMissingFiles(localDir: URL, remoteFiles: [String]) -> [String] {
+        guard FileManager.default.fileExists(atPath: localDir.path) else {
+            return remoteFiles
+        }
+        
+        do {
+            let localFiles = try FileManager.default.contentsOfDirectory(at: localDir, includingPropertiesForKeys: nil)
+                .filter { $0.pathExtension == "cht" }
+                .map { $0.lastPathComponent }
+            
+            let localSet = Set(localFiles.map { $0.lowercased() })
+            
+            return remoteFiles.filter { !localSet.contains($0.lowercased()) }
+        } catch {
+            LoggerService.warning(category: "CheatDownloadService", "Error reading local directory: \(error.localizedDescription)")
+            return remoteFiles
+        }
+    }
+    
+    // Download missing cheat files from libretro
+    private func downloadMissingCheats(missingFiles: [String], to destination: URL, systemName: String, systemFolderName: String) async throws -> Int {
+        var downloaded = 0
+        let baseURL = "https://raw.githubusercontent.com/libretro/libretro-database/master/cht"
+        let encodedFolder = systemFolderName.addingPercentEncoding(withAllowedCharacters: .urlPathAllowed) ?? systemFolderName
+        
+        for (index, fileName) in missingFiles.enumerated() {
+            let progress = Double(index) / Double(missingFiles.count)
+            downloadProgress = 0.3 + (progress * 0.7)
+            downloadStatus = "Downloading \(fileName) (\(index + 1)/\(missingFiles.count))..."
+            
+            let encodedFileName = fileName.addingPercentEncoding(withAllowedCharacters: .urlPathAllowed) ?? fileName
+            let urlString = "\(baseURL)/\(encodedFolder)/\(encodedFileName)"
+            
+            guard let url = URL(string: urlString) else {
+                LoggerService.warning(category: "CheatDownloadService", "Invalid URL: \(urlString)")
+                continue
+            }
+            
+            do {
+                let (data, response) = try await URLSession.shared.data(from: url)
+                
+                guard let httpResponse = response as? HTTPURLResponse, httpResponse.statusCode == 200 else {
+                    continue
+                }
+                
+                let filePath = destination.appendingPathComponent(fileName)
+                try data.write(to: filePath)
+                
+                downloaded += 1
+                currentDownloadedCount += 1
+            } catch {
+                LoggerService.warning(category: "CheatDownloadService", "Failed to download \(fileName): \(error.localizedDescription)")
             }
         }
         
-        LoggerService.info(category: "CheatDownloadService", "=== Download complete: \(totalDownloaded) total files ===")
-        lastDownloadDate = Date()
-        return totalDownloaded
+        return downloaded
     }
+    
+    // Legacy method for downloading all cheats (kept for compatibility)
     
     // MARK: - ROM Cheat Lookup
     
@@ -1109,6 +1265,7 @@ enum CheatDownloadError: LocalizedError {
     case fileWriteError
     case networkError
     case alreadyDownloading
+    case parseError
     
     var errorDescription: String? {
         switch self {
@@ -1124,6 +1281,8 @@ enum CheatDownloadError: LocalizedError {
             return "Network error"
         case .alreadyDownloading:
             return "A download is already in progress"
+        case .parseError:
+            return "Failed to parse response"
         }
     }
 }
