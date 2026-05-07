@@ -10,3 +10,7 @@ xcuserdata/
 build/
 .cline/
 .vscode/
+.opencode/
+.vscode/*
+.github/
+
