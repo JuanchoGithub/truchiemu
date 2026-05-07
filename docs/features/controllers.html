@@ -40,18 +40,6 @@ title: Controller Support - TruchiEmu Documentation
                 <strong>Connect Controller</strong>
                 <p>Connect your controller via USB or pair via Bluetooth. TruchiEmu automatically detects the controller and shows a notification with the detected controller type.</p>
             </li>
-            <li>
-                <strong>Verify Connection</strong>
-                <p>Open <code>Settings → Controllers → Connected Devices</code> to see your controller listed. Connected controllers show battery level if supported.</p>
-            </li>
-            <li>
-                <strong>Test Button Mapping</strong>
-                <p>Click "Test Controller" to open the input test panel. Press buttons and move sticks to verify all inputs register correctly.</p>
-            </li>
-            <li>
-                <strong>Adjust Global Settings</strong>
-                <p>In <code>Settings → Controllers → General</code>, configure global deadzone, vibration intensity, and LED settings for supported controllers.</p>
-            </li>
         </ol>
 
         <h3>Advanced Configuration</h3>
@@ -60,56 +48,7 @@ title: Controller Support - TruchiEmu Documentation
                 <strong>Custom Button Mapping</strong>
                 <p>Go to <code>Settings → Controllers → Button Mapping</code> and select your controller. Click any button and press the desired input to remap. Save as profile for reuse.</p>
             </li>
-            <li>
-                <strong>Analog Stick Calibration</strong>
-                <p>Access calibration in <code>Settings → Controllers → Calibration</code>. Adjust individual deadzones per axis and modify sensitivity curves to eliminate drift.</p>
-            </li>
-            <li>
-                <strong>Configure Hotkeys</strong>
-                <p>Map controller buttons to emulator functions in <code>Settings → Controllers → Hotkeys</code>. This allows save state creation, fast forward, and menu access from your controller.</p>
-            </li>
         </ol>
     </section>
 
-    <section id="troubleshooting">
-        <h2>Troubleshooting</h2>
-        
-        <div class="troubleshooting-grid">
-            <div class="troubleshooting-item">
-                <h3>Controller Not Detected</h3>
-                <p><strong>Symptom:</strong> Controller connected but not showing.</p>
-                <p><strong>Solution:</strong> Check macOS Privacy settings for input permissions. Try re-pairing Bluetooth controllers. Verify USB cable supports data.</p>
-            </div>
-            
-            <div class="troubleshooting-item">
-                <h3>Analog Stick Drift</h3>
-                <p><strong>Symptom:</strong> Character moves without input.</p>
-                <p><strong>Solution:</strong> Increase deadzone to 15-20% in calibration settings. Clean controller sticks with compressed air. Run calibration wizard.</p>
-            </div>
-            
-            <div class="troubleshooting-item">
-                <h3>Mapping Not Saving</h3>
-                <p><strong>Symptom:</strong> Custom mappings reset on restart.</p>
-                <p><strong>Solution:</strong> Save settings via main menu, not in-game. Create per-game profile in settings. Check config folder permissions.</p>
-            </div>
-            
-            <div class="troubleshooting-item">
-                <h3>Input Lag</h3>
-                <p><strong>Symptom:</strong> Delay between press and response.</p>
-                <p><strong>Solution:</strong> Reduce audio buffer size. Use wired connection instead of Bluetooth. Disable many shader effects. Check CPU usage.</p>
-            </div>
-            
-            <div class="troubleshooting-item">
-                <h3>Vibration Not Working</h3>
-                <p><strong>Symptom:</strong> No force feedback.</p>
-                <p><strong>Solution:</strong> Enable in controller settings. Check game supports vibration. Verify controller has adequate battery. Some cores require per-core enabling.</p>
-            </div>
-            
-            <div class="troubleshooting-item">
-                <h3>Hotkey Conflicts</h3>
-                <p><strong>Symptom:</strong> Controller triggers emulator functions accidentally.</p>
-                <p><strong>Solution:</strong> Review hotkey settings. Use Game Focus Mode to disable hotkeys. Change combinations to avoid conflicts.</p>
-            </div>
-        </div>
-    </section>
 </div>
