@@ -26,9 +26,8 @@ title: Library Management - TruchiEmu Documentation
             <li><strong>Automatic Game Detection:</strong> AI-powered ROM identification using multiple database sources</li>
             <li><strong>Metadata Scraping:</strong> Pulls game info, descriptions, release dates, and developer information</li>
             <li><strong>Artwork Management:</strong> Automatic download of box art, screenshots, and fan art</li>
-            <li><strong>Smart Collections:</strong> Dynamic grouping by system, genre, year, or custom rules</li>
-            <li><strong>Import/Export:</strong> Bulk library management with CSV and JSON support</li>
-            <li><strong>Duplicate Detection:</strong> Intelligent duplicate finder with region/version differentiation</li>
+            <li><strong>System Categorization:</strong> Groups games by original console/system</li>
+            <li><strong>Achievement Detection:</strong> Identifies games with RetroAchievements support</li>
         </ul>
 
         <h3>Technical Architecture</h3>
@@ -37,7 +36,6 @@ title: Library Management - TruchiEmu Documentation
             <li><strong>ROM Scanner:</strong> Recursive directory scanning with file hash calculation and header extraction</li>
             <li><strong>Metadata Engine:</strong> Multi-source data aggregation from LaunchBox, IGDB, and custom databases</li>
             <li><strong>Artwork Pipeline:</strong> Parallel downloading with format optimization and caching</li>
-            <li><strong>Duplicate Analyzer:</strong> Fuzzy matching algorithm to identify true duplicates vs. regional variants</li>
             <li><strong>SwiftData Backend:</strong> Persistent storage with fast search and filtering capabilities</li>
             <li><strong>Index Service:</strong> Full-text search across titles, descriptions, and metadata tags</li>
         </ul>
@@ -53,32 +51,22 @@ title: Library Management - TruchiEmu Documentation
                 <p>Navigate to <code>Settings → Library → ROM Directories</code> and click "Add Directory". Select folders containing your game ROMs. TruchiEmu supports recursive scanning of subdirectories.</p>
                 <img src="{{ '/media/screenshots/library-directories.png' | relative_url }}" alt="ROM Directories Configuration">
             </li>
-            <li>
-                <strong>Initial Scan Configuration</strong>
-                <p>Configure scan options: file extensions to include (nes, smc, gb, gba, etc.), exclude patterns for beta/prototype versions, and maximum file size limits for known bad dumps.</p>
-            </li>
-            <li>
-                <strong>Enable Metadata Sources</strong>
-                <p>In <code>Settings → Library → Metadata</code>, select your preferred metadata providers. LaunchBox is recommended for accuracy, with IGDB as fallback for newer titles.</p>
-                <img src="{{ '/media/screenshots/metadata-sources.png' | relative_url }}" alt="Metadata Sources Configuration">
-            </li>
-            <li>
-                <strong>Start Library Scan</strong>
-                <p>Click "Scan for New ROMs" in the main Library view. The scanner will calculate hashes, identify games, and fetch metadata. Progress is shown in real-time with estimated completion time.</p>
-            </li>
-            <li>
-                <strong>Review Scan Results</strong>
-                <p>After scanning, review the "Unidentified Games" section. Manually match unrecognized ROMs by selecting the correct game from search results or creating custom entries.</p>
-            </li>
-        </ol>
+                <li>
+                    <strong>Initial Scan Configuration</strong>
+                    <p>Configure scan options: file extensions to include (nes, smc, gb, gba, etc.), exclude patterns for beta/prototype versions, and maximum file size limits for known bad dumps.</p>
+                </li>
+                <li>
+                    <strong>Start Library Scan</strong>
+                    <p>Click "Scan for New ROMs" in the main Library view. The scanner will calculate hashes, identify games, and fetch metadata. Progress is shown in real-time with estimated completion time.</p>
+                </li>
+                <li>
+                    <strong>Review Scan Results</strong>
+                    <p>After scanning, review the "Unidentified Games" section. Manually match unrecognized ROMs by selecting the correct game from search results or creating custom entries.</p>
+                </li>
+            </ol>
 
         <h3>Advanced Library Organization</h3>
         <ol class="setup-steps">
-            <li>
-                <strong>Create Smart Collections</strong>
-                <p>Navigate to <code>Library → Smart Collections → New Collection</code>. Define rules based on system, genre, release year, playtime, or achievement completion status.</p>
-                <img src="{{ '/media/screenshots/smart-collections.png' | relative_url }}" alt="Smart Collection Configuration">
-            </li>
             <li>
                 <strong>Configure Artwork Preferences</strong>
                 <p>In <code>Settings → Library → Artwork</code>, set your preferences for box art regions (USA, Europe, Japan), artwork quality (Standard, High, Ultra), and download parallelization settings for faster fetching.</p>
@@ -86,15 +74,6 @@ title: Library Management - TruchiEmu Documentation
             <li>
                 <strong>Set Up Automatic Artwork Download</strong>
                 <p>Enable "Auto-download Missing Artwork" to automatically fetch artwork for new games added to the library. Configure bandwidth limits to prevent network saturation during downloads.</p>
-            </li>
-            <li>
-                <strong>Configure Duplicate Detection</strong>
-                <p>Adjust duplicate detection sensitivity in <code>Settings → Library → Advanced</code>. Set thresholds for considering games duplicates based on title similarity and file content matching.</p>
-            </li>
-            <li>
-                <strong>Create Custom Metadata Fields</strong>
-                <p>Add custom tags and metadata fields for personal organization. In <code>Settings → Library → Custom Fields</a>, define fields like "Condition", "Purchase Date", or "Rating".</p>
-                <img src="{{ '/media/screenshots/custom-fields.png' | relative_url }}" alt="Custom Metadata Fields">
             </li>
         </ol>
 
@@ -111,11 +90,6 @@ title: Library Management - TruchiEmu Documentation
             <li>
                 <strong>Batch Metadata Refresh</strong>
                 <p>Select multiple games and choose <code>Refresh Metadata</code> from the context menu. This updates all metadata fields and artwork for the selected games.</p>
-            </li>
-            <li>
-                <strong>Duplicate Management</strong>
-                <p>Run <code>Tools → Find Duplicates</code> to identify duplicate games. Choose to hide, merge, or delete duplicates with intelligent suggestions based on region and version quality.</p>
-                <img src="{{ '/media/screenshots/duplicate-finder.png' | relative_url }}" alt="Duplicate Finder Results">
             </li>
         </ol>
     </section>
@@ -304,6 +278,11 @@ smart_collections [
                 <p><strong>Symptom:</strong> Box art and screenshots not downloading.</p>
                 <p><strong>Solution:</strong> Check internet connection and firewall settings. Verify API credentials for metadata sources in settings. Try reducing parallel downloads to avoid rate limiting.</p>
             </div>
+            <div class="troubleshooting-item">
+                <h3>Scanning Performance Issues</h3>
+                <p><strong>Symptom:</strong> Library scan taking extremely long or freezing.</p>
+                <p><strong>Solution:</strong> Disable streaming checksum for large files. Reduce parallel operations in advanced settings. Scan directories in smaller batches instead of entire collection at once.</p>
+            </div>
             
             <div class="troubleshooting-item">
                 <h3>Duplicate Games in Library</h3>
@@ -327,6 +306,11 @@ smart_collections [
                 <h3>Smart Collection Not Updating</h3>
                 <p><strong>Symptom:</strong> Smart collections showing outdated game lists.</p>
                 <p><strong>Solution:</strong> Smart collections update automatically when games are played. Manual refresh with Cmd+R. Check rule syntax for errors that might prevent matching.</p>
+            </div>
+            <div class="troubleshooting-item">
+                <h3>Import/Export Errors</h3>
+                <p><strong>Symptom:</strong> Error messages when importing libraries from other applications.</p>
+                <p><strong>Solution:</strong> Ensure file format matches expected schema. Check for encoding issues in text files. Validate JSON syntax using external tools before importing.</p>
             </div>
             
             <div class="troubleshooting-item">
