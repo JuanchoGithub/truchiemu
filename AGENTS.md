@@ -28,7 +28,8 @@
 | `TruchiEmu/Views/` | SwiftUI views |
 | `TruchiEmu/Features/` | Feature-specific views |
 | `TruchiEmu/Shared/` | Shared utilities |
-| `TruchiEmu/Resources/` | Assets, Info.plist, entitlements, app icons, `retroarch/` submodule |
+| `TruchiEmu/Resources/` | Assets, Info.plist, entitlements, app icons |
+| `TruchiEmu_Resources/` | Shader and image resources (core_shaders, retroarch_images) |
 | `TruchiEmuTests/` | Unit tests (DATPrepopulationService, LaunchBoxGamesDB, ROMIdentifier, etc.) |
 | `scripts/` | Standalone Python tools (ROM lookup, DAT downloads) — not part of the app build |
 
