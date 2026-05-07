@@ -520,8 +520,22 @@ controller.close()
                     }
                     .frame(maxWidth: .infinity, maxHeight: .infinity)
                     .background(Color(NSColor.windowBackgroundColor))
-                } else if let selectedPreset = ShaderPreset.preset(id: settings.shaderPresetID),
+} else if let selectedPreset = ShaderPreset.preset(id: settings.shaderPresetID),
                    !selectedPreset.globalUniforms.isEmpty {
+                    // Built-in preset with uniforms
+                    VStack(spacing: 0) {
+                        parameterSliders
+                        savePresetBar
+                    }
+                } else if let savedPreset = savedPresets.first(where: { $0.id.uuidString == settings.shaderPresetID }),
+                         !savedPreset.uniformValues.isEmpty {
+                     // Saved custom preset with uniforms
+                    VStack(spacing: 0) {
+                        parameterSliders
+                        savePresetBar
+                    }
+                } else if !settings.uniformValues.isEmpty {
+                    // Has custom uniform values (even if not from a known preset)
                     VStack(spacing: 0) {
                         parameterSliders
                         savePresetBar
@@ -543,6 +557,26 @@ controller.close()
         .frame(minWidth: 700, minHeight: 500)
         .onAppear {
             savedPresets = ShaderPresetStorageService.shared.savedPresets
+            
+            // Load uniform values if the initial preset is a saved custom shader
+            if let savedPreset = savedPresets.first(where: { $0.id.uuidString == settings.shaderPresetID }) {
+                // Load base preset uniforms as defaults, then apply saved overrides
+                if let basePreset = ShaderPreset.preset(id: savedPreset.basePresetID) {
+                    var merged: [String: Float] = [:]
+                    for uniform in basePreset.globalUniforms {
+                        merged[uniform.name] = uniform.defaultValue
+                    }
+                    for (name, value) in savedPreset.uniformValues {
+                        merged[name] = value
+                    }
+                    settings.uniformValues = merged
+                } else {
+                    settings.uniformValues = savedPreset.uniformValues
+                }
+            }
+        }
+        .onReceive(ShaderPresetStorageService.shared.$savedPresets) { presets in
+            savedPresets = presets
         }
         .fileImporter(isPresented: $showImportPicker, allowedContentTypes: [.truchishader, .json]) { result in
             guard case .success(let url) = result else { return }
@@ -672,9 +706,7 @@ controller.close()
                     }
                 }
 
-                if !savedPresets.isEmpty {
-                    categoryChip(title: "Saved", filter: .saved, count: savedPresets.count, isActive: selectedCategory == .saved)
-                }
+                categoryChip(title: "Saved", filter: .saved, count: visibleSavedPresets.count, isActive: selectedCategory == .saved)
             }
             .padding(.horizontal, 8)
             .padding(.vertical, 6)
@@ -711,12 +743,49 @@ controller.close()
                 switch selectedCategory {
                 case .saved:
                     savedPresetsListContent
+                case .all:
+                    allPresetsListContent
                 default:
                     builtinPresetsListContent
                 }
             }
             .padding(8)
         }
+    }
+
+    private var allPresetsListContent: some View {
+        VStack(spacing: 0) {
+            if !visibleSavedPresets.isEmpty {
+                sectionHeader("Saved")
+                ForEach(visibleSavedPresets, id: \.id) { preset in
+                    savedPresetRow(preset: preset)
+                }
+            }
+            if !visibleBuiltinPresets.isEmpty {
+                if !visibleSavedPresets.isEmpty {
+                    Divider()
+                        .padding(.vertical, 8)
+                }
+                sectionHeader("Built-in")
+                ForEach(visibleBuiltinPresets, id: \.id) { preset in
+                    presetRow(preset: preset)
+                }
+            }
+            if visibleSavedPresets.isEmpty && visibleBuiltinPresets.isEmpty {
+                Text("No shaders found")
+                    .foregroundColor(.secondary)
+                    .padding()
+            }
+        }
+    }
+
+    private func sectionHeader(_ title: String) -> some View {
+        Text(title)
+            .font(.caption)
+            .foregroundColor(.secondary)
+            .frame(maxWidth: .infinity, alignment: .leading)
+            .padding(.horizontal, 12)
+            .padding(.top, 8)
     }
 
     private var builtinPresetsListContent: some View {
@@ -737,19 +806,24 @@ controller.close()
 
     private var savedPresetsListContent: some View {
         Group {
-            if savedPresets.isEmpty {
+            if visibleSavedPresets.isEmpty {
                 VStack(spacing: 12) {
-                    Text("No saved presets")
-                        .foregroundColor(.secondary)
-                    Button("Import...", systemImage: "square.and.arrow.down") {
-                        showImportPicker = true
+                    if savedPresets.isEmpty {
+                        Text("No saved presets")
+                            .foregroundColor(.secondary)
+                        Button("Import...", systemImage: "square.and.arrow.down") {
+                            showImportPicker = true
+                        }
+                        .buttonStyle(.bordered)
+                        .controlSize(.small)
+                    } else {
+                        Text("No matches found")
+                            .foregroundColor(.secondary)
                     }
-                    .buttonStyle(.bordered)
-                    .controlSize(.small)
                 }
                 .padding()
             } else {
-                ForEach(savedPresets, id: \.id) { preset in
+                ForEach(visibleSavedPresets, id: \.id) { preset in
                     savedPresetRow(preset: preset)
                 }
             }
@@ -759,15 +833,16 @@ controller.close()
     // MARK: - Preset Filtering
 
     private var visibleBuiltinPresets: [ShaderPreset] {
-        let filtered: [ShaderPreset]
         switch selectedCategory {
         case .all:
-            filtered = ShaderPreset.allPresets
+            break
         case .builtin(let type):
-            filtered = ShaderPreset.allPresets.filter { $0.shaderType == type }
+            return ShaderPreset.allPresets.filter { $0.shaderType == type }
         case .saved:
             return []
         }
+
+        let filtered = ShaderPreset.allPresets
 
         if searchText.isEmpty { return filtered }
 
@@ -776,6 +851,15 @@ controller.close()
             preset.name.lowercased().contains(search) ||
             preset.description?.lowercased().contains(search) == true ||
             preset.recommendedSystems.contains { $0.lowercased().contains(search) }
+        }
+    }
+
+    private var visibleSavedPresets: [SavedShaderPreset] {
+        if searchText.isEmpty { return savedPresets }
+
+        let search = searchText.lowercased()
+        return savedPresets.filter { preset in
+            preset.name.lowercased().contains(search)
         }
     }
 
@@ -817,9 +901,9 @@ controller.close()
         VStack(spacing: 0) {
             SavedPresetRowView(
                 preset: preset,
-                isSelected: preset.basePresetID == settings.shaderPresetID,
+                isSelected: preset.id.uuidString == settings.shaderPresetID,
                 onSelect: {
-                    settings.shaderPresetID = preset.basePresetID
+                    settings.shaderPresetID = preset.id.uuidString
                     settings.uniformValues = preset.uniformValues
                     ShaderManager.shared.activatePresetWithOverrides(presetID: preset.basePresetID, overrides: preset.uniformValues)
                 },
@@ -843,20 +927,34 @@ controller.close()
         }
     }
 
-    // MARK: - Parameter Sliders
-
+// MARK: - Parameter Sliders
+    
     private var parameterSliders: some View {
         Group {
+            // Check built-in first
             if let preset = ShaderPreset.preset(id: settings.shaderPresetID),
                !preset.globalUniforms.isEmpty {
-                 ShaderParameterSliders(
-                     preset: preset,
-                     uniformValues: $settings.uniformValues,
-                     onValueCommitted: onValueCommitted
-                 )
-                 .frame(maxWidth: .infinity)
-                 .padding(.horizontal, 8)
-                 .padding(.vertical, 8)
+                ShaderParameterSliders(
+                    preset: preset,
+                    uniformValues: $settings.uniformValues,
+                    onValueCommitted: onValueCommitted
+                )
+                .frame(maxWidth: .infinity)
+                .padding(.horizontal, 8)
+                .padding(.vertical, 8)
+            }
+            // Check saved custom presets - use base preset for slider definition
+            else if let savedPreset = savedPresets.first(where: { $0.id.uuidString == settings.shaderPresetID }),
+                  let basePreset = ShaderPreset.preset(id: savedPreset.basePresetID),
+                  !basePreset.globalUniforms.isEmpty {
+                ShaderParameterSliders(
+                    preset: basePreset,
+                    uniformValues: $settings.uniformValues,
+                    onValueCommitted: onValueCommitted
+                )
+                .frame(maxWidth: .infinity)
+                .padding(.horizontal, 8)
+                .padding(.vertical, 8)
             }
         }
     }

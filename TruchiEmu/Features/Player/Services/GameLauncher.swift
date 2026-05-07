@@ -59,7 +59,8 @@ class GameLauncher: ObservableObject {
             let system = SystemDatabase.system(forID: rom.systemID ?? "")
             let defaultShader = system?.defaultShaderPresetID ?? ""
             let romShader = rom.settings.shaderPresetID.isEmpty ? defaultShader : rom.settings.shaderPresetID
-            LoggerService.debug(category: "GameLauncher", "Resolved shader for '\(rom.displayName)' [\(rom.id.uuidString.prefix(8))]: preset=\(romShader.isEmpty ? "(none)" : romShader), systemDefault=\(defaultShader.isEmpty ? "(none)" : defaultShader)")
+            LoggerService.info(category: "GameLauncher", "Shader resolution: romShader=\(romShader.isEmpty ? "(empty)" : romShader), systemDefault=\(defaultShader.isEmpty ? "(empty)" : defaultShader), romSettingsShader=\(rom.settings.shaderPresetID)")
+            
             self.shaderPresetID = shaderPresetID ?? romShader
             
             // Resolve achievements
@@ -208,12 +209,25 @@ class GameLauncher: ObservableObject {
     private func applyLaunchConfiguration(_ config: LaunchConfig) {
         // 1. Apply shader preset - only if different from current to avoid resetting uniforms
         let currentPresetID = ShaderManager.shared.activePreset.id
-        if let preset = ShaderPreset.preset(id: config.shaderPresetID), !config.shaderPresetID.isEmpty {
-            if config.shaderPresetID != currentPresetID {
-                ShaderManager.shared.activatePreset(preset)
-                LoggerService.debug(category: "GameLauncher", "Activated shader: \(preset.name)")
+        if !config.shaderPresetID.isEmpty {
+            // Check built-in presets first
+            if let preset = ShaderPreset.preset(id: config.shaderPresetID) {
+                if config.shaderPresetID != currentPresetID {
+                    ShaderManager.shared.activatePreset(preset)
+                    LoggerService.debug(category: "GameLauncher", "Activated shader: \(preset.name)")
+                } else {
+                    LoggerService.debug(category: "GameLauncher", "Shader already active: \(preset.name)")
+                }
             } else {
-                LoggerService.debug(category: "GameLauncher", "Shader already active: \(preset.name)")
+                // Check saved custom presets (by UUID string)
+                if let savedPreset = ShaderPresetStorageService.shared.savedPresets.first(where: { $0.id.uuidString == config.shaderPresetID }) {
+                    ShaderManager.shared.activatePresetWithOverrides(presetID: savedPreset.basePresetID, overrides: savedPreset.uniformValues)
+                    LoggerService.debug(category: "GameLauncher", "Activated custom shader: \(savedPreset.name)")
+                } else {
+                    // Preset not found, reset to default
+                    ShaderManager.shared.resetToDefault()
+                    LoggerService.debug(category: "GameLauncher", "Shader not found, reset to default")
+                }
             }
         } else {
             // If no shader is specified, we must explicitly reset the manager to prevent "leaking" the last used shader

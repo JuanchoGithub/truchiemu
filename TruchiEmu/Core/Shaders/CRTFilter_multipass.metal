@@ -98,8 +98,8 @@ static inline float3 crt_mp_applyAnalogFinishing(float3 rgb, CRT_MP_Context ctx,
     return out;
 }
 
-static inline float3 crt_mp_applyScanlines(float3 rgb, float3 sourceColor, float posY, float baseInt, float bloomStr, bool useBloom) {
-    float scanline = sin(posY * 70.0) * 0.5 + 0.5;
+static inline float3 crt_mp_applyScanlines(float3 rgb, float3 sourceColor, float uvY, float texH, float baseInt, float bloomStr, bool useBloom) {
+    float scanline = sin(uvY * texH * 3.14159) * 0.5 + 0.5;
     float intensity = baseInt;
     if (useBloom) {
         float luma = dot(sourceColor, float3(0.2126, 0.7152, 0.0722));
@@ -109,35 +109,20 @@ static inline float3 crt_mp_applyScanlines(float3 rgb, float3 sourceColor, float
     return rgb * mix(1.0, 1.0 - intensity, scanPow);
 }
 
-static inline float3 crt_mp_applyPhosphorMask(float3 rgb, float2 fragCoord, float hSpacing, float vSpacing, float subpixelGap, bool active) {
+static inline float3 crt_mp_applyPhosphorMask(float3 rgb, float2 fragCoord, float hGap, float vGap, bool active) {
     if (!active) return rgb;
     
-    // Determine the current pixel cell based on screen coordinates
-    float cellX = fmod(fragCoord.x, max(1.0, hSpacing)) / max(1.0, hSpacing);
-    float cellY = fmod(fragCoord.y, max(1.0, vSpacing)) / max(1.0, vSpacing);
-    
-    // Vertical scanline gap (aperture grille/slot mask lines)
-    float vActive = 1.0;
-    if (vSpacing > 1.5) {
-        vActive = mix(0.5, 1.0, sin(cellY * 3.14159)); 
+    float phosphorX = sin(fragCoord.x * 1.5) * 0.5 + 0.5;
+    float phosphor = phosphorX;
+    if (vGap > 0.01) {
+        float phosphorY = sin(fragCoord.y * 1.5) * 0.5 + 0.5;
+        phosphor = mix(phosphorX, phosphorX * phosphorY, vGap);
     }
     
-    // Horizontal subpixel triads (R, G, B)
-    float subX = cellX * 3.0;
-    float subFract = fract(subX);
+    float strength = clamp(hGap, 0.0, 0.9);
+    float maskStr = mix(1.0, phosphor, strength);
     
-    // Create the black gap between subpixels
-    float halfGap = clamp(subpixelGap, 0.0, 0.9) * 0.5;
-    float phosphorActive = smoothstep(halfGap, halfGap + 0.05, subFract) * 
-                           (1.0 - smoothstep(1.0 - halfGap - 0.05, 1.0 - halfGap, subFract));
-                           
-    float3 mask = float3(0.0);
-    if (subX < 1.0) mask.r = phosphorActive;
-    else if (subX < 2.0) mask.g = phosphorActive;
-    else mask.b = phosphorActive;
-    
-    // Multiply by 2.5 to compensate for the brightness lost to the black mask gaps
-    return rgb * mask * vActive * 2.5; 
+    return rgb * maskStr;
 }
 
 static inline float3 crt_mp_applyMaskAndBezel(float3 rgb, float2 distortUV, float2 sampleUV, texture2d<float> tex, sampler s, float boost, float texX, float rounding, float glowInt, bool bezel) {
@@ -228,10 +213,10 @@ fragment float4 fragmentCRTMultipass(VertexOut in [[stage_in]],
     rgb = crt_mp_applyDitherBleed(rgb, colL, colR, BLEED, u.bleedAmount); // Fixed hardcoded 0.3
     rgb = crt_mp_applyAnalogFinishing(rgb, ctx, u.colorBoost, float3(u.tintR, u.tintG, u.tintB), u.vignetteStrength, u.time, u.flickerStrength, WHITE, VIG, FLICK);
     
-    if (SCAN) rgb = crt_mp_applyScanlines(rgb, f0, in.position.y, u.scanlineIntensity, u.bloomStrength, BLOOM);
+    if (SCAN) rgb = crt_mp_applyScanlines(rgb, f0, sampleUV.y, u.texSizeY, u.scanlineIntensity, u.bloomStrength, BLOOM);
     
     // 6. Subpixel CRT Mask
-    if (MASK) rgb = crt_mp_applyPhosphorMask(rgb, in.position.xy, u.maskPixelSpacingH, u.maskPixelSpacingV, u.maskSubpixelGap, MASK);
+    if (MASK) rgb = crt_mp_applyPhosphorMask(rgb, in.position.xy, u.maskPixelSpacingH, u.maskPixelSpacingV, MASK);
     
     // 7. Final Composite
     float3 finalOut = crt_mp_applyMaskAndBezel(rgb, distortedUV, sampleUV, frame0, s, u.colorBoost, u.texSizeX, u.bezelRounding, u.bezelGlow, BEZEL);

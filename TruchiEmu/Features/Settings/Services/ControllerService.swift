@@ -594,8 +594,10 @@ struct KeyboardMapping: Codable {
             base[.y] = 9     // Y (Button 4)
             base[.l1] = 12   // Q (Button 5)
             base[.r1] = 14   // W (Button 6)
-            base[.coin1] = 18  // R (Coin 1)
-            base[.start1] = 19 // T (Start 1)
+            base[.coin1] = 15 // R (Coin 1) - kVK_ANSI_R = 0x0F = 15
+            base[.start1] = 17 // T (Start 1) - kVK_ANSI_T = 0x11 = 17
+            base[.coin2] = 16   // Y (Coin 2) - kVK_ANSI_Y = 0x10 = 16
+            base[.start2] = 32  // U (Start 2) - kVK_ANSI_U = 0x20 = 32
             
         case "scummvm":
             // ScummVM: Full mouse and keyboard emulation
@@ -984,6 +986,8 @@ enum RetroButton: String, Codable, CaseIterable {
 
         case .coin1: return 2
         case .start1: return 3
+        case .coin2: return 4
+        case .start2: return 5
         
         default: return -1
         }
@@ -1130,10 +1134,7 @@ extension KeyboardMapping {
             map(.y, to: .y)
             map(.z, to: .r1)
         case "mame", "fba", "arcade":
-            map(.coin1, to: .select)
-            map(.start1, to: .start)
-            map(.coin2, to: .l3)
-            map(.start2, to: .r3)
+            break
         default:
             break
         }

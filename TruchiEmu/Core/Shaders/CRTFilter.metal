@@ -102,30 +102,20 @@ static float2 getDistortedUV(float2 screenUV, ShaderContext ctx, float amount, b
 /**
  * applyPhosphorMask: CRT subpixel mask (RGB phosphor triad simulation)
  */
-static float3 applyPhosphorMask(float3 rgb, float2 fragCoord, float hSpacing, float vSpacing, float subpixelGap, bool active) {
+static float3 applyPhosphorMask(float3 rgb, float2 fragCoord, float hGap, float vGap, bool active) {
     if (!active) return rgb;
     
-    float cellX = fmod(fragCoord.x, max(1.0, hSpacing)) / max(1.0, hSpacing);
-    float cellY = fmod(fragCoord.y, max(1.0, vSpacing)) / max(1.0, vSpacing);
-    
-    float vActive = 1.0;
-    if (vSpacing > 1.5) {
-        vActive = mix(0.5, 1.0, sin(cellY * 3.14159)); 
+    float phosphorX = sin(fragCoord.x * 1.5) * 0.5 + 0.5;
+    float phosphor = phosphorX;
+    if (vGap > 0.01) {
+        float phosphorY = sin(fragCoord.y * 1.5) * 0.5 + 0.5;
+        phosphor = mix(phosphorX, phosphorX * phosphorY, vGap);
     }
     
-    float subX = cellX * 3.0;
-    float subFract = fract(subX);
+    float strength = clamp(hGap, 0.0, 0.9);
+    float maskStr = mix(1.0, phosphor, strength);
     
-    float halfGap = clamp(subpixelGap, 0.0, 0.9) * 0.5;
-    float phosphorActive = smoothstep(halfGap, halfGap + 0.05, subFract) * 
-                           (1.0 - smoothstep(1.0 - halfGap - 0.05, 1.0 - halfGap, subFract));
-                           
-    float3 mask = float3(0.0);
-    if (subX < 1.0) mask.r = phosphorActive;
-    else if (subX < 2.0) mask.g = phosphorActive;
-    else mask.b = phosphorActive;
-    
-    return rgb * mask * vActive * 2.5; 
+    return rgb * maskStr;
 }
 
 // --- [ 2. COLOR & SAMPLING ] ---
@@ -164,12 +154,11 @@ static float3 applyAnalogFinishing(float3 rgb, ShaderContext ctx, float boost, f
  * - baseInt: Darkness. 0.3 (PVM) | 0.5 (Arcade) | 0.8 (Cheap TV).
  * - bloomStr: 1.0 (Static) | 1.5+ (Scanlines fade out in bright white areas).
  */
-static float3 applyScanlines(float3 rgb, float3 sourceColor, float posY, float baseInt, float bloomStr, bool useBloom) {
-    float scanline = sin(posY * 70.0) * 0.5 + 0.5;
+static float3 applyScanlines(float3 rgb, float3 sourceColor, float uvY, float texH, float baseInt, float bloomStr, bool useBloom) {
+    float scanline = sin(uvY * texH * 3.14159) * 0.5 + 0.5;
     float intensity = baseInt;
     
     if (useBloom) {
-        // Bright pixels "expand" the electron beam, making the black scanline thinner.
         float luma = dot(sourceColor, float3(0.2126, 0.7152, 0.0722));
         intensity = mix(baseInt, 0.0, saturate(luma * bloomStr));
     }
@@ -341,10 +330,10 @@ fragment float4 fragmentCRT(VertexOut in [[stage_in]],
     rgb = applyAnalogFinishing(rgb, ctx, u.colorBoost, float3(u.tintR, u.tintG, u.tintB), u.vignetteStrength, u.time, u.flickerStrength, WHITE, VIG, FLICK);
     
     // SCANLINES: Horizontal darkened lines with adaptive bloom.
-    if (SCAN) rgb = applyScanlines(rgb, mainColor, in.position.y, u.scanlineIntensity, u.bloomStrength, BLOOM);
+    if (SCAN) rgb = applyScanlines(rgb, mainColor, sampleUV.y, u.texSizeY, u.scanlineIntensity, u.bloomStrength, BLOOM);
     
     // SUBPIXEL MASK: CRT phosphor mask
-    if (MASK) rgb = applyPhosphorMask(rgb, in.position.xy, u.maskPixelSpacingH, u.maskPixelSpacingV, u.maskSubpixelGap, MASK);
+    if (MASK) rgb = applyPhosphorMask(rgb, in.position.xy, u.maskPixelSpacingH, u.maskPixelSpacingV, MASK);
     
     // 5. Final Composite: Add bezel mask and glass glow.
     float3 finalOut = applyMaskAndBezel(rgb, distortedUV, sampleUV, tex, s, u.colorBoost, u.texSizeX, u.bezelRounding, u.bezelGlow, BEZEL);

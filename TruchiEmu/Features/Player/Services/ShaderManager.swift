@@ -27,7 +27,24 @@ class ShaderManager: ObservableObject {
         setupDevice()
         loadLibrary()
         createVertexBuffer()
-        loadDefaultUniforms()
+        
+        // Load saved default shader preset if configured, otherwise use built-in default
+        let savedDefaultID = AppSettings.get("display_default_shader_preset", type: String.self) ?? ""
+        if !savedDefaultID.isEmpty {
+            // Check built-in presets first
+            if let preset = ShaderPreset.preset(id: savedDefaultID) {
+                activatePreset(preset)
+            } else {
+                // Check saved custom presets (by UUID string)
+                if let savedPreset = ShaderPresetStorageService.shared.savedPresets.first(where: { $0.id.uuidString == savedDefaultID }) {
+                    activatePresetWithOverrides(presetID: savedPreset.basePresetID, overrides: savedPreset.uniformValues)
+                } else {
+                    loadDefaultUniforms()
+                }
+            }
+        } else {
+            loadDefaultUniforms()
+        }
     }
     
     // Vertex buffer for fullscreen quad

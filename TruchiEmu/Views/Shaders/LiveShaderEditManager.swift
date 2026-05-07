@@ -21,10 +21,18 @@ class LiveShaderEditManager: ObservableObject {
             return
         }
 
-        // Set up the shader preset before launching
+        // Set up the shader preset before launching - check both built-in and saved presets
         let presetID = rom.settings.shaderPresetID
-        if !presetID.isEmpty, let preset = ShaderPreset.preset(id: presetID) {
-            ShaderManager.shared.activatePresetWithOverrides(presetID: presetID, overrides: shaderUniformOverrides)
+        if !presetID.isEmpty {
+            if let preset = ShaderPreset.preset(id: presetID) {
+                ShaderManager.shared.activatePresetWithOverrides(presetID: presetID, overrides: shaderUniformOverrides)
+            } else if let savedPreset = ShaderPresetStorageService.shared.savedPresets.first(where: { $0.id.uuidString == presetID }) {
+                var merged = shaderUniformOverrides
+                for (name, value) in savedPreset.uniformValues {
+                    if merged[name] == nil { merged[name] = value }
+                }
+                ShaderManager.shared.activatePresetWithOverrides(presetID: savedPreset.basePresetID, overrides: merged)
+            }
         }
 
         activeROMSettings = rom.settings

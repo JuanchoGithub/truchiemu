@@ -114,11 +114,14 @@ shaderController = ShaderWindowController(settings: settings) { [self] newPreset
 LoggerService.debug(category: "ShaderPicker", "=== CONTENTVIEW CALLBACK ===")
 LoggerService.debug(category: "ShaderPicker", "newPresetID=\(newPresetID), targetSystemID=\(targetSystem.id)")
 
-let preset = ShaderPreset.preset(id: newPresetID) ?? ShaderPreset.defaultPreset
-
-ShaderManager.shared.activatePreset(preset)
+// Activate the shader - check both built-in and saved presets
+if let preset = ShaderPreset.preset(id: newPresetID) {
+    ShaderManager.shared.activatePreset(preset)
+} else if let savedPreset = ShaderPresetStorageService.shared.savedPresets.first(where: { $0.id.uuidString == newPresetID }) {
+    ShaderManager.shared.activatePresetWithOverrides(presetID: savedPreset.basePresetID, overrides: savedPreset.uniformValues)
+}
 for (name, value) in newUniforms {
-ShaderManager.shared.updateUniform(name, value: value)
+    ShaderManager.shared.updateUniform(name, value: value)
 }
 
 let targetSystemID = targetSystem.id
