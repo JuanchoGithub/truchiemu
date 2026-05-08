@@ -197,7 +197,7 @@ extension ShaderPreset {
                     ],
 globalUniforms: [
                 ShaderUniform(name: "scanlineIntensity", defaultValue: 0.35, minValue: 0.0, maxValue: 1.0, displayName: "Scanline Intensity"),
-                ShaderUniform(name: "barrelAmount", defaultValue: 0.12, minValue: 0.0, maxValue: 0.5, displayName: "Barrel Distortion"),
+                ShaderUniform(name: "barrelAmount", defaultValue: 0.06, minValue: 0.0, maxValue: 0.5, displayName: "Barrel Distortion"),
                 ShaderUniform(name: "colorBoost", defaultValue: 1.0, minValue: 0.5, maxValue: 2.0, displayName: "Color Boost"),
                 ShaderUniform(name: "bleedAmount", defaultValue: 0.3, minValue: 0.0, maxValue: 1.0, step: 0.01, displayName: "Color Bleed Amount"),
                 ShaderUniform(name: "vignetteStrength", defaultValue: 0.6, minValue: 0.0, maxValue: 1.0, displayName: "Vignette Strength"),
@@ -429,7 +429,7 @@ description: "Game Boy Color with temporal feedback, ghosting, and iridescent LC
             ],
             globalUniforms: [
                 ShaderUniform(name: "scanlineIntensity", defaultValue: 0.45, minValue: 0.0, maxValue: 1.0, displayName: "Scanline Intensity"),
-                ShaderUniform(name: "barrelAmount", defaultValue: 0.15, minValue: 0.0, maxValue: 0.5, displayName: "Barrel Distortion"),
+                ShaderUniform(name: "barrelAmount", defaultValue: 0.06, minValue: 0.0, maxValue: 0.5, displayName: "Barrel Distortion"),
                 ShaderUniform(name: "colorBoost", defaultValue: 1.0, minValue: 0.5, maxValue: 2.0, displayName: "Color Boost"),
                 ShaderUniform(name: "ghostingWeight", defaultValue: 0.3, minValue: 0.0, maxValue: 1.0, displayName: "Phosphor Persistence"),
                 ShaderUniform(name: "bloomStrength", defaultValue: 0.25, minValue: 0.0, maxValue: 1.0, displayName: "Scanline Bloom"),
