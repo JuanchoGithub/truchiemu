@@ -43,9 +43,9 @@ actor ROMScanner {
 
     // Static Set is much faster than recreating it per file
     private static let nonROMExtensions: Set<String> = [
-        "txt", "xml", "jpg", "jpeg", "png", "gif", "bmp", "pdf", "mp3", "mp4", "avi", "mkv", "nfo", "dat", "db", "json",
+        "xml", "jpg", "jpeg", "png", "gif", "bmp", "pdf", "mp3", "mp4", "avi", "mkv", "nfo", "db", "json",
         "py", "pyc", "pyo", "pyw", "dylib", "so", "app", "icns", "plist", "strings", "loc", "lproj", "nib", "xib",
-        "md", "rmd", "html", "htm", "css", "js", "ts", "jsx", "tsx"
+        "rmd", "html", "htm", "css", "js", "ts", "jsx", "tsx"
     ]
 
     // MARK: - Bulk MAME Identification
