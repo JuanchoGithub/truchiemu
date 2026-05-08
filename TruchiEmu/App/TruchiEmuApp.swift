@@ -419,7 +419,10 @@ class AppDelegate: NSObject, NSApplicationDelegate, UNUserNotificationCenterDele
     func applicationDidFinishLaunching(_ notification: Notification) {
         // Set the delegate for notification center to handle foreground notifications
         UNUserNotificationCenter.current().delegate = self
-        
+
+        // Set up RetroAchievementsService with SwiftData context
+        RetroAchievementsService.shared.setModelContext(SwiftDataContainer.shared.container.mainContext)
+
         let args = ProcessInfo.processInfo.arguments
         if args.contains("--launch") {
             LoggerService.info(category: "App", "CLI launch detected - will terminate when last window closes")

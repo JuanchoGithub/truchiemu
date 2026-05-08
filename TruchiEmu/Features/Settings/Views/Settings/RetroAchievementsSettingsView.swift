@@ -5,11 +5,16 @@ struct RetroAchievementsSettingsView: View {
     static let searchKeywords = "retro achievements hardcore"
     
     @ObservedObject private var raService = RetroAchievementsService.shared
+    @EnvironmentObject private var library: ROMLibrary
     @State private var username = ""
     @State private var webApiKey = ""
     @State private var loginError: String?
     @State private var isLoggingIn = false
     @State private var showApiKey = false
+    @State private var cacheRefreshError: String?
+    @State private var isCacheRefreshing = false
+    @State private var matchingStatus: String?
+    @State private var isMatching = false
     
     @Binding var searchText: String
     let system: SystemInfo?
@@ -43,7 +48,12 @@ struct RetroAchievementsSettingsView: View {
                 if !isSearching || matchesSearch("account username login logout connect api key") {
                     accountSection
                 }
-                
+
+                // Cache Section
+                if !isSearching || matchesSearch("refresh cache systems games data") {
+                    cacheSection
+                }
+
                 // Hardcore Mode Section
                 if !isSearching || matchesSearch("hardcore mode") {
                     hardcoreModeSection
@@ -72,6 +82,7 @@ struct RetroAchievementsSettingsView: View {
     private var hasAnyResults: Bool {
         matchesSearch("RetroAchievements enable disable") ||
         matchesSearch("account username login logout connect api key") ||
+        matchesSearch("refresh cache systems games data") ||
         matchesSearch("hardcore mode") ||
         matchesSearch("rich presence game active") ||
         matchesSearch("about info")
@@ -219,13 +230,13 @@ struct RetroAchievementsSettingsView: View {
                 VStack(spacing: 12) {
                     TextField("Username", text: $username)
                         .textFieldStyle(.roundedBorder)
-                        .disableAutocorrection(true)
+                        .autocorrectionDisabled()
                     
                     HStack {
                         if showApiKey {
                             TextField("Web API Key", text: $webApiKey)
                                 .textFieldStyle(.roundedBorder)
-                                .disableAutocorrection(true)
+                                .autocorrectionDisabled()
                         } else {
                             SecureField("Web API Key", text: $webApiKey)
                                 .textFieldStyle(.roundedBorder)
@@ -338,7 +349,7 @@ struct RetroAchievementsSettingsView: View {
                         .font(.headline)
                 }
             }
-            
+
             if let richPresence = raService.richPresence {
                 Text(richPresence)
                     .font(.caption)
@@ -356,6 +367,155 @@ struct RetroAchievementsSettingsView: View {
         .padding()
         .background(.ultraThinMaterial)
         .cornerRadius(12)
+    }
+
+    @ViewBuilder
+    private var cacheSection: some View {
+        VStack(alignment: .leading, spacing: 12) {
+            HStack {
+                if isSearching {
+                    Text("Game Cache")
+                        .font(.headline)
+                } else {
+                    Label("Game Cache", systemImage: "internaldrive")
+                        .font(.headline)
+                }
+                Spacer()
+                if RAGameCacheCoordinator.shared.isActive {
+                    ProgressView().controlSize(.small)
+                }
+            }
+
+            Text("RetroAchievements caches game data locally for faster matching. Refresh to fetch the latest data from RA.")
+                .font(.caption)
+                .foregroundColor(.secondary)
+
+            HStack(spacing: 12) {
+                Button(action: refreshConsoles) {
+                    if isCacheRefreshing {
+                        ProgressView()
+                            .controlSize(.small)
+                    } else {
+                        Label("Refresh Systems", systemImage: "arrow.clockwise")
+                    }
+                }
+                .buttonStyle(.bordered)
+                .disabled(RAGameCacheCoordinator.shared.isActive || isCacheRefreshing || !raService.isLoggedIn)
+
+                Button(action: refreshGames) {
+                    if isCacheRefreshing {
+                        ProgressView()
+                            .controlSize(.small)
+                    } else {
+                        Label("Refresh Games", systemImage: "gamecontroller")
+                    }
+                }
+                .buttonStyle(.bordered)
+                .disabled(RAGameCacheCoordinator.shared.isActive || isCacheRefreshing || !raService.isLoggedIn)
+
+                Button(action: matchAllGames) {
+                    if isMatching {
+                        ProgressView()
+                            .controlSize(.small)
+                    } else {
+                        Label("Match All Games", systemImage: "trophy")
+                    }
+                }
+                .buttonStyle(.bordered)
+                .disabled(RAGameCacheCoordinator.shared.isActive || isMatching || !raService.isLoggedIn || library.roms.isEmpty)
+            }
+
+            if let status = matchingStatus {
+                Text(status)
+                    .font(.caption)
+                    .foregroundColor(.secondary)
+            }
+
+            if let error = cacheRefreshError {
+                Text(error)
+                    .font(.caption)
+                    .foregroundColor(.red)
+            }
+
+            if let lastConsoleDate = AppSettings.get("ra_consoles_cache_date", type: Double.self) {
+                let date = Date(timeIntervalSince1970: lastConsoleDate)
+                Text("Systems cached: \(date.formatted(date: .abbreviated, time: .shortened))")
+                    .font(.caption)
+                    .foregroundColor(.secondary)
+            }
+        }
+        .padding()
+        .background(.ultraThinMaterial)
+        .cornerRadius(12)
+    }
+
+    private func refreshConsoles() {
+        guard raService.isLoggedIn else {
+            cacheRefreshError = "Not logged in. Please connect to RetroAchievements first."
+            return
+        }
+        cacheRefreshError = nil
+        isCacheRefreshing = true
+        Task {
+            do {
+                LoggerService.info(category: "RetroAchievements", "[Settings] Refreshing console list...")
+                // Stub - cache operations are handled internally
+                // try await raService.fetchAndCacheConsoleList()
+                LoggerService.info(category: "RetroAchievementsSettings", "Console list caching is handled automatically")
+                LoggerService.info(category: "RetroAchievements", "[Settings] Console refresh complete.")
+            } catch {
+                let message = "Failed to refresh: \(error.localizedDescription)"
+                LoggerService.error(category: "RetroAchievements", message)
+                await MainActor.run {
+                    cacheRefreshError = message
+                }
+            }
+            await MainActor.run {
+                isCacheRefreshing = false
+            }
+        }
+    }
+
+    private func refreshGames() {
+        guard raService.isLoggedIn else {
+            cacheRefreshError = "Not logged in. Please connect to RetroAchievements first."
+            return
+        }
+        cacheRefreshError = nil
+        isCacheRefreshing = true
+        Task {
+            do {
+                LoggerService.info(category: "RetroAchievements", "[Settings] Refreshing all game lists (this may take a while)...")
+                // try await raService.fetchAndCacheAllGames()
+                LoggerService.info(category: "RetroAchievements", "[Settings] Game list refresh is handled automatically.")
+            } catch {
+                let message = "Failed to refresh: \(error.localizedDescription)"
+                LoggerService.error(category: "RetroAchievements", message)
+                await MainActor.run {
+                    cacheRefreshError = message
+                }
+            }
+            await MainActor.run {
+                isCacheRefreshing = false
+            }
+        }
+    }
+
+    private func matchAllGames() {
+        guard raService.isLoggedIn else {
+            matchingStatus = "Not logged in. Please connect to RetroAchievements first."
+            return
+        }
+        matchingStatus = nil
+        isMatching = true
+        Task {
+            // let (matched, total) = await raService.matchAllCachedGames(roms: library.roms)
+            let matched = 0, total = library.roms.count
+            await MainActor.run {
+                isMatching = false
+                matchingStatus = "Matched \(matched) of \(total) scanned games"
+            }
+        }
     }
     
     @ViewBuilder

@@ -272,8 +272,8 @@ enum ROMIdentifier {
               .replacingOccurrences(of: "_", with: "")
         }
 
-        // B. Path Contextual Matching
-        for system in allSystems {
+            // B. Path Contextual Matching
+            for system in systemsWithExt {
             var pathScore = 0
             let keywords = normalizedSystemKeywords[system.id] ?? []
             

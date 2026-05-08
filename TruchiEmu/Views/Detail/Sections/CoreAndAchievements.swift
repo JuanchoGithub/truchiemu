@@ -86,11 +86,74 @@ extension GameDetailView {
                         Text("Loading achievements...").font(.subheadline).foregroundColor(AppColors.textSecondary(colorScheme))
                     }
                     .frame(maxWidth: .infinity).padding(.vertical, 16)
+                } else if let mismatchStatus = currentROM.raMatchStatus, mismatchStatus.hasPrefix("mismatch") {
+                    VStack(spacing: 12) {
+                        HStack(spacing: 10) {
+                            Image(systemName: "exclamationmark.triangle.fill")
+                                .font(.system(size: 24))
+                                .foregroundColor(.orange)
+                            VStack(alignment: .leading, spacing: 4) {
+                                Text("Version Mismatch")
+                                    .font(.headline)
+                                    .foregroundColor(AppColors.textPrimary(colorScheme))
+                                Text("Your ROM version does not match the RetroAchievements supported version. Achievements cannot be earned.")
+                                    .font(.caption)
+                                    .foregroundColor(AppColors.textMuted(colorScheme))
+                                    .lineLimit(3)
+                            }
+                            Spacer()
+                        }
+                        if let raGameId = currentROM.raGameId {
+                            Button {
+                                if let url = URL(string: "https://retroachievements.org/game/\(raGameId)") {
+                                    NSWorkspace.shared.open(url)
+                                }
+                            } label: {
+                                Text("View on RetroAchievements")
+                                    .font(.caption)
+                            }
+                            .buttonStyle(.link)
+                        }
+                        Button {
+                            findInRA()
+                        } label: {
+                            Label("Find Different Version", systemImage: "magnifyingglass")
+                                .font(.caption)
+                        }
+                        .buttonStyle(.bordered)
+                        .controlSize(.small)
+                    }
+                    .padding(.vertical, 8)
+                } else if let matchStatus = currentROM.raMatchStatus, matchStatus == "not_supported" {
+                    VStack(spacing: 8) {
+                        Image(systemName: "trophy.circle").font(.system(size: 30)).foregroundColor(AppColors.textMuted(colorScheme))
+                        Text("No Achievements").font(.subheadline).foregroundColor(AppColors.textSecondary(colorScheme))
+                        Text("This game is not supported by RetroAchievements.").font(.caption).foregroundColor(AppColors.textMuted(colorScheme))
+                        Button {
+                            findInRA()
+                        } label: {
+                            Label("Search RetroAchievements", systemImage: "magnifyingglass")
+                                .font(.caption)
+                        }
+                        .buttonStyle(.bordered)
+                        .controlSize(.small)
+                        .padding(.top, 4)
+                    }
+                    .frame(maxWidth: .infinity).padding(.vertical, 16)
                 } else if gameAchievements.isEmpty {
                     VStack(spacing: 8) {
                         Image(systemName: "trophy.circle").font(.system(size: 30)).foregroundColor(AppColors.textMuted(colorScheme))
                         Text("No achievements available").font(.subheadline).foregroundColor(AppColors.textSecondary(colorScheme))
                         Text("Game may not have RetroAchievements data").font(.caption).foregroundColor(AppColors.textMuted(colorScheme))
+                        Button {
+                            findInRA()
+                        } label: {
+                            Label("Search RetroAchievements", systemImage: "magnifyingglass")
+                                .font(.caption)
+                        }
+                        .buttonStyle(.bordered)
+                        .controlSize(.small)
+                        .padding(.top, 4)
                     }
                     .frame(maxWidth: .infinity).padding(.vertical, 16)
                 } else {
@@ -110,15 +173,12 @@ extension GameDetailView {
 
                     Divider().overlay(AppColors.divider(colorScheme))
 
-                    ScrollView(.horizontal, showsIndicators: false) {
-                        HStack(spacing: 12) {
-                            ForEach(gameAchievements.prefix(6)) { achievement in AchievementBadgeView(achievement: achievement) }
-                            if gameAchievements.count > 6 {
-                                Text("+\(gameAchievements.count - 6) more").font(.caption).foregroundColor(AppColors.textMuted(colorScheme)).frame(width: 60)
-                            }
+                    LazyVGrid(columns: [GridItem(.adaptive(minimum: 64, maximum: 64), spacing: 16)], spacing: 20) {
+                        ForEach(gameAchievements) { achievement in
+                            AchievementBadgeView(achievement: achievement)
                         }
                     }
-                    .padding(.vertical, 4)
+                    .padding(.vertical, 8)
                 }
             }
         }

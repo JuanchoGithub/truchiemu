@@ -58,6 +58,17 @@ struct GameDetailView: View {
     @State var showEnabledOnlyCheats: Bool = false
     @State var isLaunchingGame = false
 
+    // MARK: - RA Hash Comparison State
+    @State var showRAHashComparison = false
+    @State var raComparisonTitle: String = ""
+    @State var raComparisonHashes: [String] = []
+    @State var raComparisonCurrentHash: String = ""
+    @State var raComparisonMatchedHash: String?
+    @State var raComparisonRAGameId: Int?
+    @State var isFindingRAGame = false
+    @State var raComparisonError: String?
+    @State var raComparisonNameMatches: [RAHashComparisonContent.NameMatchItem] = []
+
     var currentROM: ROM {
         library.roms.first { $0.id == rom.id } ?? rom
     }
@@ -99,6 +110,50 @@ struct GameDetailView: View {
     }
     var isShaderCustomized: Bool { currentROM.settings.shaderPresetID != systemDefaultShaderID }
 
+    @ViewBuilder
+    var mainContentArea: some View {
+        ScrollView {
+            VStack(alignment: .leading, spacing: 20) {
+                switch selectedSection {
+                case .gameInfo: gameInfoSection
+                case .shader: shaderSection
+                case .bezels: bezelsSection
+                case .controls: controlsSection
+                case .savedStates: savedStatesSection
+                case .cheats: cheatsSection
+                case .core: coreSection
+                case .achievements:
+                    if achievementsService.isEnabled {
+                        achievementsSection
+                    }
+                }
+            }
+            .padding(24)
+        }
+        .scrollContentBackground(.hidden)
+        .background(Color.clear)
+    }
+
+    @ViewBuilder
+    var controlsPickerSheet: some View {
+        SystemControlsMappingView(systemID: currentROM.systemID ?? "", systemName: system?.name ?? "Unknown")
+            .environmentObject(controllerService)
+    }
+
+    @ViewBuilder
+    var raHashComparisonSheet: some View {
+        RAHashComparisonContent(
+            gameTitle: raComparisonTitle,
+            hashes: raComparisonHashes,
+            currentHash: raComparisonCurrentHash,
+            matchedHash: raComparisonMatchedHash,
+            raGameId: raComparisonRAGameId,
+            error: raComparisonError,
+            isLoading: isFindingRAGame,
+            nameMatches: raComparisonNameMatches
+        )
+    }
+
     var body: some View {
         VStack(spacing: 0) {
             compactHeaderSection
@@ -112,26 +167,7 @@ struct GameDetailView: View {
                 Divider()
                     .overlay(AppColors.divider(colorScheme))
 
-                ScrollView {
-                    VStack(alignment: .leading, spacing: 20) {
-                        switch selectedSection {
-                        case .gameInfo: gameInfoSection
-                        case .shader: shaderSection
-                        case .bezels: bezelsSection
-                        case .controls: controlsSection
-                        case .savedStates: savedStatesSection
-                        case .cheats: cheatsSection
-                        case .core: coreSection
-                        case .achievements:
-                            if achievementsService.isEnabled {
-                                achievementsSection
-                            }
-                        }
-                    }
-                    .padding(24)
-                }
-                .scrollContentBackground(.hidden)
-                .background(Color.clear)
+                mainContentArea
             }
             .frame(maxHeight: .infinity)
 
@@ -145,7 +181,10 @@ struct GameDetailView: View {
         .onAppear {
             loadBoxArt()
             loadSlotInfo()
-            loadAchievements()
+            // Only load achievements if we're logged in and RA is enabled
+            if achievementsService.isLoggedIn && achievementsService.isEnabled {
+                loadAchievements()
+            }
             useCustomCore = currentROM.useCustomCore
             selectedCoreID = currentROM.selectedCoreID ?? sysPrefs.preferredCoreID(for: currentROM.systemID ?? "") ?? system?.defaultCoreID
             infoCoreID = currentROM.selectedCoreID ?? sysPrefs.preferredCoreID(for: currentROM.systemID ?? "") ?? system?.defaultCoreID
@@ -159,7 +198,10 @@ struct GameDetailView: View {
         .onChange(of: currentROM.id) { _, _ in
             clearManualStatus()
             loadSlotInfo()
-            loadAchievements()
+            // Only load achievements if we're logged in and RA is enabled
+            if achievementsService.isLoggedIn && achievementsService.isEnabled {
+                loadAchievements()
+            }
         }
         .task(id: currentROM.id) {
             if currentROM.systemID == "mame" || currentROM.systemID == "arcade" {
@@ -191,36 +233,25 @@ struct GameDetailView: View {
         .onChange(of: currentROM.hasBoxArt) { _, _ in loadBoxArt() }
         .onChange(of: currentROM.screenshotPaths) { _, _ in loadScreenshots() }
         .onChange(of: library.bezelUpdateToken) { _, _ in Task { await loadCurrentBezelImage() } }
-        .onChange(of: achievementsService.isLoggedIn) { _, isLoggedIn in
-            if isLoggedIn {
+        .onChange(of: achievementsService.isLoggedIn) { _, _ in
+            if achievementsService.isLoggedIn && achievementsService.isEnabled {
                 loadAchievements()
             } else {
                 gameAchievements = []
                 isAchievementsLoading = false
             }
         }
-        .onChange(of: achievementsService.isEnabled) { _, isEnabled in
-            if isEnabled {
+        .onChange(of: achievementsService.isEnabled) { _, _ in
+            if achievementsService.isLoggedIn && achievementsService.isEnabled {
                 loadAchievements()
             } else {
                 gameAchievements = []
                 isAchievementsLoading = false
-            }
-        }
-        .onChange(of: achievementsService.isLoggedIn) { _, isLoggedIn in
-            if isLoggedIn {
-                loadAchievements()
-            }
-        }
-        .onChange(of: achievementsService.isEnabled) { _, isEnabled in
-            if isEnabled {
-                loadAchievements()
             }
         }
         .sheet(isPresented: $showBoxArtPicker) { BoxArtPickerView(rom: currentROM) }
-        .sheet(isPresented: $showControlsPicker) {
-            SystemControlsMappingView(systemID: currentROM.systemID ?? "", systemName: system?.name ?? "Unknown")
-                .environmentObject(controllerService)
+        .sheet(isPresented: $showControlsPicker) { controlsPickerSheet }
+        .sheet(isPresented: $showRAHashComparison) { raHashComparisonSheet
         }
     }
 
@@ -283,34 +314,115 @@ struct GameDetailView: View {
 
     @MainActor
     func loadAchievements() {
-        guard achievementsService.isEnabled else { return }
-        guard achievementsService.isLoggedIn else { return }
+        if let raGameId = currentROM.raGameId {
+            loadAchievements(raGameId: raGameId)
+        } else {
+            gameAchievements = []
+            isAchievementsLoading = false
+        }
+    }
+
+    @MainActor
+    func loadAchievements(raGameId: Int) {
+        guard achievementsService.isEnabled else {
+            LoggerService.info(category: "GameDetailView", "loadAchievements: RA not enabled, bailing")
+            return
+        }
+        guard achievementsService.isLoggedIn else {
+            LoggerService.info(category: "GameDetailView", "loadAchievements: not logged in, bailing")
+            return
+        }
         isAchievementsLoading = true
         gameAchievements = []
-        let hash = ROMIdentifierService.shared.computeCRC(for: currentROM.path, systemID: currentROM.systemID ?? "")
-        if let hash = hash {
-            Task {
-                do {
-                    let gameInfo = try await achievementsService.identifyGame(hash: hash)
-                    await MainActor.run {
-                        if let gameInfo = gameInfo {
-                            achievementsService.currentGame = gameInfo
-                            gameAchievements = gameInfo.achievements
-                        } else {
-                            gameAchievements = []
-                        }
-                        isAchievementsLoading = false
-                    }
-                } catch {
-                    await MainActor.run {
-                        LoggerService.debug(category: "Achievements", "Failed to load achievements: \(error.localizedDescription)")
-                        gameAchievements = []
-                        isAchievementsLoading = false
-                    }
+        LoggerService.info(category: "GameDetailView", "loadAchievements: fetching for raGameId=\(raGameId)")
+
+        Task {
+            do {
+                let gameInfo = try await achievementsService.fetchGameInfo(gameID: raGameId, username: achievementsService.username ?? "")
+                await MainActor.run {
+                    LoggerService.info(category: "GameDetailView", "loadAchievements: got \(gameInfo.achievements.count) achievements for '\(gameInfo.title)' (consoleID: \(gameInfo.consoleID))")
+                    achievementsService.currentGame = gameInfo
+                    gameAchievements = gameInfo.achievements
+                    isAchievementsLoading = false
+                }
+            } catch {
+                let errorMsg = "\(error)"
+                LoggerService.error(category: "GameDetailView", "loadAchievements: fetch failed: \(errorMsg)")
+                await MainActor.run {
+                    gameAchievements = []
+                    isAchievementsLoading = false
                 }
             }
-        } else {
-            isAchievementsLoading = false
+        }
+    }
+
+    @MainActor
+    func findInRA() {
+        guard achievementsService.isEnabled else { return }
+        guard achievementsService.isLoggedIn else { return }
+        guard let systemID = currentROM.systemID else { return }
+
+        isFindingRAGame = true
+        raComparisonError = nil
+        raComparisonTitle = currentROM.displayName
+
+        let raConsoleID = achievementsService.mapSystemIDToRAConsoleID(systemID)
+        guard raConsoleID > 0 else {
+            raComparisonError = "This system is not supported by RetroAchievements"
+            isFindingRAGame = false
+            showRAHashComparison = true
+            return
+        }
+
+        Task {
+            let computedHash = RomHasher.hashRom(at: currentROM.path.path, systemID: systemID)
+
+            guard let hash = computedHash else {
+                await MainActor.run {
+                    raComparisonCurrentHash = "Could not compute RA hash"
+                    raComparisonError = "Could not compute hash for this ROM file"
+                    raComparisonHashes = []
+                    raComparisonMatchedHash = nil
+                    isFindingRAGame = false
+                    showRAHashComparison = true
+                }
+                return
+            }
+
+            await MainActor.run {
+                raComparisonCurrentHash = hash
+            }
+
+            if let cachedGame = await achievementsService.findGameByHashLocally(consoleID: raConsoleID, hash: hash) {
+                raComparisonRAGameId = cachedGame.id
+                raComparisonTitle = cachedGame.title
+                raComparisonHashes = cachedGame.hashes
+                raComparisonMatchedHash = hash
+                var updatedROM = currentROM
+                updatedROM.raGameId = cachedGame.id
+                updatedROM.raMatchStatus = "matched"
+                library.updateROM(updatedROM)
+                LoggerService.debug(category: "GameDetailView", "Persisted RA match: raGameId=\(cachedGame.id), title='\(cachedGame.title)'")
+                loadAchievements(raGameId: cachedGame.id)
+
+                await MainActor.run {
+                    isFindingRAGame = false
+                    showRAHashComparison = true
+                }
+            } else {
+                let nameMatches = await achievementsService.findAllRAGamesByName(title: currentROM.displayName, consoleID: raConsoleID)
+                await MainActor.run {
+                    if let firstMatch = nameMatches.first {
+                        raComparisonRAGameId = firstMatch.id
+                        raComparisonTitle = firstMatch.title
+                        raComparisonHashes = firstMatch.hashes
+                        raComparisonMatchedHash = nil
+                    }
+                    raComparisonNameMatches = nameMatches.map { RAHashComparisonContent.NameMatchItem(id: $0.id, title: $0.title, hashes: $0.hashes) }
+                    isFindingRAGame = false
+                    showRAHashComparison = true
+                }
+            }
         }
     }
 

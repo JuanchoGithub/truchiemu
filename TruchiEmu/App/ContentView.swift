@@ -21,6 +21,7 @@ struct ContentView: View {
     @EnvironmentObject var controllerService: ControllerService
     @Environment(SystemDatabaseWrapper.self) private var systemDatabase
     @StateObject private var metadataSync = MetadataSyncCoordinator.shared
+    @StateObject private var raCacheCoordinator = RAGameCacheCoordinator.shared
     @ObservedObject var wizard = SetupWizardState.shared
     
 @State private var selectedFilter: LibraryFilter = .recent
@@ -326,6 +327,11 @@ LoggerService.info(category: "Shaders", "Updated shader for \(updatedROMIDs.coun
         if metadataSync.isActive {
             let prog: Double = metadataSync.progress
             let status: String = metadataSync.statusLine
+            return (prog, status)
+        }
+        if raCacheCoordinator.isActive {
+            let prog: Double = raCacheCoordinator.progress
+            let status: String = raCacheCoordinator.statusLine
             return (prog, status)
         }
         return nil

@@ -149,29 +149,36 @@ struct AchievementListView: View {
 struct AchievementRowView: View {
     let achievement: Achievement
     let isExpanded: Bool
-    @State private var badgeImage: NSImage?
-    
+    @ObservedObject private var cache = RABadgeCacheService.shared
     var body: some View {
         HStack(spacing: 12) {
             // Badge
-            Group {
-                if let badge = badgeImage {
-                    Image(nsImage: badge)
-                        .resizable()
-                        .aspectRatio(contentMode: .fit)
-                } else {
-                    Image(systemName: achievement.isUnlocked ? "trophy.fill" : "lock.fill")
-                        .font(.system(size: 24))
-                        .foregroundColor(achievement.isUnlocked ? .yellow : .secondary)
+            ZStack {
+                RoundedRectangle(cornerRadius: 8)
+                    .fill(achievement.isUnlocked ? Color.accentColor.opacity(0.1) : Color.secondary.opacity(0.1))
+                    .frame(width: 44, height: 44)
+                
+                Group {
+                    if let localURL = achievement.localBadgeURL, let nsImage = NSImage(contentsOf: localURL) {
+                        Image(nsImage: nsImage)
+                            .resizable()
+                            .aspectRatio(contentMode: .fit)
+                    } else {
+                        Image(systemName: "trophy.fill")
+                            .font(.system(size: 20))
+                            .foregroundColor(.secondary)
+                    }
                 }
+                .frame(width: 32, height: 32)
+                .grayscale(achievement.isUnlocked ? 0 : 1.0)
+                .opacity(achievement.isUnlocked ? 1.0 : 0.4)
             }
-            .frame(width: 40, height: 40)
-            .opacity(achievement.isUnlocked ? 1.0 : 0.5)
             
             // Info
             VStack(alignment: .leading, spacing: 4) {
-                Text(achievement.isUnlocked ? achievement.title : "???")
+                Text(achievement.displayTitle)
                     .font(.body)
+                    .fontWeight(achievement.isUnlocked ? .medium : .regular)
                     .foregroundColor(achievement.isUnlocked ? .primary : .secondary)
                 
                 if isExpanded && achievement.isUnlocked {
@@ -194,7 +201,7 @@ struct AchievementRowView: View {
             Spacer()
             
             // Points badge
-            VStack {
+            VStack(alignment: .trailing, spacing: 2) {
                 Text("\(achievement.points)")
                     .font(.headline)
                     .foregroundColor(achievement.isUnlocked ? .accentColor : .secondary)
@@ -206,21 +213,6 @@ struct AchievementRowView: View {
         .padding(12)
         .background(achievement.isUnlocked ? Color.accentColor.opacity(0.05) : Color.secondary.opacity(0.05))
         .cornerRadius(8)
-        .onAppear {
-            loadBadge()
-        }
-    }
-    
-    private func loadBadge() {
-        guard let url = achievement.isUnlocked ? achievement.badgeURL : achievement.badgeLockedURL else { return }
-        
-        URLSession.shared.dataTask(with: url) { data, _, _ in
-            if let data = data, let image = NSImage(data: data) {
-                DispatchQueue.main.async {
-                    self.badgeImage = image
-                }
-            }
-        }.resume()
     }
 }
 

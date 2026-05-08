@@ -181,6 +181,79 @@ class RetroAchievementsService: ObservableObject {
             return nil
         }
     }
+    
+    // Find game by hash - tries local cache first, then falls back to API
+    func findGameByHashLocally(consoleID: Int, hash: String) async -> (id: Int, title: String, hashes: [String])? {
+        // First try local cache
+        if let context = modelContext {
+            let lowerHash = hash.lowercased()
+            let predicate = #Predicate<RAGameCacheEntry> {
+                $0.consoleID == consoleID
+            }
+            let descriptor = FetchDescriptor<RAGameCacheEntry>(predicate: predicate)
+            
+            if let results = try? context.fetch(descriptor) {
+                for entry in results {
+                    if entry.hashes.contains(where: { $0.lowercased() == lowerHash }) {
+                        return (entry.id, entry.title, entry.hashes)
+                    }
+                }
+            }
+        }
+        
+        // If not in cache, try to resolve via API directly
+        return await resolveHashViaAPI(hash: hash, consoleID: consoleID)
+    }
+    
+    // Find all games by name - tries local cache first, then falls back to API  
+    func findAllRAGamesByName(title: String, consoleID: Int) async -> [(id: Int, title: String, hashes: [String])] {
+        // First try local cache
+        if let context = modelContext {
+            let predicate = #Predicate<RAGameCacheEntry> {
+                $0.title.localizedStandardContains(title) && $0.consoleID == consoleID
+            }
+            let descriptor = FetchDescriptor<RAGameCacheEntry>(predicate: predicate)
+            
+            if let results = try? context.fetch(descriptor) {
+                return results.map { ($0.id, $0.title, $0.hashes) }
+            }
+        }
+        
+        // If not in cache, search via API
+        return await searchGamesByNameViaAPI(title: title, consoleID: consoleID)
+    }
+    
+    // Search games by name via RA API
+    private func searchGamesByNameViaAPI(title: String, consoleID: Int) async -> [(id: Int, title: String, hashes: [String])] {
+        guard let username = username, !webApiKey.isEmpty else { return [] }
+        
+        // Use the generic game list endpoint filtered by console and search term
+        let url = URL(string: "\(apiBaseURL)/API_GetGameList.php")!
+        var components = URLComponents(url: url, resolvingAgainstBaseURL: false)!
+        components.queryItems = [
+            URLQueryItem(name: "u", value: username),
+            URLQueryItem(name: "y", value: webApiKey),
+            URLQueryItem(name: "i", value: String(consoleID)),
+            URLQueryItem(name: "f", value: "1")
+        ]
+        
+        guard let (data, _) = try? await URLSession.shared.data(from: components.url!) else { return [] }
+        
+        // Parse the list and filter by title
+        if let json = try? JSONSerialization.jsonObject(with: data) as? [[String: Any]] {
+            let lowerTitle = title.lowercased()
+            return json.compactMap { game in
+                guard let gameTitle = game["Title"] as? String,
+                      gameTitle.lowercased().contains(lowerTitle),
+                      let idStr = game["ID"] as? String,
+                      let id = Int(idStr) else { return nil }
+                let hashes = game["Hashes"] as? [String] ?? []
+                return (id, gameTitle, hashes)
+            }
+        }
+        
+        return []
+    }
 
     // MARK: - Game Identification
     
@@ -237,7 +310,7 @@ class RetroAchievementsService: ObservableObject {
     }
 
     /// Helper to map Libretro/SystemDatabase IDs to RetroAchievements Console IDs
-    private func mapSystemIDToRAConsoleID(_ systemID: String) -> Int {
+    func mapSystemIDToRAConsoleID(_ systemID: String) -> Int {
         // Implementation will include a mapping dictionary (e.g., "nes" -> 1, "snes" -> 2, etc.)
         // based on the RA API documentation.
         let mapping: [String: Int] = [
@@ -294,6 +367,42 @@ class RetroAchievementsService: ObservableObject {
         
         return nil
     }
+    
+    // Resolve hash directly via RA API - returns game info
+    private func resolveHashViaAPI(hash: String, consoleID: Int) async -> (id: Int, title: String, hashes: [String])? {
+        guard let username = username, !webApiKey.isEmpty else { return nil }
+        
+        // This calls the API to resolve hash to game ID
+        let url = URL(string: "\(apiBaseURL)/API_GetGameByHash.php")!
+        var components = URLComponents(url: url, resolvingAgainstBaseURL: false)!
+        components.queryItems = [
+            URLQueryItem(name: "h", value: hash),
+            URLQueryItem(name: "u", value: username),
+            URLQueryItem(name: "y", value: webApiKey)
+        ]
+        
+        guard let (data, _) = try? await URLSession.shared.data(from: components.url!) else { return nil }
+        
+        // Response format: {"ID":"10","Title":"Sonic the Hedgehog 2","Hashes":["abc123",...]}
+        if let json = try? JSONSerialization.jsonObject(with: data) as? [String: Any] {
+            guard let idStr = json["ID"] as? String,
+                  let title = json["Title"] as? String else {
+                // Check for error
+                if let error = json["Error"] as? String {
+                    LoggerService.info(category: "RetroAchievements", "Hash resolution error: \(error)")
+                }
+                return nil
+            }
+            
+            let gameId = Int(idStr) ?? 0
+            let hashes = json["Hashes"] as? [String] ?? []
+            
+            LoggerService.info(category: "RetroAchievements", "Resolved hash to game: \(title) (ID: \(gameId))")
+            return (gameId, title, hashes)
+        }
+        
+        return nil
+    }
 
     // Fetch game ID from a ROM hash.
     private func requestGameByHash(hash: String, username: String) async throws -> RAHashResponse? {
@@ -320,7 +429,22 @@ class RetroAchievementsService: ObservableObject {
     }
     
     // Fetch detailed game info including achievements.
-    private func fetchGameInfo(gameID: Int, username: String) async throws -> RAGameInfo {
+    func fetchGameInfo(gameID: Int, username: String) async throws -> RAGameInfo {
+        // 1. Try to load from cache first
+        if let cached = await loadGameInfoFromCache(gameID: gameID, username: username) {
+            // Check freshness (6 months)
+            let sixMonths: TimeInterval = 180 * 24 * 3600
+            if Date().timeIntervalSince(cached.cachedAt) < sixMonths {
+                LoggerService.info(category: "RetroAchievements", "Using cached achievement info for game \(gameID) (cached at \(cached.cachedAt))")
+                
+                // Still trigger badge prefetch just in case
+                RABadgeCacheService.shared.prefetchBadges(for: cached.gameInfo.achievements)
+                
+                return cached.gameInfo
+            }
+            LoggerService.info(category: "RetroAchievements", "Cached achievement info for game \(gameID) is stale, re-fetching...")
+        }
+
         let response = try await requestGameInfo(gameID: String(gameID), username: username)
         guard let response = response else {
             throw RAError.gameNotFound
@@ -330,30 +454,143 @@ class RetroAchievementsService: ObservableObject {
         if let achDict = response.Achievements {
             for (_, achResponse) in achDict {
                 let achievement = Achievement(
-                    id: Int(achResponse.ID) ?? 0,
+                    id: achResponse.ID,
                     title: achResponse.Title,
                     description: achResponse.Description,
-                    points: Int(achResponse.Points) ?? 0,
+                    points: achResponse.Points,
                     badgeName: achResponse.BadgeName,
                     isUnlocked: achResponse.DateAwarded != nil,
                     unlockDate: achResponse.DateAwarded.flatMap { date in
                         DateFormatter.raDateFormatter.date(from: date)
                     },
-                    isHardcore: achResponse.HardcoreAchieved == 1,
+                    isHardcore: achResponse.DateAwardedHardcore != nil,
                     category: AchievementCategory(rawValue: achResponse.Category ?? "core") ?? .core
                 )
                 achievements.append(achievement)
             }
+            RABadgeCacheService.shared.prefetchBadges(for: achievements)
         }
         
-        return RAGameInfo(
-            id: Int(response.ID) ?? 0,
-            title: response.Title,
-            consoleName: response.ConsoleName,
-            consoleID: Int(response.ConsoleID) ?? 0,
+        let gameInfo = RAGameInfo(
+            id: response.ID ?? 0,
+            title: response.Title ?? "",
+            consoleName: response.ConsoleName ?? "",
+            consoleID: response.ConsoleID ?? 0,
             achievements: achievements,
-            totalPoints: response.Achievements?.values.reduce(0) { $0 + (Int($1.Points) ?? 0) } ?? 0
+            totalPoints: response.Achievements?.values.reduce(0) { $0 + $1.Points } ?? 0
         )
+        
+        // Save to cache
+        await saveGameInfoToCache(gameInfo: gameInfo, username: username)
+        
+        return gameInfo
+    }
+    
+    @MainActor
+    private func loadGameInfoFromCache(gameID: Int, username: String) async -> (gameInfo: RAGameInfo, cachedAt: Date)? {
+        guard let context = modelContext else { return nil }
+        
+        let gamePredicate = #Predicate<RAGameAchievementCache> { $0.gameId == gameID }
+        let gameDescriptor = FetchDescriptor<RAGameAchievementCache>(predicate: gamePredicate)
+        
+        guard let gameCache = try? context.fetch(gameDescriptor).first else { return nil }
+        
+        let achPredicate = #Predicate<RAAchievementCacheEntry> { $0.gameId == gameID && $0.username == username }
+        let achDescriptor = FetchDescriptor<RAAchievementCacheEntry>(predicate: achPredicate)
+        
+        guard let achEntries = try? context.fetch(achDescriptor) else { return nil }
+        // If we found the game cache but no achievements for this user, we might need a re-fetch
+        if achEntries.isEmpty && gameCache.achievementCount > 0 { return nil }
+
+        let achievements = achEntries.map { entry in
+            Achievement(
+                id: entry.achievementId,
+                title: entry.title,
+                description: entry.achDescription,
+                points: entry.points,
+                badgeName: entry.badgeName,
+                isUnlocked: entry.dateAwarded != nil,
+                unlockDate: entry.dateAwarded,
+                isHardcore: entry.dateAwardedHardcore != nil,
+                category: AchievementCategory(rawValue: entry.category) ?? .core
+            )
+        }
+        
+        let gameInfo = RAGameInfo(
+            id: gameCache.gameId,
+            title: gameCache.title,
+            consoleName: gameCache.consoleName,
+            consoleID: gameCache.consoleID,
+            achievements: achievements,
+            totalPoints: gameCache.totalPoints
+        )
+        
+        return (gameInfo, gameCache.cachedAt)
+    }
+    
+    @MainActor
+    private func saveGameInfoToCache(gameInfo: RAGameInfo, username: String) async {
+        guard let context = modelContext else { return }
+        
+        // 1. Update/Create Game Cache
+        let gameID = gameInfo.id
+        let gamePredicate = #Predicate<RAGameAchievementCache> { $0.gameId == gameID }
+        let gameDescriptor = FetchDescriptor<RAGameAchievementCache>(predicate: gamePredicate)
+        
+        if let existingGame = try? context.fetch(gameDescriptor).first {
+            existingGame.achievementCount = gameInfo.achievements.count
+            existingGame.title = gameInfo.title
+            existingGame.consoleName = gameInfo.consoleName
+            existingGame.consoleID = gameInfo.consoleID
+            existingGame.totalPoints = gameInfo.totalPoints
+            existingGame.cachedAt = Date()
+        } else {
+            let newGame = RAGameAchievementCache(
+                gameId: gameInfo.id,
+                achievementCount: gameInfo.achievements.count,
+                title: gameInfo.title,
+                consoleName: gameInfo.consoleName,
+                consoleID: gameInfo.consoleID,
+                totalPoints: gameInfo.totalPoints,
+                cachedAt: Date()
+            )
+            context.insert(newGame)
+        }
+        
+        // 2. Update/Create Achievement Entries
+        for ach in gameInfo.achievements {
+            let achID = ach.id
+            let achPredicate = #Predicate<RAAchievementCacheEntry> { $0.achievementId == achID && $0.username == username }
+            let achDescriptor = FetchDescriptor<RAAchievementCacheEntry>(predicate: achPredicate)
+            
+            if let existingAch = try? context.fetch(achDescriptor).first {
+                existingAch.title = ach.title
+                existingAch.achDescription = ach.description
+                existingAch.points = ach.points
+                existingAch.badgeName = ach.badgeName
+                existingAch.category = ach.category.rawValue
+                existingAch.dateAwarded = ach.unlockDate
+                existingAch.dateAwardedHardcore = ach.isHardcore ? ach.unlockDate : nil // Approximation
+                existingAch.cachedAt = Date()
+            } else {
+                let newAch = RAAchievementCacheEntry(
+                    achievementId: ach.id,
+                    gameId: gameInfo.id,
+                    title: ach.title,
+                    description: ach.description,
+                    points: ach.points,
+                    badgeName: ach.badgeName,
+                    category: ach.category.rawValue,
+                    dateAwarded: ach.unlockDate,
+                    dateAwardedHardcore: ach.isHardcore ? ach.unlockDate : nil,
+                    username: username,
+                    cachedAt: Date()
+                )
+                context.insert(newAch)
+            }
+        }
+        
+        try? context.save()
     }
     
     // MARK: - Achievement Unlocking
@@ -531,7 +768,7 @@ class RetroAchievementsService: ObservableObject {
     }
     
     private func requestGameInfo(gameID: String, username: String) async throws -> RAGameResponse? {
-        let url = URL(string: "\(apiBaseURL)/API_GetGame.php")!
+        let url = URL(string: "\(apiBaseURL)/API_GetGameExtended.php")!
         var components = URLComponents(url: url, resolvingAgainstBaseURL: false)!
         components.queryItems = [
             URLQueryItem(name: "i", value: gameID),

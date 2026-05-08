@@ -18,12 +18,12 @@ struct Achievement: Identifiable, Codable, Hashable {
         URL(string: "https://media.retroachievements.org/Badge/\(badgeName).png")
     }
     
-    var badgeLockedURL: URL? {
-        URL(string: "https://media.retroachievements.org/Badge/\(badgeName)_lock.png")
+    var localBadgeURL: URL? {
+        RABadgeCacheService.shared.localURL(for: badgeName)
     }
     
     var displayTitle: String {
-        isUnlocked ? title : "???"
+        title
     }
     
     var displayDescription: String {
@@ -143,25 +143,26 @@ struct RAUserInfo: Codable {
 
 // Response from the RA API for game info.
 struct RAGameResponse: Codable {
-    var ID: String
-    var Title: String
-    var ConsoleID: String
-    var ConsoleName: String
-    var NumAchievements: Int
-    var NumAwarded: Int
-    var NumAwardedToUser: Int
-    var NumAwardedToUserHardcore: Int
+    var ID: Int?
+    var Title: String?
+    var ConsoleID: Int?
+    var ConsoleName: String?
+    var NumAchievements: Int?
+    var NumAwarded: Int?
+    var NumAwardedToUser: Int?
+    var NumAwardedToUserHardcore: Int?
     var Achievements: [String: RAAchievementResponse]?
+    var Hashes: [String]?
 }
 
 struct RAAchievementResponse: Codable {
-    var ID: String
+    var ID: Int
     var Title: String
     var Description: String
-    var Points: String
+    var Points: Int
     var BadgeName: String
     var DateAwarded: String?
-    var HardcoreAchieved: Int?
+    var DateAwardedHardcore: String?
     var Category: String?
 }
 
