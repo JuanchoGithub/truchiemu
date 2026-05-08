@@ -465,7 +465,7 @@
             "iso"
         ],
         "emuIconName": "3DO",
-        "defaultBoxType": "Vertical",
+        "defaultBoxType": "Box",
         "iconName": "opticaldisc",
         "defaultCoreID": "opera_libretro",
         "manufacturer": "Panasonic"
