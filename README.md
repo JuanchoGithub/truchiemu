@@ -20,7 +20,7 @@ Forget clunky, outdated menus. TruchiEmu features a polished, native macOS inter
 
 ### 📺 Immersive Visuals
 
-https://github.com/user-attachments/assets/4add1a22-27d2-4778-9e0b-7b5667a049cb
+https://github.com/user-attachments/assets/46a734d8-9c25-4d94-bb81-80cb53506531
 
 Relive the golden age of gaming with advanced Metal-powered shaders. Whether you want the warm glow of a classic CRT, the sharp look of an LCD, or custom scanline effects, TruchiEmu makes every pixel feel authentic.
 
