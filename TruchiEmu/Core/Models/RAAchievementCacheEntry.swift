@@ -64,3 +64,39 @@ final class RAGameAchievementCache {
         self.cachedAt = cachedAt
     }
 }
+
+@Model
+final class RAUserCache {
+    @Attribute(.unique) var username: String
+    var totalPoints: Int
+    var totalHardcorePoints: Int
+    var totalTruePoints: Int
+    var rank: Int
+    var awards: Int
+    var memberSince: String
+    var cachedAt: Date
+    
+    init(username: String, totalPoints: Int, totalHardcorePoints: Int, totalTruePoints: Int, rank: Int, awards: Int, memberSince: String, cachedAt: Date = Date()) {
+        self.username = username
+        self.totalPoints = totalPoints
+        self.totalHardcorePoints = totalHardcorePoints
+        self.totalTruePoints = totalTruePoints
+        self.rank = rank
+        self.awards = awards
+        self.memberSince = memberSince
+        self.cachedAt = cachedAt
+    }
+}
+
+@Model
+final class RAHashCache {
+    @Attribute(.unique) var hash: String
+    var gameId: Int
+    var cachedAt: Date
+    
+    init(hash: String, gameId: Int, cachedAt: Date = Date()) {
+        self.hash = hash
+        self.gameId = gameId
+        self.cachedAt = cachedAt
+    }
+}

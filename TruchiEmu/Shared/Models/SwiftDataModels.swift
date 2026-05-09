@@ -23,6 +23,7 @@ final class ROMEntry {
     var dateAdded: Date
     var category: String
     var crc32: String?
+    var md5: String?
     var thumbnailLookupSystemID: String?
     var screenshotPathsJSON: String?
     var settingsJSON: String?
@@ -62,6 +63,7 @@ final class ROMEntry {
         dateAdded: Date = Date(),
         category: String = "game",
         crc32: String? = nil,
+        md5: String? = nil,
         thumbnailLookupSystemID: String? = nil,
         screenshotPathsJSON: String? = nil,
         settingsJSON: String? = nil,
@@ -89,6 +91,7 @@ final class ROMEntry {
         self.dateAdded = dateAdded
         self.category = category
         self.crc32 = crc32
+        self.md5 = md5
         self.thumbnailLookupSystemID = thumbnailLookupSystemID
         self.screenshotPathsJSON = screenshotPathsJSON
         self.settingsJSON = settingsJSON

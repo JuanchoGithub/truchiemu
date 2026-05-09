@@ -143,23 +143,23 @@ struct RAUserInfo: Codable {
 
 // Response from the RA API for game info.
 struct RAGameResponse: Codable {
-    var ID: Int?
+    @SafeOptionalInt var ID: Int?
     var Title: String?
-    var ConsoleID: Int?
+    @SafeOptionalInt var ConsoleID: Int?
     var ConsoleName: String?
-    var NumAchievements: Int?
-    var NumAwarded: Int?
-    var NumAwardedToUser: Int?
-    var NumAwardedToUserHardcore: Int?
+    @SafeOptionalInt var NumAchievements: Int?
+    @SafeOptionalInt var NumAwarded: Int?
+    @SafeOptionalInt var NumAwardedToUser: Int?
+    @SafeOptionalInt var NumAwardedToUserHardcore: Int?
     var Achievements: [String: RAAchievementResponse]?
     var Hashes: [String]?
 }
 
 struct RAAchievementResponse: Codable {
-    var ID: Int
+    @SafeInt var ID: Int
     var Title: String
     var Description: String
-    var Points: Int
+    @SafeInt var Points: Int
     var BadgeName: String
     var DateAwarded: String?
     var DateAwardedHardcore: String?
@@ -167,7 +167,33 @@ struct RAAchievementResponse: Codable {
 }
 
 // Response from the RA API for hash resolution.
-struct RAHashResponse: Codable {
-    var ID: String
-    var Hash: String
+struct RAHashResponse: Decodable {
+    private enum CodingKeys: String, CodingKey {
+        case ID, GameID, Title, Hashes
+    }
+    
+    var ID: Int?
+    var Title: String?
+    var Hashes: [String]?
+    
+    init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        
+        let idVal: Int?
+        if let idInt = try? container.decode(Int.self, forKey: .ID) {
+            idVal = idInt
+        } else if let idStr = try? container.decode(String.self, forKey: .ID), let idInt = Int(idStr) {
+            idVal = idInt
+        } else if let gameIdInt = try? container.decode(Int.self, forKey: .GameID) {
+            idVal = gameIdInt
+        } else if let gameIdStr = try? container.decode(String.self, forKey: .GameID), let idInt = Int(gameIdStr) {
+            idVal = idInt
+        } else {
+            idVal = nil
+        }
+        
+        self.ID = idVal
+        self.Title = try? container.decode(String.self, forKey: .Title)
+        self.Hashes = try? container.decode([String].self, forKey: .Hashes)
+    }
 }

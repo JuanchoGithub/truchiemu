@@ -315,8 +315,6 @@ final class ROMIdentifierService: @unchecked Sendable {
             }
         }
 
-        LoggerService.debug(category: "ROMIdentifier", "Identify \(rom.name): NOT FOUND — CRC \(key) not in database and name search found 0 matches for \(systemID)")
-        
         // --- INTEGRATION START ---
         // Trigger RA sync as a side effect of identification.
         // We use a Task to avoid blocking the primary identification result.

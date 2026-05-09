@@ -459,9 +459,7 @@ struct RetroAchievementsSettingsView: View {
         Task {
             do {
                 LoggerService.info(category: "RetroAchievements", "[Settings] Refreshing console list...")
-                // Stub - cache operations are handled internally
-                // try await raService.fetchAndCacheConsoleList()
-                LoggerService.info(category: "RetroAchievementsSettings", "Console list caching is handled automatically")
+                try await raService.fetchAndCacheConsoleList()
                 LoggerService.info(category: "RetroAchievements", "[Settings] Console refresh complete.")
             } catch {
                 let message = "Failed to refresh: \(error.localizedDescription)"
@@ -486,8 +484,8 @@ struct RetroAchievementsSettingsView: View {
         Task {
             do {
                 LoggerService.info(category: "RetroAchievements", "[Settings] Refreshing all game lists (this may take a while)...")
-                // try await raService.fetchAndCacheAllGames()
-                LoggerService.info(category: "RetroAchievements", "[Settings] Game list refresh is handled automatically.")
+                try await raService.fetchAndCacheAllGames()
+                LoggerService.info(category: "RetroAchievements", "[Settings] Game list refresh complete.")
             } catch {
                 let message = "Failed to refresh: \(error.localizedDescription)"
                 LoggerService.error(category: "RetroAchievements", message)
@@ -509,8 +507,7 @@ struct RetroAchievementsSettingsView: View {
         matchingStatus = nil
         isMatching = true
         Task {
-            // let (matched, total) = await raService.matchAllCachedGames(roms: library.roms)
-            let matched = 0, total = library.roms.count
+            let (matched, total) = await raService.matchAllCachedGames(roms: library.roms)
             await MainActor.run {
                 isMatching = false
                 matchingStatus = "Matched \(matched) of \(total) scanned games"

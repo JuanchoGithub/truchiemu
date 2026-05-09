@@ -314,7 +314,7 @@ struct GameDetailView: View {
 
     @MainActor
     func loadAchievements() {
-        if let raGameId = currentROM.raGameId {
+        if let raGameId = currentROM.raGameId, raGameId > 0 {
             loadAchievements(raGameId: raGameId)
         } else {
             gameAchievements = []
@@ -338,7 +338,7 @@ struct GameDetailView: View {
 
         Task {
             do {
-                let gameInfo = try await achievementsService.fetchGameInfo(gameID: raGameId, username: achievementsService.username ?? "")
+                let gameInfo = try await achievementsService.fetchGameInfo(gameID: raGameId, username: achievementsService.username ?? "", isUserInitiated: false)
                 await MainActor.run {
                     LoggerService.info(category: "GameDetailView", "loadAchievements: got \(gameInfo.achievements.count) achievements for '\(gameInfo.title)' (consoleID: \(gameInfo.consoleID))")
                     achievementsService.currentGame = gameInfo
@@ -393,7 +393,7 @@ struct GameDetailView: View {
                 raComparisonCurrentHash = hash
             }
 
-            if let cachedGame = await achievementsService.findGameByHashLocally(consoleID: raConsoleID, hash: hash) {
+            if let cachedGame = await achievementsService.findGameByHashLocally(consoleID: raConsoleID, hash: hash, isUserInitiated: true) {
                 raComparisonRAGameId = cachedGame.id
                 raComparisonTitle = cachedGame.title
                 raComparisonHashes = cachedGame.hashes

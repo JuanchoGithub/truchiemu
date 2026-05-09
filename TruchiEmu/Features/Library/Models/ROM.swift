@@ -29,6 +29,7 @@ struct ROM: Identifiable, Codable, Hashable, Sendable {
     var mameRomType: String?
     // No-Intro / identification CRC32 (hex), persisted in library metadata file.
     var crc32: String?
+    var md5: String?
     // Libretro thumbnail CDN folder (`Nintendo - Game Boy` vs `GBC`) when identification matched a different DB (e.g. GB ROM in merged GB+GBC set).
     var thumbnailLookupSystemID: String?
     // Array of screenshot image paths for the game

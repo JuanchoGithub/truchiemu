@@ -33,7 +33,7 @@ enum RomHasher {
         case "saturn":
             return hashSaturn(url: url)
         case "genesis", "megadrive", "sms", "gamegear", "32x", "sg-1000":
-            return md5File(url: url)
+            return hashGenesis(url: url)
         case "mame", "arcade", "mess", "ume":
             return hashMAME(url: url)
         case "3do":
@@ -646,5 +646,35 @@ enum RomHasher {
         }
 
         return md5File(url: url)
+    }
+
+    // MARK: - Genesis / Mega Drive / SMS / Game Gear
+    
+    private static func hashGenesis(url: URL) -> String? {
+        guard let attributes = try? FileManager.default.attributesOfItem(atPath: url.path),
+              let fileSize = attributes[.size] as? UInt64 else { return md5File(url: url) }
+        
+        // RetroAchievements expects MD5 of the raw ROM.
+        // If the file has a 512-byte SMD header, we skip it.
+        let isPowerOfTwo = { (n: UInt64) -> Bool in n > 0 && (n & (n - 1) == 0) }
+        let hasHeader = (fileSize > 512) && (fileSize % 16384 == 512 || isPowerOfTwo(fileSize - 512))
+        let offset: UInt64 = hasHeader ? 512 : 0
+        
+        guard let handle = try? FileHandle(forReadingFrom: url) else { return md5File(url: url) }
+        defer { try? handle.close() }
+        
+        if offset > 0 {
+            try? handle.seek(toOffset: offset)
+        }
+        
+        var context = CC_MD5_CTX()
+        CC_MD5_Init(&context)
+        
+        let bufferSize = 128 * 1024
+        while let data = try? handle.read(upToCount: bufferSize), !data.isEmpty {
+            md5Update(context: &context, data: data)
+        }
+        
+        return md5Final(context: &context)
     }
 }
