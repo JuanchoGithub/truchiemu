@@ -211,7 +211,7 @@ float4 renderGBCShell(float2 p, constant GBCUniforms &u) {
 
     if (lensSDF < 0.0 && screenSDF > 0.0) {
         col = float3(0.16, 0.16, 0.18);
-        if (screenSDF < 0.6) col = float3(0.04, 0.04, 0.05);
+        if (screenSDF > 0.0 && screenSDF < 1.6) col = float3(0.04, 0.04, 0.05);
         if (length(p - float2(-78.0, -8.0)) < 2.2) col = float3(1.0, 0.2, 0.1);
         
         float2 logoP = p - float2(-34.0, 52.0);
@@ -258,7 +258,7 @@ fragment float4 fragment8BitGBC(VertexOut in [[stage_in]],
       // Inside inner area - render actual screen content
          constexpr sampler samp(coord::normalized, address::clamp_to_edge, filter::linear);
          // Map p coordinates to 0..1 UV across the inner screen area
-         float2 uv = (p - (screenCenter - screenSize)) / (screenSize * 2.0);
+         float2 uv = (p - (screenCenter - innerScreenSize)) / (innerScreenSize * 2.0);
          float2 centeredUV = uv - float2(0.5, 0.5);
             float sqDist = dot(centeredUV, centeredUV);
 
