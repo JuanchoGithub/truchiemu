@@ -141,7 +141,13 @@ enum ROMIdentifier {
         }
 
         // Fallback 1: Check if any parent folder name is a valid System ID
-        if let folderSystem = parentNames.lazy.compactMap({ name in cachedSystems.first(where: { $0.id.lowercased() == name }) }).first {
+        // AND that system actually supports this extension
+        if let folderSystem = parentNames.lazy.compactMap({ name in
+            cachedSystems.first(where: {
+                $0.id.lowercased() == name &&
+                $0.extensions.contains { normalize(extension: $0) == extLower }
+            })
+        }).first {
             return folderSystem
         }
 

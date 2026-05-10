@@ -585,13 +585,14 @@ LibraryMetadataStore.shared.deleteMetadataEntries(Set(removedROMs.map { LibraryM
                 if updated.metadata == nil { updated.metadata = ROMMetadata() }
                 updated.metadata?.title = info.name; updated.metadata?.year = info.year
                 updated.metadata?.publisher = info.publisher; updated.metadata?.developer = info.developer; updated.metadata?.genre = info.genre
-                // Apply players from library — only if user has not set a manual override.
-                // Libretro data is authoritative; user override is preserved only when library has no data.
                 if updated.metadata?.userPlayerOverride == nil {
                     let infoPlayers = info.players
                     let currentPlayers = updated.metadata?.players ?? 1
                     updated.metadata?.players = infoPlayers ?? currentPlayers
                 }
+                // GB/GBC extension correction: after identification, force system to match extension
+                // .gbc files → GBC, everything else in GB family → GB (for shader selection)
+                updated = correctGBCExtensionSystem(rom: updated)
                 updateROM(updated, persist: persist, silent: silent)
                 return updated
                 
@@ -601,6 +602,7 @@ LibraryMetadataStore.shared.deleteMetadataEntries(Set(removedROMs.map { LibraryM
                     updated.metadata?.title = nil; updated.metadata?.year = nil
                     updated.metadata?.publisher = nil; updated.metadata?.developer = nil; updated.metadata?.genre = nil
                 }
+                updated = correctGBCExtensionSystem(rom: updated)
                 updateROM(updated, persist: persist, silent: silent)
                 return updated
                 
@@ -610,14 +612,32 @@ LibraryMetadataStore.shared.deleteMetadataEntries(Set(removedROMs.map { LibraryM
                     updated.metadata?.title = nil; updated.metadata?.year = nil
                     updated.metadata?.publisher = nil; updated.metadata?.developer = nil; updated.metadata?.genre = nil
                     updated.thumbnailLookupSystemID = nil
-                    updateROM(updated, persist: persist, silent: silent)
-                    return updated
                 }
+                updateROM(updated, persist: persist, silent: silent)
+                return updated
             
             case .databaseUnavailable, .noSystem, .romReadFailed: 
                 return nil
         }
         return nil
+    }
+    
+    private func correctGBCExtensionSystem(rom: ROM) -> ROM {
+        guard rom.systemID == "gb" || rom.systemID == "gbc" else { return rom }
+        let ext = rom.path.pathExtension.lowercased()
+        var updated = rom
+        
+        // .gbc files should use GBC system (for shader selection)
+        // Any other GB-family extension should use GB system
+        if ext == "gbc" && rom.systemID == "gb" {
+            updated.systemID = "gbc"
+            LoggerService.debug(category: "ROMLibrary", "GB/GBC Correction: '\(rom.name)' has .gbc extension → moved to GBC (for shader selection)")
+        } else if ext != "gbc" && rom.systemID == "gbc" {
+            updated.systemID = "gb"
+            LoggerService.debug(category: "ROMLibrary", "GB/GBC Correction: '\(rom.name)' has .\(ext) extension → moved to GB (for shader selection)")
+        }
+        
+        return updated
     }
 
     func clearIdentification(for rom: ROM, persist: Bool = true) {

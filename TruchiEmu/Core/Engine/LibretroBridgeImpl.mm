@@ -568,6 +568,8 @@ shutdown:
         //NSLog(@"[Core-DGB] FBO is complete (ID: %d, size: %dx%d, wasRead=%d, wasDraw=%d)", _hwFBO, w, h, boundReadFBOBefore, boundDrawFBOBefore);
     }
 
+    // Unbind PBO to ensure we read into CPU memory, not an offset into a core's PBO
+    glBindBuffer(GL_PIXEL_PACK_BUFFER, 0);
     glReadPixels(0, 0, w, h, GL_BGRA, GL_UNSIGNED_INT_8_8_8_8_REV, _hwReadbackBuffer);
     
     //NSLog(@"[Core-DGB] Readback pixels - first: 0x%08X, last: 0x%08X", firstPixel, lastPixel);
