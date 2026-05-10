@@ -31,6 +31,7 @@ struct ContentView: View {
 @State private var searchText = ""
 @State private var showCreateCategorySheet = false
 @State private var editingCategory: GameCategory? = nil
+@State private var renamingSystem: SystemInfo? = nil
 @State private var shaderOverrideData: ShaderOverrideData?
     
     var body: some View {
@@ -192,12 +193,15 @@ case .defaultShadersForAll(let systemID, let shaderID):
                                       }
                                       try? modelContext.save()
                                   }
-                          case .library:
-                             selectedFilter = .system(system)
-                         }
-                     }
+case .library:
+                              selectedFilter = .system(system)
+                          }
+                      },
+                          onRenameSystem: { system in
+                              renamingSystem = system
+                          }
 
-                     )
+                      )
                      .frame(width: 240)
 
                       LibraryGridView(
@@ -216,9 +220,12 @@ case .defaultShadersForAll(let systemID, let shaderID):
                 .sheet(isPresented: $showCreateCategorySheet) {
                     CreateCategorySheet()
                 }
-                 .sheet(item: $editingCategory) { category in
-                     EditCategorySheet(category: category)
-                 }
+.sheet(item: $editingCategory) { category in
+                      EditCategorySheet(category: category)
+                  }
+                  .sheet(item: $renamingSystem) { system in
+                      RenameSystemSheet(system: system)
+                  }
   
                  // Status bar for library automation or metadata sync
                 if let activeStatus = activeBackgroundTask {

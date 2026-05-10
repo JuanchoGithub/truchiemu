@@ -108,6 +108,7 @@ struct SystemInfo: Identifiable, Codable, Hashable {
     var displayInUI: Bool = true
     var isDiskBased: Bool = false
 
+    var customDisplayName: String?
     var coreReportedAspectRatio: CGFloat?
 
     // The correct display aspect ratio for this system's output.
@@ -130,7 +131,7 @@ struct SystemInfo: Identifiable, Codable, Hashable {
     enum CodingKeys: String, CodingKey {
         case id, name, pathKeywords, magicHeaders, filenamePatterns, manufacturer
         case extensions, defaultCoreID, defaultShaderPresetID, iconName, emuIconName, year, sortOrder
-        case defaultBoxType, displayInUI, coreReportedAspectRatio, isDiskBased
+        case defaultBoxType, displayInUI, coreReportedAspectRatio, isDiskBased, customDisplayName
     }
     
     // Custom Decoder to handle missing JSON fields safely
@@ -157,6 +158,7 @@ struct SystemInfo: Identifiable, Codable, Hashable {
         displayInUI = try container.decodeIfPresent(Bool.self, forKey: .displayInUI) ?? true
         isDiskBased = try container.decodeIfPresent(Bool.self, forKey: .isDiskBased) ?? false
         coreReportedAspectRatio = try container.decodeIfPresent(CGFloat.self, forKey: .coreReportedAspectRatio)
+        customDisplayName = try container.decodeIfPresent(String.self, forKey: .customDisplayName)
     }
     
     // Keep the standard init so LibretroInfoManager can still create objects dynamically
@@ -178,6 +180,7 @@ struct SystemInfo: Identifiable, Codable, Hashable {
         self.displayInUI = displayInUI
         self.isDiskBased = isDiskBased
         self.coreReportedAspectRatio = nil
+        self.customDisplayName = nil
     }
     
     func emuImage(size: Int) -> NSImage? {
@@ -223,6 +226,9 @@ struct SystemInfo: Identifiable, Codable, Hashable {
     }
     
     var sidebarDisplayName: String {
+        if let custom = customDisplayName, !custom.isEmpty {
+            return custom
+        }
         switch id {
         case "nes": return "Nintendo NES"
         case "genesis": return "Sega Genesis"
@@ -298,6 +304,7 @@ class SystemDatabase {
                     mergedSys.displayInUI = cacheSys.displayInUI
                     mergedSys.defaultShaderPresetID = cacheSys.defaultShaderPresetID
                     mergedSys.defaultCoreID = cacheSys.defaultCoreID
+                    mergedSys.customDisplayName = cacheSys.customDisplayName
                     
                     finalSystems.append(mergedSys)
                 } else {

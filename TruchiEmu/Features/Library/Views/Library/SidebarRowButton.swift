@@ -13,6 +13,7 @@ struct SidebarRowButton: View {
     var onRefresh: (() -> Void)? = nil
     var onSettings: (() -> Void)? = nil
     var onSystemAction: ((SystemInfo, SystemAction, String?) -> Void)? = nil
+    var onRename: ((SystemInfo) -> Void)? = nil
     var installedCores: [LibretroCore]? = nil
     
     @State private var isHovered = false
@@ -51,6 +52,12 @@ struct SidebarRowButton: View {
         .buttonStyle(.plain)
         .contextMenu {
             if let system = system {
+                Button {
+                    onRename?(system)
+                } label: {
+                    Label("Rename", systemImage: "pencil")
+                }
+
                 if let onSystemAction = onSystemAction {
                     Button {
                         onSystemAction(system, .refresh, nil)

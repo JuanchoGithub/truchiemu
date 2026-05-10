@@ -11,6 +11,7 @@ struct SystemSidebarView: View {
     var onRefresh: ((SystemInfo) -> Void)? = nil
     var onSettings: ((String) -> Void)? = nil
     var onSystemAction: ((SystemInfo, SystemAction, String?) -> Void)? = nil
+    var onRenameSystem: ((SystemInfo) -> Void)? = nil
     
     // Combined system entries for the sidebar. Game Boy (gb) absorbs Game Boy Color (gbc)
     // into a single "Game Boy" display entry while keeping internal systemIDs intact.
@@ -113,7 +114,8 @@ struct SystemSidebarView: View {
                                 label: entry.system.sidebarDisplayName,
                                 system: entry.system,
                                 count: entry.combinedCount,
-                                filter: .system(entry.system)
+                                filter: .system(entry.system),
+                                onRename: onRenameSystem != nil ? { system in onRenameSystem?(system) } : nil
                             )
                             .tag(LibraryFilter.system(entry.system))
                         }
@@ -168,7 +170,7 @@ struct SystemSidebarView: View {
     }
 
     @ViewBuilder
-    private func sidebarRow(icon: String, label: String, system: SystemInfo? = nil, count: Int, tint: Color = .accentColor, filter: LibraryFilter) -> some View {
+    private func sidebarRow(icon: String, label: String, system: SystemInfo? = nil, count: Int, tint: Color = .accentColor, filter: LibraryFilter, onRename: ((SystemInfo) -> Void)? = nil) -> some View {
         SidebarRowButton(
             icon: icon,
             label: label,
@@ -188,6 +190,7 @@ struct SystemSidebarView: View {
                     onSystemAction?(sys, action, targetID)
                 }
             } : nil,
+            onRename: onRename,
             installedCores: system != nil ? coreManager.installedCores.filter { core in
                 core.systemIDs.contains(system!.id)
             } : nil
@@ -391,6 +394,73 @@ struct EditCategorySheet: View {
             // Initialize selection state from the category
             selectedIcon = category.iconName
             selectedColor = category.colorHex
+        }
+    }
+}
+
+// MARK: - Rename System Sheet
+
+struct RenameSystemSheet: View {
+    @Environment(\.dismiss) private var dismiss
+    @Environment(SystemDatabaseWrapper.self) private var systemDatabase
+    let system: SystemInfo
+    
+    @State private var displayName: String = ""
+    
+    var body: some View {
+        NavigationStack {
+            Form {
+                Section("Display Name") {
+                    TextField("Name", text: $displayName)
+                }
+                
+                Section {
+                    HStack {
+                        Text("Original:")
+                            .foregroundStyle(.secondary)
+                        Text(system.name)
+                    }
+                }
+                
+                Section("Preview") {
+                    HStack {
+                        Image(systemName: system.iconName)
+                            .foregroundStyle(Color.accentColor)
+                        Text(displayName.isEmpty ? system.name : displayName)
+                    }
+                }
+            }
+            .formStyle(.grouped)
+            .navigationTitle("Rename System")
+            .toolbar {
+                ToolbarItem(placement: .cancellationAction) {
+                    Button("Cancel") { dismiss() }
+                }
+                ToolbarItem(placement: .confirmationAction) {
+                    Button("Save") {
+                        saveRename()
+                        dismiss()
+                    }
+                    .disabled(displayName.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty)
+                }
+            }
+        }
+        .frame(width: 360, height: 280)
+        .onAppear {
+            displayName = system.customDisplayName ?? system.sidebarDisplayName
+        }
+    }
+    
+    private func saveRename() {
+        var systems = SystemDatabase.systems
+        if let index = systems.firstIndex(where: { $0.id == system.id }) {
+            let trimmed = displayName.trimmingCharacters(in: .whitespacesAndNewlines)
+            if trimmed.isEmpty {
+                systems[index].customDisplayName = nil
+            } else {
+                systems[index].customDisplayName = trimmed
+            }
+            SystemDatabase.saveSystems(systems)
         }
     }
 }

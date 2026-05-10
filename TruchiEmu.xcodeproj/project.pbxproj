@@ -1211,52 +1211,52 @@
 		DD112FE2BCE7C11788BDFDDA /* Mattel - Intellivision-content.png in Resources */ = {isa = PBXBuildFile; fileRef = 4E5D628C005D168208B7A93A /* Mattel - Intellivision-content.png */; };
 		DD84C3E013D08CD9560AD323 /* subsetting.png in Resources */ = {isa = PBXBuildFile; fileRef = 27C7478B4575355EDFBA9650 /* subsetting.png */; };
 		DDA041F91E82B4DF5D1105FF /* menu_brightness.png in Resources */ = {isa = PBXBuildFile; fileRef = F46246B0F0F17DCFB8187DFF /* menu_brightness.png */; };
-		DDB984062FAEC31000F7A4A1 /* megadrive-cheats.zip in Resources */ = {isa = PBXBuildFile; fileRef = DDB983ED2FAEC31000F7A4A1 /* megadrive-cheats.zip */; };
-		DDB984072FAEC31000F7A4A1 /* msx-cheats.zip in Resources */ = {isa = PBXBuildFile; fileRef = DDB983EF2FAEC31000F7A4A1 /* msx-cheats.zip */; };
-		DDB984082FAEC31000F7A4A1 /* msx_fmsx-cheats.zip in Resources */ = {isa = PBXBuildFile; fileRef = DDB983EE2FAEC31000F7A4A1 /* msx_fmsx-cheats.zip */; };
-		DDB984092FAEC31000F7A4A1 /* gb-cheats.zip in Resources */ = {isa = PBXBuildFile; fileRef = DDB983E62FAEC31000F7A4A1 /* gb-cheats.zip */; };
-		DDB9840A2FAEC31000F7A4A1 /* gg-cheats.zip in Resources */ = {isa = PBXBuildFile; fileRef = DDB983EA2FAEC31000F7A4A1 /* gg-cheats.zip */; };
-		DDB9840B2FAEC31000F7A4A1 /* atari800-cheats.zip in Resources */ = {isa = PBXBuildFile; fileRef = DDB983DB2FAEC31000F7A4A1 /* atari800-cheats.zip */; };
-		DDB9840C2FAEC31000F7A4A1 /* atari7800-cheats.zip in Resources */ = {isa = PBXBuildFile; fileRef = DDB983DE2FAEC31000F7A4A1 /* atari7800-cheats.zip */; };
-		DDB9840D2FAEC31000F7A4A1 /* fds-cheats.zip in Resources */ = {isa = PBXBuildFile; fileRef = DDB983E52FAEC31000F7A4A1 /* fds-cheats.zip */; };
-		DDB9840E2FAEC31000F7A4A1 /* thomson-cheats.zip in Resources */ = {isa = PBXBuildFile; fileRef = DDB984012FAEC31000F7A4A1 /* thomson-cheats.zip */; };
-		DDB9840F2FAEC31000F7A4A1 /* sms-cheats.zip in Resources */ = {isa = PBXBuildFile; fileRef = DDB983FD2FAEC31000F7A4A1 /* sms-cheats.zip */; };
-		DDB984102FAEC31000F7A4A1 /* saturn-cheats.zip in Resources */ = {isa = PBXBuildFile; fileRef = DDB983FB2FAEC31000F7A4A1 /* saturn-cheats.zip */; };
-		DDB984112FAEC31000F7A4A1 /* dreamcast-cheats.zip in Resources */ = {isa = PBXBuildFile; fileRef = DDB983E32FAEC31000F7A4A1 /* dreamcast-cheats.zip */; };
-		DDB984122FAEC31000F7A4A1 /* n64_aleck-cheats.zip in Resources */ = {isa = PBXBuildFile; fileRef = DDB983F02FAEC31000F7A4A1 /* n64_aleck-cheats.zip */; };
-		DDB984132FAEC31000F7A4A1 /* chailove-cheats.zip in Resources */ = {isa = PBXBuildFile; fileRef = DDB983E02FAEC31000F7A4A1 /* chailove-cheats.zip */; };
-		DDB984142FAEC31000F7A4A1 /* turbografxcd-cheats.zip in Resources */ = {isa = PBXBuildFile; fileRef = DDB984042FAEC31000F7A4A1 /* turbografxcd-cheats.zip */; };
-		DDB984152FAEC31000F7A4A1 /* atari2600-cheats.zip in Resources */ = {isa = PBXBuildFile; fileRef = DDB983DC2FAEC31000F7A4A1 /* atari2600-cheats.zip */; };
-		DDB984162FAEC31000F7A4A1 /* dos-cheats.zip in Resources */ = {isa = PBXBuildFile; fileRef = DDB983E22FAEC31000F7A4A1 /* dos-cheats.zip */; };
-		DDB984172FAEC31000F7A4A1 /* n64-cheats.zip in Resources */ = {isa = PBXBuildFile; fileRef = DDB983F32FAEC31000F7A4A1 /* n64-cheats.zip */; };
-		DDB984182FAEC31000F7A4A1 /* nds-cheats.zip in Resources */ = {isa = PBXBuildFile; fileRef = DDB983F42FAEC31000F7A4A1 /* nds-cheats.zip */; };
-		DDB984192FAEC31000F7A4A1 /* gbc-cheats.zip in Resources */ = {isa = PBXBuildFile; fileRef = DDB983E82FAEC31000F7A4A1 /* gbc-cheats.zip */; };
-		DDB9841A2FAEC31000F7A4A1 /* tic80-cheats.zip in Resources */ = {isa = PBXBuildFile; fileRef = DDB984022FAEC31000F7A4A1 /* tic80-cheats.zip */; };
-		DDB9841B2FAEC31000F7A4A1 /* psp-cheats.zip in Resources */ = {isa = PBXBuildFile; fileRef = DDB983F72FAEC31000F7A4A1 /* psp-cheats.zip */; };
-		DDB9841C2FAEC31000F7A4A1 /* turbografx16-cheats.zip in Resources */ = {isa = PBXBuildFile; fileRef = DDB984032FAEC31000F7A4A1 /* turbografx16-cheats.zip */; };
-		DDB9841D2FAEC31000F7A4A1 /* jaguar-cheats.zip in Resources */ = {isa = PBXBuildFile; fileRef = DDB983EC2FAEC31000F7A4A1 /* jaguar-cheats.zip */; };
-		DDB9841E2FAEC31000F7A4A1 /* intellivision-cheats.zip in Resources */ = {isa = PBXBuildFile; fileRef = DDB983EB2FAEC31000F7A4A1 /* intellivision-cheats.zip */; };
-		DDB9841F2FAEC31000F7A4A1 /* amstrad-cheats.zip in Resources */ = {isa = PBXBuildFile; fileRef = DDB983D92FAEC31000F7A4A1 /* amstrad-cheats.zip */; };
-		DDB984202FAEC31000F7A4A1 /* n64_unreleased-cheats.zip in Resources */ = {isa = PBXBuildFile; fileRef = DDB983F22FAEC31000F7A4A1 /* n64_unreleased-cheats.zip */; };
-		DDB984212FAEC31000F7A4A1 /* atarilynx-cheats.zip in Resources */ = {isa = PBXBuildFile; fileRef = DDB983DF2FAEC31000F7A4A1 /* atarilynx-cheats.zip */; };
-		DDB984222FAEC31000F7A4A1 /* gba-cheats.zip in Resources */ = {isa = PBXBuildFile; fileRef = DDB983E72FAEC31000F7A4A1 /* gba-cheats.zip */; };
-		DDB984232FAEC31000F7A4A1 /* nes-cheats.zip in Resources */ = {isa = PBXBuildFile; fileRef = DDB983F52FAEC31000F7A4A1 /* nes-cheats.zip */; };
-		DDB984242FAEC31000F7A4A1 /* 32x-cheats.zip in Resources */ = {isa = PBXBuildFile; fileRef = DDB983D82FAEC31000F7A4A1 /* 32x-cheats.zip */; };
-		DDB984252FAEC31000F7A4A1 /* n64_ique-cheats.zip in Resources */ = {isa = PBXBuildFile; fileRef = DDB983F12FAEC31000F7A4A1 /* n64_ique-cheats.zip */; };
-		DDB984262FAEC31000F7A4A1 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = DDB983D72FAEC31000F7A4A1 /* Assets.xcassets */; };
-		DDB984272FAEC31000F7A4A1 /* supergrafx-cheats.zip in Resources */ = {isa = PBXBuildFile; fileRef = DDB984002FAEC31000F7A4A1 /* supergrafx-cheats.zip */; };
-		DDB984282FAEC31000F7A4A1 /* prboom-cheats.zip in Resources */ = {isa = PBXBuildFile; fileRef = DDB983F62FAEC31000F7A4A1 /* prboom-cheats.zip */; };
-		DDB984292FAEC31000F7A4A1 /* snes-cheats.zip in Resources */ = {isa = PBXBuildFile; fileRef = DDB983FE2FAEC31000F7A4A1 /* snes-cheats.zip */; };
-		DDB9842A2FAEC31000F7A4A1 /* arcade-cheats.zip in Resources */ = {isa = PBXBuildFile; fileRef = DDB983DA2FAEC31000F7A4A1 /* arcade-cheats.zip */; };
-		DDB9842B2FAEC31000F7A4A1 /* satellaview-cheats.zip in Resources */ = {isa = PBXBuildFile; fileRef = DDB983FA2FAEC31000F7A4A1 /* satellaview-cheats.zip */; };
-		DDB9842C2FAEC31000F7A4A1 /* genesis-cheats.zip in Resources */ = {isa = PBXBuildFile; fileRef = DDB983E92FAEC31000F7A4A1 /* genesis-cheats.zip */; };
-		DDB9842D2FAEC31000F7A4A1 /* segacd-cheats.zip in Resources */ = {isa = PBXBuildFile; fileRef = DDB983FC2FAEC31000F7A4A1 /* segacd-cheats.zip */; };
-		DDB9842E2FAEC31000F7A4A1 /* puzzlescript-cheats.zip in Resources */ = {isa = PBXBuildFile; fileRef = DDB983F92FAEC31000F7A4A1 /* puzzlescript-cheats.zip */; };
-		DDB9842F2FAEC31000F7A4A1 /* atari5200-cheats.zip in Resources */ = {isa = PBXBuildFile; fileRef = DDB983DD2FAEC31000F7A4A1 /* atari5200-cheats.zip */; };
-		DDB984302FAEC31000F7A4A1 /* psx-cheats.zip in Resources */ = {isa = PBXBuildFile; fileRef = DDB983F82FAEC31000F7A4A1 /* psx-cheats.zip */; };
-		DDB984312FAEC31000F7A4A1 /* fbneo-cheats.zip in Resources */ = {isa = PBXBuildFile; fileRef = DDB983E42FAEC31000F7A4A1 /* fbneo-cheats.zip */; };
-		DDB984322FAEC31000F7A4A1 /* colecovision-cheats.zip in Resources */ = {isa = PBXBuildFile; fileRef = DDB983E12FAEC31000F7A4A1 /* colecovision-cheats.zip */; };
-		DDB984332FAEC31000F7A4A1 /* spectrum-cheats.zip in Resources */ = {isa = PBXBuildFile; fileRef = DDB983FF2FAEC31000F7A4A1 /* spectrum-cheats.zip */; };
+		DDB984C02FB0DEE400F7A4A1 /* puzzlescript-cheats.zip in Resources */ = {isa = PBXBuildFile; fileRef = DDB984B32FB0DEE400F7A4A1 /* puzzlescript-cheats.zip */; };
+		DDB984C12FB0DEE400F7A4A1 /* fds-cheats.zip in Resources */ = {isa = PBXBuildFile; fileRef = DDB9849F2FB0DEE400F7A4A1 /* fds-cheats.zip */; };
+		DDB984C22FB0DEE400F7A4A1 /* arcade-cheats.zip in Resources */ = {isa = PBXBuildFile; fileRef = DDB984942FB0DEE400F7A4A1 /* arcade-cheats.zip */; };
+		DDB984C32FB0DEE400F7A4A1 /* amstrad-cheats.zip in Resources */ = {isa = PBXBuildFile; fileRef = DDB984932FB0DEE400F7A4A1 /* amstrad-cheats.zip */; };
+		DDB984C42FB0DEE400F7A4A1 /* 32x-cheats.zip in Resources */ = {isa = PBXBuildFile; fileRef = DDB984922FB0DEE400F7A4A1 /* 32x-cheats.zip */; };
+		DDB984C52FB0DEE400F7A4A1 /* gg-cheats.zip in Resources */ = {isa = PBXBuildFile; fileRef = DDB984A42FB0DEE400F7A4A1 /* gg-cheats.zip */; };
+		DDB984C62FB0DEE400F7A4A1 /* chailove-cheats.zip in Resources */ = {isa = PBXBuildFile; fileRef = DDB9849A2FB0DEE400F7A4A1 /* chailove-cheats.zip */; };
+		DDB984C72FB0DEE400F7A4A1 /* genesis-cheats.zip in Resources */ = {isa = PBXBuildFile; fileRef = DDB984A32FB0DEE400F7A4A1 /* genesis-cheats.zip */; };
+		DDB984C82FB0DEE400F7A4A1 /* intellivision-cheats.zip in Resources */ = {isa = PBXBuildFile; fileRef = DDB984A52FB0DEE400F7A4A1 /* intellivision-cheats.zip */; };
+		DDB984C92FB0DEE400F7A4A1 /* prboom-cheats.zip in Resources */ = {isa = PBXBuildFile; fileRef = DDB984B02FB0DEE400F7A4A1 /* prboom-cheats.zip */; };
+		DDB984CA2FB0DEE400F7A4A1 /* dreamcast-cheats.zip in Resources */ = {isa = PBXBuildFile; fileRef = DDB9849D2FB0DEE400F7A4A1 /* dreamcast-cheats.zip */; };
+		DDB984CB2FB0DEE400F7A4A1 /* tic80-cheats.zip in Resources */ = {isa = PBXBuildFile; fileRef = DDB984BC2FB0DEE400F7A4A1 /* tic80-cheats.zip */; };
+		DDB984CC2FB0DEE400F7A4A1 /* gb-cheats.zip in Resources */ = {isa = PBXBuildFile; fileRef = DDB984A02FB0DEE400F7A4A1 /* gb-cheats.zip */; };
+		DDB984CD2FB0DEE400F7A4A1 /* turbografxcd-cheats.zip in Resources */ = {isa = PBXBuildFile; fileRef = DDB984BE2FB0DEE400F7A4A1 /* turbografxcd-cheats.zip */; };
+		DDB984CE2FB0DEE400F7A4A1 /* atari7800-cheats.zip in Resources */ = {isa = PBXBuildFile; fileRef = DDB984982FB0DEE400F7A4A1 /* atari7800-cheats.zip */; };
+		DDB984CF2FB0DEE400F7A4A1 /* n64_aleck-cheats.zip in Resources */ = {isa = PBXBuildFile; fileRef = DDB984AA2FB0DEE400F7A4A1 /* n64_aleck-cheats.zip */; };
+		DDB984D02FB0DEE400F7A4A1 /* fbneo-cheats.zip in Resources */ = {isa = PBXBuildFile; fileRef = DDB9849E2FB0DEE400F7A4A1 /* fbneo-cheats.zip */; };
+		DDB984D12FB0DEE400F7A4A1 /* dos-cheats.zip in Resources */ = {isa = PBXBuildFile; fileRef = DDB9849C2FB0DEE400F7A4A1 /* dos-cheats.zip */; };
+		DDB984D22FB0DEE400F7A4A1 /* atari5200-cheats.zip in Resources */ = {isa = PBXBuildFile; fileRef = DDB984972FB0DEE400F7A4A1 /* atari5200-cheats.zip */; };
+		DDB984D32FB0DEE400F7A4A1 /* atari800-cheats.zip in Resources */ = {isa = PBXBuildFile; fileRef = DDB984952FB0DEE400F7A4A1 /* atari800-cheats.zip */; };
+		DDB984D42FB0DEE400F7A4A1 /* msx-cheats.zip in Resources */ = {isa = PBXBuildFile; fileRef = DDB984A92FB0DEE400F7A4A1 /* msx-cheats.zip */; };
+		DDB984D52FB0DEE400F7A4A1 /* nes-cheats.zip in Resources */ = {isa = PBXBuildFile; fileRef = DDB984AF2FB0DEE400F7A4A1 /* nes-cheats.zip */; };
+		DDB984D62FB0DEE400F7A4A1 /* msx_fmsx-cheats.zip in Resources */ = {isa = PBXBuildFile; fileRef = DDB984A82FB0DEE400F7A4A1 /* msx_fmsx-cheats.zip */; };
+		DDB984D72FB0DEE400F7A4A1 /* spectrum-cheats.zip in Resources */ = {isa = PBXBuildFile; fileRef = DDB984B92FB0DEE400F7A4A1 /* spectrum-cheats.zip */; };
+		DDB984D82FB0DEE400F7A4A1 /* atarilynx-cheats.zip in Resources */ = {isa = PBXBuildFile; fileRef = DDB984992FB0DEE400F7A4A1 /* atarilynx-cheats.zip */; };
+		DDB984D92FB0DEE400F7A4A1 /* psx-cheats.zip in Resources */ = {isa = PBXBuildFile; fileRef = DDB984B22FB0DEE400F7A4A1 /* psx-cheats.zip */; };
+		DDB984DA2FB0DEE400F7A4A1 /* thomson-cheats.zip in Resources */ = {isa = PBXBuildFile; fileRef = DDB984BB2FB0DEE400F7A4A1 /* thomson-cheats.zip */; };
+		DDB984DB2FB0DEE400F7A4A1 /* jaguar-cheats.zip in Resources */ = {isa = PBXBuildFile; fileRef = DDB984A62FB0DEE400F7A4A1 /* jaguar-cheats.zip */; };
+		DDB984DC2FB0DEE400F7A4A1 /* supergrafx-cheats.zip in Resources */ = {isa = PBXBuildFile; fileRef = DDB984BA2FB0DEE400F7A4A1 /* supergrafx-cheats.zip */; };
+		DDB984DD2FB0DEE400F7A4A1 /* saturn-cheats.zip in Resources */ = {isa = PBXBuildFile; fileRef = DDB984B52FB0DEE400F7A4A1 /* saturn-cheats.zip */; };
+		DDB984DE2FB0DEE400F7A4A1 /* n64-cheats.zip in Resources */ = {isa = PBXBuildFile; fileRef = DDB984AD2FB0DEE400F7A4A1 /* n64-cheats.zip */; };
+		DDB984DF2FB0DEE400F7A4A1 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = DDB984912FB0DEE400F7A4A1 /* Assets.xcassets */; };
+		DDB984E02FB0DEE400F7A4A1 /* sms-cheats.zip in Resources */ = {isa = PBXBuildFile; fileRef = DDB984B72FB0DEE400F7A4A1 /* sms-cheats.zip */; };
+		DDB984E12FB0DEE400F7A4A1 /* gbc-cheats.zip in Resources */ = {isa = PBXBuildFile; fileRef = DDB984A22FB0DEE400F7A4A1 /* gbc-cheats.zip */; };
+		DDB984E22FB0DEE400F7A4A1 /* snes-cheats.zip in Resources */ = {isa = PBXBuildFile; fileRef = DDB984B82FB0DEE400F7A4A1 /* snes-cheats.zip */; };
+		DDB984E32FB0DEE400F7A4A1 /* atari2600-cheats.zip in Resources */ = {isa = PBXBuildFile; fileRef = DDB984962FB0DEE400F7A4A1 /* atari2600-cheats.zip */; };
+		DDB984E42FB0DEE400F7A4A1 /* turbografx16-cheats.zip in Resources */ = {isa = PBXBuildFile; fileRef = DDB984BD2FB0DEE400F7A4A1 /* turbografx16-cheats.zip */; };
+		DDB984E52FB0DEE400F7A4A1 /* n64_ique-cheats.zip in Resources */ = {isa = PBXBuildFile; fileRef = DDB984AB2FB0DEE400F7A4A1 /* n64_ique-cheats.zip */; };
+		DDB984E62FB0DEE400F7A4A1 /* psp-cheats.zip in Resources */ = {isa = PBXBuildFile; fileRef = DDB984B12FB0DEE400F7A4A1 /* psp-cheats.zip */; };
+		DDB984E72FB0DEE400F7A4A1 /* gba-cheats.zip in Resources */ = {isa = PBXBuildFile; fileRef = DDB984A12FB0DEE400F7A4A1 /* gba-cheats.zip */; };
+		DDB984E82FB0DEE400F7A4A1 /* nds-cheats.zip in Resources */ = {isa = PBXBuildFile; fileRef = DDB984AE2FB0DEE400F7A4A1 /* nds-cheats.zip */; };
+		DDB984E92FB0DEE400F7A4A1 /* n64_unreleased-cheats.zip in Resources */ = {isa = PBXBuildFile; fileRef = DDB984AC2FB0DEE400F7A4A1 /* n64_unreleased-cheats.zip */; };
+		DDB984EA2FB0DEE400F7A4A1 /* colecovision-cheats.zip in Resources */ = {isa = PBXBuildFile; fileRef = DDB9849B2FB0DEE400F7A4A1 /* colecovision-cheats.zip */; };
+		DDB984EB2FB0DEE400F7A4A1 /* satellaview-cheats.zip in Resources */ = {isa = PBXBuildFile; fileRef = DDB984B42FB0DEE400F7A4A1 /* satellaview-cheats.zip */; };
+		DDB984EC2FB0DEE400F7A4A1 /* megadrive-cheats.zip in Resources */ = {isa = PBXBuildFile; fileRef = DDB984A72FB0DEE400F7A4A1 /* megadrive-cheats.zip */; };
+		DDB984ED2FB0DEE400F7A4A1 /* segacd-cheats.zip in Resources */ = {isa = PBXBuildFile; fileRef = DDB984B62FB0DEE400F7A4A1 /* segacd-cheats.zip */; };
 		DE0B4D6A993B5675334C258D /* Nokia - N-Gage.png in Resources */ = {isa = PBXBuildFile; fileRef = B0337EA86AD9250DF0343B12 /* Nokia - N-Gage.png */; };
 		DE347FA1041BC76A0615B861 /* Unofficial - Microsoft - Xbox 360 (Title Updates)-content.png in Resources */ = {isa = PBXBuildFile; fileRef = 321407A2D97719BCB0F6971E /* Unofficial - Microsoft - Xbox 360 (Title Updates)-content.png */; };
 		DE87FF8977E7AD06FD914A84 /* gba.png in Resources */ = {isa = PBXBuildFile; fileRef = 8CF265A0D4B16C7BF766897E /* gba.png */; };
@@ -2648,52 +2648,52 @@
 		DC83E960655FFB51A76C5F10 /* NEC - PC-8001 - PC-8801-content.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "NEC - PC-8001 - PC-8801-content.png"; sourceTree = "<group>"; };
 		DD476D63A6BB92961004D98F /* GitHubAPIModels.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GitHubAPIModels.swift; sourceTree = "<group>"; };
 		DDA440915145AB1C4D850872 /* LogManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LogManager.swift; sourceTree = "<group>"; };
-		DDB983D72FAEC31000F7A4A1 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
-		DDB983D82FAEC31000F7A4A1 /* 32x-cheats.zip */ = {isa = PBXFileReference; lastKnownFileType = archive.zip; path = "32x-cheats.zip"; sourceTree = "<group>"; };
-		DDB983D92FAEC31000F7A4A1 /* amstrad-cheats.zip */ = {isa = PBXFileReference; lastKnownFileType = archive.zip; path = "amstrad-cheats.zip"; sourceTree = "<group>"; };
-		DDB983DA2FAEC31000F7A4A1 /* arcade-cheats.zip */ = {isa = PBXFileReference; lastKnownFileType = archive.zip; path = "arcade-cheats.zip"; sourceTree = "<group>"; };
-		DDB983DB2FAEC31000F7A4A1 /* atari800-cheats.zip */ = {isa = PBXFileReference; lastKnownFileType = archive.zip; path = "atari800-cheats.zip"; sourceTree = "<group>"; };
-		DDB983DC2FAEC31000F7A4A1 /* atari2600-cheats.zip */ = {isa = PBXFileReference; lastKnownFileType = archive.zip; path = "atari2600-cheats.zip"; sourceTree = "<group>"; };
-		DDB983DD2FAEC31000F7A4A1 /* atari5200-cheats.zip */ = {isa = PBXFileReference; lastKnownFileType = archive.zip; path = "atari5200-cheats.zip"; sourceTree = "<group>"; };
-		DDB983DE2FAEC31000F7A4A1 /* atari7800-cheats.zip */ = {isa = PBXFileReference; lastKnownFileType = archive.zip; path = "atari7800-cheats.zip"; sourceTree = "<group>"; };
-		DDB983DF2FAEC31000F7A4A1 /* atarilynx-cheats.zip */ = {isa = PBXFileReference; lastKnownFileType = archive.zip; path = "atarilynx-cheats.zip"; sourceTree = "<group>"; };
-		DDB983E02FAEC31000F7A4A1 /* chailove-cheats.zip */ = {isa = PBXFileReference; lastKnownFileType = archive.zip; path = "chailove-cheats.zip"; sourceTree = "<group>"; };
-		DDB983E12FAEC31000F7A4A1 /* colecovision-cheats.zip */ = {isa = PBXFileReference; lastKnownFileType = archive.zip; path = "colecovision-cheats.zip"; sourceTree = "<group>"; };
-		DDB983E22FAEC31000F7A4A1 /* dos-cheats.zip */ = {isa = PBXFileReference; lastKnownFileType = archive.zip; path = "dos-cheats.zip"; sourceTree = "<group>"; };
-		DDB983E32FAEC31000F7A4A1 /* dreamcast-cheats.zip */ = {isa = PBXFileReference; lastKnownFileType = archive.zip; path = "dreamcast-cheats.zip"; sourceTree = "<group>"; };
-		DDB983E42FAEC31000F7A4A1 /* fbneo-cheats.zip */ = {isa = PBXFileReference; lastKnownFileType = archive.zip; path = "fbneo-cheats.zip"; sourceTree = "<group>"; };
-		DDB983E52FAEC31000F7A4A1 /* fds-cheats.zip */ = {isa = PBXFileReference; lastKnownFileType = archive.zip; path = "fds-cheats.zip"; sourceTree = "<group>"; };
-		DDB983E62FAEC31000F7A4A1 /* gb-cheats.zip */ = {isa = PBXFileReference; lastKnownFileType = archive.zip; path = "gb-cheats.zip"; sourceTree = "<group>"; };
-		DDB983E72FAEC31000F7A4A1 /* gba-cheats.zip */ = {isa = PBXFileReference; lastKnownFileType = archive.zip; path = "gba-cheats.zip"; sourceTree = "<group>"; };
-		DDB983E82FAEC31000F7A4A1 /* gbc-cheats.zip */ = {isa = PBXFileReference; lastKnownFileType = archive.zip; path = "gbc-cheats.zip"; sourceTree = "<group>"; };
-		DDB983E92FAEC31000F7A4A1 /* genesis-cheats.zip */ = {isa = PBXFileReference; lastKnownFileType = archive.zip; path = "genesis-cheats.zip"; sourceTree = "<group>"; };
-		DDB983EA2FAEC31000F7A4A1 /* gg-cheats.zip */ = {isa = PBXFileReference; lastKnownFileType = archive.zip; path = "gg-cheats.zip"; sourceTree = "<group>"; };
-		DDB983EB2FAEC31000F7A4A1 /* intellivision-cheats.zip */ = {isa = PBXFileReference; lastKnownFileType = archive.zip; path = "intellivision-cheats.zip"; sourceTree = "<group>"; };
-		DDB983EC2FAEC31000F7A4A1 /* jaguar-cheats.zip */ = {isa = PBXFileReference; lastKnownFileType = archive.zip; path = "jaguar-cheats.zip"; sourceTree = "<group>"; };
-		DDB983ED2FAEC31000F7A4A1 /* megadrive-cheats.zip */ = {isa = PBXFileReference; lastKnownFileType = archive.zip; path = "megadrive-cheats.zip"; sourceTree = "<group>"; };
-		DDB983EE2FAEC31000F7A4A1 /* msx_fmsx-cheats.zip */ = {isa = PBXFileReference; lastKnownFileType = archive.zip; path = "msx_fmsx-cheats.zip"; sourceTree = "<group>"; };
-		DDB983EF2FAEC31000F7A4A1 /* msx-cheats.zip */ = {isa = PBXFileReference; lastKnownFileType = archive.zip; path = "msx-cheats.zip"; sourceTree = "<group>"; };
-		DDB983F02FAEC31000F7A4A1 /* n64_aleck-cheats.zip */ = {isa = PBXFileReference; lastKnownFileType = archive.zip; path = "n64_aleck-cheats.zip"; sourceTree = "<group>"; };
-		DDB983F12FAEC31000F7A4A1 /* n64_ique-cheats.zip */ = {isa = PBXFileReference; lastKnownFileType = archive.zip; path = "n64_ique-cheats.zip"; sourceTree = "<group>"; };
-		DDB983F22FAEC31000F7A4A1 /* n64_unreleased-cheats.zip */ = {isa = PBXFileReference; lastKnownFileType = archive.zip; path = "n64_unreleased-cheats.zip"; sourceTree = "<group>"; };
-		DDB983F32FAEC31000F7A4A1 /* n64-cheats.zip */ = {isa = PBXFileReference; lastKnownFileType = archive.zip; path = "n64-cheats.zip"; sourceTree = "<group>"; };
-		DDB983F42FAEC31000F7A4A1 /* nds-cheats.zip */ = {isa = PBXFileReference; lastKnownFileType = archive.zip; path = "nds-cheats.zip"; sourceTree = "<group>"; };
-		DDB983F52FAEC31000F7A4A1 /* nes-cheats.zip */ = {isa = PBXFileReference; lastKnownFileType = archive.zip; path = "nes-cheats.zip"; sourceTree = "<group>"; };
-		DDB983F62FAEC31000F7A4A1 /* prboom-cheats.zip */ = {isa = PBXFileReference; lastKnownFileType = archive.zip; path = "prboom-cheats.zip"; sourceTree = "<group>"; };
-		DDB983F72FAEC31000F7A4A1 /* psp-cheats.zip */ = {isa = PBXFileReference; lastKnownFileType = archive.zip; path = "psp-cheats.zip"; sourceTree = "<group>"; };
-		DDB983F82FAEC31000F7A4A1 /* psx-cheats.zip */ = {isa = PBXFileReference; lastKnownFileType = archive.zip; path = "psx-cheats.zip"; sourceTree = "<group>"; };
-		DDB983F92FAEC31000F7A4A1 /* puzzlescript-cheats.zip */ = {isa = PBXFileReference; lastKnownFileType = archive.zip; path = "puzzlescript-cheats.zip"; sourceTree = "<group>"; };
-		DDB983FA2FAEC31000F7A4A1 /* satellaview-cheats.zip */ = {isa = PBXFileReference; lastKnownFileType = archive.zip; path = "satellaview-cheats.zip"; sourceTree = "<group>"; };
-		DDB983FB2FAEC31000F7A4A1 /* saturn-cheats.zip */ = {isa = PBXFileReference; lastKnownFileType = archive.zip; path = "saturn-cheats.zip"; sourceTree = "<group>"; };
-		DDB983FC2FAEC31000F7A4A1 /* segacd-cheats.zip */ = {isa = PBXFileReference; lastKnownFileType = archive.zip; path = "segacd-cheats.zip"; sourceTree = "<group>"; };
-		DDB983FD2FAEC31000F7A4A1 /* sms-cheats.zip */ = {isa = PBXFileReference; lastKnownFileType = archive.zip; path = "sms-cheats.zip"; sourceTree = "<group>"; };
-		DDB983FE2FAEC31000F7A4A1 /* snes-cheats.zip */ = {isa = PBXFileReference; lastKnownFileType = archive.zip; path = "snes-cheats.zip"; sourceTree = "<group>"; };
-		DDB983FF2FAEC31000F7A4A1 /* spectrum-cheats.zip */ = {isa = PBXFileReference; lastKnownFileType = archive.zip; path = "spectrum-cheats.zip"; sourceTree = "<group>"; };
-		DDB984002FAEC31000F7A4A1 /* supergrafx-cheats.zip */ = {isa = PBXFileReference; lastKnownFileType = archive.zip; path = "supergrafx-cheats.zip"; sourceTree = "<group>"; };
-		DDB984012FAEC31000F7A4A1 /* thomson-cheats.zip */ = {isa = PBXFileReference; lastKnownFileType = archive.zip; path = "thomson-cheats.zip"; sourceTree = "<group>"; };
-		DDB984022FAEC31000F7A4A1 /* tic80-cheats.zip */ = {isa = PBXFileReference; lastKnownFileType = archive.zip; path = "tic80-cheats.zip"; sourceTree = "<group>"; };
-		DDB984032FAEC31000F7A4A1 /* turbografx16-cheats.zip */ = {isa = PBXFileReference; lastKnownFileType = archive.zip; path = "turbografx16-cheats.zip"; sourceTree = "<group>"; };
-		DDB984042FAEC31000F7A4A1 /* turbografxcd-cheats.zip */ = {isa = PBXFileReference; lastKnownFileType = archive.zip; path = "turbografxcd-cheats.zip"; sourceTree = "<group>"; };
+		DDB984912FB0DEE400F7A4A1 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
+		DDB984922FB0DEE400F7A4A1 /* 32x-cheats.zip */ = {isa = PBXFileReference; lastKnownFileType = archive.zip; path = "32x-cheats.zip"; sourceTree = "<group>"; };
+		DDB984932FB0DEE400F7A4A1 /* amstrad-cheats.zip */ = {isa = PBXFileReference; lastKnownFileType = archive.zip; path = "amstrad-cheats.zip"; sourceTree = "<group>"; };
+		DDB984942FB0DEE400F7A4A1 /* arcade-cheats.zip */ = {isa = PBXFileReference; lastKnownFileType = archive.zip; path = "arcade-cheats.zip"; sourceTree = "<group>"; };
+		DDB984952FB0DEE400F7A4A1 /* atari800-cheats.zip */ = {isa = PBXFileReference; lastKnownFileType = archive.zip; path = "atari800-cheats.zip"; sourceTree = "<group>"; };
+		DDB984962FB0DEE400F7A4A1 /* atari2600-cheats.zip */ = {isa = PBXFileReference; lastKnownFileType = archive.zip; path = "atari2600-cheats.zip"; sourceTree = "<group>"; };
+		DDB984972FB0DEE400F7A4A1 /* atari5200-cheats.zip */ = {isa = PBXFileReference; lastKnownFileType = archive.zip; path = "atari5200-cheats.zip"; sourceTree = "<group>"; };
+		DDB984982FB0DEE400F7A4A1 /* atari7800-cheats.zip */ = {isa = PBXFileReference; lastKnownFileType = archive.zip; path = "atari7800-cheats.zip"; sourceTree = "<group>"; };
+		DDB984992FB0DEE400F7A4A1 /* atarilynx-cheats.zip */ = {isa = PBXFileReference; lastKnownFileType = archive.zip; path = "atarilynx-cheats.zip"; sourceTree = "<group>"; };
+		DDB9849A2FB0DEE400F7A4A1 /* chailove-cheats.zip */ = {isa = PBXFileReference; lastKnownFileType = archive.zip; path = "chailove-cheats.zip"; sourceTree = "<group>"; };
+		DDB9849B2FB0DEE400F7A4A1 /* colecovision-cheats.zip */ = {isa = PBXFileReference; lastKnownFileType = archive.zip; path = "colecovision-cheats.zip"; sourceTree = "<group>"; };
+		DDB9849C2FB0DEE400F7A4A1 /* dos-cheats.zip */ = {isa = PBXFileReference; lastKnownFileType = archive.zip; path = "dos-cheats.zip"; sourceTree = "<group>"; };
+		DDB9849D2FB0DEE400F7A4A1 /* dreamcast-cheats.zip */ = {isa = PBXFileReference; lastKnownFileType = archive.zip; path = "dreamcast-cheats.zip"; sourceTree = "<group>"; };
+		DDB9849E2FB0DEE400F7A4A1 /* fbneo-cheats.zip */ = {isa = PBXFileReference; lastKnownFileType = archive.zip; path = "fbneo-cheats.zip"; sourceTree = "<group>"; };
+		DDB9849F2FB0DEE400F7A4A1 /* fds-cheats.zip */ = {isa = PBXFileReference; lastKnownFileType = archive.zip; path = "fds-cheats.zip"; sourceTree = "<group>"; };
+		DDB984A02FB0DEE400F7A4A1 /* gb-cheats.zip */ = {isa = PBXFileReference; lastKnownFileType = archive.zip; path = "gb-cheats.zip"; sourceTree = "<group>"; };
+		DDB984A12FB0DEE400F7A4A1 /* gba-cheats.zip */ = {isa = PBXFileReference; lastKnownFileType = archive.zip; path = "gba-cheats.zip"; sourceTree = "<group>"; };
+		DDB984A22FB0DEE400F7A4A1 /* gbc-cheats.zip */ = {isa = PBXFileReference; lastKnownFileType = archive.zip; path = "gbc-cheats.zip"; sourceTree = "<group>"; };
+		DDB984A32FB0DEE400F7A4A1 /* genesis-cheats.zip */ = {isa = PBXFileReference; lastKnownFileType = archive.zip; path = "genesis-cheats.zip"; sourceTree = "<group>"; };
+		DDB984A42FB0DEE400F7A4A1 /* gg-cheats.zip */ = {isa = PBXFileReference; lastKnownFileType = archive.zip; path = "gg-cheats.zip"; sourceTree = "<group>"; };
+		DDB984A52FB0DEE400F7A4A1 /* intellivision-cheats.zip */ = {isa = PBXFileReference; lastKnownFileType = archive.zip; path = "intellivision-cheats.zip"; sourceTree = "<group>"; };
+		DDB984A62FB0DEE400F7A4A1 /* jaguar-cheats.zip */ = {isa = PBXFileReference; lastKnownFileType = archive.zip; path = "jaguar-cheats.zip"; sourceTree = "<group>"; };
+		DDB984A72FB0DEE400F7A4A1 /* megadrive-cheats.zip */ = {isa = PBXFileReference; lastKnownFileType = archive.zip; path = "megadrive-cheats.zip"; sourceTree = "<group>"; };
+		DDB984A82FB0DEE400F7A4A1 /* msx_fmsx-cheats.zip */ = {isa = PBXFileReference; lastKnownFileType = archive.zip; path = "msx_fmsx-cheats.zip"; sourceTree = "<group>"; };
+		DDB984A92FB0DEE400F7A4A1 /* msx-cheats.zip */ = {isa = PBXFileReference; lastKnownFileType = archive.zip; path = "msx-cheats.zip"; sourceTree = "<group>"; };
+		DDB984AA2FB0DEE400F7A4A1 /* n64_aleck-cheats.zip */ = {isa = PBXFileReference; lastKnownFileType = archive.zip; path = "n64_aleck-cheats.zip"; sourceTree = "<group>"; };
+		DDB984AB2FB0DEE400F7A4A1 /* n64_ique-cheats.zip */ = {isa = PBXFileReference; lastKnownFileType = archive.zip; path = "n64_ique-cheats.zip"; sourceTree = "<group>"; };
+		DDB984AC2FB0DEE400F7A4A1 /* n64_unreleased-cheats.zip */ = {isa = PBXFileReference; lastKnownFileType = archive.zip; path = "n64_unreleased-cheats.zip"; sourceTree = "<group>"; };
+		DDB984AD2FB0DEE400F7A4A1 /* n64-cheats.zip */ = {isa = PBXFileReference; lastKnownFileType = archive.zip; path = "n64-cheats.zip"; sourceTree = "<group>"; };
+		DDB984AE2FB0DEE400F7A4A1 /* nds-cheats.zip */ = {isa = PBXFileReference; lastKnownFileType = archive.zip; path = "nds-cheats.zip"; sourceTree = "<group>"; };
+		DDB984AF2FB0DEE400F7A4A1 /* nes-cheats.zip */ = {isa = PBXFileReference; lastKnownFileType = archive.zip; path = "nes-cheats.zip"; sourceTree = "<group>"; };
+		DDB984B02FB0DEE400F7A4A1 /* prboom-cheats.zip */ = {isa = PBXFileReference; lastKnownFileType = archive.zip; path = "prboom-cheats.zip"; sourceTree = "<group>"; };
+		DDB984B12FB0DEE400F7A4A1 /* psp-cheats.zip */ = {isa = PBXFileReference; lastKnownFileType = archive.zip; path = "psp-cheats.zip"; sourceTree = "<group>"; };
+		DDB984B22FB0DEE400F7A4A1 /* psx-cheats.zip */ = {isa = PBXFileReference; lastKnownFileType = archive.zip; path = "psx-cheats.zip"; sourceTree = "<group>"; };
+		DDB984B32FB0DEE400F7A4A1 /* puzzlescript-cheats.zip */ = {isa = PBXFileReference; lastKnownFileType = archive.zip; path = "puzzlescript-cheats.zip"; sourceTree = "<group>"; };
+		DDB984B42FB0DEE400F7A4A1 /* satellaview-cheats.zip */ = {isa = PBXFileReference; lastKnownFileType = archive.zip; path = "satellaview-cheats.zip"; sourceTree = "<group>"; };
+		DDB984B52FB0DEE400F7A4A1 /* saturn-cheats.zip */ = {isa = PBXFileReference; lastKnownFileType = archive.zip; path = "saturn-cheats.zip"; sourceTree = "<group>"; };
+		DDB984B62FB0DEE400F7A4A1 /* segacd-cheats.zip */ = {isa = PBXFileReference; lastKnownFileType = archive.zip; path = "segacd-cheats.zip"; sourceTree = "<group>"; };
+		DDB984B72FB0DEE400F7A4A1 /* sms-cheats.zip */ = {isa = PBXFileReference; lastKnownFileType = archive.zip; path = "sms-cheats.zip"; sourceTree = "<group>"; };
+		DDB984B82FB0DEE400F7A4A1 /* snes-cheats.zip */ = {isa = PBXFileReference; lastKnownFileType = archive.zip; path = "snes-cheats.zip"; sourceTree = "<group>"; };
+		DDB984B92FB0DEE400F7A4A1 /* spectrum-cheats.zip */ = {isa = PBXFileReference; lastKnownFileType = archive.zip; path = "spectrum-cheats.zip"; sourceTree = "<group>"; };
+		DDB984BA2FB0DEE400F7A4A1 /* supergrafx-cheats.zip */ = {isa = PBXFileReference; lastKnownFileType = archive.zip; path = "supergrafx-cheats.zip"; sourceTree = "<group>"; };
+		DDB984BB2FB0DEE400F7A4A1 /* thomson-cheats.zip */ = {isa = PBXFileReference; lastKnownFileType = archive.zip; path = "thomson-cheats.zip"; sourceTree = "<group>"; };
+		DDB984BC2FB0DEE400F7A4A1 /* tic80-cheats.zip */ = {isa = PBXFileReference; lastKnownFileType = archive.zip; path = "tic80-cheats.zip"; sourceTree = "<group>"; };
+		DDB984BD2FB0DEE400F7A4A1 /* turbografx16-cheats.zip */ = {isa = PBXFileReference; lastKnownFileType = archive.zip; path = "turbografx16-cheats.zip"; sourceTree = "<group>"; };
+		DDB984BE2FB0DEE400F7A4A1 /* turbografxcd-cheats.zip */ = {isa = PBXFileReference; lastKnownFileType = archive.zip; path = "turbografxcd-cheats.zip"; sourceTree = "<group>"; };
 		DDCACEF2DA4CC526B3582217 /* ps@132w.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "ps@132w.png"; sourceTree = "<group>"; };
 		DDFFDFCC5969E427805C3248 /* arduboy@132w.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "arduboy@132w.png"; sourceTree = "<group>"; };
 		DE2600DCA812DC4AA5557013 /* Sega - SG-1000.dat */ = {isa = PBXFileReference; lastKnownFileType = text; path = "Sega - SG-1000.dat"; sourceTree = "<group>"; };
@@ -2846,6 +2846,7 @@
 		F6BC2D971B660ACD5CC70339 /* SATURN.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = SATURN.png; sourceTree = "<group>"; };
 		F6C3B97C1F2A6EE711881DBF /* Handheld Electronic Game.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "Handheld Electronic Game.png"; sourceTree = "<group>"; };
 		F7E9B25CFC2A7C93185513F2 /* genesis.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = genesis.png; sourceTree = "<group>"; };
+		F81D1C54DD9BF425528C589B /* TruchiEmuTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = TruchiEmuTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		F840A09480B7BD45951DD050 /* cps2@132w.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "cps2@132w.png"; sourceTree = "<group>"; };
 		F85405AF2804CF2BF04FAD6D /* CheatManagerViews.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CheatManagerViews.swift; sourceTree = "<group>"; };
 		F8570BBBFB4E4EC224FC2C7F /* Microsoft - XBOX 360-content.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "Microsoft - XBOX 360-content.png"; sourceTree = "<group>"; };
@@ -3402,8 +3403,8 @@
 		6030CD98AFCCAA9A068217A1 /* Resources */ = {
 			isa = PBXGroup;
 			children = (
-				DDB983D72FAEC31000F7A4A1 /* Assets.xcassets */,
-				DDB984052FAEC31000F7A4A1 /* cheats */,
+				DDB984912FB0DEE400F7A4A1 /* Assets.xcassets */,
+				DDB984BF2FB0DEE400F7A4A1 /* cheats */,
 				993EF4980E6D59693590061E /* Config */,
 				35AF3E1D0EA8DD7BDA67C06A /* Data */,
 				0CBD37D03C917E1671224137 /* EmulatorIcons */,
@@ -3949,54 +3950,54 @@
 			path = UI;
 			sourceTree = "<group>";
 		};
-		DDB984052FAEC31000F7A4A1 /* cheats */ = {
+		DDB984BF2FB0DEE400F7A4A1 /* cheats */ = {
 			isa = PBXGroup;
 			children = (
-				DDB983D82FAEC31000F7A4A1 /* 32x-cheats.zip */,
-				DDB983D92FAEC31000F7A4A1 /* amstrad-cheats.zip */,
-				DDB983DA2FAEC31000F7A4A1 /* arcade-cheats.zip */,
-				DDB983DB2FAEC31000F7A4A1 /* atari800-cheats.zip */,
-				DDB983DC2FAEC31000F7A4A1 /* atari2600-cheats.zip */,
-				DDB983DD2FAEC31000F7A4A1 /* atari5200-cheats.zip */,
-				DDB983DE2FAEC31000F7A4A1 /* atari7800-cheats.zip */,
-				DDB983DF2FAEC31000F7A4A1 /* atarilynx-cheats.zip */,
-				DDB983E02FAEC31000F7A4A1 /* chailove-cheats.zip */,
-				DDB983E12FAEC31000F7A4A1 /* colecovision-cheats.zip */,
-				DDB983E22FAEC31000F7A4A1 /* dos-cheats.zip */,
-				DDB983E32FAEC31000F7A4A1 /* dreamcast-cheats.zip */,
-				DDB983E42FAEC31000F7A4A1 /* fbneo-cheats.zip */,
-				DDB983E52FAEC31000F7A4A1 /* fds-cheats.zip */,
-				DDB983E62FAEC31000F7A4A1 /* gb-cheats.zip */,
-				DDB983E72FAEC31000F7A4A1 /* gba-cheats.zip */,
-				DDB983E82FAEC31000F7A4A1 /* gbc-cheats.zip */,
-				DDB983E92FAEC31000F7A4A1 /* genesis-cheats.zip */,
-				DDB983EA2FAEC31000F7A4A1 /* gg-cheats.zip */,
-				DDB983EB2FAEC31000F7A4A1 /* intellivision-cheats.zip */,
-				DDB983EC2FAEC31000F7A4A1 /* jaguar-cheats.zip */,
-				DDB983ED2FAEC31000F7A4A1 /* megadrive-cheats.zip */,
-				DDB983EE2FAEC31000F7A4A1 /* msx_fmsx-cheats.zip */,
-				DDB983EF2FAEC31000F7A4A1 /* msx-cheats.zip */,
-				DDB983F02FAEC31000F7A4A1 /* n64_aleck-cheats.zip */,
-				DDB983F12FAEC31000F7A4A1 /* n64_ique-cheats.zip */,
-				DDB983F22FAEC31000F7A4A1 /* n64_unreleased-cheats.zip */,
-				DDB983F32FAEC31000F7A4A1 /* n64-cheats.zip */,
-				DDB983F42FAEC31000F7A4A1 /* nds-cheats.zip */,
-				DDB983F52FAEC31000F7A4A1 /* nes-cheats.zip */,
-				DDB983F62FAEC31000F7A4A1 /* prboom-cheats.zip */,
-				DDB983F72FAEC31000F7A4A1 /* psp-cheats.zip */,
-				DDB983F82FAEC31000F7A4A1 /* psx-cheats.zip */,
-				DDB983F92FAEC31000F7A4A1 /* puzzlescript-cheats.zip */,
-				DDB983FA2FAEC31000F7A4A1 /* satellaview-cheats.zip */,
-				DDB983FB2FAEC31000F7A4A1 /* saturn-cheats.zip */,
-				DDB983FC2FAEC31000F7A4A1 /* segacd-cheats.zip */,
-				DDB983FD2FAEC31000F7A4A1 /* sms-cheats.zip */,
-				DDB983FE2FAEC31000F7A4A1 /* snes-cheats.zip */,
-				DDB983FF2FAEC31000F7A4A1 /* spectrum-cheats.zip */,
-				DDB984002FAEC31000F7A4A1 /* supergrafx-cheats.zip */,
-				DDB984012FAEC31000F7A4A1 /* thomson-cheats.zip */,
-				DDB984022FAEC31000F7A4A1 /* tic80-cheats.zip */,
-				DDB984032FAEC31000F7A4A1 /* turbografx16-cheats.zip */,
-				DDB984042FAEC31000F7A4A1 /* turbografxcd-cheats.zip */,
+				DDB984922FB0DEE400F7A4A1 /* 32x-cheats.zip */,
+				DDB984932FB0DEE400F7A4A1 /* amstrad-cheats.zip */,
+				DDB984942FB0DEE400F7A4A1 /* arcade-cheats.zip */,
+				DDB984952FB0DEE400F7A4A1 /* atari800-cheats.zip */,
+				DDB984962FB0DEE400F7A4A1 /* atari2600-cheats.zip */,
+				DDB984972FB0DEE400F7A4A1 /* atari5200-cheats.zip */,
+				DDB984982FB0DEE400F7A4A1 /* atari7800-cheats.zip */,
+				DDB984992FB0DEE400F7A4A1 /* atarilynx-cheats.zip */,
+				DDB9849A2FB0DEE400F7A4A1 /* chailove-cheats.zip */,
+				DDB9849B2FB0DEE400F7A4A1 /* colecovision-cheats.zip */,
+				DDB9849C2FB0DEE400F7A4A1 /* dos-cheats.zip */,
+				DDB9849D2FB0DEE400F7A4A1 /* dreamcast-cheats.zip */,
+				DDB9849E2FB0DEE400F7A4A1 /* fbneo-cheats.zip */,
+				DDB9849F2FB0DEE400F7A4A1 /* fds-cheats.zip */,
+				DDB984A02FB0DEE400F7A4A1 /* gb-cheats.zip */,
+				DDB984A12FB0DEE400F7A4A1 /* gba-cheats.zip */,
+				DDB984A22FB0DEE400F7A4A1 /* gbc-cheats.zip */,
+				DDB984A32FB0DEE400F7A4A1 /* genesis-cheats.zip */,
+				DDB984A42FB0DEE400F7A4A1 /* gg-cheats.zip */,
+				DDB984A52FB0DEE400F7A4A1 /* intellivision-cheats.zip */,
+				DDB984A62FB0DEE400F7A4A1 /* jaguar-cheats.zip */,
+				DDB984A72FB0DEE400F7A4A1 /* megadrive-cheats.zip */,
+				DDB984A82FB0DEE400F7A4A1 /* msx_fmsx-cheats.zip */,
+				DDB984A92FB0DEE400F7A4A1 /* msx-cheats.zip */,
+				DDB984AA2FB0DEE400F7A4A1 /* n64_aleck-cheats.zip */,
+				DDB984AB2FB0DEE400F7A4A1 /* n64_ique-cheats.zip */,
+				DDB984AC2FB0DEE400F7A4A1 /* n64_unreleased-cheats.zip */,
+				DDB984AD2FB0DEE400F7A4A1 /* n64-cheats.zip */,
+				DDB984AE2FB0DEE400F7A4A1 /* nds-cheats.zip */,
+				DDB984AF2FB0DEE400F7A4A1 /* nes-cheats.zip */,
+				DDB984B02FB0DEE400F7A4A1 /* prboom-cheats.zip */,
+				DDB984B12FB0DEE400F7A4A1 /* psp-cheats.zip */,
+				DDB984B22FB0DEE400F7A4A1 /* psx-cheats.zip */,
+				DDB984B32FB0DEE400F7A4A1 /* puzzlescript-cheats.zip */,
+				DDB984B42FB0DEE400F7A4A1 /* satellaview-cheats.zip */,
+				DDB984B52FB0DEE400F7A4A1 /* saturn-cheats.zip */,
+				DDB984B62FB0DEE400F7A4A1 /* segacd-cheats.zip */,
+				DDB984B72FB0DEE400F7A4A1 /* sms-cheats.zip */,
+				DDB984B82FB0DEE400F7A4A1 /* snes-cheats.zip */,
+				DDB984B92FB0DEE400F7A4A1 /* spectrum-cheats.zip */,
+				DDB984BA2FB0DEE400F7A4A1 /* supergrafx-cheats.zip */,
+				DDB984BB2FB0DEE400F7A4A1 /* thomson-cheats.zip */,
+				DDB984BC2FB0DEE400F7A4A1 /* tic80-cheats.zip */,
+				DDB984BD2FB0DEE400F7A4A1 /* turbografx16-cheats.zip */,
+				DDB984BE2FB0DEE400F7A4A1 /* turbografxcd-cheats.zip */,
 			);
 			path = cheats;
 			sourceTree = "<group>";
@@ -4005,6 +4006,7 @@
 			isa = PBXGroup;
 			children = (
 				823B1FD3E319074A9926700C /* TruchiEmu.app */,
+				F81D1C54DD9BF425528C589B /* TruchiEmuTests.xctest */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -4924,6 +4926,23 @@
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
+		824E5F67D3EF37711CE3E2CF /* TruchiEmuTests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 59C2B069D060E0E3F8951485 /* Build configuration list for PBXNativeTarget "TruchiEmuTests" */;
+			buildPhases = (
+				0DF0D0A8E717B9A3220793A1 /* Sources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = TruchiEmuTests;
+			packageProductDependencies = (
+			);
+			productName = TruchiEmuTests;
+			productReference = F81D1C54DD9BF425528C589B /* TruchiEmuTests.xctest */;
+			productType = "com.apple.product-type.bundle.unit-test";
+		};
 		C342292B3D93C9DCE165854D /* TruchiEmu */ = {
 			isa = PBXNativeTarget;
 			buildConfigurationList = 888A13B53EC1AEBD8012E2A3 /* Build configuration list for PBXNativeTarget "TruchiEmu" */;
@@ -4971,6 +4990,7 @@
 			projectRoot = "";
 			targets = (
 				C342292B3D93C9DCE165854D /* TruchiEmu */,
+				824E5F67D3EF37711CE3E2CF /* TruchiEmuTests */,
 			);
 		};
 /* End PBXProject section */
@@ -5100,52 +5120,6 @@
 				06E5AA4819EDB046FEC30C2E /* Bandai - WonderSwan.png in Resources */,
 				B0E7555F1F9EEF1F2A0FE3B8 /* Benesse - Pocket Challenge V2-content.png in Resources */,
 				43E5A510AD18266F818203D3 /* Benesse - Pocket Challenge V2.png in Resources */,
-				DDB984062FAEC31000F7A4A1 /* megadrive-cheats.zip in Resources */,
-				DDB984072FAEC31000F7A4A1 /* msx-cheats.zip in Resources */,
-				DDB984082FAEC31000F7A4A1 /* msx_fmsx-cheats.zip in Resources */,
-				DDB984092FAEC31000F7A4A1 /* gb-cheats.zip in Resources */,
-				DDB9840A2FAEC31000F7A4A1 /* gg-cheats.zip in Resources */,
-				DDB9840B2FAEC31000F7A4A1 /* atari800-cheats.zip in Resources */,
-				DDB9840C2FAEC31000F7A4A1 /* atari7800-cheats.zip in Resources */,
-				DDB9840D2FAEC31000F7A4A1 /* fds-cheats.zip in Resources */,
-				DDB9840E2FAEC31000F7A4A1 /* thomson-cheats.zip in Resources */,
-				DDB9840F2FAEC31000F7A4A1 /* sms-cheats.zip in Resources */,
-				DDB984102FAEC31000F7A4A1 /* saturn-cheats.zip in Resources */,
-				DDB984112FAEC31000F7A4A1 /* dreamcast-cheats.zip in Resources */,
-				DDB984122FAEC31000F7A4A1 /* n64_aleck-cheats.zip in Resources */,
-				DDB984132FAEC31000F7A4A1 /* chailove-cheats.zip in Resources */,
-				DDB984142FAEC31000F7A4A1 /* turbografxcd-cheats.zip in Resources */,
-				DDB984152FAEC31000F7A4A1 /* atari2600-cheats.zip in Resources */,
-				DDB984162FAEC31000F7A4A1 /* dos-cheats.zip in Resources */,
-				DDB984172FAEC31000F7A4A1 /* n64-cheats.zip in Resources */,
-				DDB984182FAEC31000F7A4A1 /* nds-cheats.zip in Resources */,
-				DDB984192FAEC31000F7A4A1 /* gbc-cheats.zip in Resources */,
-				DDB9841A2FAEC31000F7A4A1 /* tic80-cheats.zip in Resources */,
-				DDB9841B2FAEC31000F7A4A1 /* psp-cheats.zip in Resources */,
-				DDB9841C2FAEC31000F7A4A1 /* turbografx16-cheats.zip in Resources */,
-				DDB9841D2FAEC31000F7A4A1 /* jaguar-cheats.zip in Resources */,
-				DDB9841E2FAEC31000F7A4A1 /* intellivision-cheats.zip in Resources */,
-				DDB9841F2FAEC31000F7A4A1 /* amstrad-cheats.zip in Resources */,
-				DDB984202FAEC31000F7A4A1 /* n64_unreleased-cheats.zip in Resources */,
-				DDB984212FAEC31000F7A4A1 /* atarilynx-cheats.zip in Resources */,
-				DDB984222FAEC31000F7A4A1 /* gba-cheats.zip in Resources */,
-				DDB984232FAEC31000F7A4A1 /* nes-cheats.zip in Resources */,
-				DDB984242FAEC31000F7A4A1 /* 32x-cheats.zip in Resources */,
-				DDB984252FAEC31000F7A4A1 /* n64_ique-cheats.zip in Resources */,
-				DDB984262FAEC31000F7A4A1 /* Assets.xcassets in Resources */,
-				DDB984272FAEC31000F7A4A1 /* supergrafx-cheats.zip in Resources */,
-				DDB984282FAEC31000F7A4A1 /* prboom-cheats.zip in Resources */,
-				DDB984292FAEC31000F7A4A1 /* snes-cheats.zip in Resources */,
-				DDB9842A2FAEC31000F7A4A1 /* arcade-cheats.zip in Resources */,
-				DDB9842B2FAEC31000F7A4A1 /* satellaview-cheats.zip in Resources */,
-				DDB9842C2FAEC31000F7A4A1 /* genesis-cheats.zip in Resources */,
-				DDB9842D2FAEC31000F7A4A1 /* segacd-cheats.zip in Resources */,
-				DDB9842E2FAEC31000F7A4A1 /* puzzlescript-cheats.zip in Resources */,
-				DDB9842F2FAEC31000F7A4A1 /* atari5200-cheats.zip in Resources */,
-				DDB984302FAEC31000F7A4A1 /* psx-cheats.zip in Resources */,
-				DDB984312FAEC31000F7A4A1 /* fbneo-cheats.zip in Resources */,
-				DDB984322FAEC31000F7A4A1 /* colecovision-cheats.zip in Resources */,
-				DDB984332FAEC31000F7A4A1 /* spectrum-cheats.zip in Resources */,
 				C3B06B24AFDCA27C71B2255E /* Benesse - Pocket Challenge W-content.png in Resources */,
 				D19116CDE9768B39CD95AB9C /* Benesse - Pocket Challenge W.png in Resources */,
 				72FEA322E72B975E2FFFF3FA /* Bit Corporation - Gamate-content.png in Resources */,
@@ -5950,6 +5924,52 @@
 				6630BBCCFF193A21D4676F96 /* commodore_amiga.png in Resources */,
 				8A021B2C0594F68BF7B3F7D1 /* commodore_cbm2.png in Resources */,
 				C7AA90EB788888F103BAECC6 /* commodore_pet.png in Resources */,
+				DDB984C02FB0DEE400F7A4A1 /* puzzlescript-cheats.zip in Resources */,
+				DDB984C12FB0DEE400F7A4A1 /* fds-cheats.zip in Resources */,
+				DDB984C22FB0DEE400F7A4A1 /* arcade-cheats.zip in Resources */,
+				DDB984C32FB0DEE400F7A4A1 /* amstrad-cheats.zip in Resources */,
+				DDB984C42FB0DEE400F7A4A1 /* 32x-cheats.zip in Resources */,
+				DDB984C52FB0DEE400F7A4A1 /* gg-cheats.zip in Resources */,
+				DDB984C62FB0DEE400F7A4A1 /* chailove-cheats.zip in Resources */,
+				DDB984C72FB0DEE400F7A4A1 /* genesis-cheats.zip in Resources */,
+				DDB984C82FB0DEE400F7A4A1 /* intellivision-cheats.zip in Resources */,
+				DDB984C92FB0DEE400F7A4A1 /* prboom-cheats.zip in Resources */,
+				DDB984CA2FB0DEE400F7A4A1 /* dreamcast-cheats.zip in Resources */,
+				DDB984CB2FB0DEE400F7A4A1 /* tic80-cheats.zip in Resources */,
+				DDB984CC2FB0DEE400F7A4A1 /* gb-cheats.zip in Resources */,
+				DDB984CD2FB0DEE400F7A4A1 /* turbografxcd-cheats.zip in Resources */,
+				DDB984CE2FB0DEE400F7A4A1 /* atari7800-cheats.zip in Resources */,
+				DDB984CF2FB0DEE400F7A4A1 /* n64_aleck-cheats.zip in Resources */,
+				DDB984D02FB0DEE400F7A4A1 /* fbneo-cheats.zip in Resources */,
+				DDB984D12FB0DEE400F7A4A1 /* dos-cheats.zip in Resources */,
+				DDB984D22FB0DEE400F7A4A1 /* atari5200-cheats.zip in Resources */,
+				DDB984D32FB0DEE400F7A4A1 /* atari800-cheats.zip in Resources */,
+				DDB984D42FB0DEE400F7A4A1 /* msx-cheats.zip in Resources */,
+				DDB984D52FB0DEE400F7A4A1 /* nes-cheats.zip in Resources */,
+				DDB984D62FB0DEE400F7A4A1 /* msx_fmsx-cheats.zip in Resources */,
+				DDB984D72FB0DEE400F7A4A1 /* spectrum-cheats.zip in Resources */,
+				DDB984D82FB0DEE400F7A4A1 /* atarilynx-cheats.zip in Resources */,
+				DDB984D92FB0DEE400F7A4A1 /* psx-cheats.zip in Resources */,
+				DDB984DA2FB0DEE400F7A4A1 /* thomson-cheats.zip in Resources */,
+				DDB984DB2FB0DEE400F7A4A1 /* jaguar-cheats.zip in Resources */,
+				DDB984DC2FB0DEE400F7A4A1 /* supergrafx-cheats.zip in Resources */,
+				DDB984DD2FB0DEE400F7A4A1 /* saturn-cheats.zip in Resources */,
+				DDB984DE2FB0DEE400F7A4A1 /* n64-cheats.zip in Resources */,
+				DDB984DF2FB0DEE400F7A4A1 /* Assets.xcassets in Resources */,
+				DDB984E02FB0DEE400F7A4A1 /* sms-cheats.zip in Resources */,
+				DDB984E12FB0DEE400F7A4A1 /* gbc-cheats.zip in Resources */,
+				DDB984E22FB0DEE400F7A4A1 /* snes-cheats.zip in Resources */,
+				DDB984E32FB0DEE400F7A4A1 /* atari2600-cheats.zip in Resources */,
+				DDB984E42FB0DEE400F7A4A1 /* turbografx16-cheats.zip in Resources */,
+				DDB984E52FB0DEE400F7A4A1 /* n64_ique-cheats.zip in Resources */,
+				DDB984E62FB0DEE400F7A4A1 /* psp-cheats.zip in Resources */,
+				DDB984E72FB0DEE400F7A4A1 /* gba-cheats.zip in Resources */,
+				DDB984E82FB0DEE400F7A4A1 /* nds-cheats.zip in Resources */,
+				DDB984E92FB0DEE400F7A4A1 /* n64_unreleased-cheats.zip in Resources */,
+				DDB984EA2FB0DEE400F7A4A1 /* colecovision-cheats.zip in Resources */,
+				DDB984EB2FB0DEE400F7A4A1 /* satellaview-cheats.zip in Resources */,
+				DDB984EC2FB0DEE400F7A4A1 /* megadrive-cheats.zip in Resources */,
+				DDB984ED2FB0DEE400F7A4A1 /* segacd-cheats.zip in Resources */,
 				A15149016E78A82387F2BDF3 /* commodore_plus4.png in Resources */,
 				A7393149D8B2B128E9D0110D /* commodore_vic20.png in Resources */,
 				B18AC7DCC3546A76FD0B587F /* core-cheat-options.png in Resources */,
@@ -6210,6 +6230,13 @@
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
+		0DF0D0A8E717B9A3220793A1 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		4DC137320AE94339DFED2ECF /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
@@ -6428,6 +6455,25 @@
 /* End PBXSourcesBuildPhase section */
 
 /* Begin XCBuildConfiguration section */
+		39E3306D247D590779F6B7B6 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				COMBINE_HIDPI_IMAGES = YES;
+				GENERATE_INFOPLIST_FILE = YES;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+					"@loader_path/../Frameworks",
+				);
+				MACOSX_DEPLOYMENT_TARGET = 14.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.TruchiEmu.tests;
+				PRODUCT_NAME = TruchiEmuTests;
+				SDKROOT = macosx;
+				SWIFT_VERSION = 5.9;
+			};
+			name = Release;
+		};
 		3CF1F27BA11432A023389CEE /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
@@ -6439,11 +6485,9 @@
 				CODE_SIGN_ENTITLEMENTS = TruchiEmu/Resources/TruchiEmu.entitlements;
 				CODE_SIGN_STYLE = Automatic;
 				COMBINE_HIDPI_IMAGES = YES;
-				DEVELOPMENT_TEAM = 39XHVFF3ZC;
 				ENABLE_HARDENED_RUNTIME = NO;
 				GCC_C_LANGUAGE_STANDARD = gnu17;
 				INFOPLIST_FILE = TruchiEmu/Resources/Info.plist;
-				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.games";
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/../Frameworks",
@@ -6547,11 +6591,9 @@
 				CODE_SIGN_ENTITLEMENTS = TruchiEmu/Resources/TruchiEmu.entitlements;
 				CODE_SIGN_STYLE = Automatic;
 				COMBINE_HIDPI_IMAGES = YES;
-				DEVELOPMENT_TEAM = 39XHVFF3ZC;
 				ENABLE_HARDENED_RUNTIME = NO;
 				GCC_C_LANGUAGE_STANDARD = gnu17;
 				INFOPLIST_FILE = TruchiEmu/Resources/Info.plist;
-				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.games";
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/../Frameworks",
@@ -6577,6 +6619,25 @@
 				PRODUCT_NAME = TruchiEmu;
 				SDKROOT = macosx;
 				SWIFT_OBJC_BRIDGING_HEADER = "TruchiEmu/Core/Engine/TruchiEmu-Bridging-Header.h";
+				SWIFT_VERSION = 5.9;
+			};
+			name = Debug;
+		};
+		F4814021E33ACB46544F4995 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				COMBINE_HIDPI_IMAGES = YES;
+				GENERATE_INFOPLIST_FILE = YES;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+					"@loader_path/../Frameworks",
+				);
+				MACOSX_DEPLOYMENT_TARGET = 14.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.TruchiEmu.tests;
+				PRODUCT_NAME = TruchiEmuTests;
+				SDKROOT = macosx;
 				SWIFT_VERSION = 5.9;
 			};
 			name = Debug;
@@ -6640,6 +6701,15 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
+		59C2B069D060E0E3F8951485 /* Build configuration list for PBXNativeTarget "TruchiEmuTests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				F4814021E33ACB46544F4995 /* Debug */,
+				39E3306D247D590779F6B7B6 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
 		6E82A081688B36841B054CBC /* Build configuration list for PBXProject "TruchiEmu" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
