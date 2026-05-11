@@ -33,6 +33,29 @@
 | `TruchiEmuTests/` | Unit tests (DATPrepopulationService, LaunchBoxGamesDB, ROMIdentifier, etc.) |
 | `scripts/` | Standalone Python tools (ROM lookup, DAT downloads) — not part of the app build |
 
+## Resources Included in Build (project.yml)
+
+These paths are explicitly added to the Xcode build via `project.yml`:
+- `TruchiEmu/Resources/Config`
+- `TruchiEmu/Resources/Data` (SystemDatabase.json, LibretroDats, mame_unified.json)
+- `TruchiEmu/Resources/EmulatorIcons`
+- `TruchiEmu/Resources/ThumbnailManifests`
+- `TruchiEmu/Resources/System/` (BIOS files: sega_101.bin, mpr-17933.bin, PPSSPP_assets.zip, dreamcast.zip)
+- `TruchiEmu/Resources/cheats/` (all cheat zip files — critical for RetroAchievements)
+- `TruchiEmu/Resources/AppIcons/` — app icons
+- `TruchiEmu/Resources/Assets.xcassets/` — app icon set
+
+## Runtime vs Bundled Resources
+
+**`TruchiEmu_Resources/`** — Runtime-only resources (loaded at runtime, NOT in xcode project):
+- `core_shaders/` — Metal shaders loaded dynamically
+- `retroarch_images/` — system icons loaded at runtime
+- These are loaded from bundle path (not bundled into Xcode target)
+
+**Bundled resources are flattened** — When app is built, all resources in `Resources/` are flattened to a single folder. Subdirectories are lost. Code fetching resources must use filenames only (e.g., `Bundle.main.path(forResource: "sega_101", ofType: "bin")`), not rely on folder paths.
+
+**Unzipping bundled resources** — If a zip expects specific subfolders (e.g., cheats/cheats.zip contains folders), you must create those directories manually in the sandboxed app container. The flat bundle structure won't preserve the zip's internal folder hierarchy.
+
 ## Key Constraints
 
 - `build/` is gitignored — do not commit build artifacts
@@ -41,12 +64,14 @@
 - Entitlements file is minimal/empty — no sandboxing initially; if adding capabilities, update entitlements
 - C++ standard: **gnu17/gnu++17** (not LLVM default)
 - `NSAllowsArbitraryLoads: true` set in Info.plist for network access
+- No lint/typecheck tools configured — rely on Xcode's built-in checks
 
 ## When Adding Source Files
 
 1. Edit `project.yml` to add new paths under the appropriate target's `sources`
 2. Run `xcodegen generate` to regenerate the xcodeproj
 3. If adding ObjC++ to the Engine, ensure symbols are exposed through the bridging header
+4. After adding new resources (e.g., new cheats, assets), ensure they're added to project.yml BEFORE running xcodegen
 
 ## Testing
 
