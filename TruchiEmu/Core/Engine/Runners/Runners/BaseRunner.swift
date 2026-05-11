@@ -711,24 +711,74 @@ case "scummvm": runner = ScummVMRunner()
         guard let device = self.device else { return }
 
         let mtlFormat = mapPixelFormat(format)
+        let declaredBPP = pixelBytesForFormat(mtlFormat)
+        let declaredMinPitch = width * declaredBPP
 
-        let tex: MTLTexture
-        if let existing = textureCache, existing.width == width, existing.height == height, existing.pixelFormat == mtlFormat {
-            tex = existing
+        let actualBPP = pitch / max(1, width)
+        let useBPP: Int
+        let useFormat: MTLPixelFormat
+        if pitch < declaredMinPitch && actualBPP > 0 {
+            useBPP = actualBPP
+            useFormat = useBPP >= 4 ? .bgra8Unorm : (useBPP == 2 ? .b5g6r5Unorm : .r8Unorm)
         } else {
-            let desc = MTLTextureDescriptor.texture2DDescriptor(pixelFormat: mtlFormat,
+            useBPP = declaredBPP
+            useFormat = mtlFormat
+        }
+
+        var tex: MTLTexture
+        if let existing = textureCache,
+           existing.width == width,
+           existing.height == height,
+           existing.pixelFormat == useFormat {
+            tex = existing
+            let expectedRowBytes = existing.width * pixelBytesForFormat(existing.pixelFormat)
+            if pitch == expectedRowBytes {
+                tex.replace(region: MTLRegionMake2D(0, 0, width, height),
+                            mipmapLevel: 0,
+                            withBytes: data,
+                            bytesPerRow: pitch)
+            } else {
+                LoggerService.warning(category: "Runner", "Pitch \(pitch) != bytesPerRow \(expectedRowBytes), packing into temp buffer")
+                var rowBuffer = [UInt8](repeating: 0, count: width * useBPP)
+                for row in 0..<height {
+                    let src = data.advanced(by: row * pitch)
+                    let dst = rowBuffer.withUnsafeMutableBufferPointer { $0.baseAddress! }
+                    dst.initialize(from: src.assumingMemoryBound(to: UInt8.self), count: width * useBPP)
+                    tex.replace(region: MTLRegionMake2D(0, row, width, 1),
+                                mipmapLevel: 0,
+                                withBytes: rowBuffer,
+                                bytesPerRow: width * useBPP)
+                }
+            }
+        } else {
+            let desc = MTLTextureDescriptor.texture2DDescriptor(pixelFormat: useFormat,
                                                                  width: width, height: height, mipmapped: false)
             desc.usage = [.shaderRead]
             desc.storageMode = .shared
             guard let newTex = device.makeTexture(descriptor: desc) else { return }
             tex = newTex
             textureCache = tex
+
+            let expectedRowBytes = width * pixelBytesForFormat(useFormat)
+            if pitch == expectedRowBytes {
+                tex.replace(region: MTLRegionMake2D(0, 0, width, height),
+                            mipmapLevel: 0,
+                            withBytes: data,
+                            bytesPerRow: pitch)
+            } else {
+                LoggerService.warning(category: "Runner", "First frame pitch=\(pitch) != expected=\(expectedRowBytes), using copy path")
+                var rowBuffer = [UInt8](repeating: 0, count: width * useBPP)
+                for row in 0..<height {
+                    let src = data.advanced(by: row * pitch)
+                    let dst = rowBuffer.withUnsafeMutableBufferPointer { $0.baseAddress! }
+                    dst.initialize(from: src.assumingMemoryBound(to: UInt8.self), count: width * useBPP)
+                    tex.replace(region: MTLRegionMake2D(0, row, width, 1),
+                                mipmapLevel: 0,
+                                withBytes: rowBuffer,
+                                bytesPerRow: width * useBPP)
+                }
+            }
         }
-        
-        tex.replace(region: MTLRegionMake2D(0, 0, width, height),
-                    mipmapLevel: 0,
-                    withBytes: data,
-                    bytesPerRow: pitch)
 
         #if DEBUG
         if systemID == "n64" {
@@ -758,12 +808,24 @@ case "scummvm": runner = ScummVMRunner()
     }
 
     internal func mapPixelFormat(_ format: Int) -> MTLPixelFormat {
-        // Defaults to common format
         switch format {
         case 0: return .a1bgr5Unorm // 0RGB1555
         case 1: return .bgra8Unorm  // XRGB8888
         case 2: return .b5g6r5Unorm // RGB565
         default: return .bgra8Unorm
+        }
+    }
+
+    private func pixelBytesForFormat(_ format: MTLPixelFormat) -> Int {
+        switch format {
+        case .bgra8Unorm, .rgba8Unorm, .rgba8Unorm_srgb, .bgra8Unorm_srgb:
+            return 4
+        case .b5g6r5Unorm, .a1bgr5Unorm, .bgr5A1Unorm:
+            return 2
+        case .r8Unorm, .r8Unorm_srgb:
+            return 1
+        default:
+            return 4
         }
     }
 

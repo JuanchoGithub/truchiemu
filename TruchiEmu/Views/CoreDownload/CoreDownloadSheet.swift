@@ -534,8 +534,13 @@ return
             SystemPreferences.shared.setPreferredCoreID(cid, for: sysID)
         }
 
+        var updatedROM = rom
+        updatedROM.selectedCoreID = cid
+        updatedROM.useCustomCore = true
+        library.updateROM(updatedROM)
+
         await gameLauncher.launchGame(
-            rom: rom,
+            rom: updatedROM,
             coreID: cid,
             slotToLoad: pending.slotToLoad,
             library: library
