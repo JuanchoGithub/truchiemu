@@ -84,32 +84,30 @@ class SaveStateManager: ObservableObject, @unchecked Sendable {
     
     // MARK: - Path Resolution
     
-    // Returns the full URL for a save state file
-    // - Parameters:
-    //   - gameName: The display name of the game (used for filename)
-    //   - systemID: The system identifier (used for subdirectory)
-    //   - slot: Slot number (0-9 for user slots, -1 for auto-save)
-    // - Returns: URL to the .state file
-    func statePath(gameName: String, systemID: String, slot: Int) -> URL {
-        let sysDir = systemDirectory(systemID: systemID)
-        let safeName = safeGameStateName(gameName)
-        
-        let fileName: String
-        if slot == -1 {
-            // Auto-save: just ".state" extension (no number)
-            fileName = "\(safeName).state"
-        } else if slot == 0 {
-            // Slot 0: same as auto for convenience (no number)
-            fileName = "\(safeName).state"
-        } else if slot >= 1 && slot <= 9 {
-            // Slots 1-9: ".state1" through ".state9"
-            fileName = "\(safeName).state\(slot)"
-        } else {
-            // Fallback for any other slot number
-            fileName = "\(safeName).state\(slot)"
-        }
-        
-        return sysDir.appendingPathComponent(fileName)
+// Returns the full URL for a save state file
+// - Parameters:
+// - gameName: The display name of the game (used for filename)
+// - systemID: The system identifier (used for subdirectory)
+// - slot: Slot number (0-9 for user slots, -1 for auto-save)
+// - Returns: URL to the .state file
+func statePath(gameName: String, systemID: String, slot: Int) -> URL {
+    let sysDir = systemDirectory(systemID: systemID)
+    let safeName = safeGameStateName(gameName)
+
+    let fileName: String
+    if slot == -1 {
+        // Auto-save (system only): just ".state" extension (no number)
+        fileName = "\(safeName).state"
+    } else if slot >= 0 && slot <= 9 {
+        // User slots 0-9: ".state0" through ".state9"
+        // Slot 0 is now a regular user slot, separate from auto-save
+        fileName = "\(safeName).state\(slot)"
+    } else {
+        // Fallback for any other slot number
+        fileName = "\(safeName).state\(slot)"
+    }
+
+return sysDir.appendingPathComponent(fileName)
     }
     
     // Returns the full URL for a save state thumbnail
