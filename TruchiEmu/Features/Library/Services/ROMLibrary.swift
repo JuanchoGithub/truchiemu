@@ -927,7 +927,9 @@ LibraryMetadataStore.shared.deleteMetadataEntries(Set(removedROMs.map { LibraryM
             for path in Set(deletedROMs.map { $0.path.path }) { fileIndex.removeValue(forKey: path) }
         }
 
-        updateCounts(); isScanning = false
+        updateCounts()
+        lastChangeDate = Date()
+        isScanning = false
     }
 
     @MainActor func rebuildFolder(folder: ROMLibraryFolder, option: RebuildOption) async { await rebuildLibrary(modes: [option]) }
