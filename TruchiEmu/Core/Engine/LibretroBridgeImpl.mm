@@ -190,6 +190,12 @@ return self;
     return NO;
   }
 
+    // Default to XRGB8888 (32-bit BGRA) for all cores. This ensures the bridge uses
+    // .bgra8Unorm Metal textures, preventing 16-bit/32-bit pitch mismatches for cores
+    // that don't call SET_PIXEL_FORMAT themselves (like Opera for 3DO).
+    // The core's actual format will override this if it calls SET_PIXEL_FORMAT.
+    _pixelFormat = RETRO_PIXEL_FORMAT_XRGB8888;
+
   @try {
     if (!g_instance->_retro_load_game(&gi)) {
       goto shutdown;

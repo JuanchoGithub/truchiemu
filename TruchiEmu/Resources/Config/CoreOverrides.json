@@ -122,8 +122,10 @@
       "dosbox_pure_joysticktype": "auto"
     },
     "ppsspp_libretro": {
-      "override_description": "PPSSPP hw_render_context_negotiation enabled",
-      "hw_render_context_negotiation": "enabled"
+      "override_description": "PPSSPP performance optimized settings - use software rendering to avoid HW render FBO readback issues on macOS",
+      "hw_render_context_negotiation": "enabled",
+      "ppsspp_rendering_mode": "None",
+      "ppsspp_software_rendering": "enabled"
     },
     "nestopia_libretro": {
       "nestopia_overscan_h_left": "8",

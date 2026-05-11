@@ -96,25 +96,20 @@ targets:
       buildPhase: resources
     - path: TruchiEmu/Resources/ThumbnailManifests
       buildPhase: resources
-    - path: TruchiEmu_Resources/retroarch_images/dot-art/systems
+    - path: TruchiEmu/Resources/cheats
       buildPhase: resources
-    - path: TruchiEmu_Resources/retroarch_images/dot-art/png
+    - path: TruchiEmu/Resources/AppIcons
       buildPhase: resources
-      excludes:
-      - "2048.png"
-      - "DOOM.png"
-      - "DOS.png"
-      - "MAME.png"
-      - "movie.png"
-      - "music.png"
-      - "movies.png"
+    - path: TruchiEmu/Resources/Assets.xcassets
+      buildPhase: resources
+
     - path: TruchiEmu/Resources/System/mpr-17933.bin
       buildPhase: resources
     - path: TruchiEmu/Resources/System/sega_101.bin
       buildPhase: resources
-    - path: TruchiEmu/Resources/System/saturn_bios.bin
-      buildPhase: resources
     - path: TruchiEmu/Resources/System/PPSSPP_assets.zip
+      buildPhase: resources
+    - path: TruchiEmu/Resources/System/dreamcast.zip
       buildPhase: resources
     - path: scripts/mame_lookup/mame_rom_data.json
       buildPhase: resources

@@ -133,13 +133,22 @@ bool bridge_environment(unsigned cmd, void *data) {
     return true;
   }
 
-  case RETRO_ENVIRONMENT_SET_PIXEL_FORMAT:
+  case RETRO_ENVIRONMENT_SET_PIXEL_FORMAT: {
     if (data) {
       enum retro_pixel_format fmt = *(enum retro_pixel_format *)data;
+      const char *fmtName = "UNKNOWN";
+      switch (fmt) {
+        case RETRO_PIXEL_FORMAT_0RGB1555: fmtName = "0RGB1555"; break;
+        case RETRO_PIXEL_FORMAT_XRGB8888: fmtName = "XRGB8888"; break;
+        case RETRO_PIXEL_FORMAT_RGB565: fmtName = "RGB565"; break;
+        default: fmtName = "UNKNOWN"; break;
+      }
+      bridge_log_printf(RETRO_LOG_INFO, "[LibretroCore] SET_PIXEL_FORMAT: %s (value %d)", fmtName, (int)fmt);
       if (g_instance) {[g_instance setPixelFormat:(int)fmt];
       }
     }
     return true;
+  }
 
   case RETRO_ENVIRONMENT_GET_CORE_OPTIONS_VERSION:
     if (data) *(unsigned *)data = 2;
