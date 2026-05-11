@@ -154,7 +154,11 @@ class GameLauncher: ObservableObject {
                 }
             }
         }
-        
+
+        if coreID.lowercased().contains("flycast") {
+            DreamcastBIOSService.shared.ensureExtracted()
+        }
+
         isLaunching = true
         currentLaunchROM = rom
         
