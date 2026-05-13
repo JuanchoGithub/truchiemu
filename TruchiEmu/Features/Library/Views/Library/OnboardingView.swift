@@ -3,6 +3,7 @@ import SwiftUI
 struct OnboardingView: View {
     @EnvironmentObject var library: ROMLibrary
     @EnvironmentObject var coreManager: CoreManager
+    @ObservedObject private var loc = LocalizationManager.shared
     @State private var step = 0
     @State private var selectedFolder: URL? = nil
     @State private var isScrapingSetupSkipped = false
@@ -44,7 +45,7 @@ struct OnboardingView: View {
                         .opacity(logoAppeared ? 1 : 0)
                         .offset(y: logoAppeared ? 0 : 10)
 
-                    Text("A beautiful macOS emulation frontend")
+                    Text(loc.localized("onboarding.tagline"))
                         .font(.title3)
                         .foregroundColor(.white.opacity(0.6))
                         .opacity(logoAppeared ? 1 : 0)
@@ -137,14 +138,14 @@ struct OnboardingView: View {
                 Button {
                     pickFolder()
                 } label: {
-                    Label(selectedFolder == nil ? "Choose Folder…" : "Change Folder…",
+                    Label(selectedFolder == nil ? loc.localized("onboarding.chooseFolder") : loc.localized("onboarding.changeFolder"),
                           systemImage: "folder")
                         .frame(maxWidth: .infinity)
                 }
                 .buttonStyle(PrimaryButtonStyle())
 
                 if selectedFolder != nil {
-                    Button("Continue") {
+                    Button(loc.localized("onboarding.continue")) {
                         if let folder = selectedFolder {
                             library.completeOnboarding(folderURL: folder)
                         }
@@ -163,15 +164,15 @@ struct OnboardingView: View {
                 .font(.system(size: 56))
                 .foregroundColor(.green)
 
-            Text("All set!")
+            Text(loc.localized("onboarding.allSet"))
                 .font(.title.weight(.bold))
                 .foregroundColor(.white)
 
-            Text("Your library is being scanned. Box art can be set up in Settings → Box Art after creating a free account at screenscraper.fr.")
+            Text(loc.localized("onboarding.scanningLibrary"))
                 .multilineTextAlignment(.center)
                 .foregroundColor(.white.opacity(0.7))
 
-            Button("Enter TruchiEmu") {
+            Button(loc.localized("onboarding.enterApp")) {
                 library.hasCompletedOnboarding = true
             }
             .buttonStyle(PrimaryButtonStyle(color: .purple))
@@ -183,7 +184,7 @@ struct OnboardingView: View {
         panel.canChooseDirectories = true
         panel.canChooseFiles = false
         panel.allowsMultipleSelection = false
-        panel.message = "Select your ROM folder"
+        panel.message = loc.localized("onboarding.selectRomFolder")
         if panel.runModal() == .OK, let url = panel.url {
             selectedFolder = url
         }

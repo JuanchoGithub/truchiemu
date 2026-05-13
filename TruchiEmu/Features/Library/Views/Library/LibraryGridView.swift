@@ -190,12 +190,12 @@ struct LibraryGridView: View {
             }
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity)
-        .alert("Rename Game", isPresented: Binding(
+        .alert(loc.localized("library.renameGame"), isPresented: Binding(
             get: { renamingROM != nil },
             set: { if !$0 { renamingROM = nil } }
         )) {
-            TextField("Name", text: $renameText)
-            Button("Save") {
+            TextField(loc.localized("library.name"), text: $renameText)
+            Button(loc.localized("library.save")) {
                 if let rom = renamingROM {
                     var updated = rom
                     updated.customName = renameText.isEmpty ? nil : renameText
@@ -203,7 +203,7 @@ struct LibraryGridView: View {
                 }
                 renamingROM = nil
             }
-            Button("Cancel", role: .cancel) {
+            Button(loc.localized("library.cancel"), role: .cancel) {
                 renamingROM = nil
             }
         }
@@ -830,12 +830,12 @@ columns = Array(
     @State private var scanningMessageIndex = 0
     
     private var scanningMessages: [String] {[
-            "Scanning your ROM library…",
-            "Identifying classic games…",
-            "Building your game shelf…",
-            "Fetching box art references…",
-            "Organizing by platform…",
-            "Almost ready to play…"
+            loc.localized("library.scanningLibrary"),
+            loc.localized("library.identifyingGames"),
+            loc.localized("library.buildingShelf"),
+            loc.localized("library.fetchingBoxArt"),
+            loc.localized("library.organizingByPlatform"),
+            loc.localized("library.almostReady")
         ]
     }
     
@@ -887,7 +887,7 @@ columns = Array(
             
             // Fun stats during scan
             if library.roms.count > 0 {
-                Text("\(library.roms.count) game\(library.roms.count == 1 ? "" : "s") found so far")
+                Text("\(library.roms.count) \(loc.localized("library.gamesFound"))")
                     .font(.caption)
                     .foregroundColor(.secondary)
                     .contentTransition(.numericText())
@@ -907,11 +907,11 @@ columns = Array(
     @State private var boxArtMessageIndex = 0
     
     private var boxArtMessages: [String] {[
-            "Fetching box art…",
-            "Dressing up your games…",
-            "Making your library pretty…",
-            "Finding cover art gems…",
-            "Wrapping ROMs in beautiful cases…"
+            loc.localized("library.fetchingBoxArtProgress"),
+            loc.localized("library.dressingUpGames"),
+            loc.localized("library.makingLibraryPretty"),
+            loc.localized("library.findingCoverArt"),
+            loc.localized("library.wrappingRoms")
         ]
     }
     
@@ -944,7 +944,7 @@ columns = Array(
                     .foregroundColor(.primary)
                     .contentTransition(.numericText())
                 
-                Text("\(boxArtService.downloadedCount) / \(boxArtService.downloadQueueCount) covers downloaded")
+                Text("\(boxArtService.downloadedCount) / \(boxArtService.downloadQueueCount) \(loc.localized("library.coversDownloaded"))")
                     .font(.caption2)
                     .foregroundColor(.secondary)
             }
@@ -1035,11 +1035,11 @@ columns = Array(
     
     private var emptyStateTitle: String {
         if !activeFilters.isEmpty && searchText.isEmpty {
-            return "No games match your filters"
+            return loc.localized("library.noGamesMatchFilters")
         } else if !searchText.isEmpty {
-            return "Nothing matching \"\(searchText)\""
+            return String(format: loc.localized("library.nothingMatching"), searchText)
         } else {
-            return "Your gaming shelf is empty"
+            return loc.localized("library.gamingShelfEmpty")
         }
     }
     
@@ -1060,8 +1060,8 @@ columns = Array(
         panel.canChooseDirectories = true
         panel.canChooseFiles = false
         panel.allowsMultipleSelection = true
-        panel.message = "Select one or more folders containing your ROM files"
-        panel.prompt = "Add Folders"
+        panel.message = loc.localized("library.selectFolders")
+        panel.prompt = loc.localized("library.addFolders")
         if panel.runModal() == .OK {
             for url in panel.urls {
                 library.addLibraryFolder(url: url)
