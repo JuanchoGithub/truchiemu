@@ -224,7 +224,7 @@ init(settings: ShaderWindowSettings, onPresetChanged: ((String, [String: Float],
             defer: false
         )
 
-        window.title = "Shader Editor"
+        window.title = LocalizationManager.shared.localized("shader.editorTitle")
         window.minSize = NSSize(width: 650, height: 350)
         window.isReleasedWhenClosed = false
         window.level = .floating
@@ -680,7 +680,7 @@ controller.close()
         HStack {
             Image(systemName: "magnifyingglass")
                 .foregroundColor(.secondary)
-            TextField("shader.searchShaders", text: $searchText)
+            TextField(loc.localized("shader.searchShaders"), text: $searchText)
                 .textFieldStyle(.plain)
             if !searchText.isEmpty {
                 Button(loc.localized("shader.clear"), systemImage: "xmark.circle.fill") {

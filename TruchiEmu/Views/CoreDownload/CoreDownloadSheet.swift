@@ -406,7 +406,7 @@ struct CoreDownloadSheet: View {
                 if isRefreshingCores || coreManager.isFetchingCoreList {
                     HStack(spacing: 8) {
                         ProgressView().controlSize(.small)
-                        Text("Refreshing list online...")
+                        Text("coreDownload.refreshingListOnline")
                             .font(.caption)
                             .foregroundColor(.secondary)
                     }

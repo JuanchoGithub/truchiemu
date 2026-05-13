@@ -123,7 +123,7 @@ Text(slot.displayName)
                         onDelete()
                     }
                 }) {
-                    Label("saveState.delete", systemImage: "trash")
+                    Label(loc.localized("saveState.delete"), systemImage: "trash")
                 }
             }
         }
