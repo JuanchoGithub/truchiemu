@@ -71,6 +71,7 @@ class StandaloneGameWindowController: NSWindowController, NSWindowDelegate, Obse
     @MainActor @Published var isToolbarVisible: Bool = true
     @MainActor @Published var isFullscreen: Bool = false
     @MainActor @Published var autoFullscreenEnabled: Bool = false
+    @MainActor @Published var saveStatesDisabled: Bool = false
     var onWindowWillClose: (() -> Void)?
     private var toolbarView: NSHostingView<AnyView>?
     private var hideToolbarTimer: Timer?
@@ -430,6 +431,12 @@ super.init(window: window)
         // Launch the game with current shader uniforms
         runner?.launch(rom: rom, coreID: coreID, shaderUniformOverrides: shaderUniforms)
 
+        // Disable save states for Dolphin cores due to known serialization crash
+        saveStatesDisabled = isDolphinCore()
+        if saveStatesDisabled {
+            LoggerService.info(category: "SaveState", "Save states disabled for Dolphin core (known crash issue)")
+        }
+
         // Start input capture for DOS/ScummVM games immediately upon launch
         if let window = window, let systemID = rom.systemID?.lowercased(), (systemID == "dos" || systemID == "scummvm") {
             InputCaptureManager.shared.startCapture(window: window)
@@ -581,26 +588,31 @@ super.init(window: window)
             // Auto-load from slot -1 after launch completes (if enabled)
             let shouldAutoLoad = AppSettings.getBool("saveState_autoLoadOnStart", defaultValue: true)
             if shouldAutoLoad {
-                // Wait for emulation to stabilize
-                DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) { [weak self] in
-                    guard let self = self, let runner = self.runner else { return }
-                    let systemID = rom.systemID ?? "default"
-                    let stateURL = runner.saveManager.statePath(gameName: rom.displayName, systemID: systemID, slot: -1)
-                    if FileManager.default.fileExists(atPath: stateURL.path) {
-                        LoggerService.info(category: "SaveState", "Found save state at: \(stateURL.path)")
-                        let success = runner.loadState(slot: -1)
-                        if success {
-                            runner.osdMessage = "Auto-loaded last session"
-                            LoggerService.info(category: "SaveState", "Successfully loaded auto-save state")
-                            Task {
-                                try? await Task.sleep(nanoseconds: 2_000_000_000)
-                                await MainActor.run { runner.osdMessage = nil }
+                // Skip auto-load for Dolphin cores due to known serialization crash
+                if isDolphinCore() {
+                    LoggerService.info(category: "SaveState", "Auto-load disabled for Dolphin core (known crash issue)")
+                } else {
+                    // Wait for emulation to stabilize
+                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) { [weak self] in
+                        guard let self = self, let runner = self.runner else { return }
+                        let systemID = rom.systemID ?? "default"
+                        let stateURL = runner.saveManager.statePath(gameName: rom.displayName, systemID: systemID, slot: -1)
+                        if FileManager.default.fileExists(atPath: stateURL.path) {
+                            LoggerService.info(category: "SaveState", "Found save state at: \(stateURL.path)")
+                            let success = runner.loadState(slot: -1)
+                            if success {
+                                runner.osdMessage = "Auto-loaded last session"
+                                LoggerService.info(category: "SaveState", "Successfully loaded auto-save state")
+                                Task {
+                                    try? await Task.sleep(nanoseconds: 2_000_000_000)
+                                    await MainActor.run { runner.osdMessage = nil }
+                                }
+                            } else {
+                                LoggerService.debug(category: "SaveState", "Failed to load auto-save state")
                             }
                         } else {
-                            LoggerService.debug(category: "SaveState", "Failed to load auto-save state")
+                            LoggerService.debug(category: "SaveState", "No save state found at: \(stateURL.path)")
                         }
-                    } else {
-                        LoggerService.debug(category: "SaveState", "No save state found at: \(stateURL.path)")
                     }
                 }
             }
@@ -771,14 +783,17 @@ super.init(window: window)
 
     // 1. Check the setting (Default to false for safety)
     let shouldAutoSave = AppSettings.getBool("saveState_autoSaveOnExit", defaultValue: false)
-        
-        if shouldAutoSave {
-            if let runner = runner {
-                LoggerService.info(category: "SaveState", "Auto-saving on window close...")
-                // We call this BEFORE runner.stop() to ensure the core is still active
-                _ = runner.saveState(slot: -1)
-            }
+
+    if shouldAutoSave {
+        // Skip auto-save for Dolphin cores due to known serialization crash
+        if isDolphinCore() {
+            LoggerService.info(category: "SaveState", "Auto-save disabled for Dolphin core (known crash issue)")
+        } else if let runner = runner {
+            LoggerService.info(category: "SaveState", "Auto-saving on window close...")
+            // We call this BEFORE runner.stop() to ensure the core is still active
+            _ = runner.saveState(slot: -1)
         }
+    }
         runner?.stop()
         
         // Record play session with the accumulated playtime
@@ -798,6 +813,13 @@ super.init(window: window)
 
         // Call external callback (e.g., for live shader edit cleanup)
         onWindowWillClose?()
+    }
+
+    // MARK: - Helper Functions
+
+    private func isDolphinCore() -> Bool {
+        let coreID = AppSettings.get("lastLoadedCoreID", type: String.self) ?? ""
+        return coreID.lowercased().contains("dolphin")
     }
 
     // MARK: - Input Capture

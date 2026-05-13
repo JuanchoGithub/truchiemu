@@ -61,7 +61,8 @@ struct GameOverlayToolbar: View {
 
             ToolbarButton(
                 icon: "square.and.arrow.down",
-                label: loc.localized("toolbar.save")
+                label: loc.localized("toolbar.save"),
+                disabled: windowController.saveStatesDisabled
             ) {
                 Task { @MainActor in
                     _ = runner.saveState(slot: runner.currentSlot)
@@ -70,7 +71,8 @@ struct GameOverlayToolbar: View {
 
             ToolbarButton(
                 icon: "square.and.arrow.down.on.square",
-                label: loc.localized("toolbar.load")
+                label: loc.localized("toolbar.load"),
+                disabled: windowController.saveStatesDisabled
             ) {
                 Task { @MainActor in
                     _ = runner.loadState(slot: runner.currentSlot)
@@ -82,7 +84,8 @@ struct GameOverlayToolbar: View {
                 onSlotChange: { newSlot in
                     runner.currentSlot = newSlot
                 },
-                runner: runner
+                runner: runner,
+                disabled: windowController.saveStatesDisabled
             )
 
             Divider()
@@ -97,7 +100,7 @@ struct GameOverlayToolbar: View {
             }
 
             FullscreenButton(windowController: windowController)
-            
+
             AutoFullscreenButton(windowController: windowController)
         }
         .padding(.horizontal, 16)

@@ -108,8 +108,9 @@ struct ToolbarButton: View {
     let icon: String
     let label: String
     var danger: Bool = false
+    var disabled: Bool = false
     let action: () -> Void
-    
+
     var body: some View {
         Button(action: action) {
             VStack(spacing: 4) {
@@ -121,15 +122,16 @@ struct ToolbarButton: View {
             }
             .padding(.horizontal, 10)
             .padding(.vertical, 6)
-            .foregroundColor(danger ? .red.opacity(0.9) : .white.opacity(0.9))
+            .foregroundColor(disabled ? .white.opacity(0.3) : (danger ? .red.opacity(0.9) : .white.opacity(0.9)))
             .background(
                 RoundedRectangle(cornerRadius: 8)
-                    .fill(danger ? Color.red.opacity(0.15) : Color.white.opacity(0.1))
+                    .fill(disabled ? Color.white.opacity(0.05) : (danger ? Color.red.opacity(0.15) : Color.white.opacity(0.1)))
             )
             .contentShape(Rectangle())
         }
         .buttonStyle(ToolbarButtonStyle())
         .buttonStyle(.plain)
+        .disabled(disabled)
     }
 }
 
@@ -223,7 +225,8 @@ struct SlotSelectorButton: View {
     @ObservedObject private var loc = LocalizationManager.shared
     @State private var isDropdownShown = false
     @State private var selectedSlot: Int = 0
-    
+    var disabled: Bool = false
+
     var body: some View {
         VStack(spacing: 4) {
             Image(systemName: "number.circle")
@@ -232,7 +235,7 @@ struct SlotSelectorButton: View {
                 .font(.system(size: 10, weight: .medium))
         }
         .frame(minWidth: 50)
-        .foregroundColor(.white)
+        .foregroundColor(disabled ? .white.opacity(0.3) : .white)
         .padding(6)
         .background(
             RoundedRectangle(cornerRadius: 8)
@@ -240,13 +243,16 @@ struct SlotSelectorButton: View {
         )
         .contentShape(Rectangle())
         .onTapGesture {
-            selectedSlot = currentSlot
-            isDropdownShown = true
+            if !disabled {
+                selectedSlot = currentSlot
+                isDropdownShown = true
+            }
         }
         .popover(isPresented: $isDropdownShown, arrowEdge: .top) {
             SlotPickerView(selectedSlot: $selectedSlot, onSlotSelect: onSlotChange, runner: runner)
                 .frame(width: 280, height: 400)
         }
+        .disabled(disabled)
     }
 }
 
