@@ -426,8 +426,17 @@ int16_t bridge_input_state(unsigned port, unsigned device, unsigned index, unsig
     if (port == 0) {
         if (device == RETRO_DEVICE_JOYPAD)
             return g_input_state[id & 0x1F] ? 1 : 0;
-        if (device == RETRO_DEVICE_ANALOG && index < 2 && id < 2)
-            return g_analog_state[index][id];
+        if (device == RETRO_DEVICE_ANALOG) {
+            if (index < 2 && id < 2) {
+                int16_t val = g_analog_state[index][id];
+                if (val != 0)
+                    return val;
+                if (g_input_state[id] != 0)
+                    return 1;
+                return 0;
+            }
+            return g_input_state[id & 0x1F] ? 1 : 0;
+        }
 
         // RETRO_DEVICE_KEYBOARD - raw keycode polling
         if (device == RETRO_DEVICE_KEYBOARD || device == 0) {

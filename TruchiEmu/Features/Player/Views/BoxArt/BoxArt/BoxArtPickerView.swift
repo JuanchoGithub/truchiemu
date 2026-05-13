@@ -8,15 +8,14 @@ struct BoxArtPickerView: View {
 
     @State private var searchText: String = ""
     @State private var searchEngine: SearchEngine = .duckduckgo
+    @ObservedObject private var loc = LocalizationManager.shared
 
-    // 1. Add a second state variable for the "final" query
-    @State private var appliedSearchText: String = "" // This triggers the search
+    @State private var appliedSearchText: String = ""
 
     enum SearchEngine: String, CaseIterable {
         case duckduckgo = "DuckDuckGo"
         case google = "Google"
     }
-
 
     var body: some View {
         VStack(spacing: 0) {
@@ -26,21 +25,18 @@ struct BoxArtPickerView: View {
 
             VStack(spacing: 12) {
                 HStack(spacing: 10) {
-                    // Search Input
-                    TextField("Search query...", text: $searchText)
+                    TextField(loc.localized("boxArt.searchQuery"), text: $searchText)
                         .textFieldStyle(.roundedBorder)
-                        .onSubmit { updateSearch() } // Triggers on Enter key
+                        .onSubmit { updateSearch() }
 
-                    // Search Button
                     Button(action: updateSearch) {
                         Image(systemName: "magnifyingglass")
                     }
                     .buttonStyle(.borderedProminent)
 
-                    // Engine Selection
                     HStack(spacing: 8) {
-                        Text("Engine")
-                            .fixedSize() // This prevents "Engine" from wrapping
+                        Text(loc.localized("boxart.engine"))
+                            .fixedSize()
                         
                         Picker("", selection: $searchEngine) {
                             ForEach(SearchEngine.allCases, id: \.self) { engine in
@@ -52,13 +48,12 @@ struct BoxArtPickerView: View {
                     }
                 }
 
-                Text("Right-click an image to select it as box art")
+                Text(loc.localized("boxart.rightClickInfo"))
                     .font(.caption)
                     .foregroundColor(.secondary)
             }
             .padding()
 
-            // 2. Use appliedSearchText here so it only updates when you want it to
             WebSearchView(query: appliedSearchText, engine: searchEngine, onImagePicked: applyURL)
         }
         .frame(width: 800, height: 600)
@@ -67,13 +62,11 @@ struct BoxArtPickerView: View {
             let systemID = rom.systemID?.uppercased() ?? ""
             let initialSearch = "\(cleanName) \(systemID) BoxArt"
             
-            // Initialize both so it searches immediately on load
             searchText = initialSearch
             appliedSearchText = initialSearch
         }
     }
-
-    // 3. The function that actually triggers the API/Web call
+    
     private func updateSearch() {
         appliedSearchText = searchText
     }
@@ -82,16 +75,16 @@ struct BoxArtPickerView: View {
     private var header: some View {
         HStack {
             VStack(alignment: .leading, spacing: 2) {
-                Text("Box Art Picker")
+                Text(loc.localized("boxart.pickerTitle"))
                     .font(.headline)
                 Text(rom.displayName)
                     .font(.subheadline)
                     .foregroundColor(.secondary)
             }
             Spacer()
-            Button("Cancel") { dismiss() }
+            Button(loc.localized("core.cancel")) { dismiss() }
                 .buttonStyle(.bordered)
-            Button("Done") { dismiss() }
+            Button(loc.localized("core.done")) { dismiss() }
                 .buttonStyle(.borderedProminent)
         }
         .padding()

@@ -9,6 +9,7 @@ struct CheatManagerViewWrapper: View {
     
     @ObservedObject private var cheatManager = CheatManagerService.shared
     @StateObject private var cheatDownloadService = CheatDownloadService.shared
+    @ObservedObject private var loc = LocalizationManager.shared
     @State private var showAddCheatWindow = false
     @State private var showImportFile = false
     @State private var searchText = ""
@@ -44,9 +45,9 @@ struct CheatManagerViewWrapper: View {
             // Header with title and close button
             HStack {
                 VStack(alignment: .leading, spacing: 4) {
-                    Text("Cheats for \(rom.displayName)")
+                    Text(loc.localized("cheat.cheatsForGame", rom.displayName))
                         .font(.headline)
-                    Text("\(enabledCount) of \(cheatManager.cheats(for: rom).count) cheats enabled")
+                    Text(loc.localized("cheat.enabledCount", enabledCount, cheatManager.cheats(for: rom).count))
                         .font(.caption)
                         .foregroundColor(.secondary)
                 }
@@ -58,7 +59,7 @@ struct CheatManagerViewWrapper: View {
                         .font(.title3)
                         .foregroundColor(.secondary)
                 }
-                .help("Close")
+                .help(loc.localized("cheat.close"))
             }
             .padding()
             
@@ -67,18 +68,18 @@ struct CheatManagerViewWrapper: View {
                  cheatManager.loadCheatsForROM(rom)
              }
              
-             // Category filter
-            ScrollView(.horizontal, showsIndicators: false) {
-                HStack(spacing: 8) {
-                    Button(action: { selectedCategory = nil }) {
-                        Text("All")
-                            .font(.caption)
-                            .padding(.horizontal, 12)
-                            .padding(.vertical, 6)
-                            .background(selectedCategory == nil ? Color.accentColor : Color.secondary.opacity(0.2))
-                            .foregroundColor(selectedCategory == nil ? .white : .primary)
-                            .cornerRadius(8)
-                    }
+              // Category filter
+             ScrollView(.horizontal, showsIndicators: false) {
+                 HStack(spacing: 8) {
+                     Button(action: { selectedCategory = nil }) {
+                         Text(loc.localized("cheat.all"))
+                             .font(.caption)
+                             .padding(.horizontal, 12)
+                             .padding(.vertical, 6)
+                             .background(selectedCategory == nil ? Color.accentColor : Color.secondary.opacity(0.2))
+                             .foregroundColor(selectedCategory == nil ? .white : .primary)
+                             .cornerRadius(8)
+                     }
                     
                     ForEach(CheatCategory.allCases, id: \.self) { category in
                         Button(action: { selectedCategory = category }) {
@@ -98,25 +99,25 @@ struct CheatManagerViewWrapper: View {
             
             Divider()
             
-            // Search
-            HStack {
-                Image(systemName: "magnifyingglass")
-                    .foregroundColor(.secondary)
-                TextField("Search cheats...", text: $searchText)
-                    .textFieldStyle(.plain)
-                if !searchText.isEmpty {
-                    Button(action: { searchText = "" }) {
-                        Image(systemName: "xmark.circle.fill")
-                            .foregroundColor(.secondary)
-                    }
-                    .buttonStyle(.plain)
-                }
-            }
-            .padding(8)
-            .background(Color.secondary.opacity(0.1))
-            .cornerRadius(8)
-            .padding(.horizontal)
-            .padding(.vertical, 8)
+             // Search
+             HStack {
+                 Image(systemName: "magnifyingglass")
+                     .foregroundColor(.secondary)
+                 TextField(loc.localized("cheat.searchPlaceholder"), text: $searchText)
+                     .textFieldStyle(.plain)
+                 if !searchText.isEmpty {
+                     Button(action: { searchText = "" }) {
+                         Image(systemName: "xmark.circle.fill")
+                             .foregroundColor(.secondary)
+                     }
+                     .buttonStyle(.plain)
+                 }
+             }
+             .padding(8)
+             .background(Color.secondary.opacity(0.1))
+             .cornerRadius(8)
+             .padding(.horizontal)
+             .padding(.vertical, 8)
             
             // Download status message
             if let downloadMessage = downloadMessage {
@@ -141,45 +142,45 @@ struct CheatManagerViewWrapper: View {
             
             Divider()
             
-            // Action buttons row
-            HStack(spacing: 8) {
-                Button {
-                    showAddCheatWindow = true
-                } label: {
-                    Label("Add Cheat", systemImage: "plus")
-                        .padding(.horizontal, 12)
-                        .padding(.vertical, 6)
-                }
-                .help("Add custom cheat code")
-                
-                Button {
-                    showImportFile = true
-                } label: {
-                    Label("Import File", systemImage: "square.and.arrow.down")
-                        .padding(.horizontal, 12)
-                        .padding(.vertical, 6)
-                }
-                .help("Import .cht file")
-                
-                Button {
-                    Task {
-                        await downloadOnlineCheat()
-                    }
-                } label: {
-                    HStack(spacing: 4) {
-                        if isDownloadingCheat {
-                            ProgressView()
-                                .controlSize(.small)
-                        } else {
-                            Image(systemName: "arrow.down.circle")
-                        }
-                        Text(isDownloadingCheat ? "Searching..." : "Download")
-                            .padding(.horizontal, 12)
-                            .padding(.vertical, 6)
-                    }
-                }
-                .help("Search and download cheats from libretro database")
-                .disabled(isDownloadingCheat)
+             // Action buttons row
+             HStack(spacing: 8) {
+                 Button {
+                     showAddCheatWindow = true
+                 } label: {
+                     Label(loc.localized("cheat.addCustomCheat"), systemImage: "plus")
+                         .padding(.horizontal, 12)
+                         .padding(.vertical, 6)
+                 }
+                 .help(loc.localized("cheat.addCustomCheatHelp"))
+                 
+                 Button {
+                     showImportFile = true
+                 } label: {
+                     Label(loc.localized("cheat.importFile"), systemImage: "square.and.arrow.down")
+                         .padding(.horizontal, 12)
+                         .padding(.vertical, 6)
+                 }
+                 .help(loc.localized("cheat.importFileHelp"))
+                 
+                 Button {
+                     Task {
+                         await downloadOnlineCheat()
+                     }
+                 } label: {
+                     HStack(spacing: 4) {
+                         if isDownloadingCheat {
+                             ProgressView()
+                                 .controlSize(.small)
+                         } else {
+                             Image(systemName: "arrow.down.circle")
+                         }
+                         Text(isDownloadingCheat ? loc.localized("cheat.searching") : loc.localized("cheat.download"))
+                             .padding(.horizontal, 12)
+                             .padding(.vertical, 6)
+                     }
+                 }
+                 .help(loc.localized("cheat.downloadHelp"))
+                 .disabled(isDownloadingCheat)
                 
                 Spacer()
             }
@@ -188,21 +189,21 @@ struct CheatManagerViewWrapper: View {
             
             Divider()
             
-            // Cheat list
-            if filteredCheats.isEmpty {
-                VStack(spacing: 12) {
-                    Image(systemName: "wand.and.stars")
-                        .font(.system(size: 40))
-                        .foregroundColor(.secondary)
-                    Text(searchText.isEmpty ? "No cheats available" : "No matching cheats")
-                        .foregroundColor(.secondary)
-                    if searchText.isEmpty {
-                        Text("Download cheats, import a .cht file, or add custom codes")
-                            .font(.caption)
-                            .foregroundColor(.secondary)
-                    }
-                }
-                .frame(maxWidth: .infinity, maxHeight: .infinity)
+             // Cheat list
+             if filteredCheats.isEmpty {
+                 VStack(spacing: 12) {
+                     Image(systemName: "wand.and.stars")
+                         .font(.system(size: 40))
+                         .foregroundColor(.secondary)
+                     Text(searchText.isEmpty ? loc.localized("cheat.noCheatsAvailable") : loc.localized("cheat.noMatchingCheats"))
+                         .foregroundColor(.secondary)
+                     if searchText.isEmpty {
+                         Text(loc.localized("cheat.importInstructions"))
+                             .font(.caption)
+                             .foregroundColor(.secondary)
+                     }
+                 }
+                 .frame(maxWidth: .infinity, maxHeight: .infinity)
             } else {
                 ScrollView {
                     LazyVStack(spacing: 8) {
@@ -218,17 +219,17 @@ struct CheatManagerViewWrapper: View {
                 }
             }
             
-            // Apply button
-            if enabledCount > 0 {
-                Divider()
-                Button(action: applyCheats) {
-                    Label("Apply Cheats", systemImage: "checkmark.circle.fill")
-                        .frame(maxWidth: .infinity)
-                        .padding()
-                }
-                .buttonStyle(.borderedProminent)
-                .padding()
-            }
+             // Apply button
+             if enabledCount > 0 {
+                 Divider()
+                 Button(action: applyCheats) {
+                     Label(loc.localized("cheat.applyCheats"), systemImage: "checkmark.circle.fill")
+                         .frame(maxWidth: .infinity)
+                         .padding()
+                 }
+                 .buttonStyle(.borderedProminent)
+                 .padding()
+             }
         }
         .frame(minWidth: 500, minHeight: 600)
         .sheet(isPresented: $showAddCheatWindow) {
@@ -268,7 +269,7 @@ struct CheatManagerViewWrapper: View {
     @MainActor
     private func downloadOnlineCheat() async {
         guard let systemID = rom.systemID else {
-            downloadMessage = "Unable to determine system for \(rom.displayName)"
+            downloadMessage = loc.localized("cheat.unableToDetermineSystem", rom.displayName)
             return
         }
         
@@ -292,12 +293,12 @@ struct CheatManagerViewWrapper: View {
                         }
                     }
                 }
-                downloadMessage = "Cheats found and downloaded for \(rom.displayName)!"
+                downloadMessage = loc.localized("cheat.cheatsFoundAndDownloaded", rom.displayName)
             } else {
-                downloadMessage = "No cheat file found for \(rom.displayName) in the libretro database"
+                downloadMessage = loc.localized("cheat.noCheatFileFound", rom.displayName)
             }
         } catch {
-            downloadMessage = "Download failed: \(error.localizedDescription)"
+            downloadMessage = loc.localized("cheat.downloadFailed", error.localizedDescription)
         }
         
         isDownloadingCheat = false
@@ -372,6 +373,7 @@ struct InlineCheatRowView: View {
 struct AddCheatViewWrapper: View {
     let rom: ROM
     @ObservedObject var cheatManager: CheatManagerService
+    @ObservedObject private var loc = LocalizationManager.shared
     @Environment(\.dismiss) private var dismiss
     @State private var description = ""
     @State private var code = ""
@@ -381,7 +383,7 @@ struct AddCheatViewWrapper: View {
     var body: some View {
         VStack(spacing: 0) {
             HStack {
-                Text("Add Custom Cheat")
+                Text(loc.localized("cheat.addCustomCheat"))
                     .font(.headline)
                 Spacer()
                 Button {
@@ -397,18 +399,18 @@ struct AddCheatViewWrapper: View {
             Divider()
             
             Form {
-                Section("Cheat Details") {
-                    TextField("Description (e.g., Infinite Lives)", text: $description)
-                    TextField("Code (e.g., 7E0DBE05)", text: $code)
+                Section(loc.localized("cheat.details")) {
+                    TextField(loc.localized("cheat.descriptionPlaceholder"), text: $description)
+                    TextField(loc.localized("cheat.codePlaceholder"), text: $code)
                         .font(.system(.body, design: .monospaced))
-                    Picker("Format", selection: $format) {
+                    Picker(loc.localized("cheat.format"), selection: $format) {
                         ForEach(CheatFormat.allCases, id: \.self) { format in
                             Text(format.displayName).tag(format)
                         }
                     }
                 }
                 
-                Section("Example") {
+                Section(loc.localized("cheat.example")) {
                     Text(format.example)
                         .font(.system(.body, design: .monospaced))
                         .foregroundColor(.secondary)
@@ -416,7 +418,7 @@ struct AddCheatViewWrapper: View {
                 }
                 
                 if let error = errorMessage {
-                    Section("Error") {
+                    Section(loc.localized("cheat.error")) {
                         Text(error)
                             .foregroundColor(.red)
                     }
@@ -426,12 +428,12 @@ struct AddCheatViewWrapper: View {
             
             HStack {
                 Spacer()
-                Button("Cancel") {
+                Button(loc.localized("cheat.cancel")) {
                     dismiss()
                 }
                 .keyboardShortcut(.escape, modifiers: .command)
                 
-                Button("Add Cheat") {
+                Button(loc.localized("cheat.addCheat")) {
                     addCheat()
                 }
                 .keyboardShortcut(.return, modifiers: .command)
@@ -447,19 +449,19 @@ struct AddCheatViewWrapper: View {
         let trimmedDesc = description.trimmingCharacters(in: .whitespacesAndNewlines)
         
         guard !trimmedCode.isEmpty else {
-            errorMessage = "Code cannot be empty"
+            errorMessage = loc.localized("cheat.codeEmptyError")
             return
         }
         
         let detectedFormat = CheatParser.detectFormat(trimmedCode)
         if detectedFormat != format && format != .raw {
-            errorMessage = "Code format doesn\'t match. Detected: \(detectedFormat.displayName)"
+            errorMessage = loc.localized("cheat.codeFormatMismatch", detectedFormat.displayName)
             return
         }
         
         let cheat = Cheat(
             index: cheatManager.cheats(for: rom).count,
-            description: trimmedDesc.isEmpty ? "Custom Cheat" : trimmedDesc,
+            description: trimmedDesc.isEmpty ? loc.localized("cheat.customCheat") : trimmedDesc,
             code: trimmedCode,
             enabled: true,
             format: format

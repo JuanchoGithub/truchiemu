@@ -5,6 +5,7 @@ struct BezelsSection: View {
     let library: ROMLibrary
     @State private var currentBezelImage: NSImage?
     @Environment(\.colorScheme) private var colorScheme
+    @ObservedObject private var loc = LocalizationManager.shared
 
     private var currentROM: ROM {
         library.roms.first { $0.id == rom.id } ?? rom
@@ -13,20 +14,20 @@ struct BezelsSection: View {
     private var currentBezelStatusText: String {
         let bezelFileName = currentROM.settings.bezelFileName
         if bezelFileName == "none" {
-            return "Off"
+            return loc.localized("bezel.off")
         } else if bezelFileName.isEmpty {
-            return "Auto"
+            return loc.localized("bezel.auto")
         } else {
-            return "Custom"
+            return loc.localized("bezel.custom")
         }
     }
 
     private var currentBezelDisplayName: String {
         let bezelFileName = currentROM.settings.bezelFileName
         if bezelFileName == "none" {
-            return "Bezels are disabled"
+            return loc.localized("bezel.bezelsDisabled")
         } else if bezelFileName.isEmpty {
-            return "Automatically matched by game name"
+            return loc.localized("bezel.automaticallyMatched")
         } else {
             return bezelFileName.replacingOccurrences(of: ".png", with: "")
                 .replacingOccurrences(of: "_", with: " ")
@@ -35,7 +36,7 @@ struct BezelsSection: View {
 
     var body: some View {
         ModernSectionCard(
-            title: "Bezels",
+            title: loc.localized("bezel.title"),
             icon: "picture.inset.filled",
             badge: currentBezelStatusText.isEmpty ? nil : currentBezelStatusText
         ) {
@@ -59,7 +60,7 @@ struct BezelsSection: View {
                             Text(currentBezelDisplayName)
                                 .font(.subheadline)
                                 .foregroundColor(AppColors.textSecondary(colorScheme))
-                            Text("No preview available")
+                            Text(loc.localized("bezel.noPreviewAvailable"))
                                 .font(.caption)
                                 .foregroundColor(AppColors.textMuted(colorScheme))
                         }
@@ -74,7 +75,7 @@ struct BezelsSection: View {
 
                 HStack {
                     VStack(alignment: .leading, spacing: 2) {
-                        Text("Current Bezel")
+                        Text(loc.localized("bezel.currentBezel"))
                             .font(.subheadline)
                             .fontWeight(.medium)
                             .foregroundColor(AppColors.textPrimary(colorScheme))
@@ -85,7 +86,7 @@ struct BezelsSection: View {
 
                     Spacer()
 
-                    Button("Browse Bezels") {
+                    Button(loc.localized("bezel.browseBezels")) {
                         presentBezelSelectorWindow()
                     }
                     .foregroundColor(.white)
@@ -105,7 +106,7 @@ struct BezelsSection: View {
                             Image(systemName: "magnifyingglass")
                                 .foregroundColor(.white)
                                 .frame(width: 20)
-                            Text("Auto-Match Bezel")
+                            Text(loc.localized("bezel.autoMatchBezel"))
                                 .foregroundColor(AppColors.textPrimary(colorScheme))
                             Spacer()
                         }
@@ -123,7 +124,7 @@ struct BezelsSection: View {
                             Image(systemName: "nosign")
                                 .foregroundColor(.white)
                                 .frame(width: 20)
-                            Text("Clear Bezel")
+                            Text(loc.localized("bezel.clearBezel"))
                                 .foregroundColor(AppColors.textPrimary(colorScheme))
                             Spacer()
                         }
@@ -137,7 +138,7 @@ struct BezelsSection: View {
 
                 Divider().overlay(AppColors.divider(colorScheme))
 
-                Text("Bezels are pre-downloaded before gameplay. Browse available bezels from The Bezel Project or import your own.")
+                Text(loc.localized("bezel.bezelsPreDownloaded"))
                     .font(.caption)
                     .foregroundColor(AppColors.textMuted(colorScheme))
             }

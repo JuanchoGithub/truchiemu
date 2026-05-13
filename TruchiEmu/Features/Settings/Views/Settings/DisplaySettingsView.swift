@@ -5,6 +5,7 @@ struct DisplaySettingsView: View {
     @State private var selectedPresetID: String = ""
     @State private var shaderWindowSettings: ShaderWindowSettings?
     @StateObject private var shaderManager = ShaderManager.shared
+    @ObservedObject private var loc = LocalizationManager.shared
     
     @Binding var searchText: String
     
@@ -28,15 +29,15 @@ struct DisplaySettingsView: View {
         Form {
             // Shader Presets Section
             if !isSearching || matchesSearch("Shader Presets display screen shader preset default") {
-                Section("Shader Presets") {
-                    LabeledContent("Default Shader") {
+                Section(loc.localized("display.shaderPresets")) {
+                    LabeledContent(loc.localized("display.defaultShader")) {
                         Button(ShaderManager.displayName(for: selectedPresetID)) {
                             presentShaderWindow()
                         }
                         .buttonStyle(.bordered)
                     }
                     
-                    Text("Select a default shader preset for all games. Individual games can override this in their settings.")
+                    Text(loc.localized("display.defaultShaderDescription"))
                         .font(.caption)
                         .foregroundColor(.secondary)
                 }
@@ -44,7 +45,7 @@ struct DisplaySettingsView: View {
             
             // Quick Preview Section
             if !isSearching || matchesSearch("Quick Preview shader preset display screen") {
-                Section("Quick Preview") {
+                Section(loc.localized("display.quickPreview")) {
                     VStack(spacing: 8) {
                         ForEach(ShaderPreset.allPresets.prefix(4), id: \.id) { preset in
                             HStack {
@@ -59,7 +60,7 @@ struct DisplaySettingsView: View {
                                 }
                                 Spacer()
                                 if preset.recommendedSystems.isEmpty {
-                                    Text("All systems")
+                                    Text(loc.localized("display.allSystems"))
                                         .font(.caption2)
                                         .foregroundColor(.secondary)
                                 } else {
@@ -76,8 +77,8 @@ struct DisplaySettingsView: View {
             
             // Bezel Section
             if !isSearching || matchesSearch("Bezel display screen bezel frame") {
-                Section("Bezel") {
-                    Text("Bezel options are available in the in-game HUD (shown on hover).")
+                Section(loc.localized("display.bezel")) {
+                    Text(loc.localized("display.bezelDescription"))
                         .foregroundColor(.secondary)
                 }
             }
@@ -85,7 +86,7 @@ struct DisplaySettingsView: View {
             // No results message
             if isSearching && !hasMatchingSections {
                 Section {
-                    Text("No matching settings found for \"\(searchText)\"")
+                    Text("\(loc.localized("display.noMatchingSettings")) \"\(searchText)\"")
                         .font(.caption)
                         .foregroundStyle(.secondary)
                         .frame(maxWidth: .infinity, alignment: .center)
@@ -94,7 +95,7 @@ struct DisplaySettingsView: View {
             }
         }
         .formStyle(.grouped)
-        .navigationTitle("Display")
+        .navigationTitle(loc.localized("display.title"))
         .onAppear {
             selectedPresetID = AppSettings.get("display_default_shader_preset", type: String.self) ?? ""
         }

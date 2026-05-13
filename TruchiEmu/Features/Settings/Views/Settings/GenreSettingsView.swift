@@ -5,6 +5,7 @@ import Foundation
 struct GenreSettingsView: View {
     @EnvironmentObject var library: ROMLibrary
     @Binding var searchText: String
+    @ObservedObject private var loc = LocalizationManager.shared
     @State private var showAddSheet: Bool = false
     @State private var editingOriginal: String = ""
     @State private var editingDisplay: String = ""
@@ -125,7 +126,7 @@ struct GenreSettingsView: View {
                 Button {
                     deleteCustomGenre(original: item.original)
                 } label: {
-                    Text("Delete")
+                    Text(loc.localized("genre.delete"))
                         .font(.caption)
                         .foregroundColor(.red)
                         .padding(.horizontal, 8)
@@ -210,41 +211,41 @@ struct GenreSettingsView: View {
 
     private var editMappingSheet: some View {
         VStack(spacing: 16) {
-            Text(isCreatingNew ? "Create Custom Genre" : "Edit Genre Mapping")
+            Text(isCreatingNew ? loc.localized("genre.createCustomGenre") : loc.localized("genre.editGenreMapping"))
                 .font(.headline)
 
             if isCreatingNew {
                 VStack(alignment: .leading, spacing: 8) {
-                    Text("Custom Genre Name")
+                    Text(loc.localized("genre.customGenreName"))
                         .font(.caption)
                         .foregroundColor(.secondary)
 
-                    TextField("Genre name", text: $editingDisplay)
+                    TextField(loc.localized("genre.genreName"), text: $editingDisplay)
                         .textFieldStyle(.roundedBorder)
                 }
             } else if editingOriginal.isEmpty {
                 VStack(alignment: .leading, spacing: 8) {
                     HStack {
-                        Text("Genre Name")
+                        Text(loc.localized("genre.genreName"))
                             .font(.caption)
                             .foregroundColor(.secondary)
                         Spacer()
-                        Text("editable")
+                        Text(loc.localized("genre.editable"))
                             .font(.caption2)
                             .foregroundColor(.secondary)
                     }
 
-                    TextField("Genre name", text: $editingDisplay)
+                    TextField(loc.localized("genre.genreName"), text: $editingDisplay)
                         .textFieldStyle(.roundedBorder)
                 }
             } else {
                 VStack(alignment: .leading, spacing: 8) {
                     HStack {
-                        Text("Original (from ROM)")
+                        Text(loc.localized("genre.originalFromROM"))
                             .font(.caption)
                             .foregroundColor(.secondary)
                         Spacer()
-                        Text("read-only")
+                        Text(loc.localized("genre.readOnly"))
                             .font(.caption2)
                             .foregroundColor(.secondary)
                     }
@@ -259,24 +260,24 @@ struct GenreSettingsView: View {
                 }
 
                 VStack(alignment: .leading, spacing: 8) {
-                    Text("Display (shown in app)")
+                    Text(loc.localized("genre.displayShownInApp"))
                         .font(.caption)
                         .foregroundColor(.secondary)
 
-                    TextField("Display genre", text: $editingDisplay)
+                    TextField(loc.localized("genre.displayGenre"), text: $editingDisplay)
                         .textFieldStyle(.roundedBorder)
                 }
             }
 
             HStack {
-                Button("Cancel") {
+                Button(loc.localized("library.cancel")) {
                     showAddSheet = false
                 }
                 .buttonStyle(.plain)
 
                 Spacer()
 
-                Button("Save") {
+                Button(loc.localized("library.apply")) {
                     saveMapping()
                 }
                 .buttonStyle(.borderedProminent)

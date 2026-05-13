@@ -451,7 +451,7 @@ class SystemPreferences: ObservableObject {
 
     private static let keyShowBiosFiles = "showBiosFiles"
     private static let keyShowHiddenMAMEFiles = "showHiddenMAMEFiles"
-    private static let keySystemLanguage = "systemLanguage"
+    private static let keySystemLanguage = "coreSystemLanguage"
     private static let keyCoreLogLevel = "coreLogLevel"
     private static let keyApplyCheatsOnLaunch = "applyCheatsOnLaunch"
     private static let keyShowCheatNotifications = "showCheatNotifications"

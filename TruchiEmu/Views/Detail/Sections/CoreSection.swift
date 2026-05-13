@@ -8,6 +8,7 @@ struct CoreSection: View {
     @State private var selectedCoreID: String?
     @State private var applyCoreToSystem: Bool = false
     @Environment(\.colorScheme) private var colorScheme
+    @ObservedObject private var loc = LocalizationManager.shared
     private var sysPrefs = SystemPreferences.shared
 
     private var currentROM: ROM {
@@ -15,17 +16,17 @@ struct CoreSection: View {
     }
 
     var body: some View {
-        ModernSectionCard(title: "Core", icon: "cpu") {
+        ModernSectionCard(title: loc.localized("core.title"), icon: "cpu") {
             VStack(alignment: .leading, spacing: 12) {
                 HStack {
                     Image(systemName: "cpu")
                         .foregroundColor(AppColors.textSecondary(colorScheme))
-                    Text("Emulation Core")
+                    Text(loc.localized("core.emulationCore"))
                         .foregroundColor(AppColors.textSecondary(colorScheme))
                         .font(.caption)
                     Spacer()
                     if installedCores.isEmpty {
-                        Text("No cores installed")
+                        Text(loc.localized("core.noCoresInstalled"))
                             .font(.caption)
                             .foregroundColor(AppColors.textMuted(colorScheme))
                     } else {
@@ -46,19 +47,19 @@ struct CoreSection: View {
                     HStack {
                         Image(systemName: "globe")
                             .foregroundColor(AppColors.textSecondary(colorScheme))
-                        Text("Apply to system default")
+                        Text(loc.localized("core.applyToSystemDefault"))
                             .foregroundColor(AppColors.textPrimary(colorScheme))
                     }
                 }
                 .toggleStyle(SwitchToggleStyle())
 
                 if applyCoreToSystem {
-                    Text("This will change the default core for all \(systemName) games. The current game will no longer use a custom core override.")
+                    Text(loc.localized("core.changeSystemCoreWarning").replacingOccurrences(of: "{0}", with: systemName))
                         .font(.caption)
                         .foregroundColor(AppColors.textMuted(colorScheme))
                         .lineSpacing(2)
                 } else {
-                    Text("Only this game will use the selected core.")
+                    Text(loc.localized("core.onlyThisGameUsesSelectedCore"))
                         .font(.caption)
                         .foregroundColor(AppColors.textMuted(colorScheme))
                         .lineSpacing(2)
@@ -73,7 +74,7 @@ struct CoreSection: View {
                     } label: {
                         HStack(spacing: 6) {
                             Image(systemName: applyCoreToSystem ? "globe" : "gamecontroller")
-                            Text(applyCoreToSystem ? "Set System Default" : "Set for This Game")
+                            Text(applyCoreToSystem ? loc.localized("core.setSystemDefault") : loc.localized("core.setForThisGame"))
                         }
                         .foregroundColor(.white)
                         .padding(.horizontal, 16)

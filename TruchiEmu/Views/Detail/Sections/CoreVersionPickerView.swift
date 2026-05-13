@@ -1,20 +1,19 @@
 import SwiftUI
 
-// MARK: - Core Version Picker
-
 struct CoreVersionPickerView: View {
     @EnvironmentObject var coreManager: CoreManager
+    @ObservedObject private var loc = LocalizationManager.shared
     let core: LibretroCore
     @State private var selectedTag: String?
 
     var body: some View {
         HStack {
-            Text("Version")
+            Text(loc.localized("coreVersion.version"))
                 .font(.caption)
                 .foregroundColor(.white.opacity(0.5))
-            Picker("Version", selection: $selectedTag) {
+            Picker(loc.localized("coreVersion.version"), selection: $selectedTag) {
                 if selectedTag == nil {
-                    Text("Select Version...").tag(nil as String?)
+                    Text(loc.localized("coreVersion.selectVersion")).tag(nil as String?)
                 }
                 ForEach(core.installedVersions.reversed()) { v in
                     Text(v.tag).tag(v.tag as String?)

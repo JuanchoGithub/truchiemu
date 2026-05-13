@@ -8,9 +8,10 @@ struct CategoryRowButton: View {
     @Binding var selectedFilter: LibraryFilter
     let handleDropOnCategory: ([NSItemProvider], String) -> Bool
     let showEditCategorySheet: (GameCategory) -> Void
-    
-  @State private var isHovered = false
-  @State private var isDropTarget = false
+
+    @State private var isHovered = false
+    @State private var isDropTarget = false
+    @ObservedObject private var loc = LocalizationManager.shared
 
   var body: some View {
     Button {
@@ -56,12 +57,12 @@ struct CategoryRowButton: View {
             Button {
                 showEditCategorySheet(category)
             } label: {
-                Label("Edit Category", systemImage: "pencil")
+                Label(loc.localized("contextMenu.editCategory"), systemImage: "pencil")
             }
             Button(role: .destructive) {
                 // Deletion handled via tag-based List selection
             } label: {
-                Label("Delete Category", systemImage: "trash")
+                Label(loc.localized("contextMenu.deleteCategory"), systemImage: "trash")
             }
         }
     }

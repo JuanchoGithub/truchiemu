@@ -3,6 +3,7 @@ import SwiftUI
 struct AchievementBadgeView: View {
     let achievement: Achievement
     @ObservedObject private var cache = RABadgeCacheService.shared
+    @ObservedObject private var loc = LocalizationManager.shared
     @Environment(\.colorScheme) private var colorScheme
 
     var body: some View {
@@ -40,7 +41,7 @@ struct AchievementBadgeView: View {
                     .foregroundColor(achievement.isUnlocked ? AppColors.textPrimary(colorScheme) : AppColors.textSecondary(colorScheme))
                     .frame(height: 22, alignment: .top)
                 
-                Text("\(achievement.points) pts")
+                Text("\(achievement.points) \(loc.localized("achievement.pts"))")
                     .font(.system(size: 8))
                     .foregroundColor(achievement.isUnlocked ? .blue : AppColors.textMuted(colorScheme))
             }

@@ -4,6 +4,7 @@ struct ModernSaveStateSlotView: View {
     let slot: SlotInfo
     let rom: ROM
     @ObservedObject var saveStateManager: SaveStateManager
+    @ObservedObject private var loc = LocalizationManager.shared
     var onDelete: () -> Void
     var onLaunchSlot: (Int) -> Void = { _ in }
     @State private var thumbnail: NSImage?
@@ -29,8 +30,8 @@ struct ModernSaveStateSlotView: View {
                             )
                     }
                 }
-                .frame(width: 70, height: 52)
-                .clipShape(RoundedRectangle(cornerRadius: 6))
+                .frame(width: 96, height: 72)
+                .clipShape(RoundedRectangle(cornerRadius: 8))
 
                 if slot.exists && showPlayButton {
                     Button {
@@ -42,40 +43,47 @@ struct ModernSaveStateSlotView: View {
                                 Image(systemName: "play.circle.fill")
                                     .font(.system(size: 20))
                                     .foregroundColor(.white)
-                                Text("Play")
+                                Text("saveState.play")
                                     .font(.caption2)
                                     .fontWeight(.semibold)
                                     .foregroundColor(.white)
                             }
                         }
-                        .clipShape(RoundedRectangle(cornerRadius: 6))
+                        .clipShape(RoundedRectangle(cornerRadius: 8))
                     }
                     .buttonStyle(.plain)
                     .transition(.opacity)
                 }
             }
             .overlay(
-                RoundedRectangle(cornerRadius: 6)
+                RoundedRectangle(cornerRadius: 8)
                     .stroke(slot.exists ? Color.accentColor.opacity(0.5) : Color.clear, lineWidth: 1.5)
             )
 
-            Text(slot.displayName)
-                .font(.caption)
-                .fontWeight(slot.exists ? .semibold : .regular)
-                .foregroundColor(slot.exists ? AppColors.textPrimary(colorScheme) : AppColors.textMuted(colorScheme))
-
-            if let date = slot.formattedDate {
-                Text(date)
-                    .font(.system(size: 9))
-                    .foregroundColor(AppColors.textMuted(colorScheme))
-                    .lineLimit(1)
-            } else if let fileSize = slot.fileSize {
-                Text(fileSize.formattedByteSize)
-                    .font(.system(size: 9))
-                    .foregroundColor(AppColors.textMuted(colorScheme))
-            }
-        }
-        .frame(width: 74)
+Text(slot.displayName)
+      .font(.caption)
+      .fontWeight(slot.exists ? .semibold : .regular)
+      .foregroundColor(slot.exists ? AppColors.textPrimary(colorScheme) : AppColors.textMuted(colorScheme))
+      
+      // Reserve space for 3 text rows to prevent vertical misalignment
+      // Show date or file size for saved slots, empty view for empty slots
+      if let date = slot.formattedDate {
+        Text(date)
+          .font(.system(size: 9))
+          .foregroundColor(AppColors.textMuted(colorScheme))
+          .lineLimit(1)
+      } else if let fileSize = slot.fileSize {
+        Text(fileSize.formattedByteSize)
+          .font(.system(size: 9))
+          .foregroundColor(AppColors.textMuted(colorScheme))
+      } else {
+        // Empty slot - reserve same vertical space
+        Text(" ")
+          .font(.system(size: 9))
+          .foregroundColor(.clear)
+      }
+    }
+        .frame(width: 104)
         .onTapGesture(count: 1) {
             if slot.exists {
                 withAnimation(.easeInOut(duration: 0.15)) {
@@ -115,7 +123,7 @@ struct ModernSaveStateSlotView: View {
                         onDelete()
                     }
                 }) {
-                    Label("Delete", systemImage: "trash")
+                    Label("saveState.delete", systemImage: "trash")
                 }
             }
         }

@@ -46,6 +46,7 @@ struct DetailBoxArtButton: View {
 struct DetailZoomableFullScreenView: View {
     let image: NSImage
     @Environment(\.dismiss) private var dismiss
+    private var loc: LocalizationManager { LocalizationManager.shared }
     @State private var showControls = true
     @State private var scale: CGFloat = 1.0
     @State private var lastScale: CGFloat = 1.0
@@ -122,7 +123,7 @@ struct DetailZoomableFullScreenView: View {
                     .opacity(showControls ? 1 : 0)
                 }
                 Spacer()
-                Text("Pinch to zoom")
+                Text("boxArt.pinchToZoom")
                     .font(.caption)
                     .foregroundColor(.white.opacity(0.7))
                     .padding(.bottom, 20)

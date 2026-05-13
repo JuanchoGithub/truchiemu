@@ -2,6 +2,7 @@ import SwiftUI
 // MARK: - About
 struct AboutView: View {
     @State private var expandedSections: Set<String> = []
+    @ObservedObject private var loc = LocalizationManager.shared
     
     var body: some View {
 
@@ -14,7 +15,7 @@ struct AboutView: View {
                         .foregroundStyle(LinearGradient(colors: [Color(red: 0.1, green: 0.6, blue: 0.35), Color(red: 0.15, green: 0.65, blue: 0.55)], startPoint: .topLeading, endPoint: .bottomTrailing))
                     Text("TruchiEmu")
                         .font(.largeTitle.weight(.bold))
-                    Text("A beautiful macOS libretro frontend")
+                    Text(loc.localized("about.tagline"))
                         .foregroundColor(.secondary)
                 }
                 .padding(.top, 20)
@@ -23,13 +24,13 @@ struct AboutView: View {
                 
                 // Third-Party Dependencies
                 VStack(alignment: .leading, spacing: 16) {
-                    Text("Third-Party Software & Services")
+                    Text(loc.localized("about.thirdPartySoftware"))
                         .font(.headline)
                         .frame(maxWidth: .infinity, alignment: .leading)
                     
                     // --- Core Engine ---
                     DependencySection(
-                        title: "Emulation Cores (libretro)",
+                        title: loc.localized("about.emulationCores"),
                         isExpanded: Binding(
                             get: { expandedSections.contains("cores") },
                             set: { if $0 { expandedSections.insert("cores") } else { expandedSections.remove("cores") } }
@@ -75,14 +76,14 @@ struct AboutView: View {
                         
                         Divider()
                         
-                        Text("Additional cores (mGBA, Genesis Plus GX, DOSBox Pure, ScummVM, MAME variants, etc.) are available from the libretro buildbot and each carries its own license. Visit the individual repositories on GitHub for details.")
+                        Text(loc.localized("about.additionalCoresNote"))
                             .foregroundColor(.secondary)
                             .font(.caption)
                     }
                     
                     // --- Databases & Content ---
                     DependencySection(
-                        title: "Game Databases & Content",
+                        title: loc.localized("about.gameDatabases"),
                         isExpanded: Binding(
                             get: { expandedSections.contains("databases") },
                             set: { if $0 { expandedSections.insert("databases") } else { expandedSections.remove("databases") } }
@@ -109,7 +110,7 @@ struct AboutView: View {
                     
                     // --- Bezel Project ---
                     DependencySection(
-                        title: "Visual Overlays",
+                        title: loc.localized("about.visualOverlays"),
                         isExpanded: Binding(
                             get: { expandedSections.contains("bezels") },
                             set: { if $0 { expandedSections.insert("bezels") } else { expandedSections.remove("bezels") } }
@@ -126,7 +127,7 @@ struct AboutView: View {
                     
                     // --- Box Art ---
                     DependencySection(
-                        title: "Box Art & Thumbnails",
+                        title: loc.localized("about.boxArtThumbnails"),
                         isExpanded: Binding(
                             get: { expandedSections.contains("boxart") },
                             set: { if $0 { expandedSections.insert("boxart") } else { expandedSections.remove("boxart") } }
@@ -162,7 +163,7 @@ struct AboutView: View {
                     
                     // --- RetroAchievements ---
                     DependencySection(
-                        title: "Achievement Tracking",
+                        title: loc.localized("about.achievementTracking"),
                         isExpanded: Binding(
                             get: { expandedSections.contains("achievements") },
                             set: { if $0 { expandedSections.insert("achievements") } else { expandedSections.remove("achievements") } }
@@ -181,9 +182,9 @@ struct AboutView: View {
                     
                     // --- General Notes ---
                     VStack(alignment: .leading, spacing: 8) {
-                        Text("Acknowledgment")
+                        Text(loc.localized("about.acknowledgment"))
                             .font(.headline)
-                        Text("TruchiEmu is built entirely on the shoulders of giants. The emulation cores, game databases, artwork, and achievement systems are all the result of thousands of hours of volunteer work by the retro gaming community. This app would not be possible without their generosity.")
+                        Text(loc.localized("about.acknowledgmentDescription"))
                             .foregroundColor(.secondary)
                             .font(.callout)
                     }
@@ -242,6 +243,7 @@ struct DependencyGroup: View {
     let license: String
     let licenseURL: String?
     let description: String
+    @ObservedObject private var loc = LocalizationManager.shared
     
     var body: some View {
         VStack(alignment: .leading, spacing: 4) {
@@ -256,7 +258,7 @@ struct DependencyGroup: View {
                 }
             }
             HStack(spacing: 4) {
-                Text("License:")
+                Text(loc.localized("about.license"))
                     .foregroundColor(.secondary)
                     .font(.caption)
                 Text(license)
@@ -267,7 +269,7 @@ struct DependencyGroup: View {
                         Image(systemName: "doc.text.magnifyingglass")
                             .font(.caption)
                     }
-                    .help("View full license")
+                    .help(loc.localized("about.viewFullLicense"))
                 }
             }
             Text(description)

@@ -16,7 +16,7 @@ extension GameDetailView {
 
     var cheatsSection: some View {
         ModernSectionCard(
-            title: "Cheats",
+            title: loc.localized("cheats.title"),
             icon: "wand.and.stars",
             badge: cheatCount > 0 ? "\(enabledCheatCount)/\(cheatCount)" : nil
         ) {
@@ -29,7 +29,7 @@ extension GameDetailView {
                 )) {
                     HStack {
                         Image(systemName: "gamecontroller.fill").foregroundColor(.blue)
-                        Text("Enable Cheats").foregroundColor(AppColors.textPrimary(colorScheme))
+                        Text(loc.localized("cheats.enableCheats")).foregroundColor(AppColors.textPrimary(colorScheme))
                     }
                 }
                 .toggleStyle(SwitchToggleStyle())
@@ -56,12 +56,12 @@ extension GameDetailView {
                 HStack(spacing: 6) {
                     Button {
                         Task {
-                            downloadMessage = "Starting download..."
+                            downloadMessage = loc.localized("cheats.startingDownload")
                             downloadMessageTone = .info
                             do {
                                 let systemID = currentROM.systemID ?? ""
                                 guard !systemID.isEmpty else {
-                                    downloadMessage = "No system assigned to this game"
+                                    downloadMessage = loc.localized("cheats.noSystemAssigned")
                                     downloadMessageTone = .warning; return
                                 }
                                 let cheatCountBefore = cheatManagerService.totalCount(for: currentROM)
@@ -71,23 +71,23 @@ extension GameDetailView {
                                     updateCheatCounts()
                                     loadCheatsList()
                                     let cheatsFound = cheatCount - cheatCountBefore
-                                    if cheatsFound > 0 { downloadMessage = "Downloaded \(cheatsFound) cheat\(cheatsFound == 1 ? "" : "s")" }
-                                    else { downloadMessage = "Downloaded cheat for \(currentROM.displayName)" }
+                                    if cheatsFound > 0 { downloadMessage = String(format: loc.localized("cheats.downloadedCheatsFound").replacingOccurrences(of: "{0}", with: "\(cheatsFound)").replacingOccurrences(of: "{1}", with: cheatsFound == 1 ? "" : "s")) }
+                                    else { downloadMessage = loc.localized("cheats.downloadedCheatFor").replacingOccurrences(of: "{0}", with: currentROM.displayName) }
                                     downloadMessageTone = .success
                                 } else {
-                                    downloadMessage = "No cheat file found for \(currentROM.displayName)"
+                                    downloadMessage = loc.localized("cheats.noCheatFileFound").replacingOccurrences(of: "{0}", with: currentROM.displayName)
                                     downloadMessageTone = .warning
                                 }
                             } catch is TimeoutError {
-                                downloadMessage = "Download timed out"; downloadMessageTone = .error
+                                downloadMessage = loc.localized("cheats.downloadTimedOut"); downloadMessageTone = .error
                             } catch {
-                                downloadMessage = "Download failed: \(error.localizedDescription)"; downloadMessageTone = .error
+                                downloadMessage = loc.localized("cheats.downloadFailed").replacingOccurrences(of: "{0}", with: error.localizedDescription); downloadMessageTone = .error
                             }
                         }
                     } label: {
                         HStack(spacing: 4) {
                             if cheatDownloadService.isDownloading { ProgressView().controlSize(.small) } else { Image(systemName: "arrow.down.circle") }
-                            Text(cheatDownloadService.isDownloading ? "Downloading..." : "Download")
+                            Text(cheatDownloadService.isDownloading ? loc.localized("cheats.downloading") : loc.localized("cheats.download"))
                         }
                         .foregroundColor(.white).padding(.horizontal, 10).padding(.vertical, 5)
                         .background(cheatDownloadService.isDownloading ? Color.green.opacity(0.4) : Color.green.opacity(0.6)).cornerRadius(5)
@@ -95,7 +95,7 @@ extension GameDetailView {
                     .disabled(cheatDownloadService.isDownloading)
 
                     Button { showImportCheatFile = true } label: {
-                        HStack(spacing: 4) { Image(systemName: "square.and.arrow.down"); Text("Import") }
+                        HStack(spacing: 4) { Image(systemName: "square.and.arrow.down"); Text(loc.localized("cheats.import")) }
                             .foregroundColor(.white).padding(.horizontal, 10).padding(.vertical, 5).background(Color.orange.opacity(0.6)).cornerRadius(5)
                     }
 
@@ -107,7 +107,7 @@ extension GameDetailView {
                 if !cheatsList.isEmpty {
                     HStack(spacing: 6) {
                         Image(systemName: "magnifyingglass").foregroundColor(AppColors.textMuted(colorScheme)).font(.caption)
-                        TextField("Search cheats...", text: $cheatSearchText)
+                        TextField(loc.localized("cheats.searchCheats"), text: $cheatSearchText)
                             .textFieldStyle(.plain).font(.caption).foregroundColor(AppColors.textPrimary(colorScheme))
                         if !cheatSearchText.isEmpty {
                             Button { cheatSearchText = "" } label: {
@@ -129,8 +129,8 @@ extension GameDetailView {
                 if cheatsList.isEmpty {
                     VStack(spacing: 4) {
                         Image(systemName: "wand.and.stars").font(.system(size: 20)).foregroundColor(AppColors.textMuted(colorScheme))
-                        Text("No cheats available").font(.caption).foregroundColor(AppColors.textSecondary(colorScheme))
-                        Text("Download or import a cheat file").font(.caption2).foregroundColor(AppColors.textMuted(colorScheme))
+                        Text(loc.localized("cheats.noCheatsAvailable")).font(.caption).foregroundColor(AppColors.textSecondary(colorScheme))
+                        Text(loc.localized("cheats.downloadOrImportCheatFile")).font(.caption2).foregroundColor(AppColors.textMuted(colorScheme))
                     }
                     .frame(maxWidth: .infinity).padding(.vertical, 10)
                 } else {
@@ -148,7 +148,7 @@ extension GameDetailView {
                     .frame(maxHeight: 300)
 
                     if !cheatSearchText.isEmpty && filteredCheatsList.isEmpty {
-                        Text("No cheats match \"\(cheatSearchText)\"").font(.caption2).foregroundColor(AppColors.textMuted(colorScheme)).padding(.vertical, 4)
+                        Text(loc.localized("cheats.noCheatsMatch").replacingOccurrences(of: "{0}", with: cheatSearchText)).font(.caption2).foregroundColor(AppColors.textMuted(colorScheme)).padding(.vertical, 4)
                     }
                 }
 
@@ -160,11 +160,11 @@ extension GameDetailView {
                         else { cheatManagerService.enableAllCheats(for: currentROM) }
                         loadCheatsList(); updateCheatCounts()
                     } label: {
-                        Label(enabledCheatCount > 0 ? "Disable All" : "Enable All", systemImage: enabledCheatCount > 0 ? "stop.circle" : "play.circle")
+                        Label(enabledCheatCount > 0 ? loc.localized("cheats.disableAll") : loc.localized("cheats.enableAll"), systemImage: enabledCheatCount > 0 ? "stop.circle" : "play.circle")
                             .font(.caption).foregroundColor(AppColors.textSecondary(colorScheme))
                     }.buttonStyle(.plain)
                     Spacer()
-                    Text("\(enabledCheatCount) of \(cheatCount) enabled").font(.caption).foregroundColor(AppColors.textSecondary(colorScheme))
+                    Text(loc.localized("cheats.enabledOfTotal").replacingOccurrences(of: "{0}", with: "\(enabledCheatCount)").replacingOccurrences(of: "{1}", with: "\(cheatCount)")).font(.caption).foregroundColor(AppColors.textSecondary(colorScheme))
                 }
 
                 Divider().overlay(AppColors.divider(colorScheme))
@@ -172,7 +172,7 @@ extension GameDetailView {
                 Button { openCheatSettings() } label: {
                     HStack {
                         Image(systemName: "gearshape").foregroundColor(AppColors.textSecondary(colorScheme))
-                        Text("Cheat Settings").font(.caption).foregroundColor(AppColors.textSecondary(colorScheme))
+                        Text(loc.localized("cheats.cheatSettings")).font(.caption).foregroundColor(AppColors.textSecondary(colorScheme))
                         Spacer()
                         Image(systemName: "chevron.right").font(.caption).foregroundColor(AppColors.textMuted(colorScheme))
                     }

@@ -63,6 +63,11 @@ enum ShaderUniformType: String, Codable {
 struct ShaderUniformOption: Codable, Hashable {
   var value: Float
   var label: String
+
+  var displayLabel: String {
+    let key = "shader.option.\(label.lowercased().replacingOccurrences(of: " ", with: "_"))"
+    return LocalizationManager.shared.localized(key)
+  }
 }
 
 struct ShaderUniform: Codable, Hashable, Identifiable {
@@ -78,7 +83,11 @@ struct ShaderUniform: Codable, Hashable, Identifiable {
   var options: [ShaderUniformOption]? = nil
 
   var displayLabel: String {
-    displayName ?? name.replacingOccurrences(of: "_", with: " ").capitalized
+    if let displayName = displayName {
+      let key = "shader.param.\(displayName.lowercased().replacingOccurrences(of: " ", with: "_").replacingOccurrences(of: "'", with: ""))"
+      return LocalizationManager.shared.localized(key)
+    }
+    return name.replacingOccurrences(of: "_", with: " ").capitalized
   }
 }
 

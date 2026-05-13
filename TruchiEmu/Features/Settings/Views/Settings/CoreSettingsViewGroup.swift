@@ -5,7 +5,8 @@ import GameController
 // MARK: - Cores
 struct CoreSettingsView: View {
     @EnvironmentObject var coreManager: CoreManager
-    @ObservedObject private var prefs = SystemPreferences.shared 
+    @ObservedObject private var prefs = SystemPreferences.shared
+    @ObservedObject private var loc = LocalizationManager.shared
     @Environment(SystemDatabaseWrapper.self) private var systemDatabase
 
     @Binding var searchText: String
@@ -73,7 +74,7 @@ struct CoreSettingsView: View {
                     Image(systemName: "magnifyingglass")
                         .foregroundColor(.secondary)
                     
-                    TextField("Search systems or cores...", text: $searchText)
+                    TextField(loc.localized("cores.searchSystemsCores"), text: $searchText)
                         .textFieldStyle(.plain)
                         .autocorrectionDisabled()
                     
@@ -97,7 +98,7 @@ struct CoreSettingsView: View {
                     HStack(spacing: 8) {
                         ProgressView()
                             .controlSize(.small)
-                        Text("Fetching core list from buildbot...")
+                        Text(loc.localized("cores.fetchingCoreList"))
                             .foregroundStyle(.secondary)
                             .font(.caption)
                     }
@@ -110,10 +111,10 @@ struct CoreSettingsView: View {
                         HStack {
                             if coreManager.isFetchingCoreList || LibretroInfoManager.shared.isRefreshing {
                                 ProgressView().controlSize(.small)
-                                Text("Updating Systems & Cores...")
+                                Text(loc.localized("cores.updatingSystemsCores"))
                             } else {
                                 Image(systemName: "arrow.triangle.2.circlepath")
-                                Text("Check for Updates")
+                                Text(loc.localized("cores.checkForUpdates"))
                             }
                         }
                     }
@@ -131,7 +132,7 @@ struct CoreSettingsView: View {
                 HStack(spacing: 0) {
                     // System list (left column)
                     VStack(spacing: 0) {
-                        Text("Systems")
+                        Text(loc.localized("cores.systems"))
                             .font(.caption)
                             .fontWeight(.semibold)
                             .foregroundStyle(.secondary)
@@ -169,9 +170,9 @@ struct CoreSettingsView: View {
                                 .id(coreManager.installedCores.count + coreManager.availableCores.count) 
                         } else {
                             ContentUnavailableView {
-                                Label("Select a System", systemImage: "gamecontroller")
+                                Label(loc.localized("cores.selectSystem"), systemImage: "gamecontroller")
                             } description: {
-                                Text("Choose a system from the list to see available cores.")
+                                Text(loc.localized("cores.selectSystemDescription"))
                             }
                             .frame(maxWidth: .infinity, maxHeight: .infinity)
                         }
@@ -252,6 +253,7 @@ struct SystemRowView: View {
 struct SystemCoresView: View {
     let system: SystemInfo
     @ObservedObject var coreManager: CoreManager
+    @ObservedObject private var loc = LocalizationManager.shared
     @State private var expandedCoreID: String? = nil
     @State private var showOptionsFor: String? = nil
 
@@ -278,7 +280,7 @@ struct SystemCoresView: View {
                         Image(systemName: "cpu")
                             .font(.system(size: 32))
                             .foregroundColor(.secondary)
-                        Text("No cores available for this system.")
+                        Text(loc.localized("cores.noCoresAvailable"))
                             .foregroundColor(.secondary)
                             .multilineTextAlignment(.center)
                     }
@@ -330,10 +332,11 @@ struct InstalledCoresSection: View {
     @Binding var expandedCoreID: String?
     @Binding var showOptionsFor: String?
     @ObservedObject var coreManager: CoreManager
+    @ObservedObject private var loc = LocalizationManager.shared
     
     var body: some View {
         VStack(alignment: .leading, spacing: 8) {
-            Text("INSTALLED")
+            Text(loc.localized("cores.installed"))
                 .font(.caption2)
                 .fontWeight(.semibold)
                 .foregroundColor(.secondary)
@@ -372,10 +375,11 @@ struct InstalledCoresSection: View {
 struct DownloadableCoresSection: View {
     let cores: [RemoteCoreInfo]
     @ObservedObject var coreManager: CoreManager
+    @ObservedObject private var loc = LocalizationManager.shared
     
     var body: some View {
         VStack(alignment: .leading, spacing: 8) {
-            Text("AVAILABLE FOR DOWNLOAD")
+            Text(loc.localized("cores.availableForDownload"))
                 .font(.caption2)
                 .fontWeight(.semibold)
                 .foregroundColor(.secondary)
@@ -402,6 +406,7 @@ struct InstalledCoreRowView: View {
     let onShowOptions: () -> Void
     let onDelete: () -> Void
     let coreManager: CoreManager
+    @ObservedObject private var loc = LocalizationManager.shared
     
     @State private var showDeleteConfirmation = false
     
@@ -434,7 +439,7 @@ struct InstalledCoreRowView: View {
                         HStack(spacing: 4) {
                             Image(systemName: "checkmark.circle.fill")
                                 .foregroundColor(.green)
-                            Text("Installed")
+                            Text(loc.localized("cores.installedLabel"))
                                 .font(.caption)
                                 .foregroundColor(.secondary)
                         }
@@ -463,14 +468,14 @@ struct InstalledCoreRowView: View {
                     .foregroundColor(.red.opacity(0.6))
                     .symbolVariant(.circle)
                     .confirmationDialog(
-                        "Delete Core",
+                        loc.localized("cores.deleteCore"),
                         isPresented: $showDeleteConfirmation,
                         titleVisibility: .visible
                     ) {
-                        Button("Delete", role: .destructive) { onDelete() }
+                        Button(loc.localized("cores.delete"), role: .destructive) { onDelete() }
                         Button("Cancel", role: .cancel) {}
                     } message: {
-                        Text("Delete '\(core.displayName)' and all its versions? This will free up disk space.")
+                        Text(loc.localized("cores.deleteConfirmation").replacingOccurrences(of: "{0}", with: core.displayName))
                     }
                     
                     Image(systemName: isExpanded ? "chevron.down" : "chevron.right")
@@ -489,12 +494,12 @@ struct InstalledCoreRowView: View {
                 Divider()
                 VStack(alignment: .leading, spacing: 8) {
                     HStack {
-                        Text("Installed Versions:")
+                        Text(loc.localized("cores.installedVersions"))
                             .font(.caption)
                             .foregroundColor(.secondary)
                         
                         if !core.installedVersions.isEmpty {
-                            Picker("Version", selection: Binding(
+                            Picker(loc.localized("cores.version"), selection: Binding(
                                 get: { core.activeVersionTag ?? core.installedVersions.last?.tag ?? "" },
                                 set: { tag in
                                     coreManager.setActiveVersion(coreID: core.id, tag: tag)
@@ -542,6 +547,7 @@ struct InstalledCoreRowView: View {
 struct DownloadableCoreRowView: View {
     let remoteCore: RemoteCoreInfo
     @ObservedObject var coreManager: CoreManager
+    @ObservedObject private var loc = LocalizationManager.shared
     
     var body: some View {
         HStack(spacing: 12) {
@@ -571,7 +577,7 @@ struct DownloadableCoreRowView: View {
                     ProgressView(value: Double(inst.downloadProgress) / 100.0)
                         .frame(width: 100)
                         .tint(.orange)
-                    Text("Downloading...")
+                    Text(loc.localized("cores.downloading"))
                         .font(.caption2)
                         .foregroundColor(.secondary)
                 }
@@ -579,7 +585,7 @@ struct DownloadableCoreRowView: View {
                 Image(systemName: "checkmark.circle.fill")
                     .foregroundColor(.green)
       } else {
-        Button("Download") {
+        Button(loc.localized("cores.download")) {
           Task {
             await coreManager.downloadCore(remoteCore)
           }

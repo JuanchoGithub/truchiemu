@@ -2,6 +2,7 @@ import SwiftUI
 
 struct ShaderGameOverrideView: View {
 @Environment(\.dismiss) private var dismiss
+@ObservedObject private var loc = LocalizationManager.shared
 
 let systemID: String
 let newShaderPresetID: String
@@ -20,23 +21,23 @@ self._selectedGameIDs = State(initialValue: Set(games.map { $0.id }))
 
     var body: some View {
         VStack(spacing: 16) {
-            Text("Override Game Shaders")
+            Text(loc.localized("gameOverride.title"))
                 .font(.headline)
 
             HStack(spacing: 12) {
-                Button("Select All") {
+                Button(loc.localized("gameOverride.selectAll")) {
                     selectedGameIDs = Set(games.map { $0.id })
                 }
                 .controlSize(.small)
 
-                Button("Deselect All") {
+                Button(loc.localized("gameOverride.deselectAll")) {
                     selectedGameIDs = []
                 }
                 .controlSize(.small)
 
                 Spacer()
 
-                Text("\(games.count) game\(games.count == 1 ? "" : "s") with custom shaders")
+                Text(loc.localized("gameOverride.gamesWithCustomShaders"))
                     .font(.caption)
                     .foregroundColor(.secondary)
             }
@@ -45,7 +46,7 @@ self._selectedGameIDs = State(initialValue: Set(games.map { $0.id }))
 
             if games.isEmpty {
                 Spacer()
-                Text("No games have custom shaders")
+                Text(loc.localized("gameOverride.noGamesHaveCustomShaders"))
                     .foregroundColor(.secondary)
                 Spacer()
 } else {
@@ -82,14 +83,14 @@ Text(game.displayName)
             Divider()
 
             HStack {
-                Button("Cancel") {
+                Button(loc.localized("gameOverride.cancel")) {
                     dismiss()
                 }
                 .controlSize(.regular)
 
                 Spacer()
 
-                Button("Update \(selectedGameIDs.count) Game\(selectedGameIDs.count == 1 ? "" : "s")") {
+                Button(loc.localized("gameOverride.updateGames")) {
                     onApply(selectedGameIDs)
                     dismiss()
                 }
@@ -105,7 +106,7 @@ Text(game.displayName)
     private func currentShaderName(for game: ROM) -> String {
         let shaderID = game.settings.shaderPresetID
         if shaderID.isEmpty {
-            return "System Default"
+            return loc.localized("gameOverride.systemDefault")
         }
         return ShaderManager.displayName(for: shaderID)
     }

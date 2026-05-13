@@ -7,6 +7,7 @@ struct GenrePickerView: View {
 
     @State private var searchText: String = ""
     @Environment(\.colorScheme) private var colorScheme
+    @ObservedObject private var loc = LocalizationManager.shared
 
     private var filteredGenres: [String] {
         if searchText.isEmpty {
@@ -31,7 +32,7 @@ struct GenrePickerView: View {
             Image(systemName: "magnifyingglass")
                 .font(.caption)
                 .foregroundColor(.secondary)
-            TextField("Search genres...", text: $searchText)
+            TextField(loc.localized("genre.searchPlaceholder"), text: $searchText)
                 .textFieldStyle(.plain)
                 .font(.caption)
         }

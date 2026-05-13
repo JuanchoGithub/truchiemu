@@ -8,6 +8,7 @@ struct MetadataRow: View {
     var useNameAction: (() -> Void)? = nil
 
     @Environment(\.colorScheme) private var colorScheme
+    @ObservedObject private var loc = LocalizationManager.shared
 
     var body: some View {
         HStack(alignment: .top, spacing: 16) {
@@ -34,7 +35,7 @@ struct MetadataRow: View {
                             .font(.caption)
                     }
                     .buttonStyle(.plain)
-                    .help("Use as game title")
+                    .help(loc.localized("metadata.useAsGameTitle"))
                 }
 
                 if let copyAction = copyAction {
@@ -44,7 +45,7 @@ struct MetadataRow: View {
                             .font(.caption)
                     }
                     .buttonStyle(.plain)
-                    .help("Copy")
+                    .help(loc.localized("metadata.copy"))
                 }
             }
         }

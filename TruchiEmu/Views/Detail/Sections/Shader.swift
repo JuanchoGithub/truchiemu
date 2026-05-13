@@ -4,14 +4,14 @@ import SwiftData
 extension GameDetailView {
     var shaderSection: some View {
         ModernSectionCard(
-            title: "Shader",
+            title: loc.localized("gameDetail.shader"),
             icon: "tv",
-            badge: isShaderCustomized ? "Custom" : nil
+            badge: isShaderCustomized ? loc.localized("shader.custom") : nil
         ) {
             VStack(alignment: .leading, spacing: 14) {
                 HStack {
                     VStack(alignment: .leading, spacing: 2) {
-                        Text("Current Shader")
+                        Text(loc.localized("shader.currentShader"))
                             .font(.subheadline)
                             .fontWeight(.medium)
                             .foregroundColor(AppColors.textPrimary(colorScheme))
@@ -20,14 +20,14 @@ extension GameDetailView {
                             .foregroundColor(AppColors.textSecondary(colorScheme))
                     }
                     Spacer()
-                    Button("Customize") { presentShaderWindow() }
+                    Button(loc.localized("shader.customize")) { presentShaderWindow() }
                         .foregroundColor(.white)
                         .padding(.horizontal, 14)
                         .padding(.vertical, 8)
                         .background(Color.accentColor.opacity(0.8))
                         .cornerRadius(8)
 
-                    Button("Live Shader Edit ▶") { presentLiveShaderEdit() }
+                    Button(loc.localized("shader.liveShaderEdit")) { presentLiveShaderEdit() }
                         .foregroundColor(.white)
                         .padding(.horizontal, 14)
                         .padding(.vertical, 8)
@@ -67,11 +67,11 @@ extension GameDetailView {
 
                 HStack {
                     VStack(alignment: .leading, spacing: 2) {
-                        Text("System Default").font(.caption).foregroundColor(AppColors.textSecondary(colorScheme))
-                        Text("Reset to default shader for this system").font(.caption).foregroundColor(AppColors.textMuted(colorScheme))
+                        Text(loc.localized("shader.systemDefault")).font(.caption).foregroundColor(AppColors.textSecondary(colorScheme))
+                        Text(loc.localized("shader.resetToDefault")).font(.caption).foregroundColor(AppColors.textMuted(colorScheme))
                     }
                     Spacer()
-                    Button("Use Default") { updateSettings { $0.shaderPresetID = systemDefaultShaderID } }
+                    Button(loc.localized("shader.useDefault")) { updateSettings { $0.shaderPresetID = systemDefaultShaderID } }
                         .foregroundColor(.white)
                         .padding(.horizontal, 12)
                         .padding(.vertical, 6)

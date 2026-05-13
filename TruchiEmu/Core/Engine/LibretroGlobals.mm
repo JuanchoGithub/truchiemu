@@ -203,35 +203,47 @@ void parseInputDescriptors(const struct retro_input_descriptor *descriptors) {
       };
       [buttons addObject:buttonInfo];
     }
-    // Handle RETRO_DEVICE_ANALOG (analog sticks)
+    // Handle RETRO_DEVICE_ANALOG (analog sticks or digital buttons via ANALOG device)
     else if (desc->device == RETRO_DEVICE_ANALOG) {
-      // Map analog index/id to a unique ID range (16-23)
-      // index 0 = left stick, index 1 = right stick
-      // id 0 = X axis, id 1 = Y axis
-      // We create two entries per axis: positive and negative direction
-      unsigned int analogId = 16 + (desc->index * 4) + (desc->id * 2);
+      // True analog axes use index < 2 && id < 2
+      if (desc->index < 2 && desc->id < 2) {
+        // Map analog index/id to a unique ID range (16-23)
+        // index 0 = left stick, index 1 = right stick
+        // id 0 = X axis, id 1 = Y axis
+        // We create two entries per axis: positive and negative direction
+        unsigned int analogId = 16 + (desc->index * 4) + (desc->id * 2);
 
-      // Positive direction (right/up)
-      NSDictionary *posButtonInfo = @{
-        @"id" : @(analogId),
-        @"description" : desc->description ? [NSString stringWithUTF8String:desc->description] : @"",
-        @"device" : @"analog",
-        @"index" : @(desc->index),
-        @"axis" : @(desc->id),
-        @"direction" : @"positive"
-      };
-      [buttons addObject:posButtonInfo];
+        // Positive direction (right/up)
+        NSDictionary *posButtonInfo = @{
+          @"id" : @(analogId),
+          @"description" : desc->description ? [NSString stringWithUTF8String:desc->description] : @"",
+          @"device" : @"analog",
+          @"index" : @(desc->index),
+          @"axis" : @(desc->id),
+          @"direction" : @"positive"
+        };
+        [buttons addObject:posButtonInfo];
 
-      // Negative direction (left/down)
-      NSDictionary *negButtonInfo = @{
-        @"id" : @(analogId + 1),
-        @"description" : @"",
-        @"device" : @"analog",
-        @"index" : @(desc->index),
-        @"axis" : @(desc->id),
-        @"direction" : @"negative"
-      };
-      [buttons addObject:negButtonInfo];
+        // Negative direction (left/down)
+        NSDictionary *negButtonInfo = @{
+          @"id" : @(analogId + 1),
+          @"description" : @"",
+          @"device" : @"analog",
+          @"index" : @(desc->index),
+          @"axis" : @(desc->id),
+          @"direction" : @"negative"
+        };
+        [buttons addObject:negButtonInfo];
+      } else {
+        // Digital buttons queried through ANALOG device type (Mupen64Plus-Next, etc.)
+        // Store as JOYPAD descriptors using original IDs so convertToRetroButtons maps correctly
+        NSDictionary *buttonInfo = @{
+          @"id" : @(desc->id),
+          @"description" : desc->description ? [NSString stringWithUTF8String:desc->description] : @"",
+          @"device" : @"joypad"
+        };
+        [buttons addObject:buttonInfo];
+      }
     }
     desc++;
   }

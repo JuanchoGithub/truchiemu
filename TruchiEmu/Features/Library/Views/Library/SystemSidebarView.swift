@@ -5,6 +5,7 @@ struct SystemSidebarView: View {
     @EnvironmentObject var categoryManager: CategoryManager
     @EnvironmentObject var coreManager: CoreManager
     @Environment(SystemDatabaseWrapper.self) private var systemDatabase
+    @ObservedObject private var loc = LocalizationManager.shared
     @Binding var selectedFilter: LibraryFilter
     @Binding var showCreateCategorySheet: Bool
     @Binding var editingCategory: GameCategory?
@@ -38,19 +39,19 @@ struct SystemSidebarView: View {
     var body: some View {
         List(selection: $selectedFilter) {
             // All games
-            sidebarRow(icon: "square.grid.2x2", label: "All Games", count: library.romCounts["all"] ?? 0, filter: .all)
+            sidebarRow(icon: "square.grid.2x2", label: loc.localized("app.allGames"), count: library.romCounts["all"] ?? 0, filter: .all)
                 .tag(LibraryFilter.all)
 
             // Favorites
             let favCount = library.romCounts["favorites"] ?? 0
             if favCount > 0 {
-                sidebarRow(icon: "heart.fill", label: "Favorites", count: favCount, tint: .pink, filter: .favorites)
+                sidebarRow(icon: "heart.fill", label: loc.localized("app.favorites"), count: favCount, tint: .pink, filter: .favorites)
                     .tag(LibraryFilter.favorites)
             }
 
             // Recently played
             let recentCount = library.romCounts["recent"] ?? 0
-            sidebarRow(icon: "clock.fill", label: "Recent", count: recentCount, tint: .orange, filter: .recent)
+            sidebarRow(icon: "clock.fill", label: loc.localized("app.recent"), count: recentCount, tint: .orange, filter: .recent)
                  .tag(LibraryFilter.recent)
             
             // Categories section — tap title row to expand/collapse; "New Category" on header hover
@@ -72,7 +73,7 @@ struct SystemSidebarView: View {
                                 .font(.caption.weight(.semibold))
                                 .foregroundStyle(.secondary)
                                 .frame(width: 12, alignment: .center)
-                            Text("Categories")
+                            Text(loc.localized("app.categories"))
                             Spacer(minLength: 0)
                         }
                         .frame(maxWidth: .infinity, alignment: .leading)
@@ -88,7 +89,7 @@ struct SystemSidebarView: View {
                             HStack(spacing: 4) {
                                 Image(systemName: "plus.circle")
                                     .foregroundStyle(.secondary)
-                                Text("New Category")
+                                Text(loc.localized("app.newCategory"))
                                     .lineLimit(1)
                             }
                             .font(.caption)
@@ -129,7 +130,7 @@ struct SystemSidebarView: View {
                                 .font(.caption.weight(.semibold))
                                 .foregroundStyle(.secondary)
                                 .frame(width: 12, alignment: .center)
-                            Text("Systems")
+                            Text(loc.localized("app.systems"))
                             Spacer(minLength: 0)
                         }
                         .frame(maxWidth: .infinity, alignment: .leading)
@@ -145,8 +146,8 @@ struct SystemSidebarView: View {
             let hiddenCount = library.romCounts["hidden"] ?? 0
             let showHiddenCategory = AppSettings.getBool("showHiddenGamesCategory", defaultValue: true)
             if hiddenCount > 0 && showHiddenCategory {
-                Section("Hidden Games") {
-                    sidebarRow(icon: "eye.slash", label: "Hidden", count: hiddenCount, tint: .gray, filter: .hidden)
+                Section(loc.localized("app.hiddenGames")) {
+                    sidebarRow(icon: "eye.slash", label: loc.localized("app.hidden"), count: hiddenCount, tint: .gray, filter: .hidden)
                         .tag(LibraryFilter.hidden)
                 }
             }
@@ -156,8 +157,8 @@ struct SystemSidebarView: View {
             let mameNonGamesCount = library.romCounts["mameNonGames"] ?? 0
             let showHiddenMAME = SystemPreferences.shared.showHiddenMAMEFiles
             if mameNonGamesCount > 0 && showHiddenMAME {
-                Section("MAME Files") {
-                    sidebarRow(icon: "doc.badge.gearshape", label: "Hidden MAME Files", count: mameNonGamesCount, tint: .gray, filter: .mameNonGames)
+                Section(loc.localized("app.mameFiles")) {
+                    sidebarRow(icon: "doc.badge.gearshape", label: loc.localized("app.hiddenMAMEFiles"), count: mameNonGamesCount, tint: .gray, filter: .mameNonGames)
                         .tag(LibraryFilter.mameNonGames)
                 }
             }
@@ -166,7 +167,7 @@ struct SystemSidebarView: View {
         .scrollContentBackground(.hidden)
         .background(.ultraThinMaterial)
         .frame(minWidth: 220, idealWidth: 240)
-        .navigationTitle("Library")
+        .navigationTitle(loc.localized("app.library"))
     }
 
     @ViewBuilder
@@ -238,6 +239,7 @@ struct SystemSidebarView: View {
 struct CreateCategorySheet: View {
     @Environment(\.dismiss) private var dismiss
     @EnvironmentObject var categoryManager: CategoryManager
+    @ObservedObject private var loc = LocalizationManager.shared
     
     @State private var name: String = ""
     @State private var selectedIcon: String = "folder.fill"
@@ -246,11 +248,11 @@ struct CreateCategorySheet: View {
     var body: some View {
         NavigationStack {
             Form {
-                Section("Category Name") {
-                    TextField("Name", text: $name)
+                Section(loc.localized("app.categoryName")) {
+                    TextField(loc.localized("app.name"), text: $name)
                 }
                 
-                Section("Icon") {
+                Section(loc.localized("app.icon")) {
                     LazyVGrid(columns: Array(repeating: GridItem(.flexible()), count: 6), spacing: 12) {
                         ForEach(GameCategory.commonIcons, id: \.self) { icon in
                             Button {
@@ -266,7 +268,7 @@ struct CreateCategorySheet: View {
                     }
                 }
                 
-                Section("Color") {
+                Section(loc.localized("app.color")) {
                     LazyVGrid(columns: Array(repeating: GridItem(.flexible()), count: 7), spacing: 12) {
                         ForEach(GameCategory.colorPalette, id: \.hex) { color in
                             Button {
@@ -285,7 +287,7 @@ struct CreateCategorySheet: View {
                     }
                 }
                 
-                Section("Preview") {
+                Section(loc.localized("app.preview")) {
                     HStack {
                         Image(systemName: selectedIcon)
                             .font(.title2)
@@ -295,13 +297,13 @@ struct CreateCategorySheet: View {
                 }
             }
             .formStyle(.grouped)
-            .navigationTitle("New Category")
+            .navigationTitle(loc.localized("app.newCategory"))
             .toolbar {
                 ToolbarItem(placement: .cancellationAction) {
-                    Button("Cancel") { dismiss() }
+                    Button(loc.localized("app.cancel")) { dismiss() }
                 }
                 ToolbarItem(placement: .confirmationAction) {
-                    Button("Create") {
+                    Button(loc.localized("app.create")) {
                         categoryManager.addCategory(name: name, iconName: selectedIcon, colorHex: selectedColor)
                         dismiss()
                     }
@@ -316,6 +318,7 @@ struct CreateCategorySheet: View {
 struct EditCategorySheet: View {
     @Environment(\.dismiss) private var dismiss
     @EnvironmentObject var categoryManager: CategoryManager
+    @ObservedObject private var loc = LocalizationManager.shared
     @State var category: GameCategory
     
     // Use separate state variables for selection tracking
@@ -325,11 +328,11 @@ struct EditCategorySheet: View {
     var body: some View {
         NavigationStack {
             Form {
-                Section("Category Name") {
-                    TextField("Name", text: $category.name)
+                Section(loc.localized("app.categoryName")) {
+                    TextField(loc.localized("app.name"), text: $category.name)
                 }
                 
-                Section("Icon") {
+                Section(loc.localized("app.icon")) {
                     LazyVGrid(columns: Array(repeating: GridItem(.flexible()), count: 6), spacing: 12) {
                         ForEach(GameCategory.commonIcons, id: \.self) { icon in
                             Button {
@@ -346,7 +349,7 @@ struct EditCategorySheet: View {
                     }
                 }
                 
-                Section("Color") {
+                Section(loc.localized("app.color")) {
                     LazyVGrid(columns: Array(repeating: GridItem(.flexible()), count: 7), spacing: 12) {
                         ForEach(GameCategory.colorPalette, id: \.hex) { color in
                             Button {
@@ -366,7 +369,7 @@ struct EditCategorySheet: View {
                     }
                 }
                 
-                Section("Preview") {
+                Section(loc.localized("app.preview")) {
                     HStack {
                         Image(systemName: selectedIcon)
                             .font(.title2)
@@ -376,13 +379,13 @@ struct EditCategorySheet: View {
                 }
             }
             .formStyle(.grouped)
-            .navigationTitle("Edit Category")
+            .navigationTitle(loc.localized("app.editCategory"))
             .toolbar {
                 ToolbarItem(placement: .cancellationAction) {
-                    Button("Cancel") { dismiss() }
+                    Button(loc.localized("app.cancel")) { dismiss() }
                 }
                 ToolbarItem(placement: .confirmationAction) {
-                    Button("Save") {
+                    Button(loc.localized("app.save")) {
                         categoryManager.updateCategory(category)
                         dismiss()
                     }
@@ -402,27 +405,28 @@ struct EditCategorySheet: View {
 
 struct RenameSystemSheet: View {
     @Environment(\.dismiss) private var dismiss
-    @Environment(SystemDatabaseWrapper.self) private var systemDatabase
-    let system: SystemInfo
+    @ObservedObject private var loc = LocalizationManager.shared
+    var system: SystemInfo
+    var onRename: (String) -> Void
     
     @State private var displayName: String = ""
     
     var body: some View {
         NavigationStack {
             Form {
-                Section("Display Name") {
-                    TextField("Name", text: $displayName)
+                Section(loc.localized("app.displayName")) {
+                    TextField(loc.localized("app.name"), text: $displayName)
                 }
                 
                 Section {
                     HStack {
-                        Text("Original:")
+                        Text(loc.localized("app.original"))
                             .foregroundStyle(.secondary)
                         Text(system.name)
                     }
                 }
                 
-                Section("Preview") {
+                Section(loc.localized("app.preview")) {
                     HStack {
                         Image(systemName: system.iconName)
                             .foregroundStyle(Color.accentColor)
@@ -431,13 +435,13 @@ struct RenameSystemSheet: View {
                 }
             }
             .formStyle(.grouped)
-            .navigationTitle("Rename System")
+            .navigationTitle(loc.localized("app.renameSystem"))
             .toolbar {
                 ToolbarItem(placement: .cancellationAction) {
-                    Button("Cancel") { dismiss() }
+                    Button(loc.localized("app.cancel")) { dismiss() }
                 }
                 ToolbarItem(placement: .confirmationAction) {
-                    Button("Save") {
+                    Button(loc.localized("app.save")) {
                         saveRename()
                         dismiss()
                     }

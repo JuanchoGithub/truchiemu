@@ -3,7 +3,7 @@ import SwiftUI
 extension GameDetailView {
     var savedStatesSection: some View {
         ModernSectionCard(
-            title: "Saved States",
+            title: loc.localized("savedStates.title"),
             icon: "externaldrive",
             badge: slotInfoList.filter { $0.exists && $0.id >= 0 }.isEmpty ? nil : "\(slotInfoList.filter { $0.exists && $0.id >= 0 }.count)"
         ) {
@@ -15,8 +15,8 @@ extension GameDetailView {
                 if showSlots.isEmpty {
                     VStack(spacing: 8) {
                         Image(systemName: "externaldrive.slash").font(.system(size: 30)).foregroundColor(AppColors.textMuted(colorScheme))
-                        Text("No saved states").font(.subheadline).foregroundColor(AppColors.textSecondary(colorScheme))
-                        Text("Save states created during gameplay").font(.caption).foregroundColor(AppColors.textMuted(colorScheme))
+                        Text(loc.localized("savedStates.noSavedStates")).font(.subheadline).foregroundColor(AppColors.textSecondary(colorScheme))
+                        Text(loc.localized("savedStates.savedStatesCreatedDuringGameplay")).font(.caption).foregroundColor(AppColors.textMuted(colorScheme))
                     }
                     .frame(maxWidth: .infinity)
                     .padding(.vertical, 16)
@@ -40,7 +40,7 @@ extension GameDetailView {
                 if !existingSlots.isEmpty {
                     Divider().overlay(AppColors.divider(colorScheme))
                     HStack {
-                        Text("\(existingSlots.count) save state(s)").font(.caption).foregroundColor(AppColors.textSecondary(colorScheme))
+                        Text("\(existingSlots.count) \(loc.localized("savedStates.saveStateCount"))").font(.caption).foregroundColor(AppColors.textSecondary(colorScheme))
                         Spacer()
                         let totalSize = existingSlots.reduce(0) { $0 + ($1.fileSize ?? 0) }
                         if totalSize > 0 {

@@ -42,6 +42,8 @@ struct GameDetailView: View {
     @State var localTitle: String = ""
     @State var gameDescription: String? = nil
 
+    @ObservedObject var loc = LocalizationManager.shared
+
     @State var fetchMetadataStatus: ManualActionStatus = .hidden
     @State var fetchMetadataAutoDismiss: Task<Void, Never>?
     @State var fetchBoxArtStatus: ManualActionStatus = .hidden
@@ -203,6 +205,10 @@ struct GameDetailView: View {
                 loadAchievements()
             }
         }
+        .onChange(of: currentROM.lastPlayed) { _, _ in
+            // Refresh slot info when user returns from playing the game
+            loadSlotInfo()
+        }
         .task(id: currentROM.id) {
             if currentROM.systemID == "mame" || currentROM.systemID == "arcade" {
                 await MAMEUnifiedService.shared.ensureLoaded()
@@ -287,7 +293,7 @@ struct GameDetailView: View {
                         .font(.system(size: 15, weight: .medium))
                         .frame(width: 20, height: 20)
                         .foregroundColor(isSelected ? .accentColor : AppColors.textSecondary(colorScheme))
-                    Text(section.rawValue)
+                    Text(section.localizedTitle)
                         .lineLimit(1)
                         .foregroundColor(isSelected ? AppColors.textPrimary(colorScheme) : AppColors.textSecondary(colorScheme))
                         .fontWeight(isSelected ? .medium : .regular)

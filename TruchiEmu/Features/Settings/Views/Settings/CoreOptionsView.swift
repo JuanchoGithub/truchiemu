@@ -5,6 +5,7 @@ import Combine
 @MainActor
 class CoreOptionsViewModel: ObservableObject {
     private let manager = CoreOptionsManager.shared
+    @ObservedObject private var loc = LocalizationManager.shared
     
     @Published var currentCoreID: String
     @Published var isSystemMode: Bool = false
@@ -195,7 +196,7 @@ class CoreOptionsViewModel: ObservableObject {
     }
 
     func categoryDisplayName(for key: String) -> String {
-        key.isEmpty ? "General" : (categories[key]?.description ?? key)
+        key.isEmpty ? loc.localized("coreOptions.general") : (categories[key]?.description ?? key)
     }
 
     func optionKeysInCategory(_ categoryKey: String) -> [String] {
@@ -246,6 +247,7 @@ struct CoreOptionsView: View {
     @StateObject private var viewModel: CoreOptionsViewModel
     @Environment(\.dismiss) private var dismiss
     @EnvironmentObject var library: ROMLibrary
+    @ObservedObject private var loc = LocalizationManager.shared
 
     init(coreID: String) {
         self.initialID = coreID
@@ -260,7 +262,7 @@ struct CoreOptionsView: View {
                 if viewModel.isLoading {
                     VStack(spacing: 16) {
                         ProgressView().controlSize(.large)
-                        Text("Loading core settings...").foregroundColor(.secondary)
+                        Text(loc.localized("coreOptions.loading")).foregroundColor(.secondary)
                     }
                     .transition(.opacity)
                 } else if viewModel.options.isEmpty {
@@ -269,7 +271,7 @@ struct CoreOptionsView: View {
                     ScrollView {
                         VStack(spacing: 24) {
                             if viewModel.isSystemMode {
-                                Picker("Core", selection: $viewModel.currentCoreID) {
+                                Picker(loc.localized("coreOptions.core"), selection: $viewModel.currentCoreID) {
                                     ForEach(viewModel.availableCores, id: \.id) { core in
                                         Text(core.name).tag(core.id)
                                     }
@@ -294,7 +296,7 @@ struct CoreOptionsView: View {
                                 Button(action: {
                                     Task { await viewModel.discoverOptions(for: viewModel.currentCoreID, library: library) }
                                 }) {
-                                    Label("Rediscover from Core", systemImage: "arrow.triangle.2.circlepath")
+                                    Label(loc.localized("coreOptions.rediscoverFromCore"), systemImage: "arrow.triangle.2.circlepath")
                                 }
                                 .buttonStyle(.link)
                                 
@@ -306,9 +308,9 @@ struct CoreOptionsView: View {
                     }
                 }
              }
-             .animation(.easeInOut, value: viewModel.isLoading)
-             .navigationTitle(viewModel.isSystemMode ? "Options: \(SystemDatabase.system(forID: viewModel.systemID ?? "")?.name ?? "")" : "Options: \(viewModel.currentCoreID)")
-             .searchable(text: $viewModel.searchText, prompt: "Search options...")
+              .animation(.easeInOut, value: viewModel.isLoading)
+              .navigationTitle(viewModel.isSystemMode ? "\(loc.localized("coreOptions.options")) \(SystemDatabase.system(forID: viewModel.systemID ?? "")?.name ?? "")" : "\(loc.localized("coreOptions.options")) \(viewModel.currentCoreID)")
+              .searchable(text: $viewModel.searchText, prompt: loc.localized("coreOptions.searchOptions"))
              .toolbar {
                  ToolbarItem(placement: .primaryAction) {
                      Button {
@@ -364,6 +366,7 @@ struct CategorySection: View {
 
 struct CoreOptionRow: View {
     @ObservedObject var viewModel: CoreOptionsViewModel
+    @ObservedObject private var loc = LocalizationManager.shared
     let versionedKey: String
     @State private var selectedValue: String
 
@@ -404,9 +407,9 @@ struct CoreOptionRow: View {
                 if option.isModified {
                     HStack {
                         Image(systemName: "circle.fill").font(.system(size: 6)).foregroundColor(.orange)
-                        Text("Modified from default").font(.system(size: 10)).foregroundColor(.orange)
+                        Text(loc.localized("coreOptions.modifiedFromDefault")).font(.system(size: 10)).foregroundColor(.orange)
                         Spacer()
-                        Button("Restore Default") {
+                        Button(loc.localized("coreOptions.restoreDefault")) {
                             selectedValue = option.defaultValue
                             viewModel.updateValue(option.defaultValue, for: option.key)
                         }
@@ -455,11 +458,12 @@ struct ControlPicker: View {
 
 struct ResetFooter: View {
     @ObservedObject var viewModel: CoreOptionsViewModel
+    @ObservedObject private var loc = LocalizationManager.shared
     var body: some View {
         VStack(spacing: 8) {
-            Button("Reset All to Defaults") { viewModel.resetAll() }
+            Button(loc.localized("coreOptions.resetAllToDefaults")) { viewModel.resetAll() }
                 .buttonStyle(.bordered)
-            Text("Changes will take effect on next launch.").font(.caption2).foregroundColor(.secondary)
+            Text(loc.localized("coreOptions.effectiveOnNextLaunch")).font(.caption2).foregroundColor(.secondary)
         }
     }
 }
@@ -468,14 +472,15 @@ struct EmptyStateView: View {
     let coreID: String
     @ObservedObject var viewModel: CoreOptionsViewModel
     @EnvironmentObject var library: ROMLibrary
+    @ObservedObject private var loc = LocalizationManager.shared
     
     var body: some View {
         ContentUnavailableView {
-            Label("No Settings Found", systemImage: "gearshape.2")
+            Label(loc.localized("coreOptions.noSettingsFound"), systemImage: "gearshape.2")
         } description: {
-            Text("Launch a game with \(coreID) to generate settings, or try discovering them now.")
+            Text(loc.localized("coreOptions.noSettingsDescription"))
         } actions: {
-            Button("Rediscover from Core") {
+            Button(loc.localized("coreOptions.rediscoverFromCore")) {
                 Task { await viewModel.discoverOptions(for: coreID, library: library) }
             }
             .buttonStyle(.borderedProminent)

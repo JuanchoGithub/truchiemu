@@ -1,18 +1,15 @@
 import SwiftUI
 
-// MARK: - Bezel Download Log View
-
-// Shows a scrollable log of bezel download entries with success/error status
 struct BezelDownloadLogView: View {
     let logEntries: [BezelDownloadLogEntry]
     @State private var lastCount: Int = 0
     @State private var showDetails = false
+    @ObservedObject private var loc = LocalizationManager.shared
     
     var body: some View {
         VStack(alignment: .leading, spacing: 4) {
-            // Header with stats
             HStack {
-                Label("Download History", systemImage: "list.bullet")
+                Label(loc.localized("bezel.downloadHistory"), systemImage: "list.bullet")
                     .font(.caption)
                     .fontWeight(.medium)
                     .foregroundColor(.secondary)
@@ -67,7 +64,7 @@ struct BezelDownloadLogView: View {
                 }
             } label: {
                 Label(
-                    showDetails ? "Hide Details" : "Show Details",
+                    showDetails ? loc.localized("bezel.hideDetails") : loc.localized("bezel.showDetails"),
                     systemImage: showDetails ? "chevron.up" : "chevron.down"
                 )
                 .font(.caption2)

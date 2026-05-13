@@ -7,6 +7,7 @@ struct CheatSettingsView: View {
     @StateObject private var cheatManager = CheatManagerService.shared
     @ObservedObject var prefs = SystemPreferences.shared
     @Environment(SystemDatabaseWrapper.self) private var systemDatabase
+    @ObservedObject private var loc = LocalizationManager.shared
     
     @State private var downloadResult: String?
     @State private var showClearConfirmation = false
@@ -49,21 +50,21 @@ struct CheatSettingsView: View {
                     HStack(spacing: 20) {
                         statTile(
                             value: "\(downloadService.getDownloadedCheatCount())",
-                            label: "Files",
+                            label: loc.localized("cheats.files"),
                             icon: "doc.on.doc.fill",
                             color: .blue
                         )
                         Divider().frame(height: 40)
                         statTile(
                             value: formatByteSize(downloadService.getDownloadedCheatSize()),
-                            label: "Storage",
+                            label: loc.localized("cheats.storage"),
                             icon: "internaldrive.fill",
                             color: .purple
                         )
                         Divider().frame(height: 40)
                         statTile(
                             value: AppSettings.getData("cheats_v2") != nil ? "Active" : "None",
-                            label: "Custom",
+                            label: loc.localized("cheats.custom"),
                             icon: "wand.and.stars",
                             color: .orange
                         )
@@ -71,7 +72,7 @@ struct CheatSettingsView: View {
                     .padding(.vertical, 8)
                     .frame(maxWidth: .infinity)
                 } header: {
-                    Text("Cheat Library Summary")
+                    Text(loc.localized("cheats.librarySummary"))
                 }
             }
 
@@ -80,7 +81,7 @@ struct CheatSettingsView: View {
                 Section {
                     VStack(alignment: .leading, spacing: 12) {
                         if let lastDate = downloadService.lastDownloadDate {
-                            LabeledContent("Last Updated") {
+                            LabeledContent(loc.localized("cheats.lastUpdated")) {
                                 Text(lastDate.formatted(date: .abbreviated, time: .shortened))
                                     .font(.system(.caption, design: .monospaced))
                                     .foregroundStyle(.secondary)
@@ -94,19 +95,19 @@ struct CheatSettingsView: View {
                         }
                     }
                 } header: {
-                    Label("Online Database", systemImage: "network")
+                    Label(loc.localized("cheats.onlineDatabase"), systemImage: "network")
                 } footer: {
-                    Text("Downloads cheat files from the Libretro-Database repository. Files are automatically organized by system core.")
+                    Text(loc.localized("cheats.onlineDatabaseDescription"))
                 }
             }
 
             // MARK: - Preferences Section
             if !isSearching || matchesSearch("Apply Cheats on Launch Behavior notifications") {
-                Section("Behavior") {
+                Section(loc.localized("cheats.behavior")) {
                     Toggle(isOn: $prefs.applyCheatsOnLaunch) {
                         VStack(alignment: .leading, spacing: 2) {
-                            Text("Apply Cheats on Launch")
-                            Text("Automatically apply enabled cheats when starting a game")
+                            Text(loc.localized("cheats.applyOnLaunch"))
+                            Text(loc.localized("cheats.applyOnLaunchDescription"))
                                 .font(.caption)
                                 .foregroundStyle(.secondary)
                         }
@@ -117,8 +118,8 @@ struct CheatSettingsView: View {
                     
                     Toggle(isOn: $prefs.showCheatNotifications) {
                         VStack(alignment: .leading, spacing: 2) {
-                            Text("Cheat Notifications")
-                            Text("Show OSD notifications when cheats are activated")
+                            Text(loc.localized("cheats.notifications"))
+                            Text(loc.localized("cheats.notificationsDescription"))
                                 .font(.caption)
                                 .foregroundStyle(.secondary)
                         }
@@ -131,15 +132,15 @@ struct CheatSettingsView: View {
 
             // MARK: - Maintenance Section
             if !isSearching || matchesSearch("Actions Show in Finder Clear Downloaded Cheats") {
-                Section("Actions") {
+                Section(loc.localized("cheats.actions")) {
                     Button(action: openCheatDirectory) {
-                        Label("Show in Finder", systemImage: "folder")
+                        Label(loc.localized("cheats.showInFinder"), systemImage: "folder")
                     }
                     
                     Button(role: .destructive) {
                         showClearConfirmation = true
                     } label: {
-                        Label("Clear Downloaded Cheats", systemImage: "trash")
+                        Label(loc.localized("cheats.clearDownloadedCheats"), systemImage: "trash")
                             .foregroundStyle(.red)
                     }
                 }
@@ -154,10 +155,10 @@ struct CheatSettingsView: View {
                             Image(systemName: "magnifyingglass")
                                 .font(.largeTitle)
                                 .foregroundStyle(.secondary)
-                            Text("No results")
+                            Text(loc.localized("cheats.noResults"))
                                 .font(.headline)
                                 .foregroundStyle(.secondary)
-                            Text("Try a different search term")
+                            Text(loc.localized("cheats.tryDifferentSearch"))
                                 .font(.caption)
                                 .foregroundStyle(.tertiary)
                         }
@@ -168,13 +169,13 @@ struct CheatSettingsView: View {
             }
         }
         .formStyle(.grouped)
-        .navigationTitle("Cheats")
+        .navigationTitle(loc.localized("cheats.title"))
         .confirmationDialog(
-            "Clear Downloaded Cheats",
+            loc.localized("cheats.clearDownloadedCheats"),
             isPresented: $showClearConfirmation,
             titleVisibility: .visible
         ) {
-            Button("Clear All", role: .destructive) {
+            Button(loc.localized("cheats.clearAll"), role: .destructive) {
                 do {
                     try downloadService.clearDownloadedCheats()
                 } catch {
@@ -182,7 +183,7 @@ struct CheatSettingsView: View {
                 }
             }
         } message: {
-            Text("This will remove all downloaded cheat files. Your custom cheats will not be affected.")
+            Text(loc.localized("cheats.clearConfirmation"))
         }
         .overlay(alignment: .bottom) {
             if let result = downloadResult {
@@ -247,7 +248,7 @@ struct CheatSettingsView: View {
                     handleResult(result)
                 }
             } label: {
-                Label("Download All", systemImage: "arrow.down.circle")
+                Label(loc.localized("cheats.downloadAll"), systemImage: "arrow.down.circle")
             }
             .buttonStyle(.borderedProminent)
 
@@ -256,7 +257,7 @@ struct CheatSettingsView: View {
                     downloadForSystem(system.id, name: system.name)
                 }
             } else {
-                Menu("Update Specific...") {
+                Menu(loc.localized("cheats.updateSpecific")) {
                     ForEach(systemDatabase.systemsForDisplay.sorted(by: { $0.name < $1.name })) { sys in
                         Button(sys.name) {
                             downloadForSystem(sys.id, name: sys.name)

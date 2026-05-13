@@ -52,16 +52,17 @@ struct ShaderParameterSliders: View {
     let preset: ShaderPreset
     @Binding var uniformValues: [String: Float]
     var onValueCommitted: (([String: Float]) -> Void)?
+    @ObservedObject private var loc = LocalizationManager.shared
 
     var body: some View {
         VStack(alignment: .leading, spacing: 8) {
-             HStack {
-                 Image(systemName: "slider.horizontal.3")
-                     .foregroundColor(.accentColor)
-                 Text("Parameters")
-                     .font(.headline)
-                 Spacer()
-             }
+              HStack {
+                  Image(systemName: "slider.horizontal.3")
+                      .foregroundColor(.accentColor)
+                  Text(loc.localized("shader.parameters"))
+                      .font(.headline)
+                  Spacer()
+              }
 
              Divider()
 
@@ -132,9 +133,9 @@ let selectedValue = currentUniformValue(for: uniform)
                                ShaderManager.shared.updateUniform(uniform.name, value: newValue)
                            }
                        )) {
-                           ForEach(uniform.options ?? [], id: \.value) { option in
-                               Text(option.label).tag(option.value)
-                           }
+                            ForEach(uniform.options ?? [], id: \.value) { option in
+                                Text(option.displayLabel).tag(option.value)
+                            }
                        }
                        .pickerStyle(.menu)
                        .controlSize(.small)
@@ -289,6 +290,7 @@ struct ShaderPresetRowView: View {
     let onSelect: () -> Void
 
     @State private var isHovered = false
+    private var loc: LocalizationManager { LocalizationManager.shared }
 
     var body: some View {
         HStack(spacing: 10) {
@@ -375,6 +377,7 @@ struct SavedPresetRowView: View {
     let onDelete: () -> Void
 
     @State private var isHovered = false
+    private var loc: LocalizationManager { LocalizationManager.shared }
 
     var body: some View {
         HStack(spacing: 10) {
@@ -390,7 +393,7 @@ struct SavedPresetRowView: View {
                     .foregroundColor(isSelected ? .accentColor : .primary)
 
                 if let base = preset.basePreset {
-                    Text("based on \(base.name)")
+                    Text(loc.localized("shader.basedOn") + " \(base.name)")
                         .font(.caption2)
                         .foregroundColor(.secondary)
                         .lineLimit(1)
@@ -425,10 +428,10 @@ struct SavedPresetRowView: View {
         }
         .onTapGesture { onSelect() }
         .contextMenu {
-            Button("Rename", systemImage: "pencil") { onRename() }
-            Button("Export...", systemImage: "square.and.arrow.up") { onExport() }
+            Button(loc.localized("shader.renamePreset"), systemImage: "pencil") { onRename() }
+            Button(loc.localized("shader.exportEllipsis"), systemImage: "square.and.arrow.up") { onExport() }
             Divider()
-            Button("Delete", systemImage: "trash", role: .destructive) { onDelete() }
+            Button(loc.localized("core.delete"), systemImage: "trash", role: .destructive) { onDelete() }
         }
     }
 }
@@ -436,6 +439,7 @@ struct SavedPresetRowView: View {
 // MARK: - Shader Preset Picker View
 struct ShaderPresetPickerView: View {
 @ObservedObject var settings: ShaderWindowSettings
+@ObservedObject private var loc = LocalizationManager.shared
 
 @State private var selectedCategory: CategoryFilter = .all
 @State private var searchText: String = ""
@@ -474,14 +478,14 @@ presetList
                 VStack(spacing: 8) {
                     HStack {
 if case .saved = selectedCategory {
-    Button("Import...", systemImage: "square.and.arrow.down") {
+    Button(loc.localized("shader.import"), systemImage: "square.and.arrow.down") {
         showImportPicker = true
     }
     .buttonStyle(.bordered)
     .controlSize(.small)
 }
                         Spacer()
-Button("Apply") {
+Button(loc.localized("shader.apply")) {
 if let controller = ShaderWindowController.shared {
 controller.onPresetChanged?(settings.shaderPresetID, settings.uniformValues, [])
 controller.close()
@@ -513,7 +517,7 @@ controller.close()
                 if settings.shaderPresetID.isEmpty {
                     VStack {
                         Spacer()
-                        Text("Select a shader to view parameters")
+                        Text(loc.localized("shader.selectShader"))
                             .font(.subheadline)
                             .foregroundColor(.secondary)
                         Spacer()
@@ -543,7 +547,7 @@ controller.close()
                 } else {
                     VStack {
                         Spacer()
-                        Text("No parameters for this shader")
+                        Text(loc.localized("shader.noParameters"))
                             .font(.subheadline)
                             .foregroundColor(.secondary)
                         Spacer()
@@ -591,14 +595,14 @@ controller.close()
         .fileExporter(isPresented: $showExportPicker, document: ShaderExportDocument(preset: presetToExport ?? SavedShaderPreset(name: "shader", basePresetID: "", uniformValues: [:])), contentType: .truchishader, defaultFilename: presetToExport?.name ?? "shader") { result in }
         .sheet(isPresented: $showSaveDialog) {
             VStack(spacing: 16) {
-                Text("Save Shader Preset")
+                Text(loc.localized("shader.saveShaderPreset"))
                     .font(.headline)
-                TextField("Preset name", text: $savePresetName)
+                TextField(loc.localized("shader.presetName"), text: $savePresetName)
                     .textFieldStyle(.roundedBorder)
                     .frame(width: 250)
                 HStack(spacing: 12) {
-                    Button("Cancel") { showSaveDialog = false }
-                    Button("Save") {
+                    Button(loc.localized("shader.cancel")) { showSaveDialog = false }
+                    Button(loc.localized("shader.save")) {
                         let saved = SavedShaderPreset(
                             name: savePresetName,
                             basePresetID: settings.shaderPresetID,
@@ -621,14 +625,14 @@ controller.close()
             set: { if !$0 { renamePreset = nil } }
         )) {
             VStack(spacing: 16) {
-                Text("Rename Preset")
+                Text(loc.localized("shader.renamePreset"))
                     .font(.headline)
-                TextField("New name", text: $renameText)
+                TextField(loc.localized("shader.newName"), text: $renameText)
                     .textFieldStyle(.roundedBorder)
                     .frame(width: 250)
                 HStack(spacing: 12) {
-                    Button("Cancel") { renamePreset = nil }
-                    Button("Rename") {
+                    Button(loc.localized("shader.cancel")) { renamePreset = nil }
+                    Button(loc.localized("shader.rename")) {
                         if let p = renamePreset {
                             ShaderPresetStorageService.shared.rename(preset: p, to: renameText)
                             savedPresets = ShaderPresetStorageService.shared.savedPresets
@@ -649,7 +653,7 @@ controller.close()
     private var currentSelectionHeader: some View {
         HStack {
             VStack(alignment: .leading, spacing: 2) {
-                Text("Active")
+                Text(loc.localized("shader.active"))
                     .font(.caption2)
                     .foregroundColor(.secondary)
                 Text(ShaderManager.displayName(for: settings.shaderPresetID))
@@ -658,7 +662,7 @@ controller.close()
 
             Spacer()
 
-            Button("Reset") {
+            Button(loc.localized("shader.reset")) {
                 settings.shaderPresetID = ShaderPreset.defaultPreset.id
                 settings.uniformValues.removeAll()
                 ShaderManager.shared.resetToDefault()
@@ -676,10 +680,10 @@ controller.close()
         HStack {
             Image(systemName: "magnifyingglass")
                 .foregroundColor(.secondary)
-            TextField("Search shaders...", text: $searchText)
+            TextField("shader.searchShaders", text: $searchText)
                 .textFieldStyle(.plain)
             if !searchText.isEmpty {
-                Button("Clear", systemImage: "xmark.circle.fill") {
+                Button(loc.localized("shader.clear"), systemImage: "xmark.circle.fill") {
                     searchText = ""
                 }
                 .buttonStyle(.plain)
@@ -697,7 +701,7 @@ controller.close()
     private var categoryTabs: some View {
         ScrollView(.horizontal, showsIndicators: false) {
             HStack(spacing: 6) {
-                categoryChip(title: "All", filter: .all, count: ShaderPreset.allPresets.count + savedPresets.count, isActive: selectedCategory == .all)
+                categoryChip(title: loc.localized("shader.all"), filter: .all, count: ShaderPreset.allPresets.count + savedPresets.count, isActive: selectedCategory == .all)
 
                 ForEach(ShaderType.allCases, id: \.self) { type in
                     let count = filteredBuiltinPresets(for: type).count
@@ -706,7 +710,7 @@ controller.close()
                     }
                 }
 
-                categoryChip(title: "Saved", filter: .saved, count: visibleSavedPresets.count, isActive: selectedCategory == .saved)
+                categoryChip(title: loc.localized("shader.saved"), filter: .saved, count: visibleSavedPresets.count, isActive: selectedCategory == .saved)
             }
             .padding(.horizontal, 8)
             .padding(.vertical, 6)
@@ -756,7 +760,7 @@ controller.close()
     private var allPresetsListContent: some View {
         VStack(spacing: 0) {
             if !visibleSavedPresets.isEmpty {
-                sectionHeader("Saved")
+                sectionHeader(loc.localized("shader.saved"))
                 ForEach(visibleSavedPresets, id: \.id) { preset in
                     savedPresetRow(preset: preset)
                 }
@@ -766,13 +770,13 @@ controller.close()
                     Divider()
                         .padding(.vertical, 8)
                 }
-                sectionHeader("Built-in")
+                sectionHeader(loc.localized("shader.builtIn"))
                 ForEach(visibleBuiltinPresets, id: \.id) { preset in
                     presetRow(preset: preset)
                 }
             }
             if visibleSavedPresets.isEmpty && visibleBuiltinPresets.isEmpty {
-                Text("No shaders found")
+                Text(loc.localized("shader.noShadersFound"))
                     .foregroundColor(.secondary)
                     .padding()
             }
@@ -793,7 +797,7 @@ controller.close()
 
         return VStack(spacing: 0) {
             if presets.isEmpty {
-                Text("No shaders found")
+                Text(loc.localized("shader.noShadersFound"))
                     .foregroundColor(.secondary)
                     .padding()
             } else {
@@ -809,15 +813,15 @@ controller.close()
             if visibleSavedPresets.isEmpty {
                 VStack(spacing: 12) {
                     if savedPresets.isEmpty {
-                        Text("No saved presets")
+                        Text(loc.localized("shader.noSavedPresets"))
                             .foregroundColor(.secondary)
-                        Button("Import...", systemImage: "square.and.arrow.down") {
+                        Button(loc.localized("shader.import"), systemImage: "square.and.arrow.down") {
                             showImportPicker = true
                         }
                         .buttonStyle(.bordered)
                         .controlSize(.small)
                     } else {
-                        Text("No matches found")
+                        Text(loc.localized("shader.noMatchesFound"))
                             .foregroundColor(.secondary)
                     }
                 }
@@ -964,7 +968,7 @@ controller.close()
     private var savePresetBar: some View {
         HStack {
             Spacer()
-            Button("Save As...", systemImage: "square.and.arrow.down") {
+            Button(loc.localized("shader.saveAs"), systemImage: "square.and.arrow.down") {
                 savePresetName = ""
                 showSaveDialog = true
             }

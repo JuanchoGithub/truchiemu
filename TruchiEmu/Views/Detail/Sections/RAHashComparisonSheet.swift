@@ -19,6 +19,7 @@ struct RAHashComparisonContent: View {
 
     @Environment(\.dismiss) var dismiss
     @Environment(\.colorScheme) var colorScheme
+    @ObservedObject private var loc = LocalizationManager.shared
     @State private var showCopied = false
     @State private var selectedMatchId: Int?
 
@@ -37,10 +38,10 @@ struct RAHashComparisonContent: View {
                     noMatchView
                 }
             }
-            .navigationTitle("RetroAchievements")
+            .navigationTitle(loc.localized("raHash.title"))
             .toolbar {
                 ToolbarItem(placement: .confirmationAction) {
-                    Button("Done") {
+                    Button(loc.localized("raHash.done")) {
                         dismiss()
                     }
                 }
@@ -52,7 +53,7 @@ struct RAHashComparisonContent: View {
     private var loadingView: some View {
         VStack(spacing: 16) {
             ProgressView()
-            Text("Searching RetroAchievements...")
+            Text(loc.localized("raHash.searching"))
                 .foregroundColor(.secondary)
         }
     }
@@ -74,9 +75,9 @@ struct RAHashComparisonContent: View {
             Image(systemName: "trophy.circle")
                 .font(.system(size: 40))
                 .foregroundColor(.secondary)
-            Text("No game found in RetroAchievements")
+            Text(loc.localized("raHash.noGameFound"))
                 .font(.headline)
-            Text("This game may not be supported by RetroAchievements.")
+            Text(loc.localized("raHash.gameNotSupported"))
                 .foregroundColor(.secondary)
         }
         .padding()
@@ -94,7 +95,7 @@ struct RAHashComparisonContent: View {
                                 NSWorkspace.shared.open(url)
                             }
                         } label: {
-                            Label("View on RetroAchievements", systemImage: "arrow.up.forward.square")
+                            Label(loc.localized("raHash.viewOnRetroAchievements"), systemImage: "arrow.up.forward.square")
                                 .font(.caption)
                         }
                         .buttonStyle(.link)
@@ -107,11 +108,11 @@ struct RAHashComparisonContent: View {
                     HStack {
                         Image(systemName: "checkmark.circle.fill")
                             .foregroundColor(.green)
-                        Text("Hash Match Found!")
+                        Text(loc.localized("raHash.hashMatchFound"))
                             .font(.subheadline)
                             .fontWeight(.semibold)
                     }
-                    Text("Your ROM matches the RetroAchievements version. Achievements can be earned with this ROM.")
+                    Text(loc.localized("raHash.romMatchesRA"))
                         .font(.caption)
                         .foregroundColor(.secondary)
                 }
@@ -122,7 +123,7 @@ struct RAHashComparisonContent: View {
                 Divider()
 
                 VStack(alignment: .leading, spacing: 12) {
-                    Text("Your ROM Hash (MD5)")
+                    Text(loc.localized("raHash.yourRomHash"))
                         .font(.subheadline)
                         .fontWeight(.medium)
 
@@ -143,10 +144,10 @@ struct RAHashComparisonContent: View {
                     HStack {
                         Image(systemName: "exclamationmark.triangle.fill")
                             .foregroundColor(.orange)
-                        Text("No Matching ROM Found")
+                        Text(loc.localized("raHash.noMatchingRomFound"))
                             .font(.headline)
                     }
-                    Text("Your ROM's hash does not match any version in the RetroAchievements database. To earn achievements, you need a different ROM file that matches one of the supported hashes below.")
+                    Text(loc.localized("raHash.romHashMismatch"))
                         .font(.caption)
                         .foregroundColor(.secondary)
                 }
@@ -157,7 +158,7 @@ struct RAHashComparisonContent: View {
                 Divider()
 
                 VStack(alignment: .leading, spacing: 12) {
-                    Text("Your ROM Hash (MD5)")
+                    Text(loc.localized("raHash.yourRomHash"))
                         .font(.subheadline)
                         .fontWeight(.medium)
 
@@ -171,11 +172,11 @@ struct RAHashComparisonContent: View {
 
                 if !nameMatches.isEmpty {
                     VStack(alignment: .leading, spacing: 12) {
-                        Text("Possible Matches (\(nameMatches.count))")
+                        Text(loc.localized("raHash.possibleMatches").replacingOccurrences(of: "{0}", with: "\(nameMatches.count)"))
                             .font(.subheadline)
                             .fontWeight(.medium)
 
-                        Text("Your ROM filename matched these games in the RA database. Your hash does not match any of them, so you need a different ROM file.")
+                        Text(loc.localized("raHash.romFilenameMatched"))
                             .font(.caption)
                             .foregroundColor(.secondary)
 
@@ -190,7 +191,7 @@ struct RAHashComparisonContent: View {
                     }
                 } else {
                     VStack(alignment: .leading, spacing: 12) {
-                        Text("RetroAchievements Supported Hashes")
+                        Text(loc.localized("raHash.raSupportedHashes"))
                             .font(.subheadline)
                             .fontWeight(.medium)
 
@@ -225,7 +226,7 @@ struct RAHashComparisonContent: View {
                         showCopied = false
                     }
                 } label: {
-                    Label(showCopied ? "Copied to Clipboard!" : "Copy All Info for Google Search", systemImage: showCopied ? "checkmark.circle.fill" : "doc.on.doc")
+                    Label(showCopied ? loc.localized("raHash.copiedToClipboard") : loc.localized("raHash.copyAllInfo"), systemImage: showCopied ? "checkmark.circle.fill" : "doc.on.doc")
                         .font(.subheadline)
                 }
                 .buttonStyle(.borderedProminent)
@@ -254,7 +255,7 @@ struct RAHashComparisonContent: View {
                 .buttonStyle(.link)
             }
 
-            Text("Supported Hashes:")
+            Text(loc.localized("raHash.supportedHashes"))
                 .font(.caption)
                 .foregroundColor(.secondary)
 

@@ -1,7 +1,6 @@
 import SwiftUI
 import AppKit
 
-// NSWindowController that presents the BezelSelector as a proper window
 class BezelSelectorWindowController: NSWindowController, NSWindowDelegate {
 
     init(rom: ROM, systemID: String, library: ROMLibrary) {
@@ -18,7 +17,7 @@ class BezelSelectorWindowController: NSWindowController, NSWindowDelegate {
             defer: false
         )
         window.center()
-        window.title = "Select Bezel for \(rom.displayName)"
+        window.title = "\(LocalizationManager.shared.localized("bezel.selectBezelFor")) \(rom.displayName)"
         window.minSize = NSSize(width: 700, height: 500)
         window.contentView = hostingView
 

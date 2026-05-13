@@ -1,8 +1,7 @@
 import SwiftUI
 
-// MARK: - Shader Section (Deprecated - use Shader.swift instead)
-// This file is kept for potential future use but is not currently referenced in the codebase.
 struct ShaderSection: View {
+    @ObservedObject private var loc = LocalizationManager.shared
     let rom: ROM
     let library: ROMLibrary
     @Binding var shaderWindowSettings: ShaderWindowSettings?
@@ -19,6 +18,6 @@ struct ShaderSection: View {
     }
 
     var body: some View {
-        Text("ShaderSection is deprecated - use GameDetailView.shaderSection instead")
+        Text(loc.localized("shader.deprecated"))
     }
 }

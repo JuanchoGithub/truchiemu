@@ -41,6 +41,7 @@ final class AppSettingsCache {
     }
     
     func setBool(_ key: String, value: Bool) {
+        ensureLoaded()
         let data = try! JSONEncoder().encode(value)
         cache[key] = data
         saveAsync(key: key, value: data)
@@ -71,6 +72,7 @@ final class AppSettingsCache {
     }
     
     func setInt(_ key: String, value: Int) {
+        ensureLoaded()
         let data = try! JSONEncoder().encode(value)
         cache[key] = data
         saveAsync(key: key, value: data)
@@ -86,6 +88,7 @@ final class AppSettingsCache {
     }
     
     func setDouble(_ key: String, value: Double) {
+        ensureLoaded()
         let data = try! JSONEncoder().encode(value)
         cache[key] = data
         saveAsync(key: key, value: data)
@@ -116,6 +119,7 @@ final class AppSettingsCache {
     }
     
     func setDate(_ key: String, value: Date) {
+        ensureLoaded()
         let data = try! JSONEncoder().encode(value)
         cache[key] = data
         saveAsync(key: key, value: data)
@@ -128,6 +132,7 @@ final class AppSettingsCache {
     }
     
     func setCodable<T: Codable>(_ key: String, value: T) {
+        ensureLoaded()
         let data = try! JSONEncoder().encode(value)
         cache[key] = data
         saveAsync(key: key, value: data)

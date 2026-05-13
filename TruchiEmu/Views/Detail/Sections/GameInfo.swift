@@ -15,9 +15,9 @@ extension GameDetailView {
                 VStack(alignment: .leading, spacing: 14) {
                     if currentROM.systemID == "gb" || currentROM.systemID == "gbc" {
                         HStack {
-                            Text("System")
+                            Text(loc.localized("gameInfo.system"))
                             Spacer()
-                            Picker("System", selection: Binding(
+                            Picker(loc.localized("gameInfo.system"), selection: Binding(
                                 get: { currentROM.systemID ?? "gb" },
                                 set: { newID in
                                     var updated = currentROM
@@ -25,8 +25,8 @@ extension GameDetailView {
                                     library.updateROM(updated)
                                 }
                             )) {
-                                Text("Game Boy").tag("gb")
-                                Text("Game Boy Color").tag("gbc")
+                                Text(loc.localized("gameInfo.gameBoy")).tag("gb")
+                                Text(loc.localized("gameInfo.gameBoyColor")).tag("gbc")
                             }
                             .pickerStyle(.menu)
                             .labelsHidden()
@@ -36,10 +36,10 @@ extension GameDetailView {
 
                         Divider().overlay(AppColors.divider(colorScheme))
                     }
-                    MetadataRow(label: "File Name", value: currentROM.path.lastPathComponent)
+                    MetadataRow(label: loc.localized("gameInfo.fileName"), value: currentROM.path.lastPathComponent)
                     Divider().overlay(AppColors.divider(colorScheme))
                     MetadataRow(
-                        label: "Path",
+                        label: loc.localized("gameInfo.path"),
                         value: currentROM.path.deletingLastPathComponent().path,
                         copyAction: {
                             NSPasteboard.general.clearContents()
@@ -48,12 +48,12 @@ extension GameDetailView {
                     )
                     if let size = fileSize {
                         Divider().overlay(AppColors.divider(colorScheme))
-                        MetadataRow(label: "File Size", value: size)
+                        MetadataRow(label: loc.localized("gameInfo.fileSize"), value: size)
                     }
                     if let crc = crcHash {
                         Divider().overlay(AppColors.divider(colorScheme))
                         MetadataRow(
-                            label: "CRC32",
+                            label: loc.localized("gameInfo.crc32"),
                             value: crc,
                             isMonospaced: true,
                             copyAction: {
@@ -65,25 +65,25 @@ extension GameDetailView {
                     if let meta = currentROM.metadata {
                         if let original = meta.title, currentROM.customName != nil {
                             Divider().overlay(AppColors.divider(colorScheme))
-                            MetadataRow(label: "Original Name", value: original)
+                            MetadataRow(label: loc.localized("gameInfo.originalName"), value: original)
                         }
                         if let dev = meta.developer {
                             Divider().overlay(AppColors.divider(colorScheme))
-                            MetadataRow(label: "Developer", value: dev)
+                            MetadataRow(label: loc.localized("gameInfo.developer"), value: dev)
                         }
                         if let pub = meta.publisher {
                             Divider().overlay(AppColors.divider(colorScheme))
-                            MetadataRow(label: "Publisher", value: pub)
+                            MetadataRow(label: loc.localized("gameInfo.publisher"), value: pub)
                         }
 if meta.genre != nil {
         Divider().overlay(AppColors.divider(colorScheme))
-        MetadataRow(label: "Genre", value: GenreManager.shared.effectiveDisplayName(for: meta.genre))
+        MetadataRow(label: loc.localized("gameInfo.genre"), value: GenreManager.shared.effectiveDisplayName(for: meta.genre))
     }
                         playersRow
                         if let esrb = meta.esrbRating {
                             Divider().overlay(AppColors.divider(colorScheme))
                             HStack(alignment: .top, spacing: 16) {
-                                Text("ESRB".uppercased())
+                                Text(loc.localized("gameInfo.esrb").uppercased())
                                     .font(.caption)
                                     .fontWeight(.medium)
                                     .foregroundColor(AppColors.textTertiary(colorScheme))
@@ -126,17 +126,17 @@ if meta.genre != nil {
     }
 
     var coreInfoSection: some View {
-        ModernSectionCard(title: "Core", icon: "cpu") {
+        ModernSectionCard(title: loc.localized("gameInfo.core"), icon: "cpu") {
             VStack(alignment: .leading, spacing: 12) {
                 HStack {
                     Image(systemName: "cpu").foregroundColor(AppColors.textSecondary(colorScheme))
-                    Text("Emulation Core").foregroundColor(AppColors.textSecondary(colorScheme)).font(.caption)
+                    Text(loc.localized("gameInfo.emulationCore")).foregroundColor(AppColors.textSecondary(colorScheme)).font(.caption)
                     Spacer()
                     if installedCores.isEmpty {
-                        Text("No cores installed").font(.caption).foregroundColor(AppColors.textMuted(colorScheme))
+                        Text(loc.localized("gameInfo.noCoresInstalled")).font(.caption).foregroundColor(AppColors.textMuted(colorScheme))
                     } else {
                         Picker("Core", selection: $infoCoreID) {
-                            Text("Select Core").tag(nil as String?)
+                            Text(loc.localized("gameInfo.selectCore")).tag(nil as String?)
                             ForEach(installedCores) { core in
                                 Text(core.metadata.displayName).tag(core.id as String?)
                             }
@@ -151,16 +151,16 @@ if meta.genre != nil {
                 Toggle(isOn: $infoApplyCoreToSystem) {
                     HStack {
                         Image(systemName: "globe").foregroundColor(AppColors.textSecondary(colorScheme))
-                        Text("Apply to system default").foregroundColor(AppColors.textPrimary(colorScheme))
+                        Text(loc.localized("gameInfo.applyToSystemDefault")).foregroundColor(AppColors.textPrimary(colorScheme))
                     }
                 }
                 .toggleStyle(SwitchToggleStyle())
 
                 if infoApplyCoreToSystem {
-                    Text("This will change the default core for all \(systemName) games. The current game will no longer use a custom core override.")
+                    Text(loc.localized("gameInfo.changeSystemCoreWarning").replacingOccurrences(of: "{0}", with: systemName))
                         .font(.caption).foregroundColor(AppColors.textTertiary(colorScheme)).lineSpacing(2)
                 } else {
-                    Text("Only this game will use the selected core.")
+                    Text(loc.localized("gameInfo.onlyThisGameUsesSelectedCore"))
                         .font(.caption).foregroundColor(AppColors.textTertiary(colorScheme)).lineSpacing(2)
                 }
 
@@ -170,7 +170,7 @@ if meta.genre != nil {
                     Button { applyCoreConfigurationFromInfo() } label: {
                         HStack(spacing: 6) {
                             Image(systemName: infoApplyCoreToSystem ? "globe" : "gamecontroller")
-                            Text(infoApplyCoreToSystem ? "Set System Default" : "Set for This Game")
+                            Text(infoApplyCoreToSystem ? loc.localized("gameInfo.setSystemDefault") : loc.localized("gameInfo.setForThisGame"))
                         }
                         .foregroundColor(.white)
                         .padding(.horizontal, 16)
@@ -206,7 +206,7 @@ if meta.genre != nil {
     }
 
     var cheatsEnabledSection: some View {
-        ModernSectionCard(title: "Cheats", icon: "gamecontroller") {
+        ModernSectionCard(title: loc.localized("gameInfo.cheats"), icon: "gamecontroller") {
             VStack(alignment: .leading, spacing: 12) {
                 Toggle(isOn: Binding(
                     get: { currentROM.settings.cheatsEnabled ?? false },
@@ -216,13 +216,13 @@ if meta.genre != nil {
                 )) {
                     HStack {
                         Image(systemName: "gamecontroller.fill").foregroundColor(.blue)
-                        Text("Enable Cheats").foregroundColor(AppColors.textPrimary(colorScheme))
+                        Text(loc.localized("gameInfo.enableCheats")).foregroundColor(AppColors.textPrimary(colorScheme))
                     }
                 }
                 .toggleStyle(SwitchToggleStyle())
 
                 if currentROM.settings.cheatsEnabled ?? false {
-                    Text("When enabled, the emulator will attempt to apply active cheats during launch.")
+                    Text(loc.localized("gameInfo.cheatsEnabledInfo"))
                         .font(.caption).foregroundColor(AppColors.textTertiary(colorScheme)).lineSpacing(2)
                 }
             }
@@ -231,7 +231,7 @@ if meta.genre != nil {
     }
 
     var gbColorizationSection: some View {
-        ModernSectionCard(title: "Game Boy Colorization", icon: "paintpalette") {
+        ModernSectionCard(title: loc.localized("gameInfo.gameBoyColorization"), icon: "paintpalette") {
             VStack(alignment: .leading, spacing: 12) {
                 Toggle(isOn: Binding(
                     get: { gbColorizationEnabled },
@@ -242,7 +242,7 @@ if meta.genre != nil {
                 )) {
                     HStack {
                         Image(systemName: "paintpalette.fill").foregroundColor(.purple)
-                        Text("Enable Colorization").foregroundColor(AppColors.textPrimary(colorScheme))
+                        Text(loc.localized("gameInfo.enableColorization")).foregroundColor(AppColors.textPrimary(colorScheme))
                     }
                 }
                 .toggleStyle(SwitchToggleStyle())
@@ -256,7 +256,7 @@ if meta.genre != nil {
                             gbInternalPaletteRow
                         } else {
                             gbInternalPaletteRow.opacity(0.4).disabled(true)
-                                .help("Gambatte core only — switch to gambatte_libretro to use named palettes")
+                                .help(loc.localized("gameInfo.gambatteCoreOnly"))
                         }
                     }
                     Divider().overlay(AppColors.divider(colorScheme))
@@ -266,14 +266,14 @@ if meta.genre != nil {
                         gbColorCorrectionRow
                     } else {
                         gbColorCorrectionRow.opacity(0.4).disabled(true)
-                            .help("Gambatte core only — switch to gambatte_libretro to use color correction")
+                            .help(loc.localized("gameInfo.gambatteCoreOnlyColorCorrection"))
                     }
                     Divider().overlay(AppColors.divider(colorScheme))
-                    Text("Apply color palettes to original Game Boy (DMG) games. 'Auto' selects the best palette for each game. 'Internal' uses a classic Game Boy or Super Game Boy palette. Named palettes and color correction require the Gambatte core.")
+                    Text(loc.localized("gameInfo.applyColorPalettes"))
                         .font(.caption).foregroundColor(AppColors.textTertiary(colorScheme)).lineSpacing(2)
                 } else {
                     Divider().overlay(AppColors.divider(colorScheme))
-                    Text("Games will display in classic Game Boy monochrome (green-tinted).")
+                    Text(loc.localized("gameInfo.gamesDisplayMonochrome"))
                         .font(.caption).foregroundColor(AppColors.textTertiary(colorScheme)).lineSpacing(2)
                 }
             }
@@ -283,20 +283,20 @@ if meta.genre != nil {
     var gbPaletteModeRow: some View {
         HStack {
             Image(systemName: "eyedropper").foregroundColor(AppColors.textSecondary(colorScheme))
-            Text("Palette Mode").foregroundColor(AppColors.textSecondary(colorScheme)).font(.caption)
+            Text(loc.localized("gameInfo.paletteMode")).foregroundColor(AppColors.textSecondary(colorScheme)).font(.caption)
             Spacer()
-            Picker("Palette Mode", selection: Binding(
+            Picker(loc.localized("gameInfo.paletteMode"), selection: Binding(
                 get: { gbColorizationMode },
                 set: { newValue in
                     gbColorizationMode = newValue
                     applyGBColorizationSettings()
                 }
             )) {
-                Text("Auto Select").tag("auto")
-                Text("Game Boy Color").tag("gbc")
-                Text("Super Game Boy").tag("sgb")
-                Text("Internal Palette").tag("internal")
-                Text("Custom Palettes").tag("custom")
+                Text(loc.localized("gameInfo.autoSelect")).tag("auto")
+                Text(loc.localized("gameInfo.gameBoyColor")).tag("gbc")
+                Text(loc.localized("gameInfo.superGameBoy")).tag("sgb")
+                Text(loc.localized("gameInfo.internalPalette")).tag("internal")
+                Text(loc.localized("gameInfo.customPalettes")).tag("custom")
             }
             .pickerStyle(.menu)
             .labelsHidden()
@@ -307,21 +307,21 @@ if meta.genre != nil {
     var gbInternalPaletteRow: some View {
         HStack {
             Image(systemName: "paintpalette").foregroundColor(AppColors.textSecondary(colorScheme))
-            Text("Internal Palette").foregroundColor(AppColors.textSecondary(colorScheme)).font(.caption)
+            Text(loc.localized("gameInfo.internalPalette")).foregroundColor(AppColors.textSecondary(colorScheme)).font(.caption)
             Spacer()
-            Picker("Internal Palette", selection: Binding(
+            Picker(loc.localized("gameInfo.internalPalette"), selection: Binding(
                 get: { gbInternalPalette },
                 set: { newValue in
                     gbInternalPalette = newValue
                     applyGBColorizationSettings()
                 }
             )) {
-                Section(header: Text("Game Boy")) {
+                Section(header: Text(loc.localized("gameInfo.gameBoy"))) {
                     Text("GB - DMG (Green)").tag("GB - DMG")
                     Text("GB - Pocket").tag("GB - Pocket")
                     Text("GB - Light").tag("GB - Light")
                 }
-                Section(header: Text("Game Boy Color")) {
+                Section(header: Text(loc.localized("gameInfo.gameBoyColor"))) {
                     Text("GBC - Blue").tag("GBC - Blue")
                     Text("GBC - Brown").tag("GBC - Brown")
                     Text("GBC - Dark Blue").tag("GBC - Dark Blue")
@@ -335,7 +335,7 @@ if meta.genre != nil {
                     Text("GBC - Red").tag("GBC - Red")
                     Text("GBC - Yellow").tag("GBC - Yellow")
                 }
-                Section(header: Text("Super Game Boy")) {
+                Section(header: Text(loc.localized("gameInfo.superGameBoy"))) {
                     Text("SGB - 1A").tag("SGB - 1A")
                     Text("SGB - 1B").tag("SGB - 1B")
                     Text("SGB - 2A").tag("SGB - 2A")
@@ -345,7 +345,7 @@ if meta.genre != nil {
                     Text("SGB - 4A").tag("SGB - 4A")
                     Text("SGB - 4B").tag("SGB - 4B")
                 }
-                Section(header: Text("Special")) {
+                Section(header: Text(loc.localized("gameInfo.special"))) {
                     Text("Special 1").tag("Special 1")
                     Text("Special 2").tag("Special 2")
                     Text("Special 3").tag("Special 3")
@@ -361,11 +361,11 @@ if meta.genre != nil {
         VStack(alignment: .leading, spacing: 4) {
             HStack {
                 Image(systemName: "rectangle.on.rectangle").foregroundColor(AppColors.textSecondary(colorScheme))
-                Text("Super Game Boy Borders").foregroundColor(AppColors.textSecondary(colorScheme)).font(.caption)
+                Text(loc.localized("gameInfo.superGameBoyBorders")).foregroundColor(AppColors.textSecondary(colorScheme)).font(.caption)
                 Spacer()
-                Text("mGBA core").foregroundColor(AppColors.textMuted(colorScheme)).font(.caption2)
+                Text(loc.localized("gameInfo.mgbaCore")).foregroundColor(AppColors.textMuted(colorScheme)).font(.caption2)
             }
-            Text("Show decorative borders on SGB-enhanced games.")
+            Text(loc.localized("gameInfo.showSGBBorders"))
                 .font(.caption2).foregroundColor(AppColors.textMuted(colorScheme)).padding(.leading, 24)
             Toggle("", isOn: Binding(
                 get: { gbSGBBordersEnabled },
@@ -383,24 +383,24 @@ if meta.genre != nil {
         VStack(alignment: .leading, spacing: 4) {
             HStack {
                 Image(systemName: "sun.max").foregroundColor(AppColors.textSecondary(colorScheme))
-                Text("Color Correction").foregroundColor(AppColors.textSecondary(colorScheme)).font(.caption)
+                Text(loc.localized("gameInfo.colorCorrection")).foregroundColor(AppColors.textSecondary(colorScheme)).font(.caption)
                 Spacer()
-                Picker("Color Correction", selection: Binding(
+                Picker(loc.localized("gameInfo.colorCorrection"), selection: Binding(
                     get: { gbColorCorrectionMode },
                     set: { newValue in
                         gbColorCorrectionMode = newValue
                         applyGBColorizationSettings()
                     }
                 )) {
-                    Text("GBC Games Only").tag("gbc_only")
-                    Text("Always").tag("always")
-                    Text("Disabled").tag("disabled")
+                    Text(loc.localized("gameInfo.gbcGamesOnly")).tag("gbc_only")
+                    Text(loc.localized("gameInfo.always")).tag("always")
+                    Text(loc.localized("gameInfo.disabled")).tag("disabled")
                 }
                 .pickerStyle(.menu)
                 .labelsHidden()
                 .frame(width: 160)
             }
-            Text("Match output colors to original Game Boy Color LCD.")
+            Text(loc.localized("gameInfo.matchOutputColors"))
                 .font(.caption2).foregroundColor(AppColors.textMuted(colorScheme)).padding(.leading, 24)
         }
     }
@@ -466,7 +466,7 @@ if meta.genre != nil {
         } label: {
             HStack(spacing: 6) {
                 if case .working = manualActionStatus { ProgressView().controlSize(.small) } else { Image(systemName: "qrcode.viewfinder") }
-                Text("Identify Game")
+                Text(loc.localized("gameInfo.identifyGame"))
             }
             .foregroundColor(AppColors.textPrimary(colorScheme))
             .padding(.horizontal, 14)
@@ -483,7 +483,7 @@ if meta.genre != nil {
             switch fetchMetadataStatus {
             case .hidden:
                 Button { Task { await fetchMetadata() } } label: {
-                    Label("Fetch Metadata", systemImage: "network")
+                    Label(loc.localized("gameInfo.fetchMetadata"), systemImage: "network")
                         .padding(.vertical, 6)
                         .padding(.horizontal, 12)
                         .frame(maxWidth: .infinity)
@@ -518,7 +518,7 @@ if meta.genre != nil {
     }
 
     func fetchMetadata() async {
-        await MainActor.run { fetchMetadataStatus = .working("Searching LaunchBox...") }
+        await MainActor.run { fetchMetadataStatus = .working(loc.localized("gameInfo.searchingLaunchBox")) }
         let success = await LaunchBoxGamesDBService.shared.fetchAndApplyMetadata(for: currentROM, library: library)
         fetchMetadataAutoDismiss?.cancel()
         fetchMetadataAutoDismiss = Task { @MainActor in
@@ -527,9 +527,9 @@ if meta.genre != nil {
             if case .result = fetchMetadataStatus { fetchMetadataStatus = .hidden }
         }
         if success {
-            await MainActor.run { fetchMetadataStatus = .result("Metadata updated", tone: .success) }
+            await MainActor.run { fetchMetadataStatus = .result(loc.localized("gameInfo.metadataUpdated"), tone: .success) }
         } else {
-            await MainActor.run { fetchMetadataStatus = .result("No metadata found in the database. Try identifying this game first.", tone: .warning) }
+            await MainActor.run { fetchMetadataStatus = .result(loc.localized("gameInfo.noMetadataFound"), tone: .warning) }
         }
     }
 
@@ -546,7 +546,7 @@ if meta.genre != nil {
                 Button { Task { await fetchBoxArt() } } label: {
                     HStack(spacing: 6) {
                         Image(systemName: "arrow.down.circle")
-                        Text("Fetch Art")
+                        Text(loc.localized("gameInfo.fetchArt"))
                     }
                     .foregroundColor(AppColors.textPrimary(colorScheme))
                     .padding(.horizontal, 14)
@@ -581,7 +581,7 @@ if meta.genre != nil {
     }
 
     func fetchBoxArt() async {
-        await MainActor.run { fetchBoxArtStatus = .working("Searching...") }
+        await MainActor.run { fetchBoxArtStatus = .working(loc.localized("gameInfo.searching")) }
         if await BoxArtService.shared.fetchBoxArt(for: currentROM) != nil {
             var u = currentROM
             u.hasBoxArt = true
@@ -593,9 +593,9 @@ if meta.genre != nil {
                 guard !Task.isCancelled else { return }
                 if case .result = fetchBoxArtStatus { fetchBoxArtStatus = .hidden }
             }
-            await MainActor.run { fetchBoxArtStatus = .result("Art found", tone: .success) }
+            await MainActor.run { fetchBoxArtStatus = .result(loc.localized("gameInfo.artFound"), tone: .success) }
         } else {
-            await MainActor.run { fetchBoxArtStatus = .result("No cover art found for this game. You can manually search using the Box Art picker.", tone: .warning) }
+            await MainActor.run { fetchBoxArtStatus = .result(loc.localized("gameInfo.noCoverArtFound"), tone: .warning) }
         }
     }
 
@@ -606,7 +606,7 @@ if meta.genre != nil {
     }
 
     var screenshotsRow: some View {
-        ModernSectionCard(title: "Screenshots", icon: "photo.on.rectangle", showHeader: true) {
+        ModernSectionCard(title: loc.localized("gameInfo.screenshots"), icon: "photo.on.rectangle", showHeader: true) {
             ScrollView(.horizontal, showsIndicators: false) {
                 HStack(spacing: 10) {
                     ForEach(screenshotImages.indices, id: \.self) { index in
@@ -636,12 +636,12 @@ if meta.genre != nil {
         Group {
             if let meta = currentROM.metadata, meta.players > 0 {
                 let playersIdentifiedFromLibretro = meta.userPlayerOverride == nil && meta.players > 1
-                if playersIdentifiedFromLibretro {
-                    Divider().overlay(AppColors.divider(colorScheme))
-                    MetadataRow(label: "Players", value: String(meta.players))
+                    if playersIdentifiedFromLibretro {
+                        Divider().overlay(AppColors.divider(colorScheme))
+                        MetadataRow(label: loc.localized("gameInfo.players"), value: String(meta.players))
                     if meta.players > 1 {
                         Divider().overlay(AppColors.divider(colorScheme))
-                        MetadataRow(label: "Co-op", value: meta.cooperative ? "Yes" : "No")
+                        MetadataRow(label: loc.localized("gameInfo.coop"), value: meta.cooperative ? loc.localized("gameInfo.yes") : loc.localized("gameInfo.no"))
                     }
                 } else {
                     Divider().overlay(AppColors.divider(colorScheme))
@@ -653,7 +653,7 @@ if meta.genre != nil {
 
     private func playersPickerView(meta: ROMMetadata) -> some View {
         HStack(alignment: .top, spacing: 16) {
-            Text("PLAYERS".uppercased())
+            Text(loc.localized("gameInfo.players").uppercased())
                 .font(.caption)
                 .fontWeight(.medium)
                 .foregroundColor(AppColors.textTertiary(colorScheme))
@@ -672,8 +672,8 @@ if meta.genre != nil {
                     }
                 }
             )) {
-                Text("Single").tag(1)
-                Text("Multi").tag(2)
+                Text(loc.localized("gameInfo.single")).tag(1)
+                Text(loc.localized("gameInfo.multi")).tag(2)
             }
             .pickerStyle(.segmented)
             .labelsHidden()

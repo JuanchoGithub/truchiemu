@@ -1,17 +1,14 @@
 import SwiftUI
 import Cocoa
 
-// MARK: - MouseDownButton (NSButton that fires action on mouseDown)
 class MouseDownButton: NSButton {
     override func mouseDown(with event: NSEvent) {
-        // Fire action immediately on mouse down
         if let target = self.target, let action = self.action {
             NSApp.sendAction(action, to: target, from: self)
         }
     }
 }
 
-// MARK: - MouseDownButtonAction (SwiftUI wrapper for mouse-down button)
 struct MouseDownButtonAction<Label: View>: NSViewRepresentable {
     let action: () -> Void
     let label: () -> Label
@@ -19,7 +16,6 @@ struct MouseDownButtonAction<Label: View>: NSViewRepresentable {
     func makeNSView(context: Context) -> NSView {
         let container = NSView()
         
-        // Create the clickable button area
         let button = MouseDownButton()
         button.title = ""
         button.bezelStyle = .regularSquare
@@ -28,7 +24,6 @@ struct MouseDownButtonAction<Label: View>: NSViewRepresentable {
         button.action = #selector(Coordinator.performAction)
         button.translatesAutoresizingMaskIntoConstraints = false
         
-        // Create hosting view for SwiftUI label
         let hostingView = NSHostingView(rootView: label())
         hostingView.translatesAutoresizingMaskIntoConstraints = false
         
@@ -50,7 +45,6 @@ struct MouseDownButtonAction<Label: View>: NSViewRepresentable {
     }
     
     func updateNSView(_ nsView: NSView, context: Context) {
-        // Update the hosting view content if needed
         if let hostingView = nsView.subviews.first(where: { $0 is NSHostingView<Label> }) as? NSHostingView<Label> {
             hostingView.rootView = label()
         }
@@ -71,7 +65,6 @@ struct MouseDownButtonAction<Label: View>: NSViewRepresentable {
     }
 }
 
-// MARK: - MouseDownButtonActionStyled (with pressed state tracking)
 struct MouseDownButtonActionStyled<Label: View>: View {
     let action: () -> Void
     let label: () -> Label
@@ -101,7 +94,6 @@ struct MouseDownButtonActionStyled<Label: View>: View {
     }
 }
 
-// MARK: - Custom Button Style for Toolbar Buttons
 struct ToolbarButtonStyle: ButtonStyle {
     func makeBody(configuration: Configuration) -> some View {
         configuration.label
@@ -112,7 +104,6 @@ struct ToolbarButtonStyle: ButtonStyle {
     }
 }
 
-// MARK: - Toolbar Button Component
 struct ToolbarButton: View {
     let icon: String
     let label: String
@@ -142,9 +133,9 @@ struct ToolbarButton: View {
     }
 }
 
-// MARK: - Pause/Resume Button
 struct PauseResumeButton: View {
     @ObservedObject var runner: EmulatorRunner
+    @ObservedObject private var loc = LocalizationManager.shared
     
     var body: some View {
         Button(action: {
@@ -153,7 +144,7 @@ struct PauseResumeButton: View {
             VStack(spacing: 4) {
                 Image(systemName: runner.isPaused ? "play.fill" : "pause.fill")
                     .font(.system(size: 16, weight: .semibold))
-                Text(runner.isPaused ? "Resume" : "Pause")
+                Text(runner.isPaused ? loc.localized("toolbar.resume") : loc.localized("toolbar.pause"))
                     .font(.system(size: 10, weight: .medium))
             }
             .frame(minWidth: 50)
@@ -163,9 +154,9 @@ struct PauseResumeButton: View {
     }
 }
 
-// MARK: - Fullscreen Toggle Button
 struct FullscreenButton: View {
     @ObservedObject var windowController: StandaloneGameWindowController
+    @ObservedObject private var loc = LocalizationManager.shared
     
     var body: some View {
         Button(action: {
@@ -174,7 +165,7 @@ struct FullscreenButton: View {
             VStack(spacing: 4) {
                 Image(systemName: windowController.isFullscreen ? "arrow.down.right.and.arrow.up.left" : "arrow.up.left.and.arrow.down.right")
                     .font(.system(size: 16, weight: .semibold))
-                Text(windowController.isFullscreen ? "Exit FS" : "Full")
+                Text(windowController.isFullscreen ? loc.localized("toolbar.exitFullscreen") : loc.localized("toolbar.fullscreen"))
                     .font(.system(size: 10, weight: .medium))
                     .lineLimit(1)
             }
@@ -184,9 +175,9 @@ struct FullscreenButton: View {
     }
 }
 
-// MARK: - Reload Button
 struct ReloadButton: View {
     @ObservedObject var runner: EmulatorRunner
+    @ObservedObject private var loc = LocalizationManager.shared
     
     var body: some View {
         MouseDownButtonActionStyled(action: {
@@ -195,7 +186,7 @@ struct ReloadButton: View {
             VStack(spacing: 4) {
                 Image(systemName: "arrow.counterclockwise")
                     .font(.system(size: 16, weight: .semibold))
-                Text("Reload")
+                Text(loc.localized("toolbar.reload"))
                     .font(.system(size: 10, weight: .medium))
             }
             .frame(minWidth: 50)
@@ -203,9 +194,9 @@ struct ReloadButton: View {
     }
 }
 
-// MARK: - Auto Fullscreen Toggle Button
 struct AutoFullscreenButton: View {
     @ObservedObject var windowController: StandaloneGameWindowController
+    @ObservedObject private var loc = LocalizationManager.shared
     
     var body: some View {
         Button(action: {
@@ -214,7 +205,7 @@ struct AutoFullscreenButton: View {
             VStack(spacing: 4) {
                 Image(systemName: windowController.autoFullscreenEnabled ? "rectangle.expand.vertical" : "rectangle")
                     .font(.system(size: 16, weight: .semibold))
-                Text(windowController.autoFullscreenEnabled ? "Auto-FS" : "Auto-FS")
+                Text(loc.localized("toolbar.autoFullscreen"))
                     .font(.system(size: 10, weight: .medium))
                     .lineLimit(1)
             }
@@ -225,10 +216,11 @@ struct AutoFullscreenButton: View {
     }
 }
 
-// MARK: - Slot Selector Button
 struct SlotSelectorButton: View {
     let currentSlot: Int
     let onSlotChange: (Int) -> Void
+    @ObservedObject var runner: EmulatorRunner
+    @ObservedObject private var loc = LocalizationManager.shared
     @State private var isDropdownShown = false
     @State private var selectedSlot: Int = 0
     
@@ -236,7 +228,7 @@ struct SlotSelectorButton: View {
         VStack(spacing: 4) {
             Image(systemName: "number.circle")
                 .font(.system(size: 16, weight: .semibold))
-            Text("Slot \(currentSlot == -1 ? "Auto" : "\(abs(currentSlot))")")
+            Text("Slot \(currentSlot == -1 ? loc.localized("toolbar.slotAuto") : "\(abs(currentSlot))")")
                 .font(.system(size: 10, weight: .medium))
         }
         .frame(minWidth: 50)
@@ -252,21 +244,23 @@ struct SlotSelectorButton: View {
             isDropdownShown = true
         }
         .popover(isPresented: $isDropdownShown, arrowEdge: .top) {
-            SlotPickerView(selectedSlot: $selectedSlot, onSlotSelect: onSlotChange)
-                .frame(width: 180, height: 200)
+            SlotPickerView(selectedSlot: $selectedSlot, onSlotSelect: onSlotChange, runner: runner)
+                .frame(width: 280, height: 400)
         }
     }
 }
 
-// MARK: - Slot Picker View
 struct SlotPickerView: View {
     @Binding var selectedSlot: Int
     let onSlotSelect: ((Int) -> Void)?
+    @ObservedObject var runner: EmulatorRunner
     @Environment(\.dismiss) var dismiss
+    @ObservedObject private var loc = LocalizationManager.shared
+    @State private var slotThumbnails: [Int: NSImage] = [:]
     
     var body: some View {
         VStack(spacing: 0) {
-            Text("Select Save Slot")
+            Text(loc.localized("toolbar.selectSaveSlot"))
                 .font(.headline)
                 .padding()
             
@@ -281,10 +275,45 @@ struct SlotPickerView: View {
                             AppSettings.setInt("selected_save_slot", value: slot)
                             dismiss()
                         }) {
-                            HStack {
-                                Text(slot == -1 ? "Auto" : "Slot \(slot)")
-                                    .foregroundColor(.white)
+                            HStack(spacing: 10) {
+                                ZStack {
+                                    if let thumbnail = slotThumbnails[slot], let info = slotInfo(for: slot), info.exists {
+                                        Image(nsImage: thumbnail)
+                                            .resizable()
+                                            .aspectRatio(contentMode: .fill)
+                                            .frame(width: 40, height: 30)
+                                            .clipped()
+                                    } else {
+                                        Rectangle()
+                                            .fill(Color.gray.opacity(0.3))
+                                            .frame(width: 40, height: 30)
+                                            .overlay(
+                                                Image(systemName: "photo")
+                                                    .font(.system(size: 14))
+                                                    .foregroundColor(.secondary)
+                                            )
+                                    }
+                                }
+                                .cornerRadius(4)
+                                
+                                VStack(alignment: .leading, spacing: 2) {
+                                    Text(slotInfo(for: slot)?.displayName ?? (slot == -1 ? loc.localized("toolbar.slotAuto") : "Slot \(slot)"))
+                                        .font(.system(size: 13, weight: .medium))
+                                        .foregroundColor(.white)
+                                    
+                                    if let info = slotInfo(for: slot), info.exists, let timestamp = info.formattedDate {
+                                        Text(timestamp)
+                                            .font(.system(size: 10))
+                                            .foregroundColor(.secondary)
+                                    } else {
+                                        Text(slot == -1 ? loc.localized("toolbar.systemAutoSave") : loc.localized("toolbar.emptySlot"))
+                                            .font(.system(size: 10))
+                                            .foregroundColor(.secondary)
+                                    }
+                                }
+                                
                                 Spacer()
+                                
                                 if selectedSlot == slot {
                                     Image(systemName: "checkmark")
                                         .foregroundColor(.blue)
@@ -306,5 +335,23 @@ struct SlotPickerView: View {
         }
         .background(Color(NSColor.windowBackgroundColor))
         .clipShape(RoundedRectangle(cornerRadius: 12))
+        .onAppear {
+            loadThumbnails()
+        }
+    }
+    
+    private func slotInfo(for slot: Int) -> SlotInfo? {
+        guard let rom = runner.rom else { return nil }
+        return runner.saveManager.slotInfo(gameName: rom.displayName, systemID: rom.systemID ?? "default", slot: slot)
+    }
+    
+    private func loadThumbnails() {
+        guard let rom = runner.rom else { return }
+        let systemID = rom.systemID ?? "default"
+        for slot in -1...9 {
+            if let thumbnail = runner.saveManager.loadThumbnail(gameName: rom.displayName, systemID: systemID, slot: slot) {
+                slotThumbnails[slot] = thumbnail
+            }
+        }
     }
 }

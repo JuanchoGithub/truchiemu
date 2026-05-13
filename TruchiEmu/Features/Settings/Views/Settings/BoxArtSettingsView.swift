@@ -17,6 +17,8 @@ struct BoxArtSettingsView: View {
     
     @Binding var searchText: String
     
+    @ObservedObject private var loc = LocalizationManager.shared
+    
     init(searchText: Binding<String> = .constant("")) {
         self._searchText = searchText
     }
@@ -36,54 +38,54 @@ struct BoxArtSettingsView: View {
             // Libretro Thumbnails Section
             if !isSearching || matchesSearch("libretro thumbnail CDN CRC No-Intro DAT box art named boxarts named titles named snaps fuzzy name") {
                 Section {
-                    Toggle("Use Libretro thumbnail CDN", isOn: $useLibretroThumbnails)
-                    TextField("CDN base URL", text: $thumbnailBaseURLString)
+                    Toggle(loc.localized("boxArt.useLibretroCDN"), isOn: $useLibretroThumbnails)
+                    TextField(loc.localized("boxArt.cdnBaseURL"), text: $thumbnailBaseURLString)
                         .textFieldStyle(.roundedBorder)
                         .font(.system(.body, design: .monospaced))
-                    Picker("Try first", selection: $thumbnailPriorityRaw) {
+                    Picker(loc.localized("boxArt.tryFirst"), selection: $thumbnailPriorityRaw) {
                         ForEach(LibretroThumbnailPriority.allCases) { p in
                             Text(p.displayName).tag(p.rawValue)
                         }
                     }
-                    Toggle("Match ROM using CRC + No-Intro DAT", isOn: $useCRCMatching)
-                    Toggle("Fallback to sanitized filename if CRC not in DAT", isOn: $fallbackFilename)
-                    Toggle("Use HTTP HEAD before downloading (fewer bytes on miss)", isOn: $useHeadCheck)
+                    Toggle(loc.localized("boxArt.matchROMCrc"), isOn: $useCRCMatching)
+                    Toggle(loc.localized("boxArt.fallbackFilename"), isOn: $fallbackFilename)
+                    Toggle(loc.localized("boxArt.useHttpHead"), isOn: $useHeadCheck)
                 } header: {
-                    Label("Libretro Thumbnails", systemImage: "photo.on.rectangle.angled")
+                    Label(loc.localized("boxArt.libretroThumbnails"), systemImage: "photo.on.rectangle.angled")
                 } footer: {
-                    Text("Uses thumbnails.libretro.com with CRC-based names from Libretro DAT files when available, then Named_Boxarts → Named_Titles → Named_Snaps, with a fuzzy name pass.")
+                    Text(loc.localized("boxArt.libretroDescription"))
                 }
             }
 
             // LaunchBox GamesDB Section
             if !isSearching || matchesSearch("launchbox gamesdb box art download scan third-party fallback") {
                 Section {
-                    Toggle("Enable LaunchBox GamesDB", isOn: $useLaunchBox)
-                    Toggle("Auto-download box art after scan", isOn: $launchBoxDownloadAfterScan)
+                    Toggle(loc.localized("boxArt.enableLaunchBox"), isOn: $useLaunchBox)
+                    Toggle(loc.localized("boxArt.autoDownloadBoxArt"), isOn: $launchBoxDownloadAfterScan)
                 } header: {
-                    Label("LaunchBox GamesDB", systemImage: "gamecontroller.fill")
+                    Label(loc.localized("boxArt.launchBoxGamesDB"), systemImage: "gamecontroller.fill")
                 } footer: {
-                    Text("Queries gamesdb.launchbox-app.com as a third-party fallback when the Libretro CDN has no box art. Enable auto-download to fill gaps after scanning your library.")
+                    Text(loc.localized("boxArt.launchBoxDescription"))
                 }
             }
 
             // ScreenScraper Account Section
             if !isSearching || matchesSearch("screenscraper account credentials box art free account username password") {
                 Section {
-                    TextField("Username", text: $username)
-                    SecureField("Password", text: $password)
-                    Button("Save Credentials") {
+                    TextField(loc.localized("boxArt.username"), text: $username)
+                    SecureField(loc.localized("boxArt.password"), text: $password)
+                    Button(loc.localized("boxArt.saveCredentials")) {
                         BoxArtService.shared.saveCredentials(
                             BoxArtService.ScreenScraperCredentials(username: username, password: password))
                         saved = true
                     }
                 } header: {
-                    Label("ScreenScraper Account", systemImage: "person.badge.key")
+                    Label(loc.localized("boxArt.screenScraperAccount"), systemImage: "person.badge.key")
                 } footer: {
-                    Text("Optional fallback when Libretro CDN has no art. Create a free account at [screenscraper.fr](https://www.screenscraper.fr). Your credentials are stored locally on this device only.")
+                    Text(loc.localized("boxArt.screenScraperDescription"))
                 }
                 if saved {
-                    Label("Credentials saved!", systemImage: "checkmark.circle.fill")
+                    Label(loc.localized("boxArt.credentialsSaved"), systemImage: "checkmark.circle.fill")
                         .foregroundColor(.green)
                 }
             }
@@ -95,9 +97,9 @@ struct BoxArtSettingsView: View {
                     VStack(alignment: .leading, spacing: 8) {
                         HStack {
                             VStack(alignment: .leading, spacing: 4) {
-                                Text("Asset Indexing")
+                                Text(loc.localized("boxArt.assetIndexing"))
                                     .font(.body)
-                                Text("Indexes help the app skip broken or missing URLs instantly.")
+                                Text(loc.localized("boxArt.assetIndexingDescription"))
                                     .font(.caption)
                                     .foregroundStyle(.secondary)
                             }
@@ -111,10 +113,10 @@ struct BoxArtSettingsView: View {
                                     HStack(spacing: 6) {
                                         ProgressView()
                                             .controlSize(.small)
-                                        Text("Indexing...")
+                                        Text(loc.localized("boxArt.indexing"))
                                     }
                                 } else {
-                                    Label("Refresh Index", systemImage: "arrow.clockwise")
+                                    Label(loc.localized("boxArt.refreshIndex"), systemImage: "arrow.clockwise")
                                 }
                             }
                             .buttonStyle(.bordered)
@@ -125,7 +127,7 @@ struct BoxArtSettingsView: View {
                             VStack(alignment: .leading, spacing: 4) {
                                 ProgressView(value: manifestService.refreshProgress)
                                     .progressViewStyle(.linear)
-                                Text("Current: \(manifestService.currentRepoRefreshing)")
+                                Text("\(loc.localized("boxArt.current")) \(manifestService.currentRepoRefreshing)")
                                     .font(.caption2)
                                     .foregroundStyle(.secondary)
                                     .italic()
@@ -134,16 +136,16 @@ struct BoxArtSettingsView: View {
                         }
                     }
                 } header: {
-                    Label("Performance & Indexing", systemImage: "bolt.fill")
+                    Label(loc.localized("boxArt.performanceIndexing"), systemImage: "bolt.fill")
                 } footer: {
-                    Text("Refresh the index to sync with the latest Libretro repository listings. This significantly improves speed when browsing large libraries by eliminating 'blind' 404 checks.")
+                    Text(loc.localized("boxArt.performanceDescription"))
                 }
             }
             
             // No results message
             if isSearching && !hasMatchingSections {
                 Section {
-                    Text("No matching settings found for \"\(searchText)\"")
+                    Text("\(loc.localized("boxArt.noMatchingSettings")) \"\(searchText)\"")
                         .font(.caption)
                         .foregroundStyle(.secondary)
                         .frame(maxWidth: .infinity, alignment: .center)

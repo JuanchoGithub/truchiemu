@@ -7,6 +7,7 @@ struct LibraryGridView: View {
     @EnvironmentObject var coreManager: CoreManager
     @EnvironmentObject var controllerService: ControllerService
     @StateObject private var dragState = GameDragState.shared
+    @ObservedObject private var loc = LocalizationManager.shared
     @Binding var showCreateCategorySheet: Bool
     @Binding var filter: LibraryFilter
     @Binding var selectedROM: ROM?
@@ -45,7 +46,7 @@ struct LibraryGridView: View {
     @ViewBuilder
     private var inputDeviceButtons: some View {
         Button(action: { controllerService.activePlayerIndex = 0 }) {
-            Label("Keyboard", systemImage: "keyboard")
+            Label(loc.localized("toolbar.keyboard"), systemImage: "keyboard")
         }
         ForEach(Array(controllerService.connectedControllers.enumerated()), id: \.element.playerIndex) { index, player in
             Button(action: { controllerService.activePlayerIndex = player.playerIndex }) {
@@ -61,7 +62,7 @@ struct LibraryGridView: View {
                 NotificationCenter.default.post(name: .openAppSettings, object: nil)
             }
         } label: {
-            Label("Configure...", systemImage: "gear")
+            Label(loc.localized("toolbar.configure"), systemImage: "gear")
         }
     }
 
@@ -243,9 +244,9 @@ struct LibraryGridView: View {
             ToolbarItem(placement: .primaryAction) {
                 Spacer()
             }
-ToolbarItem(placement: .primaryAction) {
+            ToolbarItem(placement: .primaryAction) {
                 Button { pickFolder() } label: { Image(systemName: "folder.badge.plus") }
-                    .help("Add ROM folder")
+                    .help(loc.localized("toolbar.addROMFolder"))
             }
             ToolbarItem(placement: .primaryAction) {
                 Color.clear
@@ -281,17 +282,17 @@ ToolbarItem(placement: .primaryAction) {
                 }
             }
             ToolbarItem(placement: .primaryAction) {
-                Picker("View", selection: $viewMode) {
+                Picker(loc.localized("toolbar.viewMode"), selection: $viewMode) {
                     Image(systemName: "square.grid.2x2").tag(ViewMode.grid)
                     Image(systemName: "list.bullet").tag(ViewMode.list)
                 }
                 .pickerStyle(.segmented)
                 .frame(width: 80)
-                .help("Switch between grid and list view")
+                .help(loc.localized("toolbar.switchViewMode"))
             }
             ToolbarItem(placement: .primaryAction) {
                 Menu {
-                    Section("Box Art Style") {
+                    Section(loc.localized("toolbar.boxArtStyle")) {
                         ForEach(BoxType.allCases) { type in
                             Button {
                                 if case .system(let system) = filter {
@@ -309,7 +310,7 @@ ToolbarItem(placement: .primaryAction) {
                         }
                     }
                     Divider()
-                    Section("Download") {
+                    Section(loc.localized("toolbar.download")) {
                         Button {
                             Task {
                                 guard !viewModel.displayedROMs.isEmpty else { return }
@@ -331,20 +332,20 @@ ToolbarItem(placement: .primaryAction) {
                                 await BoxArtService.shared.batchDownloadBoxArtLibretro(for: viewModel.displayedROMs, library: library)
                             }
                         } label: {
-                            Label("Download All Box Art", systemImage: "arrow.down.circle.fill")
+                            Label(loc.localized("toolbar.downloadAllBoxArt"), systemImage: "arrow.down.circle.fill")
                         }
                     }
                 } label: {
                     Image(systemName: "photo.stack")
                 }
-                .help("Box art options")
+                .help(loc.localized("toolbar.boxArtOptions"))
             }
             ToolbarItem(placement: .primaryAction) {
                 Menu {
-                    Section("Input Device") {
+                    Section(loc.localized("toolbar.inputDevice")) {
                         inputDeviceButtons
                     }
-                    Section("Language") {
+                    Section(loc.localized("toolbar.language")) {
                         languageButtons
                     }
                 } label: {
@@ -353,7 +354,7 @@ ToolbarItem(placement: .primaryAction) {
                         Text(prefs.systemLanguage.flagEmoji)
                     }
                 }
-                .help("Input device and language")
+                .help(loc.localized("toolbar.inputDeviceAndLanguage"))
             }
             ToolbarItem(placement: .primaryAction) {
                 Button {
@@ -373,13 +374,13 @@ ToolbarItem(placement: .primaryAction) {
                     }
                     NSApp.windows.first { $0.identifier?.rawValue == "settings" }?.makeKeyAndOrderFront(nil)
                 } label: {
-                    Label("Settings", systemImage: "gearshape")
+                    Label(loc.localized("app.settings"), systemImage: "gearshape")
                         .labelStyle(.titleAndIcon)
                 }
                 .buttonStyle(.borderless)
                 .frame(width: 80)
                 .padding(.horizontal, 4)
-                .help("Settings")
+                .help(loc.localized("app.settings"))
             }
         }
         .sheet(item: $manualBoxArtSearchROM) { rom in
@@ -1076,7 +1077,7 @@ columns = Array(
                 Button {
                     openWindow(id: "game-info", value: rom.id)
                 } label: {
-                    Label("See Game Info", systemImage: "info.circle")
+                    Label(loc.localized("contextMenu.seeGameInfo"), systemImage: "info.circle")
                 }
 
                 Button {
@@ -1084,14 +1085,14 @@ columns = Array(
                         await launchGame(rom)
                     }
                 } label: {
-                    Label("Launch Game", systemImage: "play.fill")
+                    Label(loc.localized("contextMenu.launchGame"), systemImage: "play.fill")
                 }
 
                 Button {
                     renameText = rom.customName ?? rom.metadata?.title ?? rom.name
                     renamingROM = rom
                 } label: {
-                    Label("Rename Game", systemImage: "pencil")
+                    Label(loc.localized("contextMenu.renameGame"), systemImage: "pencil")
                 }
 
                 Divider()
@@ -1100,7 +1101,7 @@ columns = Array(
                     Button {
                         showCreateCategorySheet = true
                     } label: {
-                        Label("New Category...", systemImage: "plus.circle")
+                        Label(loc.localized("contextMenu.newCategory"), systemImage: "plus.circle")
                     }
 
                     if !categoryManager.categories.isEmpty {
@@ -1142,11 +1143,11 @@ columns = Array(
                                 categoryManager.removeGamesFromCategory(gameIDs: targetIDs, categoryID: category.id)
                             }
                         } label: {
-                            Label("Remove from All Categories", systemImage: "folder.badge.minus")
+                            Label(loc.localized("contextMenu.removeFromAllCategories"), systemImage: "folder.badge.minus")
                         }
                     }
                 } label: {
-                    Label("Categories", systemImage: "folder.badge.plus")
+                    Label(loc.localized("contextMenu.categories"), systemImage: "folder.badge.plus")
                 }
 
                     let showGBMenu = ["gb", "gbc"].contains(rom.systemID)
@@ -1154,21 +1155,21 @@ columns = Array(
                     
                     if showGBMenu || showGCMenu {
                         Divider()
-                        Menu("System") {
+                        Menu(loc.localized("contextMenu.system")) {
                             if showGBMenu {
                                 Button {
                                     var updated = rom
                                     updated.systemID = "gb"
                                     library.updateROM(updated)
                                 } label: {
-                                    Label("Game Boy", systemImage: "gamecontroller")
+                                    Label(loc.localized("contextMenu.gameBoy"), systemImage: "gamecontroller")
                                 }
                                 Button {
                                     var updated = rom
                                     updated.systemID = "gbc"
                                     library.updateROM(updated)
                                 } label: {
-                                    Label("Game Boy Color", systemImage: "gamecontroller")
+                                    Label(loc.localized("contextMenu.gameBoyColor"), systemImage: "gamecontroller")
                                 }
                             }
                             if showGCMenu {
@@ -1177,48 +1178,48 @@ columns = Array(
                                     updated.systemID = "gc"
                                     library.updateROM(updated)
                                 } label: {
-                                    Label("GameCube", systemImage: "gamecontroller")
+                                    Label(loc.localized("contextMenu.gameCube"), systemImage: "gamecontroller")
                                 }
                                 Button {
                                     var updated = rom
                                     updated.systemID = "wii"
                                     library.updateROM(updated)
                                 } label: {
-                                    Label("Wii", systemImage: "gamecontroller")
+                                    Label(loc.localized("contextMenu.wii"), systemImage: "gamecontroller")
                                 }
                             }
                         }
                     }
                     
                     Divider()
-                    Button(rom.isFavorite ? "Remove from Favorites" : "Add to Favorites") {
+                    Button(rom.isFavorite ? loc.localized("contextMenu.removeFromFavorites") : loc.localized("contextMenu.addToFavorites")) {
 
                     var updated = rom
                     updated.isFavorite.toggle()
                     library.updateROM(updated)
                 }
                 Divider()
-                Button("Get Box Art") {
+                Button(loc.localized("contextMenu.getBoxArt")) {
                     manualBoxArtSearchROM = rom
                 }
-                Button("Reveal in Finder") {
+                Button(loc.localized("contextMenu.revealInFinder")) {
                     NSWorkspace.shared.selectFile(rom.path.path, inFileViewerRootedAtPath: "")
                 }
 
                 Divider()
                 if rom.isHidden {
-                    Button("Unhide Game") {
+                    Button(loc.localized("contextMenu.unhideGame")) {
                         unhideGame(rom)
                     }
                 } else {
-                    Button("Hide Game") {
+                    Button(loc.localized("contextMenu.hideGame")) {
                         hideGame(rom)
                     }
                     Button(role: .destructive) {
                         gameToDelete = rom
                         showDeleteConfirmation = true
                     } label: {
-                        Label("Delete Game...", systemImage: "trash")
+                        Label(loc.localized("contextMenu.deleteGame"), systemImage: "trash")
                     }
                 }
             }
@@ -1272,7 +1273,7 @@ private func removeROMFromLibrary(_ rom: ROM) {
         HStack {
             Image(systemName: "magnifyingglass")
                 .foregroundColor(.secondary)
-            TextField("Search games…", text: $searchText)
+            TextField(loc.localized("library.searchGames"), text: $searchText)
                 .textFieldStyle(.plain)
             if !searchText.isEmpty {
                 Button { searchText = "" } label: {
@@ -1344,7 +1345,7 @@ private func removeROMFromLibrary(_ rom: ROM) {
                         Image(systemName: sortByLastPlayed ? "clock.fill" : "clock")
                             .font(.system(size: 10, weight: .medium))
                             .scaleEffect(sortByLastPlayed ? 1.1 : 1)
-                        Text("Last Played")
+                        Text(loc.localized("library.lastPlayed"))
                             .font(.system(size: 11, weight: .medium))
                     }
                     .foregroundColor(sortByLastPlayed ? .white : .secondary)
@@ -1388,7 +1389,7 @@ private func removeROMFromLibrary(_ rom: ROM) {
                         Image(systemName: sortByLastAdded ? "calendar" : "calendar")
                             .font(.system(size: 10, weight: .medium))
                             .scaleEffect(sortByLastAdded ? 1.1 : 1)
-                        Text("Last Added")
+                        Text(loc.localized("library.lastAdded"))
                             .font(.system(size: 11, weight: .medium))
                     }
                     .foregroundColor(sortByLastAdded ? .white : .secondary)
@@ -1431,7 +1432,7 @@ private func removeROMFromLibrary(_ rom: ROM) {
                     HStack(spacing: 4) {
                         Image(systemName: selectedGenres.isEmpty ? "tag" : "tag.fill")
                             .font(.system(size: 10, weight: .medium))
-                        Text("Genre")
+                        Text(loc.localized("library.genre"))
                             .font(.system(size: 11, weight: .medium))
                         if !selectedGenres.isEmpty {
                             Text("(\(selectedGenres.count))")

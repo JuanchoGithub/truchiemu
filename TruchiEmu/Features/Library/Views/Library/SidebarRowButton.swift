@@ -15,8 +15,9 @@ struct SidebarRowButton: View {
     var onSystemAction: ((SystemInfo, SystemAction, String?) -> Void)? = nil
     var onRename: ((SystemInfo) -> Void)? = nil
     var installedCores: [LibretroCore]? = nil
-    
+
     @State private var isHovered = false
+    @ObservedObject private var loc = LocalizationManager.shared
     
     var isSelected: Bool {
         selectedFilter.id == filter.id
@@ -55,14 +56,14 @@ struct SidebarRowButton: View {
                 Button {
                     onRename?(system)
                 } label: {
-                    Label("Rename", systemImage: "pencil")
+                    Label(loc.localized("contextMenu.rename"), systemImage: "pencil")
                 }
 
                 if let onSystemAction = onSystemAction {
                     Button {
                         onSystemAction(system, .refresh, nil)
                     } label: {
-                        Label("Refresh", systemImage: "arrow.clockwise")
+                        Label(loc.localized("contextMenu.refresh"), systemImage: "arrow.clockwise")
                     }
 
                     if let cores = installedCores, cores.count > 1 {
@@ -75,25 +76,25 @@ struct SidebarRowButton: View {
                                 }
                             }
                         } label: {
-                            Label("Core Options", systemImage: "gearshape")
+                            Label(loc.localized("contextMenu.coreOptions"), systemImage: "gearshape")
                         }
                     } else if let installedCore = installedCores?.first {
                         Button {
                             onSystemAction(system, .settings(installedCore.id), nil)
                         } label: {
-                            Label("Core Options", systemImage: "gearshape")
+                            Label(loc.localized("contextMenu.coreOptions"), systemImage: "gearshape")
                         }
                     } else if let coreID = system.defaultCoreID {
                         Button {
                             onSystemAction(system, .settings(coreID), nil)
                         } label: {
-                            Label("Core Options", systemImage: "gearshape")
+                            Label(loc.localized("contextMenu.coreOptions"), systemImage: "gearshape")
                         }
                     } else {
                         Button {
                             onSystemAction(system, .selectCore(system), nil)
                         } label: {
-                            Label("Core Options", systemImage: "gearshape")
+                            Label(loc.localized("contextMenu.coreOptions"), systemImage: "gearshape")
                         }
                     }
 
@@ -110,13 +111,13 @@ struct SidebarRowButton: View {
                                     }
                                 }
                             } label: {
-                                Label("Shaders", systemImage: "wand.and.stars")
+                                Label(loc.localized("contextMenu.shaders"), systemImage: "wand.and.stars")
                             }
                         } else {
                             Button {
                                 onSystemAction(system, .shaders, nil)
                             } label: {
-                                Label("Shaders", systemImage: "wand.and.stars")
+                                Label(loc.localized("contextMenu.shaders"), systemImage: "wand.and.stars")
                             }
                         }
 
@@ -131,13 +132,13 @@ struct SidebarRowButton: View {
                                     }
                                 }
                             } label: {
-                                Label("Bezels", systemImage: "rectangle.on.rectangle")
+                                Label(loc.localized("contextMenu.bezels"), systemImage: "rectangle.on.rectangle")
                             }
                         } else {
                             Button {
                                 onSystemAction(system, .bezels, nil)
                             } label: {
-                                Label("Bezels", systemImage: "rectangle.on.rectangle")
+                                Label(loc.localized("contextMenu.bezels"), systemImage: "rectangle.on.rectangle")
                             }
                         }
 
@@ -152,13 +153,13 @@ struct SidebarRowButton: View {
                                     }
                                 }
                             } label: {
-                                Label("Cheats", systemImage: "gamecontroller")
+                                Label(loc.localized("contextMenu.cheats"), systemImage: "gamecontroller")
                             }
                         } else {
                             Button {
                                 onSystemAction(system, .cheats, nil)
                             } label: {
-                                Label("Cheats", systemImage: "gamecontroller")
+                                Label(loc.localized("contextMenu.cheats"), systemImage: "gamecontroller")
                             }
                         }
 
@@ -173,13 +174,13 @@ struct SidebarRowButton: View {
                                     }
                                 }
                             } label: {
-                                Label("Controllers", systemImage: "gamecontroller.fill")
+                                Label(loc.localized("contextMenu.controllers"), systemImage: "gamecontroller.fill")
                             }
                         } else {
                             Button {
                                 onSystemAction(system, .controllers, nil)
                             } label: {
-                                Label("Controllers", systemImage: "gamecontroller.fill")
+                                Label(loc.localized("contextMenu.controllers"), systemImage: "gamecontroller.fill")
                             }
                         }
                     }
@@ -188,19 +189,19 @@ struct SidebarRowButton: View {
                     Button {
                         onSystemAction(system, .library, nil)
                     } label: {
-                        Label("Library", systemImage: "book")
+                        Label(loc.localized("contextMenu.library"), systemImage: "book")
                     }
                 } else {
                     Button {
                         onRefresh?()
                     } label: {
-                        Label("Refresh", systemImage: "arrow.clockwise")
+                        Label(loc.localized("contextMenu.refresh"), systemImage: "arrow.clockwise")
                     }
 
                     Button {
                         onSettings?()
                     } label: {
-                        Label("Settings", systemImage: "gearshape")
+                        Label(loc.localized("contextMenu.settings"), systemImage: "gearshape")
                     }
                 }
             }

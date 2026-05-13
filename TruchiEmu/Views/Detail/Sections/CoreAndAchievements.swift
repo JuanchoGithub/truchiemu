@@ -2,14 +2,14 @@ import SwiftUI
 
 extension GameDetailView {
     var coreSection: some View {
-        ModernSectionCard(title: "Core", icon: "cpu") {
+        ModernSectionCard(title: loc.localized("core.title"), icon: "cpu") {
             VStack(alignment: .leading, spacing: 12) {
                 HStack {
                     Image(systemName: "cpu").foregroundColor(AppColors.textSecondary(colorScheme))
-                    Text("Emulation Core").foregroundColor(AppColors.textSecondary(colorScheme)).font(.caption)
+                    Text(loc.localized("core.emulationCore")).foregroundColor(AppColors.textSecondary(colorScheme)).font(.caption)
                     Spacer()
                     if installedCores.isEmpty {
-                        Text("No cores installed").font(.caption).foregroundColor(AppColors.textMuted(colorScheme))
+                        Text(loc.localized("core.noCoresInstalled")).font(.caption).foregroundColor(AppColors.textMuted(colorScheme))
                     } else {
                         Picker("Core", selection: $selectedCoreID) {
                             ForEach(installedCores) { core in
@@ -27,16 +27,16 @@ extension GameDetailView {
                 Toggle(isOn: $applyCoreToSystem) {
                     HStack {
                         Image(systemName: "globe").foregroundColor(AppColors.textSecondary(colorScheme))
-                        Text("Apply to system default").foregroundColor(AppColors.textPrimary(colorScheme))
+                        Text(loc.localized("core.applyToSystemDefault")).foregroundColor(AppColors.textPrimary(colorScheme))
                     }
                 }
                 .toggleStyle(SwitchToggleStyle())
 
                 if applyCoreToSystem {
-                    Text("This will change the default core for all \(systemName) games. The current game will no longer use a custom core override.")
+                    Text(loc.localized("core.changeSystemCoreWarning").replacingOccurrences(of: "{0}", with: systemName))
                         .font(.caption).foregroundColor(AppColors.textMuted(colorScheme)).lineSpacing(2)
                 } else {
-                    Text("Only this game will use the selected core.")
+                    Text(loc.localized("core.onlyThisGameUsesSelectedCore"))
                         .font(.caption).foregroundColor(AppColors.textMuted(colorScheme)).lineSpacing(2)
                 }
 
@@ -47,7 +47,7 @@ extension GameDetailView {
                     Button { applyCoreConfiguration() } label: {
                         HStack(spacing: 6) {
                             Image(systemName: applyCoreToSystem ? "globe" : "gamecontroller")
-                            Text(applyCoreToSystem ? "Set System Default" : "Set for This Game")
+                            Text(applyCoreToSystem ? loc.localized("core.setSystemDefault") : loc.localized("core.setForThisGame"))
                         }
                         .foregroundColor(.white).padding(.horizontal, 16).padding(.vertical, 8).background(Color.accentColor.opacity(0.6)).cornerRadius(8)
                     }
@@ -75,7 +75,7 @@ extension GameDetailView {
 
     var achievementsSection: some View {
         ModernSectionCard(
-            title: "Achievements",
+            title: loc.localized("gameDetail.achievements"),
             icon: "trophy",
             badge: gameAchievements.isEmpty ? nil : "\(unlockedAchievementCount)/\(gameAchievements.count)"
         ) {
@@ -83,7 +83,7 @@ extension GameDetailView {
                 if isAchievementsLoading {
                     HStack(spacing: 8) {
                         ProgressView().controlSize(.small)
-                        Text("Loading achievements...").font(.subheadline).foregroundColor(AppColors.textSecondary(colorScheme))
+                        Text(loc.localized("achievement.loadingAchievements")).font(.subheadline).foregroundColor(AppColors.textSecondary(colorScheme))
                     }
                     .frame(maxWidth: .infinity).padding(.vertical, 16)
                 } else if let mismatchStatus = currentROM.raMatchStatus, mismatchStatus.hasPrefix("mismatch") {
@@ -93,10 +93,10 @@ extension GameDetailView {
                                 .font(.system(size: 24))
                                 .foregroundColor(.orange)
                             VStack(alignment: .leading, spacing: 4) {
-                                Text("Version Mismatch")
+                                Text(loc.localized("achievement.versionMismatch"))
                                     .font(.headline)
                                     .foregroundColor(AppColors.textPrimary(colorScheme))
-                                Text("Your ROM version does not match the RetroAchievements supported version. Achievements cannot be earned.")
+                                Text(loc.localized("achievement.romVersionMismatchInfo"))
                                     .font(.caption)
                                     .foregroundColor(AppColors.textMuted(colorScheme))
                                     .lineLimit(3)
@@ -109,7 +109,7 @@ extension GameDetailView {
                                     NSWorkspace.shared.open(url)
                                 }
                             } label: {
-                                Text("View on RetroAchievements")
+                                Text(loc.localized("achievement.viewOnRetroAchievements"))
                                     .font(.caption)
                             }
                             .buttonStyle(.link)
@@ -117,7 +117,7 @@ extension GameDetailView {
                         Button {
                             findInRA()
                         } label: {
-                            Label("Find Different Version", systemImage: "magnifyingglass")
+                            Label(loc.localized("achievement.findDifferentVersion"), systemImage: "magnifyingglass")
                                 .font(.caption)
                         }
                         .buttonStyle(.bordered)
@@ -127,12 +127,12 @@ extension GameDetailView {
                 } else if let matchStatus = currentROM.raMatchStatus, matchStatus == "not_supported" {
                     VStack(spacing: 8) {
                         Image(systemName: "trophy.circle").font(.system(size: 30)).foregroundColor(AppColors.textMuted(colorScheme))
-                        Text("No Achievements").font(.subheadline).foregroundColor(AppColors.textSecondary(colorScheme))
-                        Text("This game is not supported by RetroAchievements.").font(.caption).foregroundColor(AppColors.textMuted(colorScheme))
+                        Text(loc.localized("achievement.noAchievements")).font(.subheadline).foregroundColor(AppColors.textSecondary(colorScheme))
+                        Text(loc.localized("achievement.gameNotSupported")).font(.caption).foregroundColor(AppColors.textMuted(colorScheme))
                         Button {
                             findInRA()
                         } label: {
-                            Label("Search RetroAchievements", systemImage: "magnifyingglass")
+                            Label(loc.localized("achievement.searchRetroAchievements"), systemImage: "magnifyingglass")
                                 .font(.caption)
                         }
                         .buttonStyle(.bordered)
@@ -143,12 +143,12 @@ extension GameDetailView {
                 } else if gameAchievements.isEmpty {
                     VStack(spacing: 8) {
                         Image(systemName: "trophy.circle").font(.system(size: 30)).foregroundColor(AppColors.textMuted(colorScheme))
-                        Text("No achievements available").font(.subheadline).foregroundColor(AppColors.textSecondary(colorScheme))
-                        Text("Game may not have RetroAchievements data").font(.caption).foregroundColor(AppColors.textMuted(colorScheme))
+                        Text(loc.localized("achievement.noAchievementsAvailable")).font(.subheadline).foregroundColor(AppColors.textSecondary(colorScheme))
+                        Text(loc.localized("achievement.gameMayNotHaveRAData")).font(.caption).foregroundColor(AppColors.textMuted(colorScheme))
                         Button {
                             findInRA()
                         } label: {
-                            Label("Search RetroAchievements", systemImage: "magnifyingglass")
+                            Label(loc.localized("achievement.searchRetroAchievements"), systemImage: "magnifyingglass")
                                 .font(.caption)
                         }
                         .buttonStyle(.bordered)
@@ -160,11 +160,11 @@ extension GameDetailView {
                     HStack(spacing: 20) {
                         VStack(alignment: .leading, spacing: 2) {
                             Text("\(unlockedAchievementCount)/\(gameAchievements.count)").font(.title2).fontWeight(.bold).foregroundColor(AppColors.textPrimary(colorScheme))
-                            Text("Achievements").font(.caption).foregroundColor(AppColors.textSecondary(colorScheme))
+                            Text(loc.localized("achievement.achievements")).font(.caption).foregroundColor(AppColors.textSecondary(colorScheme))
                         }
                         VStack(alignment: .leading, spacing: 2) {
                             Text("\(earnedPoints)/\(totalAchievementPoints)").font(.title2).fontWeight(.bold).foregroundColor(AppColors.textPrimary(colorScheme))
-                            Text("Points").font(.caption).foregroundColor(AppColors.textSecondary(colorScheme))
+                            Text(loc.localized("achievement.points")).font(.caption).foregroundColor(AppColors.textSecondary(colorScheme))
                         }
                         Spacer()
                         let progress = gameAchievements.isEmpty ? 0.0 : Double(unlockedAchievementCount) / Double(gameAchievements.count)

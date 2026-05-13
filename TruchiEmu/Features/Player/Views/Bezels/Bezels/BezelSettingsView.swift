@@ -1,22 +1,18 @@
 import SwiftUI
 import AppKit
 
-// MARK: - Bezel Settings View
-
 struct BezelSettingsView: View {
-    // MARK: - Dependencies
     @ObservedObject private var apiService = BezelAPIService.shared
     @ObservedObject private var storageManager = BezelStorageManager.shared
+    @ObservedObject private var loc = LocalizationManager.shared
     @Environment(SystemDatabaseWrapper.self) private var systemDatabase
     
-    // MARK: - State
     @State private var downloadResult: String?
     @State private var showClearConfirmation = false
     @State private var selectedSystem: String = "all"
     
     let system: SystemInfo?
     
-    // MARK: - Search
     @Binding var searchText: String
     let searchKeywords: String = "bezel frame overlay monitor"
 
@@ -28,7 +24,6 @@ struct BezelSettingsView: View {
         }
     }
     
-    // MARK: - Filtered Sections
     private var showStorageSection: Bool {
         searchText.isEmpty || "storage path folder directory".fuzzyMatch(searchText)
     }
@@ -77,9 +72,9 @@ struct BezelSettingsView: View {
         }
         .formStyle(.grouped)
         .frame(minWidth: 500)
-        .navigationTitle("Bezel Settings")
-        .confirmationDialog("Delete Bezels?", isPresented: $showClearConfirmation) {
-            Button("Delete All", role: .destructive) { 
+        .navigationTitle(loc.localized("bezel.settings"))
+        .confirmationDialog(loc.localized("bezel.deleteBezelsTitle"), isPresented: $showClearConfirmation) {
+            Button(loc.localized("bezel.deleteAll"), role: .destructive) { 
                 do {
                     try storageManager.clearAllBezels()
                 } catch {
@@ -87,15 +82,13 @@ struct BezelSettingsView: View {
                 }
             }
         } message: {
-            Text("This will remove all downloaded images from your disk. You can re-download them later.")
+            Text(loc.localized("bezel.deleteAllWarning"))
         }
     }
     
-// MARK: - Section Views
-    
     private var storageSection: some View {
         Section {
-            LabeledContent("Current Path") {
+            LabeledContent(loc.localized("bezel.currentPath")) {
                 Text(storageManager.bezelRootDirectory.path)
                     .font(.caption.monospaced())
                     .foregroundStyle(.secondary)
@@ -104,7 +97,7 @@ struct BezelSettingsView: View {
                     .help(storageManager.bezelRootDirectory.path)
             }
             
-            Picker("Storage Mode", selection: Binding(
+            Picker(loc.localized("bezel.storageMode"), selection: Binding(
                 get: { storageManager.storageMode },
                 set: { newValue in
                     Task { await handleStorageMigration(to: newValue) }
@@ -117,35 +110,35 @@ struct BezelSettingsView: View {
             .pickerStyle(.segmented)
             
             Button(action: { storageManager.openInFinder() }) {
-                Label("Show in Finder", systemImage: "folder")
+                Label(loc.localized("bezel.showInFinder"), systemImage: "folder")
             }
             .buttonStyle(.bordered)
             .controlSize(.small)
         } header: {
-            Label("Storage", systemImage: "folder.fill")
+            Label(loc.localized("bezel.storage"), systemImage: "folder.fill")
         }
     }
     
     private var downloadsSection: some View {
         Section {
             VStack(alignment: .leading, spacing: 4) {
-                Text("The Bezel Project")
+                Text(loc.localized("bezel.theBezelProject"))
                     .font(.subheadline)
                     .fontWeight(.medium)
-                Text("Download 1080p overlays for authentic console artwork.")
+                Text(loc.localized("bezel.download1080Info"))
                     .font(.caption)
                     .foregroundStyle(.secondary)
             }
             
             if let lastDate = apiService.progressTracker.lastDownloadDate {
-                Text("Updated: \(lastDate.formatted(.dateTime.month().day().year()))")
+                Text("\(loc.localized("bezel.updated")) \(lastDate.formatted(.dateTime.month().day().year()))")
                     .font(.caption2)
                     .foregroundStyle(.secondary)
             }
             
             HStack {
-                Picker("System", selection: $selectedSystem) {
-                    Text("All Systems").tag("all")
+                Picker(loc.localized("bezel.view"), selection: $selectedSystem) {
+                    Text(loc.localized("bezel.allSystems")).tag("all")
                     Divider()
                     ForEach(systemDatabase.systemsForDisplay.sorted(by: { $0.name < $1.name })) { sys in
                         Text(sys.name).tag(sys.id)
@@ -175,7 +168,7 @@ struct BezelSettingsView: View {
                 resultBanner(result: result)
             }
         } header: {
-            Label("Downloads", systemImage: "arrow.down.circle.fill")
+            Label(loc.localized("bezel.downloads"), systemImage: "arrow.down.circle.fill")
         }
     }
     
@@ -184,21 +177,21 @@ struct BezelSettingsView: View {
             HStack(spacing: 20) {
                 statTile(
                     value: "\(storageManager.downloadedBezelCount())",
-                    label: "Files",
+                    label: loc.localized("bezel.files"),
                     icon: "photo.fill",
                     color: .blue
                 )
                 Divider().frame(height: 40)
                 statTile(
                     value: formatByteSize(storageManager.bezelStorageSize()),
-                    label: "Storage",
+                    label: loc.localized("bezel.storageLabel"),
                     icon: "internaldrive.fill",
                     color: .purple
                 )
                 Divider().frame(height: 40)
                 statTile(
                     value: "\(BezelSystemMapping.configurations.count)",
-                    label: "Supported",
+                    label: loc.localized("bezel.supported"),
                     icon: "gamecontroller.fill",
                     color: .orange
                 )
@@ -206,7 +199,7 @@ struct BezelSettingsView: View {
             .padding(.vertical, 8)
             .frame(maxWidth: .infinity)
         } header: {
-            Label("Statistics", systemImage: "chart.bar.fill")
+            Label(loc.localized("bezel.statistics"), systemImage: "chart.bar.fill")
         }
     }
     
@@ -215,29 +208,24 @@ struct BezelSettingsView: View {
             Button(role: .destructive) {
                 showClearConfirmation = true
             } label: {
-                Label("Delete All Bezels", systemImage: "trash.fill")
+                Label(loc.localized("bezel.deleteAllBezels"), systemImage: "trash.fill")
             }
             .buttonStyle(.bordered)
             .tint(.red)
             .controlSize(.small)
         } header: {
-            Label("Danger Zone", systemImage: "exclamationmark.triangle.fill")
+            Label(loc.localized("bezel.dangerZone"), systemImage: "exclamationmark.triangle.fill")
         }
     }
     
     private var noResultsView: some View {
         ContentUnavailableView {
-            Label("No Results", systemImage: "magnifyingglass")
+            Label(loc.localized("bezel.noResults"), systemImage: "magnifyingglass")
         } description: {
-            Text("No settings match '\(searchText)'")
+            Text("\(loc.localized("bezel.noSettingsMatch")) '\(searchText)'")
         }
         .padding(.vertical, 40)
     }
-}
-
-// MARK: - Sub-views & Helpers
-
-private extension BezelSettingsView {
     
     var downloadProgressBlock: some View {
         VStack(alignment: .leading, spacing: 6) {
@@ -252,7 +240,7 @@ private extension BezelSettingsView {
                 Text("\(apiService.progressTracker.currentDownloadedCount)/\(apiService.progressTracker.totalItemsToDownload)")
                     .font(.caption2.monospacedDigit())
                 
-                Button("Stop") {
+                Button(loc.localized("bezel.stop")) {
                     apiService.progressTracker.cancelDownload()
                 }
                 .buttonStyle(.link)
@@ -293,8 +281,8 @@ private extension BezelSettingsView {
     }
 
     var downloadButtonLabel: String {
-        if selectedSystem == "all" { return "Download All" }
-        return "Download \(selectedSystem.capitalized)"
+        if selectedSystem == "all" { return loc.localized("bezel.downloadAll") }
+        return "\(loc.localized("bezel.downloadAll")) \(selectedSystem.capitalized)"
     }
     
     func resultBanner(result: String) -> some View {
@@ -329,16 +317,15 @@ private extension BezelSettingsView {
         guard mode != storageManager.storageMode else { return }
         
         let alert = NSAlert()
-        alert.messageText = "Change Storage Location"
-        alert.informativeText = "Would you like to move your existing bezels to the new location?"
-        alert.addButton(withTitle: "Move Existing")
-        alert.addButton(withTitle: "Change Only")
-        alert.addButton(withTitle: "Cancel")
+        alert.messageText = loc.localized("bezel.changeStorageLocation")
+        alert.informativeText = loc.localized("bezel.moveExistingPrompt")
+        alert.addButton(withTitle: loc.localized("bezel.moveExisting"))
+        alert.addButton(withTitle: loc.localized("bezel.changeOnly"))
+        alert.addButton(withTitle: loc.localized("bezel.cancel"))
         
         let response = alert.runModal()
         if response == .alertThirdButtonReturn { return }
 
-        // Logic for NSOpenPanel if custom folder...
         if mode == .customFolder {
             let panel = NSOpenPanel()
             panel.canChooseDirectories = true
@@ -351,7 +338,6 @@ private extension BezelSettingsView {
         }
 
         if response == .alertFirstButtonReturn {
-            // Perform migration logic here via storageManager
         }
         
         storageManager.storageMode = mode

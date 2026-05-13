@@ -6,30 +6,31 @@ struct ControlsSection: View {
     let rom: ROM
     @EnvironmentObject var controllerService: ControllerService
     @Environment(\.colorScheme) private var colorScheme
+    @ObservedObject private var loc = LocalizationManager.shared
 
     @State private var showControlsPicker = false
 
     var body: some View {
         ModernSectionCard(
-            title: "Controls",
+            title: loc.localized("controls.title"),
             icon: "gamecontroller",
             badge: "System"
         ) {
             VStack(alignment: .leading, spacing: 14) {
                 HStack {
                     VStack(alignment: .leading, spacing: 2) {
-                        Text("Controller Mapping")
+                        Text(loc.localized("controls.controllerMapping"))
                             .font(.subheadline)
                             .fontWeight(.medium)
                             .foregroundColor(AppColors.textPrimary(colorScheme))
-                        Text("Uses standard \(systemName) layout")
+                        Text(loc.localized("controls.usesStandardLayout").replacingOccurrences(of: "{0}", with: systemName))
                             .font(.caption)
                             .foregroundColor(AppColors.textSecondary(colorScheme))
                     }
 
                     Spacer()
 
-                    Button("Edit") {
+                    Button(loc.localized("controls.edit")) {
                         showControlsPicker = true
                     }
                     .foregroundColor(.white)
@@ -47,11 +48,11 @@ struct ControlsSection: View {
                             .frame(width: 64, height: 64)
 
                         VStack(alignment: .leading, spacing: 2) {
-                            Text("Default Mapping")
+                            Text(loc.localized("controls.defaultMapping"))
                                 .font(.subheadline)
                                 .fontWeight(.medium)
                                 .foregroundColor(AppColors.textPrimary(colorScheme))
-                            Text("Standard \(systemName) controller")
+                            Text(loc.localized("controls.standardController").replacingOccurrences(of: "{0}", with: systemName))
                                 .font(.caption)
                                 .foregroundColor(AppColors.textSecondary(colorScheme))
                         }
@@ -67,15 +68,15 @@ struct ControlsSection: View {
 
                 HStack {
                     VStack(alignment: .leading, spacing: 2) {
-                        Text("System Default Controls")
+                        Text(loc.localized("controls.systemDefaultControls"))
                             .font(.caption)
                             .foregroundColor(AppColors.textSecondary(colorScheme))
-                        Text("Reset to default controls")
+                        Text(loc.localized("controls.resetToDefaultControls"))
                             .font(.caption)
                             .foregroundColor(AppColors.textMuted(colorScheme))
                     }
                     Spacer()
-                    Button("Reset") {
+                    Button(loc.localized("controls.reset")) {
                         resetControlsToSystemDefault()
                     }
                     .foregroundColor(.white)

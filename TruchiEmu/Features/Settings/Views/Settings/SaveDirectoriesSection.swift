@@ -8,6 +8,7 @@ import SwiftUI
 public struct SaveDirectoriesSection: View {
     @Environment(SystemDatabaseWrapper.self) private var systemDatabase
     @StateObject private var directoryManager = SaveDirectoryManager.shared
+    @ObservedObject private var loc = LocalizationManager.shared
     
     @State private var saveFileSize: Int64 = 0
     @State private var saveStateSize: Int64 = 0
@@ -18,25 +19,25 @@ public struct SaveDirectoriesSection: View {
     public var body: some View {
         Form {
             // Statistics Dashboard
-            Section("Storage Summary") {
+            Section(loc.localized("saveDirectories.storageSummary")) {
                 HStack(spacing: 20) {
                     statTile(
                         value: byteCountString(from: saveFileSize),
-                        label: "Save Files",
+                        label: loc.localized("saveDirectories.saveFiles"),
                         icon: "memorychip",
                         color: .blue
                     )
                     Divider().frame(height: 40)
                     statTile(
                         value: byteCountString(from: saveStateSize),
-                        label: "Save States",
+                        label: loc.localized("saveDirectories.saveStates"),
                         icon: "gamecontroller.fill",
                         color: .purple
                     )
                     Divider().frame(height: 40)
                     statTile(
                         value: byteCountString(from: saveFileSize + saveStateSize),
-                        label: "Total",
+                        label: loc.localized("saveDirectories.total"),
                         icon: "externaldrive.fill",
                         color: .orange
                     )
@@ -45,11 +46,11 @@ public struct SaveDirectoriesSection: View {
                 .frame(maxWidth: .infinity)
                 if directoryManager.needsMigration {
                     Divider()
-                    Label("Existing saves found in old location", systemImage: "exclamationmark.triangle")
+                    Label(loc.localized("saveDirectories.existingSavesFound"), systemImage: "exclamationmark.triangle")
                         .font(.caption)
                         .foregroundStyle(.orange)
                     Button(action: { showingMigrationAlert = true }) {
-                        Label("Migrate Save Files", systemImage: "arrow.right.doc.on.clipboard")
+                        Label(loc.localized("saveDirectories.migrateSaveFiles"), systemImage: "arrow.right.doc.on.clipboard")
                     }
                     .buttonStyle(.bordered)
                     .controlSize(.small)
@@ -57,8 +58,8 @@ public struct SaveDirectoriesSection: View {
             }
             
             // Location Section
-            Section("Location") {
-                LabeledContent("Save Files (SRAM)") {
+            Section(loc.localized("saveDirectories.location")) {
+                LabeledContent(loc.localized("saveDirectories.saveFilesSRAM")) {
                     Text(directoryManager.savefilesDirectory.path)
                         .font(.caption.monospaced())
                         .lineLimit(1)
@@ -66,7 +67,7 @@ public struct SaveDirectoriesSection: View {
                         .foregroundStyle(.secondary)
                 }
                 
-                LabeledContent("Save States") {
+                LabeledContent(loc.localized("saveDirectories.saveStates")) {
                     Text(directoryManager.statesDirectory.path)
                         .font(.caption.monospaced())
                         .lineLimit(1)
@@ -74,7 +75,7 @@ public struct SaveDirectoriesSection: View {
                         .foregroundStyle(.secondary)
                 }
                 
-                LabeledContent("System / BIOS") {
+                LabeledContent(loc.localized("saveDirectories.systemBIOS")) {
                     Text(directoryManager.activeSystemDirectory.path)
                         .font(.caption.monospaced())
                         .lineLimit(1)
@@ -87,7 +88,7 @@ public struct SaveDirectoriesSection: View {
                 
                 HStack {
                     Button(action: changeSaveDirectory) {
-                        Label("Change Save Directory", systemImage: "folder")
+                        Label(loc.localized("saveDirectories.changeSaveDirectory"), systemImage: "folder")
                     }
                     .buttonStyle(.bordered)
                     .controlSize(.small)
@@ -95,7 +96,7 @@ public struct SaveDirectoriesSection: View {
             }
         }
         .formStyle(.grouped)
-        .navigationTitle("Save Directories")
+        .navigationTitle(loc.localized("saveDirectories.title"))
         .task {
             await calculateSizes()
         }
@@ -128,8 +129,8 @@ public struct SaveDirectoriesSection: View {
         let panel = NSOpenPanel()
         panel.canChooseDirectories = true
         panel.canChooseFiles = false
-        panel.prompt = "Select Save Directory"
-        panel.message = "Choose where save files will be stored"
+        panel.prompt = loc.localized("saveDirectories.changeSaveDirectory")
+        panel.message = loc.localized("saveDirectories.chooseDirectoryMessage")
         
         if panel.runModal() == .OK, let url = panel.url {
             let needsMigration = directoryManager.setSaveDirectory(url)

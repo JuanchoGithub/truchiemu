@@ -5,7 +5,7 @@ extension GameDetailView {
         HStack(alignment: .center, spacing: 20) {
             VStack(alignment: .leading, spacing: 12) {
                 HStack(alignment: .firstTextBaseline, spacing: 10) {
-                    TextField("Game Title", text: $localTitle, onCommit: {
+                    TextField(loc.localized("header.gameTitle"), text: $localTitle, onCommit: {
                         var updated = currentROM
                         let trimmed = localTitle.trimmingCharacters(in: .whitespaces)
                         updated.customName = trimmed.isEmpty ? nil : trimmed
@@ -67,7 +67,7 @@ extension GameDetailView {
                     Button {
                         showBoxArtPicker = true
                     } label: {
-                        Label("Change Box Art", systemImage: "photo")
+                        Label(loc.localized("boxArt.changeBoxArt"), systemImage: "photo")
                     }
                 }
 
@@ -97,7 +97,7 @@ extension GameDetailView {
         } label: {
             HStack(spacing: 10) {
                 Image(systemName: "play.fill").font(.title3)
-                Text("Play").font(.headline).fontWeight(.semibold)
+                Text("header.play").font(.headline).fontWeight(.semibold)
             }
             .foregroundColor(.white)
             .frame(maxWidth: .infinity)

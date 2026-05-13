@@ -1,12 +1,5 @@
 import SwiftUI
 
-// MARK: - Bezel Browser View
-
-// A dedicated view for browsing and managing bezels per system.
-// Features:
-// - Local tab: Image grid of downloaded bezels
-// - Remote tab: List with preview panel, click to download and cache
-// Cached bezels are kept separate from "available" until user chooses to apply them.
 struct BezelBrowserView: View {
     let systemID: String
     let systemName: String
@@ -14,8 +7,8 @@ struct BezelBrowserView: View {
     @StateObject private var apiService = BezelAPIService.shared
     @StateObject private var bezelManager = BezelManager.shared
     @StateObject private var storageManager = BezelStorageManager.shared
+    @ObservedObject private var loc = LocalizationManager.shared
     
-    // State
     @State private var allBezels: [BezelEntry] = []
     @State private var isLoading = false
     @State private var errorMessage: String?
@@ -25,7 +18,6 @@ struct BezelBrowserView: View {
     @State private var activeTab: BezelBrowserTab = .local
     @State private var cachedBezels: [String: BezelEntry] = [:]
     
-    // For remote preview downloads
     @State private var previewDownloadTask: Task<Void, Never>?
     @State private var previewImage: NSImage?
     @State private var isPreviewLoading = false
@@ -44,9 +36,10 @@ struct BezelBrowserView: View {
         }
         
         var label: String {
+            let loc = LocalizationManager.shared
             switch self {
-            case .local: return "Downloaded"
-            case .remote: return "Available"
+            case .local: return loc.localized("bezel.downloadedCount").replacingOccurrences(of: ",", with: "").trimmingCharacters(in: .whitespaces)
+            case .remote: return loc.localized("bezel.availableCount").replacingOccurrences(of: ",", with: "").trimmingCharacters(in: .whitespaces)
             }
         }
     }
@@ -107,11 +100,10 @@ struct BezelBrowserView: View {
             .padding()
             .background(Color(nsColor: .windowBackgroundColor))
             
-            // Search bar
             HStack {
                 Image(systemName: "magnifyingglass")
                     .foregroundColor(.secondary)
-                TextField("Search bezels...", text: $searchQuery)
+                TextField(loc.localized("bezel.searchBezels"), text: $searchQuery)
                     .textFieldStyle(.plain)
                 if !searchQuery.isEmpty {
                     Button(action: { searchQuery = "" }) {
@@ -123,8 +115,7 @@ struct BezelBrowserView: View {
                 
                 Spacer()
                 
-                // Stats
-                Text("\(localBezels.count) downloaded, \(remoteBezels.count) available")
+                Text("\(localBezels.count) \(loc.localized("bezel.downloadedCount").replacingOccurrences(of: ",", with: "")) \(remoteBezels.count) \(loc.localized("bezel.availableCount"))")
                     .font(.caption)
                     .foregroundColor(.secondary)
             }
@@ -134,9 +125,8 @@ struct BezelBrowserView: View {
             .padding(.horizontal)
             .padding(.vertical, 4)
             
-            // Loading/Empty/Error states
             if isLoading {
-                ProgressView("Loading bezels...")
+                ProgressView(loc.localized("bezel.loadingBezels"))
                     .frame(maxWidth: .infinity, maxHeight: .infinity)
             } else if let error = errorMessage {
                 errorView(message: error)
@@ -195,18 +185,18 @@ struct BezelBrowserView: View {
                         Button {
                             applyBezel(entry)
                         } label: {
-                            Label("Apply to Game", systemImage: "checkmark.circle")
+                            Label(loc.localized("bezel.applyToGame"), systemImage: "checkmark.circle")
                         }
                         Button {
                             try? bezelManager.removeBezel(systemID: systemID, gameName: entry.id)
                             Task { await loadBezels() }
                         } label: {
-                            Label("Delete", systemImage: "trash")
+                            Label(loc.localized("bezel.delete"), systemImage: "trash")
                         }.foregroundColor(.red)
                         Button {
                             openBezelInFinder(entry)
                         } label: {
-                            Label("Show in Finder", systemImage: "folder")
+                            Label(loc.localized("bezel.showInFinder"), systemImage: "folder")
                         }
                     }
                 }
@@ -255,7 +245,7 @@ struct BezelBrowserView: View {
                             .resizable()
                             .aspectRatio(contentMode: .fit)
                     } else if isPreviewLoading {
-                        ProgressView("Loading preview...")
+                        ProgressView(loc.localized("bezel.loadingBezels"))
                     } else {
                         // Placeholder for remote bezels
                         placeholderPreview
@@ -280,15 +270,15 @@ struct BezelBrowserView: View {
                     // Status badge
                     HStack {
                         if entry.isDownloaded {
-                            Label("Downloaded", systemImage: "checkmark.circle.fill")
+                            Label(loc.localized("bezel.downloadedCount").replacingOccurrences(of: ",", with: "").trimmingCharacters(in: .whitespaces), systemImage: "checkmark.circle.fill")
                                 .foregroundColor(.green)
                                 .font(.caption)
                         } else if isCached(entry.id) {
-                            Label("Cached (preview)", systemImage: "eye.circle.fill")
+                            Label(loc.localized("bezel.cachedPreview"), systemImage: "eye.circle.fill")
                                 .foregroundColor(.blue)
                                 .font(.caption)
                         } else {
-                            Label("Not downloaded", systemImage: "arrow.down.circle")
+                            Label(loc.localized("bezel.notDownloaded"), systemImage: "arrow.down.circle")
                                 .foregroundColor(.secondary)
                                 .font(.caption)
                         }
@@ -297,20 +287,17 @@ struct BezelBrowserView: View {
                 
                 Spacer()
                 
-                // Action buttons
                 VStack(spacing: 8) {
                     if entry.isDownloaded {
-                        // Already downloaded - offer to apply
                         Button {
                             applyBezel(entry)
                         } label: {
-                            Label("Apply to Current Game", systemImage: "checkmark.circle")
+                            Label(loc.localized("bezel.applyToCurrentGame"), systemImage: "checkmark.circle")
                                 .frame(maxWidth: .infinity)
                         }
                         .buttonStyle(.borderedProminent)
                         .controlSize(.large)
                     } else {
-                        // Download and cache
                         Button {
                             downloadAndCache(entry)
                         } label: {
@@ -318,7 +305,7 @@ struct BezelBrowserView: View {
                                 ProgressView()
                                     .frame(maxWidth: .infinity)
                             } else {
-                                Label(isCached(entry.id) ? "Apply to Current Game" : "Download & Preview", 
+                                Label(isCached(entry.id) ? loc.localized("bezel.applyToCurrentGame") : loc.localized("bezel.downloadPreview"), 
                                       systemImage: isCached(entry.id) ? "checkmark.circle.fill" : "arrow.down.circle.fill")
                                     .frame(maxWidth: .infinity)
                             }
@@ -327,12 +314,11 @@ struct BezelBrowserView: View {
                         .controlSize(.large)
                         .disabled(isDownloading)
                         
-                        // If cached, show option to make available
                         if isCached(entry.id) {
                             Button {
                                 moveToAvailable(entry)
                             } label: {
-                                Label("Add to Available Bezels", systemImage: "folder.badge.plus")
+                                Label(loc.localized("bezel.addToAvailableBezels"), systemImage: "folder.badge.plus")
                                     .frame(maxWidth: .infinity)
                             }
                             .buttonStyle(.bordered)
@@ -340,7 +326,7 @@ struct BezelBrowserView: View {
                     }
                 }
             } else {
-                Text("Select a bezel to preview")
+                Text(loc.localized("bezel.selectBezelToPreview"))
                     .foregroundColor(.secondary)
                     .frame(maxWidth: .infinity, maxHeight: .infinity)
             }
@@ -355,7 +341,7 @@ struct BezelBrowserView: View {
             Image(systemName: "photo.on.rectangle.angled")
                 .font(.system(size: 48))
                 .foregroundColor(.secondary)
-            Text("Click bezel to load preview")
+            Text(loc.localized("bezel.clickBezelToPreview"))
                 .font(.caption)
                 .foregroundColor(.secondary)
         }
@@ -368,11 +354,11 @@ struct BezelBrowserView: View {
             Image(systemName: activeTab == .local ? "folder" : "cloud")
                 .font(.system(size: 48))
                 .foregroundColor(.secondary)
-            Text(activeTab == .local ? "No bezels downloaded yet" : "No bezels found for \(systemName)")
+            Text(activeTab == .local ? loc.localized("bezel.noBezelsDownloaded") : "\(loc.localized("bezel.noBezelsFound")) \(systemName)")
                 .font(.headline)
             Text(activeTab == .local
-                  ? "Bezels add decorative frames around games. Browse the Available tab to download bezels for \(systemName)."
-                  : "No bezels are available for \(systemName) in The Bezel Project database. New bezels may be added in future updates.")
+                  ? "\(loc.localized("bezel.noBezelsFound")) \(systemName). \(loc.localized("bezel.browseOnlineTab"))"
+                  : "\(loc.localized("bezel.noBezelsAvailable")) \(systemName)")
                 .font(.caption)
                 .foregroundColor(.secondary)
                 .multilineTextAlignment(.center)
@@ -386,14 +372,14 @@ struct BezelBrowserView: View {
             Image(systemName: "exclamationmark.triangle")
                 .font(.system(size: 48))
                 .foregroundColor(.orange)
-            Text("Couldn't load bezels")
+            Text(loc.localized("bezel.couldntLoadBezels"))
                 .font(.headline)
             Text(message)
                 .font(.caption)
                 .foregroundColor(.secondary)
                 .multilineTextAlignment(.center)
                 .fixedSize(horizontal: false, vertical: true)
-            Button("Try Again") {
+            Button(loc.localized("bezel.tryAgain")) {
                 Task { await loadBezels() }
             }
             .buttonStyle(.borderedProminent)

@@ -6,6 +6,7 @@ struct SystemControlsMappingView: View {
     let systemID: String
     let systemName: String
     @Environment(\.dismiss) var dismiss
+    @ObservedObject private var loc = LocalizationManager.shared
 
     @State private var mapping: KeyboardMapping = KeyboardMapping(buttons: [:])
     @State private var listeningFor: RetroButton? = nil
@@ -65,10 +66,10 @@ struct SystemControlsMappingView: View {
 
     private var header: some View {
         HStack {
-            Text("\(systemName) Controls")
+            Text(loc.localized("controls.systemControls").replacingOccurrences(of: "{0}", with: systemName))
                 .font(.headline)
             Spacer()
-            Button("Reset to Defaults") {
+            Button(loc.localized("controls.resetToDefaults")) {
                 mapping = KeyboardMapping.defaults(for: systemID)
                 controllerService.updateKeyboardMapping(mapping, for: systemID)
             }
@@ -82,7 +83,7 @@ struct SystemControlsMappingView: View {
     private var footer: some View {
         HStack {
             Spacer()
-            Button("Done") { dismiss() }
+            Button(loc.localized("controls.done")) { dismiss() }
                 .buttonStyle(.borderedProminent)
                 .tint(.purple)
         }
@@ -90,7 +91,7 @@ struct SystemControlsMappingView: View {
     }
 
     private func keyLabel(for button: RetroButton) -> String {
-        if listeningFor == button { return "Press Key…" }
+        if listeningFor == button { return loc.localized("controls.pressKey") }
         guard let code = mapping.buttons[button] else { return "—" }
         let names: [UInt16: String] = [
             0:"A",1:"S",2:"D",3:"F",4:"H",5:"G",6:"Z",7:"X",8:"C",9:"V",

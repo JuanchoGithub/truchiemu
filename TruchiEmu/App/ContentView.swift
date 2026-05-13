@@ -12,6 +12,7 @@ let games: [ROM]
 
 struct ContentView: View {
     @Environment(\.modelContext) var modelContext
+    @ObservedObject private var loc = LocalizationManager.shared
     @Environment(\.openSettings) private var openSettings
     @Environment(\.openWindow) var openWindow
     @EnvironmentObject var library: ROMLibrary
@@ -224,7 +225,10 @@ case .library:
                       EditCategorySheet(category: category)
                   }
                   .sheet(item: $renamingSystem) { system in
-                      RenameSystemSheet(system: system)
+                      RenameSystemSheet(system: system) { newName in
+                          // Handle system rename
+                          // This would need to be implemented based on the app's requirements
+                      }
                   }
   
                  // Status bar for library automation or metadata sync
@@ -366,19 +370,19 @@ LoggerService.info(category: "Shaders", "Updated shader for \(updatedROMIDs.coun
 
     private var navigationTitle: String {
         switch selectedFilter {
-        case .all: return "All Games"
-        case .favorites: return "Favorites"
-        case .recent: return "Recent"
+        case .all: return loc.localized("app.allGames")
+        case .favorites: return loc.localized("app.favorites")
+        case .recent: return loc.localized("app.recent")
         case .system(let sys): return sys.name
         case .category(let id):
             if let category = categoryManager.categories.first(where: { $0.id == id }) {
                 return category.name
             }
-            return "Category"
-        case .hidden: return "Hidden Games"
-        case .mameNonGames: return "Hidden MAME Files"
-        case .lastAdded: return "Last Added"
-        
+            return loc.localized("app.category")
+        case .hidden: return loc.localized("app.hiddenGames")
+        case .mameNonGames: return loc.localized("app.hiddenMAMEFiles")
+        case .lastAdded: return loc.localized("app.lastAdded")
+
         }
     }
     

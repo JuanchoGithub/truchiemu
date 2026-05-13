@@ -5,6 +5,7 @@ struct CheatListRowView: View {
     let isOn: Bool
     var onToggle: () -> Void
     @Environment(\.colorScheme) private var colorScheme
+    @ObservedObject private var loc = LocalizationManager.shared
 
     var body: some View {
         HStack(alignment: .top, spacing: 10) {

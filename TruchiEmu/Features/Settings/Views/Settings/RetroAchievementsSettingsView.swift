@@ -5,6 +5,7 @@ struct RetroAchievementsSettingsView: View {
     static let searchKeywords = "retro achievements hardcore"
     
     @ObservedObject private var raService = RetroAchievementsService.shared
+    @ObservedObject private var loc = LocalizationManager.shared
     @EnvironmentObject private var library: ROMLibrary
     @State private var username = ""
     @State private var webApiKey = ""
@@ -76,7 +77,7 @@ struct RetroAchievementsSettingsView: View {
             }
             .padding()
         }
-        .navigationTitle("RetroAchievements")
+        .navigationTitle(loc.localized("retroAchievements.title"))
     }
     
     private var hasAnyResults: Bool {
@@ -93,9 +94,9 @@ struct RetroAchievementsSettingsView: View {
             Image(systemName: "magnifyingglass")
                 .font(.largeTitle)
                 .foregroundColor(.secondary)
-            Text("No results found")
+            Text(loc.localized("retroAchievements.noResults"))
                 .font(.headline)
-            Text("Try adjusting your search terms")
+            Text(loc.localized("retroAchievements.tryAdjustingSearch"))
                 .font(.caption)
                 .foregroundColor(.secondary)
         }
@@ -110,14 +111,14 @@ struct RetroAchievementsSettingsView: View {
         VStack(alignment: .leading, spacing: 12) {
             HStack {
                 if isSearching {
-                    Text("RetroAchievements")
+                    Text(loc.localized("retroAchievements.title"))
                         .font(.headline)
                 } else {
-                    Label("RetroAchievements", systemImage: "trophy.fill")
+                    Label(loc.localized("retroAchievements.title"), systemImage: "trophy.fill")
                         .font(.headline)
                 }
                 Spacer()
-                Toggle("Enable", isOn: Binding(
+                Toggle(loc.localized("retroAchievements.enable"), isOn: Binding(
                     get: { raService.isEnabled },
                     set: { raService.setEnabled($0) }
                 ))
@@ -125,7 +126,7 @@ struct RetroAchievementsSettingsView: View {
             }
             
             if !raService.isEnabled {
-                Text("Enable RetroAchievements to track your achievements and compete on leaderboards.")
+                Text(loc.localized("retroAchievements.enableDescription"))
                     .font(.caption)
                     .foregroundColor(.secondary)
             }
@@ -140,24 +141,24 @@ struct RetroAchievementsSettingsView: View {
         VStack(alignment: .leading, spacing: 12) {
             HStack {
                 if isSearching {
-                    Text("Account")
+                    Text(loc.localized("retroAchievements.account"))
                         .font(.headline)
                 } else {
-                    Label("Account", systemImage: "person.badge.key")
+                    Label(loc.localized("retroAchievements.account"), systemImage: "person.badge.key")
                         .font(.headline)
                 }
                 Spacer()
                 if raService.isLoggedIn {
                     HStack(spacing: 4) {
                         Circle().fill(.green).frame(width: 8, height: 8)
-                        Text("Connected")
+                        Text(loc.localized("retroAchievements.connected"))
                             .font(.caption)
                             .foregroundColor(.green)
                     }
                 } else {
                     HStack(spacing: 4) {
                         Circle().fill(.secondary).frame(width: 8, height: 8)
-                        Text("Sign in required")
+                        Text(loc.localized("retroAchievements.signInRequired"))
                             .font(.caption)
                             .foregroundColor(.secondary)
                     }
@@ -172,16 +173,16 @@ struct RetroAchievementsSettingsView: View {
                             .font(.title)
                             .foregroundColor(.purple)
                         VStack(alignment: .leading) {
-                            Text(raService.username ?? "Unknown")
+                            Text(raService.username ?? loc.localized("retroAchievements.unknown"))
                                 .font(.headline)
                             if let userInfo = raService.userInfo {
-                                Text("Rank: #\(userInfo.rank) - \(userInfo.totalPoints) points")
+                                Text(loc.localized("retroAchievements.rankInfo", userInfo.rank, userInfo.totalPoints))
                                     .font(.caption)
                                     .foregroundColor(.secondary)
                             }
                         }
                         Spacer()
-                        Button("Logout") {
+                        Button(loc.localized("retroAchievements.logout")) {
                             raService.saveSettings(username: "", webApiKey: "")
                             raService.isLoggedIn = false
                             raService.userInfo = nil
@@ -196,25 +197,25 @@ struct RetroAchievementsSettingsView: View {
                         Divider()
                         VStack(alignment: .leading, spacing: 8) {
                             HStack {
-                                Text("Total Points:")
+                                Text(loc.localized("retroAchievements.totalPoints"))
                                 Spacer()
                                 Text("\(userInfo.totalPoints)")
                                     .fontWeight(.semibold)
                             }
                             HStack {
-                                Text("Hardcore Points:")
+                                Text(loc.localized("retroAchievements.hardcorePoints"))
                                 Spacer()
                                 Text("\(userInfo.totalHardcorePoints)")
                                     .fontWeight(.semibold)
                             }
                             HStack {
-                                Text("TruePoints:")
+                                Text(loc.localized("retroAchievements.truePoints"))
                                 Spacer()
                                 Text("\(userInfo.totalTruePoints)")
                                     .fontWeight(.semibold)
                             }
                             HStack {
-                                Text("Member Since:")
+                                Text(loc.localized("retroAchievements.memberSince"))
                                 Spacer()
                                 Text(userInfo.memberSince)
                             }
@@ -228,17 +229,17 @@ struct RetroAchievementsSettingsView: View {
             } else {
                 // Login form
                 VStack(spacing: 12) {
-                    TextField("Username", text: $username)
+                    TextField(loc.localized("retroAchievements.username"), text: $username)
                         .textFieldStyle(.roundedBorder)
                         .autocorrectionDisabled()
                     
                     HStack {
                         if showApiKey {
-                            TextField("Web API Key", text: $webApiKey)
+                            TextField(loc.localized("retroAchievements.webApiKey"), text: $webApiKey)
                                 .textFieldStyle(.roundedBorder)
                                 .autocorrectionDisabled()
                         } else {
-                            SecureField("Web API Key", text: $webApiKey)
+                            SecureField(loc.localized("retroAchievements.webApiKey"), text: $webApiKey)
                                 .textFieldStyle(.roundedBorder)
                         }
                         Button(action: { showApiKey.toggle() }) {
@@ -258,7 +259,7 @@ struct RetroAchievementsSettingsView: View {
                             ProgressView()
                                 .controlSize(.small)
                         } else {
-                            Text("Connect")
+                            Text(loc.localized("retroAchievements.connect"))
                         }
                     }
                     .buttonStyle(.borderedProminent)
@@ -268,12 +269,12 @@ struct RetroAchievementsSettingsView: View {
                 .background(.ultraThinMaterial)
                 .cornerRadius(12)
                 
-                Text("Enter your RetroAchievements Username and Web API Key. Do not use your account password.")
+                Text(loc.localized("retroAchievements.connectDescription"))
                     .font(.caption)
                     .foregroundColor(.secondary)
                 
                 HStack(spacing: 4) {
-                    Text("Find your key at")
+                    Text(loc.localized("retroAchievements.findYourKeyAt"))
                         .font(.caption)
                         .foregroundColor(.secondary)
                     Link("RetroAchievements Settings", destination: URL(string: "https://retroachievements.org/controlpanel.php")!)
@@ -281,10 +282,10 @@ struct RetroAchievementsSettingsView: View {
                 }
                 
                 HStack(spacing: 4) {
-                    Text("Don't have an account?")
+                    Text(loc.localized("retroAchievements.dontHaveAccount"))
                         .font(.caption)
                         .foregroundColor(.secondary)
-                    Link("Register here", destination: URL(string: "https://retroachievements.org/createaccount.php")!)
+                    Link(loc.localized("retroAchievements.registerHere"), destination: URL(string: "https://retroachievements.org/createaccount.php")!)
                         .font(.caption)
                 }
             }
@@ -299,14 +300,14 @@ struct RetroAchievementsSettingsView: View {
         VStack(alignment: .leading, spacing: 12) {
             HStack {
                 if isSearching {
-                    Text("Hardcore Mode")
+                    Text(loc.localized("retroAchievements.hardcoreMode"))
                         .font(.headline)
                 } else {
-                    Label("Hardcore Mode", systemImage: "shield.lefthalf.filled")
+                    Label(loc.localized("retroAchievements.hardcoreMode"), systemImage: "shield.lefthalf.filled")
                         .font(.headline)
                 }
                 Spacer()
-                Toggle("Enabled", isOn: Binding(
+                Toggle(loc.localized("retroAchievements.enabled"), isOn: Binding(
                     get: { raService.hardcoreMode },
                     set: { raService.setHardcoreMode($0) }
                 ))
@@ -315,18 +316,18 @@ struct RetroAchievementsSettingsView: View {
             }
             
             VStack(alignment: .leading, spacing: 8) {
-                Text("Hardcore Mode enforces stricter rules for achievements:")
+                Text(loc.localized("retroAchievements.hardcoreModeDescription"))
                     .font(.caption)
                     .foregroundColor(.secondary)
                 
                 VStack(alignment: .leading, spacing: 4) {
-                    hardcoreRule("Save States are disabled")
-                    hardcoreRule("Rewind is disabled")
-                    hardcoreRule("Slow Motion is disabled")
-                    hardcoreRule("Cheat codes are disabled")
+                    hardcoreRule(loc.localized("retroAchievements.saveStatesDisabled"))
+                    hardcoreRule(loc.localized("retroAchievements.rewindDisabled"))
+                    hardcoreRule(loc.localized("retroAchievements.slowMotionDisabled"))
+                    hardcoreRule(loc.localized("retroAchievements.cheatCodesDisabled"))
                 }
                 
-                Text("Using any of these features will drop your session to Softcore mode.")
+                Text(loc.localized("retroAchievements.softcoreModeWarning"))
                     .font(.caption)
                     .foregroundColor(.orange)
             }
@@ -342,10 +343,10 @@ struct RetroAchievementsSettingsView: View {
         VStack(alignment: .leading, spacing: 12) {
             HStack {
                 if isSearching {
-                    Text("Rich Presence")
+                    Text(loc.localized("retroAchievements.richPresence"))
                         .font(.headline)
                 } else {
-                    Label("Rich Presence", systemImage: "text.bubble.fill")
+                    Label(loc.localized("retroAchievements.richPresence"), systemImage: "text.bubble.fill")
                         .font(.headline)
                 }
             }
@@ -359,7 +360,7 @@ struct RetroAchievementsSettingsView: View {
                     .background(.secondary.opacity(0.1))
                     .cornerRadius(8)
             } else {
-                Text("No game currently active")
+                Text(loc.localized("retroAchievements.noGameActive"))
                     .font(.caption)
                     .foregroundColor(.secondary)
             }
@@ -374,10 +375,10 @@ struct RetroAchievementsSettingsView: View {
         VStack(alignment: .leading, spacing: 12) {
             HStack {
                 if isSearching {
-                    Text("Game Cache")
+                    Text(loc.localized("retroAchievements.gameCache"))
                         .font(.headline)
                 } else {
-                    Label("Game Cache", systemImage: "internaldrive")
+                    Label(loc.localized("retroAchievements.gameCache"), systemImage: "internaldrive")
                         .font(.headline)
                 }
                 Spacer()
@@ -386,7 +387,7 @@ struct RetroAchievementsSettingsView: View {
                 }
             }
 
-            Text("RetroAchievements caches game data locally for faster matching. Refresh to fetch the latest data from RA.")
+            Text(loc.localized("retroAchievements.gameCacheDescription"))
                 .font(.caption)
                 .foregroundColor(.secondary)
 
@@ -396,7 +397,7 @@ struct RetroAchievementsSettingsView: View {
                         ProgressView()
                             .controlSize(.small)
                     } else {
-                        Label("Refresh Systems", systemImage: "arrow.clockwise")
+                        Label(loc.localized("retroAchievements.refreshSystems"), systemImage: "arrow.clockwise")
                     }
                 }
                 .buttonStyle(.bordered)
@@ -407,7 +408,7 @@ struct RetroAchievementsSettingsView: View {
                         ProgressView()
                             .controlSize(.small)
                     } else {
-                        Label("Refresh Games", systemImage: "gamecontroller")
+                        Label(loc.localized("retroAchievements.refreshGames"), systemImage: "gamecontroller")
                     }
                 }
                 .buttonStyle(.bordered)
@@ -418,7 +419,7 @@ struct RetroAchievementsSettingsView: View {
                         ProgressView()
                             .controlSize(.small)
                     } else {
-                        Label("Match All Games", systemImage: "trophy")
+                        Label(loc.localized("retroAchievements.matchAllGames"), systemImage: "trophy")
                     }
                 }
                 .buttonStyle(.bordered)
@@ -439,7 +440,7 @@ struct RetroAchievementsSettingsView: View {
 
             if let lastConsoleDate = AppSettings.get("ra_consoles_cache_date", type: Double.self) {
                 let date = Date(timeIntervalSince1970: lastConsoleDate)
-                Text("Systems cached: \(date.formatted(date: .abbreviated, time: .shortened))")
+                Text(loc.localized("retroAchievements.systemsCached") + " " + date.formatted(date: .abbreviated, time: .shortened))
                     .font(.caption)
                     .foregroundColor(.secondary)
             }
@@ -451,7 +452,7 @@ struct RetroAchievementsSettingsView: View {
 
     private func refreshConsoles() {
         guard raService.isLoggedIn else {
-            cacheRefreshError = "Not logged in. Please connect to RetroAchievements first."
+            cacheRefreshError = loc.localized("retroAchievements.notLoggedIn")
             return
         }
         cacheRefreshError = nil
@@ -462,7 +463,7 @@ struct RetroAchievementsSettingsView: View {
                 try await raService.fetchAndCacheConsoleList()
                 LoggerService.info(category: "RetroAchievements", "[Settings] Console refresh complete.")
             } catch {
-                let message = "Failed to refresh: \(error.localizedDescription)"
+                let message = loc.localized("retroAchievements.failedToRefresh", error.localizedDescription)
                 LoggerService.error(category: "RetroAchievements", message)
                 await MainActor.run {
                     cacheRefreshError = message
@@ -476,7 +477,7 @@ struct RetroAchievementsSettingsView: View {
 
     private func refreshGames() {
         guard raService.isLoggedIn else {
-            cacheRefreshError = "Not logged in. Please connect to RetroAchievements first."
+            cacheRefreshError = loc.localized("retroAchievements.notLoggedIn")
             return
         }
         cacheRefreshError = nil
@@ -487,7 +488,7 @@ struct RetroAchievementsSettingsView: View {
                 try await raService.fetchAndCacheAllGames()
                 LoggerService.info(category: "RetroAchievements", "[Settings] Game list refresh complete.")
             } catch {
-                let message = "Failed to refresh: \(error.localizedDescription)"
+                let message = loc.localized("retroAchievements.failedToRefresh", error.localizedDescription)
                 LoggerService.error(category: "RetroAchievements", message)
                 await MainActor.run {
                     cacheRefreshError = message
@@ -501,7 +502,7 @@ struct RetroAchievementsSettingsView: View {
 
     private func matchAllGames() {
         guard raService.isLoggedIn else {
-            matchingStatus = "Not logged in. Please connect to RetroAchievements first."
+            matchingStatus = loc.localized("retroAchievements.notLoggedIn")
             return
         }
         matchingStatus = nil
@@ -510,7 +511,7 @@ struct RetroAchievementsSettingsView: View {
             let (matched, total) = await raService.matchAllCachedGames(roms: library.roms)
             await MainActor.run {
                 isMatching = false
-                matchingStatus = "Matched \(matched) of \(total) scanned games"
+                matchingStatus = loc.localized("retroAchievements.matchedOfTotal", matched, total)
             }
         }
     }
@@ -519,18 +520,18 @@ struct RetroAchievementsSettingsView: View {
     private var infoSection: some View {
         VStack(alignment: .leading, spacing: 8) {
             if isSearching {
-                Text("About RetroAchievements")
+                Text(loc.localized("retroAchievements.about"))
                     .font(.headline)
             } else {
-                Label("About RetroAchievements", systemImage: "info.circle")
+                Label(loc.localized("retroAchievements.about"), systemImage: "info.circle")
                     .font(.headline)
             }
             
-            Text("RetroAchievements adds achievements to classic games. Earn trophies, compete on leaderboards, and track your progress across thousands of retro games.")
+            Text(loc.localized("retroAchievements.aboutDescription"))
                 .font(.caption)
                 .foregroundColor(.secondary)
             
-            Link("Visit retroachievements.org", destination: URL(string: "https://retroachievements.org")!)
+            Link(loc.localized("retroAchievements.visitWebsite"), destination: URL(string: "https://retroachievements.org")!)
                 .font(.caption)
         }
         .padding()
@@ -570,11 +571,5 @@ struct RetroAchievementsSettingsView: View {
                 }
             }
         }
-    }
-}
-
-#Preview {
-    NavigationStack {
-        RetroAchievementsSettingsView()
     }
 }

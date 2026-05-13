@@ -100,7 +100,9 @@ targets:
       buildPhase: resources
     - path: TruchiEmu/Resources/AppIcons
       buildPhase: resources
-    - path: TruchiEmu/Resources/Assets.xcassets
+    - path: TruchiEmu/Resources/Translations/en.json
+      buildPhase: resources
+    - path: TruchiEmu/Resources/Translations/es.json
       buildPhase: resources
 
     - path: TruchiEmu/Resources/System/mpr-17933.bin

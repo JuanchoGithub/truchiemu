@@ -1,0 +1,398 @@
+{
+  "metadata": {
+    "project": "TruchiEmu",
+    "version": "1.0",
+    "generated_at": "2026-05-12",
+    "description": "Application packages, components, and workflow flows for TruchiEmu — a libretro game emulator for macOS"
+  },
+  "packages": [
+    {
+      "id": "app",
+      "name": "App",
+      "description": "Application entrypoint and top-level window management. Contains TruchiEmuApp (App entrypoint), ContentView (root UI), and GameInfoWindow (game info display).",
+      "files": ["TruchiEmuApp.swift", "ContentView.swift", "GameInfoWindow.swift"],
+      "type": "app_layer"
+    },
+    {
+      "id": "core",
+      "name": "Core",
+      "description": "Emulation engine and core systems. Responsible for running libretro cores, input capture, game models, and save/load state.",
+      "files": [
+        "Engine/LibretroBridgeSwift.swift",
+        "Engine/Hashing/RomHasher.swift",
+        "Engine/Runners/*.swift",
+        "Engine/SaveDirectoryBridge.swift",
+        "InputCapture/InputCaptureManager.swift",
+        "InputCapture/RetroKeycodeMapper.swift",
+        "Models/*.swift"
+      ],
+      "type": "engine_layer"
+    },
+    {
+      "id": "features",
+      "name": "Features",
+      "description": "Domain-specific feature modules: Library (ROM management), Player (game execution UI), MAME (arcade emulation), and Settings.",
+      "files": ["Library/**/*.swift", "Player/**/*.swift", "MAME/**/*.swift", "Settings/**/*.swift"],
+      "type": "feature_layer",
+      "subpackages": ["library", "player", "mame", "settings"]
+    },
+    {
+      "id": "services",
+      "name": "Services",
+      "description": "Shared business logic services that operate across features. Includes core management, ROM identification, save states, box art, thumbnails, cheats, achievements, etc.",
+      "files": ["*.swift"],
+      "type": "service_layer"
+    },
+    {
+      "id": "views",
+      "name": "Views",
+      "description": "Reusable UI components and detail views. Game detail, settings screens, shader config, and core download UI.",
+      "files": ["Settings/**/*.swift", "Detail/**/*.swift", "Shaders/**/*.swift", "CoreDownload/**/*.swift"],
+      "type": "view_layer"
+    },
+    {
+      "id": "shared",
+      "name": "Shared",
+      "description": "Cross-cutting utilities, infrastructure, and UI primitives. Includes persistence, localization, logging, and design system.",
+      "files": ["Extensions/*.swift", "Infrastructure/**/*.swift", "Models/*.swift", "Services/*.swift", "UI/*.swift", "Utilities/**/*.swift", "Localization/*.swift"],
+      "type": "infrastructure_layer"
+    }
+  ],
+  "workflows": [
+    {
+      "id": "launch_rom",
+      "name": "Lanzar un juego desde la librería",
+      "description": "El usuario selecciona un ROM desde la librería de TruchiEmu. El flujo identifica la plataforma, el núcleo libretro requerido, carga el juego y presenta el motor de juego con soporte para save states, shaders y RetroAchievements concurrentes.",
+      "steps": [
+        {
+          "from": "features:library",
+          "to": "features:library",
+          "action": "El usuario escanea o selecciona un ROM desde la lista de juegos."
+        },
+        {
+          "from": "features:library",
+          "to": "services:ROMIdentifierService",
+          "action": "Se identifica la plataforma y los metadatos del juego mediante hash del ROM."
+        },
+        {
+          "from": "services:ROMIdentifierService",
+          "to": "services:ROMIdentifier",
+          "action": "Se utiliza el algoritmo de hashing para verificar el ROM contra la base de datos de identificación."
+        },
+        {
+          "from": "services:ROMIdentifierService",
+          "to": "features:player",
+          "action": "Se lanza la vista del jugador con el ROM y núcleo identificados."
+        },
+        {
+          "from": "features:player",
+          "to": "core",
+          "action": "Se inicializa el core libretro correspondiente (NES, SNES, N64, etc.) y se carga el ROM."
+        },
+        {
+          "from": "core",
+          "to": "services:SaveStateManager",
+          "action": "Se inicializa el sistema de guardado rápido (save states)."
+        },
+        {
+          "from": "core",
+          "to": "services:ShaderPresetStorageService",
+          "action": "Se aplica la configuración de shaders predefinida para el sistema."
+        },
+        {
+          "from": "features:player",
+          "to": "services:RetroAchievementsService",
+          "action": "En paralelo, se inicializa el modo RetroAchievements (hardcore mode y notificaciones)."
+        },
+        {
+          "from": "services:SaveDirectoryManager",
+          "to": "core",
+          "action": "Se mapean las rutas de guardado del core a los directorios de la app."
+        }
+      ]
+    },
+    {
+      "id": "save_load_state",
+      "name": "Guardar/Cargar estado (Save State)",
+      "description": "El usuario pulsa un atajo para guardar o cargar un estado del juego. El flujo serializa/deserializa el estado actual del núcleo libretro y lo persiste en disco.",
+      "steps": [
+        {
+          "from": "features:player",
+          "to": "core",
+          "action": "El usuario pulsa un atajo o botón de guardado/carga en la UI."
+        },
+        {
+          "from": "core",
+          "to": "services:SaveStateManager",
+          "action": "Se serializa el estado actual del core (guardado) o se recupera el snapshot previamente guardado (carga)."
+        },
+        {
+          "from": "services:SaveStateManager",
+          "to": "services:SaveDirectoryManager",
+          "action": "Se determina la ruta de destino en el directorio de guardado del usuario."
+        },
+        {
+          "from": "services:SaveDirectoryManager",
+          "to": "features:player",
+          "action": "Se notifica a la UI el resultado de la operación (o se muestra el slot activo)."
+        }
+      ]
+    },
+    {
+      "id": "cheats",
+      "name": "Aplicar trucos (Cheats)",
+      "description": "El usuario selecciona un truco desde el menú de trucos. El flujo descarga automáticamente los cheats disponibles para el juego y aplica los códigos seleccionados en el core libretro.",
+      "steps": [
+        {
+          "from": "features:player",
+          "to": "services:CheatAutoLoader",
+          "action": "Se solicita la lista de trucos para el juego actual."
+        },
+        {
+          "from": "services:CheatAutoLoader",
+          "to": "services:CheatDownloadService",
+          "action": "Descarga automática de la base de datos de cheats (RetroAchievements u otra fuente)."
+        },
+        {
+          "from": "services:CheatAutoLoader",
+          "to": "services:CheatParser",
+          "action": "Parseo de los archivos de trucos descargados."
+        },
+        {
+          "from": "services:CheatAutoLoader",
+          "to": "features:player",
+          "action": "Se presentan los trucos en la UI de gestión de cheats."
+        },
+        {
+          "from": "features:player",
+          "to": "core",
+          "action": "El usuario activa un truco; se aplica directamente en el core libretro."
+        }
+      ]
+    },
+    {
+      "id": "retroachievements",
+      "name": "Desbloquear logro de RetroAchievements",
+      "description": "El usuario cumple una condición en el juego. El flujo verifica el logro en RetroAchievements, muestra una notificación de desbloqueo y cachea el estado.",
+      "steps": [
+        {
+          "from": "core",
+          "to": "services:RetroAchievementsService",
+          "action": "El core reporta una memoria/progreso que cumple con una condición de logro."
+        },
+        {
+          "from": "services:RetroAchievementsService",
+          "to": "services:RAGameCacheCoordinator",
+          "action": "Se verifica si el logro ya fue desbloqueado o está cacheado."
+        },
+        {
+          "from": "services:RetroAchievementsService",
+          "to": "services:NotificationService",
+          "action": "Se notifica a la UI para mostrar el toast de logro desbloqueado."
+        },
+        {
+          "from": "services:RetroAchievementsService",
+          "to": "services:RABadgeCacheService",
+          "action": "Se cachea el icono del logro para evitar descargas repetidas."
+        },
+        {
+          "from": "services:NotificationService",
+          "to": "features:player",
+          "action": "Se muestra la notificación de logro en pantalla."
+        }
+      ]
+    },
+    {
+      "id": "configure_shaders",
+      "name": "Configurar shaders y filtros de pantalla",
+      "description": "El usuario ajusta shaders (CRT, LCD, etc.) mientras juega. El flujo aplica los presets de shader al momento de lanzar el juego y permite ajustes dinámicos.",
+      "steps": [
+        {
+          "from": "features:player",
+          "to": "core",
+          "action": "El usuario lanza un juego y el motor de renderizado inicializa Metal."
+        },
+        {
+          "from": "core",
+          "to": "services:ShaderPresetStorageService",
+          "action": "Se carga el preset de shader asociado al sistema/juego, si existe."
+        },
+        {
+          "from": "services:ShaderPresetStorageService",
+          "to": "features:player",
+          "action": "Los shaders (ej. CRT, LCD) se aplican en tiempo real al framebuffer del juego."
+        },
+        {
+          "from": "features:player",
+          "to": "core",
+          "action": "El usuario ajusta parámetros de shader desde la UI (live adjust)."
+        }
+      ]
+    },
+    {
+      "id": "download_core",
+      "name": "Descargar e instalar un core libretro",
+      "description": "El usuario necesita un core para una plataforma. El flujo descarga el binario, lo valida, lo registra en la aplicación y actualiza las preferencias del core.",
+      "steps": [
+        {
+          "from": "features:settings",
+          "to": "views:core_download",
+          "action": "El usuario abre la pantalla de descarga de núcleos desde ajustes."
+        },
+        {
+          "from": "views:core_download",
+          "to": "services:CoreManager",
+          "action": "Se solicita la descarga de un core específico."
+        },
+        {
+          "from": "services:CoreManager",
+          "to": "services:CLIManager",
+          "action": "Se ejecuta el proceso de descarga (por ejemplo, mediante CLI o API directa)."
+        },
+        {
+          "from": "services:CLIManager",
+          "to": "views:core_download",
+          "action": "Se reporta el progreso de la descarga en la UI."
+        },
+        {
+          "from": "services:CoreManager",
+          "to": "features:settings",
+          "action": "El core se registra como disponible y se actualiza la lista de cores en la app."
+        }
+      ]
+    },
+    {
+      "id": "mame_import",
+      "name": "Importar ROMs de MAME",
+      "description": "El usuario importa ROMs de MAME. El flujo verifica dependencias, valida las ROMs con mame_unified.json y clasifica los juegos según el género detectado.",
+      "steps": [
+        {
+          "from": "features:library",
+          "to": "features:mame",
+          "action": "El usuario intenta importar una ROM de MAME desde la librería."
+        },
+        {
+          "from": "features:mame",
+          "to": "services:MAMEDependencyService",
+          "action": "Se verifican las dependencias (set_parent, bios, etc.) para la ROM."
+        },
+        {
+          "from": "features:mame",
+          "to": "services:MAMEVerificationService",
+          "action": "Se compara la ROM contra mame_unified.json para validación."
+        },
+        {
+          "from": "features:mame",
+          "to": "services:MAMEImportService",
+          "action": "La ROM se agrega a la librería si pasa la verificación."
+        },
+        {
+          "from": "services:MAMEImportService",
+          "to": "features:library",
+          "action": "Se actualiza la lista de juegos en la UI de la librería."
+        }
+      ]
+    },
+    {
+      "id": "boxart_sync",
+      "name": "Sincronizar carátulas (BoxArt) juegos",
+      "description": "El usuario activa la sincronización de carátulas de juegos. El flujo descarga y cachea las imágenes de carátulas usando el servicio de LaunchBox, Libretro Thumbnails y ProgettoSnaps.",
+      "steps": [
+        {
+          "from": "features:settings",
+          "to": "services:BoxArtService",
+          "action": "El usuario activa la sincronización de carátulas desde los ajustes."
+        },
+        {
+          "from": "services:BoxArtService",
+          "to": "services:LaunchBoxGamesDBService",
+          "action": "Se consulta LaunchBox para obtener metadatos de carátulas por nombre de juego."
+        },
+        {
+          "from": "services:BoxArtService",
+          "to": "services:LibretroThumbnailManifestService",
+          "action": "Se obtiene el manifiesto de thumbnails de Libretro para la plataforma."
+        },
+        {
+          "from": "services:LibretroThumbnailManifestService",
+          "to": "services:LibretroThumbnailResolver",
+          "action": "Se resuelve la URL exacta de la imagen basada en el nombre del juego."
+        },
+        {
+          "from": "services:BoxArtService",
+          "to": "services:ProgettoSnapsService",
+          "action": "Fallback: si no se encuentra en LaunchBox/Libretro, se prueba ProgettoSnaps."
+        },
+        {
+          "from": "services:BoxArtService",
+          "to": "shared:ImageCache",
+          "action": "Las imágenes descargadas se almacenan en el caché local de la app."
+        },
+        {
+          "from": "shared:ImageCache",
+          "to": "features:library",
+          "action": "La UI de la librería muestra las carátulas actualizadas en tiempo real."
+        }
+      ]
+    },
+    {
+      "id": "setup_wizard",
+      "name": "Configuración inicial (Setup Wizard)",
+      "description": "Al ejecutar TruchiEmu por primera vez, se lanza un asistente de configuración que guía al usuario para descargar cores y sincronizar datos.",
+      "steps": [
+        {
+          "from": "app",
+          "to": "services:SetupWizardState",
+          "action": "Se detecta que es la primera ejecución de la app."
+        },
+        {
+          "from": "services:SetupWizardState",
+          "to": "features:library",
+          "action": "Se muestra el SetupWizard en pantalla completa."
+        },
+        {
+          "from": "features:library",
+          "to": "services:DATPrepopulationService",
+          "action": "Opcional: se pre-pobla la base de datos con datos de sistemas y juegos."
+        },
+        {
+          "from": "features:library",
+          "to": "services:CoreManager",
+          "action": "El asistente permite descargar los cores recomendados para las plataformas más comunes."
+        },
+        {
+          "from": "services:CoreManager",
+          "to": "features:settings",
+          "action": "El usuario configura directorios de guardado y preferencias del core."
+        }
+      ]
+    },
+    {
+      "id": "controls_mapping",
+      "name": "Configurar mapeo de controles",
+      "description": "El usuario abre los ajustes de controles para mapear los botones del juego a un gamepad o teclado. El flujo guarda la configuración y la aplica en tiempo real.",
+      "steps": [
+        {
+          "from": "features:settings",
+          "to": "services:ControllerService",
+          "action": "El usuario abre la sección de controles en ajustes."
+        },
+        {
+          "from": "services:ControllerService",
+          "to": "services:CoreOverrideService",
+          "action": "Se carga la configuración de controles del core seleccionado."
+        },
+        {
+          "from": "services:ControllerService",
+          "to": "shared:SettingsRepository",
+          "action": "Se guardan las preferencias de mapeo ."
+        },
+        {
+          "from": "features:settings",
+          "to": "core",
+          "action": "Los nuevos mapeos se envían al core libretro en tiempo real si un juego está corriendo."
+        }
+      ]
+    }
+  ]
+}

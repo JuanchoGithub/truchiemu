@@ -69,8 +69,21 @@ class ControllerService: ObservableObject {
     // MARK: - Mappings
 
     func updateMapping(for vendorName: String, systemID: String, mapping: ControllerGamepadMapping) {
+        // Strip duplicate gcElementName entries to prevent one physical button
+        // from triggering multiple emulated buttons
+        var cleanedButtons = mapping.buttons
+        var seenNames = Set<String>()
+        for (btn, btnMapping) in mapping.buttons {
+            if seenNames.contains(btnMapping.gcElementName) {
+                cleanedButtons.removeValue(forKey: btn)
+            } else {
+                seenNames.insert(btnMapping.gcElementName)
+            }
+        }
+        var cleaned = mapping
+        cleaned.buttons = cleanedButtons
         if savedMappings[vendorName] == nil { savedMappings[vendorName] = [:] }
-        savedMappings[vendorName]?[systemID] = mapping
+        savedMappings[vendorName]?[systemID] = cleaned
         
         refreshConnectedControllers()
         saveMappings()
@@ -732,66 +745,69 @@ enum RetroButton: String, Codable, CaseIterable {
 
     var displayName: String {
         switch self {
-        case .up:    return "Up"
-        case .down:  return "Down"
-        case .left:  return "Left"
-        case .right: return "Right"
-        case .a:     return "A"
-        case .b:     return "B"
-        case .c:     return "C"
-        case .x:     return "X"
-        case .y:     return "Y"
-        case .z:     return "Z"
-        case .start: return "Start"
-        case .select:return "Select / Mode"
-        case .l1:    return "L1"
-        case .l2:    return "L2"
-        case .l3:    return "L3 (Left Click)"
-        case .r1:    return "R1"
-        case .r2:    return "R2"
-        case .r3:    return "R3 (Right Click)"
-        case .coin1: return "Insert Coin 1"
-        case .coin2: return "Insert Coin 2"
-        case .start1:return "1P Start"
-        case .start2:return "2P Start"
-        case .lStickUp: return "Left Stick Up"
-        case .lStickDown: return "Left Stick Down"
-        case .lStickLeft: return "Left Stick Left"
-        case .lStickRight: return "Left Stick Right"
-        case .rStickUp: return "Right Stick Up"
-        case .rStickDown: return "Right Stick Down"
-        case .rStickLeft: return "Right Stick Left"
-        case .rStickRight: return "Right Stick Right"
-        case .cUp:    return "C-Button Up"
-        case .cDown:  return "C-Button Down"
-        case .cLeft:  return "C-Button Left"
-        case .cRight: return "C-Button Right"
-        case .pause:  return "Pause"
-        case .reset:  return "Reset"
-        case .turboA: return "Turbo A"
-        case .turboB: return "Turbo B"
-        case .turboX: return "Turbo X"
-        case .turboY: return "Turbo Y"
-        case .space:  return "Space"
-        case .mouseLeft: return "Mouse Left Click"
-        case .mouseRight: return "Mouse Right Click"
-        case .mouseMiddle: return "Mouse Middle Click"
-        case .mouseX: return "Mouse X Axis"
-        case .mouseY: return "Mouse Y Axis"
-        case .mouseScrollUp: return "Mouse Scroll Up"
-        case .mouseScrollDown: return "Mouse Scroll Down"
+        case .up:    return LocalizationManager.shared.localized("controller.button.up")
+        case .down:  return LocalizationManager.shared.localized("controller.button.down")
+        case .left:  return LocalizationManager.shared.localized("controller.button.left")
+        case .right: return LocalizationManager.shared.localized("controller.button.right")
+        case .a:     return LocalizationManager.shared.localized("controller.button.a")
+        case .b:     return LocalizationManager.shared.localized("controller.button.b")
+        case .c:     return LocalizationManager.shared.localized("controller.button.c")
+        case .x:     return LocalizationManager.shared.localized("controller.button.x")
+        case .y:     return LocalizationManager.shared.localized("controller.button.y")
+        case .z:     return LocalizationManager.shared.localized("controller.button.z")
+        case .start: return LocalizationManager.shared.localized("controller.button.start")
+        case .select:return LocalizationManager.shared.localized("controller.button.select")
+        case .l1:    return LocalizationManager.shared.localized("controller.button.l1")
+        case .l2:    return LocalizationManager.shared.localized("controller.button.l2")
+        case .l3:    return LocalizationManager.shared.localized("controller.button.l3")
+        case .r1:    return LocalizationManager.shared.localized("controller.button.r1")
+        case .r2:    return LocalizationManager.shared.localized("controller.button.r2")
+        case .r3:    return LocalizationManager.shared.localized("controller.button.r3")
+        case .coin1: return LocalizationManager.shared.localized("controller.button.coin1")
+        case .coin2: return LocalizationManager.shared.localized("controller.button.coin2")
+        case .start1:return LocalizationManager.shared.localized("controller.button.start1")
+        case .start2:return LocalizationManager.shared.localized("controller.button.start2")
+        case .lStickUp: return LocalizationManager.shared.localized("controller.button.lStickUp")
+        case .lStickDown: return LocalizationManager.shared.localized("controller.button.lStickDown")
+        case .lStickLeft: return LocalizationManager.shared.localized("controller.button.lStickLeft")
+        case .lStickRight: return LocalizationManager.shared.localized("controller.button.lStickRight")
+        case .rStickUp: return LocalizationManager.shared.localized("controller.button.rStickUp")
+        case .rStickDown: return LocalizationManager.shared.localized("controller.button.rStickDown")
+        case .rStickLeft: return LocalizationManager.shared.localized("controller.button.rStickLeft")
+        case .rStickRight: return LocalizationManager.shared.localized("controller.button.rStickRight")
+        case .cUp:    return LocalizationManager.shared.localized("controller.button.cUp")
+        case .cDown:  return LocalizationManager.shared.localized("controller.button.cDown")
+        case .cLeft:  return LocalizationManager.shared.localized("controller.button.cLeft")
+        case .cRight: return LocalizationManager.shared.localized("controller.button.cRight")
+        case .pause:  return LocalizationManager.shared.localized("controller.button.pause")
+        case .reset:  return LocalizationManager.shared.localized("controller.button.reset")
+        case .turboA: return LocalizationManager.shared.localized("controller.button.turboA")
+        case .turboB: return LocalizationManager.shared.localized("controller.button.turboB")
+        case .turboX: return LocalizationManager.shared.localized("controller.button.turboX")
+        case .turboY: return LocalizationManager.shared.localized("controller.button.turboY")
+        case .space:  return LocalizationManager.shared.localized("controller.button.space")
+        case .mouseLeft: return LocalizationManager.shared.localized("controller.button.mouseLeft")
+        case .mouseRight: return LocalizationManager.shared.localized("controller.button.mouseRight")
+        case .mouseMiddle: return LocalizationManager.shared.localized("controller.button.mouseMiddle")
+        case .mouseX: return LocalizationManager.shared.localized("controller.button.mouseX")
+        case .mouseY: return LocalizationManager.shared.localized("controller.button.mouseY")
+        case .mouseScrollUp: return LocalizationManager.shared.localized("controller.button.mouseScrollUp")
+        case .mouseScrollDown: return LocalizationManager.shared.localized("controller.button.mouseScrollDown")
         }
     }
     
     // Returns the list of buttons that are relevant/available for a given system.
     // This limits the UI to only show buttons that can be mapped for that system.
-    // First tries to get buttons from InputDescriptorsManager (captured from core),
-    // falls back to hardcoded system defaults.
+    // Merges hardcoded system defaults with any button descriptors captured from the core.
+    // System defaults always take priority (core descriptors may be missing or wrong
+    // for systems like N64 where buttons are reported via ANALOG device type).
     static func availableButtons(for systemID: String) -> [RetroButton] {
-        if let buttons = InputDescriptorsManager.shared.availableButtons(for: systemID), !buttons.isEmpty {
-            return buttons
+        let defaults = systemDefaultButtons(for: systemID)
+        if let descriptors = InputDescriptorsManager.shared.availableButtons(for: systemID) {
+            let extras = descriptors.filter { !defaults.contains($0) }
+            return defaults + extras
         }
-        return systemDefaultButtons(for: systemID)
+        return defaults
     }
 
     // Hardcoded system-specific button defaults. Used as fallback when core
@@ -950,8 +966,15 @@ enum RetroButton: String, Codable, CaseIterable {
     
     func retroID(for systemID: String) -> Int32 {
         switch self {
-        // Standard buttons remain the same
-        case .b: return 0
+        // N64 has unconventional RetroPad mapping:
+        //   A → RetroPad B (0),  B → RetroPad Y (1)
+        //   C1 → RetroPad A (8),  C4 → RetroPad X (9)
+        case .a:
+            if systemID == "n64" { return 0 }
+            return 8
+        case .b:
+            if systemID == "n64" { return 1 }
+            return 0
         case .y: return 1
         case .select: return 2
         case .start: return 3
@@ -959,7 +982,6 @@ enum RetroButton: String, Codable, CaseIterable {
         case .down: return 5
         case .left: return 6
         case .right: return 7
-        case .a: return 8
         case .x: return 9
         case .l1: return 10
         case .r1: return 11
@@ -1067,8 +1089,8 @@ extension ControllerGamepadMapping {
             map(.turboB, to: .y)
             
         case "n64":
-            map(.z, to: .l2) 
-            map(.a, to: .a) 
+            map(.z, to: .l2)
+            map(.a, to: .a)
             map(.b, to: .b) 
             // Map C-buttons to Right Stick
             map(.cUp, to: .rStickUp)

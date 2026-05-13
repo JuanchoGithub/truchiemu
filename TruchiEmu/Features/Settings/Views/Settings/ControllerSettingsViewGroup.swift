@@ -8,6 +8,7 @@ struct ControllerSettingsView: View {
     @EnvironmentObject var controllerService: ControllerService
     @EnvironmentObject var library: ROMLibrary
     @Environment(SystemDatabaseWrapper.self) private var systemDatabase
+    @ObservedObject private var loc = LocalizationManager.shared
     @State private var selectedPlayer: Int = 1
     @State private var selectedSystemID: String
     @State private var configName: String = ""
@@ -36,44 +37,44 @@ struct ControllerSettingsView: View {
 
  var body: some View {
  VStack(spacing: 12) {
- // Search indicator for deep search
- if !searchText.isEmpty {
- SearchResultIndicator(
- searchText: searchText,
- sectionKeywords: Self.searchKeywords,
- sectionName: "Controllers"
- )
- }
+  // Search indicator for deep search
+  if !searchText.isEmpty {
+  SearchResultIndicator(
+  searchText: searchText,
+  sectionKeywords: Self.searchKeywords,
+  sectionName: loc.localized("controllers.controllers")
+  )
+  }
 
- // Top bar: Tab selector and System selector in one row
- HStack(spacing: 20) {
- // Segmented control for tab switching
- Picker("Tab", selection: $activeTab) {
- Text("Controllers").tag(0)
- Text("Keyboard").tag(1)
- }
- .pickerStyle(.segmented)
- .frame(maxWidth: 300)
+  // Top bar: Tab selector and System selector in one row
+  HStack(spacing: 20) {
+  // Segmented control for tab switching
+  Picker("Tab", selection: $activeTab) {
+  Text(loc.localized("controllers.controllers")).tag(0)
+  Text(loc.localized("controllers.keyboard")).tag(1)
+  }
+  .pickerStyle(.segmented)
+  .frame(maxWidth: 300)
 
  Spacer()
 
- // System picker (visible for both tabs)
- if !filteredSystemsForDisplay.isEmpty {
- HStack(spacing: 8) {
- Text("System")
- .font(.body)
- .foregroundColor(.secondary)
+  // System picker (visible for both tabs)
+  if !filteredSystemsForDisplay.isEmpty {
+  HStack(spacing: 8) {
+  Text(loc.localized("controllers.system"))
+  .font(.body)
+  .foregroundColor(.secondary)
 
- Picker("System", selection: $selectedSystemID) {
- Text("Global / Default").tag("default")
- Divider()
- ForEach(filteredSystemsForDisplay, id: \.id) { sys in
- Text(sys.name).tag(sys.id)
- }
- }
- .frame(width: 200)
- }
- }
+  Picker(loc.localized("controllers.system"), selection: $selectedSystemID) {
+  Text(loc.localized("controllers.globalDefault")).tag("default")
+  Divider()
+  ForEach(filteredSystemsForDisplay, id: \.id) { sys in
+  Text(sys.name).tag(sys.id)
+  }
+  }
+  .frame(width: 200)
+  }
+  }
  }
  .padding(.horizontal)
 
@@ -107,7 +108,7 @@ struct ControllerSettingsView: View {
                 VStack(spacing: 10) {
                     HStack(spacing: 12) {
                         // Player selection
-                        Text("Player")
+                        Text(loc.localized("controllers.player"))
                             .font(.body)
                             .foregroundColor(.secondary)
                         HStack(spacing: 6) {
@@ -126,19 +127,19 @@ struct ControllerSettingsView: View {
 
                         Divider().frame(height: 20)
 
-                           // System picker
-                           Picker("System", selection: $selectedSystemID) {
-                               Text("Global / Default").tag("default")
-                               Divider()
-                               ForEach(filteredSystemsForDisplay, id: \.id) { sys in
-                                   Text(sys.name).tag(sys.id)
- }
- }
+                            // System picker
+                            Picker("System", selection: $selectedSystemID) {
+                                Text(loc.localized("controllers.globalDefault")).tag("default")
+                                Divider()
+                                ForEach(filteredSystemsForDisplay, id: \.id) { sys in
+                                    Text(sys.name).tag(sys.id)
+  }
+  }
  
  Spacer()
 
                         // Reset to default
-                        Button("Back to Default") {
+                        Button(loc.localized("controllers.backToDefault")) {
                             if let player = controllerService.connectedControllers.first(where: { $0.playerIndex == selectedPlayer }) {
                                 let vendorName = player.gcController?.vendorName ?? "Unknown"
                                 
@@ -159,19 +160,19 @@ struct ControllerSettingsView: View {
 
                     // Config name row: Load / Save / Delete / Config name
                     HStack(spacing: 6) {
-                        Text("Config")
+                        Text(loc.localized("controllers.config"))
                             .font(.body)
                             .foregroundColor(.secondary)
-                        TextField("Name", text: $configName)
+                        TextField(loc.localized("controllers.name"), text: $configName)
                             .textFieldStyle(.roundedBorder)
                             .frame(width: 150)
-                        Button("Save") {
+                        Button(loc.localized("controllers.save")) {
                             saveCurrentConfig()
                         }
                         .disabled(configName.isEmpty)
                         .buttonStyle(.bordered)
                         .controlSize(.small)
-                        Button("Load") {
+                        Button(loc.localized("controllers.load")) {
                             loadConfig(name: configName)
                         }
                         .disabled(configName.isEmpty || savedConfigs[configName] == nil)
@@ -180,7 +181,7 @@ struct ControllerSettingsView: View {
                         Button {
                             deleteConfig(name: configName)
                         } label: {
-                            Label("Delete", systemImage: "trash")
+                            Label(loc.localized("controllers.delete"), systemImage: "trash")
                         }
                         .buttonStyle(.bordered)
                         .tint(.red)
@@ -198,7 +199,7 @@ struct ControllerSettingsView: View {
                                 }
                             }
                         } label: {
-                            Label("Saved Configs", systemImage: "archivebox")
+                            Label(loc.localized("controllers.savedConfigs"), systemImage: "archivebox")
                         }
                         .menuStyle(.borderlessButton)
                         .controlSize(.small)
@@ -229,7 +230,7 @@ struct ControllerSettingsView: View {
                         Image(systemName: "gamecontroller")
                             .font(.system(size: 48))
                             .foregroundColor(.secondary)
-                        Text("No controller connected for Player \(selectedPlayer).")
+                        Text("\(loc.localized("controllers.noControllerConnected")) \(selectedPlayer).")
                             .foregroundColor(.secondary)
                     }
                     .frame(maxWidth: .infinity, maxHeight: .infinity)
@@ -301,6 +302,7 @@ struct SearchResultIndicator: View {
     let searchText: String
     let sectionKeywords: String
     let sectionName: String
+    @ObservedObject private var loc = LocalizationManager.shared
 
     private var matchesKeywords: Bool {
         let searchLower = searchText.lowercased()
@@ -316,7 +318,7 @@ struct SearchResultIndicator: View {
             HStack(spacing: 8) {
                 Image(systemName: "magnifyingglass")
                     .font(.caption)
-                Text("Searching within \(sectionName) section")
+                Text("\(loc.localized("controllers.searchingWithin")) \(sectionName) section")
                     .font(.caption)
                 Spacer()
                 if let firstMatch = searchText.split(separator: " ").map({ String($0) }).first(where: { sectionKeywords.lowercased().contains($0.lowercased()) }) {
@@ -386,10 +388,11 @@ struct StickVisualizerView: View {
     @State private var rStick: (x: Double, y: Double) = (0, 0)
     @EnvironmentObject var controllerService: ControllerService
     @StateObject private var stickManager = StickStateTracker()
+    @ObservedObject private var loc = LocalizationManager.shared
     
     var body: some View {
         VStack(spacing: 6) {
-            Text("Sticks")
+            Text(loc.localized("controllers.sticks"))
                 .font(.caption)
                 .fontWeight(.semibold)
                 .foregroundColor(.secondary)
@@ -408,6 +411,7 @@ struct ButtonMappingList: View {
     let controllerService: ControllerService
     @State private var listeningFor: RetroButton? = nil
     @State private var currentMapping: ControllerGamepadMapping
+    @ObservedObject private var loc = LocalizationManager.shared
     
     init(systemID: String, player: PlayerController, controllerService: ControllerService) {
         self.systemID = systemID
@@ -418,7 +422,7 @@ struct ButtonMappingList: View {
     
     var body: some View {
         VStack(spacing: 0) {
-            Text("Button Mapping")
+            Text(loc.localized("controllers.buttonMapping"))
                 .font(.caption2)
                 .fontWeight(.semibold)
                 .foregroundColor(.secondary)
@@ -449,36 +453,55 @@ struct ButtonMappingList: View {
         .onDisappear { stopListening() }
     }
     
+    @State private var capturedName: String? = nil
+
     private func startListening(for btn: RetroButton) {
         listeningFor = btn
+        capturedName = nil
         guard let gc = player.gcController else { return }
         gc.extendedGamepad?.valueChangedHandler = { [self] pad, element in
             let threshold: Float = 0.5
-            
+
             if let dpad = element as? GCControllerDirectionPad {
                 let up = dpad.up.value
                 let down = dpad.down.value
                 let left = dpad.left.value
                 let right = dpad.right.value
-                
+
                 let maxVal = max(max(up, down), max(left, right))
                 if maxVal > threshold {
-                    if maxVal == up { capture(dpad.up) }
-                    else if maxVal == down { capture(dpad.down) }
-                    else if maxVal == left { capture(dpad.left) }
-                    else if maxVal == right { capture(dpad.right) }
+                    let sub: GCControllerElement
+                    if maxVal == up { sub = dpad.up }
+                    else if maxVal == down { sub = dpad.down }
+                    else if maxVal == left { sub = dpad.left }
+                    else { sub = dpad.right }
+                    capture(sub)
+                } else if maxVal == 0 {
+                    finalizeCapture()
                 }
-            } else if let button = element as? GCControllerButtonInput, button.value > threshold {
-                capture(button)
+            } else if let button = element as? GCControllerButtonInput {
+                if button.value > threshold {
+                    capture(button)
+                } else {
+                    finalizeCapture()
+                }
             }
         }
     }
-    
+
     private func capture(_ element: GCControllerElement) {
         let name = element.localizedName ?? "Button"
+        capturedName = name
         DispatchQueue.main.async {
             guard let btn = listeningFor else { return }
             currentMapping.buttons[btn] = GCButtonMapping(gcElementName: name, gcElementAlias: name)
+        }
+    }
+
+    private func finalizeCapture() {
+        guard capturedName != nil else { return }
+        capturedName = nil
+        DispatchQueue.main.async {
             listeningFor = nil
             stopListening()
             saveMapping()
@@ -543,6 +566,7 @@ struct ControllerMappingDetail: View {
     let systemID: String
     @State private var listeningFor: RetroButton? = nil
     @State private var mapping: ControllerGamepadMapping
+    @ObservedObject private var loc = LocalizationManager.shared
 
     init(player: PlayerController, systemID: String) {
         self.player = player
@@ -561,7 +585,7 @@ struct ControllerMappingDetail: View {
 
                 // Stick visualization
                 VStack(spacing: 8) {
-                    Text("Sticks")
+                    Text(loc.localized("controllers.sticks"))
                         .font(.caption)
                         .fontWeight(.semibold)
                         .foregroundColor(.secondary)
@@ -581,7 +605,7 @@ struct ControllerMappingDetail: View {
 
             // Right side: Scrollable list of control mappings
             VStack(spacing: 0) {
-                Text("Button Mapping")
+                Text(loc.localized("controllers.buttonMapping"))
                     .font(.caption2)
                     .fontWeight(.semibold)
                     .foregroundColor(.secondary)
@@ -619,36 +643,54 @@ struct ControllerMappingDetail: View {
 
     private func startListeningForButton(_ btn: RetroButton) {
         guard let gc = player.gcController else { return }
+        var pendingName: String? = nil
         gc.extendedGamepad?.valueChangedHandler = { [self] pad, element in
             let threshold: Float = 0.5
-            
+
             if let dpad = element as? GCControllerDirectionPad {
                 let up = dpad.up.value
                 let down = dpad.down.value
                 let left = dpad.left.value
                 let right = dpad.right.value
-                
+
                 let maxVal = max(max(up, down), max(left, right))
                 if maxVal > threshold {
-                    if maxVal == up { captureMapping(dpad.up, for: btn) }
-                    else if maxVal == down { captureMapping(dpad.down, for: btn) }
-                    else if maxVal == left { captureMapping(dpad.left, for: btn) }
-                    else if maxVal == right { captureMapping(dpad.right, for: btn) }
+                    let sub: GCControllerElement
+                    if maxVal == up { sub = dpad.up }
+                    else if maxVal == down { sub = dpad.down }
+                    else if maxVal == left { sub = dpad.left }
+                    else { sub = dpad.right }
+                    let name = sub.localizedName ?? "Button"
+                    pendingName = name
+                    DispatchQueue.main.async {
+                        guard listeningFor == btn else { return }
+                        self.mapping.buttons[btn] = GCButtonMapping(gcElementName: name, gcElementAlias: name)
+                    }
+                } else if maxVal == 0, pendingName != nil {
+                    pendingName = nil
+                    DispatchQueue.main.async {
+                        self.listeningFor = nil
+                        self.stopListening()
+                        self.saveMapping()
+                    }
                 }
-            } else if let button = element as? GCControllerButtonInput, button.value > threshold {
-                captureMapping(button, for: btn)
+            } else if let button = element as? GCControllerButtonInput {
+                if button.value > threshold {
+                    let name = button.localizedName ?? "Button"
+                    pendingName = name
+                    DispatchQueue.main.async {
+                        guard listeningFor == btn else { return }
+                        self.mapping.buttons[btn] = GCButtonMapping(gcElementName: name, gcElementAlias: name)
+                    }
+                } else if pendingName != nil {
+                    pendingName = nil
+                    DispatchQueue.main.async {
+                        self.listeningFor = nil
+                        self.stopListening()
+                        self.saveMapping()
+                    }
+                }
             }
-        }
-    }
-
-    private func captureMapping(_ element: GCControllerElement, for btn: RetroButton) {
-        let name = element.localizedName ?? "Button"
-        DispatchQueue.main.async {
-            guard listeningFor == btn else { return }
-            mapping.buttons[btn] = GCButtonMapping(gcElementName: name, gcElementAlias: name)
-            listeningFor = nil
-            stopListening()
-            saveMapping()
         }
     }
 
@@ -681,6 +723,7 @@ struct MappingRowView: View {
     let isListening: Bool
     let onStartListening: () -> Void
     let onMappingCaptured: (GCButtonMapping) -> Void
+    @ObservedObject private var loc = LocalizationManager.shared
 
     var body: some View {
         HStack(spacing: 6) {
@@ -690,7 +733,7 @@ struct MappingRowView: View {
 
             Spacer(minLength: 4)
 
-            Button(isListening ? "Press..." : (currentMapping?.gcElementAlias ?? "—")) {
+            Button(isListening ? loc.localized("controllers.press") : (currentMapping?.gcElementAlias ?? "—")) {
                 onStartListening()
             }
             .buttonStyle(.bordered)
@@ -857,6 +900,7 @@ struct KeyboardContentView: View {
     let systemID: String
     let isReadOnly: Bool
     @State private var listeningFor: RetroButton? = nil
+    @ObservedObject private var loc = LocalizationManager.shared
 
     var searchText: Binding<String>
 
@@ -868,21 +912,21 @@ struct KeyboardContentView: View {
         self.searchText = searchText
     }
 
- var body: some View {
- VStack(alignment: .leading, spacing: 0) {
- HStack(spacing: 20) {
- Text("Keyboard Mapping").font(.title3.weight(.semibold))
+  var body: some View {
+  VStack(alignment: .leading, spacing: 0) {
+  HStack(spacing: 20) {
+  Text(loc.localized("controllers.keyboardMapping")).font(.title3.weight(.semibold))
 
- Spacer()
+  Spacer()
 
- Button("Reset to Defaults") {
- let defaults = KeyboardMapping.defaults(for: systemID, handedness: controllerService.handedness)
- controllerService.updateKeyboardMapping(defaults, for: systemID)
- }
- .buttonStyle(.bordered)
- .controlSize(.small)
- }
- .padding()
+  Button(loc.localized("controllers.resetToDefaults")) {
+  let defaults = KeyboardMapping.defaults(for: systemID, handedness: controllerService.handedness)
+  controllerService.updateKeyboardMapping(defaults, for: systemID)
+  }
+  .buttonStyle(.bordered)
+  .controlSize(.small)
+  }
+  .padding()
 
  Divider()
 
@@ -922,6 +966,7 @@ struct KeyCaptureButton: NSViewRepresentable {
     var isListening: Bool
     var onCapture: (UInt16) -> Void
     var onStartListening: () -> Void
+    @ObservedObject private var loc = LocalizationManager.shared
 
     func makeNSView(context: Context) -> NSButton {
         let btn = NSButton()
@@ -932,7 +977,7 @@ struct KeyCaptureButton: NSViewRepresentable {
     }
 
     func updateNSView(_ nsView: NSButton, context: Context) {
-        nsView.title = isListening ? "Press a key…" : (keyCode.map { keyName(for: $0) } ?? "—")
+        nsView.title = isListening ? loc.localized("controllers.pressKey") : (keyCode.map { keyName(for: $0) } ?? "—")
         context.coordinator.parent = self
     }
 

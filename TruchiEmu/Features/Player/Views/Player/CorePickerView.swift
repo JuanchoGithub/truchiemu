@@ -38,6 +38,7 @@ struct CorePickerView: View {
     @Environment(\.dismiss) private var dismiss
     let rom: ROM
     @StateObject private var coreManager = CoreManager.shared
+    @StateObject private var loc = LocalizationManager.shared
     @State private var selectedCoreID: String = ""
     @StateObject private var metadataStore = LibraryMetadataStore.shared
     @State private var downloadTask: Task<Void, Never>? = nil
@@ -115,9 +116,9 @@ struct CorePickerView: View {
                         Image(systemName: "cpu")
                             .font(.system(size: 40))
                             .foregroundColor(.secondary)
-                        Text("No cores available")
+                        Text(loc.localized("core.noCoresAvailable"))
                             .foregroundColor(.secondary)
-                        Text("Download cores from the Core Download menu")
+                        Text(loc.localized("core.downloadFromMenu"))
                             .font(.caption)
                             .foregroundColor(.secondary)
                     }
@@ -133,10 +134,10 @@ struct CorePickerView: View {
                     }
                 }
             }
-            .navigationTitle("Select Core")
+            .navigationTitle(loc.localized("core.selectCore"))
             .toolbar {
                 ToolbarItem(placement: .cancellationAction) {
-                    Button("Done") { dismiss() }
+                    Button(loc.localized("core.done")) { dismiss() }
                 }
             }
         }
@@ -203,10 +204,10 @@ struct CorePickerView: View {
                     }) {
                         HStack(spacing: 4) {
                             if isSelected {
-                                Text("Active")
+                                Text(loc.localized("core.active"))
                                     .foregroundColor(.green)
                             } else {
-                                Text("Use This Core")
+                                Text(loc.localized("core.useThisCore"))
                                     .foregroundColor(.accentColor)
                             }
                         }
@@ -219,7 +220,7 @@ struct CorePickerView: View {
                     }) {
                         HStack(spacing: 4) {
                             Image(systemName: "arrow.down.circle.fill")
-                            Text("Download & Use")
+                            Text(loc.localized("core.downloadAndUse"))
                         }
                         .fontWeight(.medium)
                     }
@@ -340,6 +341,7 @@ struct CoreSelectionSheet: View {
     var onCoreSelected: (String) -> Void = { _ in }
     
     @StateObject private var coreManager = CoreManager.shared
+    @StateObject private var loc = LocalizationManager.shared
     @State private var selectedCoreID: String = ""
     @State private var rememberChoice: Bool = false
     
@@ -408,7 +410,7 @@ struct CoreSelectionSheet: View {
         VStack(spacing: 20) {
             headerSection
             coreListView
-            Toggle("Remember my choice for this game", isOn: $rememberChoice)
+            Toggle(loc.localized("core.rememberChoice"), isOn: $rememberChoice)
             actionButtons
         }
         .padding()
@@ -420,9 +422,9 @@ struct CoreSelectionSheet: View {
             Image(systemName: "cpu")
                 .font(.system(size: 48))
                 .foregroundColor(.accentColor)
-            Text("Multiple Cores Available")
+            Text(loc.localized("core.multipleCoresAvailable"))
                 .font(.headline)
-            Text("This game can be played with different emulators. Choose which core to use:")
+            Text(loc.localized("core.multipleCoresDescription"))
                 .font(.subheadline)
                 .foregroundColor(.secondary)
                 .multilineTextAlignment(.center)
@@ -484,12 +486,12 @@ struct CoreSelectionSheet: View {
     
     private var actionButtons: some View {
         HStack(spacing: 12) {
-            Button("Cancel") {
+            Button(loc.localized("core.cancel")) {
                 dismiss()
             }
             .buttonStyle(.bordered)
             
-            Button("Continue") {
+            Button(loc.localized("core.continue")) {
                 if rememberChoice && !selectedCoreID.isEmpty {
                     LibraryMetadataStore.shared.setCustomCore(selectedCoreID, for: rom)
                 }

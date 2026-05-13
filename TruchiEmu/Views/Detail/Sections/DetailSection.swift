@@ -1,7 +1,5 @@
 import SwiftUI
 
-// MARK: - Detail Sections
-
 enum DetailSection: String, CaseIterable {
     case gameInfo = "Game Info"
     case shader = "Shader"
@@ -12,7 +10,19 @@ enum DetailSection: String, CaseIterable {
     case core = "Core"
     case achievements = "Achievements"
     
-    // Plain-language description of what each section does, shown as tooltip
+    var localizedTitle: String {
+        switch self {
+        case .gameInfo: return LocalizationManager.shared.localized("gameDetail.gameInfo")
+        case .shader: return LocalizationManager.shared.localized("gameDetail.shader")
+        case .bezels: return LocalizationManager.shared.localized("gameDetail.bezels")
+        case .controls: return LocalizationManager.shared.localized("gameDetail.controls")
+        case .savedStates: return LocalizationManager.shared.localized("gameDetail.savedStates")
+        case .cheats: return LocalizationManager.shared.localized("gameDetail.cheats")
+        case .core: return LocalizationManager.shared.localized("gameDetail.core")
+        case .achievements: return LocalizationManager.shared.localized("gameDetail.achievements")
+        }
+    }
+
     var helpText: String {
         switch self {
         case .gameInfo:
@@ -34,12 +44,10 @@ enum DetailSection: String, CaseIterable {
         }
     }
     
-    // SF Symbol icon for the section header (larger)
     var headerIcon: String {
         return sectionIcon
     }
     
-    // SF Symbol icon used in sidebar navigation
     var sectionIcon: String {
         switch self {
         case .gameInfo: return "info.circle"

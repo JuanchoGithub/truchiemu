@@ -9,11 +9,12 @@ struct SlotPickerSheet: View {
     @State private var slotInfoList: [SlotInfo] = []
     @State private var slotThumbnails: [Int: NSImage] = [:]
     @Environment(\.colorScheme) private var colorScheme
+    @ObservedObject private var loc = LocalizationManager.shared
     
     var body: some View {
         VStack(spacing: 0) {
             HStack {
-                Label("Save State Slots", systemImage: "externaldrive")
+                Label(loc.localized("slot.title"), systemImage: "externaldrive")
                     .font(.title3)
                     .fontWeight(.semibold)
                 Spacer()
@@ -31,7 +32,7 @@ struct SlotPickerSheet: View {
             HStack(spacing: 8) {
                 HStack(spacing: 4) {
                     Image(systemName: "number.circle.fill").foregroundColor(.blue)
-                    Text("Slot \(runner.currentSlot)")
+                    Text(loc.localized("toolbar.selectSaveSlot"))
                         .font(.subheadline)
                         .fontWeight(.medium)
                 }
@@ -43,11 +44,11 @@ struct SlotPickerSheet: View {
                 Spacer()
                 
                 if runner.supportsSaveStates {
-                    Label("Available", systemImage: "checkmark.circle.fill")
+                    Label(loc.localized("slot.available"), systemImage: "checkmark.circle.fill")
                         .font(.caption)
                         .foregroundColor(.green)
                 } else {
-                    Label("Unavailable", systemImage: "exclamationmark.circle.fill")
+                    Label(loc.localized("slot.unavailable"), systemImage: "exclamationmark.circle.fill")
                         .font(.caption)
                         .foregroundColor(.orange)
                 }
@@ -62,8 +63,8 @@ struct SlotPickerSheet: View {
                 HStack(spacing: 6) {
                     Image(systemName: "archivebox").foregroundColor(.secondary)
                     VStack(alignment: .leading, spacing: 2) {
-                        Text("Compress Save States").font(.subheadline)
-                        Text("Reduces disk space but may take slightly longer to save and load.")
+                        Text(loc.localized("slot.compressSaveStates")).font(.subheadline)
+                        Text(loc.localized("slot.compressSaveStatesInfo"))
                             .font(.caption)
                             .foregroundColor(.secondary)
                     }
@@ -72,19 +73,22 @@ struct SlotPickerSheet: View {
             .padding(.horizontal, 16)
             .padding(.bottom, 6)
             
-            Divider()
-            
-            if runner.supportsSaveStates {
-                slotsGrid
-            } else {
+Divider()
+      
+      if runner.supportsSaveStates {
+        VStack(spacing: 0) {
+          Spacer().frame(height: 12) // Add padding at the top of the first row
+          slotsGrid
+        }
+      } else {
                 VStack(spacing: 16) {
                     Spacer()
                     Image(systemName: "exclamationmark.triangle")
                         .font(.system(size: 48))
                         .foregroundColor(.secondary)
-                    Text("Save states unavailable")
+                    Text(loc.localized("slot.saveStatesUnavailable"))
                         .font(.headline)
-                    Text("This emulation core doesn't support save states. Try using the game's built-in save feature instead.")
+                    Text(loc.localized("slot.saveStatesUnavailableDetail"))
                         .font(.caption).foregroundColor(.secondary)
                         .multilineTextAlignment(.center)
                         .padding(.horizontal)
@@ -97,14 +101,14 @@ struct SlotPickerSheet: View {
             
             HStack {
                 Button(action: { runner.previousSlot(); showSlotPicker = false }) {
-                    Label("Previous", systemImage: "minus.circle").font(.subheadline)
+                    Label(loc.localized("slot.previous"), systemImage: "minus.circle").font(.subheadline)
                 }
                 .buttonStyle(.bordered)
                 
                 Spacer()
                 
                 Button(action: { runner.nextSlot(); showSlotPicker = false }) {
-                    Label("Next", systemImage: "plus.circle").font(.subheadline)
+                    Label(loc.localized("slot.next"), systemImage: "plus.circle").font(.subheadline)
                 }
                 .buttonStyle(.bordered)
             }
@@ -157,6 +161,7 @@ struct SlotCardView: View {
     let onSave: () -> Void
     let onLoad: () -> Void
     let onDelete: () -> Void
+    @ObservedObject private var loc = LocalizationManager.shared
     
     var body: some View {
         VStack(spacing: 4) {
@@ -168,7 +173,7 @@ struct SlotCardView: View {
                         .overlay(VStack {
                             Image(systemName: slotInfo?.exists == true ? "square.and.arrow.down" : "plus.circle")
                                 .font(.system(size: 24)).foregroundColor(.secondary)
-                            Text(slotInfo?.exists == true ? "Preview unavailable" : "No save in this slot")
+                            Text(slotInfo?.exists == true ? loc.localized("slot.previewUnavailable") : loc.localized("slot.noSaveInSlot"))
                                 .font(.caption2).foregroundColor(.secondary)
                         })
                 }
@@ -180,23 +185,36 @@ struct SlotCardView: View {
             .cornerRadius(6)
             .overlay(RoundedRectangle(cornerRadius: 6).stroke(isCurrentSlot ? Color.blue : Color.gray.opacity(0.25), lineWidth: 1.5))
             
-            HStack {
-                Text("Slot \(slot)").font(.caption).fontWeight(isCurrentSlot ? .bold : .medium).foregroundColor(isCurrentSlot ? .blue : .primary)
-                Spacer()
-                if slotInfo?.exists == true { Image(systemName: "checkmark.circle.fill").font(.caption).foregroundColor(.green) }
-            }
-            
-            if let info = slotInfo, info.exists, let size = info.fileSize {
-                Text(size.formattedByteSize).font(.caption2).foregroundColor(.secondary)
-            }
-            
-            HStack(spacing: 4) {
+HStack {
+      Text(slotInfo?.displayName ?? "Slot \(slot)").font(.caption).fontWeight(isCurrentSlot ? .bold : .medium).foregroundColor(isCurrentSlot ? .blue : .primary)
+      Spacer()
+      if slotInfo?.exists == true { Image(systemName: "checkmark.circle.fill").font(.caption).foregroundColor(.green) }
+    }
+    
+    if let info = slotInfo, info.exists, let timestamp = info.formattedDate {
+      Text(timestamp)
+        .font(.system(size: 9))
+        .foregroundColor(.secondary)
+        .lineLimit(1)
+    } else {
+      Text(" ")
+        .font(.system(size: 9))
+        .foregroundColor(.clear)
+    }
+    
+    if let info = slotInfo, info.exists, let size = info.fileSize {
+      Text(size.formattedByteSize).font(.caption2).foregroundColor(.secondary)
+    } else {
+      Text(" ").font(.caption2).foregroundColor(.clear)
+    }
+    
+    HStack(spacing: 4) {
                 Button(action: onSave) { Image(systemName: "square.and.arrow.down").font(.caption) }
-                    .buttonStyle(.borderless).help("Save to Slot \(slot)")
+                    .buttonStyle(.borderless).help(loc.localized("slot.saveToSlot"))
                 Button(action: onLoad) { Image(systemName: "square.and.arrow.up").font(.caption) }
-                    .buttonStyle(.borderless).disabled(slotInfo?.exists != true).help("Load from Slot \(slot)")
+                    .buttonStyle(.borderless).disabled(slotInfo?.exists != true).help(loc.localized("slot.loadFromSlot"))
                 Button(action: onDelete) { Image(systemName: "trash").font(.caption) }
-                    .buttonStyle(.borderless).disabled(slotInfo?.exists != true).help("Delete Slot \(slot)")
+                    .buttonStyle(.borderless).disabled(slotInfo?.exists != true).help(loc.localized("slot.deleteSlot"))
             }
             .foregroundColor(.secondary)
         }

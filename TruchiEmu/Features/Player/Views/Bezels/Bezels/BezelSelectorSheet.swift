@@ -1,10 +1,5 @@
 import SwiftUI
 
-// MARK: - Bezel Selector Sheet
-
-// Sheet for selecting a bezel for a specific game.
-// Split into "Local Bezels" (cached/downloaded) and "Search Online" (API).
-// Shows a preview panel on the right when a bezel is selected.
 struct BezelSelectorSheet: View {
     let rom: ROM
     let systemID: String
@@ -15,6 +10,7 @@ struct BezelSelectorSheet: View {
     @StateObject private var bezelManager = BezelManager.shared
     @StateObject private var apiService = BezelAPIService.shared
     @StateObject private var storageManager = BezelStorageManager.shared
+    @ObservedObject private var loc = LocalizationManager.shared
     
     @State private var searchQuery = ""
     @State private var localBezels: [BezelStorageManager.LocalBezelInfo] = []
@@ -70,21 +66,20 @@ struct BezelSelectorSheet: View {
                 // Left: List of bezels
                 VStack(spacing: 0) {
                     // Tab picker
-                    Picker("Bezels", selection: $activeTab) {
-                        Text("Local Bezels (\(localBezels.count))")
+                    Picker(loc.localized("bezel.view"), selection: $activeTab) {
+                        Text("\(loc.localized("bezel.localBezelsCount")) (\(localBezels.count))")
                             .tag(BezelTab.local)
-                        Text("Search Online (\(remoteBezels.count))")
+                        Text("\(loc.localized("bezel.searchOnlineCount")) (\(remoteBezels.count))")
                             .tag(BezelTab.online)
                     }
                     .pickerStyle(.segmented)
                     .padding(.horizontal)
                     .padding(.top, 8)
                     
-                    // Search bar
                     HStack {
                         Image(systemName: "magnifyingglass")
                             .foregroundColor(.secondary)
-                        TextField("Search bezels...", text: $searchQuery)
+                        TextField(loc.localized("bezel.searchBezels"), text: $searchQuery)
                             .textFieldStyle(.plain)
                         if !searchQuery.isEmpty {
                             Button(action: { searchQuery = "" }) {
@@ -128,33 +123,33 @@ struct BezelSelectorSheet: View {
                 if let selected = selectedEntry {
                     bezelPreviewPanel(selected)
                 } else {
-                    Text("Select a bezel to preview")
+                    Text(loc.localized("bezel.selectBezelToPreview"))
                         .foregroundColor(.secondary)
                         .frame(maxWidth: .infinity, maxHeight: .infinity)
                 }
             }
-            .navigationTitle("Select Bezel for \(rom.displayName)")
+            .navigationTitle("\(loc.localized("bezel.selectBezelFor")) \(rom.displayName)")
             .toolbar {
                 ToolbarItem(placement: .cancellationAction) {
-                    Button("Cancel") { dismiss() }
+                    Button(loc.localized("bezel.cancel")) { dismiss() }
                 }
                 
                 ToolbarItem(placement: .primaryAction) {
                     Menu {
                         Button(action: { showFilePicker = true }) {
-                            Label("Import Custom Bezel...", systemImage: "plus")
+                            Label(loc.localized("bezel.importCustomBezel"), systemImage: "plus")
                         }
                         Button(role: .destructive) {
                             clearBezel()
                             dismiss()
                         } label: {
-                            Label("Clear Bezel", systemImage: "trash")
+                            Label(loc.localized("bezel.clearBezel"), systemImage: "trash")
                         }
                         Button(role: .destructive) {
                             disableBezel()
                             dismiss()
                         } label: {
-                            Label("Disable Bezels", systemImage: "eye.slash")
+                            Label(loc.localized("bezel.disableBezels"), systemImage: "eye.slash")
                         }
                     } label: {
                         Image(systemName: "ellipsis.circle")
@@ -164,7 +159,7 @@ struct BezelSelectorSheet: View {
                 if selectedEntry != nil {
                     ToolbarItem(placement: .confirmationAction) {
                         Button(action: { applySelectedBezel(); dismiss() }) {
-                            Label("Apply", systemImage: "checkmark")
+                            Label(loc.localized("bezel.apply"), systemImage: "checkmark")
                         }
                         .disabled(isDownloading)
                     }
@@ -229,8 +224,8 @@ struct BezelSelectorSheet: View {
     
     private var localLoadingView: some View {
         VStack(spacing: 16) {
-            ProgressView("Scanning local bezels...")
-            Text("Looking for bezels in storage...")
+            ProgressView(loc.localized("bezel.scanningLocalBezels"))
+            Text(loc.localized("bezel.lookingForBezels"))
                 .font(.caption)
                 .foregroundColor(.secondary)
         }
@@ -239,24 +234,22 @@ struct BezelSelectorSheet: View {
     
     private var remoteLoadingView: some View {
         VStack(spacing: 16) {
-            ProgressView("Loading bezels...")
-            Text("Fetching from The Bezel Project...")
+            ProgressView(loc.localized("bezel.loadingBezels"))
+            Text(loc.localized("bezel.fetchingFromBezelProject"))
                 .font(.caption)
                 .foregroundColor(.secondary)
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity)
     }
     
-    // MARK: - Empty Views
-    
     private var localEmptyView: some View {
         VStack(spacing: 12) {
             Image(systemName: "tray")
                 .font(.system(size: 36))
                 .foregroundColor(.secondary)
-            Text("No local bezels found")
+            Text(loc.localized("bezel.noLocalBezelsFound"))
                 .font(.headline)
-            Text("Browse the Search Online tab or import a custom bezel")
+            Text(loc.localized("bezel.browseOnlineTab"))
                 .font(.caption)
                 .foregroundColor(.secondary)
                 .multilineTextAlignment(.center)
@@ -269,9 +262,9 @@ struct BezelSelectorSheet: View {
             Image(systemName: "photo")
                 .font(.system(size: 36))
                 .foregroundColor(.secondary)
-            Text("No bezels available")
+            Text(loc.localized("bezel.noBezelsAvailable"))
                 .font(.headline)
-            Text("Try downloading bezels from Settings → Bezels")
+            Text(loc.localized("bezel.tryDownloadingFromSettings"))
                 .font(.caption)
                 .foregroundColor(.secondary)
                 .multilineTextAlignment(.center)
@@ -279,20 +272,18 @@ struct BezelSelectorSheet: View {
         .frame(maxWidth: .infinity, maxHeight: .infinity)
     }
     
-    // MARK: - Error View
-    
     private func errorView(message: String) -> some View {
         VStack(spacing: 12) {
             Image(systemName: "exclamationmark.triangle")
                 .font(.system(size: 36))
                 .foregroundColor(.orange)
-            Text("Unable to load bezels")
+            Text(loc.localized("bezel.unableToLoadBezels"))
                 .font(.headline)
             Text(message)
                 .font(.caption)
                 .foregroundColor(.secondary)
                 .multilineTextAlignment(.center)
-            Button("Retry") {
+            Button(loc.localized("bezel.retry")) {
                 Task { await loadRemoteBezels() }
             }
             .buttonStyle(.borderedProminent)
@@ -375,13 +366,12 @@ struct BezelSelectorSheet: View {
                                 .progressViewStyle(.linear)
                                 .tint(.blue)
                                 .frame(width: 200)
-                            Text("Downloading... \(Int(downloadProgress * 100))%")
+                            Text("\(loc.localized("bezel.downloadingProgress")) \(Int(downloadProgress * 100))%")
                                 .font(.caption)
                                 .foregroundColor(.secondary)
                         }
                         .frame(maxWidth: 350, maxHeight: 250)
                     } else {
-                        // Placeholder for remote bezels
                         Rectangle()
                             .fill(Color.gray.opacity(0.1))
                             .frame(maxWidth: 350, maxHeight: 250)
@@ -390,7 +380,7 @@ struct BezelSelectorSheet: View {
                                     Image(systemName: "photo.on.rectangle.angled")
                                         .font(.system(size: 48))
                                         .foregroundColor(.secondary)
-                                    Text("Preview not downloaded")
+                                    Text(loc.localized("bezel.previewNotDownloaded"))
                                         .font(.caption)
                                         .foregroundColor(.secondary)
                                 }
@@ -400,26 +390,24 @@ struct BezelSelectorSheet: View {
             }
             .cornerRadius(8)
             
-            // Info
             VStack(spacing: 8) {
                 Text(entry.displayName)
                     .font(.headline)
                     .lineLimit(2)
                     .multilineTextAlignment(.center)
                 
-                // Status badge
                 switch entry {
                 case .local:
-                    Label("Local file", systemImage: "checkmark.circle.fill")
+                    Label(loc.localized("bezel.localFile"), systemImage: "checkmark.circle.fill")
                         .foregroundColor(.green)
                         .font(.caption)
                 case .remote(let remote):
                     if remote.isDownloaded {
-                        Label("Downloaded", systemImage: "checkmark.circle.fill")
+                        Label(loc.localized("bezel.downloadedCount").replacingOccurrences(of: ",", with: "").trimmingCharacters(in: .whitespaces), systemImage: "checkmark.circle.fill")
                             .foregroundColor(.green)
                             .font(.caption)
                     } else {
-                        Label("Not downloaded", systemImage: "arrow.down.circle")
+                        Label(loc.localized("bezel.notDownloaded"), systemImage: "arrow.down.circle")
                             .foregroundColor(.secondary)
                             .font(.caption)
                     }
@@ -428,12 +416,11 @@ struct BezelSelectorSheet: View {
             
             Spacer()
             
-            // Action buttons
             VStack(spacing: 8) {
                 switch entry {
                 case .local:
                     Button(action: { saveBezelFileName(entry.id); dismiss() }) {
-                        Label("Apply", systemImage: "checkmark")
+                        Label(loc.localized("bezel.apply"), systemImage: "checkmark")
                             .frame(maxWidth: .infinity)
                     }
                     .buttonStyle(.borderedProminent)
@@ -441,7 +428,7 @@ struct BezelSelectorSheet: View {
                 case .remote(let remote):
                     if remote.isDownloaded {
                         Button(action: { applyRemoteBezel(remote); dismiss() }) {
-                            Label("Apply", systemImage: "checkmark")
+                            Label(loc.localized("bezel.apply"), systemImage: "checkmark")
                                 .frame(maxWidth: .infinity)
                         }
                         .buttonStyle(.borderedProminent)
@@ -451,7 +438,7 @@ struct BezelSelectorSheet: View {
                             if isDownloading {
                                 ProgressView()
                             } else {
-                                Label("Download & Apply", systemImage: "arrow.down.circle.fill")
+                                Label(loc.localized("bezel.downloadAndApply"), systemImage: "arrow.down.circle.fill")
                                     .frame(maxWidth: .infinity)
                             }
                         }

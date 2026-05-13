@@ -6,6 +6,7 @@ import SwiftUI
 // Accessible from the in-game HUD or game detail view.
 struct AchievementListView: View {
     @ObservedObject var raService = RetroAchievementsService.shared
+    @ObservedObject private var loc = LocalizationManager.shared
     @Environment(\.dismiss) private var dismiss
     @State private var selectedTab: AchievementTab = .core
     @State private var expandedAchievement: Int?
@@ -54,17 +55,16 @@ struct AchievementListView: View {
                             Text("\(totalPoints) / \(maxPoints)")
                                 .font(.title3)
                                 .fontWeight(.bold)
-                            Text("points")
+                            Text(loc.localized("achievement.points"))
                                 .font(.caption)
                                 .foregroundColor(.secondary)
                         }
                     }
                     
-                    // Progress bar
                     ProgressView(value: maxPoints > 0 ? Double(totalPoints) / Double(maxPoints) : 0)
                         .progressViewStyle(.linear)
                     
-                    Text("\(raService.currentGame?.achievements.filter { $0.isUnlocked }.count ?? 0) of \(raService.currentGame?.achievements.count ?? 0) unlocked")
+                    Text("\(raService.currentGame?.achievements.filter { $0.isUnlocked }.count ?? 0) \(loc.localized("achievement.unlockedOf")) \(raService.currentGame?.achievements.count ?? 0) \(loc.localized("achievement.unlockedSuffix"))")
                         .font(.caption)
                         .foregroundColor(.secondary)
                 }
@@ -100,7 +100,7 @@ struct AchievementListView: View {
                     Image(systemName: selectedTab == .unlocked ? "lock.fill" : "trophy.fill")
                         .font(.system(size: 40))
                         .foregroundColor(.secondary)
-                    Text("No achievements")
+                    Text(loc.localized("achievement.noAchievements"))
                         .foregroundColor(.secondary)
                 }
                 .frame(maxWidth: .infinity, maxHeight: .infinity)
@@ -133,14 +133,14 @@ struct AchievementListView: View {
                 HStack {
                     Image(systemName: "shield.lefthalf.filled.fill")
                         .foregroundColor(.orange)
-                    Text("Hardcore Mode Active")
+                    Text(loc.localized("achievement.hardcoreModeActive"))
                         .font(.caption)
                         .foregroundColor(.orange)
                 }
                 .padding()
             }
         }
-        .navigationTitle("Achievements")
+        .navigationTitle(loc.localized("achievement.achievementsTitle"))
     }
 }
 
@@ -150,6 +150,7 @@ struct AchievementRowView: View {
     let achievement: Achievement
     let isExpanded: Bool
     @ObservedObject private var cache = RABadgeCacheService.shared
+    @ObservedObject private var loc = LocalizationManager.shared
     var body: some View {
         HStack(spacing: 12) {
             // Badge
@@ -187,12 +188,12 @@ struct AchievementRowView: View {
                         .foregroundColor(.secondary)
                     
                     if let unlockDate = achievement.unlockDate {
-                        Text("Unlocked \(unlockDate.formatted(date: .abbreviated, time: .shortened))")
+                        Text("\(loc.localized("achievement.unlockedDate")) \(unlockDate.formatted(date: .abbreviated, time: .shortened))")
                             .font(.caption2)
                             .foregroundColor(.secondary)
                     }
                 } else if !achievement.isUnlocked {
-                    Text("Hidden until unlocked")
+                    Text(loc.localized("achievement.hiddenUntilUnlocked"))
                         .font(.caption)
                         .foregroundColor(.secondary)
                 }
@@ -205,7 +206,7 @@ struct AchievementRowView: View {
                 Text("\(achievement.points)")
                     .font(.headline)
                     .foregroundColor(achievement.isUnlocked ? .accentColor : .secondary)
-                Text("pts")
+                Text(loc.localized("achievement.pts"))
                     .font(.caption2)
                     .foregroundColor(.secondary)
             }
@@ -226,12 +227,13 @@ enum AchievementTab: CaseIterable {
     case locked
     
     var title: String {
+        let loc = LocalizationManager.shared
         switch self {
-        case .core: return "Core"
-        case .unofficial: return "Unofficial"
-        case .event: return "Events"
-        case .unlocked: return "Unlocked"
-        case .locked: return "Locked"
+        case .core: return loc.localized("achievement.core")
+        case .unofficial: return loc.localized("achievement.unofficial")
+        case .event: return loc.localized("achievement.events")
+        case .unlocked: return loc.localized("achievement.unlocked")
+        case .locked: return loc.localized("achievement.locked")
         }
     }
     

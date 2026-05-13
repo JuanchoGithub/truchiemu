@@ -9,6 +9,7 @@ struct CheatManagerView: View {
     @Environment(\.dismiss) var dismiss
     @Environment(\.colorScheme) private var colorScheme
     @ObservedObject private var cheatManager = CheatManagerService.shared
+    @ObservedObject private var loc = LocalizationManager.shared
     @State private var showAddCheatWindow = false
     @State private var showImportFile = false
     @State private var searchText = ""
@@ -37,7 +38,7 @@ struct CheatManagerView: View {
     var body: some View {
         VStack(spacing: 0) {
             HStack {
-                Label("Cheats", systemImage: "wand.and.stars")
+                Label(loc.localized("cheat.title"), systemImage: "wand.and.stars")
                     .font(.title3)
                     .fontWeight(.semibold)
                 Spacer()
@@ -46,7 +47,7 @@ struct CheatManagerView: View {
                         .font(.caption)
                         .fontWeight(.medium)
                         .foregroundColor(.green)
-                    Text("enabled")
+                    Text(loc.localized("cheat.enabled"))
                         .font(.caption2)
                         .foregroundColor(.secondary)
                 }
@@ -69,7 +70,7 @@ struct CheatManagerView: View {
                     Button(action: { selectedCategory = nil }) {
                         HStack(spacing: 4) {
                             Image(systemName: "square.grid.2x2").font(.caption2)
-                            Text("All").font(.caption)
+                            Text(loc.localized("cheat.all")).font(.caption)
                         }
                         .padding(.horizontal, 10)
                         .padding(.vertical, 6)
@@ -100,10 +101,9 @@ struct CheatManagerView: View {
             
             Divider()
             
-            // Search
             HStack(spacing: 6) {
                 Image(systemName: "magnifyingglass").foregroundColor(.secondary).font(.footnote)
-                TextField("Search cheats...", text: $searchText).textFieldStyle(.plain).font(.body)
+                TextField(loc.localized("cheat.searchPlaceholder"), text: $searchText).textFieldStyle(.plain).font(.body)
                 if !searchText.isEmpty {
                     Button(action: { searchText = "" }) { Image(systemName: "xmark.circle.fill").foregroundColor(.secondary).font(.footnote) }
                         .buttonStyle(.plain)
@@ -117,12 +117,11 @@ struct CheatManagerView: View {
             
             Divider()
             
-            // Cheat list
             if filteredCheats.isEmpty {
                 VStack(spacing: 10) {
                     Image(systemName: "wand.and.stars").font(.system(size: 36)).foregroundColor(.secondary)
-                    Text(searchText.isEmpty ? "No cheats available" : "No matching cheats").foregroundColor(.secondary)
-                    if searchText.isEmpty { Text("Import a .cht file or add custom codes").font(.caption).foregroundColor(.secondary) }
+                    Text(searchText.isEmpty ? loc.localized("cheat.noCheatsAvailable") : loc.localized("cheat.noMatchingCheats")).foregroundColor(.secondary)
+                    if searchText.isEmpty { Text(loc.localized("cheat.importInstructions")).font(.caption).foregroundColor(.secondary) }
                 }
                 .frame(maxWidth: .infinity, maxHeight: .infinity)
             } else {
@@ -139,7 +138,7 @@ struct CheatManagerView: View {
             if enabledCount > 0 {
                 Divider()
                 Button(action: applyCheats) {
-                    Label("Apply Cheats", systemImage: "checkmark.circle.fill").frame(maxWidth: .infinity).padding()
+                    Label(loc.localized("cheat.applyCheats"), systemImage: "checkmark.circle.fill").frame(maxWidth: .infinity).padding()
                 }
                 .buttonStyle(.borderedProminent)
                 .padding()
@@ -200,6 +199,7 @@ struct AddCheatWindow: View {
     @Environment(\.dismiss) private var dismiss
     @Environment(\.colorScheme) private var colorScheme
     @ObservedObject private var cheatManager = CheatManagerService.shared
+    @ObservedObject private var loc = LocalizationManager.shared
     @State private var description = ""
     @State private var code = ""
     @State private var format: CheatFormat = .raw
@@ -208,24 +208,24 @@ struct AddCheatWindow: View {
     var body: some View {
         NavigationStack {
             Form {
-                Section("Cheat Details") {
-                    TextField("Description (e.g., Infinite Lives)", text: $description)
-                    TextField("Code (e.g., 7E0DBE05)", text: $code).font(.system(.body, design: .monospaced))
-                    Picker("Format", selection: $format) { ForEach(CheatFormat.allCases, id: \.self) { f in Text(f.displayName).tag(f) } }
+                Section(loc.localized("cheat.details")) {
+                    TextField(loc.localized("cheat.descriptionPlaceholder"), text: $description)
+                    TextField(loc.localized("cheat.codePlaceholder"), text: $code).font(.system(.body, design: .monospaced))
+                    Picker(loc.localized("cheat.format"), selection: $format) { ForEach(CheatFormat.allCases, id: \.self) { f in Text(f.displayName).tag(f) } }
                 }
-                Section("Example") {
+                Section(loc.localized("cheat.example")) {
                     Text(format.example).font(.system(.body, design: .monospaced)).foregroundColor(.secondary).textSelection(.enabled)
                 }
                 if let error = errorMessage {
-                    Section("Error") { Label(error, systemImage: "exclamationmark.triangle.fill").foregroundColor(.red) }
+                    Section(loc.localized("cheat.error")) { Label(error, systemImage: "exclamationmark.triangle.fill").foregroundColor(.red) }
                 }
             }
             .formStyle(.grouped)
-            .navigationTitle("Add Custom Cheat")
+            .navigationTitle(loc.localized("cheat.addCustomCheat"))
             .toolbar {
-                ToolbarItem(placement: .cancellationAction) { Button("Cancel") { dismiss() } }
+                ToolbarItem(placement: .cancellationAction) { Button(loc.localized("cheat.cancel")) { dismiss() } }
                 ToolbarItem(placement: .confirmationAction) {
-                    Button("Add Cheat") { addCheat() }.disabled(code.trimmingCharacters(in: .whitespaces).isEmpty)
+                    Button(loc.localized("cheat.addCheat")) { addCheat() }.disabled(code.trimmingCharacters(in: .whitespaces).isEmpty)
                 }
             }
         }
@@ -235,10 +235,10 @@ struct AddCheatWindow: View {
     private func addCheat() {
         let trimmedCode = code.trimmingCharacters(in: .whitespacesAndNewlines)
         let trimmedDesc = description.trimmingCharacters(in: .whitespacesAndNewlines)
-        guard !trimmedCode.isEmpty else { errorMessage = "Code cannot be empty"; return }
+        guard !trimmedCode.isEmpty else { errorMessage = loc.localized("cheat.codeEmptyError"); return }
         let detectedFormat = CheatParser.detectFormat(trimmedCode)
-        if detectedFormat != format && format != .raw { errorMessage = "Code format doesn't match. Detected: \(detectedFormat.displayName)"; return }
-        let cheat = Cheat(index: cheatManager.cheats(for: rom).count, description: trimmedDesc.isEmpty ? "Custom Cheat" : trimmedDesc, code: trimmedCode, enabled: true, format: format)
+        if detectedFormat != format && format != .raw { errorMessage = "\(loc.localized("cheat.codeFormatMismatch")) \(detectedFormat.displayName)"; return }
+        let cheat = Cheat(index: cheatManager.cheats(for: rom).count, description: trimmedDesc.isEmpty ? loc.localized("cheat.customCheat") : trimmedDesc, code: trimmedCode, enabled: true, format: format)
         cheatManager.addCheat(cheat, for: rom)
         dismiss()
     }

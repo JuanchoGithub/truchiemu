@@ -5,6 +5,7 @@ struct CheatsSection: View {
     @ObservedObject var library: ROMLibrary
     @StateObject private var cheatManagerService = CheatManagerService.shared
     @StateObject private var cheatDownloadService = CheatDownloadService.shared
+    @StateObject private var loc = LocalizationManager.shared
     @State private var cheatCount: Int = 0
     @State private var enabledCheatCount: Int = 0
     @State private var downloadMessage: String? = nil
@@ -33,7 +34,7 @@ struct CheatsSection: View {
 
     var body: some View {
         ModernSectionCard(
-            title: "Cheats",
+            title: loc.localized("cheats.title"),
             icon: "wand.and.stars",
             badge: cheatCount > 0 ? "\(enabledCheatCount)/\(cheatCount)" : nil
         ) {
@@ -48,7 +49,7 @@ struct CheatsSection: View {
                 )) {
                     HStack {
                         Image(systemName: "gamecontroller.fill").foregroundColor(.blue)
-                        Text("Enable Cheats").foregroundColor(AppColors.textPrimary(colorScheme))
+                        Text(loc.localized("cheats.enableCheats")).foregroundColor(AppColors.textPrimary(colorScheme))
                     }
                 }
                 .toggleStyle(SwitchToggleStyle())
@@ -90,7 +91,7 @@ struct CheatsSection: View {
                             } else {
                                 Image(systemName: "arrow.down.circle")
                             }
-                            Text(cheatDownloadService.isDownloading ? "Downloading..." : "Download")
+                            Text(cheatDownloadService.isDownloading ? loc.localized("cheats.downloading") : loc.localized("cheats.download"))
                         }
                         .foregroundColor(.white)
                         .padding(.horizontal, 10)
@@ -105,7 +106,7 @@ struct CheatsSection: View {
                     } label: {
                         HStack(spacing: 4) {
                             Image(systemName: "square.and.arrow.down")
-                            Text("Import")
+                            Text(loc.localized("cheats.import"))
                         }
                         .foregroundColor(.white)
                         .padding(.horizontal, 10)
@@ -121,7 +122,7 @@ struct CheatsSection: View {
                     } label: {
                         HStack(spacing: 4) {
                             Image(systemName: "wand.and.stars")
-                            Text("Manage")
+                            Text(loc.localized("cheats.manage"))
                         }
                         .foregroundColor(.white)
                         .padding(.horizontal, 10)
@@ -138,7 +139,7 @@ struct CheatsSection: View {
                         Image(systemName: "magnifyingglass")
                             .foregroundColor(AppColors.textMuted(colorScheme))
                             .font(.caption)
-                        TextField("Search cheats...", text: $cheatSearchText)
+                        TextField(loc.localized("cheats.searchCheats"), text: $cheatSearchText)
                             .textFieldStyle(.plain)
                             .font(.caption)
                             .foregroundColor(AppColors.textPrimary(colorScheme))
@@ -171,10 +172,10 @@ struct CheatsSection: View {
                         Image(systemName: "wand.and.stars")
                             .font(.system(size: 20))
                             .foregroundColor(AppColors.textMuted(colorScheme))
-                        Text("No cheats available")
+                        Text(loc.localized("cheats.noCheatsAvailable"))
                             .font(.caption)
                             .foregroundColor(AppColors.textSecondary(colorScheme))
-                        Text("Download or import a cheat file")
+                        Text(loc.localized("cheats.downloadOrImportCheatFile"))
                             .font(.caption2)
                             .foregroundColor(AppColors.textMuted(colorScheme))
                     }
@@ -202,7 +203,7 @@ struct CheatsSection: View {
                 }
 
                 if !cheatSearchText.isEmpty && filteredCheatsList.isEmpty {
-                    Text("No cheats match \"\(cheatSearchText)\"")
+                    Text(loc.localized("cheats.noCheatsMatch").replacingOccurrences(of: "{0}", with: cheatSearchText))
                         .font(.caption2)
                         .foregroundColor(AppColors.textMuted(colorScheme))
                         .padding(.vertical, 4)
@@ -220,7 +221,7 @@ struct CheatsSection: View {
                         loadCheatsList()
                         updateCheatCounts()
                     } label: {
-                        Label(enabledCheatCount > 0 ? "Disable All" : "Enable All",
+                        Label(enabledCheatCount > 0 ? loc.localized("cheats.disableAll") : loc.localized("cheats.enableAll"),
                               systemImage: enabledCheatCount > 0 ? "stop.circle" : "play.circle")
                             .font(.caption)
                             .foregroundColor(AppColors.textSecondary(colorScheme))
@@ -229,7 +230,7 @@ struct CheatsSection: View {
 
                     Spacer()
 
-                    Text("\(enabledCheatCount) of \(cheatCount) enabled")
+                    Text(loc.localized("cheats.enabledOfTotal").replacingOccurrences(of: "{0}", with: "\(enabledCheatCount)").replacingOccurrences(of: "{1}", with: "\(cheatCount)"))
                         .font(.caption)
                         .foregroundColor(AppColors.textSecondary(colorScheme))
                 }
@@ -242,7 +243,7 @@ struct CheatsSection: View {
                     HStack {
                         Image(systemName: "gearshape")
                             .foregroundColor(AppColors.textSecondary(colorScheme))
-                        Text("Cheat Settings")
+                        Text(loc.localized("cheats.cheatSettings"))
                             .font(.caption)
                             .foregroundColor(AppColors.textSecondary(colorScheme))
                         Spacer()
@@ -298,13 +299,13 @@ struct CheatsSection: View {
 
     private func downloadCheats() async {
         LoggerService.info(category: "Cheats", "Download button tapped")
-        downloadMessage = "Starting download..."
+        downloadMessage = loc.localized("cheats.startingDownload")
         downloadMessageTone = .info
 
         do {
             let systemID = rom.systemID ?? ""
             guard !systemID.isEmpty else {
-                downloadMessage = "No system assigned to this game"
+                downloadMessage = loc.localized("cheats.noSystemAssigned")
                 downloadMessageTone = .warning
                 return
             }
@@ -320,20 +321,20 @@ struct CheatsSection: View {
                 loadCheatsList()
                 let cheatsFound = cheatCount - cheatCountBefore
                 if cheatsFound > 0 {
-                    downloadMessage = "Downloaded \(cheatsFound) cheat\(cheatsFound == 1 ? "" : "s")"
+                    downloadMessage = String(format: loc.localized("cheats.downloadedCheatsFound").replacingOccurrences(of: "{0}", with: "\(cheatsFound)").replacingOccurrences(of: "{1}", with: cheatsFound == 1 ? "" : "s"))
                 } else {
-                    downloadMessage = "Downloaded cheat for \(rom.displayName)"
+                    downloadMessage = loc.localized("cheats.downloadedCheatFor").replacingOccurrences(of: "{0}", with: rom.displayName)
                 }
                 downloadMessageTone = .success
             } else {
-                downloadMessage = "No cheat file found for \(rom.displayName)"
+                downloadMessage = loc.localized("cheats.noCheatFileFound").replacingOccurrences(of: "{0}", with: rom.displayName)
                 downloadMessageTone = .warning
             }
         } catch is TimeoutError {
-            downloadMessage = "Download timed out"
+            downloadMessage = loc.localized("cheats.downloadTimedOut")
             downloadMessageTone = .error
         } catch {
-            downloadMessage = "Download failed: \(error.localizedDescription)"
+            downloadMessage = loc.localized("cheats.downloadFailed").replacingOccurrences(of: "{0}", with: error.localizedDescription)
             downloadMessageTone = .error
         }
     }

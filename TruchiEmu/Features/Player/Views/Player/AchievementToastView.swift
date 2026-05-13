@@ -13,6 +13,7 @@ struct AchievementToastView: View {
     @State private var opacity: Double = 0
     @State private var badgeImage: NSImage?
     @State private var showConfetti = false
+    @ObservedObject private var loc = LocalizationManager.shared
     
     var isRareAchievement: Bool {
         achievement.points >= 10
@@ -20,7 +21,6 @@ struct AchievementToastView: View {
     
     var body: some View {
         HStack(spacing: 16) {
-            // Badge
             Group {
                 if let badge = badgeImage {
                     Image(nsImage: badge)
@@ -34,9 +34,8 @@ struct AchievementToastView: View {
             }
             .frame(width: 48, height: 48)
             
-            // Text
             VStack(alignment: .leading, spacing: 4) {
-                Text("Achievement Unlocked!")
+                Text(loc.localized("achievement.unlockedLabel"))
                     .font(.caption)
                     .foregroundColor(.secondary)
                 
@@ -45,7 +44,7 @@ struct AchievementToastView: View {
                     .foregroundColor(.white)
                     .lineLimit(2)
                 
-                Text("\(achievement.points) points")
+                Text("\(achievement.points) \(loc.localized("achievement.pointsLabel"))")
                     .font(.subheadline)
                     .foregroundColor(.secondary)
             }

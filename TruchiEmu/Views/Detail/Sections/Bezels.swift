@@ -3,7 +3,7 @@ import SwiftUI
 extension GameDetailView {
     var bezelsSection: some View {
         ModernSectionCard(
-            title: "Bezels",
+            title: loc.localized("bezel.title"),
             icon: "picture.inset.filled",
             badge: currentBezelStatusText.isEmpty ? nil : currentBezelStatusText
         ) {
@@ -21,7 +21,7 @@ extension GameDetailView {
                             .font(.system(size: 24)).foregroundColor(AppColors.textMuted(colorScheme))
                         VStack(alignment: .leading, spacing: 2) {
                             Text(currentBezelDisplayName).font(.subheadline).foregroundColor(AppColors.textSecondary(colorScheme))
-                            Text("No preview available").font(.caption).foregroundColor(AppColors.textMuted(colorScheme))
+                            Text(loc.localized("bezel.noPreviewAvailable")).font(.caption).foregroundColor(AppColors.textMuted(colorScheme))
                         }
                     }
                     .frame(maxWidth: .infinity)
@@ -34,11 +34,11 @@ extension GameDetailView {
 
                 HStack {
                     VStack(alignment: .leading, spacing: 2) {
-                        Text("Current Bezel").font(.subheadline).fontWeight(.medium).foregroundColor(AppColors.textPrimary(colorScheme))
+                        Text(loc.localized("bezel.currentBezel")).font(.subheadline).fontWeight(.medium).foregroundColor(AppColors.textPrimary(colorScheme))
                         Text(currentBezelDisplayName).font(.caption).foregroundColor(AppColors.textSecondary(colorScheme))
                     }
                     Spacer()
-                    Button("Browse Bezels") { presentBezelSelectorWindow() }
+                    Button(loc.localized("bezel.browseBezels")) { presentBezelSelectorWindow() }
                         .foregroundColor(.white)
                         .padding(.horizontal, 14)
                         .padding(.vertical, 8)
@@ -52,7 +52,7 @@ extension GameDetailView {
                     Button { autoMatchBezel() } label: {
                         HStack {
                             Image(systemName: "magnifyingglass").foregroundColor(.white).frame(width: 20)
-                            Text("Auto-Match Bezel").foregroundColor(AppColors.textPrimary(colorScheme))
+                            Text(loc.localized("bezel.autoMatchBezel")).foregroundColor(AppColors.textPrimary(colorScheme))
                             Spacer()
                         }
                         .padding(.vertical, 6)
@@ -65,7 +65,7 @@ extension GameDetailView {
                     Button { clearBezel() } label: {
                         HStack {
                             Image(systemName: "nosign").foregroundColor(.white).frame(width: 20)
-                            Text("Clear Bezel").foregroundColor(AppColors.textPrimary(colorScheme))
+                            Text(loc.localized("bezel.clearBezel")).foregroundColor(AppColors.textPrimary(colorScheme))
                             Spacer()
                         }
                         .padding(.vertical, 6)
@@ -78,7 +78,7 @@ extension GameDetailView {
 
                 Divider().overlay(AppColors.divider(colorScheme))
 
-                Text("Bezels are pre-downloaded before gameplay. Browse available bezels from The Bezel Project or import your own.")
+                Text(loc.localized("bezel.bezelsPreDownloaded"))
                     .font(.caption).foregroundColor(AppColors.textMuted(colorScheme))
             }
         }
@@ -89,15 +89,15 @@ extension GameDetailView {
 
     var currentBezelStatusText: String {
         let bezelFileName = currentROM.settings.bezelFileName
-        if bezelFileName == "none" { return "Off" }
-        else if bezelFileName.isEmpty { return "Auto" }
-        else { return "Custom" }
+        if bezelFileName == "none" { return loc.localized("bezel.off") }
+        else if bezelFileName.isEmpty { return loc.localized("bezel.auto") }
+        else { return loc.localized("bezel.custom") }
     }
 
     var currentBezelDisplayName: String {
         let bezelFileName = currentROM.settings.bezelFileName
-        if bezelFileName == "none" { return "Bezels are disabled" }
-        else if bezelFileName.isEmpty { return "Automatically matched by game name" }
+        if bezelFileName == "none" { return loc.localized("bezel.bezelsDisabled") }
+        else if bezelFileName.isEmpty { return loc.localized("bezel.automaticallyMatched") }
         else { return bezelFileName.replacingOccurrences(of: ".png", with: "").replacingOccurrences(of: "_", with: " ") }
     }
 

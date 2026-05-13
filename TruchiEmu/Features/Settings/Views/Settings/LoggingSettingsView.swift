@@ -10,6 +10,7 @@ struct LoggingSettingsView: View {
     @StateObject private var viewModel = LoggingSettingsViewModel()
     
     @Binding var searchText: String
+    @ObservedObject private var loc = LocalizationManager.shared
     
     init(searchText: Binding<String> = .constant("")) {
         self._searchText = searchText
@@ -30,7 +31,7 @@ struct LoggingSettingsView: View {
             // Log Level Section
             if !isSearching || matchesSearch("logging log debug console output level verbosity info extreme") {
                 Section {
-                    Picker("Log Level", selection: $selectedLevel) {
+                    Picker(loc.localized("logging.logLevel"), selection: $selectedLevel) {
                         ForEach(LogLevel.allCases, id: \.self) { level in
                             Text(level.description).tag(level)
                         }
@@ -39,46 +40,46 @@ struct LoggingSettingsView: View {
                     
                     logLevelDescription
                 } header: {
-                    Label("Log Level", systemImage: "slider.vertical.3")
+                    Label(loc.localized("logging.logLevel"), systemImage: "slider.vertical.3")
                 } footer: {
-                    Text("Controls the verbosity of application logs. Higher levels include all lower-level logs.")
+                    Text(loc.localized("logging.logLevelDescription"))
                 }
             }
             
             // Core Logging Section
             if !isSearching || matchesSearch("logging core libretro emulation debug") {
                 Section {
-                    Picker("Core Log Level", selection: $coreLogLevel) {
+                    Picker(loc.localized("logging.coreLogLevel"), selection: $coreLogLevel) {
                         ForEach(CoreLogLevel.allCases, id: \.self) { level in
                             Text(level.name).tag(level)
                         }
                     }
                     .pickerStyle(.segmented)
                     
-                    Text("Controls the verbosity of logs from the emulation core (libretro). Set this alongside App Log Level for comprehensive troubleshooting.")
+                    Text(loc.localized("logging.coreLoggingDescription"))
                         .font(.caption)
                         .foregroundStyle(.secondary)
                 } header: {
-                    Label("Core Logging", systemImage: "cpu")
+                    Label(loc.localized("logging.coreLogging"), systemImage: "cpu")
                 }
             }
             
             // Log File Location Section
             if !isSearching || matchesSearch("logging file folder location path size archive") {
                 Section {
-                    LabeledContent("Location") {
+                    LabeledContent(loc.localized("logging.location")) {
                         Text(viewModel.currentLogFilePath)
                             .font(.caption.monospaced())
                             .textSelection(.enabled)
                     }
                     
-                    LabeledContent("Current file") {
+                    LabeledContent(loc.localized("logging.currentFile")) {
                         Text("\(viewModel.currentLogFileSize) • \(viewModel.currentLogFileAge)")
                             .font(.caption)
                             .foregroundStyle(.secondary)
                     }
                     
-                    LabeledContent("Total log size") {
+                    LabeledContent(loc.localized("logging.totalLogSize")) {
                         Text(viewModel.totalLogFileSize)
                             .font(.caption)
                             .foregroundStyle(.secondary)
@@ -89,7 +90,7 @@ struct LoggingSettingsView: View {
                     
                     HStack {
                         Button(action: viewModel.changeLogFolder) {
-                            Label("Change...", systemImage: "folder.badge.plus")
+                            Label(loc.localized("logging.changeLocation"), systemImage: "folder.badge.plus")
                         }
                         .buttonStyle(.bordered)
                         .controlSize(.small)
@@ -97,14 +98,14 @@ struct LoggingSettingsView: View {
                         Spacer()
                         
                         Button(action: viewModel.showLogInFinder) {
-                            Label("Show in Finder", systemImage: "folder")
+                            Label(loc.localized("logging.showInFinder"), systemImage: "folder")
                         }
                         .buttonStyle(.bordered)
                         .controlSize(.small)
                         
                         if viewModel.hasCustomLogFolder {
                             Button(action: viewModel.resetToDefaultFolder) {
-                                Label("Reset", systemImage: "arrow.uturn.backward")
+                                Label(loc.localized("logging.reset"), systemImage: "arrow.uturn.backward")
                             }
                             .buttonStyle(.bordered)
                             .controlSize(.small)
@@ -112,12 +113,12 @@ struct LoggingSettingsView: View {
                     }
                     
                     if viewModel.hasCustomLogFolder {
-                        Text("Log files are being written to a custom location.")
+                        Text(loc.localized("logging.customLocationDescription"))
                             .font(.caption)
                             .foregroundStyle(.secondary)
                     }
                 } header: {
-                    Label("Log File Location", systemImage: "folder.fill")
+                    Label(loc.localized("logging.logFileLocation"), systemImage: "folder.fill")
                 }
             }
             
@@ -126,7 +127,7 @@ struct LoggingSettingsView: View {
                 Section {
                     HStack {
                         Button(action: viewModel.clearAllLogs) {
-                            Label("Clear All Logs", systemImage: "trash.fill")
+                            Label(loc.localized("logging.clearAllLogs"), systemImage: "trash.fill")
                         }
                         .buttonStyle(.bordered)
                         .controlSize(.small)
@@ -135,45 +136,45 @@ struct LoggingSettingsView: View {
                         Spacer()
                         
                         Button(action: viewModel.trimOldLogs) {
-                            Label("Trim Old Entries", systemImage: "scissors")
+                            Label(loc.localized("logging.trimOldEntries"), systemImage: "scissors")
                         }
                         .buttonStyle(.bordered)
                         .controlSize(.small)
                     }
                     
-                    Text("Clear All Logs deletes all log files including rotated archives. Trim Old Entries removes entries older than 7 days.")
+                    Text(loc.localized("logging.maintenanceDescription"))
                         .font(.caption)
                         .foregroundStyle(.secondary)
                     
                     Divider()
                         .padding(.vertical, 4)
                     
-                    LabeledContent("Max file size") {
-                        Text("5 MB")
+                    LabeledContent(loc.localized("logging.maxFileSize")) {
+                        Text(loc.localized("logging.fiveMB"))
                             .font(.caption)
                             .foregroundStyle(.secondary)
                     }
                     
-                    LabeledContent("Auto-rotation") {
-                        Text("Enabled")
+                    LabeledContent(loc.localized("logging.autoRotation")) {
+                        Text(loc.localized("logging.enabled"))
                             .font(.caption)
                             .foregroundStyle(.secondary)
                     }
                     
-                    LabeledContent("Age limit") {
-                        Text("7 days")
+                    LabeledContent(loc.localized("logging.ageLimit")) {
+                        Text(loc.localized("logging.sevenDays"))
                             .font(.caption)
                             .foregroundStyle(.secondary)
                     }
                 } header: {
-                    Label("Log Maintenance", systemImage: "trash")
+                    Label(loc.localized("logging.logMaintenance"), systemImage: "trash")
                 }
             }
             
             // No results message
             if isSearching && !hasMatchingSections {
                 Section {
-                    Text("No matching settings found for \"\(searchText)\"")
+                    Text(loc.localized("logging.noMatchingSettings") + " \"\(searchText)\"")
                         .font(.caption)
                         .foregroundStyle(.secondary)
                         .frame(maxWidth: .infinity, alignment: .center)
@@ -182,7 +183,7 @@ struct LoggingSettingsView: View {
             }
         }
 .formStyle(.grouped)
-        .navigationTitle("Logging")
+        .navigationTitle(loc.localized("logging.title"))
         .onAppear {
             let rawLevel = AppSettings.get("log_level", type: String.self) ?? "info"
             selectedLevel = LogLevel(rawValue: rawLevel) ?? .info
@@ -213,16 +214,16 @@ struct LoggingSettingsView: View {
         VStack(alignment: .leading, spacing: 4) {
             switch selectedLevel {
             case .none:
-                Label("No logs will be recorded anywhere", systemImage: "xmark.circle.fill")
+                Label(loc.localized("logging.noLogsRecorded"), systemImage: "xmark.circle.fill")
                     .foregroundStyle(.red)
             case .info:
-                Label("General logs: games running, downloads, file operations, save/load states", systemImage: "info.circle.fill")
+                Label(loc.localized("logging.generalLogs"), systemImage: "info.circle.fill")
                     .foregroundStyle(.blue)
             case .debug:
-                Label("Detailed logs: all info-level logs plus core options, shader activation, UI interactions, controller events", systemImage: "ladybug.fill")
+                Label(loc.localized("logging.detailedLogs"), systemImage: "ladybug.fill")
                     .foregroundStyle(.orange)
             case .extreme:
-                Label("Maximum logging: all debug-level logs plus every frame render, timing data, and low-level operations", systemImage: "bolt.fill")
+                Label(loc.localized("logging.maximumLogging"), systemImage: "bolt.fill")
                     .foregroundStyle(.purple)
             }
         }
@@ -239,6 +240,8 @@ final class LoggingSettingsViewModel: ObservableObject {
     @Published var totalLogFileSize: String = ""
     @Published var currentLogFileAge: String = ""
     @Published var hasCustomLogFolder: Bool = false
+    
+    private let loc = LocalizationManager.shared
     
     init() {
         refreshInfo()
@@ -257,8 +260,8 @@ final class LoggingSettingsViewModel: ObservableObject {
         panel.canChooseDirectories = true
         panel.canChooseFiles = false
         panel.allowsMultipleSelection = false
-        panel.prompt = "Select Log Folder"
-        panel.message = "Choose a folder where log files will be stored."
+        panel.prompt = loc.localized("logging.selectLogFolder")
+        panel.message = loc.localized("logging.selectLogFolderMessage")
         
         if panel.runModal() == .OK, let url = panel.url {
             LogManager.shared.setLogFolder(url)
@@ -277,8 +280,8 @@ final class LoggingSettingsViewModel: ObservableObject {
     
     func clearAllLogs() {
         let alert = NSAlert()
-        alert.addButton(withTitle: "Clear All")
-        alert.addButton(withTitle: "Cancel")
+        alert.addButton(withTitle: loc.localized("logging.clearAll"))
+        alert.addButton(withTitle: loc.localized("logging.cancel"))
         
         guard alert.runModal() == .alertFirstButtonReturn else { return }
         

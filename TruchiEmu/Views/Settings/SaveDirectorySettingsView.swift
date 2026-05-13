@@ -10,20 +10,21 @@ import Combine
 public struct SaveDirectorySettingsView: View {
   @Environment(SystemDatabaseWrapper.self) private var systemDatabase
   @StateObject private var directoryManager = SaveDirectoryManager.shared
+  @ObservedObject private var loc = LocalizationManager.shared
   @State private var showingDirectoryPicker = false
   @State private var directoryPickerType: DirectoryType = .save
   @State private var showingMigrationAlert = false
   
-  enum DirectoryType {
+  enum DirectoryType: Hashable {
     case save
     case system
   }
   
   public var body: some View {
     Form {
-      Section("Save Files Location") {
+      Section(loc.localized("saveDirs.saveFilesLocation")) {
         HStack {
-          Text("Save Files (SRAM)")
+          Text("saveDirs.saveFilesSRAM")
           Spacer()
           Text(directoryManager.savefilesDirectory.path)
             .lineLimit(1)
@@ -32,7 +33,7 @@ public struct SaveDirectorySettingsView: View {
         }
 
         HStack {
-          Text("Save States")
+          Text("saveDirs.saveStates")
           Spacer()
           Text(directoryManager.statesDirectory.path)
             .lineLimit(1)
@@ -41,7 +42,7 @@ public struct SaveDirectorySettingsView: View {
         }
 
         HStack {
-          Text("System / BIOS")
+          Text("saveDirs.systemBIOS")
           Spacer()
           Text(directoryManager.activeSystemDirectory.path)
             .lineLimit(1)
@@ -50,42 +51,47 @@ public struct SaveDirectorySettingsView: View {
         }
       }
       
-      Section("Configuration") {
-        Button("Change Save Directory") {
+      Section(loc.localized("saveDirs.configuration")) {
+        Button(loc.localized("saveDirs.changeSaveDirectory")) {
           directoryPickerType = .save
           showingDirectoryPicker = true
         }
         
-        Button("Change System Directory") {
+        Button(loc.localized("saveDirs.changeSystemDirectory")) {
           directoryPickerType = .system
           showingDirectoryPicker = true
         }
         
-        Button("Reset to Defaults") {
+        Button(loc.localized("saveDirs.resetToDefaults")) {
           directoryManager.setSaveDirectory(nil)
           directoryManager.setSystemDirectory(nil)
         }.foregroundColor(.red)
       }
       
       if directoryManager.needsMigration {
-        Section("Migration") {
-          Label("Existing saves found in old location", systemImage: "exclamationmark.triangle")
+        Section(loc.localized("saveDirs.migration")) {
+          Label(loc.localized("saveDirs.existingSavesFound"), systemImage: "exclamationmark.triangle")
             .foregroundColor(.orange)
           
-          Button("Migrate Save Files") {
+          Button(loc.localized("saveDirs.migrateSaveFiles")) {
             showingMigrationAlert = true
           }
         }
       }
       
-      Section("Disk Usage") {
-        DiskUsageView()
+      Section(loc.localized("saveDirs.diskUsage")) {
+        Text("saveDirs.diskUsageInfo")
+          .foregroundColor(.secondary)
       }
     }
     .formStyle(.grouped)
     .frame(minWidth: 500, minHeight: 400)
     .sheet(isPresented: $showingDirectoryPicker) {
-      DirectoryPicker(type: directoryPickerType) { url in
+      DirectoryPicker(
+        type: directoryPickerType,
+        promptText: loc.localized("saveDirs.chooseDirectory"),
+        messageText: directoryPickerType == .save ? loc.localized("saveDirs.selectSaveDirectory") : loc.localized("saveDirs.selectSystemDirectory")
+      ) { url in
         if let url = url {
           switch directoryPickerType {
           case .save:
@@ -99,9 +105,9 @@ public struct SaveDirectorySettingsView: View {
         }
       }
     }
-    .alert("Migrate Save Files?", isPresented: $showingMigrationAlert) {
-      Button("Cancel", role: .cancel) { }
-      Button("Migrate", role: .destructive) {
+    .alert(loc.localized("saveDirs.migrateTitle"), isPresented: $showingMigrationAlert) {
+      Button(loc.localized("shader.cancel"), role: .cancel) { }
+      Button(loc.localized("saveDirs.migrate"), role: .destructive) {
         directoryManager.performMigration { result in
           switch result {
           case .success:
@@ -112,20 +118,29 @@ public struct SaveDirectorySettingsView: View {
         }
       }
     } message: {
-      Text("This will copy all existing save files to the new location and remove them from the old location.")
+      Text("saveDirs.migrateMessage")
     }
   }
 }
 
 // MARK: - Directory Picker
 
-public struct DirectoryPicker: NSViewControllerRepresentable {
-  public typealias Context = NSViewControllerRepresentableContext<DirectoryPicker>
+struct DirectoryPicker: NSViewControllerRepresentable {
+  typealias Context = NSViewControllerRepresentableContext<DirectoryPicker>
   
   let type: SaveDirectorySettingsView.DirectoryType
   let onSelect: (URL?) -> Void
+  let promptText: String
+  let messageText: String
   
-  public func makeNSViewController(context: Context) -> NSViewController {
+  init(type: SaveDirectorySettingsView.DirectoryType, promptText: String, messageText: String, onSelect: @escaping (URL?) -> Void) {
+    self.type = type
+    self.promptText = promptText
+    self.messageText = messageText
+    self.onSelect = onSelect
+  }
+  
+  func makeNSViewController(context: Context) -> NSViewController {
     let viewController = NSViewController()
     
     DispatchQueue.main.async {
@@ -133,26 +148,20 @@ public struct DirectoryPicker: NSViewControllerRepresentable {
       openPanel.canChooseFiles = false
       openPanel.canChooseDirectories = true
       openPanel.allowsMultipleSelection = false
-      openPanel.prompt = "Choose Directory"
-      
-      switch type {
-      case .save:
-        openPanel.message = "Select Save Files Directory"
-      case .system:
-        openPanel.message = "Select System Files Directory"
-      }
+      openPanel.prompt = self.promptText
+      openPanel.message = self.messageText
       
       if openPanel.runModal() == .OK {
-        onSelect(openPanel.url)
+        self.onSelect(openPanel.url)
       } else {
-        onSelect(nil)
+        self.onSelect(nil)
       }
     }
     
     return viewController
   }
   
-  public func updateNSViewController(_ uiViewController: NSViewController, context: Context) {}
+  func updateNSViewController(_ uiViewController: NSViewController, context: Context) {}
 }
 
 // MARK: - Disk Usage View

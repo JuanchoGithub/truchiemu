@@ -21,7 +21,8 @@ extension Notification.Name {
 @main
 struct TruchiEmuApp: App {
     @NSApplicationDelegateAdaptor(AppDelegate.self) var appDelegate
-    
+    @ObservedObject private var loc = LocalizationManager.shared
+
     // SwiftData container manages all persistence.
     // The container handles one-time migration on first launch.
     init() {
@@ -114,7 +115,7 @@ LoggerService.debug(category: category, message)
                 
 // Add Settings menu item to app menu using .appSettings placement
                 CommandGroup(after: .appTermination) {
-                    Button("Settings…") {
+                    Button(loc.localized("app.settings")) {
                         UserDefaults.standard.set("general", forKey: "settings_selectedTab")
                         NotificationCenter.default.post(name: .openAppSettings, object: nil)
                     }
@@ -126,14 +127,14 @@ LoggerService.debug(category: category, message)
                     Divider()
                     
                     // View Mode
-                    Section("View Mode") {
-                        Button("Grid") {
+                    Section(loc.localized("app.viewMode")) {
+                        Button(loc.localized("app.grid")) {
                             AppSettings.set("gridViewMode", value: "grid")
                             NotificationCenter.default.post(name: .viewModeChanged, object: "grid")
                         }
                         .keyboardShortcut("1", modifiers: .command)
-                        
-                        Button("List") {
+
+                        Button(loc.localized("app.list")) {
                             AppSettings.set("gridViewMode", value: "list")
                             NotificationCenter.default.post(name: .viewModeChanged, object: "list")
                         }
@@ -143,16 +144,16 @@ LoggerService.debug(category: category, message)
                     Divider()
                     
                     // Box Art
-                    Menu("Box Art") {
-                        Button(AppSettings.getBool("showBoxArt", defaultValue: true) ? "Hide Box Art" : "Show Box Art") {
+                    Menu(loc.localized("app.boxArt")) {
+                        Button(AppSettings.getBool("showBoxArt", defaultValue: true) ? loc.localized("app.hideBoxArt") : loc.localized("app.showBoxArt")) {
                             let current = AppSettings.getBool("showBoxArt", defaultValue: true)
                             AppSettings.setBool("showBoxArt", value: !current)
                             NotificationCenter.default.post(name: .boxArtVisibilityChanged, object: nil)
                         }
                         .keyboardShortcut("B", modifiers: .command)
-                        
+
                         Divider()
-                        
+
                         ForEach(BoxType.allCases) { type in
                             Button(type.rawValue) {
                                 AppSettings.set("defaultBoxType", value: type.rawValue)
@@ -164,15 +165,15 @@ LoggerService.debug(category: category, message)
                     Divider()
                     
                     // Sort
-                    Menu("Sort By") {
-                        Button("Last Played") {
+                    Menu(loc.localized("app.sortBy")) {
+                        Button(loc.localized("app.lastPlayed")) {
                             let current = AppSettings.getBool("sortByLastPlayed", defaultValue: false)
                             AppSettings.setBool("sortByLastPlayed", value: !current)
                             NotificationCenter.default.post(name: .sortChanged, object: nil)
                         }
                         .keyboardShortcut("P", modifiers: [.command, .shift])
-                        
-                        Button("Last Added") {
+
+                        Button(loc.localized("app.lastAdded")) {
                             let current = AppSettings.getBool("sortByLastAdded", defaultValue: false)
                             AppSettings.setBool("sortByLastAdded", value: !current)
                             NotificationCenter.default.post(name: .sortChanged, object: nil)
@@ -183,7 +184,7 @@ LoggerService.debug(category: category, message)
                     Divider()
                     
                     // Filters
-                    Menu("Filters") {
+                    Menu(loc.localized("app.filters")) {
                         ForEach(GameFilterOption.allCases) { option in
                             Button(option.label) {
                                 NotificationCenter.default.post(name: .filterToggled, object: option.rawValue)
@@ -193,11 +194,10 @@ LoggerService.debug(category: category, message)
                     
                     Divider()
                     
-                    // Language
-                    Menu("Language") {
-                        ForEach(EmulatorLanguage.allCases) { lang in
-                            Button("\(lang.flagEmoji) \(lang.name)") {
-                                AppSettings.set("systemLanguage", value: lang.rawValue)
+                    Menu(loc.localized("app.language")) {
+                        ForEach(loc.availableLanguages, id: \.self) { lang in
+                            Button(languageDisplayName(for: lang)) {
+                                loc.setLanguage(lang)
                                 NotificationCenter.default.post(name: .languageChanged, object: nil)
                             }
                         }
@@ -205,91 +205,91 @@ LoggerService.debug(category: category, message)
                 }
                 
                 // Library Menu (rename to something unique to avoid conflict with macOS default)
-                CommandMenu("Games") {
-                    Button("Add ROM Folder…") {
+                CommandMenu(loc.localized("app.games")) {
+                    Button(loc.localized("app.addROMFolder")) {
                         NotificationCenter.default.post(name: .addROMFolder, object: nil)
                     }
                     .keyboardShortcut("O", modifiers: [.command, .shift])
-                    
-                    Button("Rescan Library") {
+
+                    Button(loc.localized("app.rescanLibrary")) {
                         Task { await library.fullRescan() }
                     }
                     .keyboardShortcut("R", modifiers: [.command, .shift])
                     .disabled(library.romFolderURL == nil || library.isScanning)
-                    
+
                     Divider()
-                    
+
                     // Navigation section
-                    Section("Library") {
-                        Button("All Games") {
+                    Section(loc.localized("app.library")) {
+                        Button(loc.localized("app.allGames")) {
                             NotificationCenter.default.post(name: .navigateToFilter, object: "all")
                         }
-                        
-                        Button("Favorites") {
+
+                        Button(loc.localized("app.favorites")) {
                             NotificationCenter.default.post(name: .navigateToFilter, object: "favorites")
                         }
-                        
-                        Button("Recent") {
+
+                        Button(loc.localized("app.recent")) {
                             NotificationCenter.default.post(name: .navigateToFilter, object: "recent")
                         }
-                        
+
                         Divider()
-                        
-                        Button("Play History") {
+
+                        Button(loc.localized("app.playHistory")) {
                             NotificationCenter.default.post(name: .navigateToFilter, object: "playHistory")
                         }
                         .keyboardShortcut("H", modifiers: [.command, .shift])
                     }
-                    
+
                     Divider()
-                    
+
                     // Systems submenu - only show systems that have games
-                    Menu("Systems") {
+                    Menu(loc.localized("app.systems")) {
                         let ids = Set(library.roms.compactMap { $0.systemID })
                         let displaySystems = SystemDatabase.systemsForDisplay.filter { system in
                             let internalIDs = SystemDatabase.allInternalIDs(forDisplayID: system.id)
                             return internalIDs.contains { ids.contains($0) }
                         }.sorted { $0.name.localizedCaseInsensitiveCompare($1.name) == .orderedAscending }
-                        
+
                         ForEach(displaySystems) { system in
                             Button(system.name) {
                                 NotificationCenter.default.post(name: .navigateToFilter, object: "system-\(system.id)")
                             }
                         }
                     }
-                    
+
                     Divider()
-                    
+
                     // Settings submenu
-                    Menu("Settings") {
-                        Button("Controllers") {
+                    Menu(loc.localized("app.settings")) {
+                        Button(loc.localized("app.controllers")) {
                             UserDefaults.standard.set("controllers", forKey: "settings_selectedTab")
                             NotificationCenter.default.post(name: .openAppSettings, object: nil)
                         }
-                        
-                        Button("Shaders / Display") {
+
+                        Button(loc.localized("app.shadersDisplay")) {
                             UserDefaults.standard.set("display", forKey: "settings_selectedTab")
                             NotificationCenter.default.post(name: .openAppSettings, object: nil)
                         }
-                        
-                        Button("Cheats") {
+
+                        Button(loc.localized("app.cheats")) {
                             UserDefaults.standard.set("cheats", forKey: "settings_selectedTab")
                             NotificationCenter.default.post(name: .openAppSettings, object: nil)
                         }
-                        
-                        Button("Bezels") {
+
+                        Button(loc.localized("app.bezels")) {
                             UserDefaults.standard.set("bezels", forKey: "settings_selectedTab")
                             NotificationCenter.default.post(name: .openAppSettings, object: nil)
                         }
-                        
+
                         Divider()
-                        
-                        Button("Cores…") {
+
+                        Button(loc.localized("app.cores")) {
                             UserDefaults.standard.set("cores", forKey: "settings_selectedTab")
                             NotificationCenter.default.post(name: .openAppSettings, object: nil)
                         }
-                        
-                        Button("Box Art") {
+
+                        Button(loc.localized("app.boxArtSettings")) {
                             UserDefaults.standard.set("boxArt", forKey: "settings_selectedTab")
                             NotificationCenter.default.post(name: .openAppSettings, object: nil)
                         }
@@ -358,6 +358,15 @@ LoggerService.debug(category: category, message)
     }
 }
 
+// MARK: - Language Display Name Helper
+private func languageDisplayName(for lang: String) -> String {
+    switch lang.lowercased() {
+    case "en": return "English"
+    case "es": return "Español"
+    default: return lang.uppercased()
+    }
+}
+
 // Wrapper view that runs first-run DAT pre-population before showing content.
 // MAME dictionary loading is deferred to lazy/on-demand loading.
 // Checks the prepopulation flag synchronously to avoid showing the loading view
@@ -365,6 +374,7 @@ LoggerService.debug(category: category, message)
 struct ContentWithPrepopulationView: View {
     @State private var isPrepopulated: Bool
     @State private var isRunningPrepopulation = false
+    @ObservedObject private var loc = LocalizationManager.shared
     
     @EnvironmentObject var library: ROMLibrary
     
@@ -384,7 +394,7 @@ struct ContentWithPrepopulationView: View {
                 ContentView()
                     .environmentObject(library)
             } else {
-                ProgressView("Initializing game database…")
+                ProgressView(loc.localized("app.initializingDatabase"))
                     .frame(width: 200)
                     .task {
                         await performInitialization()

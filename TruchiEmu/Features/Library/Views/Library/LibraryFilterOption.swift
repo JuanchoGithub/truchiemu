@@ -22,19 +22,19 @@ enum GameFilterOption: String, CaseIterable, Identifiable {
 
     var label: String {
         switch self {
-        case .noBoxArt: return "No Box Art"
-        case .neverPlayed: return "Never Played"
-        case .unscanned: return "Unidentified"
-        case .multiplayer: return "Multiplayer"
+        case .noBoxArt: return LocalizationManager.shared.localized("filter.noBoxArt")
+        case .neverPlayed: return LocalizationManager.shared.localized("filter.neverPlayed")
+        case .unscanned: return LocalizationManager.shared.localized("filter.unidentified")
+        case .multiplayer: return LocalizationManager.shared.localized("filter.multiplayer")
         }
     }
 
     var tooltip: String {
         switch self {
-        case .noBoxArt: return "Games missing cover art"
-        case .neverPlayed: return "Games that have never been launched"
-        case .unscanned: return "Games lacking identification data"
-        case .multiplayer: return "Games supporting 2+ players"
+        case .noBoxArt: return LocalizationManager.shared.localized("filter.noBoxArtTooltip")
+        case .neverPlayed: return LocalizationManager.shared.localized("filter.neverPlayedTooltip")
+        case .unscanned: return LocalizationManager.shared.localized("filter.unidentifiedTooltip")
+        case .multiplayer: return LocalizationManager.shared.localized("filter.multiplayerTooltip")
         }
     }
 

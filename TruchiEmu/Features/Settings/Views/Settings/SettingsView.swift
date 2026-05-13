@@ -9,6 +9,7 @@ struct SettingsView: View {
     @EnvironmentObject var coreManager: CoreManager
     @EnvironmentObject var controllerService: ControllerService
     @Environment(\.colorScheme) private var colorScheme
+    @ObservedObject private var loc = LocalizationManager.shared
     
     enum Page: Hashable, Codable, RawRepresentable, Identifiable {
         
@@ -69,18 +70,18 @@ struct SettingsView: View {
         
         var label: String {
             switch self {
-            case .general: return "General"
-            case .library: return "Library"
-            case .cores: return "Cores"
-            case .controllers: return "Controllers"
-            case .boxArt: return "Box Art"
-            case .display: return "Display"
-            case .cheats: return "Cheats"
-            case .bezels: return "Bezels"
-            case .retroAchievements: return "Retro Achievements"
-            case .genre: return "Genres"
-            case .logging: return "Logging"
-            case .about: return "About"
+            case .general: return LocalizationManager.shared.localized("settings.general")
+            case .library: return LocalizationManager.shared.localized("settings.library")
+            case .cores: return LocalizationManager.shared.localized("settings.cores")
+            case .controllers: return LocalizationManager.shared.localized("settings.controllers")
+            case .boxArt: return LocalizationManager.shared.localized("settings.boxArt")
+            case .display: return LocalizationManager.shared.localized("settings.display")
+            case .cheats: return LocalizationManager.shared.localized("settings.cheats")
+            case .bezels: return LocalizationManager.shared.localized("settings.bezels")
+            case .retroAchievements: return LocalizationManager.shared.localized("settings.retroAchievements")
+            case .genre: return LocalizationManager.shared.localized("settings.genre")
+            case .logging: return LocalizationManager.shared.localized("settings.logging")
+            case .about: return LocalizationManager.shared.localized("settings.about")
             }
         }
         
@@ -158,8 +159,8 @@ struct SettingsView: View {
                 }
             }
             .listStyle(.sidebar)
-            .searchable(text: $searchText, placement: .sidebar, prompt: "Search")
-            .navigationTitle("Settings")
+            .searchable(text: $searchText, placement: .sidebar, prompt: loc.localized("settings.search"))
+            .navigationTitle(loc.localized("settings.title"))
             .toolbar(removing: .sidebarToggle)
             .frame(minWidth: 200)
         } detail: {

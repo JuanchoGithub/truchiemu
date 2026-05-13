@@ -3,18 +3,18 @@ import SwiftUI
 extension GameDetailView {
     var controlsSection: some View {
         ModernSectionCard(
-            title: "Controls",
+            title: loc.localized("controls.title"),
             icon: "gamecontroller",
             badge: "System"
         ) {
             VStack(alignment: .leading, spacing: 14) {
                 HStack {
                     VStack(alignment: .leading, spacing: 2) {
-                        Text("Controller Mapping").font(.subheadline).fontWeight(.medium).foregroundColor(AppColors.textPrimary(colorScheme))
-                        Text("Uses standard \(system?.name ?? "this system") layout").font(.caption).foregroundColor(AppColors.textSecondary(colorScheme))
+                        Text(loc.localized("controls.controllerMapping")).font(.subheadline).fontWeight(.medium).foregroundColor(AppColors.textPrimary(colorScheme))
+                        Text(loc.localized("controls.usesStandardLayout").replacingOccurrences(of: "{0}", with: system?.name ?? "this system")).font(.caption).foregroundColor(AppColors.textSecondary(colorScheme))
                     }
                     Spacer()
-                    Button("Edit") { showControlsPicker = true }
+                    Button(loc.localized("controls.edit")) { showControlsPicker = true }
                         .foregroundColor(.white)
                         .padding(.horizontal, 14)
                         .padding(.vertical, 8)
@@ -26,8 +26,8 @@ extension GameDetailView {
                     HStack(spacing: 16) {
                         Image(nsImage: controllerIcon).resizable().aspectRatio(contentMode: .fit).frame(width: 64, height: 64)
                         VStack(alignment: .leading, spacing: 2) {
-                            Text("Default Mapping").font(.subheadline).fontWeight(.medium).foregroundColor(AppColors.textPrimary(colorScheme))
-                            Text("Standard \(sys.name) controller").font(.caption).foregroundColor(AppColors.textSecondary(colorScheme))
+                            Text(loc.localized("controls.defaultMapping")).font(.subheadline).fontWeight(.medium).foregroundColor(AppColors.textPrimary(colorScheme))
+                            Text(loc.localized("controls.standardController").replacingOccurrences(of: "{0}", with: sys.name)).font(.caption).foregroundColor(AppColors.textSecondary(colorScheme))
                         }
                         Spacer()
                     }
@@ -40,11 +40,11 @@ extension GameDetailView {
 
                 HStack {
                     VStack(alignment: .leading, spacing: 2) {
-                        Text("System Default Controls").font(.caption).foregroundColor(AppColors.textSecondary(colorScheme))
-                        Text("Reset to default controls").font(.caption).foregroundColor(AppColors.textMuted(colorScheme))
+                        Text(loc.localized("controls.systemDefaultControls")).font(.caption).foregroundColor(AppColors.textSecondary(colorScheme))
+                        Text(loc.localized("controls.resetToDefaultControls")).font(.caption).foregroundColor(AppColors.textMuted(colorScheme))
                     }
                     Spacer()
-                    Button("Reset") { resetControlsToSystemDefault() }
+                    Button(loc.localized("controls.reset")) { resetControlsToSystemDefault() }
                         .foregroundColor(.white)
                         .padding(.horizontal, 12)
                         .padding(.vertical, 6)

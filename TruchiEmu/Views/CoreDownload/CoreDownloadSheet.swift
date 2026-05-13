@@ -3,6 +3,7 @@ import SwiftUI
 struct CoreDownloadSheet: View {
     @EnvironmentObject var coreManager: CoreManager
     @EnvironmentObject var library: ROMLibrary
+    @ObservedObject private var loc = LocalizationManager.shared
     let pending: CoreManager.PendingCoreDownload
 
     @State private var selectedCoreID: String
@@ -180,9 +181,9 @@ struct CoreDownloadSheet: View {
                     .foregroundStyle(LinearGradient(colors: [Color(red: 0.1, green: 0.6, blue: 0.35), Color(red: 0.15, green: 0.65, blue: 0.55)], startPoint: .topLeading, endPoint: .bottomTrailing))
             }
             VStack(alignment: .leading, spacing: 2) {
-                Text("Emulator Core Required")
+                Text("coreDownload.title")
                     .font(.title2.weight(.bold))
-                Text("An emulator core must be downloaded to run this game.")
+                Text("coreDownload.description")
                     .foregroundColor(.secondary)
                     .font(.subheadline)
             }
@@ -194,14 +195,14 @@ struct CoreDownloadSheet: View {
             Image(systemName: "gamecontroller")
                 .foregroundColor(.secondary)
             VStack(alignment: .leading, spacing: 2) {
-                Text("Ready to launch")
+                Text("coreDownload.readyToLaunch")
                     .font(.caption)
                     .foregroundColor(.secondary)
                 if let rom = pendingROM {
                     Text(rom.displayName)
                         .font(.body.weight(.medium))
                 } else {
-                    Text("Unknown game")
+                    Text("coreDownload.unknownGame")
                         .font(.body.weight(.medium))
                         .foregroundColor(.secondary)
                 }
@@ -240,7 +241,7 @@ struct CoreDownloadSheet: View {
                         }
                         Spacer()
                         if entry.isInstalled {
-                            Text("Installed")
+                            Text("cores.installedLabel")
                                 .font(.caption2)
                                 .foregroundColor(.green)
                                 .padding(.horizontal, 6)
@@ -249,7 +250,7 @@ struct CoreDownloadSheet: View {
                                 .cornerRadius(4)
                         } else {
                             if coreManager.availableCores.contains(where: { $0.coreID == entry.id }) {
-                                Text("Download")
+                                Text("coreDownload.download")
                                     .font(.caption2)
                                     .foregroundColor(.blue)
                                     .padding(.horizontal, 6)
@@ -257,7 +258,7 @@ struct CoreDownloadSheet: View {
                                     .background(Color.blue.opacity(0.12))
                                     .cornerRadius(4)
                             } else {
-                                Text("Unavailable for Mac")
+                                Text("coreDownload.unavailableForMac")
                                     .font(.caption2)
                                     .foregroundColor(.red)
                                     .padding(.horizontal, 6)
@@ -300,7 +301,7 @@ struct CoreDownloadSheet: View {
     private var coreSelectionSection: some View {
         VStack(alignment: .leading, spacing: 8) {
             HStack {
-                Text("Emulator Core")
+                Text("coreDownload.emulatorCore")
                     .font(.body.weight(.medium))
                     .foregroundColor(.secondary)
                 Spacer()
@@ -342,10 +343,10 @@ struct CoreDownloadSheet: View {
                     Image(systemName: "cpu")
                         .font(.system(size: 32))
                         .foregroundColor(.secondary)
-                    Text("No cores available for this system")
+                    Text("coreDownload.noCoresAvailable")
                         .font(.body.weight(.medium))
                         .foregroundColor(.secondary)
-                    Text("Click Refresh to fetch the latest cores from online")
+                    Text("coreDownload.clickRefresh")
                         .font(.caption)
                         .foregroundColor(.secondary.opacity(0.8))
                 }
@@ -353,8 +354,8 @@ struct CoreDownloadSheet: View {
                 .padding(.vertical, 24)
             } else {
                 Text(allCoresForSystem.count == 1
-                    ? "\(allCoresForSystem.count) core available for this system"
-                    : "\(allCoresForSystem.count) cores available for this system")
+                    ? "coreDownload.coreAvailable"
+                    : "coreDownload.coresAvailable")
                     .font(.caption).foregroundColor(.secondary)
             }
         }
@@ -385,17 +386,17 @@ struct CoreDownloadSheet: View {
 
     private var actionButtons: some View {
         HStack {
-            Button("Cancel") { coreManager.pendingDownload = nil }
+            Button(loc.localized("coreDownload.cancel")) { coreManager.pendingDownload = nil }
                 .keyboardShortcut(.cancelAction).controlSize(.large)
             Spacer()
             if isDownloading {
                 ProgressView().scaleEffect(0.9).padding(.trailing, 6)
-                Text("Downloading core…").foregroundColor(.secondary)
+                Text("coreDownload.downloading").foregroundColor(.secondary)
             } else if LibretroThumbnailManifestService.shared.isRefreshing {
                 HStack {
                     ProgressView()
                         .padding(.trailing, 8)
-                    Text("Updating manifests...")
+                    Text("coreDownload.updatingManifests")
                         .font(.caption)
                 }
 } else {
@@ -415,7 +416,7 @@ struct CoreDownloadSheet: View {
                     } label: {
                         HStack(spacing: 6) {
                             Image(systemName: "arrow.triangle.2.circlepath")
-                            Text("Refresh list online")
+                            Text("coreDownload.refreshListOnline")
                         }
                     }
                     .buttonStyle(.bordered)
@@ -428,7 +429,7 @@ struct CoreDownloadSheet: View {
                     } label: {
                         HStack(spacing: 6) {
                             Image(systemName: selectedCoreEntry.isInstalled ? "play.fill" : "arrow.down.circle")
-                            Text(pendingROM != nil && selectedCoreEntry.isInstalled ? "Launch" : "Download & Install")
+                            Text(pendingROM != nil && selectedCoreEntry.isInstalled ? loc.localized("coreDownload.launch") : loc.localized("coreDownload.downloadAndInstall"))
                         }
                     }
                     .buttonStyle(.borderedProminent)
@@ -486,12 +487,12 @@ struct CoreDownloadSheet: View {
                 await MainActor.run { isFetchingMAMEDeps = false }
             }
 
-            guard coreManager.isInstalled(coreID: selectedCoreEntry.id) else {
+guard coreManager.isInstalled(coreID: selectedCoreEntry.id) else {
                 await MainActor.run {
                     isDownloading = false
-                    downloadError = "Core download failed — please try again."
+                    downloadError = loc.localized("coreDownload.downloadFailed")
                 }
-return
+                return
             }
 
             await MainActor.run {
@@ -517,7 +518,7 @@ return
         // Check if we found cores for this system
         let isNowAvailable = selectedCoreEntry.isInstalled || coreManager.availableCores.contains(where: { $0.coreID == selectedCoreEntry.id })
         if !isNowAvailable {
-          refreshError = "No cores found for this system. Please try again later."
+          refreshError = loc.localized("coreDownload.noCoresFound")
         }
       }
     }
