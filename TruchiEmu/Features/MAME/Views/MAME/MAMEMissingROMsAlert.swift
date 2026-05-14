@@ -9,6 +9,7 @@ struct MAMEMissingROMsAlert: View {
     let gameName: String
     let romsDirectory: URL
     @Binding var isPresented: Bool
+    @ObservedObject private var loc = LocalizationManager.shared
     
     var body: some View {
         VStack(spacing: 20) {
@@ -19,7 +20,7 @@ struct MAMEMissingROMsAlert: View {
                     .foregroundColor(.orange)
                 
                 VStack(alignment: .leading, spacing: 4) {
-                    Text("Missing ROM Files")
+                    Text(loc.localized("mame.missingROMs.title"))
                         .font(.title2.weight(.bold))
                     Text("\"\(gameName)\" requires additional files to run.")
                         .foregroundColor(.secondary)
@@ -31,7 +32,7 @@ struct MAMEMissingROMsAlert: View {
             
             // Missing files list
             VStack(alignment: .leading, spacing: 12) {
-                Text("Required files not found:")
+                Text(loc.localized("mame.missingROMs.requiredFilesNotFound"))
                     .font(.body.weight(.medium))
                 
                 VStack(alignment: .leading, spacing: 6) {
@@ -44,7 +45,7 @@ struct MAMEMissingROMsAlert: View {
                             VStack(alignment: .leading, spacing: 2) {
                                 Text(item.sourceZIP)
                                     .font(.body.weight(.medium))
-                                Text("ROM: \(item.romName)")
+                                Text("\(loc.localized("mame.missingROMs.romLabel")) \(item.romName)")
                                     .font(.caption)
                                     .foregroundColor(.secondary)
                             }
@@ -58,7 +59,7 @@ struct MAMEMissingROMsAlert: View {
             
             // Instructions
             VStack(alignment: .leading, spacing: 8) {
-                Text("How to fix:")
+                Text(loc.localized("mame.missingROMs.howToFix"))
                     .font(.body.weight(.medium))
                 
                 VStack(alignment: .leading, spacing: 4) {
@@ -75,7 +76,7 @@ struct MAMEMissingROMsAlert: View {
             
             // Action buttons
             HStack {
-                Button("Cancel") {
+                Button(loc.localized("app.cancel")) {
                     isPresented = false
                 }
                 .keyboardShortcut(.cancelAction)
@@ -86,7 +87,7 @@ struct MAMEMissingROMsAlert: View {
                 Button {
                     NSWorkspace.shared.open(romsDirectory)
                 } label: {
-                    Label("Open ROMs Folder", systemImage: "folder")
+                    Label(loc.localized("mame.missingROMs.openRomsFolder"), systemImage: "folder")
                 }
                 .keyboardShortcut(.defaultAction)
                 .controlSize(.large)

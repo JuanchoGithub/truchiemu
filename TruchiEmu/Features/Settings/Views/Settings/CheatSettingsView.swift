@@ -217,9 +217,9 @@ struct CheatSettingsView: View {
                         .foregroundStyle(.blue)
                 } else {
                     // This invisible label keeps the height consistent
-                    Label("Idle", systemImage: "circle")
+                    Label(loc.localized("cheats.statusIdle"), systemImage: "circle")
                         .font(.caption2)
-                        .opacity(0) 
+                        .opacity(0)
                 }
             }
             .frame(height: 16) // Reserve the vertical space

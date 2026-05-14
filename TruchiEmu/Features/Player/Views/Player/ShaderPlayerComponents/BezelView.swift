@@ -5,12 +5,12 @@ import SwiftUI
 enum BezelStyle: String, Codable, CaseIterable {
     case none, tv, arcade, handheld
 
-    var displayName: String {
+    var displayNameKey: String {
         switch self {
-        case .none:     return "None"
-        case .tv:       return "TV Cabinet"
-        case .arcade:   return "Arcade"
-        case .handheld: return "Handheld"
+        case .none:     return "bezel.styleName.none"
+        case .tv:       return "bezel.styleName.tvCabinet"
+        case .arcade:   return "bezel.styleName.arcade"
+        case .handheld: return "bezel.styleName.handheld"
         }
     }
 
@@ -63,7 +63,7 @@ struct BezelView: View {
                 LinearGradient(colors:[Color(red: 0.1, green: 0.6, blue: 0.35), Color(red: 0.15, green: 0.65, blue: 0.55)], startPoint: .leading, endPoint: .trailing)
                     .frame(height: 80)
                     .overlay(
-                        Text("TRUCHIE EMU")
+                        Text("TRUCHIEMU")
                             .font(.system(size: 28, weight: .black, design: .rounded))
                             .foregroundColor(.white)
                             .tracking(6)

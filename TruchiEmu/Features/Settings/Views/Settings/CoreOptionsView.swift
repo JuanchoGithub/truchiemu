@@ -326,9 +326,9 @@ struct CoreOptionsView: View {
                      }
                      .help("Filter modified options")
                  }
-                 ToolbarItem(placement: .confirmationAction) {
-                     Button("Done") { dismiss() }.keyboardShortcut(.defaultAction)
-                 }
+                  ToolbarItem(placement: .confirmationAction) {
+                      Button(loc.localized("core.done")) { dismiss() }.keyboardShortcut(.defaultAction)
+                  }
              }
              .onAppear { viewModel.loadOptions(for: initialID, library: library) }
         }

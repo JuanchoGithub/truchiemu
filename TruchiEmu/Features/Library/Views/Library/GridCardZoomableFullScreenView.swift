@@ -11,6 +11,7 @@ struct GridCardZoomableFullScreenView: View {
     @State private var lastScale: CGFloat = 1.0
     @State private var offset: CGSize = .zero
     @State private var lastOffset: CGSize = .zero
+    @ObservedObject private var loc = LocalizationManager.shared
     
     var body: some View {
         ZStack {
@@ -82,7 +83,7 @@ struct GridCardZoomableFullScreenView: View {
                     .opacity(showControls ? 1 : 0)
                 }
                 Spacer()
-                Text("Pinch to zoom")
+                Text(loc.localized("boxArt.pinchToZoom"))
                     .font(.caption)
                     .foregroundColor(.white.opacity(0.7))
                     .padding(.bottom, 20)

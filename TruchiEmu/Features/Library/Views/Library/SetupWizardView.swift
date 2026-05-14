@@ -8,6 +8,7 @@ struct SetupWizardView: View {
     @EnvironmentObject var coreManager: CoreManager
     @EnvironmentObject var controllerService: ControllerService
     @EnvironmentObject var categoryManager: CategoryManager
+    @EnvironmentObject var loc: LocalizationManager
     
     @State private var raLoginError: String?
     @State private var isRALoggingIn: Bool = false
@@ -87,7 +88,7 @@ struct SetupWizardView: View {
     private var bottomNavigation: some View {
         HStack {
             if wizard.currentStepIndex > 0 && wizard.currentStep != .completion {
-                Button("Back") {
+                Button(loc.localized("wizard.back")) {
                     wizard.previousStep()
                 }
                 .buttonStyle(.bordered)
@@ -95,33 +96,33 @@ struct SetupWizardView: View {
             } else {
                 Spacer()
             }
-            
+
             Spacer()
-            
+
             // Skip button for optional steps
             if wizard.currentStep.canSkip {
-                Button("Skip") {
+                Button(loc.localized("wizard.skip")) {
                     wizard.nextStep()
                 }
                 .buttonStyle(.plain)
                 .foregroundColor(.secondary)
             }
-            
+
             // Next / Finish button
             if wizard.currentStep == .completion {
-                Button("Enter Library") {
+                Button(loc.localized("wizard.enterLibrary")) {
                     finishSetup()
                 }
                 .buttonStyle(.borderedProminent)
                 .keyboardShortcut(.return, modifiers: [])
             } else if wizard.currentStep == .getStarted {
-                Button("Continue") {
+                Button(loc.localized("wizard.continue")) {
                     wizard.nextStep()
                 }
                 .buttonStyle(.borderedProminent)
                 .keyboardShortcut(.return, modifiers: [])
             } else {
-                Button("Continue") {
+                Button(loc.localized("wizard.continue")) {
                     wizard.nextStep()
                 }
                 .buttonStyle(.borderedProminent)
@@ -189,14 +190,14 @@ extension SetupWizardView {
     private var stepGetStarted: some View {
         VStack(spacing: 24) {
             VStack(spacing: 8) {
-                Text("Welcome to TruchiEmu")
+                Text("wizard.welcomeTitle")
                     .font(.title)
                     .fontWeight(.bold)
-                Text("Add your game folders to get started. Your files are only read — nothing is moved or modified.")
+                Text("wizard.welcomeDescription")
                     .foregroundColor(.secondary)
                     .multilineTextAlignment(.center)
             }
-            
+
             if !wizard.libraryFolders.isEmpty {
                 List {
                     ForEach(wizard.libraryFolders.indices, id: \.self) { idx in
@@ -225,20 +226,20 @@ extension SetupWizardView {
                 }
                 .frame(maxHeight: 200)
             }
-            
+
             Button {
                 pickFolder()
             } label: {
-                Label("Add Folder…", systemImage: "folder.badge.plus")
+                Label(loc.localized("wizard.addFolder"), systemImage: "folder.badge.plus")
                     .frame(maxWidth: .infinity)
             }
             .buttonStyle(.borderedProminent)
-            
+
             if wizard.libraryFolders.isEmpty {
                 HStack(spacing: 8) {
                     Image(systemName: "info.circle")
                         .foregroundColor(.secondary)
-                    Text("You can add game folders later from the library window.")
+                    Text("wizard.addFolderLater")
                         .font(.callout)
                         .foregroundColor(.secondary)
                 }
@@ -251,8 +252,8 @@ extension SetupWizardView {
         panel.canChooseDirectories = true
         panel.canChooseFiles = false
         panel.allowsMultipleSelection = true
-        panel.message = "Select one or more folders containing your ROM files"
-        panel.prompt = "Add Folders"
+        panel.message = loc.localized("library.selectFolders")
+        panel.prompt = loc.localized("wizard.addFoldersPrompt")
         if panel.runModal() == .OK {
             let appSupport = FileManager.default.urls(for: .applicationSupportDirectory, in: .userDomainMask).first!
             let internalPrefix = appSupport.appendingPathComponent("TruchiEmu").path
@@ -271,27 +272,27 @@ extension SetupWizardView {
         VStack(spacing: 24) {
             // Bezels
             VStack(alignment: .leading, spacing: 12) {
-                Label("Bezels", systemImage: "rectangle.on.rectangle")
+                Label(loc.localized("bezel.title"), systemImage: "rectangle.on.rectangle")
                     .font(.headline)
-                Text("Decorative frames that surround the game screen, giving it the look of a real television or arcade cabinet.")
+                Text("wizard.bezelsDescription")
                     .foregroundColor(.secondary)
                     .font(.callout)
-                
-                Toggle("Download bezels for all supported systems (~2-5 GB)", isOn: $wizard.downloadBezels)
+
+                Toggle(loc.localized("wizard.downloadBezelsToggle"), isOn: $wizard.downloadBezels)
                     .toggleStyle(.switch)
                     .tint(.accentColor)
             }
-            
+
             Divider()
-            
+
             // Shaders
             VStack(alignment: .leading, spacing: 12) {
-                Label("Default Shader", systemImage: "tv")
+                Label(loc.localized("wizard.defaultShader"), systemImage: "tv")
                     .font(.headline)
-                Text("Applies a visual effect to all games. You can change this per-game later.")
+                Text("wizard.shaderDescription")
                     .foregroundColor(.secondary)
                     .font(.callout)
-                
+
                 ScrollView(.horizontal, showsIndicators: false) {
                     HStack(spacing: 8) {
                         ForEach(ShaderPreset.allPresets, id: \.id) { preset in
@@ -340,42 +341,42 @@ extension SetupWizardView {
         VStack(spacing: 20) {
             // Cheats
             featureToggle(
-                title: "Cheats",
+                title: loc.localized("wizard.cheatsTitle"),
                 icon: "wand.and.stars",
-                description: "Download cheat codes for games. Enable/disable individually while playing.",
+                description: loc.localized("wizard.cheatsDescription"),
                 isOn: $wizard.downloadCheats,
-                detail: "Download all ~50 MB of cheat files"
+                detail: loc.localized("wizard.cheatsDetail")
             )
-            
+
             // Achievements
             VStack(alignment: .leading, spacing: 12) {
                 Toggle(isOn: $wizard.achievementsEnabled) {
                     Label {
-                        Text("RetroAchievements")
+                        Text("retroAchievements.title")
                     } icon: {
                         Image(systemName: "trophy")
                     }
                 }
                 .toggleStyle(.switch)
                 .tint(.accentColor)
-                
-                Text("Earn achievements in classic games. Requires a free account at retroachievements.org.")
+
+                Text("wizard.retroAchievementsDescription")
                     .foregroundColor(.secondary)
                     .font(.callout)
-                
+
                 if wizard.achievementsEnabled {
                     VStack(spacing: 8) {
-                        TextField("Username", text: $wizard.achievementsUsername)
+                        TextField(loc.localized("retroAchievements.username"), text: $wizard.achievementsUsername)
                             .textFieldStyle(.roundedBorder)
-                        SecureField("Password", text: $wizard.achievementsPassword)
+                        SecureField(loc.localized("retroAchievements.password"), text: $wizard.achievementsPassword)
                             .textFieldStyle(.roundedBorder)
-                        
+
                         if let error = raLoginError {
                             Label(error, systemImage: "xmark.circle.fill")
                                 .font(.caption)
                                 .foregroundColor(.red)
                         }
-                        
+
                         /*HStack(spacing: 8) {
                             Button {
                                 Task {
@@ -394,7 +395,7 @@ extension SetupWizardView {
                                 if isRALoggingIn { ProgressView().controlSize(.small) } else { Text("Test Connection") }
                             }
                             .disabled(wizard.achievementsUsername.isEmpty || wizard.achievementsPassword.isEmpty || isRALoggingIn)
-                            
+
                             Link("Create Account", destination: URL(string: "https://retroachievements.org")!)
                                 .font(.callout)
                                 .foregroundColor(.accentColor)
@@ -405,14 +406,14 @@ extension SetupWizardView {
                     .cornerRadius(8)
                 }
             }
-            
+
             // Logging
             featureToggle(
-                title: "Diagnostic Logging",
+                title: loc.localized("wizard.loggingTitle"),
                 icon: "terminal",
-                description: "Log core loading, game launches, and shader changes. Visible in Console.app.",
+                description: loc.localized("wizard.loggingDescription"),
                 isOn: $wizard.loggingEnabled,
-                detail: "Small performance impact — recommended only for debugging"
+                detail: loc.localized("wizard.loggingDetail")
             )
         }
     }
@@ -455,44 +456,44 @@ extension SetupWizardView {
             Image(systemName: "checkmark.circle.fill")
                 .font(.system(size: 56))
                 .foregroundColor(.green)
-            
-            Text("You're All Set!")
+
+            Text("wizard.allSet")
                 .font(.title)
                 .fontWeight(.bold)
-            
-            Text("TruchiEmu is ready. Your games are being scanned and box art is being fetched in the background.")
+
+            Text("wizard.completionDescription")
                 .multilineTextAlignment(.center)
                 .foregroundColor(.secondary)
-            
+
             if !wizard.allDetectedGames.isEmpty && library.roms.isEmpty {
                 HStack(spacing: 6) {
                     ProgressView()
                         .controlSize(.small)
-                    Text("Scanning \(wizard.libraryFolders.count) folder(s) for games…")
+                    Text(String(format: loc.localized("wizard.scanningFolders"), wizard.libraryFolders.count))
                         .font(.callout)
                         .foregroundColor(.secondary)
                 }
             } else if library.roms.isEmpty && !wizard.libraryFolders.isEmpty {
                 ProgressView()
                     .controlSize(.small)
-                Text("Scanning for games…")
+                Text("wizard.scanningForGames")
                     .foregroundColor(.secondary)
             } else if library.roms.isEmpty {
                 VStack(spacing: 8) {
                     Image(systemName: "tray")
                         .font(.system(size: 32))
                         .foregroundColor(.secondary)
-                    Text("No games detected yet")
+                    Text("wizard.noGamesDetected")
                         .font(.callout)
                         .foregroundColor(.secondary)
-                    Text("Add ROM folders later from the library window.")
+                    Text("wizard.addFolderLater")
                         .font(.caption)
                         .foregroundColor(.secondary)
                 }
             } else {
                 VStack(spacing: 8) {
                     HStack {
-                        Label("\(library.roms.count) games detected", systemImage: "gamecontroller")
+                        Label(String(format: loc.localized("wizard.gamesDetected"), library.roms.count), systemImage: "gamecontroller")
                             .font(.callout)
                         Spacer()
                     }

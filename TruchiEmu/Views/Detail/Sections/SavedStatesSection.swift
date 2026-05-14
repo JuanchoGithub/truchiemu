@@ -8,6 +8,7 @@ struct SavedStatesSection: View {
     var onLaunchSlot: ((Int) -> Void)? = nil
     @StateObject private var saveStateManager = SaveStateManager()
     @Environment(\.colorScheme) private var colorScheme
+    @ObservedObject private var loc = LocalizationManager.shared
 
     var body: some View {
         ModernSectionCard(
@@ -25,10 +26,10 @@ struct SavedStatesSection: View {
                         Image(systemName: "externaldrive.slash")
                             .font(.system(size: 30))
                             .foregroundColor(AppColors.textMuted(colorScheme))
-                        Text("No saved states")
+                        Text(loc.localized("savedStates.noSavedStates"))
                             .font(.subheadline)
                             .foregroundColor(AppColors.textSecondary(colorScheme))
-                        Text("Save states created during gameplay")
+                        Text(loc.localized("savedStates.savedStatesCreatedDuringGameplay"))
                             .font(.caption)
                             .foregroundColor(AppColors.textMuted(colorScheme))
                     }

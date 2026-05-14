@@ -456,7 +456,7 @@ struct InstalledCoreRowView: View {
                     }
                     .buttonStyle(.plain)
                     .symbolVariant(.circle)
-                    .help("Configure core options")
+                    .help(loc.localized("coreOptions.configureHelp"))
                     
                     // Delete button
                     Button(role: .destructive) {

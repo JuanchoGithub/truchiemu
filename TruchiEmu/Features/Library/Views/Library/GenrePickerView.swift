@@ -71,7 +71,7 @@ struct GenrePickerView: View {
 
     private var footer: some View {
         HStack {
-            Button("Clear All") {
+            Button(loc.localized("app.clearAll")) {
                 selectedGenres.removeAll()
                 onApply()
             }
@@ -80,7 +80,7 @@ struct GenrePickerView: View {
 
             Spacer()
 
-            Button("Apply") {
+            Button(loc.localized("app.apply")) {
                 onApply()
             }
             .font(.caption)

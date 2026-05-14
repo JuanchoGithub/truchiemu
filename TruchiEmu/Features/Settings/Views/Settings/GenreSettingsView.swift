@@ -69,9 +69,9 @@ struct GenreSettingsView: View {
     private var header: some View {
         HStack {
             VStack(alignment: .leading, spacing: 2) {
-                Text("Genres")
+                Text("genre.title")
                     .font(.headline)
-                Text("Map ROM genres to custom display names")
+                Text("genre.subtitle")
                     .font(.caption)
                     .foregroundColor(.secondary)
             }

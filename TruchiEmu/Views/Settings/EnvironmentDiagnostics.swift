@@ -34,17 +34,18 @@ struct EnvironmentGuard<T: View>: View {
 /// Diagnostic view that captures and verifies environment
 struct SystemDatabaseEnvironmentCapture: View {
   @Environment(SystemDatabaseWrapper.self) private var systemDatabase
+  @ObservedObject private var loc = LocalizationManager.shared
   let location: String
-  
+
   init(location: String) {
     self.location = location
   }
-  
+
   var body: some View {
     VStack {
-      Text("SystemDatabase captured at: \(location)")
+      Text(loc.localized("diagnostics.systemDatabaseCaptured") + " \(location)")
         .font(.caption)
-      Text("Available: YES")
+      Text(loc.localized("diagnostics.availableYes"))
         .font(.caption)
     }
     .onAppear {
@@ -56,22 +57,23 @@ struct SystemDatabaseEnvironmentCapture: View {
 /// Diagnostic version of SaveDirectoriesSection with aggressive environment capture
 public struct DebugSaveDirectoriesSection: View {
   @Environment(SystemDatabaseWrapper.self) private var systemDatabase
-  
+  @ObservedObject private var loc = LocalizationManager.shared
+
   public init() {
     print("[ENV-DEBUG] Initializing DebugSaveDirectoriesSection")
   }
-  
+
   public var body: some View {
     EnvironmentGuard(location: "DebugSaveDirectoriesSection.body") {
       VStack {
         SystemDatabaseEnvironmentCapture(location: "DebugSaveDirectoriesSection.inner")
-        
+
         // Nested view hierarchy to test propagation
         Group {
-          Text("Save Directories")
+          Text(loc.localized("saveDirectories.title"))
             .font(.headline)
-          
-          Button("Open Settings") {
+
+          Button(loc.localized("app.openSettings")) {
             print("[ENV-DEBUG] Button tapped - systemDatabase available: YES")
           }
         }

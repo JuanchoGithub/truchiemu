@@ -13,7 +13,7 @@ struct AboutView: View {
                     Image(systemName: "arcade.stick")
                         .font(.system(size: 60))
                         .foregroundStyle(LinearGradient(colors: [Color(red: 0.1, green: 0.6, blue: 0.35), Color(red: 0.15, green: 0.65, blue: 0.55)], startPoint: .topLeading, endPoint: .bottomTrailing))
-                    Text("TruchiEmu")
+                    Text(loc.localized("about.appName"))
                         .font(.largeTitle.weight(.bold))
                     Text(loc.localized("about.tagline"))
                         .foregroundColor(.secondary)

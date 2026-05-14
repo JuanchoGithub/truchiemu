@@ -5,6 +5,7 @@ struct GameInfoWindow: View {
     @EnvironmentObject var library: ROMLibrary
     let romID: UUID?
     @Environment(\.colorScheme) private var colorScheme
+    @ObservedObject private var loc = LocalizationManager.shared
     
     var body: some View {
         Group {
@@ -27,13 +28,13 @@ struct GameInfoWindow: View {
                         .scaleEffect(appeared ? 1 : 0.8)
                         .opacity(appeared ? 1 : 0)
                     
-                    Text("Game Not Found")
+                    Text(loc.localized("gameInfo.gameNotFound"))
                         .font(.title2)
                         .fontWeight(.semibold)
                         .foregroundColor(.secondary)
                         .opacity(appeared ? 1 : 0)
-                    
-                    Text("This game may have been removed from your library or the file path could have changed.")
+
+                    Text(loc.localized("gameInfo.gameNotFoundDescription"))
                         .font(.body)
                         .foregroundColor(.secondary)
                         .multilineTextAlignment(.center)
@@ -59,7 +60,7 @@ struct GameInfoWindow: View {
                 HStack {
                     Image(systemName: "exclamationmark.triangle.fill")
                         .foregroundColor(.orange)
-                    Text("This game is supported by RetroAchievements, but it needs an exact version of it that you do not have")
+                    Text(loc.localized("gameInfo.raVersionMismatch"))
                         .font(.caption)
                         .foregroundColor(.orange)
                 }
