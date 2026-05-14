@@ -132,6 +132,9 @@ static int16_t input_state_stub(unsigned port, unsigned device, unsigned index, 
 + (void)setAnalogState:(int)idx id:(int)id value:(int)v {
     if (g_instance) [g_instance setAnalogState:idx id:id value:v];
 }
++ (void)setAnalogButtonState:(int)retroID value:(int)v {
+    if (g_instance) [g_instance setAnalogButtonState:retroID value:v];
+}
 + (void)setLanguage:(int)language { g_selectedLanguage = language; }
 + (void)setLogLevel:(int)level { g_logLevel = level; }
 + (void)setPaused:(BOOL)paused { g_isPaused = paused; }

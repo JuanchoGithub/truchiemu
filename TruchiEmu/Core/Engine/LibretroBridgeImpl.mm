@@ -457,6 +457,10 @@ shutdown:
   if (idx >= 0 && idx < 2 && id >= 0 && id < 2) g_analog_state[idx][id] = (int16_t)v;
 }
 
+- (void)setAnalogButtonState:(int)retroID value:(int)v {
+  if (retroID >= 0 && retroID < 32) g_analog_button_state[retroID] = (int16_t)v;
+}
+
 - (void)setPixelFormat:(int)format { _pixelFormat = format; }
 - (int)pixelFormat { return _pixelFormat; }
 

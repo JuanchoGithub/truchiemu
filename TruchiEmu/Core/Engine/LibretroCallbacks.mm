@@ -9,6 +9,7 @@
 
 int16_t g_input_state[32] = {0};
 int16_t g_analog_state[2][2] = {0};
+int16_t g_analog_button_state[32] = {0};
 BOOL g_turbo_state[32] = {NO};
 int g_turbo_counter[32] = {0};
 BOOL g_turbo_active[32] = {NO};
@@ -435,6 +436,11 @@ int16_t bridge_input_state(unsigned port, unsigned device, unsigned index, unsig
                     return 1;
                 return 0;
             }
+            // Handle analog button values (L2/R2 triggers) for cores like Flycast
+            // that query analog trigger pressure via RETRO_DEVICE_ANALOG with index=2
+            int16_t analogVal = g_analog_button_state[id & 0x1F];
+            if (analogVal != 0)
+                return analogVal;
             return g_input_state[id & 0x1F] ? 1 : 0;
         }
 

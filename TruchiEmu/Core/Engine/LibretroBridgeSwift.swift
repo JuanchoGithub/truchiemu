@@ -136,6 +136,10 @@ import Foundation
         LibretroBridge.setAnalogState(Int32(index), id: Int32(id), value: value)
     }
 
+    static func setAnalogButtonState(retroID: Int, value: Int32) {
+        LibretroBridge.setAnalogButtonState(Int32(retroID), value: value)
+    }
+
     // MARK: - Keyboard / Mouse / Pointer Input
 
     static func dispatchKeyboardEvent(keycode: UInt32, character: UInt32, modifiers: UInt32, down: Bool) {

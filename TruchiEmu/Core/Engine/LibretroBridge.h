@@ -28,6 +28,7 @@ typedef void (^GameLoadedBlock)(const char *romPath);
                active:(BOOL)active
          targetButton:(int)targetButton;
 + (void)setAnalogState:(int)index id:(int)id value:(int)value;
++ (void)setAnalogButtonState:(int)retroID value:(int)value;
 + (void)setLanguage:(int)language;
 + (void)setLogLevel:(int)level;
 + (void)setPaused:(BOOL)paused;

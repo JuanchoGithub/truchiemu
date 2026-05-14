@@ -23,6 +23,7 @@ uintptr_t bridge_get_current_framebuffer(void);
 
 extern int16_t g_input_state[32];
 extern int16_t g_analog_state[2][2];
+extern int16_t g_analog_button_state[32];
 extern BOOL g_turbo_state[32];
 extern int g_turbo_counter[32];
 extern BOOL g_turbo_active[32];

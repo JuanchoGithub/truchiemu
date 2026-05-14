@@ -82,6 +82,7 @@ typedef void (^VideoFrameCallback)(const void *data, int width, int height, int 
 - (void)setKeyState:(int)retroID pressed:(BOOL)pressed;
 - (void)setTurboState:(int)idx active:(BOOL)active targetButton:(int)targetIdx;
 - (void)setAnalogState:(int)idx id:(int)id value:(int)v;
+- (void)setAnalogButtonState:(int)retroID value:(int)v;
 - (void)setPixelFormat:(int)format;
 - (int)pixelFormat;
 - (void)setupHWRender:(struct retro_hw_render_callback *)cb;

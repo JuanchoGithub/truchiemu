@@ -1017,10 +1017,20 @@ extendedGamepad.valueChangedHandler = { [weak self] _, element in
                 let retroID = Int(btn.retroID(for: self.systemID))
                 
                 if let btnElement = element as? GCControllerButtonInput {
+                    // Send analog value for L2/R2 triggers (used by Flycast for Dreamcast analog triggers)
+                    if retroID == 12 || retroID == 13 {
+                        let analogValue = Int32(btnElement.value * 32767.0)
+                        LibretroBridgeSwift.setAnalogButtonState(retroID: retroID, value: analogValue)
+                    }
                     // This covers face buttons, triggers (Z-button), and D-pad directions
                     self.setKeyState(retroID: retroID, pressed: btnElement.isPressed)
                 } 
                 else if let axisElement = element as? GCControllerAxisInput {
+                    // Send analog value for L2/R2 triggers mapped to axes
+                    if retroID == 12 || retroID == 13 {
+                        let analogValue = Int32(abs(axisElement.value) * 32767.0)
+                        LibretroBridgeSwift.setAnalogButtonState(retroID: retroID, value: analogValue)
+                    }
                     // If a digital button is mapped to an axis (like a trigger mapped to 'A')
                     self.setKeyState(retroID: retroID, pressed: abs(axisElement.value) > 0.5)
                 }
