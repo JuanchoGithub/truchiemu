@@ -16,6 +16,8 @@ struct ZoomableBoxArtView: View {
     @State private var offset: CGSize = .zero
     @State private var lastOffset: CGSize = .zero
     @State private var viewSize: CGSize = .zero
+    @State private var showControls: Bool = true
+    @Environment(\.dismiss) private var dismiss
     
     // Minimum and maximum zoom factors
     private let minScale: CGFloat = 1.0
@@ -69,26 +71,47 @@ struct ZoomableBoxArtView: View {
                                 clampOffset(in: geometry.size)
                             }
                     )
-                    .onTapGesture(count: 2) {
-                        withAnimation(.spring(response: 0.3, dampingFraction: 0.8)) {
-                            if scale > minScale {
-                                // Zoom out
-                                scale = minScale
-                                offset = .zero
-                                lastScale = minScale
-                                lastOffset = .zero
-                            } else {
-                                // Zoom in
-                                scale = 2.5
-                                lastScale = 2.5
-                            }
+.onTapGesture(count: 2) {
+                    withAnimation(.spring(response: 0.3, dampingFraction: 0.8)) {
+                        if scale > 1.0 {
+                            scale = 1.0
+                            offset = .zero
+                            lastScale = 1.0
+                            lastOffset = .zero
+                        } else {
+                            scale = 2.5
+                            lastScale = 2.5
                         }
                     }
+                }
+
+            VStack {
+                HStack {
+                    Spacer()
+                    Button {
+                        dismiss()
+                    } label: {
+                        Image(systemName: "xmark.circle.fill")
+                            .font(.system(size: 32))
+                            .foregroundColor(.white)
+                            .shadow(radius: 4)
+                    }
+                    .buttonStyle(.plain)
+                    .padding()
+                    .opacity(showControls ? 1 : 0)
+                }
+                Spacer()
+                Text("Tap to zoom")
+                    .font(.caption)
+                    .foregroundColor(.white.opacity(0.7))
+                    .padding(.bottom, 20)
+                    .opacity(showControls ? 1 : 0)
             }
-            .frame(maxWidth: geometry.size.width, maxHeight: geometry.size.height)
         }
-        .frame(width: maxSize.width, height: maxSize.height)
-        .clipped()
+        .frame(maxWidth: geometry.size.width, maxHeight: geometry.size.height)
+    }
+    .frame(width: maxSize.width, height: maxSize.height)
+    .clipped()
     }
     
     private func snapScale(_ scale: CGFloat) -> CGFloat {
@@ -144,6 +167,7 @@ struct ZoomableBoxArtFullScreenView: View {
     let image: NSImage
     @Environment(\.dismiss) private var dismiss
     @State private var showControls = true
+    @ObservedObject private var loc = LocalizationManager.shared
     
     var body: some View {
         ZStack {
