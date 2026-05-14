@@ -86,7 +86,7 @@ class ROMLibrary: ObservableObject {
     private func isInternalPath(_ url: URL) -> Bool { url.path.hasPrefix(appInternalPath) }
 
     private static let excludedLibraryPaths = [
-        "/Library/Application Support", "/Library/Caches", "/Library/Preferences",
+        "/Library/Caches", "/Library/Preferences",
         "/Library/Logs", "/Library/Saved Application State", "/Library/Containers",
         "/Library/Group Containers", "/Library/Autosave Information", "/Library/Calendars",
         "/Library/Mail", "/Library/Messages", "/Library/Notes", "/Library/Passes",
