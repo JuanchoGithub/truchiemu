@@ -1,0 +1,26 @@
+{
+  "b": {
+    "label": "Draw / Holster"
+  },
+  "y": {
+    "label": "Inventory / Skip"
+  },
+  "up": {
+    "label": "Up"
+  },
+  "down": {
+    "label": "Down"
+  },
+  "left": {
+    "label": "Left"
+  },
+  "right": {
+    "label": "Right"
+  },
+  "a": {
+    "label": "Use"
+  },
+  "x": {
+    "label": "Action"
+  }
+}

@@ -1,0 +1,20 @@
+{
+  "up": {
+    "label": "Up"
+  },
+  "down": {
+    "label": "Down"
+  },
+  "left": {
+    "label": "Left"
+  },
+  "right": {
+    "label": "Right"
+  },
+  "b": {
+    "label": "Action / Press Key (Virtual Keyboard)"
+  },
+  "select": {
+    "label": "Show/Hide Virtual Keyboard"
+  }
+}

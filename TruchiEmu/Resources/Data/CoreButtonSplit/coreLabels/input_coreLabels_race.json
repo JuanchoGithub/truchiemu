@@ -1,0 +1,23 @@
+{
+  "a": {
+    "label": "A"
+  },
+  "start": {
+    "label": "Option"
+  },
+  "up": {
+    "label": "D-Pad Up"
+  },
+  "down": {
+    "label": "D-Pad Down"
+  },
+  "left": {
+    "label": "D-Pad Left"
+  },
+  "right": {
+    "label": "D-Pad Right"
+  },
+  "b": {
+    "label": "B"
+  }
+}

@@ -1,0 +1,258 @@
+# Nintendo - Game Boy / Color (Gearboy)
+
+## Background
+
+Gearboy is an open source, cross-platform, Nintendo Game Boy (DMG) / Game Boy Color (GBC) emulator written in C++.
+
+- Accurate emulation supporting cartridges: ROM, ROM + RAM, MBC1, MBC2, MBC3, MBC5, MBC7, HuC-1, HuC-3, MMM01, Pocket Camera, TAMA5 and MBC1M.
+- Game Boy Color support.
+- Battery powered RAM save support.
+- Save states.
+- Bootrom (BIOS) support.
+- Game Genie and GameShark cheat support.
+- Supported platforms (libretro): Windows, Linux, macOS, Raspberry Pi, Android, iOS, tvOS, PlayStation Vita, PlayStation 3, Nintendo 3DS, Nintendo GameCube, Nintendo Wii, Nintendo WiiU, Nintendo Switch, Emscripten, Classic Mini systems (NES, SNES, C64, ...), OpenDingux, RetroFW and QNX.
+
+The Gearboy core has been authored by:
+
+- [Nacho Sanchez (drhelius)](https://github.com/drhelius)
+
+The Gearboy core is licensed under:
+
+- [GPLv3](https://github.com/drhelius/Gearboy/blob/master/LICENSE)
+
+A summary of the licenses behind RetroArch and its cores can be found [here](../development/licenses.md).
+
+## BIOS
+
+Gearboy does not require bootrom (BIOS) files to work but they can be used optionally.
+
+When the bootrom is enabled it will execute as in original hardware, causing invalid roms to lock or forcing hardware like GB Pocket or GBA, depending on the bootrom file.
+
+Required or optional firmware files go in the frontend's system directory.
+
+!!! attention
+	 If you’d like to use any bootrom, you can place the following files in RetroArch's system directory. Then, you need to enable [DMG Bootrom](#core-options) and/or [Game Boy Color Bootrom](#core-options) core options for these bootrom files to be used.
+
+| Filename     | Description                        | md5sum                           |
+|:------------:|:----------------------------------:|:--------------------------------:|
+| dmg_boot.bin | Game Boy boot ROM - Optional       | 32fbbd84168d3482956eb3c5051637f5 |
+| cgb_boot.bin | Game Boy Color boot ROM - Optional | dbfce9db9deaa2567f6a84fde55f9680 |
+
+## Extensions
+
+Content that can be loaded by the Gearboy core have the following file extensions:
+
+- .gb
+- .dmg
+- .gbc
+- .cgb
+- .sgb
+
+RetroArch database(s) that are associated with the Gearboy core:
+
+- [Nintendo - Game Boy](https://github.com/libretro/libretro-database/blob/master/rdb/Nintendo%20-%20Game%20Boy.rdb)
+- [Nintendo - Game Boy Color](https://github.com/libretro/libretro-database/blob/master/rdb/Nintendo%20-%20Game%20Boy%20Color.rdb)
+
+## Features
+
+Frontend-level settings or features that the Gearboy core respects.
+
+| Feature           | Supported |
+|-------------------|:---------:|
+| Restart           | ✔         |
+| Screenshots       | ✔         |
+| Saves             | ✔         |
+| States            | ✔         |
+| Rewind            | ✔         |
+| Netplay           | ✔         |
+| Core Options      | ✔         |
+| [Memory Monitoring (achievements)](../guides/memorymonitoring.md) | ✔         |
+| RetroArch Cheats - Game Genie | ✔         |
+| RetroArch Cheats - GameShark | ✔         |
+| Native Cheats     | ✕         |
+| Controls          | ✔         |
+| Remapping         | ✔         |
+| Multi-Mouse       | ✕         |
+| Rumble            | ✕         |
+| Sensors           | ✔         |
+| Camera            | ✕         |
+| Location          | ✕         |
+| Subsystem         | ✕         |
+| [Softpatching](../guides/softpatching.md) | ✔         |
+| Disk Control      | ✕         |
+| Username          | ✕         |
+| Language          | ✕         |
+| Crop Overscan     | ✕         |
+| LEDs              | ✕         |
+
+### Directories
+
+The Gearboy core's library name is 'Gearboy'
+
+The Gearboy core saves/loads to/from these directories.
+
+**Frontend's Save directory**
+
+| File  | Description            |
+|:-----:|:----------------------:|
+| *.srm | Cartridge battery save |
+| *.rtc | Real time clock save   |
+
+**Frontend's State directory**
+
+| File     | Description |
+|:--------:|:-----------:|
+| *.state# | State       |
+
+### Geometry and timing
+
+- The Gearboy core's core provided FPS is 59.7275005696
+- The Gearboy core's core provided sample rate is 44100 Hz
+- The Gearboy core's base width is 160
+- The Gearboy core's base height is 144
+- The Gearboy core's max width is 160
+- The Gearboy core's max height is 144
+- The Gearboy core's core provided aspect ratio is 10/9
+
+## Core options
+
+The Gearboy core has the following options that can be tweaked from the core options menu. The default setting is bolded.
+
+Settings with (restart) means that core has to be closed for the new setting to be applied on next launch.
+
+- **Game Boy Model (restart)** [gearboy_model] (**Auto**|Game Boy DMG|Game Boy Advance)
+
+	Select which hardware/model is emulated.
+
+    - *Auto* selects the best hardware based on the rom.
+    - *Game Boy DMG* forces original Game Boy hardware.
+    - *Game Boy Advance* enables Game Boy Advance hardware.
+
+- **Mapper (restart)** [gearboy_mapper] (**Auto**|ROM Only|MBC 1|MBC 2|MBC 3|MBC 5|MBC 1 Multicart|HuC 1|HuC 3|MMM01|Camera|MBC 7|TAMA5)
+
+	Select which Memory Bank Controller (MBC or mapper) is emulated.
+
+    - *Auto* selects the best MBC based on the rom.
+    - *ROM Only* forces no MBC.
+    - *MBC 1* forces MBC 1.
+    - *MBC 2* forces MBC 2.
+    - *MBC 3* forces MBC 3.
+    - *MBC 5* forces MBC 5.
+    - *MBC 1 Multicart* forces MBC 1 Multicart.
+    - *HuC 1* forces HuC 1.
+    - *HuC 3* forces HuC 3.
+    - *MMM01* forces MMM01.
+    - *Camera* forces Pocket Camera.
+    - *MBC 7* forces MBC 7.
+    - *TAMA5* forces TAMA5.
+
+- **DMG Palette** [gearboy_palette] (**Original**|Sharp|B/W|Autumn|Soft|Slime)
+
+	Select a color palette for Game Boy DMG games.
+
+- **GBC Color Correction** [gearboy_color_correction] (**Disabled**|Enabled)
+
+	Enables color correction for Game Boy Color games to simulate the original GBC LCD screen output.
+
+- **DMG Bootrom (restart)** [gearboy_bootrom_dmg] (**Disabled**|Enabled)
+
+	Enable or disable the original Game Boy bootrom. For this to work, the `dmg_boot.bin` file must exist in RetroArch's system directory.
+
+- **GBC Bootrom (restart)** [gearboy_bootrom_gbc] (**Disabled**|Enabled)
+
+	Enable or disable the Game Boy Color bootrom. For this to work, the `cgb_boot.bin` file must exist in RetroArch's system directory.
+
+- **Allow Up+Down / Left+Right** [gearboy_up_down_allowed] (**Disabled**|Enabled)
+
+	Allow pressing, quickly alternating, or holding both left and right (or up and down) directions at the same time. This may cause movement based glitches in certain games.
+
+- **Tilt Source (MBC7)** [gearboy_tilt_source] (**Mouse**|Sensor|Analog Stick)
+
+	Select the input source for MBC7 tilt controls.
+
+- **Sensor Sensitivity X (MBC7)** [gearboy_sensor_sensitivity_x] (**5**|1-10)
+
+	Set the horizontal sensitivity when using sensor input for MBC7 tilt controls.
+
+- **Sensor Sensitivity Y (MBC7)** [gearboy_sensor_sensitivity_y] (**5**|1-10)
+
+	Set the vertical sensitivity when using sensor input for MBC7 tilt controls.
+
+- **Sensor Invert X (MBC7)** [gearboy_sensor_invert_x] (**Disabled**|Enabled)
+
+	Invert the horizontal axis when using sensor input for MBC7 tilt controls.
+
+- **Sensor Invert Y (MBC7)** [gearboy_sensor_invert_y] (**Disabled**|Enabled)
+
+	Invert the vertical axis when using sensor input for MBC7 tilt controls.
+
+- **Mouse Sensitivity X (MBC7)** [gearboy_mouse_sensitivity_x] (**5**|1-10)
+
+	Set the horizontal sensitivity when using mouse input for MBC7 tilt controls.
+
+- **Mouse Sensitivity Y (MBC7)** [gearboy_mouse_sensitivity_y] (**5**|1-10)
+
+	Set the vertical sensitivity when using mouse input for MBC7 tilt controls.
+
+- **Mouse Invert X (MBC7)** [gearboy_mouse_invert_x] (**Disabled**|Enabled)
+
+	Invert the horizontal axis when using mouse input for MBC7 tilt controls.
+
+- **Mouse Invert Y (MBC7)** [gearboy_mouse_invert_y] (**Disabled**|Enabled)
+
+	Invert the vertical axis when using mouse input for MBC7 tilt controls.
+
+- **Analog Sensitivity X (MBC7)** [gearboy_analog_sensitivity_x] (**5**|1-10)
+
+	Set the horizontal sensitivity when using analog stick input for MBC7 tilt controls.
+
+- **Analog Sensitivity Y (MBC7)** [gearboy_analog_sensitivity_y] (**5**|1-10)
+
+	Set the vertical sensitivity when using analog stick input for MBC7 tilt controls.
+
+- **Analog Invert X (MBC7)** [gearboy_analog_invert_x] (**Disabled**|Enabled)
+
+	Invert the horizontal axis when using analog stick input for MBC7 tilt controls.
+
+- **Analog Invert Y (MBC7)** [gearboy_analog_invert_y] (**Disabled**|Enabled)
+
+	Invert the vertical axis when using analog stick input for MBC7 tilt controls.
+
+## Joypad
+
+![](../image/controller/gb.png)
+
+| User 1 input descriptors | RetroPad Inputs                             |
+|--------------------------|---------------------------------------------|
+| B                        | ![](../image/retropad/retro_b.png)          |
+| Select                   | ![](../image/retropad/retro_select.png)     |
+| Start                    | ![](../image/retropad/retro_start.png)      |
+| Up                       | ![](../image/retropad/retro_dpad_up.png)    |
+| Down                     | ![](../image/retropad/retro_dpad_down.png)  |
+| Left                     | ![](../image/retropad/retro_dpad_left.png)  |
+| Right                    | ![](../image/retropad/retro_dpad_right.png) |
+| A                        | ![](../image/retropad/retro_a.png)          |
+
+## Compatibility
+
+- [Gearboy Accuracy Tests](https://github.com/drhelius/Gearboy#accuracy-tests)
+
+## External Links
+
+- [Official Gearboy Github Repository](https://github.com/drhelius/Gearboy)
+- [Libretro Gearboy Core info file](https://github.com/libretro/libretro-super/blob/master/dist/info/gearboy_libretro.info)
+- [Report Libretro Gearboy Core Issues Here](https://github.com/drhelius/Gearboy/issues)
+
+### See also
+
+#### Nintendo - Game Boy (+ Color)
+
+- [Nintendo - Game Boy / Color (Emux GB)](emux_gb.md)
+- [Nintendo - Game Boy / Color (Gambatte)](gambatte.md)
+- [Nintendo - Game Boy / Color (SameBoy)](sameboy.md)
+- [Nintendo - Game Boy / Color (TGB Dual)](tgb_dual.md)
+- [Nintendo - Game Boy Advance (mGBA)](mgba.md)
+- [Nintendo - Game Boy Advance (VBA-M)](vba_m.md)
+- [Nintendo - SNES / Famicom (higan Accuracy)](higan_accuracy.md)
+- [Nintendo - SNES / Famicom (nSide Balanced)](nside_balanced.md)
+- [Nintendo - SNES / Famicom (Mesen-S)](mesen-s.md)

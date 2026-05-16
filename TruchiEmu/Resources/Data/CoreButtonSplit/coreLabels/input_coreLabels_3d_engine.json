@@ -1,0 +1,59 @@
+{
+  "b": {
+    "label": "Jump/Zoom-in"
+  },
+  "up": {
+    "label": "Move forwards"
+  },
+  "down": {
+    "label": "Move backwards"
+  },
+  "left": {
+    "label": "Turn left"
+  },
+  "right": {
+    "label": "Turn right"
+  },
+  "a": {
+    "label": "Zoom-out"
+  },
+  "l1": {
+    "label": "Move left"
+  },
+  "r1": {
+    "label": "Move right"
+  },
+  "l2": {
+    "label": "Adjust lighting"
+  },
+  "r2": {
+    "label": "Adjust lighting"
+  },
+  "r3": {
+    "label": "Adjust lighting"
+  },
+  "lStickLeft": {
+    "label": "Left Stick Move right or left ←"
+  },
+  "lStickRight": {
+    "label": "Left Stick Rotate model →"
+  },
+  "lStickUp": {
+    "label": "Left Stick Move forwards and backwards ↑"
+  },
+  "lStickDown": {
+    "label": "Left Stick Rotate model ↓"
+  },
+  "rStickLeft": {
+    "label": "Right Stick Look right ←"
+  },
+  "rStickRight": {
+    "label": "Right Stick left →"
+  },
+  "rStickUp": {
+    "label": "Right Stick Look up and down ↑"
+  },
+  "rStickDown": {
+    "label": "Right Stick Zoom-in or Zoom-out ↓"
+  }
+}

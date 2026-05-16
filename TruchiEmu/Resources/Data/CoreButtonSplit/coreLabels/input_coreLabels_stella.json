@@ -1,0 +1,41 @@
+{
+  "b": {
+    "label": "Fire"
+  },
+  "select": {
+    "label": "Select"
+  },
+  "reset": {
+    "label": "Reset"
+  },
+  "up": {
+    "label": "Up"
+  },
+  "down": {
+    "label": "Down"
+  },
+  "left": {
+    "label": "Left"
+  },
+  "right": {
+    "label": "Right"
+  },
+  "l1": {
+    "label": "Left Difficulty A"
+  },
+  "r1": {
+    "label": "Right Difficulty A"
+  },
+  "l2": {
+    "label": "Left Difficulty B"
+  },
+  "r2": {
+    "label": "Right Difficulty B"
+  },
+  "l3": {
+    "label": "Color"
+  },
+  "r3": {
+    "label": "Black/White"
+  }
+}

@@ -1,0 +1,70 @@
+{
+  "buttons": {
+    "b": {
+      "label": "Fire"
+    },
+    "start": {
+      "label": "Menu"
+    },
+    "up": {
+      "label": "D-Pad Up"
+    },
+    "down": {
+      "label": "D-Pad Down"
+    },
+    "left": {
+      "label": "D-Pad Left"
+    },
+    "right": {
+      "label": "D-Pad Right"
+    },
+    "a": {
+      "label": "Cycle Weapon"
+    },
+    "x": {
+      "label": "Freelook"
+    },
+    "l1": {
+      "label": "Strafe Left"
+    },
+    "r1": {
+      "label": "Strafe Right"
+    },
+    "l2": {
+      "label": "Look Up"
+    },
+    "r2": {
+      "label": "Look Down"
+    },
+    "l3": {
+      "label": "Move Down"
+    },
+    "r3": {
+      "label": "Swim Up"
+    },
+    "lStickLeft": {
+      "label": "Left Stick Strafe Left ←"
+    },
+    "lStickRight": {
+      "label": "Left Stick Right →"
+    },
+    "lStickUp": {
+      "label": "Left Stick D-Pad Up ↑"
+    },
+    "lStickDown": {
+      "label": "Left Stick Down ↓"
+    },
+    "rStickLeft": {
+      "label": "Right Stick D-Pad Left ←"
+    },
+    "rStickRight": {
+      "label": "Right Stick Right →"
+    },
+    "rStickUp": {
+      "label": "Right Stick Look Up ↑"
+    },
+    "rStickDown": {
+      "label": "Right Stick Down ↓"
+    }
+  }
+}

@@ -1,0 +1,52 @@
+{
+  "buttons": {
+    "b": {
+      "label": "B"
+    },
+    "c": {
+      "label": "C"
+    },
+    "pause": {
+      "label": "Pause"
+    },
+    "start": {
+      "label": "Option"
+    },
+    "up": {
+      "label": "D-Pad Up"
+    },
+    "down": {
+      "label": "D-Pad Down"
+    },
+    "left": {
+      "label": "D-Pad Left"
+    },
+    "right": {
+      "label": "D-Pad Right"
+    },
+    "a": {
+      "label": "A"
+    },
+    "x": {
+      "label": "Numpad 0"
+    },
+    "l1": {
+      "label": "Numpad 1"
+    },
+    "r1": {
+      "label": "Numpad 2"
+    },
+    "l2": {
+      "label": "Numpad 3"
+    },
+    "r2": {
+      "label": "Numpad 4"
+    },
+    "l3": {
+      "label": "Numpad 5"
+    },
+    "r3": {
+      "label": "Numpad 6"
+    }
+  }
+}

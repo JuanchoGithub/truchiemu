@@ -1,0 +1,40 @@
+{
+  "buttons": {
+    "b": {
+      "label": "B"
+    },
+    "a": {
+      "label": "A"
+    },
+    "select": {
+      "label": "Mode"
+    },
+    "start": {
+      "label": "Start"
+    },
+    "up": {
+      "label": "Up"
+    },
+    "down": {
+      "label": "Down"
+    },
+    "left": {
+      "label": "Left"
+    },
+    "right": {
+      "label": "Right"
+    },
+    "c": {
+      "label": "C"
+    },
+    "y": {
+      "label": "Y"
+    },
+    "x": {
+      "label": "X"
+    },
+    "z": {
+      "label": "Z"
+    }
+  }
+}

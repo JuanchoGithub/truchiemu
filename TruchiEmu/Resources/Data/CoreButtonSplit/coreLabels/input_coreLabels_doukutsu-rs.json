@@ -1,0 +1,41 @@
+{
+  "b": {
+    "label": "Shoot"
+  },
+  "a": {
+    "label": "Jump"
+  },
+  "y": {
+    "label": "Inventory/Cutscene Fast Forward"
+  },
+  "pause": {
+    "label": "Pause"
+  },
+  "x": {
+    "label": "Show/Hide Map"
+  },
+  "up": {
+    "label": "Aim up"
+  },
+  "down": {
+    "label": "Interact/Aim down"
+  },
+  "left": {
+    "label": "Move Left"
+  },
+  "right": {
+    "label": "Move Right"
+  },
+  "l1": {
+    "label": "Previous Weapon"
+  },
+  "r1": {
+    "label": "Next Weapon"
+  },
+  "r2": {
+    "label": "Strafe"
+  },
+  "l3": {
+    "label": "Move (d-pad equivalent)"
+  }
+}

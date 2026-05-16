@@ -1,0 +1,71 @@
+{
+  "buttons": {
+    "b": {
+      "label": "A Button"
+    },
+    "y": {
+      "label": "X Button"
+    },
+    "select": {
+      "label": "Mode Switch"
+    },
+    "start": {
+      "label": "Start Button"
+    },
+    "up": {
+      "label": "D-Pad Up"
+    },
+    "down": {
+      "label": "D-Pad Down"
+    },
+    "left": {
+      "label": "D-Pad Left"
+    },
+    "right": {
+      "label": "D-Pad Right"
+    },
+    "a": {
+      "label": "B Button"
+    },
+    "x": {
+      "label": "Y Button"
+    },
+    "l1": {
+      "label": "Z Button"
+    },
+    "r1": {
+      "label": "C Button"
+    },
+    "l2": {
+      "label": "L Button"
+    },
+    "r2": {
+      "label": "R Button"
+    },
+    "lStickLeft": {
+      "label": "Left Stick Analog X ←"
+    },
+    "lStickRight": {
+      "label": "Left Stick Analog X →"
+    },
+    "lStickUp": {
+      "label": "Left Stick Analog Y ↑"
+    },
+    "lStickDown": {
+      "label": "Left Stick Analog Y ↓"
+    },
+    "rStickLeft": {
+      "label": "Right Stick Analog X ←"
+    },
+    "rStickRight": {
+      "label": "Right Stick Analog X →"
+    },
+    "rStickUp": {
+      "label": "Right Stick Analog Y ↑"
+    },
+    "rStickDown": {
+      "label": "Right Stick Analog Y ↓"
+    }
+  },
+  "systemCategory": "Sega Saturn"
+}

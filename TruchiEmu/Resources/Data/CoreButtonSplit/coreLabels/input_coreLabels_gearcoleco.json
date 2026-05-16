@@ -1,0 +1,50 @@
+{
+  "up": {
+    "label": "Joystick Up"
+  },
+  "down": {
+    "label": "Joystick Down"
+  },
+  "left": {
+    "label": "Joystick Left"
+  },
+  "right": {
+    "label": "Joystick Right"
+  },
+  "b": {
+    "label": "Yellow (Left)"
+  },
+  "a": {
+    "label": "Red (Right)"
+  },
+  "y": {
+    "label": "Keypad 1"
+  },
+  "x": {
+    "label": "Keypad 2"
+  },
+  "l1": {
+    "label": "Keypad 3"
+  },
+  "r1": {
+    "label": "Keypad 4"
+  },
+  "l2": {
+    "label": "Keypad 5"
+  },
+  "r2": {
+    "label": "Keypad 6"
+  },
+  "l3": {
+    "label": "Keypad 7"
+  },
+  "r3": {
+    "label": "Keypad 8"
+  },
+  "start": {
+    "label": "Keypad *"
+  },
+  "select": {
+    "label": "Keypad #"
+  }
+}

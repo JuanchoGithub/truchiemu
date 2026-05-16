@@ -1,0 +1,32 @@
+{
+  "a": {
+    "label": "Space / Fire"
+  },
+  "b": {
+    "label": "Space / Fire"
+  },
+  "start": {
+    "label": "< START >"
+  },
+  "select": {
+    "label": "< STOP >"
+  },
+  "up": {
+    "label": "Up"
+  },
+  "down": {
+    "label": "Down"
+  },
+  "left": {
+    "label": "Left"
+  },
+  "right": {
+    "label": "Right"
+  },
+  "l1": {
+    "label": "On-Screen Key Selector"
+  },
+  "l2": {
+    "label": "On-Screen Key Selector"
+  }
+}

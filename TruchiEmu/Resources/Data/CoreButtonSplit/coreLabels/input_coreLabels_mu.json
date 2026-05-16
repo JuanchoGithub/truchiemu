@@ -1,0 +1,32 @@
+{
+  "y": {
+    "label": "Date Book"
+  },
+  "select": {
+    "label": "D-Pad Center"
+  },
+  "start": {
+    "label": "Power"
+  },
+  "up": {
+    "label": "D-Pad Up"
+  },
+  "down": {
+    "label": "D-Pad Down"
+  },
+  "left": {
+    "label": "D-Pad Left (OS5 only)"
+  },
+  "right": {
+    "label": "D-Pad Right (OS5 only)"
+  },
+  "a": {
+    "label": "Note Pad"
+  },
+  "x": {
+    "label": "Address Book"
+  },
+  "r1": {
+    "label": "Touchscreen click/tap"
+  }
+}

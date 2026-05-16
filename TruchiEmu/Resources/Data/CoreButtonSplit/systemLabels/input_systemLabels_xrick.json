@@ -1,0 +1,19 @@
+{
+  "buttons": {
+    "up": {
+      "label": "Jump"
+    },
+    "down": {
+      "label": "Crouch"
+    },
+    "left": {
+      "label": "Left"
+    },
+    "right": {
+      "label": "Right"
+    },
+    "a": {
+      "label": "Attack"
+    }
+  }
+}

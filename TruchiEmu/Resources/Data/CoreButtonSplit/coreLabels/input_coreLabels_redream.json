@@ -1,0 +1,44 @@
+{
+  "a": {
+    "label": "A"
+  },
+  "x": {
+    "label": "X"
+  },
+  "start": {
+    "label": "Start"
+  },
+  "up": {
+    "label": "D-Pad Up"
+  },
+  "down": {
+    "label": "D-Pad Down"
+  },
+  "left": {
+    "label": "D-Pad Left"
+  },
+  "right": {
+    "label": "D-Pad Right"
+  },
+  "b": {
+    "label": "B"
+  },
+  "y": {
+    "label": "Y"
+  },
+  "l1": {
+    "label": "L"
+  },
+  "r1": {
+    "label": "R"
+  },
+  "r3": {
+    "label": "Analog X"
+  },
+  "lStickLeft": {
+    "label": "Left Stick Analog Y ←"
+  },
+  "lStickRight": {
+    "label": "Left Stick Analog Y →"
+  }
+}

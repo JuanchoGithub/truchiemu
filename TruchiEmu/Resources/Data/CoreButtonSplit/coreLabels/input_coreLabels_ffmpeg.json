@@ -1,0 +1,14 @@
+{
+  "up": {
+    "label": "Seek +60 seconds"
+  },
+  "down": {
+    "label": "Seek -60 seconds"
+  },
+  "left": {
+    "label": "Seek -10 seconds"
+  },
+  "right": {
+    "label": "Seek +10 seconds"
+  }
+}

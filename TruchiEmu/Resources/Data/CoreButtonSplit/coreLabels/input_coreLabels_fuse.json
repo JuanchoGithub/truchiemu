@@ -1,0 +1,26 @@
+{
+  "up": {
+    "label": "Up"
+  },
+  "b": {
+    "label": "Fire"
+  },
+  "select": {
+    "label": "Keyboard overlay"
+  },
+  "down": {
+    "label": "Down"
+  },
+  "left": {
+    "label": "Left"
+  },
+  "right": {
+    "label": "Right"
+  },
+  "l1": {
+    "label": "Enter"
+  },
+  "r1": {
+    "label": "Space"
+  }
+}

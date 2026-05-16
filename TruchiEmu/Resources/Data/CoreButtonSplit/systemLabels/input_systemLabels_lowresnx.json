@@ -1,0 +1,28 @@
+{
+  "buttons": {
+    "b": {
+      "label": "Button 2"
+    },
+    "select": {
+      "label": "Button SELECT"
+    },
+    "start": {
+      "label": "Button START"
+    },
+    "up": {
+      "label": "Button UP"
+    },
+    "down": {
+      "label": "Button DOWN"
+    },
+    "left": {
+      "label": "Button LEFT"
+    },
+    "right": {
+      "label": "Button RIGHT"
+    },
+    "a": {
+      "label": "BUTTON 1"
+    }
+  }
+}

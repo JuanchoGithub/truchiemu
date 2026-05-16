@@ -1,0 +1,35 @@
+{
+  "buttons": {
+    "a": {
+      "label": "A"
+    },
+    "b": {
+      "label": "B"
+    },
+    "up": {
+      "label": "D-Pad Up"
+    },
+    "down": {
+      "label": "D-Pad Down"
+    },
+    "left": {
+      "label": "D-Pad Left"
+    },
+    "right": {
+      "label": "D-Pad Right"
+    },
+    "select": {
+      "label": "Select"
+    },
+    "start": {
+      "label": "Start"
+    },
+    "l1": {
+      "label": "Previous Color Palette"
+    },
+    "r1": {
+      "label": "Next Color Palette"
+    }
+  },
+  "systemCategory": "Game Boy Family"
+}

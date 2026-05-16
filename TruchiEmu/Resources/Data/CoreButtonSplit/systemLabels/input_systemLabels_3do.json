@@ -1,0 +1,38 @@
+{
+  "buttons": {
+    "b": {
+      "label": "B"
+    },
+    "a": {
+      "label": "A"
+    },
+    "x": {
+      "label": "X (Stop)"
+    },
+    "start": {
+      "label": "P (Play/Pause)"
+    },
+    "up": {
+      "label": "D-Pad Up"
+    },
+    "down": {
+      "label": "D-Pad Down"
+    },
+    "left": {
+      "label": "D-Pad Left"
+    },
+    "right": {
+      "label": "D-Pad Right"
+    },
+    "c": {
+      "label": "C"
+    },
+    "l1": {
+      "label": "L"
+    },
+    "r1": {
+      "label": "R"
+    }
+  },
+  "systemCategory": "3DO"
+}

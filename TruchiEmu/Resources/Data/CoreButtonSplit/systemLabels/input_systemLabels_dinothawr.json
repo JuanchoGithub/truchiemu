@@ -1,0 +1,25 @@
+{
+  "buttons": {
+    "b": {
+      "label": "Push"
+    },
+    "up": {
+      "label": "D-Pad Up"
+    },
+    "down": {
+      "label": "D-Pad Down"
+    },
+    "left": {
+      "label": "D-Pad Left"
+    },
+    "right": {
+      "label": "D-Pad Right"
+    },
+    "a": {
+      "label": "Menu"
+    },
+    "reset": {
+      "label": "Reset"
+    }
+  }
+}

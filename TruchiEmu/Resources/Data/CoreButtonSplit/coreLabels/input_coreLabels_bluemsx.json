@@ -1,0 +1,50 @@
+{
+  "b": {
+    "label": "Button 2"
+  },
+  "y": {
+    "label": "Button 3"
+  },
+  "select": {
+    "label": "Select"
+  },
+  "start": {
+    "label": "Start"
+  },
+  "up": {
+    "label": "Joy Up"
+  },
+  "down": {
+    "label": "Joy Down"
+  },
+  "left": {
+    "label": "Joy Left"
+  },
+  "right": {
+    "label": "Joy Right"
+  },
+  "a": {
+    "label": "Button 1"
+  },
+  "x": {
+    "label": "Button 4"
+  },
+  "l1": {
+    "label": "Button 5"
+  },
+  "r1": {
+    "label": "Button 6"
+  },
+  "l2": {
+    "label": "Button 7"
+  },
+  "r2": {
+    "label": "Button 8"
+  },
+  "l3": {
+    "label": "Button 9"
+  },
+  "r3": {
+    "label": "Button 10"
+  }
+}

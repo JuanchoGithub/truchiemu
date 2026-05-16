@@ -1,0 +1,13 @@
+{
+  "buttons": {
+    "pause": {
+      "label": "Pause"
+    },
+    "l1": {
+      "label": "Previous Track"
+    },
+    "r1": {
+      "label": "Next Track"
+    }
+  }
+}

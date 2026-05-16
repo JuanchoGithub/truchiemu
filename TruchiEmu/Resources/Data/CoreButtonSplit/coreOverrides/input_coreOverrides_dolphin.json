@@ -1,0 +1,35 @@
+{
+  "z": {
+    "id": 11
+  },
+  "l1": {
+    "id": 12
+  },
+  "r1": {
+    "id": 13
+  },
+  "lStickLeft": {
+    "id": 17
+  },
+  "lStickRight": {
+    "id": 16
+  },
+  "lStickUp": {
+    "id": 18
+  },
+  "lStickDown": {
+    "id": 19
+  },
+  "rStickLeft": {
+    "id": 21
+  },
+  "rStickRight": {
+    "id": 20
+  },
+  "rStickUp": {
+    "id": 22
+  },
+  "rStickDown": {
+    "id": 23
+  }
+}

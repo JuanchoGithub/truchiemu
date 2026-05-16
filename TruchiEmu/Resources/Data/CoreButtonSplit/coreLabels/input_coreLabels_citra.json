@@ -1,0 +1,71 @@
+{
+  "b": {
+    "label": "B"
+  },
+  "y": {
+    "label": "Y"
+  },
+  "select": {
+    "label": "Select"
+  },
+  "start": {
+    "label": "Start"
+  },
+  "up": {
+    "label": "Up"
+  },
+  "down": {
+    "label": "Down"
+  },
+  "left": {
+    "label": "Left"
+  },
+  "right": {
+    "label": "Right"
+  },
+  "a": {
+    "label": "A"
+  },
+  "x": {
+    "label": "X"
+  },
+  "l1": {
+    "label": "L"
+  },
+  "r1": {
+    "label": "R"
+  },
+  "l2": {
+    "label": "ZL"
+  },
+  "r2": {
+    "label": "ZR"
+  },
+  "l3": {
+    "label": "Home"
+  },
+  "lStickLeft": {
+    "label": "Circle Pad X ←"
+  },
+  "lStickRight": {
+    "label": "Circle Pad X →"
+  },
+  "lStickUp": {
+    "label": "Circle Pad Y ↑"
+  },
+  "lStickDown": {
+    "label": "Circle Pad Y ↓"
+  },
+  "rStickLeft": {
+    "label": "Right analog function ←"
+  },
+  "rStickRight": {
+    "label": "Right analog function →"
+  },
+  "rStickUp": {
+    "label": "Right analog function ↑"
+  },
+  "rStickDown": {
+    "label": "Right analog function ↓"
+  }
+}

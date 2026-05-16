@@ -1,0 +1,61 @@
+{
+  "buttons": {
+    "up": {
+      "label": "Move Forward"
+    },
+    "down": {
+      "label": "Move Backward"
+    },
+    "left": {
+      "label": "Turn Left"
+    },
+    "right": {
+      "label": "Turn Right"
+    },
+    "l1": {
+      "label": "Strafe Left"
+    },
+    "r1": {
+      "label": "Strafe Right"
+    },
+    "b": {
+      "label": "Use"
+    },
+    "x": {
+      "label": "Run"
+    },
+    "y": {
+      "label": "Show Status"
+    },
+    "select": {
+      "label": "Map"
+    },
+    "l2": {
+      "label": "Previous Weapon"
+    },
+    "r2": {
+      "label": "Next Weapon"
+    },
+    "pause": {
+      "label": "Pause"
+    },
+    "lStickLeft": {
+      "label": "Left Stick Strafe Left ←"
+    },
+    "lStickRight": {
+      "label": "Left Stick Right →"
+    },
+    "lStickUp": {
+      "label": "Left Stick Move Forward ↑"
+    },
+    "lStickDown": {
+      "label": "Left Stick Backward ↓"
+    },
+    "rStickLeft": {
+      "label": "Right Stick Turn Left ←"
+    },
+    "rStickRight": {
+      "label": "Right Stick Right →"
+    }
+  }
+}

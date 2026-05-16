@@ -1,0 +1,44 @@
+{
+  "a": {
+    "label": "Button 1"
+  },
+  "y": {
+    "label": "Button 3"
+  },
+  "coin1": {
+    "label": "Coin"
+  },
+  "start": {
+    "label": "Start"
+  },
+  "up": {
+    "label": "Up"
+  },
+  "down": {
+    "label": "Down"
+  },
+  "left": {
+    "label": "Left"
+  },
+  "right": {
+    "label": "Right"
+  },
+  "b": {
+    "label": "Button 2"
+  },
+  "l1": {
+    "label": "Dollar"
+  },
+  "lStickLeft": {
+    "label": "Left Stick Paddle ←"
+  },
+  "lStickRight": {
+    "label": "Left Stick Paddle →"
+  },
+  "lStickUp": {
+    "label": "Left Stick Paddle ↑"
+  },
+  "lStickDown": {
+    "label": "Left Stick Paddle ↓"
+  }
+}

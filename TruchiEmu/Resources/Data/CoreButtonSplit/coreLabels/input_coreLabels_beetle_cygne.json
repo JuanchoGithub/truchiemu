@@ -1,0 +1,38 @@
+{
+  "b": {
+    "label": "B"
+  },
+  "select": {
+    "label": "Rotate screen + active D-Pad"
+  },
+  "start": {
+    "label": "Start"
+  },
+  "up": {
+    "label": "X Cursor Up"
+  },
+  "down": {
+    "label": "X Cursor Down"
+  },
+  "left": {
+    "label": "X Cursor Left"
+  },
+  "right": {
+    "label": "X Cursor Right"
+  },
+  "a": {
+    "label": "A"
+  },
+  "l1": {
+    "label": "Y Cursor Left"
+  },
+  "r1": {
+    "label": "Y Cursor Right"
+  },
+  "l2": {
+    "label": "Y Cursor Down"
+  },
+  "r2": {
+    "label": "Y Cursor Up"
+  }
+}

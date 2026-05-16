@@ -1,0 +1,26 @@
+{
+  "b": {
+    "id": 8
+  },
+  "pause": {
+    "id": 3
+  },
+  "lStickLeft": {
+    "id": 17
+  },
+  "lStickRight": {
+    "id": 16
+  },
+  "lStickUp": {
+    "id": 18
+  },
+  "lStickDown": {
+    "id": 19
+  },
+  "rStickLeft": {
+    "id": 21
+  },
+  "rStickRight": {
+    "id": 20
+  }
+}

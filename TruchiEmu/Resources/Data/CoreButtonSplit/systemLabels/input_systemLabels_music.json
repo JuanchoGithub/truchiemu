@@ -1,0 +1,25 @@
+{
+  "buttons": {
+    "pause": {
+      "label": "Pause"
+    },
+    "start": {
+      "label": "Start"
+    },
+    "up": {
+      "label": "Up"
+    },
+    "down": {
+      "label": "Down"
+    },
+    "left": {
+      "label": "Left"
+    },
+    "right": {
+      "label": "Right"
+    },
+    "r1": {
+      "label": "Shutdown"
+    }
+  }
+}

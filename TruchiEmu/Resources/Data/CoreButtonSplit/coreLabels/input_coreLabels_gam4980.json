@@ -1,0 +1,44 @@
+{
+  "b": {
+    "label": "Exit"
+  },
+  "y": {
+    "label": "Help (4988: Z)"
+  },
+  "select": {
+    "label": "Insert (4988: Shift)"
+  },
+  "start": {
+    "label": "Search (4988: ZY)"
+  },
+  "up": {
+    "label": "Up"
+  },
+  "down": {
+    "label": "Down"
+  },
+  "left": {
+    "label": "Left"
+  },
+  "right": {
+    "label": "Right"
+  },
+  "a": {
+    "label": "A"
+  },
+  "r1": {
+    "label": "Page Down"
+  },
+  "l1": {
+    "label": "Page Up"
+  },
+  "l2": {
+    "label": "Modify (4988: Space)"
+  },
+  "r2": {
+    "label": "Del (4988: X)"
+  },
+  "z": {
+    "label": "Z (4988: S)"
+  }
+}

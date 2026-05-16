@@ -1,0 +1,22 @@
+{
+  "buttons": {
+    "b": {
+      "label": "Button B"
+    },
+    "up": {
+      "label": "Up"
+    },
+    "down": {
+      "label": "Down"
+    },
+    "left": {
+      "label": "Left"
+    },
+    "right": {
+      "label": "Right"
+    },
+    "a": {
+      "label": "Button A"
+    }
+  }
+}

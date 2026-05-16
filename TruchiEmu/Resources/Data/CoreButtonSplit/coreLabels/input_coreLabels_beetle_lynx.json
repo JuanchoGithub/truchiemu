@@ -1,0 +1,29 @@
+{
+  "b": {
+    "label": "B"
+  },
+  "pause": {
+    "label": "Pause"
+  },
+  "up": {
+    "label": "D-Pad Up"
+  },
+  "down": {
+    "label": "D-Pad Down"
+  },
+  "left": {
+    "label": "D-Pad Left"
+  },
+  "right": {
+    "label": "D-Pad Right"
+  },
+  "a": {
+    "label": "A"
+  },
+  "l1": {
+    "label": "Option 1"
+  },
+  "r1": {
+    "label": "Option 2"
+  }
+}

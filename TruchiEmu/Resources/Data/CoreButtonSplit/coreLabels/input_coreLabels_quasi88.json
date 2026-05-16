@@ -1,0 +1,35 @@
+{
+  "b": {
+    "label": "Z Key"
+  },
+  "y": {
+    "label": "Space Key"
+  },
+  "select": {
+    "label": "I Key"
+  },
+  "start": {
+    "label": "Return Key"
+  },
+  "up": {
+    "label": "Keypad 8 (Up)"
+  },
+  "down": {
+    "label": "Keypad 2 (Down)"
+  },
+  "left": {
+    "label": "Keypad 4 (Left)"
+  },
+  "right": {
+    "label": "Keypad 6 (Right)"
+  },
+  "a": {
+    "label": "X Key"
+  },
+  "l1": {
+    "label": "Change loaded disk in drive 1"
+  },
+  "r1": {
+    "label": "Change loaded disk in drive 2"
+  }
+}

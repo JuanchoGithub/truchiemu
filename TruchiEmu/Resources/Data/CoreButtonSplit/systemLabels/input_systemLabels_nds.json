@@ -1,0 +1,74 @@
+{
+  "buttons": {
+    "b": {
+      "label": "B"
+    },
+    "y": {
+      "label": "Y"
+    },
+    "select": {
+      "label": "Select"
+    },
+    "start": {
+      "label": "Start"
+    },
+    "up": {
+      "label": "Up"
+    },
+    "down": {
+      "label": "Down"
+    },
+    "left": {
+      "label": "Left"
+    },
+    "right": {
+      "label": "Right"
+    },
+    "a": {
+      "label": "A"
+    },
+    "x": {
+      "label": "X"
+    },
+    "l1": {
+      "label": "L"
+    },
+    "r1": {
+      "label": "R"
+    },
+    "l2": {
+      "label": "Lid Close/Open"
+    },
+    "r2": {
+      "label": "Tap Stylus"
+    },
+    "l3": {
+      "label": "Toggle Microphone"
+    },
+    "lStickLeft": {
+      "label": "Pointer mode l-analog X ←"
+    },
+    "lStickRight": {
+      "label": "Pointer mode l-analog X →"
+    },
+    "lStickUp": {
+      "label": "Pointer mode l-analog Y ↑"
+    },
+    "lStickDown": {
+      "label": "Pointer mode l-analog Y ↓"
+    },
+    "rStickLeft": {
+      "label": "Pointer mode r-analog X ←"
+    },
+    "rStickRight": {
+      "label": "Pointer mode r-analog X →"
+    },
+    "rStickUp": {
+      "label": "Pointer mode r-analog Y ↑"
+    },
+    "rStickDown": {
+      "label": "Pointer mode r-analog Y ↓"
+    }
+  },
+  "systemCategory": "Nintendo Handhelds"
+}

@@ -1,0 +1,17 @@
+{
+  "b": {
+    "label": "Enter"
+  },
+  "up": {
+    "label": "Up"
+  },
+  "down": {
+    "label": "Down"
+  },
+  "left": {
+    "label": "Left"
+  },
+  "right": {
+    "label": "Right"
+  }
+}

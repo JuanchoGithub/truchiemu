@@ -1,0 +1,74 @@
+{
+  "b": {
+    "label": "Keypad 1"
+  },
+  "y": {
+    "label": "Keypad 4"
+  },
+  "select": {
+    "label": "Console A"
+  },
+  "start": {
+    "label": "Console Start"
+  },
+  "up": {
+    "label": "Paddle Up"
+  },
+  "down": {
+    "label": "Paddle Down"
+  },
+  "left": {
+    "label": "Paddle Left"
+  },
+  "right": {
+    "label": "Paddle Right"
+  },
+  "a": {
+    "label": "Keypad 2 (Fire)"
+  },
+  "x": {
+    "label": "Keypad 5"
+  },
+  "l1": {
+    "label": "Console B (Coin for arcade)"
+  },
+  "r1": {
+    "label": "Keypad 0"
+  },
+  "l2": {
+    "label": "Console Reset"
+  },
+  "r2": {
+    "label": "Keypad Enter"
+  },
+  "l3": {
+    "label": "Keypad Clear"
+  },
+  "r3": {
+    "label": "Keypad 6"
+  },
+  "lStickLeft": {
+    "label": "Paddle X (Analog) ←"
+  },
+  "lStickRight": {
+    "label": "Paddle X (Analog) →"
+  },
+  "lStickUp": {
+    "label": "Paddle Y (Analog) ↑"
+  },
+  "lStickDown": {
+    "label": "Paddle Y (Analog) ↓"
+  },
+  "rStickLeft": {
+    "label": "Right Stick Keypad 1-9 (8-directional) ←"
+  },
+  "rStickRight": {
+    "label": "Right Stick Keypad 1-9 (8-directional) →"
+  },
+  "rStickUp": {
+    "label": "Right Stick Keypad 1-9 (8-directional) ↑"
+  },
+  "rStickDown": {
+    "label": "Right Stick Keypad 1-9 (8-directional) ↓"
+  }
+}

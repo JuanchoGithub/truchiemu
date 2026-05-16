@@ -1,0 +1,29 @@
+{
+  "b": {
+    "label": "B"
+  },
+  "pause": {
+    "label": "Pause"
+  },
+  "up": {
+    "label": "Up"
+  },
+  "down": {
+    "label": "Down"
+  },
+  "left": {
+    "label": "Left"
+  },
+  "right": {
+    "label": "Right"
+  },
+  "a": {
+    "label": "A"
+  },
+  "l1": {
+    "label": "Option 1"
+  },
+  "r1": {
+    "label": "Option 2"
+  }
+}

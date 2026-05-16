@@ -1,0 +1,14 @@
+{
+  "b": {
+    "label": "\"Fire\" button / Press key when the virtual keyboard is displayed"
+  },
+  "y": {
+    "label": "Virtual keyboard: move up/down"
+  },
+  "select": {
+    "label": "Virtual keyboard: show/hide"
+  },
+  "start": {
+    "label": "Start program<br>(See: Usage)"
+  }
+}

@@ -1,0 +1,44 @@
+{
+  "buttons": {
+    "b": {
+      "label": "II"
+    },
+    "y": {
+      "label": "III"
+    },
+    "select": {
+      "label": "Select"
+    },
+    "start": {
+      "label": "Run"
+    },
+    "up": {
+      "label": "D-Pad Up"
+    },
+    "down": {
+      "label": "D-Pad Down"
+    },
+    "left": {
+      "label": "D-Pad Left"
+    },
+    "right": {
+      "label": "D-Pad Right"
+    },
+    "a": {
+      "label": "I"
+    },
+    "x": {
+      "label": "IV"
+    },
+    "l1": {
+      "label": "V"
+    },
+    "r1": {
+      "label": "VI"
+    },
+    "l2": {
+      "label": "Mode Switch"
+    }
+  },
+  "systemCategory": "NEC Family"
+}

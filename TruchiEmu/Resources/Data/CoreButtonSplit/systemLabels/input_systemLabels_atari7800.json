@@ -1,0 +1,38 @@
+{
+  "buttons": {
+    "b": {
+      "label": "B"
+    },
+    "select": {
+      "label": "Console Select"
+    },
+    "start": {
+      "label": "Console Pause"
+    },
+    "up": {
+      "label": "Up"
+    },
+    "down": {
+      "label": "Down"
+    },
+    "left": {
+      "label": "Left"
+    },
+    "right": {
+      "label": "Right"
+    },
+    "a": {
+      "label": "2"
+    },
+    "x": {
+      "label": "Console Reset"
+    },
+    "l1": {
+      "label": "Left Difficulty"
+    },
+    "r1": {
+      "label": "Right Difficulty"
+    }
+  },
+  "systemCategory": "Atari Family"
+}

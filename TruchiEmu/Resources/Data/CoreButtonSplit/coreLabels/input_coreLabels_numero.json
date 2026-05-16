@@ -1,0 +1,41 @@
+{
+  "b": {
+    "label": "Button 2ND"
+  },
+  "y": {
+    "label": "Button DOWN"
+  },
+  "select": {
+    "label": "Button ALPHA"
+  },
+  "start": {
+    "label": "Button ENTER"
+  },
+  "up": {
+    "label": "Mouse Up"
+  },
+  "down": {
+    "label": "Mouse Down"
+  },
+  "left": {
+    "label": "Mouse Left"
+  },
+  "right": {
+    "label": "Mouse Right"
+  },
+  "a": {
+    "label": "Mouse Press"
+  },
+  "x": {
+    "label": "Button UP"
+  },
+  "l1": {
+    "label": "Button LEFT"
+  },
+  "r1": {
+    "label": "Button RIGHT"
+  },
+  "r2": {
+    "label": "Mouse Press"
+  }
+}

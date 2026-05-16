@@ -1,0 +1,47 @@
+{
+  "b": {
+    "label": "Push2"
+  },
+  "y": {
+    "label": "Push3"
+  },
+  "select": {
+    "label": "Select"
+  },
+  "start": {
+    "label": "Start"
+  },
+  "up": {
+    "label": "Course Select increment"
+  },
+  "down": {
+    "label": "Course Select decrement"
+  },
+  "left": {
+    "label": "Lever Switch 1 Left"
+  },
+  "right": {
+    "label": "Lever Switch 1 Right"
+  },
+  "a": {
+    "label": "Push4"
+  },
+  "x": {
+    "label": "Push1"
+  },
+  "r1": {
+    "label": "AUX"
+  },
+  "lStickLeft": {
+    "label": "Paddle 2 ←"
+  },
+  "lStickRight": {
+    "label": "Paddle 2 →"
+  },
+  "lStickUp": {
+    "label": "Paddle 1 ↑"
+  },
+  "lStickDown": {
+    "label": "Paddle 1 ↓"
+  }
+}

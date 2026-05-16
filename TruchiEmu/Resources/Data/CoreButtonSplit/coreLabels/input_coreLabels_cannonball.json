@@ -1,0 +1,47 @@
+{
+  "b": {
+    "label": "Accelerate"
+  },
+  "y": {
+    "label": "Brake"
+  },
+  "coin1": {
+    "label": "Coin"
+  },
+  "start": {
+    "label": "Start"
+  },
+  "up": {
+    "label": "Up"
+  },
+  "down": {
+    "label": "Down"
+  },
+  "left": {
+    "label": "Left"
+  },
+  "right": {
+    "label": "Right"
+  },
+  "a": {
+    "label": "Gear"
+  },
+  "x": {
+    "label": "Gear"
+  },
+  "l1": {
+    "label": "Adjust View"
+  },
+  "lStickLeft": {
+    "label": "Left Stick Analog X ←"
+  },
+  "lStickRight": {
+    "label": "Left Stick Analog X →"
+  },
+  "lStickUp": {
+    "label": "Left Stick Analog Y ↑"
+  },
+  "lStickDown": {
+    "label": "Left Stick Analog Y ↓"
+  }
+}

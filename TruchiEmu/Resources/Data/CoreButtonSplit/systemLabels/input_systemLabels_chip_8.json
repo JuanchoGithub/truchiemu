@@ -1,0 +1,37 @@
+{
+  "buttons": {
+    "b": {
+      "label": "B"
+    },
+    "y": {
+      "label": "2"
+    },
+    "start": {
+      "label": "1"
+    },
+    "up": {
+      "label": "5"
+    },
+    "down": {
+      "label": "8"
+    },
+    "left": {
+      "label": "7"
+    },
+    "right": {
+      "label": "9"
+    },
+    "a": {
+      "label": "A"
+    },
+    "c": {
+      "label": "C"
+    },
+    "l1": {
+      "label": "5"
+    },
+    "r2": {
+      "label": "D"
+    }
+  }
+}

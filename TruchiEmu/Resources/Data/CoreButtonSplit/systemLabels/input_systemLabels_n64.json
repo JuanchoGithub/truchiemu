@@ -1,0 +1,68 @@
+{
+  "buttons": {
+    "b": {
+      "label": "A Button (C3)"
+    },
+    "y": {
+      "label": "B Button (C2)"
+    },
+    "start": {
+      "label": "START Button"
+    },
+    "up": {
+      "label": "Up (digital)"
+    },
+    "down": {
+      "label": "Down (digital)"
+    },
+    "left": {
+      "label": "Left (digital)"
+    },
+    "right": {
+      "label": "Right (digital)"
+    },
+    "a": {
+      "label": "(C1)"
+    },
+    "x": {
+      "label": "(C4)"
+    },
+    "l1": {
+      "label": "L-Trigger"
+    },
+    "r1": {
+      "label": "R-Trigger"
+    },
+    "l2": {
+      "label": "Z-Trigger"
+    },
+    "r2": {
+      "label": "C Buttons Mode"
+    },
+    "lStickLeft": {
+      "label": "Control Stick X ←"
+    },
+    "lStickRight": {
+      "label": "Control Stick X →"
+    },
+    "lStickUp": {
+      "label": "Control Stick Y ↑"
+    },
+    "lStickDown": {
+      "label": "Control Stick Y ↓"
+    },
+    "rStickLeft": {
+      "label": "C Buttons X ←"
+    },
+    "rStickRight": {
+      "label": "C Buttons X →"
+    },
+    "rStickUp": {
+      "label": "C Buttons Y ↑"
+    },
+    "rStickDown": {
+      "label": "C Buttons Y ↓"
+    }
+  },
+  "systemCategory": "Nintendo 64"
+}

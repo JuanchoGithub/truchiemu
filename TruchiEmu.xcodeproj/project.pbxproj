@@ -37,6 +37,7 @@
 		0B8C1186E8119651761AD034 /* mame@132w.png in Resources */ = {isa = PBXBuildFile; fileRef = D751DC74B037E607A4D77BCC /* mame@132w.png */; };
 		0B91DB75B67F7778CEFDD3F6 /* ATARI7800.png in Resources */ = {isa = PBXBuildFile; fileRef = 2A22D3CFE0F38F217152AD90 /* ATARI7800.png */; };
 		0BE28A8B60AC8CBFB100B0BC /* pico@132w.png in Resources */ = {isa = PBXBuildFile; fileRef = 0C64F8151FBFA058A68B1FE8 /* pico@132w.png */; };
+		0CD244372E8158A9E2559772 /* PlayerController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8B1DB6C719F5587E47EB2D0D /* PlayerController.swift */; };
 		0D2E27740B6ADF1221055466 /* cpc@132w.png in Resources */ = {isa = PBXBuildFile; fileRef = 880E0B1C3C4D3119152284CE /* cpc@132w.png */; };
 		0D8A07B323B96EBC8E1F8E1F /* LibraryFilterOption.swift in Sources */ = {isa = PBXBuildFile; fileRef = 44D6E43A22D859720886ECD6 /* LibraryFilterOption.swift */; };
 		0EC966AB34C9316BEB777009 /* StandaloneGameWindowController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5F6FCC4037CB225E511FD3F5 /* StandaloneGameWindowController.swift */; };
@@ -54,8 +55,8 @@
 		140BF0CFF39BA12534FAE0CF /* BezelModels.swift in Sources */ = {isa = PBXBuildFile; fileRef = 827E55E978215F285D7F5800 /* BezelModels.swift */; };
 		142A6AA4E03AD16607BD045B /* GameDBLookupResult.swift in Sources */ = {isa = PBXBuildFile; fileRef = B624916CC58B4F2C2A93E827 /* GameDBLookupResult.swift */; };
 		1471E66EA479C2A887D47B15 /* PCE.png in Resources */ = {isa = PBXBuildFile; fileRef = 764D6A71F6401BE53D60A3FE /* PCE.png */; };
-		14B0E6739ECD3D9180CBBF0C /* SystemDatabase.json in Resources */ = {isa = PBXBuildFile; fileRef = 52EF17FAC9C9F438B0FAC30E /* SystemDatabase.json */; };
 		14FB8DCADACF67C7B6902B07 /* BoxArtPickerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 40FDC856DB192502B6962553 /* BoxArtPickerView.swift */; };
+		151D372D28A505324152DBB2 /* AnalogDeadZone.swift in Sources */ = {isa = PBXBuildFile; fileRef = F2B0864FA900DBC4BEF891BB /* AnalogDeadZone.swift */; };
 		1580DEF25CC82B1F8E3A634A /* gba@132w.png in Resources */ = {isa = PBXBuildFile; fileRef = 43A74C412BC2B50697134132 /* gba@132w.png */; };
 		159563995D41385866D73736 /* arcade@132w.png in Resources */ = {isa = PBXBuildFile; fileRef = 643F2C12E11DF5F7AEA988E3 /* arcade@132w.png */; };
 		161AE4D067729CBD2E14A115 /* VIDEOPAC.png in Resources */ = {isa = PBXBuildFile; fileRef = 0B6E64CAC32E5F8FE49FE85C /* VIDEOPAC.png */; };
@@ -115,6 +116,7 @@
 		2FE3FB8CFF7628D9650AF703 /* ms@132w.png in Resources */ = {isa = PBXBuildFile; fileRef = 5AE1CBC695D134E3FF153854 /* ms@132w.png */; };
 		30C2689FE0C7763B11053D49 /* VMAC.png in Resources */ = {isa = PBXBuildFile; fileRef = E059451BADA7D67E5C1FB483 /* VMAC.png */; };
 		31434EDEF448D7E1F3C4066C /* Sega - SG-1000.dat in Resources */ = {isa = PBXBuildFile; fileRef = 3B508F2E6A11186A526FC830 /* Sega - SG-1000.dat */; };
+		31A2B97F6CD9CA68CAE74088 /* InputDeviceType.swift in Sources */ = {isa = PBXBuildFile; fileRef = 596FC72EF305521FB589153D /* InputDeviceType.swift */; };
 		31FC1BD5BB58A71829C03B7F /* MAMEImportService.swift in Sources */ = {isa = PBXBuildFile; fileRef = D8AD6A0A6955FFF8B544B69B /* MAMEImportService.swift */; };
 		323AEFDEE8A1AEC2CDC30E07 /* n64-cheats.zip in Resources */ = {isa = PBXBuildFile; fileRef = DE550E5F3E5C2B4AC358C4DB /* n64-cheats.zip */; };
 		3290145934AA7E2112EB52AD /* ATARIST.png in Resources */ = {isa = PBXBuildFile; fileRef = AACBC1E970B66924152B022A /* ATARIST.png */; };
@@ -259,6 +261,7 @@
 		791402ABB260460A0380E845 /* ProgettoSnapsService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 112A0F3619B6C52925987F75 /* ProgettoSnapsService.swift */; };
 		797743C7B0984ACD8054042A /* DC.png in Resources */ = {isa = PBXBuildFile; fileRef = 4E990F214B18E1F3D2CB9948 /* DC.png */; };
 		7AB6C958DA92C9CDF9A93EEF /* quake@132w.png in Resources */ = {isa = PBXBuildFile; fileRef = 466CFD903A62D1110AFF0C9B /* quake@132w.png */; };
+		7ABCF7A060244B57A297019B /* KeyboardMapping.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66AFB541FCD568D3320D18CD /* KeyboardMapping.swift */; };
 		7AF77A8FDB21C1CCEBDCAB17 /* dreamcast.zip in Resources */ = {isa = PBXBuildFile; fileRef = 70DC82C7E6FFA6CA65424CC3 /* dreamcast.zip */; };
 		7B114C2B979B350258054F09 /* ControllerSettingsViewGroup.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3230EB435232A6B5AC4FBC1E /* ControllerSettingsViewGroup.swift */; };
 		7B583AF5BACF0E19D9574F51 /* MAMERomEntry.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4379C651DF62956D8B2BA04A /* MAMERomEntry.swift */; };
@@ -267,6 +270,7 @@
 		7F3A0AF55C70223F0AD9607C /* SCUMMVM.png in Resources */ = {isa = PBXBuildFile; fileRef = A208B8C6B2BCD2197F46362D /* SCUMMVM.png */; };
 		7F7B70E8BE63D8BEBB523510 /* psx-cheats.zip in Resources */ = {isa = PBXBuildFile; fileRef = 6418BF23C56726D09EF49C78 /* psx-cheats.zip */; };
 		802243197EC4A31177770310 /* PPSSPAssetService.swift in Sources */ = {isa = PBXBuildFile; fileRef = BCF5F2A331B01D152BE6194C /* PPSSPAssetService.swift */; };
+		803DED50F68081A6048C1DC5 /* GameMappingProfile.swift in Sources */ = {isa = PBXBuildFile; fileRef = 90136857D881B5C8AEE538D0 /* GameMappingProfile.swift */; };
 		803EACFA754C4D83757A278A /* LibretroThumbnailResolver.swift in Sources */ = {isa = PBXBuildFile; fileRef = 205860E15724E191A9B42460 /* LibretroThumbnailResolver.swift */; };
 		8105A781BD4CBBF17FFB2727 /* nes-cheats.zip in Resources */ = {isa = PBXBuildFile; fileRef = 1D129731FB43D154FA51411C /* nes-cheats.zip */; };
 		81294D07B34834F13769FF30 /* LiteCRT.metal in Sources */ = {isa = PBXBuildFile; fileRef = EFD1D1521FD51B428CD6D464 /* LiteCRT.metal */; };
@@ -388,10 +392,13 @@
 		B99F0771CCACF4B87FF04FC5 /* Sega - Mega Drive - Genesis.dat in Resources */ = {isa = PBXBuildFile; fileRef = 7F93FF0CC02DE90C30470010 /* Sega - Mega Drive - Genesis.dat */; };
 		BC9C57943B2B061E72D6ABA7 /* Cheat.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5641DF774B081BEE408A9052 /* Cheat.swift */; };
 		BCF6E7FD69063759D0607C29 /* HardcoreModeManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8BA1C0AA362D511F3CD87919 /* HardcoreModeManager.swift */; };
+		BD71E295B764ABB29962EA20 /* RetroButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 30A8C369BBDB954516046501 /* RetroButton.swift */; };
 		BD74977960E9593789D89B41 /* Nintendo - Virtual Boy.dat in Resources */ = {isa = PBXBuildFile; fileRef = 40D1BAA97C12B70D381691F0 /* Nintendo - Virtual Boy.dat */; };
 		BDC87CD59F17869B68CFE5EF /* ShaderSection.swift in Sources */ = {isa = PBXBuildFile; fileRef = F314DC9BA2137BD9EB358C9A /* ShaderSection.swift */; };
 		BDCE9A1B1362A168214C510E /* ps@132w.png in Resources */ = {isa = PBXBuildFile; fileRef = DDCACEF2DA4CC526B3582217 /* ps@132w.png */; };
 		BE582972E824FFB012393F7C /* Atari - Jaguar.dat in Resources */ = {isa = PBXBuildFile; fileRef = D65DE717669D9B6378E63B06 /* Atari - Jaguar.dat */; };
+		BE69107D74B61BC83EFF333D /* CoreButtonOverride.swift in Sources */ = {isa = PBXBuildFile; fileRef = 72FFFDC3B0AE8A595EB1A77B /* CoreButtonOverride.swift */; };
+		BF3899C41521C9D716EBDC5D /* ControllerGamepadMapping.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2EB63FBDD677CD02C8E222A8 /* ControllerGamepadMapping.swift */; };
 		C0BF7D965A680A168FACC3BB /* CoreOptionsManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 007D62D59B68855828E28A77 /* CoreOptionsManager.swift */; };
 		C18E5BE81E68BF2BD3405575 /* LaunchBoxGamesDBService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 51CC71BA94F2F723F61276A2 /* LaunchBoxGamesDBService.swift */; };
 		C19923C3D7A3AEEAA0BFC603 /* n64_aleck-cheats.zip in Resources */ = {isa = PBXBuildFile; fileRef = C82BB66735423EFE27B88240 /* n64_aleck-cheats.zip */; };
@@ -446,7 +453,300 @@
 		DCBCEE45C7C74C4F9687B563 /* vb@132w.png in Resources */ = {isa = PBXBuildFile; fileRef = 5E90C52AEDC3AC23BA35B915 /* vb@132w.png */; };
 		DCC432C8DC5EA9D19CA13B14 /* PICO.png in Resources */ = {isa = PBXBuildFile; fileRef = 895E4313F6A502B39E0267B1 /* PICO.png */; };
 		DCD12CEBA7F2C2CDA39B26D0 /* Nintendo - Nintendo 64.dat in Resources */ = {isa = PBXBuildFile; fileRef = 20E3F1E2894944E8BAF2B432 /* Nintendo - Nintendo 64.dat */; };
-		DD5754332FB513D300D1467D /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = DD5754322FB513D300D1467D /* Assets.xcassets */; };
+		DD5754352FB5F31000D1467D /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = DD5754342FB5F31000D1467D /* Assets.xcassets */; };
+		DD5755ED2FB7370400D1467D /* SystemDatabase.json in Resources */ = {isa = PBXBuildFile; fileRef = DD5755EC2FB7370400D1467D /* SystemDatabase.json */; };
+		DD5757162FB7BB3900D1467D /* input_systemLabels_dos.json in Resources */ = {isa = PBXBuildFile; fileRef = DD5756DB2FB7BB3900D1467D /* input_systemLabels_dos.json */; };
+		DD5757172FB7BB3900D1467D /* input_systemLabels_sms.json in Resources */ = {isa = PBXBuildFile; fileRef = DD5757042FB7BB3900D1467D /* input_systemLabels_sms.json */; };
+		DD5757182FB7BB3900D1467D /* input_coreLabels_beetle_lynx.json in Resources */ = {isa = PBXBuildFile; fileRef = DD5755F72FB7BB3900D1467D /* input_coreLabels_beetle_lynx.json */; };
+		DD5757192FB7BB3900D1467D /* input_coreLabels_citra_canary.json in Resources */ = {isa = PBXBuildFile; fileRef = DD57560F2FB7BB3900D1467D /* input_coreLabels_citra_canary.json */; };
+		DD57571A2FB7BB3900D1467D /* input_systemLabels_epochcv.json in Resources */ = {isa = PBXBuildFile; fileRef = DD5756DE2FB7BB3900D1467D /* input_systemLabels_epochcv.json */; };
+		DD57571B2FB7BB3900D1467D /* input_coreLabels_bsnes_mercury_accuracy.json in Resources */ = {isa = PBXBuildFile; fileRef = DD5756062FB7BB3900D1467D /* input_coreLabels_bsnes_mercury_accuracy.json */; };
+		DD57571C2FB7BB3900D1467D /* input_coreOverrides_dolphin.json in Resources */ = {isa = PBXBuildFile; fileRef = DD5756932FB7BB3900D1467D /* input_coreOverrides_dolphin.json */; };
+		DD57571D2FB7BB3900D1467D /* input_coreOverrides_pcsx_rearmed.json in Resources */ = {isa = PBXBuildFile; fileRef = DD5756AC2FB7BB3900D1467D /* input_coreOverrides_pcsx_rearmed.json */; };
+		DD57571E2FB7BB3900D1467D /* input_systemLabels_chip_8.json in Resources */ = {isa = PBXBuildFile; fileRef = DD5756D22FB7BB3900D1467D /* input_systemLabels_chip_8.json */; };
+		DD57571F2FB7BB3900D1467D /* input_coreOverrides_citra.json in Resources */ = {isa = PBXBuildFile; fileRef = DD57568A2FB7BB3900D1467D /* input_coreOverrides_citra.json */; };
+		DD5757202FB7BB3900D1467D /* input_coreLabels_gearcoleco.json in Resources */ = {isa = PBXBuildFile; fileRef = DD57562B2FB7BB3900D1467D /* input_coreLabels_gearcoleco.json */; };
+		DD5757212FB7BB3900D1467D /* input_coreLabels_beetle_neopop.json in Resources */ = {isa = PBXBuildFile; fileRef = DD5755F82FB7BB3900D1467D /* input_coreLabels_beetle_neopop.json */; };
+		DD5757222FB7BB3900D1467D /* input_systemLabels_mega_duck.json in Resources */ = {isa = PBXBuildFile; fileRef = DD5756EC2FB7BB3900D1467D /* input_systemLabels_mega_duck.json */; };
+		DD5757232FB7BB3900D1467D /* input_systemLabels_xrick.json in Resources */ = {isa = PBXBuildFile; fileRef = DD5757112FB7BB3900D1467D /* input_systemLabels_xrick.json */; };
+		DD5757242FB7BB3900D1467D /* input_coreLabels_ppsspp.json in Resources */ = {isa = PBXBuildFile; fileRef = DD5756582FB7BB3900D1467D /* input_coreLabels_ppsspp.json */; };
+		DD5757252FB7BB3900D1467D /* input_systemLabels_wolfenstein3d.json in Resources */ = {isa = PBXBuildFile; fileRef = DD57570F2FB7BB3900D1467D /* input_systemLabels_wolfenstein3d.json */; };
+		DD5757262FB7BB3900D1467D /* input_coreOverrides_emux_sms.json in Resources */ = {isa = PBXBuildFile; fileRef = DD5756992FB7BB3900D1467D /* input_coreOverrides_emux_sms.json */; };
+		DD5757272FB7BB3900D1467D /* input_coreLabels_vemulator.json in Resources */ = {isa = PBXBuildFile; fileRef = DD5756772FB7BB3900D1467D /* input_coreLabels_vemulator.json */; };
+		DD5757282FB7BB3900D1467D /* input_systemLabels_nds.json in Resources */ = {isa = PBXBuildFile; fileRef = DD5756F02FB7BB3900D1467D /* input_systemLabels_nds.json */; };
+		DD5757292FB7BB3900D1467D /* input_coreLabels_numero.json in Resources */ = {isa = PBXBuildFile; fileRef = DD57564D2FB7BB3900D1467D /* input_coreLabels_numero.json */; };
+		DD57572A2FB7BB3900D1467D /* input_coreOverrides_game_music_emu.json in Resources */ = {isa = PBXBuildFile; fileRef = DD57569D2FB7BB3900D1467D /* input_coreOverrides_game_music_emu.json */; };
+		DD57572B2FB7BB3900D1467D /* input_coreOverrides_dice.json in Resources */ = {isa = PBXBuildFile; fileRef = DD5756912FB7BB3900D1467D /* input_coreOverrides_dice.json */; };
+		DD57572C2FB7BB3900D1467D /* input_systemLabels_3do.json in Resources */ = {isa = PBXBuildFile; fileRef = DD5756C32FB7BB3900D1467D /* input_systemLabels_3do.json */; };
+		DD57572D2FB7BB3900D1467D /* input_coreLabels_lrps2.json in Resources */ = {isa = PBXBuildFile; fileRef = DD57563B2FB7BB3900D1467D /* input_coreLabels_lrps2.json */; };
+		DD57572E2FB7BB3900D1467D /* input_coreLabels_tyrquake.json in Resources */ = {isa = PBXBuildFile; fileRef = DD5756712FB7BB3900D1467D /* input_coreLabels_tyrquake.json */; };
+		DD57572F2FB7BB3900D1467D /* input_coreLabels_vba_m.json in Resources */ = {isa = PBXBuildFile; fileRef = DD5756742FB7BB3900D1467D /* input_coreLabels_vba_m.json */; };
+		DD5757302FB7BB3900D1467D /* input_coreOverrides_holani.json in Resources */ = {isa = PBXBuildFile; fileRef = DD5756A22FB7BB3900D1467D /* input_coreOverrides_holani.json */; };
+		DD5757312FB7BB3900D1467D /* input_coreLabels_anarch.json in Resources */ = {isa = PBXBuildFile; fileRef = DD5755F12FB7BB3900D1467D /* input_coreLabels_anarch.json */; };
+		DD5757322FB7BB3900D1467D /* input_coreOverrides_crocods.json in Resources */ = {isa = PBXBuildFile; fileRef = DD57568E2FB7BB3900D1467D /* input_coreOverrides_crocods.json */; };
+		DD5757332FB7BB3900D1467D /* input_coreLabels_bsnes_mercury_performance.json in Resources */ = {isa = PBXBuildFile; fileRef = DD5756082FB7BB3900D1467D /* input_coreLabels_bsnes_mercury_performance.json */; };
+		DD5757342FB7BB3900D1467D /* input_coreLabels_gearlynx.json in Resources */ = {isa = PBXBuildFile; fileRef = DD57562D2FB7BB3900D1467D /* input_coreLabels_gearlynx.json */; };
+		DD5757352FB7BB3900D1467D /* input_coreLabels_picodrive.json in Resources */ = {isa = PBXBuildFile; fileRef = DD5756542FB7BB3900D1467D /* input_coreLabels_picodrive.json */; };
+		DD5757362FB7BB3900D1467D /* input_systemLabels_commodore_amiga.json in Resources */ = {isa = PBXBuildFile; fileRef = DD5756D42FB7BB3900D1467D /* input_systemLabels_commodore_amiga.json */; };
+		DD5757372FB7BB3900D1467D /* input_systemLabels_openlara.json in Resources */ = {isa = PBXBuildFile; fileRef = DD5756F52FB7BB3900D1467D /* input_systemLabels_openlara.json */; };
+		DD5757382FB7BB3900D1467D /* input_systemLabels_arduboy.json in Resources */ = {isa = PBXBuildFile; fileRef = DD5756CA2FB7BB3900D1467D /* input_systemLabels_arduboy.json */; };
+		DD5757392FB7BB3900D1467D /* input_coreLabels_melonds_ds.json in Resources */ = {isa = PBXBuildFile; fileRef = DD5756402FB7BB3900D1467D /* input_coreLabels_melonds_ds.json */; };
+		DD57573A2FB7BB3900D1467D /* input_coreOverrides_dinothawr.json in Resources */ = {isa = PBXBuildFile; fileRef = DD5756922FB7BB3900D1467D /* input_coreOverrides_dinothawr.json */; };
+		DD57573B2FB7BB3900D1467D /* input_coreOverrides_beetle_lynx.json in Resources */ = {isa = PBXBuildFile; fileRef = DD5756822FB7BB3900D1467D /* input_coreOverrides_beetle_lynx.json */; };
+		DD57573C2FB7BB3900D1467D /* input_coreLabels_quasi88.json in Resources */ = {isa = PBXBuildFile; fileRef = DD57565D2FB7BB3900D1467D /* input_coreLabels_quasi88.json */; };
+		DD57573D2FB7BB3900D1467D /* input_systemLabels_zx81.json in Resources */ = {isa = PBXBuildFile; fileRef = DD5757132FB7BB3900D1467D /* input_systemLabels_zx81.json */; };
+		DD57573E2FB7BB3900D1467D /* input_coreLabels_game_music_emu.json in Resources */ = {isa = PBXBuildFile; fileRef = DD5756292FB7BB3900D1467D /* input_coreLabels_game_music_emu.json */; };
+		DD57573F2FB7BB3900D1467D /* input_systemLabels_2048.json in Resources */ = {isa = PBXBuildFile; fileRef = DD5756C62FB7BB3900D1467D /* input_systemLabels_2048.json */; };
+		DD5757402FB7BB3900D1467D /* input_coreOverrides_desmume_2015.json in Resources */ = {isa = PBXBuildFile; fileRef = DD5756902FB7BB3900D1467D /* input_coreOverrides_desmume_2015.json */; };
+		DD5757412FB7BB3900D1467D /* input_systemLabels_p2000t.json in Resources */ = {isa = PBXBuildFile; fileRef = DD5756F62FB7BB3900D1467D /* input_systemLabels_p2000t.json */; };
+		DD5757422FB7BB3900D1467D /* input_systemLabels_colecovision.json in Resources */ = {isa = PBXBuildFile; fileRef = DD5756D32FB7BB3900D1467D /* input_systemLabels_colecovision.json */; };
+		DD5757432FB7BB3900D1467D /* input_coreLabels_vba_next.json in Resources */ = {isa = PBXBuildFile; fileRef = DD5756752FB7BB3900D1467D /* input_coreLabels_vba_next.json */; };
+		DD5757442FB7BB3900D1467D /* input_systemLabels_doom_3.json in Resources */ = {isa = PBXBuildFile; fileRef = DD5756DA2FB7BB3900D1467D /* input_systemLabels_doom_3.json */; };
+		DD5757452FB7BB3900D1467D /* input_coreLabels_ep128emu.json in Resources */ = {isa = PBXBuildFile; fileRef = DD5756212FB7BB3900D1467D /* input_coreLabels_ep128emu.json */; };
+		DD5757462FB7BB3900D1467D /* input_coreLabels_dosbox.json in Resources */ = {isa = PBXBuildFile; fileRef = DD5756182FB7BB3900D1467D /* input_coreLabels_dosbox.json */; };
+		DD5757472FB7BB3900D1467D /* input_systemLabels_dinothawr.json in Resources */ = {isa = PBXBuildFile; fileRef = DD5756D82FB7BB3900D1467D /* input_systemLabels_dinothawr.json */; };
+		DD5757482FB7BB3900D1467D /* input_coreLabels_vice.json in Resources */ = {isa = PBXBuildFile; fileRef = DD5756782FB7BB3900D1467D /* input_coreLabels_vice.json */; };
+		DD5757492FB7BB3900D1467D /* input_coreLabels_desmume.json in Resources */ = {isa = PBXBuildFile; fileRef = DD5756132FB7BB3900D1467D /* input_coreLabels_desmume.json */; };
+		DD57574A2FB7BB3900D1467D /* input_coreLabels_snes9x_2005.json in Resources */ = {isa = PBXBuildFile; fileRef = DD5756682FB7BB3900D1467D /* input_coreLabels_snes9x_2005.json */; };
+		DD57574B2FB7BB3900D1467D /* input_coreOverrides_clownmdemu.json in Resources */ = {isa = PBXBuildFile; fileRef = DD57568C2FB7BB3900D1467D /* input_coreOverrides_clownmdemu.json */; };
+		DD57574C2FB7BB3900D1467D /* input_systemLabels_ti_83.json in Resources */ = {isa = PBXBuildFile; fileRef = DD5757062FB7BB3900D1467D /* input_systemLabels_ti_83.json */; };
+		DD57574D2FB7BB3900D1467D /* input_coreOverrides_doukutsu-rs.json in Resources */ = {isa = PBXBuildFile; fileRef = DD5756962FB7BB3900D1467D /* input_coreOverrides_doukutsu-rs.json */; };
+		DD57574E2FB7BB3900D1467D /* input_coreLabels_beetle_psx_hw.json in Resources */ = {isa = PBXBuildFile; fileRef = DD5755FC2FB7BB3900D1467D /* input_coreLabels_beetle_psx_hw.json */; };
+		DD57574F2FB7BB3900D1467D /* input_coreLabels_desmume_2015.json in Resources */ = {isa = PBXBuildFile; fileRef = DD5756142FB7BB3900D1467D /* input_coreLabels_desmume_2015.json */; };
+		DD5757502FB7BB3900D1467D /* input_coreLabels_gearsystem.json in Resources */ = {isa = PBXBuildFile; fileRef = DD57562E2FB7BB3900D1467D /* input_coreLabels_gearsystem.json */; };
+		DD5757512FB7BB3900D1467D /* input_systemLabels_lowresnx.json in Resources */ = {isa = PBXBuildFile; fileRef = DD5756E92FB7BB3900D1467D /* input_systemLabels_lowresnx.json */; };
+		DD5757522FB7BB3900D1467D /* input_coreLabels_ardens.json in Resources */ = {isa = PBXBuildFile; fileRef = DD5755F22FB7BB3900D1467D /* input_coreLabels_ardens.json */; };
+		DD5757532FB7BB3900D1467D /* input_coreLabels_openlara.json in Resources */ = {isa = PBXBuildFile; fileRef = DD5756502FB7BB3900D1467D /* input_coreLabels_openlara.json */; };
+		DD5757542FB7BB3900D1467D /* input_systemLabels_gamegear.json in Resources */ = {isa = PBXBuildFile; fileRef = DD5756E22FB7BB3900D1467D /* input_systemLabels_gamegear.json */; };
+		DD5757552FB7BB3900D1467D /* input_coreLabels_uzem.json in Resources */ = {isa = PBXBuildFile; fileRef = DD5756722FB7BB3900D1467D /* input_coreLabels_uzem.json */; };
+		DD5757562FB7BB3900D1467D /* input_coreOverrides_pocketcdg.json in Resources */ = {isa = PBXBuildFile; fileRef = DD5756B02FB7BB3900D1467D /* input_coreOverrides_pocketcdg.json */; };
+		DD5757572FB7BB3900D1467D /* input_coreOverrides_flycast.json in Resources */ = {isa = PBXBuildFile; fileRef = DD57569A2FB7BB3900D1467D /* input_coreOverrides_flycast.json */; };
+		DD5757582FB7BB3900D1467D /* input_coreOverrides_cannonball.json in Resources */ = {isa = PBXBuildFile; fileRef = DD5756892FB7BB3900D1467D /* input_coreOverrides_cannonball.json */; };
+		DD5757592FB7BB3900D1467D /* input_coreOverrides_mkxp-z.json in Resources */ = {isa = PBXBuildFile; fileRef = DD5756A72FB7BB3900D1467D /* input_coreOverrides_mkxp-z.json */; };
+		DD57575A2FB7BB3900D1467D /* input_systemLabels_ps2.json in Resources */ = {isa = PBXBuildFile; fileRef = DD5756FC2FB7BB3900D1467D /* input_systemLabels_ps2.json */; };
+		DD57575B2FB7BB3900D1467D /* input_systemLabels_sharp_x68000.json in Resources */ = {isa = PBXBuildFile; fileRef = DD5757032FB7BB3900D1467D /* input_systemLabels_sharp_x68000.json */; };
+		DD57575C2FB7BB3900D1467D /* input_coreLabels_snes9x_2005_plus.json in Resources */ = {isa = PBXBuildFile; fileRef = DD5756692FB7BB3900D1467D /* input_coreLabels_snes9x_2005_plus.json */; };
+		DD57575D2FB7BB3900D1467D /* input_coreLabels_holani.json in Resources */ = {isa = PBXBuildFile; fileRef = DD5756352FB7BB3900D1467D /* input_coreLabels_holani.json */; };
+		DD57575E2FB7BB3900D1467D /* input_coreLabels_mr_boom.json in Resources */ = {isa = PBXBuildFile; fileRef = DD5756472FB7BB3900D1467D /* input_coreLabels_mr_boom.json */; };
+		DD57575F2FB7BB3900D1467D /* input_coreOverrides_tic80.json in Resources */ = {isa = PBXBuildFile; fileRef = DD5756BA2FB7BB3900D1467D /* input_coreOverrides_tic80.json */; };
+		DD5757602FB7BB3900D1467D /* input_coreLabels_prosystem.json in Resources */ = {isa = PBXBuildFile; fileRef = DD57565A2FB7BB3900D1467D /* input_coreLabels_prosystem.json */; };
+		DD5757612FB7BB3900D1467D /* input_systemLabels_quake_1.json in Resources */ = {isa = PBXBuildFile; fileRef = DD5756FF2FB7BB3900D1467D /* input_systemLabels_quake_1.json */; };
+		DD5757622FB7BB3900D1467D /* input_systemLabels_tic80.json in Resources */ = {isa = PBXBuildFile; fileRef = DD5757072FB7BB3900D1467D /* input_systemLabels_tic80.json */; };
+		DD5757632FB7BB3900D1467D /* input_coreLabels_beetle_sgx.json in Resources */ = {isa = PBXBuildFile; fileRef = DD5755FE2FB7BB3900D1467D /* input_coreLabels_beetle_sgx.json */; };
+		DD5757642FB7BB3900D1467D /* input_coreLabels_nestopia.json in Resources */ = {isa = PBXBuildFile; fileRef = DD57564B2FB7BB3900D1467D /* input_coreLabels_nestopia.json */; };
+		DD5757652FB7BB3900D1467D /* input_coreLabels_yabause.json in Resources */ = {isa = PBXBuildFile; fileRef = DD57567D2FB7BB3900D1467D /* input_coreLabels_yabause.json */; };
+		DD5757662FB7BB3900D1467D /* input_coreOverrides_gam4980.json in Resources */ = {isa = PBXBuildFile; fileRef = DD57569C2FB7BB3900D1467D /* input_coreOverrides_gam4980.json */; };
+		DD5757672FB7BB3900D1467D /* input_coreLabels_stone_soup.json in Resources */ = {isa = PBXBuildFile; fileRef = DD57566C2FB7BB3900D1467D /* input_coreLabels_stone_soup.json */; };
+		DD5757682FB7BB3900D1467D /* input_coreOverrides_nestopia.json in Resources */ = {isa = PBXBuildFile; fileRef = DD5756A92FB7BB3900D1467D /* input_coreOverrides_nestopia.json */; };
+		DD5757692FB7BB3900D1467D /* input_coreOverrides_nxengine.json in Resources */ = {isa = PBXBuildFile; fileRef = DD5756AA2FB7BB3900D1467D /* input_coreOverrides_nxengine.json */; };
+		DD57576A2FB7BB3900D1467D /* input_coreLabels_mame_2003.json in Resources */ = {isa = PBXBuildFile; fileRef = DD57563E2FB7BB3900D1467D /* input_coreLabels_mame_2003.json */; };
+		DD57576B2FB7BB3900D1467D /* input_coreLabels_mu.json in Resources */ = {isa = PBXBuildFile; fileRef = DD5756482FB7BB3900D1467D /* input_coreLabels_mu.json */; };
+		DD57576C2FB7BB3900D1467D /* input_systemLabels_jaguar.json in Resources */ = {isa = PBXBuildFile; fileRef = DD5756E72FB7BB3900D1467D /* input_systemLabels_jaguar.json */; };
+		DD57576D2FB7BB3900D1467D /* input_coreLabels_pd777.json in Resources */ = {isa = PBXBuildFile; fileRef = DD5756532FB7BB3900D1467D /* input_coreLabels_pd777.json */; };
+		DD57576E2FB7BB3900D1467D /* input_coreLabels_beetle_psx.json in Resources */ = {isa = PBXBuildFile; fileRef = DD5755FB2FB7BB3900D1467D /* input_coreLabels_beetle_psx.json */; };
+		DD57576F2FB7BB3900D1467D /* input_coreLabels_mupen64plus.json in Resources */ = {isa = PBXBuildFile; fileRef = DD5756492FB7BB3900D1467D /* input_coreLabels_mupen64plus.json */; };
+		DD5757702FB7BB3900D1467D /* input_coreOverrides_2048.json in Resources */ = {isa = PBXBuildFile; fileRef = DD5756802FB7BB3900D1467D /* input_coreOverrides_2048.json */; };
+		DD5757712FB7BB3900D1467D /* input_coreOverrides_beetle_psx_hw.json in Resources */ = {isa = PBXBuildFile; fileRef = DD5756852FB7BB3900D1467D /* input_coreOverrides_beetle_psx_hw.json */; };
+		DD5757722FB7BB3900D1467D /* input_systemLabels_ep128.json in Resources */ = {isa = PBXBuildFile; fileRef = DD5756DD2FB7BB3900D1467D /* input_systemLabels_ep128.json */; };
+		DD5757732FB7BB3900D1467D /* input_coreOverrides_craft.json in Resources */ = {isa = PBXBuildFile; fileRef = DD57568D2FB7BB3900D1467D /* input_coreOverrides_craft.json */; };
+		DD5757742FB7BB3900D1467D /* input_coreOverrides_hatari.json in Resources */ = {isa = PBXBuildFile; fileRef = DD5756A12FB7BB3900D1467D /* input_coreOverrides_hatari.json */; };
+		DD5757752FB7BB3900D1467D /* input_systemLabels_dreamcast.json in Resources */ = {isa = PBXBuildFile; fileRef = DD5756DC2FB7BB3900D1467D /* input_systemLabels_dreamcast.json */; };
+		DD5757762FB7BB3900D1467D /* input_coreOverrides_dosbox.json in Resources */ = {isa = PBXBuildFile; fileRef = DD5756942FB7BB3900D1467D /* input_coreOverrides_dosbox.json */; };
+		DD5757772FB7BB3900D1467D /* input_coreLabels_doukutsu-rs.json in Resources */ = {isa = PBXBuildFile; fileRef = DD57561A2FB7BB3900D1467D /* input_coreLabels_doukutsu-rs.json */; };
+		DD5757782FB7BB3900D1467D /* input_coreLabels_beetle_pce_fast.json in Resources */ = {isa = PBXBuildFile; fileRef = DD5755FA2FB7BB3900D1467D /* input_coreLabels_beetle_pce_fast.json */; };
+		DD5757792FB7BB3900D1467D /* input_systemLabels_atari_st.json in Resources */ = {isa = PBXBuildFile; fileRef = DD5756CB2FB7BB3900D1467D /* input_systemLabels_atari_st.json */; };
+		DD57577A2FB7BB3900D1467D /* input_systemLabels_arcadia.json in Resources */ = {isa = PBXBuildFile; fileRef = DD5756C92FB7BB3900D1467D /* input_systemLabels_arcadia.json */; };
+		DD57577B2FB7BB3900D1467D /* input_systemLabels_segacd.json in Resources */ = {isa = PBXBuildFile; fileRef = DD5757012FB7BB3900D1467D /* input_systemLabels_segacd.json */; };
+		DD57577C2FB7BB3900D1467D /* input_coreLabels_xrick.json in Resources */ = {isa = PBXBuildFile; fileRef = DD57567C2FB7BB3900D1467D /* input_coreLabels_xrick.json */; };
+		DD57577D2FB7BB3900D1467D /* input_systemLabels_anarch.json in Resources */ = {isa = PBXBuildFile; fileRef = DD5756C82FB7BB3900D1467D /* input_systemLabels_anarch.json */; };
+		DD57577E2FB7BB3900D1467D /* input_systemLabels_pce.json in Resources */ = {isa = PBXBuildFile; fileRef = DD5756F92FB7BB3900D1467D /* input_systemLabels_pce.json */; };
+		DD57577F2FB7BB3900D1467D /* input_coreLabels_opera.json in Resources */ = {isa = PBXBuildFile; fileRef = DD5756512FB7BB3900D1467D /* input_coreLabels_opera.json */; };
+		DD5757802FB7BB3900D1467D /* input_coreLabels_tempgba.json in Resources */ = {isa = PBXBuildFile; fileRef = DD57566D2FB7BB3900D1467D /* input_coreLabels_tempgba.json */; };
+		DD5757812FB7BB3900D1467D /* input_coreOverrides_vaporspec.json in Resources */ = {isa = PBXBuildFile; fileRef = DD5756BD2FB7BB3900D1467D /* input_coreOverrides_vaporspec.json */; };
+		DD5757822FB7BB3900D1467D /* input_coreLabels_same_cdi.json in Resources */ = {isa = PBXBuildFile; fileRef = DD5756622FB7BB3900D1467D /* input_coreLabels_same_cdi.json */; };
+		DD5757832FB7BB3900D1467D /* input_coreOverrides_smsplus.json in Resources */ = {isa = PBXBuildFile; fileRef = DD5756B82FB7BB3900D1467D /* input_coreOverrides_smsplus.json */; };
+		DD5757842FB7BB3900D1467D /* input_coreLabels_prboom.json in Resources */ = {isa = PBXBuildFile; fileRef = DD5756592FB7BB3900D1467D /* input_coreLabels_prboom.json */; };
+		DD5757852FB7BB3900D1467D /* input_coreOverrides_gearlynx.json in Resources */ = {isa = PBXBuildFile; fileRef = DD57569E2FB7BB3900D1467D /* input_coreOverrides_gearlynx.json */; };
+		DD5757862FB7BB3900D1467D /* input_coreOverrides_virtual_jaguar.json in Resources */ = {isa = PBXBuildFile; fileRef = DD5756BF2FB7BB3900D1467D /* input_coreOverrides_virtual_jaguar.json */; };
+		DD5757872FB7BB3900D1467D /* input_coreOverrides_mupen64plus.json in Resources */ = {isa = PBXBuildFile; fileRef = DD5756A82FB7BB3900D1467D /* input_coreOverrides_mupen64plus.json */; };
+		DD5757882FB7BB3900D1467D /* input_systemLabels_wii.json in Resources */ = {isa = PBXBuildFile; fileRef = DD57570E2FB7BB3900D1467D /* input_systemLabels_wii.json */; };
+		DD5757892FB7BB3900D1467D /* input_coreLabels_smsplus.json in Resources */ = {isa = PBXBuildFile; fileRef = DD5756652FB7BB3900D1467D /* input_coreLabels_smsplus.json */; };
+		DD57578A2FB7BB3900D1467D /* input_coreOverrides_yabause.json in Resources */ = {isa = PBXBuildFile; fileRef = DD5756C12FB7BB3900D1467D /* input_coreOverrides_yabause.json */; };
+		DD57578B2FB7BB3900D1467D /* input_coreLabels_snes9x_2010.json in Resources */ = {isa = PBXBuildFile; fileRef = DD57566A2FB7BB3900D1467D /* input_coreLabels_snes9x_2010.json */; };
+		DD57578C2FB7BB3900D1467D /* input_coreLabels_cannonball.json in Resources */ = {isa = PBXBuildFile; fileRef = DD57560B2FB7BB3900D1467D /* input_coreLabels_cannonball.json */; };
+		DD57578D2FB7BB3900D1467D /* input_coreLabels_redream.json in Resources */ = {isa = PBXBuildFile; fileRef = DD5756602FB7BB3900D1467D /* input_coreLabels_redream.json */; };
+		DD57578E2FB7BB3900D1467D /* input_systemLabels_gam4980.json in Resources */ = {isa = PBXBuildFile; fileRef = DD5756DF2FB7BB3900D1467D /* input_systemLabels_gam4980.json */; };
+		DD57578F2FB7BB3900D1467D /* input_coreLabels_theodore.json in Resources */ = {isa = PBXBuildFile; fileRef = DD57566F2FB7BB3900D1467D /* input_coreLabels_theodore.json */; };
+		DD5757902FB7BB3900D1467D /* input_systemLabels_vectrex.json in Resources */ = {isa = PBXBuildFile; fileRef = DD57570A2FB7BB3900D1467D /* input_systemLabels_vectrex.json */; };
+		DD5757912FB7BB3900D1467D /* input_coreLabels_emux_nes.json in Resources */ = {isa = PBXBuildFile; fileRef = DD57561F2FB7BB3900D1467D /* input_coreLabels_emux_nes.json */; };
+		DD5757922FB7BB3900D1467D /* input_coreOverrides_race.json in Resources */ = {isa = PBXBuildFile; fileRef = DD5756B52FB7BB3900D1467D /* input_coreOverrides_race.json */; };
+		DD5757932FB7BB3900D1467D /* input_systemLabels_uzebox.json in Resources */ = {isa = PBXBuildFile; fileRef = DD5757082FB7BB3900D1467D /* input_systemLabels_uzebox.json */; };
+		DD5757942FB7BB3900D1467D /* input_coreLabels_ffmpeg.json in Resources */ = {isa = PBXBuildFile; fileRef = DD5756232FB7BB3900D1467D /* input_coreLabels_ffmpeg.json */; };
+		DD5757952FB7BB3900D1467D /* input_coreLabels_nside_balanced.json in Resources */ = {isa = PBXBuildFile; fileRef = DD57564C2FB7BB3900D1467D /* input_coreLabels_nside_balanced.json */; };
+		DD5757962FB7BB3900D1467D /* input_systemLabels_game_music.json in Resources */ = {isa = PBXBuildFile; fileRef = DD5756E02FB7BB3900D1467D /* input_systemLabels_game_music.json */; };
+		DD5757972FB7BB3900D1467D /* input_coreLabels_jaxe.json in Resources */ = {isa = PBXBuildFile; fileRef = DD5756372FB7BB3900D1467D /* input_coreLabels_jaxe.json */; };
+		DD5757982FB7BB3900D1467D /* input_systemLabels_psp.json in Resources */ = {isa = PBXBuildFile; fileRef = DD5756FD2FB7BB3900D1467D /* input_systemLabels_psp.json */; };
+		DD5757992FB7BB3900D1467D /* input_coreOverrides_vice.json in Resources */ = {isa = PBXBuildFile; fileRef = DD5756BE2FB7BB3900D1467D /* input_coreOverrides_vice.json */; };
+		DD57579A2FB7BB3900D1467D /* input_coreLabels_wasm-4.json in Resources */ = {isa = PBXBuildFile; fileRef = DD57567B2FB7BB3900D1467D /* input_coreLabels_wasm-4.json */; };
+		DD57579B2FB7BB3900D1467D /* input_coreLabels_higan_accuracy.json in Resources */ = {isa = PBXBuildFile; fileRef = DD5756342FB7BB3900D1467D /* input_coreLabels_higan_accuracy.json */; };
+		DD57579C2FB7BB3900D1467D /* input_coreLabels_px68k.json in Resources */ = {isa = PBXBuildFile; fileRef = DD57565C2FB7BB3900D1467D /* input_coreLabels_px68k.json */; };
+		DD57579D2FB7BB3900D1467D /* input_coreOverrides_pd777.json in Resources */ = {isa = PBXBuildFile; fileRef = DD5756AD2FB7BB3900D1467D /* input_coreOverrides_pd777.json */; };
+		DD57579E2FB7BB3900D1467D /* input_coreLabels_quicknes.json in Resources */ = {isa = PBXBuildFile; fileRef = DD57565E2FB7BB3900D1467D /* input_coreLabels_quicknes.json */; };
+		DD57579F2FB7BB3900D1467D /* input_systemLabels_mame.json in Resources */ = {isa = PBXBuildFile; fileRef = DD5756EB2FB7BB3900D1467D /* input_systemLabels_mame.json */; };
+		DD5757A02FB7BB3900D1467D /* input_systemLabels_atari7800.json in Resources */ = {isa = PBXBuildFile; fileRef = DD5756CE2FB7BB3900D1467D /* input_systemLabels_atari7800.json */; };
+		DD5757A12FB7BB3900D1467D /* input_coreLabels_2048.json in Resources */ = {isa = PBXBuildFile; fileRef = DD5755EF2FB7BB3900D1467D /* input_coreLabels_2048.json */; };
+		DD5757A22FB7BB3900D1467D /* input_coreLabels_amiarcadia.json in Resources */ = {isa = PBXBuildFile; fileRef = DD5755F02FB7BB3900D1467D /* input_coreLabels_amiarcadia.json */; };
+		DD5757A32FB7BB3900D1467D /* input_coreLabels_geargrafx.json in Resources */ = {isa = PBXBuildFile; fileRef = DD57562C2FB7BB3900D1467D /* input_coreLabels_geargrafx.json */; };
+		DD5757A42FB7BB3900D1467D /* input_coreLabels_boom3.json in Resources */ = {isa = PBXBuildFile; fileRef = DD5756022FB7BB3900D1467D /* input_coreLabels_boom3.json */; };
+		DD5757A52FB7BB3900D1467D /* input_coreOverrides_same_cdi.json in Resources */ = {isa = PBXBuildFile; fileRef = DD5756B72FB7BB3900D1467D /* input_coreOverrides_same_cdi.json */; };
+		DD5757A62FB7BB3900D1467D /* input_coreOverrides_prboom.json in Resources */ = {isa = PBXBuildFile; fileRef = DD5756B32FB7BB3900D1467D /* input_coreOverrides_prboom.json */; };
+		DD5757A72FB7BB3900D1467D /* input_coreLabels_fceumm.json in Resources */ = {isa = PBXBuildFile; fileRef = DD5756222FB7BB3900D1467D /* input_coreLabels_fceumm.json */; };
+		DD5757A82FB7BB3900D1467D /* input_systemLabels_vaporspec.json in Resources */ = {isa = PBXBuildFile; fileRef = DD5757092FB7BB3900D1467D /* input_systemLabels_vaporspec.json */; };
+		DD5757A92FB7BB3900D1467D /* input_systemLabels_3ds.json in Resources */ = {isa = PBXBuildFile; fileRef = DD5756C42FB7BB3900D1467D /* input_systemLabels_3ds.json */; };
+		DD5757AA2FB7BB3900D1467D /* input_systemLabels_atari2600.json in Resources */ = {isa = PBXBuildFile; fileRef = DD5756CC2FB7BB3900D1467D /* input_systemLabels_atari2600.json */; };
+		DD5757AB2FB7BB3900D1467D /* input_coreOverrides_desmume.json in Resources */ = {isa = PBXBuildFile; fileRef = DD57568F2FB7BB3900D1467D /* input_coreOverrides_desmume.json */; };
+		DD5757AC2FB7BB3900D1467D /* input_coreLabels_gam4980.json in Resources */ = {isa = PBXBuildFile; fileRef = DD5756272FB7BB3900D1467D /* input_coreLabels_gam4980.json */; };
+		DD5757AD2FB7BB3900D1467D /* input_coreLabels_vaporspec.json in Resources */ = {isa = PBXBuildFile; fileRef = DD5756732FB7BB3900D1467D /* input_coreLabels_vaporspec.json */; };
+		DD5757AE2FB7BB3900D1467D /* input_systemLabels_wasm4.json in Resources */ = {isa = PBXBuildFile; fileRef = DD57570D2FB7BB3900D1467D /* input_systemLabels_wasm4.json */; };
+		DD5757AF2FB7BB3900D1467D /* input_coreLabels_genesis_plus_gx.json in Resources */ = {isa = PBXBuildFile; fileRef = DD57562F2FB7BB3900D1467D /* input_coreLabels_genesis_plus_gx.json */; };
+		DD5757B02FB7BB3900D1467D /* input_coreOverrides_redream.json in Resources */ = {isa = PBXBuildFile; fileRef = DD5756B62FB7BB3900D1467D /* input_coreOverrides_redream.json */; };
+		DD5757B12FB7BB3900D1467D /* input_coreOverrides_fuse.json in Resources */ = {isa = PBXBuildFile; fileRef = DD57569B2FB7BB3900D1467D /* input_coreOverrides_fuse.json */; };
+		DD5757B22FB7BB3900D1467D /* input_systemLabels_amiga.json in Resources */ = {isa = PBXBuildFile; fileRef = DD5756C72FB7BB3900D1467D /* input_systemLabels_amiga.json */; };
+		DD5757B32FB7BB3900D1467D /* input_systemLabels_chailove.json in Resources */ = {isa = PBXBuildFile; fileRef = DD5756D12FB7BB3900D1467D /* input_systemLabels_chailove.json */; };
+		DD5757B42FB7BB3900D1467D /* input_systemLabels_segapico.json in Resources */ = {isa = PBXBuildFile; fileRef = DD5757022FB7BB3900D1467D /* input_systemLabels_segapico.json */; };
+		DD5757B52FB7BB3900D1467D /* input_coreLabels_bsnes-jg.json in Resources */ = {isa = PBXBuildFile; fileRef = DD57560A2FB7BB3900D1467D /* input_coreLabels_bsnes-jg.json */; };
+		DD5757B62FB7BB3900D1467D /* input_coreOverrides_uzem.json in Resources */ = {isa = PBXBuildFile; fileRef = DD5756BC2FB7BB3900D1467D /* input_coreOverrides_uzem.json */; };
+		DD5757B72FB7BB3900D1467D /* input_systemLabels_doom.json in Resources */ = {isa = PBXBuildFile; fileRef = DD5756D92FB7BB3900D1467D /* input_systemLabels_doom.json */; };
+		DD5757B82FB7BB3900D1467D /* input_coreLabels_mgba.json in Resources */ = {isa = PBXBuildFile; fileRef = DD5756442FB7BB3900D1467D /* input_coreLabels_mgba.json */; };
+		DD5757B92FB7BB3900D1467D /* input_coreOverrides_boom3.json in Resources */ = {isa = PBXBuildFile; fileRef = DD5756882FB7BB3900D1467D /* input_coreOverrides_boom3.json */; };
+		DD5757BA2FB7BB3900D1467D /* input_coreLabels_bnes.json in Resources */ = {isa = PBXBuildFile; fileRef = DD5756012FB7BB3900D1467D /* input_coreLabels_bnes.json */; };
+		DD5757BB2FB7BB3900D1467D /* input_coreOverrides_beetle_neopop.json in Resources */ = {isa = PBXBuildFile; fileRef = DD5756832FB7BB3900D1467D /* input_coreOverrides_beetle_neopop.json */; };
+		DD5757BC2FB7BB3900D1467D /* input_coreLabels_dolphin.json in Resources */ = {isa = PBXBuildFile; fileRef = DD5756172FB7BB3900D1467D /* input_coreLabels_dolphin.json */; };
+		DD5757BD2FB7BB3900D1467D /* input_coreLabels_fmsx.json in Resources */ = {isa = PBXBuildFile; fileRef = DD5756252FB7BB3900D1467D /* input_coreLabels_fmsx.json */; };
+		DD5757BE2FB7BB3900D1467D /* input_coreOverrides_3d_engine.json in Resources */ = {isa = PBXBuildFile; fileRef = DD57567F2FB7BB3900D1467D /* input_coreOverrides_3d_engine.json */; };
+		DD5757BF2FB7BB3900D1467D /* input_coreLabels_pokemini.json in Resources */ = {isa = PBXBuildFile; fileRef = DD5756572FB7BB3900D1467D /* input_coreLabels_pokemini.json */; };
+		DD5757C02FB7BB3900D1467D /* input_coreLabels_fuse.json in Resources */ = {isa = PBXBuildFile; fileRef = DD5756262FB7BB3900D1467D /* input_coreLabels_fuse.json */; };
+		DD5757C12FB7BB3900D1467D /* input_systemLabels_music.json in Resources */ = {isa = PBXBuildFile; fileRef = DD5756EE2FB7BB3900D1467D /* input_systemLabels_music.json */; };
+		DD5757C22FB7BB3900D1467D /* input_coreOverrides_puae.json in Resources */ = {isa = PBXBuildFile; fileRef = DD5756B42FB7BB3900D1467D /* input_coreOverrides_puae.json */; };
+		DD5757C32FB7BB3900D1467D /* input_coreLabels_beetle_gba.json in Resources */ = {isa = PBXBuildFile; fileRef = DD5755F62FB7BB3900D1467D /* input_coreLabels_beetle_gba.json */; };
+		DD5757C42FB7BB3900D1467D /* input_coreOverrides_dosbox_pure.json in Resources */ = {isa = PBXBuildFile; fileRef = DD5756952FB7BB3900D1467D /* input_coreOverrides_dosbox_pure.json */; };
+		DD5757C52FB7BB3900D1467D /* input_coreLabels_kronos.json in Resources */ = {isa = PBXBuildFile; fileRef = DD5756392FB7BB3900D1467D /* input_coreLabels_kronos.json */; };
+		DD5757C62FB7BB3900D1467D /* input_systemLabels_nes.json in Resources */ = {isa = PBXBuildFile; fileRef = DD5756F12FB7BB3900D1467D /* input_systemLabels_nes.json */; };
+		DD5757C72FB7BB3900D1467D /* input_systemLabels_ngp.json in Resources */ = {isa = PBXBuildFile; fileRef = DD5756F22FB7BB3900D1467D /* input_systemLabels_ngp.json */; };
+		DD5757C82FB7BB3900D1467D /* input_systemLabels_pc_98.json in Resources */ = {isa = PBXBuildFile; fileRef = DD5756F82FB7BB3900D1467D /* input_systemLabels_pc_98.json */; };
+		DD5757C92FB7BB3900D1467D /* input_coreOverrides_beetle_saturn.json in Resources */ = {isa = PBXBuildFile; fileRef = DD5756862FB7BB3900D1467D /* input_coreOverrides_beetle_saturn.json */; };
+		DD5757CA2FB7BB3900D1467D /* input_systemLabels_n64.json in Resources */ = {isa = PBXBuildFile; fileRef = DD5756EF2FB7BB3900D1467D /* input_systemLabels_n64.json */; };
+		DD5757CB2FB7BB3900D1467D /* input_coreOverrides_ecwolf.json in Resources */ = {isa = PBXBuildFile; fileRef = DD5756982FB7BB3900D1467D /* input_coreOverrides_ecwolf.json */; };
+		DD5757CC2FB7BB3900D1467D /* input_coreLabels_neko_project_ii_kai.json in Resources */ = {isa = PBXBuildFile; fileRef = DD57564A2FB7BB3900D1467D /* input_coreLabels_neko_project_ii_kai.json */; };
+		DD5757CD2FB7BB3900D1467D /* input_systemLabels_bomberman.json in Resources */ = {isa = PBXBuildFile; fileRef = DD5756CF2FB7BB3900D1467D /* input_systemLabels_bomberman.json */; };
+		DD5757CE2FB7BB3900D1467D /* input_coreLabels_lowres_nx.json in Resources */ = {isa = PBXBuildFile; fileRef = DD57563A2FB7BB3900D1467D /* input_coreLabels_lowres_nx.json */; };
+		DD5757CF2FB7BB3900D1467D /* input_coreLabels_mkxp-z.json in Resources */ = {isa = PBXBuildFile; fileRef = DD5756462FB7BB3900D1467D /* input_coreLabels_mkxp-z.json */; };
+		DD5757D02FB7BB3900D1467D /* input_coreLabels_crocods.json in Resources */ = {isa = PBXBuildFile; fileRef = DD5756122FB7BB3900D1467D /* input_coreLabels_crocods.json */; };
+		DD5757D12FB7BB3900D1467D /* input_systemLabels_pokemon_mini.json in Resources */ = {isa = PBXBuildFile; fileRef = DD5756FB2FB7BB3900D1467D /* input_systemLabels_pokemon_mini.json */; };
+		DD5757D22FB7BB3900D1467D /* input_systemLabels_jumpnbump.json in Resources */ = {isa = PBXBuildFile; fileRef = DD5756E82FB7BB3900D1467D /* input_systemLabels_jumpnbump.json */; };
+		DD5757D32FB7BB3900D1467D /* input_coreLabels_flycast.json in Resources */ = {isa = PBXBuildFile; fileRef = DD5756242FB7BB3900D1467D /* input_coreLabels_flycast.json */; };
+		DD5757D42FB7BB3900D1467D /* input_coreLabels_jumpnbump.json in Resources */ = {isa = PBXBuildFile; fileRef = DD5756382FB7BB3900D1467D /* input_coreLabels_jumpnbump.json */; };
+		DD5757D52FB7BB3900D1467D /* input_coreLabels_gearboy.json in Resources */ = {isa = PBXBuildFile; fileRef = DD57562A2FB7BB3900D1467D /* input_coreLabels_gearboy.json */; };
+		DD5757D62FB7BB3900D1467D /* input_coreOverrides_citra_canary.json in Resources */ = {isa = PBXBuildFile; fileRef = DD57568B2FB7BB3900D1467D /* input_coreOverrides_citra_canary.json */; };
+		DD5757D72FB7BB3900D1467D /* input_coreLabels_eightyone.json in Resources */ = {isa = PBXBuildFile; fileRef = DD57561D2FB7BB3900D1467D /* input_coreLabels_eightyone.json */; };
+		DD5757D82FB7BB3900D1467D /* input_systemLabels_craft.json in Resources */ = {isa = PBXBuildFile; fileRef = DD5756D62FB7BB3900D1467D /* input_systemLabels_craft.json */; };
+		DD5757D92FB7BB3900D1467D /* input_coreOverrides_pokemini.json in Resources */ = {isa = PBXBuildFile; fileRef = DD5756B12FB7BB3900D1467D /* input_coreOverrides_pokemini.json */; };
+		DD5757DA2FB7BB3900D1467D /* input_coreLabels_snes9x_2002.json in Resources */ = {isa = PBXBuildFile; fileRef = DD5756672FB7BB3900D1467D /* input_coreLabels_snes9x_2002.json */; };
+		DD5757DB2FB7BB3900D1467D /* input_coreLabels_caprice32.json in Resources */ = {isa = PBXBuildFile; fileRef = DD57560C2FB7BB3900D1467D /* input_coreLabels_caprice32.json */; };
+		DD5757DC2FB7BB3900D1467D /* input_systemLabels_gamecube.json in Resources */ = {isa = PBXBuildFile; fileRef = DD5756E12FB7BB3900D1467D /* input_systemLabels_gamecube.json */; };
+		DD5757DD2FB7BB3900D1467D /* input_systemLabels_lynx.json in Resources */ = {isa = PBXBuildFile; fileRef = DD5756EA2FB7BB3900D1467D /* input_systemLabels_lynx.json */; };
+		DD5757DE2FB7BB3900D1467D /* input_coreLabels_virtual_jaguar.json in Resources */ = {isa = PBXBuildFile; fileRef = DD57567A2FB7BB3900D1467D /* input_coreLabels_virtual_jaguar.json */; };
+		DD5757DF2FB7BB3900D1467D /* input_coreOverrides_beetle_psx.json in Resources */ = {isa = PBXBuildFile; fileRef = DD5756842FB7BB3900D1467D /* input_coreOverrides_beetle_psx.json */; };
+		DD5757E02FB7BB3900D1467D /* input_coreLabels_meteor.json in Resources */ = {isa = PBXBuildFile; fileRef = DD5756432FB7BB3900D1467D /* input_coreLabels_meteor.json */; };
+		DD5757E12FB7BB3900D1467D /* input_systemLabels_virtual_boy.json in Resources */ = {isa = PBXBuildFile; fileRef = DD57570C2FB7BB3900D1467D /* input_systemLabels_virtual_boy.json */; };
+		DD5757E22FB7BB3900D1467D /* input_coreLabels_vecx.json in Resources */ = {isa = PBXBuildFile; fileRef = DD5756762FB7BB3900D1467D /* input_coreLabels_vecx.json */; };
+		DD5757E32FB7BB3900D1467D /* input_systemLabels_snes.json in Resources */ = {isa = PBXBuildFile; fileRef = DD5757052FB7BB3900D1467D /* input_systemLabels_snes.json */; };
+		DD5757E42FB7BB3900D1467D /* input_coreLabels_imageviewer.json in Resources */ = {isa = PBXBuildFile; fileRef = DD5756362FB7BB3900D1467D /* input_coreLabels_imageviewer.json */; };
+		DD5757E52FB7BB3900D1467D /* input_systemLabels_vircon32.json in Resources */ = {isa = PBXBuildFile; fileRef = DD57570B2FB7BB3900D1467D /* input_systemLabels_vircon32.json */; };
+		DD5757E62FB7BB3900D1467D /* input_coreLabels_pcsx_rearmed.json in Resources */ = {isa = PBXBuildFile; fileRef = DD5756522FB7BB3900D1467D /* input_coreLabels_pcsx_rearmed.json */; };
+		DD5757E72FB7BB3900D1467D /* input_coreOverrides_picodrive.json in Resources */ = {isa = PBXBuildFile; fileRef = DD5756AE2FB7BB3900D1467D /* input_coreOverrides_picodrive.json */; };
+		DD5757E82FB7BB3900D1467D /* input_coreLabels_atari800.json in Resources */ = {isa = PBXBuildFile; fileRef = DD5755F32FB7BB3900D1467D /* input_coreLabels_atari800.json */; };
+		DD5757E92FB7BB3900D1467D /* input_coreLabels_mesen-s.json in Resources */ = {isa = PBXBuildFile; fileRef = DD5756422FB7BB3900D1467D /* input_coreLabels_mesen-s.json */; };
+		DD5757EA2FB7BB3900D1467D /* input_coreLabels_dinothawr.json in Resources */ = {isa = PBXBuildFile; fileRef = DD5756162FB7BB3900D1467D /* input_coreLabels_dinothawr.json */; };
+		DD5757EB2FB7BB3900D1467D /* input_coreLabels_tic80.json in Resources */ = {isa = PBXBuildFile; fileRef = DD5756702FB7BB3900D1467D /* input_coreLabels_tic80.json */; };
+		DD5757EC2FB7BB3900D1467D /* input_coreLabels_gambatte.json in Resources */ = {isa = PBXBuildFile; fileRef = DD5756282FB7BB3900D1467D /* input_coreLabels_gambatte.json */; };
+		DD5757ED2FB7BB3900D1467D /* input_coreLabels_o2em.json in Resources */ = {isa = PBXBuildFile; fileRef = DD57564F2FB7BB3900D1467D /* input_coreLabels_o2em.json */; };
+		DD5757EE2FB7BB3900D1467D /* input_coreLabels_snes9x.json in Resources */ = {isa = PBXBuildFile; fileRef = DD5756662FB7BB3900D1467D /* input_coreLabels_snes9x.json */; };
+		DD5757EF2FB7BB3900D1467D /* input_coreOverrides_wasm-4.json in Resources */ = {isa = PBXBuildFile; fileRef = DD5756C02FB7BB3900D1467D /* input_coreOverrides_wasm-4.json */; };
+		DD5757F02FB7BB3900D1467D /* input_coreLabels_craft.json in Resources */ = {isa = PBXBuildFile; fileRef = DD5756112FB7BB3900D1467D /* input_coreLabels_craft.json */; };
+		DD5757F12FB7BB3900D1467D /* input_coreLabels_gpsp.json in Resources */ = {isa = PBXBuildFile; fileRef = DD5756302FB7BB3900D1467D /* input_coreLabels_gpsp.json */; };
+		DD5757F22FB7BB3900D1467D /* input_coreLabels_sameboy.json in Resources */ = {isa = PBXBuildFile; fileRef = DD5756632FB7BB3900D1467D /* input_coreLabels_sameboy.json */; };
+		DD5757F32FB7BB3900D1467D /* input_coreLabels_bluemsx.json in Resources */ = {isa = PBXBuildFile; fileRef = DD5756002FB7BB3900D1467D /* input_coreLabels_bluemsx.json */; };
+		DD5757F42FB7BB3900D1467D /* input_coreLabels_ecwolf.json in Resources */ = {isa = PBXBuildFile; fileRef = DD57561C2FB7BB3900D1467D /* input_coreLabels_ecwolf.json */; };
+		DD5757F52FB7BB3900D1467D /* input_coreLabels_beetle_cygne.json in Resources */ = {isa = PBXBuildFile; fileRef = DD5755F52FB7BB3900D1467D /* input_coreLabels_beetle_cygne.json */; };
+		DD5757F62FB7BB3900D1467D /* input_coreLabels_nxengine.json in Resources */ = {isa = PBXBuildFile; fileRef = DD57564E2FB7BB3900D1467D /* input_coreLabels_nxengine.json */; };
+		DD5757F72FB7BB3900D1467D /* input_coreLabels_bsnes_accuracy.json in Resources */ = {isa = PBXBuildFile; fileRef = DD5756032FB7BB3900D1467D /* input_coreLabels_bsnes_accuracy.json */; };
+		DD5757F82FB7BB3900D1467D /* input_systemLabels_gba.json in Resources */ = {isa = PBXBuildFile; fileRef = DD5756E42FB7BB3900D1467D /* input_systemLabels_gba.json */; };
+		DD5757F92FB7BB3900D1467D /* input_coreLabels_race.json in Resources */ = {isa = PBXBuildFile; fileRef = DD57565F2FB7BB3900D1467D /* input_coreLabels_race.json */; };
+		DD5757FA2FB7BB3900D1467D /* input_systemLabels_zx_spectrum.json in Resources */ = {isa = PBXBuildFile; fileRef = DD5757122FB7BB3900D1467D /* input_systemLabels_zx_spectrum.json */; };
+		DD5757FB2FB7BB3900D1467D /* input_coreLabels_m2000.json in Resources */ = {isa = PBXBuildFile; fileRef = DD57563D2FB7BB3900D1467D /* input_coreLabels_m2000.json */; };
+		DD5757FC2FB7BB3900D1467D /* input_coreLabels_reminiscence.json in Resources */ = {isa = PBXBuildFile; fileRef = DD5756612FB7BB3900D1467D /* input_coreLabels_reminiscence.json */; };
+		DD5757FD2FB7BB3900D1467D /* input_coreLabels_dosbox_pure.json in Resources */ = {isa = PBXBuildFile; fileRef = DD5756192FB7BB3900D1467D /* input_coreLabels_dosbox_pure.json */; };
+		DD5757FE2FB7BB3900D1467D /* input_coreOverrides_kronos.json in Resources */ = {isa = PBXBuildFile; fileRef = DD5756A42FB7BB3900D1467D /* input_coreOverrides_kronos.json */; };
+		DD5757FF2FB7BB3900D1467D /* input_coreLabels_puae.json in Resources */ = {isa = PBXBuildFile; fileRef = DD57565B2FB7BB3900D1467D /* input_coreLabels_puae.json */; };
+		DD5758002FB7BB3900D1467D /* input_systemLabels_32x.json in Resources */ = {isa = PBXBuildFile; fileRef = DD5756C52FB7BB3900D1467D /* input_systemLabels_32x.json */; };
+		DD5758012FB7BB3900D1467D /* input_coreLabels_chailove.json in Resources */ = {isa = PBXBuildFile; fileRef = DD57560D2FB7BB3900D1467D /* input_coreLabels_chailove.json */; };
+		DD5758022FB7BB3900D1467D /* input_coreLabels_tgb_dual.json in Resources */ = {isa = PBXBuildFile; fileRef = DD57566E2FB7BB3900D1467D /* input_coreLabels_tgb_dual.json */; };
+		DD5758032FB7BB3900D1467D /* input_systemLabels_odyssey2.json in Resources */ = {isa = PBXBuildFile; fileRef = DD5756F42FB7BB3900D1467D /* input_systemLabels_odyssey2.json */; };
+		DD5758042FB7BB3900D1467D /* input_coreLabels_emux_gb.json in Resources */ = {isa = PBXBuildFile; fileRef = DD57561E2FB7BB3900D1467D /* input_coreLabels_emux_gb.json */; };
+		DD5758052FB7BB3900D1467D /* input_coreLabels_3d_engine.json in Resources */ = {isa = PBXBuildFile; fileRef = DD5755EE2FB7BB3900D1467D /* input_coreLabels_3d_engine.json */; };
+		DD5758062FB7BB3900D1467D /* input_systemLabels_pcfx.json in Resources */ = {isa = PBXBuildFile; fileRef = DD5756FA2FB7BB3900D1467D /* input_systemLabels_pcfx.json */; };
+		DD5758072FB7BB3900D1467D /* input_coreLabels_clownmdemu.json in Resources */ = {isa = PBXBuildFile; fileRef = DD5756102FB7BB3900D1467D /* input_coreLabels_clownmdemu.json */; };
+		DD5758082FB7BB3900D1467D /* input_coreOverrides_amiarcadia.json in Resources */ = {isa = PBXBuildFile; fileRef = DD5756812FB7BB3900D1467D /* input_coreOverrides_amiarcadia.json */; };
+		DD5758092FB7BB3900D1467D /* input_coreLabels_emux_sms.json in Resources */ = {isa = PBXBuildFile; fileRef = DD5756202FB7BB3900D1467D /* input_coreLabels_emux_sms.json */; };
+		DD57580A2FB7BB3900D1467D /* input_coreLabels_hatari.json in Resources */ = {isa = PBXBuildFile; fileRef = DD5756332FB7BB3900D1467D /* input_coreLabels_hatari.json */; };
+		DD57580B2FB7BB3900D1467D /* input_systemLabels_dice.json in Resources */ = {isa = PBXBuildFile; fileRef = DD5756D72FB7BB3900D1467D /* input_systemLabels_dice.json */; };
+		DD57580C2FB7BB3900D1467D /* input_coreLabels_bsnes_balanced.json in Resources */ = {isa = PBXBuildFile; fileRef = DD5756042FB7BB3900D1467D /* input_coreLabels_bsnes_balanced.json */; };
+		DD57580D2FB7BB3900D1467D /* input_coreLabels_beetle_bsnes.json in Resources */ = {isa = PBXBuildFile; fileRef = DD5755F42FB7BB3900D1467D /* input_coreLabels_beetle_bsnes.json */; };
+		DD57580E2FB7BB3900D1467D /* input_coreOverrides_mesen.json in Resources */ = {isa = PBXBuildFile; fileRef = DD5756A62FB7BB3900D1467D /* input_coreOverrides_mesen.json */; };
+		DD57580F2FB7BB3900D1467D /* input_coreLabels_lutro.json in Resources */ = {isa = PBXBuildFile; fileRef = DD57563C2FB7BB3900D1467D /* input_coreLabels_lutro.json */; };
+		DD5758102FB7BB3900D1467D /* input_coreLabels_beetle_vb.json in Resources */ = {isa = PBXBuildFile; fileRef = DD5755FF2FB7BB3900D1467D /* input_coreLabels_beetle_vb.json */; };
+		DD5758112FB7BB3900D1467D /* input_coreOverrides_easyrpg.json in Resources */ = {isa = PBXBuildFile; fileRef = DD5756972FB7BB3900D1467D /* input_coreOverrides_easyrpg.json */; };
+		DD5758122FB7BB3900D1467D /* input_systemLabels_cdi.json in Resources */ = {isa = PBXBuildFile; fileRef = DD5756D02FB7BB3900D1467D /* input_systemLabels_cdi.json */; };
+		DD5758132FB7BB3900D1467D /* input_coreOverrides_handy.json in Resources */ = {isa = PBXBuildFile; fileRef = DD5756A02FB7BB3900D1467D /* input_coreOverrides_handy.json */; };
+		DD5758142FB7BB3900D1467D /* input_coreLabels_bsnes_mercury_balanced.json in Resources */ = {isa = PBXBuildFile; fileRef = DD5756072FB7BB3900D1467D /* input_coreLabels_bsnes_mercury_balanced.json */; };
+		DD5758152FB7BB3900D1467D /* input_coreOverrides_tyrquake.json in Resources */ = {isa = PBXBuildFile; fileRef = DD5756BB2FB7BB3900D1467D /* input_coreOverrides_tyrquake.json */; };
+		DD5758162FB7BB3900D1467D /* input_systemLabels_gbc.json in Resources */ = {isa = PBXBuildFile; fileRef = DD5756E52FB7BB3900D1467D /* input_systemLabels_gbc.json */; };
+		DD5758172FB7BB3900D1467D /* input_systemLabels_psx.json in Resources */ = {isa = PBXBuildFile; fileRef = DD5756FE2FB7BB3900D1467D /* input_systemLabels_psx.json */; };
+		DD5758182FB7BB3900D1467D /* input_systemLabels_atari5200.json in Resources */ = {isa = PBXBuildFile; fileRef = DD5756CD2FB7BB3900D1467D /* input_systemLabels_atari5200.json */; };
+		DD5758192FB7BB3900D1467D /* input_coreOverrides_lrps2.json in Resources */ = {isa = PBXBuildFile; fileRef = DD5756A52FB7BB3900D1467D /* input_coreOverrides_lrps2.json */; };
+		DD57581A2FB7BB3900D1467D /* input_coreOverrides_genesis_plus_gx.json in Resources */ = {isa = PBXBuildFile; fileRef = DD57569F2FB7BB3900D1467D /* input_coreOverrides_genesis_plus_gx.json */; };
+		DD57581B2FB7BB3900D1467D /* input_coreLabels_citra.json in Resources */ = {isa = PBXBuildFile; fileRef = DD57560E2FB7BB3900D1467D /* input_coreLabels_citra.json */; };
+		DD57581C2FB7BB3900D1467D /* input_systemLabels_msx.json in Resources */ = {isa = PBXBuildFile; fileRef = DD5756ED2FB7BB3900D1467D /* input_systemLabels_msx.json */; };
+		DD57581D2FB7BB3900D1467D /* input_coreLabels_easyrpg.json in Resources */ = {isa = PBXBuildFile; fileRef = DD57561B2FB7BB3900D1467D /* input_coreLabels_easyrpg.json */; };
+		DD57581E2FB7BB3900D1467D /* input_coreOverrides_opera.json in Resources */ = {isa = PBXBuildFile; fileRef = DD5756AB2FB7BB3900D1467D /* input_coreOverrides_opera.json */; };
+		DD57581F2FB7BB3900D1467D /* input_systemLabels_pc_88.json in Resources */ = {isa = PBXBuildFile; fileRef = DD5756F72FB7BB3900D1467D /* input_systemLabels_pc_88.json */; };
+		DD5758202FB7BB3900D1467D /* input_coreLabels_vircon32.json in Resources */ = {isa = PBXBuildFile; fileRef = DD5756792FB7BB3900D1467D /* input_coreLabels_vircon32.json */; };
+		DD5758212FB7BB3900D1467D /* input_systemLabels_gb.json in Resources */ = {isa = PBXBuildFile; fileRef = DD5756E32FB7BB3900D1467D /* input_systemLabels_gb.json */; };
+		DD5758222FB7BB3900D1467D /* input_coreLabels_beetle_saturn.json in Resources */ = {isa = PBXBuildFile; fileRef = DD5755FD2FB7BB3900D1467D /* input_coreLabels_beetle_saturn.json */; };
+		DD5758232FB7BB3900D1467D /* input_coreLabels_handy.json in Resources */ = {isa = PBXBuildFile; fileRef = DD5756322FB7BB3900D1467D /* input_coreLabels_handy.json */; };
+		DD5758242FB7BB3900D1467D /* input_coreOverrides_ppsspp.json in Resources */ = {isa = PBXBuildFile; fileRef = DD5756B22FB7BB3900D1467D /* input_coreOverrides_ppsspp.json */; };
+		DD5758252FB7BB3900D1467D /* input_coreLabels_microw8.json in Resources */ = {isa = PBXBuildFile; fileRef = DD5756452FB7BB3900D1467D /* input_coreLabels_microw8.json */; };
+		DD5758262FB7BB3900D1467D /* input_coreLabels_mesen.json in Resources */ = {isa = PBXBuildFile; fileRef = DD5756412FB7BB3900D1467D /* input_coreLabels_mesen.json */; };
+		DD5758272FB7BB3900D1467D /* input_systemLabels_cpc.json in Resources */ = {isa = PBXBuildFile; fileRef = DD5756D52FB7BB3900D1467D /* input_systemLabels_cpc.json */; };
+		DD5758282FB7BB3900D1467D /* input_coreLabels_stella.json in Resources */ = {isa = PBXBuildFile; fileRef = DD57566B2FB7BB3900D1467D /* input_coreLabels_stella.json */; };
+		DD5758292FB7BB3900D1467D /* input_systemLabels_wonderswan.json in Resources */ = {isa = PBXBuildFile; fileRef = DD5757102FB7BB3900D1467D /* input_systemLabels_wonderswan.json */; };
+		DD57582A2FB7BB3900D1467D /* input_coreLabels_play.json in Resources */ = {isa = PBXBuildFile; fileRef = DD5756552FB7BB3900D1467D /* input_coreLabels_play.json */; };
+		DD57582B2FB7BB3900D1467D /* input_coreOverrides_play.json in Resources */ = {isa = PBXBuildFile; fileRef = DD5756AF2FB7BB3900D1467D /* input_coreOverrides_play.json */; };
+		DD57582C2FB7BB3900D1467D /* input_coreLabels_sameduck.json in Resources */ = {isa = PBXBuildFile; fileRef = DD5756642FB7BB3900D1467D /* input_coreLabels_sameduck.json */; };
+		DD57582D2FB7BB3900D1467D /* input_coreLabels_melonds.json in Resources */ = {isa = PBXBuildFile; fileRef = DD57563F2FB7BB3900D1467D /* input_coreLabels_melonds.json */; };
+		DD57582E2FB7BB3900D1467D /* input_systemLabels_saturn.json in Resources */ = {isa = PBXBuildFile; fileRef = DD5757002FB7BB3900D1467D /* input_systemLabels_saturn.json */; };
+		DD57582F2FB7BB3900D1467D /* input_coreLabels_pocketcdg.json in Resources */ = {isa = PBXBuildFile; fileRef = DD5756562FB7BB3900D1467D /* input_coreLabels_pocketcdg.json */; };
+		DD5758302FB7BB3900D1467D /* input_coreOverrides_jaxe.json in Resources */ = {isa = PBXBuildFile; fileRef = DD5756A32FB7BB3900D1467D /* input_coreOverrides_jaxe.json */; };
+		DD5758312FB7BB3900D1467D /* input_coreLabels_bsnes_performance.json in Resources */ = {isa = PBXBuildFile; fileRef = DD5756092FB7BB3900D1467D /* input_coreLabels_bsnes_performance.json */; };
+		DD5758322FB7BB3900D1467D /* input_coreLabels_bsnes_cplusplus98.json in Resources */ = {isa = PBXBuildFile; fileRef = DD5756052FB7BB3900D1467D /* input_coreLabels_bsnes_cplusplus98.json */; };
+		DD5758332FB7BB3900D1467D /* input_coreLabels_beetle_pc_fx.json in Resources */ = {isa = PBXBuildFile; fileRef = DD5755F92FB7BB3900D1467D /* input_coreLabels_beetle_pc_fx.json */; };
+		DD5758342FB7BB3900D1467D /* input_systemLabels_nxengine.json in Resources */ = {isa = PBXBuildFile; fileRef = DD5756F32FB7BB3900D1467D /* input_systemLabels_nxengine.json */; };
+		DD5758352FB7BB3900D1467D /* input_coreLabels_dice.json in Resources */ = {isa = PBXBuildFile; fileRef = DD5756152FB7BB3900D1467D /* input_coreLabels_dice.json */; };
+		DD5758362FB7BB3900D1467D /* input_coreOverrides_stella.json in Resources */ = {isa = PBXBuildFile; fileRef = DD5756B92FB7BB3900D1467D /* input_coreOverrides_stella.json */; };
+		DD5758372FB7BB3900D1467D /* input_systemLabels_genesis.json in Resources */ = {isa = PBXBuildFile; fileRef = DD5756E62FB7BB3900D1467D /* input_systemLabels_genesis.json */; };
+		DD5758382FB7BB3900D1467D /* input_coreLabels_gw.json in Resources */ = {isa = PBXBuildFile; fileRef = DD5756312FB7BB3900D1467D /* input_coreLabels_gw.json */; };
+		DD5758392FB7BB3900D1467D /* input_coreOverrides_beetle_vb.json in Resources */ = {isa = PBXBuildFile; fileRef = DD5756872FB7BB3900D1467D /* input_coreOverrides_beetle_vb.json */; };
 		DE78A265FBC43C04D89A11A3 /* appIcon32.jpg in Resources */ = {isa = PBXBuildFile; fileRef = 11DA3CCFB66270F6DF1983FB /* appIcon32.jpg */; };
 		DEBE1AA24F4A10D04F5838F5 /* supergrafx-cheats.zip in Resources */ = {isa = PBXBuildFile; fileRef = 7208613730A514B56E32B071 /* supergrafx-cheats.zip */; };
 		DEF1DDA46E59570FAE57D442 /* vdp@132w.png in Resources */ = {isa = PBXBuildFile; fileRef = D755FBFFC3BD76093815B71D /* vdp@132w.png */; };
@@ -604,11 +904,13 @@
 		2E4A84332074065FDE10275B /* GB.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = GB.png; sourceTree = "<group>"; };
 		2E4D9A8F1E7FEDBCD0A9B62D /* appIcon128.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = appIcon128.jpg; sourceTree = "<group>"; };
 		2E8DE8B4D7FF0DCC47683B7B /* X68000.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = X68000.png; sourceTree = "<group>"; };
+		2EB63FBDD677CD02C8E222A8 /* ControllerGamepadMapping.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ControllerGamepadMapping.swift; sourceTree = "<group>"; };
 		2FD6A5FBF95F102464F674D3 /* ControlsSection.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ControlsSection.swift; sourceTree = "<group>"; };
 		2FE49842060623217A4EC976 /* LibretroCallbacks.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = LibretroCallbacks.h; sourceTree = "<group>"; };
 		2FF46494B22F41F5D1CD519B /* 8bGameBoyColor.metal */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.metal; path = 8bGameBoyColor.metal; sourceTree = "<group>"; };
 		305854E346C89DB7F671CA96 /* SEtBX.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = SEtBX.jpg; sourceTree = "<group>"; };
 		306AC1B1E929B069330A9356 /* fc@132w.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "fc@132w.png"; sourceTree = "<group>"; };
+		30A8C369BBDB954516046501 /* RetroButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RetroButton.swift; sourceTree = "<group>"; };
 		30CC526A551953B4E9BB08C9 /* LoggerService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoggerService.swift; sourceTree = "<group>"; };
 		31018212011E14042F08F694 /* ngp@132w.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "ngp@132w.png"; sourceTree = "<group>"; };
 		312DD29D6B77A5CC9B13F942 /* Header.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Header.swift; sourceTree = "<group>"; };
@@ -680,7 +982,6 @@
 		512CBDD71A4FCF28803691E0 /* SaveDirectoryBridge.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SaveDirectoryBridge.swift; sourceTree = "<group>"; };
 		5173355E48F173C9B876F13B /* Sega - 32X.dat */ = {isa = PBXFileReference; lastKnownFileType = text; path = "Sega - 32X.dat"; sourceTree = "<group>"; };
 		51CC71BA94F2F723F61276A2 /* LaunchBoxGamesDBService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LaunchBoxGamesDBService.swift; sourceTree = "<group>"; };
-		52EF17FAC9C9F438B0FAC30E /* SystemDatabase.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = SystemDatabase.json; sourceTree = "<group>"; };
 		5370952DF5AE2FD872D8934E /* CLIManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CLIManager.swift; sourceTree = "<group>"; };
 		537B577BF88C9F9050CD1FCF /* SetupWizardState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SetupWizardState.swift; sourceTree = "<group>"; };
 		5496899A3DFCC8269B7D763D /* chai@132w.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "chai@132w.png"; sourceTree = "<group>"; };
@@ -692,6 +993,7 @@
 		5695FD5B1A94518DB9D69637 /* CoreVersionPickerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CoreVersionPickerView.swift; sourceTree = "<group>"; };
 		579FF46D161EC2DD3CE4C105 /* CHAILOVE.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = CHAILOVE.png; sourceTree = "<group>"; };
 		58F6C2A68F840683B84E80DB /* Bezels.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Bezels.swift; sourceTree = "<group>"; };
+		596FC72EF305521FB589153D /* InputDeviceType.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InputDeviceType.swift; sourceTree = "<group>"; };
 		5A32D090BDCC70201F06FE5A /* vectrex@132w.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "vectrex@132w.png"; sourceTree = "<group>"; };
 		5AE1CBC695D134E3FF153854 /* ms@132w.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "ms@132w.png"; sourceTree = "<group>"; };
 		5B369817A06C01C6361538D0 /* N64.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = N64.png; sourceTree = "<group>"; };
@@ -724,6 +1026,7 @@
 		6557EBEE7592CD9DFA261356 /* DOOM.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = DOOM.png; sourceTree = "<group>"; };
 		655A4E06046E79930EEE2443 /* LibraryAutomationCoordinator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LibraryAutomationCoordinator.swift; sourceTree = "<group>"; };
 		65A4A31E6B2E47A1C3F13256 /* GameCategory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GameCategory.swift; sourceTree = "<group>"; };
+		66AFB541FCD568D3320D18CD /* KeyboardMapping.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeyboardMapping.swift; sourceTree = "<group>"; };
 		67513DC1F7CC071810CCC098 /* GridCardZoomableFullScreenView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GridCardZoomableFullScreenView.swift; sourceTree = "<group>"; };
 		6788E1B34FDC8AE5B0094B07 /* OnboardingView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OnboardingView.swift; sourceTree = "<group>"; };
 		67D8E99941A946620FF8D608 /* LibretroBridgeSwift.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LibretroBridgeSwift.swift; sourceTree = "<group>"; };
@@ -748,6 +1051,7 @@
 		72DFDF6462D09B051A7093FE /* RomHasher.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RomHasher.swift; sourceTree = "<group>"; };
 		72F92F049160D19A6E41CB5B /* mpr-17933.bin */ = {isa = PBXFileReference; lastKnownFileType = archive.macbinary; path = "mpr-17933.bin"; sourceTree = "<group>"; };
 		72FFF143D39011C7542C3520 /* Atari - 2600.dat */ = {isa = PBXFileReference; lastKnownFileType = text; path = "Atari - 2600.dat"; sourceTree = "<group>"; };
+		72FFFDC3B0AE8A595EB1A77B /* CoreButtonOverride.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CoreButtonOverride.swift; sourceTree = "<group>"; };
 		7442198CF891F84CE81220FA /* CheatManagerService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CheatManagerService.swift; sourceTree = "<group>"; };
 		74C4ECFC23ADA7A8A05EE298 /* SystemSidebarView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SystemSidebarView.swift; sourceTree = "<group>"; };
 		7593A3081245E3AFB23AD3B9 /* MSX.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = MSX.png; sourceTree = "<group>"; };
@@ -798,6 +1102,7 @@
 		8A2E2704F5FE6300EED10653 /* POKEMINI.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = POKEMINI.png; sourceTree = "<group>"; };
 		8A73903CC89F4E5F785FF99D /* VB.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = VB.png; sourceTree = "<group>"; };
 		8AB64FE05102EE7FCDFCFAB8 /* NGC.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = NGC.png; sourceTree = "<group>"; };
+		8B1DB6C719F5587E47EB2D0D /* PlayerController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PlayerController.swift; sourceTree = "<group>"; };
 		8B2AEF2FFA96556BE1A55529 /* SavedShaderPreset.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SavedShaderPreset.swift; sourceTree = "<group>"; };
 		8B36EBC921BB6DCAEA0437A4 /* Controls.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Controls.swift; sourceTree = "<group>"; };
 		8BA1C0AA362D511F3CD87919 /* HardcoreModeManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HardcoreModeManager.swift; sourceTree = "<group>"; };
@@ -807,6 +1112,7 @@
 		8EECD5E5425F98599E3FEE0C /* satellaview-cheats.zip */ = {isa = PBXFileReference; lastKnownFileType = archive.zip; path = "satellaview-cheats.zip"; sourceTree = "<group>"; };
 		8EF0E4BB2D485D8AD82D50B3 /* segacd-cheats.zip */ = {isa = PBXFileReference; lastKnownFileType = archive.zip; path = "segacd-cheats.zip"; sourceTree = "<group>"; };
 		8F335963F669B717AE38BB24 /* SaveStateManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SaveStateManager.swift; sourceTree = "<group>"; };
+		90136857D881B5C8AEE538D0 /* GameMappingProfile.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GameMappingProfile.swift; sourceTree = "<group>"; };
 		91841A7C7B2DD9EC9AE7FF7F /* Atari - 7800.dat */ = {isa = PBXFileReference; lastKnownFileType = text; path = "Atari - 7800.dat"; sourceTree = "<group>"; };
 		9193295DAA1AD6AEF81EA1ED /* SUPERVISION-alt.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "SUPERVISION-alt.png"; sourceTree = "<group>"; };
 		930A7FE7A4D56153499E8A64 /* ROMLibrary.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ROMLibrary.swift; sourceTree = "<group>"; };
@@ -948,7 +1254,300 @@
 		DBFA21A59E5959BCB5A24AE7 /* Nintendo - Super Nintendo Entertainment System.dat */ = {isa = PBXFileReference; lastKnownFileType = text; path = "Nintendo - Super Nintendo Entertainment System.dat"; sourceTree = "<group>"; };
 		DC11E976179410D451158A7A /* AMIGA.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = AMIGA.png; sourceTree = "<group>"; };
 		DD476D63A6BB92961004D98F /* GitHubAPIModels.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GitHubAPIModels.swift; sourceTree = "<group>"; };
-		DD5754322FB513D300D1467D /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
+		DD5754342FB5F31000D1467D /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
+		DD5755EC2FB7370400D1467D /* SystemDatabase.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = SystemDatabase.json; sourceTree = "<group>"; };
+		DD5755EE2FB7BB3900D1467D /* input_coreLabels_3d_engine.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = input_coreLabels_3d_engine.json; sourceTree = "<group>"; };
+		DD5755EF2FB7BB3900D1467D /* input_coreLabels_2048.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = input_coreLabels_2048.json; sourceTree = "<group>"; };
+		DD5755F02FB7BB3900D1467D /* input_coreLabels_amiarcadia.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = input_coreLabels_amiarcadia.json; sourceTree = "<group>"; };
+		DD5755F12FB7BB3900D1467D /* input_coreLabels_anarch.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = input_coreLabels_anarch.json; sourceTree = "<group>"; };
+		DD5755F22FB7BB3900D1467D /* input_coreLabels_ardens.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = input_coreLabels_ardens.json; sourceTree = "<group>"; };
+		DD5755F32FB7BB3900D1467D /* input_coreLabels_atari800.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = input_coreLabels_atari800.json; sourceTree = "<group>"; };
+		DD5755F42FB7BB3900D1467D /* input_coreLabels_beetle_bsnes.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = input_coreLabels_beetle_bsnes.json; sourceTree = "<group>"; };
+		DD5755F52FB7BB3900D1467D /* input_coreLabels_beetle_cygne.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = input_coreLabels_beetle_cygne.json; sourceTree = "<group>"; };
+		DD5755F62FB7BB3900D1467D /* input_coreLabels_beetle_gba.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = input_coreLabels_beetle_gba.json; sourceTree = "<group>"; };
+		DD5755F72FB7BB3900D1467D /* input_coreLabels_beetle_lynx.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = input_coreLabels_beetle_lynx.json; sourceTree = "<group>"; };
+		DD5755F82FB7BB3900D1467D /* input_coreLabels_beetle_neopop.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = input_coreLabels_beetle_neopop.json; sourceTree = "<group>"; };
+		DD5755F92FB7BB3900D1467D /* input_coreLabels_beetle_pc_fx.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = input_coreLabels_beetle_pc_fx.json; sourceTree = "<group>"; };
+		DD5755FA2FB7BB3900D1467D /* input_coreLabels_beetle_pce_fast.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = input_coreLabels_beetle_pce_fast.json; sourceTree = "<group>"; };
+		DD5755FB2FB7BB3900D1467D /* input_coreLabels_beetle_psx.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = input_coreLabels_beetle_psx.json; sourceTree = "<group>"; };
+		DD5755FC2FB7BB3900D1467D /* input_coreLabels_beetle_psx_hw.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = input_coreLabels_beetle_psx_hw.json; sourceTree = "<group>"; };
+		DD5755FD2FB7BB3900D1467D /* input_coreLabels_beetle_saturn.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = input_coreLabels_beetle_saturn.json; sourceTree = "<group>"; };
+		DD5755FE2FB7BB3900D1467D /* input_coreLabels_beetle_sgx.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = input_coreLabels_beetle_sgx.json; sourceTree = "<group>"; };
+		DD5755FF2FB7BB3900D1467D /* input_coreLabels_beetle_vb.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = input_coreLabels_beetle_vb.json; sourceTree = "<group>"; };
+		DD5756002FB7BB3900D1467D /* input_coreLabels_bluemsx.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = input_coreLabels_bluemsx.json; sourceTree = "<group>"; };
+		DD5756012FB7BB3900D1467D /* input_coreLabels_bnes.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = input_coreLabels_bnes.json; sourceTree = "<group>"; };
+		DD5756022FB7BB3900D1467D /* input_coreLabels_boom3.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = input_coreLabels_boom3.json; sourceTree = "<group>"; };
+		DD5756032FB7BB3900D1467D /* input_coreLabels_bsnes_accuracy.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = input_coreLabels_bsnes_accuracy.json; sourceTree = "<group>"; };
+		DD5756042FB7BB3900D1467D /* input_coreLabels_bsnes_balanced.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = input_coreLabels_bsnes_balanced.json; sourceTree = "<group>"; };
+		DD5756052FB7BB3900D1467D /* input_coreLabels_bsnes_cplusplus98.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = input_coreLabels_bsnes_cplusplus98.json; sourceTree = "<group>"; };
+		DD5756062FB7BB3900D1467D /* input_coreLabels_bsnes_mercury_accuracy.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = input_coreLabels_bsnes_mercury_accuracy.json; sourceTree = "<group>"; };
+		DD5756072FB7BB3900D1467D /* input_coreLabels_bsnes_mercury_balanced.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = input_coreLabels_bsnes_mercury_balanced.json; sourceTree = "<group>"; };
+		DD5756082FB7BB3900D1467D /* input_coreLabels_bsnes_mercury_performance.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = input_coreLabels_bsnes_mercury_performance.json; sourceTree = "<group>"; };
+		DD5756092FB7BB3900D1467D /* input_coreLabels_bsnes_performance.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = input_coreLabels_bsnes_performance.json; sourceTree = "<group>"; };
+		DD57560A2FB7BB3900D1467D /* input_coreLabels_bsnes-jg.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = "input_coreLabels_bsnes-jg.json"; sourceTree = "<group>"; };
+		DD57560B2FB7BB3900D1467D /* input_coreLabels_cannonball.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = input_coreLabels_cannonball.json; sourceTree = "<group>"; };
+		DD57560C2FB7BB3900D1467D /* input_coreLabels_caprice32.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = input_coreLabels_caprice32.json; sourceTree = "<group>"; };
+		DD57560D2FB7BB3900D1467D /* input_coreLabels_chailove.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = input_coreLabels_chailove.json; sourceTree = "<group>"; };
+		DD57560E2FB7BB3900D1467D /* input_coreLabels_citra.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = input_coreLabels_citra.json; sourceTree = "<group>"; };
+		DD57560F2FB7BB3900D1467D /* input_coreLabels_citra_canary.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = input_coreLabels_citra_canary.json; sourceTree = "<group>"; };
+		DD5756102FB7BB3900D1467D /* input_coreLabels_clownmdemu.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = input_coreLabels_clownmdemu.json; sourceTree = "<group>"; };
+		DD5756112FB7BB3900D1467D /* input_coreLabels_craft.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = input_coreLabels_craft.json; sourceTree = "<group>"; };
+		DD5756122FB7BB3900D1467D /* input_coreLabels_crocods.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = input_coreLabels_crocods.json; sourceTree = "<group>"; };
+		DD5756132FB7BB3900D1467D /* input_coreLabels_desmume.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = input_coreLabels_desmume.json; sourceTree = "<group>"; };
+		DD5756142FB7BB3900D1467D /* input_coreLabels_desmume_2015.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = input_coreLabels_desmume_2015.json; sourceTree = "<group>"; };
+		DD5756152FB7BB3900D1467D /* input_coreLabels_dice.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = input_coreLabels_dice.json; sourceTree = "<group>"; };
+		DD5756162FB7BB3900D1467D /* input_coreLabels_dinothawr.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = input_coreLabels_dinothawr.json; sourceTree = "<group>"; };
+		DD5756172FB7BB3900D1467D /* input_coreLabels_dolphin.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = input_coreLabels_dolphin.json; sourceTree = "<group>"; };
+		DD5756182FB7BB3900D1467D /* input_coreLabels_dosbox.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = input_coreLabels_dosbox.json; sourceTree = "<group>"; };
+		DD5756192FB7BB3900D1467D /* input_coreLabels_dosbox_pure.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = input_coreLabels_dosbox_pure.json; sourceTree = "<group>"; };
+		DD57561A2FB7BB3900D1467D /* input_coreLabels_doukutsu-rs.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = "input_coreLabels_doukutsu-rs.json"; sourceTree = "<group>"; };
+		DD57561B2FB7BB3900D1467D /* input_coreLabels_easyrpg.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = input_coreLabels_easyrpg.json; sourceTree = "<group>"; };
+		DD57561C2FB7BB3900D1467D /* input_coreLabels_ecwolf.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = input_coreLabels_ecwolf.json; sourceTree = "<group>"; };
+		DD57561D2FB7BB3900D1467D /* input_coreLabels_eightyone.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = input_coreLabels_eightyone.json; sourceTree = "<group>"; };
+		DD57561E2FB7BB3900D1467D /* input_coreLabels_emux_gb.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = input_coreLabels_emux_gb.json; sourceTree = "<group>"; };
+		DD57561F2FB7BB3900D1467D /* input_coreLabels_emux_nes.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = input_coreLabels_emux_nes.json; sourceTree = "<group>"; };
+		DD5756202FB7BB3900D1467D /* input_coreLabels_emux_sms.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = input_coreLabels_emux_sms.json; sourceTree = "<group>"; };
+		DD5756212FB7BB3900D1467D /* input_coreLabels_ep128emu.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = input_coreLabels_ep128emu.json; sourceTree = "<group>"; };
+		DD5756222FB7BB3900D1467D /* input_coreLabels_fceumm.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = input_coreLabels_fceumm.json; sourceTree = "<group>"; };
+		DD5756232FB7BB3900D1467D /* input_coreLabels_ffmpeg.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = input_coreLabels_ffmpeg.json; sourceTree = "<group>"; };
+		DD5756242FB7BB3900D1467D /* input_coreLabels_flycast.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = input_coreLabels_flycast.json; sourceTree = "<group>"; };
+		DD5756252FB7BB3900D1467D /* input_coreLabels_fmsx.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = input_coreLabels_fmsx.json; sourceTree = "<group>"; };
+		DD5756262FB7BB3900D1467D /* input_coreLabels_fuse.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = input_coreLabels_fuse.json; sourceTree = "<group>"; };
+		DD5756272FB7BB3900D1467D /* input_coreLabels_gam4980.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = input_coreLabels_gam4980.json; sourceTree = "<group>"; };
+		DD5756282FB7BB3900D1467D /* input_coreLabels_gambatte.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = input_coreLabels_gambatte.json; sourceTree = "<group>"; };
+		DD5756292FB7BB3900D1467D /* input_coreLabels_game_music_emu.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = input_coreLabels_game_music_emu.json; sourceTree = "<group>"; };
+		DD57562A2FB7BB3900D1467D /* input_coreLabels_gearboy.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = input_coreLabels_gearboy.json; sourceTree = "<group>"; };
+		DD57562B2FB7BB3900D1467D /* input_coreLabels_gearcoleco.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = input_coreLabels_gearcoleco.json; sourceTree = "<group>"; };
+		DD57562C2FB7BB3900D1467D /* input_coreLabels_geargrafx.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = input_coreLabels_geargrafx.json; sourceTree = "<group>"; };
+		DD57562D2FB7BB3900D1467D /* input_coreLabels_gearlynx.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = input_coreLabels_gearlynx.json; sourceTree = "<group>"; };
+		DD57562E2FB7BB3900D1467D /* input_coreLabels_gearsystem.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = input_coreLabels_gearsystem.json; sourceTree = "<group>"; };
+		DD57562F2FB7BB3900D1467D /* input_coreLabels_genesis_plus_gx.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = input_coreLabels_genesis_plus_gx.json; sourceTree = "<group>"; };
+		DD5756302FB7BB3900D1467D /* input_coreLabels_gpsp.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = input_coreLabels_gpsp.json; sourceTree = "<group>"; };
+		DD5756312FB7BB3900D1467D /* input_coreLabels_gw.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = input_coreLabels_gw.json; sourceTree = "<group>"; };
+		DD5756322FB7BB3900D1467D /* input_coreLabels_handy.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = input_coreLabels_handy.json; sourceTree = "<group>"; };
+		DD5756332FB7BB3900D1467D /* input_coreLabels_hatari.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = input_coreLabels_hatari.json; sourceTree = "<group>"; };
+		DD5756342FB7BB3900D1467D /* input_coreLabels_higan_accuracy.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = input_coreLabels_higan_accuracy.json; sourceTree = "<group>"; };
+		DD5756352FB7BB3900D1467D /* input_coreLabels_holani.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = input_coreLabels_holani.json; sourceTree = "<group>"; };
+		DD5756362FB7BB3900D1467D /* input_coreLabels_imageviewer.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = input_coreLabels_imageviewer.json; sourceTree = "<group>"; };
+		DD5756372FB7BB3900D1467D /* input_coreLabels_jaxe.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = input_coreLabels_jaxe.json; sourceTree = "<group>"; };
+		DD5756382FB7BB3900D1467D /* input_coreLabels_jumpnbump.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = input_coreLabels_jumpnbump.json; sourceTree = "<group>"; };
+		DD5756392FB7BB3900D1467D /* input_coreLabels_kronos.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = input_coreLabels_kronos.json; sourceTree = "<group>"; };
+		DD57563A2FB7BB3900D1467D /* input_coreLabels_lowres_nx.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = input_coreLabels_lowres_nx.json; sourceTree = "<group>"; };
+		DD57563B2FB7BB3900D1467D /* input_coreLabels_lrps2.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = input_coreLabels_lrps2.json; sourceTree = "<group>"; };
+		DD57563C2FB7BB3900D1467D /* input_coreLabels_lutro.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = input_coreLabels_lutro.json; sourceTree = "<group>"; };
+		DD57563D2FB7BB3900D1467D /* input_coreLabels_m2000.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = input_coreLabels_m2000.json; sourceTree = "<group>"; };
+		DD57563E2FB7BB3900D1467D /* input_coreLabels_mame_2003.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = input_coreLabels_mame_2003.json; sourceTree = "<group>"; };
+		DD57563F2FB7BB3900D1467D /* input_coreLabels_melonds.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = input_coreLabels_melonds.json; sourceTree = "<group>"; };
+		DD5756402FB7BB3900D1467D /* input_coreLabels_melonds_ds.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = input_coreLabels_melonds_ds.json; sourceTree = "<group>"; };
+		DD5756412FB7BB3900D1467D /* input_coreLabels_mesen.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = input_coreLabels_mesen.json; sourceTree = "<group>"; };
+		DD5756422FB7BB3900D1467D /* input_coreLabels_mesen-s.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = "input_coreLabels_mesen-s.json"; sourceTree = "<group>"; };
+		DD5756432FB7BB3900D1467D /* input_coreLabels_meteor.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = input_coreLabels_meteor.json; sourceTree = "<group>"; };
+		DD5756442FB7BB3900D1467D /* input_coreLabels_mgba.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = input_coreLabels_mgba.json; sourceTree = "<group>"; };
+		DD5756452FB7BB3900D1467D /* input_coreLabels_microw8.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = input_coreLabels_microw8.json; sourceTree = "<group>"; };
+		DD5756462FB7BB3900D1467D /* input_coreLabels_mkxp-z.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = "input_coreLabels_mkxp-z.json"; sourceTree = "<group>"; };
+		DD5756472FB7BB3900D1467D /* input_coreLabels_mr_boom.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = input_coreLabels_mr_boom.json; sourceTree = "<group>"; };
+		DD5756482FB7BB3900D1467D /* input_coreLabels_mu.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = input_coreLabels_mu.json; sourceTree = "<group>"; };
+		DD5756492FB7BB3900D1467D /* input_coreLabels_mupen64plus.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = input_coreLabels_mupen64plus.json; sourceTree = "<group>"; };
+		DD57564A2FB7BB3900D1467D /* input_coreLabels_neko_project_ii_kai.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = input_coreLabels_neko_project_ii_kai.json; sourceTree = "<group>"; };
+		DD57564B2FB7BB3900D1467D /* input_coreLabels_nestopia.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = input_coreLabels_nestopia.json; sourceTree = "<group>"; };
+		DD57564C2FB7BB3900D1467D /* input_coreLabels_nside_balanced.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = input_coreLabels_nside_balanced.json; sourceTree = "<group>"; };
+		DD57564D2FB7BB3900D1467D /* input_coreLabels_numero.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = input_coreLabels_numero.json; sourceTree = "<group>"; };
+		DD57564E2FB7BB3900D1467D /* input_coreLabels_nxengine.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = input_coreLabels_nxengine.json; sourceTree = "<group>"; };
+		DD57564F2FB7BB3900D1467D /* input_coreLabels_o2em.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = input_coreLabels_o2em.json; sourceTree = "<group>"; };
+		DD5756502FB7BB3900D1467D /* input_coreLabels_openlara.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = input_coreLabels_openlara.json; sourceTree = "<group>"; };
+		DD5756512FB7BB3900D1467D /* input_coreLabels_opera.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = input_coreLabels_opera.json; sourceTree = "<group>"; };
+		DD5756522FB7BB3900D1467D /* input_coreLabels_pcsx_rearmed.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = input_coreLabels_pcsx_rearmed.json; sourceTree = "<group>"; };
+		DD5756532FB7BB3900D1467D /* input_coreLabels_pd777.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = input_coreLabels_pd777.json; sourceTree = "<group>"; };
+		DD5756542FB7BB3900D1467D /* input_coreLabels_picodrive.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = input_coreLabels_picodrive.json; sourceTree = "<group>"; };
+		DD5756552FB7BB3900D1467D /* input_coreLabels_play.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = input_coreLabels_play.json; sourceTree = "<group>"; };
+		DD5756562FB7BB3900D1467D /* input_coreLabels_pocketcdg.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = input_coreLabels_pocketcdg.json; sourceTree = "<group>"; };
+		DD5756572FB7BB3900D1467D /* input_coreLabels_pokemini.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = input_coreLabels_pokemini.json; sourceTree = "<group>"; };
+		DD5756582FB7BB3900D1467D /* input_coreLabels_ppsspp.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = input_coreLabels_ppsspp.json; sourceTree = "<group>"; };
+		DD5756592FB7BB3900D1467D /* input_coreLabels_prboom.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = input_coreLabels_prboom.json; sourceTree = "<group>"; };
+		DD57565A2FB7BB3900D1467D /* input_coreLabels_prosystem.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = input_coreLabels_prosystem.json; sourceTree = "<group>"; };
+		DD57565B2FB7BB3900D1467D /* input_coreLabels_puae.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = input_coreLabels_puae.json; sourceTree = "<group>"; };
+		DD57565C2FB7BB3900D1467D /* input_coreLabels_px68k.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = input_coreLabels_px68k.json; sourceTree = "<group>"; };
+		DD57565D2FB7BB3900D1467D /* input_coreLabels_quasi88.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = input_coreLabels_quasi88.json; sourceTree = "<group>"; };
+		DD57565E2FB7BB3900D1467D /* input_coreLabels_quicknes.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = input_coreLabels_quicknes.json; sourceTree = "<group>"; };
+		DD57565F2FB7BB3900D1467D /* input_coreLabels_race.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = input_coreLabels_race.json; sourceTree = "<group>"; };
+		DD5756602FB7BB3900D1467D /* input_coreLabels_redream.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = input_coreLabels_redream.json; sourceTree = "<group>"; };
+		DD5756612FB7BB3900D1467D /* input_coreLabels_reminiscence.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = input_coreLabels_reminiscence.json; sourceTree = "<group>"; };
+		DD5756622FB7BB3900D1467D /* input_coreLabels_same_cdi.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = input_coreLabels_same_cdi.json; sourceTree = "<group>"; };
+		DD5756632FB7BB3900D1467D /* input_coreLabels_sameboy.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = input_coreLabels_sameboy.json; sourceTree = "<group>"; };
+		DD5756642FB7BB3900D1467D /* input_coreLabels_sameduck.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = input_coreLabels_sameduck.json; sourceTree = "<group>"; };
+		DD5756652FB7BB3900D1467D /* input_coreLabels_smsplus.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = input_coreLabels_smsplus.json; sourceTree = "<group>"; };
+		DD5756662FB7BB3900D1467D /* input_coreLabels_snes9x.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = input_coreLabels_snes9x.json; sourceTree = "<group>"; };
+		DD5756672FB7BB3900D1467D /* input_coreLabels_snes9x_2002.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = input_coreLabels_snes9x_2002.json; sourceTree = "<group>"; };
+		DD5756682FB7BB3900D1467D /* input_coreLabels_snes9x_2005.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = input_coreLabels_snes9x_2005.json; sourceTree = "<group>"; };
+		DD5756692FB7BB3900D1467D /* input_coreLabels_snes9x_2005_plus.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = input_coreLabels_snes9x_2005_plus.json; sourceTree = "<group>"; };
+		DD57566A2FB7BB3900D1467D /* input_coreLabels_snes9x_2010.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = input_coreLabels_snes9x_2010.json; sourceTree = "<group>"; };
+		DD57566B2FB7BB3900D1467D /* input_coreLabels_stella.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = input_coreLabels_stella.json; sourceTree = "<group>"; };
+		DD57566C2FB7BB3900D1467D /* input_coreLabels_stone_soup.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = input_coreLabels_stone_soup.json; sourceTree = "<group>"; };
+		DD57566D2FB7BB3900D1467D /* input_coreLabels_tempgba.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = input_coreLabels_tempgba.json; sourceTree = "<group>"; };
+		DD57566E2FB7BB3900D1467D /* input_coreLabels_tgb_dual.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = input_coreLabels_tgb_dual.json; sourceTree = "<group>"; };
+		DD57566F2FB7BB3900D1467D /* input_coreLabels_theodore.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = input_coreLabels_theodore.json; sourceTree = "<group>"; };
+		DD5756702FB7BB3900D1467D /* input_coreLabels_tic80.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = input_coreLabels_tic80.json; sourceTree = "<group>"; };
+		DD5756712FB7BB3900D1467D /* input_coreLabels_tyrquake.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = input_coreLabels_tyrquake.json; sourceTree = "<group>"; };
+		DD5756722FB7BB3900D1467D /* input_coreLabels_uzem.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = input_coreLabels_uzem.json; sourceTree = "<group>"; };
+		DD5756732FB7BB3900D1467D /* input_coreLabels_vaporspec.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = input_coreLabels_vaporspec.json; sourceTree = "<group>"; };
+		DD5756742FB7BB3900D1467D /* input_coreLabels_vba_m.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = input_coreLabels_vba_m.json; sourceTree = "<group>"; };
+		DD5756752FB7BB3900D1467D /* input_coreLabels_vba_next.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = input_coreLabels_vba_next.json; sourceTree = "<group>"; };
+		DD5756762FB7BB3900D1467D /* input_coreLabels_vecx.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = input_coreLabels_vecx.json; sourceTree = "<group>"; };
+		DD5756772FB7BB3900D1467D /* input_coreLabels_vemulator.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = input_coreLabels_vemulator.json; sourceTree = "<group>"; };
+		DD5756782FB7BB3900D1467D /* input_coreLabels_vice.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = input_coreLabels_vice.json; sourceTree = "<group>"; };
+		DD5756792FB7BB3900D1467D /* input_coreLabels_vircon32.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = input_coreLabels_vircon32.json; sourceTree = "<group>"; };
+		DD57567A2FB7BB3900D1467D /* input_coreLabels_virtual_jaguar.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = input_coreLabels_virtual_jaguar.json; sourceTree = "<group>"; };
+		DD57567B2FB7BB3900D1467D /* input_coreLabels_wasm-4.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = "input_coreLabels_wasm-4.json"; sourceTree = "<group>"; };
+		DD57567C2FB7BB3900D1467D /* input_coreLabels_xrick.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = input_coreLabels_xrick.json; sourceTree = "<group>"; };
+		DD57567D2FB7BB3900D1467D /* input_coreLabels_yabause.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = input_coreLabels_yabause.json; sourceTree = "<group>"; };
+		DD57567F2FB7BB3900D1467D /* input_coreOverrides_3d_engine.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = input_coreOverrides_3d_engine.json; sourceTree = "<group>"; };
+		DD5756802FB7BB3900D1467D /* input_coreOverrides_2048.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = input_coreOverrides_2048.json; sourceTree = "<group>"; };
+		DD5756812FB7BB3900D1467D /* input_coreOverrides_amiarcadia.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = input_coreOverrides_amiarcadia.json; sourceTree = "<group>"; };
+		DD5756822FB7BB3900D1467D /* input_coreOverrides_beetle_lynx.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = input_coreOverrides_beetle_lynx.json; sourceTree = "<group>"; };
+		DD5756832FB7BB3900D1467D /* input_coreOverrides_beetle_neopop.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = input_coreOverrides_beetle_neopop.json; sourceTree = "<group>"; };
+		DD5756842FB7BB3900D1467D /* input_coreOverrides_beetle_psx.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = input_coreOverrides_beetle_psx.json; sourceTree = "<group>"; };
+		DD5756852FB7BB3900D1467D /* input_coreOverrides_beetle_psx_hw.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = input_coreOverrides_beetle_psx_hw.json; sourceTree = "<group>"; };
+		DD5756862FB7BB3900D1467D /* input_coreOverrides_beetle_saturn.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = input_coreOverrides_beetle_saturn.json; sourceTree = "<group>"; };
+		DD5756872FB7BB3900D1467D /* input_coreOverrides_beetle_vb.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = input_coreOverrides_beetle_vb.json; sourceTree = "<group>"; };
+		DD5756882FB7BB3900D1467D /* input_coreOverrides_boom3.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = input_coreOverrides_boom3.json; sourceTree = "<group>"; };
+		DD5756892FB7BB3900D1467D /* input_coreOverrides_cannonball.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = input_coreOverrides_cannonball.json; sourceTree = "<group>"; };
+		DD57568A2FB7BB3900D1467D /* input_coreOverrides_citra.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = input_coreOverrides_citra.json; sourceTree = "<group>"; };
+		DD57568B2FB7BB3900D1467D /* input_coreOverrides_citra_canary.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = input_coreOverrides_citra_canary.json; sourceTree = "<group>"; };
+		DD57568C2FB7BB3900D1467D /* input_coreOverrides_clownmdemu.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = input_coreOverrides_clownmdemu.json; sourceTree = "<group>"; };
+		DD57568D2FB7BB3900D1467D /* input_coreOverrides_craft.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = input_coreOverrides_craft.json; sourceTree = "<group>"; };
+		DD57568E2FB7BB3900D1467D /* input_coreOverrides_crocods.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = input_coreOverrides_crocods.json; sourceTree = "<group>"; };
+		DD57568F2FB7BB3900D1467D /* input_coreOverrides_desmume.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = input_coreOverrides_desmume.json; sourceTree = "<group>"; };
+		DD5756902FB7BB3900D1467D /* input_coreOverrides_desmume_2015.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = input_coreOverrides_desmume_2015.json; sourceTree = "<group>"; };
+		DD5756912FB7BB3900D1467D /* input_coreOverrides_dice.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = input_coreOverrides_dice.json; sourceTree = "<group>"; };
+		DD5756922FB7BB3900D1467D /* input_coreOverrides_dinothawr.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = input_coreOverrides_dinothawr.json; sourceTree = "<group>"; };
+		DD5756932FB7BB3900D1467D /* input_coreOverrides_dolphin.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = input_coreOverrides_dolphin.json; sourceTree = "<group>"; };
+		DD5756942FB7BB3900D1467D /* input_coreOverrides_dosbox.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = input_coreOverrides_dosbox.json; sourceTree = "<group>"; };
+		DD5756952FB7BB3900D1467D /* input_coreOverrides_dosbox_pure.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = input_coreOverrides_dosbox_pure.json; sourceTree = "<group>"; };
+		DD5756962FB7BB3900D1467D /* input_coreOverrides_doukutsu-rs.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = "input_coreOverrides_doukutsu-rs.json"; sourceTree = "<group>"; };
+		DD5756972FB7BB3900D1467D /* input_coreOverrides_easyrpg.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = input_coreOverrides_easyrpg.json; sourceTree = "<group>"; };
+		DD5756982FB7BB3900D1467D /* input_coreOverrides_ecwolf.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = input_coreOverrides_ecwolf.json; sourceTree = "<group>"; };
+		DD5756992FB7BB3900D1467D /* input_coreOverrides_emux_sms.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = input_coreOverrides_emux_sms.json; sourceTree = "<group>"; };
+		DD57569A2FB7BB3900D1467D /* input_coreOverrides_flycast.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = input_coreOverrides_flycast.json; sourceTree = "<group>"; };
+		DD57569B2FB7BB3900D1467D /* input_coreOverrides_fuse.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = input_coreOverrides_fuse.json; sourceTree = "<group>"; };
+		DD57569C2FB7BB3900D1467D /* input_coreOverrides_gam4980.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = input_coreOverrides_gam4980.json; sourceTree = "<group>"; };
+		DD57569D2FB7BB3900D1467D /* input_coreOverrides_game_music_emu.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = input_coreOverrides_game_music_emu.json; sourceTree = "<group>"; };
+		DD57569E2FB7BB3900D1467D /* input_coreOverrides_gearlynx.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = input_coreOverrides_gearlynx.json; sourceTree = "<group>"; };
+		DD57569F2FB7BB3900D1467D /* input_coreOverrides_genesis_plus_gx.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = input_coreOverrides_genesis_plus_gx.json; sourceTree = "<group>"; };
+		DD5756A02FB7BB3900D1467D /* input_coreOverrides_handy.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = input_coreOverrides_handy.json; sourceTree = "<group>"; };
+		DD5756A12FB7BB3900D1467D /* input_coreOverrides_hatari.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = input_coreOverrides_hatari.json; sourceTree = "<group>"; };
+		DD5756A22FB7BB3900D1467D /* input_coreOverrides_holani.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = input_coreOverrides_holani.json; sourceTree = "<group>"; };
+		DD5756A32FB7BB3900D1467D /* input_coreOverrides_jaxe.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = input_coreOverrides_jaxe.json; sourceTree = "<group>"; };
+		DD5756A42FB7BB3900D1467D /* input_coreOverrides_kronos.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = input_coreOverrides_kronos.json; sourceTree = "<group>"; };
+		DD5756A52FB7BB3900D1467D /* input_coreOverrides_lrps2.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = input_coreOverrides_lrps2.json; sourceTree = "<group>"; };
+		DD5756A62FB7BB3900D1467D /* input_coreOverrides_mesen.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = input_coreOverrides_mesen.json; sourceTree = "<group>"; };
+		DD5756A72FB7BB3900D1467D /* input_coreOverrides_mkxp-z.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = "input_coreOverrides_mkxp-z.json"; sourceTree = "<group>"; };
+		DD5756A82FB7BB3900D1467D /* input_coreOverrides_mupen64plus.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = input_coreOverrides_mupen64plus.json; sourceTree = "<group>"; };
+		DD5756A92FB7BB3900D1467D /* input_coreOverrides_nestopia.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = input_coreOverrides_nestopia.json; sourceTree = "<group>"; };
+		DD5756AA2FB7BB3900D1467D /* input_coreOverrides_nxengine.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = input_coreOverrides_nxengine.json; sourceTree = "<group>"; };
+		DD5756AB2FB7BB3900D1467D /* input_coreOverrides_opera.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = input_coreOverrides_opera.json; sourceTree = "<group>"; };
+		DD5756AC2FB7BB3900D1467D /* input_coreOverrides_pcsx_rearmed.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = input_coreOverrides_pcsx_rearmed.json; sourceTree = "<group>"; };
+		DD5756AD2FB7BB3900D1467D /* input_coreOverrides_pd777.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = input_coreOverrides_pd777.json; sourceTree = "<group>"; };
+		DD5756AE2FB7BB3900D1467D /* input_coreOverrides_picodrive.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = input_coreOverrides_picodrive.json; sourceTree = "<group>"; };
+		DD5756AF2FB7BB3900D1467D /* input_coreOverrides_play.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = input_coreOverrides_play.json; sourceTree = "<group>"; };
+		DD5756B02FB7BB3900D1467D /* input_coreOverrides_pocketcdg.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = input_coreOverrides_pocketcdg.json; sourceTree = "<group>"; };
+		DD5756B12FB7BB3900D1467D /* input_coreOverrides_pokemini.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = input_coreOverrides_pokemini.json; sourceTree = "<group>"; };
+		DD5756B22FB7BB3900D1467D /* input_coreOverrides_ppsspp.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = input_coreOverrides_ppsspp.json; sourceTree = "<group>"; };
+		DD5756B32FB7BB3900D1467D /* input_coreOverrides_prboom.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = input_coreOverrides_prboom.json; sourceTree = "<group>"; };
+		DD5756B42FB7BB3900D1467D /* input_coreOverrides_puae.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = input_coreOverrides_puae.json; sourceTree = "<group>"; };
+		DD5756B52FB7BB3900D1467D /* input_coreOverrides_race.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = input_coreOverrides_race.json; sourceTree = "<group>"; };
+		DD5756B62FB7BB3900D1467D /* input_coreOverrides_redream.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = input_coreOverrides_redream.json; sourceTree = "<group>"; };
+		DD5756B72FB7BB3900D1467D /* input_coreOverrides_same_cdi.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = input_coreOverrides_same_cdi.json; sourceTree = "<group>"; };
+		DD5756B82FB7BB3900D1467D /* input_coreOverrides_smsplus.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = input_coreOverrides_smsplus.json; sourceTree = "<group>"; };
+		DD5756B92FB7BB3900D1467D /* input_coreOverrides_stella.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = input_coreOverrides_stella.json; sourceTree = "<group>"; };
+		DD5756BA2FB7BB3900D1467D /* input_coreOverrides_tic80.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = input_coreOverrides_tic80.json; sourceTree = "<group>"; };
+		DD5756BB2FB7BB3900D1467D /* input_coreOverrides_tyrquake.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = input_coreOverrides_tyrquake.json; sourceTree = "<group>"; };
+		DD5756BC2FB7BB3900D1467D /* input_coreOverrides_uzem.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = input_coreOverrides_uzem.json; sourceTree = "<group>"; };
+		DD5756BD2FB7BB3900D1467D /* input_coreOverrides_vaporspec.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = input_coreOverrides_vaporspec.json; sourceTree = "<group>"; };
+		DD5756BE2FB7BB3900D1467D /* input_coreOverrides_vice.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = input_coreOverrides_vice.json; sourceTree = "<group>"; };
+		DD5756BF2FB7BB3900D1467D /* input_coreOverrides_virtual_jaguar.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = input_coreOverrides_virtual_jaguar.json; sourceTree = "<group>"; };
+		DD5756C02FB7BB3900D1467D /* input_coreOverrides_wasm-4.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = "input_coreOverrides_wasm-4.json"; sourceTree = "<group>"; };
+		DD5756C12FB7BB3900D1467D /* input_coreOverrides_yabause.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = input_coreOverrides_yabause.json; sourceTree = "<group>"; };
+		DD5756C32FB7BB3900D1467D /* input_systemLabels_3do.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = input_systemLabels_3do.json; sourceTree = "<group>"; };
+		DD5756C42FB7BB3900D1467D /* input_systemLabels_3ds.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = input_systemLabels_3ds.json; sourceTree = "<group>"; };
+		DD5756C52FB7BB3900D1467D /* input_systemLabels_32x.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = input_systemLabels_32x.json; sourceTree = "<group>"; };
+		DD5756C62FB7BB3900D1467D /* input_systemLabels_2048.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = input_systemLabels_2048.json; sourceTree = "<group>"; };
+		DD5756C72FB7BB3900D1467D /* input_systemLabels_amiga.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = input_systemLabels_amiga.json; sourceTree = "<group>"; };
+		DD5756C82FB7BB3900D1467D /* input_systemLabels_anarch.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = input_systemLabels_anarch.json; sourceTree = "<group>"; };
+		DD5756C92FB7BB3900D1467D /* input_systemLabels_arcadia.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = input_systemLabels_arcadia.json; sourceTree = "<group>"; };
+		DD5756CA2FB7BB3900D1467D /* input_systemLabels_arduboy.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = input_systemLabels_arduboy.json; sourceTree = "<group>"; };
+		DD5756CB2FB7BB3900D1467D /* input_systemLabels_atari_st.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = input_systemLabels_atari_st.json; sourceTree = "<group>"; };
+		DD5756CC2FB7BB3900D1467D /* input_systemLabels_atari2600.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = input_systemLabels_atari2600.json; sourceTree = "<group>"; };
+		DD5756CD2FB7BB3900D1467D /* input_systemLabels_atari5200.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = input_systemLabels_atari5200.json; sourceTree = "<group>"; };
+		DD5756CE2FB7BB3900D1467D /* input_systemLabels_atari7800.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = input_systemLabels_atari7800.json; sourceTree = "<group>"; };
+		DD5756CF2FB7BB3900D1467D /* input_systemLabels_bomberman.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = input_systemLabels_bomberman.json; sourceTree = "<group>"; };
+		DD5756D02FB7BB3900D1467D /* input_systemLabels_cdi.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = input_systemLabels_cdi.json; sourceTree = "<group>"; };
+		DD5756D12FB7BB3900D1467D /* input_systemLabels_chailove.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = input_systemLabels_chailove.json; sourceTree = "<group>"; };
+		DD5756D22FB7BB3900D1467D /* input_systemLabels_chip_8.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = input_systemLabels_chip_8.json; sourceTree = "<group>"; };
+		DD5756D32FB7BB3900D1467D /* input_systemLabels_colecovision.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = input_systemLabels_colecovision.json; sourceTree = "<group>"; };
+		DD5756D42FB7BB3900D1467D /* input_systemLabels_commodore_amiga.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = input_systemLabels_commodore_amiga.json; sourceTree = "<group>"; };
+		DD5756D52FB7BB3900D1467D /* input_systemLabels_cpc.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = input_systemLabels_cpc.json; sourceTree = "<group>"; };
+		DD5756D62FB7BB3900D1467D /* input_systemLabels_craft.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = input_systemLabels_craft.json; sourceTree = "<group>"; };
+		DD5756D72FB7BB3900D1467D /* input_systemLabels_dice.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = input_systemLabels_dice.json; sourceTree = "<group>"; };
+		DD5756D82FB7BB3900D1467D /* input_systemLabels_dinothawr.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = input_systemLabels_dinothawr.json; sourceTree = "<group>"; };
+		DD5756D92FB7BB3900D1467D /* input_systemLabels_doom.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = input_systemLabels_doom.json; sourceTree = "<group>"; };
+		DD5756DA2FB7BB3900D1467D /* input_systemLabels_doom_3.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = input_systemLabels_doom_3.json; sourceTree = "<group>"; };
+		DD5756DB2FB7BB3900D1467D /* input_systemLabels_dos.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = input_systemLabels_dos.json; sourceTree = "<group>"; };
+		DD5756DC2FB7BB3900D1467D /* input_systemLabels_dreamcast.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = input_systemLabels_dreamcast.json; sourceTree = "<group>"; };
+		DD5756DD2FB7BB3900D1467D /* input_systemLabels_ep128.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = input_systemLabels_ep128.json; sourceTree = "<group>"; };
+		DD5756DE2FB7BB3900D1467D /* input_systemLabels_epochcv.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = input_systemLabels_epochcv.json; sourceTree = "<group>"; };
+		DD5756DF2FB7BB3900D1467D /* input_systemLabels_gam4980.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = input_systemLabels_gam4980.json; sourceTree = "<group>"; };
+		DD5756E02FB7BB3900D1467D /* input_systemLabels_game_music.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = input_systemLabels_game_music.json; sourceTree = "<group>"; };
+		DD5756E12FB7BB3900D1467D /* input_systemLabels_gamecube.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = input_systemLabels_gamecube.json; sourceTree = "<group>"; };
+		DD5756E22FB7BB3900D1467D /* input_systemLabels_gamegear.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = input_systemLabels_gamegear.json; sourceTree = "<group>"; };
+		DD5756E32FB7BB3900D1467D /* input_systemLabels_gb.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = input_systemLabels_gb.json; sourceTree = "<group>"; };
+		DD5756E42FB7BB3900D1467D /* input_systemLabels_gba.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = input_systemLabels_gba.json; sourceTree = "<group>"; };
+		DD5756E52FB7BB3900D1467D /* input_systemLabels_gbc.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = input_systemLabels_gbc.json; sourceTree = "<group>"; };
+		DD5756E62FB7BB3900D1467D /* input_systemLabels_genesis.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = input_systemLabels_genesis.json; sourceTree = "<group>"; };
+		DD5756E72FB7BB3900D1467D /* input_systemLabels_jaguar.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = input_systemLabels_jaguar.json; sourceTree = "<group>"; };
+		DD5756E82FB7BB3900D1467D /* input_systemLabels_jumpnbump.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = input_systemLabels_jumpnbump.json; sourceTree = "<group>"; };
+		DD5756E92FB7BB3900D1467D /* input_systemLabels_lowresnx.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = input_systemLabels_lowresnx.json; sourceTree = "<group>"; };
+		DD5756EA2FB7BB3900D1467D /* input_systemLabels_lynx.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = input_systemLabels_lynx.json; sourceTree = "<group>"; };
+		DD5756EB2FB7BB3900D1467D /* input_systemLabels_mame.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = input_systemLabels_mame.json; sourceTree = "<group>"; };
+		DD5756EC2FB7BB3900D1467D /* input_systemLabels_mega_duck.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = input_systemLabels_mega_duck.json; sourceTree = "<group>"; };
+		DD5756ED2FB7BB3900D1467D /* input_systemLabels_msx.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = input_systemLabels_msx.json; sourceTree = "<group>"; };
+		DD5756EE2FB7BB3900D1467D /* input_systemLabels_music.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = input_systemLabels_music.json; sourceTree = "<group>"; };
+		DD5756EF2FB7BB3900D1467D /* input_systemLabels_n64.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = input_systemLabels_n64.json; sourceTree = "<group>"; };
+		DD5756F02FB7BB3900D1467D /* input_systemLabels_nds.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = input_systemLabels_nds.json; sourceTree = "<group>"; };
+		DD5756F12FB7BB3900D1467D /* input_systemLabels_nes.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = input_systemLabels_nes.json; sourceTree = "<group>"; };
+		DD5756F22FB7BB3900D1467D /* input_systemLabels_ngp.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = input_systemLabels_ngp.json; sourceTree = "<group>"; };
+		DD5756F32FB7BB3900D1467D /* input_systemLabels_nxengine.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = input_systemLabels_nxengine.json; sourceTree = "<group>"; };
+		DD5756F42FB7BB3900D1467D /* input_systemLabels_odyssey2.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = input_systemLabels_odyssey2.json; sourceTree = "<group>"; };
+		DD5756F52FB7BB3900D1467D /* input_systemLabels_openlara.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = input_systemLabels_openlara.json; sourceTree = "<group>"; };
+		DD5756F62FB7BB3900D1467D /* input_systemLabels_p2000t.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = input_systemLabels_p2000t.json; sourceTree = "<group>"; };
+		DD5756F72FB7BB3900D1467D /* input_systemLabels_pc_88.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = input_systemLabels_pc_88.json; sourceTree = "<group>"; };
+		DD5756F82FB7BB3900D1467D /* input_systemLabels_pc_98.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = input_systemLabels_pc_98.json; sourceTree = "<group>"; };
+		DD5756F92FB7BB3900D1467D /* input_systemLabels_pce.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = input_systemLabels_pce.json; sourceTree = "<group>"; };
+		DD5756FA2FB7BB3900D1467D /* input_systemLabels_pcfx.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = input_systemLabels_pcfx.json; sourceTree = "<group>"; };
+		DD5756FB2FB7BB3900D1467D /* input_systemLabels_pokemon_mini.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = input_systemLabels_pokemon_mini.json; sourceTree = "<group>"; };
+		DD5756FC2FB7BB3900D1467D /* input_systemLabels_ps2.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = input_systemLabels_ps2.json; sourceTree = "<group>"; };
+		DD5756FD2FB7BB3900D1467D /* input_systemLabels_psp.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = input_systemLabels_psp.json; sourceTree = "<group>"; };
+		DD5756FE2FB7BB3900D1467D /* input_systemLabels_psx.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = input_systemLabels_psx.json; sourceTree = "<group>"; };
+		DD5756FF2FB7BB3900D1467D /* input_systemLabels_quake_1.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = input_systemLabels_quake_1.json; sourceTree = "<group>"; };
+		DD5757002FB7BB3900D1467D /* input_systemLabels_saturn.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = input_systemLabels_saturn.json; sourceTree = "<group>"; };
+		DD5757012FB7BB3900D1467D /* input_systemLabels_segacd.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = input_systemLabels_segacd.json; sourceTree = "<group>"; };
+		DD5757022FB7BB3900D1467D /* input_systemLabels_segapico.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = input_systemLabels_segapico.json; sourceTree = "<group>"; };
+		DD5757032FB7BB3900D1467D /* input_systemLabels_sharp_x68000.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = input_systemLabels_sharp_x68000.json; sourceTree = "<group>"; };
+		DD5757042FB7BB3900D1467D /* input_systemLabels_sms.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = input_systemLabels_sms.json; sourceTree = "<group>"; };
+		DD5757052FB7BB3900D1467D /* input_systemLabels_snes.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = input_systemLabels_snes.json; sourceTree = "<group>"; };
+		DD5757062FB7BB3900D1467D /* input_systemLabels_ti_83.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = input_systemLabels_ti_83.json; sourceTree = "<group>"; };
+		DD5757072FB7BB3900D1467D /* input_systemLabels_tic80.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = input_systemLabels_tic80.json; sourceTree = "<group>"; };
+		DD5757082FB7BB3900D1467D /* input_systemLabels_uzebox.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = input_systemLabels_uzebox.json; sourceTree = "<group>"; };
+		DD5757092FB7BB3900D1467D /* input_systemLabels_vaporspec.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = input_systemLabels_vaporspec.json; sourceTree = "<group>"; };
+		DD57570A2FB7BB3900D1467D /* input_systemLabels_vectrex.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = input_systemLabels_vectrex.json; sourceTree = "<group>"; };
+		DD57570B2FB7BB3900D1467D /* input_systemLabels_vircon32.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = input_systemLabels_vircon32.json; sourceTree = "<group>"; };
+		DD57570C2FB7BB3900D1467D /* input_systemLabels_virtual_boy.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = input_systemLabels_virtual_boy.json; sourceTree = "<group>"; };
+		DD57570D2FB7BB3900D1467D /* input_systemLabels_wasm4.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = input_systemLabels_wasm4.json; sourceTree = "<group>"; };
+		DD57570E2FB7BB3900D1467D /* input_systemLabels_wii.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = input_systemLabels_wii.json; sourceTree = "<group>"; };
+		DD57570F2FB7BB3900D1467D /* input_systemLabels_wolfenstein3d.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = input_systemLabels_wolfenstein3d.json; sourceTree = "<group>"; };
+		DD5757102FB7BB3900D1467D /* input_systemLabels_wonderswan.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = input_systemLabels_wonderswan.json; sourceTree = "<group>"; };
+		DD5757112FB7BB3900D1467D /* input_systemLabels_xrick.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = input_systemLabels_xrick.json; sourceTree = "<group>"; };
+		DD5757122FB7BB3900D1467D /* input_systemLabels_zx_spectrum.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = input_systemLabels_zx_spectrum.json; sourceTree = "<group>"; };
+		DD5757132FB7BB3900D1467D /* input_systemLabels_zx81.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = input_systemLabels_zx81.json; sourceTree = "<group>"; };
 		DD7DC6DFCBB3F10306A3EF57 /* aWw6r.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = aWw6r.jpg; sourceTree = "<group>"; };
 		DDA440915145AB1C4D850872 /* LogManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LogManager.swift; sourceTree = "<group>"; };
 		DDCACEF2DA4CC526B3582217 /* ps@132w.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "ps@132w.png"; sourceTree = "<group>"; };
@@ -993,6 +1592,7 @@
 		F1F5E29743EF34674D35D6CE /* BezelBrowserView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BezelBrowserView.swift; sourceTree = "<group>"; };
 		F20EF6C414682B78AE383860 /* appIcon1024.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = appIcon1024.jpg; sourceTree = "<group>"; };
 		F21660AD9FFF6D840095815C /* RetroAchievementsService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RetroAchievementsService.swift; sourceTree = "<group>"; };
+		F2B0864FA900DBC4BEF891BB /* AnalogDeadZone.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AnalogDeadZone.swift; sourceTree = "<group>"; };
 		F314DC9BA2137BD9EB358C9A /* ShaderSection.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShaderSection.swift; sourceTree = "<group>"; };
 		F502D499AC8073224A06F944 /* atari800-cheats.zip */ = {isa = PBXFileReference; lastKnownFileType = archive.zip; path = "atari800-cheats.zip"; sourceTree = "<group>"; };
 		F51E4C962081D3A3C9E0784B /* Sony - PlayStation 2.dat */ = {isa = PBXFileReference; lastKnownFileType = text; path = "Sony - PlayStation 2.dat"; sourceTree = "<group>"; };
@@ -1311,9 +1911,10 @@
 		35AF3E1D0EA8DD7BDA67C06A /* Data */ = {
 			isa = PBXGroup;
 			children = (
+				DD5757152FB7BB3900D1467D /* CoreButtonSplit */,
+				DD5755EC2FB7370400D1467D /* SystemDatabase.json */,
 				A673278170E78C1235D11B09 /* mame_unified.json */,
 				B35D214EFF390ECC091F6642 /* N64RumbleCRCs.txt */,
-				52EF17FAC9C9F438B0FAC30E /* SystemDatabase.json */,
 				C6689CCD80EA918DCC09C54D /* LibretroDats */,
 			);
 			path = Data;
@@ -1556,7 +2157,7 @@
 		6030CD98AFCCAA9A068217A1 /* Resources */ = {
 			isa = PBXGroup;
 			children = (
-				DD5754322FB513D300D1467D /* Assets.xcassets */,
+				DD5754342FB5F31000D1467D /* Assets.xcassets */,
 				18A378D98313D80173A8B0B0 /* AppIcons */,
 				FE700291499B346B34E3C68A /* cheats */,
 				993EF4980E6D59693590061E /* Config */,
@@ -1654,6 +2255,7 @@
 		8EA8442105B8007BF7C7BDD2 /* Settings */ = {
 			isa = PBXGroup;
 			children = (
+				E80FE09498B0D21C035E85F5 /* Models */,
 				1128BD0262A6AA67827DC4DA /* Services */,
 				01A09E410677DCE1916971A7 /* Views */,
 			);
@@ -1993,6 +2595,329 @@
 			path = UI;
 			sourceTree = "<group>";
 		};
+		DD57567E2FB7BB3900D1467D /* coreLabels */ = {
+			isa = PBXGroup;
+			children = (
+				DD5755EE2FB7BB3900D1467D /* input_coreLabels_3d_engine.json */,
+				DD5755EF2FB7BB3900D1467D /* input_coreLabels_2048.json */,
+				DD5755F02FB7BB3900D1467D /* input_coreLabels_amiarcadia.json */,
+				DD5755F12FB7BB3900D1467D /* input_coreLabels_anarch.json */,
+				DD5755F22FB7BB3900D1467D /* input_coreLabels_ardens.json */,
+				DD5755F32FB7BB3900D1467D /* input_coreLabels_atari800.json */,
+				DD5755F42FB7BB3900D1467D /* input_coreLabels_beetle_bsnes.json */,
+				DD5755F52FB7BB3900D1467D /* input_coreLabels_beetle_cygne.json */,
+				DD5755F62FB7BB3900D1467D /* input_coreLabels_beetle_gba.json */,
+				DD5755F72FB7BB3900D1467D /* input_coreLabels_beetle_lynx.json */,
+				DD5755F82FB7BB3900D1467D /* input_coreLabels_beetle_neopop.json */,
+				DD5755F92FB7BB3900D1467D /* input_coreLabels_beetle_pc_fx.json */,
+				DD5755FA2FB7BB3900D1467D /* input_coreLabels_beetle_pce_fast.json */,
+				DD5755FB2FB7BB3900D1467D /* input_coreLabels_beetle_psx.json */,
+				DD5755FC2FB7BB3900D1467D /* input_coreLabels_beetle_psx_hw.json */,
+				DD5755FD2FB7BB3900D1467D /* input_coreLabels_beetle_saturn.json */,
+				DD5755FE2FB7BB3900D1467D /* input_coreLabels_beetle_sgx.json */,
+				DD5755FF2FB7BB3900D1467D /* input_coreLabels_beetle_vb.json */,
+				DD5756002FB7BB3900D1467D /* input_coreLabels_bluemsx.json */,
+				DD5756012FB7BB3900D1467D /* input_coreLabels_bnes.json */,
+				DD5756022FB7BB3900D1467D /* input_coreLabels_boom3.json */,
+				DD5756032FB7BB3900D1467D /* input_coreLabels_bsnes_accuracy.json */,
+				DD5756042FB7BB3900D1467D /* input_coreLabels_bsnes_balanced.json */,
+				DD5756052FB7BB3900D1467D /* input_coreLabels_bsnes_cplusplus98.json */,
+				DD5756062FB7BB3900D1467D /* input_coreLabels_bsnes_mercury_accuracy.json */,
+				DD5756072FB7BB3900D1467D /* input_coreLabels_bsnes_mercury_balanced.json */,
+				DD5756082FB7BB3900D1467D /* input_coreLabels_bsnes_mercury_performance.json */,
+				DD5756092FB7BB3900D1467D /* input_coreLabels_bsnes_performance.json */,
+				DD57560A2FB7BB3900D1467D /* input_coreLabels_bsnes-jg.json */,
+				DD57560B2FB7BB3900D1467D /* input_coreLabels_cannonball.json */,
+				DD57560C2FB7BB3900D1467D /* input_coreLabels_caprice32.json */,
+				DD57560D2FB7BB3900D1467D /* input_coreLabels_chailove.json */,
+				DD57560E2FB7BB3900D1467D /* input_coreLabels_citra.json */,
+				DD57560F2FB7BB3900D1467D /* input_coreLabels_citra_canary.json */,
+				DD5756102FB7BB3900D1467D /* input_coreLabels_clownmdemu.json */,
+				DD5756112FB7BB3900D1467D /* input_coreLabels_craft.json */,
+				DD5756122FB7BB3900D1467D /* input_coreLabels_crocods.json */,
+				DD5756132FB7BB3900D1467D /* input_coreLabels_desmume.json */,
+				DD5756142FB7BB3900D1467D /* input_coreLabels_desmume_2015.json */,
+				DD5756152FB7BB3900D1467D /* input_coreLabels_dice.json */,
+				DD5756162FB7BB3900D1467D /* input_coreLabels_dinothawr.json */,
+				DD5756172FB7BB3900D1467D /* input_coreLabels_dolphin.json */,
+				DD5756182FB7BB3900D1467D /* input_coreLabels_dosbox.json */,
+				DD5756192FB7BB3900D1467D /* input_coreLabels_dosbox_pure.json */,
+				DD57561A2FB7BB3900D1467D /* input_coreLabels_doukutsu-rs.json */,
+				DD57561B2FB7BB3900D1467D /* input_coreLabels_easyrpg.json */,
+				DD57561C2FB7BB3900D1467D /* input_coreLabels_ecwolf.json */,
+				DD57561D2FB7BB3900D1467D /* input_coreLabels_eightyone.json */,
+				DD57561E2FB7BB3900D1467D /* input_coreLabels_emux_gb.json */,
+				DD57561F2FB7BB3900D1467D /* input_coreLabels_emux_nes.json */,
+				DD5756202FB7BB3900D1467D /* input_coreLabels_emux_sms.json */,
+				DD5756212FB7BB3900D1467D /* input_coreLabels_ep128emu.json */,
+				DD5756222FB7BB3900D1467D /* input_coreLabels_fceumm.json */,
+				DD5756232FB7BB3900D1467D /* input_coreLabels_ffmpeg.json */,
+				DD5756242FB7BB3900D1467D /* input_coreLabels_flycast.json */,
+				DD5756252FB7BB3900D1467D /* input_coreLabels_fmsx.json */,
+				DD5756262FB7BB3900D1467D /* input_coreLabels_fuse.json */,
+				DD5756272FB7BB3900D1467D /* input_coreLabels_gam4980.json */,
+				DD5756282FB7BB3900D1467D /* input_coreLabels_gambatte.json */,
+				DD5756292FB7BB3900D1467D /* input_coreLabels_game_music_emu.json */,
+				DD57562A2FB7BB3900D1467D /* input_coreLabels_gearboy.json */,
+				DD57562B2FB7BB3900D1467D /* input_coreLabels_gearcoleco.json */,
+				DD57562C2FB7BB3900D1467D /* input_coreLabels_geargrafx.json */,
+				DD57562D2FB7BB3900D1467D /* input_coreLabels_gearlynx.json */,
+				DD57562E2FB7BB3900D1467D /* input_coreLabels_gearsystem.json */,
+				DD57562F2FB7BB3900D1467D /* input_coreLabels_genesis_plus_gx.json */,
+				DD5756302FB7BB3900D1467D /* input_coreLabels_gpsp.json */,
+				DD5756312FB7BB3900D1467D /* input_coreLabels_gw.json */,
+				DD5756322FB7BB3900D1467D /* input_coreLabels_handy.json */,
+				DD5756332FB7BB3900D1467D /* input_coreLabels_hatari.json */,
+				DD5756342FB7BB3900D1467D /* input_coreLabels_higan_accuracy.json */,
+				DD5756352FB7BB3900D1467D /* input_coreLabels_holani.json */,
+				DD5756362FB7BB3900D1467D /* input_coreLabels_imageviewer.json */,
+				DD5756372FB7BB3900D1467D /* input_coreLabels_jaxe.json */,
+				DD5756382FB7BB3900D1467D /* input_coreLabels_jumpnbump.json */,
+				DD5756392FB7BB3900D1467D /* input_coreLabels_kronos.json */,
+				DD57563A2FB7BB3900D1467D /* input_coreLabels_lowres_nx.json */,
+				DD57563B2FB7BB3900D1467D /* input_coreLabels_lrps2.json */,
+				DD57563C2FB7BB3900D1467D /* input_coreLabels_lutro.json */,
+				DD57563D2FB7BB3900D1467D /* input_coreLabels_m2000.json */,
+				DD57563E2FB7BB3900D1467D /* input_coreLabels_mame_2003.json */,
+				DD57563F2FB7BB3900D1467D /* input_coreLabels_melonds.json */,
+				DD5756402FB7BB3900D1467D /* input_coreLabels_melonds_ds.json */,
+				DD5756412FB7BB3900D1467D /* input_coreLabels_mesen.json */,
+				DD5756422FB7BB3900D1467D /* input_coreLabels_mesen-s.json */,
+				DD5756432FB7BB3900D1467D /* input_coreLabels_meteor.json */,
+				DD5756442FB7BB3900D1467D /* input_coreLabels_mgba.json */,
+				DD5756452FB7BB3900D1467D /* input_coreLabels_microw8.json */,
+				DD5756462FB7BB3900D1467D /* input_coreLabels_mkxp-z.json */,
+				DD5756472FB7BB3900D1467D /* input_coreLabels_mr_boom.json */,
+				DD5756482FB7BB3900D1467D /* input_coreLabels_mu.json */,
+				DD5756492FB7BB3900D1467D /* input_coreLabels_mupen64plus.json */,
+				DD57564A2FB7BB3900D1467D /* input_coreLabels_neko_project_ii_kai.json */,
+				DD57564B2FB7BB3900D1467D /* input_coreLabels_nestopia.json */,
+				DD57564C2FB7BB3900D1467D /* input_coreLabels_nside_balanced.json */,
+				DD57564D2FB7BB3900D1467D /* input_coreLabels_numero.json */,
+				DD57564E2FB7BB3900D1467D /* input_coreLabels_nxengine.json */,
+				DD57564F2FB7BB3900D1467D /* input_coreLabels_o2em.json */,
+				DD5756502FB7BB3900D1467D /* input_coreLabels_openlara.json */,
+				DD5756512FB7BB3900D1467D /* input_coreLabels_opera.json */,
+				DD5756522FB7BB3900D1467D /* input_coreLabels_pcsx_rearmed.json */,
+				DD5756532FB7BB3900D1467D /* input_coreLabels_pd777.json */,
+				DD5756542FB7BB3900D1467D /* input_coreLabels_picodrive.json */,
+				DD5756552FB7BB3900D1467D /* input_coreLabels_play.json */,
+				DD5756562FB7BB3900D1467D /* input_coreLabels_pocketcdg.json */,
+				DD5756572FB7BB3900D1467D /* input_coreLabels_pokemini.json */,
+				DD5756582FB7BB3900D1467D /* input_coreLabels_ppsspp.json */,
+				DD5756592FB7BB3900D1467D /* input_coreLabels_prboom.json */,
+				DD57565A2FB7BB3900D1467D /* input_coreLabels_prosystem.json */,
+				DD57565B2FB7BB3900D1467D /* input_coreLabels_puae.json */,
+				DD57565C2FB7BB3900D1467D /* input_coreLabels_px68k.json */,
+				DD57565D2FB7BB3900D1467D /* input_coreLabels_quasi88.json */,
+				DD57565E2FB7BB3900D1467D /* input_coreLabels_quicknes.json */,
+				DD57565F2FB7BB3900D1467D /* input_coreLabels_race.json */,
+				DD5756602FB7BB3900D1467D /* input_coreLabels_redream.json */,
+				DD5756612FB7BB3900D1467D /* input_coreLabels_reminiscence.json */,
+				DD5756622FB7BB3900D1467D /* input_coreLabels_same_cdi.json */,
+				DD5756632FB7BB3900D1467D /* input_coreLabels_sameboy.json */,
+				DD5756642FB7BB3900D1467D /* input_coreLabels_sameduck.json */,
+				DD5756652FB7BB3900D1467D /* input_coreLabels_smsplus.json */,
+				DD5756662FB7BB3900D1467D /* input_coreLabels_snes9x.json */,
+				DD5756672FB7BB3900D1467D /* input_coreLabels_snes9x_2002.json */,
+				DD5756682FB7BB3900D1467D /* input_coreLabels_snes9x_2005.json */,
+				DD5756692FB7BB3900D1467D /* input_coreLabels_snes9x_2005_plus.json */,
+				DD57566A2FB7BB3900D1467D /* input_coreLabels_snes9x_2010.json */,
+				DD57566B2FB7BB3900D1467D /* input_coreLabels_stella.json */,
+				DD57566C2FB7BB3900D1467D /* input_coreLabels_stone_soup.json */,
+				DD57566D2FB7BB3900D1467D /* input_coreLabels_tempgba.json */,
+				DD57566E2FB7BB3900D1467D /* input_coreLabels_tgb_dual.json */,
+				DD57566F2FB7BB3900D1467D /* input_coreLabels_theodore.json */,
+				DD5756702FB7BB3900D1467D /* input_coreLabels_tic80.json */,
+				DD5756712FB7BB3900D1467D /* input_coreLabels_tyrquake.json */,
+				DD5756722FB7BB3900D1467D /* input_coreLabels_uzem.json */,
+				DD5756732FB7BB3900D1467D /* input_coreLabels_vaporspec.json */,
+				DD5756742FB7BB3900D1467D /* input_coreLabels_vba_m.json */,
+				DD5756752FB7BB3900D1467D /* input_coreLabels_vba_next.json */,
+				DD5756762FB7BB3900D1467D /* input_coreLabels_vecx.json */,
+				DD5756772FB7BB3900D1467D /* input_coreLabels_vemulator.json */,
+				DD5756782FB7BB3900D1467D /* input_coreLabels_vice.json */,
+				DD5756792FB7BB3900D1467D /* input_coreLabels_vircon32.json */,
+				DD57567A2FB7BB3900D1467D /* input_coreLabels_virtual_jaguar.json */,
+				DD57567B2FB7BB3900D1467D /* input_coreLabels_wasm-4.json */,
+				DD57567C2FB7BB3900D1467D /* input_coreLabels_xrick.json */,
+				DD57567D2FB7BB3900D1467D /* input_coreLabels_yabause.json */,
+			);
+			path = coreLabels;
+			sourceTree = "<group>";
+		};
+		DD5756C22FB7BB3900D1467D /* coreOverrides */ = {
+			isa = PBXGroup;
+			children = (
+				DD57567F2FB7BB3900D1467D /* input_coreOverrides_3d_engine.json */,
+				DD5756802FB7BB3900D1467D /* input_coreOverrides_2048.json */,
+				DD5756812FB7BB3900D1467D /* input_coreOverrides_amiarcadia.json */,
+				DD5756822FB7BB3900D1467D /* input_coreOverrides_beetle_lynx.json */,
+				DD5756832FB7BB3900D1467D /* input_coreOverrides_beetle_neopop.json */,
+				DD5756842FB7BB3900D1467D /* input_coreOverrides_beetle_psx.json */,
+				DD5756852FB7BB3900D1467D /* input_coreOverrides_beetle_psx_hw.json */,
+				DD5756862FB7BB3900D1467D /* input_coreOverrides_beetle_saturn.json */,
+				DD5756872FB7BB3900D1467D /* input_coreOverrides_beetle_vb.json */,
+				DD5756882FB7BB3900D1467D /* input_coreOverrides_boom3.json */,
+				DD5756892FB7BB3900D1467D /* input_coreOverrides_cannonball.json */,
+				DD57568A2FB7BB3900D1467D /* input_coreOverrides_citra.json */,
+				DD57568B2FB7BB3900D1467D /* input_coreOverrides_citra_canary.json */,
+				DD57568C2FB7BB3900D1467D /* input_coreOverrides_clownmdemu.json */,
+				DD57568D2FB7BB3900D1467D /* input_coreOverrides_craft.json */,
+				DD57568E2FB7BB3900D1467D /* input_coreOverrides_crocods.json */,
+				DD57568F2FB7BB3900D1467D /* input_coreOverrides_desmume.json */,
+				DD5756902FB7BB3900D1467D /* input_coreOverrides_desmume_2015.json */,
+				DD5756912FB7BB3900D1467D /* input_coreOverrides_dice.json */,
+				DD5756922FB7BB3900D1467D /* input_coreOverrides_dinothawr.json */,
+				DD5756932FB7BB3900D1467D /* input_coreOverrides_dolphin.json */,
+				DD5756942FB7BB3900D1467D /* input_coreOverrides_dosbox.json */,
+				DD5756952FB7BB3900D1467D /* input_coreOverrides_dosbox_pure.json */,
+				DD5756962FB7BB3900D1467D /* input_coreOverrides_doukutsu-rs.json */,
+				DD5756972FB7BB3900D1467D /* input_coreOverrides_easyrpg.json */,
+				DD5756982FB7BB3900D1467D /* input_coreOverrides_ecwolf.json */,
+				DD5756992FB7BB3900D1467D /* input_coreOverrides_emux_sms.json */,
+				DD57569A2FB7BB3900D1467D /* input_coreOverrides_flycast.json */,
+				DD57569B2FB7BB3900D1467D /* input_coreOverrides_fuse.json */,
+				DD57569C2FB7BB3900D1467D /* input_coreOverrides_gam4980.json */,
+				DD57569D2FB7BB3900D1467D /* input_coreOverrides_game_music_emu.json */,
+				DD57569E2FB7BB3900D1467D /* input_coreOverrides_gearlynx.json */,
+				DD57569F2FB7BB3900D1467D /* input_coreOverrides_genesis_plus_gx.json */,
+				DD5756A02FB7BB3900D1467D /* input_coreOverrides_handy.json */,
+				DD5756A12FB7BB3900D1467D /* input_coreOverrides_hatari.json */,
+				DD5756A22FB7BB3900D1467D /* input_coreOverrides_holani.json */,
+				DD5756A32FB7BB3900D1467D /* input_coreOverrides_jaxe.json */,
+				DD5756A42FB7BB3900D1467D /* input_coreOverrides_kronos.json */,
+				DD5756A52FB7BB3900D1467D /* input_coreOverrides_lrps2.json */,
+				DD5756A62FB7BB3900D1467D /* input_coreOverrides_mesen.json */,
+				DD5756A72FB7BB3900D1467D /* input_coreOverrides_mkxp-z.json */,
+				DD5756A82FB7BB3900D1467D /* input_coreOverrides_mupen64plus.json */,
+				DD5756A92FB7BB3900D1467D /* input_coreOverrides_nestopia.json */,
+				DD5756AA2FB7BB3900D1467D /* input_coreOverrides_nxengine.json */,
+				DD5756AB2FB7BB3900D1467D /* input_coreOverrides_opera.json */,
+				DD5756AC2FB7BB3900D1467D /* input_coreOverrides_pcsx_rearmed.json */,
+				DD5756AD2FB7BB3900D1467D /* input_coreOverrides_pd777.json */,
+				DD5756AE2FB7BB3900D1467D /* input_coreOverrides_picodrive.json */,
+				DD5756AF2FB7BB3900D1467D /* input_coreOverrides_play.json */,
+				DD5756B02FB7BB3900D1467D /* input_coreOverrides_pocketcdg.json */,
+				DD5756B12FB7BB3900D1467D /* input_coreOverrides_pokemini.json */,
+				DD5756B22FB7BB3900D1467D /* input_coreOverrides_ppsspp.json */,
+				DD5756B32FB7BB3900D1467D /* input_coreOverrides_prboom.json */,
+				DD5756B42FB7BB3900D1467D /* input_coreOverrides_puae.json */,
+				DD5756B52FB7BB3900D1467D /* input_coreOverrides_race.json */,
+				DD5756B62FB7BB3900D1467D /* input_coreOverrides_redream.json */,
+				DD5756B72FB7BB3900D1467D /* input_coreOverrides_same_cdi.json */,
+				DD5756B82FB7BB3900D1467D /* input_coreOverrides_smsplus.json */,
+				DD5756B92FB7BB3900D1467D /* input_coreOverrides_stella.json */,
+				DD5756BA2FB7BB3900D1467D /* input_coreOverrides_tic80.json */,
+				DD5756BB2FB7BB3900D1467D /* input_coreOverrides_tyrquake.json */,
+				DD5756BC2FB7BB3900D1467D /* input_coreOverrides_uzem.json */,
+				DD5756BD2FB7BB3900D1467D /* input_coreOverrides_vaporspec.json */,
+				DD5756BE2FB7BB3900D1467D /* input_coreOverrides_vice.json */,
+				DD5756BF2FB7BB3900D1467D /* input_coreOverrides_virtual_jaguar.json */,
+				DD5756C02FB7BB3900D1467D /* input_coreOverrides_wasm-4.json */,
+				DD5756C12FB7BB3900D1467D /* input_coreOverrides_yabause.json */,
+			);
+			path = coreOverrides;
+			sourceTree = "<group>";
+		};
+		DD5757142FB7BB3900D1467D /* systemLabels */ = {
+			isa = PBXGroup;
+			children = (
+				DD5756C32FB7BB3900D1467D /* input_systemLabels_3do.json */,
+				DD5756C42FB7BB3900D1467D /* input_systemLabels_3ds.json */,
+				DD5756C52FB7BB3900D1467D /* input_systemLabels_32x.json */,
+				DD5756C62FB7BB3900D1467D /* input_systemLabels_2048.json */,
+				DD5756C72FB7BB3900D1467D /* input_systemLabels_amiga.json */,
+				DD5756C82FB7BB3900D1467D /* input_systemLabels_anarch.json */,
+				DD5756C92FB7BB3900D1467D /* input_systemLabels_arcadia.json */,
+				DD5756CA2FB7BB3900D1467D /* input_systemLabels_arduboy.json */,
+				DD5756CB2FB7BB3900D1467D /* input_systemLabels_atari_st.json */,
+				DD5756CC2FB7BB3900D1467D /* input_systemLabels_atari2600.json */,
+				DD5756CD2FB7BB3900D1467D /* input_systemLabels_atari5200.json */,
+				DD5756CE2FB7BB3900D1467D /* input_systemLabels_atari7800.json */,
+				DD5756CF2FB7BB3900D1467D /* input_systemLabels_bomberman.json */,
+				DD5756D02FB7BB3900D1467D /* input_systemLabels_cdi.json */,
+				DD5756D12FB7BB3900D1467D /* input_systemLabels_chailove.json */,
+				DD5756D22FB7BB3900D1467D /* input_systemLabels_chip_8.json */,
+				DD5756D32FB7BB3900D1467D /* input_systemLabels_colecovision.json */,
+				DD5756D42FB7BB3900D1467D /* input_systemLabels_commodore_amiga.json */,
+				DD5756D52FB7BB3900D1467D /* input_systemLabels_cpc.json */,
+				DD5756D62FB7BB3900D1467D /* input_systemLabels_craft.json */,
+				DD5756D72FB7BB3900D1467D /* input_systemLabels_dice.json */,
+				DD5756D82FB7BB3900D1467D /* input_systemLabels_dinothawr.json */,
+				DD5756D92FB7BB3900D1467D /* input_systemLabels_doom.json */,
+				DD5756DA2FB7BB3900D1467D /* input_systemLabels_doom_3.json */,
+				DD5756DB2FB7BB3900D1467D /* input_systemLabels_dos.json */,
+				DD5756DC2FB7BB3900D1467D /* input_systemLabels_dreamcast.json */,
+				DD5756DD2FB7BB3900D1467D /* input_systemLabels_ep128.json */,
+				DD5756DE2FB7BB3900D1467D /* input_systemLabels_epochcv.json */,
+				DD5756DF2FB7BB3900D1467D /* input_systemLabels_gam4980.json */,
+				DD5756E02FB7BB3900D1467D /* input_systemLabels_game_music.json */,
+				DD5756E12FB7BB3900D1467D /* input_systemLabels_gamecube.json */,
+				DD5756E22FB7BB3900D1467D /* input_systemLabels_gamegear.json */,
+				DD5756E32FB7BB3900D1467D /* input_systemLabels_gb.json */,
+				DD5756E42FB7BB3900D1467D /* input_systemLabels_gba.json */,
+				DD5756E52FB7BB3900D1467D /* input_systemLabels_gbc.json */,
+				DD5756E62FB7BB3900D1467D /* input_systemLabels_genesis.json */,
+				DD5756E72FB7BB3900D1467D /* input_systemLabels_jaguar.json */,
+				DD5756E82FB7BB3900D1467D /* input_systemLabels_jumpnbump.json */,
+				DD5756E92FB7BB3900D1467D /* input_systemLabels_lowresnx.json */,
+				DD5756EA2FB7BB3900D1467D /* input_systemLabels_lynx.json */,
+				DD5756EB2FB7BB3900D1467D /* input_systemLabels_mame.json */,
+				DD5756EC2FB7BB3900D1467D /* input_systemLabels_mega_duck.json */,
+				DD5756ED2FB7BB3900D1467D /* input_systemLabels_msx.json */,
+				DD5756EE2FB7BB3900D1467D /* input_systemLabels_music.json */,
+				DD5756EF2FB7BB3900D1467D /* input_systemLabels_n64.json */,
+				DD5756F02FB7BB3900D1467D /* input_systemLabels_nds.json */,
+				DD5756F12FB7BB3900D1467D /* input_systemLabels_nes.json */,
+				DD5756F22FB7BB3900D1467D /* input_systemLabels_ngp.json */,
+				DD5756F32FB7BB3900D1467D /* input_systemLabels_nxengine.json */,
+				DD5756F42FB7BB3900D1467D /* input_systemLabels_odyssey2.json */,
+				DD5756F52FB7BB3900D1467D /* input_systemLabels_openlara.json */,
+				DD5756F62FB7BB3900D1467D /* input_systemLabels_p2000t.json */,
+				DD5756F72FB7BB3900D1467D /* input_systemLabels_pc_88.json */,
+				DD5756F82FB7BB3900D1467D /* input_systemLabels_pc_98.json */,
+				DD5756F92FB7BB3900D1467D /* input_systemLabels_pce.json */,
+				DD5756FA2FB7BB3900D1467D /* input_systemLabels_pcfx.json */,
+				DD5756FB2FB7BB3900D1467D /* input_systemLabels_pokemon_mini.json */,
+				DD5756FC2FB7BB3900D1467D /* input_systemLabels_ps2.json */,
+				DD5756FD2FB7BB3900D1467D /* input_systemLabels_psp.json */,
+				DD5756FE2FB7BB3900D1467D /* input_systemLabels_psx.json */,
+				DD5756FF2FB7BB3900D1467D /* input_systemLabels_quake_1.json */,
+				DD5757002FB7BB3900D1467D /* input_systemLabels_saturn.json */,
+				DD5757012FB7BB3900D1467D /* input_systemLabels_segacd.json */,
+				DD5757022FB7BB3900D1467D /* input_systemLabels_segapico.json */,
+				DD5757032FB7BB3900D1467D /* input_systemLabels_sharp_x68000.json */,
+				DD5757042FB7BB3900D1467D /* input_systemLabels_sms.json */,
+				DD5757052FB7BB3900D1467D /* input_systemLabels_snes.json */,
+				DD5757062FB7BB3900D1467D /* input_systemLabels_ti_83.json */,
+				DD5757072FB7BB3900D1467D /* input_systemLabels_tic80.json */,
+				DD5757082FB7BB3900D1467D /* input_systemLabels_uzebox.json */,
+				DD5757092FB7BB3900D1467D /* input_systemLabels_vaporspec.json */,
+				DD57570A2FB7BB3900D1467D /* input_systemLabels_vectrex.json */,
+				DD57570B2FB7BB3900D1467D /* input_systemLabels_vircon32.json */,
+				DD57570C2FB7BB3900D1467D /* input_systemLabels_virtual_boy.json */,
+				DD57570D2FB7BB3900D1467D /* input_systemLabels_wasm4.json */,
+				DD57570E2FB7BB3900D1467D /* input_systemLabels_wii.json */,
+				DD57570F2FB7BB3900D1467D /* input_systemLabels_wolfenstein3d.json */,
+				DD5757102FB7BB3900D1467D /* input_systemLabels_wonderswan.json */,
+				DD5757112FB7BB3900D1467D /* input_systemLabels_xrick.json */,
+				DD5757122FB7BB3900D1467D /* input_systemLabels_zx_spectrum.json */,
+				DD5757132FB7BB3900D1467D /* input_systemLabels_zx81.json */,
+			);
+			path = systemLabels;
+			sourceTree = "<group>";
+		};
+		DD5757152FB7BB3900D1467D /* CoreButtonSplit */ = {
+			isa = PBXGroup;
+			children = (
+				DD57567E2FB7BB3900D1467D /* coreLabels */,
+				DD5756C22FB7BB3900D1467D /* coreOverrides */,
+				DD5757142FB7BB3900D1467D /* systemLabels */,
+			);
+			path = CoreButtonSplit;
+			sourceTree = "<group>";
+		};
 		DFFF9FFBB78EA64551D01B64 /* Products */ = {
 			isa = PBXGroup;
 			children = (
@@ -2010,6 +2935,21 @@
 				653DE9525EF1FB1F93751490 /* Player */,
 			);
 			path = Views;
+			sourceTree = "<group>";
+		};
+		E80FE09498B0D21C035E85F5 /* Models */ = {
+			isa = PBXGroup;
+			children = (
+				F2B0864FA900DBC4BEF891BB /* AnalogDeadZone.swift */,
+				2EB63FBDD677CD02C8E222A8 /* ControllerGamepadMapping.swift */,
+				72FFFDC3B0AE8A595EB1A77B /* CoreButtonOverride.swift */,
+				90136857D881B5C8AEE538D0 /* GameMappingProfile.swift */,
+				596FC72EF305521FB589153D /* InputDeviceType.swift */,
+				66AFB541FCD568D3320D18CD /* KeyboardMapping.swift */,
+				8B1DB6C719F5587E47EB2D0D /* PlayerController.swift */,
+				30A8C369BBDB954516046501 /* RetroButton.swift */,
+			);
+			path = Models;
 			sourceTree = "<group>";
 		};
 		EDEC01E37303CAACF35E1D98 /* Persistence */ = {
@@ -2214,6 +3154,7 @@
 				5E31A920B42805637F721AB9 /* CPC.png in Resources */,
 				4961AAFA6178F84713B2D7FC /* CPET.png in Resources */,
 				48214494B7986684DD7B290F /* CPLUS4.png in Resources */,
+				DD5755ED2FB7370400D1467D /* SystemDatabase.json in Resources */,
 				EA4C269AEDD90FF203A43D9F /* CPS1.png in Resources */,
 				5AC33F5FA17B7FE3D176056D /* CPS2.png in Resources */,
 				95DF320E0D3AA286DA9CB885 /* CPS3.png in Resources */,
@@ -2249,6 +3190,7 @@
 				D66B93781AA1F09200B679BE /* MSX.png in Resources */,
 				4066B00A028CB072D858AD6B /* MSX2.png in Resources */,
 				E0BD0AA661359907DC9D17FF /* N64.png in Resources */,
+				DD5754352FB5F31000D1467D /* Assets.xcassets in Resources */,
 				9DD29FB1CA463EB914DE6264 /* N64DD.png in Resources */,
 				2F987CBE55DA51075E7B325D /* N64RumbleCRCs.txt in Resources */,
 				433AEF333D6DB128C5125EA3 /* NAOMI.png in Resources */,
@@ -2264,7 +3206,6 @@
 				6B2CECDE2686DCECCFF5E34A /* Nintendo - Game Boy Color.dat in Resources */,
 				5D4A0EE8D24A2A693A5EE662 /* Nintendo - Game Boy.dat in Resources */,
 				DCD12CEBA7F2C2CDA39B26D0 /* Nintendo - Nintendo 64.dat in Resources */,
-				DD5754332FB513D300D1467D /* Assets.xcassets in Resources */,
 				9C91873E4B6FFE238F925A8D /* Nintendo - Nintendo DS.dat in Resources */,
 				36BCFA5CE92E1BA8EE9CD75C /* Nintendo - Nintendo Entertainment System.dat in Resources */,
 				989A19E7C73505C5E79BBB6D /* Nintendo - Super Nintendo Entertainment System.dat in Resources */,
@@ -2317,7 +3258,6 @@
 				954B76716E5AB9956257D60C /* Sony - PlayStation Portable.dat in Resources */,
 				92643ECC54504397054B4E32 /* Sony - PlayStation.dat in Resources */,
 				E10F14F2E1D4A39E730275F6 /* Sony_-_PlayStation.json in Resources */,
-				14B0E6739ECD3D9180CBBF0C /* SystemDatabase.json in Resources */,
 				18C7CE49EC674187D760805F /* THOMSON.png in Resources */,
 				6BD6BF15F314107230D2070E /* TI83.png in Resources */,
 				B28BAC855B3AE12F271C2CE4 /* TIC.png in Resources */,
@@ -2349,6 +3289,298 @@
 				AB85F7B36B9F2A0687A33822 /* appIcon64.jpg in Resources */,
 				FAE5B8459AF7CB4F97F0E61C /* arcade-cheats.zip in Resources */,
 				159563995D41385866D73736 /* arcade@132w.png in Resources */,
+				DD5757162FB7BB3900D1467D /* input_systemLabels_dos.json in Resources */,
+				DD5757172FB7BB3900D1467D /* input_systemLabels_sms.json in Resources */,
+				DD5757182FB7BB3900D1467D /* input_coreLabels_beetle_lynx.json in Resources */,
+				DD5757192FB7BB3900D1467D /* input_coreLabels_citra_canary.json in Resources */,
+				DD57571A2FB7BB3900D1467D /* input_systemLabels_epochcv.json in Resources */,
+				DD57571B2FB7BB3900D1467D /* input_coreLabels_bsnes_mercury_accuracy.json in Resources */,
+				DD57571C2FB7BB3900D1467D /* input_coreOverrides_dolphin.json in Resources */,
+				DD57571D2FB7BB3900D1467D /* input_coreOverrides_pcsx_rearmed.json in Resources */,
+				DD57571E2FB7BB3900D1467D /* input_systemLabels_chip_8.json in Resources */,
+				DD57571F2FB7BB3900D1467D /* input_coreOverrides_citra.json in Resources */,
+				DD5757202FB7BB3900D1467D /* input_coreLabels_gearcoleco.json in Resources */,
+				DD5757212FB7BB3900D1467D /* input_coreLabels_beetle_neopop.json in Resources */,
+				DD5757222FB7BB3900D1467D /* input_systemLabels_mega_duck.json in Resources */,
+				DD5757232FB7BB3900D1467D /* input_systemLabels_xrick.json in Resources */,
+				DD5757242FB7BB3900D1467D /* input_coreLabels_ppsspp.json in Resources */,
+				DD5757252FB7BB3900D1467D /* input_systemLabels_wolfenstein3d.json in Resources */,
+				DD5757262FB7BB3900D1467D /* input_coreOverrides_emux_sms.json in Resources */,
+				DD5757272FB7BB3900D1467D /* input_coreLabels_vemulator.json in Resources */,
+				DD5757282FB7BB3900D1467D /* input_systemLabels_nds.json in Resources */,
+				DD5757292FB7BB3900D1467D /* input_coreLabels_numero.json in Resources */,
+				DD57572A2FB7BB3900D1467D /* input_coreOverrides_game_music_emu.json in Resources */,
+				DD57572B2FB7BB3900D1467D /* input_coreOverrides_dice.json in Resources */,
+				DD57572C2FB7BB3900D1467D /* input_systemLabels_3do.json in Resources */,
+				DD57572D2FB7BB3900D1467D /* input_coreLabels_lrps2.json in Resources */,
+				DD57572E2FB7BB3900D1467D /* input_coreLabels_tyrquake.json in Resources */,
+				DD57572F2FB7BB3900D1467D /* input_coreLabels_vba_m.json in Resources */,
+				DD5757302FB7BB3900D1467D /* input_coreOverrides_holani.json in Resources */,
+				DD5757312FB7BB3900D1467D /* input_coreLabels_anarch.json in Resources */,
+				DD5757322FB7BB3900D1467D /* input_coreOverrides_crocods.json in Resources */,
+				DD5757332FB7BB3900D1467D /* input_coreLabels_bsnes_mercury_performance.json in Resources */,
+				DD5757342FB7BB3900D1467D /* input_coreLabels_gearlynx.json in Resources */,
+				DD5757352FB7BB3900D1467D /* input_coreLabels_picodrive.json in Resources */,
+				DD5757362FB7BB3900D1467D /* input_systemLabels_commodore_amiga.json in Resources */,
+				DD5757372FB7BB3900D1467D /* input_systemLabels_openlara.json in Resources */,
+				DD5757382FB7BB3900D1467D /* input_systemLabels_arduboy.json in Resources */,
+				DD5757392FB7BB3900D1467D /* input_coreLabels_melonds_ds.json in Resources */,
+				DD57573A2FB7BB3900D1467D /* input_coreOverrides_dinothawr.json in Resources */,
+				DD57573B2FB7BB3900D1467D /* input_coreOverrides_beetle_lynx.json in Resources */,
+				DD57573C2FB7BB3900D1467D /* input_coreLabels_quasi88.json in Resources */,
+				DD57573D2FB7BB3900D1467D /* input_systemLabels_zx81.json in Resources */,
+				DD57573E2FB7BB3900D1467D /* input_coreLabels_game_music_emu.json in Resources */,
+				DD57573F2FB7BB3900D1467D /* input_systemLabels_2048.json in Resources */,
+				DD5757402FB7BB3900D1467D /* input_coreOverrides_desmume_2015.json in Resources */,
+				DD5757412FB7BB3900D1467D /* input_systemLabels_p2000t.json in Resources */,
+				DD5757422FB7BB3900D1467D /* input_systemLabels_colecovision.json in Resources */,
+				DD5757432FB7BB3900D1467D /* input_coreLabels_vba_next.json in Resources */,
+				DD5757442FB7BB3900D1467D /* input_systemLabels_doom_3.json in Resources */,
+				DD5757452FB7BB3900D1467D /* input_coreLabels_ep128emu.json in Resources */,
+				DD5757462FB7BB3900D1467D /* input_coreLabels_dosbox.json in Resources */,
+				DD5757472FB7BB3900D1467D /* input_systemLabels_dinothawr.json in Resources */,
+				DD5757482FB7BB3900D1467D /* input_coreLabels_vice.json in Resources */,
+				DD5757492FB7BB3900D1467D /* input_coreLabels_desmume.json in Resources */,
+				DD57574A2FB7BB3900D1467D /* input_coreLabels_snes9x_2005.json in Resources */,
+				DD57574B2FB7BB3900D1467D /* input_coreOverrides_clownmdemu.json in Resources */,
+				DD57574C2FB7BB3900D1467D /* input_systemLabels_ti_83.json in Resources */,
+				DD57574D2FB7BB3900D1467D /* input_coreOverrides_doukutsu-rs.json in Resources */,
+				DD57574E2FB7BB3900D1467D /* input_coreLabels_beetle_psx_hw.json in Resources */,
+				DD57574F2FB7BB3900D1467D /* input_coreLabels_desmume_2015.json in Resources */,
+				DD5757502FB7BB3900D1467D /* input_coreLabels_gearsystem.json in Resources */,
+				DD5757512FB7BB3900D1467D /* input_systemLabels_lowresnx.json in Resources */,
+				DD5757522FB7BB3900D1467D /* input_coreLabels_ardens.json in Resources */,
+				DD5757532FB7BB3900D1467D /* input_coreLabels_openlara.json in Resources */,
+				DD5757542FB7BB3900D1467D /* input_systemLabels_gamegear.json in Resources */,
+				DD5757552FB7BB3900D1467D /* input_coreLabels_uzem.json in Resources */,
+				DD5757562FB7BB3900D1467D /* input_coreOverrides_pocketcdg.json in Resources */,
+				DD5757572FB7BB3900D1467D /* input_coreOverrides_flycast.json in Resources */,
+				DD5757582FB7BB3900D1467D /* input_coreOverrides_cannonball.json in Resources */,
+				DD5757592FB7BB3900D1467D /* input_coreOverrides_mkxp-z.json in Resources */,
+				DD57575A2FB7BB3900D1467D /* input_systemLabels_ps2.json in Resources */,
+				DD57575B2FB7BB3900D1467D /* input_systemLabels_sharp_x68000.json in Resources */,
+				DD57575C2FB7BB3900D1467D /* input_coreLabels_snes9x_2005_plus.json in Resources */,
+				DD57575D2FB7BB3900D1467D /* input_coreLabels_holani.json in Resources */,
+				DD57575E2FB7BB3900D1467D /* input_coreLabels_mr_boom.json in Resources */,
+				DD57575F2FB7BB3900D1467D /* input_coreOverrides_tic80.json in Resources */,
+				DD5757602FB7BB3900D1467D /* input_coreLabels_prosystem.json in Resources */,
+				DD5757612FB7BB3900D1467D /* input_systemLabels_quake_1.json in Resources */,
+				DD5757622FB7BB3900D1467D /* input_systemLabels_tic80.json in Resources */,
+				DD5757632FB7BB3900D1467D /* input_coreLabels_beetle_sgx.json in Resources */,
+				DD5757642FB7BB3900D1467D /* input_coreLabels_nestopia.json in Resources */,
+				DD5757652FB7BB3900D1467D /* input_coreLabels_yabause.json in Resources */,
+				DD5757662FB7BB3900D1467D /* input_coreOverrides_gam4980.json in Resources */,
+				DD5757672FB7BB3900D1467D /* input_coreLabels_stone_soup.json in Resources */,
+				DD5757682FB7BB3900D1467D /* input_coreOverrides_nestopia.json in Resources */,
+				DD5757692FB7BB3900D1467D /* input_coreOverrides_nxengine.json in Resources */,
+				DD57576A2FB7BB3900D1467D /* input_coreLabels_mame_2003.json in Resources */,
+				DD57576B2FB7BB3900D1467D /* input_coreLabels_mu.json in Resources */,
+				DD57576C2FB7BB3900D1467D /* input_systemLabels_jaguar.json in Resources */,
+				DD57576D2FB7BB3900D1467D /* input_coreLabels_pd777.json in Resources */,
+				DD57576E2FB7BB3900D1467D /* input_coreLabels_beetle_psx.json in Resources */,
+				DD57576F2FB7BB3900D1467D /* input_coreLabels_mupen64plus.json in Resources */,
+				DD5757702FB7BB3900D1467D /* input_coreOverrides_2048.json in Resources */,
+				DD5757712FB7BB3900D1467D /* input_coreOverrides_beetle_psx_hw.json in Resources */,
+				DD5757722FB7BB3900D1467D /* input_systemLabels_ep128.json in Resources */,
+				DD5757732FB7BB3900D1467D /* input_coreOverrides_craft.json in Resources */,
+				DD5757742FB7BB3900D1467D /* input_coreOverrides_hatari.json in Resources */,
+				DD5757752FB7BB3900D1467D /* input_systemLabels_dreamcast.json in Resources */,
+				DD5757762FB7BB3900D1467D /* input_coreOverrides_dosbox.json in Resources */,
+				DD5757772FB7BB3900D1467D /* input_coreLabels_doukutsu-rs.json in Resources */,
+				DD5757782FB7BB3900D1467D /* input_coreLabels_beetle_pce_fast.json in Resources */,
+				DD5757792FB7BB3900D1467D /* input_systemLabels_atari_st.json in Resources */,
+				DD57577A2FB7BB3900D1467D /* input_systemLabels_arcadia.json in Resources */,
+				DD57577B2FB7BB3900D1467D /* input_systemLabels_segacd.json in Resources */,
+				DD57577C2FB7BB3900D1467D /* input_coreLabels_xrick.json in Resources */,
+				DD57577D2FB7BB3900D1467D /* input_systemLabels_anarch.json in Resources */,
+				DD57577E2FB7BB3900D1467D /* input_systemLabels_pce.json in Resources */,
+				DD57577F2FB7BB3900D1467D /* input_coreLabels_opera.json in Resources */,
+				DD5757802FB7BB3900D1467D /* input_coreLabels_tempgba.json in Resources */,
+				DD5757812FB7BB3900D1467D /* input_coreOverrides_vaporspec.json in Resources */,
+				DD5757822FB7BB3900D1467D /* input_coreLabels_same_cdi.json in Resources */,
+				DD5757832FB7BB3900D1467D /* input_coreOverrides_smsplus.json in Resources */,
+				DD5757842FB7BB3900D1467D /* input_coreLabels_prboom.json in Resources */,
+				DD5757852FB7BB3900D1467D /* input_coreOverrides_gearlynx.json in Resources */,
+				DD5757862FB7BB3900D1467D /* input_coreOverrides_virtual_jaguar.json in Resources */,
+				DD5757872FB7BB3900D1467D /* input_coreOverrides_mupen64plus.json in Resources */,
+				DD5757882FB7BB3900D1467D /* input_systemLabels_wii.json in Resources */,
+				DD5757892FB7BB3900D1467D /* input_coreLabels_smsplus.json in Resources */,
+				DD57578A2FB7BB3900D1467D /* input_coreOverrides_yabause.json in Resources */,
+				DD57578B2FB7BB3900D1467D /* input_coreLabels_snes9x_2010.json in Resources */,
+				DD57578C2FB7BB3900D1467D /* input_coreLabels_cannonball.json in Resources */,
+				DD57578D2FB7BB3900D1467D /* input_coreLabels_redream.json in Resources */,
+				DD57578E2FB7BB3900D1467D /* input_systemLabels_gam4980.json in Resources */,
+				DD57578F2FB7BB3900D1467D /* input_coreLabels_theodore.json in Resources */,
+				DD5757902FB7BB3900D1467D /* input_systemLabels_vectrex.json in Resources */,
+				DD5757912FB7BB3900D1467D /* input_coreLabels_emux_nes.json in Resources */,
+				DD5757922FB7BB3900D1467D /* input_coreOverrides_race.json in Resources */,
+				DD5757932FB7BB3900D1467D /* input_systemLabels_uzebox.json in Resources */,
+				DD5757942FB7BB3900D1467D /* input_coreLabels_ffmpeg.json in Resources */,
+				DD5757952FB7BB3900D1467D /* input_coreLabels_nside_balanced.json in Resources */,
+				DD5757962FB7BB3900D1467D /* input_systemLabels_game_music.json in Resources */,
+				DD5757972FB7BB3900D1467D /* input_coreLabels_jaxe.json in Resources */,
+				DD5757982FB7BB3900D1467D /* input_systemLabels_psp.json in Resources */,
+				DD5757992FB7BB3900D1467D /* input_coreOverrides_vice.json in Resources */,
+				DD57579A2FB7BB3900D1467D /* input_coreLabels_wasm-4.json in Resources */,
+				DD57579B2FB7BB3900D1467D /* input_coreLabels_higan_accuracy.json in Resources */,
+				DD57579C2FB7BB3900D1467D /* input_coreLabels_px68k.json in Resources */,
+				DD57579D2FB7BB3900D1467D /* input_coreOverrides_pd777.json in Resources */,
+				DD57579E2FB7BB3900D1467D /* input_coreLabels_quicknes.json in Resources */,
+				DD57579F2FB7BB3900D1467D /* input_systemLabels_mame.json in Resources */,
+				DD5757A02FB7BB3900D1467D /* input_systemLabels_atari7800.json in Resources */,
+				DD5757A12FB7BB3900D1467D /* input_coreLabels_2048.json in Resources */,
+				DD5757A22FB7BB3900D1467D /* input_coreLabels_amiarcadia.json in Resources */,
+				DD5757A32FB7BB3900D1467D /* input_coreLabels_geargrafx.json in Resources */,
+				DD5757A42FB7BB3900D1467D /* input_coreLabels_boom3.json in Resources */,
+				DD5757A52FB7BB3900D1467D /* input_coreOverrides_same_cdi.json in Resources */,
+				DD5757A62FB7BB3900D1467D /* input_coreOverrides_prboom.json in Resources */,
+				DD5757A72FB7BB3900D1467D /* input_coreLabels_fceumm.json in Resources */,
+				DD5757A82FB7BB3900D1467D /* input_systemLabels_vaporspec.json in Resources */,
+				DD5757A92FB7BB3900D1467D /* input_systemLabels_3ds.json in Resources */,
+				DD5757AA2FB7BB3900D1467D /* input_systemLabels_atari2600.json in Resources */,
+				DD5757AB2FB7BB3900D1467D /* input_coreOverrides_desmume.json in Resources */,
+				DD5757AC2FB7BB3900D1467D /* input_coreLabels_gam4980.json in Resources */,
+				DD5757AD2FB7BB3900D1467D /* input_coreLabels_vaporspec.json in Resources */,
+				DD5757AE2FB7BB3900D1467D /* input_systemLabels_wasm4.json in Resources */,
+				DD5757AF2FB7BB3900D1467D /* input_coreLabels_genesis_plus_gx.json in Resources */,
+				DD5757B02FB7BB3900D1467D /* input_coreOverrides_redream.json in Resources */,
+				DD5757B12FB7BB3900D1467D /* input_coreOverrides_fuse.json in Resources */,
+				DD5757B22FB7BB3900D1467D /* input_systemLabels_amiga.json in Resources */,
+				DD5757B32FB7BB3900D1467D /* input_systemLabels_chailove.json in Resources */,
+				DD5757B42FB7BB3900D1467D /* input_systemLabels_segapico.json in Resources */,
+				DD5757B52FB7BB3900D1467D /* input_coreLabels_bsnes-jg.json in Resources */,
+				DD5757B62FB7BB3900D1467D /* input_coreOverrides_uzem.json in Resources */,
+				DD5757B72FB7BB3900D1467D /* input_systemLabels_doom.json in Resources */,
+				DD5757B82FB7BB3900D1467D /* input_coreLabels_mgba.json in Resources */,
+				DD5757B92FB7BB3900D1467D /* input_coreOverrides_boom3.json in Resources */,
+				DD5757BA2FB7BB3900D1467D /* input_coreLabels_bnes.json in Resources */,
+				DD5757BB2FB7BB3900D1467D /* input_coreOverrides_beetle_neopop.json in Resources */,
+				DD5757BC2FB7BB3900D1467D /* input_coreLabels_dolphin.json in Resources */,
+				DD5757BD2FB7BB3900D1467D /* input_coreLabels_fmsx.json in Resources */,
+				DD5757BE2FB7BB3900D1467D /* input_coreOverrides_3d_engine.json in Resources */,
+				DD5757BF2FB7BB3900D1467D /* input_coreLabels_pokemini.json in Resources */,
+				DD5757C02FB7BB3900D1467D /* input_coreLabels_fuse.json in Resources */,
+				DD5757C12FB7BB3900D1467D /* input_systemLabels_music.json in Resources */,
+				DD5757C22FB7BB3900D1467D /* input_coreOverrides_puae.json in Resources */,
+				DD5757C32FB7BB3900D1467D /* input_coreLabels_beetle_gba.json in Resources */,
+				DD5757C42FB7BB3900D1467D /* input_coreOverrides_dosbox_pure.json in Resources */,
+				DD5757C52FB7BB3900D1467D /* input_coreLabels_kronos.json in Resources */,
+				DD5757C62FB7BB3900D1467D /* input_systemLabels_nes.json in Resources */,
+				DD5757C72FB7BB3900D1467D /* input_systemLabels_ngp.json in Resources */,
+				DD5757C82FB7BB3900D1467D /* input_systemLabels_pc_98.json in Resources */,
+				DD5757C92FB7BB3900D1467D /* input_coreOverrides_beetle_saturn.json in Resources */,
+				DD5757CA2FB7BB3900D1467D /* input_systemLabels_n64.json in Resources */,
+				DD5757CB2FB7BB3900D1467D /* input_coreOverrides_ecwolf.json in Resources */,
+				DD5757CC2FB7BB3900D1467D /* input_coreLabels_neko_project_ii_kai.json in Resources */,
+				DD5757CD2FB7BB3900D1467D /* input_systemLabels_bomberman.json in Resources */,
+				DD5757CE2FB7BB3900D1467D /* input_coreLabels_lowres_nx.json in Resources */,
+				DD5757CF2FB7BB3900D1467D /* input_coreLabels_mkxp-z.json in Resources */,
+				DD5757D02FB7BB3900D1467D /* input_coreLabels_crocods.json in Resources */,
+				DD5757D12FB7BB3900D1467D /* input_systemLabels_pokemon_mini.json in Resources */,
+				DD5757D22FB7BB3900D1467D /* input_systemLabels_jumpnbump.json in Resources */,
+				DD5757D32FB7BB3900D1467D /* input_coreLabels_flycast.json in Resources */,
+				DD5757D42FB7BB3900D1467D /* input_coreLabels_jumpnbump.json in Resources */,
+				DD5757D52FB7BB3900D1467D /* input_coreLabels_gearboy.json in Resources */,
+				DD5757D62FB7BB3900D1467D /* input_coreOverrides_citra_canary.json in Resources */,
+				DD5757D72FB7BB3900D1467D /* input_coreLabels_eightyone.json in Resources */,
+				DD5757D82FB7BB3900D1467D /* input_systemLabels_craft.json in Resources */,
+				DD5757D92FB7BB3900D1467D /* input_coreOverrides_pokemini.json in Resources */,
+				DD5757DA2FB7BB3900D1467D /* input_coreLabels_snes9x_2002.json in Resources */,
+				DD5757DB2FB7BB3900D1467D /* input_coreLabels_caprice32.json in Resources */,
+				DD5757DC2FB7BB3900D1467D /* input_systemLabels_gamecube.json in Resources */,
+				DD5757DD2FB7BB3900D1467D /* input_systemLabels_lynx.json in Resources */,
+				DD5757DE2FB7BB3900D1467D /* input_coreLabels_virtual_jaguar.json in Resources */,
+				DD5757DF2FB7BB3900D1467D /* input_coreOverrides_beetle_psx.json in Resources */,
+				DD5757E02FB7BB3900D1467D /* input_coreLabels_meteor.json in Resources */,
+				DD5757E12FB7BB3900D1467D /* input_systemLabels_virtual_boy.json in Resources */,
+				DD5757E22FB7BB3900D1467D /* input_coreLabels_vecx.json in Resources */,
+				DD5757E32FB7BB3900D1467D /* input_systemLabels_snes.json in Resources */,
+				DD5757E42FB7BB3900D1467D /* input_coreLabels_imageviewer.json in Resources */,
+				DD5757E52FB7BB3900D1467D /* input_systemLabels_vircon32.json in Resources */,
+				DD5757E62FB7BB3900D1467D /* input_coreLabels_pcsx_rearmed.json in Resources */,
+				DD5757E72FB7BB3900D1467D /* input_coreOverrides_picodrive.json in Resources */,
+				DD5757E82FB7BB3900D1467D /* input_coreLabels_atari800.json in Resources */,
+				DD5757E92FB7BB3900D1467D /* input_coreLabels_mesen-s.json in Resources */,
+				DD5757EA2FB7BB3900D1467D /* input_coreLabels_dinothawr.json in Resources */,
+				DD5757EB2FB7BB3900D1467D /* input_coreLabels_tic80.json in Resources */,
+				DD5757EC2FB7BB3900D1467D /* input_coreLabels_gambatte.json in Resources */,
+				DD5757ED2FB7BB3900D1467D /* input_coreLabels_o2em.json in Resources */,
+				DD5757EE2FB7BB3900D1467D /* input_coreLabels_snes9x.json in Resources */,
+				DD5757EF2FB7BB3900D1467D /* input_coreOverrides_wasm-4.json in Resources */,
+				DD5757F02FB7BB3900D1467D /* input_coreLabels_craft.json in Resources */,
+				DD5757F12FB7BB3900D1467D /* input_coreLabels_gpsp.json in Resources */,
+				DD5757F22FB7BB3900D1467D /* input_coreLabels_sameboy.json in Resources */,
+				DD5757F32FB7BB3900D1467D /* input_coreLabels_bluemsx.json in Resources */,
+				DD5757F42FB7BB3900D1467D /* input_coreLabels_ecwolf.json in Resources */,
+				DD5757F52FB7BB3900D1467D /* input_coreLabels_beetle_cygne.json in Resources */,
+				DD5757F62FB7BB3900D1467D /* input_coreLabels_nxengine.json in Resources */,
+				DD5757F72FB7BB3900D1467D /* input_coreLabels_bsnes_accuracy.json in Resources */,
+				DD5757F82FB7BB3900D1467D /* input_systemLabels_gba.json in Resources */,
+				DD5757F92FB7BB3900D1467D /* input_coreLabels_race.json in Resources */,
+				DD5757FA2FB7BB3900D1467D /* input_systemLabels_zx_spectrum.json in Resources */,
+				DD5757FB2FB7BB3900D1467D /* input_coreLabels_m2000.json in Resources */,
+				DD5757FC2FB7BB3900D1467D /* input_coreLabels_reminiscence.json in Resources */,
+				DD5757FD2FB7BB3900D1467D /* input_coreLabels_dosbox_pure.json in Resources */,
+				DD5757FE2FB7BB3900D1467D /* input_coreOverrides_kronos.json in Resources */,
+				DD5757FF2FB7BB3900D1467D /* input_coreLabels_puae.json in Resources */,
+				DD5758002FB7BB3900D1467D /* input_systemLabels_32x.json in Resources */,
+				DD5758012FB7BB3900D1467D /* input_coreLabels_chailove.json in Resources */,
+				DD5758022FB7BB3900D1467D /* input_coreLabels_tgb_dual.json in Resources */,
+				DD5758032FB7BB3900D1467D /* input_systemLabels_odyssey2.json in Resources */,
+				DD5758042FB7BB3900D1467D /* input_coreLabels_emux_gb.json in Resources */,
+				DD5758052FB7BB3900D1467D /* input_coreLabels_3d_engine.json in Resources */,
+				DD5758062FB7BB3900D1467D /* input_systemLabels_pcfx.json in Resources */,
+				DD5758072FB7BB3900D1467D /* input_coreLabels_clownmdemu.json in Resources */,
+				DD5758082FB7BB3900D1467D /* input_coreOverrides_amiarcadia.json in Resources */,
+				DD5758092FB7BB3900D1467D /* input_coreLabels_emux_sms.json in Resources */,
+				DD57580A2FB7BB3900D1467D /* input_coreLabels_hatari.json in Resources */,
+				DD57580B2FB7BB3900D1467D /* input_systemLabels_dice.json in Resources */,
+				DD57580C2FB7BB3900D1467D /* input_coreLabels_bsnes_balanced.json in Resources */,
+				DD57580D2FB7BB3900D1467D /* input_coreLabels_beetle_bsnes.json in Resources */,
+				DD57580E2FB7BB3900D1467D /* input_coreOverrides_mesen.json in Resources */,
+				DD57580F2FB7BB3900D1467D /* input_coreLabels_lutro.json in Resources */,
+				DD5758102FB7BB3900D1467D /* input_coreLabels_beetle_vb.json in Resources */,
+				DD5758112FB7BB3900D1467D /* input_coreOverrides_easyrpg.json in Resources */,
+				DD5758122FB7BB3900D1467D /* input_systemLabels_cdi.json in Resources */,
+				DD5758132FB7BB3900D1467D /* input_coreOverrides_handy.json in Resources */,
+				DD5758142FB7BB3900D1467D /* input_coreLabels_bsnes_mercury_balanced.json in Resources */,
+				DD5758152FB7BB3900D1467D /* input_coreOverrides_tyrquake.json in Resources */,
+				DD5758162FB7BB3900D1467D /* input_systemLabels_gbc.json in Resources */,
+				DD5758172FB7BB3900D1467D /* input_systemLabels_psx.json in Resources */,
+				DD5758182FB7BB3900D1467D /* input_systemLabels_atari5200.json in Resources */,
+				DD5758192FB7BB3900D1467D /* input_coreOverrides_lrps2.json in Resources */,
+				DD57581A2FB7BB3900D1467D /* input_coreOverrides_genesis_plus_gx.json in Resources */,
+				DD57581B2FB7BB3900D1467D /* input_coreLabels_citra.json in Resources */,
+				DD57581C2FB7BB3900D1467D /* input_systemLabels_msx.json in Resources */,
+				DD57581D2FB7BB3900D1467D /* input_coreLabels_easyrpg.json in Resources */,
+				DD57581E2FB7BB3900D1467D /* input_coreOverrides_opera.json in Resources */,
+				DD57581F2FB7BB3900D1467D /* input_systemLabels_pc_88.json in Resources */,
+				DD5758202FB7BB3900D1467D /* input_coreLabels_vircon32.json in Resources */,
+				DD5758212FB7BB3900D1467D /* input_systemLabels_gb.json in Resources */,
+				DD5758222FB7BB3900D1467D /* input_coreLabels_beetle_saturn.json in Resources */,
+				DD5758232FB7BB3900D1467D /* input_coreLabels_handy.json in Resources */,
+				DD5758242FB7BB3900D1467D /* input_coreOverrides_ppsspp.json in Resources */,
+				DD5758252FB7BB3900D1467D /* input_coreLabels_microw8.json in Resources */,
+				DD5758262FB7BB3900D1467D /* input_coreLabels_mesen.json in Resources */,
+				DD5758272FB7BB3900D1467D /* input_systemLabels_cpc.json in Resources */,
+				DD5758282FB7BB3900D1467D /* input_coreLabels_stella.json in Resources */,
+				DD5758292FB7BB3900D1467D /* input_systemLabels_wonderswan.json in Resources */,
+				DD57582A2FB7BB3900D1467D /* input_coreLabels_play.json in Resources */,
+				DD57582B2FB7BB3900D1467D /* input_coreOverrides_play.json in Resources */,
+				DD57582C2FB7BB3900D1467D /* input_coreLabels_sameduck.json in Resources */,
+				DD57582D2FB7BB3900D1467D /* input_coreLabels_melonds.json in Resources */,
+				DD57582E2FB7BB3900D1467D /* input_systemLabels_saturn.json in Resources */,
+				DD57582F2FB7BB3900D1467D /* input_coreLabels_pocketcdg.json in Resources */,
+				DD5758302FB7BB3900D1467D /* input_coreOverrides_jaxe.json in Resources */,
+				DD5758312FB7BB3900D1467D /* input_coreLabels_bsnes_performance.json in Resources */,
+				DD5758322FB7BB3900D1467D /* input_coreLabels_bsnes_cplusplus98.json in Resources */,
+				DD5758332FB7BB3900D1467D /* input_coreLabels_beetle_pc_fx.json in Resources */,
+				DD5758342FB7BB3900D1467D /* input_systemLabels_nxengine.json in Resources */,
+				DD5758352FB7BB3900D1467D /* input_coreLabels_dice.json in Resources */,
+				DD5758362FB7BB3900D1467D /* input_coreOverrides_stella.json in Resources */,
+				DD5758372FB7BB3900D1467D /* input_systemLabels_genesis.json in Resources */,
+				DD5758382FB7BB3900D1467D /* input_coreLabels_gw.json in Resources */,
+				DD5758392FB7BB3900D1467D /* input_coreOverrides_beetle_vb.json in Resources */,
 				CCEBE37645478E3B8F8668BD /* arduboy@132w.png in Resources */,
 				DCB8C49EDD0B659D30E5ABE1 /* atari2600-cheats.zip in Resources */,
 				9274B92A535571F79AC42410 /* atari2600@132w.png in Resources */,
@@ -2494,6 +3726,7 @@
 				E1DC04BBB50C8F4B597931CC /* AchievementBadgeView.swift in Sources */,
 				A9DD8337345315BE6B8E1D37 /* AchievementListView.swift in Sources */,
 				DAA7D00D03C90DDF0DD7D031 /* AchievementToastView.swift in Sources */,
+				151D372D28A505324152DBB2 /* AnalogDeadZone.swift in Sources */,
 				8486017DB7D747C9E058F05D /* AppSettings.swift in Sources */,
 				ED962975C5DEFB723D7702E0 /* BaseRunner.swift in Sources */,
 				A811823110A251E5BBB9698E /* BezelAPIService.swift in Sources */,
@@ -2535,11 +3768,13 @@
 				962BFC364471A16EFFFA3091 /* CodableWrappers.swift in Sources */,
 				497FF7B2E2F1E1B1A3B6141A /* ConfettiView.swift in Sources */,
 				0A9B92BF3A1DCF3E5BEA3DF9 /* ContentView.swift in Sources */,
+				BF3899C41521C9D716EBDC5D /* ControllerGamepadMapping.swift in Sources */,
 				9D37D249654A1647F9276A9E /* ControllerService.swift in Sources */,
 				7B114C2B979B350258054F09 /* ControllerSettingsViewGroup.swift in Sources */,
 				DCB45CB4AFC527F727105206 /* Controls.swift in Sources */,
 				77542C8AE9ED8AC003E6B035 /* ControlsSection.swift in Sources */,
 				84D8EF6AD4A33478C294BF06 /* CoreAndAchievements.swift in Sources */,
+				BE69107D74B61BC83EFF333D /* CoreButtonOverride.swift in Sources */,
 				6BDB6525F52667BF93E61A2D /* CoreDownloadSheet.swift in Sources */,
 				20BA97ABF5B6C7FBD1ECF76E /* CoreManager.swift in Sources */,
 				18F648B9ABBD542F67F8578A /* CoreOption.swift in Sources */,
@@ -2578,6 +3813,7 @@
 				D804D2B87362CD5BD3DDCD85 /* GameInfoWindow.swift in Sources */,
 				7BC9F2B7264429F92FD2D48F /* GameLauncher.swift in Sources */,
 				667975EF2750F253A19162FB /* GameListRowView.swift in Sources */,
+				803DED50F68081A6048C1DC5 /* GameMappingProfile.swift in Sources */,
 				886D1903700E00DE7F11523C /* GameNameFormatter.swift in Sources */,
 				27F9277272450FDAE20B690D /* GameOverlayToolbar.swift in Sources */,
 				CC4C936CF4AAB9EBE49E8F47 /* GeneralSettingsView.swift in Sources */,
@@ -2591,6 +3827,8 @@
 				D3BF624E6D643A9C9E0976FF /* ImageCache.swift in Sources */,
 				2B2B0A84C8FA0EC3F94F0ADB /* InputCaptureManager.swift in Sources */,
 				21A571C012E0EEAB3DB1B142 /* InputDescriptorsManager.swift in Sources */,
+				31A2B97F6CD9CA68CAE74088 /* InputDeviceType.swift in Sources */,
+				7ABCF7A060244B57A297019B /* KeyboardMapping.swift in Sources */,
 				D1987AB001C52B7301D88FF8 /* LaunchBoxGameMetadata.swift in Sources */,
 				C18E5BE81E68BF2BD3405575 /* LaunchBoxGamesDBService.swift in Sources */,
 				A88B029EDF9B982AD0A805D9 /* LibraryAnimations.swift in Sources */,
@@ -2639,6 +3877,7 @@
 				802243197EC4A31177770310 /* PPSSPAssetService.swift in Sources */,
 				0731BAFCEC49AC5E62BA3474 /* Passthrough.metal in Sources */,
 				97532B79D1C03B1230BDB004 /* PersistenceMigrationFlag.swift in Sources */,
+				0CD244372E8158A9E2559772 /* PlayerController.swift in Sources */,
 				791402ABB260460A0380E845 /* ProgettoSnapsService.swift in Sources */,
 				60693F589F90C2D9CA80CE8B /* RAAchievementCacheEntry.swift in Sources */,
 				8659FD76142AA61568D6983A /* RABadgeCacheService.swift in Sources */,
@@ -2657,6 +3896,7 @@
 				562FE8460EC832F3319BAB35 /* ResourceCacheRepository.swift in Sources */,
 				29210C88A814413EAAA45AA1 /* RetroAchievementsService.swift in Sources */,
 				452E0E7F7A9630C725D08395 /* RetroAchievementsSettingsView.swift in Sources */,
+				BD71E295B764ABB29962EA20 /* RetroButton.swift in Sources */,
 				1D74BFC265809AEF5ED3C30F /* RetroKeycodeMapper.swift in Sources */,
 				85BBBE31E65E1DC39A40EC77 /* RomHasher.swift in Sources */,
 				9D1FE1B871BDDD7FC953E9FF /* RunningGamesTracker.swift in Sources */,

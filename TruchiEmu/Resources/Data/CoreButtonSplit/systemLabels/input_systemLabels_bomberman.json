@@ -1,0 +1,31 @@
+{
+  "buttons": {
+    "b": {
+      "label": "Drop Bomb/Join game"
+    },
+    "select": {
+      "label": "Add a bomberman bot (while in the join game screen)"
+    },
+    "start": {
+      "label": "Start game"
+    },
+    "up": {
+      "label": "Up/Push bomb"
+    },
+    "down": {
+      "label": "Down/Push bomb"
+    },
+    "left": {
+      "label": "Left/Push bomb"
+    },
+    "right": {
+      "label": "Right/Push bomb"
+    },
+    "a": {
+      "label": "Detonate bomb (when you have the Remote control power)/Join game"
+    },
+    "x": {
+      "label": "Jump (while riding a Kangaroo)/Join game)"
+    }
+  }
+}

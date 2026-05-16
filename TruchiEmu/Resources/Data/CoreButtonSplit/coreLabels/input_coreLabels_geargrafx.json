@@ -1,0 +1,32 @@
+{
+  "up": {
+    "label": "D-Pad Up"
+  },
+  "down": {
+    "label": "D-Pad Down"
+  },
+  "left": {
+    "label": "D-Pad Left"
+  },
+  "right": {
+    "label": "D-Pad Right"
+  },
+  "select": {
+    "label": "Select"
+  },
+  "start": {
+    "label": "Run"
+  },
+  "a": {
+    "label": "I"
+  },
+  "b": {
+    "label": "II"
+  },
+  "l2": {
+    "label": "Toggle Turbo II"
+  },
+  "r2": {
+    "label": "Toggle Turbo I"
+  }
+}

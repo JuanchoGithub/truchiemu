@@ -1,0 +1,65 @@
+{
+  "b": {
+    "label": "Jump"
+  },
+  "y": {
+    "label": "Destroy block"
+  },
+  "select": {
+    "label": "Zoom out"
+  },
+  "up": {
+    "label": "Move forwards"
+  },
+  "down": {
+    "label": "Move backwards"
+  },
+  "left": {
+    "label": "Move crosshair left"
+  },
+  "right": {
+    "label": "Move crosshair right"
+  },
+  "a": {
+    "label": "Next block"
+  },
+  "x": {
+    "label": "Place block"
+  },
+  "l1": {
+    "label": "Move left"
+  },
+  "r1": {
+    "label": "Move right"
+  },
+  "l2": {
+    "label": "Move crosshair up"
+  },
+  "r2": {
+    "label": "Move crosshair down"
+  },
+  "lStickLeft": {
+    "label": "Left Stick Move left ←"
+  },
+  "lStickRight": {
+    "label": "Left Stick right →"
+  },
+  "lStickUp": {
+    "label": "Left Stick Move up ↑"
+  },
+  "lStickDown": {
+    "label": "Left Stick down ↓"
+  },
+  "rStickLeft": {
+    "label": "Right Stick Move crosshair left ←"
+  },
+  "rStickRight": {
+    "label": "Right Stick right →"
+  },
+  "rStickUp": {
+    "label": "Right Stick Move crosshair up.down ↑"
+  },
+  "rStickDown": {
+    "label": "Right Stick Move crosshair up.down ↓"
+  }
+}

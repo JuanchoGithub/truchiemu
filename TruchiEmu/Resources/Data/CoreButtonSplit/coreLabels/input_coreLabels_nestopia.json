@@ -1,0 +1,47 @@
+{
+  "b": {
+    "label": "B"
+  },
+  "y": {
+    "label": "Turbo B"
+  },
+  "select": {
+    "label": "Select"
+  },
+  "start": {
+    "label": "Start"
+  },
+  "up": {
+    "label": "D-Pad Up"
+  },
+  "down": {
+    "label": "D-Pad Down"
+  },
+  "left": {
+    "label": "D-Pad Left"
+  },
+  "right": {
+    "label": "D-Pad Right"
+  },
+  "a": {
+    "label": "A"
+  },
+  "x": {
+    "label": "Turbo A"
+  },
+  "l1": {
+    "label": "(FDS) Disk Side Change"
+  },
+  "r1": {
+    "label": "(FDS) Eject Disk"
+  },
+  "coin1": {
+    "label": "(VSSystem) Coin 1"
+  },
+  "coin2": {
+    "label": "(VSSystem) Coin 2"
+  },
+  "l3": {
+    "label": "(Famicom) Microphone"
+  }
+}

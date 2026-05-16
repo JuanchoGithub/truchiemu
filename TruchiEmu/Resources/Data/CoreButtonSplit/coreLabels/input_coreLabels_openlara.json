@@ -1,0 +1,41 @@
+{
+  "b": {
+    "label": "Action (Shoot/grab)"
+  },
+  "y": {
+    "label": "Jump"
+  },
+  "select": {
+    "label": "Inventory"
+  },
+  "start": {
+    "label": "Start"
+  },
+  "up": {
+    "label": "Up"
+  },
+  "down": {
+    "label": "Down"
+  },
+  "left": {
+    "label": "Left"
+  },
+  "right": {
+    "label": "Right"
+  },
+  "a": {
+    "label": "Roll"
+  },
+  "x": {
+    "label": "Draw weapon"
+  },
+  "r1": {
+    "label": "Walk (when holding)"
+  },
+  "l2": {
+    "label": "Duck/Crouch (TR3 and up)"
+  },
+  "r2": {
+    "label": "Dash (TR3 and up)"
+  }
+}

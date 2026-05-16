@@ -1,0 +1,41 @@
+{
+  "b": {
+    "label": "Fire"
+  },
+  "y": {
+    "label": "Run"
+  },
+  "select": {
+    "label": "Show/Hide Map"
+  },
+  "start": {
+    "label": "Show/Hide Menu"
+  },
+  "up": {
+    "label": "D-Pad Up"
+  },
+  "down": {
+    "label": "D-Pad Down"
+  },
+  "left": {
+    "label": "D-Pad Left"
+  },
+  "right": {
+    "label": "D-Pad Right"
+  },
+  "x": {
+    "label": "Strafe"
+  },
+  "l1": {
+    "label": "Strafe Left"
+  },
+  "r1": {
+    "label": "Strafe Right"
+  },
+  "l2": {
+    "label": "Previous Weapon"
+  },
+  "r2": {
+    "label": "Next Weapon"
+  }
+}

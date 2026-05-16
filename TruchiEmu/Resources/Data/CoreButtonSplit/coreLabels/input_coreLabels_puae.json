@@ -1,0 +1,74 @@
+{
+  "up": {
+    "label": "D-Pad Up"
+  },
+  "down": {
+    "label": "D-Pad Down"
+  },
+  "left": {
+    "label": "D-Pad Left"
+  },
+  "right": {
+    "label": "D-Pad Right"
+  },
+  "b": {
+    "label": "B / Fire"
+  },
+  "a": {
+    "label": "A / 2nd fire"
+  },
+  "y": {
+    "label": "Y"
+  },
+  "x": {
+    "label": "X"
+  },
+  "select": {
+    "label": "Select"
+  },
+  "start": {
+    "label": "Start"
+  },
+  "l1": {
+    "label": "L"
+  },
+  "r1": {
+    "label": "R"
+  },
+  "l2": {
+    "label": "L2"
+  },
+  "r2": {
+    "label": "R2"
+  },
+  "l3": {
+    "label": "L3"
+  },
+  "r3": {
+    "label": "R3"
+  },
+  "lStickLeft": {
+    "label": "Left Analog X ←"
+  },
+  "lStickRight": {
+    "label": "Left Analog X →"
+  },
+  "lStickUp": {
+    "label": "Left Analog Y ↑"
+  },
+  "lStickDown": {
+    "label": "Left Analog Y ↓"
+  },
+  "rStickLeft": {
+    "label": "Right Analog X ←"
+  },
+  "rStickRight": {
+    "label": "Right Analog X →"
+  },
+  "rStickUp": {
+    "label": "Right Analog Y ↑"
+  },
+  "rStickDown": {
+    "label": "Right Analog Y ↓"
+  }
+}

@@ -1,0 +1,44 @@
+{
+  "b": {
+    "label": "B"
+  },
+  "y": {
+    "label": "Turbo B"
+  },
+  "select": {
+    "label": "Select"
+  },
+  "start": {
+    "label": "Start"
+  },
+  "up": {
+    "label": "Up"
+  },
+  "down": {
+    "label": "Down"
+  },
+  "left": {
+    "label": "Left"
+  },
+  "right": {
+    "label": "Right"
+  },
+  "a": {
+    "label": "A"
+  },
+  "x": {
+    "label": "Turbo A"
+  },
+  "l1": {
+    "label": "L"
+  },
+  "r1": {
+    "label": "R"
+  },
+  "l2": {
+    "label": "Turbo L"
+  },
+  "r2": {
+    "label": "Turbo R"
+  }
+}

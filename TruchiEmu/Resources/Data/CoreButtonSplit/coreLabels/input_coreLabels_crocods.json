@@ -1,0 +1,38 @@
+{
+  "b": {
+    "label": "JOY_FIRE2"
+  },
+  "y": {
+    "label": "NIL"
+  },
+  "pause": {
+    "label": "Pause"
+  },
+  "start": {
+    "label": "Start"
+  },
+  "up": {
+    "label": "Up"
+  },
+  "down": {
+    "label": "Down"
+  },
+  "left": {
+    "label": "Left"
+  },
+  "right": {
+    "label": "Right"
+  },
+  "a": {
+    "label": "JOY_FIRE1"
+  },
+  "x": {
+    "label": "NIL"
+  },
+  "l1": {
+    "label": "NIL"
+  },
+  "r1": {
+    "label": "NIL"
+  }
+}

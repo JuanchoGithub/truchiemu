@@ -1,0 +1,38 @@
+{
+  "b": {
+    "label": "Button 1/Right Stick Down/UI Cancel"
+  },
+  "y": {
+    "label": "Button 2/Right Stick Left"
+  },
+  "select": {
+    "label": "Coin in"
+  },
+  "start": {
+    "label": "Start"
+  },
+  "a": {
+    "label": "Button 4/Right Stick Right/UI Select"
+  },
+  "x": {
+    "label": "Button 3/Right Stick Up"
+  },
+  "l1": {
+    "label": "Button 5"
+  },
+  "r1": {
+    "label": "Button 6"
+  },
+  "l2": {
+    "label": "Button 7"
+  },
+  "r2": {
+    "label": "Button 8/TAB Menu"
+  },
+  "l3": {
+    "label": "Button 9"
+  },
+  "r3": {
+    "label": "Button 10"
+  }
+}

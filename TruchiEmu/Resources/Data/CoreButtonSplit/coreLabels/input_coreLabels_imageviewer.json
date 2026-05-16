@@ -1,0 +1,17 @@
+{
+  "y": {
+    "label": "Automatic slideshow - Go to the next image every 2 seconds"
+  },
+  "up": {
+    "label": "Go forward 5 images"
+  },
+  "down": {
+    "label": "Go backward 5 images"
+  },
+  "left": {
+    "label": "Go backward 1 image"
+  },
+  "right": {
+    "label": "Go forward 1 image"
+  }
+}

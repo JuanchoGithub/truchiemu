@@ -1,0 +1,34 @@
+{
+  "buttons": {
+    "b": {
+      "label": "Fire"
+    },
+    "select": {
+      "label": "Settings"
+    },
+    "start": {
+      "label": "Inventory"
+    },
+    "up": {
+      "label": "D-Pad Up"
+    },
+    "down": {
+      "label": "D-Pad Down"
+    },
+    "left": {
+      "label": "D-Pad Left"
+    },
+    "right": {
+      "label": "D-Pad Right"
+    },
+    "x": {
+      "label": "Show/Hide Map"
+    },
+    "l1": {
+      "label": "Previous Weapon"
+    },
+    "r1": {
+      "label": "Next Weapon"
+    }
+  }
+}

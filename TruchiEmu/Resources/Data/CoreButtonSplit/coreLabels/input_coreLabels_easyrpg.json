@@ -1,0 +1,47 @@
+{
+  "up": {
+    "label": "Up"
+  },
+  "down": {
+    "label": "Down"
+  },
+  "left": {
+    "label": "Left"
+  },
+  "right": {
+    "label": "Right"
+  },
+  "a": {
+    "label": "Decision"
+  },
+  "b": {
+    "label": "Cancel"
+  },
+  "x": {
+    "label": "Cancel"
+  },
+  "y": {
+    "label": "Shift"
+  },
+  "l3": {
+    "label": "Number 0"
+  },
+  "r3": {
+    "label": "Number 5"
+  },
+  "start": {
+    "label": "Settings Menu"
+  },
+  "reset": {
+    "label": "Reset"
+  },
+  "r2": {
+    "label": "Fast Forward (x10)"
+  },
+  "l2": {
+    "label": "Debug Through (Test Play mode only)"
+  },
+  "r1": {
+    "label": "Debug Save (Test Play mode only)"
+  }
+}

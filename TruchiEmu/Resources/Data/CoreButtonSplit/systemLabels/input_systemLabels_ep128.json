@@ -1,0 +1,34 @@
+{
+  "buttons": {
+    "up": {
+      "label": "Respective directions for: <br> Enterprise, TVC: Internal joystick <br> CPC: External joystick 1 <br> ZX Spectrum: Kempston interface"
+    },
+    "x": {
+      "label": "Enterprise, TVC: space (fire for internal joystick) <br> CPC: External joystick 1 fire <br> ZX Spectrum: Kempston joystick"
+    },
+    "y": {
+      "label": "Enter"
+    },
+    "a": {
+      "label": "CPC: External joystick 1 fire 2"
+    },
+    "l1": {
+      "label": "Key 0"
+    },
+    "r1": {
+      "label": "Key 1"
+    },
+    "l2": {
+      "label": "Key 2"
+    },
+    "r2": {
+      "label": "Key 3"
+    },
+    "l3": {
+      "label": "Info display"
+    },
+    "r3": {
+      "label": "Intelligent zoom"
+    }
+  }
+}

@@ -1,0 +1,59 @@
+{
+  "a": {
+    "label": "Input::C"
+  },
+  "b": {
+    "label": "Input::B"
+  },
+  "x": {
+    "label": "Input::A"
+  },
+  "y": {
+    "label": "Input::X"
+  },
+  "up": {
+    "label": "Input::UP"
+  },
+  "down": {
+    "label": "Input::DOWN"
+  },
+  "left": {
+    "label": "Input::LEFT"
+  },
+  "right": {
+    "label": "Input::RIGHT"
+  },
+  "l1": {
+    "label": "Input::L"
+  },
+  "r1": {
+    "label": "Input::R"
+  },
+  "l2": {
+    "label": "Input::CTRL"
+  },
+  "r2": {
+    "label": "Input::SHIFT"
+  },
+  "l3": {
+    "label": "Input::Y"
+  },
+  "r3": {
+    "label": "Input::Z"
+  },
+  "start": {
+    "label": "Input::ALT"
+  },
+  "lStickLeft": {
+    "label": "Left Stick Input::LEFT ←"
+  },
+  "lStickRight": {
+    "label": "Left Stick Input::RIGHT →"
+  },
+  "lStickUp": {
+    "label": "Left Stick Input::UP ↑"
+  },
+  "lStickDown": {
+    "label": "Left Stick Input::DOWN ↓"
+  }
+}

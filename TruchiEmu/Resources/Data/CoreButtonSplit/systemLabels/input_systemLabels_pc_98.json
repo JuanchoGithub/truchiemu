@@ -1,0 +1,43 @@
+{
+  "buttons": {
+    "b": {
+      "label": "Z key"
+    },
+    "y": {
+      "label": "Left control key"
+    },
+    "select": {
+      "label": "Escape key"
+    },
+    "start": {
+      "label": "Return key"
+    },
+    "up": {
+      "label": "Up arrow key"
+    },
+    "down": {
+      "label": "Down arrow key"
+    },
+    "left": {
+      "label": "Left arrow key"
+    },
+    "right": {
+      "label": "Right arrow key"
+    },
+    "a": {
+      "label": "X key"
+    },
+    "x": {
+      "label": "Space key"
+    },
+    "l1": {
+      "label": "Backspace key"
+    },
+    "r1": {
+      "label": "Right shift key"
+    },
+    "l2": {
+      "label": "NP2 menu key"
+    }
+  }
+}

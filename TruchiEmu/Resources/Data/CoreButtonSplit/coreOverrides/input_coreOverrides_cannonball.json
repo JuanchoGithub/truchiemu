@@ -1,0 +1,17 @@
+{
+  "coin1": {
+    "id": 2
+  },
+  "lStickLeft": {
+    "id": 17
+  },
+  "lStickRight": {
+    "id": 16
+  },
+  "lStickUp": {
+    "id": 18
+  },
+  "lStickDown": {
+    "id": 19
+  }
+}

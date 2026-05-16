@@ -1,0 +1,26 @@
+{
+  "up": {
+    "label": "D-Pad Up"
+  },
+  "down": {
+    "label": "D-Pad Down"
+  },
+  "left": {
+    "label": "D-Pad Left"
+  },
+  "right": {
+    "label": "D-Pad Right"
+  },
+  "x": {
+    "label": "Button X"
+  },
+  "y": {
+    "label": "Button Y"
+  },
+  "a": {
+    "label": "Button A"
+  },
+  "b": {
+    "label": "Button B"
+  }
+}

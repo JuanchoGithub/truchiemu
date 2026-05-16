@@ -1,0 +1,14 @@
+{
+  "rStickLeft": {
+    "id": 21
+  },
+  "rStickRight": {
+    "id": 20
+  },
+  "rStickUp": {
+    "id": 22
+  },
+  "rStickDown": {
+    "id": 23
+  }
+}

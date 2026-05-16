@@ -1,0 +1,31 @@
+{
+  "buttons": {
+    "b": {
+      "label": "B"
+    },
+    "select": {
+      "label": "Power"
+    },
+    "up": {
+      "label": "D-Pad Up"
+    },
+    "down": {
+      "label": "D-Pad Down"
+    },
+    "left": {
+      "label": "D-Pad Left"
+    },
+    "right": {
+      "label": "D-Pad Right"
+    },
+    "a": {
+      "label": "A"
+    },
+    "l1": {
+      "label": "Shake"
+    },
+    "c": {
+      "label": "C"
+    }
+  }
+}
