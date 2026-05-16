@@ -608,6 +608,48 @@ enum ROMIdentifier {
                     referenced.append(fileURL)
                 }
             }
+        } else if ext == "gdi" {
+            guard let content = try? String(contentsOf: url, encoding: .utf8) else { return [] }
+            let lines = content.components(separatedBy: .newlines)
+            // First line is track count, subsequent lines reference track files
+            for (index, line) in lines.enumerated() {
+                if index == 0 { continue }
+                let trimmed = line.trimmingCharacters(in: .whitespaces)
+                guard !trimmed.isEmpty else { continue }
+                // Each line: track sector mode size "filename" offset
+                // Extract quoted filename
+                if let quoteStart = trimmed.firstIndex(of: "\""),
+                   let quoteEnd = trimmed[trimmed.index(after: quoteStart)...].firstIndex(of: "\"") {
+                    let filename = String(trimmed[trimmed.index(after: quoteStart)..<quoteEnd])
+                    let fileURL = url.deletingLastPathComponent().appendingPathComponent(filename).standardized
+                    referenced.append(fileURL)
+                }
+            }
+        } else if ext == "ccd" || ext == "toc" {
+            guard let content = try? String(contentsOf: url, encoding: .utf8) else { return [] }
+            let lines = content.components(separatedBy: .newlines)
+            for line in lines {
+                let trimmed = line.trimmingCharacters(in: .whitespaces)
+                if trimmed.uppercased().hasPrefix("IMAGE") {
+                    let scanner = Scanner(string: trimmed)
+                    _ = scanner.scanString("IMAGE")
+                    var filename: NSString?
+                    if scanner.scanString("=\"") != nil {
+                        if let scanned = scanner.scanUpToString("\"") { filename = scanned as NSString }
+                    } else if scanner.scanString("=\"") != nil {
+                        if let scanned = scanner.scanUpToString("\"") { filename = scanned as NSString }
+                    }
+                    if let name = filename as String? {
+                        let fileURL = url.deletingLastPathComponent().appendingPathComponent(name).standardized
+                        referenced.append(fileURL)
+                    }
+                }
+            }
+        } else if ext == "mds" {
+            // MDS references an MDF file with the same base name
+            let mdfName = url.deletingPathExtension().lastPathComponent + ".mdf"
+            let fileURL = url.deletingLastPathComponent().appendingPathComponent(mdfName).standardized
+            referenced.append(fileURL)
         }
 
         return referenced
