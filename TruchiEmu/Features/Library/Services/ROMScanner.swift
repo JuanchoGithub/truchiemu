@@ -43,7 +43,7 @@ actor ROMScanner {
 
     // Static Set is much faster than recreating it per file
     private static let nonROMExtensions: Set<String> = [
-        "xml", "jpg", "jpeg", "png", "gif", "bmp", "pdf", "mp3", "mp4", "avi", "mkv", "nfo", "db", "json",
+        "txt", "xml", "jpg", "jpeg", "png", "gif", "bmp", "pdf", "mp3", "mp4", "avi", "mkv", "nfo", "db", "json",
         "py", "pyc", "pyo", "pyw", "dylib", "so", "app", "icns", "plist", "strings", "loc", "lproj", "nib", "xib",
         "rmd", "html", "htm", "css", "js", "ts", "jsx", "tsx"
     ]
@@ -252,7 +252,8 @@ actor ROMScanner {
     
     private func buildIgnoreList(for urls: [URL], in uniqueFolders: Set<URL>) async -> Set<String> {
         var ignoredURLs = Set<String>()
-        var containerURLs = urls.filter { $0.pathExtension.lowercased() == "cue" || $0.pathExtension.lowercased() == "m3u" }
+        let containerExts = Set(["cue", "m3u", "gdi", "ccd", "toc", "mds"])
+        var containerURLs = urls.filter { containerExts.contains($0.pathExtension.lowercased()) }
         
         // Include sibling containers not explicitly passed (Useful for Drag & Drop files without their .cue)
         let fm = FileManager.default
@@ -260,7 +261,7 @@ actor ROMScanner {
             if let files = try? fm.contentsOfDirectory(at: folder, includingPropertiesForKeys: nil, options: .skipsHiddenFiles) {
                 for file in files {
                     let ext = file.pathExtension.lowercased()
-                    if (ext == "cue" || ext == "m3u") && !containerURLs.contains(file) {
+                    if containerExts.contains(ext) && !containerURLs.contains(file) {
                         containerURLs.append(file)
                     }
                 }
@@ -268,9 +269,10 @@ actor ROMScanner {
         }
         
         for url in containerURLs {
-            let system = await identifySystem(url: url, extension: url.pathExtension.lowercased())
-            // If it's a disk-based system OR we know it's a container (cue/m3u), ignore its references
-            if system?.isDiskBased == true || url.pathExtension.lowercased() == "cue" || url.pathExtension.lowercased() == "m3u" {
+            let ext = url.pathExtension.lowercased()
+            let system = await identifySystem(url: url, extension: ext)
+            // If it's a disk-based system OR we know it's a container, ignore its references
+            if system?.isDiskBased == true || containerExts.contains(ext) {
                 for ref in getReferencedFiles(in: url) {
                     ignoredURLs.insert(ref.standardized.path)
                 }
@@ -348,14 +350,12 @@ actor ROMScanner {
     nonisolated func getIgnoredFiles(in folder: URL) async -> Set<String> {
         let fm = FileManager.default
         guard let files = try? fm.contentsOfDirectory(at: folder, includingPropertiesForKeys: nil, options: .skipsHiddenFiles) else { return[] }
+        let containerExts = Set(["cue", "m3u", "gdi", "ccd", "toc", "mds"])
         var ignored = Set<String>()
         for file in files {
             let ext = file.pathExtension.lowercased()
-            if ext == "cue" || ext == "m3u" {
-                let system = await identifySystem(url: file, extension: ext)
-                if system?.isDiskBased == true {
-                    for ref in getReferencedFiles(in: file) { ignored.insert(ref.standardized.path) }
-                }
+            if containerExts.contains(ext) {
+                for ref in getReferencedFiles(in: file) { ignored.insert(ref.standardized.path) }
             }
         }
         return ignored
