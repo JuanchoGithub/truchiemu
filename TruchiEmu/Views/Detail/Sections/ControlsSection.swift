@@ -100,7 +100,7 @@ struct ControlsSection: View {
 
     private func resetControlsToSystemDefault() {
         controllerService.updateKeyboardMapping(
-            KeyboardMapping.defaults(for: systemID),
+            KeyboardMapping.defaults(for: systemID, handedness: controllerService.handedness),
             for: systemID
         )
     }

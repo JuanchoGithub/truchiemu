@@ -40,6 +40,11 @@ class InputDescriptorsManager {
         try? data.write(to: defURL)
     }
 
+    nonisolated func descriptorLabel(for retroID: Int, coreID: String) -> String? {
+        guard let descs = loadFromDisk(for: coreID) else { return nil }
+        return descs.first(where: { $0.id == retroID })?.description
+    }
+
     nonisolated func availableButtons(for systemID: String) -> [RetroButton]? {
         guard let defaultCoreID = SystemDatabase.system(forID: systemID)?.defaultCoreID,
               let descs = loadFromDisk(for: defaultCoreID) else {

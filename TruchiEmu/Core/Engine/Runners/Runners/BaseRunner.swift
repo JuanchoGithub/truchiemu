@@ -282,6 +282,7 @@ class EmulatorRunner: ObservableObject, @unchecked Sendable {
     var undoBuffer: Data?
     
     var systemID: String = "default"
+    var activeCoreID: String = ""
 
     // Whether the current core supports save states
     var supportsSaveStates: Bool {
@@ -338,6 +339,7 @@ case "scummvm": runner = ScummVMRunner()
         
         self.rom = rom
         self.romPath = rom.path.path
+        self.activeCoreID = coreID
         let sysID = rom.systemID ?? "default"
         var mapping = ControllerService.shared.keyboardMapping(for: sysID)
         if mapping.buttons.isEmpty {
@@ -824,7 +826,6 @@ case "scummvm": runner = ScummVMRunner()
                             withBytes: data,
                             bytesPerRow: pitch)
             } else {
-                LoggerService.warning(category: "Runner", "Pitch \(pitch) != bytesPerRow \(expectedRowBytes), packing into temp buffer")
                 var rowBuffer = [UInt8](repeating: 0, count: width * useBPP)
                 for row in 0..<height {
                     let src = data.advanced(by: row * pitch)
@@ -918,7 +919,7 @@ case "scummvm": runner = ScummVMRunner()
     func mapKey(_ keyCode: UInt16) -> Int? {
         for (button, code) in cachedKeyboardMapping.buttons {
             if code == keyCode {
-                return Int(button.retroID(for: self.systemID))
+                return Int(button.retroID(for: self.systemID, coreID: self.activeCoreID))
             }
         }
         return nil
@@ -973,14 +974,17 @@ extendedGamepad.valueChangedHandler = { [weak self] _, element in
         }
     }
 
-    private func updateGamepadButton(_ element: GCControllerElement, in mapping: ControllerGamepadMapping) {
-        let name = element.localizedName ?? ""
+    private func elementMatches(_ element: GCControllerElement, name: String) -> Bool {
+        if element.localizedName == name { return true }
+        if let sf = element.sfSymbolsName, sf == name { return true }
+        if let unmapped = element.unmappedLocalizedName, unmapped == name { return true }
+        return false
+    }
 
+    private func updateGamepadButton(_ element: GCControllerElement, in mapping: ControllerGamepadMapping) {
         for (btn, btnMapping) in mapping.buttons {
-            // Only process the mapping that matches the physical element that changed
-            guard btnMapping.gcElementName == name else { continue }
+            guard elementMatches(element, name: btnMapping.gcElementName) else { continue }
             
-            // 1. Handle Analog Sticks / Axes (e.g., N64 Analog Stick)
             if let info = btn.analogInfo {
                 var value: Float = 0.0
                 
@@ -989,14 +993,12 @@ extendedGamepad.valueChangedHandler = { [weak self] _, element in
                 } else if let axisElement = element as? GCControllerAxisInput {
                     value = abs(axisElement.value)
                 } else if let stick = element as? GCControllerDirectionPad {
-                    // Rare case: If the mapping points to the whole stick
                     let axisVal = (info.id == 0) ? stick.xAxis.value : stick.yAxis.value
                     value = abs(axisVal)
                 }
                 
                 analogButtonStates[btn] = value
                 
-                // Aggregate directions for this specific axis (e.g., combine Up + Down into one Y axis)
                 var aggregatedAxisValue: Float = 0.0
                 for (mappedBtn, _) in mapping.buttons {
                     if let otherInfo = mappedBtn.analogInfo, 
@@ -1007,14 +1009,15 @@ extendedGamepad.valueChangedHandler = { [weak self] _, element in
                     }
                 }
                 
+                aggregatedAxisValue = AnalogDeadZone.default.apply(aggregatedAxisValue)
                 aggregatedAxisValue = max(-1.0, min(1.0, aggregatedAxisValue))
                 let retroValue = Int32(aggregatedAxisValue * 32767.0)
                 LibretroBridgeSwift.setAnalogState(Int(info.index), id: Int(info.id), value: retroValue)
             } 
             
             // 2. Handle Digital Joypad Buttons (ID 0 to 15)
-            else if btn.retroID(for: self.systemID) >= 0 {
-                let retroID = Int(btn.retroID(for: self.systemID))
+        else if btn.retroID(for: self.systemID, coreID: self.activeCoreID) >= 0 {
+            let retroID = Int(btn.retroID(for: self.systemID, coreID: self.activeCoreID))
                 
                 if let btnElement = element as? GCControllerButtonInput {
                     // Send analog value for L2/R2 triggers (used by Flycast for Dreamcast analog triggers)

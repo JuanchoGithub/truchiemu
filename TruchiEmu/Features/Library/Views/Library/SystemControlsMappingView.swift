@@ -70,7 +70,7 @@ struct SystemControlsMappingView: View {
                 .font(.headline)
             Spacer()
             Button(loc.localized("controls.resetToDefaults")) {
-                mapping = KeyboardMapping.defaults(for: systemID)
+                mapping = KeyboardMapping.defaults(for: systemID, handedness: controllerService.handedness)
                 controllerService.updateKeyboardMapping(mapping, for: systemID)
             }
             .font(.caption)

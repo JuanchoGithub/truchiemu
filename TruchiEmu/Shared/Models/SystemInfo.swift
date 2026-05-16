@@ -107,6 +107,7 @@ struct SystemInfo: Identifiable, Codable, Hashable {
     var defaultBoxType: BoxType = .vertical
     var displayInUI: Bool = true
     var isDiskBased: Bool = false
+    var database: [String]? = nil
 
     var customDisplayName: String?
     var coreReportedAspectRatio: CGFloat?
@@ -131,7 +132,7 @@ struct SystemInfo: Identifiable, Codable, Hashable {
     enum CodingKeys: String, CodingKey {
         case id, name, pathKeywords, magicHeaders, filenamePatterns, manufacturer
         case extensions, defaultCoreID, defaultShaderPresetID, iconName, emuIconName, year, sortOrder
-        case defaultBoxType, displayInUI, coreReportedAspectRatio, isDiskBased, customDisplayName
+        case defaultBoxType, displayInUI, coreReportedAspectRatio, isDiskBased, customDisplayName, database
     }
     
     // Custom Decoder to handle missing JSON fields safely
@@ -159,6 +160,7 @@ struct SystemInfo: Identifiable, Codable, Hashable {
         isDiskBased = try container.decodeIfPresent(Bool.self, forKey: .isDiskBased) ?? false
         coreReportedAspectRatio = try container.decodeIfPresent(CGFloat.self, forKey: .coreReportedAspectRatio)
         customDisplayName = try container.decodeIfPresent(String.self, forKey: .customDisplayName)
+        database = try container.decodeIfPresent([String].self, forKey: .database)
     }
     
     // Keep the standard init so LibretroInfoManager can still create objects dynamically
@@ -292,21 +294,24 @@ class SystemDatabase {
         for (id, bundleSys) in bundledSystems {
             processedIDs.insert(id)
             
-                if let cacheSys = cachedSystems[id] {
-                    // MERGE: Take the important bundled data, but keep cached dynamic changes
-                    var mergedSys = bundleSys
-                    
-                    // Union the extensions (Bundle + Libretro discoveries)
-                    let combinedExtensions = Set(bundleSys.extensions).union(cacheSys.extensions)
-                    mergedSys.extensions = Array(combinedExtensions).sorted()
-                    
-                    // Preserve user states from cache
-                    mergedSys.displayInUI = cacheSys.displayInUI
-                    mergedSys.defaultShaderPresetID = cacheSys.defaultShaderPresetID
-                    mergedSys.defaultCoreID = cacheSys.defaultCoreID
-                    mergedSys.customDisplayName = cacheSys.customDisplayName
-                    
-                    finalSystems.append(mergedSys)
+        if let cacheSys = cachedSystems[id] {
+            // MERGE: Take the important bundled data, but keep cached dynamic changes
+            var mergedSys = bundleSys
+
+            // Union the extensions (Bundle + Libretro discoveries)
+            let combinedExtensions = Set(bundleSys.extensions).union(cacheSys.extensions)
+            mergedSys.extensions = Array(combinedExtensions).sorted()
+
+            // Preserve user states from cache
+            mergedSys.displayInUI = cacheSys.displayInUI
+            mergedSys.defaultShaderPresetID = cacheSys.defaultShaderPresetID
+            mergedSys.defaultCoreID = cacheSys.defaultCoreID
+            mergedSys.customDisplayName = cacheSys.customDisplayName
+
+            // Always take database from bundle (source of truth) — never from stale cache
+            mergedSys.database = bundleSys.database
+
+            finalSystems.append(mergedSys)
                 } else {
                 // Found in bundle, but not in cache yet (brand new install or you added a new system)
                 finalSystems.append(bundleSys)
@@ -542,6 +547,28 @@ extension SystemDatabase {
         default: return libretroID
         }
     }
+    
+/// Looks up the system ID from a libretro database name by checking all systems' database fields
+    static func systemIDFromDatabaseName(_ dbName: String) -> String? {
+        let trimmed = dbName.trimmingCharacters(in: .whitespaces)
+        LoggerService.debug(category: "LibretroInfoManager", "Looking up database entry: '\(trimmed)'")
+        LoggerService.debug(category: "LibretroInfoManager", "Total systems in database: \(systems.count)")
+        
+        // Search through all systems to find one whose database field contains this name
+        for system in systems {
+            if let dbArray = system.database {
+                LoggerService.debug(category: "LibretroInfoManager", "Checking system '\(system.id)' with database: \(dbArray)")
+                for dbEntry in dbArray {
+                    if dbEntry == trimmed {
+                        LoggerService.debug(category: "LibretroInfoManager", "✓ Found match: '\(trimmed)' -> '\(system.id)'")
+                        return system.id
+                    }
+                }
+            }
+        }
+        LoggerService.warning(category: "LibretroInfoManager", "✗ No match found for '\(trimmed)'")
+        return nil
+    }
 }
 
 // MARK: - Libretro Core Info Refresh Service
@@ -703,6 +730,20 @@ class LibretroInfoManager: ObservableObject {
                             }
                         }
                         
+                        // 2. ALSO parse the "database" field to capture additional systems
+                        // e.g., picodrive has systemid="mega_drive" but database includes "Sega - 32X"
+                        if let databaseString = infoDict["database"] {
+                            let databaseEntries = databaseString.components(separatedBy: "|")
+                            for entry in databaseEntries {
+                                if let systemID = SystemDatabase.systemIDFromDatabaseName(entry) {
+                                    ids.append(systemID)
+                                    LoggerService.debug(category: "LibretroInfoManager", "Mapped database entry '\(entry)' to system ID '\(systemID)' for core '\(coreID)'")
+                                } else {
+                                    LoggerService.warning(category: "LibretroInfoManager", "Could not map database entry '\(entry)' for core '\(coreID)'. Total systems loaded: \(SystemDatabase.systems.count)")
+                                }
+                            }
+                        }
+                        
                         LibretroInfoManager.coreToSystemMap[coreID] = Set(ids)
                         
                         // Extract human-readable names and manufacturer
@@ -711,10 +752,9 @@ class LibretroInfoManager: ObservableObject {
                         
                         for (index, id) in ids.enumerated() {
                             if systemNamesFromInfo[id] == nil {
-                                if index < names.count {
-                                    systemNamesFromInfo[id] = names[index]
-                                } else if let firstName = names.first {
-                                    systemNamesFromInfo[id] = firstName
+                                // Use the canonical name from SystemDatabase if available
+                                if let system = SystemDatabase.systems.first(where: { $0.id == id }) {
+                                    systemNamesFromInfo[id] = system.name
                                 } else {
                                     systemNamesFromInfo[id] = id.capitalized
                                 }

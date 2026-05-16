@@ -65,6 +65,6 @@ extension GameDetailView {
 
     func resetControlsToSystemDefault() {
         let systemID = currentROM.systemID ?? ""
-        controllerService.updateKeyboardMapping(KeyboardMapping.defaults(for: systemID), for: systemID)
+        controllerService.updateKeyboardMapping(KeyboardMapping.defaults(for: systemID, handedness: controllerService.handedness), for: systemID)
     }
 }

@@ -436,6 +436,7 @@ struct ButtonMappingList: View {
                 ForEach(RetroButton.availableButtons(for: systemID), id: \.self) { btn in
                     MappingRowView(
                         button: btn,
+                        systemID: systemID,
                         currentMapping: currentMapping.buttons[btn],
                         isListening: listeningFor == btn,
                         onStartListening: { startListening(for: btn) },
@@ -619,6 +620,7 @@ struct ControllerMappingDetail: View {
                     ForEach(RetroButton.availableButtons(for: systemID), id: \.self) { btn in
                         MappingRowView(
                             button: btn,
+                            systemID: systemID,
                             currentMapping: mapping.buttons[btn],
                             isListening: listeningFor == btn,
                             onStartListening: {
@@ -719,6 +721,7 @@ struct ControllerMappingDetail: View {
 // MARK: - Mapping Row View
 struct MappingRowView: View {
     let button: RetroButton
+    let systemID: String
     let currentMapping: GCButtonMapping?
     let isListening: Bool
     let onStartListening: () -> Void
@@ -727,7 +730,7 @@ struct MappingRowView: View {
 
     var body: some View {
         HStack(spacing: 6) {
-            Text(button.displayName)
+            Text(button.displayName(for: systemID))
                 .font(.body)
                 .lineLimit(1)
 
@@ -936,7 +939,7 @@ struct KeyboardContentView: View {
                 LazyVGrid(columns: [GridItem(.flexible()), GridItem(.flexible())], spacing: 12) {
                     ForEach(buttons, id: \.self) { btn in
                         HStack {
-                            Text(btn.displayName).frame(width: 120, alignment: .leading)
+                            Text(btn.displayName(for: systemID)).frame(width: 120, alignment: .leading)
                             Spacer()
                             KeyCaptureButton(
                                 keyCode: controllerService.keyboardMapping(for: systemID).buttons[btn],
