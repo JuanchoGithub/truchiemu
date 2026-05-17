@@ -546,6 +546,8 @@
   "library.hideFromLibrary": "Hide from Library Only",
   "library.stop": "Stop",
   "library.addRomFolder": "Add ROM Folder",
+  "library.nothingHere": "Nothing here",
+  "library.tryDifferentCategory": "Try selecting a different category or system.",
   "library.noGamesMatchFilters": "No games match your filters",
   "library.nothingMatching": "Nothing matching \"{0}\"",
   "library.gamingShelfEmpty": "Your gaming shelf is empty",

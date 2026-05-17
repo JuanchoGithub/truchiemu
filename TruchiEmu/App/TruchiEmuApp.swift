@@ -363,6 +363,7 @@ private func languageDisplayName(for lang: String) -> String {
     switch lang.lowercased() {
     case "en": return "English"
     case "es": return "Español"
+    case "pt": return "Português"
     default: return lang.uppercased()
     }
 }

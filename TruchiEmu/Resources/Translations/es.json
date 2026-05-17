@@ -308,6 +308,8 @@
   "library.rebuilding": "Reconstruyendo...",
   "library.rebuildingDescription": "Puede tardar dependiendo de tus ROMs",
   "library.close": "Cerrar",
+  "library.nothingHere": "No hay nada aquí",
+  "library.tryDifferentCategory": "Prueba con una categoría o sistema diferente.",
   "library.noResults": "Sin resultados",
   "library.noSettingsMatch": "Sin ajustes",
   "library.searchGames": "Buscar juegos…",
