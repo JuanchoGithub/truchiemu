@@ -1083,7 +1083,6 @@ return false
                             let scanInt = getUniform("scanlineIntensity", fallback: 0.6) 
                             let barrelAmt = getUniform("barrelAmount", fallback: 0.05)
                             let colorB = getUniform("colorBoost", fallback: 1.1)
-                            LoggerService.extreme(category: "Shaders", "scanInt=\(scanInt) barrelAmt=\(barrelAmt) colorBoost=\(colorB)")
                             var u = CRTUniforms(
                                  scanlineIntensity: scanInt,
                                  barrelAmount: barrelAmt,
@@ -1110,8 +1109,8 @@ return false
                                  useWhite: getUniform("useWhite", fallback: 1.0),
                                  useVig: getUniform("useVig", fallback: 1.0),
                                  useFlick: getUniform("useFlick", fallback: 1.0),
-useBezel: getUniform("useBezel", fallback: 1.0),
-                                  useBloom: getUniform("useBloom", fallback: 0.0),
+                                 useBezel: getUniform("useBezel", fallback: 1.0),
+                                 useBloom: getUniform("useBloom", fallback: 0.0),
                                   
                                   // Subpixel mask controls
                                   maskPixelSpacingH: getUniform("maskPixelSpacingH", fallback: 3.0),
@@ -1207,70 +1206,68 @@ useBezel: getUniform("useBezel", fallback: 1.0),
    if vignetteEnabled { flags |= 1 << 8 } // FLAG_VIGNETTE
    if topographyEnabled { flags |= 1 << 9 } // FLAG_TOPOGRAPHY
    if colorMatrixEnabled { flags |= 1 << 10 } // FLAG_COLOR_MATRIX
-   LoggerService.info(category: "Shaders", "GBC flags: ghost=\(ghostEnabled) grid=\(gridEnabled) aberration=\(aberrationEnabled) bleed=\(bleedEnabled) newtonRings=\(newtonRingsEnabled) jitter=\(jitterEnabled) reflection=\(reflectionEnabled) grain=\(grainEnabled) vignette=\(vignetteEnabled) topography=\(topographyEnabled) colorMatrix=\(colorMatrixEnabled) -> flags=\(flags)")
-                            var u = GBCUniforms(
-                                dotOpacity: getUniform("dotOpacity", fallback: 0.85),
-                                specularShininess: getUniform("specularShininess", fallback: 8.0),
-                                colorBoost: colorB,
-                                physicalDepth: getUniform("physicalDepth", fallback: 0.22),
-                                ghostingWeight: gw,
-                                frameIndex: frameCounter,
-                                flags: flags,
-                                brightnessBoost: getUniform("brightnessBoost", fallback: 1.0),
-                                showShell: getUniform("showShell", fallback: 1.0),
-                                lightPositionIndex: getUniform("lightPositionIndex", fallback: 0.0),
-                                lightStrength: getUniform("lightStrength", fallback: 1.0),
-                                shellColorIndex: {
-                                let val = getUniform("shellColorIndex", fallback: 0.0)
-                                LoggerService.info(category: "Shaders", "GBC shellColorIndex=\(val)")
-                                return val
-                            }(),
-                                gridThicknessDark: getUniform("gridThicknessDark", fallback: 0.2),
-                                gridThicknessLight: getUniform("gridThicknessLight", fallback: 0.1),
-                                sourceSize: SIMD4<Float>(fw, fh, 0, 0),
-                                outputSize: SIMD4<Float>(vpW, vpH, 0, 0)
-)
-                            enc.setFragmentBytes(&u, length: MemoryLayout<GBCUniforms>.stride, index: 0)
-                            // Set all 5 textures: frame0=current, frame1=T-1, frame2=T-2, frame3=T-3, frame4=T-4
-                            enc.setFragmentTexture(frameTex, index: 0)
-                            for i in 1...4 {
-                                if let tex = getTemporalTexture(at: (temporalIndex - i + 5) % 5) {
-                                    enc.setFragmentTexture(tex, index: i)
-                                }
-                            }
-                            frameCounter += 1
-                        case "fragmentLiteCRT":
-                            let colorB = getUniform("colorBoost", fallback: 1.0)
-                            var u = LiteCRTUniforms(
-                                scanlineIntensity: getUniform("scanlineIntensity", fallback: 0.3),
-                                phosphorStrength: getUniform("phosphorStrength", fallback: 0.2),
-                                brightness: getUniform("brightness", fallback: 1.1),
-                                colorBoost: colorB
-                            )
-                            enc.setFragmentBytes(&u, length: MemoryLayout<LiteCRTUniforms>.stride, index: 0)
-                        case "fragmentScaleSmooth":
-                            let colorB = getUniform("colorBoost", fallback: 1.0)
-                            var u = ScaleSmoothUniforms(
-                                smoothness: getUniform("smoothness", fallback: 1.0),
-                                colorBoost: colorB,
-                                sourceSize: SIMD4<Float>(fw, fh, 1.0/fw, 1.0/fh)
-                            )
-                            enc.setFragmentBytes(&u, length: MemoryLayout<ScaleSmoothUniforms>.stride, index: 0)
-                        case "fragmentGBAShader":
-                            ensureTemporalTextures(width: frameTex.width, height: frameTex.height, device: device, sourceFormat: frameTex.pixelFormat)
-                            let colorB = getUniform("colorBoost", fallback: 1.0)
-                            var u = GBAUniforms(
-                                dotOpacity: getUniform("dotOpacity", fallback: 0.8),
-                                specularShininess: getUniform("specularShininess", fallback: 1.0),
-                                colorBoost: colorB,
-                                ghostingWeight: getUniform("ghostingWeight", fallback: 0.25),
-                                physicalDepth: getUniform("physicalDepth", fallback: 0.2),
-                                frameIndex: UInt32(frameCounter % 60),
-                                sourceSize: SIMD4<Float>(fw, fh, 1.0/fw, 1.0/fh),
-                                outputSize: SIMD4<Float>(vpW, vpH, 0.0, 0.0),
-                                lightPositionIndex: getUniform("lightPositionIndex", fallback: 0.0)
-                            )
-                            enc.setFragmentBytes(&u, length: MemoryLayout<GBAUniforms>.stride, index: 0)
+    var u = GBCUniforms(
+        dotOpacity: getUniform("dotOpacity", fallback: 0.85),
+        specularShininess: getUniform("specularShininess", fallback: 8.0),
+        colorBoost: colorB,
+        physicalDepth: getUniform("physicalDepth", fallback: 0.22),
+        ghostingWeight: gw,
+        frameIndex: frameCounter,
+        flags: flags,
+        brightnessBoost: getUniform("brightnessBoost", fallback: 1.0),
+        showShell: getUniform("showShell", fallback: 1.0),
+        lightPositionIndex: getUniform("lightPositionIndex", fallback: 0.0),
+        lightStrength: getUniform("lightStrength", fallback: 1.0),
+        shellColorIndex: {
+        let val = getUniform("shellColorIndex", fallback: 0.0)
+        return val
+    }(),
+        gridThicknessDark: getUniform("gridThicknessDark", fallback: 0.2),
+        gridThicknessLight: getUniform("gridThicknessLight", fallback: 0.1),
+        sourceSize: SIMD4<Float>(fw, fh, 0, 0),
+        outputSize: SIMD4<Float>(vpW, vpH, 0, 0)
+    )
+        enc.setFragmentBytes(&u, length: MemoryLayout<GBCUniforms>.stride, index: 0)
+        // Set all 5 textures: frame0=current, frame1=T-1, frame2=T-2, frame3=T-3, frame4=T-4
+        enc.setFragmentTexture(frameTex, index: 0)
+        for i in 1...4 {
+            if let tex = getTemporalTexture(at: (temporalIndex - i + 5) % 5) {
+                enc.setFragmentTexture(tex, index: i)
+            }
+        }
+        frameCounter += 1
+    case "fragmentLiteCRT":
+        let colorB = getUniform("colorBoost", fallback: 1.0)
+        var u = LiteCRTUniforms(
+            scanlineIntensity: getUniform("scanlineIntensity", fallback: 0.3),
+            phosphorStrength: getUniform("phosphorStrength", fallback: 0.2),
+            brightness: getUniform("brightness", fallback: 1.1),
+            colorBoost: colorB
+        )
+        enc.setFragmentBytes(&u, length: MemoryLayout<LiteCRTUniforms>.stride, index: 0)
+    case "fragmentScaleSmooth":
+        let colorB = getUniform("colorBoost", fallback: 1.0)
+        var u = ScaleSmoothUniforms(
+            smoothness: getUniform("smoothness", fallback: 1.0),
+            colorBoost: colorB,
+            sourceSize: SIMD4<Float>(fw, fh, 1.0/fw, 1.0/fh)
+        )
+        enc.setFragmentBytes(&u, length: MemoryLayout<ScaleSmoothUniforms>.stride, index: 0)
+    case "fragmentGBAShader":
+        ensureTemporalTextures(width: frameTex.width, height: frameTex.height, device: device, sourceFormat: frameTex.pixelFormat)
+        let colorB = getUniform("colorBoost", fallback: 1.0)
+        var u = GBAUniforms(
+            dotOpacity: getUniform("dotOpacity", fallback: 0.8),
+            specularShininess: getUniform("specularShininess", fallback: 1.0),
+            colorBoost: colorB,
+            ghostingWeight: getUniform("ghostingWeight", fallback: 0.25),
+            physicalDepth: getUniform("physicalDepth", fallback: 0.2),
+            frameIndex: UInt32(frameCounter % 60),
+            sourceSize: SIMD4<Float>(fw, fh, 1.0/fw, 1.0/fh),
+            outputSize: SIMD4<Float>(vpW, vpH, 0.0, 0.0),
+            lightPositionIndex: getUniform("lightPositionIndex", fallback: 0.0)
+        )
+        enc.setFragmentBytes(&u, length: MemoryLayout<GBAUniforms>.stride, index: 0)
         enc.setFragmentTexture(frameTex, index: 0)
         for i in 1...2 {
             if let tex = getTemporalTexture(at: (temporalIndex - i + 5) % 5) {
