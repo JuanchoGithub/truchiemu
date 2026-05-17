@@ -161,4 +161,8 @@ struct CoreOverrideUpdate {
     @objc static func getOverrideKeys(for coreID: NSString) -> [String] {
         return Array(CoreOverrideService.shared.getOverrides(for: coreID as String).keys)
     }
+
+    @objc static func getAllOverrides(for coreID: NSString) -> NSDictionary {
+        return CoreOverrideService.shared.getOverrides(for: coreID as String) as NSDictionary
+    }
 }

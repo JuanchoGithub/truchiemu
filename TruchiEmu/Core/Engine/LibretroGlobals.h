@@ -38,6 +38,8 @@ extern NSDictionary<NSString *, NSArray *> *g_inputDescriptors;
 
 void parseInputDescriptors(const struct retro_input_descriptor *descriptors);
 
+extern BOOL g_variablesUpdated;
+
 extern dispatch_semaphore_t g_bridgeCompletionSemaphore;
 
 // Keyboard state (RETRO_DEVICE_KEYBOARD)

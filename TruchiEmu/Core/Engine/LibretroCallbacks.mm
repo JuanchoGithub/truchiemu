@@ -115,24 +115,26 @@ bool bridge_environment(unsigned cmd, void *data) {
     if (data) *(unsigned char *)data = 1;
     return true;
 
-  case RETRO_ENVIRONMENT_GET_SYSTEM_DIRECTORY: {
-    static char s_sysPath[1024];
-    // Use dynamic path from SaveDirectoryManager
-    NSString *path = [SaveDirectoryBridge libretroSystemDirectoryPath];
-    [[NSFileManager defaultManager] createDirectoryAtPath:path withIntermediateDirectories:YES attributes:nil error:nil];
-    strncpy(s_sysPath, path.UTF8String, sizeof(s_sysPath) - 1);
-    if (data) *(const char **)data = s_sysPath;
-    return true;
-  }
-  case RETRO_ENVIRONMENT_GET_SAVE_DIRECTORY: {
-    static char s_savePath[1024];
-    // Use dynamic path from SaveDirectoryManager
-    NSString *path = [SaveDirectoryBridge libretroSaveDirectoryPath];
-    [[NSFileManager defaultManager] createDirectoryAtPath:path withIntermediateDirectories:YES attributes:nil error:nil];
-    strncpy(s_savePath, path.UTF8String, sizeof(s_savePath) - 1);
-    if (data) *(const char **)data = s_savePath;
-    return true;
-  }
+    case RETRO_ENVIRONMENT_GET_SYSTEM_DIRECTORY: {
+        static char s_sysPath[1024];
+        // Use dynamic path from SaveDirectoryManager
+        NSString *path = [SaveDirectoryBridge libretroSystemDirectoryPath];
+        [[NSFileManager defaultManager] createDirectoryAtPath:path withIntermediateDirectories:YES attributes:nil error:nil];
+        strncpy(s_sysPath, path.UTF8String, sizeof(s_sysPath) - 1);
+        bridge_log_printf(RETRO_LOG_INFO, "[LibretroCore] GET_SYSTEM_DIRECTORY returning: %s", s_sysPath);
+        if (data) *(const char **)data = s_sysPath;
+        return true;
+    }
+    case RETRO_ENVIRONMENT_GET_SAVE_DIRECTORY: {
+        static char s_savePath[1024];
+        // Use dynamic path from SaveDirectoryManager
+        NSString *path = [SaveDirectoryBridge libretroSaveDirectoryPath];
+        [[NSFileManager defaultManager] createDirectoryAtPath:path withIntermediateDirectories:YES attributes:nil error:nil];
+        strncpy(s_savePath, path.UTF8String, sizeof(s_savePath) - 1);
+        bridge_log_printf(RETRO_LOG_INFO, "[LibretroCore] GET_SAVE_DIRECTORY returning: %s", s_savePath);
+        if (data) *(const char **)data = s_savePath;
+        return true;
+    }
 
   case RETRO_ENVIRONMENT_SET_PIXEL_FORMAT: {
     if (data) {
@@ -159,37 +161,39 @@ bool bridge_environment(unsigned cmd, void *data) {
     if (data) *(unsigned *)data = RETRO_LANGUAGE_ENGLISH;
     return true;
 
-  case RETRO_ENVIRONMENT_GET_VARIABLE: {
-    struct retro_variable *var = (struct retro_variable *)data;
-    if (var && var->key) {
-        static std::unordered_map<std::string, std::string> s_varCache;
+    case RETRO_ENVIRONMENT_GET_VARIABLE: {
+        struct retro_variable *var = (struct retro_variable *)data;
+        if (var && var->key) {
+            static std::unordered_map<std::string, std::string> s_varCache;
 
-        // Apply core-specific overrides from CoreOverrideService
-        if (g_coreID) {
-            const char* overrideValue = core_override_get_value([((NSString *)g_coreID) UTF8String], var->key);
-            if (overrideValue) {
-                s_varCache[var->key] = overrideValue;
-                var->value = s_varCache[var->key].c_str();
-                bridge_log_printf(RETRO_LOG_INFO, "[Override-JSON] %s = %s", var->key, var->value);
-                return true;
+            // Apply core-specific overrides from CoreOverrideService
+            if (g_coreID) {
+                const char* overrideValue = core_override_get_value([((NSString *)g_coreID) UTF8String], var->key);
+                if (overrideValue) {
+                    s_varCache[var->key] = overrideValue;
+                    var->value = s_varCache[var->key].c_str();
+                    bridge_log_printf(RETRO_LOG_INFO, "[Override-JSON] %s = %s", var->key, var->value);
+                    return true;
+                }
             }
-        }
-        
-        // Apply registered option values from Swift layer
-        if (g_optValues && g_optValues.count > 0) {
-            NSString *keyStr = [NSString stringWithUTF8String:var->key];
-            NSString *valStr = g_optValues[keyStr];
-            if (valStr && valStr.length > 0) {
-                s_varCache[var->key] = valStr.UTF8String;
-                var->value = s_varCache[var->key].c_str();
-                return true;
+
+            // Apply registered option values from Swift layer
+            if (g_optValues && g_optValues.count > 0) {
+                NSString *keyStr = [NSString stringWithUTF8String:var->key];
+                NSString *valStr = g_optValues[keyStr];
+                if (valStr && valStr.length > 0) {
+                    s_varCache[var->key] = valStr.UTF8String;
+                    var->value = s_varCache[var->key].c_str();
+                    bridge_log_printf(RETRO_LOG_INFO, "[Option-Swift] %s = %s", var->key, var->value);
+                    return true;
+                }
             }
+
+            bridge_log_printf(RETRO_LOG_INFO, "[Option-Unset] %s (no override or user value found)", var->key);
+            var->value = NULL;
         }
-        
-        var->value = NULL;
+        return false;
     }
-    return false;
-  }
   case RETRO_ENVIRONMENT_SET_GEOMETRY:
     if (data && g_instance) {
       struct retro_game_geometry *geo = (struct retro_game_geometry *)data;
@@ -304,9 +308,15 @@ case RETRO_ENVIRONMENT_SET_CORE_OPTIONS: {
       g_instance->_avInfo.geometry = info->geometry;
     }
     return true;
-  case RETRO_ENVIRONMENT_GET_VARIABLE_UPDATE:
-    if (data) *(bool *)data = false;
-    return true;
+	case RETRO_ENVIRONMENT_GET_VARIABLE_UPDATE: {
+		bool updated = g_variablesUpdated;
+		if (updated) {
+			g_variablesUpdated = NO;
+			bridge_log_printf(RETRO_LOG_INFO, "[LibretroCore] GET_VARIABLE_UPDATE returning true (device port override trigger)");
+		}
+		if (data) *(bool *)data = updated;
+		return true;
+	}
   case RETRO_ENVIRONMENT_SET_HW_RENDER: {
     struct retro_hw_render_callback *cb = (struct retro_hw_render_callback *)data;
     if (g_instance && cb) {

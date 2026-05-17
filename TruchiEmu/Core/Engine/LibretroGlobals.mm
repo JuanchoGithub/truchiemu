@@ -1,4 +1,5 @@
 #import "LibretroGlobals.h"
+#import "CoreOverrideBridge.h"
 
 CoreLoggerBlock g_swiftLoggerBlock = nil;
 GameLoadedBlock g_gameLoadedCallback = nil;
@@ -8,7 +9,8 @@ int g_selectedLanguage = 0; // RETRO_LANGUAGE_ENGLISH
 int g_logLevel = 1;         // 1 = Warn & Error
 NSString *g_coreID = nil;   
 NSString *g_shaderDir = nil;                          
-BOOL g_isPaused = NO;      
+BOOL g_isPaused = NO;
+BOOL g_variablesUpdated = NO;      
 int g_currentRotation = 0; 
 GLuint g_hwFBO = 0;
 
@@ -253,36 +255,38 @@ void parseInputDescriptors(const struct retro_input_descriptor *descriptors) {
 }
 
 void applyPersistedOverrides(void) {
-  if (!g_coreID) return;
+    if (!g_coreID) return;
 
-  NSString *configName =[NSString stringWithFormat:@"%@.cfg", g_coreID];
-  NSString *appSupport =[NSSearchPathForDirectoriesInDomains(NSApplicationSupportDirectory, NSUserDomainMask, YES) firstObject];
-  NSString *optionsDir =[appSupport stringByAppendingPathComponent:@"TruchiEmu/CoreOptions"];
-  NSString *configPath =[optionsDir stringByAppendingPathComponent:configName];
+    core_override_apply_all_to_optvalues(g_coreID.UTF8String);
 
-  if (![[NSFileManager defaultManager] fileExistsAtPath:configPath]) return;
+    NSString *configName =[NSString stringWithFormat:@"%@.cfg", g_coreID];
+    NSString *appSupport =[NSSearchPathForDirectoriesInDomains(NSApplicationSupportDirectory, NSUserDomainMask, YES) firstObject];
+    NSString *optionsDir =[appSupport stringByAppendingPathComponent:@"TruchiEmu/CoreOptions"];
+    NSString *configPath =[optionsDir stringByAppendingPathComponent:configName];
 
-  NSString *fileContent =[NSString stringWithContentsOfFile:configPath encoding:NSUTF8StringEncoding error:nil];
-  if (!fileContent) return;
+    if ([[NSFileManager defaultManager] fileExistsAtPath:configPath]) {
+        NSString *fileContent =[NSString stringWithContentsOfFile:configPath encoding:NSUTF8StringEncoding error:nil];
+        if (fileContent) {
+            NSArray<NSString *> *allLines =[fileContent componentsSeparatedByCharactersInSet:[NSCharacterSet newlineCharacterSet]];
 
-  NSArray<NSString *> *allLines =[fileContent componentsSeparatedByCharactersInSet:[NSCharacterSet newlineCharacterSet]];
+            for (NSString *line in allLines) {
+                NSString *trimmed = [line stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]];
+                if (trimmed.length == 0 || [trimmed hasPrefix:@"#"]) continue;
 
-  for (NSString *line in allLines) {
-    NSString *trimmed = [line stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]];
-    if (trimmed.length == 0 || [trimmed hasPrefix:@"#"]) continue;
+                NSRange eqRange = [trimmed rangeOfString:@"="];
+                if (eqRange.location == NSNotFound) continue;
 
-    NSRange eqRange = [trimmed rangeOfString:@"="];
-    if (eqRange.location == NSNotFound) continue;
+                NSString *key = [[trimmed substringToIndex:eqRange.location] stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceCharacterSet]];
+                NSString *val = [[trimmed substringFromIndex:NSMaxRange(eqRange)] stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceCharacterSet]];
 
-    NSString *key = [[trimmed substringToIndex:eqRange.location] stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceCharacterSet]];
-    NSString *val = [[trimmed substringFromIndex:NSMaxRange(eqRange)] stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceCharacterSet]];
-
-    if ([val hasPrefix:@"\""] && [val hasSuffix:@"\""]) {
-      val =[val substringWithRange:NSMakeRange(1, val.length - 2)];
+                if ([val hasPrefix:@"\""] && [val hasSuffix:@"\""]) {
+                    val =[val substringWithRange:NSMakeRange(1, val.length - 2)];
+                }
+                if (g_optValues && key.length > 0) {
+                    g_optValues[key] = val;
+                    bridge_log_printf(RETRO_LOG_INFO, "Override from .cfg: %s = %s", key.UTF8String, val.UTF8String);
+                }
+            }
+        }
     }
-    if (g_optValues && key.length > 0) {
-      g_optValues[key] = val;
-      bridge_log_printf(RETRO_LOG_INFO, "Override from .cfg: %s = %s", key.UTF8String, val.UTF8String);
-    }
-  }
 }

@@ -204,9 +204,20 @@ return self;
     goto shutdown;
   } @catch (...) {
     goto shutdown;
-  }[self setControllerPortDevice:0 device:device_type];
+}[self setControllerPortDevice:0 device:device_type];
 
-  [_coreLock lock];
+    // Signal variables updated for Flycast cores so retro_run() triggers
+    // update_variables() with first_startup=false, which processes device
+    // port options (reicast_device_port*_slot*) that are skipped on first init
+    if (g_coreID && [[g_coreID lowercaseString] containsString:@"flycast"]) {
+        g_variablesUpdated = YES;
+        [self setControllerPortDevice:1 device:device_type];
+        [self setControllerPortDevice:2 device:device_type];
+        [self setControllerPortDevice:3 device:device_type];
+        bridge_log_printf(RETRO_LOG_INFO, "[LibretroCore] Set g_variablesUpdated=YES for Flycast device port override");
+    }
+
+    [_coreLock lock];
   if (_hwRenderEnabled && _hw_callback.context_reset) {
     if (_glContext) CGLSetCurrentContext(_glContext);
     _hw_callback.context_reset();
