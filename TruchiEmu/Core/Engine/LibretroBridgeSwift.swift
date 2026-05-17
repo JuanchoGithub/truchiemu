@@ -1,8 +1,8 @@
 import Foundation
 
 @objc class LibretroBridgeSwift: NSObject {
-    
-    // MARK: - Logging Integration
+
+// MARK: - Logging Integration
     
     static func registerCoreLogger(logger: @escaping (String, Int) -> Void) {
         // Because it is a + (class method) in Obj-C, 

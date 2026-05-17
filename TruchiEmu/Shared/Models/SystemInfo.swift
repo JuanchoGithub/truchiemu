@@ -107,6 +107,7 @@ struct SystemInfo: Identifiable, Codable, Hashable {
     var defaultBoxType: BoxType = .vertical
     var displayInUI: Bool = true
     var isDiskBased: Bool = false
+    var isRedumpOnly: Bool = false
     var database: [String]? = nil
 
     var customDisplayName: String?
@@ -117,22 +118,14 @@ struct SystemInfo: Identifiable, Codable, Hashable {
         if let coreAR = coreReportedAspectRatio, coreAR > 0.0 {
             return coreAR
         }
-        
-        switch id {
-        case "psx", "ps1", "ps2", "n64", "saturn", "dreamcast", "3do":
-            return 4.0 / 3.0
-        case "nds":
-            return 2.0 / 3.0
-        default:
-            return 4.0 / 3.0
-        }
+        return 4.0 / 3.0 // Default aspect ratio for most systems
     }
     
     // Explicit CodingKeys ensure both custom Decoding and automatic Encoding work perfectly
     enum CodingKeys: String, CodingKey {
         case id, name, pathKeywords, magicHeaders, filenamePatterns, manufacturer
         case extensions, defaultCoreID, defaultShaderPresetID, iconName, emuIconName, year, sortOrder
-        case defaultBoxType, displayInUI, coreReportedAspectRatio, isDiskBased, customDisplayName, database
+        case defaultBoxType, displayInUI, coreReportedAspectRatio, isDiskBased, isRedumpOnly, customDisplayName, database
     }
     
     // Custom Decoder to handle missing JSON fields safely
@@ -158,13 +151,14 @@ struct SystemInfo: Identifiable, Codable, Hashable {
         defaultBoxType = try container.decodeIfPresent(BoxType.self, forKey: .defaultBoxType) ?? .vertical
         displayInUI = try container.decodeIfPresent(Bool.self, forKey: .displayInUI) ?? true
         isDiskBased = try container.decodeIfPresent(Bool.self, forKey: .isDiskBased) ?? false
+        isRedumpOnly = try container.decodeIfPresent(Bool.self, forKey: .isRedumpOnly) ?? false
         coreReportedAspectRatio = try container.decodeIfPresent(CGFloat.self, forKey: .coreReportedAspectRatio)
         customDisplayName = try container.decodeIfPresent(String.self, forKey: .customDisplayName)
         database = try container.decodeIfPresent([String].self, forKey: .database)
     }
     
     // Keep the standard init so LibretroInfoManager can still create objects dynamically
-    init(id: String, name: String, pathKeywords: [String], magicHeaders:[MagicHeader], filenamePatterns: [String], manufacturer: String, extensions: [String], defaultCoreID: String?, defaultShaderPresetID: String? = nil, iconName: String, emuIconName: String?, year: String?, sortOrder: Int, defaultBoxType: BoxType, displayInUI: Bool, isDiskBased: Bool = false) {
+    init(id: String, name: String, pathKeywords: [String], magicHeaders:[MagicHeader], filenamePatterns: [String], manufacturer: String, extensions: [String], defaultCoreID: String?, defaultShaderPresetID: String? = nil, iconName: String, emuIconName: String?, year: String?, sortOrder: Int, defaultBoxType: BoxType, displayInUI: Bool, isDiskBased: Bool = false, isRedumpOnly: Bool = false) {
         self.id = id
         self.name = name
         self.pathKeywords = pathKeywords
@@ -181,6 +175,7 @@ struct SystemInfo: Identifiable, Codable, Hashable {
         self.defaultBoxType = defaultBoxType
         self.displayInUI = displayInUI
         self.isDiskBased = isDiskBased
+        self.isRedumpOnly = isRedumpOnly
         self.coreReportedAspectRatio = nil
         self.customDisplayName = nil
     }
@@ -231,11 +226,7 @@ struct SystemInfo: Identifiable, Codable, Hashable {
         if let custom = customDisplayName, !custom.isEmpty {
             return custom
         }
-        switch id {
-        case "nes": return "Nintendo NES"
-        case "genesis": return "Sega Genesis"
-        default: return name
-        }
+        return name
     }
 }
 

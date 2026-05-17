@@ -1,26 +1,69 @@
 {
   "buttons": {
-    "z": {
-      "label": "Z"
+    "b": {
+      "label": "Button 2"
     },
-    "x": {
-      "label": "S"
+    "y": {
+      "label": "Button 4"
     },
-    "a": {
-      "label": "A"
+    "select": {
+      "label": "Insert Coin"
+    },
+    "start": {
+      "label": "Start"
     },
     "up": {
-      "label": "D-Pad Up"
+      "label": "Joy Up"
     },
     "down": {
-      "label": "D-Pad Down"
+      "label": "Joy Down"
     },
     "left": {
-      "label": "D-Pad Left"
+      "label": "Joy Left"
     },
     "right": {
-      "label": "D-Pad Right"
+      "label": "Joy Right"
+    },
+    "a": {
+      "label": "Button 1"
+    },
+    "x": {
+      "label": "Button 3"
+    },
+    "l1": {
+      "label": "Button 5"
+    },
+    "r1": {
+      "label": "Button 6"
+    },
+    "l2": {
+      "label": "Button 7"
+    },
+    "r2": {
+      "label": "Button 8"
+    },
+    "l3": {
+      "label": "Service"
+    },
+    "r3": {
+      "label": "MAME UI"
+    },
+    "lStickRight": {
+      "label": "Left Stick X →"
+    },
+    "lStickUp": {
+      "label": "Left Stick Y ↑"
+    },
+    "rStickRight": {
+      "label": "Right Stick X →"
+    },
+    "rStickUp": {
+      "label": "Right Stick Y ↑"
     }
   },
+  "turboButtons": [
+    "a",
+    "b"
+  ],
   "systemCategory": "Arcade"
 }

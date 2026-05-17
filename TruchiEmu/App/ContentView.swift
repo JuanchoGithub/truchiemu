@@ -39,11 +39,12 @@ struct ContentView: View {
         Group {
             if !library.hasCompletedOnboarding && !wizard.hasCompletedWizard {
                 // Show the setup wizard for first-time users
-                SetupWizardView(wizard: wizard)
-                    .environmentObject(library)
-                    .environmentObject(categoryManager)
-                    .environmentObject(coreManager)
-                    .environmentObject(controllerService)
+            SetupWizardView(wizard: wizard)
+                .environmentObject(library)
+                .environmentObject(categoryManager)
+                .environmentObject(coreManager)
+                .environmentObject(controllerService)
+                .environmentObject(loc)
             } else {
                 mainInterface
             }

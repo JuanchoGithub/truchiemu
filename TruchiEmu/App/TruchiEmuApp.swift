@@ -115,10 +115,10 @@ LoggerService.debug(category: category, message)
                 
 // Add Settings menu item to app menu using .appSettings placement
                 CommandGroup(after: .appTermination) {
-                    Button(loc.localized("app.settings")) {
-                        UserDefaults.standard.set("general", forKey: "settings_selectedTab")
-                        NotificationCenter.default.post(name: .openAppSettings, object: nil)
-                    }
+            Button(loc.localized("app.settings")) {
+                AppSettings.set("settings_selectedTab", value: "general")
+                NotificationCenter.default.post(name: .openAppSettings, object: nil)
+            }
                     .keyboardShortcut(",", modifiers: .command)
                 }
                 
@@ -262,37 +262,37 @@ LoggerService.debug(category: category, message)
 
                     // Settings submenu
                     Menu(loc.localized("app.settings")) {
-                        Button(loc.localized("app.controllers")) {
-                            UserDefaults.standard.set("controllers", forKey: "settings_selectedTab")
-                            NotificationCenter.default.post(name: .openAppSettings, object: nil)
-                        }
+        Button(loc.localized("app.controllers")) {
+                AppSettings.set("settings_selectedTab", value: "controllers")
+                NotificationCenter.default.post(name: .openAppSettings, object: nil)
+            }
 
-                        Button(loc.localized("app.shadersDisplay")) {
-                            UserDefaults.standard.set("display", forKey: "settings_selectedTab")
-                            NotificationCenter.default.post(name: .openAppSettings, object: nil)
-                        }
+            Button(loc.localized("app.shadersDisplay")) {
+                AppSettings.set("settings_selectedTab", value: "display")
+                NotificationCenter.default.post(name: .openAppSettings, object: nil)
+            }
 
-                        Button(loc.localized("app.cheats")) {
-                            UserDefaults.standard.set("cheats", forKey: "settings_selectedTab")
-                            NotificationCenter.default.post(name: .openAppSettings, object: nil)
-                        }
+            Button(loc.localized("app.cheats")) {
+                AppSettings.set("settings_selectedTab", value: "cheats")
+                NotificationCenter.default.post(name: .openAppSettings, object: nil)
+            }
 
-                        Button(loc.localized("app.bezels")) {
-                            UserDefaults.standard.set("bezels", forKey: "settings_selectedTab")
-                            NotificationCenter.default.post(name: .openAppSettings, object: nil)
-                        }
+            Button(loc.localized("app.bezels")) {
+                AppSettings.set("settings_selectedTab", value: "bezels")
+                NotificationCenter.default.post(name: .openAppSettings, object: nil)
+            }
 
-                        Divider()
+            Divider()
 
-                        Button(loc.localized("app.cores")) {
-                            UserDefaults.standard.set("cores", forKey: "settings_selectedTab")
-                            NotificationCenter.default.post(name: .openAppSettings, object: nil)
-                        }
+            Button(loc.localized("app.cores")) {
+                AppSettings.set("settings_selectedTab", value: "cores")
+                NotificationCenter.default.post(name: .openAppSettings, object: nil)
+            }
 
-                        Button(loc.localized("app.boxArtSettings")) {
-                            UserDefaults.standard.set("boxArt", forKey: "settings_selectedTab")
-                            NotificationCenter.default.post(name: .openAppSettings, object: nil)
-                        }
+            Button(loc.localized("app.boxArtSettings")) {
+                AppSettings.set("settings_selectedTab", value: "boxArt")
+                NotificationCenter.default.post(name: .openAppSettings, object: nil)
+            }
                     }
                 }
             }

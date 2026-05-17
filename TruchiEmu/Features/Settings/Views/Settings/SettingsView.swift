@@ -120,25 +120,22 @@ struct SettingsView: View {
         .general, .genre, .library, .logging, .retroAchievements, .about
     ]
     
-    // Use @AppStorage so it persists and can be set before openSettings() is called
-    @AppStorage("settings_selectedTab") private var selectedPageRaw: String = "general"
-    
     @State private var selectedPage: Page = .general
     @State private var searchText: String = ""
     @State private var columnVisibility: NavigationSplitViewVisibility = .all
     
     let system: SystemInfo?
     
-    // Sync state with AppStorage when view appears
+    // Sync state with AppSettings when view appears
     private func syncWithStorage() {
-        if let page = Page(rawValue: selectedPageRaw) {
+        if let page = Page(rawValue: AppSettings.getString("settings_selectedTab", defaultValue: "general") ?? "general") {
             selectedPage = page
         }
     }
-    
+
     // Update storage when selection changes
     private func updateStorage() {
-        selectedPageRaw = selectedPage.rawValue
+        AppSettings.set("settings_selectedTab", value: selectedPage.rawValue)
     }
     
     init(system: SystemInfo? = nil, initialPage: SettingsView.Page? = nil) {
@@ -173,7 +170,7 @@ struct SettingsView: View {
         .onAppear {
             if system != nil {
                 // Only sync if no initialPage was provided
-                if selectedPage == .general && selectedPageRaw == "general" {
+                if selectedPage == .general && AppSettings.getString("settings_selectedTab", defaultValue: "general") == "general" {
                     // First appearance, potentially show initialPage from init
                 }
             } else {

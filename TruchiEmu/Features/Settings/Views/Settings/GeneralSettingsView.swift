@@ -219,6 +219,7 @@ struct GeneralSettingsView: View {
         switch lang.lowercased() {
         case "en": return "English"
         case "es": return "Español"
+        case "pt": return "Português"
         default: return lang.uppercased()
         }
     }
@@ -227,6 +228,7 @@ struct GeneralSettingsView: View {
         switch lang.lowercased() {
         case "en": return "🇺🇸"
         case "es": return "🇦🇷"
+        case "pt": return "🇧🇷"
         default: return "🌐"
         }
     }

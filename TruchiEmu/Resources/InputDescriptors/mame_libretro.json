@@ -1,0 +1,770 @@
+[
+  {
+    "description" : "Joy Left",
+    "id" : 6
+  },
+  {
+    "description" : "Joy Right",
+    "id" : 7
+  },
+  {
+    "description" : "Joy Up",
+    "id" : 4
+  },
+  {
+    "description" : "Joy Down",
+    "id" : 5
+  },
+  {
+    "description" : "A",
+    "id" : 8
+  },
+  {
+    "description" : "B",
+    "id" : 0
+  },
+  {
+    "description" : "X",
+    "id" : 9
+  },
+  {
+    "description" : "Y",
+    "id" : 1
+  },
+  {
+    "description" : "L",
+    "id" : 10
+  },
+  {
+    "description" : "R",
+    "id" : 11
+  },
+  {
+    "description" : "Select",
+    "id" : 2
+  },
+  {
+    "description" : "Start",
+    "id" : 3
+  },
+  {
+    "description" : "L2",
+    "id" : 12
+  },
+  {
+    "description" : "L3",
+    "id" : 14
+  },
+  {
+    "description" : "R2",
+    "id" : 13
+  },
+  {
+    "description" : "R3",
+    "id" : 15
+  },
+  {
+    "description" : "Left Stick X",
+    "id" : 16
+  },
+  {
+    "description" : "",
+    "id" : 17
+  },
+  {
+    "description" : "Left Stick Y",
+    "id" : 18
+  },
+  {
+    "description" : "",
+    "id" : 19
+  },
+  {
+    "description" : "Right Stick X",
+    "id" : 20
+  },
+  {
+    "description" : "",
+    "id" : 21
+  },
+  {
+    "description" : "Right Stick Y",
+    "id" : 22
+  },
+  {
+    "description" : "",
+    "id" : 23
+  },
+  {
+    "description" : "Joy Left",
+    "id" : 6
+  },
+  {
+    "description" : "Joy Right",
+    "id" : 7
+  },
+  {
+    "description" : "Joy Up",
+    "id" : 4
+  },
+  {
+    "description" : "Joy Down",
+    "id" : 5
+  },
+  {
+    "description" : "A",
+    "id" : 8
+  },
+  {
+    "description" : "B",
+    "id" : 0
+  },
+  {
+    "description" : "X",
+    "id" : 9
+  },
+  {
+    "description" : "Y",
+    "id" : 1
+  },
+  {
+    "description" : "L",
+    "id" : 10
+  },
+  {
+    "description" : "R",
+    "id" : 11
+  },
+  {
+    "description" : "Select",
+    "id" : 2
+  },
+  {
+    "description" : "Start",
+    "id" : 3
+  },
+  {
+    "description" : "L2",
+    "id" : 12
+  },
+  {
+    "description" : "L3",
+    "id" : 14
+  },
+  {
+    "description" : "R2",
+    "id" : 13
+  },
+  {
+    "description" : "R3",
+    "id" : 15
+  },
+  {
+    "description" : "Left Stick X",
+    "id" : 16
+  },
+  {
+    "description" : "",
+    "id" : 17
+  },
+  {
+    "description" : "Left Stick Y",
+    "id" : 18
+  },
+  {
+    "description" : "",
+    "id" : 19
+  },
+  {
+    "description" : "Right Stick X",
+    "id" : 20
+  },
+  {
+    "description" : "",
+    "id" : 21
+  },
+  {
+    "description" : "Right Stick Y",
+    "id" : 22
+  },
+  {
+    "description" : "",
+    "id" : 23
+  },
+  {
+    "description" : "Joy Left",
+    "id" : 6
+  },
+  {
+    "description" : "Joy Right",
+    "id" : 7
+  },
+  {
+    "description" : "Joy Up",
+    "id" : 4
+  },
+  {
+    "description" : "Joy Down",
+    "id" : 5
+  },
+  {
+    "description" : "A",
+    "id" : 8
+  },
+  {
+    "description" : "B",
+    "id" : 0
+  },
+  {
+    "description" : "X",
+    "id" : 9
+  },
+  {
+    "description" : "Y",
+    "id" : 1
+  },
+  {
+    "description" : "L",
+    "id" : 10
+  },
+  {
+    "description" : "R",
+    "id" : 11
+  },
+  {
+    "description" : "Select",
+    "id" : 2
+  },
+  {
+    "description" : "Start",
+    "id" : 3
+  },
+  {
+    "description" : "L2",
+    "id" : 12
+  },
+  {
+    "description" : "L3",
+    "id" : 14
+  },
+  {
+    "description" : "R2",
+    "id" : 13
+  },
+  {
+    "description" : "R3",
+    "id" : 15
+  },
+  {
+    "description" : "Left Stick X",
+    "id" : 16
+  },
+  {
+    "description" : "",
+    "id" : 17
+  },
+  {
+    "description" : "Left Stick Y",
+    "id" : 18
+  },
+  {
+    "description" : "",
+    "id" : 19
+  },
+  {
+    "description" : "Right Stick X",
+    "id" : 20
+  },
+  {
+    "description" : "",
+    "id" : 21
+  },
+  {
+    "description" : "Right Stick Y",
+    "id" : 22
+  },
+  {
+    "description" : "",
+    "id" : 23
+  },
+  {
+    "description" : "Joy Left",
+    "id" : 6
+  },
+  {
+    "description" : "Joy Right",
+    "id" : 7
+  },
+  {
+    "description" : "Joy Up",
+    "id" : 4
+  },
+  {
+    "description" : "Joy Down",
+    "id" : 5
+  },
+  {
+    "description" : "A",
+    "id" : 8
+  },
+  {
+    "description" : "B",
+    "id" : 0
+  },
+  {
+    "description" : "X",
+    "id" : 9
+  },
+  {
+    "description" : "Y",
+    "id" : 1
+  },
+  {
+    "description" : "L",
+    "id" : 10
+  },
+  {
+    "description" : "R",
+    "id" : 11
+  },
+  {
+    "description" : "Select",
+    "id" : 2
+  },
+  {
+    "description" : "Start",
+    "id" : 3
+  },
+  {
+    "description" : "L2",
+    "id" : 12
+  },
+  {
+    "description" : "L3",
+    "id" : 14
+  },
+  {
+    "description" : "R2",
+    "id" : 13
+  },
+  {
+    "description" : "R3",
+    "id" : 15
+  },
+  {
+    "description" : "Left Stick X",
+    "id" : 16
+  },
+  {
+    "description" : "",
+    "id" : 17
+  },
+  {
+    "description" : "Left Stick Y",
+    "id" : 18
+  },
+  {
+    "description" : "",
+    "id" : 19
+  },
+  {
+    "description" : "Right Stick X",
+    "id" : 20
+  },
+  {
+    "description" : "",
+    "id" : 21
+  },
+  {
+    "description" : "Right Stick Y",
+    "id" : 22
+  },
+  {
+    "description" : "",
+    "id" : 23
+  },
+  {
+    "description" : "Joy Left",
+    "id" : 6
+  },
+  {
+    "description" : "Joy Right",
+    "id" : 7
+  },
+  {
+    "description" : "Joy Up",
+    "id" : 4
+  },
+  {
+    "description" : "Joy Down",
+    "id" : 5
+  },
+  {
+    "description" : "A",
+    "id" : 8
+  },
+  {
+    "description" : "B",
+    "id" : 0
+  },
+  {
+    "description" : "X",
+    "id" : 9
+  },
+  {
+    "description" : "Y",
+    "id" : 1
+  },
+  {
+    "description" : "L",
+    "id" : 10
+  },
+  {
+    "description" : "R",
+    "id" : 11
+  },
+  {
+    "description" : "Select",
+    "id" : 2
+  },
+  {
+    "description" : "Start",
+    "id" : 3
+  },
+  {
+    "description" : "L2",
+    "id" : 12
+  },
+  {
+    "description" : "L3",
+    "id" : 14
+  },
+  {
+    "description" : "R2",
+    "id" : 13
+  },
+  {
+    "description" : "R3",
+    "id" : 15
+  },
+  {
+    "description" : "Left Stick X",
+    "id" : 16
+  },
+  {
+    "description" : "",
+    "id" : 17
+  },
+  {
+    "description" : "Left Stick Y",
+    "id" : 18
+  },
+  {
+    "description" : "",
+    "id" : 19
+  },
+  {
+    "description" : "Right Stick X",
+    "id" : 20
+  },
+  {
+    "description" : "",
+    "id" : 21
+  },
+  {
+    "description" : "Right Stick Y",
+    "id" : 22
+  },
+  {
+    "description" : "",
+    "id" : 23
+  },
+  {
+    "description" : "Joy Left",
+    "id" : 6
+  },
+  {
+    "description" : "Joy Right",
+    "id" : 7
+  },
+  {
+    "description" : "Joy Up",
+    "id" : 4
+  },
+  {
+    "description" : "Joy Down",
+    "id" : 5
+  },
+  {
+    "description" : "A",
+    "id" : 8
+  },
+  {
+    "description" : "B",
+    "id" : 0
+  },
+  {
+    "description" : "X",
+    "id" : 9
+  },
+  {
+    "description" : "Y",
+    "id" : 1
+  },
+  {
+    "description" : "L",
+    "id" : 10
+  },
+  {
+    "description" : "R",
+    "id" : 11
+  },
+  {
+    "description" : "Select",
+    "id" : 2
+  },
+  {
+    "description" : "Start",
+    "id" : 3
+  },
+  {
+    "description" : "L2",
+    "id" : 12
+  },
+  {
+    "description" : "L3",
+    "id" : 14
+  },
+  {
+    "description" : "R2",
+    "id" : 13
+  },
+  {
+    "description" : "R3",
+    "id" : 15
+  },
+  {
+    "description" : "Left Stick X",
+    "id" : 16
+  },
+  {
+    "description" : "",
+    "id" : 17
+  },
+  {
+    "description" : "Left Stick Y",
+    "id" : 18
+  },
+  {
+    "description" : "",
+    "id" : 19
+  },
+  {
+    "description" : "Right Stick X",
+    "id" : 20
+  },
+  {
+    "description" : "",
+    "id" : 21
+  },
+  {
+    "description" : "Right Stick Y",
+    "id" : 22
+  },
+  {
+    "description" : "",
+    "id" : 23
+  },
+  {
+    "description" : "Joy Left",
+    "id" : 6
+  },
+  {
+    "description" : "Joy Right",
+    "id" : 7
+  },
+  {
+    "description" : "Joy Up",
+    "id" : 4
+  },
+  {
+    "description" : "Joy Down",
+    "id" : 5
+  },
+  {
+    "description" : "A",
+    "id" : 8
+  },
+  {
+    "description" : "B",
+    "id" : 0
+  },
+  {
+    "description" : "X",
+    "id" : 9
+  },
+  {
+    "description" : "Y",
+    "id" : 1
+  },
+  {
+    "description" : "L",
+    "id" : 10
+  },
+  {
+    "description" : "R",
+    "id" : 11
+  },
+  {
+    "description" : "Select",
+    "id" : 2
+  },
+  {
+    "description" : "Start",
+    "id" : 3
+  },
+  {
+    "description" : "L2",
+    "id" : 12
+  },
+  {
+    "description" : "L3",
+    "id" : 14
+  },
+  {
+    "description" : "R2",
+    "id" : 13
+  },
+  {
+    "description" : "R3",
+    "id" : 15
+  },
+  {
+    "description" : "Left Stick X",
+    "id" : 16
+  },
+  {
+    "description" : "",
+    "id" : 17
+  },
+  {
+    "description" : "Left Stick Y",
+    "id" : 18
+  },
+  {
+    "description" : "",
+    "id" : 19
+  },
+  {
+    "description" : "Right Stick X",
+    "id" : 20
+  },
+  {
+    "description" : "",
+    "id" : 21
+  },
+  {
+    "description" : "Right Stick Y",
+    "id" : 22
+  },
+  {
+    "description" : "",
+    "id" : 23
+  },
+  {
+    "description" : "Joy Left",
+    "id" : 6
+  },
+  {
+    "description" : "Joy Right",
+    "id" : 7
+  },
+  {
+    "description" : "Joy Up",
+    "id" : 4
+  },
+  {
+    "description" : "Joy Down",
+    "id" : 5
+  },
+  {
+    "description" : "A",
+    "id" : 8
+  },
+  {
+    "description" : "B",
+    "id" : 0
+  },
+  {
+    "description" : "X",
+    "id" : 9
+  },
+  {
+    "description" : "Y",
+    "id" : 1
+  },
+  {
+    "description" : "L",
+    "id" : 10
+  },
+  {
+    "description" : "R",
+    "id" : 11
+  },
+  {
+    "description" : "Select",
+    "id" : 2
+  },
+  {
+    "description" : "Start",
+    "id" : 3
+  },
+  {
+    "description" : "L2",
+    "id" : 12
+  },
+  {
+    "description" : "L3",
+    "id" : 14
+  },
+  {
+    "description" : "R2",
+    "id" : 13
+  },
+  {
+    "description" : "R3",
+    "id" : 15
+  },
+  {
+    "description" : "Left Stick X",
+    "id" : 16
+  },
+  {
+    "description" : "",
+    "id" : 17
+  },
+  {
+    "description" : "Left Stick Y",
+    "id" : 18
+  },
+  {
+    "description" : "",
+    "id" : 19
+  },
+  {
+    "description" : "Right Stick X",
+    "id" : 20
+  },
+  {
+    "description" : "",
+    "id" : 21
+  },
+  {
+    "description" : "Right Stick Y",
+    "id" : 22
+  },
+  {
+    "description" : "",
+    "id" : 23
+  }
+]

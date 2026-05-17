@@ -17,74 +17,25 @@ enum LibretroThumbnailResolver {
     }
 
     static func libretroFolderName(forSystemID systemID: String) -> String? {
-        let map = systemMapping()
-        let result = map[systemID.lowercased()]
-        if let folder = result {
-            LoggerService.debug(category: logCategory, "Mapped systemID '\(systemID)' → folder '\(folder)'")
-        } else {
-            LoggerService.warning(category: logCategory, "No folder mapping for systemID '\(systemID)' — thumbnails will not be resolved")
+        guard let system = SystemDatabase.system(forID: systemID) else { 
+            LoggerService.warning(category: logCategory, "No system found for systemID '\(systemID)' — thumbnails will not be resolved")
+            return nil 
         }
-        return result
+        
+        // Use first database entry as CDN folder name
+        if let folder = system.database?.first {
+            LoggerService.debug(category: logCategory, "Mapped systemID '\(systemID)' → folder '\(folder)'")
+            return folder
+        } else {
+            LoggerService.warning(category: logCategory, "No database entry for systemID '\(systemID)' — thumbnails will not be resolved")
+            return nil
+        }
     }
 
     // Returns a list of all known Libretro thumbnail repository names (formatted for GitHub).
     static func allKnownSystemRepos() -> [String] {
-        return Array(Set(systemMapping().values)).map { githubRepoName(for: $0) }.sorted()
-    }
-
-    private static func systemMapping() -> [String: String] {
-        return [
-            // Nintendo
-            "nes": "Nintendo - Nintendo Entertainment System",
-            "snes": "Nintendo - Super Nintendo Entertainment System",
-            "n64": "Nintendo - Nintendo 64",
-            "gba": "Nintendo - Game Boy Advance",
-            "gb": "Nintendo - Game Boy",
-            "gbc": "Nintendo - Game Boy Color",
-            "nds": "Nintendo - Nintendo DS",
-            "vb": "Nintendo - Virtual Boy",
-            // Sega
-            "genesis": "Sega - Mega Drive - Genesis",
-            "sms": "Sega - Master System - Mark III",
-            "gamegear": "Sega - Game Gear",
-            "32x": "Sega - 32X",
-            "saturn": "Sega - Saturn",
-            "dreamcast": "Sega - Dreamcast",
-            "pico": "Sega - PICO",
-            "sc3000": "Sega - SC-3000",
-            "sg1000": "Sega - SG-1000",
-            // Sony
-            "psx": "Sony - PlayStation",
-            "ps2": "Sony - PlayStation 2",
-            "psp": "Sony - PlayStation Portable",
-            "psvita": "Sony - PlayStation Vita",
-            // Arcade
-            "mame": "MAME",
-            "fba": "FBNeo - Arcade Games",
-            "neogeo": "SNK - Neo Geo",
-            // Atari
-            "atari2600": "Atari - 2600",
-            "atari5200": "Atari - 5200",
-            "atari7800": "Atari - 7800",
-            "lynx": "Atari - Lynx",
-            "jaguar": "Atari - Jaguar",
-            "5200": "Atari - 5200",
-            "7800": "Atari - 7800",
-            // SNK
-            "ngp": "SNK - Neo Geo Pocket",
-            "ngpc": "SNK - Neo Geo Pocket Color",
-            // NEC
-            "pce": "NEC - PC Engine - TurboGrafx 16",
-            "pcfx": "NEC - PC-FX",
-            "tg16": "NEC - PC Engine - TurboGrafx 16",
-            "sgx": "NEC - PC Engine SuperGrafx",
-            "pcecd": "NEC - PC Engine CD - TurboGrafx-CD",
-            // Other
-            "3do": "The 3DO Company - 3DO",
-            "wswan": "Bandai - WonderSwan",
-            "wswanc": "Bandai - WonderSwan Color",
-            "pokemini": "Nintendo - Pokémon Mini",
-        ]
+        let allFolders = SystemDatabase.systems.compactMap { $0.database?.first }.filter { !$0.isEmpty }
+        return Array(Set(allFolders)).map { githubRepoName(for: $0) }.sorted()
     }
 
     // Converts a Libretro folder name (e.g. "Nintendo - Nintendo Entertainment System")

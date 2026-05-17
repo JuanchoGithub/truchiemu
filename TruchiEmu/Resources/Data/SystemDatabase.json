@@ -296,7 +296,7 @@
     "defaultCoreID": "desmume_libretro",
     "manufacturer": "Nintendo",
     "database": [
-      "Nintendo - DS"
+      "Nintendo - Nintendo DS"
     ]
   },
   {
@@ -437,6 +437,7 @@
     "iconName": "opticaldisc",
     "defaultCoreID": "mednafen_saturn_libretro",
     "manufacturer": "Sega",
+    "isRedumpOnly": true,
     "database": [
       "Sega - Saturn"
     ]
@@ -466,6 +467,7 @@
     "iconName": "opticaldisc",
     "defaultCoreID": "flycast_libretro",
     "manufacturer": "Sega",
+    "isRedumpOnly": true,
     "database": [
       "Sega - Dreamcast"
     ]
@@ -515,7 +517,7 @@
     "defaultCoreID": "opera_libretro",
     "manufacturer": "Panasonic",
     "database": [
-      "3DO"
+      "The 3DO Company - 3DO"
     ]
   },
   {
@@ -575,6 +577,7 @@
     "iconName": "opticaldisc",
     "defaultCoreID": "mednafen_psx_libretro",
     "manufacturer": "Sony",
+    "isRedumpOnly": true,
     "database": [
       "Sony - PlayStation"
     ]
@@ -650,6 +653,7 @@
     "iconName": "opticaldisc",
     "defaultCoreID": "play_libretro",
     "manufacturer": "Sony",
+    "isRedumpOnly": true,
     "database": [
       "Sony - PlayStation 2"
     ]
@@ -692,6 +696,30 @@
     "manufacturer": "Sony",
     "database": [
       "Sony - PSP"
+    ]
+  },
+  {
+    "year": "2011",
+    "id": "psvita",
+    "name": "PlayStation Vita",
+    "pathKeywords": [
+      "psvita",
+      "ps vita"
+    ],
+    "magicHeaders": [],
+    "filenamePatterns": [],
+    "extensions": [
+      "vpk"
+    ],
+    "defaultBoxType": "Box",
+    "iconName": "ipad.landscape",
+    "defaultCoreID": "vita_libretro",
+    "manufacturer": "Sony",
+    "isRedumpOnly": true,
+    "sortOrder": 23,
+    "displayInUI": true,
+    "database": [
+      "Sony - PlayStation Vita"
     ]
   },
   {
@@ -861,6 +889,37 @@
     ]
   },
   {
+    "year": "1999",
+    "id": "ngpc",
+    "name": "Neo Geo Pocket Color",
+    "pathKeywords": [
+      "ngpc",
+      "neo geo pocket color"
+    ],
+    "magicHeaders": [],
+    "filenamePatterns": [],
+    "extensions": [
+      "7z",
+      "ccd",
+      "cue",
+      "neo",
+      "ngc",
+      "ngp",
+      "ngpc",
+      "npc",
+      "zip"
+    ],
+    "defaultBoxType": "Vertical",
+    "iconName": "iphone",
+    "defaultCoreID": "mednafen_ngp_libretro",
+    "manufacturer": "SNK",
+    "sortOrder": 51,
+    "displayInUI": true,
+    "database": [
+      "SNK - Neo Geo Pocket Color"
+    ]
+  },
+  {
     "year": "1987",
     "id": "pce",
     "pathKeywords": [
@@ -898,7 +957,7 @@
     "defaultCoreID": "mednafen_pce_libretro",
     "manufacturer": "NEC",
     "database": [
-      "NEC - TurboGrafx-16"
+      "NEC - PC Engine - TurboGrafx-16"
     ]
   },
   {
@@ -1263,6 +1322,24 @@
     "manufacturer": "Bandai",
     "database": [
       "Bandai - WonderSwan"
+    ]
+  },
+  {
+    "displayInUI": true,
+    "id": "wonderswancolor",
+    "name": "WonderSwan Color",
+    "extensions": [
+      "pc2",
+      "pcv2",
+      "ws",
+      "wsc"
+    ],
+    "defaultBoxType": "Landscape",
+    "iconName": "gamecontroller",
+    "sortOrder": 81,
+    "manufacturer": "Bandai",
+    "database": [
+      "Bandai - WonderSwan Color"
     ]
   },
   {
@@ -3307,6 +3384,7 @@
     "magicHeaders": [],
     "filenamePatterns": [],
     "manufacturer": "Sega",
+    "isRedumpOnly": true,
     "extensions": [],
     "defaultCoreID": null,
     "iconName": "gamecontroller",
@@ -3333,8 +3411,135 @@
 "sortOrder": 80,
   "defaultBoxType": "Landscape",
   "displayInUI": true,
-  "database": [
-    "Sega - PICO"
+    "database": [
+      "Sega - PICO"
+    ]
+  },
+  {
+    "year": "1983",
+    "id": "sg1000",
+    "name": "SG-1000",
+    "pathKeywords": [
+      "sg1000",
+      "sega sg1000"
+    ],
+    "magicHeaders": [],
+    "filenamePatterns": [],
+    "extensions": [
+      "sc",
+      "sg",
+      "sms",
+      "rom"
+    ],
+    "defaultBoxType": "Landscape",
+    "iconName": "gamecontroller",
+    "defaultCoreID": "gearsystem_libretro",
+    "manufacturer": "Sega",
+    "sortOrder": 85,
+    "displayInUI": true,
+    "database": [
+      "Sega - SG-1000"
+    ]
+  },
+  {
+    "year": "1983",
+    "id": "sc3000",
+    "name": "SC-3000",
+    "pathKeywords": [
+      "sc3000",
+      "sega sc3000"
+    ],
+    "magicHeaders": [],
+    "filenamePatterns": [],
+    "extensions": [
+      "sc",
+      "sg",
+      "rom"
+    ],
+    "defaultBoxType": "Landscape",
+    "iconName": "gamecontroller",
+    "defaultCoreID": "gearsystem_libretro",
+    "manufacturer": "Sega",
+    "sortOrder": 86,
+    "displayInUI": true,
+    "database": [
+      "Sega - SC-3000"
+    ]
+  },
+  {
+    "year": "1986",
+    "id": "pcfx",
+    "name": "PC-FX",
+    "pathKeywords": [
+      "pcfx",
+      "pc fx"
+    ],
+    "magicHeaders": [],
+    "filenamePatterns": [],
+    "extensions": [
+      "cue",
+      "iso"
+    ],
+    "defaultBoxType": "Landscape",
+    "iconName": "gamecontroller",
+    "defaultCoreID": "mednafen_pcfx_libretro",
+    "manufacturer": "NEC",
+    "isRedumpOnly": true,
+    "sortOrder": 62,
+    "displayInUI": true,
+    "database": [
+      "NEC - PC-FX"
+    ]
+  },
+  {
+    "year": "1986",
+    "id": "sgx",
+    "name": "PC Engine SuperGrafx",
+    "pathKeywords": [
+      "sgx",
+      "pc engine supergrafx"
+    ],
+    "magicHeaders": [],
+    "filenamePatterns": [],
+    "extensions": [
+      "pce",
+      "rom"
+    ],
+    "defaultBoxType": "Landscape",
+    "iconName": "gamecontroller",
+    "defaultCoreID": "mednafen_pce_libretro",
+    "manufacturer": "NEC",
+    "sortOrder": 63,
+    "displayInUI": true,
+    "database": [
+      "NEC - PC Engine SuperGrafx"
+    ]
+  },
+  {
+    "year": "1988",
+    "id": "pcecd",
+    "name": "PC Engine CD",
+    "pathKeywords": [
+      "pcecd",
+      "tg16cd",
+      "pc engine cd",
+      "turbografx cd"
+    ],
+    "magicHeaders": [],
+    "filenamePatterns": [],
+    "extensions": [
+      "cue",
+      "iso"
+    ],
+    "defaultBoxType": "Landscape",
+    "iconName": "gamecontroller",
+    "defaultCoreID": "mednafen_pce_libretro",
+    "manufacturer": "NEC",
+    "isRedumpOnly": true,
+    "sortOrder": 64,
+    "displayInUI": true,
+    "database": [
+      "NEC - PC Engine CD - TurboGrafx-CD"
     ]
   }
 ]

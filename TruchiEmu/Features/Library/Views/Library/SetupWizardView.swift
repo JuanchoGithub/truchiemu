@@ -135,7 +135,7 @@ struct SetupWizardView: View {
     private func finishSetup() {
         wizard.hasCompletedWizard = true
         library.hasCompletedOnboarding = true
-        UserDefaults.standard.set(true, forKey: "has_completed_onboarding")
+        AppSettings.setBool("has_completed_onboarding", value: true)
         
         AppSettings.setBool("logging_enabled", value: wizard.loggingEnabled)
         AppSettings.set("display_default_shader_preset", value: wizard.selectedShaderPresetID)

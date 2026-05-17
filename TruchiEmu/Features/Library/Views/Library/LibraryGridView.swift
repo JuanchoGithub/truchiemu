@@ -58,7 +58,7 @@ struct LibraryGridView: View {
             if case .system(let system) = filter {
                 openWindow(id: "system-settings", value: SystemSettingsRequest(system: system, page: .controllers))
             } else {
-                UserDefaults.standard.set("controllers", forKey: "settings_selectedTab")
+                AppSettings.set("settings_selectedTab", value: "controllers")
                 NotificationCenter.default.post(name: .openAppSettings, object: nil)
             }
         } label: {
@@ -899,9 +899,9 @@ columns = Array(
                 Label("Stop", systemImage: "stop.fill")
             }
             .buttonStyle(.borderedProminent)
-            .tint(.red)
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity)
+        .clipped()
     }
 
     @State private var boxArtMessageIndex = 0
@@ -973,46 +973,51 @@ columns = Array(
     @State private var emptyStateAppeared = false
     
     private var emptyState: some View {
-        VStack(spacing: 16) {
-            Image(systemName: emptyStateIcon)
-                .font(.system(size: 56))
-                .foregroundColor(.secondary)
-                .scaleEffect(emptyStateAppeared ? 1 : 0.8)
-                .offset(y: emptyStateAppeared ? 0 : 10)
-                .onAppear {
-                    if NSWorkspace.shared.accessibilityDisplayShouldReduceMotion {
-                        emptyStateAppeared = true
-                    } else {
-                        withAnimation(.interpolatingSpring(stiffness: 170, damping: 20).delay(0.05)) {
+        ScrollView {
+            VStack(spacing: 16) {
+                Image(systemName: emptyStateIcon)
+                    .font(.system(size: 56))
+                    .foregroundColor(.secondary)
+                    .scaleEffect(emptyStateAppeared ? 1 : 0.8)
+                    .offset(y: emptyStateAppeared ? 0 : 10)
+                    .onAppear {
+                        if NSWorkspace.shared.accessibilityDisplayShouldReduceMotion {
                             emptyStateAppeared = true
+                        } else {
+                            withAnimation(.interpolatingSpring(stiffness: 170, damping: 20).delay(0.05)) {
+                                emptyStateAppeared = true
+                            }
                         }
                     }
+                    .modifier(EmptyStateFloatAnimation())
+                Text(emptyStateTitle)
+                    .font(.title3)
+                    .foregroundColor(.secondary)
+                    .opacity(emptyStateAppeared ? 1 : 0)
+                    .offset(y: emptyStateAppeared ? 0 : 8)
+                Text(emptyStateDescription)
+                    .font(.body)
+                    .foregroundColor(.secondary)
+                    .multilineTextAlignment(.center)
+                    .frame(maxWidth: 320)
+                    .opacity(emptyStateAppeared ? 1 : 0)
+                    .offset(y: emptyStateAppeared ? 0 : 8)
+                if activeFilters.isEmpty && searchText.isEmpty && library.roms.isEmpty {
+                    Button {
+                        pickFolder()
+                    } label: {
+                        Label("Add ROM Folder", systemImage: "folder.badge.plus")
+                    }
+                    .buttonStyle(.borderedProminent)
+                    .tint(.accentColor)
+                    .opacity(emptyStateAppeared ? 1 : 0)
+                    .offset(y: emptyStateAppeared ? 0 : 8)
                 }
-                .modifier(EmptyStateFloatAnimation())
-            Text(emptyStateTitle)
-                .font(.title3)
-                .foregroundColor(.secondary)
-                .opacity(emptyStateAppeared ? 1 : 0)
-                .offset(y: emptyStateAppeared ? 0 : 8)
-            Text(emptyStateDescription)
-                .font(.body)
-                .foregroundColor(.secondary)
-                .multilineTextAlignment(.center)
-                .frame(maxWidth: 320)
-                .opacity(emptyStateAppeared ? 1 : 0)
-                .offset(y: emptyStateAppeared ? 0 : 8)
-            if activeFilters.isEmpty && searchText.isEmpty {
-                Button {
-                    pickFolder()
-                } label: {
-                    Label("Add ROM Folder", systemImage: "folder.badge.plus")
-                }
-                .buttonStyle(.borderedProminent)
-                .tint(.accentColor)
-                .opacity(emptyStateAppeared ? 1 : 0)
-                .offset(y: emptyStateAppeared ? 0 : 8)
-}
+            }
+            .padding()
         }
+        .frame(maxHeight: .infinity)
+        .clipped()
         .sheet(item: $manualBoxArtSearchROM) { rom in
             BoxArtPickerView(rom: rom)
         }
@@ -1028,6 +1033,8 @@ columns = Array(
             return "line.3.horizontal.decrease.circle"
         } else if !searchText.isEmpty {
             return "magnifyingglass"
+        } else if library.roms.isEmpty {
+            return "tray"
         } else {
             return "tray"
         }
@@ -1038,18 +1045,22 @@ columns = Array(
             return loc.localized("library.noGamesMatchFilters")
         } else if !searchText.isEmpty {
             return String(format: loc.localized("library.nothingMatching"), searchText)
-        } else {
+        } else if library.roms.isEmpty {
             return loc.localized("library.gamingShelfEmpty")
+        } else {
+            return loc.localized("library.nothingHere")
         }
     }
     
     private var emptyStateDescription: String {
         if !activeFilters.isEmpty && searchText.isEmpty {
-            return "Try loosening your filters to rediscover some games."
+            return loc.localized("library.tryLooseningFilters")
         } else if !searchText.isEmpty {
-            return "That title might be hiding under a different name. Try a different search."
+            return loc.localized("library.tryDifferentSearch")
+        } else if library.roms.isEmpty {
+            return loc.localized("library.addFolderDescription")
         } else {
-            return "Add a folder of ROMs and TruchiEmu will organize your collection by system, complete with box art."
+            return loc.localized("library.tryDifferentCategory")
         }
     }
     

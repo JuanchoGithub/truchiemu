@@ -99,9 +99,14 @@ enum RetroButton: String, Codable, CaseIterable {
         }
         if let descriptors = InputDescriptorsManager.shared.availableButtons(for: systemID) {
             let extras = descriptors.filter { !base.contains($0) }
-            return base + extras
+            base += extras
         }
-        return base
+        
+        // Sort alphabetically by display name
+        return base.sorted { 
+            $0.displayName(for: systemID, coreID: coreID) < 
+            $1.displayName(for: systemID, coreID: coreID) 
+        }
     }
 
     func retroID(for systemID: String, coreID: String? = nil) -> Int32 {

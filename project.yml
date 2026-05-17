@@ -98,6 +98,8 @@ targets:
       buildPhase: resources
     - path: TruchiEmu/Resources/cheats
       buildPhase: resources
+    - path: TruchiEmu/Resources/InputDescriptors
+      buildPhase: resources
     - path: TruchiEmu/Resources/AppIcons
       buildPhase: resources
     - path: TruchiEmu/Resources/Translations/en.json
@@ -132,3 +134,10 @@ targets:
         PRODUCT_BUNDLE_IDENTIFIER: com.TruchiEmu.tests
         SWIFT_VERSION: "5.9"
         GENERATE_INFOPLIST_FILE: YES
+
+    sources:
+    - path: TruchiEmuTests
+      type: group
+
+    dependencies:
+    - target: TruchiEmu

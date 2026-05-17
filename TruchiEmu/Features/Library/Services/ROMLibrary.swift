@@ -120,7 +120,6 @@ class ROMLibrary: ObservableObject {
     private let decoder = JSONDecoder()
     private let legacyRomsKey = "saved_roms"
     private let legacyFoldersKey = "library_folders_bookmarks_v2"
-    private let legacyOnboardingKey = "has_completed_onboarding"
     private let legacyIndexKey = "rom_file_index_v1"
     private var fileIndex: [String: FileSignature] = [:]
 
@@ -128,7 +127,7 @@ class ROMLibrary: ObservableObject {
 
     init() {
         self.repository = ROMRepository(context: SwiftDataContainer.shared.mainContext)
-        self.hasCompletedOnboarding = UserDefaults.standard.bool(forKey: "has_completed_onboarding")
+        self.hasCompletedOnboarding = AppSettings.getBool("has_completed_onboarding", defaultValue: false)
     }
 
     func initializeIfNeeded() {
@@ -285,7 +284,7 @@ let idsToPurge = orphans.map { $0.id }
     func completeOnboarding(folderURL: URL) {
         addPrimaryFolder(url: folderURL)
         hasCompletedOnboarding = true
-        UserDefaults.standard.set(true, forKey: "has_completed_onboarding")
+        AppSettings.setBool("has_completed_onboarding", value: true)
     }
 
     func addLibraryFolder(url: URL) { addPrimaryFolder(url: url) }

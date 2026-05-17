@@ -230,7 +230,6 @@ static int16_t input_state_stub(unsigned port, unsigned device, unsigned index, 
 
     // --- TEARDOWN SEQUENCE ---
     bridge_log_printf(RETRO_LOG_INFO, "Discovery: Beginning safe teardown for %@", coreID);
-    [[NSUserDefaults standardUserDefaults] setObject:coreID forKey:@"lastLoadedCoreID"];
 
     [impl->_coreLock lock];
 

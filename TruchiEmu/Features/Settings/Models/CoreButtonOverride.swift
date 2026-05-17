@@ -145,7 +145,11 @@ class CoreButtonOverride {
                 }
             }
             if !result.isEmpty {
-                return result
+                // Sort alphabetically by display name
+                return result.sorted { 
+                    $0.displayName(for: systemID, coreID: coreID) < 
+                    $1.displayName(for: systemID, coreID: coreID) 
+                }
             }
         }
 
@@ -158,11 +162,19 @@ class CoreButtonOverride {
                 }
             }
             if !result.isEmpty {
-                return result
+                // Sort alphabetically by display name  
+                return result.sorted { 
+                    $0.displayName(for: systemID, coreID: coreID) < 
+                    $1.displayName(for: systemID, coreID: coreID) 
+                }
             }
         }
 
-        return Self.defaultButtons
+        // Sort fallback defaultButtons alphabetically
+        return Self.defaultButtons.sorted { 
+            $0.displayName(for: systemID, coreID: coreID) < 
+            $1.displayName(for: systemID, coreID: coreID) 
+        }
     }
 
     func turboButtons(for systemID: String) -> [RetroButton] {

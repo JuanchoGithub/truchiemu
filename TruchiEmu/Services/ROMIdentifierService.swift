@@ -779,6 +779,12 @@ struct LibretroDatGame {
 actor LibretroDatabaseLibrary {
     static let shared = LibretroDatabaseLibrary()
     private static let gbFamilyCacheKey = "gb+gbc"
+    
+    // Database cache
+    private var databases: [String: [String: GameInfo]] = [:]
+    
+    // MAME RDB basenames
+    private static let mameRdbBasenames = ["mame", "mame2003", "mame2010", "mame2016", "mame2023"]
 
     private static func isGbFamily(_ systemID: String) -> Bool { systemID == "gb" || systemID == "gbc" }
 
@@ -787,39 +793,30 @@ actor LibretroDatabaseLibrary {
     }
 
     // TODO: make this dynamic
-    private static let libretroDatBasenameOverrides: [String: String] = [
-        "nes": "Nintendo - Nintendo Entertainment System.dat", "snes": "Nintendo - Super Nintendo Entertainment System.dat",
-        "n64": "Nintendo - Nintendo 64.dat", "nds": "Nintendo - Nintendo DS.dat", "gb": "Nintendo - Game Boy.dat",
-        "gbc": "Nintendo - Game Boy Color.dat", "gba": "Nintendo - Game Boy Advance.dat", "genesis": "Sega - Mega Drive - Genesis.dat",
-        "sms": "Sega - Master System - Mark III.dat", "gamegear": "Sega - Game Gear.dat", "32x": "Sega - 32X.dat",
-        "psx": "Sony - PlayStation.dat", "atari2600": "Atari - 2600.dat", "atari5200": "Atari - 5200.dat", "atari7800": "Atari - 7800.dat",
-        "lynx": "Atari - Lynx.dat", "jaguar": "Atari - Jaguar.dat", "mame": "MAME.dat", "pce": "NEC - PC Engine - TurboGrafx 16.dat",
-        "wonderswan": "Bandai - WonderSwan.dat", "wswanc": "Bandai - WonderSwan Color.dat",
-        "gamecube": "Nintendo - GameCube.dat", "wii": "Nintendo - Wii.dat",
-    ]
-
-    // TODO: make this dynamic
-    private static let redumpOnlySystems: Set<String> = ["psx", "ps2", "psp", "psvita", "ps3", "segacd", "pcecd", "pcfx", "pc98", "jaguar_cd", "cd32", "cdtv", "gcn"]
-
-    private static let mameRdbBasenames: [String] = ["MAME.rdb", "MAME 2016.rdb", "MAME 2015.rdb", "MAME 2010.rdb", "MAME 2003-Plus.rdb", "MAME 2003.rdb", "MAME 2000.rdb"]
-
-    private var databases: [String: [String: GameInfo]] = [:]
-
-    private func datBasenamesToTry(for system: SystemInfo) -> [String] {
-        var ordered: [String] = []; var seen = Set<String>()
-        func append(_ name: String) { guard !seen.contains(name) else { return }; seen.insert(name); ordered.append(name) }
-        if let exact = Self.libretroDatBasenameOverrides[system.id] { append(exact) }
-        var primary = "\(system.name).dat"
-        if !system.manufacturer.isEmpty && system.manufacturer != "Various" {
-            let nameLower = system.name.lowercased(), mfrLower = system.manufacturer.lowercased()
-            if nameLower.hasPrefix(mfrLower) {
-                let remainder = system.name.dropFirst(mfrLower.count).trimmingCharacters(in: .whitespaces)
-                if remainder.isEmpty { primary = "\(system.name).dat"  } else { primary = "\(system.manufacturer) - \(remainder).dat" }
-            } else { primary = "\(system.manufacturer) - \(system.name).dat" }
-        }
-        append(primary); append("\(system.name).dat"); append("\(system.manufacturer.isEmpty ? "" : "\(system.manufacturer) ")\(system.name).dat")
-        return ordered
-    }
+     private func datBasenamesToTry(for system: SystemInfo) -> [String] {
+         var ordered: [String] = []; var seen = Set<String>()
+         func append(_ name: String) { guard !seen.contains(name) else { return }; seen.insert(name); ordered.append(name) }
+         
+         // Use database entries first (most specific)
+         if let databaseEntries = system.database {
+             for entry in databaseEntries {
+                 append("\(entry).dat")
+             }
+         }
+         
+         // Fallback to legacy naming logic for compatibility
+         var primary = "\(system.name).dat"
+         if !system.manufacturer.isEmpty && system.manufacturer != "Various" {
+             let nameLower = system.name.lowercased(), mfrLower = system.manufacturer.lowercased()
+             if nameLower.hasPrefix(mfrLower) {
+                 let remainder = system.name.dropFirst(mfrLower.count).trimmingCharacters(in: .whitespaces)
+                 if remainder.isEmpty { primary = "\(system.name).dat"  } else { primary = "\(system.manufacturer) - \(remainder).dat" }
+             } else { primary = "\(system.manufacturer) - \(system.name).dat" }
+         }
+         append(primary)
+          
+          return ordered
+      }
 
     private func rdbBasenamesToTry(for system: SystemInfo) -> [String] {
         if system.id == "mame" { return Self.mameRdbBasenames }

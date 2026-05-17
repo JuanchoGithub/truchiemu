@@ -7,33 +7,17 @@ import SwiftData
 // Maps internal system IDs to LaunchBox GamesDB display platform names.
 enum LaunchBoxPlatformMapper {
     static func launchBoxPlatformName(for systemID: String) -> String? {
-        let map: [String: String] = [
-            "nes": "Nintendo Entertainment System",
-            "snes": "Super Nintendo Entertainment System",
-            "n64": "Nintendo 64",
-            "gba": "Nintendo Game Boy Advance",
-            "gb": "Nintendo Game Boy",
-            "gbc": "Nintendo Game Boy Color",
-            "nds": "Nintendo DS",
-            "genesis": "Sega Genesis",
-            "sms": "Sega Master System",
-            "gamegear": "Sega Game Gear",
-            "saturn": "Sega Saturn",
-            "dreamcast": "Sega Dreamcast",
-            "psx": "Sony Playstation",
-            "ps2": "Sony Playstation 2",
-            "psp": "Sony Playstation Portable",
-            "mame": "Arcade",
-            "fba": "Arcade",
-            "atari2600": "Atari 2600",
-            "atari5200": "Atari 5200",
-            "atari7800": "Atari 7800",
-            "lynx": "Atari Lynx",
-            "ngp": "Neo Geo Pocket",
-            "pce": "TurboGrafx-16",
-            "pcfx": "PC-FX",
-        ]
-        return map[systemID.lowercased()]
+        guard let system = SystemDatabase.system(forID: systemID) else { return nil }
+        
+        // Use system name, but add manufacturer prefix if it's missing
+        let systemName = system.name
+        let manufacturer = system.manufacturer
+        
+        // Add manufacturer prefix if not already present
+        if !systemName.lowercased().contains(manufacturer.lowercased()) {
+            return "\(manufacturer) \(systemName)"
+        }
+        return systemName
     }
 }
 

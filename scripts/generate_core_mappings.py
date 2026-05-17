@@ -75,6 +75,7 @@ TURBO_BUTTONS_MAP = {
     "sfc": ["a", "b", "x", "y"],
     "genesis": ["a", "b", "x", "y"],
     "megadrive": ["a", "b", "x", "y"],
+    "mame": ["a", "b"],
     "scummvm": ["a"],
 }
 
@@ -664,6 +665,76 @@ def determine_analog_btns(label, stick, axis):
     return None
 
 
+RUNTIME_ID_TO_BTN = {}
+for _btn, _rid in IDENTITY.items():
+    RUNTIME_ID_TO_BTN[_rid] = _btn
+RUNTIME_ID_TO_BTN.update({
+    16: "lStickRight", 17: "lStickLeft",
+    18: "lStickUp", 19: "lStickDown",
+    20: "rStickRight", 21: "rStickLeft",
+    22: "rStickUp", 23: "rStickDown",
+})
+
+ARCADE_LABEL_OVERRIDES = {
+    "select": "Insert Coin",
+    "a": "Button 1", "b": "Button 2",
+    "x": "Button 3", "y": "Button 4",
+    "l1": "Button 5", "r1": "Button 6",
+    "l2": "Button 7", "r2": "Button 8",
+    "l3": "Service", "r3": "MAME UI",
+}
+
+CORE_ARCADE_OVERRIDES = {"mame", "mame2010", "mame2003_plus", "mame_2003"}
+
+INPUT_DESCRIPTORS_DIR = os.path.join(
+    os.path.dirname(__file__), "..",
+    "TruchiEmu", "Resources", "InputDescriptors"
+)
+
+
+def convert_runtime_descriptors(core_base, label_overrides=None):
+    path = os.path.join(INPUT_DESCRIPTORS_DIR, f"{core_base}_libretro.json")
+    if not os.path.exists(path):
+        return None, None
+
+    with open(path) as f:
+        descriptors = json.load(f)
+
+    seen = {}
+    for d in descriptors:
+        rid = d.get("id")
+        desc = d.get("description", "")
+        if rid is not None and rid not in seen and desc:
+            seen[rid] = desc
+
+    cl = {}
+    co = {}
+
+    for rid, desc in sorted(seen.items()):
+        btn = RUNTIME_ID_TO_BTN.get(rid)
+        if not btn:
+            continue
+
+        if btn.startswith("lStick") or btn.startswith("rStick"):
+            cl[btn] = {"label": make_analog_label(desc, btn)}
+            co[btn] = {"id": rid}
+        else:
+            label = desc
+            if label_overrides and btn in label_overrides:
+                label = label_overrides[btn]
+            cl[btn] = {"label": label}
+
+            identity_id = IDENTITY.get(btn)
+            if btn in NONSTANDARD_BTNS:
+                if identity_id is None or rid != identity_id:
+                    co[btn] = {"id": rid}
+            elif identity_id is not None and rid != identity_id:
+                co[btn] = {"id": rid}
+                print(f" OVERRIDE: {core_base}.{btn} -> {rid} (identity={identity_id})", file=sys.stderr)
+
+    return cl, co
+
+
 def build_default_core_map(db, sys_to_cores):
     """For systems without defaultCoreID, pick the first available core."""
     updates = {}
@@ -720,7 +791,7 @@ def main():
 
     md_files = find_md_files(use_cache=use_cache)
     core_map, db, sys_to_cores = build_core_system_map()
-    print(f"Found {len(md_files)} docs, {len(core_map)} known cores", file=sys.stderr)
+    print(f"Found {len(md_files)} docs, {len(core_map)} known cores, use_cache={use_cache}", file=sys.stderr)
 
     core_labels = {}
     core_overrides = {}
@@ -761,7 +832,6 @@ def main():
         for label, retro_id in digital_rows:
             btn = determine_btn_from_label(label, retro_id)
             if not btn:
-                print(f" SKIP digital: {core_base} label='{label}' rid={retro_id}", file=sys.stderr)
                 continue
 
             cl[btn] = {"label": strip_markdown_links(label)}
@@ -785,7 +855,22 @@ def main():
                 co[btn_name] = {"id": analog_retro_id}
 
         if cl:
+            if core_base in CORE_ARCADE_OVERRIDES:
+                for btn, override_label in ARCADE_LABEL_OVERRIDES.items():
+                    if btn in cl:
+                        cl[btn] = {"label": override_label}
             core_labels[core_base] = cl
+        if co:
+            core_overrides[core_base] = co
+
+    for core_base in CORE_ARCADE_OVERRIDES:
+        if core_base in core_labels:
+            continue
+        overrides = ARCADE_LABEL_OVERRIDES if core_base in ("mame", "mame2010") else None
+        cl, co = convert_runtime_descriptors(core_base, label_overrides=overrides)
+        if cl:
+            core_labels[core_base] = cl
+            print(f" RUNTIME: {core_base} -> {len(cl)} labels", file=sys.stderr)
         if co:
             core_overrides[core_base] = co
 

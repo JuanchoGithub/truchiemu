@@ -1,0 +1,330 @@
+[
+  {
+    "description" : "Service\/Test",
+    "id" : 14
+  },
+  {
+    "description" : "Toggle MAME UI",
+    "id" : 15
+  },
+  {
+    "description" : "Joystick Left",
+    "id" : 6
+  },
+  {
+    "description" : "Joystick Right",
+    "id" : 7
+  },
+  {
+    "description" : "Joystick Up",
+    "id" : 4
+  },
+  {
+    "description" : "Joystick Down",
+    "id" : 5
+  },
+  {
+    "description" : "Button 1",
+    "id" : 8
+  },
+  {
+    "description" : "Button 2",
+    "id" : 0
+  },
+  {
+    "description" : "Button 3",
+    "id" : 9
+  },
+  {
+    "description" : "Insert Coin",
+    "id" : 2
+  },
+  {
+    "description" : "Analog LX",
+    "id" : 16
+  },
+  {
+    "description" : "",
+    "id" : 17
+  },
+  {
+    "description" : "Analog LY",
+    "id" : 18
+  },
+  {
+    "description" : "",
+    "id" : 19
+  },
+  {
+    "description" : "Analog RX",
+    "id" : 20
+  },
+  {
+    "description" : "",
+    "id" : 21
+  },
+  {
+    "description" : "Analog RY",
+    "id" : 22
+  },
+  {
+    "description" : "",
+    "id" : 23
+  },
+  {
+    "description" : "Start",
+    "id" : 3
+  },
+  {
+    "description" : "Turbo Button",
+    "id" : 13
+  },
+  {
+    "description" : "Button 4",
+    "id" : 1
+  },
+  {
+    "description" : "Button 5",
+    "id" : 10
+  },
+  {
+    "description" : "Button 6",
+    "id" : 11
+  },
+  {
+    "description" : "Button 7",
+    "id" : 12
+  },
+  {
+    "description" : "Joystick Left",
+    "id" : 6
+  },
+  {
+    "description" : "Joystick Right",
+    "id" : 7
+  },
+  {
+    "description" : "Joystick Up",
+    "id" : 4
+  },
+  {
+    "description" : "Joystick Down",
+    "id" : 5
+  },
+  {
+    "description" : "Button 1",
+    "id" : 8
+  },
+  {
+    "description" : "Button 2",
+    "id" : 0
+  },
+  {
+    "description" : "Button 3",
+    "id" : 9
+  },
+  {
+    "description" : "Insert Coin",
+    "id" : 2
+  },
+  {
+    "description" : "Analog LX",
+    "id" : 16
+  },
+  {
+    "description" : "",
+    "id" : 17
+  },
+  {
+    "description" : "Analog LY",
+    "id" : 18
+  },
+  {
+    "description" : "",
+    "id" : 19
+  },
+  {
+    "description" : "Analog RX",
+    "id" : 20
+  },
+  {
+    "description" : "",
+    "id" : 21
+  },
+  {
+    "description" : "Analog RY",
+    "id" : 22
+  },
+  {
+    "description" : "",
+    "id" : 23
+  },
+  {
+    "description" : "Start",
+    "id" : 3
+  },
+  {
+    "description" : "Turbo Button",
+    "id" : 13
+  },
+  {
+    "description" : "Joystick Left",
+    "id" : 6
+  },
+  {
+    "description" : "Joystick Right",
+    "id" : 7
+  },
+  {
+    "description" : "Joystick Up",
+    "id" : 4
+  },
+  {
+    "description" : "Joystick Down",
+    "id" : 5
+  },
+  {
+    "description" : "Button 1",
+    "id" : 8
+  },
+  {
+    "description" : "Button 2",
+    "id" : 0
+  },
+  {
+    "description" : "Button 3",
+    "id" : 9
+  },
+  {
+    "description" : "Insert Coin",
+    "id" : 2
+  },
+  {
+    "description" : "Analog LX",
+    "id" : 16
+  },
+  {
+    "description" : "",
+    "id" : 17
+  },
+  {
+    "description" : "Analog LY",
+    "id" : 18
+  },
+  {
+    "description" : "",
+    "id" : 19
+  },
+  {
+    "description" : "Analog RX",
+    "id" : 20
+  },
+  {
+    "description" : "",
+    "id" : 21
+  },
+  {
+    "description" : "Analog RY",
+    "id" : 22
+  },
+  {
+    "description" : "",
+    "id" : 23
+  },
+  {
+    "description" : "Start",
+    "id" : 3
+  },
+  {
+    "description" : "Turbo Button",
+    "id" : 13
+  },
+  {
+    "description" : "Button 4",
+    "id" : 1
+  },
+  {
+    "description" : "Button 5",
+    "id" : 10
+  },
+  {
+    "description" : "Button 6",
+    "id" : 11
+  },
+  {
+    "description" : "Button 7",
+    "id" : 12
+  },
+  {
+    "description" : "Joystick Left",
+    "id" : 6
+  },
+  {
+    "description" : "Joystick Right",
+    "id" : 7
+  },
+  {
+    "description" : "Joystick Up",
+    "id" : 4
+  },
+  {
+    "description" : "Joystick Down",
+    "id" : 5
+  },
+  {
+    "description" : "Button 1",
+    "id" : 8
+  },
+  {
+    "description" : "Button 2",
+    "id" : 0
+  },
+  {
+    "description" : "Button 3",
+    "id" : 9
+  },
+  {
+    "description" : "Insert Coin",
+    "id" : 2
+  },
+  {
+    "description" : "Analog LX",
+    "id" : 16
+  },
+  {
+    "description" : "",
+    "id" : 17
+  },
+  {
+    "description" : "Analog LY",
+    "id" : 18
+  },
+  {
+    "description" : "",
+    "id" : 19
+  },
+  {
+    "description" : "Analog RX",
+    "id" : 20
+  },
+  {
+    "description" : "",
+    "id" : 21
+  },
+  {
+    "description" : "Analog RY",
+    "id" : 22
+  },
+  {
+    "description" : "",
+    "id" : 23
+  },
+  {
+    "description" : "Start",
+    "id" : 3
+  },
+  {
+    "description" : "Turbo Button",
+    "id" : 13
+  }
+]

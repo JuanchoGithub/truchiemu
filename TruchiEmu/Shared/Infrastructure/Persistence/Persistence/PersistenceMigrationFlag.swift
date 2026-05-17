@@ -10,7 +10,7 @@ enum PersistenceMigrationFlagKeys {
 enum OldDatabasePaths {
     static let appDataDB = "truchiemu.db"
     static let gameDB = "game_database"
-    
+
     static var allPaths: [String] {
         [appDataDB, gameDB]
     }
@@ -18,31 +18,24 @@ enum OldDatabasePaths {
 
 // MARK: - Migration Flag Manager
 final class PersistenceMigrationFlag {
-    private let defaults: UserDefaults
-    
-    init(userDefaults: UserDefaults = .standard) {
-        self.defaults = userDefaults
-    }
-    
-    // Check if the SwiftData migration has been completed
+
+    init() {}
+
     var hasMigrated: Bool {
-        defaults.bool(forKey: PersistenceMigrationFlagKeys.migrationKey)
+        AppSettings.getBool(PersistenceMigrationFlagKeys.migrationKey, defaultValue: false)
     }
-    
-    // Mark the migration as complete
+
     func markMigrationComplete() {
-        defaults.set(true, forKey: PersistenceMigrationFlagKeys.migrationKey)
-        defaults.set(Date(), forKey: PersistenceMigrationFlagKeys.migrationDateKey)
+        AppSettings.setBool(PersistenceMigrationFlagKeys.migrationKey, value: true)
+        AppSettings.setDate(PersistenceMigrationFlagKeys.migrationDateKey, value: Date())
     }
-    
-    // Get the date when migration was completed
+
     var migrationDate: Date? {
-        defaults.object(forKey: PersistenceMigrationFlagKeys.migrationDateKey) as? Date
+        AppSettings.getDate(PersistenceMigrationFlagKeys.migrationDateKey)
     }
-    
-    // Reset migration flag (useful for testing or re-migration)
+
     func resetMigrationFlag() {
-        defaults.removeObject(forKey: PersistenceMigrationFlagKeys.migrationKey)
-        defaults.removeObject(forKey: PersistenceMigrationFlagKeys.migrationDateKey)
+        AppSettings.removeObject(PersistenceMigrationFlagKeys.migrationKey)
+        AppSettings.removeObject(PersistenceMigrationFlagKeys.migrationDateKey)
     }
 }

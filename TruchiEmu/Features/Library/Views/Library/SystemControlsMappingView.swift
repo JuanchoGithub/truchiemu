@@ -12,13 +12,7 @@ struct SystemControlsMappingView: View {
     @State private var listeningFor: RetroButton? = nil
 
     private var relevantButtons: [RetroButton] {
-        switch systemID {
-        case "nes":      return [.up, .down, .left, .right, .a, .b, .start, .select]
-        case "snes":     return [.up, .down, .left, .right, .a, .b, .x, .y, .l1, .r1, .start, .select]
-        case "genesis":  return [.up, .down, .left, .right, .a, .b, .c, .x, .y, .z, .start, .select]
-        case "mame", "fba", "arcade": return [.up, .down, .left, .right, .a, .b, .x, .y, .l1, .r1, .coin1, .start1]
-        default:         return RetroButton.allCases
-        }
+        RetroButton.availableButtons(for: systemID)
     }
 
     var body: some View {

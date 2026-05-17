@@ -11,6 +11,18 @@
   "start": {
     "label": "Start"
   },
+  "up": {
+    "label": "Joy Up"
+  },
+  "down": {
+    "label": "Joy Down"
+  },
+  "left": {
+    "label": "Joy Left"
+  },
+  "right": {
+    "label": "Joy Right"
+  },
   "a": {
     "label": "Button 1"
   },
@@ -34,5 +46,17 @@
   },
   "r3": {
     "label": "MAME UI"
+  },
+  "lStickRight": {
+    "label": "Left Stick X →"
+  },
+  "lStickUp": {
+    "label": "Left Stick Y ↑"
+  },
+  "rStickRight": {
+    "label": "Right Stick X →"
+  },
+  "rStickUp": {
+    "label": "Right Stick Y ↑"
   }
 }
