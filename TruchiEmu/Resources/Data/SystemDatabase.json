@@ -58,7 +58,8 @@
       "Nintendo - NES",
       "Nintendo - Nintendo Entertainment System",
       "Nintendo - Family Computer Disk System"
-    ]
+    ],
+    "defaultShaderPresetID": "builtin-crt-classic"
   },
   {
     "year": "1990",
@@ -108,7 +109,8 @@
       "Nintendo - Super Nintendo Entertainment System",
       "Nintendo - Sufami Turbo",
       "Nintendo - Satellaview"
-    ]
+    ],
+    "defaultShaderPresetID": "builtin-crt-classic"
   },
   {
     "year": "1996",
@@ -131,7 +133,8 @@
     "manufacturer": "Nintendo",
     "database": [
       "Nintendo - Nintendo 64"
-    ]
+    ],
+    "defaultShaderPresetID": "builtin-crt-classic"
   },
   {
     "year": "2001",
@@ -177,7 +180,8 @@
     "manufacturer": "Nintendo",
     "database": [
       "Nintendo - Game Boy Advance"
-    ]
+    ],
+    "defaultShaderPresetID": "builtin-gba"
   },
   {
     "year": "1989",
@@ -232,7 +236,8 @@
     "manufacturer": "Nintendo",
     "database": [
       "Nintendo - Game Boy"
-    ]
+    ],
+    "defaultShaderPresetID": "builtin-dot-matrix"
   },
   {
     "year": "1998",
@@ -255,7 +260,8 @@
     "manufacturer": "Nintendo",
     "database": [
       "Nintendo - Game Boy Color"
-    ]
+    ],
+    "defaultShaderPresetID": "builtin-dot-matrix"
   },
   {
     "year": "2004",
@@ -297,7 +303,8 @@
     "manufacturer": "Nintendo",
     "database": [
       "Nintendo - Nintendo DS"
-    ]
+    ],
+    "defaultShaderPresetID": "builtin-nds"
   },
   {
     "year": "1988",
@@ -351,7 +358,8 @@
     "manufacturer": "Sega",
     "database": [
       "Sega - Mega Drive - Genesis"
-    ]
+    ],
+    "defaultShaderPresetID": "builtin-crt-classic"
   },
   {
     "year": "1985",
@@ -382,7 +390,8 @@
     "manufacturer": "Sega",
     "database": [
       "Sega - Master System - Mark III"
-    ]
+    ],
+    "defaultShaderPresetID": "builtin-crt-classic"
   },
   {
     "year": "1990",
@@ -400,7 +409,8 @@
     "manufacturer": "Sega",
     "database": [
       "Sega - Game Gear"
-    ]
+    ],
+    "defaultShaderPresetID": "builtin-dot-matrix"
   },
   {
     "year": "1994",
@@ -440,7 +450,8 @@
     "isRedumpOnly": true,
     "database": [
       "Sega - Saturn"
-    ]
+    ],
+    "defaultShaderPresetID": "builtin-crt-classic"
   },
   {
     "year": "1998",
@@ -470,7 +481,8 @@
     "isRedumpOnly": true,
     "database": [
       "Sega - Dreamcast"
-    ]
+    ],
+    "defaultShaderPresetID": "builtin-none"
   },
   {
     "year": "1994",
@@ -497,7 +509,8 @@
     "manufacturer": "Sega",
     "database": [
       "Sega - 32X"
-    ]
+    ],
+    "defaultShaderPresetID": "builtin-crt-classic"
   },
   {
     "year": "1993",
@@ -518,7 +531,8 @@
     "manufacturer": "Panasonic",
     "database": [
       "The 3DO Company - 3DO"
-    ]
+    ],
+    "defaultShaderPresetID": "builtin-crt-classic"
   },
   {
     "year": "1994",
@@ -580,7 +594,8 @@
     "isRedumpOnly": true,
     "database": [
       "Sony - PlayStation"
-    ]
+    ],
+    "defaultShaderPresetID": "builtin-crt-classic"
   },
   {
     "year": "2000",
@@ -656,7 +671,8 @@
     "isRedumpOnly": true,
     "database": [
       "Sony - PlayStation 2"
-    ]
+    ],
+    "defaultShaderPresetID": "builtin-none"
   },
   {
     "year": "2004",
@@ -696,7 +712,8 @@
     "manufacturer": "Sony",
     "database": [
       "Sony - PSP"
-    ]
+    ],
+    "defaultShaderPresetID": "builtin-psp"
   },
   {
     "year": "2011",
@@ -720,7 +737,8 @@
     "displayInUI": true,
     "database": [
       "Sony - PlayStation Vita"
-    ]
+    ],
+    "defaultShaderPresetID": "builtin-none"
   },
   {
     "sortOrder": 30,
@@ -739,7 +757,8 @@
     "manufacturer": "Various",
     "database": [
       "MAME"
-    ]
+    ],
+    "defaultShaderPresetID": "builtin-crt-classic"
   },
   {
     "sortOrder": 31,
@@ -757,7 +776,8 @@
     "manufacturer": "Various",
     "database": [
       "FBNeo - Arcade Games"
-    ]
+    ],
+    "defaultShaderPresetID": "builtin-crt-classic"
   },
   {
     "year": "1977",
@@ -776,7 +796,8 @@
     "manufacturer": "Atari",
     "database": [
       "Atari - 2600"
-    ]
+    ],
+    "defaultShaderPresetID": "builtin-crt-classic"
   },
   {
     "year": "1982",
@@ -795,7 +816,8 @@
     "manufacturer": "Atari",
     "database": [
       "Atari - 5200"
-    ]
+    ],
+    "defaultShaderPresetID": "builtin-crt-classic"
   },
   {
     "year": "1986",
@@ -815,7 +837,8 @@
     "manufacturer": "Atari",
     "database": [
       "Atari - 7800"
-    ]
+    ],
+    "defaultShaderPresetID": "builtin-crt-classic"
   },
   {
     "year": "1989",
@@ -836,7 +859,8 @@
     "manufacturer": "Atari",
     "database": [
       "Atari - Lynx"
-    ]
+    ],
+    "defaultShaderPresetID": "builtin-dot-matrix"
   },
   {
     "year": "1993",
@@ -860,7 +884,8 @@
     "manufacturer": "Atari",
     "database": [
       "Atari - Jaguar"
-    ]
+    ],
+    "defaultShaderPresetID": "builtin-crt-classic"
   },
   {
     "year": "1998",
@@ -886,7 +911,8 @@
     "manufacturer": "SNK",
     "database": [
       "SNK - Neo Geo Pocket"
-    ]
+    ],
+    "defaultShaderPresetID": "builtin-dot-matrix"
   },
   {
     "year": "1999",
@@ -917,7 +943,8 @@
     "displayInUI": true,
     "database": [
       "SNK - Neo Geo Pocket Color"
-    ]
+    ],
+    "defaultShaderPresetID": "builtin-dot-matrix"
   },
   {
     "year": "1987",
@@ -958,7 +985,8 @@
     "manufacturer": "NEC",
     "database": [
       "NEC - PC Engine - TurboGrafx-16"
-    ]
+    ],
+    "defaultShaderPresetID": "builtin-crt-classic"
   },
   {
     "year": "1994",
@@ -983,7 +1011,8 @@
     "manufacturer": "NEC",
     "database": [
       "NEC - PC-FX"
-    ]
+    ],
+    "defaultShaderPresetID": "builtin-crt-classic"
   },
   {
     "year": "1981",
@@ -1018,7 +1047,8 @@
     "manufacturer": "Microsoft",
     "database": [
       "DOS"
-    ]
+    ],
+    "defaultShaderPresetID": "builtin-none"
   },
   {
     "sortOrder": 75,
@@ -1036,7 +1066,8 @@
     "manufacturer": "Various",
     "database": [
       "ScummVM"
-    ]
+    ],
+    "defaultShaderPresetID": "builtin-none"
   },
   {
     "displayInUI": true,
@@ -1073,7 +1104,8 @@
     "manufacturer": "Commodore",
     "database": [
       "Commodore - Amiga"
-    ]
+    ],
+    "defaultShaderPresetID": "builtin-none"
   },
   {
     "displayInUI": true,
@@ -1092,7 +1124,8 @@
     "manufacturer": "Mattel",
     "database": [
       "Mattel - Intellivision"
-    ]
+    ],
+    "defaultShaderPresetID": "builtin-crt-classic"
   },
   {
     "displayInUI": true,
@@ -1107,7 +1140,8 @@
     "manufacturer": "Nintendo",
     "database": [
       "Pokemon - Mini"
-    ]
+    ],
+    "defaultShaderPresetID": "builtin-dot-matrix"
   },
   {
     "displayInUI": true,
@@ -1128,7 +1162,8 @@
     "manufacturer": "Id Software",
     "database": [
       "Wolfenstein 3D"
-    ]
+    ],
+    "defaultShaderPresetID": "builtin-none"
   },
   {
     "displayInUI": true,
@@ -1147,7 +1182,8 @@
     "manufacturer": "Mattel",
     "database": [
       "Mattel - Intellivision"
-    ]
+    ],
+    "defaultShaderPresetID": "builtin-crt-classic"
   },
   {
     "displayInUI": true,
@@ -1166,7 +1202,8 @@
     "manufacturer": "Apple",
     "database": [
       "Mac68k"
-    ]
+    ],
+    "defaultShaderPresetID": "builtin-none"
   },
   {
     "displayInUI": true,
@@ -1183,7 +1220,8 @@
     "manufacturer": "Epoch",
     "database": [
       "Epoch - Cassette Vision"
-    ]
+    ],
+    "defaultShaderPresetID": "builtin-crt-classic"
   },
   {
     "displayInUI": true,
@@ -1198,7 +1236,8 @@
     "manufacturer": "Uzebox",
     "database": [
       "Uzebox"
-    ]
+    ],
+    "defaultShaderPresetID": "builtin-none"
   },
   {
     "displayInUI": true,
@@ -1215,7 +1254,8 @@
     "manufacturer": "Id Software",
     "database": [
       "DOOM Engine"
-    ]
+    ],
+    "defaultShaderPresetID": "builtin-none"
   },
   {
     "displayInUI": true,
@@ -1252,7 +1292,8 @@
     "manufacturer": "Various",
     "database": [
       "Arcade (various)"
-    ]
+    ],
+    "defaultShaderPresetID": "builtin-none"
   },
   {
     "displayInUI": true,
@@ -1289,7 +1330,8 @@
     "manufacturer": "Commodore",
     "database": [
       "Amiga"
-    ]
+    ],
+    "defaultShaderPresetID": "builtin-none"
   },
   {
     "displayInUI": true,
@@ -1304,7 +1346,8 @@
     "manufacturer": "N/A",
     "database": [
       "SDLPAL"
-    ]
+    ],
+    "defaultShaderPresetID": "builtin-none"
   },
   {
     "displayInUI": true,
@@ -1322,7 +1365,8 @@
     "manufacturer": "Bandai",
     "database": [
       "Bandai - WonderSwan"
-    ]
+    ],
+    "defaultShaderPresetID": "builtin-dot-matrix"
   },
   {
     "displayInUI": true,
@@ -1340,7 +1384,8 @@
     "manufacturer": "Bandai",
     "database": [
       "Bandai - WonderSwan Color"
-    ]
+    ],
+    "defaultShaderPresetID": "builtin-dot-matrix"
   },
   {
     "displayInUI": true,
@@ -1355,7 +1400,8 @@
     "manufacturer": "N/A",
     "database": [
       "2048"
-    ]
+    ],
+    "defaultShaderPresetID": "builtin-none"
   },
   {
     "displayInUI": true,
@@ -1376,7 +1422,8 @@
     "manufacturer": "Atari",
     "database": [
       "Jaguar"
-    ]
+    ],
+    "defaultShaderPresetID": "builtin-crt-classic"
   },
   {
     "displayInUI": true,
@@ -1400,7 +1447,8 @@
     "manufacturer": "Atari",
     "database": [
       "Atari - ST/STE/TT/Falcon"
-    ]
+    ],
+    "defaultShaderPresetID": "builtin-none"
   },
   {
     "displayInUI": true,
@@ -1415,7 +1463,8 @@
     "manufacturer": "Id Software",
     "database": [
       "Quake III Engine"
-    ]
+    ],
+    "defaultShaderPresetID": "builtin-none"
   },
   {
     "displayInUI": true,
@@ -1460,7 +1509,8 @@
     "manufacturer": "Commodore",
     "database": [
       "Commodore - C64"
-    ]
+    ],
+    "defaultShaderPresetID": "builtin-none"
   },
   {
     "displayInUI": true,
@@ -1492,7 +1542,8 @@
     "manufacturer": "NEC",
     "database": [
       "NEC - PC-9800"
-    ]
+    ],
+    "defaultShaderPresetID": "builtin-none"
   },
   {
     "displayInUI": true,
@@ -1510,7 +1561,8 @@
     "manufacturer": "Various",
     "database": [
       "Multi (various)"
-    ]
+    ],
+    "defaultShaderPresetID": "builtin-none"
   },
   {
     "displayInUI": true,
@@ -1526,7 +1578,8 @@
     "manufacturer": "Various",
     "database": [
       "PuzzleScript"
-    ]
+    ],
+    "defaultShaderPresetID": "builtin-none"
   },
   {
     "displayInUI": true,
@@ -1543,7 +1596,8 @@
     "manufacturer": "Texas Instruments",
     "database": [
       "TI-83"
-    ]
+    ],
+    "defaultShaderPresetID": "builtin-none"
   },
   {
     "displayInUI": true,
@@ -1580,7 +1634,8 @@
     "manufacturer": "Various",
     "database": [
       "Arcade (various)"
-    ]
+    ],
+    "defaultShaderPresetID": "builtin-crt-classic"
   },
   {
     "displayInUI": true,
@@ -1596,7 +1651,8 @@
     "manufacturer": "N/A",
     "database": [
       "ChaiLove"
-    ]
+    ],
+    "defaultShaderPresetID": "builtin-none"
   },
   {
     "displayInUI": true,
@@ -1613,7 +1669,8 @@
     "manufacturer": "Nintendo",
     "database": [
       "Nintendo - Virtual Boy"
-    ]
+    ],
+    "defaultShaderPresetID": "builtin-none"
   },
   {
     "displayInUI": true,
@@ -1629,7 +1686,8 @@
     "manufacturer": "Arduboy",
     "database": [
       "Arduboy"
-    ]
+    ],
+    "defaultShaderPresetID": "builtin-none"
   },
   {
     "displayInUI": true,
@@ -1674,7 +1732,8 @@
     "manufacturer": "Commodore",
     "database": [
       "PET"
-    ]
+    ],
+    "defaultShaderPresetID": "builtin-none"
   },
   {
     "displayInUI": true,
@@ -1690,7 +1749,8 @@
     "manufacturer": "Various",
     "database": [
       "MicroW8"
-    ]
+    ],
+    "defaultShaderPresetID": "builtin-none"
   },
   {
     "displayInUI": true,
@@ -1705,7 +1765,8 @@
     "manufacturer": "N/A",
     "database": [
       "Cruzes"
-    ]
+    ],
+    "defaultShaderPresetID": "builtin-none"
   },
   {
     "displayInUI": true,
@@ -1732,7 +1793,8 @@
     "manufacturer": "Various",
     "database": [
       "Music"
-    ]
+    ],
+    "defaultShaderPresetID": "builtin-none"
   },
   {
     "displayInUI": true,
@@ -1748,7 +1810,8 @@
     "manufacturer": "various",
     "database": [
       "Laserdisc arcade game"
-    ]
+    ],
+    "defaultShaderPresetID": "builtin-crt-classic"
   },
   {
     "displayInUI": true,
@@ -1765,7 +1828,8 @@
     "manufacturer": "Bandai",
     "database": [
       "Tamagotchi"
-    ]
+    ],
+    "defaultShaderPresetID": "builtin-none"
   },
   {
     "displayInUI": true,
@@ -1813,7 +1877,8 @@
     "manufacturer": "Commodore",
     "database": [
       "C64 SuperCPU"
-    ]
+    ],
+    "defaultShaderPresetID": "builtin-none"
   },
   {
     "displayInUI": true,
@@ -1842,7 +1907,8 @@
     "manufacturer": "Apple",
     "database": [
       "Apple - II"
-    ]
+    ],
+    "defaultShaderPresetID": "builtin-none"
   },
   {
     "displayInUI": true,
@@ -1869,7 +1935,8 @@
     "manufacturer": "Various",
     "database": [
       "Music"
-    ]
+    ],
+    "defaultShaderPresetID": "builtin-none"
   },
   {
     "displayInUI": true,
@@ -1884,7 +1951,8 @@
     "manufacturer": "BBK Electronics",
     "database": [
       "Longman 4980"
-    ]
+    ],
+    "defaultShaderPresetID": "builtin-none"
   },
   {
     "displayInUI": true,
@@ -1900,7 +1968,8 @@
     "manufacturer": "Acorn",
     "database": [
       "Acorn - BBC Micro"
-    ]
+    ],
+    "defaultShaderPresetID": "builtin-none"
   },
   {
     "displayInUI": true,
@@ -1918,7 +1987,8 @@
     "manufacturer": "ONScripter",
     "database": [
       "ONScripter"
-    ]
+    ],
+    "defaultShaderPresetID": "builtin-none"
   },
   {
     "displayInUI": true,
@@ -1931,7 +2001,8 @@
     "manufacturer": "SyobonAction",
     "database": [
       "Syobon Action"
-    ]
+    ],
+    "defaultShaderPresetID": "builtin-none"
   },
   {
     "displayInUI": true,
@@ -1976,7 +2047,8 @@
     "manufacturer": "Commodore",
     "database": [
       "Commodore - C128"
-    ]
+    ],
+    "defaultShaderPresetID": "builtin-none"
   },
   {
     "displayInUI": true,
@@ -1998,7 +2070,8 @@
     "manufacturer": "Amstrad",
     "database": [
       "Amstrad - CPC/GX4000"
-    ]
+    ],
+    "defaultShaderPresetID": "builtin-none"
   },
   {
     "displayInUI": true,
@@ -2017,7 +2090,8 @@
     "manufacturer": "Joseph Weisbecker",
     "database": [
       "CHIP-8"
-    ]
+    ],
+    "defaultShaderPresetID": "builtin-none"
   },
   {
     "displayInUI": true,
@@ -2046,7 +2120,8 @@
     "manufacturer": "Commodore",
     "database": [
       "CBM-II"
-    ]
+    ],
+    "defaultShaderPresetID": "builtin-none"
   },
   {
     "displayInUI": true,
@@ -2071,7 +2146,8 @@
     "manufacturer": "SNK",
     "database": [
       "SNK - Neo Geo"
-    ]
+    ],
+    "defaultShaderPresetID": "builtin-crt-classic"
   },
   {
     "displayInUI": true,
@@ -2116,7 +2192,8 @@
     "manufacturer": "Enterprise",
     "database": [
       "128"
-    ]
+    ],
+    "defaultShaderPresetID": "builtin-none"
   },
   {
     "displayInUI": true,
@@ -2131,7 +2208,8 @@
     "manufacturer": "RVVM",
     "database": [
       "RVVM"
-    ]
+    ],
+    "defaultShaderPresetID": "builtin-none"
   },
   {
     "displayInUI": true,
@@ -2146,7 +2224,8 @@
     "manufacturer": "Various",
     "database": [
       "Bomberman"
-    ]
+    ],
+    "defaultShaderPresetID": "builtin-none"
   },
   {
     "displayInUI": true,
@@ -2164,7 +2243,8 @@
     "manufacturer": "Coleco|VTech|Nichibutsu",
     "database": [
       "ColecoVision"
-    ]
+    ],
+    "defaultShaderPresetID": "builtin-crt-classic"
   },
   {
     "displayInUI": true,
@@ -2181,7 +2261,8 @@
     "manufacturer": "Various",
     "database": [
       "Cave Story Engine"
-    ]
+    ],
+    "defaultShaderPresetID": "builtin-none"
   },
   {
     "displayInUI": true,
@@ -2196,7 +2277,8 @@
     "manufacturer": "TIC-80",
     "database": [
       "TIC-80"
-    ]
+    ],
+    "defaultShaderPresetID": "builtin-none"
   },
   {
     "displayInUI": true,
@@ -2221,7 +2303,8 @@
     "manufacturer": "Various",
     "database": [
       "MSX"
-    ]
+    ],
+    "defaultShaderPresetID": "builtin-none"
   },
   {
     "displayInUI": true,
@@ -2238,7 +2321,8 @@
     "manufacturer": "SplinterGU",
     "database": [
       "Bennu Game Development"
-    ]
+    ],
+    "defaultShaderPresetID": "builtin-none"
   },
   {
     "displayInUI": true,
@@ -2283,7 +2367,8 @@
     "manufacturer": "Commodore",
     "database": [
       "C64DTV"
-    ]
+    ],
+    "defaultShaderPresetID": "builtin-none"
   },
   {
     "displayInUI": true,
@@ -2328,7 +2413,8 @@
     "manufacturer": "Commodore",
     "database": [
       "C64"
-    ]
+    ],
+    "defaultShaderPresetID": "builtin-none"
   },
   {
     "displayInUI": true,
@@ -2361,7 +2447,8 @@
     "manufacturer": "Oracle Corporation",
     "database": [
       "Java ME"
-    ]
+    ],
+    "defaultShaderPresetID": "builtin-none"
   },
   {
     "displayInUI": true,
@@ -2376,7 +2463,8 @@
     "manufacturer": "Microsoft",
     "database": [
       "Microsoft - Xbox"
-    ]
+    ],
+    "defaultShaderPresetID": "builtin-none"
   },
   {
     "displayInUI": true,
@@ -2392,7 +2480,8 @@
     "manufacturer": "Various",
     "database": [
       "Redbook Audio"
-    ]
+    ],
+    "defaultShaderPresetID": "builtin-none"
   },
   {
     "displayInUI": true,
@@ -2409,7 +2498,8 @@
     "manufacturer": "Philips",
     "database": [
       "Philips - CD-i"
-    ]
+    ],
+    "defaultShaderPresetID": "builtin-crt-classic"
   },
   {
     "displayInUI": true,
@@ -2424,7 +2514,8 @@
     "manufacturer": "Id Software",
     "database": [
       "Quake Engine"
-    ]
+    ],
+    "defaultShaderPresetID": "builtin-none"
   },
   {
     "displayInUI": true,
@@ -2440,7 +2531,8 @@
     "manufacturer": "Lexaloffle",
     "database": [
       "PICO-8"
-    ]
+    ],
+    "defaultShaderPresetID": "builtin-none"
   },
   {
     "displayInUI": true,
@@ -2457,7 +2549,8 @@
     "manufacturer": "Various",
     "database": [
       "Classic Tomb Raider"
-    ]
+    ],
+    "defaultShaderPresetID": "builtin-none"
   },
   {
     "displayInUI": true,
@@ -2472,7 +2565,8 @@
     "manufacturer": "Id Software",
     "database": [
       "Doom 3 Engine"
-    ]
+    ],
+    "defaultShaderPresetID": "builtin-none"
   },
   {
     "displayInUI": true,
@@ -2488,7 +2582,8 @@
     "manufacturer": "Emerson|Interton|Elektor|Zaccaria",
     "database": [
       "Fairchild - Arcadia 2001"
-    ]
+    ],
+    "defaultShaderPresetID": "builtin-crt-classic"
   },
   {
     "displayInUI": true,
@@ -2503,7 +2598,8 @@
     "manufacturer": "Hundred Rabbits",
     "database": [
       "Uxn / Varvara"
-    ]
+    ],
+    "defaultShaderPresetID": "builtin-none"
   },
   {
     "displayInUI": true,
@@ -2543,7 +2639,8 @@
     "manufacturer": "Nintendo",
     "database": [
       "Nintendo - 3DS"
-    ]
+    ],
+    "defaultShaderPresetID": "builtin-3ds"
   },
   {
     "displayInUI": true,
@@ -2558,7 +2655,8 @@
     "manufacturer": "N/A",
     "database": [
       "Pong Clone"
-    ]
+    ],
+    "defaultShaderPresetID": "builtin-none"
   },
   {
     "displayInUI": true,
@@ -2576,7 +2674,8 @@
     "manufacturer": "NEC",
     "database": [
       "NEC - PC-8800"
-    ]
+    ],
+    "defaultShaderPresetID": "builtin-none"
   },
   {
     "displayInUI": true,
@@ -2591,7 +2690,8 @@
     "manufacturer": "Philips",
     "database": [
       "CDi"
-    ]
+    ],
+    "defaultShaderPresetID": "builtin-crt-classic"
   },
   {
     "displayInUI": true,
@@ -2636,7 +2736,8 @@
     "manufacturer": "Commodore",
     "database": [
       "Commodore - PLUS/4"
-    ]
+    ],
+    "defaultShaderPresetID": "builtin-none"
   },
   {
     "displayInUI": true,
@@ -2649,7 +2750,8 @@
     "manufacturer": "Brainchild Design",
     "database": [
       "Jump 'n Bump"
-    ]
+    ],
+    "defaultShaderPresetID": "builtin-none"
   },
   {
     "displayInUI": true,
@@ -2691,7 +2793,8 @@
     "manufacturer": "Various",
     "database": [
       "MPV"
-    ]
+    ],
+    "defaultShaderPresetID": "builtin-none"
   },
   {
     "displayInUI": true,
@@ -2742,7 +2845,8 @@
     "manufacturer": "Commodore",
     "database": [
       "Commodore - VIC-20"
-    ]
+    ],
+    "defaultShaderPresetID": "builtin-none"
   },
   {
     "displayInUI": true,
@@ -2768,7 +2872,8 @@
     "manufacturer": "Sharp",
     "database": [
       "Sharp - X1"
-    ]
+    ],
+    "defaultShaderPresetID": "builtin-none"
   },
   {
     "displayInUI": true,
@@ -2784,7 +2889,8 @@
     "manufacturer": "Welback Holdings",
     "database": [
       "Mega Duck"
-    ]
+    ],
+    "defaultShaderPresetID": "builtin-dot-matrix"
   },
   {
     "displayInUI": true,
@@ -2813,7 +2919,8 @@
     "manufacturer": "Id Software",
     "database": [
       "Quake II Engine"
-    ]
+    ],
+    "defaultShaderPresetID": "builtin-none"
   },
   {
     "displayInUI": true,
@@ -2847,7 +2954,8 @@
     "manufacturer": "Nintendo",
     "database": [
       "Nintendo - GameCube"
-    ]
+    ],
+    "defaultShaderPresetID": "builtin-none"
   },
   {
     "displayInUI": true,
@@ -2880,7 +2988,8 @@
     "database": [
       "Nintendo - Wii",
       "Nintendo - Wii (Digital)"
-    ]
+    ],
+    "defaultShaderPresetID": "builtin-none"
   },
   {
     "displayInUI": true,
@@ -2893,7 +3002,8 @@
     "manufacturer": "Taylor",
     "database": [
       "C713"
-    ]
+    ],
+    "defaultShaderPresetID": "builtin-none"
   },
   {
     "displayInUI": true,
@@ -2918,7 +3028,8 @@
     "manufacturer": "Sharp",
     "database": [
       "Sharp - X68000"
-    ]
+    ],
+    "defaultShaderPresetID": "builtin-none"
   },
   {
     "displayInUI": true,
@@ -2934,7 +3045,8 @@
     "manufacturer": "IBM",
     "database": [
       "IBM - PC/XT"
-    ]
+    ],
+    "defaultShaderPresetID": "builtin-none"
   },
   {
     "displayInUI": true,
@@ -2959,7 +3071,8 @@
     "manufacturer": "Coleco",
     "database": [
       "Coleco - ColecoVision"
-    ]
+    ],
+    "defaultShaderPresetID": "builtin-crt-classic"
   },
   {
     "displayInUI": true,
@@ -2996,7 +3109,8 @@
     "manufacturer": "Various",
     "database": [
       "Daphne Arcade"
-    ]
+    ],
+    "defaultShaderPresetID": "builtin-crt-classic"
   },
   {
     "displayInUI": true,
@@ -3011,7 +3125,8 @@
     "manufacturer": "Magnavox|Philips",
     "database": [
       "Magnavox - Odyssey 2"
-    ]
+    ],
+    "defaultShaderPresetID": "builtin-crt-classic"
   },
   {
     "displayInUI": true,
@@ -3026,7 +3141,8 @@
     "manufacturer": "Philips",
     "database": [
       "P2000T"
-    ]
+    ],
+    "defaultShaderPresetID": "builtin-none"
   },
   {
     "displayInUI": true,
@@ -3041,7 +3157,8 @@
     "manufacturer": "inutilis",
     "database": [
       "LowRes NX"
-    ]
+    ],
+    "defaultShaderPresetID": "builtin-none"
   },
   {
     "displayInUI": true,
@@ -3066,7 +3183,8 @@
     "manufacturer": "Sinclair|Amstrad",
     "database": [
       "ZX Spectrum (various)"
-    ]
+    ],
+    "defaultShaderPresetID": "builtin-none"
   },
   {
     "displayInUI": true,
@@ -3083,7 +3201,8 @@
     "manufacturer": "Various",
     "database": [
       "Cave Story Engine"
-    ]
+    ],
+    "defaultShaderPresetID": "builtin-none"
   },
   {
     "displayInUI": true,
@@ -3096,7 +3215,8 @@
     "manufacturer": "N/A",
     "database": [
       "Anarch"
-    ]
+    ],
+    "defaultShaderPresetID": "builtin-none"
   },
   {
     "displayInUI": true,
@@ -3111,7 +3231,8 @@
     "manufacturer": "Various",
     "database": [
       "WASM-4"
-    ]
+    ],
+    "defaultShaderPresetID": "builtin-none"
   },
   {
     "displayInUI": true,
@@ -3126,7 +3247,8 @@
     "manufacturer": "Microsoft",
     "database": [
       "Minecraft Clone"
-    ]
+    ],
+    "defaultShaderPresetID": "builtin-none"
   },
   {
     "displayInUI": true,
@@ -3171,7 +3293,8 @@
     "manufacturer": "Commodore",
     "database": [
       "CBM-5x0"
-    ]
+    ],
+    "defaultShaderPresetID": "builtin-none"
   },
   {
     "displayInUI": true,
@@ -3184,7 +3307,8 @@
     "manufacturer": "N/A",
     "database": [
       "Advanced Test Core"
-    ]
+    ],
+    "defaultShaderPresetID": "builtin-none"
   },
   {
     "displayInUI": true,
@@ -3200,7 +3324,8 @@
     "manufacturer": "Watara",
     "database": [
       "Watara - Supervision"
-    ]
+    ],
+    "defaultShaderPresetID": "builtin-dot-matrix"
   },
   {
     "displayInUI": true,
@@ -3213,7 +3338,8 @@
     "manufacturer": "Various",
     "database": [
       "Superbroswar"
-    ]
+    ],
+    "defaultShaderPresetID": "builtin-none"
   },
   {
     "displayInUI": true,
@@ -3228,7 +3354,8 @@
     "manufacturer": "Various",
     "database": [
       "Rick Dangerous"
-    ]
+    ],
+    "defaultShaderPresetID": "builtin-none"
   },
   {
     "displayInUI": true,
@@ -3245,7 +3372,8 @@
     "manufacturer": "Sinclair",
     "database": [
       "ZX81"
-    ]
+    ],
+    "defaultShaderPresetID": "builtin-none"
   },
   {
     "displayInUI": true,
@@ -3260,7 +3388,8 @@
     "manufacturer": "N/A",
     "database": [
       "Dinothawr"
-    ]
+    ],
+    "defaultShaderPresetID": "builtin-none"
   },
   {
     "displayInUI": true,
@@ -3275,7 +3404,8 @@
     "manufacturer": "VaporSpec",
     "database": [
       "VaporSpec"
-    ]
+    ],
+    "defaultShaderPresetID": "builtin-none"
   },
   {
     "displayInUI": true,
@@ -3292,7 +3422,8 @@
     "manufacturer": "Infocom",
     "database": [
       "Z-Machine"
-    ]
+    ],
+    "defaultShaderPresetID": "builtin-none"
   },
   {
     "displayInUI": true,
@@ -3307,7 +3438,8 @@
     "manufacturer": "Various",
     "database": [
       "Vircon32"
-    ]
+    ],
+    "defaultShaderPresetID": "builtin-none"
   },
   {
     "displayInUI": true,
@@ -3325,7 +3457,8 @@
     "manufacturer": "ONScripter",
     "database": [
       "ONScripter Yuri"
-    ]
+    ],
+    "defaultShaderPresetID": "builtin-none"
   },
   {
     "displayInUI": true,
@@ -3343,7 +3476,8 @@
     "manufacturer": "NEC",
     "database": [
       "PC-FX"
-    ]
+    ],
+    "defaultShaderPresetID": "builtin-crt-classic"
   },
   {
     "displayInUI": true,
@@ -3359,7 +3493,8 @@
     "manufacturer": "Smith Engineering|General Consumer Electronics",
     "database": [
       "GCE - Vectrex"
-    ]
+    ],
+    "defaultShaderPresetID": "builtin-none"
   },
   {
     "displayInUI": true,
@@ -3374,7 +3509,8 @@
     "manufacturer": "Unknown",
     "database": [
       "Unknown System"
-    ]
+    ],
+    "defaultShaderPresetID": "builtin-none"
   },
   {
     "year": null,
@@ -3389,12 +3525,13 @@
     "defaultCoreID": null,
     "iconName": "gamecontroller",
     "emuIconName": null,
-"sortOrder": 80,
-  "defaultBoxType": "Landscape",
-  "displayInUI": true,
-  "database": [
-    "Sega - Mega-CD - Sega CD"
-    ]
+    "sortOrder": 80,
+    "defaultBoxType": "Landscape",
+    "displayInUI": true,
+    "database": [
+      "Sega - Mega-CD - Sega CD"
+    ],
+    "defaultShaderPresetID": "builtin-crt-classic"
   },
   {
     "year": null,
@@ -3408,12 +3545,13 @@
     "defaultCoreID": null,
     "iconName": "gamecontroller",
     "emuIconName": null,
-"sortOrder": 80,
-  "defaultBoxType": "Landscape",
-  "displayInUI": true,
+    "sortOrder": 80,
+    "defaultBoxType": "Landscape",
+    "displayInUI": true,
     "database": [
       "Sega - PICO"
-    ]
+    ],
+    "defaultShaderPresetID": "builtin-crt-classic"
   },
   {
     "year": "1983",
@@ -3439,7 +3577,8 @@
     "displayInUI": true,
     "database": [
       "Sega - SG-1000"
-    ]
+    ],
+    "defaultShaderPresetID": "builtin-crt-classic"
   },
   {
     "year": "1983",
@@ -3464,7 +3603,8 @@
     "displayInUI": true,
     "database": [
       "Sega - SC-3000"
-    ]
+    ],
+    "defaultShaderPresetID": "builtin-crt-classic"
   },
   {
     "year": "1986",
@@ -3489,7 +3629,8 @@
     "displayInUI": true,
     "database": [
       "NEC - PC-FX"
-    ]
+    ],
+    "defaultShaderPresetID": "builtin-crt-classic"
   },
   {
     "year": "1986",
@@ -3513,7 +3654,8 @@
     "displayInUI": true,
     "database": [
       "NEC - PC Engine SuperGrafx"
-    ]
+    ],
+    "defaultShaderPresetID": "builtin-crt-classic"
   },
   {
     "year": "1988",
@@ -3540,6 +3682,7 @@
     "displayInUI": true,
     "database": [
       "NEC - PC Engine CD - TurboGrafx-CD"
-    ]
+    ],
+    "defaultShaderPresetID": "builtin-crt-classic"
   }
 ]

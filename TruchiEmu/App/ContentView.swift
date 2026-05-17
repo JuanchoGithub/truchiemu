@@ -204,9 +204,10 @@ case .library:
                           }
 
                       )
-                     .frame(width: 240)
+                .frame(width: 240)
+                .layoutPriority(1)
 
-                      LibraryGridView(
+                LibraryGridView(
                           showCreateCategorySheet: $showCreateCategorySheet,
                           filter: $selectedFilter,
                           selectedROM: $selectedROM,

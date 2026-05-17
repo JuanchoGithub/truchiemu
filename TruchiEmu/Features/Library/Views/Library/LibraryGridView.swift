@@ -88,11 +88,7 @@ struct LibraryGridView: View {
     @StateObject private var gameLauncher = GameLauncher.shared
 
     @State private var viewMode: ViewMode = .grid
-    @State private var columnCount: Int = {
-        let zoom = AppSettings.getDouble("gridZoomLevel", defaultValue: 0.0)
-        let effectiveZoom = zoom != 0.0 ? zoom : 0.5
-        return max(1, min(8, Int(round((1.0 - effectiveZoom) * 7.0) + 1)))
-    }()
+    @State private var columnCount: Int = 4
     @ObservedObject var prefs = SystemPreferences.shared
     @ObservedObject var boxArtService = BoxArtService.shared
     @State private var manualBoxArtSearchROM: ROM?
@@ -264,15 +260,11 @@ struct LibraryGridView: View {
                                    }
                                }
                            })
-                           .onChange(of: continuousZoom) { _, newZoom in
-                               if viewMode == .grid {
-                                   let newColumnCount = max(1, min(8, Int(round((1.0 - newZoom) * 7.0) + 1)))
-                                   if newColumnCount != columnCount {
-                                       columnCount = newColumnCount
-                                       updateColumns()
-                                   }
-                               }
-                           }
+                .onChange(of: continuousZoom) { _, _ in
+                    if viewMode == .grid {
+                        updateColumns()
+                    }
+                }
 .frame(width: 160)
                     Image(systemName: "plus.magnifyingglass")
                         .font(.system(size: 10))
@@ -544,8 +536,8 @@ viewModel.updateFilters(
         let computedColumns = max(1, min(8, Int((availableWidth + spacing) / (cardWidth + spacing))))
         columnCount = computedColumns
         
-columns = Array(
-            repeating: GridItem(.flexible(minimum: cardWidth, maximum: cardWidth), spacing: spacing),
+        columns = Array(
+            repeating: GridItem(.flexible(minimum: 1, maximum: cardWidth), spacing: spacing),
             count: columnCount
         )
     }
@@ -629,30 +621,22 @@ columns = Array(
         .clipped() // Prevent content from drawing outside bounds (e.g., behind sidebar)
         .gesture(
             MagnificationGesture()
-                .onChanged { value in
-                    // Continuous zoom: adjust cards smoothly during pinch
-                    let scale = value / lastMagnification
-                    let zoomDelta = (scale - 1.0) * 0.15
-                    let newZoom = max(0, min(1, continuousZoom + zoomDelta))
-                    continuousZoom = newZoom
-                    // Update columns in real-time for smooth reflow
-                    let newColumnCount = max(1, min(8, Int(round((1.0 - newZoom) * 7.0) + 1)))
-                    if newColumnCount != columnCount {
-                        columnCount = newColumnCount
-                        updateColumns()
-                    }
-                    lastMagnification = value
+            .onChanged { value in
+                let scale = value / lastMagnification
+                let zoomDelta = (scale - 1.0) * 0.15
+                let newZoom = max(0, min(1, continuousZoom + zoomDelta))
+                continuousZoom = newZoom
+                updateColumns()
+                lastMagnification = value
+            }
+            .onEnded { _ in
+                let snapped = round(continuousZoom * 7.0) / 7.0
+                withAnimation(.interpolatingSpring(stiffness: 150, damping: 20)) {
+                    continuousZoom = snapped
+                    updateColumns()
                 }
-                .onEnded { _ in
-                    // Smooth snap to nearest predefined step when pinch ends
-                    let snapped = round(continuousZoom * 7.0) / 7.0
-                    withAnimation(.interpolatingSpring(stiffness: 150, damping: 20)) {
-                        continuousZoom = snapped
-                        columnCount = max(1, min(8, Int(round((1.0 - snapped) * 7.0) + 1)))
-                        updateColumns()
-                    }
-                    lastMagnification = 1.0
-                }
+                lastMagnification = 1.0
+            }
         )
         .onDrop(of:[.url], isTargeted: nil) { items, location in
             return false
@@ -814,16 +798,12 @@ columns = Array(
     // Applies the current continuousZoom value to columnCount and updates the grid.
     // Shared between slider, pinch gesture, and onAppear restoration.
     private func applyZoomToColumnCount(animate: Bool = false) {
-        let newColumnCount = max(1, min(8, Int(round((1.0 - continuousZoom) * 7.0) + 1)))
-        if newColumnCount != columnCount {
-            columnCount = newColumnCount
-            if animate {
-                withAnimation(.interpolatingSpring(stiffness: 150, damping: 20)) {
-                    updateColumns()
-                }
-            } else {
+        if animate {
+            withAnimation(.interpolatingSpring(stiffness: 150, damping: 20)) {
                 updateColumns()
             }
+        } else {
+            updateColumns()
         }
     }
 

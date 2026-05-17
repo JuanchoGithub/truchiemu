@@ -373,8 +373,143 @@ description: "Game Boy Color with temporal feedback, ghosting, and iridescent LC
                     ShaderUniformOption(value: 8.0, label: "Bottom Right"),
                 ]),
             ],
-            description: "Advanced GBA LCD simulation with ghosting, grid, and metallic reflections.",
-            recommendedSystems: ["gba"]
+        description: "Advanced GBA LCD simulation with ghosting, grid, and metallic reflections.",
+        recommendedSystems: ["gba"]
+        ),
+
+        // PSP (Advanced LCD with warm gamut and ghosting)
+        ShaderPreset(
+        id: "builtin-psp",
+        name: "PSP (Advanced LCD)",
+        shaderType: .lcd,
+        passes: [
+            ShaderPass(
+                shaderFile: "PSP",
+                filter: .nearest,
+                scaleX: 1.0, scaleY: 1.0,
+                scaleTypeX: .viewport, scaleTypeY: .viewport
+            )
+        ],
+        globalUniforms: [
+            ShaderUniform(name: "dotOpacity", defaultValue: 0.85, minValue: 0.0, maxValue: 1.0, displayName: "Grid Opacity"),
+            ShaderUniform(name: "specularShininess", defaultValue: 0.8, minValue: 0.0, maxValue: 5.0, displayName: "Reflection Intensity"),
+            ShaderUniform(name: "colorBoost", defaultValue: 1.0, minValue: 0.5, maxValue: 2.0, displayName: "Color Boost"),
+            ShaderUniform(name: "ghostingWeight", defaultValue: 0.15, minValue: 0.0, maxValue: 1.0, displayName: "Ghosting Weight"),
+            ShaderUniform(name: "physicalDepth", defaultValue: 0.15, minValue: 0.0, maxValue: 1.0, displayName: "Physical Depth"),
+            ShaderUniform(name: "physicalLineWidth", defaultValue: 0.8, minValue: 0.0, maxValue: 3.0, step: 0.05, displayName: "Grid Line Width"),
+            ShaderUniform(name: "lightPositionIndex", defaultValue: 0.0, minValue: 0.0, maxValue: 8.0, step: 1.0, displayName: "Light Position", type: .dropdown, options: [
+                ShaderUniformOption(value: 0.0, label: "Top Right"),
+                ShaderUniformOption(value: 1.0, label: "Top Left"),
+                ShaderUniformOption(value: 2.0, label: "Top Center"),
+                ShaderUniformOption(value: 3.0, label: "Center"),
+                ShaderUniformOption(value: 4.0, label: "Center Left"),
+                ShaderUniformOption(value: 5.0, label: "Center Right"),
+                ShaderUniformOption(value: 6.0, label: "Bottom Left"),
+                ShaderUniformOption(value: 7.0, label: "Bottom Center"),
+                ShaderUniformOption(value: 8.0, label: "Bottom Right"),
+            ]),
+            ShaderUniform(name: "gamutR0C0", defaultValue: 0.90, minValue: 0.0, maxValue: 1.0, step: 0.01, displayName: "Gamut Red to Red"),
+            ShaderUniform(name: "gamutR0C1", defaultValue: 0.10, minValue: 0.0, maxValue: 1.0, step: 0.01, displayName: "Gamut Red to Green"),
+            ShaderUniform(name: "gamutR0C2", defaultValue: 0.0, minValue: 0.0, maxValue: 1.0, step: 0.01, displayName: "Gamut Red to Blue"),
+            ShaderUniform(name: "gamutR1C0", defaultValue: 0.02, minValue: 0.0, maxValue: 1.0, step: 0.01, displayName: "Gamut Green to Red"),
+            ShaderUniform(name: "gamutR1C1", defaultValue: 0.88, minValue: 0.0, maxValue: 1.0, step: 0.01, displayName: "Gamut Green to Green"),
+            ShaderUniform(name: "gamutR1C2", defaultValue: 0.10, minValue: 0.0, maxValue: 1.0, step: 0.01, displayName: "Gamut Green to Blue"),
+            ShaderUniform(name: "gamutR2C0", defaultValue: 0.0, minValue: 0.0, maxValue: 1.0, step: 0.01, displayName: "Gamut Blue to Red"),
+            ShaderUniform(name: "gamutR2C1", defaultValue: 0.08, minValue: 0.0, maxValue: 1.0, step: 0.01, displayName: "Gamut Blue to Green"),
+            ShaderUniform(name: "gamutR2C2", defaultValue: 0.92, minValue: 0.0, maxValue: 1.0, step: 0.01, displayName: "Gamut Blue to Blue"),
+        ],
+        description: "PSP LCD simulation with warm color gamut, ghosting, and subtle pixel grid.",
+        recommendedSystems: ["psp"]
+        ),
+
+        // NDS (Advanced LCD with washed-out gamut)
+        ShaderPreset(
+        id: "builtin-nds",
+        name: "NDS (Advanced LCD)",
+        shaderType: .lcd,
+        passes: [
+            ShaderPass(
+                shaderFile: "PSP",
+                filter: .nearest,
+                scaleX: 1.0, scaleY: 1.0,
+                scaleTypeX: .viewport, scaleTypeY: .viewport
+            )
+        ],
+        globalUniforms: [
+            ShaderUniform(name: "dotOpacity", defaultValue: 0.85, minValue: 0.0, maxValue: 1.0, displayName: "Grid Opacity"),
+            ShaderUniform(name: "specularShininess", defaultValue: 0.6, minValue: 0.0, maxValue: 5.0, displayName: "Reflection Intensity"),
+            ShaderUniform(name: "colorBoost", defaultValue: 1.0, minValue: 0.5, maxValue: 2.0, displayName: "Color Boost"),
+            ShaderUniform(name: "ghostingWeight", defaultValue: 0.05, minValue: 0.0, maxValue: 1.0, displayName: "Ghosting Weight"),
+            ShaderUniform(name: "physicalDepth", defaultValue: 0.15, minValue: 0.0, maxValue: 1.0, displayName: "Physical Depth"),
+            ShaderUniform(name: "physicalLineWidth", defaultValue: 1.0, minValue: 0.0, maxValue: 3.0, step: 0.05, displayName: "Grid Line Width"),
+            ShaderUniform(name: "lightPositionIndex", defaultValue: 0.0, minValue: 0.0, maxValue: 8.0, step: 1.0, displayName: "Light Position", type: .dropdown, options: [
+                ShaderUniformOption(value: 0.0, label: "Top Right"),
+                ShaderUniformOption(value: 1.0, label: "Top Left"),
+                ShaderUniformOption(value: 2.0, label: "Top Center"),
+                ShaderUniformOption(value: 3.0, label: "Center"),
+                ShaderUniformOption(value: 4.0, label: "Center Left"),
+                ShaderUniformOption(value: 5.0, label: "Center Right"),
+                ShaderUniformOption(value: 6.0, label: "Bottom Left"),
+                ShaderUniformOption(value: 7.0, label: "Bottom Center"),
+                ShaderUniformOption(value: 8.0, label: "Bottom Right"),
+            ]),
+            ShaderUniform(name: "gamutR0C0", defaultValue: 0.95, minValue: 0.0, maxValue: 1.0, step: 0.01, displayName: "Gamut Red to Red"),
+            ShaderUniform(name: "gamutR0C1", defaultValue: 0.05, minValue: 0.0, maxValue: 1.0, step: 0.01, displayName: "Gamut Red to Green"),
+            ShaderUniform(name: "gamutR0C2", defaultValue: 0.0, minValue: 0.0, maxValue: 1.0, step: 0.01, displayName: "Gamut Red to Blue"),
+            ShaderUniform(name: "gamutR1C0", defaultValue: 0.03, minValue: 0.0, maxValue: 1.0, step: 0.01, displayName: "Gamut Green to Red"),
+            ShaderUniform(name: "gamutR1C1", defaultValue: 0.90, minValue: 0.0, maxValue: 1.0, step: 0.01, displayName: "Gamut Green to Green"),
+            ShaderUniform(name: "gamutR1C2", defaultValue: 0.07, minValue: 0.0, maxValue: 1.0, step: 0.01, displayName: "Gamut Green to Blue"),
+            ShaderUniform(name: "gamutR2C0", defaultValue: 0.02, minValue: 0.0, maxValue: 1.0, step: 0.01, displayName: "Gamut Blue to Red"),
+            ShaderUniform(name: "gamutR2C1", defaultValue: 0.06, minValue: 0.0, maxValue: 1.0, step: 0.01, displayName: "Gamut Blue to Green"),
+            ShaderUniform(name: "gamutR2C2", defaultValue: 0.92, minValue: 0.0, maxValue: 1.0, step: 0.01, displayName: "Gamut Blue to Blue"),
+        ],
+        description: "NDS LCD simulation with washed-out color gamut, light ghosting, and visible pixel grid.",
+        recommendedSystems: ["nds"]
+        ),
+
+        // 3DS (Advanced LCD with accurate color)
+        ShaderPreset(
+        id: "builtin-3ds",
+        name: "3DS (Advanced LCD)",
+        shaderType: .lcd,
+        passes: [
+            ShaderPass(
+                shaderFile: "PSP",
+                filter: .nearest,
+                scaleX: 1.0, scaleY: 1.0,
+                scaleTypeX: .viewport, scaleTypeY: .viewport
+            )
+        ],
+        globalUniforms: [
+            ShaderUniform(name: "dotOpacity", defaultValue: 0.85, minValue: 0.0, maxValue: 1.0, displayName: "Grid Opacity"),
+            ShaderUniform(name: "specularShininess", defaultValue: 0.5, minValue: 0.0, maxValue: 5.0, displayName: "Reflection Intensity"),
+            ShaderUniform(name: "colorBoost", defaultValue: 1.0, minValue: 0.5, maxValue: 2.0, displayName: "Color Boost"),
+            ShaderUniform(name: "ghostingWeight", defaultValue: 0.0, minValue: 0.0, maxValue: 1.0, displayName: "Ghosting Weight"),
+            ShaderUniform(name: "physicalDepth", defaultValue: 0.12, minValue: 0.0, maxValue: 1.0, displayName: "Physical Depth"),
+            ShaderUniform(name: "physicalLineWidth", defaultValue: 0.6, minValue: 0.0, maxValue: 3.0, step: 0.05, displayName: "Grid Line Width"),
+            ShaderUniform(name: "lightPositionIndex", defaultValue: 0.0, minValue: 0.0, maxValue: 8.0, step: 1.0, displayName: "Light Position", type: .dropdown, options: [
+                ShaderUniformOption(value: 0.0, label: "Top Right"),
+                ShaderUniformOption(value: 1.0, label: "Top Left"),
+                ShaderUniformOption(value: 2.0, label: "Top Center"),
+                ShaderUniformOption(value: 3.0, label: "Center"),
+                ShaderUniformOption(value: 4.0, label: "Center Left"),
+                ShaderUniformOption(value: 5.0, label: "Center Right"),
+                ShaderUniformOption(value: 6.0, label: "Bottom Left"),
+                ShaderUniformOption(value: 7.0, label: "Bottom Center"),
+                ShaderUniformOption(value: 8.0, label: "Bottom Right"),
+            ]),
+            ShaderUniform(name: "gamutR0C0", defaultValue: 1.0, minValue: 0.0, maxValue: 1.0, step: 0.01, displayName: "Gamut Red to Red"),
+            ShaderUniform(name: "gamutR0C1", defaultValue: 0.0, minValue: 0.0, maxValue: 1.0, step: 0.01, displayName: "Gamut Red to Green"),
+            ShaderUniform(name: "gamutR0C2", defaultValue: 0.0, minValue: 0.0, maxValue: 1.0, step: 0.01, displayName: "Gamut Red to Blue"),
+            ShaderUniform(name: "gamutR1C0", defaultValue: 0.0, minValue: 0.0, maxValue: 1.0, step: 0.01, displayName: "Gamut Green to Red"),
+            ShaderUniform(name: "gamutR1C1", defaultValue: 1.0, minValue: 0.0, maxValue: 1.0, step: 0.01, displayName: "Gamut Green to Green"),
+            ShaderUniform(name: "gamutR1C2", defaultValue: 0.0, minValue: 0.0, maxValue: 1.0, step: 0.01, displayName: "Gamut Green to Blue"),
+            ShaderUniform(name: "gamutR2C0", defaultValue: 0.0, minValue: 0.0, maxValue: 1.0, step: 0.01, displayName: "Gamut Blue to Red"),
+            ShaderUniform(name: "gamutR2C1", defaultValue: 0.0, minValue: 0.0, maxValue: 1.0, step: 0.01, displayName: "Gamut Blue to Green"),
+            ShaderUniform(name: "gamutR2C2", defaultValue: 1.0, minValue: 0.0, maxValue: 1.0, step: 0.01, displayName: "Gamut Blue to Blue"),
+        ],
+        description: "3DS LCD simulation with accurate color, no ghosting, and subtle pixel grid.",
+        recommendedSystems: ["3ds"]
         ),
 
         // Dot Matrix LCD (Game Boy metallic dot-matrix)

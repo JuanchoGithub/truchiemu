@@ -1271,13 +1271,44 @@ useBezel: getUniform("useBezel", fallback: 1.0),
                                 lightPositionIndex: getUniform("lightPositionIndex", fallback: 0.0)
                             )
                             enc.setFragmentBytes(&u, length: MemoryLayout<GBAUniforms>.stride, index: 0)
-                            enc.setFragmentTexture(frameTex, index: 0)
-                            for i in 1...2 {
-                                if let tex = getTemporalTexture(at: (temporalIndex - i + 5) % 5) {
-                                    enc.setFragmentTexture(tex, index: i)
-                                }
-                            }
-                            frameCounter += 1
+        enc.setFragmentTexture(frameTex, index: 0)
+        for i in 1...2 {
+            if let tex = getTemporalTexture(at: (temporalIndex - i + 5) % 5) {
+                enc.setFragmentTexture(tex, index: i)
+            }
+        }
+        frameCounter += 1
+        case "fragmentPSPShader":
+        ensureTemporalTextures(width: frameTex.width, height: frameTex.height, device: device, sourceFormat: frameTex.pixelFormat)
+        let pspColorB = getUniform("colorBoost", fallback: 1.0)
+        let pspGamut = simd_float3x3(
+            SIMD3<Float>(getUniform("gamutR0C0", fallback: 1.0), getUniform("gamutR1C0", fallback: 0.0), getUniform("gamutR2C0", fallback: 0.0)),
+            SIMD3<Float>(getUniform("gamutR0C1", fallback: 0.0), getUniform("gamutR1C1", fallback: 1.0), getUniform("gamutR2C1", fallback: 0.0)),
+            SIMD3<Float>(getUniform("gamutR0C2", fallback: 0.0), getUniform("gamutR1C2", fallback: 0.0), getUniform("gamutR2C2", fallback: 1.0))
+        )
+        var pspU = PSPUniforms(
+            dotOpacity: getUniform("dotOpacity", fallback: 0.85),
+            specularShininess: getUniform("specularShininess", fallback: 0.8),
+            colorBoost: pspColorB,
+            ghostingWeight: getUniform("ghostingWeight", fallback: 0.15),
+            physicalDepth: getUniform("physicalDepth", fallback: 0.15),
+            frameIndex: UInt32(frameCounter % 60),
+            sourceSize: SIMD4<Float>(fw, fh, 1.0/fw, 1.0/fh),
+            outputSize: SIMD4<Float>(vpW, vpH, 0.0, 0.0),
+            lightPositionIndex: getUniform("lightPositionIndex", fallback: 0.0),
+            physicalLineWidth: getUniform("physicalLineWidth", fallback: 0.8),
+            _pad0: 0.0,
+            _pad1: 0.0,
+            colorGamut: pspGamut
+        )
+        enc.setFragmentBytes(&pspU, length: MemoryLayout<PSPUniforms>.stride, index: 0)
+        enc.setFragmentTexture(frameTex, index: 0)
+        for i in 1...2 {
+            if let tex = getTemporalTexture(at: (temporalIndex - i + 5) % 5) {
+                enc.setFragmentTexture(tex, index: i)
+            }
+        }
+        frameCounter += 1
                         case "fragmentCRTMultipass":
                             ensureTemporalTextures(width: frameTex.width, height: frameTex.height, device: device, sourceFormat: frameTex.pixelFormat)
                             let colorB = getUniform("colorBoost", fallback: 1.0)
@@ -1377,7 +1408,7 @@ useBezel: getUniform("useBezel", fallback: 1.0),
                         // For shaders with temporal feedback: maintain rolling history
                         // Must happen AFTER render encoder ends
                         // Advance first, then write to that slot (becomes T-1 for next frame)
-                        if fragmentName == "fragment8BitGBC" || fragmentName == "fragmentGBAShader" || fragmentName == "fragmentCRTMultipass" {
+                        if fragmentName == "fragment8BitGBC" || fragmentName == "fragmentGBAShader" || fragmentName == "fragmentPSPShader" || fragmentName == "fragmentCRTMultipass" {
                             advanceTemporalIndex()
                             let blit = cmdBuffer.makeBlitCommandEncoder()
                             if let tex = temporalTextures[temporalIndex] {

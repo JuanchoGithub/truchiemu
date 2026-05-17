@@ -182,5 +182,22 @@ struct GBAUniforms {
     var lightPositionIndex: Float
 }
 
+// PSP/NDS/3DS uniforms - matches PSPUniforms in PSP.metal
+struct PSPUniforms {
+    var dotOpacity: Float
+    var specularShininess: Float
+    var colorBoost: Float
+    var ghostingWeight: Float
+    var physicalDepth: Float
+    var frameIndex: UInt32
+    var sourceSize: SIMD4<Float>
+    var outputSize: SIMD4<Float>
+    var lightPositionIndex: Float
+    var physicalLineWidth: Float
+    var _pad0: Float
+    var _pad1: Float
+    var colorGamut: simd_float3x3
+}
+
 // Legacy alias for CRT passthrough
 typealias ShaderUniforms = CRTUniforms
