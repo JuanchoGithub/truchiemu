@@ -47,6 +47,17 @@ enum ROMIdentifier {
         
         LoggerService.debug(category: "ROMIdentifier", "Analyzing \(filename)")
 
+        // Reject .dat files smaller than 10 MB — these are never game ROMs
+        // (high score files, config data, etc.) and only pollute system listings.
+        // Legitimate .dat files are NAOMI NullDC legacy ROMs (typically 2-100+ MB).
+        if extLower == "dat" {
+            let resourceValues = try? url.resourceValues(forKeys: [.fileSizeKey])
+            if let fileSize = resourceValues?.fileSize, fileSize < 10_000_000 {
+                LoggerService.debug(category: "ROMIdentifier", "Skipping \(filename): .dat file is too small (\(fileSize) bytes) to be a game ROM")
+                return nil
+            }
+        }
+
         // 🚀 FAST PATH: Unique Extensions
         // If the extension belongs to exactly ONE system, we can instantly return it
         // and bypass all string allocations, path parsing, and I/O reads entirely.

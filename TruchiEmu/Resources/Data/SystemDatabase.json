@@ -1978,7 +1978,6 @@
     "extensions": [
       "/",
       "___",
-      "dat",
       "ons"
     ],
     "defaultBoxType": "Landscape",
@@ -2311,7 +2310,6 @@
     "id": "bgdi",
     "name": "Bennu Game Development",
     "extensions": [
-      "dat",
       "dcb",
       "exe"
     ],
@@ -3412,7 +3410,6 @@
     "id": "zmachine",
     "name": "Z-Machine",
     "extensions": [
-      "dat",
       "z1",
       "z3"
     ],
@@ -3448,7 +3445,6 @@
     "extensions": [
       "/",
       "___",
-      "dat",
       "ons"
     ],
     "defaultBoxType": "Landscape",
