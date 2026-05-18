@@ -111,6 +111,7 @@ Strong success criteria let you loop independently. Weak criteria ("make it work
 ## Build System
 
 - **XcodeGen**: Run `xcodegen generate` after any `project.yml` change to regenerate `TruchiEmu.xcodeproj`. Do not edit the `.xcodeproj` directly.
+- **No project.yml edits for new files**: Sources under `TruchiEmu/` and resources under `TruchiEmu/Resources/` are auto-included via recursive paths in `project.yml`. Only edit `project.yml` if you're adding a directory that should be **excluded** from the build.
 - **Build command**: `xcodebuild -project TruchiEmu.xcodeproj -scheme TruchiEmu -configuration Debug build` (or open the xcodeproj in Xcode)
 - **Test command**: `xcodebuild test -scheme TruchiEmuTests -destination 'platform=macOS'`
 - **macOS 14.0+ and Swift 5.9** required
@@ -143,15 +144,7 @@ Strong success criteria let you loop independently. Weak criteria ("make it work
 
 ## Resources Included in Build (project.yml)
 
-These paths are explicitly added to the Xcode build via `project.yml`:
-- `TruchiEmu/Resources/Config`
-- `TruchiEmu/Resources/Data` (SystemDatabase.json, LibretroDats, mame_unified.json)
-- `TruchiEmu/Resources/EmulatorIcons`
-- `TruchiEmu/Resources/ThumbnailManifests`
-- `TruchiEmu/Resources/System/` (BIOS files: sega_101.bin, mpr-17933.bin, PPSSPP_assets.zip, dreamcast.zip)
-- `TruchiEmu/Resources/cheats/` (all cheat zip files — critical for RetroAchievements)
-- `TruchiEmu/Resources/AppIcons/` — app icons
-- `TruchiEmu/Resources/Assets.xcassets/` — app icon set
+`TruchiEmu/Resources/` is included recursively as resources — any file added anywhere under it is automatically bundled. No `project.yml` changes needed.
 
 ## Runtime vs Bundled Resources
 
@@ -176,10 +169,9 @@ These paths are explicitly added to the Xcode build via `project.yml`:
 
 ## When Adding Source Files
 
-1. Edit `project.yml` to add new paths under the appropriate target's `sources`
+1. **No project.yml edits for new files**: Sources under `TruchiEmu/` and resources under `TruchiEmu/Resources/` are auto-included via recursive paths. See "Build System" above.
 2. Run `xcodegen generate` to regenerate the xcodeproj
 3. If adding ObjC++ to the Engine, ensure symbols are exposed through the bridging header
-4. After adding new resources (e.g., new cheats, assets), ensure they're added to project.yml BEFORE running xcodegen
 
 ## Testing
 
