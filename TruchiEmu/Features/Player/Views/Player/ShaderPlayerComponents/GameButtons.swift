@@ -322,7 +322,7 @@ struct SlotPickerView: View {
                                 
                                 if selectedSlot == slot {
                                     Image(systemName: "checkmark")
-                                        .foregroundColor(.blue)
+                                        .foregroundColor(AppColors.brandAccent)
                                 }
                             }
                             .padding(.horizontal, 12)

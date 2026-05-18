@@ -7,16 +7,20 @@ import Combine
 @MainActor
 class CoreOptionsManager: ObservableObject {
     static let shared = CoreOptionsManager()
-    
+
     // All options for the currently loaded core, indexed by versioned key (e.g., "key_V1")
     @Published private(set) var options: [String: CoreOption] = [:]
-    
+
     // Categories for the currently loaded core
     @Published private(set) var categories: [String: CoreOptionCategory] = [:]
-    
+
     // The core ID we're managing (set when loading a core)
     private var currentCoreID: String?
-    
+
+    // Scope for persistence: system-level or per-game
+    private var currentSystemID: String?
+    private var currentGameFilename: String?
+
     // Directory for per-core options config files (.cfg)
     private let optionsDirectory: URL = {
         let base = FileManager.default.urls(for: .applicationSupportDirectory, in: .userDomainMask).first!
@@ -28,24 +32,28 @@ class CoreOptionsManager: ObservableObject {
         let base = FileManager.default.urls(for: .applicationSupportDirectory, in: .userDomainMask).first!
         return base.appendingPathComponent("TruchiEmu/CoreOptionDefinitions", isDirectory: true)
     }()
-    
+
+    // Directory for the per-core/per-system override hierarchy
+    private let overridesDirectory: URL = {
+        let base = FileManager.default.urls(for: .applicationSupportDirectory, in: .userDomainMask).first!
+        return base.appendingPathComponent("TruchiEmu/CoreOverrides", isDirectory: true)
+    }()
+
     private let encoder = JSONEncoder()
     private let decoder = JSONDecoder()
-    
+
     private init() {
         try? FileManager.default.createDirectory(at: optionsDirectory, withIntermediateDirectories: true)
         try? FileManager.default.createDirectory(at: definitionsDirectory, withIntermediateDirectories: true)
         encoder.outputFormatting = [.prettyPrinted, .sortedKeys]
     }
-    
+
     // Allow reading options for an arbitrary core (not just the currently loaded one)
     nonisolated func setCoreIDForReading(_ coreID: String) {
-        // This is a no-op since we just expose loadUserOverrides(coreID:)
     }
-    
-    nonisolated func loadUserOverrides(for coreID: String) -> [String: String] {
-        let configURL = optionsDirectory.appendingPathComponent("\(coreID).cfg")
-        guard let content = try? String(contentsOf: configURL, encoding: .utf8) else { return [:] }
+
+    private nonisolated func parseCfgFile(at url: URL) -> [String: String] {
+        guard let content = try? String(contentsOf: url, encoding: .utf8) else { return [:] }
         var result: [String: String] = [:]
         let lines = content.components(separatedBy: .newlines)
         for line in lines {
@@ -60,25 +68,128 @@ class CoreOptionsManager: ObservableObject {
                 if !key.isEmpty { result[key] = value }
             }
         }
+        return result
+    }
+
+    nonisolated func loadUserOverrides(for coreID: String) -> [String: String] {
+        let configURL = optionsDirectory.appendingPathComponent("\(coreID).cfg")
+        let result = parseCfgFile(at: configURL)
         LoggerService.debug(category: "CoreOptionsManager", "User Overrides: \(result)")
         return result
     }
-    
+
     nonisolated func saveOverride(for coreID: String, values: [String: String]) {
         let configURL = optionsDirectory.appendingPathComponent("\(coreID).cfg")
         LoggerService.debug(category: "CoreOptionsManager", "For \(coreID): Saving Override \(values) in file: \(configURL)")
         let content = values.map { "\($0.key) = \"\($0.value)\"" }.joined(separator: "\n")
         try? content.write(to: configURL, atomically: true, encoding: .utf8)
     }
-    
+
+    // MARK: - System-Level and Game-Level Overrides
+
+    nonisolated func saveSystemOverride(for coreID: String, systemID: String, values: [String: String]) {
+        let dir = overridesDirectory.appendingPathComponent(coreID).appendingPathComponent(systemID)
+        try? FileManager.default.createDirectory(at: dir, withIntermediateDirectories: true)
+        let configURL = dir.appendingPathComponent("overrides.cfg")
+        LoggerService.debug(category: "CoreOptionsManager", "Saving system override for \(coreID)/\(systemID): \(values)")
+        let content = values.map { "\($0.key) = \"\($0.value)\"" }.joined(separator: "\n")
+        try? content.write(to: configURL, atomically: true, encoding: .utf8)
+    }
+
+    nonisolated func loadSystemOverrides(for coreID: String, systemID: String) -> [String: String] {
+        let configURL = overridesDirectory.appendingPathComponent(coreID).appendingPathComponent(systemID).appendingPathComponent("overrides.cfg")
+        return parseCfgFile(at: configURL)
+    }
+
+    nonisolated func saveGameOverride(for coreID: String, systemID: String, gameFilename: String, values: [String: String]) {
+        let dir = overridesDirectory.appendingPathComponent(coreID).appendingPathComponent(systemID)
+        try? FileManager.default.createDirectory(at: dir, withIntermediateDirectories: true)
+        let configURL = dir.appendingPathComponent("\(gameFilename).cfg")
+        LoggerService.debug(category: "CoreOptionsManager", "Saving game override for \(coreID)/\(systemID)/\(gameFilename): \(values)")
+        let content = values.map { "\($0.key) = \"\($0.value)\"" }.joined(separator: "\n")
+        try? content.write(to: configURL, atomically: true, encoding: .utf8)
+    }
+
+    nonisolated func loadGameOverrides(for coreID: String, systemID: String, gameFilename: String) -> [String: String] {
+        let configURL = overridesDirectory.appendingPathComponent(coreID).appendingPathComponent(systemID).appendingPathComponent("\(gameFilename).cfg")
+        return parseCfgFile(at: configURL)
+    }
+
+    nonisolated func deleteGameOverride(for coreID: String, systemID: String, gameFilename: String) {
+        let configURL = overridesDirectory.appendingPathComponent(coreID).appendingPathComponent(systemID).appendingPathComponent("\(gameFilename).cfg")
+        try? FileManager.default.removeItem(at: configURL)
+    }
+
+    nonisolated func deleteSystemOverride(for coreID: String, systemID: String) {
+        let configURL = overridesDirectory.appendingPathComponent(coreID).appendingPathComponent(systemID).appendingPathComponent("overrides.cfg")
+        try? FileManager.default.removeItem(at: configURL)
+    }
+
     // MARK: - Core Lifecycle
-    
-    // Called when a new core is loaded. Clears previous options and loads persisted overrides.
+
     func prepareForCore(coreID: String) {
         LoggerService.debug(category: "CoreOptionsManager", "New core \(coreID) loaded, cleaning all optiones and overrides")
         currentCoreID = coreID
+        currentSystemID = nil
+        currentGameFilename = nil
         options.removeAll()
         categories.removeAll()
+    }
+
+    func setScope(systemID: String?, gameFilename: String? = nil) {
+        currentSystemID = systemID
+        currentGameFilename = gameFilename
+    }
+
+    // MARK: - Override Layer Application
+
+    private func applyOverrideLayers(to option: inout CoreOption, coreID: String) {
+        let coreDefault = option.defaultValue
+        var currentValue = coreDefault
+        var source: OverrideSource = .coreDefault
+        var previousLayerValue = coreDefault
+
+        // Layer 1: Bundled app defaults
+        let appDefaults = CoreOverrideService.shared.getOverrides(for: coreID, scope: "default")
+        if let appValue = appDefaults[option.key] {
+            currentValue = appValue
+            source = .appDefault
+            previousLayerValue = coreDefault
+        }
+
+        // Layer 2: Bundled system-specific overrides (e.g., gambatte_gb.json)
+        if let sysID = currentSystemID {
+            let systemOverrides = CoreOverrideService.shared.getOverrides(for: coreID, scope: sysID)
+            if let sysValue = systemOverrides[option.key] {
+                previousLayerValue = currentValue
+                currentValue = sysValue
+                source = .appSystemDefault
+            }
+        }
+
+        // Layer 3: User system-level overrides
+        if let sysID = currentSystemID {
+            let userSystem = loadSystemOverrides(for: coreID, systemID: sysID)
+            if let userSysValue = userSystem[option.key] {
+                previousLayerValue = currentValue
+                currentValue = userSysValue
+                source = .systemOverride
+            }
+        }
+
+        // Layer 4: User game-level overrides
+        if let gameFilename = currentGameFilename, let sysID = currentSystemID {
+            let userGame = loadGameOverrides(for: coreID, systemID: sysID, gameFilename: gameFilename)
+            if let gameValue = userGame[option.key] {
+                previousLayerValue = currentValue
+                currentValue = gameValue
+                source = .gameOverride
+            }
+        }
+
+        option.currentValue = currentValue
+        option.overrideSource = source
+        option.previousLayerValue = previousLayerValue
     }
 
     // Loads definitions and overrides from disk for a specific core.
@@ -86,39 +197,29 @@ class CoreOptionsManager: ObservableObject {
     func loadForCore(coreID: String, dylibPath: String? = nil, romPath: String? = nil) {
         LoggerService.debug(category: "CoreOptionsManager", "Loading options from core: \(coreID)")
         currentCoreID = coreID
-        
-        // 1. Load Definitions
+
         let defURL = definitionsDirectory.appendingPathComponent("\(coreID).json")
-        //LoggerService.debug(category: "CoreOptionsManager", "Definitions file For \(currentCoreID): \(defURL)")
-    
+
         guard let data = try? Data(contentsOf: defURL),
-              let json = try? JSONSerialization.jsonObject(with: data) as? [String: Any] else {
+        let json = try? JSONSerialization.jsonObject(with: data) as? [String: Any] else {
             options.removeAll()
             categories.removeAll()
-    
             LoggerService.debug(category: "CoreOptionsManager", "For \(coreID): cleaned up. Definitions not found.")
             return
         }
- 
-        // Parse categories
 
-        // 1. Load Categories
         if let cats = json["categories"] as? [String: [String: String]] {
             self.categories = cats.reduce(into: [:]) { res, entry in
                 res[entry.key] = CoreOptionCategory(key: entry.key, description: entry.value["desc"] ?? entry.key, info: entry.value["info"] ?? "")
             }
-        }        
- 
-        // 2. Load Options
+        }
+
         if let opts = json["options"] as? [String: [String: Any]] {
             self.options.removeAll()
             for (jsonKey, d) in opts {
-                // jsonKey is the base key (e.g. "gambatte_gb_bootloader_V2")
-                
-                // Create the internal key safely
                 let internalKey = makeInternalKey(baseKey: jsonKey, version: .v2)
-                
-                options[internalKey] = CoreOption(
+
+                var option = CoreOption(
                     key: jsonKey,
                     description: d["desc"] as? String ?? jsonKey,
                     info: d["info"] as? String ?? "",
@@ -128,15 +229,8 @@ class CoreOptionsManager: ObservableObject {
                     currentValue: d["currentValue"] as? String ?? "",
                     version: .v2
                 )
-            }
-        }
- 
-        // 3. Apply Overrides
-        let overrides = loadUserOverrides(for: coreID)
-        for (key, value) in overrides {
-            // Look for the versioned key that matches the config key
-            if let vKey = options.keys.first(where: { $0.hasPrefix("\(key)_") }) {
-                options[vKey]?.currentValue = value
+                applyOverrideLayers(to: &option, coreID: coreID)
+                options[internalKey] = option
             }
         }
     }
@@ -144,18 +238,19 @@ class CoreOptionsManager: ObservableObject {
     private func makeInternalKey(baseKey: String, version: CoreOptionVersion) -> String {
         let suffix = "_\(version.rawValue)"
         if baseKey.hasSuffix(suffix) {
-            return baseKey // It already has it (like Gambatte)
+            return baseKey
         }
-        return "\(baseKey)\(suffix)" // Add it (for other cores)
+        return "\(baseKey)\(suffix)"
+    }
+
+    private func versionedKeys(for baseKey: String) -> [String] {
+        options.keys.filter { $0 == "\(baseKey)_V1" || $0 == "\(baseKey)_V2" }
     }
 
     /// Triggers the discovery of core options AND input descriptors by launching a headless core session.
-    /// This is used when definitions are missing.
     func discoverOptions(for coreID: String, dylibPath: String, romPath: String?) async {
         LoggerService.debug(category: "CoreOptionsManager", "Starting discovery for core: \(coreID)")
 
-        // 1. Launch the core in headless mode to trigger environment callbacks.
-        // We provide a dummy ROM path if possible to prevent crashes in cores that require a valid game context.
         var dummyRomPath: String? = nil
         if let systemID = CoreManager.supportedSystems(for: coreID).first {
             let repository = ROMRepository(context: SwiftDataContainer.shared.mainContext)
@@ -167,17 +262,14 @@ class CoreOptionsManager: ObservableObject {
         LibretroBridge.loadCore(forOptions: dylibPath, coreID: coreID, romPath: dummyRomPath)
         LoggerService.debug(category: "CoreOptionsManager", "For: \(coreID), Core loaded")
 
-        // 2. Fetch the captured options, categories, AND input descriptors from the bridge
         let optionsDict = LibretroBridge.getOptionsDictionary() ?? [:]
         let categoriesDict = LibretroBridge.getCategoriesDictionary() ?? [:]
         let rawDescriptors = LibretroBridge.getInputDescriptorsDictionary() ?? [:]
         LoggerService.debug(category: "CoreOptionsManager", "For: \(coreID), options: \(optionsDict), categories: \(categoriesDict), inputDescriptors: \(rawDescriptors)")
 
-        // 3. Convert the bridge dictionaries into our internal models
         var newOptions: [CoreOption] = []
         var newCategories: [CoreOptionCategory] = []
 
-        // Parse Categories
         for (catKey, catData) in categoriesDict {
             let desc = catData["description"] as? String ?? catKey
             let info = catData["info"] as? String ?? ""
@@ -185,7 +277,6 @@ class CoreOptionsManager: ObservableObject {
         }
         LoggerService.debug(category: "CoreOptionsManager", "For: \(coreID), new Categories: \(newCategories)")
 
-        // Parse Options
         for (key, optData) in optionsDict {
             let desc = optData["description"] as? String ?? key
             let info = optData["info"] as? String ?? ""
@@ -217,20 +308,18 @@ class CoreOptionsManager: ObservableObject {
         }
         LoggerService.debug(category: "CoreOptionsManager", "For: \(coreID), Parsed options")
 
-        // 4. Parse Input Descriptors
         var buttonDescriptors: [InputButtonDescriptor] = []
         for (_, buttons) in rawDescriptors {
             for buttonDict in buttons {
                 if let dict = buttonDict as? [String: Any],
-                   let id = dict["id"] as? Int,
-                   let desc = dict["description"] as? String {
+                let id = dict["id"] as? Int,
+                let desc = dict["description"] as? String {
                     buttonDescriptors.append(InputButtonDescriptor(id: id, description: desc))
                 }
             }
         }
         LoggerService.debug(category: "CoreOptionsManager", "For: \(coreID), parsed \(buttonDescriptors.count) input descriptors")
 
-        // 5. Update the manager, persist options, and persist input descriptors
         await MainActor.run {
             self.prepareForCore(coreID: coreID)
             self.setOptions(newOptions, categories: newCategories)
@@ -242,76 +331,60 @@ class CoreOptionsManager: ObservableObject {
             }
         }
     }
-    
+
     // Set the full options list (called from ObjC bridge when core calls SET_CORE_OPTIONS_V2).
     func setOptions(_ newOptions: [CoreOption], categories: [CoreOptionCategory]) {
-        // 1. Setup Categories
         var updatedCategories = Dictionary(uniqueKeysWithValues: categories.map { ($0.key, $0) })
         let fallbackKey = "general"
         if updatedCategories[fallbackKey] == nil {
             updatedCategories[fallbackKey] = CoreOptionCategory(key: fallbackKey, description: "General Settings", info: "")
         }
         self.categories = updatedCategories
-        
-        let persisted = loadUserOverrides()
-        
+
+        let coreID = currentCoreID ?? ""
+
         for var option in newOptions {
-            // 2. Clean Category
             if option.category == nil || option.category?.isEmpty == true {
                 option.category = fallbackKey
             }
-            
-            // 3. Apply Overrides
-            if let savedValue = persisted[option.key] {
-                option.currentValue = savedValue
-            }
-            
-            // 4. SMART INTERNAL KEY (No more _V2_V2)
+            applyOverrideLayers(to: &option, coreID: coreID)
             let internalKey = makeInternalKey(baseKey: option.key, version: option.version)
             self.options[internalKey] = option
         }
 
-        // Persist these definitions so they can be loaded when the core isn't running
         if let coreID = currentCoreID {
             persistDefinitions(for: coreID)
         }
     }
-    
+
     // Set options from a V1 core (simpler struct).
     func setOptionsV1(_ newOptions: [CoreOption]) {
         self.categories.removeAll()
-        let persisted = loadUserOverrides()
+        let coreID = currentCoreID ?? ""
 
         for var option in newOptions {
-            // Ensure version is set to v1 if not already
-            let versionedKey = "\(option.key)_\(CoreOptionVersion.v1.rawValue)"
-            if let savedValue = persisted[option.key],
-               option.values.contains(where: { $0.value == savedValue }) {
-                option.currentValue = savedValue
-            }
+            applyOverrideLayers(to: &option, coreID: coreID)
             var v1Option = option
             v1Option.version = .v1
+            let versionedKey = "\(option.key)_\(CoreOptionVersion.v1.rawValue)"
             self.options[versionedKey] = v1Option
         }
     }
-    
+
     // MARK: - Reading Values (used by GET_VARIABLE callback)
-    
-    // Get the current value for a key. Called from the bridge's GET_VARIABLE handler.
+
     func getValue(for key: String) -> String? {
-        // Try V1 then V2
         if let v1Value = options["\(key)_\(CoreOptionVersion.v1.rawValue)"]?.currentValue {
             return v1Value
         }
         return options["\(key)_\(CoreOptionVersion.v2.rawValue)"]?.currentValue
     }
-    
-    // Get all raw key-value pairs for passing back to the core
+
     func allValues() -> [String: String] {
         var result: [String: String] = [:]
         let v1Suffix = "_\(CoreOptionVersion.v1.rawValue)"
         let v2Suffix = "_\(CoreOptionVersion.v2.rawValue)"
-        
+
         for (versionedKey, option) in options {
             var baseKey = versionedKey
             if baseKey.hasSuffix(v1Suffix) {
@@ -323,129 +396,231 @@ class CoreOptionsManager: ObservableObject {
         }
         return result
     }
-    
+
     // MARK: - Writing Values
-    
-    // Update a single option value and persist.
+
     func updateValue(_ value: String, for key: String) {
-        LoggerService.debug(category: "CoreOptionsManager", "For \(currentCoreID ?? "unknown"): updating key: \(key), value \(value)")
-        
-        // We find all versioned keys that match this base key and update them.
-        // This ensures that if the UI is showing both V1 and V2, they both update.
-        let matchingKeys = options.keys.filter { $0.hasPrefix("\(key)_") }
-        
-        if !matchingKeys.isEmpty {
+        let matchingKeys = versionedKeys(for: key)
+
+        guard !matchingKeys.isEmpty else { return }
+
+        let baseResult = computeBaseValue(for: key)
+
+        if value == baseResult.value {
             for vKey in matchingKeys {
                 options[vKey]?.currentValue = value
+                options[vKey]?.overrideSource = baseResult.source
+                options[vKey]?.previousLayerValue = baseResult.previousLayerValue
+            }
+            removeOverrideAtCurrentScope(key: key)
+        } else {
+            let source: OverrideSource = currentGameFilename != nil ? .gameOverride : .systemOverride
+            for vKey in matchingKeys {
+                options[vKey]?.previousLayerValue = baseResult.value
+                options[vKey]?.currentValue = value
+                options[vKey]?.overrideSource = source
             }
             persistOverride(key: key, value: value)
         }
     }
-    
-    // Reset a single option to its core-default.
-    func resetToDefault(key: String) {
-        LoggerService.debug(category: "CoreOptionsManager", "For \(currentCoreID ?? "unknown"): resetting key: \(key)")
-        
-        // Find all versioned keys that match this base key and reset them.
-        let matchingKeys = options.keys.filter { $0.hasPrefix("\(key)_") }
-        
-        if !matchingKeys.isEmpty {
-            for vKey in matchingKeys {
-                options[vKey]?.currentValue = options[vKey]!.defaultValue
-            }
-            persistOverride(key: key, value: options[matchingKeys.first!]!.defaultValue)
-        }
+
+    private struct BaseValueResult {
+        let value: String
+        let source: OverrideSource
+        let previousLayerValue: String
     }
-    
-    // Reset ALL options to their core-defined defaults.
+
+    private func computeBaseValue(for key: String) -> BaseValueResult {
+        guard let coreID = currentCoreID else {
+            return BaseValueResult(value: "", source: .coreDefault, previousLayerValue: "")
+        }
+
+        let coreDefault: String
+        if let firstKey = versionedKeys(for: key).first,
+            let opt = options[firstKey] {
+            coreDefault = opt.defaultValue
+        } else {
+            return BaseValueResult(value: "", source: .coreDefault, previousLayerValue: "")
+        }
+
+        var value = coreDefault
+        var source: OverrideSource = .coreDefault
+        var prevLayer = coreDefault
+
+        let appDefaults = CoreOverrideService.shared.getOverrides(for: coreID, scope: "default")
+        if let appValue = appDefaults[key] {
+            prevLayer = value
+            value = appValue
+            source = .appDefault
+        }
+
+        if let sysID = currentSystemID {
+            let systemOverrides = CoreOverrideService.shared.getOverrides(for: coreID, scope: sysID)
+            if let sysValue = systemOverrides[key] {
+                prevLayer = value
+                value = sysValue
+                source = .appSystemDefault
+            }
+
+            if currentGameFilename != nil {
+                let userSystem = loadSystemOverrides(for: coreID, systemID: sysID)
+                if let userSysValue = userSystem[key] {
+                    prevLayer = value
+                    value = userSysValue
+                    source = .systemOverride
+                }
+            }
+        }
+
+        return BaseValueResult(value: value, source: source, previousLayerValue: prevLayer)
+    }
+
+    func restoreToPreviousLayer(key: String) {
+        LoggerService.debug(category: "CoreOptionsManager", "For \(currentCoreID ?? "unknown"): restoring key: \(key) to previous layer")
+
+        let matchingKeys = versionedKeys(for: key)
+        guard !matchingKeys.isEmpty else { return }
+
+        let baseResult = computeBaseValue(for: key)
+
+        for vKey in matchingKeys {
+            options[vKey]?.currentValue = baseResult.value
+            options[vKey]?.overrideSource = baseResult.source
+            options[vKey]?.previousLayerValue = baseResult.previousLayerValue
+        }
+
+        removeOverrideAtCurrentScope(key: key)
+    }
+
+    func resetToDefault(key: String) {
+        restoreToPreviousLayer(key: key)
+    }
+
     func resetAllToDefaults() {
         LoggerService.debug(category: "CoreOptionsManager", "For \(currentCoreID ?? "unknown"): resetting ALL KEYS")
-        for key in options.keys {
-            options[key]!.currentValue = options[key]!.defaultValue
-        }
         clearAllOverrides()
-        
-        // Also persist the reset values to the definitions cache
+
+        for (vKey, _) in options {
+            if let optKey = options[vKey]?.key {
+                let baseResult = computeBaseValue(for: optKey)
+                options[vKey]?.currentValue = baseResult.value
+                options[vKey]?.overrideSource = baseResult.source
+                options[vKey]?.previousLayerValue = baseResult.previousLayerValue
+            }
+        }
+
         if let coreID = currentCoreID {
             persistDefinitions(for: coreID)
         }
     }
-    
+
     // MARK: - Persistence
-    
-    // File path for the RetroArch-compatible core options file
+
     private func optionsFileURL(_ coreID: String) -> URL {
         optionsDirectory.appendingPathComponent("\(coreID).cfg")
     }
-    
-    // Save a key-value override to the per-core config file.
+
     private func persistOverride(key: String, value: String) {
         guard let coreID = currentCoreID else { return }
-        var allOverrides = loadUserOverrides()
-        allOverrides[key] = value
-        
-        let configURL = optionsFileURL(coreID)
-        let content = allOverrides.map { "\($0.key) = \"\($0.value)\"" }.joined(separator: "\n")
-        try? content.write(to: configURL, atomically: true, encoding: .utf8)
-        LoggerService.debug(category: "CoreOptionsManager", "For \(coreID): Saving content \(content) into file \(configURL)")
-    }
-    
-    // Load all user overrides from the per-core config file.
-    // Returns a dictionary [key: value] of persisted values.
-    public func loadUserOverrides() -> [String: String] {
-        guard let coreID = currentCoreID else { return [:] }
-        let configURL = optionsFileURL(coreID)
-        
-        guard let content = try? String(contentsOf: configURL, encoding: .utf8) else {
-            return [:]
+
+        if let systemID = currentSystemID {
+            if let gameFilename = currentGameFilename {
+                var allOverrides = loadGameOverrides(for: coreID, systemID: systemID, gameFilename: gameFilename)
+                allOverrides[key] = value
+                saveGameOverride(for: coreID, systemID: systemID, gameFilename: gameFilename, values: allOverrides)
+            } else {
+                var allOverrides = loadSystemOverrides(for: coreID, systemID: systemID)
+                allOverrides[key] = value
+                saveSystemOverride(for: coreID, systemID: systemID, values: allOverrides)
+            }
+        } else {
+            var allOverrides = loadUserOverrides(for: coreID)
+            allOverrides[key] = value
+            let configURL = optionsFileURL(coreID)
+            let content = allOverrides.map { "\($0.key) = \"\($0.value)\"" }.joined(separator: "\n")
+            try? content.write(to: configURL, atomically: true, encoding: .utf8)
+            LoggerService.debug(category: "CoreOptionsManager", "For \(coreID): Saving content \(content) into file \(configURL)")
         }
-        
-        var result: [String: String] = [:]
-        let lines = content.components(separatedBy: .newlines)
-        
-        for line in lines {
-            let trimmed = line.trimmingCharacters(in: .whitespaces)
-            guard !trimmed.isEmpty, !trimmed.hasPrefix("#") else { continue }
-            
-            // Parse RetroArch format: key = "value"
-            if let range = trimmed.range(of: "=") {
-                let key = trimmed[..<range.lowerBound].trimmingCharacters(in: .whitespaces)
-                var value = trimmed[range.upperBound...].trimmingCharacters(in: .whitespaces)
-                
-                // Strip surrounding quotes
-                if value.hasPrefix("\"") && value.hasSuffix("\"") {
-                    value = String(value.dropFirst().dropLast())
+    }
+
+    private func removeOverrideAtCurrentScope(key: String) {
+        guard let coreID = currentCoreID else { return }
+
+        if let systemID = currentSystemID {
+            if let gameFilename = currentGameFilename {
+                var allOverrides = loadGameOverrides(for: coreID, systemID: systemID, gameFilename: gameFilename)
+                allOverrides.removeValue(forKey: key)
+                if allOverrides.isEmpty {
+                    deleteGameOverride(for: coreID, systemID: systemID, gameFilename: gameFilename)
+                } else {
+                    saveGameOverride(for: coreID, systemID: systemID, gameFilename: gameFilename, values: allOverrides)
                 }
-                
-                if !key.isEmpty {
-                    result[key] = value
+            } else {
+                var allOverrides = loadSystemOverrides(for: coreID, systemID: systemID)
+                allOverrides.removeValue(forKey: key)
+                if allOverrides.isEmpty {
+                    deleteSystemOverride(for: coreID, systemID: systemID)
+                } else {
+                    saveSystemOverride(for: coreID, systemID: systemID, values: allOverrides)
                 }
             }
+        } else {
+            var allOverrides = loadUserOverrides(for: coreID)
+            allOverrides.removeValue(forKey: key)
+            let configURL = optionsFileURL(coreID)
+            if allOverrides.isEmpty {
+                try? FileManager.default.removeItem(at: configURL)
+            } else {
+                let content = allOverrides.map { "\($0.key) = \"\($0.value)\"" }.joined(separator: "\n")
+                try? content.write(to: configURL, atomically: true, encoding: .utf8)
+            }
         }
-        LoggerService.debug(category: "CoreOptionsManager", "For \(currentCoreID ?? "unknown"): Loaded user overrides: \(result)")        
+    }
+
+    public func loadUserOverrides() -> [String: String] {
+        guard let coreID = currentCoreID else { return [:] }
+
+        if let systemID = currentSystemID {
+            var result = loadSystemOverrides(for: coreID, systemID: systemID)
+            if let gameFilename = currentGameFilename {
+                let gameOverrides = loadGameOverrides(for: coreID, systemID: systemID, gameFilename: gameFilename)
+                result.merge(gameOverrides) { _, new in new }
+            }
+            LoggerService.debug(category: "CoreOptionsManager", "For \(coreID)/\(systemID): Loaded overrides: \(result)")
+            return result
+        }
+
+        let configURL = optionsFileURL(coreID)
+        let result = parseCfgFile(at: configURL)
+        LoggerService.debug(category: "CoreOptionsManager", "For \(currentCoreID ?? "unknown"): Loaded user overrides: \(result)")
         return result
     }
-    
-    // Clear all persistend options for the current core.
+
     private func clearAllOverrides() {
         guard let coreID = currentCoreID else { return }
-        let configURL = optionsFileURL(coreID)
-        try? FileManager.default.removeItem(at: configURL)
-        
-        // Also clear the definitions cache
+
+        if let systemID = currentSystemID {
+            if let gameFilename = currentGameFilename {
+                deleteGameOverride(for: coreID, systemID: systemID, gameFilename: gameFilename)
+            } else {
+                deleteSystemOverride(for: coreID, systemID: systemID)
+            }
+        } else {
+            let configURL = optionsFileURL(coreID)
+            try? FileManager.default.removeItem(at: configURL)
+        }
+
         let defURL = definitionsDirectory.appendingPathComponent("\(coreID).json")
         try? FileManager.default.removeItem(at: defURL)
     }
-    
+
     // MARK: - Definition Persistence
     private func persistDefinitions(for coreID: String) {
-        // Map categories
         let catsPayload = categories.mapValues { ["desc": $0.description, "info": $0.info] }
-        
-        // Map options using the BASE key as the JSON key
+
         var optsPayload: [String: Any] = [:]
         for (_, option) in options {
-            optsPayload[option.key] = [ // <--- USE option.key (Base), NOT the dictionary key
+            optsPayload[option.key] = [
                 "desc": option.description,
                 "info": option.info,
                 "category": option.category ?? "general",
@@ -464,8 +639,7 @@ class CoreOptionsManager: ObservableObject {
     }
 
     // MARK: - Export / Import (RetroArch compatibility)
-    
-    // Export options in RetroArch-compatible .cfg format
+
     func exportAsRetroArchConfig() -> String {
         LoggerService.debug(category: "CoreOptionsManager", "For \(currentCoreID ?? "unknown"): Exporting data as retroarch config")
         let lines = options.values.map { opt in

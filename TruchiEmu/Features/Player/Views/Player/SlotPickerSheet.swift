@@ -31,14 +31,14 @@ struct SlotPickerSheet: View {
             
             HStack(spacing: 8) {
                 HStack(spacing: 4) {
-                    Image(systemName: "number.circle.fill").foregroundColor(.blue)
+                    Image(systemName: "number.circle.fill").foregroundColor(AppColors.brandAccent)
                     Text(loc.localized("toolbar.selectSaveSlot"))
                         .font(.subheadline)
                         .fontWeight(.medium)
                 }
                 .padding(.horizontal, 10)
                 .padding(.vertical, 4)
-                .background(Color.blue.opacity(0.1))
+                .background(AppColors.brandAccent.opacity(0.1))
                 .cornerRadius(12)
                 
                 Spacer()
@@ -178,15 +178,15 @@ struct SlotCardView: View {
                         })
                 }
                 if isCurrentSlot {
-                    VStack { HStack { Image(systemName: "chevron.right.circle.fill").foregroundColor(.blue).font(.caption); Spacer() }; Spacer() }
+                    VStack { HStack { Image(systemName: "chevron.right.circle.fill").foregroundColor(AppColors.brandAccent).font(.caption); Spacer() }; Spacer() }
                         .padding(4)
                 }
             }
             .cornerRadius(6)
-            .overlay(RoundedRectangle(cornerRadius: 6).stroke(isCurrentSlot ? Color.blue : Color.gray.opacity(0.25), lineWidth: 1.5))
+            .overlay(RoundedRectangle(cornerRadius: 6).stroke(isCurrentSlot ? AppColors.brandAccent : Color.gray.opacity(0.25), lineWidth: 1.5))
             
 HStack {
-      Text(slotInfo?.displayName ?? "Slot \(slot)").font(.caption).fontWeight(isCurrentSlot ? .bold : .medium).foregroundColor(isCurrentSlot ? .blue : .primary)
+      Text(slotInfo?.displayName ?? "Slot \(slot)").font(.caption).fontWeight(isCurrentSlot ? .bold : .medium).foregroundColor(isCurrentSlot ? AppColors.brandAccent : .primary)
       Spacer()
       if slotInfo?.exists == true { Image(systemName: "checkmark.circle.fill").font(.caption).foregroundColor(.green) }
     }

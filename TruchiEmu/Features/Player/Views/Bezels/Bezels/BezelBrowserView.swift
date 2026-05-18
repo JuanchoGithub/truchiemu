@@ -275,7 +275,7 @@ struct BezelBrowserView: View {
                                 .font(.caption)
                         } else if isCached(entry.id) {
                             Label(loc.localized("bezel.cachedPreview"), systemImage: "eye.circle.fill")
-                                .foregroundColor(.blue)
+                    .foregroundColor(AppColors.brandAccent)
                                 .font(.caption)
                         } else {
                             Label(loc.localized("bezel.notDownloaded"), systemImage: "arrow.down.circle")
@@ -545,7 +545,7 @@ struct BezelThumbnailView: View {
             }
             .overlay(
                 RoundedRectangle(cornerRadius: 6)
-                    .stroke(isSelected ? Color.blue : Color.clear, lineWidth: 2)
+                    .stroke(isSelected ? AppColors.brandAccent : Color.clear, lineWidth: 2)
             )
             
             // Name
@@ -591,7 +591,7 @@ struct RemoteBezelListRow: View {
             // Selected indicator
             if isSelected {
                 Image(systemName: "chevron.right")
-                    .foregroundColor(.blue)
+                    .foregroundColor(AppColors.brandAccent)
                     .font(.caption)
             }
         }

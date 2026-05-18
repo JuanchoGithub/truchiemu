@@ -25,7 +25,7 @@ public struct SaveDirectoriesSection: View {
                         value: byteCountString(from: saveFileSize),
                         label: loc.localized("saveDirectories.saveFiles"),
                         icon: "memorychip",
-                        color: .blue
+                        color: AppColors.brandAccent
                     )
                     Divider().frame(height: 40)
                     statTile(

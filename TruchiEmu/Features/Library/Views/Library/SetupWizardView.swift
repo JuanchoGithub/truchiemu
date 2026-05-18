@@ -63,11 +63,11 @@ struct SetupWizardView: View {
             HStack(spacing: 0) {
                 ForEach(Array(SetupWizardState.WizardStep.allCases.enumerated()), id: \.element.id) { idx, step in
                     Circle()
-                        .fill(idx <= wizard.currentStepIndex ? Color.accentColor : Color.secondary.opacity(0.2))
+                        .fill(idx <= wizard.currentStepIndex ? AppColors.brandAccent : Color.secondary.opacity(0.2))
                         .frame(width: 8, height: 8)
                     if idx < SetupWizardState.WizardStep.allCases.count - 1 {
                         Rectangle()
-                            .fill(idx < wizard.currentStepIndex ? Color.accentColor : Color.secondary.opacity(0.15))
+                            .fill(idx < wizard.currentStepIndex ? AppColors.brandAccent : Color.secondary.opacity(0.15))
                             .frame(height: 1)
                             .frame(maxWidth: .infinity)
                     }
@@ -203,7 +203,7 @@ extension SetupWizardView {
                     ForEach(wizard.libraryFolders.indices, id: \.self) { idx in
                         HStack {
                             Image(systemName: "folder.fill")
-                                .foregroundColor(.accentColor)
+                                .foregroundColor(AppColors.brandAccent)
                             VStack(alignment: .leading) {
                                 Text(wizard.libraryFolders[idx].lastPathComponent)
                                     .lineLimit(1)
@@ -280,9 +280,8 @@ extension SetupWizardView {
 
                 Toggle(loc.localized("wizard.downloadBezelsToggle"), isOn: $wizard.downloadBezels)
                     .toggleStyle(.switch)
-                    .tint(.accentColor)
+                    .tint(AppColors.brandAccent)
             }
-
             Divider()
 
             // Shaders
@@ -312,13 +311,13 @@ extension SetupWizardView {
             Label(preset.name, systemImage: shaderIcon(for: preset.shaderType))
                 .padding(.horizontal, 12)
                 .padding(.vertical, 6)
-                .background(isSelected ? Color.accentColor.opacity(0.15) : Color.secondary.opacity(0.05))
+                .background(isSelected ? AppColors.brandAccent.opacity(0.15) : Color.secondary.opacity(0.05))
                 .cornerRadius(8)
                 .overlay(
                     RoundedRectangle(cornerRadius: 8)
-                        .stroke(isSelected ? Color.accentColor : Color.clear, lineWidth: 1)
+                        .stroke(isSelected ? AppColors.brandAccent : Color.clear, lineWidth: 1)
                 )
-                .foregroundColor(isSelected ? .accentColor : .primary)
+                .foregroundColor(isSelected ? AppColors.brandAccent : .primary)
         }
         .buttonStyle(.plain)
     }
@@ -358,7 +357,7 @@ extension SetupWizardView {
                     }
                 }
                 .toggleStyle(.switch)
-                .tint(.accentColor)
+                .tint(AppColors.brandAccent)
 
                 Text("wizard.retroAchievementsDescription")
                     .foregroundColor(.secondary)
@@ -398,7 +397,7 @@ extension SetupWizardView {
 
                             Link("Create Account", destination: URL(string: "https://retroachievements.org")!)
                                 .font(.callout)
-                                .foregroundColor(.accentColor)
+                                .foregroundColor(AppColors.brandAccent)
                         }*/
                     }
                     .padding()
@@ -429,7 +428,7 @@ extension SetupWizardView {
                 }
             }
             .toggleStyle(.switch)
-            .tint(.accentColor)
+            .tint(AppColors.brandAccent)
             
             Text(description)
                 .foregroundColor(.secondary)

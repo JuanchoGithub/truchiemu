@@ -48,7 +48,7 @@ struct CheatsSection: View {
                     }
                 )) {
                     HStack {
-                        Image(systemName: "gamecontroller.fill").foregroundColor(.blue)
+                        Image(systemName: "gamecontroller.fill").foregroundColor(AppColors.brandAccent)
                         Text(loc.localized("cheats.enableCheats")).foregroundColor(AppColors.textPrimary(colorScheme))
                     }
                 }
@@ -127,7 +127,7 @@ struct CheatsSection: View {
                         .foregroundColor(.white)
                         .padding(.horizontal, 10)
                         .padding(.vertical, 5)
-                        .background(Color.accentColor.opacity(0.6))
+                        .background(AppColors.brandAccent.opacity(0.6))
                         .cornerRadius(5)
                     }
                 }

@@ -79,7 +79,7 @@ struct CoreSection: View {
                         .foregroundColor(.white)
                         .padding(.horizontal, 16)
                         .padding(.vertical, 8)
-                        .background(Color.accentColor.opacity(0.6))
+                        .background(AppColors.brandAccent.opacity(0.6))
                         .cornerRadius(8)
                     }
                     .buttonStyle(.plain)

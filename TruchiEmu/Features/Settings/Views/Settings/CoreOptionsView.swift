@@ -6,41 +6,56 @@ import Combine
 class CoreOptionsViewModel: ObservableObject {
     private let manager = CoreOptionsManager.shared
     @ObservedObject private var loc = LocalizationManager.shared
-    
+
     @Published var currentCoreID: String
     @Published var isSystemMode: Bool = false
     @Published var systemID: String? = nil
     @Published var availableCores: [(id: String, name: String)] = []
-    
+    let gameFilename: String?
+
     @Published var isLoading = false
     @Published var hasLoadedOnce = false
     @Published var searchText: String = ""
-    
-    // Pre-calculated filtered data to improve performance
+
     @Published private(set) var filteredSortedKeys: [String] = []
     @Published private(set) var filteredOptionKeysByCategory: [String: [String]] = [:]
-    
+
     private var cancellables = Set<AnyCancellable>()
 
     var options: [String: CoreOption] { manager.options }
     var categories: [String: CoreOptionCategory] { manager.categories }
 
-    init(id: String) {
+    init(id: String, systemID: String? = nil, gameFilename: String? = nil) {
         if let system = SystemDatabase.system(forID: id) {
             self.currentCoreID = system.defaultCoreID ?? ""
             self.isSystemMode = true
             self.systemID = id
+        } else if let displaySystem = SystemDatabase.displaySystem(forInternalID: id) {
+            self.currentCoreID = displaySystem.defaultCoreID ?? ""
+            self.isSystemMode = true
+            self.systemID = id
         } else {
             self.currentCoreID = id
-            self.isSystemMode = false
-            self.systemID = nil
+            self.isSystemMode = systemID != nil
+            self.systemID = systemID
         }
-        
-        // Observe changes to manager (options/categories) and searchText
-        Publishers.CombineLatest(manager.objectWillChange, $searchText)
-            .receive(on: RunLoop.main)
+        self.gameFilename = gameFilename
+
+        manager.objectWillChange
+            .receive(on: DispatchQueue.main)
             .sink { [weak self] _ in
-                self?.updateFilteredData()
+                DispatchQueue.main.async {
+                    self?.objectWillChange.send()
+                }
+            }
+            .store(in: &cancellables)
+
+        Publishers.CombineLatest(manager.objectWillChange, $searchText)
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] _ in
+                DispatchQueue.main.async {
+                    self?.updateFilteredData()
+                }
             }
             .store(in: &cancellables)
     }
@@ -48,21 +63,18 @@ class CoreOptionsViewModel: ObservableObject {
     private func updateFilteredData() {
         let allOptions = options.values
         var query = searchText.trimmingCharacters(in: .whitespacesAndNewlines).lowercased()
-        
-        // Handle "is:modified" shortcut
+
         let modifiedKeyword = "is:modified"
         let isSearchingModified = query.contains(modifiedKeyword)
         if isSearchingModified {
             query = query.replacingOccurrences(of: modifiedKeyword, with: "").trimmingCharacters(in: .whitespaces)
         }
-        
-        // 1. Filter options first
+
         let matchingOptions = allOptions.filter { option in
-            // If modified filter is active, only include modified options
-            if isSearchingModified && !option.isModified {
+            if isSearchingModified && option.overrideSource == .coreDefault {
                 return false
             }
-            
+
             if query.isEmpty { return true }
             let optDesc = option.description.lowercased()
             let optInfo = option.info.lowercased()
@@ -70,16 +82,14 @@ class CoreOptionsViewModel: ObservableObject {
             let optPretty = prettify(option.key).lowercased()
             return optKey.contains(query) || optDesc.contains(query) || optInfo.contains(query) || optPretty.contains(query)
         }
-        
-        // 2. Build category map for matching options
+
         var categoryToKeys: [String: [String]] = [:]
         for option in matchingOptions {
             let internalKey = "\(option.key)_\(option.version.rawValue)"
             let cat = option.category ?? ""
             categoryToKeys[cat, default: []].append(internalKey)
         }
-        
-        // 3. Sort keys within each category
+
         for (cat, keys) in categoryToKeys {
             categoryToKeys[cat] = keys.sorted { k1, k2 in
                 let opt1 = options[k1]!
@@ -87,35 +97,31 @@ class CoreOptionsViewModel: ObservableObject {
                 return opt1.description < opt2.description
             }
         }
-        
-        // 4. Determine which categories to show
+
         var visibleCatKeys: Set<String> = Set(matchingOptions.compactMap { $0.category })
-        
-        // If searching, handle the "General" (empty) category specifically if it has matches
+
         if !query.isEmpty {
             let emptyCatMatches = allOptions.filter { ($0.category == nil || $0.category == "") }
-                                           .contains { option in
-                let optDesc = option.description.lowercased()
-                let optInfo = option.info.lowercased()
-                let optKey = option.key.lowercased()
-                let optPretty = prettify(option.key).lowercased()
-                return optKey.contains(query) || optDesc.contains(query) || optInfo.contains(query) || optPretty.contains(query)
-            }
+                .contains { option in
+                    let optDesc = option.description.lowercased()
+                    let optInfo = option.info.lowercased()
+                    let optKey = option.key.lowercased()
+                    let optPretty = prettify(option.key).lowercased()
+                    return optKey.contains(query) || optDesc.contains(query) || optInfo.contains(query) || optPretty.contains(query)
+                }
             if emptyCatMatches { visibleCatKeys.insert("") }
         } else if !allOptions.isEmpty {
-            // If not searching, always show general category if it exists
             if allOptions.contains(where: { $0.category == nil || $0.category == "" }) {
                 visibleCatKeys.insert("")
             }
         }
-        
-        // 5. Sort the categories themselves
+
         let sortedCats = visibleCatKeys.sorted { a, b in
             if a.isEmpty { return true }
             if b.isEmpty { return false }
             return (categories[a]?.description ?? "") < (categories[b]?.description ?? "")
         }
-        
+
         self.filteredSortedKeys = sortedCats
         self.filteredOptionKeysByCategory = categoryToKeys
     }
@@ -123,8 +129,7 @@ class CoreOptionsViewModel: ObservableObject {
 
     func loadOptions(for id: String, library: ROMLibrary? = nil) {
         isLoading = true
-        
-        // Find dylib path from installed cores
+
         var dylibPath: String? = nil
         if let core = CoreManager.shared.installedCores.first(where: { $0.id == id }) {
             LoggerService.debug(category: "CoreOptionsViewModel", "Found installed core: \(core.id). Versions: \(core.installedVersions.count). ActiveTag: \(core.activeVersionTag ?? "nil")")
@@ -137,8 +142,7 @@ class CoreOptionsViewModel: ObservableObject {
         } else {
             LoggerService.debug(category: "CoreOptionsViewModel", "Core \(id) not found in installedCores")
         }
-        
-        // Find rom path from library
+
         var romPath: String? = nil
         if let lib = library {
             let systemIDs = CoreManager.supportedSystems(for: id)
@@ -149,8 +153,8 @@ class CoreOptionsViewModel: ObservableObject {
                 LoggerService.debug(category: "CoreOptionsViewModel", "No ROM found in library for system(s): \(systemIDs)")
             }
         }
-        
-        // Load the options
+
+        self.manager.setScope(systemID: self.systemID, gameFilename: self.gameFilename)
         if self.isSystemMode, let sysID = self.systemID {
             self.discoverCoresForSystem(sysID)
         } else {
@@ -162,16 +166,14 @@ class CoreOptionsViewModel: ObservableObject {
 
     private func discoverCoresForSystem(_ sysID: String) {
         let compatibleIDs = SystemDatabase.compatibleIDs(for: sysID)
-        let cores = LibretroInfoManager.coreToSystemMap
-            .filter { coreID, supportedSystems in
-                !supportedSystems.isDisjoint(with: compatibleIDs)
-            }
-            .map { $0.key }
-        
-        self.availableCores = cores.map { coreID in
-            let baseID = coreID.replacingOccurrences(of: "_libretro", with: "")
-            let name = LibretroCore.knownCoreMetadata[baseID]?.displayName ?? coreID.replacingOccurrences(of: "_libretro", with: "").capitalized
-            return (id: coreID, name: name)
+        let installed = CoreManager.shared.installedCores.filter { core in
+            !Set(core.systemIDs).isDisjoint(with: compatibleIDs) || SystemDatabase.system(forID: sysID)?.defaultCoreID == core.id
+        }
+
+        self.availableCores = installed.map { core in
+            let baseID = core.id.replacingOccurrences(of: "_libretro", with: "")
+            let name = LibretroCore.knownCoreMetadata[baseID]?.displayName ?? core.id.replacingOccurrences(of: "_libretro", with: "").capitalized
+            return (id: core.id, name: name)
         }
 
         if let system = SystemDatabase.system(forID: sysID), let defaultID = system.defaultCoreID, availableCores.contains(where: { $0.id == defaultID }) {
@@ -188,7 +190,6 @@ class CoreOptionsViewModel: ObservableObject {
     }
 
     func prettify(_ key: String) -> String {
-        // mgba_gb_colors_preset -> Gb Colors Preset
         let clean = key.replacingOccurrences(of: "^[a-zA-Z0-9]+_", with: "", options: .regularExpression)
         let words = clean.components(separatedBy: "_")
         let pretty = words.map { $0.capitalized }.joined(separator: " ")
@@ -207,15 +208,18 @@ class CoreOptionsViewModel: ObservableObject {
         manager.updateValue(value, for: key)
     }
 
+    func restoreToPreviousLayer(key: String) {
+        manager.restoreToPreviousLayer(key: key)
+    }
+
     func resetAll() {
         manager.resetAllToDefaults()
     }
-    
+
     func discoverOptions(for coreID: String, library: ROMLibrary) async {
         isLoading = true
         defer { isLoading = false }
 
-        // 1. Find dylib path from installed cores
         var dylibPath: String? = nil
         if let core = CoreManager.shared.installedCores.first(where: { $0.id == coreID }) {
             if let activeVersion = core.activeVersion {
@@ -223,14 +227,12 @@ class CoreOptionsViewModel: ObservableObject {
             }
         }
 
-        // 2. Find rom path from library
         var romPath: String? = nil
         let systemIDs = CoreManager.supportedSystems(for: coreID)
         if let sysID = systemIDs.first, let rom = library.roms.first(where: { $0.systemID == sysID }) {
             romPath = rom.path.path
         }
 
-        // 3. Perform discovery
         if let dylib = dylibPath {
             await manager.discoverOptions(for: coreID, dylibPath: dylib, romPath: romPath)
             hasLoadedOnce = true
@@ -249,16 +251,16 @@ struct CoreOptionsView: View {
     @EnvironmentObject var library: ROMLibrary
     @ObservedObject private var loc = LocalizationManager.shared
 
-    init(coreID: String) {
+    init(coreID: String, systemID: String? = nil, gameFilename: String? = nil) {
         self.initialID = coreID
-        self._viewModel = StateObject(wrappedValue: CoreOptionsViewModel(id: coreID))
+        self._viewModel = StateObject(wrappedValue: CoreOptionsViewModel(id: coreID, systemID: systemID, gameFilename: gameFilename))
     }
 
     var body: some View {
         NavigationStack {
             ZStack {
                 Color(NSColor.windowBackgroundColor).ignoresSafeArea()
-                
+
                 if viewModel.isLoading {
                     VStack(spacing: 16) {
                         ProgressView().controlSize(.large)
@@ -278,20 +280,20 @@ struct CoreOptionsView: View {
                                 }
                                 .pickerStyle(.menu)
                                 .padding(.horizontal)
-                                 .onChange(of: viewModel.currentCoreID) { _, newID in
-                                     viewModel.loadOptions(for: newID, library: library)
-                                 }
+                                .onChange(of: viewModel.currentCoreID) { _, newID in
+                                    viewModel.loadOptions(for: newID, library: library)
+                                }
                                 Divider()
                             }
 
-                             ForEach(viewModel.filteredSortedKeys, id: \.self) { category in
-                                 CategorySection(
-                                     title: viewModel.categoryDisplayName(for: category),
+                            ForEach(viewModel.filteredSortedKeys, id: \.self) { category in
+                                CategorySection(
+                                    title: viewModel.categoryDisplayName(for: category),
                                     optionKeys: viewModel.optionKeysInCategory(category),
                                     viewModel: viewModel
                                 )
                             }
-                            
+
                             VStack(spacing: 16) {
                                 Button(action: {
                                     Task { await viewModel.discoverOptions(for: viewModel.currentCoreID, library: library) }
@@ -299,7 +301,7 @@ struct CoreOptionsView: View {
                                     Label(loc.localized("coreOptions.rediscoverFromCore"), systemImage: "arrow.triangle.2.circlepath")
                                 }
                                 .buttonStyle(.link)
-                                
+
                                 ResetFooter(viewModel: viewModel)
                             }
                             .padding(.top)
@@ -307,31 +309,31 @@ struct CoreOptionsView: View {
                         .padding()
                     }
                 }
-             }
-              .animation(.easeInOut, value: viewModel.isLoading)
-              .navigationTitle(viewModel.isSystemMode ? "\(loc.localized("coreOptions.options")) \(SystemDatabase.system(forID: viewModel.systemID ?? "")?.name ?? "")" : "\(loc.localized("coreOptions.options")) \(viewModel.currentCoreID)")
-              .searchable(text: $viewModel.searchText, prompt: loc.localized("coreOptions.searchOptions"))
-             .toolbar {
-                 ToolbarItem(placement: .primaryAction) {
-                     Button {
-                         let currentSearch = viewModel.searchText
-                         if currentSearch.contains("is:modified") {
-                             viewModel.searchText = currentSearch.replacingOccurrences(of: "is:modified", with: "").trimmingCharacters(in: .whitespaces)
-                         } else {
-                             viewModel.searchText = (currentSearch.isEmpty ? "" : currentSearch + " ") + "is:modified"
-                         }
-                     } label: {
-                         Image(systemName: viewModel.searchText.contains("is:modified") ? "line.3.horizontal.decrease.circle.fill" : "line.3.horizontal.decrease.circle")
-                             .foregroundColor(viewModel.searchText.contains("is:modified") ? .blue : .secondary)
-                     }
-                     .help("Filter modified options")
-                 }
-                  ToolbarItem(placement: .confirmationAction) {
-                      Button(loc.localized("core.done")) { dismiss() }.keyboardShortcut(.defaultAction)
-                  }
-             }
-             .onAppear { viewModel.loadOptions(for: initialID, library: library) }
+            }
         }
+        .animation(.easeInOut, value: viewModel.isLoading)
+        .navigationTitle(viewModel.isSystemMode ? "\(loc.localized("coreOptions.options")) \(SystemDatabase.systemName(forInternalID: viewModel.systemID ?? ""))" : "\(loc.localized("coreOptions.options")) \(viewModel.currentCoreID)")
+        .searchable(text: $viewModel.searchText, placement: .toolbar, prompt: loc.localized("coreOptions.searchOptions"))
+        .toolbar {
+            ToolbarItem(placement: .primaryAction) {
+                Button {
+                    let currentSearch = viewModel.searchText
+                    if currentSearch.contains("is:modified") {
+                        viewModel.searchText = currentSearch.replacingOccurrences(of: "is:modified", with: "").trimmingCharacters(in: .whitespaces)
+                    } else {
+                        viewModel.searchText = (currentSearch.isEmpty ? "" : currentSearch + " ") + "is:modified"
+                    }
+                } label: {
+                    Image(systemName: viewModel.searchText.contains("is:modified") ? "line.3.horizontal.decrease.circle.fill" : "line.3.horizontal.decrease.circle")
+                        .foregroundColor(viewModel.searchText.contains("is:modified") ? AppColors.brandAccent : .secondary)
+                }
+                .help("Filter modified options")
+            }
+            ToolbarItem(placement: .confirmationAction) {
+                Button(loc.localized("core.done")) { dismiss() }.keyboardShortcut(.defaultAction)
+            }
+        }
+        .onAppear { viewModel.loadOptions(for: initialID, library: library) }
     }
 }
 
@@ -341,14 +343,14 @@ struct CategorySection: View {
     let title: String
     let optionKeys: [String]
     @ObservedObject var viewModel: CoreOptionsViewModel
-    
+
     var body: some View {
         VStack(alignment: .leading, spacing: 8) {
             Text(title.uppercased())
                 .font(.system(size: 10, weight: .bold))
                 .foregroundColor(.secondary)
                 .padding(.leading, 4)
-            
+
             VStack(spacing: 0) {
                 ForEach(optionKeys, id: \.self) { key in
                     CoreOptionRow(versionedKey: key, viewModel: viewModel)
@@ -385,7 +387,7 @@ struct CoreOptionRow: View {
                     VStack(alignment: .leading, spacing: 2) {
                         Text(viewModel.prettify(option.key))
                             .font(.system(size: 13, weight: .medium))
-                        
+
                         if !option.info.isEmpty {
                             Text(option.info)
                                 .font(.system(size: 11))
@@ -393,9 +395,9 @@ struct CoreOptionRow: View {
                                 .lineLimit(2)
                         }
                     }
-                    
+
                     Spacer()
-                    
+
                     ControlPicker(option: option, selection: $selectedValue)
                         .onChange(of: selectedValue) { _, newValue in
                             viewModel.updateValue(newValue, for: option.key)
@@ -403,21 +405,52 @@ struct CoreOptionRow: View {
                 }
                 .padding(.horizontal, 12)
                 .padding(.vertical, 10)
-                
-                if option.isModified {
-                    HStack {
-                        Image(systemName: "circle.fill").font(.system(size: 6)).foregroundColor(.orange)
-                        Text(loc.localized("coreOptions.modifiedFromDefault")).font(.system(size: 10)).foregroundColor(.orange)
-                        Spacer()
+
+            if option.overrideSource != .coreDefault {
+                HStack {
+                    overrideSourceLabel(for: option.overrideSource)
+                    Spacer()
+                    if option.overrideSource == .systemOverride || option.overrideSource == .gameOverride {
                         Button(loc.localized("coreOptions.restoreDefault")) {
-                            selectedValue = option.defaultValue
-                            viewModel.updateValue(option.defaultValue, for: option.key)
+                            viewModel.restoreToPreviousLayer(key: option.key)
+                            if let updated = viewModel.options[versionedKey] {
+                                selectedValue = updated.currentValue
+                            }
                         }
                         .buttonStyle(.link).font(.system(size: 10))
                     }
-                    .padding(.horizontal, 12).padding(.bottom, 8)
                 }
+                .padding(.horizontal, 12).padding(.bottom, 8)
             }
+            }
+        }
+    }
+
+    @ViewBuilder
+    private func overrideSourceLabel(for source: OverrideSource) -> some View {
+        switch source {
+        case .appDefault:
+            HStack(spacing: 4) {
+                Image(systemName: "circle.fill").font(.system(size: 6)).foregroundColor(.cyan)
+                Text(loc.localized("coreOptions.appDefault")).font(.system(size: 10)).foregroundColor(.cyan)
+            }
+        case .appSystemDefault:
+            HStack(spacing: 4) {
+                Image(systemName: "circle.fill").font(.system(size: 6)).foregroundColor(.cyan)
+                Text(loc.localized("coreOptions.appSystemDefault")).font(.system(size: 10)).foregroundColor(.cyan)
+            }
+        case .systemOverride:
+            HStack(spacing: 4) {
+                Image(systemName: "circle.fill").font(.system(size: 6)).foregroundColor(.purple)
+                Text(loc.localized("coreOptions.systemOverride")).font(.system(size: 10)).foregroundColor(.purple)
+            }
+        case .gameOverride:
+            HStack(spacing: 4) {
+                Image(systemName: "circle.fill").font(.system(size: 6)).foregroundColor(.orange)
+                Text(loc.localized("coreOptions.gameOverride")).font(.system(size: 10)).foregroundColor(.orange)
+            }
+        default:
+            EmptyView()
         }
     }
 }
@@ -425,7 +458,7 @@ struct CoreOptionRow: View {
 struct ControlPicker: View {
     let option: CoreOption
     @Binding var selection: String
-    
+
     var body: some View {
         if isBoolean {
             Toggle("", isOn: Binding(
@@ -445,12 +478,14 @@ struct ControlPicker: View {
             .pickerStyle(.menu).labelsHidden().frame(width: 140)
         }
     }
-    
+
     private var isBoolean: Bool {
+        guard option.values.count == 2 else { return false }
         let labels = option.values.map { $0.label.lowercased() }
-        return labels.contains(where: { ["enabled", "disabled", "on", "off"].contains($0) })
+        return labels.contains(where: { ["enabled", "on", "yes", "true"].contains($0) })
+            && labels.contains(where: { ["disabled", "off", "no", "false"].contains($0) })
     }
-    
+
     private var longText: Bool {
         option.values.contains { $0.label.count > 12 }
     }
@@ -473,7 +508,7 @@ struct EmptyStateView: View {
     @ObservedObject var viewModel: CoreOptionsViewModel
     @EnvironmentObject var library: ROMLibrary
     @ObservedObject private var loc = LocalizationManager.shared
-    
+
     var body: some View {
         ContentUnavailableView {
             Label(loc.localized("coreOptions.noSettingsFound"), systemImage: "gearshape.2")

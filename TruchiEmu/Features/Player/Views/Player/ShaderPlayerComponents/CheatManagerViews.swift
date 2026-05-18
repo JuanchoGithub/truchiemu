@@ -76,18 +76,18 @@ struct CheatManagerViewWrapper: View {
                              .font(.caption)
                              .padding(.horizontal, 12)
                              .padding(.vertical, 6)
-                             .background(selectedCategory == nil ? Color.accentColor : Color.secondary.opacity(0.2))
-                             .foregroundColor(selectedCategory == nil ? .white : .primary)
-                             .cornerRadius(8)
-                     }
-                    
-                    ForEach(CheatCategory.allCases, id: \.self) { category in
-                        Button(action: { selectedCategory = category }) {
-                            Label(category.displayName, systemImage: category.icon)
-                                .font(.caption)
-                                .padding(.horizontal, 12)
-                                .padding(.vertical, 6)
-                                .background(selectedCategory == category ? Color.accentColor : Color.secondary.opacity(0.2))
+                              .background(selectedCategory == nil ? AppColors.brandAccent : Color.secondary.opacity(0.2))
+                              .foregroundColor(selectedCategory == nil ? .white : .primary)
+                              .cornerRadius(8)
+                      }
+                     
+                     ForEach(CheatCategory.allCases, id: \.self) { category in
+                         Button(action: { selectedCategory = category }) {
+                             Label(category.displayName, systemImage: category.icon)
+                                 .font(.caption)
+                                 .padding(.horizontal, 12)
+                                 .padding(.vertical, 6)
+                                 .background(selectedCategory == category ? AppColors.brandAccent : Color.secondary.opacity(0.2))
                                 .foregroundColor(selectedCategory == category ? .white : .primary)
                                 .cornerRadius(8)
                         }

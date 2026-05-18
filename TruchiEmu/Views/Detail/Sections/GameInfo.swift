@@ -175,11 +175,30 @@ if meta.genre != nil {
                         .foregroundColor(.white)
                         .padding(.horizontal, 16)
                         .padding(.vertical, 8)
-                        .background(Color.accentColor.opacity(0.8))
+                        .background(AppColors.brandAccent.opacity(0.8))
                         .cornerRadius(8)
                     }
                     .buttonStyle(.plain)
                     .disabled(infoCoreID == nil || installedCores.isEmpty)
+                }
+                Divider().overlay(AppColors.divider(colorScheme))
+                HStack {
+                    Spacer()
+                    Button {
+                        showCoreOptionsView = true
+                    } label: {
+                        HStack(spacing: 6) {
+                            Image(systemName: "slider.horizontal.3")
+                            Text(loc.localized("gameInfo.coreOptions"))
+                        }
+                        .foregroundColor(AppColors.brandAccent)
+                        .padding(.horizontal, 16)
+                        .padding(.vertical, 8)
+                        .background(AppColors.brandAccent.opacity(0.15))
+                        .cornerRadius(8)
+                    }
+                    .buttonStyle(.plain)
+                    .disabled(activeCoreID == nil)
                 }
             }
         }
@@ -215,7 +234,7 @@ if meta.genre != nil {
                     }
                 )) {
                     HStack {
-                        Image(systemName: "gamecontroller.fill").foregroundColor(.blue)
+                        Image(systemName: "gamecontroller.fill").foregroundColor(AppColors.brandAccent)
                         Text(loc.localized("gameInfo.enableCheats")).foregroundColor(AppColors.textPrimary(colorScheme))
                     }
                 }
@@ -405,15 +424,118 @@ if meta.genre != nil {
         }
     }
 
+    func loadGBColorizationSettings() {
+        guard let sysID = currentROM.systemID,
+              (sysID == "gb" || sysID == "gbc"),
+              let coreID = activeCoreID else { return }
+        let gameFilename = currentROM.filenameWithoutExtension
+        let overrides = CoreOptionsManager.shared.loadGameOverrides(for: coreID, systemID: sysID, gameFilename: gameFilename)
+        if overrides.isEmpty { return }
+        let coreBaseID = coreID.replacingOccurrences(of: "_libretro", with: "")
+        if coreBaseID.contains("gambatte") {
+            if let val = overrides["gambatte_gb_colorization"] {
+                if val == "disabled" {
+                    gbColorizationEnabled = false
+                } else {
+                    gbColorizationEnabled = true
+                    gbColorizationMode = val
+                }
+            }
+            if let val = overrides["gambatte_gb_internal_palette"] {
+                gbInternalPalette = val
+            }
+            if let val = overrides["gambatte_gbc_color_correction"] {
+                switch val {
+                case "GBC only": gbColorCorrectionMode = "gbc_only"
+                case "always": gbColorCorrectionMode = "always"
+                default: gbColorCorrectionMode = "disabled"
+                }
+            }
+        } else if coreBaseID.contains("mgba") {
+            if let val = overrides["mgba_gb_model"] {
+                switch val {
+                case "Game Boy": gbColorizationEnabled = false
+                case "Autodetect": gbColorizationEnabled = true; gbColorizationMode = "auto"
+                case "Game Boy Color": gbColorizationEnabled = true; gbColorizationMode = "gbc"
+                case "Super Game Boy": gbColorizationEnabled = true; gbColorizationMode = "sgb"
+                default: break
+                }
+            }
+            if let val = overrides["mgba_sgb_borders"] {
+                gbSGBBordersEnabled = (val == "ON")
+            }
+        } else if coreBaseID.contains("sameboy") {
+            if let val = overrides["sameboy_model"] {
+                switch val {
+                case "Game Boy": gbColorizationEnabled = false
+                case "Auto": gbColorizationEnabled = true; gbColorizationMode = "auto"
+                case "Game Boy Color": gbColorizationEnabled = true; gbColorizationMode = "gbc"
+                default: break
+                }
+            }
+            if let val = overrides["sameboy_color_correction_mode"] {
+                switch val {
+                case "off": gbColorCorrectionMode = "disabled"
+                default: gbColorCorrectionMode = "gbc_only"
+                }
+            }
+        } else if coreBaseID.contains("gearboy") {
+            if let val = overrides["gearboy_colorization"] {
+                gbColorizationEnabled = (val == "enabled")
+            }
+        }
+    }
+
     func applyGBColorizationSettings() {
-        guard currentROM.systemID == "gb" || currentROM.systemID == "gbc" else { return }
-        var updated = currentROM
-        updated.settings.gbColorizationEnabled = gbColorizationEnabled
-        updated.settings.gbColorizationMode = gbColorizationMode
-        updated.settings.gbInternalPalette = gbInternalPalette
-        updated.settings.gbSGBBordersEnabled = gbSGBBordersEnabled
-        updated.settings.gbColorCorrectionMode = gbColorCorrectionMode
-        library.updateROM(updated)
+        guard let sysID = currentROM.systemID,
+              (sysID == "gb" || sysID == "gbc"),
+              let coreID = activeCoreID else { return }
+        let gameFilename = currentROM.filenameWithoutExtension
+        var overrides = CoreOptionsManager.shared.loadGameOverrides(for: coreID, systemID: sysID, gameFilename: gameFilename)
+        let coreBaseID = coreID.replacingOccurrences(of: "_libretro", with: "")
+        if coreBaseID.contains("gambatte") {
+            overrides["gambatte_gb_colorization"] = gbColorizationEnabled ? gbColorizationMode : "disabled"
+            overrides["gambatte_gb_internal_palette"] = gbInternalPalette
+            switch gbColorCorrectionMode {
+            case "gbc_only": overrides["gambatte_gbc_color_correction"] = "GBC only"
+            case "always": overrides["gambatte_gbc_color_correction"] = "always"
+            default: overrides["gambatte_gbc_color_correction"] = "disabled"
+            }
+        } else if coreBaseID.contains("mgba") {
+            if !gbColorizationEnabled {
+                overrides["mgba_gb_model"] = "Game Boy"
+            } else {
+                switch gbColorizationMode {
+                case "auto": overrides["mgba_gb_model"] = "Autodetect"
+                case "gbc": overrides["mgba_gb_model"] = "Game Boy Color"
+                case "sgb": overrides["mgba_gb_model"] = "Super Game Boy"
+                default: overrides["mgba_gb_model"] = "Game Boy Color"
+                }
+            }
+            overrides["mgba_sgb_borders"] = gbSGBBordersEnabled ? "ON" : "OFF"
+        } else if coreBaseID.contains("sameboy") {
+            if !gbColorizationEnabled {
+                overrides["sameboy_model"] = "Game Boy"
+            } else {
+                switch gbColorizationMode {
+                case "auto": overrides["sameboy_model"] = "Auto"
+                case "gbc", "internal", "sgb", "custom": overrides["sameboy_model"] = "Game Boy Color"
+                default: overrides["sameboy_model"] = "Auto"
+                }
+            }
+            let isGBCROM = sysID == "gbc"
+            if isGBCROM {
+                switch gbColorCorrectionMode {
+                case "disabled", "off": overrides["sameboy_color_correction_mode"] = "off"
+                default: overrides["sameboy_color_correction_mode"] = "correct curves"
+                }
+            }
+        } else if coreBaseID.contains("gearboy") {
+            overrides["gearboy_colorization"] = gbColorizationEnabled ? "enabled" : "disabled"
+        }
+        if !overrides.isEmpty {
+            CoreOptionsManager.shared.saveGameOverride(for: coreID, systemID: sysID, gameFilename: gameFilename, values: overrides)
+        }
     }
 
     var identifyButton: some View {

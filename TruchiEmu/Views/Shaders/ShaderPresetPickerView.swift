@@ -58,7 +58,7 @@ struct ShaderParameterSliders: View {
         VStack(alignment: .leading, spacing: 8) {
               HStack {
                   Image(systemName: "slider.horizontal.3")
-                      .foregroundColor(.accentColor)
+                      .foregroundColor(AppColors.brandAccent)
                   Text(loc.localized("shader.parameters"))
                       .font(.headline)
                   Spacer()
@@ -297,13 +297,13 @@ struct ShaderPresetRowView: View {
             Image(systemName: shaderIcon(for: preset.shaderType))
                 .font(.body)
                 .frame(width: 24)
-                .foregroundColor(isSelected ? .accentColor : .secondary)
+                .foregroundColor(isSelected ? AppColors.brandAccent : .secondary)
 
             VStack(alignment: .leading, spacing: 4) {
                 Text(preset.name)
                     .font(.subheadline.weight(isSelected ? .semibold : .regular))
                     .lineLimit(1)
-                    .foregroundColor(isSelected ? .accentColor : .primary)
+                    .foregroundColor(isSelected ? AppColors.brandAccent : .primary)
 
                 if !preset.recommendedSystems.isEmpty {
                     Text(preset.recommendedSystems.joined(separator: ", ").uppercased())
@@ -327,7 +327,7 @@ struct ShaderPresetRowView: View {
 
             if isSelected {
                 Image(systemName: "checkmark.circle.fill")
-                    .foregroundColor(.accentColor)
+                    .foregroundColor(AppColors.brandAccent)
                     .font(.body)
             }
         }
@@ -336,7 +336,7 @@ struct ShaderPresetRowView: View {
         .frame(maxWidth: .infinity, alignment: .leading)
         .background {
             if isSelected {
-                Color.accentColor.opacity(0.2)
+                AppColors.brandAccent.opacity(0.2)
                     .cornerRadius(6)
             } else if isHovered {
                 Color.secondary.opacity(0.1)
@@ -384,13 +384,13 @@ struct SavedPresetRowView: View {
             Image(systemName: "bookmark.fill")
                 .font(.body)
                 .frame(width: 24)
-                .foregroundColor(isSelected ? .accentColor : .orange)
+                .foregroundColor(isSelected ? AppColors.brandAccent : .orange)
 
             VStack(alignment: .leading, spacing: 4) {
                 Text(preset.name)
                     .font(.subheadline.weight(isSelected ? .semibold : .regular))
                     .lineLimit(1)
-                    .foregroundColor(isSelected ? .accentColor : .primary)
+                    .foregroundColor(isSelected ? AppColors.brandAccent : .primary)
 
                 if let base = preset.basePreset {
                     Text(loc.localized("shader.basedOn") + " \(base.name)")
@@ -404,7 +404,7 @@ struct SavedPresetRowView: View {
 
             if isSelected {
                 Image(systemName: "checkmark.circle.fill")
-                    .foregroundColor(.accentColor)
+                    .foregroundColor(AppColors.brandAccent)
                     .font(.body)
             }
         }
@@ -413,7 +413,7 @@ struct SavedPresetRowView: View {
         .frame(maxWidth: .infinity, alignment: .leading)
         .background {
             if isSelected {
-                Color.accentColor.opacity(0.2)
+                AppColors.brandAccent.opacity(0.2)
                     .cornerRadius(6)
             } else if isHovered {
                 Color.secondary.opacity(0.1)
@@ -732,7 +732,7 @@ controller.close()
             }
             .padding(.horizontal, 10)
             .padding(.vertical, 4)
-            .background(isActive ? Color.accentColor : Color(NSColor.controlBackgroundColor))
+            .background(isActive ? AppColors.brandAccent : Color(NSColor.controlBackgroundColor))
             .foregroundColor(isActive ? .white : .primary)
             .cornerRadius(12)
         }

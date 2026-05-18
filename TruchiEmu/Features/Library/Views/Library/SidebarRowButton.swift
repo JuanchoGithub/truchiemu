@@ -17,6 +17,7 @@ struct SidebarRowButton: View {
     var installedCores: [LibretroCore]? = nil
 
     @State private var isHovered = false
+    @Environment(\.colorScheme) private var colorScheme
     @ObservedObject private var loc = LocalizationManager.shared
     
     var isSelected: Bool {
@@ -40,10 +41,10 @@ struct SidebarRowButton: View {
                 
                 Text("\(count)")
                     .font(.caption2.monospacedDigit())
-                    .foregroundColor(.secondary)
+                    .foregroundColor(isSelected ? AppColors.brandAccent : .secondary)
                     .padding(.horizontal, 6)
                     .padding(.vertical, 2)
-                    .background(Color.secondary.opacity(0.12))
+                    .background(isSelected ? AppColors.accentBackground(colorScheme) : Color.secondary.opacity(0.12))
                     .cornerRadius(6)
             }
             .padding(.horizontal, 6)
@@ -66,37 +67,77 @@ struct SidebarRowButton: View {
                         Label(loc.localized("contextMenu.refresh"), systemImage: "arrow.clockwise")
                     }
 
-                    if let cores = installedCores, cores.count > 1 {
-                        Menu {
-                            ForEach(cores) { core in
-                                Button {
-                                    onSystemAction(system, .settings(core.id), nil)
+        if let cores = installedCores, cores.count > 1 {
+                if let internalIDs = SystemDatabase.multiSystemGroups()[system.id] {
+                    Menu {
+                        ForEach(cores) { core in
+                            if internalIDs.count > 1 {
+                                Menu {
+                                    ForEach(internalIDs, id: \.self) { id in
+                                        Button { onSystemAction(system, .settings(core.id), id) } label: {
+                                            Label(SystemDatabase.system(forID: id)?.name ?? id, systemImage: "cpu")
+                                        }
+                                    }
                                 } label: {
                                     Label(core.displayName, systemImage: "cpu")
                                 }
+                            } else {
+                                Button { onSystemAction(system, .settings(core.id), nil) } label: {
+                                    Label(core.displayName, systemImage: "cpu")
+                                }
                             }
-                        } label: {
-                            Label(loc.localized("contextMenu.coreOptions"), systemImage: "gearshape")
                         }
-                    } else if let installedCore = installedCores?.first {
-                        Button {
-                            onSystemAction(system, .settings(installedCore.id), nil)
-                        } label: {
-                            Label(loc.localized("contextMenu.coreOptions"), systemImage: "gearshape")
-                        }
-                    } else if let coreID = system.defaultCoreID {
-                        Button {
-                            onSystemAction(system, .settings(coreID), nil)
-                        } label: {
-                            Label(loc.localized("contextMenu.coreOptions"), systemImage: "gearshape")
-                        }
-                    } else {
-                        Button {
-                            onSystemAction(system, .selectCore(system), nil)
-                        } label: {
-                            Label(loc.localized("contextMenu.coreOptions"), systemImage: "gearshape")
-                        }
+                    } label: {
+                        Label(loc.localized("contextMenu.coreOptions"), systemImage: "gearshape")
                     }
+                } else {
+                    Menu {
+                        ForEach(cores) { core in
+                            Button { onSystemAction(system, .settings(core.id), nil) } label: {
+                                Label(core.displayName, systemImage: "cpu")
+                            }
+                        }
+                    } label: {
+                        Label(loc.localized("contextMenu.coreOptions"), systemImage: "gearshape")
+                    }
+                }
+            } else if let installedCore = installedCores?.first {
+                if let internalIDs = SystemDatabase.multiSystemGroups()[system.id], internalIDs.count > 1 {
+                    Menu {
+                        ForEach(internalIDs, id: \.self) { id in
+                            Button { onSystemAction(system, .settings(installedCore.id), id) } label: {
+                                Label(SystemDatabase.system(forID: id)?.name ?? id, systemImage: "gearshape")
+                            }
+                        }
+                    } label: {
+                        Label(loc.localized("contextMenu.coreOptions"), systemImage: "gearshape")
+                    }
+                } else {
+                    Button { onSystemAction(system, .settings(installedCore.id), nil) } label: {
+                        Label(loc.localized("contextMenu.coreOptions"), systemImage: "gearshape")
+                    }
+                }
+            } else if let coreID = system.defaultCoreID {
+                if let internalIDs = SystemDatabase.multiSystemGroups()[system.id], internalIDs.count > 1 {
+                    Menu {
+                        ForEach(internalIDs, id: \.self) { id in
+                            Button { onSystemAction(system, .settings(coreID), id) } label: {
+                                Label(SystemDatabase.system(forID: id)?.name ?? id, systemImage: "gearshape")
+                            }
+                        }
+                    } label: {
+                        Label(loc.localized("contextMenu.coreOptions"), systemImage: "gearshape")
+                    }
+                } else {
+                    Button { onSystemAction(system, .settings(coreID), nil) } label: {
+                        Label(loc.localized("contextMenu.coreOptions"), systemImage: "gearshape")
+                    }
+                }
+            } else {
+                Button { onSystemAction(system, .selectCore(system), nil) } label: {
+                    Label(loc.localized("contextMenu.coreOptions"), systemImage: "gearshape")
+                }
+            }
 
                     // MARK: - Action Buttons
                     Group {
@@ -206,11 +247,13 @@ struct SidebarRowButton: View {
                 }
             }
         }
+        .offset(y: isHovered ? -1 : 0)
         .background(
             RoundedRectangle(cornerRadius: 6)
-                .fill(isSelected ? Color.accentColor.opacity(0.15) : (isHovered ? Color.secondary.opacity(0.08) : .clear))
+                .fill(isSelected ? AppColors.accentBackground(colorScheme) : (isHovered ? Color.secondary.opacity(0.08) : .clear))
         )
         .onHover { isHovered = $0 }
+        .animation(AppMotion.micro, value: isHovered)
     }
     
     @ViewBuilder

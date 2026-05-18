@@ -24,7 +24,7 @@ extension GameDetailView {
                         .foregroundColor(.white)
                         .padding(.horizontal, 14)
                         .padding(.vertical, 8)
-                        .background(Color.accentColor.opacity(0.8))
+                        .background(AppColors.brandAccent.opacity(0.8))
                         .cornerRadius(8)
 
                     Button(loc.localized("shader.liveShaderEdit")) { presentLiveShaderEdit() }
@@ -44,11 +44,11 @@ extension GameDetailView {
                         Button { updateSettings { $0.shaderPresetID = preset.id } } label: {
                             HStack {
                                 Image(systemName: shaderIcon(for: preset.shaderType))
-                                    .foregroundColor(.blue).frame(width: 20)
+                                    .foregroundColor(AppColors.brandAccent).frame(width: 20)
                                 Text(preset.name).font(.subheadline).foregroundColor(AppColors.textPrimary(colorScheme))
                                 Spacer()
                                 if currentROM.settings.shaderPresetID == preset.id {
-                                    Image(systemName: "checkmark.circle.fill").foregroundColor(.blue)
+                                    Image(systemName: "checkmark.circle.fill").foregroundColor(AppColors.brandAccent)
                                 }
                                 if let desc = preset.description {
                                     Text(desc).font(.caption).foregroundColor(AppColors.textMuted(colorScheme)).lineLimit(1)
@@ -56,7 +56,7 @@ extension GameDetailView {
                             }
                             .padding(.vertical, 6)
                             .padding(.horizontal, 10)
-                            .background(currentROM.settings.shaderPresetID == preset.id ? Color.blue.opacity(0.15) : Color.clear)
+                            .background(currentROM.settings.shaderPresetID == preset.id ? AppColors.brandAccent.opacity(0.15) : Color.clear)
                             .cornerRadius(6)
                         }
                         .buttonStyle(.plain)

@@ -32,10 +32,10 @@ struct CategoryRowButton: View {
 
         Text("\(count)")
         .font(.caption2.monospacedDigit())
-        .foregroundColor(.secondary)
+        .foregroundColor(isSelected ? (Color(hex: category.colorHex) ?? .blue) : .secondary)
         .padding(.horizontal, 6)
         .padding(.vertical, 2)
-        .background(Color.secondary.opacity(0.12))
+        .background(isSelected ? (Color(hex: category.colorHex) ?? .blue).opacity(0.15) : Color.secondary.opacity(0.12))
         .cornerRadius(6)
       }
       .padding(.horizontal, 6)
@@ -45,8 +45,8 @@ struct CategoryRowButton: View {
     .buttonStyle(.plain)
     .background(
       RoundedRectangle(cornerRadius: 6)
-      .fill(isDropTarget ? Color.accentColor.opacity(0.2) : 
-            (isSelected ? Color.accentColor.opacity(0.15) : 
+      .fill(isDropTarget ? (Color(hex: category.colorHex) ?? .blue).opacity(0.2) : 
+            (isSelected ? (Color(hex: category.colorHex) ?? .blue).opacity(0.15) : 
              (isHovered ? Color.secondary.opacity(0.08) : .clear)))
     )
     .onHover { isHovered = $0 }

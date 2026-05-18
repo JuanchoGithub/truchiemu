@@ -329,7 +329,7 @@ struct SearchResultIndicator: View {
             }
             .padding(.horizontal, 12)
             .padding(.vertical, 6)
-            .background(Color.accentColor.opacity(0.1))
+            .background(AppColors.brandAccent.opacity(0.1))
             .cornerRadius(6)
         }
     }
@@ -769,10 +769,10 @@ struct CompactStickView: View {
                 Rectangle().fill(.secondary.opacity(0.1)).frame(width: 1, height: 80)
 
                 Circle()
-                    .fill(LinearGradient(colors: [Color(red: 0.1, green: 0.6, blue: 0.35), Color(red: 0.15, green: 0.65, blue: 0.55)], startPoint: .top, endPoint: .bottom))
+                    .fill(AppColors.brandAccent)
                     .frame(width: 16, height: 16)
                     .offset(x: CGFloat(x * 34), y: CGFloat(y * -34))
-                    .shadow(color: .purple.opacity(0.5), radius: 5)
+                    .shadow(color: AppColors.brandAccent.opacity(0.4), radius: 5)
             }
             .clipShape(Circle())
 
@@ -803,10 +803,10 @@ struct StickTesterView: View {
                 Rectangle().fill(.secondary.opacity(0.1)).frame(width: 100, height: 1)
                 Rectangle().fill(.secondary.opacity(0.1)).frame(width: 1, height: 100)
                 
-                Circle().fill(LinearGradient(colors: [Color(red: 0.1, green: 0.6, blue: 0.35), Color(red: 0.15, green: 0.65, blue: 0.55)], startPoint: .top, endPoint: .bottom))
+                Circle().fill(AppColors.brandAccent)
                     .frame(width: 14, height: 14)
                     .offset(x: CGFloat(x * 43), y: CGFloat(y * -43))
-                    .shadow(color: .purple.opacity(0.5), radius: 6)
+                    .shadow(color: AppColors.brandAccent.opacity(0.4), radius: 6)
             }
             .clipShape(Circle())
             

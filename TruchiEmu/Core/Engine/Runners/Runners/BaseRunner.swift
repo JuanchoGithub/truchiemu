@@ -391,6 +391,7 @@ case "scummvm": runner = ScummVMRunner()
                 romPath: romPath,
                 coreID: coreID,
                 systemID: systemID,
+                romFilename: rom.filenameWithoutExtension,
                 shaderDir: shaderDir,
                 videoCallback: { [weak self] data, width, height, pitch, format in
                     self?.updateFrame(data: data, width: width, height: height, pitch: pitch, format: format)

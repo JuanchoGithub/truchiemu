@@ -7,8 +7,10 @@ unsigned g_currentSaveRAMType = 0;
 LibretroBridgeImpl *g_instance = nil;
 int g_selectedLanguage = 0; // RETRO_LANGUAGE_ENGLISH
 int g_logLevel = 1;         // 1 = Warn & Error
-NSString *g_coreID = nil;   
-NSString *g_shaderDir = nil;                          
+NSString *g_coreID = nil;
+NSString *g_systemID = nil;
+NSString *g_romFilename = nil;
+NSString *g_shaderDir = nil;
 BOOL g_isPaused = NO;
 BOOL g_variablesUpdated = NO;      
 int g_currentRotation = 0; 
@@ -254,39 +256,102 @@ void parseInputDescriptors(const struct retro_input_descriptor *descriptors) {
   bridge_log_printf(RETRO_LOG_INFO, "Parsed %lu input descriptors", (unsigned long)result.count);
 }
 
+static void loadBundledOverrideJSON(const char* coreID, const char* scopeName) {
+    if (!coreID || !scopeName) return;
+    NSString *coreStr = [NSString stringWithUTF8String:coreID];
+    NSString *scopeStr = [NSString stringWithUTF8String:scopeName];
+
+    NSString *fileName = [NSString stringWithFormat:@"%@_%@", coreStr, scopeStr];
+    NSURL *url = [[NSBundle mainBundle] URLForResource:fileName withExtension:@"json" subdirectory:@"CoreOverrides"];
+    if (!url) {
+        url = [[NSBundle mainBundle] URLForResource:fileName withExtension:@"json"];
+    }
+    if (!url) return;
+
+    NSData *data = [NSData dataWithContentsOfURL:url];
+    if (!data) return;
+
+    NSError *error = nil;
+    NSDictionary *json = [NSJSONSerialization JSONObjectWithData:data options:0 error:&error];
+    if (!json || ![json isKindOfClass:[NSDictionary class]]) return;
+
+    for (NSString *key in json) {
+        NSString *value = json[key];
+        if (![value isKindOfClass:[NSString class]] && ![value isKindOfClass:[NSNumber class]]) continue;
+        NSString *valueStr = [value isKindOfClass:[NSString class]] ? value : [value description];
+        if (g_optValues && key.length > 0 && valueStr.length > 0) {
+            g_optValues[key] = valueStr;
+            bridge_log_printf(RETRO_LOG_INFO, "[Override-Bundled-JSON] %s/%s: %s = %s", coreID, scopeName, key.UTF8String, valueStr.UTF8String);
+        }
+    }
+}
+
+static void loadUserOverrideCFG(const char* coreID, const char* systemID, const char* gameFilename) {
+    if (!coreID || !systemID) return;
+    NSString *coreStr = [NSString stringWithUTF8String:coreID];
+    NSString *systemStr = [NSString stringWithUTF8String:systemID];
+
+    NSString *appSupport = [NSSearchPathForDirectoriesInDomains(NSApplicationSupportDirectory, NSUserDomainMask, YES) firstObject];
+    NSString *baseDir = [appSupport stringByAppendingPathComponent:@"TruchiEmu/CoreOverrides"];
+    NSString *coreDir = [baseDir stringByAppendingPathComponent:coreStr];
+    NSString *systemDir = [coreDir stringByAppendingPathComponent:systemStr];
+
+    NSString *configPath;
+    NSString *logScope;
+
+    if (gameFilename && strlen(gameFilename) > 0) {
+        NSString *gameStr = [NSString stringWithUTF8String:gameFilename];
+        configPath = [systemDir stringByAppendingPathComponent:[NSString stringWithFormat:@"%@.cfg", gameStr]];
+        logScope = [[NSString stringWithFormat:@"%s/%s/%s", coreID, systemID, gameFilename] copy];
+    } else {
+        configPath = [systemDir stringByAppendingPathComponent:@"overrides.cfg"];
+        logScope = [[NSString stringWithFormat:@"%s/%s", coreID, systemID] copy];
+    }
+
+    if (![[NSFileManager defaultManager] fileExistsAtPath:configPath]) return;
+
+    NSString *fileContent = [NSString stringWithContentsOfFile:configPath encoding:NSUTF8StringEncoding error:nil];
+    if (!fileContent) return;
+
+    NSArray<NSString *> *allLines = [fileContent componentsSeparatedByCharactersInSet:[NSCharacterSet newlineCharacterSet]];
+    for (NSString *line in allLines) {
+        NSString *trimmed = [line stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]];
+        if (trimmed.length == 0 || [trimmed hasPrefix:@"#"]) continue;
+
+        NSRange eqRange = [trimmed rangeOfString:@"="];
+        if (eqRange.location == NSNotFound) continue;
+
+        NSString *key = [[trimmed substringToIndex:eqRange.location] stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceCharacterSet]];
+        NSString *val = [[trimmed substringFromIndex:NSMaxRange(eqRange)] stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceCharacterSet]];
+
+        if ([val hasPrefix:@"\""] && [val hasSuffix:@"\""]) {
+            val = [val substringWithRange:NSMakeRange(1, val.length - 2)];
+        }
+        if (g_optValues && key.length > 0) {
+            g_optValues[key] = val;
+            bridge_log_printf(RETRO_LOG_INFO, "[Override-User-CFG] %s: %s = %s", logScope.UTF8String, key.UTF8String, val.UTF8String);
+        }
+    }
+}
+
 void applyPersistedOverrides(void) {
     if (!g_coreID) return;
 
-    core_override_apply_all_to_optvalues(g_coreID.UTF8String);
+    // Layer 1: Bundled default.json (core defaults, applies to all systems)
+    loadBundledOverrideJSON(g_coreID.UTF8String, "default");
 
-    NSString *configName =[NSString stringWithFormat:@"%@.cfg", g_coreID];
-    NSString *appSupport =[NSSearchPathForDirectoriesInDomains(NSApplicationSupportDirectory, NSUserDomainMask, YES) firstObject];
-    NSString *optionsDir =[appSupport stringByAppendingPathComponent:@"TruchiEmu/CoreOptions"];
-    NSString *configPath =[optionsDir stringByAppendingPathComponent:configName];
+    // Layer 2: Bundled <systemID>.json (system-specific defaults)
+    if (g_systemID && g_systemID.length > 0) {
+        loadBundledOverrideJSON(g_coreID.UTF8String, g_systemID.UTF8String);
+    }
 
-    if ([[NSFileManager defaultManager] fileExistsAtPath:configPath]) {
-        NSString *fileContent =[NSString stringWithContentsOfFile:configPath encoding:NSUTF8StringEncoding error:nil];
-        if (fileContent) {
-            NSArray<NSString *> *allLines =[fileContent componentsSeparatedByCharactersInSet:[NSCharacterSet newlineCharacterSet]];
+    // Layer 3: User system-level .cfg (CoreOverrides/<coreID>/<systemID>.cfg)
+    if (g_systemID && g_systemID.length > 0) {
+        loadUserOverrideCFG(g_coreID.UTF8String, g_systemID.UTF8String, NULL);
+    }
 
-            for (NSString *line in allLines) {
-                NSString *trimmed = [line stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]];
-                if (trimmed.length == 0 || [trimmed hasPrefix:@"#"]) continue;
-
-                NSRange eqRange = [trimmed rangeOfString:@"="];
-                if (eqRange.location == NSNotFound) continue;
-
-                NSString *key = [[trimmed substringToIndex:eqRange.location] stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceCharacterSet]];
-                NSString *val = [[trimmed substringFromIndex:NSMaxRange(eqRange)] stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceCharacterSet]];
-
-                if ([val hasPrefix:@"\""] && [val hasSuffix:@"\""]) {
-                    val =[val substringWithRange:NSMakeRange(1, val.length - 2)];
-                }
-                if (g_optValues && key.length > 0) {
-                    g_optValues[key] = val;
-                    bridge_log_printf(RETRO_LOG_INFO, "Override from .cfg: %s = %s", key.UTF8String, val.UTF8String);
-                }
-            }
-        }
+    // Layer 4: User game-level .cfg (CoreOverrides/<coreID>/<systemID>/<game>.cfg)
+    if (g_systemID && g_systemID.length > 0 && g_romFilename && g_romFilename.length > 0) {
+        loadUserOverrideCFG(g_coreID.UTF8String, g_systemID.UTF8String, g_romFilename.UTF8String);
     }
 }

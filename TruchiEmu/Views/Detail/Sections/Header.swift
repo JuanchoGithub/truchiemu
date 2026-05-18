@@ -3,15 +3,31 @@ import SwiftUI
 extension GameDetailView {
     var compactHeaderSection: some View {
         HStack(alignment: .center, spacing: 20) {
-            VStack(alignment: .leading, spacing: 12) {
-                HStack(alignment: .firstTextBaseline, spacing: 10) {
+            DetailBoxArtButton(
+                image: boxArtImage,
+                rom: currentROM,
+                placeholder: { AnyView(placeholderArt) }
+            )
+            .frame(width: 80, height: 105)
+            .clipShape(RoundedRectangle(cornerRadius: 8))
+            .shadow(color: Color.black.opacity(0.25), radius: 4, y: 2)
+            .contextMenu {
+                Button {
+                    showBoxArtPicker = true
+                } label: {
+                    Label(loc.localized("boxArt.changeBoxArt"), systemImage: "photo")
+                }
+            }
+
+            VStack(alignment: .leading, spacing: 6) {
+                HStack(alignment: .firstTextBaseline, spacing: 8) {
                     TextField(loc.localized("header.gameTitle"), text: $localTitle, onCommit: {
                         var updated = currentROM
                         let trimmed = localTitle.trimmingCharacters(in: .whitespaces)
                         updated.customName = trimmed.isEmpty ? nil : trimmed
                         library.updateROM(updated)
                     })
-                    .font(.title.bold())
+                    .font(AppTypography.title3)
                     .foregroundColor(AppColors.textPrimary(colorScheme))
                     .textFieldStyle(.plain)
                     .onAppear {
@@ -22,73 +38,44 @@ extension GameDetailView {
                     }
 
                     if let year = currentROM.metadata?.year {
-                        Text("(\(year))")
-                            .font(.title3)
+                        Text(year)
+                            .font(AppTypography.caption1)
                             .fontWeight(.medium)
                             .foregroundColor(AppColors.textSecondary(colorScheme))
+                            .padding(.horizontal, 6)
+                            .padding(.vertical, 2)
+                            .background(AppColors.cardBackgroundSubtle(colorScheme))
+                            .cornerRadius(AppRadius.xs)
                     }
-                    Spacer()
                 }
 
                 if let sys = system {
-                    HStack(spacing: 8) {
+                    HStack(spacing: 5) {
                         if let emuImg = sys.emuImage(size: 132) {
                             Image(nsImage: emuImg)
                                 .resizable()
                                 .aspectRatio(contentMode: .fit)
-                                .frame(width: 16, height: 16)
+                                .frame(width: 13, height: 13)
                         }
                         Text(sys.name)
-                            .font(.caption)
+                            .font(AppTypography.caption1)
                             .fontWeight(.medium)
                             .foregroundColor(AppColors.textSecondary(colorScheme))
                     }
-                    .padding(.horizontal, 10)
-                    .padding(.vertical, 4)
+                    .padding(.horizontal, 6)
+                    .padding(.vertical, 2)
                     .background(AppColors.cardBackgroundSubtle(colorScheme))
-                    .cornerRadius(6)
+                    .cornerRadius(AppRadius.xs)
                 }
 
-                Spacer()
+                Spacer(minLength: 0)
                 launchButton
-                Spacer()
             }
-
-            HStack(spacing: 12) {
-                DetailBoxArtButton(
-                    image: boxArtImage,
-                    rom: currentROM,
-                    placeholder: { AnyView(placeholderArt) }
-                )
-                .frame(width: 110, height: 140)
-                .clipShape(RoundedRectangle(cornerRadius: 10))
-                .shadow(color: Color.black.opacity(0.3), radius: 8, y: 4)
-                .contextMenu {
-                    Button {
-                        showBoxArtPicker = true
-                    } label: {
-                        Label(loc.localized("boxArt.changeBoxArt"), systemImage: "photo")
-                    }
-                }
-
-                ZStack {
-                    if let img = boxArtImage {
-                        Image(nsImage: img)
-                            .resizable()
-                            .aspectRatio(contentMode: .fill)
-                            .blur(radius: 8)
-                            .opacity(0.6)
-                    } else {
-                        placeholderArt
-                    }
-                }
-                .frame(width: 80, height: 140)
-                .clipShape(RoundedRectangle(cornerRadius: 10))
-            }
+            .frame(maxWidth: .infinity, alignment: .leading)
         }
-        .padding(.horizontal, 24)
+        .padding(.horizontal, 20)
         .padding(.vertical, 12)
-        .frame(height: 160)
+        .frame(height: 130)
     }
 
     var launchButton: some View {
@@ -97,34 +84,25 @@ extension GameDetailView {
         } label: {
             HStack(spacing: 10) {
                 Image(systemName: "play.fill").font(.title3)
-                Text("header.play").font(.headline).fontWeight(.semibold)
+                Text(loc.localized("header.play")).font(.headline).fontWeight(.semibold)
             }
             .foregroundColor(.white)
             .frame(maxWidth: .infinity)
             .padding(.vertical, 14)
             .padding(.horizontal, 28)
-            .background(
-                LinearGradient(
-                    colors:[
-                        Color(red: 0.35, green: 0.75, blue: 0.35),
-                        Color(red: 0.25, green: 0.60, blue: 0.25)
-                    ],
-                    startPoint: .leading,
-                    endPoint: .trailing
-                )
-            )
+            .background(AppDecorativeGradients.buttonPrimary)
             .clipShape(Capsule())
-            .shadow(color: .green.opacity(0.3), radius: 8, y: 2)
+            .shadow(color: .black.opacity(0.35), radius: 8, y: 2)
         }
-        .buttonStyle(.plain)
+        .buttonStyle(LaunchButtonStyle())
     }
 
     var placeholderArt: some View {
         ZStack {
             LinearGradient(
                 colors:[
-                    Color(red: 0.2, green: 0.22, blue: 0.25),
-                    Color(red: 0.15, green: 0.16, blue: 0.2)
+                    Color(hue: 0.08, saturation: 0.10, brightness: 0.25),
+                    Color(hue: 0.08, saturation: 0.08, brightness: 0.18)
                 ],
                 startPoint: .topLeading,
                 endPoint: .bottomTrailing
@@ -142,5 +120,13 @@ extension GameDetailView {
                     .foregroundColor(AppColors.textMuted(colorScheme))
             }
         }
+    }
+}
+
+private struct LaunchButtonStyle: ButtonStyle {
+    func makeBody(configuration: Configuration) -> some View {
+        configuration.label
+            .scaleEffect(configuration.isPressed ? 0.95 : 1.0)
+            .animation(.interpolatingSpring(stiffness: 300, damping: 15), value: configuration.isPressed)
     }
 }

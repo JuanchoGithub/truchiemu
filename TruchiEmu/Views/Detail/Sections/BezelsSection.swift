@@ -92,7 +92,7 @@ struct BezelsSection: View {
                     .foregroundColor(.white)
                     .padding(.horizontal, 14)
                     .padding(.vertical, 8)
-                    .background(Color.accentColor.opacity(0.8))
+                    .background(AppColors.brandAccent.opacity(0.8))
                     .cornerRadius(8)
                 }
 

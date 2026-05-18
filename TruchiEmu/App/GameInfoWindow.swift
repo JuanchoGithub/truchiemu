@@ -20,11 +20,7 @@ struct GameInfoWindow: View {
                 VStack(spacing: 24) {
                     Image(systemName: "gamecontroller")
                         .font(.system(size: 64, weight: .light))
-                        .foregroundStyle(LinearGradient(
-                            colors: [Color(red: 0.1, green: 0.6, blue: 0.35).opacity(0.85), Color(red: 0.15, green: 0.65, blue: 0.55).opacity(0.85)],
-                            startPoint: .leading,
-                            endPoint: .trailing
-                        ))
+                        .foregroundStyle(AppColors.brandAccent)
                         .scaleEffect(appeared ? 1 : 0.8)
                         .opacity(appeared ? 1 : 0)
                     
@@ -50,7 +46,7 @@ struct GameInfoWindow: View {
             }
         }
         .frame(minWidth: 900, minHeight: 700)
-        .background(colorScheme == .dark ? Color(white: 0.06) : Color(white: 0.94))
+        .background(AppColors.windowBackground(colorScheme))
     }
     
     // MARK: - RetroAchievements Warning

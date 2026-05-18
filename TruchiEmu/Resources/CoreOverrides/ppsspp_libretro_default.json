@@ -1,0 +1,5 @@
+{
+  "hw_render_context_negotiation": "enabled",
+  "ppsspp_rendering_mode": "None",
+  "ppsspp_software_rendering": "enabled"
+}

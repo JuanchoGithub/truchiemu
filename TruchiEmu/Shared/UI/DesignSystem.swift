@@ -1,5 +1,33 @@
 import SwiftUI
 
+// MARK: - Oklch Color Space Support
+
+extension Color {
+    /// Create a color from Oklch components (lightness, chroma, hue).
+    /// Uses the Oklch color space (macOS 14+) for perceptually uniform warm colors.
+    static func oklch(_ lightness: Double, _ chroma: Double, _ hue: Double, alpha: Double = 1.0) -> Color {
+        let hRad = hue * .pi / 180.0
+        let a = chroma * cos(hRad)
+        let b = chroma * sin(hRad)
+
+        // Oklab to linear sRGB conversion matrix
+        let l_ = lightness + 0.3963377774 * a + 0.2158037573 * b
+        let m_ = lightness - 0.1055613458 * a - 0.0638541728 * b
+        let s_ = lightness - 0.0894841775 * a - 1.2914855480 * b
+
+        func gamma(_ c: Double) -> Double {
+            let sign = c < 0 ? -1.0 : 1.0
+            let absC = abs(c)
+            if absC > 0.0031308 {
+                return sign * (1.055 * pow(absC, 1 / 2.4) - 0.055)
+            }
+            return 12.92 * c
+        }
+
+        return Color(.sRGB, red: gamma(l_), green: gamma(m_), blue: gamma(s_), opacity: alpha)
+    }
+}
+
 // MARK: - TruchiEmu Design System
 // A unified design system providing consistent colors, typography, spacing, and components
 // across all views and windows in the application.
@@ -8,83 +36,123 @@ import SwiftUI
 
 // Centralized color tokens that adapt to light and dark mode
 struct AppColors {
+    // MARK: - Brand Colors
+    
+    // Warm amber — the TruchiEmu brand accent
+    static let brandAccent: Color = .oklch(0.72, 0.14, 50)
+    static let brandAccentDimmed: Color = .oklch(0.58, 0.10, 50)
+    static let brandAccentDark: Color = .oklch(0.40, 0.08, 50)
+    
     // MARK: - Semantic Colors
     
     // Primary background color for cards and panels
     static func cardBackground(_ colorScheme: ColorScheme) -> Color {
-        colorScheme == .dark ? Color(white: 0.12).opacity(0.8) : Color(white: 0.96)
+        colorScheme == .dark
+            ? .oklch(0.15, 0.02, 50)
+            : .oklch(0.93, 0.02, 55)
     }
     
     // Subtle background for sections within cards
     static func cardBackgroundSubtle(_ colorScheme: ColorScheme) -> Color {
-        colorScheme == .dark ? Color(white: 0.15).opacity(0.5) : Color(white: 0.98)
+        colorScheme == .dark
+            ? .oklch(0.17, 0.02, 50)
+            : .oklch(0.95, 0.02, 55)
     }
     
     // Card border with subtle visibility
     static func cardBorder(_ colorScheme: ColorScheme) -> Color {
-        colorScheme == .dark ? Color.white.opacity(0.08) : Color.black.opacity(0.06)
+        colorScheme == .dark
+            ? Color.white.opacity(0.08)
+            : Color.black.opacity(0.06)
     }
     
     // Separator/divider color
     static func divider(_ colorScheme: ColorScheme) -> Color {
-        colorScheme == .dark ? Color.white.opacity(0.08) : Color.black.opacity(0.08)
+        colorScheme == .dark
+            ? Color.white.opacity(0.08)
+            : Color.black.opacity(0.08)
     }
     
-    // Primary text color
+    // Primary text color (warm-tinted)
     static func textPrimary(_ colorScheme: ColorScheme) -> Color {
-        colorScheme == .dark ? .white : Color(white: 0.1)
+        colorScheme == .dark
+            ? .oklch(0.92, 0.03, 55)
+            : .oklch(0.20, 0.03, 55)
     }
     
     // Secondary text (labels, descriptions)
     static func textSecondary(_ colorScheme: ColorScheme) -> Color {
-        colorScheme == .dark ? Color(white: 0.7) : Color(white: 0.45)
+        colorScheme == .dark
+            ? .oklch(0.65, 0.02, 55)
+            : .oklch(0.45, 0.02, 55)
     }
     
     // Tertiary text (meta, timestamps)
     static func textTertiary(_ colorScheme: ColorScheme) -> Color {
-        colorScheme == .dark ? Color(white: 0.5) : Color(white: 0.6)
+        colorScheme == .dark
+            ? .oklch(0.50, 0.02, 55)
+            : .oklch(0.58, 0.02, 55)
     }
     
     // Muted text for disabled/inactive states
     static func textMuted(_ colorScheme: ColorScheme) -> Color {
-        colorScheme == .dark ? Color(white: 0.35) : Color(white: 0.65)
+        colorScheme == .dark
+            ? .oklch(0.38, 0.01, 55)
+            : .oklch(0.68, 0.01, 55)
     }
     
     // MARK: - Accent Colors
     
-    // Primary accent (blue) - standard interactive elements
+    // Primary accent — warm amber brand color
     static var accent: Color { .accentColor }
     
-    // Accent tint for selected states (adapts to mode)
+    // Accent tint for selected states
     static func accentTint(_ colorScheme: ColorScheme) -> Color {
-        colorScheme == .dark ? Color.blue : Color.blue
+        brandAccent
     }
     
-    // Accent background (subtle)
+    // Accent background (subtle) — higher opacity for more confident color use
     static func accentBackground(_ colorScheme: ColorScheme) -> Color {
-        colorScheme == .dark ? Color.blue.opacity(0.15) : Color.blue.opacity(0.08)
+        colorScheme == .dark
+            ? brandAccent.opacity(0.25)
+            : brandAccent.opacity(0.15)
     }
     
-    // Success green
+    // Secondary accent — warm coral/terracotta for complementary actions
+    static var accentSecondary: Color { .oklch(0.65, 0.15, 30) }
+    
+    // Tertiary accent — warm teal for complementary accents
+    static var accentTertiary: Color { .oklch(0.65, 0.10, 170) }
+    
+    // Warm golden yellow for highlights and decorative elements
+    static var accentWarm: Color { .oklch(0.78, 0.13, 75) }
+    
+    // Success green (warm-tinted)
     static func success(_ colorScheme: ColorScheme) -> Color {
-        colorScheme == .dark ? Color(red: 0.2, green: 0.85, blue: 0.3) : Color(red: 0.1, green: 0.65, blue: 0.2)
+        colorScheme == .dark
+            ? .oklch(0.62, 0.12, 150)
+            : .oklch(0.55, 0.14, 150)
     }
     
-    // Warning orange
+    // Warning amber (warm-tinted)
     static func warning(_ colorScheme: ColorScheme) -> Color {
-        colorScheme == .dark ? Color.orange : Color.orange
+        .oklch(0.75, 0.14, 75)
     }
     
-    // Error red
+    // Error red (warm-tinted)
     static func error(_ colorScheme: ColorScheme) -> Color {
-        colorScheme == .dark ? Color(red: 1.0, green: 0.35, blue: 0.35) : Color(red: 0.85, green: 0.15, blue: 0.15)
+        colorScheme == .dark
+            ? .oklch(0.65, 0.16, 25)
+            : .oklch(0.55, 0.18, 25)
     }
     
     // MARK: - Surface Colors
     
     // Main window background
     static func windowBackground(_ colorScheme: ColorScheme) -> Color {
-        colorScheme == .dark ? Color(white: 0.06) : Color(white: 0.94)
+        colorScheme == .dark
+            ? .oklch(0.12, 0.02, 50)
+            : .oklch(0.94, 0.02, 55)
     }
     
     // Sidebar background (with material effect)
@@ -94,19 +162,25 @@ struct AppColors {
     
     // Toolbar/chrome background
     static func toolbarBackground(_ colorScheme: ColorScheme) -> Color {
-        colorScheme == .dark ? Color(white: 0.1) : Color(white: 0.96)
+        colorScheme == .dark
+            ? .oklch(0.14, 0.015, 50)
+            : .oklch(0.95, 0.015, 55)
     }
     
     // Elevated surface (popovers, sheets)
     static func surface(_ colorScheme: ColorScheme) -> Color {
-        colorScheme == .dark ? Color(white: 0.15) : .white
+        colorScheme == .dark
+            ? .oklch(0.20, 0.015, 50)
+            : .oklch(0.96, 0.01, 55)
     }
     
     // MARK: - Overlay Colors
     
     // Shadow overlay for cards
     static func shadowOverlay(_ colorScheme: ColorScheme) -> Color {
-        colorScheme == .dark ? .black.opacity(0.4) : .black.opacity(0.12)
+        colorScheme == .dark
+            ? Color(hue: 0.08, saturation: 0.05, brightness: 0.0).opacity(0.45)
+            : Color(hue: 0.08, saturation: 0.05, brightness: 0.0).opacity(0.12)
     }
     
     // Glass overlay effect
@@ -364,7 +438,7 @@ enum AppPillStyle {
     func foregroundColor(_ colorScheme: ColorScheme) -> Color {
         switch self {
         case .primary:
-            return colorScheme == .dark ? Color.white : .blue
+            return colorScheme == .dark ? Color.white : AppColors.brandAccent
         case .secondary:
             return AppColors.textSecondary(colorScheme)
         case .success:
@@ -379,7 +453,7 @@ enum AppPillStyle {
     func background(_ colorScheme: ColorScheme) -> Color {
         switch self {
         case .primary:
-            return colorScheme == .dark ? Color.blue.opacity(0.3) : .blue.opacity(0.12)
+            return colorScheme == .dark ? AppColors.brandAccent.opacity(0.3) : AppColors.brandAccent.opacity(0.12)
         case .secondary:
             return AppColors.cardBackgroundSubtle(colorScheme)
         case .success:
@@ -414,24 +488,24 @@ struct ContinuousPulse: ViewModifier {
 // MARK: - Gradient Assets
 
 enum AppGradients {
-    // Refined emerald-to-teal accent gradient
+    // Warm amber brand accent gradient
     static var accent: LinearGradient {
         LinearGradient(
             colors: [
-                Color(red: 0.1, green: 0.6, blue: 0.35).opacity(0.85),
-                Color(red: 0.15, green: 0.65, blue: 0.55).opacity(0.85)
+                AppColors.brandAccent.opacity(0.90),
+                AppColors.brandAccentDimmed.opacity(0.80)
             ],
             startPoint: .leading,
             endPoint: .trailing
         )
     }
     
-    // Warm amber-to-orange gradient for hero elements
+    // Deeper warm-copper gradient for hero/emphasis elements
     static var warmAccent: LinearGradient {
         LinearGradient(
             colors: [
-                Color(red: 0.85, green: 0.65, blue: 0.15).opacity(0.85),
-                Color(red: 0.9, green: 0.5, blue: 0.2).opacity(0.75)
+                Color(hue: 0.10, saturation: 0.65, brightness: 0.75).opacity(0.85),
+                Color(hue: 0.08, saturation: 0.55, brightness: 0.60).opacity(0.75)
             ],
             startPoint: .leading,
             endPoint: .trailing
@@ -468,12 +542,169 @@ enum AppAnimations {
     }
 }
 
+// MARK: - Motion Language
+
+enum AppMotion {
+    /// Entrance: staggered ease-out for content appearing on screen
+    static func entrance(delay: Double = 0) -> Animation {
+        .easeOut(duration: 0.4).delay(delay)
+    }
+    
+    /// Micro-interaction: spring feel for hover, toggle, press feedback
+    static let micro: Animation = .interpolatingSpring(stiffness: 200, damping: 25)
+    
+    /// State change: content swap, panel show/hide
+    static let stateChange: Animation = .easeInOut(duration: 0.25)
+    
+    /// Quick feedback: press, tap, dismiss
+    static let feedback: Animation = .easeOut(duration: 0.12)
+}
+
+// MARK: - Typography Scale
+
+enum AppTypography {
+    // Display font for large hero text — uses .rounded design for distinctive headings
+    static let displayFont = Font.system(.largeTitle, design: .rounded)
+    
+    // Modular type scale (ratio 1.25) for consistent typographic rhythm
+    
+    // Display — large hero text
+    static let display = Font.system(size: 44, weight: .bold, design: .rounded)
+    static let display2 = Font.system(size: 34, weight: .bold, design: .rounded)
+    
+    // Titles
+    static let title1 = Font.system(size: 28, weight: .bold, design: .rounded)
+    static let title2 = Font.system(size: 22, weight: .semibold, design: .rounded)
+    static let title3 = Font.system(size: 18, weight: .semibold, design: .rounded)
+    
+    // Headings
+    static let headline = Font.system(size: 15, weight: .semibold, design: .rounded)
+    static let subheadline = Font.system(size: 15, weight: .medium, design: .rounded)
+    
+    // Body
+    static let body = Font.system(size: 14)
+    static let callout = Font.system(size: 13)
+    static let footnote = Font.system(size: 12)
+    
+    // Captions
+    static let caption1 = Font.system(size: 11)
+    static let caption2 = Font.system(size: 10)
+    
+    // Light weight variants for contrast
+    static let displayLight = Font.system(size: 44, weight: .ultraLight, design: .rounded)
+    static let display2Light = Font.system(size: 34, weight: .ultraLight, design: .rounded)
+    static let title1Light = Font.system(size: 28, weight: .light, design: .rounded)
+    static let title2Light = Font.system(size: 22, weight: .light, design: .rounded)
+    static let bodyLight = Font.system(size: 14, weight: .light)
+    static let calloutLight = Font.system(size: 13, weight: .light)
+    
+    // Brand heading shortcuts (SF Rounded for distinctive macOS-native headings)
+    static let headingLarge = Font.system(size: 22, weight: .bold, design: .rounded)
+    static let headingMedium = Font.system(size: 17, weight: .semibold, design: .rounded)
+    static let headingSmall = Font.system(size: 15, weight: .semibold, design: .rounded)
+    static let sectionHeader = Font.system(size: 12, weight: .semibold, design: .rounded)
+}
+
+// MARK: - Decorative Gradients
+
+enum AppDecorativeGradients {
+    // Subtle warm radial gradient for background ambiance
+    static var warmGlow: some View {
+        RadialGradient(
+            colors: [
+                AppColors.brandAccent.opacity(0.08),
+                AppColors.brandAccent.opacity(0.0)
+            ],
+            center: .center,
+            startRadius: 0,
+            endRadius: 400
+        )
+    }
+    
+    // Subtle warm tint gradient for card hover states
+    static func cardHover(_ colorScheme: ColorScheme) -> LinearGradient {
+        LinearGradient(
+            colors: [
+                AppColors.brandAccent.opacity(colorScheme == .dark ? 0.06 : 0.04),
+                Color.clear
+            ],
+            startPoint: .topLeading,
+            endPoint: .bottomTrailing
+        )
+    }
+    
+    // Warm amber gradient for primary buttons
+    static var buttonPrimary: LinearGradient {
+        LinearGradient(
+            colors: [
+                AppColors.brandAccent,
+                AppColors.brandAccentDimmed
+            ],
+            startPoint: .leading,
+            endPoint: .trailing
+        )
+    }
+}
+
+// MARK: - Surface Tints
+
+enum AppSurfaces {
+    // Subtle warm tint overlay for card backgrounds
+    static func warmTint(_ colorScheme: ColorScheme) -> Color {
+        colorScheme == .dark
+            ? Color.black.opacity(0.3)
+            : AppColors.brandAccent.opacity(0.03)
+    }
+}
+
+// MARK: - Retro Effects
+
+enum AppRetroEffects {
+    // Subtle CRT-inspired overlay for retro game room feel
+    // Uses alternating opacity stripes to mimic scanlines
+    static func scanlineOverlay(opacity: Double = 0.03) -> some View {
+        Rectangle()
+            .fill(
+                LinearGradient(
+                    colors: [
+                        .clear,
+                        .black.opacity(opacity),
+                        .clear,
+                        .black.opacity(opacity * 0.5),
+                        .clear
+                    ],
+                    startPoint: .top,
+                    endPoint: .bottom
+                )
+            )
+            .allowsHitTesting(false)
+    }
+}
+
+extension View {
+    func sectionHeaderStyle() -> some View {
+        self.font(AppTypography.sectionHeader).textCase(.uppercase).tracking(0.8)
+    }
+}
+
+extension Text {
+    func headingLarge() -> Text {
+        font(AppTypography.headingLarge)
+    }
+    func headingMedium() -> Text {
+        font(AppTypography.headingMedium)
+    }
+    func headingSmall() -> Text {
+        font(AppTypography.headingSmall)
+    }
+}
+
 // MARK: - Button Styles
 
 // Primary action button with consistent styling
 struct AppPrimaryButtonStyle: ButtonStyle {
     @Environment(\.colorScheme) private var colorScheme
-    var accent: Color = .blue
+    var accent: Color = AppColors.brandAccent
     var fullWidth: Bool = false
     
     func makeBody(configuration: Configuration) -> some View {
@@ -533,12 +764,12 @@ struct AppToggleStyle: ToggleStyle {
                 ZStack {
                     Capsule()
                         .fill(configuration.isOn ?
-                            Color.blue.opacity(0.3) :
+                            AppColors.brandAccent.opacity(0.3) :
                             AppColors.cardBackgroundSubtle(colorScheme))
                         .frame(width: 40, height: 24)
                     
                     Circle()
-                        .fill(configuration.isOn ? .blue : AppColors.textMuted(colorScheme))
+                        .fill(configuration.isOn ? AppColors.brandAccent : AppColors.textMuted(colorScheme))
                         .frame(width: 20, height: 20)
                         .offset(x: configuration.isOn ? 8 : -8)
                 }
@@ -562,7 +793,7 @@ struct AppSearchField: View {
     var body: some View {
         HStack(spacing: AppSpacing.sm) {
             Image(systemName: "magnifyingglass")
-                .foregroundColor(isFocused ? .blue : AppColors.textTertiary(colorScheme))
+                .foregroundColor(isFocused ? AppColors.brandAccent : AppColors.textTertiary(colorScheme))
                 .font(.footnote)
             
             TextField(placeholder, text: $text)
@@ -590,7 +821,7 @@ struct AppSearchField: View {
                     AppColors.cardBackgroundSubtle(colorScheme))
                 .overlay(
                     RoundedRectangle(cornerRadius: AppRadius.lg)
-                        .stroke(isFocused ? Color.blue.opacity(0.3) : AppColors.cardBorder(colorScheme), lineWidth: 1)
+                        .stroke(isFocused ? AppColors.brandAccent.opacity(0.3) : AppColors.cardBorder(colorScheme), lineWidth: 1)
                 )
         )
         .animation(.easeOut(duration: 0.15), value: isFocused)
@@ -674,7 +905,7 @@ struct AppChip: View, Identifiable {
     let label: String
     var icon: String? 
     var isSelected: Bool
-    var accent: Color = .blue
+    var accent: Color = AppColors.brandAccent
     let action: () -> Void
     @Environment(\.colorScheme) private var colorScheme
     
@@ -682,7 +913,7 @@ struct AppChip: View, Identifiable {
         label: String,
         icon: String? = nil,
         isSelected: Bool = false,
-        accent: Color = .accentColor,
+        accent: Color = AppColors.brandAccent,
         action: @escaping () -> Void
     ) {
         self.id = label
@@ -793,7 +1024,7 @@ struct AppStatCard: View {
     let icon: String
     let value: String
     let label: String
-    var accent: Color = .blue
+    var accent: Color = AppColors.brandAccent
     @Environment(\.colorScheme) private var colorScheme
     
     var body: some View {

@@ -51,7 +51,7 @@ struct GenrePickerView: View {
                         HStack(spacing: 8) {
                             Image(systemName: selectedGenres.contains(genre) ? "checkmark.square.fill" : "square")
                                 .font(.system(size: 12))
-                                .foregroundColor(selectedGenres.contains(genre) ? .accentColor : .secondary)
+                                .foregroundColor(selectedGenres.contains(genre) ? AppColors.brandAccent : .secondary)
                             Text(genre)
                                 .font(.caption)
                                 .foregroundColor(AppColors.textPrimary(colorScheme))
@@ -88,7 +88,7 @@ struct GenrePickerView: View {
             .foregroundColor(.white)
             .padding(.horizontal, 12)
             .padding(.vertical, 6)
-            .background(Color.accentColor)
+            .background(AppColors.brandAccent)
             .cornerRadius(6)
         }
         .padding(.horizontal, 10)

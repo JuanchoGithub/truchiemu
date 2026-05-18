@@ -48,9 +48,9 @@ struct EmptyStateFloatAnimation: ViewModifier {
     
     func body(content: Content) -> some View {
         content
-            .offset(y: isAnimating ? -4 : 0)
+            .offset(y: isAnimating ? -6 : 3)
             .animation(
-                Animation.easeInOut(duration: 2.5)
+                Animation.easeInOut(duration: 3)
                     .repeatForever(autoreverses: true)
                     .delay(0.5),
                 value: isAnimating

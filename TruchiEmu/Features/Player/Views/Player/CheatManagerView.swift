@@ -74,7 +74,7 @@ struct CheatManagerView: View {
                         }
                         .padding(.horizontal, 10)
                         .padding(.vertical, 6)
-                        .background(selectedCategory == nil ? Color.blue.opacity(0.85) : Color.secondary.opacity(0.1))
+                        .background(selectedCategory == nil ? AppColors.brandAccent : Color.secondary.opacity(0.1))
                         .foregroundColor(selectedCategory == nil ? .white : .primary)
                         .cornerRadius(12)
                     }
@@ -88,7 +88,7 @@ struct CheatManagerView: View {
                             }
                             .padding(.horizontal, 10)
                             .padding(.vertical, 6)
-                            .background(selectedCategory == category ? Color.blue.opacity(0.85) : Color.secondary.opacity(0.1))
+                            .background(selectedCategory == category ? AppColors.brandAccent : Color.secondary.opacity(0.1))
                             .foregroundColor(selectedCategory == category ? .white : .primary)
                             .cornerRadius(12)
                         }

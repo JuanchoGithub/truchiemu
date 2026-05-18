@@ -52,6 +52,6 @@ enum GameFilterOption: String, CaseIterable, Identifiable {
     }
 
     var activeColor: Color {
-        return .accentColor
+        return AppColors.brandAccent
     }
 }

@@ -18,6 +18,8 @@ typedef void (^GameLoadedBlock)(const char *romPath);
               videoCallback:(void (^)(const void *data, int width, int height,
                                       int pitch, int format))cb
                      coreID:(NSString *)coreID
+                   systemID:(nullable NSString *)systemID
+                romFilename:(nullable NSString *)romFilename
             failureCallback:(nullable void (^)(NSString *message))failureCb;
 
 + (void)stop;

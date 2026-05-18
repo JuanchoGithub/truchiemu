@@ -38,6 +38,18 @@ struct SystemSidebarView: View {
 
     var body: some View {
         List(selection: $selectedFilter) {
+            Section {
+                EmptyView()
+            } header: {
+                HStack {
+                    RoundedRectangle(cornerRadius: 1)
+                        .fill(AppGradients.accent)
+                        .frame(width: 48, height: 2)
+                    Spacer()
+                }
+                .padding(.bottom, 4)
+            }
+
             // All games
             sidebarRow(icon: "square.grid.2x2", label: loc.localized("app.allGames"), count: library.romCounts["all"] ?? 0, filter: .all)
                 .tag(LibraryFilter.all)
@@ -146,9 +158,12 @@ struct SystemSidebarView: View {
             let hiddenCount = library.romCounts["hidden"] ?? 0
             let showHiddenCategory = AppSettings.getBool("showHiddenGamesCategory", defaultValue: true)
             if hiddenCount > 0 && showHiddenCategory {
-                Section(loc.localized("app.hiddenGames")) {
+                Section {
                     sidebarRow(icon: "eye.slash", label: loc.localized("app.hidden"), count: hiddenCount, tint: .gray, filter: .hidden)
                         .tag(LibraryFilter.hidden)
+                } header: {
+                    Text(loc.localized("app.hiddenGames"))
+                        .sectionHeaderStyle()
                 }
             }
 
@@ -157,13 +172,17 @@ struct SystemSidebarView: View {
             let mameNonGamesCount = library.romCounts["mameNonGames"] ?? 0
             let showHiddenMAME = SystemPreferences.shared.showHiddenMAMEFiles
             if mameNonGamesCount > 0 && showHiddenMAME {
-                Section(loc.localized("app.mameFiles")) {
+                Section {
                     sidebarRow(icon: "doc.badge.gearshape", label: loc.localized("app.hiddenMAMEFiles"), count: mameNonGamesCount, tint: .gray, filter: .mameNonGames)
                         .tag(LibraryFilter.mameNonGames)
+                } header: {
+                    Text(loc.localized("app.mameFiles"))
+                        .sectionHeaderStyle()
                 }
             }
         }
         .listStyle(.sidebar)
+        .accentColor(AppColors.brandAccent)
         .scrollContentBackground(.hidden)
         .background(.ultraThinMaterial)
         .frame(minWidth: 220, idealWidth: 240)
@@ -171,7 +190,7 @@ struct SystemSidebarView: View {
     }
 
     @ViewBuilder
-    private func sidebarRow(icon: String, label: String, system: SystemInfo? = nil, count: Int, tint: Color = .accentColor, filter: LibraryFilter, onRename: ((SystemInfo) -> Void)? = nil) -> some View {
+    private func sidebarRow(icon: String, label: String, system: SystemInfo? = nil, count: Int, tint: Color = AppColors.brandAccent, filter: LibraryFilter, onRename: ((SystemInfo) -> Void)? = nil) -> some View {
         SidebarRowButton(
             icon: icon,
             label: label,
@@ -181,21 +200,20 @@ struct SystemSidebarView: View {
             filter: filter,
             selectedFilter: $selectedFilter,
             onRefresh: system != nil ? { onRefresh?(system!) } : nil,
-            onSettings: system != nil ? { onSettings?(system!.defaultCoreID ?? "") } : nil,
-            onSystemAction: system != nil ? { sys, action, targetID in
-                if case .refresh = action {
-                    onRefresh?(sys)
-                } else if case .settings(let coreID) = action {
-                    onSettings?(coreID)
-                } else {
-                    onSystemAction?(sys, action, targetID)
-                }
-            } : nil,
+            onSettings: system != nil ? { onSettings?(system!.id) } : nil,
+onSystemAction: system != nil ? { sys, action, targetID in
+                    if case .refresh = action {
+                        onRefresh?(sys)
+                    } else {
+                        onSystemAction?(sys, action, targetID)
+                    }
+                } : nil,
             onRename: onRename,
             installedCores: system != nil ? coreManager.installedCores.filter { core in
                 core.systemIDs.contains(system!.id)
             } : nil
         )
+        .listRowBackground(Color.clear)
     }
 
     @StateObject private var dragState = GameDragState.shared
@@ -218,6 +236,7 @@ struct SystemSidebarView: View {
             handleDropOnCategory: handleDropOnCategory,
             showEditCategorySheet: showEditCategorySheet
         )
+        .listRowBackground(Color.clear)
     }
     
     private func handleDropOnCategory(items: [NSItemProvider], categoryID: String) -> Bool {
@@ -429,7 +448,7 @@ struct RenameSystemSheet: View {
                 Section(loc.localized("app.preview")) {
                     HStack {
                         Image(systemName: system.iconName)
-                            .foregroundStyle(Color.accentColor)
+                            .foregroundStyle(AppColors.brandAccent)
                         Text(displayName.isEmpty ? system.name : displayName)
                     }
                 }

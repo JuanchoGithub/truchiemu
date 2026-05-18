@@ -3,6 +3,7 @@ import SwiftUI
 struct OnboardingView: View {
     @EnvironmentObject var library: ROMLibrary
     @EnvironmentObject var coreManager: CoreManager
+    @Environment(\.colorScheme) private var colorScheme
     @ObservedObject private var loc = LocalizationManager.shared
     @State private var step = 0
     @State private var selectedFolder: URL? = nil
@@ -10,31 +11,23 @@ struct OnboardingView: View {
 
     @State private var logoAppeared = false
     @State private var cardAppeared = false
-    
-    @State private var currentStepID = 0
-    
+
     var body: some View {
         ZStack {
-            // Animated background
             LinearGradient(
-                colors: [Color(hue: 0.65, saturation: 0.8, brightness: 0.15),
-                         Color(hue: 0.70, saturation: 0.9, brightness: 0.08)],
+                colors: [Color(hue: 0.10, saturation: 0.60, brightness: 0.18),
+                         Color(hue: 0.08, saturation: 0.55, brightness: 0.10)],
                 startPoint: .topLeading,
                 endPoint: .bottomTrailing
             )
             .ignoresSafeArea()
 
             VStack(spacing: 0) {
-                // Logo
                 Spacer()
                 VStack(spacing: 16) {
                     Image(systemName: "arcade.stick")
                         .font(.system(size: 72, weight: .ultraLight))
-                        .foregroundStyle(LinearGradient(
-                            colors: [Color(red: 0.1, green: 0.6, blue: 0.35), Color(red: 0.15, green: 0.65, blue: 0.55)],
-                            startPoint: .topLeading,
-                            endPoint: .bottomTrailing
-                        ))
+                        .foregroundStyle(AppColors.brandAccent)
                         .padding(.bottom, 8)
                         .scaleEffect(logoAppeared ? 1 : 0.85)
                         .opacity(logoAppeared ? 1 : 0)
@@ -53,16 +46,14 @@ struct OnboardingView: View {
                 }
                 .padding(.bottom, 60)
 
-                // Step card with animated transitions
                 ZStack {
                     RoundedRectangle(cornerRadius: 24)
-                        .fill(.ultraThinMaterial)
+                        .fill(AppColors.surface(colorScheme))
                         .overlay(
                             RoundedRectangle(cornerRadius: 24)
-                                .stroke(Color.white.opacity(0.12), lineWidth: 1)
+                                .stroke(AppColors.cardBorder(colorScheme), lineWidth: 1)
                         )
-                    
-                    // Content with transitions
+
                     ZStack {
                         if step == 0 {
                             stepChooseFolder
@@ -93,18 +84,15 @@ struct OnboardingView: View {
             .padding()
         }
         .onAppear {
-            withAnimation(.interpolatingSpring(stiffness: 170, damping: 20).delay(0.1)) {
+            withAnimation(AppMotion.entrance(delay: 0.1)) {
                 logoAppeared = true
             }
-            withAnimation(.easeOut(duration: 0.4).delay(0.25)) {
+            withAnimation(AppMotion.entrance(delay: 0.25)) {
                 cardAppeared = true
             }
         }
         .onChange(of: step) { _, _ in
-            // Animate step transitions
-            withAnimation(.easeInOut(duration: 0.3)) {
-                currentStepID = step
-            }
+            withAnimation(AppMotion.stateChange) {}
         }
     }
 
@@ -112,11 +100,11 @@ struct OnboardingView: View {
 
     private var stepChooseFolder: some View {
         VStack(alignment: .leading, spacing: 24) {
-            Label("Choose your ROM folder", systemImage: "folder.badge.plus")
+            Label(loc.localized("onboarding.chooseRomFolder"), systemImage: "folder.badge.plus")
                 .font(.title2.weight(.semibold))
                 .foregroundColor(.white)
 
-            Text("TruchiEmu will recursively scan this folder for game files and detect which consoles they belong to. It only reads your files — nothing is moved or modified.")
+            Text(loc.localized("onboarding.scanDescription"))
                 .font(.body)
                 .foregroundColor(.white.opacity(0.7))
                 .fixedSize(horizontal: false, vertical: true)
@@ -124,13 +112,13 @@ struct OnboardingView: View {
             if let folder = selectedFolder {
                 HStack {
                     Image(systemName: "checkmark.circle.fill")
-                        .foregroundColor(.green)
+                        .foregroundColor(AppColors.brandAccent)
                     Text(folder.lastPathComponent)
                         .foregroundColor(.white)
                         .lineLimit(1)
                 }
                 .padding(12)
-                .background(Color.green.opacity(0.15))
+                .background(AppColors.brandAccent.opacity(0.15))
                 .cornerRadius(10)
             }
 
@@ -150,7 +138,7 @@ struct OnboardingView: View {
                             library.completeOnboarding(folderURL: folder)
                         }
                     }
-                    .buttonStyle(PrimaryButtonStyle(color: .purple))
+                    .buttonStyle(PrimaryButtonStyle())
                 }
             }
         }
@@ -162,7 +150,7 @@ struct OnboardingView: View {
         VStack(spacing: 20) {
             Image(systemName: "checkmark.circle.fill")
                 .font(.system(size: 56))
-                .foregroundColor(.green)
+                .foregroundColor(AppColors.brandAccent)
 
             Text(loc.localized("onboarding.allSet"))
                 .font(.title.weight(.bold))
@@ -175,7 +163,7 @@ struct OnboardingView: View {
             Button(loc.localized("onboarding.enterApp")) {
                 library.hasCompletedOnboarding = true
             }
-            .buttonStyle(PrimaryButtonStyle(color: .purple))
+            .buttonStyle(PrimaryButtonStyle())
         }
     }
 
@@ -194,7 +182,7 @@ struct OnboardingView: View {
 // MARK: - Button Style
 
 struct PrimaryButtonStyle: ButtonStyle {
-    var color: Color = .blue
+    var color: Color = AppColors.brandAccent
 
     func makeBody(configuration: Configuration) -> some View {
         configuration.label

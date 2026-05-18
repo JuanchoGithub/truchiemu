@@ -102,7 +102,7 @@ struct GenreSettingsView: View {
     private func genreRow(item: (type: GenreType, original: String, display: String)) -> some View {
         let bgColor: Color = {
             switch item.type {
-            case .mapped: return Color.accentColor.opacity(0.05)
+            case .mapped: return AppColors.brandAccent.opacity(0.05)
             case .custom: return Color.green.opacity(0.05)
             case .unmapped: return Color.clear
             }

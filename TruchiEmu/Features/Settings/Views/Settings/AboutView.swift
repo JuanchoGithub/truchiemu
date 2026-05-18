@@ -12,7 +12,7 @@ struct AboutView: View {
                 VStack(spacing: 12) {
                     Image(systemName: "arcade.stick")
                         .font(.system(size: 60))
-                        .foregroundStyle(LinearGradient(colors: [Color(red: 0.1, green: 0.6, blue: 0.35), Color(red: 0.15, green: 0.65, blue: 0.55)], startPoint: .topLeading, endPoint: .bottomTrailing))
+                        .foregroundStyle(AppColors.brandAccent)
                     Text(loc.localized("about.appName"))
                         .font(.largeTitle.weight(.bold))
                     Text(loc.localized("about.tagline"))

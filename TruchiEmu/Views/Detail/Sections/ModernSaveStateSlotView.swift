@@ -57,7 +57,7 @@ struct ModernSaveStateSlotView: View {
             }
             .overlay(
                 RoundedRectangle(cornerRadius: 8)
-                    .stroke(slot.exists ? Color.accentColor.opacity(0.5) : Color.clear, lineWidth: 1.5)
+                    .stroke(slot.exists ? AppColors.brandAccent.opacity(0.5) : Color.clear, lineWidth: 1.5)
             )
 
 Text(slot.displayName)

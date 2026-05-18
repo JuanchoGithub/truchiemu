@@ -130,29 +130,7 @@ struct ROMSettings: Codable, Hashable {
     
     // Bezel: filename of the selected bezel, empty = auto-detect, "none" = disabled
     var bezelFileName: String = ""
-    
-    // MARK: - Game Boy Colorization
-    // Whether to apply color palettes to original Game Boy (DMG) games.
-    // Defaults to true (colorization enabled). Only relevant for GB system games.
-    var gbColorizationEnabled: Bool = true
-    
-    // Colorization mode for Game Boy games.
-    // "auto" = auto-select best palette, "disabled" = monochrome
-    // Maps to gambatte's gb_colorization, mGBA's model, sameboy's model
-    var gbColorizationMode: String = "auto"
-    
-    // Which internal palette to use when mode is "internal".
-    var gbInternalPalette: String = "GB - DMG"
-    
-    // Whether to use SGB borders when a Super Game Boy enhanced game is detected.
-    // Works with mGBA's "GB: Borders" option.
-    var gbSGBBordersEnabled: Bool = true
-    
-    // Color correction (Gambatte core only).
-    var gbColorCorrectionMode: String = "gbc_only"
 
-    // Whether to enable cheats for this specific game.
-    // If nil, the global application setting is used.
     var cheatsEnabled: Bool? = nil
 }
 

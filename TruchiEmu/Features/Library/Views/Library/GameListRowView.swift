@@ -7,7 +7,9 @@ struct GameListRowView: View {
     let rom: ROM
     let isSelected: Bool
     let zoomLevel: Double
+    @Environment(\.colorScheme) private var colorScheme
     @State private var thumb: NSImage?
+    @State private var isHovered = false
     @EnvironmentObject var library: ROMLibrary
     @EnvironmentObject var categoryManager: CategoryManager
     
@@ -81,7 +83,7 @@ struct GameListRowView: View {
             // Left side: game info
             VStack(alignment: .leading, spacing: 2) {
                 Text(rom.displayName)
-                    .font(.system(size: titleFontSize, weight: .medium))
+                    .font(.system(size: titleFontSize, weight: .semibold, design: .rounded))
                 
                 // System name
                 if let sys = SystemDatabase.system(forID: rom.systemID ?? "") {
@@ -127,7 +129,7 @@ struct GameListRowView: View {
             Spacer()
             
             // Right side: stats column
-            VStack(alignment: .trailing, spacing: 2) {
+            VStack(alignment: .trailing, spacing: 4) {
                 // Playtime
                 if let playtime = formattedPlaytime {
                     HStack(spacing: 3) {
@@ -164,12 +166,21 @@ struct GameListRowView: View {
         }
         .padding(.vertical, 4)
         .background(
-            isSelected ? Color.accentColor.opacity(0.15) : Color.clear
+            RoundedRectangle(cornerRadius: 8)
+                .fill(isSelected ? AppColors.accentBackground(colorScheme) :
+                      isHovered ? AppColors.brandAccent.opacity(0.04) : .clear)
         )
         .overlay(
             RoundedRectangle(cornerRadius: 8)
-                .stroke(isSelected ? Color.accentColor.opacity(0.5) : Color.clear, lineWidth: 1.5)
+                .stroke(isSelected ? AppColors.brandAccent.opacity(0.4) : Color.clear, lineWidth: 1.5)
         )
+        .overlay(alignment: .leading) {
+            Rectangle()
+                .fill(AppColors.brandAccent.opacity(0.2))
+                .frame(width: 2, height: 20)
+                .padding(.leading, 4)
+        }
+        .onHover { isHovered = $0 }
         .task(id: rom.id) {
             // Lazy-resolve local boxart on-demand if not already set
             if rom.hasBoxArt {
@@ -206,6 +217,7 @@ struct GameListRowView: View {
             }
         }
         .frame(width: thumbSize, height: thumbSize)
-        .clipShape(RoundedRectangle(cornerRadius: 6))
+        .clipShape(RoundedRectangle(cornerRadius: AppRadius.sm))
+        .shadow(color: AppColors.brandAccent.opacity(0.12), radius: 3, x: 0, y: 1)
     }
 }

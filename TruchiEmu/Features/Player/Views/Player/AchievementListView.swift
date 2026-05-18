@@ -82,7 +82,7 @@ struct AchievementListView: View {
                                 .font(.caption)
                                 .padding(.horizontal, 12)
                                 .padding(.vertical, 6)
-                                .background(selectedTab == tab ? Color.accentColor : Color.secondary.opacity(0.2))
+                                .background(selectedTab == tab ? AppColors.brandAccent : Color.secondary.opacity(0.2))
                                 .foregroundColor(selectedTab == tab ? .white : .primary)
                                 .cornerRadius(8)
                         }
@@ -156,7 +156,7 @@ struct AchievementRowView: View {
             // Badge
             ZStack {
                 RoundedRectangle(cornerRadius: 8)
-                    .fill(achievement.isUnlocked ? Color.accentColor.opacity(0.1) : Color.secondary.opacity(0.1))
+                    .fill(achievement.isUnlocked ? AppColors.brandAccent.opacity(0.1) : Color.secondary.opacity(0.1))
                     .frame(width: 44, height: 44)
                 
                 Group {
@@ -205,14 +205,14 @@ struct AchievementRowView: View {
             VStack(alignment: .trailing, spacing: 2) {
                 Text("\(achievement.points)")
                     .font(.headline)
-                    .foregroundColor(achievement.isUnlocked ? .accentColor : .secondary)
+                    .foregroundColor(achievement.isUnlocked ? AppColors.brandAccent : .secondary)
                 Text(loc.localized("achievement.pts"))
                     .font(.caption2)
                     .foregroundColor(.secondary)
             }
         }
         .padding(12)
-        .background(achievement.isUnlocked ? Color.accentColor.opacity(0.05) : Color.secondary.opacity(0.05))
+        .background(achievement.isUnlocked ? AppColors.brandAccent.opacity(0.05) : Color.secondary.opacity(0.05))
         .cornerRadius(8)
     }
 }

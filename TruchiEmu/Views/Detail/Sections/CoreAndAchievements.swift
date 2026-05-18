@@ -49,7 +49,7 @@ extension GameDetailView {
                             Image(systemName: applyCoreToSystem ? "globe" : "gamecontroller")
                             Text(applyCoreToSystem ? loc.localized("core.setSystemDefault") : loc.localized("core.setForThisGame"))
                         }
-                        .foregroundColor(.white).padding(.horizontal, 16).padding(.vertical, 8).background(Color.accentColor.opacity(0.6)).cornerRadius(8)
+                        .foregroundColor(.white).padding(.horizontal, 16).padding(.vertical, 8).background(AppColors.brandAccent.opacity(0.6)).cornerRadius(8)
                     }
                     .buttonStyle(.plain)
                     .disabled(selectedCoreID == nil || installedCores.isEmpty)

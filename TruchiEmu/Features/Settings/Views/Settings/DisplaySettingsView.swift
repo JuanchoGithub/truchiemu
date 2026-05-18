@@ -50,7 +50,7 @@ struct DisplaySettingsView: View {
                         ForEach(ShaderPreset.allPresets.prefix(4), id: \.id) { preset in
                             HStack {
                                 Image(systemName: shaderIcon(for: preset.shaderType))
-                                    .foregroundColor(.accentColor)
+                                    .foregroundColor(AppColors.brandAccent)
                                 VStack(alignment: .leading) {
                                     Text(preset.name)
                                         .font(.subheadline)

@@ -104,7 +104,7 @@ struct MAMEMissingROMsAlert: View {
                 .font(.system(size: 12, weight: .bold))
                 .foregroundColor(.white)
                 .frame(width: 20, height: 20)
-                .background(Color.accentColor)
+                .background(AppColors.brandAccent)
                 .clipShape(Circle())
             
             Text(text)

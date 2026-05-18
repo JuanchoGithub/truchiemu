@@ -11,12 +11,15 @@ struct GameCardView: View {
     var contextMenu: (() -> AnyView)?
 
     @State private var isHovered = false
+    @State private var isPressed = false
+    @State private var mouseLocation: CGPoint = .zero
     @State private var image: NSImage?
- @ObservedObject private var prefs = SystemPreferences.shared
- @ObservedObject var dragState = GameDragState.shared
- @ObservedObject private var boxArtService = BoxArtService.shared
- @EnvironmentObject private var library: ROMLibrary
- @EnvironmentObject private var categoryManager: CategoryManager
+    @Environment(\.colorScheme) private var colorScheme
+    @ObservedObject private var prefs = SystemPreferences.shared
+    @ObservedObject var dragState = GameDragState.shared
+    @ObservedObject private var boxArtService = BoxArtService.shared
+    @EnvironmentObject private var library: ROMLibrary
+    @EnvironmentObject private var categoryManager: CategoryManager
 
     private var boxType: BoxType {
         prefs.boxType(for: rom.systemID ?? "")
@@ -49,44 +52,62 @@ struct GameCardView: View {
     }
 
     private var cardBackground: Color {
-        if isSelected { return Color.accentColor.opacity(0.25) }
+        if isSelected { return AppColors.brandAccent.opacity(0.15) }
         if isHiddenItem { return Color.gray.opacity(0.08) }
-        return isHovered ? Color.secondary.opacity(0.1) : .clear
+        return (isHovered || isPressed) ? AppColors.brandAccent.opacity(0.06) : .clear
     }
 
     private var cardStrokeColor: Color {
-        if isSelected { return Color.accentColor }
+        if isSelected { return AppColors.brandAccent }
         if isHiddenItem { return Color.gray.opacity(0.3) }
-        return .clear
+        return isHovered ? AppColors.brandAccent.opacity(0.25) : .clear
     }
 
     private var cardStrokeWidth: CGFloat {
-        isHiddenItem ? 1 : 2
-    }
-
-    private var shadowColor: Color {
-        if isHiddenItem { return .clear }
-        if isHovered && !isSelected { return Color.accentColor.opacity(0.2) }
-        return .clear
+        isHiddenItem ? 1 : (isSelected || isHovered ? 1.5 : 0)
     }
 
     private var titleColor: Color {
-        isHiddenItem ? .gray : .primary
+        isHiddenItem ? .gray : AppColors.textPrimary(colorScheme)
+    }
+
+    private var parallaxRotation: (x: Double, y: Double) {
+        guard isHovered, mouseLocation != .zero else { return (0, 0) }
+        let cardWidth: CGFloat = 180
+        let cardHeight: CGFloat = 240
+        let nx = (mouseLocation.x - cardWidth / 2) / (cardWidth / 2)
+        let ny = (mouseLocation.y - cardHeight / 2) / (cardHeight / 2)
+        return (-ny * 2.5, nx * 2.5)
     }
 
     var body: some View {
         Button(action: onTap) {
             cardContent
+                .scaleEffect(isPressed ? 0.97 : 1.0)
+                .animation(AppMotion.feedback, value: isPressed)
         }
-    .buttonStyle(CardButtonStyle())
+    .buttonStyle(.plain)
     .onHover { isHovered = $0 }
-    .contextMenu {
-      contextMenu?()
+    .onContinuousHover { phase in
+        switch phase {
+        case .active(let location):
+            mouseLocation = location
+        case .ended:
+            mouseLocation = .zero
+        }
     }
-    .animation(.spring(), value: isHovered)
- .accessibilityLabel(rom.displayName)
- .accessibilityAddTraits(.isButton)
- .task(id: "\(rom.id)-\(boxArtService.boxArtUpdated)") {
+    .simultaneousGesture(
+            DragGesture(minimumDistance: 0)
+                .onChanged { _ in isPressed = true }
+                .onEnded { _ in isPressed = false }
+        )
+        .contextMenu {
+            contextMenu?()
+        }
+        .animation(AppMotion.micro, value: isHovered)
+        .accessibilityLabel(rom.displayName)
+        .accessibilityAddTraits(.isButton)
+        .task(id: "\(rom.id)-\(boxArtService.boxArtUpdated)") {
             var artPath = rom.boxArtLocalPath
             if !FileManager.default.fileExists(atPath: artPath.path) {
                 if let resolved = BoxArtService.shared.resolveLocalBoxArt(for: rom) {
@@ -124,7 +145,7 @@ struct GameCardView: View {
                     .clipped()
                     .overlay(
                         RoundedRectangle(cornerRadius: 8)
-                            .fill(Color.black.opacity(isHovered ? 0.1 : 0))
+                            .fill(Color.black.opacity(isHovered ? 0.08 : 0))
                     )
                     .grayscale(artworkGrayscale)
                     .opacity(artworkOpacity)
@@ -132,8 +153,8 @@ struct GameCardView: View {
                 if isMultiSelected {
                     Image(systemName: "checkmark.circle.fill")
                         .font(.title2)
-                        .foregroundColor(.white)
-                        .shadow(radius: 2)
+                        .foregroundColor(AppColors.brandAccent)
+                        .shadow(color: .black.opacity(0.3), radius: 2)
                         .padding(4)
                         .transition(.scale.combined(with: .opacity))
                 }
@@ -141,7 +162,7 @@ struct GameCardView: View {
 
             VStack(alignment: .leading, spacing: 4) {
                 Text(rom.displayName)
-                    .font(.system(size: titleFontSize, weight: .medium))
+                    .font(.system(size: titleFontSize, weight: .semibold, design: .rounded))
                     .lineLimit(2)
                     .multilineTextAlignment(.leading)
                     .foregroundColor(titleColor)
@@ -169,14 +190,45 @@ struct GameCardView: View {
                 .fill(cardBackground)
         )
         .overlay(
+            Group {
+                if isSelected {
+                    RoundedRectangle(cornerRadius: 12)
+                        .stroke(AppColors.brandAccent.opacity(0.4), lineWidth: 1.5)
+                        .shadow(color: AppColors.brandAccent.opacity(0.35), radius: 4)
+                } else {
+                    RoundedRectangle(cornerRadius: 12)
+                        .stroke(cardStrokeColor, lineWidth: cardStrokeWidth)
+                }
+            }
+        )
+        .overlay(
             RoundedRectangle(cornerRadius: 12)
-                .stroke(cardStrokeColor, lineWidth: cardStrokeWidth)
+                .fill(
+                    LinearGradient(
+                        colors: [.clear, Color.black.opacity(colorScheme == .dark ? 0.12 : 0.05)],
+                        startPoint: .center,
+                        endPoint: .bottom
+                    )
+                )
+                .allowsHitTesting(false)
         )
         .shadow(
-            color: isHovered ? Color.accentColor.opacity(0.15) : Color.black.opacity(0.3),
-            radius: isHovered ? 12 : 6,
-            y: isHovered ? 8 : 3
+            color: isSelected ? AppColors.brandAccent.opacity(0.25) : (isHovered ? AppColors.brandAccent.opacity(0.2) : .clear),
+            radius: isSelected ? 8 : (isHovered ? 14 : 0),
+            y: isSelected ? 0 : (isHovered ? 8 : 0)
         )
+        .offset(y: isHovered ? -4 : 0)
+        .rotation3DEffect(
+            .degrees(parallaxRotation.y),
+            axis: (x: 0, y: 1, z: 0),
+            perspective: 0.3
+        )
+        .rotation3DEffect(
+            .degrees(parallaxRotation.x),
+            axis: (x: 1, y: 0, z: 0),
+            perspective: 0.3
+        )
+        .animation(.interpolatingSpring(stiffness: 200, damping: 20), value: mouseLocation)
     }
 
     private var artworkView: some View {
@@ -199,15 +251,12 @@ struct GameCardView: View {
         .frame(maxWidth: .infinity)
         .aspectRatio(boxType.aspectRatio, contentMode: .fit)
         .clipShape(RoundedRectangle(cornerRadius: 8))
-        .shadow(color: Color.black.opacity(isHovered ? 0.4 : 0.3), radius: isHovered ? 10 : 6, x: 0, y: isHovered ? 5 : 3)
+        .shadow(color: Color.black.opacity(isHovered ? 0.35 : 0.25), radius: isHovered ? 8 : 4, x: 0, y: isHovered ? 4 : 2)
     }
 
     private var placeholderArt: some View {
         ZStack {
-            LinearGradient(
-                colors:[systemColor.opacity(0.6), systemColor.opacity(0.3)],
-                startPoint: .topLeading, endPoint: .bottomTrailing
-            )
+            systemArtGradient
             VStack(spacing: 8) {
                 if let sys = SystemDatabase.system(forID: rom.systemID ?? ""),
                    let img = sys.emuImage(size: 600) {
@@ -235,10 +284,20 @@ struct GameCardView: View {
         SystemDatabase.system(forID: rom.systemID ?? "")?.iconName ?? "gamecontroller"
     }
 
-    private var systemColor: Color {
-        let colors: [Color] = [.purple, .blue, .cyan, .green, .orange, .red, .pink]
+    private var systemArtGradient: LinearGradient {
+        let palette: [(Color, Color)] = [
+            (Color(hue: 0.08, saturation: 0.55, brightness: 0.75), Color(hue: 0.06, saturation: 0.40, brightness: 0.55)),
+            (Color(hue: 0.04, saturation: 0.50, brightness: 0.70), Color(hue: 0.03, saturation: 0.35, brightness: 0.50)),
+            (Color(hue: 0.12, saturation: 0.50, brightness: 0.80), Color(hue: 0.10, saturation: 0.35, brightness: 0.60)),
+            (Color(hue: 0.02, saturation: 0.55, brightness: 0.65), Color(hue: 0.01, saturation: 0.40, brightness: 0.45)),
+            (Color(hue: 0.14, saturation: 0.45, brightness: 0.85), Color(hue: 0.12, saturation: 0.30, brightness: 0.65)),
+            (Color(hue: 0.06, saturation: 0.55, brightness: 0.72), Color(hue: 0.05, saturation: 0.40, brightness: 0.52)),
+            (Color(hue: 0.10, saturation: 0.45, brightness: 0.78), Color(hue: 0.08, saturation: 0.30, brightness: 0.58)),
+            (Color(hue: 0.11, saturation: 0.50, brightness: 0.82), Color(hue: 0.09, saturation: 0.35, brightness: 0.62)),
+        ]
         let hash = abs((rom.systemID ?? "x").hashValue)
-        return colors[hash % colors.count]
+        let colors = palette[hash % palette.count]
+        return LinearGradient(colors: [colors.0.opacity(0.7), colors.1.opacity(0.4)], startPoint: .topLeading, endPoint: .bottomTrailing)
     }
 }
 
@@ -256,13 +315,7 @@ extension GameCardView {
 
 // MARK: - Support Views
 
-struct CardButtonStyle: ButtonStyle {
-    func makeBody(configuration: Configuration) -> some View {
-        configuration.label
-            .scaleEffect(configuration.isPressed ? 0.98 : 1.0)
-            .animation(.spring(), value: configuration.isPressed)
-    }
-}
+
 
 struct CategoryBadgesRow: View {
   let badges: [GameCategory]

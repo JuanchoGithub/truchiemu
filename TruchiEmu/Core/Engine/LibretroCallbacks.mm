@@ -2,7 +2,6 @@
 #import "LibretroGlobals.h"
 #import "LibretroBridgeImpl.h"
 #import "SaveDirectoryBridge.h"
-#import "CoreOverrideBridge.h"
 #import <dlfcn.h>
 #include <unordered_map>
 #include <string>
@@ -161,39 +160,27 @@ bool bridge_environment(unsigned cmd, void *data) {
     if (data) *(unsigned *)data = RETRO_LANGUAGE_ENGLISH;
     return true;
 
-    case RETRO_ENVIRONMENT_GET_VARIABLE: {
-        struct retro_variable *var = (struct retro_variable *)data;
-        if (var && var->key) {
-            static std::unordered_map<std::string, std::string> s_varCache;
+	case RETRO_ENVIRONMENT_GET_VARIABLE: {
+		struct retro_variable *var = (struct retro_variable *)data;
+		if (var && var->key) {
+			static std::unordered_map<std::string, std::string> s_varCache;
 
-            // Apply core-specific overrides from CoreOverrideService
-            if (g_coreID) {
-                const char* overrideValue = core_override_get_value([((NSString *)g_coreID) UTF8String], var->key);
-                if (overrideValue) {
-                    s_varCache[var->key] = overrideValue;
-                    var->value = s_varCache[var->key].c_str();
-                    bridge_log_printf(RETRO_LOG_INFO, "[Override-JSON] %s = %s", var->key, var->value);
-                    return true;
-                }
-            }
+			if (g_optValues && g_optValues.count > 0) {
+				NSString *keyStr = [NSString stringWithUTF8String:var->key];
+				NSString *valStr = g_optValues[keyStr];
+				if (valStr && valStr.length > 0) {
+					s_varCache[var->key] = valStr.UTF8String;
+					var->value = s_varCache[var->key].c_str();
+					bridge_log_printf(RETRO_LOG_INFO, "[Option] %s = %s", var->key, var->value);
+					return true;
+				}
+			}
 
-            // Apply registered option values from Swift layer
-            if (g_optValues && g_optValues.count > 0) {
-                NSString *keyStr = [NSString stringWithUTF8String:var->key];
-                NSString *valStr = g_optValues[keyStr];
-                if (valStr && valStr.length > 0) {
-                    s_varCache[var->key] = valStr.UTF8String;
-                    var->value = s_varCache[var->key].c_str();
-                    bridge_log_printf(RETRO_LOG_INFO, "[Option-Swift] %s = %s", var->key, var->value);
-                    return true;
-                }
-            }
-
-            bridge_log_printf(RETRO_LOG_INFO, "[Option-Unset] %s (no override or user value found)", var->key);
-            var->value = NULL;
-        }
-        return false;
-    }
+			bridge_log_printf(RETRO_LOG_INFO, "[Option-Unset] %s (no override or user value found)", var->key);
+			var->value = NULL;
+		}
+		return false;
+	}
   case RETRO_ENVIRONMENT_SET_GEOMETRY:
     if (data && g_instance) {
       struct retro_game_geometry *geo = (struct retro_game_geometry *)data;

@@ -1,0 +1,10 @@
+{
+  "swanstation_CPU_Overclock": "200",
+  "swanstation_60hz": "true",
+  "swanstation_GPU_Renderer": "Software",
+  "swanstation_GPU_SoftwareRendererResolution": "1x",
+  "swanstation_CDROM_LoadImageToRAM": "enabled",
+  "swanstation_CDROM_ReadSpeedup": "8",
+  "swanstation_GPU_DownsampleMode": "Disabled",
+  "swanstation_GPU.ColorBuffer32Bit": "enabled"
+}

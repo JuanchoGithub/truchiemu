@@ -11,7 +11,7 @@ struct AchievementBadgeView: View {
             ZStack {
                 RoundedRectangle(cornerRadius: 10)
                     .fill(achievement.isUnlocked
-                        ? Color.blue.opacity(0.15)
+                        ? AppColors.brandAccent.opacity(0.15)
                         : AppColors.cardBackgroundSubtle(colorScheme))
                     .frame(width: 52, height: 52)
                     .shadow(color: Color.black.opacity(0.1), radius: 2, x: 0, y: 1)
@@ -43,7 +43,7 @@ struct AchievementBadgeView: View {
                 
                 Text("\(achievement.points) \(loc.localized("achievement.pts"))")
                     .font(.system(size: 8))
-                    .foregroundColor(achievement.isUnlocked ? .blue : AppColors.textMuted(colorScheme))
+                    .foregroundColor(achievement.isUnlocked ? AppColors.brandAccent : AppColors.textMuted(colorScheme))
             }
             .frame(width: 64)
             .help(achievement.title)

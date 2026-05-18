@@ -23,6 +23,8 @@ extern LibretroBridgeImpl *g_instance;
 extern int g_selectedLanguage;
 extern int g_logLevel;
 extern NSString *g_coreID;
+extern NSString *g_systemID;
+extern NSString *g_romFilename;
 extern NSString *g_shaderDir;
 extern BOOL g_isPaused;
 extern int g_currentRotation;

@@ -179,7 +179,7 @@ struct BezelSettingsView: View {
                     value: "\(storageManager.downloadedBezelCount())",
                     label: loc.localized("bezel.files"),
                     icon: "photo.fill",
-                    color: .blue
+                    color: AppColors.brandAccent
                 )
                 Divider().frame(height: 40)
                 statTile(
@@ -267,7 +267,7 @@ struct BezelSettingsView: View {
         HStack(spacing: 8) {
             Image(systemName: icon)
                 .font(.title2)
-                .foregroundStyle(Color.accentColor)
+                .foregroundStyle(AppColors.brandAccent)
                 .frame(width: 30)
             
             VStack(alignment: .leading, spacing: 2) {
@@ -296,7 +296,7 @@ struct BezelSettingsView: View {
             .buttonStyle(.plain)
         }
         .padding(8)
-        .background(Color.accentColor.opacity(0.1))
+        .background(AppColors.brandAccent.opacity(0.1))
         .cornerRadius(6)
     }
 

@@ -364,7 +364,7 @@ struct BezelSelectorSheet: View {
                         VStack(spacing: 12) {
                             ProgressView(value: downloadProgress)
                                 .progressViewStyle(.linear)
-                                .tint(.blue)
+                                .tint(AppColors.brandAccent)
                                 .frame(width: 200)
                             Text("\(loc.localized("bezel.downloadingProgress")) \(Int(downloadProgress * 100))%")
                                 .font(.caption)
@@ -662,7 +662,7 @@ struct LocalBezelListRow: View {
             
             if isSelected {
                 Image(systemName: "checkmark")
-                    .foregroundColor(.blue)
+                    .foregroundColor(AppColors.brandAccent)
             }
         }
         .padding(.vertical, 4)

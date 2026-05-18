@@ -1,0 +1,7 @@
+{
+  "beetle_psx_analog_toggle": "disabled",
+  "beetle_psx_gpu_overclock": "2x",
+  "beetle_psx_skip_bios": "enabled",
+  "beetle_psx_internal_resolution": "4x",
+  "beetle_psx_cd_fastload": "4x"
+}

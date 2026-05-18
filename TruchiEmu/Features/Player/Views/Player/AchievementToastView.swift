@@ -13,6 +13,8 @@ struct AchievementToastView: View {
     @State private var opacity: Double = 0
     @State private var badgeImage: NSImage?
     @State private var showConfetti = false
+    @State private var glowIntensity: Double = 0
+    @State private var trophyScale: CGFloat = 1
     @ObservedObject private var loc = LocalizationManager.shared
     
     var isRareAchievement: Bool {
@@ -21,36 +23,45 @@ struct AchievementToastView: View {
     
     var body: some View {
         HStack(spacing: 16) {
-            Group {
-                if let badge = badgeImage {
-                    Image(nsImage: badge)
-                        .resizable()
-                        .aspectRatio(contentMode: .fit)
-                } else {
-                    Image(systemName: "trophy.fill")
-                        .font(.system(size: 32))
-                        .foregroundColor(.yellow)
+            ZStack {
+                if isRareAchievement {
+                    Circle()
+                        .fill(AppColors.accentWarm.opacity(0.3))
+                        .frame(width: 56, height: 56)
+                        .blur(radius: 8)
                 }
+                Group {
+                    if let badge = badgeImage {
+                        Image(nsImage: badge)
+                            .resizable()
+                            .aspectRatio(contentMode: .fit)
+                    } else {
+                        Image(systemName: "trophy.fill")
+                            .font(.system(size: 32))
+                            .foregroundColor(.yellow)
+                            .scaleEffect(trophyScale)
+                    }
+                }
+                .frame(width: 48, height: 48)
             }
-            .frame(width: 48, height: 48)
-            
+
             VStack(alignment: .leading, spacing: 4) {
                 Text(loc.localized("achievement.unlockedLabel"))
                     .font(.caption)
                     .foregroundColor(.secondary)
-                
+
                 Text(achievement.title)
                     .font(.headline)
                     .foregroundColor(.white)
                     .lineLimit(2)
-                
+
                 Text("\(achievement.points) \(loc.localized("achievement.pointsLabel"))")
                     .font(.subheadline)
                     .foregroundColor(.secondary)
             }
-            
+
             Spacer()
-            
+
             // Dismiss button
             Button(action: { dismiss() }) {
                 Image(systemName: "xmark.circle.fill")
@@ -61,20 +72,19 @@ struct AchievementToastView: View {
         }
         .padding(16)
         .frame(maxWidth: 380)
-        .background(
-            LinearGradient(
-                colors: [Color(red: 0.1, green: 0.6, blue: 0.35).opacity(0.9), Color(red: 0.15, green: 0.65, blue: 0.55).opacity(0.9)],
-                startPoint: .leading,
-                endPoint: .trailing
-            )
+        .background(AppDecorativeGradients.buttonPrimary)
+        .overlay(
+            RoundedRectangle(cornerRadius: 12)
+                .stroke(Color.orange.opacity(0.3), lineWidth: 1)
         )
         .cornerRadius(12)
         .shadow(color: .black.opacity(0.3), radius: 10, x: 0, y: 5)
+        .shadow(color: AppColors.brandAccent.opacity(glowIntensity * 0.4), radius: 12 + glowIntensity * 8, x: 0, y: 0)
         .offset(y: offset)
         .opacity(opacity)
         .overlay {
             if showConfetti {
-                ConfettiView(particleCount: 60) {
+                ConfettiView(particleCount: isRareAchievement ? 80 : 60) {
                     showConfetti = false
                 }
             }
@@ -82,12 +92,27 @@ struct AchievementToastView: View {
         .onAppear {
             loadBadge()
             animateIn()
-            
+
+            // Warm glow pulse
+            withAnimation(.easeOut(duration: 0.3)) {
+                glowIntensity = 1
+            }
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
+                withAnimation(.easeInOut(duration: 1.0)) {
+                    glowIntensity = 0.3
+                }
+            }
+
+            // Scale pulse on trophy icon
+            withAnimation(.easeInOut(duration: 0.3).repeatCount(2, autoreverses: true)) {
+                trophyScale = 1.15
+            }
+
             // Trigger confetti for rare achievements
             if isRareAchievement {
                 showConfetti = true
             }
-            
+
             // Auto-dismiss after 5 seconds
             DispatchQueue.main.asyncAfter(deadline: .now() + 5) {
                 dismiss()
@@ -96,7 +121,7 @@ struct AchievementToastView: View {
     }
     
     private func animateIn() {
-        withAnimation(.interpolatingSpring(stiffness: 170, damping: 24)) {
+        withAnimation(.interpolatingSpring(stiffness: 150, damping: 16, initialVelocity: 4)) {
             offset = 0
             opacity = 1
         }

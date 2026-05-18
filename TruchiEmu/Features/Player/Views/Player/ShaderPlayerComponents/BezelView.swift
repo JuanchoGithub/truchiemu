@@ -54,19 +54,19 @@ struct BezelView: View {
     private var arcadeBezel: some View {
         ZStack {
             Rectangle()
-                .fill(LinearGradient(colors:[Color(hue: 0.65, saturation: 0.5, brightness: 0.2),
-                                               Color(hue: 0.68, saturation: 0.6, brightness: 0.1)],
+                .fill(LinearGradient(colors:[Color(hue: 0.10, saturation: 0.40, brightness: 0.20),
+                                               Color(hue: 0.08, saturation: 0.35, brightness: 0.10)],
                                       startPoint: .top, endPoint: .bottom))
                 .ignoresSafeArea()
             // Marquee strip
             VStack {
-                LinearGradient(colors:[Color(red: 0.1, green: 0.6, blue: 0.35), Color(red: 0.15, green: 0.65, blue: 0.55)], startPoint: .leading, endPoint: .trailing)
+                AppGradients.accent
                     .frame(height: 80)
                     .overlay(
                         Text("TRUCHIEMU")
                             .font(.system(size: 28, weight: .black, design: .rounded))
                             .foregroundColor(.white)
-                            .tracking(6)
+                            .tracking(12)
                     )
                 Spacer()
             }

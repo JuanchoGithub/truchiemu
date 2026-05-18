@@ -1,0 +1,8 @@
+{
+  "mupen64plus-cpucore": "pure_interpreter",
+  "mupen64plus-rdp-plugin": "angrylion",
+  "mupen64plus-next-aspect": "4:3",
+  "hw_render_context_negotiation": "enabled",
+  "mupen64plus-angrylion-vioverlay": "Unfiltered",
+  "mupen64plus-angrylion-overscan": "enabled"
+}

@@ -52,7 +52,7 @@ struct CheatSettingsView: View {
                             value: "\(downloadService.getDownloadedCheatCount())",
                             label: loc.localized("cheats.files"),
                             icon: "doc.on.doc.fill",
-                            color: .blue
+                            color: AppColors.brandAccent
                         )
                         Divider().frame(height: 40)
                         statTile(
@@ -214,7 +214,7 @@ struct CheatSettingsView: View {
                 if downloadService.currentlyDownloadingCount > 0 {
                     Label("\(downloadService.currentlyDownloadingCount) active threads", systemImage: "arrow.down.circle.fill")
                         .font(.caption2)
-                        .foregroundStyle(.blue)
+                        .foregroundStyle(AppColors.brandAccent)
                 } else {
                     // This invisible label keeps the height consistent
                     Label(loc.localized("cheats.statusIdle"), systemImage: "circle")
@@ -384,7 +384,7 @@ struct LogEntryRow: View {
     
     private var statusColor: Color {
         switch entry.status {
-        case .inProgress: return .blue
+        case .inProgress: return AppColors.brandAccent
         case .success: return .green
         case .failed: return .red
         }

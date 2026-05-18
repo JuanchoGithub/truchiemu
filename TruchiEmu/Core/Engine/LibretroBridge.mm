@@ -35,6 +35,8 @@ static int16_t input_state_stub(unsigned port, unsigned device, unsigned index, 
                   shaderDir:(nullable NSString *)shaderDir
               videoCallback:(void (^)(const void *, int, int, int, int))cb
                      coreID:(NSString *)coreID
+                   systemID:(nullable NSString *)systemID
+                romFilename:(nullable NSString *)romFilename
             failureCallback:(nullable void (^)(NSString *))failureCb {
     
     static dispatch_once_t onceToken;
@@ -52,6 +54,8 @@ static int16_t input_state_stub(unsigned port, unsigned device, unsigned index, 
     g_coreID = [cleanCoreID copy];
     NSLog(@"[Bridge] Active CoreID set to: '%@'", g_coreID);
     g_shaderDir = [shaderDir copy];
+    g_systemID = [systemID copy] ?: nil;
+    g_romFilename = [romFilename copy] ?: nil;
     initOptStorage();
     [g_optValues removeAllObjects];
     g_optDefinitions = nil;
@@ -86,6 +90,8 @@ static int16_t input_state_stub(unsigned port, unsigned device, unsigned index, 
 
         if (g_instance == newInst) {
             g_instance = nil;
+            g_systemID = nil;
+            g_romFilename = nil;
         }
 
         dispatch_semaphore_signal(semToSignal);
@@ -276,9 +282,11 @@ static int16_t input_state_stub(unsigned port, unsigned device, unsigned index, 
     // impl's dealloc doesn't try to call context_destroy()
     memset(&(impl->_hw_callback), 0, sizeof(struct retro_hw_render_callback));
 
-    g_instance = nil;
-    g_loadingForOptions = NO;
-    bridge_log_printf(RETRO_LOG_INFO, "Discovery: Headless session complete for %@.", coreID);
+        g_instance = nil;
+        g_loadingForOptions = NO;
+        g_systemID = nil;
+        g_romFilename = nil;
+        bridge_log_printf(RETRO_LOG_INFO, "Discovery: Headless session complete for %@.", coreID);
     discoveryInProgress = NO;
 }
 

@@ -1,0 +1,8 @@
+{
+  "dolphin_gfx_backend": "OGL",
+  "dolphin_vertex_rounding": "disabled",
+  "dolphin_fastmem": "enabled",
+  "dolphin_crop_overscan": "enabled",
+  "dolphin_fast_disc_speed": "enabled",
+  "dolphin_osd_enabled": "disabled"
+}

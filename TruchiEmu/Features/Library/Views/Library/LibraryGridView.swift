@@ -83,6 +83,7 @@ struct LibraryGridView: View {
 
 
 
+    @Environment(\.colorScheme) private var colorScheme
     @State private var renamingROM: ROM? = nil
     @State private var renameText: String = ""
     @StateObject private var gameLauncher = GameLauncher.shared
@@ -153,28 +154,31 @@ struct LibraryGridView: View {
             }
             
             ZStack {
-                if library.isScanning {
-                    scanningOverlay
-                } else if viewModel.displayedROMs.isEmpty {
-                    emptyState
-                } else if viewMode == .grid {
-                    gridView
-                        .background(
-                            GeometryReader { geometry in
-                                Color.clear
-                                    .onAppear {
-                                        gridWidth = geometry.size.width
-                                        updateColumns()
-                                    }
-                                    .onChange(of: geometry.size.width) { _, newWidth in
-                                        gridWidth = newWidth
-                                        updateColumns()
-                                    }
-                            }
-                        )
-                } else {
-                    listView
+                Group {
+                    if library.isScanning {
+                        scanningOverlay
+                    } else if viewModel.displayedROMs.isEmpty {
+                        emptyState
+                    } else if viewMode == .grid {
+                        gridView
+                            .background(
+                                GeometryReader { geometry in
+                                    Color.clear
+                                        .onAppear {
+                                            gridWidth = geometry.size.width
+                                            updateColumns()
+                                        }
+                                        .onChange(of: geometry.size.width) { _, newWidth in
+                                            gridWidth = newWidth
+                                            updateColumns()
+                                        }
+                                }
+                            )
+                    } else {
+                        listView
+                    }
                 }
+                .transition(.opacity.combined(with: .scale(scale: 0.97)))
                 
                 if boxArtService.isDownloadingBatch {
                     VStack {
@@ -822,35 +826,40 @@ viewModel.updateFilters(
     private var scanningOverlay: some View {
         VStack(spacing: 20) {
             ZStack {
+                // CRT monitor frame
+                RoundedRectangle(cornerRadius: 14)
+                    .stroke(AppColors.brandAccent.opacity(0.3), lineWidth: 2)
+                    .frame(width: 72, height: 72)
+
+                // Warm glow
+                RoundedRectangle(cornerRadius: 14)
+                    .fill(AppColors.brandAccent.opacity(0.08))
+                    .frame(width: 72, height: 72)
+
                 // Animated pulse ring
                 Circle()
-                    .stroke(Color.accentColor.opacity(0.3), lineWidth: 2)
+                    .stroke(AppColors.brandAccent.opacity(0.3), lineWidth: 2)
                     .frame(width: 60, height: 60)
                     .scaleEffect(1.0 + library.scanProgress * 0.5)
                     .opacity(1.0 - library.scanProgress * 0.8)
-                
-                Circle()
-                    .stroke(Color.accentColor.opacity(0.2), lineWidth: 1)
-                    .frame(width: 60, height: 60)
-                    .scaleEffect(1.0 + library.scanProgress * 0.3)
-                    .opacity(0.5)
-                
-                // Controller icon
+
+                // Controller icon with warm glow
                 Image(systemName: "arcade.stick")
                     .font(.system(size: 28))
-                    .foregroundStyle(
-                        LinearGradient(
-                            colors:[Color(red: 0.1, green: 0.6, blue: 0.35), Color(red: 0.15, green: 0.65, blue: 0.55)],
-                            startPoint: .topLeading,
-                            endPoint: .bottomTrailing
-                        )
-                    )
+                    .foregroundStyle(AppGradients.accent)
+                    .shadow(color: AppColors.brandAccent.opacity(0.4), radius: 6)
+
+                // CRT scan line
+                ScanningScanLine()
+                    .frame(width: 56, height: 40)
+                    .clipShape(RoundedRectangle(cornerRadius: 6))
             }
             .modifier(ScanningPulseAnimation())
-            
+
             ProgressView(value: library.scanProgress)
-                .frame(width: 280)
-            
+                .frame(width: 320)
+                .tint(AppColors.brandAccent)
+
             Group {
                 Text(scanningMessages[scanningMessageIndex])
                     .foregroundColor(.secondary)
@@ -859,12 +868,12 @@ viewModel.updateFilters(
             .font(.body)
             .onReceive(Timer.publish(every: 3, on: .main, in: .common).autoconnect()) { _ in
                 if library.isScanning {
-                    withAnimation(.easeInOut(duration: 0.3)) {
+                    withAnimation(.easeInOut(duration: 0.45)) {
                         scanningMessageIndex = (scanningMessageIndex + 1) % scanningMessages.count
                     }
                 }
             }
-            
+
             // Fun stats during scan
             if library.roms.count > 0 {
                 Text("\(library.roms.count) \(loc.localized("library.gamesFound"))")
@@ -872,7 +881,7 @@ viewModel.updateFilters(
                     .foregroundColor(.secondary)
                     .contentTransition(.numericText())
             }
-            
+
             Button(role: .cancel) {
                 library.stopScan()
             } label: {
@@ -897,25 +906,25 @@ viewModel.updateFilters(
     
     private var downloadingArtOverlay: some View {
         HStack(spacing: 12) {
-            // Animated book icon
+            // Animated book icon that opens/closes
             ZStack {
                 Circle()
-                    .stroke(Color.accentColor.opacity(0.3), lineWidth: 1.5)
+                    .stroke(AppColors.brandAccent.opacity(0.3), lineWidth: 1.5)
                     .frame(width: 20, height: 20)
                     .scaleEffect(1.0 + boxArtService.downloadProgress * 0.2)
                     .opacity(1.0 - boxArtService.downloadProgress * 0.5)
                 
-                Image(systemName: "book.fill")
+                Image(systemName: showingOpenBook ? "book.fill" : "book.closed")
                     .font(.system(size: 10))
-                    .foregroundStyle(
-                        LinearGradient(
-                            colors:[Color(red: 0.1, green: 0.6, blue: 0.35), Color(red: 0.15, green: 0.65, blue: 0.55)],
-                            startPoint: .topLeading,
-                            endPoint: .bottomTrailing
-                        )
-                    )
+                    .foregroundStyle(AppGradients.accent)
+                    .contentTransition(.symbolEffect(.automatic))
             }
             .modifier(BoxArtPulseAnimation())
+            .onAppear {
+                withAnimation(.easeInOut(duration: 0.8).repeatForever(autoreverses: true)) {
+                    showingOpenBook.toggle()
+                }
+            }
             
             VStack(alignment: .leading, spacing: 2) {
                 Text(boxArtMessages[boxArtMessageIndex])
@@ -934,6 +943,10 @@ viewModel.updateFilters(
         .background(
             Capsule()
                 .fill(.regularMaterial)
+                .overlay(
+                    Capsule()
+                        .fill(AppColors.brandAccent.opacity(0.08))
+                )
                 .shadow(color: .black.opacity(0.15), radius: 8, y: 4)
         )
         .onReceive(Timer.publish(every: 4, on: .main, in: .common).autoconnect()) { _ in
@@ -951,13 +964,12 @@ viewModel.updateFilters(
     }
 
     @State private var emptyStateAppeared = false
+    @State private var showingOpenBook = false
     
     private var emptyState: some View {
         ScrollView {
             VStack(spacing: 16) {
-                Image(systemName: emptyStateIcon)
-                    .font(.system(size: 56))
-                    .foregroundColor(.secondary)
+                EmptyStateIllustration()
                     .scaleEffect(emptyStateAppeared ? 1 : 0.8)
                     .offset(y: emptyStateAppeared ? 0 : 10)
                     .onAppear {
@@ -971,13 +983,13 @@ viewModel.updateFilters(
                     }
                     .modifier(EmptyStateFloatAnimation())
                 Text(emptyStateTitle)
-                    .font(.title3)
-                    .foregroundColor(.secondary)
+                    .font(AppTypography.title2)
+                    .foregroundColor(AppColors.textPrimary(colorScheme))
                     .opacity(emptyStateAppeared ? 1 : 0)
                     .offset(y: emptyStateAppeared ? 0 : 8)
                 Text(emptyStateDescription)
-                    .font(.body)
-                    .foregroundColor(.secondary)
+                    .font(AppTypography.body)
+                    .foregroundColor(AppColors.textSecondary(colorScheme))
                     .multilineTextAlignment(.center)
                     .frame(maxWidth: 320)
                     .opacity(emptyStateAppeared ? 1 : 0)
@@ -989,7 +1001,7 @@ viewModel.updateFilters(
                         Label("Add ROM Folder", systemImage: "folder.badge.plus")
                     }
                     .buttonStyle(.borderedProminent)
-                    .tint(.accentColor)
+                    .tint(AppColors.brandAccent)
                     .opacity(emptyStateAppeared ? 1 : 0)
                     .offset(y: emptyStateAppeared ? 0 : 8)
                 }
@@ -997,6 +1009,7 @@ viewModel.updateFilters(
             .padding()
         }
         .frame(maxHeight: .infinity)
+        .background(AppDecorativeGradients.warmGlow)
         .clipped()
         .sheet(item: $manualBoxArtSearchROM) { rom in
             BoxArtPickerView(rom: rom)
@@ -1115,7 +1128,7 @@ viewModel.updateFilters(
                                 Spacer()
                                 if isInCategory {
                                     Image(systemName: "checkmark.circle.fill")
-                                        .foregroundColor(.blue)
+                                        .foregroundColor(AppColors.brandAccent)
                                 } else {
                                     Image(systemName: "plus.circle")
                                         .foregroundColor(.secondary)
@@ -1275,7 +1288,7 @@ private func removeROMFromLibrary(_ rom: ROM) {
             }
         }
         .padding(8)
-        .background(Color.secondary.opacity(0.1))
+        .background(AppColors.cardBackgroundSubtle(colorScheme))
         .cornerRadius(10)
         .padding([.horizontal, .top], 16)
         .padding(.bottom, 4)
@@ -1434,7 +1447,7 @@ private func removeROMFromLibrary(_ rom: ROM) {
                     .padding(.horizontal, 10)
                     .padding(.vertical, 6)
                     .frame(minHeight: 30)
-                    .background(Capsule().fill(selectedGenres.isEmpty ? Color.secondary.opacity(0.12) : Color.accentColor))
+                    .background(Capsule().fill(selectedGenres.isEmpty ? Color.secondary.opacity(0.12) : AppColors.brandAccent))
                 }
                 .buttonStyle(.plain)
                 .popover(isPresented: $showGenrePicker) {
@@ -1477,7 +1490,7 @@ private func removeROMFromLibrary(_ rom: ROM) {
                         .padding(.horizontal, 10)
                         .padding(.vertical, 6)
                         .frame(minHeight: 30)
-                        .background(Color.accentColor)
+                        .background(AppColors.brandAccent)
                         .clipShape(Capsule())
                     }
                     .buttonStyle(.plain)
@@ -1492,7 +1505,7 @@ private func removeROMFromLibrary(_ rom: ROM) {
     private var activeFilterSummary: some View {
         HStack {
             Image(systemName: "line.3.horizontal.decrease.circle.fill")
-                .foregroundColor(.accentColor)
+                .foregroundColor(AppColors.brandAccent)
                 .font(.caption)
             
             Text("Filtering: " + activeFilterDisplayText)
@@ -1570,6 +1583,82 @@ private func removeROMFromLibrary(_ rom: ROM) {
                     }
                 }
             }
+        }
+    }
+}
+
+// MARK: - Empty State Illustration
+
+private struct EmptyStateIllustration: View {
+    @Environment(\.colorScheme) private var colorScheme
+
+    var body: some View {
+        ZStack {
+            // TV/monitor body
+            RoundedRectangle(cornerRadius: 12)
+                .fill(
+                    colorScheme == .dark
+                        ? Color.black.opacity(0.4)
+                        : AppColors.brandAccent.opacity(0.06)
+                )
+                .frame(width: 80, height: 64)
+                .overlay(
+                    RoundedRectangle(cornerRadius: 12)
+                        .stroke(AppColors.brandAccent.opacity(0.3), lineWidth: 1.5)
+                )
+
+            // Warm glow behind
+            RoundedRectangle(cornerRadius: 12)
+                .fill(AppColors.brandAccent.opacity(0.06))
+                .frame(width: 80, height: 64)
+                .blur(radius: 8)
+
+            // Screen area
+            RoundedRectangle(cornerRadius: 6)
+                .fill(
+                    colorScheme == .dark
+                        ? Color.black.opacity(0.6)
+                        : Color.white.opacity(0.5)
+                )
+                .frame(width: 60, height: 44)
+                .overlay(
+                    RoundedRectangle(cornerRadius: 6)
+                        .stroke(AppColors.brandAccent.opacity(0.15), lineWidth: 1)
+                )
+
+            // Game controller icon
+            Image(systemName: "gamecontroller")
+                .font(.system(size: 20))
+                .foregroundStyle(AppGradients.accent)
+
+            // Scanline overlay
+            AppRetroEffects.scanlineOverlay(opacity: 0.04)
+                .clipShape(RoundedRectangle(cornerRadius: 6))
+                .frame(width: 60, height: 44)
+        }
+        .frame(width: 80, height: 64)
+    }
+}
+
+// MARK: - Scanning Scan Line
+
+private struct ScanningScanLine: View {
+    @State private var scanOffset: CGFloat = -0.3
+
+    var body: some View {
+        GeometryReader { geo in
+            RoundedRectangle(cornerRadius: 1)
+                .fill(AppGradients.warmAccent.opacity(0.5))
+                .frame(width: geo.size.width * 0.5, height: 2)
+                .offset(x: geo.size.width * scanOffset)
+                .shadow(color: AppColors.brandAccent.opacity(0.4), radius: 4)
+                .onAppear {
+                    withAnimation(
+                        Animation.easeInOut(duration: 2).repeatForever(autoreverses: true)
+                    ) {
+                        scanOffset = 0.3
+                    }
+                }
         }
     }
 }

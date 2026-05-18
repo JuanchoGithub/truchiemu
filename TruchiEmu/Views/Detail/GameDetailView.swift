@@ -22,6 +22,7 @@ struct GameDetailView: View {
     @State var gameAchievements:[Achievement] = []
     @State var isAchievementsLoading = false
     @State var showImportCheatFile = false
+@State var showCoreOptionsView = false
     @State var gbColorizationEnabled: Bool = true
     @State var gbColorizationMode: String = "auto"
     @State var gbInternalPalette: String = "GB - DMG"
@@ -116,19 +117,22 @@ struct GameDetailView: View {
     var mainContentArea: some View {
         ScrollView {
             VStack(alignment: .leading, spacing: 20) {
-                switch selectedSection {
-                case .gameInfo: gameInfoSection
-                case .shader: shaderSection
-                case .bezels: bezelsSection
-                case .controls: controlsSection
-                case .savedStates: savedStatesSection
-                case .cheats: cheatsSection
-                case .core: coreSection
-                case .achievements:
-                    if achievementsService.isEnabled {
-                        achievementsSection
+                Group {
+                    switch selectedSection {
+                    case .gameInfo: gameInfoSection
+                    case .shader: shaderSection
+                    case .bezels: bezelsSection
+                    case .controls: controlsSection
+                    case .savedStates: savedStatesSection
+                    case .cheats: cheatsSection
+                    case .core: coreSection
+                    case .achievements:
+                        if achievementsService.isEnabled {
+                            achievementsSection
+                        }
                     }
                 }
+                .transition(.opacity.combined(with: .move(edge: .trailing)))
             }
             .padding(24)
         }
@@ -191,11 +195,7 @@ struct GameDetailView: View {
             selectedCoreID = currentROM.selectedCoreID ?? sysPrefs.preferredCoreID(for: currentROM.systemID ?? "") ?? system?.defaultCoreID
             infoCoreID = currentROM.selectedCoreID ?? sysPrefs.preferredCoreID(for: currentROM.systemID ?? "") ?? system?.defaultCoreID
             infoApplyCoreToSystem = !currentROM.useCustomCore
-            gbColorizationEnabled = currentROM.settings.gbColorizationEnabled
-            gbColorizationMode = currentROM.settings.gbColorizationMode
-            gbInternalPalette = currentROM.settings.gbInternalPalette
-            gbSGBBordersEnabled = currentROM.settings.gbSGBBordersEnabled
-            gbColorCorrectionMode = currentROM.settings.gbColorCorrectionMode
+        loadGBColorizationSettings()
         }
         .onChange(of: currentROM.id) { _, _ in
             clearManualStatus()
@@ -259,16 +259,41 @@ struct GameDetailView: View {
         .sheet(isPresented: $showControlsPicker) { controlsPickerSheet }
         .sheet(isPresented: $showRAHashComparison) { raHashComparisonSheet
         }
+        .sheet(isPresented: $showCoreOptionsView) {
+            if let coreID = activeCoreID, let systemID = currentROM.systemID {
+                CoreOptionsView(coreID: coreID, systemID: systemID, gameFilename: currentROM.filenameWithoutExtension)
+            }
+        }
+    }
+
+    var primarySections: [DetailSection] {
+        [.gameInfo, .shader, .bezels, .controls]
+    }
+
+    var advancedSections: [DetailSection] {
+        achievementsService.isEnabled
+            ? [.savedStates, .cheats, .core, .achievements]
+            : [.savedStates, .cheats, .core]
     }
 
     var sidebarNavigation: some View {
         VStack(alignment: .leading, spacing: 2) {
-            ForEach(DetailSection.allCases, id: \.self) { section in
+            ForEach(primarySections, id: \.self) { section in
                 sidebarItem(for: section)
             }
+
+            Divider()
+                .overlay(AppColors.divider(colorScheme))
+                .padding(.vertical, 4)
+                .padding(.horizontal, 10)
+
+            ForEach(advancedSections, id: \.self) { section in
+                sidebarItem(for: section)
+            }
+
             Spacer()
         }
-        .frame(width: 180)
+        .frame(width: 160)
         .padding(.vertical, 12)
         .padding(.horizontal, 8)
         .background(AppColors.sidebarBackground)
@@ -276,11 +301,6 @@ struct GameDetailView: View {
 
     func sidebarItem(for section: DetailSection) -> some View {
         let isSelected = selectedSection == section
-        let showAchievements = achievementsService.isEnabled
-
-        if section == .achievements && !showAchievements {
-            return AnyView(EmptyView())
-        }
 
         return AnyView(
             Button {
@@ -292,12 +312,18 @@ struct GameDetailView: View {
                     Image(systemName: section.sectionIcon)
                         .font(.system(size: 15, weight: .medium))
                         .frame(width: 20, height: 20)
-                        .foregroundColor(isSelected ? .accentColor : AppColors.textSecondary(colorScheme))
+                        .foregroundColor(isSelected ? AppColors.brandAccent : AppColors.textSecondary(colorScheme))
                     Text(section.localizedTitle)
                         .lineLimit(1)
+                        .font(AppTypography.subheadline)
                         .foregroundColor(isSelected ? AppColors.textPrimary(colorScheme) : AppColors.textSecondary(colorScheme))
                         .fontWeight(isSelected ? .medium : .regular)
                     Spacer()
+                    Image(systemName: "info.circle")
+                        .font(.caption2)
+                        .foregroundColor(AppColors.textTertiary(colorScheme))
+                        .opacity(0.4)
+                        .help(section.helpText)
                 }
                 .padding(.horizontal, 10)
                 .padding(.vertical, 7)
@@ -309,6 +335,14 @@ struct GameDetailView: View {
                 RoundedRectangle(cornerRadius: 6)
                     .fill(isSelected ? AppColors.accentBackground(colorScheme) : .clear)
             )
+            .overlay(alignment: .leading) {
+                if isSelected {
+                    RoundedRectangle(cornerRadius: 2)
+                        .fill(AppColors.brandAccent)
+                        .frame(width: 3, height: 20)
+                        .padding(.leading, 2)
+                }
+            }
         )
     }
 

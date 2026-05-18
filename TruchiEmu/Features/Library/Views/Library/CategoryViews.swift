@@ -24,10 +24,10 @@ struct CategoryBadgeView: View {
                     .font(.system(size: 10, weight: .medium))
             }
             .foregroundColor(.white)
-            .padding(.horizontal, 6)
-            .padding(.vertical, 3)
+            .padding(.horizontal, 8)
+            .padding(.vertical, 4)
             .background(Color(hex: category.colorHex) ?? .blue)
-            .cornerRadius(4)
+            .cornerRadius(AppRadius.xs)
         }
     }
 }

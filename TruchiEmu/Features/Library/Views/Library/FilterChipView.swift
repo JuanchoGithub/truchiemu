@@ -16,17 +16,17 @@ struct FilterChipView: View {
                     .font(.system(size: 10, weight: .medium))
                     .scaleEffect(isActive ? 1.1 : 1)
                 Text(option.label)
-                    .font(.system(size: 11, weight: .medium))
+                    .font(.system(size: 11, weight: .medium, design: .rounded))
             }
-            .foregroundColor(isActive ? .white : .secondary)
+            .foregroundColor(isActive ? .white : (isHovered ? AppColors.brandAccent : .secondary))
             .padding(.horizontal, 10)
             .padding(.vertical, 6)
             .frame(minHeight: 30)
             .background(
                 Capsule()
-                    .fill(isActive ? option.activeColor : Color.secondary.opacity(0.12))
+                    .fill(isActive ? option.activeColor : (isHovered ? AppColors.brandAccent.opacity(0.12) : Color.secondary.opacity(0.12)))
                     .scaleEffect(isHovered ? 1.05 : 1)
-                    .shadow(color: isActive ? option.activeColor.opacity(0.3) : .clear, radius: isHovered ? 4 : 0, y: 2)
+                    .shadow(color: isActive ? option.activeColor.opacity(0.3) : (isHovered ? AppColors.brandAccent.opacity(0.2) : .clear), radius: isHovered ? 4 : 0, y: 2)
             )
         }
         .buttonStyle(.plain)

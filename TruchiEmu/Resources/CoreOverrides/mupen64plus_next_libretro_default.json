@@ -1,0 +1,18 @@
+{
+  "mupen64plus-next-cpucore": "pure_interpreter",
+  "mupen64plus-cpucore": "pure_interpreter",
+  "mupen64plus-next-rdp-plugin": "angrylion",
+  "mupen64plus-rdp-plugin": "angrylion",
+  "mupen64plus-next-aspect": "4:3",
+  "mupen64plus-aspect": "4:3",
+  "mupen64plus-next-ThreadedRenderer": "Disabled",
+  "mupen64plus-ThreadedRenderer": "Disabled",
+  "mupen64plus-next-parallel-rdp-synchronous": "Disabled",
+  "mupen64plus-next-ExpansionPak": "Enabled",
+  "mupen64plus-next-EnableFBEmulation": "True",
+  "mupen64plus-next-EnableCopyColorToRDRAM": "Off",
+  "mupen64plus-next-EnableCopyDepthToRDRAM": "Off",
+  "hw_render_context_negotiation": "enabled",
+  "mupen64plus-angrylion-vioverlay": "Unfiltered",
+  "mupen64plus-angrylion-overscan": "enabled"
+}

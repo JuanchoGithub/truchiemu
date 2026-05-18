@@ -218,7 +218,7 @@ struct LoggingSettingsView: View {
                     .foregroundStyle(.red)
             case .info:
                 Label(loc.localized("logging.generalLogs"), systemImage: "info.circle.fill")
-                    .foregroundStyle(.blue)
+                    .foregroundStyle(AppColors.brandAccent)
             case .debug:
                 Label(loc.localized("logging.detailedLogs"), systemImage: "ladybug.fill")
                     .foregroundStyle(.orange)

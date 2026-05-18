@@ -174,11 +174,11 @@ struct CoreDownloadSheet: View {
         HStack(spacing: 16) {
             ZStack {
                 Circle()
-                    .fill(LinearGradient(colors: [Color(red: 0.1, green: 0.6, blue: 0.35).opacity(0.2), Color(red: 0.15, green: 0.65, blue: 0.55).opacity(0.2)], startPoint: .topLeading, endPoint: .bottomTrailing))
+                    .fill(AppColors.brandAccent.opacity(0.15))
                     .frame(width: 56, height: 56)
                 Image(systemName: "cpu")
                     .font(.system(size: 26))
-                    .foregroundStyle(LinearGradient(colors: [Color(red: 0.1, green: 0.6, blue: 0.35), Color(red: 0.15, green: 0.65, blue: 0.55)], startPoint: .topLeading, endPoint: .bottomTrailing))
+                    .foregroundStyle(AppColors.brandAccent)
             }
             VStack(alignment: .leading, spacing: 2) {
                 Text("coreDownload.title")
@@ -252,10 +252,10 @@ struct CoreDownloadSheet: View {
                             if coreManager.availableCores.contains(where: { $0.coreID == entry.id }) {
                                 Text("coreDownload.download")
                                     .font(.caption2)
-                                    .foregroundColor(.blue)
+                                    .foregroundColor(AppColors.brandAccent)
                                     .padding(.horizontal, 6)
                                     .padding(.vertical, 1)
-                                    .background(Color.blue.opacity(0.12))
+                                    .background(AppColors.brandAccent.opacity(0.12))
                                     .cornerRadius(4)
                             } else {
                                 Text("coreDownload.unavailableForMac")
@@ -277,13 +277,13 @@ struct CoreDownloadSheet: View {
             .padding(10)
             .frame(maxWidth: .infinity, alignment: .leading)
             .background(entry.id == selectedCoreID
-                ? Color.accentColor.opacity(0.08)
+                ? AppColors.brandAccent.opacity(0.08)
                 : Color.secondary.opacity(0.04))
             .cornerRadius(10)
             .overlay(
                 RoundedRectangle(cornerRadius: 10)
                     .stroke(entry.id == selectedCoreID
-                        ? Color.accentColor.opacity(0.4)
+                        ? AppColors.brandAccent.opacity(0.4)
                         : Color.clear, lineWidth: 1)
             )
         }
@@ -316,11 +316,7 @@ struct CoreDownloadSheet: View {
                     .padding(.horizontal, 8)
                     .padding(.vertical, 3)
                     .background(
-                        LinearGradient(
-                            colors: [Color(red: 0.1, green: 0.6, blue: 0.35).opacity(0.85), Color(red: 0.15, green: 0.65, blue: 0.55).opacity(0.85)],
-                            startPoint: .leading,
-                            endPoint: .trailing
-                        )
+                        AppGradients.accent
                     )
                     .cornerRadius(6)
                 }

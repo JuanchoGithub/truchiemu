@@ -20,14 +20,7 @@ struct CoreRecommendationBadge: View {
 
 // Shared design tokens for Core views
 enum CoreStyle {
-    static let recommendationGradient = LinearGradient(
-        colors: [
-            Color(red: 0.1, green: 0.6, blue: 0.35).opacity(0.85),
-            Color(red: 0.15, green: 0.65, blue: 0.55).opacity(0.85)
-        ],
-        startPoint: .leading,
-        endPoint: .trailing
-    )
+    static let recommendationGradient = AppGradients.accent
 }
 
 // MARK: - Core Picker View
@@ -164,7 +157,7 @@ struct CorePickerView: View {
                         .imageScale(.medium)
                 } else {
                     Image(systemName: "arrow.down.circle")
-                        .foregroundColor(.blue)
+                        .foregroundColor(AppColors.brandAccent)
                         .imageScale(.medium)
                 }
                 
@@ -208,7 +201,7 @@ struct CorePickerView: View {
                                     .foregroundColor(.green)
                             } else {
                                 Text(loc.localized("core.useThisCore"))
-                                    .foregroundColor(.accentColor)
+                                    .foregroundColor(AppColors.brandAccent)
                             }
                         }
                         .fontWeight(.medium)
@@ -232,13 +225,13 @@ struct CorePickerView: View {
         .padding()
         .background(
             isSelected
-                ? Color.accentColor.opacity(0.08)
+                ? AppColors.brandAccent.opacity(0.08)
                 : Color.secondary.opacity(0.05)
         )
         .cornerRadius(12)
         .overlay(
             RoundedRectangle(cornerRadius: 12)
-                .stroke(isSelected ? Color.accentColor.opacity(0.3) : Color.clear, lineWidth: 1)
+                .stroke(isSelected ? AppColors.brandAccent.opacity(0.3) : Color.clear, lineWidth: 1)
         )
     }
     
@@ -279,7 +272,7 @@ struct CoreRowView: View {
                 HStack(spacing: 8) {
                     VStack {
                         Circle()
-                            .fill(isSelected ? Color.accentColor : (isDownloaded ? Color.green : Color.secondary))
+                            .fill(isSelected ? AppColors.brandAccent : (isDownloaded ? Color.green : Color.secondary))
                             .frame(width: 10, height: 10)
                     }
                     
@@ -325,7 +318,7 @@ struct CoreRowView: View {
                     .foregroundColor(.secondary.opacity(0.7))
             }
             .padding(12)
-            .background(isSelected ? Color.accentColor.opacity(0.1) : Color.secondary.opacity(0.05))
+            .background(isSelected ? AppColors.brandAccent.opacity(0.1) : Color.secondary.opacity(0.05))
             .cornerRadius(8)
         }
         .buttonStyle(.plain)
@@ -421,7 +414,7 @@ struct CoreSelectionSheet: View {
         VStack(spacing: 8) {
             Image(systemName: "cpu")
                 .font(.system(size: 48))
-                .foregroundColor(.accentColor)
+                .foregroundColor(AppColors.brandAccent)
             Text(loc.localized("core.multipleCoresAvailable"))
                 .font(.headline)
             Text(loc.localized("core.multipleCoresDescription"))
@@ -441,7 +434,7 @@ struct CoreSelectionSheet: View {
                                 HStack(spacing: 6) {
                                     Text(entry.metadata.displayName)
                                         .font(.body)
-                                        .foregroundColor(selectedCoreID == entry.id ? .accentColor : .primary)
+                                        .foregroundColor(selectedCoreID == entry.id ? AppColors.brandAccent : .primary)
                                     
                                     if entry.metadata.version != "?" {
                                         Text(entry.metadata.version)
@@ -455,7 +448,7 @@ struct CoreSelectionSheet: View {
                                     Spacer()
                                     
                                     Image(systemName: selectedCoreID == entry.id ? "checkmark.circle.fill" : "circle")
-                                        .foregroundColor(selectedCoreID == entry.id ? .accentColor : .secondary)
+                                        .foregroundColor(selectedCoreID == entry.id ? AppColors.brandAccent : .secondary)
                                 }
                                 
                                 Text(entry.metadata.description)
@@ -469,7 +462,7 @@ struct CoreSelectionSheet: View {
                             }
                         }
                         .padding()
-                        .background(selectedCoreID == entry.id ? Color.accentColor.opacity(0.1) : Color.secondary.opacity(0.05))
+                        .background(selectedCoreID == entry.id ? AppColors.brandAccent.opacity(0.1) : Color.secondary.opacity(0.05))
                         .cornerRadius(8)
                     }
                     .buttonStyle(.plain)
@@ -515,7 +508,7 @@ struct SimpleCoreRow: View {
                     HStack(spacing: 6) {
                         Text(core.metadata.displayName)
                             .font(.body)
-                            .foregroundColor(selectedCoreID == core.id ? .accentColor : .primary)
+                            .foregroundColor(selectedCoreID == core.id ? AppColors.brandAccent : .primary)
                         
                         if core.metadata.version != "?" {
                             Text(core.metadata.version)
@@ -539,10 +532,10 @@ struct SimpleCoreRow: View {
                 
                 Spacer()
                 Image(systemName: selectedCoreID == core.id ? "checkmark.circle.fill" : "circle")
-                    .foregroundColor(selectedCoreID == core.id ? .accentColor : .secondary)
+                    .foregroundColor(selectedCoreID == core.id ? AppColors.brandAccent : .secondary)
             }
             .padding()
-            .background(selectedCoreID == core.id ? Color.accentColor.opacity(0.1) : Color.secondary.opacity(0.05))
+            .background(selectedCoreID == core.id ? AppColors.brandAccent.opacity(0.1) : Color.secondary.opacity(0.05))
             .cornerRadius(8)
         }
         .buttonStyle(.plain)

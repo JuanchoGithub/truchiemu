@@ -68,7 +68,7 @@ struct BezelDownloadLogView: View {
                     systemImage: showDetails ? "chevron.up" : "chevron.down"
                 )
                 .font(.caption2)
-                .foregroundColor(.blue)
+                .foregroundColor(AppColors.brandAccent)
                 .frame(maxWidth: .infinity)
             }
             .buttonStyle(.plain)
@@ -95,7 +95,7 @@ struct BezelLogEntryRow: View {
     var statusColor: Color {
         switch entry.status {
         case .inProgress:
-            return .blue
+            return AppColors.brandAccent
         case .success:
             return .green
         case .failed:

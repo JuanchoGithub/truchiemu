@@ -316,14 +316,14 @@ struct SystemCoresView: View {
             .padding(.bottom, 16)
         }
         .frame(maxWidth: .infinity)
-        .sheet(isPresented: Binding(
-            get: { showOptionsFor != nil },
-            set: { if !$0 { showOptionsFor = nil } }
-        )) {
-            if let coreID = showOptionsFor {
-                CoreOptionsView(coreID: coreID)
-            }
+    .sheet(isPresented: Binding(
+        get: { showOptionsFor != nil },
+        set: { if !$0 { showOptionsFor = nil } }
+    )) {
+        if let coreID = showOptionsFor {
+            CoreOptionsView(coreID: coreID, systemID: system.id)
         }
+    }
     }
 }
 

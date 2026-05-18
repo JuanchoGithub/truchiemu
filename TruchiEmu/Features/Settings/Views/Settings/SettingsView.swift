@@ -115,9 +115,22 @@ struct SettingsView: View {
         }
     }
     
+    private struct PageGroup: Identifiable {
+        let id: String
+        let label: String
+        let pages: [Page]
+    }
+    
     static let allPages: [Page] = [
         .boxArt, .cheats, .controllers, .cores, .bezels, .display,
         .general, .genre, .library, .logging, .retroAchievements, .about
+    ]
+    
+    private static let pageGroups: [PageGroup] = [
+        PageGroup(id: "general", label: "General", pages: [.general, .library]),
+        PageGroup(id: "systems", label: "Systems", pages: [.cores, .controllers]),
+        PageGroup(id: "visuals", label: "Visuals", pages: [.boxArt, .display, .bezels, .cheats]),
+        PageGroup(id: "advanced", label: "Advanced", pages: [.retroAchievements, .genre, .logging, .about]),
     ]
     
     @State private var selectedPage: Page = .general
@@ -148,11 +161,25 @@ struct SettingsView: View {
     
     var body: some View {
         NavigationSplitView(columnVisibility: $columnVisibility) {
-            // Sidebar - native macOS sidebar styling
             List(selection: $selectedPage) {
-                ForEach(filteredPages) { page in
-                    sidebarItem(for: page)
-                        .tag(page)
+                if searchText.isEmpty {
+                    ForEach(Self.pageGroups) { group in
+                        Section(header: Text(group.label.uppercased())
+                            .font(.system(size: 11, weight: .semibold, design: .rounded))
+                            .foregroundColor(AppColors.textSecondary(colorScheme))
+                            .padding(.top, 8)
+                        ) {
+                            ForEach(group.pages) { page in
+                                sidebarItem(for: page)
+                                    .tag(page)
+                            }
+                        }
+                    }
+                } else {
+                    ForEach(filteredPages) { page in
+                        sidebarItem(for: page)
+                            .tag(page)
+                    }
                 }
             }
             .listStyle(.sidebar)
@@ -199,11 +226,12 @@ struct SettingsView: View {
         HStack(spacing: 8) {
             Image(systemName: page.icon)
                 .font(.system(size: 14, weight: .medium))
-                .symbolVariant(.fill)
+                .symbolVariant(selectedPage == page ? .fill : .none)
                 .frame(width: 20)
                 .fixedSize()
+                .foregroundColor(selectedPage == page ? AppColors.brandAccent : AppColors.textSecondary(colorScheme))
             Text(page.label)
-                .font(.system(size: 13))
+                .font(AppTypography.callout)
         }
         .frame(maxWidth: .infinity, alignment: .leading)
         .padding(.vertical, 4)
@@ -212,7 +240,11 @@ struct SettingsView: View {
     // MARK: - Detail Content
     @ViewBuilder
     private var detailContent: some View {
-        Group {
+        VStack(spacing: 0) {
+            Rectangle()
+                .fill(AppColors.brandAccent.opacity(0.3))
+                .frame(height: 1)
+            Group {
             switch selectedPage {
             case .general:     GeneralSettingsView(searchText: $searchText)
             case .library:     LibrarySettingsView(searchText: $searchText)
@@ -229,6 +261,7 @@ struct SettingsView: View {
             }
         }
         .frame(minWidth: 550, minHeight: 420)
+        }
     }
 }
 

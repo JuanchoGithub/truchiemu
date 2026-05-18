@@ -68,9 +68,9 @@ struct ContentView: View {
                                  }
                              }
                          },
-                         onSettings: { coreID in
-                             openWindow(id: "core-options", value: coreID)
-                         },
+            onSettings: { systemID in
+                openWindow(id: "core-options", value: systemID)
+            },
                           onSystemAction: { system, action, targetID in
                               let resolvedSystemID = targetID ?? system.id
                               switch action {
@@ -82,10 +82,10 @@ struct ContentView: View {
                                           await library.refreshFolder(at: folder)
                                       }
                                   }
-                              case .settings(let coreID):
-                                  openWindow(id: "core-options", value: coreID)
-                              case .selectCore(let system):
-                                  openWindow(id: "core-options", value: system.id)
+            case .settings(let coreID):
+                openWindow(id: "core-options", value: resolvedSystemID)
+            case .selectCore(let system):
+                openWindow(id: "core-options", value: resolvedSystemID)
                               case .cheats:
                                   var targetSystem = system
                                   if let target = SystemDatabase.system(forID: resolvedSystemID) {

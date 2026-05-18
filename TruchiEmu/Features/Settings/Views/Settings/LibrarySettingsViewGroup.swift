@@ -546,7 +546,7 @@ struct SubfolderRow: View {
                 }
                 
                 Image(systemName: isPrimary ? "folder.fill.badge.plus" : "folder.fill")
-                    .foregroundColor(isPrimary ? .blue : .gray)
+                    .foregroundColor(isPrimary ? AppColors.brandAccent : .gray)
                     .font(.caption)
                     .frame(width: 16)
                 
@@ -559,7 +559,7 @@ struct SubfolderRow: View {
                         if isPrimary {
                             Text("(Independent)")
                                 .font(.caption2)
-                                .foregroundColor(.blue)
+                                .foregroundColor(AppColors.brandAccent)
                         }
                     }
                 }
@@ -780,11 +780,11 @@ struct RebuildOptionsSheet: View {
                             
                             if selectedOption == option {
                                 Image(systemName: "checkmark.circle.fill")
-                                    .foregroundColor(.accentColor)
+                                    .foregroundColor(AppColors.brandAccent)
                             }
                         }
                         .padding(12)
-                        .background(selectedOption == option ? Color.accentColor.opacity(0.1) : Color.clear)
+                        .background(selectedOption == option ? AppColors.brandAccent.opacity(0.1) : Color.clear)
                         .cornerRadius(8)
                     }
                     .buttonStyle(.plain)

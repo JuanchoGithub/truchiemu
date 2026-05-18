@@ -28,7 +28,7 @@ extension GameDetailView {
                     }
                 )) {
                     HStack {
-                        Image(systemName: "gamecontroller.fill").foregroundColor(.blue)
+                        Image(systemName: "gamecontroller.fill").foregroundColor(AppColors.brandAccent)
                         Text(loc.localized("cheats.enableCheats")).foregroundColor(AppColors.textPrimary(colorScheme))
                     }
                 }
