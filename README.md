@@ -66,7 +66,7 @@ In this initial version, DOSBOX and SCUMMVM do not capture the mouse/keyboard ye
 
 ## 🚀 Getting Started
 
-1. **Download & Install**: [Insert download link or instructions here]
+1. **Download & Install**: Get the latest release from https://github.com/JuanchoGithub/truchiemu/releases
 2. **Run the Setup Wizard**: Follow the on-screen instructions to configure your library.
 3. **Add Your Games**: Simply drag and drop your ROM files into the app to begin your journey.
 4. **Start Playing**: Pick a game, choose your favorite shader, and enjoy!
