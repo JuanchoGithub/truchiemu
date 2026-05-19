@@ -36,6 +36,11 @@ class DOSRunner: EmulatorRunner, @unchecked Sendable {
         configureCoreOptions()
         
         super.launch(rom: rom, coreID: coreID, shaderUniformOverrides: shaderUniformOverrides)
+        
+        // Auto-start input capture for DOS games
+        if let window = self.window, !InputCaptureManager.shared.isCapturing {
+            InputCaptureManager.shared.startCapture(window: window)
+        }
     }
     
     // MARK: - Core Options Configuration

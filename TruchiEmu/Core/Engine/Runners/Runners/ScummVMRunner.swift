@@ -375,5 +375,10 @@ class ScummVMRunner: EmulatorRunner, @unchecked Sendable {
             LoggerService.debug(category: "ScummVM", "Launching non-ZIP file normally")
             super.launch(rom: rom, coreID: coreID, shaderUniformOverrides: shaderUniformOverrides)
         }
+        
+        // Auto-start input capture for ScummVM games
+        if let window = self.window, !InputCaptureManager.shared.isCapturing {
+            InputCaptureManager.shared.startCapture(window: window)
+        }
     }
 }

@@ -17,6 +17,9 @@ class InputCaptureManager: NSObject, ObservableObject {
 
     // Local monitor for detecting clicks outside the window
     private var clickMonitor: Any?
+    
+    // Local monitor for forwarding mouse events
+    private var mouseMonitor: Any?
 
     // Local monitor for Escape key (when capturing)
     private var escapeMonitor: Any?
@@ -61,6 +64,9 @@ class InputCaptureManager: NSObject, ObservableObject {
             // In true fullscreen, macOS hides the menu bar automatically
         }
 
+        // Setup mouse and keyboard event monitors
+        setupEventMonitors()
+
         // Setup click-outside monitor to release capture
         setupClickOutsideMonitor()
 
@@ -98,6 +104,7 @@ class InputCaptureManager: NSObject, ObservableObject {
         }
 
         // Remove monitors
+        removeEventMonitors()
         removeClickOutsideMonitor()
 
         // Remove app resignation observer
@@ -153,7 +160,114 @@ class InputCaptureManager: NSObject, ObservableObject {
         }
     }
 
-    // MARK: - Cmd+F10 Handler
+    // MARK: - Event Monitors
+
+    private func setupEventMonitors() {
+        // Monitor all mouse events and forward them to the captured window
+        // Use global monitors to ensure we capture all input
+        clickMonitor = NSEvent.addLocalMonitorForEvents(matching: .mouseMoved) { [weak self] event in
+            LoggerService.debug(category: "InputCapture", "Mouse moved event: location=\(event.locationInWindow)")
+            self?.handleMouseEvent(event)
+            return event // Continue normal event processing
+        }
+        
+        clickMonitor = NSEvent.addLocalMonitorForEvents(matching: .leftMouseDown) { [weak self] event in
+            LoggerService.debug(category: "InputCapture", "Left mouse down event: location=\(event.locationInWindow)")
+            self?.handleMouseEvent(event)
+            return event // Continue normal event processing
+        }
+        
+        clickMonitor = NSEvent.addLocalMonitorForEvents(matching: .leftMouseUp) { [weak self] event in
+            LoggerService.debug(category: "InputCapture", "Left mouse up event: location=\(event.locationInWindow)")
+            self?.handleMouseEvent(event)
+            return event // Continue normal event processing
+        }
+        
+        clickMonitor = NSEvent.addLocalMonitorForEvents(matching: .rightMouseDown) { [weak self] event in
+            LoggerService.debug(category: "InputCapture", "Right mouse down event: location=\(event.locationInWindow)")
+            self?.handleMouseEvent(event)
+            return event // Continue normal event processing
+        }
+        
+        clickMonitor = NSEvent.addLocalMonitorForEvents(matching: .rightMouseUp) { [weak self] event in
+            LoggerService.debug(category: "InputCapture", "Right mouse up event: location=\(event.locationInWindow)")
+            self?.handleMouseEvent(event)
+            return event // Continue normal event processing
+        }
+        
+        clickMonitor = NSEvent.addLocalMonitorForEvents(matching: .otherMouseDown) { [weak self] event in
+            LoggerService.debug(category: "InputCapture", "Other mouse down event: location=\(event.locationInWindow)")
+            self?.handleMouseEvent(event)
+            return event // Continue normal event processing
+        }
+        
+        clickMonitor = NSEvent.addLocalMonitorForEvents(matching: .otherMouseUp) { [weak self] event in
+            LoggerService.debug(category: "InputCapture", "Other mouse up event: location=\(event.locationInWindow)")
+            self?.handleMouseEvent(event)
+            return event // Continue normal event processing
+        }
+        
+        clickMonitor = NSEvent.addLocalMonitorForEvents(matching: .scrollWheel) { [weak self] event in
+            LoggerService.debug(category: "InputCapture", "Scroll wheel event: deltaY=\(event.deltaY)")
+            self?.handleMouseEvent(event)
+            return event // Continue normal event processing
+        }
+    }
+    
+    private func handleMouseEvent(_ event: NSEvent) {
+        guard let window = capturedWindow else { return }
+        
+        LoggerService.debug(category: "InputCapture", "Handling mouse event: type=\(event.type), location=\(event.locationInWindow)")
+        
+        // Convert to window coordinates and send directly
+        let windowLocation = event.locationInWindow
+        
+        // Create a new event with the same properties
+        if let newEvent = NSEvent.mouseEvent(
+            with: event.type,
+            location: windowLocation,
+            modifierFlags: event.modifierFlags,
+            timestamp: event.timestamp,
+            windowNumber: window.windowNumber,
+            context: nil,
+            eventNumber: event.eventNumber,
+            clickCount: event.clickCount,
+            pressure: event.pressure
+        ) {
+            window.sendEvent(newEvent)
+        }
+    }
+    
+    private func forwardMouseEvent(_ event: NSEvent) {
+        guard let window = capturedWindow else { return }
+        
+        LoggerService.debug(category: "InputCapture", "Forwarding mouse event: type=\(event.type), location=\(event.locationInWindow)")
+        
+        // Create a new mouse event with the same properties and send it to the window
+        // Note: buttonNumber is not available in all NSEvent.mouseEvent variants
+        let mouseEvent = NSEvent.mouseEvent(
+            with: event.type,
+            location: event.locationInWindow,
+            modifierFlags: event.modifierFlags,
+            timestamp: event.timestamp,
+            windowNumber: window.windowNumber,
+            context: nil,
+            eventNumber: event.eventNumber,
+            clickCount: event.clickCount,
+            pressure: event.pressure
+        )
+        
+        if let mouseEvent = mouseEvent {
+            window.sendEvent(mouseEvent)
+        }
+    }
+
+    private func removeEventMonitors() {
+        if let monitor = mouseMonitor {
+            NSEvent.removeMonitor(monitor)
+            mouseMonitor = nil
+        }
+    }
 
     // Called from the window controller when Cmd+F10 is pressed
     func handleToggleHotkey(window: NSWindow) {

@@ -16,14 +16,15 @@ class FocusableMTKView: MTKView {
     override func mouseDown(with event: NSEvent) {
         self.window?.makeFirstResponder(self)
 
-        // Start input capture on click if not already capturing
+        // Auto-start input capture for DOS/ScummVM games on first click
         if let window = self.window, !InputCaptureManager.shared.isCapturing {
-            let coreID = runner?.rom?.systemID?.lowercased() ?? ""
-            if coreID == "dos" || coreID == "scummvm" {
+            if shouldCaptureInputForCurrentGame() {
                 InputCaptureManager.shared.startCapture(window: window)
+                LoggerService.info(category: "InputCapture", "Started capture for DOS/ScummVM game")
             }
         }
 
+        LoggerService.debug(category: "InputCapture", "Mouse down: button=0, inCapture=\(InputCaptureManager.shared.isCapturing)")
         LibretroBridgeSwift.setMouseButton(0, pressed: true)
     }
 
@@ -40,6 +41,7 @@ class FocusableMTKView: MTKView {
     }
 
     override func mouseMoved(with event: NSEvent) {
+        LoggerService.debug(category: "InputCapture", "Mouse moved: dx=\(event.deltaX), dy=\(event.deltaY), inCapture=\(InputCaptureManager.shared.isCapturing)")
         updateMouseDelta(with: event)
     }
 
@@ -97,7 +99,6 @@ class FocusableMTKView: MTKView {
     // MARK: - Keyboard Events
 
     override func keyDown(with event: NSEvent) {
-
         // Save state hotkeys - these are handled specially, not sent to core
         if event.modifierFlags.isEmpty || event.modifierFlags.contains(.command) {
             switch event.keyCode {
@@ -133,23 +134,98 @@ class FocusableMTKView: MTKView {
             }
         }
 
-        // 1. Mapped Path: Send to Joypad mapping (for standard cores)
-        if let rid = runner?.mapKey(event.keyCode) {
-            runner?.setKeyState(retroID: rid, pressed: true)
+        // For DOS/ScummVM games, bypass ALL TruchiEmu keyboard handling and send properly mapped keys to DOSBOX
+        if shouldCaptureInputForCurrentGame() {
+            LoggerService.debug(category: "InputCapture", "DOS/ScummVM keyDown event: keyCode=\(event.keyCode), characters='\(event.characters ?? "")', charactersIgnoringModifiers='\(event.charactersIgnoringModifiers ?? "")'")
+            
+            // Convert Mac key code to libretro key code using the proper mapper
+            let retroKey = RetroKeycodeMapper.retroKey(fromMacOS: event.keyCode)
+            guard retroKey != 0 else { 
+                LoggerService.debug(category: "InputCapture", "Unmapped key for DOS/ScummVM: keyCode=\(event.keyCode)")
+                return 
+            }
+            
+            // Convert modifiers to retro format
+            var modifiers: UInt32 = 0
+            if event.modifierFlags.contains(.shift) { modifiers |= 1 << 0 }
+            if event.modifierFlags.contains(.control) { modifiers |= 1 << 1 }
+            if event.modifierFlags.contains(.option) { modifiers |= 1 << 2 }
+            if event.modifierFlags.contains(.command) { modifiers |= 1 << 3 }
+            
+            // Get the proper character - if shift is pressed and it's a letter, use uppercase
+            var characterValue: UInt32 = 0
+            if let chars = event.charactersIgnoringModifiers {
+                if event.modifierFlags.contains(.shift) {
+                    // For shift+letter, convert to uppercase
+                    characterValue = UInt32(chars.uppercased().unicodeScalars.first?.value ?? 0)
+                } else {
+                    characterValue = UInt32(chars.unicodeScalars.first?.value ?? 0)
+                }
+            }
+            
+            LoggerService.debug(category: "InputCapture", "DOS/ScummVM sending keyDown: retroKey=\(retroKey), modifiers=\(modifiers), character=\(characterValue)")
+            
+            // Send properly mapped key event directly to core
+            LibretroBridgeSwift.dispatchKeyboardEvent(
+                keycode: retroKey,
+                character: characterValue,
+                modifiers: modifiers,
+                down: true
+            )
+        } else {
+            LoggerService.debug(category: "InputCapture", "Mapped keyboard event for standard core: keyCode=\(event.keyCode)")
+            // For standard cores, use the normal mapped path
+            if let rid = runner?.mapKey(event.keyCode) {
+                runner?.setKeyState(retroID: rid, pressed: true)
+            }
         }
-
-        // 2. Raw Path: Send to Libretro core (for DOS/ScummVM)
-        dispatchKeyboardEvent(event, down: true)
     }
 
     override func keyUp(with event: NSEvent) {
-        // 1. Mapped Path: Send to Joypad mapping (for standard cores)
-        if let rid = runner?.mapKey(event.keyCode) {
-            runner?.setKeyState(retroID: rid, pressed: false)
+        // For DOS/ScummVM games, bypass ALL TruchiEmu keyboard handling and send properly mapped keys to DOSBOX
+        if shouldCaptureInputForCurrentGame() {
+            LoggerService.debug(category: "InputCapture", "DOS/ScummVM keyUp event: keyCode=\(event.keyCode)")
+            
+            // Convert Mac key code to libretro key code using the proper mapper
+            let retroKey = RetroKeycodeMapper.retroKey(fromMacOS: event.keyCode)
+            guard retroKey != 0 else { 
+                LoggerService.debug(category: "InputCapture", "Unmapped key for DOS/ScummVM: keyCode=\(event.keyCode)")
+                return 
+            }
+            
+            // Convert modifiers to retro format
+            var modifiers: UInt32 = 0
+            if event.modifierFlags.contains(.shift) { modifiers |= 1 << 0 }
+            if event.modifierFlags.contains(.control) { modifiers |= 1 << 1 }
+            if event.modifierFlags.contains(.option) { modifiers |= 1 << 2 }
+            if event.modifierFlags.contains(.command) { modifiers |= 1 << 3 }
+            
+            // Get the proper character - if shift is pressed and it's a letter, use uppercase
+            var characterValue: UInt32 = 0
+            if let chars = event.charactersIgnoringModifiers {
+                if event.modifierFlags.contains(.shift) {
+                    // For shift+letter, convert to uppercase
+                    characterValue = UInt32(chars.uppercased().unicodeScalars.first?.value ?? 0)
+                } else {
+                    characterValue = UInt32(chars.unicodeScalars.first?.value ?? 0)
+                }
+            }
+            
+            // Send properly mapped key event directly to core
+            LoggerService.debug(category: "InputCapture", "DOS/ScummVM sending keyUp: retroKey=\(retroKey), modifiers=\(modifiers), character=\(characterValue)")
+            LibretroBridgeSwift.dispatchKeyboardEvent(
+                keycode: retroKey,
+                character: characterValue,
+                modifiers: modifiers,
+                down: false
+            )
+        } else {
+            LoggerService.debug(category: "InputCapture", "Mapped keyUp event for standard core: keyCode=\(event.keyCode)")
+            // For standard cores, use the normal mapped path
+            if let rid = runner?.mapKey(event.keyCode) {
+                runner?.setKeyState(retroID: rid, pressed: false)
+            }
         }
-
-        // 2. Raw Path: Send to Libretro core (for DOS/ScummVM)
-        dispatchKeyboardEvent(event, down: false)
     }
 
     private func dispatchKeyboardEvent(_ event: NSEvent, down: Bool) {
@@ -171,6 +247,33 @@ class FocusableMTKView: MTKView {
             modifiers: modifiers,
             down: down
         )
+    }
+
+    // MARK: - Input Capture Helpers
+
+    /// Returns true if the current game should use full input capture (DOS/ScummVM)
+    private func shouldCaptureInputForCurrentGame() -> Bool {
+        guard let runner = runner else { return false }
+        let systemID = runner.systemID.lowercased()
+        return systemID == "dos" || systemID == "scummvm"
+    }
+
+    /// Updates input capture state when the runner changes
+    func updateRunner() {
+        // Stop capture if the runner changed (different game/system)
+        if InputCaptureManager.shared.isCapturing && !shouldCaptureInputForCurrentGame() {
+            InputCaptureManager.shared.stopCapture(reason: "Runner changed")
+        }
+        
+        // Update window reference in runner
+        runner?.window = self.window
+        
+        // Auto-start input capture for DOS/ScummVM games
+        if let window = self.window, !InputCaptureManager.shared.isCapturing {
+            if shouldCaptureInputForCurrentGame() {
+                InputCaptureManager.shared.startCapture(window: window)
+            }
+        }
     }
 
 }

@@ -276,6 +276,9 @@ class EmulatorRunner: ObservableObject, @unchecked Sendable {
     // Used to prevent showing the window before game content is ready (avoids bezel flash).
     @MainActor @Published var isReadyForDisplay: Bool = false
     
+    // Reference to the game window for input capture
+    @MainActor weak var window: NSWindow?
+    
     // MARK: - Save State
     @MainActor @Published var currentSlot: Int = 0
     @MainActor @Published var osdMessage: String?
