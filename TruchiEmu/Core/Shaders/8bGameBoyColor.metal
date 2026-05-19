@@ -211,7 +211,7 @@ float4 renderGBCShell(float2 p, constant GBCUniforms &u) {
 
     if (lensSDF < 0.0 && screenSDF > 0.0) {
         col = float3(0.16, 0.16, 0.18);
-        if (screenSDF < 0.6) col = float3(0.04, 0.04, 0.05);
+        if (screenSDF > 0.0 && screenSDF < 1.6) col = float3(0.04, 0.04, 0.05);
         if (length(p - float2(-78.0, -8.0)) < 2.2) col = float3(1.0, 0.2, 0.1);
         
         float2 logoP = p - float2(-34.0, 52.0);
@@ -258,7 +258,7 @@ fragment float4 fragment8BitGBC(VertexOut in [[stage_in]],
       // Inside inner area - render actual screen content
          constexpr sampler samp(coord::normalized, address::clamp_to_edge, filter::linear);
          // Map p coordinates to 0..1 UV across the inner screen area
-         float2 uv = (p - (screenCenter - screenSize)) / (screenSize * 2.0);
+         float2 uv = (p - (screenCenter - innerScreenSize)) / (innerScreenSize * 2.0);
          float2 centeredUV = uv - float2(0.5, 0.5);
             float sqDist = dot(centeredUV, centeredUV);
 
@@ -297,18 +297,17 @@ fragment float4 fragment8BitGBC(VertexOut in [[stage_in]],
                 float4 bleedSample = frame0.sample(samp, float2(uv.x, 0.5));
                 float bleedVal = (bleedSample.a < 1.0) ? bleedSample.a : bleedSample.g;
                 color -= float3(bleedVal * 0.008);
-color *= (0.97 + pcg_hash_gbc(pixelIndex * 3.3) * 0.06);
+                color *= (0.97 + pcg_hash_gbc(pixelIndex * 3.3) * 0.06);
             }
 
             float2 grid = abs(fract(uv * u.sourceSize.xy - 0.5) - 0.5) / fwidth(uv * u.sourceSize.xy);
-            float3 gbcScreenColor = float3(0.593, 0.622, 0.604);
-            color = mix(gbcScreenColor, color * mix(1.0, 0.85, (1.0 - smoothstep(0.0, 1.0, min(grid.x, grid.y)))), u.dotOpacity);
+            color *= mix(1.0, 0.85, (1.0 - smoothstep(0.0, 1.0, min(grid.x, grid.y)))) * u.dotOpacity;
 
-          // Only apply grid when FLAG_GRID is enabled
-          if (u.flags & FLAG_GRID) {
-             float2 grid = abs(fract(uv * u.sourceSize.xy - 0.5) - 0.5) / fwidth(uv * u.sourceSize.xy);
-             color = mix(gbcScreenColor, color * mix(1.0, 0.85, (1.0 - smoothstep(0.0, 1.0, min(grid.x, grid.y)))), u.dotOpacity);
-          }
+         // Only apply grid when FLAG_GRID is enabled
+         if (u.flags & FLAG_GRID) {
+            float2 grid = abs(fract(uv * u.sourceSize.xy - 0.5) - 0.5) / fwidth(uv * u.sourceSize.xy);
+            color *= mix(1.0, 0.85, (1.0 - smoothstep(0.0, 1.0, min(grid.x, grid.y)))) * u.dotOpacity;
+         }
          float shadow = smoothstep(-52.0, -47.0, p.y - screenCenter.y) * smoothstep(70.0, 65.0, p.x - screenCenter.x);
          if (u.flags & FLAG_COLOR_MATRIX) color = color * float3x3(0.85, 0.1, 0.05, 0.05, 0.85, 0.1, 0.1, 0.05, 0.85);
 
@@ -403,10 +402,9 @@ color *= (0.97 + pcg_hash_gbc(pixelIndex * 3.3) * 0.06);
         maskS = smoothstep(thick, 0.0, abs(fract(pCoord + sOffset) - 0.5).x) * smoothstep(thick, 0.0, abs(fract(pCoord + sOffset) - 0.5).y);
    }
 
-// GBC screen background color for authentic pixel gaps
-    float3 gbcScreenColor = float3(0.593, 0.622, 0.604);
-    float3 bg = mix(gbcScreenColor, float3(0.20, 0.21, 0.18), maskS) + (sCol * 0.05);
-     float3 final = mix(gbcScreenColor, mix(bg, sCol, maskG), u.dotOpacity) * 0.65;
+   // GBC screen background color for authentic pixel gaps
+   float3 bg = mix(float3(0.593, 0.622, 0.604), float3(0.20, 0.21, 0.18), maskS) + (sCol * 0.05);
+    float3 final = mix(bg, sCol, maskG * u.dotOpacity + (1.0 - u.dotOpacity)) * 0.65;
 
     if (u.flags & FLAG_NEWTON_RINGS) {
         float aggression = (u.lightStrength > 0.0) ? u.lightStrength : 1.0;
