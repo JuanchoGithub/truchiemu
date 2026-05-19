@@ -5,7 +5,12 @@
 
 # HomePage
 
-https://juanchogithub.github.io/truchiemu/
+Home page is being mantained from the repo itself, and it is here: https://juanchogithub.github.io/truchiemu/
+
+# Download
+Download and install from my releases page: https://github.com/JuanchoGithub/truchiemu/releases
+
+# TruchiEmu
 
 **The ultimate retro gaming experience, beautifully reimagined for macOS.**
 
