@@ -9,22 +9,18 @@ struct SetupWizardView: View {
     @EnvironmentObject var controllerService: ControllerService
     @EnvironmentObject var categoryManager: CategoryManager
     @EnvironmentObject var loc: LocalizationManager
-    
+
     @State private var raLoginError: String?
     @State private var isRALoggingIn: Bool = false
-    
+
     var body: some View {
         ZStack {
-            // Clean, minimal backdrop
             Color(nsColor: .windowBackgroundColor)
                 .ignoresSafeArea()
-            
-            // Centered wizard card — adaptive size
+
             VStack(spacing: 0) {
-                // Simple header with step indicator
                 headerBar
-                
-                // Content area
+
                 ZStack {
                     switch wizard.currentStep {
                     case .getStarted: stepGetStarted
@@ -34,8 +30,7 @@ struct SetupWizardView: View {
                     }
                 }
                 .padding(32)
-                
-                // Navigation buttons
+
                 bottomNavigation
             }
             .padding()
@@ -45,9 +40,9 @@ struct SetupWizardView: View {
             .shadow(color: Color(nsColor: .shadowColor).opacity(0.15), radius: 20, y: 4)
         }
     }
-    
+
     // MARK: - Header
-    
+
     private var headerBar: some View {
         VStack(spacing: 12) {
             HStack {
@@ -58,8 +53,7 @@ struct SetupWizardView: View {
             }
             .padding(.horizontal, 16)
             .padding(.top, 12)
-            
-            // Step progress
+
             HStack(spacing: 0) {
                 ForEach(Array(SetupWizardState.WizardStep.allCases.enumerated()), id: \.element.id) { idx, step in
                     Circle()
@@ -74,7 +68,7 @@ struct SetupWizardView: View {
                 }
             }
             .padding(.horizontal, 24)
-            
+
             Text(wizard.currentStep.title)
                 .font(.title2)
                 .fontWeight(.semibold)
@@ -82,9 +76,9 @@ struct SetupWizardView: View {
         }
         .padding(.bottom, 8)
     }
-    
+
     // MARK: - Bottom Navigation
-    
+
     private var bottomNavigation: some View {
         HStack {
             if wizard.currentStepIndex > 0 && wizard.currentStep != .completion {
@@ -99,7 +93,6 @@ struct SetupWizardView: View {
 
             Spacer()
 
-            // Skip button for optional steps
             if wizard.currentStep.canSkip {
                 Button(loc.localized("wizard.skip")) {
                     wizard.nextStep()
@@ -108,7 +101,6 @@ struct SetupWizardView: View {
                 .foregroundColor(.secondary)
             }
 
-            // Next / Finish button
             if wizard.currentStep == .completion {
                 Button(loc.localized("wizard.enterLibrary")) {
                     finishSetup()
@@ -131,27 +123,23 @@ struct SetupWizardView: View {
         }
         .padding(.top, 16)
     }
-    
+
     private func finishSetup() {
         wizard.hasCompletedWizard = true
         library.hasCompletedOnboarding = true
         AppSettings.setBool("has_completed_onboarding", value: true)
-        
+
         AppSettings.setBool("logging_enabled", value: wizard.loggingEnabled)
         AppSettings.set("display_default_shader_preset", value: wizard.selectedShaderPresetID)
-        
-        // Add library folders (each triggers its own scan via addPrimaryFolder)
+
         for folder in wizard.libraryFolders {
             library.addLibraryFolder(url: folder)
         }
-        
-        // Capture main actor-isolated values before entering detached task
+
         let downloadBezels = wizard.downloadBezels
         let downloadCheats = wizard.downloadCheats
-        
-        // Kick off background tasks without blocking the UI
+
         Task.detached(priority: .utility) {
-            // Download bezels and cheats in parallel if requested
             if downloadBezels || downloadCheats {
                 await withTaskGroup(of: Void.self) { group in
                     if downloadBezels {
@@ -162,8 +150,7 @@ struct SetupWizardView: View {
                     }
                 }
             }
-            
-            // RetroAchievements login
+
             /*
             if achievementsEnabled && !achievementsUsername.isEmpty && !achievementsPassword.isEmpty {
                 do {
@@ -246,7 +233,7 @@ extension SetupWizardView {
             }
         }
     }
-    
+
     private func pickFolder() {
         let panel = NSOpenPanel()
         panel.canChooseDirectories = true
@@ -269,40 +256,49 @@ extension SetupWizardView {
 
 extension SetupWizardView {
     private var stepLookAndFeel: some View {
-        VStack(spacing: 24) {
+        VStack(alignment: .leading, spacing: 24) {
             // Bezels
             VStack(alignment: .leading, spacing: 12) {
                 Label(loc.localized("bezel.title"), systemImage: "rectangle.on.rectangle")
                     .font(.headline)
-                Text("wizard.bezelsDescription")
-                    .foregroundColor(.secondary)
-                    .font(.callout)
 
-                Toggle(loc.localized("wizard.downloadBezelsToggle"), isOn: $wizard.downloadBezels)
-                    .toggleStyle(.switch)
-                    .tint(AppColors.brandAccent)
+                VStack(alignment: .leading, spacing: 8) {
+                    Text("wizard.bezelsDescription")
+                        .foregroundColor(.secondary)
+                        .font(.callout)
+
+                    Toggle(loc.localized("wizard.downloadBezelsToggle"), isOn: $wizard.downloadBezels)
+                        .toggleStyle(.switch)
+                        .tint(AppColors.brandAccent)
+                }
+                .padding(.leading, 4)
             }
+
             Divider()
 
             // Shaders
             VStack(alignment: .leading, spacing: 12) {
                 Label(loc.localized("wizard.defaultShader"), systemImage: "tv")
                     .font(.headline)
-                Text("wizard.shaderDescription")
-                    .foregroundColor(.secondary)
-                    .font(.callout)
 
-                ScrollView(.horizontal, showsIndicators: false) {
-                    HStack(spacing: 8) {
-                        ForEach(ShaderPreset.allPresets, id: \.id) { preset in
-                            shaderPill(preset: preset)
+                VStack(alignment: .leading, spacing: 8) {
+                    Text("wizard.shaderDescription")
+                        .foregroundColor(.secondary)
+                        .font(.callout)
+
+                    ScrollView(.horizontal, showsIndicators: false) {
+                        HStack(spacing: 8) {
+                            ForEach(ShaderPreset.allPresets, id: \.id) { preset in
+                                shaderPill(preset: preset)
+                            }
                         }
                     }
                 }
+                .padding(.leading, 4)
             }
         }
     }
-    
+
     private func shaderPill(preset: ShaderPreset) -> some View {
         let isSelected = wizard.selectedShaderPresetID == preset.id
         return Button {
@@ -321,7 +317,7 @@ extension SetupWizardView {
         }
         .buttonStyle(.plain)
     }
-    
+
     private func shaderIcon(for type: ShaderType) -> String {
         switch type {
         case .crt: return "tv"
@@ -337,7 +333,7 @@ extension SetupWizardView {
 
 extension SetupWizardView {
     private var stepOptionalFeatures: some View {
-        VStack(spacing: 20) {
+        VStack(alignment: .leading, spacing: 20) {
             // Cheats
             featureToggle(
                 title: loc.localized("wizard.cheatsTitle"),
@@ -347,36 +343,37 @@ extension SetupWizardView {
                 detail: loc.localized("wizard.cheatsDetail")
             )
 
+            Divider()
+
             // Achievements
-            VStack(alignment: .leading, spacing: 12) {
+            VStack(alignment: .leading, spacing: 8) {
                 Toggle(isOn: $wizard.achievementsEnabled) {
-                    Label {
-                        Text("retroAchievements.title")
-                    } icon: {
-                        Image(systemName: "trophy")
+                    Label { Text("retroAchievements.title")
+                    } icon: { Image(systemName: "trophy")
                     }
                 }
                 .toggleStyle(.switch)
                 .tint(AppColors.brandAccent)
 
-                Text("wizard.retroAchievementsDescription")
-                    .foregroundColor(.secondary)
-                    .font(.callout)
+                VStack(alignment: .leading, spacing: 8) {
+                    Text("wizard.retroAchievementsDescription")
+                        .foregroundColor(.secondary)
+                        .font(.callout)
 
-                if wizard.achievementsEnabled {
-                    VStack(spacing: 8) {
-                        TextField(loc.localized("retroAchievements.username"), text: $wizard.achievementsUsername)
-                            .textFieldStyle(.roundedBorder)
-                        SecureField(loc.localized("retroAchievements.password"), text: $wizard.achievementsPassword)
-                            .textFieldStyle(.roundedBorder)
+                    if wizard.achievementsEnabled {
+                        VStack(spacing: 8) {
+                            TextField(loc.localized("retroAchievements.username"), text: $wizard.achievementsUsername)
+                                .textFieldStyle(.roundedBorder)
+                            SecureField(loc.localized("retroAchievements.password"), text: $wizard.achievementsPassword)
+                                .textFieldStyle(.roundedBorder)
 
-                        if let error = raLoginError {
-                            Label(error, systemImage: "xmark.circle.fill")
-                                .font(.caption)
-                                .foregroundColor(.red)
-                        }
+                            if let error = raLoginError {
+                                Label(error, systemImage: "xmark.circle.fill")
+                                    .font(.caption)
+                                    .foregroundColor(.red)
+                            }
 
-                        /*HStack(spacing: 8) {
+                            /*HStack(spacing: 8) {
                             Button {
                                 Task {
                                     isRALoggingIn = true
@@ -398,13 +395,17 @@ extension SetupWizardView {
                             Link("Create Account", destination: URL(string: "https://retroachievements.org")!)
                                 .font(.callout)
                                 .foregroundColor(AppColors.brandAccent)
-                        }*/
+                            }*/
+                        }
+                        .padding(12)
+                        .background(Color.secondary.opacity(0.05))
+                        .cornerRadius(8)
                     }
-                    .padding()
-                    .background(Color.secondary.opacity(0.05))
-                    .cornerRadius(8)
                 }
+                .padding(.leading, 36)
             }
+
+            Divider()
 
             // Logging
             featureToggle(
@@ -416,33 +417,34 @@ extension SetupWizardView {
             )
         }
     }
-    
+
     private func featureToggle(title: String, icon: String, description: String, isOn: Binding<Bool>, detail: String) -> some View {
         VStack(alignment: .leading, spacing: 8) {
             Toggle(isOn: isOn) {
-                Label {
-                    Text(title)
-                        .fontWeight(.medium)
-                } icon: {
-                    Image(systemName: icon)
+                Label { Text(title)
+                    .fontWeight(.medium)
+                } icon: { Image(systemName: icon)
                 }
             }
             .toggleStyle(.switch)
             .tint(AppColors.brandAccent)
-            
-            Text(description)
-                .foregroundColor(.secondary)
-                .font(.callout)
-            
-            if isOn.wrappedValue {
-                HStack(spacing: 6) {
-                    Image(systemName: "info.circle")
-                        .font(.caption)
-                    Text(detail)
-                        .font(.caption)
-                        .foregroundColor(.secondary)
+
+            VStack(alignment: .leading, spacing: 6) {
+                Text(description)
+                    .foregroundColor(.secondary)
+                    .font(.callout)
+
+                if isOn.wrappedValue {
+                    HStack(spacing: 6) {
+                        Image(systemName: "info.circle")
+                            .font(.caption)
+                        Text(detail)
+                            .font(.caption)
+                            .foregroundColor(.secondary)
+                    }
                 }
             }
+            .padding(.leading, 36)
         }
     }
 }

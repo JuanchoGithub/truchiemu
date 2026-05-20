@@ -12,11 +12,16 @@ struct GeneralSettingsView: View {
     @State private var launchboxEnabled: Bool = true
     @State private var showSyncConfirmation = false
     @State private var lastSyncText: String = ""
-    
+
+    @State private var pendingTheme: AccentColorTheme = .cyan
+    @State private var pendingCustomColor: Color = Color(.sRGB, red: 0.031, green: 0.569, blue: 0.698)
+    @State private var pendingToolbarAccent: Bool = true
+    @State private var showRestartConfirmation = false
+
     @Binding var searchText: String
-    
-    // Observe LocalizationManager so the view updates when language changes
+
     @ObservedObject private var loc = LocalizationManager.shared
+    @ObservedObject private var themeManager = ThemeManager.shared
     
     init(searchText: Binding<String> = .constant("")) {
         self._searchText = searchText
@@ -48,9 +53,96 @@ struct GeneralSettingsView: View {
                     }
                     .pickerStyle(.menu)
                 }
+        }
+
+        // ★ Theme – accent color presets, custom picker, preview card
+        if !isSearching || matchesSearch("Theme accent color toolbar") {
+            Section(header: Label(loc.localized("settings.theme"), systemImage: "paintpalette")) {
+                VStack(alignment: .leading, spacing: AppSpacing.md) {
+                    Text(loc.localized("settings.accentColor"))
+                        .font(.caption)
+                        .foregroundStyle(AppColors.textSecondary(colorScheme))
+
+                    HStack(spacing: AppSpacing.md) {
+                        ForEach(AccentColorTheme.allCases.filter { !$0.isCustom }, id: \.self) { theme in
+                            Button {
+                                pendingTheme = theme
+                            } label: {
+                                Circle()
+                                    .fill(theme.accent)
+                                    .frame(width: 24, height: 24)
+                                    .overlay(
+                                        Circle()
+                                            .strokeBorder(Color.primary.opacity(0.2), lineWidth: pendingTheme == theme ? 2 : 0)
+                                    )
+                                    .overlay(
+                                        Image(systemName: "checkmark")
+                                            .font(.system(size: 10, weight: .bold))
+                                            .foregroundStyle(.white)
+                                            .opacity(pendingTheme == theme ? 1 : 0)
+                                    )
+                            }
+                            .buttonStyle(.plain)
+                            .help(theme.displayName)
+                        }
+
+                        Button {
+                            pendingTheme = .custom
+                        } label: {
+                            ZStack {
+                                Circle()
+                                    .strokeBorder(Color.primary.opacity(0.3), lineWidth: 1.5)
+                                    .frame(width: 24, height: 24)
+                                Image(systemName: "plus")
+                                    .font(.system(size: 9, weight: .semibold))
+                                    .foregroundStyle(AppColors.textSecondary(colorScheme))
+                            }
+                        }
+                        .buttonStyle(.plain)
+                        .help(loc.localized("settings.theme.custom"))
+                    }
+
+                    if pendingTheme == .custom {
+                        ColorPicker(loc.localized("settings.customColor"), selection: $pendingCustomColor, supportsOpacity: false)
+                    }
+
+                    Toggle(loc.localized("settings.toolbarAccent"), isOn: $pendingToolbarAccent)
+                    Text(loc.localized("settings.toolbarAccentDescription"))
+                        .font(.caption)
+                        .foregroundStyle(AppColors.textSecondary(colorScheme))
+                }
+
+                VStack(alignment: .leading, spacing: AppSpacing.sm) {
+                    Text(loc.localized("settings.theme.previewTitle"))
+                        .font(.caption.weight(.semibold))
+                        .foregroundStyle(AppColors.textSecondary(colorScheme))
+
+                    ThemePreviewCard(accent: previewAccent, accentDimmed: previewAccentDimmed, accentDark: previewAccentDark)
+                }
+
+                Button(loc.localized("settings.theme.applyTheme")) {
+                    themeManager.applyTheme(pendingTheme, customColor: pendingTheme == .custom ? pendingCustomColor : nil)
+                    themeManager.setToolbarAccent(pendingToolbarAccent)
+                    showRestartConfirmation = true
+                }
+                .buttonStyle(.borderedProminent)
+                .disabled(!themeHasChanged)
+                .confirmationDialog(
+                    loc.localized("settings.theme.restartRequired"),
+                    isPresented: $showRestartConfirmation,
+                    titleVisibility: .visible
+                ) {
+                    Button(loc.localized("settings.theme.restartNow")) {
+                        ThemeManager.relaunchApp()
+                    }
+                    Button(loc.localized("settings.theme.later"), role: .cancel) {}
+                } message: {
+                    Text(loc.localized("settings.theme.restartMessage"))
+                }
             }
-            
-            // Save States Section
+        }
+
+        // Save States Section
             if !isSearching || matchesSearch("Save States auto save auto-load compress") {
                 Section(header: Label(loc.localized("settings.saveStates"), systemImage: "doc.badge.clock")) {
                     Toggle(loc.localized("settings.autoSaveOnExit"), isOn: $autoSaveOnExit)
@@ -184,14 +276,17 @@ struct GeneralSettingsView: View {
         }
         .formStyle(.grouped)
         .navigationTitle("General")
-        .onAppear {
-            showHiddenGamesCategory = AppSettings.getBool("showHiddenGamesCategory", defaultValue: true)
-            launchboxEnabled = launchboxService.isEnabled
-            autoSaveOnExit = AppSettings.getBool("saveState_autoSaveOnExit", defaultValue: false)
-            autoLoadOnStart = AppSettings.getBool("saveState_autoLoadOnStart", defaultValue: false)
-            compressSaveStates = AppSettings.getBool("saveState_compress", defaultValue: true)
-            updateLastSyncText()
-        }
+    .onAppear {
+        showHiddenGamesCategory = AppSettings.getBool("showHiddenGamesCategory", defaultValue: true)
+        launchboxEnabled = launchboxService.isEnabled
+        autoSaveOnExit = AppSettings.getBool("saveState_autoSaveOnExit", defaultValue: false)
+        autoLoadOnStart = AppSettings.getBool("saveState_autoLoadOnStart", defaultValue: false)
+        compressSaveStates = AppSettings.getBool("saveState_compress", defaultValue: true)
+        pendingTheme = themeManager.currentTheme
+        pendingCustomColor = themeManager.customAccentColor
+        pendingToolbarAccent = themeManager.toolbarAccentEnabled
+        updateLastSyncText()
+    }
         .onChange(of: showHiddenGamesCategory) { _, newValue in
             AppSettings.setBool("showHiddenGamesCategory", value: newValue)
         }
@@ -209,7 +304,31 @@ struct GeneralSettingsView: View {
         }
     }
     
+    private var previewAccent: Color {
+        if pendingTheme == .custom { return pendingCustomColor }
+        return pendingTheme.accent
+    }
+
+    private var previewAccentDimmed: Color {
+        if pendingTheme == .custom { return AccentColorTheme.dimmedColor(from: pendingCustomColor) }
+        return pendingTheme.accentDimmed
+    }
+
+    private var previewAccentDark: Color {
+        if pendingTheme == .custom { return AccentColorTheme.darkColor(from: pendingCustomColor) }
+        return pendingTheme.accentDark
+    }
+
+    private var themeHasChanged: Bool {
+        let themeChanged = pendingTheme != themeManager.currentTheme
+        let customColorChanged = pendingTheme == .custom && pendingCustomColor != themeManager.customAccentColor
+        let toolbarChanged = pendingToolbarAccent != themeManager.toolbarAccentEnabled
+        return themeChanged || customColorChanged || toolbarChanged
+    }
+
     private var hasMatchingSections: Bool {
+        matchesSearch("Application Language localization") ||
+        matchesSearch("Theme accent color toolbar") ||
         matchesSearch("Save States auto save auto-load compress") ||
         matchesSearch("Hidden Games category sidebar") ||
         matchesSearch("LaunchBox GamesDB sync metadata description developer publisher genre players ESRB") ||
@@ -242,5 +361,40 @@ struct GeneralSettingsView: View {
         } else {
             lastSyncText = loc.localized("settings.never")
         }
+    }
+}
+
+private struct ThemePreviewCard: View {
+    let accent: Color
+    let accentDimmed: Color
+    let accentDark: Color
+
+    var body: some View {
+        HStack(spacing: AppSpacing.lg) {
+            VStack(spacing: AppSpacing.sm) {
+                RoundedRectangle(cornerRadius: AppRadius.sm)
+                    .fill(accent)
+                    .overlay(Text("Primary").foregroundStyle(.white).font(.caption.weight(.medium)))
+                    .frame(height: 28)
+
+                RoundedRectangle(cornerRadius: AppRadius.sm)
+                    .fill(accent.opacity(0.15))
+                    .overlay(Text("Secondary").foregroundStyle(accent).font(.caption.weight(.medium)))
+                    .frame(height: 28)
+            }
+
+            VStack(alignment: .leading, spacing: AppSpacing.xs) {
+                Text("Accent Text")
+                    .font(.caption.weight(.semibold))
+                    .foregroundStyle(accent)
+                Toggle("", isOn: .constant(true))
+                    .toggleStyle(.switch)
+                    .labelsHidden()
+                    .tint(accent)
+            }
+        }
+        .padding(AppSpacing.md)
+        .background(.quaternary.opacity(0.3))
+        .clipShape(RoundedRectangle(cornerRadius: AppRadius.md))
     }
 }

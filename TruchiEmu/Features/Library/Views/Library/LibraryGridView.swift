@@ -245,8 +245,9 @@ struct LibraryGridView: View {
                 Spacer()
             }
             ToolbarItem(placement: .primaryAction) {
-                Button { pickFolder() } label: { Image(systemName: "folder.badge.plus") }
-                    .help(loc.localized("toolbar.addROMFolder"))
+            Button { pickFolder() } label: { Image(systemName: "folder.badge.plus") }
+            .help(loc.localized("toolbar.addROMFolder"))
+            .foregroundStyle(ThemeManager.shared.toolbarAccentEnabled ? AppColors.brandAccent : .primary)
             }
             ToolbarItem(placement: .primaryAction) {
                 Color.clear
@@ -255,7 +256,8 @@ struct LibraryGridView: View {
             ToolbarItem(placement: .primaryAction) {
                 HStack(spacing: 6) {
                     Image(systemName: "minus.magnifyingglass")
-                        .font(.system(size: 10))
+                        .font(.system(size: 12))
+                        .foregroundStyle(continuousZoom == 0.0 && ThemeManager.shared.toolbarAccentEnabled ? AppColors.brandAccent : .primary)
                     Slider(value: $continuousZoom, in: 0...1, step: 1.0/7.0,
                            onEditingChanged: { isEditing in
                                if viewMode == .grid, !isEditing {
@@ -271,18 +273,19 @@ struct LibraryGridView: View {
                 }
 .frame(width: 160)
                     Image(systemName: "plus.magnifyingglass")
-                        .font(.system(size: 10))
+                        .font(.system(size: 12))
+                        .foregroundStyle(continuousZoom == 1.0 && ThemeManager.shared.toolbarAccentEnabled ? AppColors.brandAccent : .primary)
                     Text("\(Int(continuousZoom * 100))%")
                         .font(.system(size: 9, weight: .medium, design: .monospaced))
                         .frame(width: 36)
                 }
             }
             ToolbarItem(placement: .primaryAction) {
-                Picker(loc.localized("toolbar.viewMode"), selection: $viewMode) {
-                    Image(systemName: "square.grid.2x2").tag(ViewMode.grid)
-                    Image(systemName: "list.bullet").tag(ViewMode.list)
-                }
-                .pickerStyle(.segmented)
+                AccentSegmentedControl(
+                    selection: $viewMode,
+                    options: [(ViewMode.grid, "square.grid.2x2"), (ViewMode.list, "list.bullet")],
+                    accentColor: ThemeManager.shared.toolbarAccentEnabled ? AppColors.brandAccent : .blue
+                )
                 .frame(width: 80)
                 .help(loc.localized("toolbar.switchViewMode"))
             }
@@ -331,10 +334,11 @@ struct LibraryGridView: View {
                             Label(loc.localized("toolbar.downloadAllBoxArt"), systemImage: "arrow.down.circle.fill")
                         }
                     }
-                } label: {
-                    Image(systemName: "photo.stack")
-                }
-                .help(loc.localized("toolbar.boxArtOptions"))
+        } label: {
+                Image(systemName: "photo.stack")
+            }
+            .help(loc.localized("toolbar.boxArtOptions"))
+            .tint(ThemeManager.shared.toolbarAccentEnabled ? AppColors.brandAccent : .primary)
             }
             ToolbarItem(placement: .primaryAction) {
                 Menu {
@@ -344,13 +348,14 @@ struct LibraryGridView: View {
                     Section(loc.localized("toolbar.language")) {
                         languageButtons
                     }
-                } label: {
-                    HStack(spacing: 4) {
-                        Image(systemName: controllerService.activePlayerIndex == 0 ? "keyboard" : "gamecontroller")
-                        Text(prefs.systemLanguage.flagEmoji)
-                    }
+        } label: {
+                HStack(spacing: 4) {
+                    Image(systemName: controllerService.activePlayerIndex == 0 ? "keyboard" : "gamecontroller")
+                    Text(prefs.systemLanguage.flagEmoji)
                 }
-                .help(loc.localized("toolbar.inputDeviceAndLanguage"))
+            }
+            .help(loc.localized("toolbar.inputDeviceAndLanguage"))
+            .tint(ThemeManager.shared.toolbarAccentEnabled ? AppColors.brandAccent : .primary)
             }
             ToolbarItem(placement: .primaryAction) {
                 Button {
@@ -369,14 +374,15 @@ struct LibraryGridView: View {
                         }
                     }
                     NSApp.windows.first { $0.identifier?.rawValue == "settings" }?.makeKeyAndOrderFront(nil)
-                } label: {
-                    Label(loc.localized("app.settings"), systemImage: "gearshape")
-                        .labelStyle(.titleAndIcon)
-                }
-                .buttonStyle(.borderless)
-                .frame(width: 80)
-                .padding(.horizontal, 4)
-                .help(loc.localized("app.settings"))
+        } label: {
+                Label(loc.localized("app.settings"), systemImage: "gearshape")
+                    .labelStyle(.titleAndIcon)
+            }
+            .buttonStyle(.borderless)
+            .frame(width: 80)
+            .padding(.horizontal, 4)
+            .help(loc.localized("app.settings"))
+            .foregroundStyle(ThemeManager.shared.toolbarAccentEnabled ? AppColors.brandAccent : .primary)
             }
         }
         .sheet(item: $manualBoxArtSearchROM) { rom in

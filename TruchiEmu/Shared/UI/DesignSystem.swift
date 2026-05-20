@@ -39,9 +39,9 @@ struct AppColors {
     // MARK: - Brand Colors
     
     // Cyan — the TruchiEmu brand accent (#0891b2 Tailwind cyan-600)
-    static let brandAccent: Color = Color(.sRGB, red: 0.031, green: 0.569, blue: 0.698, opacity: 1.0)
-    static let brandAccentDimmed: Color = Color(.sRGB, red: 0.024, green: 0.478, blue: 0.588, opacity: 1.0)
-    static let brandAccentDark: Color = Color(.sRGB, red: 0.016, green: 0.333, blue: 0.408, opacity: 1.0)
+    static var brandAccent: Color = Color(.sRGB, red: 0.031, green: 0.569, blue: 0.698, opacity: 1.0)
+    static var brandAccentDimmed: Color = Color(.sRGB, red: 0.024, green: 0.478, blue: 0.588, opacity: 1.0)
+    static var brandAccentDark: Color = Color(.sRGB, red: 0.016, green: 0.333, blue: 0.408, opacity: 1.0)
     
     // MARK: - Semantic Colors
     

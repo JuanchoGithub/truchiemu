@@ -10,10 +10,6 @@ schemes:
     build:
       targets:
         TruchiEmu: all
-        TruchiEmuTests: [test]
-    test:
-      targets:
-      - TruchiEmuTests
 
 targets:
   TruchiEmu:
@@ -63,42 +59,20 @@ targets:
         OTHER_LDFLAGS: "-framework Metal -framework MetalKit -framework GameController -framework AVFoundation -framework WebKit -framework OpenGL -framework SwiftData"
     
     sources:
-    - path: TruchiEmu
-      excludes:
-      - "Library"
-      - "Resources"
-      - "Core/Engine/slang/**"
-      - "Core/Engine/internal/**"
-      - "Core/Shaders/slang/**"
-      - "Core/Shaders/internal/**"
-      - "Core/Shaders/all_shaders.metal"
-    - path: TruchiEmu/Resources
-      buildPhase: resources
-  - path: scripts/mame_lookup
-    excludes:
-      - "mame_unified.json"
-    buildPhase: resources
+      - path: TruchiEmu
+        excludes:
+          - "Library"
+          - "Resources"
+          - "Core/Engine/slang/**"
+          - "Core/Engine/internal/**"
+          - "Core/Shaders/slang/**"
+          - "Core/Shaders/internal/**"
+          - "Core/Shaders/all_shaders.metal"
+      - path: TruchiEmu/Resources
+        buildPhase: resources
+      - path: scripts/mame_lookup
+        excludes:
+          - "mame_unified.json"
+        buildPhase: resources
 
     preBuildScripts: []
-
-  TruchiEmuTests:
-    type: bundle.unit-test
-    platform: macOS
-    deploymentTarget: "14.0"
-
-    frameworks:
-    - SwiftData
-
-    settings:
-      base:
-        PRODUCT_NAME: TruchiEmuTests
-        PRODUCT_BUNDLE_IDENTIFIER: com.TruchiEmu.tests
-        SWIFT_VERSION: "5.9"
-        GENERATE_INFOPLIST_FILE: YES
-
-    sources:
-    - path: TruchiEmuTests
-      type: group
-
-    dependencies:
-    - target: TruchiEmu

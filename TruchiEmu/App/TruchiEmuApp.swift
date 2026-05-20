@@ -28,6 +28,7 @@ struct TruchiEmuApp: App {
     init() {
         _ = SwiftDataContainer.shared
         _ = LoggerService.shared
+        _ = ThemeManager.shared
         
         // MAME dictionary loading is deferred to background tasks in ContentWithPrepopulationView
         // 1. Connect the Bridge to your existing LoggerService
