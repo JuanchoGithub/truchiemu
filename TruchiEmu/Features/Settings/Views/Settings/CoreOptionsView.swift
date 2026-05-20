@@ -247,6 +247,7 @@ class CoreOptionsViewModel: ObservableObject {
 struct CoreOptionsView: View {
     let initialID: String
     @StateObject private var viewModel: CoreOptionsViewModel
+    @Environment(\.colorScheme) private var colorScheme
     @Environment(\.dismiss) private var dismiss
     @EnvironmentObject var library: ROMLibrary
     @ObservedObject private var loc = LocalizationManager.shared
@@ -259,12 +260,12 @@ struct CoreOptionsView: View {
     var body: some View {
         NavigationStack {
             ZStack {
-                Color(NSColor.windowBackgroundColor).ignoresSafeArea()
+                Color(AppColors.windowBackground(colorScheme)).ignoresSafeArea()
 
                 if viewModel.isLoading {
                     VStack(spacing: 16) {
                         ProgressView().controlSize(.large)
-                        Text(loc.localized("coreOptions.loading")).foregroundColor(.secondary)
+                        Text(loc.localized("coreOptions.loading")).foregroundColor(AppColors.textSecondary(colorScheme))
                     }
                     .transition(.opacity)
                 } else if viewModel.options.isEmpty {
@@ -298,7 +299,7 @@ struct CoreOptionsView: View {
                                 Button(action: {
                                     Task { await viewModel.discoverOptions(for: viewModel.currentCoreID, library: library) }
                                 }) {
-                                    Label(loc.localized("coreOptions.rediscoverFromCore"), systemImage: "arrow.triangle.2.circlepath")
+                                    Label { Text(loc.localized("coreOptions.rediscoverFromCore")) } icon: { Image(systemName: "arrow.triangle.2.circlepath") }
                                 }
                                 .buttonStyle(.link)
 
@@ -325,7 +326,7 @@ struct CoreOptionsView: View {
                     }
                 } label: {
                     Image(systemName: viewModel.searchText.contains("is:modified") ? "line.3.horizontal.decrease.circle.fill" : "line.3.horizontal.decrease.circle")
-                        .foregroundColor(viewModel.searchText.contains("is:modified") ? AppColors.brandAccent : .secondary)
+                        .foregroundColor(viewModel.searchText.contains("is:modified") ? AppColors.brandAccent : AppColors.textSecondary(colorScheme))
                 }
                 .help("Filter modified options")
             }
@@ -343,25 +344,26 @@ struct CategorySection: View {
     let title: String
     let optionKeys: [String]
     @ObservedObject var viewModel: CoreOptionsViewModel
+    @Environment(\.colorScheme) private var colorScheme
 
     var body: some View {
         VStack(alignment: .leading, spacing: 8) {
             Text(title.uppercased())
                 .font(.system(size: 10, weight: .bold))
-                .foregroundColor(.secondary)
+                .foregroundColor(AppColors.textSecondary(colorScheme))
                 .padding(.leading, 4)
 
             VStack(spacing: 0) {
                 ForEach(optionKeys, id: \.self) { key in
                     CoreOptionRow(versionedKey: key, viewModel: viewModel)
                     if key != optionKeys.last {
-                        Divider().opacity(0.5).padding(.horizontal, 10)
+                        Divider().opacity(0.5).padding(.horizontal, 10).overlay(AppColors.divider(colorScheme))
                     }
                 }
             }
-            .background(Color(NSColor.controlBackgroundColor).opacity(0.4))
-            .cornerRadius(12)
-            .overlay(RoundedRectangle(cornerRadius: 12).stroke(Color.primary.opacity(0.1), lineWidth: 0.5))
+            .background(AppColors.cardBackgroundSubtle(colorScheme))
+            .cornerRadius(AppRadius.xl)
+            .overlay(RoundedRectangle(cornerRadius: AppRadius.xl).stroke(AppColors.cardBorder(colorScheme), lineWidth: 0.5))
         }
     }
 }
@@ -369,6 +371,7 @@ struct CategorySection: View {
 struct CoreOptionRow: View {
     @ObservedObject var viewModel: CoreOptionsViewModel
     @ObservedObject private var loc = LocalizationManager.shared
+    @Environment(\.colorScheme) private var colorScheme
     let versionedKey: String
     @State private var selectedValue: String
 
@@ -391,7 +394,7 @@ struct CoreOptionRow: View {
                         if !option.info.isEmpty {
                             Text(option.info)
                                 .font(.system(size: 11))
-                                .foregroundColor(.secondary)
+                                .foregroundColor(AppColors.textSecondary(colorScheme))
                                 .lineLimit(2)
                         }
                     }
@@ -431,23 +434,23 @@ struct CoreOptionRow: View {
         switch source {
         case .appDefault:
             HStack(spacing: 4) {
-                Image(systemName: "circle.fill").font(.system(size: 6)).foregroundColor(.cyan)
-                Text(loc.localized("coreOptions.appDefault")).font(.system(size: 10)).foregroundColor(.cyan)
+                Image(systemName: "circle.fill").font(.system(size: 6)).foregroundColor(AppColors.accentTertiary)
+                Text(loc.localized("coreOptions.appDefault")).font(.system(size: 10)).foregroundColor(AppColors.accentTertiary)
             }
         case .appSystemDefault:
             HStack(spacing: 4) {
-                Image(systemName: "circle.fill").font(.system(size: 6)).foregroundColor(.cyan)
-                Text(loc.localized("coreOptions.appSystemDefault")).font(.system(size: 10)).foregroundColor(.cyan)
+                Image(systemName: "circle.fill").font(.system(size: 6)).foregroundColor(AppColors.accentTertiary)
+                Text(loc.localized("coreOptions.appSystemDefault")).font(.system(size: 10)).foregroundColor(AppColors.accentTertiary)
             }
         case .systemOverride:
             HStack(spacing: 4) {
-                Image(systemName: "circle.fill").font(.system(size: 6)).foregroundColor(.purple)
-                Text(loc.localized("coreOptions.systemOverride")).font(.system(size: 10)).foregroundColor(.purple)
+                Image(systemName: "circle.fill").font(.system(size: 6)).foregroundColor(AppColors.accentWarm)
+                Text(loc.localized("coreOptions.systemOverride")).font(.system(size: 10)).foregroundColor(AppColors.accentWarm)
             }
         case .gameOverride:
             HStack(spacing: 4) {
-                Image(systemName: "circle.fill").font(.system(size: 6)).foregroundColor(.orange)
-                Text(loc.localized("coreOptions.gameOverride")).font(.system(size: 10)).foregroundColor(.orange)
+                Image(systemName: "circle.fill").font(.system(size: 6)).foregroundColor(AppColors.warning(colorScheme))
+                Text(loc.localized("coreOptions.gameOverride")).font(.system(size: 10)).foregroundColor(AppColors.warning(colorScheme))
             }
         default:
             EmptyView()
@@ -494,11 +497,12 @@ struct ControlPicker: View {
 struct ResetFooter: View {
     @ObservedObject var viewModel: CoreOptionsViewModel
     @ObservedObject private var loc = LocalizationManager.shared
+    @Environment(\.colorScheme) private var colorScheme
     var body: some View {
         VStack(spacing: 8) {
             Button(loc.localized("coreOptions.resetAllToDefaults")) { viewModel.resetAll() }
                 .buttonStyle(.bordered)
-            Text(loc.localized("coreOptions.effectiveOnNextLaunch")).font(.caption2).foregroundColor(.secondary)
+            Text(loc.localized("coreOptions.effectiveOnNextLaunch")).font(.caption2).foregroundColor(AppColors.textSecondary(colorScheme))
         }
     }
 }
@@ -511,7 +515,7 @@ struct EmptyStateView: View {
 
     var body: some View {
         ContentUnavailableView {
-            Label(loc.localized("coreOptions.noSettingsFound"), systemImage: "gearshape.2")
+            Label { Text(loc.localized("coreOptions.noSettingsFound")) } icon: { Image(systemName: "gearshape.2") }
         } description: {
             Text(loc.localized("coreOptions.noSettingsDescription"))
         } actions: {

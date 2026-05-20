@@ -6,6 +6,7 @@
   "settings.english": "English",
   "settings.spanish": "Spanish",
   "settings.general": "General",
+  "general.noMatchingSettings": "No matching settings found for",
   "settings.saveStates": "Save States",
   "settings.autoSaveOnExit": "Auto-save on game exit",
   "settings.autoLoadOnStart": "Auto-load on game start",
@@ -43,6 +44,11 @@
   "settings.genre": "Genre",
   "settings.logging": "Logging",
   "settings.about": "About",
+  "settingsGroup.general": "General",
+  "settingsGroup.systems": "Systems",
+  "settingsGroup.visuals": "Visuals",
+  "settingsGroup.advanced": "Advanced",
+  "settings.never": "Never",
   "app.bezels": "Bezels",
   "app.settings": "Settings",
   "app.viewMode": "View Mode",
@@ -74,8 +80,6 @@
   "app.category": "Category",
   "app.hiddenGames": "Hidden Games",
   "app.hiddenMAMEFiles": "Hidden MAME Files",
-  "app.category": "Category",
-  "app.hiddenGames": "Hidden Games",
   "app.mameFiles": "MAME Files",
   "app.newCategory": "New Category",
   "app.categoryName": "Category Name",
@@ -93,10 +97,7 @@
   "app.categories": "Categories",
   "app.clearAll": "Clear All",
   "app.apply": "Apply",
-  "app.newCategory": "New Category",
-  "app.systems": "Systems",
   "app.hidden": "Hidden",
-  "app.mameFiles": "MAME Files",
   "filter.noBoxArt": "No Box Art",
   "filter.neverPlayed": "Never Played",
   "filter.unidentified": "Unidentified",
@@ -152,7 +153,6 @@
   "cheatsInfo": "When enabled, the emulator will attempt to apply active cheats during launch.",
   "enableColorization": "Enable Colorization",
   "colorizationInfo": "Apply color palettes to original Game Boy (DMG) games.",
-
   "saveDirectories.title": "Save Directories",
   "saveDirectories.storageSummary": "Storage Summary",
   "saveDirectories.saveFiles": "Save Files",
@@ -165,7 +165,6 @@
   "saveDirectories.systemBIOS": "System / BIOS",
   "saveDirectories.changeSaveDirectory": "Change Save Directory",
   "saveDirectories.chooseDirectoryMessage": "Choose where save files will be stored",
-
   "display.title": "Display",
   "display.shaderPresets": "Shader Presets",
   "display.defaultShader": "Default Shader",
@@ -175,7 +174,6 @@
   "display.bezel": "Bezel",
   "display.bezelDescription": "Bezel options are available in the in-game HUD (shown on hover).",
   "display.noMatchingSettings": "No matching settings found for",
-
   "cheats.title": "Cheats",
   "cheats.librarySummary": "Cheat Library Summary",
   "cheats.files": "Files",
@@ -200,7 +198,6 @@
   "cheats.onlineDatabaseDescription": "Downloads cheat files from the Libretro-Database repository. Files are automatically organized by system core.",
   "cheats.noResults": "No results",
   "cheats.tryDifferentSearch": "Try a different search term",
-
   "cheat.title": "Cheats",
   "cheat.enabled": "Enabled",
   "cheat.all": "All",
@@ -234,7 +231,6 @@
   "cheat.cheatsFoundAndDownloaded": "Cheats found and downloaded for {0}!",
   "cheat.noCheatFileFound": "No cheat file found for {0} in the libretro database",
   "cheat.downloadFailed": "Download failed: {0}",
-
   "retroAchievements.title": "RetroAchievements",
   "retroAchievements.enable": "Enable",
   "retroAchievements.enableDescription": "Enable RetroAchievements to track your achievements and compete on leaderboards.",
@@ -280,7 +276,6 @@
   "retroAchievements.notLoggedIn": "Not logged in. Please connect to RetroAchievements first.",
   "retroAchievements.failedToRefresh": "Failed to refresh: {0}",
   "retroAchievements.matchedOfTotal": "Matched {0} of {1} scanned games",
-
   "library.title": "Library",
   "library.displayOptions": "Display Options",
   "library.libraryFolders": "Library Folders",
@@ -327,7 +322,6 @@
   "library.lastPlayed": "Last Played",
   "library.lastAdded": "Last Added",
   "library.genre": "Genre",
-
   "logging.title": "Logging",
   "logging.logLevel": "Log Level",
   "logging.logLevelDescription": "Controls the verbosity of application logs. Higher levels include all lower-level logs.",
@@ -361,7 +355,6 @@
   "logging.selectLogFolderMessage": "Choose a folder where log files will be stored.",
   "logging.clearAll": "Clear All",
   "logging.cancel": "Cancel",
-
   "genre.title": "Genres",
   "genre.subtitle": "Map ROM genres to custom display names",
   "genre.newGenre": "New Genre",
@@ -375,24 +368,22 @@
   "genre.readOnly": "read-only",
   "genre.displayShownInApp": "Display (shown in app)",
   "genre.displayGenre": "Display genre",
-
   "coreOptions.loading": "Loading core settings...",
   "coreOptions.noSettingsFound": "No Settings Found",
   "coreOptions.noSettingsDescription": "Launch a game with core to generate settings, or try discovering them now.",
   "coreOptions.rediscoverFromCore": "Rediscover from Core",
-    "coreOptions.resetAllToDefaults": "Reset All to Defaults",
-    "coreOptions.effectiveOnNextLaunch": "Changes will take effect on next launch.",
-    "coreOptions.modifiedFromDefault": "Modified from default",
+  "coreOptions.resetAllToDefaults": "Reset All to Defaults",
+  "coreOptions.effectiveOnNextLaunch": "Changes will take effect on next launch.",
+  "coreOptions.modifiedFromDefault": "Modified from default",
   "coreOptions.appDefault": "TruchiEmu Default",
   "coreOptions.appSystemDefault": "TruchiEmu System Default",
   "coreOptions.systemOverride": "System Setting",
   "coreOptions.gameOverride": "Game Setting",
-    "coreOptions.restoreDefault": "Restore Default",
+  "coreOptions.restoreDefault": "Restore Default",
   "coreOptions.options": "Options:",
   "coreOptions.searchOptions": "Search options...",
   "coreOptions.core": "Core",
   "coreOptions.general": "General",
-
   "cores.title": "Systems & Cores",
   "cores.searchSystemsCores": "Search systems or cores...",
   "cores.fetchingCoreList": "Fetching core list from buildbot...",
@@ -412,7 +403,6 @@
   "cores.version": "Version",
   "cores.download": "Download",
   "cores.downloading": "Downloading...",
-
   "controllers.title": "Controllers",
   "controllers.controllers": "Controllers",
   "controllers.keyboard": "Keyboard",
@@ -438,7 +428,6 @@
   "controls.resetToDefaults": "Reset to Defaults",
   "controls.done": "Done",
   "controls.pressKey": "Press Key…",
-
   "controller.button.up": "Up",
   "controller.button.down": "Down",
   "controller.button.left": "Left",
@@ -487,7 +476,6 @@
   "controller.button.mouseY": "Mouse Y Axis",
   "controller.button.mouseScrollUp": "Mouse Scroll Up",
   "controller.button.mouseScrollDown": "Mouse Scroll Down",
-
   "boxArt.title": "Box Art",
   "boxArt.libretroThumbnails": "Libretro Thumbnails",
   "boxArt.useLibretroCDN": "Use Libretro thumbnail CDN",
@@ -515,7 +503,6 @@
   "boxArt.current": "Current:",
   "boxArt.performanceDescription": "Refresh the index to sync with the latest Libretro repository listings. This significantly improves speed when browsing large libraries by eliminating 'blind' 404 checks.",
   "boxArt.noMatchingSettings": "No matching settings found for",
-
   "about.title": "About",
   "about.appName": "TruchiEmu",
   "about.tagline": "A beautiful macOS libretro frontend",
@@ -540,11 +527,9 @@
   "onboarding.scanningLibrary": "Your library is being scanned. Box art can be set up in Settings → Box Art after creating a free account at screenscraper.fr.",
   "onboarding.enterApp": "Enter TruchiEmu",
   "onboarding.selectRomFolder": "Select your ROM folder",
-
   "library.renameGame": "Rename Game",
   "library.name": "Name",
   "library.save": "Save",
-  "library.cancel": "Cancel",
   "library.deleteGameTitle": "Delete Game: {0}",
   "library.moveRomToTrash": "Move ROM File to Trash & Remove from Library",
   "library.hideFromLibrary": "Hide from Library Only",
@@ -573,7 +558,6 @@
   "library.findingCoverArt": "Finding cover art gems…",
   "library.wrappingRoms": "Wrapping ROMs in beautiful cases…",
   "library.coversDownloaded": "covers downloaded",
-
   "mame.missingROMs.title": "Missing ROM Files",
   "mame.missingROMs.description": "\"{game}\" requires additional files to run.",
   "mame.missingROMs.requiredFilesNotFound": "Required files not found:",
@@ -590,7 +574,13 @@
   "mame.dependencies.loading": "Loading dependency info...",
   "mame.dependencies.toFix": "To fix:",
   "mame.dependencies.fixInstructions": "Copy the missing ROM files to your ROMs folder. Files must be named exactly as shown above.",
-
+  "mame.dependencies.mainROM": "Main ROM",
+  "mame.dependencies.parentROMClone": "Parent ROM (clone)",
+  "mame.dependencies.deviceROM": "Device ROM",
+  "mame.dependencies.sampleROM": "Sample ROM",
+  "mame.dependencies.mergedROM": "Merged ROM",
+  "mame.dependencies.available": "Available",
+  "mame.dependencies.missing": "Missing",
   "gameDetail.gameInfo": "Game Info",
   "gameDetail.shader": "Shader",
   "gameDetail.bezels": "Bezels",
@@ -599,12 +589,18 @@
   "gameDetail.cheats": "Cheats",
   "gameDetail.core": "Core",
   "gameDetail.achievements": "Achievements",
-
+"gameDetail.gameInfoHelp": "View game details, metadata, and metadata identification tools",
+"gameDetail.shaderHelp": "Customize visual effects like CRT filters and screen smoothing",
+"gameDetail.bezelsHelp": "Browse and apply decorative bezel artwork around the game screen",
+"gameDetail.controlsHelp": "View and customize keyboard and controller button mappings",
+"gameDetail.savedStatesHelp": "Manage save states created during gameplay — load or delete saves",
+"gameDetail.cheatsHelp": "Download, enable, and manage cheat codes for this game",
+"gameDetail.coreHelp": "Choose which emulation engine to use for this game or system",
+"gameDetail.achievementsHelp": "View RetroAchievements — earn points by completing in-game challenges",
   "savedStates.title": "Saved States",
   "savedStates.noSavedStates": "No saved states",
   "savedStates.savedStatesCreatedDuringGameplay": "Save states created during gameplay",
   "savedStates.saveStateCount": "save state(s)",
-
   "gameInfo.fileName": "File Name",
   "gameInfo.path": "Path",
   "gameInfo.fileSize": "File Size",
@@ -623,19 +619,6 @@
   "gameInfo.no": "No",
   "gameInfo.single": "Single",
   "gameInfo.multi": "Multi",
-  "gameInfo.core": "Core",
-  "gameInfo.emulationCore": "Emulation Core",
-  "gameInfo.noCoresInstalled": "No cores installed",
-  "gameInfo.selectCore": "Select Core",
-  "gameInfo.applyToSystemDefault": "Apply to system default",
-  "gameInfo.changeSystemCoreWarning": "This will change the default core for all {0} games. The current game will no longer use a custom core override.",
-  "gameInfo.onlyThisGameUsesSelectedCore": "Only this game will use the selected core.",
-  "gameInfo.setSystemDefault": "Set System Default",
-  "gameInfo.setForThisGame": "Set for This Game",
-"gameInfo.coreOptions": "Core Options",
-  "gameInfo.cheats": "Cheats",
-  "gameInfo.enableCheats": "Enable Cheats",
-  "gameInfo.cheatsEnabledInfo": "When enabled, the emulator will attempt to apply active cheats during launch.",
   "gameInfo.gameBoyColorization": "Game Boy Colorization",
   "gameInfo.enableColorization": "Enable Colorization",
   "gameInfo.paletteMode": "Palette Mode",
@@ -656,6 +639,7 @@
   "gameInfo.gambatteCoreOnly": "Gambatte core only — switch to gambatte_libretro to use named palettes",
   "gameInfo.gambatteCoreOnlyColorCorrection": "Gambatte core only — switch to gambatte_libretro to use color correction",
   "gameInfo.special": "Special",
+  "gameInfo.coreOptions": "Core Options",
   "gameInfo.identifyGame": "Identify Game",
   "gameInfo.fetchMetadata": "Fetch Metadata",
   "gameInfo.fetchArt": "Fetch Art",
@@ -669,7 +653,6 @@
   "gameInfo.gameNotFound": "Game Not Found",
   "gameInfo.gameNotFoundDescription": "This game may have been removed from your library or the file path could have changed.",
   "gameInfo.raVersionMismatch": "This game is supported by RetroAchievements, but it needs an exact version of it that you do not have",
-
   "achievement.pts": "pts",
   "achievement.loadingAchievements": "Loading achievements...",
   "achievement.versionMismatch": "Version Mismatch",
@@ -696,9 +679,7 @@
   "achievement.events": "Events",
   "achievement.unlocked": "Unlocked",
   "achievement.locked": "Locked",
-
   "shader.deprecated": "ShaderSection is deprecated - use GameDetailView.shaderSection instead",
-
   "raHash.title": "RetroAchievements",
   "raHash.done": "Done",
   "raHash.searching": "Searching RetroAchievements...",
@@ -716,7 +697,6 @@
   "raHash.copyAllInfo": "Copy All Info for Google Search",
   "raHash.copiedToClipboard": "Copied to Clipboard!",
   "raHash.supportedHashes": "Supported Hashes:",
-
   "core.title": "Core",
   "core.emulationCore": "Emulation Core",
   "core.noCoresInstalled": "No cores installed",
@@ -737,14 +717,10 @@
   "core.multipleCoresDescription": "This game can be played with multiple emulator cores. Choose one to continue.",
   "core.cancel": "Cancel",
   "core.continue": "Continue",
-
   "metadata.useAsGameTitle": "Use as game title",
   "metadata.copy": "Copy",
-
   "coreVersion.version": "Version",
   "coreVersion.selectVersion": "Select Version...",
-
-  "cheats.title": "Cheats",
   "cheats.enableCheats": "Enable Cheats",
   "cheats.download": "Download",
   "cheats.downloading": "Downloading...",
@@ -765,7 +741,7 @@
   "cheats.downloadFailed": "Download failed: {0}",
   "cheats.noCheatsMatch": "No cheats match \"{0}\"",
   "cheats.enabledOfTotal": "{0} of {1} enabled",
-
+  "cheats.ok": "OK",
   "controls.title": "Controls",
   "controls.controllerMapping": "Controller Mapping",
   "controls.usesStandardLayout": "Uses standard {0} layout",
@@ -775,7 +751,7 @@
   "controls.systemDefaultControls": "System Default Controls",
   "controls.resetToDefaultControls": "Reset to default controls",
   "controls.reset": "Reset",
-
+"controls.systemBadge": "System",
   "bezel": "Bezel",
   "bezel.title": "Bezels",
   "bezel.off": "Off",
@@ -856,7 +832,6 @@
   "bezel.tryAgain": "Try Again",
   "bezel.tryDownloadingFromSettings": "Try downloading from Settings",
   "bezel.unableToLoadBezels": "Unable to load bezels",
-
   "coreDownload.title": "Emulator Core Required",
   "coreDownload.description": "An emulator core must be downloaded to run this game.",
   "coreDownload.readyToLaunch": "Ready to launch",
@@ -876,7 +851,6 @@
   "coreDownload.downloadAndInstall": "Download & Install",
   "coreDownload.downloadFailed": "Core download failed — please try again.",
   "coreDownload.noCoresFound": "No cores found for this system. Please try again later.",
-
   "shader.parameters": "Parameters",
   "shader.active": "Active",
   "shader.reset": "Reset",
@@ -912,7 +886,6 @@
   "shader.resetToDefault": "Reset to default shader for this system",
   "shader.useDefault": "Use Default",
   "shader.basedOn": "Based on",
-
   "shader.param.barrel_distortion": "Barrel Distortion",
   "shader.param.bezel_glow": "Bezel Glow",
   "shader.param.bezel_mask": "Bezel Mask",
@@ -996,7 +969,6 @@
   "shader.option.top_center": "Top Center",
   "shader.option.top_left": "Top Left",
   "shader.option.top_right": "Top Right",
-
   "gameOverride.title": "Override Game Shaders",
   "gameOverride.selectAll": "Select All",
   "gameOverride.deselectAll": "Deselect All",
@@ -1005,7 +977,6 @@
   "gameOverride.systemDefault": "System Default",
   "gameOverride.cancel": "Cancel",
   "gameOverride.updateGames": "Update %d Game(s)",
-
   "saveDirs.saveFilesLocation": "Save Files Location",
   "saveDirs.configuration": "Configuration",
   "saveDirs.migration": "Migration",
@@ -1025,16 +996,12 @@
   "saveDirs.saveStates": "Save States",
   "saveDirs.systemBIOS": "System / BIOS",
   "saveDirs.changeSaveDirectory": "Change Save Directory",
-
   "saveState.play": "Play",
   "saveState.delete": "Delete",
-
   "boxArt.pinchToZoom": "Pinch to zoom",
   "boxArt.changeBoxArt": "Change Box Art",
-
   "header.gameTitle": "Game Title",
   "header.play": "Play",
-
   "contextMenu.rename": "Rename",
   "contextMenu.refresh": "Refresh",
   "contextMenu.coreOptions": "Core Options",
@@ -1079,7 +1046,6 @@
   "toolbar.selectSaveSlot": "Select Save Slot",
   "toolbar.systemAutoSave": "System Auto-Save",
   "toolbar.emptySlot": "Empty Slot",
-
   "toolbar.addROMFolder": "Add ROM folder",
   "toolbar.viewMode": "View",
   "toolbar.switchViewMode": "Switch between grid and list view",
@@ -1092,11 +1058,9 @@
   "toolbar.inputDeviceAndLanguage": "Input device and language",
   "toolbar.keyboard": "Keyboard",
   "toolbar.configure": "Configure...",
-
   "genre.searchPlaceholder": "Search genres...",
   "boxArt.searchQuery": "Search query...",
   "boxArt.engine": "Engine",
-  
   "wizard.back": "Back",
   "wizard.skip": "Skip",
   "wizard.enterLibrary": "Enter Library",

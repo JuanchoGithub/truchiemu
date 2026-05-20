@@ -49,49 +49,31 @@ actor ROMScanner {
     ]
 
     // MARK: - Bulk MAME Identification
-    func bulkIdentifyMAME(urls: [URL]) async -> (mameURLs: Set<URL>, remainingURLs: [URL]) {
+    func bulkIdentifyMAME(urls: [URL]) async -> (playableMameURLs: Set<URL>, remainingURLs: [URL]) {
         await MAMEUnifiedService.shared.ensureLoaded()
-        
-        var zipURLs: [URL] = []
+
         var remainingURLs: [URL] = []
-        
-        // 1. Separate ZIPs from direct files (.nes, .sfc, etc.)
+        var playableMameURLs = Set<URL>()
+
         for url in urls {
             if url.pathExtension.lowercased() == "zip" {
-                zipURLs.append(url)
+                let shortName = url.deletingPathExtension().lastPathComponent.lowercased()
+
+                if MAMEUnifiedService.shared.lookup(shortName: shortName) != nil {
+                    if MAMEUnifiedService.shared.isRunnable(shortName: shortName)
+                        && !MAMEUnifiedService.shared.isBIOS(shortName: shortName) {
+                        playableMameURLs.insert(url)
+                    }
+                } else {
+                    remainingURLs.append(url)
+                }
             } else {
                 remainingURLs.append(url)
             }
         }
-        
-        var mameURLs = Set<URL>()
-        var playableMameURLs = Set<URL>()
-        
-        // 2. Identify which ZIPs belong to MAME
-        for url in zipURLs {
-            let shortName = url.deletingPathExtension().lastPathComponent.lowercased()
-            
-            // If the Master Lookup Table contains this key, it is a MAME asset.
-            // It doesn't matter if it's a BIOS, a Game, or Unplayable—it belongs to MAME.
-            LoggerService.debug(category: "MAMEUnifiedService", "Lookup for \(shortName)")
-            if MAMEUnifiedService.shared.lookup(shortName: shortName) != nil {
-                LoggerService.debug(category: "MAMEUnifiedService", "Lookup for \(shortName)... found: \(url)")
-                mameURLs.insert(url)
-            } else {
-                // If MAME doesn't know what this is, it's likely a zipped console ROM (SNES/Genesis)
-                // Pass it to the Deep Scan to be unzipped and analyzed.
-                LoggerService.debug(category: "MAMEUnifiedService", "Lookup for \(shortName)... NOT found: \(url)")
-                remainingURLs.append(url)
-            }
-            // Actual runnable mame roms
-            if MAMEUnifiedService.shared.isRunnable(shortName: shortName) {
-                LoggerService.debug(category: "MAMEUnifiedService", "Lookup for \(shortName)... Playable: \(url)")
-                playableMameURLs.insert(url)
-            }
-        }   
-        
-        LoggerService.debug(category: "ROMScanner", "Bulk Matrix Op: Identified \(urls.count) files, \(zipURLs.count) zips. Then \(mameURLs.count) MAME assets and \(playableMameURLs.count) playable. Passing \(remainingURLs.count) unknown ZIPs/files to deep scan.")
-        
+
+        LoggerService.debug(category: "ROMScanner", "Bulk MAME: \(urls.count) files → \(playableMameURLs.count) playable, \(remainingURLs.count) to deep scan")
+
         return (playableMameURLs, remainingURLs)
     }
 
@@ -127,7 +109,7 @@ actor ROMScanner {
         }
         
         // 2. MAME Matrix
-        let (mameURLs, deepScanURLs) = await bulkIdentifyMAME(urls: urls)
+        let (playableMameURLs, deepScanURLs) = await bulkIdentifyMAME(urls: urls)
         
         let progressTracker = ProgressTracker(total: totalFiles, progressHandler: progress)
         var found: [ROM] = []
@@ -138,7 +120,7 @@ actor ROMScanner {
         let mameSystem = SystemDatabase.system(forID: "mame")
         
         // 3. Process Instant MAME ROMs
-        for url in mameURLs {
+        for url in playableMameURLs {
             if isCancelled || (cancellationToken?.isCancelled ?? false) { break }
             await progressTracker.incrementAndReport()
             zipCount += 1
@@ -231,6 +213,7 @@ actor ROMScanner {
         
         if system?.id == "mame" {
             await applyMAMEIdentification(to: &rom, url: url)
+            if rom.mameRomType == nil { return nil }
         }
         
         let folder = url.deletingLastPathComponent()

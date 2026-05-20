@@ -80,7 +80,7 @@ MAME_BIOS_URL = "https://raw.githubusercontent.com/libretro/libretro-database/ma
 
 # Constants for 7z handling
 MAME_287_7Z_URL = "https://www.progettosnaps.net/download/?tipo=dat_mame&file=/dats/MAME/packs/MAME_Dats_287.7z"
-MAME_287_DIR = "scripts/mame_lookup/MAME_Dats_287"
+MAME_287_DIR = os.path.normpath(os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "..", "scripts", "mame_lookup", "MAME_Dats_287"))
 
 
 def download_file(url, desc="file"):
@@ -141,6 +141,7 @@ def parse_xml_data(file_path_or_data, core_id):
             return
 
         runnable = game_elem.get("runnable", "yes") != "no"
+        is_bios = game_elem.get("isbios", "no") == "yes"
         clone_of = game_elem.get("cloneof")
         rom_of = game_elem.get("romof")
         sample_of = game_elem.get("sampleof")
@@ -191,6 +192,7 @@ def parse_xml_data(file_path_or_data, core_id):
             "year": year,
             "manufacturer": manufacturer,
             "runnable": runnable,
+            "isBios": is_bios,
             "cloneOf": clone_of,
             "romOf": rom_of if rom_of else (clone_of if clone_of else None),
             "sampleOf": sample_of,
@@ -268,21 +270,24 @@ def parse_dat_format(data):
 
 
 def parse_bios_dat(data):
-    """Parse MAME BIOS.dat and return set of BIOS short names."""
+    """Parse MAME BIOS.dat and return set of BIOS short names.
+
+    The BIOS.dat game names are descriptions (e.g. "Naomi Bios"), not MAME
+    short_names.  The actual short_name is the zip stem inside each rom entry
+    (e.g. naomi.zip -> "naomi").  We extract those zip stems so they can be
+    matched against core XML entries.
+    """
     text = data.decode("utf-8", errors="replace")
     bios_names = set()
 
-    game_pattern = re.compile(
-        r'game\s*\(\s*\n'
-        r'\s*name\s+"([^"]+)"\s*\n',
-        re.MULTILINE
-    )
+    rom_pattern = re.compile(r'rom\s*\(\s*name\s+([^\s\)]+?\.zip)')
 
-    for match in game_pattern.finditer(text):
-        name = match.group(1)
-        bios_names.add(name)
+    for match in rom_pattern.finditer(text):
+        zip_name = match.group(1)
+        short_name = os.path.splitext(zip_name)[0]
+        bios_names.add(short_name)
 
-    print(f"  Found {len(bios_names):,} BIOS entries")
+    print(f" Found {len(bios_names):,} BIOS entries")
     return bios_names
 
 
@@ -310,6 +315,12 @@ def build_unified_database():
     for core_id, source in CORE_SOURCES.items():
         # Check if it's a local file first (for MAME 0.287)
         local_path = source.get("local_path")
+        if local_path:
+            # Resolve relative to script directory so it works regardless of CWD
+            if not os.path.isabs(local_path):
+                local_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "..", local_path)
+                local_path = os.path.normpath(local_path)
+            source["local_path"] = local_path
         if local_path and os.path.exists(local_path):
             print(f"  Using local file for {source['displayName']}...")
             games = parse_xml_data(local_path, core_id)
@@ -410,6 +421,9 @@ def build_unified_database():
                     "mergedROMs": game["mergedROMs"]
                 }
 
+                if game.get("isBios"):
+                    is_bios = True
+
                 # Update best metadata if this entry has more info
                 if game["description"] and game["description"] != short_name:
                     best_description = game["description"]
@@ -454,7 +468,6 @@ def build_unified_database():
 
         # Determine if BIOS from core data (runnable=false often means BIOS/device)
         if not compatible_cores:
-            # Not in any core - check if it's a known BIOS
             is_bios = short_name in bios_names
 
         # Check if any core has this as runnable
@@ -463,10 +476,9 @@ def build_unified_database():
             for c in compatible_cores
         ) if compatible_cores else False
 
-        # If not runnable in any core and not explicitly a BIOS, mark as unplayable
-        if not is_runnable_in_any_core and not is_bios and compatible_cores:
-            # It's in cores but not runnable - likely a device or system ROM
-            pass  # Keep as-is, will be filtered by runnable status
+        # If not runnable in any core and in BIOS.dat, mark as BIOS
+        if not is_runnable_in_any_core and short_name in bios_names:
+            is_bios = True
 
         unified_games[short_name] = {
             "description": best_description,
@@ -529,7 +541,7 @@ def build_unified_database():
 
     # Write output
     output_path = os.path.join(os.path.dirname(__file__), "mame_unified.json")
-    resources_path = os.path.join(os.path.dirname(__file__), "..", "..", "TruchiEmu", "Resources", "mame_unified.json")
+    resources_path = os.path.join(os.path.dirname(__file__), "..", "..", "TruchiEmu", "Resources", "Data", "mame_unified.json")
 
     with open(output_path, "w", encoding="utf-8") as f:
         json.dump(output, f, indent=2, ensure_ascii=False)

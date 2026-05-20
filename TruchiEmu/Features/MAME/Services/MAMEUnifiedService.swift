@@ -138,11 +138,8 @@ final class MAMEUnifiedService: ObservableObject {
                     newMasterLookup[lowerName] = entry 
                     
                     // 2. Sort into our specific lists
-                    if entry.isBIOS || entry.description.localizedCaseInsensitiveContains("bios")
-                    || entry.description.localizedCaseInsensitiveContains("boot rom")
-                    || entry.description.localizedCaseInsensitiveContains("system")
-                    || entry.players == nil {
-                        allBIOSShortNames.insert(lowerName)
+            if entry.isBIOS || KnownBIOS.mameFiles.contains(lowerName) {
+                allBIOSShortNames.insert(lowerName)
                     } else if entry.isRunnableInAnyCore {
                         allRunnableShortNames.insert(lowerName)                        
                         // ONLY playable games are allowed in this dictionary!

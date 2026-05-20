@@ -8,6 +8,7 @@ struct CoreSettingsView: View {
     @ObservedObject private var prefs = SystemPreferences.shared
     @ObservedObject private var loc = LocalizationManager.shared
     @Environment(SystemDatabaseWrapper.self) private var systemDatabase
+    @Environment(\.colorScheme) private var colorScheme
 
     @Binding var searchText: String
     let searchKeywords: [String] = ["systems cores emulator download update"]
@@ -24,30 +25,27 @@ struct CoreSettingsView: View {
     }
 
     var sortedSystems: [SystemInfo] {
-        let _ = prefs.updateTrigger // Subscribes to database updates
+        let _ = prefs.updateTrigger
 
-        // 1. Start with the base list
         var filteredList = systemDatabase.systemsForDisplay
-        
-        // 2. Apply Fuzzy Search Filter
+
         if !searchText.isEmpty {
             filteredList = filteredList.filter { sys in
                 if sys.name.fuzzyMatch(searchText) || sys.id.fuzzyMatch(searchText) || sys.manufacturer.fuzzyMatch(searchText) {
                     return true
                 }
-                
+
                 let matchingCores = coreManager.availableCores.filter { remoteCore in
                     let normalizedIDs = remoteCore.systemIDs.map { SystemDatabase.normalizeSystemID($0) }
                     return normalizedIDs.contains(sys.id) || sys.defaultCoreID == remoteCore.coreID
                 }
-                
+
                 return matchingCores.contains { core in
                     core.displayName.fuzzyMatch(searchText) || core.coreID.fuzzyMatch(searchText)
                 }
             }
         }
 
-        // 3. Sort Results (Installed Cores First -> Alphabetical)
         return filteredList.sorted { sysA, sysB in
             let aHasInstalled = coreManager.installedCores.contains { core in
                 core.systemIDs.contains(sysA.id) || sysA.defaultCoreID == core.id
@@ -55,57 +53,50 @@ struct CoreSettingsView: View {
             let bHasInstalled = coreManager.installedCores.contains { core in
                 core.systemIDs.contains(sysB.id) || sysB.defaultCoreID == core.id
             }
-            
+
             if aHasInstalled != bHasInstalled {
                 return aHasInstalled
             }
-            
+
             return sysA.name.localizedCaseInsensitiveCompare(sysB.name) == .orderedAscending
         }
     }
 
-    var body: some View {
+var body: some View {
         VStack(spacing: 0) {
-            
-            // 🔥 NEW: Unified Top Toolbar Area
             HStack {
-                // Search Bar (Left)
                 HStack {
                     Image(systemName: "magnifyingglass")
-                        .foregroundColor(.secondary)
-                    
+                    .foregroundColor(AppColors.textSecondary(colorScheme))
+
                     TextField(loc.localized("cores.searchSystemsCores"), text: $searchText)
-                        .textFieldStyle(.plain)
-                        .autocorrectionDisabled()
-                    
+                    .textFieldStyle(.plain)
+                    .autocorrectionDisabled()
+
                     if !searchText.isEmpty {
                         Button(action: { searchText = "" }) {
                             Image(systemName: "xmark.circle.fill")
-                                .foregroundColor(.secondary)
+                            .foregroundColor(AppColors.textSecondary(colorScheme))
                         }
                         .buttonStyle(.plain)
                     }
                 }
-                .padding(6)
+                .padding(AppSpacing.sm)
                 .background(Color.secondary.opacity(0.1))
-                .cornerRadius(8)
-                .frame(width: 250) // Standard macOS search bar width
-                
+                .cornerRadius(AppRadius.md)
+                .frame(width: 250)
+
                 Spacer()
-                
-                // Fetching Indicator OR Refresh Button (Right)
+
                 if coreManager.isFetchingCoreList {
-                    HStack(spacing: 8) {
+                    HStack(spacing: AppSpacing.md) {
                         ProgressView()
-                            .controlSize(.small)
+                        .controlSize(.small)
                         Text(loc.localized("cores.fetchingCoreList"))
-                            .foregroundStyle(.secondary)
-                            .font(.caption)
+                        .foregroundStyle(AppColors.textSecondary(colorScheme))
                     }
-                    .padding(.trailing, 8)
                 } else {
                     Button {
-                        LoggerService.info(category: "SettingsView", "Refreshing systems and cores...")
                         Task { await coreManager.performFullSystemUpdate() }
                     } label: {
                         HStack {
@@ -123,54 +114,50 @@ struct CoreSettingsView: View {
                     .disabled(coreManager.isFetchingCoreList || LibretroInfoManager.shared.isRefreshing)
                 }
             }
-            .padding(8)
-            .background(.ultraThinMaterial) // Makes the header bar look clean and native
-            
+            .padding(.horizontal, AppSpacing.lg)
+            .padding(.vertical, AppSpacing.md)
+
             Divider()
-            
+
             GeometryReader { geometry in
                 HStack(spacing: 0) {
-                    // System list (left column)
                     VStack(spacing: 0) {
                         Text(loc.localized("cores.systems"))
-                            .font(.caption)
-                            .fontWeight(.semibold)
-                            .foregroundStyle(.secondary)
-                            .frame(maxWidth: .infinity, alignment: .leading)
-                            .padding(.horizontal, 8)
-                            .padding(.top, 8)
-                            .padding(.bottom, 4)
-                        
+                        .font(.caption)
+                        .fontWeight(.semibold)
+                        .foregroundStyle(AppColors.textSecondary(colorScheme))
+                        .frame(maxWidth: .infinity, alignment: .leading)
+                        .padding(.horizontal, AppSpacing.sm)
+                        .padding(.top, AppSpacing.sm)
+                        .padding(.bottom, AppSpacing.xs)
+
                         List(selection: $selectedSystemID) {
                             ForEach(sortedSystems) { sys in
                                 SystemRowView(system: sys, coreManager: coreManager)
-                                    .tag(sys.id)
+                                .tag(sys.id)
                             }
                         }
                         .listStyle(.plain)
                     }
                     .frame(width: systemsPanelWidth)
-                    .border(.separator, width: 0.5)
-                    
-                    // Draggable divider
+
                     DraggableDivider(width: $systemsPanelWidth)
-                    
-                    // Cores list (right pane)
+
                     VStack(spacing: 0) {
-                        if let system = selectedSystem {
-                            Text(system.name)
-                                .font(.caption)
-                                .fontWeight(.semibold)
-                                .foregroundStyle(.secondary)
-                                .frame(maxWidth: .infinity, alignment: .leading)
-                                .padding(.horizontal, 12)
-                                .padding(.vertical, 8)
-                            
-                            SystemCoresView(system: system, coreManager: coreManager)
-                                .id(coreManager.installedCores.count + coreManager.availableCores.count) 
+                        if let selectedSystem = selectedSystem {
+                            Text(selectedSystem.name)
+                            .font(.caption)
+                            .fontWeight(.semibold)
+                            .foregroundStyle(AppColors.textSecondary(colorScheme))
+                            .frame(maxWidth: .infinity, alignment: .leading)
+                            .padding(.horizontal, AppSpacing.lg)
+                            .padding(.vertical, AppSpacing.md)
+
+                            SystemCoresView(system: selectedSystem, coreManager: coreManager)
+                            .id(coreManager.installedCores.count + coreManager.availableCores.count)
                         } else {
                             ContentUnavailableView {
-                                Label(loc.localized("cores.selectSystem"), systemImage: "gamecontroller")
+                                Label { Text(loc.localized("cores.selectSystem")) } icon: { Image(systemName: "gamecontroller") }
                             } description: {
                                 Text(loc.localized("cores.selectSystemDescription"))
                             }
@@ -179,9 +166,9 @@ struct CoreSettingsView: View {
                     }
                     .frame(maxWidth: .infinity)
                 }
-                .frame(maxHeight: .infinity)
             }
         }
+        .frame(maxHeight: .infinity)
         .clipped()
         .onAppear {
             if coreManager.shouldAutoFetchCores {
@@ -190,24 +177,25 @@ struct CoreSettingsView: View {
         }
     }
 }
+
 struct SystemRowView: View {
     let system: SystemInfo
     @ObservedObject var coreManager: CoreManager
-    
+    @Environment(\.colorScheme) private var colorScheme
+
     var installedCount: Int {
         coreManager.installedCores.filter { core in
             core.systemIDs.contains(system.id) || system.defaultCoreID == core.id
         }.count
     }
-    
+
     var hasInstalled: Bool { installedCount > 0 }
-    
+
     var body: some View {
-        HStack(spacing: 8) {
-            // Green dot indicator for installed cores (before icon)
+        HStack(spacing: AppSpacing.md) {
             if hasInstalled {
                 Circle()
-                    .fill(.green)
+                    .fill(AppColors.success(colorScheme))
                     .frame(width: 8, height: 8)
                     .fixedSize()
             } else {
@@ -216,12 +204,11 @@ struct SystemRowView: View {
                     .frame(width: 8, height: 8)
                     .fixedSize()
             }
-            
-            // System icon/image in uniform 32x32 container
+
             ZStack {
-                RoundedRectangle(cornerRadius: 6)
+                RoundedRectangle(cornerRadius: AppRadius.sm)
                     .fill(Color.secondary.opacity(0.1))
-                
+
                 if let img = system.emuImage(size: 132) {
                     Image(nsImage: img)
                         .resizable()
@@ -229,23 +216,23 @@ struct SystemRowView: View {
                         .frame(width: 24, height: 24)
                 } else {
                     Image(systemName: system.iconName)
-                        .foregroundColor(.secondary)
+                        .foregroundColor(AppColors.textSecondary(colorScheme))
                         .font(.system(size: 16))
                 }
             }
             .frame(width: 32, height: 32)
             .fixedSize()
-            
+
             Text(system.name)
                 .font(.body)
                 .lineLimit(1)
                 .minimumScaleFactor(0.7)
-            
+
             Spacer()
         }
-        .padding(.vertical, 2)
-        .padding(.horizontal, 4)
-        .listRowInsets(EdgeInsets(top: 0, leading: 4, bottom: 0, trailing: 4))
+        .padding(.vertical, AppSpacing.xs)
+        .padding(.horizontal, AppSpacing.xs)
+        .listRowInsets(EdgeInsets(top: 0, leading: AppSpacing.xs, bottom: 0, trailing: AppSpacing.xs))
         .listRowSeparator(.hidden)
     }
 }
@@ -254,18 +241,17 @@ struct SystemCoresView: View {
     let system: SystemInfo
     @ObservedObject var coreManager: CoreManager
     @ObservedObject private var loc = LocalizationManager.shared
+    @Environment(\.colorScheme) private var colorScheme
     @State private var expandedCoreID: String? = nil
     @State private var showOptionsFor: String? = nil
 
     var coresForSystem: [RemoteCoreInfo] {
         coreManager.availableCores.filter { remoteCore in
-            // Normalize all core system IDs before comparing
             let normalizedCoreIDs = remoteCore.systemIDs.map { SystemDatabase.normalizeSystemID($0) }
-            
             return normalizedCoreIDs.contains(system.id) || system.defaultCoreID == remoteCore.coreID
+        }
     }
-}
-    
+
     var installedCoresForSystem: [LibretroCore] {
         coreManager.installedCores.filter { core in
             core.systemIDs.contains(system.id) || system.defaultCoreID == core.id
@@ -274,20 +260,19 @@ struct SystemCoresView: View {
 
     var body: some View {
         ScrollView {
-            LazyVStack(spacing: 8) {
+            LazyVStack(spacing: AppSpacing.md) {
                 if installedCoresForSystem.isEmpty && coresForSystem.isEmpty {
-                    VStack(spacing: 12) {
+                    VStack(spacing: AppSpacing.xl) {
                         Image(systemName: "cpu")
                             .font(.system(size: 32))
-                            .foregroundColor(.secondary)
+                            .foregroundColor(AppColors.textMuted(colorScheme))
                         Text(loc.localized("cores.noCoresAvailable"))
-                            .foregroundColor(.secondary)
+                            .foregroundColor(AppColors.textSecondary(colorScheme))
                             .multilineTextAlignment(.center)
                     }
                     .frame(maxWidth: .infinity)
-                    .padding(.vertical, 24)
+                    .padding(.vertical, AppSpacing.xl2)
                 } else {
-                    // Show installed cores first
                     if !installedCoresForSystem.isEmpty {
                         InstalledCoresSection(
                             cores: installedCoresForSystem,
@@ -296,13 +281,12 @@ struct SystemCoresView: View {
                             coreManager: coreManager
                         )
                     }
-                    
-                    // Show available cores for download
+
                     if !coresForSystem.isEmpty {
                         let availableForDownload = coresForSystem.filter { remoteCore in
                             !coreManager.isInstalled(coreID: remoteCore.coreID)
                         }
-                        
+
                         if !availableForDownload.isEmpty {
                             DownloadableCoresSection(
                                 cores: availableForDownload,
@@ -312,18 +296,18 @@ struct SystemCoresView: View {
                     }
                 }
             }
-            .padding(.horizontal, 12)
-            .padding(.bottom, 16)
+            .padding(.horizontal, AppSpacing.lg)
+            .padding(.bottom, AppSpacing.xl2)
         }
         .frame(maxWidth: .infinity)
-    .sheet(isPresented: Binding(
-        get: { showOptionsFor != nil },
-        set: { if !$0 { showOptionsFor = nil } }
-    )) {
-        if let coreID = showOptionsFor {
-            CoreOptionsView(coreID: coreID, systemID: system.id)
+        .sheet(isPresented: Binding(
+            get: { showOptionsFor != nil },
+            set: { if !$0 { showOptionsFor = nil } }
+        )) {
+            if let coreID = showOptionsFor {
+                CoreOptionsView(coreID: coreID, systemID: system.id)
+            }
         }
-    }
     }
 }
 
@@ -333,17 +317,18 @@ struct InstalledCoresSection: View {
     @Binding var showOptionsFor: String?
     @ObservedObject var coreManager: CoreManager
     @ObservedObject private var loc = LocalizationManager.shared
-    
+    @Environment(\.colorScheme) private var colorScheme
+
     var body: some View {
-        VStack(alignment: .leading, spacing: 8) {
+        VStack(alignment: .leading, spacing: AppSpacing.md) {
             Text(loc.localized("cores.installed"))
                 .font(.caption2)
                 .fontWeight(.semibold)
-                .foregroundColor(.secondary)
-                .padding(.horizontal, 4)
-                .padding(.bottom, 4)
-            
-            VStack(spacing: 8) {
+                .foregroundColor(AppColors.textSecondary(colorScheme))
+                .padding(.horizontal, AppSpacing.xs)
+                .padding(.bottom, AppSpacing.xs)
+
+            VStack(spacing: AppSpacing.md) {
                 ForEach(cores) { core in
                     InstalledCoreRowView(
                         core: core,
@@ -368,7 +353,7 @@ struct InstalledCoresSection: View {
                 }
             }
         }
-        .padding(.top, 8)
+        .padding(.top, AppSpacing.md)
     }
 }
 
@@ -376,17 +361,18 @@ struct DownloadableCoresSection: View {
     let cores: [RemoteCoreInfo]
     @ObservedObject var coreManager: CoreManager
     @ObservedObject private var loc = LocalizationManager.shared
-    
+    @Environment(\.colorScheme) private var colorScheme
+
     var body: some View {
-        VStack(alignment: .leading, spacing: 8) {
+        VStack(alignment: .leading, spacing: AppSpacing.md) {
             Text(loc.localized("cores.availableForDownload"))
                 .font(.caption2)
                 .fontWeight(.semibold)
-                .foregroundColor(.secondary)
-                .padding(.horizontal, 4)
-                .padding(.bottom, 4)
-            
-            VStack(spacing: 8) {
+                .foregroundColor(AppColors.textSecondary(colorScheme))
+                .padding(.horizontal, AppSpacing.xs)
+                .padding(.bottom, AppSpacing.xs)
+
+            VStack(spacing: AppSpacing.md) {
                 ForEach(cores) { remoteCore in
                     DownloadableCoreRowView(
                         remoteCore: remoteCore,
@@ -395,7 +381,7 @@ struct DownloadableCoresSection: View {
                 }
             }
         }
-        .padding(.top, 8)
+        .padding(.top, AppSpacing.md)
     }
 }
 
@@ -407,65 +393,61 @@ struct InstalledCoreRowView: View {
     let onDelete: () -> Void
     let coreManager: CoreManager
     @ObservedObject private var loc = LocalizationManager.shared
-    
+    @Environment(\.colorScheme) private var colorScheme
+
     @State private var showDeleteConfirmation = false
-    
+
     var body: some View {
         VStack(spacing: 0) {
             Button(action: onToggle) {
-                HStack(spacing: 12) {
-                    // Icon in fixed container
+                HStack(spacing: AppSpacing.lg) {
                     Image(systemName: "cpu")
-                        .foregroundColor(.purple)
+                        .foregroundColor(AppColors.brandAccent)
                         .font(.system(size: 16, weight: .medium))
                         .frame(width: 24, height: 24)
                         .fixedSize()
-                    
-                    // VStack centered vertically with button
+
                     VStack(alignment: .leading, spacing: 2) {
                         Text(core.displayName)
                             .font(.body)
                             .fontWeight(.medium)
                         Text(core.id)
                             .font(.caption)
-                            .foregroundColor(.secondary)
+                            .foregroundColor(AppColors.textSecondary(colorScheme))
                             .fontDesign(.monospaced)
                     }
-                    
+
                     Spacer()
-                    
-                    // Status indicator
+
                     VStack(alignment: .trailing, spacing: 2) {
-                        HStack(spacing: 4) {
+                        HStack(spacing: AppSpacing.xs) {
                             Image(systemName: "checkmark.circle.fill")
-                                .foregroundColor(.green)
+                                .foregroundColor(AppColors.success(colorScheme))
                             Text(loc.localized("cores.installedLabel"))
                                 .font(.caption)
-                                .foregroundColor(.secondary)
+                                .foregroundColor(AppColors.textSecondary(colorScheme))
                         }
                         if let version = core.activeVersionTag {
                             Text("v\(version)")
                                 .font(.caption2)
-                                .foregroundColor(.secondary.opacity(0.7))
+                                .foregroundColor(AppColors.textMuted(colorScheme))
                         }
                     }
-                    
-                    // Options button
+
                     Button(action: onShowOptions) {
                         Image(systemName: "slider.vertical.3")
                     }
                     .buttonStyle(.plain)
                     .symbolVariant(.circle)
                     .help(loc.localized("coreOptions.configureHelp"))
-                    
-                    // Delete button
+
                     Button(role: .destructive) {
                         showDeleteConfirmation = true
                     } label: {
                         Image(systemName: "trash")
                     }
                     .buttonStyle(.plain)
-                    .foregroundColor(.red.opacity(0.6))
+                    .foregroundColor(AppColors.error(colorScheme).opacity(0.6))
                     .symbolVariant(.circle)
                     .confirmationDialog(
                         loc.localized("cores.deleteCore"),
@@ -477,27 +459,27 @@ struct InstalledCoreRowView: View {
                     } message: {
                         Text(loc.localized("cores.deleteConfirmation").replacingOccurrences(of: "{0}", with: core.displayName))
                     }
-                    
+
                     Image(systemName: isExpanded ? "chevron.down" : "chevron.right")
-                        .foregroundColor(.secondary)
+                        .foregroundColor(AppColors.textSecondary(colorScheme))
                         .font(.caption)
                         .frame(width: 16)
                 }
                 .frame(minHeight: 48)
-                .padding(.horizontal, 12)
-                .padding(.vertical, 10)
+                .padding(.horizontal, AppSpacing.lg)
+                .padding(.vertical, AppSpacing.lg)
                 .contentShape(Rectangle())
             }
             .buttonStyle(.plain)
-            
+
             if isExpanded {
                 Divider()
-                VStack(alignment: .leading, spacing: 8) {
+                VStack(alignment: .leading, spacing: AppSpacing.md) {
                     HStack {
                         Text(loc.localized("cores.installedVersions"))
                             .font(.caption)
-                            .foregroundColor(.secondary)
-                        
+                            .foregroundColor(AppColors.textSecondary(colorScheme))
+
                         if !core.installedVersions.isEmpty {
                             Picker(loc.localized("cores.version"), selection: Binding(
                                 get: { core.activeVersionTag ?? core.installedVersions.last?.tag ?? "" },
@@ -513,34 +495,34 @@ struct InstalledCoreRowView: View {
                             .labelsHidden()
                         }
                     }
-                    
+
                     let sysNames = core.systemIDs.compactMap { SystemDatabase.system(forID: $0)?.name }
                     if !sysNames.isEmpty {
                         ScrollView(.horizontal, showsIndicators: false) {
-                            HStack(spacing: 4) {
+                            HStack(spacing: AppSpacing.xs) {
                                 ForEach(sysNames, id: \.self) { name in
                                     Text(name)
                                         .font(.caption2)
-                                        .padding(.horizontal, 6)
-                                        .padding(.vertical, 2)
+                                        .padding(.horizontal, AppSpacing.sm)
+                                        .padding(.vertical, AppSpacing.xs)
                                         .background(.secondary.opacity(0.2))
-                                        .cornerRadius(4)
+                                        .cornerRadius(AppRadius.xs)
                                 }
                             }
                         }
                     }
-                    
+
                     Text("\(core.installedVersions.count) version\(core.installedVersions.count == 1 ? "" : "s") installed")
                         .font(.caption)
-                        .foregroundColor(.secondary)
+                        .foregroundColor(AppColors.textSecondary(colorScheme))
                 }
-                .padding(.horizontal, 12)
-                .padding(.vertical, 8)
-                .background(.secondary.opacity(0.05))
+                .padding(.horizontal, AppSpacing.lg)
+                .padding(.vertical, AppSpacing.md)
+                .background(AppColors.cardBackgroundSubtle(colorScheme))
             }
         }
-        .background(.ultraThinMaterial)
-        .cornerRadius(8)
+        .background(AppColors.cardBackgroundSubtle(colorScheme))
+        .cornerRadius(AppRadius.md)
     }
 }
 
@@ -548,56 +530,65 @@ struct DownloadableCoreRowView: View {
     let remoteCore: RemoteCoreInfo
     @ObservedObject var coreManager: CoreManager
     @ObservedObject private var loc = LocalizationManager.shared
-    
+    @Environment(\.colorScheme) private var colorScheme
+
+    private var isBeingDownloaded: Bool {
+        coreManager.isDownloadingCore && coreManager.downloadCoreName == remoteCore.displayName
+    }
+
     var body: some View {
-        HStack(spacing: 12) {
-            // Icon in fixed container
+        HStack(spacing: AppSpacing.lg) {
             Image(systemName: "cpu")
-                .foregroundColor(.orange)
+                .foregroundColor(AppColors.warning(colorScheme))
                 .font(.system(size: 16, weight: .medium))
                 .frame(width: 24, height: 24)
                 .fixedSize()
-            
-            // VStack centered vertically relative to button
+
             VStack(alignment: .leading, spacing: 2) {
                 Text(remoteCore.displayName)
                     .font(.body)
                 Text(remoteCore.coreID)
                     .font(.caption)
-                    .foregroundColor(.secondary)
+                    .foregroundColor(AppColors.textSecondary(colorScheme))
                     .fontDesign(.monospaced)
             }
-            
+
             Spacer()
-            
+
             let installed = coreManager.installedCores.first(where: { $0.id == remoteCore.coreID })
-            
-            if let inst = installed, inst.isDownloading {
-                VStack(alignment: .trailing, spacing: 4) {
-                    ProgressView(value: Double(inst.downloadProgress) / 100.0)
-                        .frame(width: 100)
-                        .tint(.orange)
+
+            if isBeingDownloaded {
+                VStack(alignment: .trailing, spacing: AppSpacing.xs) {
+                    if case .downloading(let progress) = coreManager.downloadPhase {
+                        ProgressView(value: progress)
+                            .frame(width: 100)
+                            .tint(AppColors.warning(colorScheme))
+                    } else {
+                        ProgressView()
+                            .controlSize(.small)
+                    }
                     Text(loc.localized("cores.downloading"))
                         .font(.caption2)
-                        .foregroundColor(.secondary)
+                        .foregroundColor(AppColors.textSecondary(colorScheme))
                 }
             } else if let inst = installed, inst.isInstalled {
                 Image(systemName: "checkmark.circle.fill")
-                    .foregroundColor(.green)
-      } else {
-        Button(loc.localized("cores.download")) {
-          Task {
-            await coreManager.downloadCore(remoteCore)
-          }
-        }
-        .buttonStyle(.bordered)
-        .controlSize(.small)
-      }
+                    .foregroundColor(AppColors.success(colorScheme))
+            } else {
+                Button(loc.localized("cores.download")) {
+                    Task {
+                        await coreManager.downloadCore(remoteCore)
+                    }
+                }
+                .buttonStyle(.bordered)
+                .controlSize(.small)
+                .disabled(coreManager.isDownloadingCore)
+            }
         }
         .frame(minHeight: 48)
-        .padding(.horizontal, 12)
-        .padding(.vertical, 10)
+        .padding(.horizontal, AppSpacing.lg)
+        .padding(.vertical, AppSpacing.lg)
         .background(.ultraThinMaterial)
-        .cornerRadius(8)
+        .cornerRadius(AppRadius.md)
     }
 }

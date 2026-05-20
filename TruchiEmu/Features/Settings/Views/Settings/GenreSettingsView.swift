@@ -3,6 +3,7 @@ import GameController
 import Foundation
 
 struct GenreSettingsView: View {
+    @Environment(\.colorScheme) private var colorScheme
     @EnvironmentObject var library: ROMLibrary
     @Binding var searchText: String
     @ObservedObject private var loc = LocalizationManager.shared
@@ -68,12 +69,12 @@ struct GenreSettingsView: View {
 
     private var header: some View {
         HStack {
-            VStack(alignment: .leading, spacing: 2) {
-                Text("genre.title")
-                    .font(.headline)
+VStack(alignment: .leading, spacing: AppSpacing.xxs) {
+    Text("genre.title")
+        .font(.headline)
                 Text("genre.subtitle")
                     .font(.caption)
-                    .foregroundColor(.secondary)
+                    .foregroundStyle(AppColors.textSecondary(colorScheme))
             }
             Spacer()
             Button {
@@ -103,12 +104,12 @@ struct GenreSettingsView: View {
         let bgColor: Color = {
             switch item.type {
             case .mapped: return AppColors.brandAccent.opacity(0.05)
-            case .custom: return Color.green.opacity(0.05)
+            case .custom: return AppColors.success(colorScheme).opacity(0.05)
             case .unmapped: return Color.clear
             }
         }()
         
-        return HStack(spacing: 12) {
+        return     HStack(spacing: AppSpacing.lg) {
             if item.type == .custom {
                 customLabel(item.display, editable: true)
             } else {
@@ -128,17 +129,17 @@ struct GenreSettingsView: View {
                 } label: {
                     Text(loc.localized("genre.delete"))
                         .font(.caption)
-                        .foregroundColor(.red)
-                        .padding(.horizontal, 8)
-                        .padding(.vertical, 4)
-                        .background(Color.red.opacity(0.1))
-                        .cornerRadius(6)
+        .foregroundStyle(AppColors.error(colorScheme))
+        .padding(.horizontal, AppSpacing.md)
+        .padding(.vertical, AppSpacing.xs)
+        .background(AppColors.error(colorScheme).opacity(0.1))
+        .cornerRadius(AppRadius.sm)
                 }
                 .buttonStyle(.plain)
             }
         }
-        .padding(.horizontal, 16)
-        .padding(.vertical, 8)
+    .padding(.horizontal, AppSpacing.xl)
+    .padding(.vertical, AppSpacing.md)
         .background(bgColor)
         .contentShape(Rectangle())
         .onTapGesture {
@@ -147,15 +148,15 @@ struct GenreSettingsView: View {
     }
 
     private func customLabel(_ text: String, editable: Bool) -> some View {
-        HStack(spacing: 4) {
-            Text(text)
-                .font(.body)
-                .foregroundColor(.green)
-                .lineLimit(1)
-            if editable {
-                Image(systemName: "pencil")
-                    .font(.caption2)
-                    .foregroundColor(.green.opacity(0.7))
+    HStack(spacing: AppSpacing.xs) {
+        Text(text)
+        .font(.body)
+        .foregroundStyle(AppColors.success(colorScheme))
+        .lineLimit(1)
+        if editable {
+            Image(systemName: "pencil")
+            .font(.caption2)
+            .foregroundStyle(AppColors.success(colorScheme).opacity(0.7))
             }
         }
     }
@@ -163,7 +164,7 @@ struct GenreSettingsView: View {
     private func originalLabel(_ text: String) -> some View {
         Text(text)
             .font(.system(.body, design: .monospaced))
-            .foregroundColor(Color.secondary.opacity(0.7))
+            .foregroundStyle(AppColors.textSecondary(colorScheme).opacity(0.7))
             .lineLimit(1)
             .frame(minWidth: 100, alignment: .leading)
     }
@@ -171,14 +172,14 @@ struct GenreSettingsView: View {
     private var arrowLabel: some View {
         Image(systemName: "arrow.right")
             .font(.caption)
-            .foregroundColor(.secondary)
+            .foregroundStyle(AppColors.textSecondary(colorScheme))
     }
 
     private func displayLabel(_ item: (type: GenreType, original: String, display: String)) -> some View {
         Text(item.display)
             .font(.body)
             .fontWeight(item.type == .mapped ? .medium : .regular)
-            .foregroundColor(item.type == .mapped ? .primary : .secondary)
+            .foregroundStyle(item.type == .mapped ? .primary : AppColors.textSecondary(colorScheme))
             .lineLimit(1)
     }
 
@@ -210,59 +211,55 @@ struct GenreSettingsView: View {
     }
 
     private var editMappingSheet: some View {
-        VStack(spacing: 16) {
+        VStack(spacing: AppSpacing.xl) {
             Text(isCreatingNew ? loc.localized("genre.createCustomGenre") : loc.localized("genre.editGenreMapping"))
                 .font(.headline)
 
-            if isCreatingNew {
-                VStack(alignment: .leading, spacing: 8) {
-                    Text(loc.localized("genre.customGenreName"))
-                        .font(.caption)
-                        .foregroundColor(.secondary)
-
-                    TextField(loc.localized("genre.genreName"), text: $editingDisplay)
-                        .textFieldStyle(.roundedBorder)
-                }
+        if isCreatingNew {
+            VStack(alignment: .leading, spacing: AppSpacing.md) {
+                TextField(loc.localized("genre.genreName"), text: $editingDisplay)
+                    .textFieldStyle(.roundedBorder)
+            }
             } else if editingOriginal.isEmpty {
-                VStack(alignment: .leading, spacing: 8) {
+                VStack(alignment: .leading, spacing: AppSpacing.md) {
                     HStack {
                         Text(loc.localized("genre.genreName"))
                             .font(.caption)
-                            .foregroundColor(.secondary)
+                            .foregroundStyle(AppColors.textSecondary(colorScheme))
                         Spacer()
                         Text(loc.localized("genre.editable"))
                             .font(.caption2)
-                            .foregroundColor(.secondary)
+                            .foregroundStyle(AppColors.textSecondary(colorScheme))
                     }
 
                     TextField(loc.localized("genre.genreName"), text: $editingDisplay)
                         .textFieldStyle(.roundedBorder)
                 }
             } else {
-                VStack(alignment: .leading, spacing: 8) {
+                VStack(alignment: .leading, spacing: AppSpacing.md) {
                     HStack {
                         Text(loc.localized("genre.originalFromROM"))
                             .font(.caption)
-                            .foregroundColor(.secondary)
+                            .foregroundStyle(AppColors.textSecondary(colorScheme))
                         Spacer()
                         Text(loc.localized("genre.readOnly"))
                             .font(.caption2)
-                            .foregroundColor(.secondary)
+                            .foregroundStyle(AppColors.textSecondary(colorScheme))
                     }
 
                     Text(editingOriginal)
                         .font(.system(.body, design: .monospaced))
-                        .foregroundColor(.secondary)
-                        .padding(8)
-                        .frame(maxWidth: .infinity, alignment: .leading)
-                        .background(Color.secondary.opacity(0.1))
-                        .cornerRadius(6)
+                        .foregroundStyle(AppColors.textSecondary(colorScheme))
+.padding(AppSpacing.md)
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .background(AppColors.cardBackgroundSubtle(colorScheme))
+        .cornerRadius(AppRadius.sm)
                 }
 
-                VStack(alignment: .leading, spacing: 8) {
+                VStack(alignment: .leading, spacing: AppSpacing.md) {
                     Text(loc.localized("genre.displayShownInApp"))
                         .font(.caption)
-                        .foregroundColor(.secondary)
+                        .foregroundStyle(AppColors.textSecondary(colorScheme))
 
                     TextField(loc.localized("genre.displayGenre"), text: $editingDisplay)
                         .textFieldStyle(.roundedBorder)

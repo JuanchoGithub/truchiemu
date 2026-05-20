@@ -32,8 +32,6 @@ struct GameDetailView: View {
     @State var useCustomCore: Bool = false
     @State var selectedCoreID: String? = nil
     @State var applyCoreToSystem: Bool = false
-    @State var infoCoreID: String? = nil
-    @State var infoApplyCoreToSystem: Bool = false
     @State var manualActionStatus: ManualActionStatus = .hidden
     @State var manualStatusAutoDismiss: Task<Void, Never>?
 
@@ -117,27 +115,30 @@ struct GameDetailView: View {
     var mainContentArea: some View {
         ScrollView {
             VStack(alignment: .leading, spacing: 20) {
-                Group {
-                    switch selectedSection {
-                    case .gameInfo: gameInfoSection
-                    case .shader: shaderSection
-                    case .bezels: bezelsSection
-                    case .controls: controlsSection
-                    case .savedStates: savedStatesSection
-                    case .cheats: cheatsSection
-                    case .core: coreSection
-                    case .achievements:
-                        if achievementsService.isEnabled {
-                            achievementsSection
-                        }
-                    }
-                }
-                .transition(.opacity.combined(with: .move(edge: .trailing)))
+                AnyView(sectionContent)
+                    .transition(.opacity.combined(with: .move(edge: .trailing)))
             }
             .padding(24)
         }
         .scrollContentBackground(.hidden)
         .background(Color.clear)
+    }
+
+    @ViewBuilder
+    private var sectionContent: some View {
+        switch selectedSection {
+        case .gameInfo: gameInfoSection
+        case .shader: shaderSection
+        case .bezels: bezelsSection
+        case .controls: controlsSection
+        case .savedStates: savedStatesSection
+        case .cheats: cheatsSection
+        case .core: coreSection
+        case .achievements:
+            if achievementsService.isEnabled {
+                achievementsSection
+            }
+        }
     }
 
     @ViewBuilder
@@ -193,9 +194,7 @@ struct GameDetailView: View {
             }
             useCustomCore = currentROM.useCustomCore
             selectedCoreID = currentROM.selectedCoreID ?? sysPrefs.preferredCoreID(for: currentROM.systemID ?? "") ?? system?.defaultCoreID
-            infoCoreID = currentROM.selectedCoreID ?? sysPrefs.preferredCoreID(for: currentROM.systemID ?? "") ?? system?.defaultCoreID
-            infoApplyCoreToSystem = !currentROM.useCustomCore
-        loadGBColorizationSettings()
+            loadGBColorizationSettings()
         }
         .onChange(of: currentROM.id) { _, _ in
             clearManualStatus()

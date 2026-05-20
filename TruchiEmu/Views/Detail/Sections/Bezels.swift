@@ -7,7 +7,7 @@ extension GameDetailView {
             icon: "picture.inset.filled",
             badge: currentBezelStatusText.isEmpty ? nil : currentBezelStatusText
         ) {
-            VStack(alignment: .leading, spacing: 14) {
+            VStack(alignment: .leading, spacing: 0) {
                 if let bezelImage = currentBezelImage {
                     Image(nsImage: bezelImage)
                         .resizable()
@@ -18,68 +18,79 @@ extension GameDetailView {
                 } else {
                     HStack(spacing: 8) {
                         Image(systemName: "photo.on.rectangle.angled")
-                            .font(.system(size: 24)).foregroundColor(AppColors.textMuted(colorScheme))
+                            .font(.system(size: 24)).foregroundColor(AppColors.textTertiary(colorScheme))
                         VStack(alignment: .leading, spacing: 2) {
                             Text(currentBezelDisplayName).font(.subheadline).foregroundColor(AppColors.textSecondary(colorScheme))
-                            Text(loc.localized("bezel.noPreviewAvailable")).font(.caption).foregroundColor(AppColors.textMuted(colorScheme))
+                            Text(loc.localized("bezel.noPreviewAvailable")).font(.caption).foregroundColor(AppColors.textTertiary(colorScheme))
                         }
                     }
                     .frame(maxWidth: .infinity)
                     .padding(.vertical, 16)
-                    .background(AppColors.cardBackgroundSubtle(colorScheme))
-                    .cornerRadius(8)
-                }
+                    .background(AppColors.brandAccent.opacity(0.12))
+            .cornerRadius(8)
+            }
 
-                Divider().overlay(AppColors.divider(colorScheme))
+            Divider().overlay(AppColors.divider(colorScheme))
 
+HStack {
+VStack(alignment: .leading, spacing: 2) {
+Text(loc.localized("bezel.currentBezel")).font(.subheadline).fontWeight(.medium).foregroundColor(AppColors.textPrimary(colorScheme))
+Text(currentBezelDisplayName).font(.caption).foregroundColor(AppColors.textSecondary(colorScheme))
+}
+Spacer()
+        Button { presentBezelSelectorWindow() } label: {
+            Text(loc.localized("bezel.browseBezels"))
+                .font(.subheadline)
+                .foregroundColor(.white)
+                .padding(.horizontal, AppSpacing.lg)
+                .padding(.vertical, AppSpacing.sm)
+                .background(AppColors.brandAccent)
+                .cornerRadius(AppRadius.md)
+        }
+        .buttonStyle(.plain)
+}
+.padding(.vertical, AppSpacing.xs)
+
+            Divider().overlay(AppColors.divider(colorScheme))
+
+VStack(spacing: 8) {
+            Button { autoMatchBezel() } label: {
                 HStack {
-                    VStack(alignment: .leading, spacing: 2) {
-                        Text(loc.localized("bezel.currentBezel")).font(.subheadline).fontWeight(.medium).foregroundColor(AppColors.textPrimary(colorScheme))
-                        Text(currentBezelDisplayName).font(.caption).foregroundColor(AppColors.textSecondary(colorScheme))
-                    }
+                    Image(systemName: "magnifyingglass").frame(width: 20)
+                    Text(loc.localized("bezel.autoMatchBezel"))
                     Spacer()
-                    Button(loc.localized("bezel.browseBezels")) { presentBezelSelectorWindow() }
-                        .foregroundColor(.white)
-                        .padding(.horizontal, 14)
-                        .padding(.vertical, 8)
-                        .background(AppColors.brandAccent.opacity(0.6))
-                        .cornerRadius(8)
                 }
+                .font(.subheadline)
+                .foregroundColor(.white)
+                .padding(.vertical, AppSpacing.xs)
+                .padding(.horizontal, AppSpacing.lg)
+                .background(AppColors.brandAccent)
+                .cornerRadius(AppRadius.sm)
+            }
+            .buttonStyle(.plain)
+
+            Button { clearBezel() } label: {
+                HStack {
+                    Image(systemName: "nosign").frame(width: 20)
+                    Text(loc.localized("bezel.clearBezel"))
+                    Spacer()
+                }
+                .font(.subheadline)
+                .foregroundColor(AppColors.brandAccent)
+                .padding(.vertical, AppSpacing.xs)
+                .padding(.horizontal, AppSpacing.lg)
+                .background(AppColors.brandAccent.opacity(0.15))
+                .cornerRadius(AppRadius.sm)
+            }
+            .buttonStyle(.plain)
+}
+.padding(.vertical, AppSpacing.xs)
 
                 Divider().overlay(AppColors.divider(colorScheme))
 
-                VStack(spacing: 8) {
-                    Button { autoMatchBezel() } label: {
-                        HStack {
-                            Image(systemName: "magnifyingglass").foregroundColor(.white).frame(width: 20)
-                            Text(loc.localized("bezel.autoMatchBezel")).foregroundColor(AppColors.textPrimary(colorScheme))
-                            Spacer()
-                        }
-                        .padding(.vertical, 6)
-                        .padding(.horizontal, 10)
-                        .background(AppColors.cardBackground(colorScheme))
-                        .cornerRadius(6)
-                    }
-                    .buttonStyle(.plain)
-
-                    Button { clearBezel() } label: {
-                        HStack {
-                            Image(systemName: "nosign").foregroundColor(.white).frame(width: 20)
-                            Text(loc.localized("bezel.clearBezel")).foregroundColor(AppColors.textPrimary(colorScheme))
-                            Spacer()
-                        }
-                        .padding(.vertical, 6)
-                        .padding(.horizontal, 10)
-                        .background(AppColors.cardBackground(colorScheme))
-                        .cornerRadius(6)
-                    }
-                    .buttonStyle(.plain)
-                }
-
-                Divider().overlay(AppColors.divider(colorScheme))
-
-                Text(loc.localized("bezel.bezelsPreDownloaded"))
-                    .font(.caption).foregroundColor(AppColors.textMuted(colorScheme))
+Text(loc.localized("bezel.bezelsPreDownloaded"))
+.font(.caption).foregroundColor(AppColors.textTertiary(colorScheme))
+.padding(.vertical, AppSpacing.xs)
             }
         }
         .task(id: currentROM.id) {

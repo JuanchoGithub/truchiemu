@@ -7,21 +7,20 @@ extension GameDetailView {
             icon: "externaldrive",
             badge: slotInfoList.filter { $0.exists && $0.id >= 0 }.isEmpty ? nil : "\(slotInfoList.filter { $0.exists && $0.id >= 0 }.count)"
         ) {
-            VStack(alignment: .leading, spacing: 14) {
+            VStack(alignment: .leading, spacing: 0) {
                 let existingSlots = slotInfoList.filter { $0.exists }
                 let emptySlots = slotInfoList.filter { !$0.exists && $0.id >= 0 }.prefix(10)
                 let showSlots = existingSlots.isEmpty ? Array(emptySlots) : slotInfoList.filter { $0.id >= 0 }
 
                 if showSlots.isEmpty {
                     VStack(spacing: 8) {
-                        Image(systemName: "externaldrive.slash").font(.system(size: 30)).foregroundColor(AppColors.textMuted(colorScheme))
+                        Image(systemName: "externaldrive.slash").font(.system(size: 30)).foregroundColor(AppColors.textTertiary(colorScheme))
                         Text(loc.localized("savedStates.noSavedStates")).font(.subheadline).foregroundColor(AppColors.textSecondary(colorScheme))
-                        Text(loc.localized("savedStates.savedStatesCreatedDuringGameplay")).font(.caption).foregroundColor(AppColors.textMuted(colorScheme))
-                    }
-                    .frame(maxWidth: .infinity)
-                    .padding(.vertical, 16)
-                } else {
-                    LazyVGrid(
+                        Text(loc.localized("savedStates.savedStatesCreatedDuringGameplay")).font(.caption).foregroundColor(AppColors.textTertiary(colorScheme))
+}
+.padding(.vertical, AppSpacing.xs)
+} else {
+LazyVGrid(
                         columns: Array(repeating: GridItem(.flexible(), spacing: 12), count: 5),
                         spacing: 12
                     ) {
@@ -37,17 +36,18 @@ extension GameDetailView {
                     }
                 }
 
-                if !existingSlots.isEmpty {
-                    Divider().overlay(AppColors.divider(colorScheme))
-                    HStack {
-                        Text("\(existingSlots.count) \(loc.localized("savedStates.saveStateCount"))").font(.caption).foregroundColor(AppColors.textSecondary(colorScheme))
-                        Spacer()
-                        let totalSize = existingSlots.reduce(0) { $0 + ($1.fileSize ?? 0) }
-                        if totalSize > 0 {
-                            Text(Int64(totalSize).formattedByteSize).font(.caption).foregroundColor(AppColors.textSecondary(colorScheme))
-                        }
-                    }
-                }
+if !existingSlots.isEmpty {
+Divider().overlay(AppColors.divider(colorScheme))
+HStack {
+Text("\(existingSlots.count) \(loc.localized("savedStates.saveStateCount"))").font(.caption).foregroundColor(AppColors.textSecondary(colorScheme))
+Spacer()
+let totalSize = existingSlots.reduce(0) { $0 + ($1.fileSize ?? 0) }
+if totalSize > 0 {
+Text(Int64(totalSize).formattedByteSize).font(.caption).foregroundColor(AppColors.textSecondary(colorScheme))
+}
+}
+.padding(.vertical, AppSpacing.xs)
+}
             }
         }
     }

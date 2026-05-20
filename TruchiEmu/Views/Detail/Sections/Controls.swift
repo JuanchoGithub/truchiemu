@@ -5,22 +5,27 @@ extension GameDetailView {
         ModernSectionCard(
             title: loc.localized("controls.title"),
             icon: "gamecontroller",
-            badge: "System"
+            badge: loc.localized("controls.systemBadge")
         ) {
-            VStack(alignment: .leading, spacing: 14) {
-                HStack {
-                    VStack(alignment: .leading, spacing: 2) {
-                        Text(loc.localized("controls.controllerMapping")).font(.subheadline).fontWeight(.medium).foregroundColor(AppColors.textPrimary(colorScheme))
-                        Text(loc.localized("controls.usesStandardLayout").replacingOccurrences(of: "{0}", with: system?.name ?? "this system")).font(.caption).foregroundColor(AppColors.textSecondary(colorScheme))
-                    }
-                    Spacer()
-                    Button(loc.localized("controls.edit")) { showControlsPicker = true }
-                        .foregroundColor(.white)
-                        .padding(.horizontal, 14)
-                        .padding(.vertical, 8)
-                        .background(AppColors.brandAccent.opacity(0.6))
-                        .cornerRadius(8)
-                }
+VStack(alignment: .leading, spacing: 0) {
+HStack {
+VStack(alignment: .leading, spacing: 2) {
+Text(loc.localized("controls.controllerMapping")).font(.subheadline).fontWeight(.medium).foregroundColor(AppColors.textPrimary(colorScheme))
+Text(loc.localized("controls.usesStandardLayout").replacingOccurrences(of: "{0}", with: system?.name ?? "this system")).font(.caption).foregroundColor(AppColors.textTertiary(colorScheme))
+}
+Spacer()
+        Button { showControlsPicker = true } label: {
+            Text(loc.localized("controls.edit"))
+                .font(.subheadline)
+                .foregroundColor(.white)
+                .padding(.horizontal, AppSpacing.lg)
+                .padding(.vertical, AppSpacing.sm)
+                .background(AppColors.brandAccent)
+                .cornerRadius(AppRadius.md)
+        }
+        .buttonStyle(.plain)
+}
+.padding(.vertical, AppSpacing.xs)
 
                 if let sys = system, let controllerIcon = controllerIconForSystem(sys) {
                     HStack(spacing: 16) {
@@ -30,27 +35,32 @@ extension GameDetailView {
                             Text(loc.localized("controls.standardController").replacingOccurrences(of: "{0}", with: sys.name)).font(.caption).foregroundColor(AppColors.textSecondary(colorScheme))
                         }
                         Spacer()
-                    }
-                    .padding(12)
-                    .background(AppColors.cardBackground(colorScheme))
-                    .cornerRadius(8)
-                }
+}
+.padding(12)
+.background(AppColors.brandAccent.opacity(0.12))
+        .cornerRadius(AppRadius.md)
+        }
 
-                Divider().overlay(AppColors.divider(colorScheme))
+        Divider().overlay(AppColors.divider(colorScheme))
 
                 HStack {
                     VStack(alignment: .leading, spacing: 2) {
                         Text(loc.localized("controls.systemDefaultControls")).font(.caption).foregroundColor(AppColors.textSecondary(colorScheme))
-                        Text(loc.localized("controls.resetToDefaultControls")).font(.caption).foregroundColor(AppColors.textMuted(colorScheme))
+                        Text(loc.localized("controls.resetToDefaultControls")).font(.caption).foregroundColor(AppColors.textTertiary(colorScheme))
                     }
                     Spacer()
-                    Button(loc.localized("controls.reset")) { resetControlsToSystemDefault() }
-                        .foregroundColor(.white)
-                        .padding(.horizontal, 12)
-                        .padding(.vertical, 6)
-                        .background(AppColors.cardBackground(colorScheme))
-                        .cornerRadius(6)
-                }
+        Button { resetControlsToSystemDefault() } label: {
+            Text(loc.localized("controls.reset"))
+                .font(.subheadline)
+                .foregroundColor(AppColors.brandAccent)
+                .padding(.horizontal, AppSpacing.lg)
+                .padding(.vertical, AppSpacing.xs)
+                .background(AppColors.brandAccent.opacity(0.15))
+                .cornerRadius(AppRadius.sm)
+        }
+        .buttonStyle(.plain)
+}
+.padding(.vertical, AppSpacing.xs)
             }
         }
     }

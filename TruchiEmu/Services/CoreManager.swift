@@ -4,6 +4,14 @@ import Darwin
 import AppKit
 import SwiftData
 
+enum CoreDownloadPhase: Equatable {
+    case idle
+    case findingURL
+    case fetchingFromURL
+    case downloading(progress: Double)
+    case installing
+}
+
 
 class BiosDownloader {
     
@@ -160,6 +168,9 @@ class CoreManager: ObservableObject {
     @Published var availableCores: [RemoteCoreInfo] = []
     @Published var isFetchingCoreList: Bool = false
     @Published var pendingDownload: PendingCoreDownload? = nil
+    @Published var downloadPhase: CoreDownloadPhase = .idle
+    @Published var downloadCoreName: String = ""
+    var isDownloadingCore: Bool { downloadPhase != .idle }
     private let appSupportURL: URL = {
         let base = FileManager.default.urls(for: .applicationSupportDirectory, in: .userDomainMask).first!
         return base.appendingPathComponent("TruchiEmu/Cores", isDirectory: true)
@@ -470,126 +481,128 @@ class CoreManager: ObservableObject {
     func downloadCore(_ info: RemoteCoreInfo, romPath: String? = nil) async {
         LoggerService.debug(category: "CoreManager", "Starting download: \(info.coreID) from \(info.downloadURL)")
 
+        downloadCoreName = info.displayName
+        downloadPhase = .findingURL
+
         let BiosDownloaderService = BiosDownloader()
         BiosDownloaderService.downloadAndExtractBios(for: info.coreID) { result in
             switch result {
-                case .success(_):
-                    LoggerService.debug(category: "CoreManager", "BIOS for \(info.coreID) downloaded successfully")
-                case .failure(let error):
-                    LoggerService.error(category: "CoreManager", "BIOS for \(info.coreID) download failed: \(error)")
+            case .success(_):
+                LoggerService.debug(category: "CoreManager", "BIOS for \(info.coreID) downloaded successfully")
+            case .failure(let error):
+                LoggerService.error(category: "CoreManager", "BIOS for \(info.coreID) download failed: \(error)")
             }
         }
 
-
-        // Mark as downloading
+        // Mark existing installed core as downloading (for re-downloads/updates)
         if let idx = installedCores.firstIndex(where: { $0.id == info.coreID }) {
-            LoggerService.debug(category: "CoreManager", "Found installed core: \(info.coreID)")
             installedCores[idx].isDownloading = true
-        } else {
-            LoggerService.debug(category: "CoreManager", "Core not found in installed cores, adding new core")
-            installedCores.append(LibretroCore(id: info.coreID, displayName: info.displayName,
-                                               systemIDs: info.systemIDs, installedVersions: [],
-                                               isDownloading: true))
         }
 
         do {
+            downloadPhase = .fetchingFromURL
             LoggerService.debug(category: "CoreManager", "Downloading core: \(info.coreID)")
             var request = URLRequest(url: info.downloadURL)
             request.setValue("Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36", forHTTPHeaderField: "User-Agent")
-            LoggerService.debug(category: "CoreManager", "Request: \(request)")
+
+            downloadPhase = .downloading(progress: 0)
             let (tmpURL, response) = try await URLSession.shared.download(for: request)
 
             if let http = response as? HTTPURLResponse, http.statusCode != 200 {
                 LoggerService.error(category: "CoreManager", "Server returned HTTP \(http.statusCode)")
                 throw NSError(domain: "CoreManager", code: http.statusCode, userInfo: [NSLocalizedDescriptionKey: "Server returned HTTP \(http.statusCode)"])
             }
-            
-        // Use version from RemoteCoreInfo instead of timestamp
-        // Extract version from info.version (format: "raw-version-buildDate")
-        let versionParts = (info.version ?? "unknown").split(separator: "-", maxSplits: 1)
-        let versionString = String(versionParts.first ?? "unknown")
-        let buildDate = versionParts.count > 1 ? String(versionParts[1]) : Date().ISO8601Format()
 
-        // Create folder structure: coreID/version/
-        let coreFolder = appSupportURL.appendingPathComponent(info.coreID, isDirectory: true)
-        let versionFolder = coreFolder.appendingPathComponent("\(versionString)-\(buildDate)", isDirectory: true)
-        try FileManager.default.createDirectory(at: versionFolder, withIntermediateDirectories: true)
-        LoggerService.debug(category: "CoreManager", "Core version folder created: \(versionFolder.path)")
+            downloadPhase = .installing
 
-        // Unzip to version folder
-        let dylibName = info.fileName.replacingOccurrences(of: ".zip", with: "")
-        let dylibDest = versionFolder.appendingPathComponent(dylibName)
+            // Use version from RemoteCoreInfo instead of timestamp
+            // Extract version from info.version (format: "raw-version-buildDate")
+            let versionParts = (info.version ?? "unknown").split(separator: "-", maxSplits: 1)
+            let versionString = String(versionParts.first ?? "unknown")
+            let buildDate = versionParts.count > 1 ? String(versionParts[1]) : Date().ISO8601Format()
 
-        LoggerService.debug(category: "CoreManager", "Unzipping to: \(dylibDest.path)")
-        try await unzip(zipURL: tmpURL, extracting: dylibName, to: dylibDest)
-        LoggerService.debug(category: "CoreManager", "Unzipped successfully")
+            // Create folder structure: coreID/version/
+            let coreFolder = appSupportURL.appendingPathComponent(info.coreID, isDirectory: true)
+            let versionFolder = coreFolder.appendingPathComponent("\(versionString)-\(buildDate)", isDirectory: true)
+            try FileManager.default.createDirectory(at: versionFolder, withIntermediateDirectories: true)
+            LoggerService.debug(category: "CoreManager", "Core version folder created: \(versionFolder.path)")
 
-        // Create CoreVersion object
-        let coreVersion = CoreVersion(
-            version: versionString,
-            buildDate: buildDate,
-            dylibPath: dylibDest,
-            downloadedAt: Date(),
-            remoteURL: info.downloadURL,
-            isActive: true // Mark as active immediately after download
-        )
-        LoggerService.debug(category: "CoreManager", "Core version created: \(coreVersion)")
+            // Unzip to version folder
+            let dylibName = info.fileName.replacingOccurrences(of: ".zip", with: "")
+            let dylibDest = versionFolder.appendingPathComponent(dylibName)
 
-        // Create latest symlink pointing to the version we just downloaded
-        let symlinkPath = coreFolder.appendingPathComponent(info.coreID + ".dylib")
-        let relativePath = "\(versionString)-\(buildDate)/\(dylibName)"
+            LoggerService.debug(category: "CoreManager", "Unzipping to: \(dylibDest.path)")
+            try await unzip(zipURL: tmpURL, extracting: dylibName, to: dylibDest)
+            LoggerService.debug(category: "CoreManager", "Unzipped successfully")
 
-        do {
-            // Remove old symlink if it exists
-            if FileManager.default.fileExists(atPath: symlinkPath.path) {
-                try FileManager.default.removeItem(at: symlinkPath)
+            // Create CoreVersion object
+            let coreVersion = CoreVersion(
+                version: versionString,
+                buildDate: buildDate,
+                dylibPath: dylibDest,
+                downloadedAt: Date(),
+                remoteURL: info.downloadURL,
+                isActive: true // Mark as active immediately after download
+            )
+            LoggerService.debug(category: "CoreManager", "Core version created: \(coreVersion)")
+
+            // Create latest symlink pointing to the version we just downloaded
+            let symlinkPath = coreFolder.appendingPathComponent(info.coreID + ".dylib")
+            let relativePath = "\(versionString)-\(buildDate)/\(dylibName)"
+
+            do {
+                // Remove old symlink if it exists
+                if FileManager.default.fileExists(atPath: symlinkPath.path) {
+                    try FileManager.default.removeItem(at: symlinkPath)
+                }
+
+                // Create new symlink to version folder
+                try FileManager.default.createSymbolicLink(at: symlinkPath, withDestinationURL: dylibDest)
+                LoggerService.debug(category: "CoreManager", "Created latest symlink: \(symlinkPath.path) -> \(relativePath)")
+            } catch {
+                LoggerService.error(category: "CoreManager", "Failed to create latest symlink: \(error)")
             }
 
-            // Create new symlink to version folder
-            try FileManager.default.createSymbolicLink(at: symlinkPath,
-                                                      withDestinationURL: dylibDest)
-            LoggerService.debug(category: "CoreManager", "Created latest symlink: \(symlinkPath.path) -> \(relativePath)")
-        } catch {
-            LoggerService.error(category: "CoreManager", "Failed to create latest symlink: \(error)")
-            // Continue even if symlink fails - core is still usable
-        }
+            if let idx = installedCores.firstIndex(where: { $0.id == info.coreID }) {
+                // Ensure no duplicate path entries exist
+                installedCores[idx].installedVersions.removeAll { $0.dylibPath.path == dylibDest.path }
+                installedCores[idx].installedVersions.append(coreVersion)
+                installedCores[idx].activeVersionTag = coreVersion.tag
+                installedCores[idx].isDownloading = false
+                installedCores[idx].downloadProgress = 0
+            } else {
+                // New core installation
+                let newCore = LibretroCore(
+                    id: info.coreID,
+                    displayName: info.displayName,
+                    systemIDs: info.systemIDs,
+                    installedVersions: [coreVersion],
+                    activeVersionTag: coreVersion.tag,
+                    isDownloading: false,
+                    downloadProgress: 0
+                )
+                installedCores.append(newCore)
+            }
 
-    if let idx = installedCores.firstIndex(where: { $0.id == info.coreID }) {
-      // Ensure no duplicate path entries exist
-      installedCores[idx].installedVersions.removeAll { $0.dylibPath.path == dylibDest.path }
-      installedCores[idx].installedVersions.append(coreVersion)
-      installedCores[idx].activeVersionTag = coreVersion.tag
-      installedCores[idx].isDownloading = false
-      installedCores[idx].downloadProgress = 0
-    } else {
-      // New core installation
-      let newCore = LibretroCore(
-        id: info.coreID,
-        displayName: info.displayName,
-        systemIDs: info.systemIDs,
-        installedVersions: [coreVersion],
-        activeVersionTag: coreVersion.tag,
-        isDownloading: false,
-        downloadProgress: 0
-      )
-      installedCores.append(newCore)
-    }
-    
-// Discover core options and input descriptors in one shot (both captured during core init)
-        LoggerService.debug(category: "CoreManager", "Discovering core options and input descriptors for: \(info.coreID)")
-        await CoreOptionsManager.shared.discoverOptions(for: info.coreID, dylibPath: dylibDest.path, romPath: romPath)
+            // Discover core options and input descriptors in one shot (both captured during core init)
+            LoggerService.debug(category: "CoreManager", "Discovering core options and input descriptors for: \(info.coreID)")
+            await CoreOptionsManager.shared.discoverOptions(for: info.coreID, dylibPath: dylibDest.path, romPath: romPath)
 
-    LoggerService.debug(category: "CoreManager", "Installed cores: \(installedCores)")
-    saveInstalledCores()
-    LoggerService.info(category: "CoreManager", "Successfully installed \(info.coreID) version \(versionString)")
+            LoggerService.debug(category: "CoreManager", "Installed cores: \(installedCores)")
+            saveInstalledCores()
+            LoggerService.info(category: "CoreManager", "Successfully installed \(info.coreID) version \(versionString)")
         } catch {
             LoggerService.error(category: "CoreManager", "Download failed for \(info.coreID): \(error.localizedDescription)")
-            if let idx = installedCores.firstIndex(where: { $0.id == info.coreID }) {
-                LoggerService.debug(category: "CoreManager", "Found installed core: \(info.coreID)")
+            // Remove placeholder core if it was added (no installed versions = not truly installed)
+            if let idx = installedCores.firstIndex(where: { $0.id == info.coreID && $0.installedVersions.isEmpty }) {
+                installedCores.remove(at: idx)
+            } else if let idx = installedCores.firstIndex(where: { $0.id == info.coreID }) {
                 installedCores[idx].isDownloading = false
             }
-            LoggerService.error(category: "CoreManager", "Download failed for \(info.coreID): \(error.localizedDescription)")
         }
+
+        downloadPhase = .idle
+        downloadCoreName = ""
     }
 
     // MARK: - Core lookup

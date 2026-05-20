@@ -6,6 +6,7 @@
 import SwiftUI
 
 public struct SaveDirectoriesSection: View {
+    @Environment(\.colorScheme) private var colorScheme
     @Environment(SystemDatabaseWrapper.self) private var systemDatabase
     @StateObject private var directoryManager = SaveDirectoryManager.shared
     @ObservedObject private var loc = LocalizationManager.shared
@@ -19,8 +20,8 @@ public struct SaveDirectoriesSection: View {
     public var body: some View {
         Form {
             // Statistics Dashboard
-            Section(loc.localized("saveDirectories.storageSummary")) {
-                HStack(spacing: 20) {
+        Section {
+                HStack(spacing: AppSpacing.xl) {
                     statTile(
                         value: byteCountString(from: saveFileSize),
                         label: loc.localized("saveDirectories.saveFiles"),
@@ -32,25 +33,25 @@ public struct SaveDirectoriesSection: View {
                         value: byteCountString(from: saveStateSize),
                         label: loc.localized("saveDirectories.saveStates"),
                         icon: "gamecontroller.fill",
-                        color: .purple
+                        color: AppColors.accentTertiary
                     )
                     Divider().frame(height: 40)
                     statTile(
                         value: byteCountString(from: saveFileSize + saveStateSize),
                         label: loc.localized("saveDirectories.total"),
                         icon: "externaldrive.fill",
-                        color: .orange
+                        color: AppColors.warning(colorScheme)
                     )
                 }
-                .padding(.vertical, 8)
+                .padding(.vertical, AppSpacing.md)
                 .frame(maxWidth: .infinity)
                 if directoryManager.needsMigration {
                     Divider()
-                    Label(loc.localized("saveDirectories.existingSavesFound"), systemImage: "exclamationmark.triangle")
+                    Label { Text(loc.localized("saveDirectories.existingSavesFound")) } icon: { Image(systemName: "exclamationmark.triangle") }
                         .font(.caption)
-                        .foregroundStyle(.orange)
+                        .foregroundStyle(AppColors.warning(colorScheme))
                     Button(action: { showingMigrationAlert = true }) {
-                        Label(loc.localized("saveDirectories.migrateSaveFiles"), systemImage: "arrow.right.doc.on.clipboard")
+                        Label { Text(loc.localized("saveDirectories.migrateSaveFiles")) } icon: { Image(systemName: "arrow.right.doc.on.clipboard") }
                     }
                     .buttonStyle(.bordered)
                     .controlSize(.small)
@@ -58,37 +59,37 @@ public struct SaveDirectoriesSection: View {
             }
             
             // Location Section
-            Section(loc.localized("saveDirectories.location")) {
+            Section(header: Label(loc.localized("saveDirectories.location"), systemImage: "folder.fill")) {
                 LabeledContent(loc.localized("saveDirectories.saveFilesSRAM")) {
                     Text(directoryManager.savefilesDirectory.path)
                         .font(.caption.monospaced())
                         .lineLimit(1)
                         .truncationMode(.middle)
-                        .foregroundStyle(.secondary)
-                }
-                
-                LabeledContent(loc.localized("saveDirectories.saveStates")) {
-                    Text(directoryManager.statesDirectory.path)
-                        .font(.caption.monospaced())
-                        .lineLimit(1)
-                        .truncationMode(.middle)
-                        .foregroundStyle(.secondary)
-                }
-                
-                LabeledContent(loc.localized("saveDirectories.systemBIOS")) {
-                    Text(directoryManager.activeSystemDirectory.path)
-                        .font(.caption.monospaced())
-                        .lineLimit(1)
-                        .truncationMode(.middle)
-                        .foregroundStyle(.secondary)
+        .foregroundStyle(AppColors.textSecondary(colorScheme))
+            }
+
+            LabeledContent(loc.localized("saveDirectories.saveStates")) {
+                Text(directoryManager.statesDirectory.path)
+                    .font(.caption.monospaced())
+                    .lineLimit(1)
+                    .truncationMode(.middle)
+                    .foregroundStyle(AppColors.textSecondary(colorScheme))
+            }
+
+            LabeledContent(loc.localized("saveDirectories.systemBIOS")) {
+                Text(directoryManager.activeSystemDirectory.path)
+                    .font(.caption.monospaced())
+                    .lineLimit(1)
+                    .truncationMode(.middle)
+                    .foregroundStyle(AppColors.textSecondary(colorScheme))
                 }
                 
                 Divider()
-                    .padding(.vertical, 4)
+                    .padding(.vertical, AppSpacing.xs)
                 
                 HStack {
                     Button(action: changeSaveDirectory) {
-                        Label(loc.localized("saveDirectories.changeSaveDirectory"), systemImage: "folder")
+                        Label { Text(loc.localized("saveDirectories.changeSaveDirectory")) } icon: { Image(systemName: "folder") }
                     }
                     .buttonStyle(.bordered)
                     .controlSize(.small)
@@ -103,7 +104,7 @@ public struct SaveDirectoriesSection: View {
     }
     
     private func statTile(value: String, label: String, icon: String, color: Color) -> some View {
-        VStack(spacing: 4) {
+        VStack(spacing: AppSpacing.xs) {
             Image(systemName: icon)
                 .font(.title2)
                 .foregroundStyle(color)
@@ -111,7 +112,7 @@ public struct SaveDirectoriesSection: View {
                 .font(.headline.monospacedDigit())
             Text(label)
                 .font(.caption)
-                .foregroundStyle(.secondary)
+                .foregroundStyle(AppColors.textSecondary(colorScheme))
         }
         .frame(maxWidth: .infinity)
     }

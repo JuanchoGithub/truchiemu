@@ -233,7 +233,12 @@ case .library:
                       }
                   }
   
-                 // Status bar for library automation or metadata sync
+                 // Core download status bar
+            if coreManager.isDownloadingCore {
+                CoreDownloadStatusBar(coreManager: coreManager)
+            }
+
+            // Status bar for library automation or metadata sync
                 if let activeStatus = activeBackgroundTask {
                     VStack(alignment: .leading, spacing: 6) {
                         ProgressView(value: activeStatus.progress)

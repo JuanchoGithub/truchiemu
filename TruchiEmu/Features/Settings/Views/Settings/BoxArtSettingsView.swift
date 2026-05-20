@@ -1,6 +1,7 @@
 import SwiftUI
 // MARK: - Box Art Settings
 struct BoxArtSettingsView: View {
+    @Environment(\.colorScheme) private var colorScheme
     @State private var username = ""
     @State private var password = ""
     @State private var saved = false
@@ -51,7 +52,7 @@ struct BoxArtSettingsView: View {
                     Toggle(loc.localized("boxArt.fallbackFilename"), isOn: $fallbackFilename)
                     Toggle(loc.localized("boxArt.useHttpHead"), isOn: $useHeadCheck)
                 } header: {
-                    Label(loc.localized("boxArt.libretroThumbnails"), systemImage: "photo.on.rectangle.angled")
+                    Label { Text(loc.localized("boxArt.libretroThumbnails")) } icon: { Image(systemName: "photo.on.rectangle.angled") }
                 } footer: {
                     Text(loc.localized("boxArt.libretroDescription"))
                 }
@@ -63,7 +64,7 @@ struct BoxArtSettingsView: View {
                     Toggle(loc.localized("boxArt.enableLaunchBox"), isOn: $useLaunchBox)
                     Toggle(loc.localized("boxArt.autoDownloadBoxArt"), isOn: $launchBoxDownloadAfterScan)
                 } header: {
-                    Label(loc.localized("boxArt.launchBoxGamesDB"), systemImage: "gamecontroller.fill")
+                    Label { Text(loc.localized("boxArt.launchBoxGamesDB")) } icon: { Image(systemName: "gamecontroller.fill") }
                 } footer: {
                     Text(loc.localized("boxArt.launchBoxDescription"))
                 }
@@ -80,13 +81,13 @@ struct BoxArtSettingsView: View {
                         saved = true
                     }
                 } header: {
-                    Label(loc.localized("boxArt.screenScraperAccount"), systemImage: "person.badge.key")
+                    Label { Text(loc.localized("boxArt.screenScraperAccount")) } icon: { Image(systemName: "person.badge.key") }
                 } footer: {
                     Text(loc.localized("boxArt.screenScraperDescription"))
                 }
                 if saved {
-                    Label(loc.localized("boxArt.credentialsSaved"), systemImage: "checkmark.circle.fill")
-                        .foregroundColor(.green)
+                    Label { Text(loc.localized("boxArt.credentialsSaved")) } icon: { Image(systemName: "checkmark.circle.fill") }
+                        .foregroundStyle(AppColors.success(colorScheme))
                 }
             }
 
@@ -94,15 +95,15 @@ struct BoxArtSettingsView: View {
             if !isSearching || matchesSearch("performance indexing manifest refresh repository library URL 404 check") {
                 Section {
                     let manifestService = LibretroThumbnailManifestService.shared
-                    VStack(alignment: .leading, spacing: 8) {
-                        HStack {
-                            VStack(alignment: .leading, spacing: 4) {
-                                Text(loc.localized("boxArt.assetIndexing"))
-                                    .font(.body)
-                                Text(loc.localized("boxArt.assetIndexingDescription"))
-                                    .font(.caption)
-                                    .foregroundStyle(.secondary)
-                            }
+    VStack(alignment: .leading, spacing: AppSpacing.md) {
+        HStack {
+        VStack(alignment: .leading, spacing: AppSpacing.xs) {
+            Text(loc.localized("boxArt.assetIndexing"))
+            .font(.body)
+            Text(loc.localized("boxArt.assetIndexingDescription"))
+            .font(.caption)
+            .foregroundStyle(AppColors.textSecondary(colorScheme))
+        }
                             Spacer()
                             Button(action: {
                                 Task {
@@ -110,13 +111,13 @@ struct BoxArtSettingsView: View {
                                 }
                             }) {
                                 if manifestService.isRefreshing {
-                                    HStack(spacing: 6) {
-                                        ProgressView()
-                                            .controlSize(.small)
-                                        Text(loc.localized("boxArt.indexing"))
+            HStack(spacing: AppSpacing.sm) {
+              ProgressView()
+              .controlSize(.small)
+              Text(loc.localized("boxArt.indexing"))
                                     }
                                 } else {
-                                    Label(loc.localized("boxArt.refreshIndex"), systemImage: "arrow.clockwise")
+                                    Label { Text(loc.localized("boxArt.refreshIndex")) } icon: { Image(systemName: "arrow.clockwise") }
                                 }
                             }
                             .buttonStyle(.bordered)
@@ -124,19 +125,19 @@ struct BoxArtSettingsView: View {
                         }
                         
                         if manifestService.isRefreshing {
-                            VStack(alignment: .leading, spacing: 4) {
-                                ProgressView(value: manifestService.refreshProgress)
-                                    .progressViewStyle(.linear)
-                                Text("\(loc.localized("boxArt.current")) \(manifestService.currentRepoRefreshing)")
-                                    .font(.caption2)
-                                    .foregroundStyle(.secondary)
-                                    .italic()
-                            }
-                            .padding(.top, 4)
+        VStack(alignment: .leading, spacing: AppSpacing.xs) {
+            ProgressView(value: manifestService.refreshProgress)
+            .progressViewStyle(.linear)
+            Text("\(loc.localized("boxArt.current")) \(manifestService.currentRepoRefreshing)")
+            .font(.caption2)
+            .foregroundStyle(AppColors.textTertiary(colorScheme))
+            .italic()
+        }
+        .padding(.top, AppSpacing.xs)
                         }
                     }
                 } header: {
-                    Label(loc.localized("boxArt.performanceIndexing"), systemImage: "bolt.fill")
+                    Label { Text(loc.localized("boxArt.performanceIndexing")) } icon: { Image(systemName: "bolt.fill") }
                 } footer: {
                     Text(loc.localized("boxArt.performanceDescription"))
                 }
@@ -145,11 +146,11 @@ struct BoxArtSettingsView: View {
             // No results message
             if isSearching && !hasMatchingSections {
                 Section {
-                    Text("\(loc.localized("boxArt.noMatchingSettings")) \"\(searchText)\"")
-                        .font(.caption)
-                        .foregroundStyle(.secondary)
-                        .frame(maxWidth: .infinity, alignment: .center)
-                        .padding(.vertical, 20)
+      Text("\(loc.localized("boxArt.noMatchingSettings")) \"\(searchText)\"")
+        .font(.caption)
+        .foregroundStyle(AppColors.textSecondary(colorScheme))
+        .frame(maxWidth: .infinity, alignment: .center)
+        .padding(.vertical, AppSpacing.xl2)
                 }
             }
         }

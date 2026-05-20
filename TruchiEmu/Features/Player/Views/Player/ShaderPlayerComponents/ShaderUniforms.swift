@@ -40,8 +40,9 @@ struct CRTUniforms {
     var maskPixelSpacingV: Float
     var maskSubpixelGap: Float
     var useMask: Float
-    
-    var padding: Float
+
+    var outputWidth: Float
+    var outputHeight: Float
 }
 
 // CRT Multipass uniforms - matches CRTMultipassUniforms in CRTFilter_multipass.metal
@@ -80,9 +81,10 @@ struct CRTMultipassUniforms {
     var maskPixelSpacingH: Float
     var maskPixelSpacingV: Float
     var maskSubpixelGap: Float
-    var useMask: Float
-    
-    var padding: Float
+ var useMask: Float
+ 
+ var outputWidth: Float
+ var outputHeight: Float
 }
 
 // Dot Matrix LCD uniforms (48 bytes) - matches DotMatrixLCDUniforms in DotMatrixLCD.metal

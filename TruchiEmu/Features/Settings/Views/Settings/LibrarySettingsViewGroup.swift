@@ -5,6 +5,7 @@ import GameController
 
 // MARK: - Library Settings
 struct LibrarySettingsView: View {
+    @Environment(\.colorScheme) var colorScheme
     @EnvironmentObject var library: ROMLibrary
     @State private var scanningFolders: Set<String> = []
     @State private var rebuildTargetFolder: ROMLibraryFolder?
@@ -71,7 +72,7 @@ var body: some View {
                  Section {
                      Button(action: { Task { await library.fullRescan() } }) {
                          HStack {
-                             Label(loc.localized("library.fullLibraryRescan"), systemImage: "arrow.clockwise.circle.fill")
+                             Label { Text(loc.localized("library.fullLibraryRescan")) } icon: { Image(systemName: "arrow.clockwise.circle.fill") }
                              Spacer()
                              if library.isScanning {
                                  ProgressView()
@@ -83,15 +84,15 @@ var body: some View {
                      
                      LabeledContent(loc.localized("library.totalGames")) {
                          Text("\(library.roms.count)")
-                             .foregroundStyle(.secondary)
+                             .foregroundStyle(AppColors.textSecondary(colorScheme))
                      }
                      
                      LabeledContent(loc.localized("library.primaryFolders")) {
                          Text("\(library.primaryFolders.count)")
-                             .foregroundStyle(.secondary)
+                             .foregroundStyle(AppColors.textSecondary(colorScheme))
                      }
                  } header: {
-                     Label(loc.localized("library.maintenance"), systemImage: "wrench.and.screwdriver")
+                     Label { Text(loc.localized("library.maintenance")) } icon: { Image(systemName: "wrench.and.screwdriver") }
                  }
              }
             
@@ -101,14 +102,14 @@ var body: some View {
                      Toggle(loc.localized("library.showBiosFiles"), isOn: $prefs.showBiosFiles)
                      Text(loc.localized("library.showBiosFilesDescription"))
                          .font(.caption)
-                         .foregroundStyle(.secondary)
+                         .foregroundStyle(AppColors.textSecondary(colorScheme))
                      
                      Toggle(loc.localized("library.showHiddenMAMEFiles"), isOn: $prefs.showHiddenMAMEFiles)
                      Text(loc.localized("library.showHiddenMAMEFilesDescription"))
                          .font(.caption)
-                         .foregroundStyle(.secondary)
+                         .foregroundStyle(AppColors.textSecondary(colorScheme))
                  } header: {
-                     Label(loc.localized("library.displayOptions"), systemImage: "eyeglasses")
+                     Label { Text(loc.localized("library.displayOptions")) } icon: { Image(systemName: "eyeglasses") }
                  }
              }
             
@@ -130,22 +131,22 @@ var body: some View {
              if !searchText.isEmpty && visibleSections.isEmpty {
                  Section {
                      ContentUnavailableView {
-                         Label(loc.localized("library.noResults"), systemImage: "magnifyingglass")
+                         Label { Text(loc.localized("library.noResults")) } icon: { Image(systemName: "magnifyingglass") }
                      } description: {
                          Text(loc.localized("library.noSettingsMatch"))
-                     }
-                     .padding(.vertical, 20)
-                 }
-             }
+}
+            .padding(.vertical, AppSpacing.xl2)
+            }
         }
-         .formStyle(.grouped)
-         .navigationTitle(loc.localized("library.title"))
-         .sheet(item: $rebuildTargetFolder) { folder in
-             RebuildOptionsSheet(folder: folder, library: library, automation: LibraryAutomationCoordinator.shared)
-         }
     }
-    
-    private func addLibraryFolder() {
+    .formStyle(.grouped)
+    .navigationTitle(loc.localized("library.title"))
+    .sheet(item: $rebuildTargetFolder) { folder in
+        RebuildOptionsSheet(folder: folder, library: library, automation: LibraryAutomationCoordinator.shared)
+    }
+}
+
+private func addLibraryFolder() {
         let panel = NSOpenPanel()
         panel.canChooseDirectories = true
         panel.canChooseFiles = false
@@ -178,19 +179,19 @@ struct LibraryFoldersSection: View {
          Section {
              if library.primaryFolders.isEmpty {
                  ContentUnavailableView {
-                     Label(loc.localized("library.noLibraryFolders"), systemImage: "folder")
+                     Label { Text(loc.localized("library.noLibraryFolders")) } icon: { Image(systemName: "folder") }
                  } description: {
                      Text(loc.localized("library.noLibraryFoldersDescription"))
                  }
-                 .padding(.vertical, 20)
-             } else if filteredFolders.isEmpty {
+            .padding(.vertical, AppSpacing.xl2)
+            } else if filteredFolders.isEmpty {
                  ContentUnavailableView {
-                     Label(loc.localized("library.noFoldersMatch"), systemImage: "folder")
+                     Label { Text(loc.localized("library.noFoldersMatch")) } icon: { Image(systemName: "folder") }
                  } description: {
                      Text("\(loc.localized("library.noFoldersMatch")) '\(searchText)'")
                  }
-                 .padding(.vertical, 20)
-             } else {
+            .padding(.vertical, AppSpacing.xl2)
+            } else {
                  ForEach(filteredFolders) { folder in
                      PrimaryFolderRow(
                          folder: folder,
@@ -211,11 +212,11 @@ struct LibraryFoldersSection: View {
              }
              
              Button(action: addLibraryFolder) {
-                 Label(loc.localized("library.addFolder"), systemImage: "plus")
+                 Label { Text(loc.localized("library.addFolder")) } icon: { Image(systemName: "plus") }
              }
-             .padding(.top, 8)
-         } header: {
-             Label(loc.localized("library.libraryFolders"), systemImage: "folder.fill")
+        .padding(.top, AppSpacing.md)
+    } header: {
+             Label { Text(loc.localized("library.libraryFolders")) } icon: { Image(systemName: "folder.fill") }
          }
     }
     
@@ -232,6 +233,7 @@ struct LibraryFoldersSection: View {
 
 // MARK: - Maintenance Section
 struct MaintenanceSection: View {
+    @Environment(\.colorScheme) var colorScheme
     @EnvironmentObject var library: ROMLibrary
     @ObservedObject private var loc = LocalizationManager.shared
     
@@ -251,15 +253,15 @@ struct MaintenanceSection: View {
             
             LabeledContent(loc.localized("library.totalGames")) {
                 Text("\(library.roms.count)")
-                    .foregroundStyle(.secondary)
+                    .foregroundStyle(AppColors.textSecondary(colorScheme))
             }
             
             LabeledContent(loc.localized("library.primaryFolders")) {
                 Text("\(library.primaryFolders.count)")
-                    .foregroundStyle(.secondary)
+                    .foregroundStyle(AppColors.textSecondary(colorScheme))
             }
         } header: {
-            Label("Maintenance", systemImage: "wrench.and.screwdriver")
+            Label { Text("Maintenance") } icon: { Image(systemName: "wrench.and.screwdriver") }
         }
     }
 }
@@ -271,7 +273,8 @@ struct PrimaryFolderRow: View {
     var searchText: String
     let onRescan: () -> Void
     let onRebuild: (ROMLibraryFolder) -> Void
-    
+
+    @Environment(\.colorScheme) var colorScheme
     @EnvironmentObject var library: ROMLibrary
     @State private var isExpanded = false
     @State private var subfolders: [ROMLibraryFolder] = []
@@ -299,8 +302,8 @@ struct PrimaryFolderRow: View {
     
     var body: some View {
         VStack(spacing: 0) {
-            // Primary folder row
-            HStack(spacing: 12) {
+        // Primary folder row
+        HStack(spacing: AppSpacing.lg) {
                 Button(action: {
                     withAnimation {
                         isExpanded.toggle()
@@ -310,36 +313,36 @@ struct PrimaryFolderRow: View {
                     }
                 }) {
                     Image(systemName: isExpanded ? "chevron.down" : "chevron.right")
-                        .foregroundColor(.secondary)
+                        .foregroundColor(AppColors.textSecondary(colorScheme))
                         .frame(width: 16)
                 }
                 .buttonStyle(.plain)
                 
-                Image(systemName: "folder.fill")
-                    .foregroundColor(.purple)
-                    .font(.title3)
-                
-                VStack(alignment: .leading, spacing: 2) {
-                    Text(folder.url.path)
-                        .lineLimit(1)
-                        .truncationMode(.middle)
-                        .font(.body)
-                    Text("\(romCount) game\(romCount == 1 ? "" : "s")")
-                        .font(.caption)
-                        .foregroundColor(.secondary)
+            Image(systemName: "folder.fill")
+                .foregroundColor(AppColors.brandAccent)
+                .font(.title3)
+
+            VStack(alignment: .leading, spacing: 2) {
+                Text(folder.url.path)
+                    .lineLimit(1)
+                    .truncationMode(.middle)
+                    .font(.body)
+                Text("\(romCount) game\(romCount == 1 ? "" : "s")")
+                    .font(.caption)
+                    .foregroundColor(AppColors.textSecondary(colorScheme))
                 }
                 
                 Spacer()
                 
                  Button(action: onRescan) {
-                     if isScanning {
-                         HStack(spacing: 6) {
-                             ProgressView()
-                                 .controlSize(.small)
-                             Text(loc.localized("library.scanning"))
+            if isScanning {
+                HStack(spacing: AppSpacing.sm) {
+                    ProgressView()
+                        .controlSize(.small)
+                    Text(loc.localized("library.scanning"))
                          }
                      } else {
-                         Label(loc.localized("library.refresh"), systemImage: "arrow.clockwise")
+                         Label { Text(loc.localized("library.refresh")) } icon: { Image(systemName: "arrow.clockwise") }
                      }
                  }
                  .buttonStyle(.bordered)
@@ -347,7 +350,7 @@ struct PrimaryFolderRow: View {
                  .disabled(isScanning || library.isScanning)
                  
                  Button(action: { onRebuild(folder) }) {
-                     Label(loc.localized("library.rebuild"), systemImage: "gearshape.2")
+                     Label { Text(loc.localized("library.rebuild")) } icon: { Image(systemName: "gearshape.2") }
                  }
                  .buttonStyle(.bordered)
                  .controlSize(.small)
@@ -359,10 +362,10 @@ struct PrimaryFolderRow: View {
                      Image(systemName: "trash")
                  }
                  .buttonStyle(.bordered)
-                 .tint(.red.opacity(0.8))
-                 .controlSize(.small)
-                 .confirmationDialog(
-                     loc.localized("library.removeFolderConfirmation"),
+            .tint(AppColors.error(colorScheme))
+            .controlSize(.small)
+            .confirmationDialog(
+                loc.localized("library.removeFolderConfirmation"),
                      isPresented: $showDeleteConfirmation,
                      titleVisibility: .visible
                  ) {
@@ -376,70 +379,70 @@ struct PrimaryFolderRow: View {
                      Text(loc.localized("library.removeFolderDescription"))
                  }
             }
-            .padding(.vertical, 8)
-            .padding(.horizontal, 12)
-            .background(.ultraThinMaterial)
-            .cornerRadius(10)
-            
-             // Subfolders (expanded)
-             if isExpanded {
-                 VStack(spacing: 4) {
-                     if isDiscovering {
-                         HStack(spacing: 8) {
-                             ProgressView(value: discoverScanProgress)
-                                 .progressViewStyle(.linear)
-                             Text(loc.localized("library.discoveringSubfolders"))
-                                 .font(.caption)
-                                 .foregroundColor(.secondary)
-                         }
-                         .padding(.horizontal, 40)
-                         .padding(.vertical, 8)
-                     } else if subfolders.isEmpty {
-                         Text(loc.localized("library.noSubfolders"))
-                             .font(.caption)
-                             .foregroundColor(.secondary)
-                             .padding(.horizontal, 40)
-                             .padding(.vertical, 8)
-                     } else if filteredSubfolders.isEmpty {
-                         Text("\(loc.localized("library.noSubfoldersMatch")) '\(searchText)'")
-                             .font(.caption)
-                             .foregroundColor(.secondary)
-                             .padding(.horizontal, 40)
-                             .padding(.vertical, 8)
-                     } else {
-                         ForEach(filteredSubfolders) { subfolder in
-                             SubfolderRow(
-                                 folder: subfolder,
-                                 parentPath: folder.url.path,
-                                 isPrimary: subfolder.isPrimary,
-                                 depth: 0,
-                                 searchText: searchText,
-                                 onRebuild: onRebuild
-                             )
-                         }
-                     }
-                     
-                     // Discover subfolders button
-                     Button(action: {
-                         Task { await discoverSubfolders() }
-                     }) {
-                         HStack {
-                             Image(systemName: "magnifyingglass")
-                             Text(loc.localized("library.discoverSubfolders"))
-                         }
-                         .font(.caption)
-                     }
-                     .disabled(isDiscovering)
-                     .padding(.horizontal, 40)
-                     .padding(.bottom, 8)
-                  }
-                  .padding(.leading, 28)
-                  .padding(.top, 4)
-              }
+        .padding(.vertical, AppSpacing.md)
+        .padding(.horizontal, AppSpacing.lg)
+        .background(.ultraThinMaterial)
+        .cornerRadius(AppRadius.lg)
+
+        // Expanded subfolders area
+        if isExpanded {
+            VStack(spacing: AppSpacing.xs) {
+                if isDiscovering {
+                    HStack(spacing: AppSpacing.md) {
+                        ProgressView()
+                            .controlSize(.small)
+                        Text(loc.localized("library.discoveringSubfolders"))
+                            .font(.caption)
+                            .foregroundColor(AppColors.textSecondary(colorScheme))
+                    }
+                    .padding(.horizontal, 40)
+                    .padding(.vertical, AppSpacing.md)
+                } else if subfolders.isEmpty {
+                    Text(loc.localized("library.noSubfolders"))
+                        .font(.caption)
+                        .foregroundColor(AppColors.textSecondary(colorScheme))
+                        .padding(.horizontal, 40)
+                        .padding(.vertical, AppSpacing.md)
+                } else if filteredSubfolders.isEmpty {
+                    Text("\(loc.localized("library.noSubfoldersMatch")) '\(searchText)'")
+                        .font(.caption)
+                        .foregroundColor(AppColors.textSecondary(colorScheme))
+                        .padding(.horizontal, 40)
+                        .padding(.vertical, AppSpacing.md)
+                } else {
+                    ForEach(filteredSubfolders) { subfolder in
+                        SubfolderRow(
+                            folder: subfolder,
+                            parentPath: folder.url.path,
+                            isPrimary: subfolder.isPrimary,
+                            depth: 0,
+                            searchText: searchText,
+                            onRebuild: onRebuild
+                        )
+                    }
+                }
+
+                // Discover subfolders button
+                Button(action: {
+                    Task { await discoverSubfolders() }
+                }) {
+                    HStack {
+                        Image(systemName: "magnifyingglass")
+                        Text(loc.localized("library.discoverSubfolders"))
+                    }
+                    .font(.caption)
+                }
+                .disabled(isDiscovering)
+                .padding(.horizontal, 40)
+                .padding(.bottom, AppSpacing.md)
+            }
+            .padding(.leading, 28)
+            .padding(.top, AppSpacing.xs)
         }
     }
-    
-    @MainActor
+}
+
+@MainActor
     private func discoverSubfolders() async {
         isDiscovering = true
         discoverScanProgress = 0
@@ -479,11 +482,12 @@ struct PrimaryFolderRow: View {
 struct SubfolderRow: View {
     let folder: ROMLibraryFolder
     let parentPath: String
-    let isPrimary: Bool // true if this subfolder was independently added as primary
-    let depth: Int // nesting depth for indentation
+    let isPrimary: Bool
+    let depth: Int
     var searchText: String
     let onRebuild: (ROMLibraryFolder) -> Void
-    
+
+    @Environment(\.colorScheme) var colorScheme
     @EnvironmentObject var library: ROMLibrary
     @State private var showDeleteConfirmation = false
     @State private var isScanning = false
@@ -516,7 +520,7 @@ struct SubfolderRow: View {
     
     var body: some View {
         VStack(spacing: 0) {
-            HStack(spacing: 12) {
+            HStack(spacing: AppSpacing.lg) {
                 // Expand chevron for sub-subfolders (depth < 2)
                 if folderHasChildren {
                     Button(action: {
@@ -528,7 +532,7 @@ struct SubfolderRow: View {
                         }
                     }) {
                         Image(systemName: isExpanded ? "chevron.down" : "chevron.right")
-                            .foregroundColor(.secondary)
+                            .foregroundColor(AppColors.textSecondary(colorScheme))
                             .frame(width: 16)
                     }
                     .buttonStyle(.plain)
@@ -540,18 +544,18 @@ struct SubfolderRow: View {
                 // Indent indicators - one line per depth level
                 ForEach(0..<depth, id: \.self) { _ in
                     Rectangle()
-                        .fill(.secondary.opacity(0.3))
+                        .fill(AppColors.divider(colorScheme).opacity(0.3))
                         .frame(width: 2)
-                        .padding(.horizontal, 4)
+                        .padding(.horizontal, AppSpacing.xs)
                 }
                 
                 Image(systemName: isPrimary ? "folder.fill.badge.plus" : "folder.fill")
-                    .foregroundColor(isPrimary ? AppColors.brandAccent : .gray)
+                    .foregroundColor(isPrimary ? AppColors.brandAccent : AppColors.textMuted(colorScheme))
                     .font(.caption)
                     .frame(width: 16)
                 
                 VStack(alignment: .leading, spacing: 2) {
-                    HStack(spacing: 4) {
+                    HStack(spacing: AppSpacing.xs) {
                         Text(compactPathDisplay)
                             .lineLimit(1)
                             .truncationMode(.middle)
@@ -577,7 +581,7 @@ struct SubfolderRow: View {
                          ProgressView()
                              .controlSize(.small)
                      } else {
-                         Label(loc.localized("library.refresh"), systemImage: "arrow.clockwise")
+                         Label { Text(loc.localized("library.refresh")) } icon: { Image(systemName: "arrow.clockwise") }
                      }
                  }
                  .buttonStyle(.bordered)
@@ -585,7 +589,7 @@ struct SubfolderRow: View {
                  .disabled(isScanning || library.isScanning)
                  
                  Button(action: { onRebuild(folder) }) {
-                     Label(loc.localized("library.rebuild"), systemImage: "gearshape.2")
+                     Label { Text(loc.localized("library.rebuild")) } icon: { Image(systemName: "gearshape.2") }
                  }
                  .buttonStyle(.bordered)
                  .controlSize(.small)
@@ -597,11 +601,11 @@ struct SubfolderRow: View {
                      Image(systemName: "trash")
                  }
                  .buttonStyle(.bordered)
-                 .tint(.red.opacity(0.8))
-                 .controlSize(.small)
-                 .disabled(folder.isPrimary)
-                 .confirmationDialog(
-                     loc.localized("library.removeSubfolder"),
+            .tint(AppColors.error(colorScheme))
+            .controlSize(.small)
+            .disabled(folder.isPrimary)
+            .confirmationDialog(
+                loc.localized("library.removeSubfolder"),
                      isPresented: $showDeleteConfirmation,
                      titleVisibility: .visible
                  ) {
@@ -618,36 +622,36 @@ struct SubfolderRow: View {
                      }
                  }
             }
-            .padding(.vertical, 6)
-            .padding(.horizontal, 12)
-            .background(.regularMaterial.opacity(0.5))
-            .cornerRadius(8)
+        .padding(.vertical, AppSpacing.sm)
+        .padding(.horizontal, AppSpacing.lg)
+        .background(.regularMaterial.opacity(0.5))
+        .cornerRadius(AppRadius.md)
             
              // Sub-subfolders (expanded)
              if isExpanded {
-                 VStack(spacing: 4) {
-                     if isDiscovering {
-                         HStack(spacing: 8) {
-                             ProgressView()
-                                 .controlSize(.small)
-                             Text(loc.localized("library.discoveringSubfolders"))
-                                 .font(.caption)
-                                 .foregroundColor(.secondary)
-                         }
-                         .padding(.horizontal, 40)
-                         .padding(.vertical, 8)
-                     } else if subfolders.isEmpty {
-                         Text(loc.localized("library.noSubfolders"))
-                             .font(.caption)
-                             .foregroundColor(.secondary)
-                             .padding(.horizontal, 40)
-                             .padding(.vertical, 8)
-                     } else if filteredSubfolders.isEmpty {
-                         Text("\(loc.localized("library.noSubfoldersMatch")) '\(searchText)'")
-                             .font(.caption)
-                             .foregroundColor(.secondary)
-                             .padding(.horizontal, 40)
-                             .padding(.vertical, 8)
+        VStack(spacing: AppSpacing.xs) {
+            if isDiscovering {
+                    HStack(spacing: AppSpacing.md) {
+                        ProgressView()
+                            .controlSize(.small)
+                        Text(loc.localized("library.discoveringSubfolders"))
+                            .font(.caption)
+                            .foregroundColor(AppColors.textSecondary(colorScheme))
+                    }
+                    .padding(.horizontal, 40)
+                    .padding(.vertical, AppSpacing.md)
+                } else if subfolders.isEmpty {
+                    Text(loc.localized("library.noSubfolders"))
+                        .font(.caption)
+                        .foregroundColor(AppColors.textSecondary(colorScheme))
+                        .padding(.horizontal, 40)
+                        .padding(.vertical, AppSpacing.md)
+                } else if filteredSubfolders.isEmpty {
+                    Text("\(loc.localized("library.noSubfoldersMatch")) '\(searchText)'")
+                        .font(.caption)
+                        .foregroundColor(AppColors.textSecondary(colorScheme))
+                        .padding(.horizontal, 40)
+                        .padding(.vertical, AppSpacing.md)
                      } else {
                          ForEach(filteredSubfolders) { subfolder in
                              SubfolderRow(
@@ -662,7 +666,7 @@ struct SubfolderRow: View {
                      }
                  }
                  .padding(.leading, 28)
-                 .padding(.top, 4)
+                 .padding(.top, AppSpacing.xs)
              }
         }
     }
@@ -712,6 +716,7 @@ struct RebuildOptionsSheet: View {
     @ObservedObject var library: ROMLibrary
     @ObservedObject var automation: LibraryAutomationCoordinator
     @Environment(\.dismiss) private var dismiss
+    @Environment(\.colorScheme) var colorScheme
     @State private var selectedOption: RebuildOption? = nil
     @State private var isRebuilding = false
     @State private var rebuildStarted = false
@@ -719,7 +724,7 @@ struct RebuildOptionsSheet: View {
     @ObservedObject private var loc = LocalizationManager.shared
     
     var body: some View {
-        VStack(alignment: .leading, spacing: 20) {
+        VStack(alignment: .leading, spacing: AppSpacing.xl) {
             if isRebuilding {
                 rebuildingView
             } else {
@@ -749,19 +754,19 @@ struct RebuildOptionsSheet: View {
     
     @ViewBuilder
     private var optionsView: some View {
-        VStack(alignment: .leading, spacing: 20) {
+        VStack(alignment: .leading, spacing: AppSpacing.xl) {
             Text(loc.localized("library.rebuild") + ": \(folder.url.lastPathComponent)")
                 .font(.title2)
                 .fontWeight(.semibold)
             
             Text(loc.localized("library.chooseWhatToRebuild"))
                 .font(.subheadline)
-                .foregroundColor(.secondary)
+                .foregroundColor(AppColors.textSecondary(colorScheme))
             
-            VStack(spacing: 12) {
+            VStack(spacing: AppSpacing.lg) {
                 ForEach(RebuildOption.allCases) { option in
                     Button(action: { selectedOption = option }) {
-                        HStack(spacing: 12) {
+                        HStack(spacing: AppSpacing.lg) {
                             Image(systemName: option.icon)
                                 .font(.title2)
                                 .frame(width: 24)
@@ -773,7 +778,7 @@ struct RebuildOptionsSheet: View {
                                     .fontWeight(selectedOption == option ? .semibold : .regular)
                                 Text(option.description)
                                     .font(.caption)
-                                    .foregroundColor(.secondary)
+                                    .foregroundColor(AppColors.textSecondary(colorScheme))
                             }
                             
                             Spacer()
@@ -783,9 +788,9 @@ struct RebuildOptionsSheet: View {
                                     .foregroundColor(AppColors.brandAccent)
                             }
                         }
-                        .padding(12)
-                        .background(selectedOption == option ? AppColors.brandAccent.opacity(0.1) : Color.clear)
-                        .cornerRadius(8)
+                    .padding(AppSpacing.lg)
+                    .background(selectedOption == option ? AppColors.brandAccent.opacity(0.1) : Color.clear)
+                    .cornerRadius(AppRadius.md)
                     }
                     .buttonStyle(.plain)
                 }
@@ -810,20 +815,20 @@ struct RebuildOptionsSheet: View {
     
     @ViewBuilder
     private var rebuildingView: some View {
-        VStack(alignment: .center, spacing: 24) {
+        VStack(alignment: .center, spacing: AppSpacing.xl2) {
             Spacer()
             
             ProgressView()
                 .scaleEffect(1.5)
             
-            VStack(spacing: 8) {
+            VStack(spacing: AppSpacing.md) {
                 Text(loc.localized("library.rebuilding"))
                     .font(.title2)
                     .fontWeight(.semibold)
-                
+
                 Text(loc.localized("library.rebuildingDescription"))
                     .font(.subheadline)
-                    .foregroundColor(.secondary)
+                    .foregroundColor(AppColors.textSecondary(colorScheme))
                     .multilineTextAlignment(.center)
             }
             
@@ -842,22 +847,22 @@ struct RebuildOptionsSheet: View {
     }
     
     private var rebuildStatusBar: some View {
-        HStack(spacing: 10) {
+        HStack(spacing: AppSpacing.lg) {
             if automation.isActive {
                 ProgressView()
                     .controlSize(.small)
             }
-            
+
             Text(automation.statusLine)
                 .font(.callout)
                 .foregroundColor(.primary)
                 .textSelection(.enabled)
                 .frame(maxWidth: .infinity, alignment: .leading)
         }
-        .padding(.horizontal, 16)
-        .padding(.vertical, 11)
+        .padding(.horizontal, AppSpacing.xl)
+        .padding(.vertical, AppSpacing.lg)
         .frame(maxWidth: .infinity, alignment: .leading)
-        .background(Color(nsColor: .controlBackgroundColor))
+        .background(AppColors.cardBackgroundSubtle(colorScheme))
     }
 }
 
@@ -866,7 +871,8 @@ struct LibraryFolderRow: View {
     let index: Int
     let isScanning: Bool
     let onRescan: () -> Void
-    
+
+    @Environment(\.colorScheme) var colorScheme
     @EnvironmentObject var library: ROMLibrary
     @State private var showDeleteConfirmation = false
     @ObservedObject private var loc = LocalizationManager.shared
@@ -877,32 +883,32 @@ struct LibraryFolderRow: View {
     }
     
     var body: some View {
-        HStack(spacing: 12) {
-            Image(systemName: "folder.fill")
-                .foregroundColor(.purple)
-                .font(.title3)
-            
-            VStack(alignment: .leading, spacing: 2) {
-                Text(folder.path)
-                    .lineLimit(1)
-                    .truncationMode(.middle)
-                    .font(.body)
-                Text("\(gameCount) game\(gameCount == 1 ? "" : "s")")
-                    .font(.caption)
-                    .foregroundColor(.secondary)
+        HStack(spacing: AppSpacing.lg) {
+        Image(systemName: "folder.fill")
+            .foregroundColor(AppColors.brandAccent)
+            .font(.title3)
+
+        VStack(alignment: .leading, spacing: 2) {
+            Text(folder.path)
+                .lineLimit(1)
+                .truncationMode(.middle)
+                .font(.body)
+            Text("\(gameCount) game\(gameCount == 1 ? "" : "s")")
+                .font(.caption)
+                .foregroundColor(AppColors.textSecondary(colorScheme))
             }
             
             Spacer()
             
             Button(action: onRescan) {
                 if isScanning {
-                    HStack(spacing: 6) {
+                    HStack(spacing: AppSpacing.sm) {
                         ProgressView()
                             .controlSize(.small)
                         Text(loc.localized("library.scanning"))
                     }
                 } else {
-                    Label(loc.localized("library.refresh"), systemImage: "arrow.clockwise")
+                    Label { Text(loc.localized("library.refresh")) } icon: { Image(systemName: "arrow.clockwise") }
                 }
             }
             .buttonStyle(.bordered)
@@ -916,10 +922,10 @@ struct LibraryFolderRow: View {
                 Image(systemName: "trash")
             }
             .buttonStyle(.bordered)
-            .tint(.red.opacity(0.8))
-            .controlSize(.small)
-            .confirmationDialog(
-                "Remove Folder",
+        .tint(AppColors.error(colorScheme))
+        .controlSize(.small)
+        .confirmationDialog(
+            "Remove Folder",
                 isPresented: $showDeleteConfirmation,
                 titleVisibility: .visible
             ) {
@@ -931,10 +937,10 @@ struct LibraryFolderRow: View {
                 Text("Remove '\(folder.lastPathComponent)' from your library? The ROMs from this folder will be removed from your library.")
             }
         }
-        .padding(.vertical, 8)
-        .padding(.horizontal, 12)
+        .padding(.vertical, AppSpacing.md)
+        .padding(.horizontal, AppSpacing.lg)
         .background(.ultraThinMaterial)
-        .cornerRadius(10)
+        .cornerRadius(AppRadius.lg)
     }
 }
 

@@ -5,6 +5,7 @@ import Foundation
 
 // MARK: - Controllers
 struct ControllerSettingsView: View {
+    @Environment(\.colorScheme) private var colorScheme
     @EnvironmentObject var controllerService: ControllerService
     @EnvironmentObject var library: ROMLibrary
     @Environment(SystemDatabaseWrapper.self) private var systemDatabase
@@ -63,7 +64,7 @@ struct ControllerSettingsView: View {
   HStack(spacing: 8) {
   Text(loc.localized("controllers.system"))
   .font(.body)
-  .foregroundColor(.secondary)
+  .foregroundColor(AppColors.textSecondary(colorScheme))
 
   Picker(loc.localized("controllers.system"), selection: $selectedSystemID) {
   Text(loc.localized("controllers.globalDefault")).tag("default")
@@ -110,16 +111,16 @@ struct ControllerSettingsView: View {
                         // Player selection
                         Text(loc.localized("controllers.player"))
                             .font(.body)
-                            .foregroundColor(.secondary)
+                            .foregroundColor(AppColors.textSecondary(colorScheme))
                         HStack(spacing: 6) {
                             ForEach(1...4, id: \.self) { i in
                                 let connected = controllerService.connectedControllers.first(where: { $0.playerIndex == i })?.isConnected ?? false
                                 Button("P\(i)") { selectedPlayer = i }
                                     .buttonStyle(.bordered)
                                     .controlSize(.small)
-                                    .tint(selectedPlayer == i ? .purple : .secondary)
-                                    .overlay(
-                                        connected ? Circle().fill(.green).frame(width: 6, height: 6).offset(x: 8, y: -8) : nil,
+                    .tint(selectedPlayer == i ? AppColors.accentTertiary : AppColors.textSecondary(colorScheme))
+                    .overlay(
+                        connected ? Circle().fill(AppColors.success(colorScheme)).frame(width: 6, height: 6).offset(x: 8, y: -8) : nil,
                                         alignment: .topTrailing
                                     )
                             }
@@ -162,7 +163,7 @@ struct ControllerSettingsView: View {
                     HStack(spacing: 6) {
                         Text(loc.localized("controllers.config"))
                             .font(.body)
-                            .foregroundColor(.secondary)
+                            .foregroundColor(AppColors.textSecondary(colorScheme))
                         TextField(loc.localized("controllers.name"), text: $configName)
                             .textFieldStyle(.roundedBorder)
                             .frame(width: 150)
@@ -181,10 +182,10 @@ struct ControllerSettingsView: View {
                         Button {
                             deleteConfig(name: configName)
                         } label: {
-                            Label(loc.localized("controllers.delete"), systemImage: "trash")
+                            Label { Text(loc.localized("controllers.delete")) } icon: { Image(systemName: "trash") }
                         }
                         .buttonStyle(.bordered)
-                        .tint(.red)
+                        .tint(AppColors.error(colorScheme))
                         .controlSize(.small)
                         .disabled(configName.isEmpty || savedConfigs[configName] == nil)
 
@@ -199,7 +200,7 @@ struct ControllerSettingsView: View {
                                 }
                             }
                         } label: {
-                            Label(loc.localized("controllers.savedConfigs"), systemImage: "archivebox")
+                            Label { Text(loc.localized("controllers.savedConfigs")) } icon: { Image(systemName: "archivebox") }
                         }
                         .menuStyle(.borderlessButton)
                         .controlSize(.small)
@@ -229,9 +230,9 @@ struct ControllerSettingsView: View {
                     VStack(spacing: 12) {
                         Image(systemName: "gamecontroller")
                             .font(.system(size: 48))
-                            .foregroundColor(.secondary)
+                            .foregroundColor(AppColors.textSecondary(colorScheme))
                         Text("\(loc.localized("controllers.noControllerConnected")) \(selectedPlayer).")
-                            .foregroundColor(.secondary)
+                            .foregroundColor(AppColors.textSecondary(colorScheme))
                     }
                     .frame(maxWidth: .infinity, maxHeight: .infinity)
                 }
@@ -299,6 +300,7 @@ struct ControllerSettingsView: View {
 
 // MARK: - Search Result Indicator
 struct SearchResultIndicator: View {
+    @Environment(\.colorScheme) private var colorScheme
     let searchText: String
     let sectionKeywords: String
     let sectionName: String
@@ -324,7 +326,7 @@ struct SearchResultIndicator: View {
                 if let firstMatch = searchText.split(separator: " ").map({ String($0) }).first(where: { sectionKeywords.lowercased().contains($0.lowercased()) }) {
                     Text("Matched: \"\(firstMatch)\"")
                         .font(.caption2)
-                        .foregroundColor(.secondary)
+                        .foregroundColor(AppColors.textSecondary(colorScheme))
                 }
             }
             .padding(.horizontal, 12)
@@ -339,11 +341,12 @@ struct SearchResultIndicator: View {
 // MARK: - Draggable Divider
 struct DraggableDivider: View {
     @Binding var width: CGFloat
+    @Environment(\.colorScheme) private var colorScheme
     @State private var isHovered = false
     
     var body: some View {
         Rectangle()
-            .fill(isHovered ? Color.secondary.opacity(0.4) : Color.secondary.opacity(0.2))
+            .fill(isHovered ? AppColors.divider(colorScheme).opacity(0.4) : AppColors.divider(colorScheme).opacity(0.2))
             .frame(width: 4)
             .frame(maxHeight: .infinity)
             .onHover { hovering in
@@ -361,6 +364,7 @@ struct DraggableDivider: View {
 
 // MARK: - Controller Left Panel (icon + sticks)
 struct ControllerLeftPanel: View {
+    @Environment(\.colorScheme) private var colorScheme
     let systemID: String
     let width: CGFloat
 
@@ -383,6 +387,7 @@ struct ControllerLeftPanel: View {
 
 // MARK: - Stick Visualizer with live state
 struct StickVisualizerView: View {
+    @Environment(\.colorScheme) private var colorScheme
     let systemID: String
     @State private var lStick: (x: Double, y: Double) = (0, 0)
     @State private var rStick: (x: Double, y: Double) = (0, 0)
@@ -395,7 +400,7 @@ struct StickVisualizerView: View {
             Text(loc.localized("controllers.sticks"))
                 .font(.caption)
                 .fontWeight(.semibold)
-                .foregroundColor(.secondary)
+                .foregroundColor(AppColors.textSecondary(colorScheme))
             HStack(spacing: 12) {
                 CompactStickView(x: stickManager.lX, y: stickManager.lY, label: "L")
                 CompactStickView(x: stickManager.rX, y: stickManager.rY, label: "R")
@@ -406,6 +411,7 @@ struct StickVisualizerView: View {
 
 // MARK: - Button Mapping List (right panel)
 struct ButtonMappingList: View {
+    @Environment(\.colorScheme) private var colorScheme
     let systemID: String
     let player: PlayerController
     let controllerService: ControllerService
@@ -425,7 +431,7 @@ struct ButtonMappingList: View {
             Text(loc.localized("controllers.buttonMapping"))
                 .font(.caption2)
                 .fontWeight(.semibold)
-                .foregroundColor(.secondary)
+                .foregroundColor(AppColors.textSecondary(colorScheme))
                 .frame(maxWidth: .infinity, alignment: .leading)
                 .padding(.horizontal, 10)
                 .padding(.vertical, 6)
@@ -562,6 +568,7 @@ class StickStateTracker: ObservableObject {
 }
 
 struct ControllerMappingDetail: View {
+    @Environment(\.colorScheme) private var colorScheme
     @EnvironmentObject var controllerService: ControllerService
     let player: PlayerController
     let systemID: String
@@ -589,7 +596,7 @@ struct ControllerMappingDetail: View {
                     Text(loc.localized("controllers.sticks"))
                         .font(.caption)
                         .fontWeight(.semibold)
-                        .foregroundColor(.secondary)
+                        .foregroundColor(AppColors.textSecondary(colorScheme))
                     HStack(spacing: 8) {
                         CompactStickView(x: lStickState.x, y: lStickState.y, label: "L")
                         CompactStickView(x: rStickState.x, y: rStickState.y, label: "R")
@@ -609,7 +616,7 @@ struct ControllerMappingDetail: View {
                 Text(loc.localized("controllers.buttonMapping"))
                     .font(.caption2)
                     .fontWeight(.semibold)
-                    .foregroundColor(.secondary)
+                    .foregroundColor(AppColors.textSecondary(colorScheme))
                     .frame(maxWidth: .infinity, alignment: .leading)
                     .padding(.horizontal, 12)
                     .padding(.vertical, 6)
@@ -720,6 +727,7 @@ struct ControllerMappingDetail: View {
 
 // MARK: - Mapping Row View
 struct MappingRowView: View {
+    @Environment(\.colorScheme) private var colorScheme
     let button: RetroButton
     let systemID: String
     let currentMapping: GCButtonMapping?
@@ -741,7 +749,7 @@ struct MappingRowView: View {
             }
             .buttonStyle(.bordered)
             .controlSize(.small)
-            .tint(isListening ? .orange : .secondary)
+                    .tint(isListening ? AppColors.warning(colorScheme) : AppColors.textSecondary(colorScheme))
             .fixedSize()
         }
         .padding(.vertical, 4)
@@ -751,6 +759,7 @@ struct MappingRowView: View {
 
 // MARK: - Compact Stick View
 struct CompactStickView: View {
+    @Environment(\.colorScheme) private var colorScheme
     let x: Double
     let y: Double
     let label: String
@@ -759,14 +768,14 @@ struct CompactStickView: View {
         VStack(spacing: 6) {
             ZStack {
                 Circle()
-                    .fill(.quaternary.opacity(0.2))
+                    .fill(AppColors.divider(colorScheme).opacity(0.3))
                     .frame(width: 80, height: 80)
                 Circle()
-                    .stroke(.secondary.opacity(0.3), lineWidth: 1)
+                    .stroke(AppColors.divider(colorScheme).opacity(0.3), lineWidth: 1)
                     .frame(width: 80, height: 80)
 
-                Rectangle().fill(.secondary.opacity(0.1)).frame(width: 80, height: 1)
-                Rectangle().fill(.secondary.opacity(0.1)).frame(width: 1, height: 80)
+                Rectangle().fill(AppColors.divider(colorScheme).opacity(0.1)).frame(width: 80, height: 1)
+                Rectangle().fill(AppColors.divider(colorScheme).opacity(0.1)).frame(width: 1, height: 80)
 
                 Circle()
                     .fill(AppColors.brandAccent)
@@ -778,16 +787,17 @@ struct CompactStickView: View {
 
             Text(label)
                 .font(.caption.weight(.semibold))
-                .foregroundColor(.secondary)
+                .foregroundColor(AppColors.textSecondary(colorScheme))
 
             Text("\(String(format: "%.2f", x)), \(String(format: "%.2f", y))")
                 .font(.system(size: 9, design: .monospaced))
-                .foregroundColor(.secondary.opacity(0.7))
+                .foregroundColor(AppColors.divider(colorScheme).opacity(0.7))
         }
     }
 }
 
 struct StickTesterView: View {
+    @Environment(\.colorScheme) private var colorScheme
     let x: Double
     let y: Double
     let label: String
@@ -795,13 +805,13 @@ struct StickTesterView: View {
     var body: some View {
         VStack(spacing: 8) {
             ZStack {
-                Circle().fill(.quaternary.opacity(0.2))
+                Circle().fill(AppColors.divider(colorScheme).opacity(0.3))
                     .frame(width: 100, height: 100)
-                Circle().stroke(.secondary.opacity(0.3), lineWidth: 1)
+                Circle().stroke(AppColors.divider(colorScheme).opacity(0.3), lineWidth: 1)
                     .frame(width: 100, height: 100)
                 
-                Rectangle().fill(.secondary.opacity(0.1)).frame(width: 100, height: 1)
-                Rectangle().fill(.secondary.opacity(0.1)).frame(width: 1, height: 100)
+                Rectangle().fill(AppColors.divider(colorScheme).opacity(0.1)).frame(width: 100, height: 1)
+                Rectangle().fill(AppColors.divider(colorScheme).opacity(0.1)).frame(width: 1, height: 100)
                 
                 Circle().fill(AppColors.brandAccent)
                     .frame(width: 14, height: 14)
@@ -810,21 +820,22 @@ struct StickTesterView: View {
             }
             .clipShape(Circle())
             
-            Text(label).font(.caption2.bold()).foregroundColor(.secondary)
+            Text(label).font(.caption2.bold()).foregroundColor(AppColors.textSecondary(colorScheme))
             HStack(spacing: 8) {
                 Text("X: \(String(format: "%.2f", x))").font(.system(size: 9, design: .monospaced))
                 Text("Y: \(String(format: "%.2f", y))").font(.system(size: 9, design: .monospaced))
             }
-            .foregroundColor(.secondary)
+            .foregroundColor(AppColors.textSecondary(colorScheme))
         }
         .padding(12)
         .background(.background.opacity(0.5))
         .cornerRadius(12)
-        .overlay(RoundedRectangle(cornerRadius: 12).stroke(.secondary.opacity(0.1), lineWidth: 1))
+        .overlay(RoundedRectangle(cornerRadius: 12).stroke(AppColors.divider(colorScheme).opacity(0.1), lineWidth: 1))
     }
 }
 
 struct ControllerIconView: View {
+    @Environment(\.colorScheme) private var colorScheme
     let systemID: String
     
     var body: some View {
@@ -860,36 +871,37 @@ struct ControllerIconView: View {
 }
 
 struct ControllerDrawingView: View {
+    @Environment(\.colorScheme) private var colorScheme
     var body: some View {
         ZStack {
             Capsule()
-                .fill(.quaternary.opacity(0.1))
+                .fill(AppColors.divider(colorScheme).opacity(0.15))
                 .frame(width: 200, height: 120)
-                .overlay(Capsule().stroke(.secondary.opacity(0.2), lineWidth: 1))
+                .overlay(Capsule().stroke(AppColors.divider(colorScheme).opacity(0.2), lineWidth: 1))
             
             HStack(spacing: 120) {
-                Circle().fill(.quaternary.opacity(0.05)).frame(width: 60)
-                Circle().fill(.quaternary.opacity(0.05)).frame(width: 60)
+                Circle().fill(AppColors.divider(colorScheme).opacity(0.08)).frame(width: 60)
+                Circle().fill(AppColors.divider(colorScheme).opacity(0.08)).frame(width: 60)
             }
             
             HStack(spacing: 60) {
-                Circle().fill(.secondary.opacity(0.2)).frame(width: 30)
-                Circle().fill(.secondary.opacity(0.2)).frame(width: 30)
+                Circle().fill(AppColors.divider(colorScheme).opacity(0.2)).frame(width: 30)
+                Circle().fill(AppColors.divider(colorScheme).opacity(0.2)).frame(width: 30)
             }
             .offset(y: 20)
             
             HStack(spacing: 100) {
-                Image(systemName: "plus.circle.fill").font(.title2).foregroundColor(.secondary.opacity(0.3))
+                Image(systemName: "plus.circle.fill").font(.title2).foregroundColor(AppColors.divider(colorScheme).opacity(0.3))
                 VStack(spacing: 5) {
                     HStack(spacing: 5) { Circle().frame(width: 10); Circle().frame(width: 10) }
                     HStack(spacing: 5) { Circle().frame(width: 10); Circle().frame(width: 10) }
                 }
-                .foregroundColor(.secondary.opacity(0.3))
+                .foregroundColor(AppColors.divider(colorScheme).opacity(0.3))
             }
             .offset(y: -15)
             
             Text("INPUT PREVIEW").font(.system(size: 8, weight: .black)).tracking(2)
-                .foregroundColor(.secondary.opacity(0.5))
+                .foregroundColor(AppColors.divider(colorScheme).opacity(0.5))
                 .offset(y: -50)
         }
         .padding()
@@ -899,6 +911,7 @@ struct ControllerDrawingView: View {
 
 // MARK: - Keyboard
 struct KeyboardContentView: View {
+    @Environment(\.colorScheme) private var colorScheme
     @EnvironmentObject var controllerService: ControllerService
     let systemID: String
     let isReadOnly: Bool

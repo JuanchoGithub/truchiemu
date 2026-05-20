@@ -340,29 +340,15 @@ LibraryMetadataStore.shared.deleteMetadataEntries(Set(removedROMs.map { LibraryM
 
         // 2. Identify new items (Fast O(1) duplicate prevention)
         let existingROMPaths = Set(roms.map { $0.path.path })
-        let newROMs = scannedROMs.filter { !existingROMPaths.contains($0.path.path) }
-        
-        if !newROMs.isEmpty {
-            var processedROMs: [ROM] = []
+        let processedROMs = processNewROMs(scannedROMs, existingROMPaths: existingROMPaths)
             
-            // 3. Process only the new items
-            for var rom in newROMs {
-                if rom.systemID == "mame" {
-                    self.applyMAMEIdentificationInline(to: &rom, url: rom.path)
-                }
-                if (!rom.isBios && !rom.isHidden) {
-                    // Add metadata merging
-                    let merged = LibraryMetadataStore.shared.mergedROM(rom)
-                    processedROMs.append(merged)
-                }
-            }
-            
+        if !processedROMs.isEmpty {
             // 4. Update UI state incrementally
             self.roms.append(contentsOf: processedROMs)
             self.lastAddedROMs = processedROMs
             self.roms.sort { $0.displayName < $1.displayName }
-            self.updateCounts(for: processedROMs) // Uses your new incremental method
-            
+            self.updateCounts(for: processedROMs)
+
             // 5. Persist only the new items
             repository.saveROMs(processedROMs)
             for rom in processedROMs {
@@ -370,8 +356,8 @@ LibraryMetadataStore.shared.deleteMetadataEntries(Set(removedROMs.map { LibraryM
                 LibraryMetadataStore.shared.persist(rom: rom)
             }
             LibraryMetadataStore.shared.flushToSwiftData()
-            
-            LoggerService.info(category: "ROMLibrary", "Scan extracted \(newROMs.count) new ROMs in \(String(format: "%.2f", Date().timeIntervalSince(scanStart)))s")
+
+            LoggerService.info(category: "ROMLibrary", "Scan extracted \(processedROMs.count) new ROMs in \(String(format: "%.2f", Date().timeIntervalSince(scanStart)))s")
         }
 
         // 6. Post-scan tasks (only for new systems)
@@ -392,7 +378,21 @@ LibraryMetadataStore.shared.deleteMetadataEntries(Set(removedROMs.map { LibraryM
         }
     }
 
-// Apply MAME identification inline during scanning.
+    private func processNewROMs(_ scannedROMs: [ROM], existingROMPaths: Set<String>) -> [ROM] {
+        let newROMs = scannedROMs.filter { !existingROMPaths.contains($0.path.path) }
+        var processedROMs: [ROM] = []
+        for var rom in newROMs {
+            if rom.systemID == "mame" {
+                self.applyMAMEIdentificationInline(to: &rom, url: rom.path)
+            }
+            if !rom.isBios && !rom.isHidden {
+                processedROMs.append(LibraryMetadataStore.shared.mergedROM(rom))
+            }
+        }
+        return processedROMs
+    }
+
+    // Apply MAME identification inline during scanning.
     private func applyMAMEIdentificationInline(to rom: inout ROM, url: URL) {
         let shortName = url.deletingPathExtension().lastPathComponent.lowercased()
         let mameService = MAMEUnifiedService.shared
@@ -903,7 +903,8 @@ LibraryMetadataStore.shared.deleteMetadataEntries(Set(removedROMs.map { LibraryM
         let newFileURLs = romFileURLs.filter { !existingPaths.contains($0.path) }
         var newROMsToAdd: [ROM] = []
         if !newFileURLs.isEmpty {
-            newROMsToAdd = await scanner.scan(urls: newFileURLs) { _ in }.map { LibraryMetadataStore.shared.mergedROM($0) }
+            let scannedROMs = await scanner.scan(urls: newFileURLs) { _ in }
+            newROMsToAdd = processNewROMs(scannedROMs, existingROMPaths: existingPaths)
         }
 
         let deletedROMs = existingROMs.filter { !scannedPaths.contains($0.path.path) }

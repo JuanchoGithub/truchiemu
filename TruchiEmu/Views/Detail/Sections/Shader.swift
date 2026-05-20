@@ -8,32 +8,41 @@ extension GameDetailView {
             icon: "tv",
             badge: isShaderCustomized ? loc.localized("shader.custom") : nil
         ) {
-            VStack(alignment: .leading, spacing: 14) {
-                HStack {
-                    VStack(alignment: .leading, spacing: 2) {
-                        Text(loc.localized("shader.currentShader"))
-                            .font(.subheadline)
-                            .fontWeight(.medium)
-                            .foregroundColor(AppColors.textPrimary(colorScheme))
-                        Text(ShaderManager.displayName(for: currentROM.settings.shaderPresetID))
-                            .font(.caption)
-                            .foregroundColor(AppColors.textSecondary(colorScheme))
-                    }
-                    Spacer()
-                    Button(loc.localized("shader.customize")) { presentShaderWindow() }
-                        .foregroundColor(.white)
-                        .padding(.horizontal, 14)
-                        .padding(.vertical, 8)
-                        .background(AppColors.brandAccent.opacity(0.8))
-                        .cornerRadius(8)
+VStack(alignment: .leading, spacing: 0) {
+HStack {
+VStack(alignment: .leading, spacing: 2) {
+Text(loc.localized("shader.currentShader"))
+.font(.subheadline)
+.fontWeight(.medium)
+.foregroundColor(AppColors.textPrimary(colorScheme))
+Text(ShaderManager.displayName(for: currentROM.settings.shaderPresetID))
+.font(.caption)
+.foregroundColor(AppColors.textSecondary(colorScheme))
+}
+Spacer()
+        Button { presentShaderWindow() } label: {
+            Text(loc.localized("shader.customize"))
+                .font(.subheadline)
+                .foregroundColor(.white)
+                .padding(.horizontal, AppSpacing.lg)
+                .padding(.vertical, AppSpacing.sm)
+                .background(AppColors.brandAccent)
+                .cornerRadius(AppRadius.md)
+        }
+        .buttonStyle(.plain)
 
-                    Button(loc.localized("shader.liveShaderEdit")) { presentLiveShaderEdit() }
-                        .foregroundColor(.white)
-                        .padding(.horizontal, 14)
-                        .padding(.vertical, 8)
-                        .background(Color.green.opacity(0.8))
-                        .cornerRadius(8)
-                }
+        Button { presentLiveShaderEdit() } label: {
+            Text(loc.localized("shader.liveShaderEdit"))
+                .font(.subheadline)
+                .foregroundColor(AppColors.brandAccent)
+                .padding(.horizontal, AppSpacing.lg)
+                .padding(.vertical, AppSpacing.sm)
+                .background(AppColors.brandAccent.opacity(0.15))
+                .cornerRadius(AppRadius.md)
+        }
+        .buttonStyle(.plain)
+}
+.padding(.vertical, AppSpacing.xs)
 
                 Divider().overlay(AppColors.divider(colorScheme))
 
@@ -51,34 +60,40 @@ extension GameDetailView {
                                     Image(systemName: "checkmark.circle.fill").foregroundColor(AppColors.brandAccent)
                                 }
                                 if let desc = preset.description {
-                                    Text(desc).font(.caption).foregroundColor(AppColors.textMuted(colorScheme)).lineLimit(1)
+                                    Text(desc).font(.caption).foregroundColor(AppColors.textTertiary(colorScheme)).lineLimit(1)
                                 }
                             }
-                            .padding(.vertical, 6)
-                            .padding(.horizontal, 10)
-                            .background(currentROM.settings.shaderPresetID == preset.id ? AppColors.brandAccent.opacity(0.15) : Color.clear)
-                            .cornerRadius(6)
+.padding(.vertical, AppSpacing.xs)
+.padding(.horizontal, AppSpacing.lg)
+.background(currentROM.settings.shaderPresetID == preset.id ? AppColors.brandAccent.opacity(0.5) : Color.clear)
+.cornerRadius(AppRadius.sm)
                         }
                         .buttonStyle(.plain)
-                    }
-                }
+}
+}
+.padding(.vertical, AppSpacing.xs)
 
-                Divider().overlay(AppColors.divider(colorScheme))
+Divider().overlay(AppColors.divider(colorScheme))
 
-                HStack {
+HStack {
                     VStack(alignment: .leading, spacing: 2) {
                         Text(loc.localized("shader.systemDefault")).font(.caption).foregroundColor(AppColors.textSecondary(colorScheme))
-                        Text(loc.localized("shader.resetToDefault")).font(.caption).foregroundColor(AppColors.textMuted(colorScheme))
+                        Text(loc.localized("shader.resetToDefault")).font(.caption).foregroundColor(AppColors.textTertiary(colorScheme))
                     }
                     Spacer()
-                    Button(loc.localized("shader.useDefault")) { updateSettings { $0.shaderPresetID = systemDefaultShaderID } }
-                        .foregroundColor(.white)
-                        .padding(.horizontal, 12)
-                        .padding(.vertical, 6)
-                        .background(AppColors.cardBackground(colorScheme))
-                        .cornerRadius(6)
-                        .disabled(!isShaderCustomized)
-                }
+        Button { updateSettings { $0.shaderPresetID = systemDefaultShaderID } } label: {
+            Text(loc.localized("shader.useDefault"))
+                .font(.caption)
+                .foregroundColor(AppColors.brandAccent)
+                .padding(.horizontal, AppSpacing.lg)
+                .padding(.vertical, AppSpacing.xs)
+                .background(AppColors.brandAccent.opacity(0.15))
+                .cornerRadius(AppRadius.sm)
+        }
+        .buttonStyle(.plain)
+        .disabled(!isShaderCustomized)
+}
+.padding(.vertical, AppSpacing.xs)
             }
         }
     }

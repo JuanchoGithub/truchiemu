@@ -2,6 +2,7 @@ import SwiftUI
 // MARK: - General Settings
 
 struct GeneralSettingsView: View {
+    @Environment(\.colorScheme) private var colorScheme
     @EnvironmentObject var library: ROMLibrary
     @StateObject private var launchboxService = LaunchBoxGamesDBService.shared
     @State private var autoSaveOnExit = false
@@ -10,7 +11,7 @@ struct GeneralSettingsView: View {
     @State private var showHiddenGamesCategory: Bool = true
     @State private var launchboxEnabled: Bool = true
     @State private var showSyncConfirmation = false
-    @State private var lastSyncText: String = "Never"
+    @State private var lastSyncText: String = ""
     
     @Binding var searchText: String
     
@@ -35,7 +36,7 @@ struct GeneralSettingsView: View {
         Form {
             // ★ Language picker – appears at the top of General settings
             if !isSearching || matchesSearch("Application Language localization") {
-                Section(loc.localized("settings.language")) {
+                Section(header: Label(loc.localized("settings.language"), systemImage: "globe")) {
                     Picker(loc.localized("settings.selectLanguage"), selection: Binding<String>(
                         get: { loc.currentLanguage },
                         set: { loc.setLanguage($0) })
@@ -51,7 +52,7 @@ struct GeneralSettingsView: View {
             
             // Save States Section
             if !isSearching || matchesSearch("Save States auto save auto-load compress") {
-                Section(loc.localized("settings.saveStates")) {
+                Section(header: Label(loc.localized("settings.saveStates"), systemImage: "doc.badge.clock")) {
                     Toggle(loc.localized("settings.autoSaveOnExit"), isOn: $autoSaveOnExit)
                     Toggle(loc.localized("settings.autoLoadOnStart"), isOn: $autoLoadOnStart)
                     Toggle(loc.localized("settings.compressSaveStates"), isOn: $compressSaveStates)
@@ -66,7 +67,7 @@ struct GeneralSettingsView: View {
 
             // Save Files Section
             if !isSearching || matchesSearch("Save Files SRAM") {
-                Section(loc.localized("settings.saveFiles")) {
+                Section(header: Label(loc.localized("settings.saveFiles"), systemImage: "doc.on.doc")) {
                     LabeledContent(loc.localized("settings.gameSavesLocation")) {
                         Text(SaveDirectoryManager.shared.savefilesDirectory.path)
                             .font(.caption.monospaced())
@@ -77,45 +78,45 @@ struct GeneralSettingsView: View {
             
             // Hidden Games Section
             if !isSearching || matchesSearch("Hidden Games category sidebar") {
-                Section(loc.localized("settings.hiddenGames")) {
+                Section(header: Label(loc.localized("settings.hiddenGames"), systemImage: "eye.slash")) {
                     Toggle(loc.localized("settings.showHiddenGamesCategory"), isOn: $showHiddenGamesCategory)
-                    Text("When disabled, hidden games will still exist but the category won't be visible in the sidebar.")
-                        .font(.caption)
-                        .foregroundStyle(.secondary)
+        Text("When disabled, hidden games will still exist but the category won't be visible in the sidebar.")
+          .font(.caption)
+          .foregroundStyle(AppColors.textSecondary(colorScheme))
                 }
             }
             
             // LaunchBox GamesDB Section
             if !isSearching || matchesSearch("LaunchBox GamesDB sync metadata description developer publisher genre players ESRB") {
-                Section(loc.localized("settings.launchBoxGamesDB")) {
+                Section(header: Label(loc.localized("settings.launchBoxGamesDB"), systemImage: "cloud.fill")) {
                     Toggle(loc.localized("settings.enableLaunchBox"), isOn: $launchboxEnabled)
-                    Text(loc.localized("settings.launchBoxDescription"))
-                        .font(.caption)
-                        .foregroundStyle(.secondary)
+        Text(loc.localized("settings.launchBoxDescription"))
+          .font(.caption)
+          .foregroundStyle(AppColors.textSecondary(colorScheme))
                     
                     LabeledContent(loc.localized("settings.lastSync")) {
                         if launchboxService.isSyncing {
-                            HStack(spacing: 8) {
-                                ProgressView()
-                                    .controlSize(.small)
-                                Text(loc.localized("settings.syncing"))
-                                    .font(.caption)
-                                    .foregroundStyle(.secondary)
-                            }
+        HStack(spacing: AppSpacing.md) {
+          ProgressView()
+            .controlSize(.small)
+          Text(loc.localized("settings.syncing"))
+            .font(.caption)
+            .foregroundStyle(AppColors.textSecondary(colorScheme))
+        }
                         } else {
-                            Text(lastSyncText)
-                                .font(.caption)
-                                .foregroundStyle(.secondary)
+        Text(lastSyncText)
+          .font(.caption)
+          .foregroundStyle(AppColors.textTertiary(colorScheme))
                         }
                     }
                     
                     if launchboxService.isSyncing {
-                        VStack(spacing: 8) {
-                            ProgressView(value: launchboxService.syncProgress)
-                            Text(launchboxService.syncStatus)
-                                .font(.caption)
-                                .foregroundStyle(.secondary)
-                        }
+        VStack(spacing: AppSpacing.md) {
+          ProgressView(value: launchboxService.syncProgress)
+          Text(launchboxService.syncStatus)
+            .font(.caption)
+            .foregroundStyle(AppColors.textSecondary(colorScheme))
+        }
                     }
                     
                     Button(loc.localized("settings.syncAllGamesNow")) {
@@ -142,7 +143,7 @@ struct GeneralSettingsView: View {
             
             // Application Section
             if !isSearching || matchesSearch("Application version build notifications") {
-                Section(loc.localized("settings.application")) {
+                Section(header: Label(loc.localized("settings.application"), systemImage: "app.badge")) {
                     LabeledContent(loc.localized("settings.version")) {
                         Text(Bundle.main.infoDictionary?["CFBundleShortVersionString"] as? String ?? "1.0.0")
                     }
@@ -152,7 +153,7 @@ struct GeneralSettingsView: View {
 
                     // Notifications Subsection
                     if !isSearching || matchesSearch("Notifications system") {
-                        Section(loc.localized("settings.notifications")) {
+                        Section(header: Label(loc.localized("settings.notifications"), systemImage: "bell.badge")) {
                             HStack {
                                 Text(loc.localized("settings.systemNotifications"))
                                 Spacer()
@@ -173,11 +174,11 @@ struct GeneralSettingsView: View {
             // No results message
             if isSearching && !hasMatchingSections {
                 Section {
-                    Text("No matching settings found for \"\(searchText)\"")
-                        .font(.caption)
-                        .foregroundStyle(.secondary)
-                        .frame(maxWidth: .infinity, alignment: .center)
-                        .padding(.vertical, 20)
+      Text("\(loc.localized("general.noMatchingSettings")) \"\(searchText)\"")
+        .font(.caption)
+        .foregroundStyle(AppColors.textSecondary(colorScheme))
+        .frame(maxWidth: .infinity, alignment: .center)
+        .padding(.vertical, AppSpacing.xl2)
                 }
             }
         }
@@ -239,7 +240,7 @@ struct GeneralSettingsView: View {
             formatter.unitsStyle = .full
             lastSyncText = formatter.localizedString(for: date, relativeTo: Date())
         } else {
-            lastSyncText = "Never"
+            lastSyncText = loc.localized("settings.never")
         }
     }
 }

@@ -11,27 +11,26 @@ struct MetadataRow: View {
     @ObservedObject private var loc = LocalizationManager.shared
 
     var body: some View {
-        HStack(alignment: .top, spacing: 16) {
+        HStack(alignment: .top, spacing: AppSpacing.lg) {
             Text(label.uppercased())
                 .font(.caption)
                 .fontWeight(.medium)
-                .foregroundColor(AppColors.textTertiary(colorScheme))
+                .foregroundColor(AppColors.accentTint(colorScheme))
                 .frame(width: 100, alignment: .leading)
 
             Text(value)
-                .font(.body)
+                .font(isMonospaced ? .body.monospaced() : .body)
                 .foregroundColor(AppColors.textPrimary(colorScheme))
                 .lineLimit(2)
                 .truncationMode(.middle)
-                .font(isMonospaced ? .body.monospaced() : .body)
 
             Spacer()
 
-            HStack(spacing: 12) {
+            HStack(spacing: AppSpacing.md) {
                 if let useNameAction = useNameAction {
                     Button(action: useNameAction) {
                         Image(systemName: "pencil")
-                            .foregroundColor(AppColors.textTertiary(colorScheme))
+                            .foregroundColor(AppColors.brandAccent)
                             .font(.caption)
                     }
                     .buttonStyle(.plain)
@@ -41,7 +40,7 @@ struct MetadataRow: View {
                 if let copyAction = copyAction {
                     Button(action: copyAction) {
                         Image(systemName: "doc.on.doc")
-                            .foregroundColor(AppColors.textTertiary(colorScheme))
+                            .foregroundColor(AppColors.brandAccent)
                             .font(.caption)
                     }
                     .buttonStyle(.plain)
@@ -49,5 +48,6 @@ struct MetadataRow: View {
                 }
             }
         }
+        .padding(.vertical, AppSpacing.xs)
     }
 }

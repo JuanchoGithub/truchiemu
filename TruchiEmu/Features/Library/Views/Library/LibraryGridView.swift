@@ -1037,7 +1037,7 @@ viewModel.updateFilters(
         if !activeFilters.isEmpty && searchText.isEmpty {
             return loc.localized("library.noGamesMatchFilters")
         } else if !searchText.isEmpty {
-            return String(format: loc.localized("library.nothingMatching"), searchText)
+            return loc.localized("library.nothingMatching").replacingOccurrences(of: "{0}", with: searchText)
         } else if library.roms.isEmpty {
             return loc.localized("library.gamingShelfEmpty")
         } else {

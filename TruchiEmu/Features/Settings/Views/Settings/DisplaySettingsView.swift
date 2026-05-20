@@ -2,6 +2,7 @@ import SwiftUI
 
 // MARK: - Display Settings
 struct DisplaySettingsView: View {
+    @Environment(\.colorScheme) private var colorScheme
     @State private var selectedPresetID: String = ""
     @State private var shaderWindowSettings: ShaderWindowSettings?
     @StateObject private var shaderManager = ShaderManager.shared
@@ -29,7 +30,7 @@ struct DisplaySettingsView: View {
         Form {
             // Shader Presets Section
             if !isSearching || matchesSearch("Shader Presets display screen shader preset default") {
-                Section(loc.localized("display.shaderPresets")) {
+                Section(header: Label(loc.localized("display.shaderPresets"), systemImage: "wand.and.rays")) {
                     LabeledContent(loc.localized("display.defaultShader")) {
                         Button(ShaderManager.displayName(for: selectedPresetID)) {
                             presentShaderWindow()
@@ -39,37 +40,37 @@ struct DisplaySettingsView: View {
                     
                     Text(loc.localized("display.defaultShaderDescription"))
                         .font(.caption)
-                        .foregroundColor(.secondary)
+                        .foregroundStyle(AppColors.textSecondary(colorScheme))
                 }
             }
             
             // Quick Preview Section
             if !isSearching || matchesSearch("Quick Preview shader preset display screen") {
-                Section(loc.localized("display.quickPreview")) {
-                    VStack(spacing: 8) {
+                Section(header: Label(loc.localized("display.quickPreview"), systemImage: "eye")) {
+                    VStack(spacing: AppSpacing.md) {
                         ForEach(ShaderPreset.allPresets.prefix(4), id: \.id) { preset in
                             HStack {
                                 Image(systemName: shaderIcon(for: preset.shaderType))
-                                    .foregroundColor(AppColors.brandAccent)
+                                    .foregroundStyle(AppColors.brandAccent)
                                 VStack(alignment: .leading) {
                                     Text(preset.name)
                                         .font(.subheadline)
                                     Text(preset.description ?? "")
                                         .font(.caption)
-                                        .foregroundColor(.secondary)
+                                        .foregroundStyle(AppColors.textSecondary(colorScheme))
                                 }
                                 Spacer()
                                 if preset.recommendedSystems.isEmpty {
                                     Text(loc.localized("display.allSystems"))
                                         .font(.caption2)
-                                        .foregroundColor(.secondary)
+                                        .foregroundStyle(AppColors.textSecondary(colorScheme))
                                 } else {
                                     Text(preset.recommendedSystems.prefix(3).joined(separator: ", ").uppercased())
                                         .font(.caption2)
-                                        .foregroundColor(.secondary)
+                                        .foregroundStyle(AppColors.textSecondary(colorScheme))
                                 }
                             }
-                            .padding(.vertical, 4)
+                            .padding(.vertical, AppSpacing.xs)
                         }
                     }
                 }
@@ -77,9 +78,9 @@ struct DisplaySettingsView: View {
             
             // Bezel Section
             if !isSearching || matchesSearch("Bezel display screen bezel frame") {
-                Section(loc.localized("display.bezel")) {
+                Section(header: Label(loc.localized("display.bezel"), systemImage: "rectangle.on.rectangle")) {
                     Text(loc.localized("display.bezelDescription"))
-                        .foregroundColor(.secondary)
+                        .foregroundStyle(AppColors.textSecondary(colorScheme))
                 }
             }
             
@@ -88,9 +89,9 @@ struct DisplaySettingsView: View {
                 Section {
                     Text("\(loc.localized("display.noMatchingSettings")) \"\(searchText)\"")
                         .font(.caption)
-                        .foregroundStyle(.secondary)
+                        .foregroundStyle(AppColors.textSecondary(colorScheme))
                         .frame(maxWidth: .infinity, alignment: .center)
-                        .padding(.vertical, 20)
+                        .padding(.vertical, AppSpacing.xl)
                 }
             }
         }

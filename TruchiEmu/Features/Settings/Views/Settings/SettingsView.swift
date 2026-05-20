@@ -127,10 +127,10 @@ struct SettingsView: View {
     ]
     
     private static let pageGroups: [PageGroup] = [
-        PageGroup(id: "general", label: "General", pages: [.general, .library]),
-        PageGroup(id: "systems", label: "Systems", pages: [.cores, .controllers]),
-        PageGroup(id: "visuals", label: "Visuals", pages: [.boxArt, .display, .bezels, .cheats]),
-        PageGroup(id: "advanced", label: "Advanced", pages: [.retroAchievements, .genre, .logging, .about]),
+        PageGroup(id: "general", label: LocalizationManager.shared.localized("settingsGroup.general"), pages: [.general, .library]),
+        PageGroup(id: "systems", label: LocalizationManager.shared.localized("settingsGroup.systems"), pages: [.cores, .controllers]),
+        PageGroup(id: "visuals", label: LocalizationManager.shared.localized("settingsGroup.visuals"), pages: [.boxArt, .display, .bezels, .cheats]),
+        PageGroup(id: "advanced", label: LocalizationManager.shared.localized("settingsGroup.advanced"), pages: [.retroAchievements, .genre, .logging, .about]),
     ]
     
     @State private var selectedPage: Page = .general
@@ -205,6 +205,10 @@ struct SettingsView: View {
             }
         }
         .onChange(of: selectedPage) { _, newValue in
+            if coreManager.isDownloadingCore && newValue != .cores {
+                selectedPage = .cores
+                return
+            }
             updateStorage()
         }
         .sheet(item: $coreManager.pendingDownload) { pending in
@@ -225,13 +229,19 @@ struct SettingsView: View {
     private func sidebarItem(for page: Page) -> some View {
         HStack(spacing: 8) {
             Image(systemName: page.icon)
-                .font(.system(size: 14, weight: .medium))
-                .symbolVariant(selectedPage == page ? .fill : .none)
-                .frame(width: 20)
-                .fixedSize()
-                .foregroundColor(selectedPage == page ? AppColors.brandAccent : AppColors.textSecondary(colorScheme))
+            .font(.system(size: 14, weight: .medium))
+            .symbolVariant(selectedPage == page ? .fill : .none)
+            .frame(width: 20)
+            .fixedSize()
+            .foregroundColor(selectedPage == page ? AppColors.brandAccent : AppColors.textSecondary(colorScheme))
             Text(page.label)
-                .font(AppTypography.callout)
+            .font(AppTypography.callout)
+
+            if coreManager.isDownloadingCore && page == .cores {
+                Spacer()
+                ProgressView()
+                .controlSize(.small)
+            }
         }
         .frame(maxWidth: .infinity, alignment: .leading)
         .padding(.vertical, 4)
@@ -258,11 +268,15 @@ struct SettingsView: View {
             case .genre:       GenreSettingsView(searchText: $searchText)
             case .logging:     LoggingSettingsView(searchText: $searchText)
             case .about:       AboutView()
-            }
+        }
         }
         .frame(minWidth: 550, minHeight: 420)
+
+        if coreManager.isDownloadingCore {
+            CoreDownloadStatusBar(coreManager: coreManager)
         }
     }
+}
 }
 
 // MARK: - Fuzzy Search Helper

@@ -60,5 +60,14 @@ struct ModernSectionCard<Content: View>: View {
             content
         }
         .padding(AppSpacing.xl)
+        .background(
+            RoundedRectangle(cornerRadius: AppRadius.lg)
+                .fill(AppColors.cardBackground(colorScheme))
+        )
+        .overlay(
+            RoundedRectangle(cornerRadius: AppRadius.lg)
+                .stroke(AppColors.cardBorder(colorScheme), lineWidth: 1)
+        )
+        .clipped()
     }
 }

@@ -74,8 +74,10 @@ targets:
       - "Core/Shaders/all_shaders.metal"
     - path: TruchiEmu/Resources
       buildPhase: resources
-    - path: scripts/mame_lookup/mame_rom_data.json
-      buildPhase: resources
+  - path: scripts/mame_lookup
+    excludes:
+      - "mame_unified.json"
+    buildPhase: resources
 
     preBuildScripts: []
 

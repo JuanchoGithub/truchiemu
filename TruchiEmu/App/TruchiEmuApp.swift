@@ -89,14 +89,15 @@ LoggerService.debug(category: category, message)
     
     var body: some Scene {
         WindowGroup {
-            ContentWithPrepopulationView()
-                .environmentObject(library)
-                .environmentObject(categoryManager)
-                .environmentObject(coreManager)
-                .environmentObject(controllerService)
-                .environmentObject(LibraryAutomationCoordinator.shared)
-                .environmentObject(mameVerification)
-                .environment(systemDatabase)
+        ContentWithPrepopulationView()
+            .tint(AppColors.brandAccent)
+            .environmentObject(library)
+            .environmentObject(categoryManager)
+            .environmentObject(coreManager)
+            .environmentObject(controllerService)
+            .environmentObject(LibraryAutomationCoordinator.shared)
+            .environmentObject(mameVerification)
+            .environment(systemDatabase)
                 .onAppear {
                     // Start MAME verification when app becomes idle
                     startMAMEVerificationIfNeeded()
@@ -298,63 +299,68 @@ LoggerService.debug(category: category, message)
             }
         }
         
-        WindowGroup(id: "game-info", for: UUID.self) { $romID in
-            GameInfoWindow(romID: romID ?? UUID())
-                .environmentObject(library)
-                .environmentObject(categoryManager)
-                .environmentObject(coreManager)
-                .environmentObject(controllerService)
-                .environment(systemDatabase)
-        }
+    WindowGroup(id: "game-info", for: UUID.self) { $romID in
+        GameInfoWindow(romID: romID ?? UUID())
+            .tint(AppColors.brandAccent)
+            .environmentObject(library)
+            .environmentObject(categoryManager)
+            .environmentObject(coreManager)
+            .environmentObject(controllerService)
+            .environment(systemDatabase)
+    }
 
-        WindowGroup(id: "core-options", for: String.self) { $coreID in
-            if let coreID = coreID {
-                CoreOptionsView(coreID: coreID)
-                    .environmentObject(library)
-                    .environmentObject(categoryManager)
-                    .environmentObject(coreManager)
-                    .environmentObject(controllerService)
-                    .environment(systemDatabase)
-            }
+    WindowGroup(id: "core-options", for: String.self) { $coreID in
+        if let coreID = coreID {
+            CoreOptionsView(coreID: coreID)
+                .tint(AppColors.brandAccent)
+                .environmentObject(library)
+                .environmentObject(categoryManager)
+                .environmentObject(coreManager)
+                .environmentObject(controllerService)
+                .environment(systemDatabase)
         }
+    }
 
-        WindowGroup(id: "system-settings", for: SystemSettingsRequest.self) { $request in
-            if let request = request {
-                let initialPage: SettingsView.Page? = {
-                    switch request.page {
-                    case .bezels: return .bezels
-                    case .controllers: return .controllers
-                    case .cheats: return .cheats
-                    case .general, .library, .cores, .boxArt, .display, .retroAchievements, .genre, .logging, .about:
-                        return request.page
-                    }
-                }()
-                SettingsView(system: request.system, initialPage: initialPage)
-                    .environmentObject(library)
-                    .environmentObject(categoryManager)
-                    .environmentObject(coreManager)
-                    .environmentObject(controllerService)
-                    .environment(systemDatabase)
-            }
-        }
-        
-        WindowGroup(id: "settings") {
-            SettingsView()
+    WindowGroup(id: "system-settings", for: SystemSettingsRequest.self) { $request in
+        if let request = request {
+            let initialPage: SettingsView.Page? = {
+                switch request.page {
+                case .bezels: return .bezels
+                case .controllers: return .controllers
+                case .cheats: return .cheats
+                case .general, .library, .cores, .boxArt, .display, .retroAchievements, .genre, .logging, .about:
+                    return request.page
+                }
+            }()
+            SettingsView(system: request.system, initialPage: initialPage)
+                .tint(AppColors.brandAccent)
                 .environmentObject(library)
                 .environmentObject(categoryManager)
                 .environmentObject(coreManager)
                 .environmentObject(controllerService)
                 .environment(systemDatabase)
         }
-        
-        Settings {
-            SettingsView()
-                .environmentObject(library)
-                .environmentObject(categoryManager)
-                .environmentObject(coreManager)
-                .environmentObject(controllerService)
-                .environment(systemDatabase)
-        }
+    }
+
+    WindowGroup(id: "settings") {
+        SettingsView()
+            .tint(AppColors.brandAccent)
+            .environmentObject(library)
+            .environmentObject(categoryManager)
+            .environmentObject(coreManager)
+            .environmentObject(controllerService)
+            .environment(systemDatabase)
+    }
+
+    Settings {
+        SettingsView()
+            .tint(AppColors.brandAccent)
+            .environmentObject(library)
+            .environmentObject(categoryManager)
+            .environmentObject(coreManager)
+            .environmentObject(controllerService)
+            .environment(systemDatabase)
+    }
     }
 }
 

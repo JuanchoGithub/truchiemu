@@ -1,29 +1,30 @@
 import SwiftUI
 // MARK: - About
 struct AboutView: View {
+    @Environment(\.colorScheme) private var colorScheme
     @State private var expandedSections: Set<String> = []
     @ObservedObject private var loc = LocalizationManager.shared
     
     var body: some View {
 
         ScrollView {
-            VStack(spacing: 24) {
-                // App Identity
-                VStack(spacing: 12) {
+    VStack(spacing: AppSpacing.xl3) {
+        // App Identity
+        VStack(spacing: AppSpacing.lg) {
                     Image(systemName: "arcade.stick")
                         .font(.system(size: 60))
                         .foregroundStyle(AppColors.brandAccent)
                     Text(loc.localized("about.appName"))
                         .font(.largeTitle.weight(.bold))
-                    Text(loc.localized("about.tagline"))
-                        .foregroundColor(.secondary)
+    Text(loc.localized("about.tagline"))
+      .foregroundStyle(AppColors.textSecondary(colorScheme))
                 }
-                .padding(.top, 20)
+                .padding(.top, AppSpacing.xl2)
                 
                 Divider()
                 
                 // Third-Party Dependencies
-                VStack(alignment: .leading, spacing: 16) {
+                VStack(alignment: .leading, spacing: AppSpacing.xl) {
                     Text(loc.localized("about.thirdPartySoftware"))
                         .font(.headline)
                         .frame(maxWidth: .infinity, alignment: .leading)
@@ -76,9 +77,9 @@ struct AboutView: View {
                         
                         Divider()
                         
-                        Text(loc.localized("about.additionalCoresNote"))
-                            .foregroundColor(.secondary)
-                            .font(.caption)
+      Text(loc.localized("about.additionalCoresNote"))
+        .foregroundStyle(AppColors.textSecondary(colorScheme))
+        .font(.caption)
                     }
                     
                     // --- Databases & Content ---
@@ -181,18 +182,18 @@ struct AboutView: View {
                     Divider()
                     
                     // --- General Notes ---
-                    VStack(alignment: .leading, spacing: 8) {
-                        Text(loc.localized("about.acknowledgment"))
-                            .font(.headline)
-                        Text(loc.localized("about.acknowledgmentDescription"))
-                            .foregroundColor(.secondary)
-                            .font(.callout)
-                    }
-                    .padding(.vertical, 4)
+VStack(alignment: .leading, spacing: AppSpacing.md) {
+    Text(loc.localized("about.acknowledgment"))
+    .font(.headline)
+      Text(loc.localized("about.acknowledgmentDescription"))
+.foregroundStyle(AppColors.textSecondary(colorScheme))
+        .font(.callout)
+    }
+    .padding(.vertical, AppSpacing.xs)
                 }
             }
         }
-        .padding(24)
+        .padding(AppSpacing.xl3)
         .frame(maxWidth: .infinity, maxHeight: .infinity)
     }
 }
@@ -203,7 +204,8 @@ struct DependencySection<Content: View>: View {
     let title: String
     @Binding var isExpanded: Bool
     @ViewBuilder let content: Content
-    
+    @Environment(\.colorScheme) private var colorScheme
+
     var body: some View {
         VStack(alignment: .leading, spacing: 0) {
             Button(action: {
@@ -214,8 +216,8 @@ struct DependencySection<Content: View>: View {
                 HStack {
                     Image(systemName: isExpanded ? "chevron.down" : "chevron.right")
                         .font(.caption)
-                        .foregroundColor(.secondary)
-                        .frame(width: 16)
+.foregroundStyle(AppColors.textSecondary(colorScheme))
+                        .frame(width: AppSpacing.xl)
                     Text(title)
                         .font(.headline)
                     Spacer()
@@ -225,11 +227,11 @@ struct DependencySection<Content: View>: View {
             .buttonStyle(.plain)
             
             if isExpanded {
-                VStack(alignment: .leading, spacing: 12) {
-                    content
-                }
-                .padding(.top, 8)
-                .padding(.leading, 20)
+        VStack(alignment: .leading, spacing: AppSpacing.lg) {
+            content
+        }
+        .padding(.top, AppSpacing.md)
+        .padding(.leading, AppSpacing.xl2)
                 .transition(.opacity)
             }
         }
@@ -244,10 +246,11 @@ struct DependencyGroup: View {
     let licenseURL: String?
     let description: String
     @ObservedObject private var loc = LocalizationManager.shared
-    
+    @Environment(\.colorScheme) private var colorScheme
+
     var body: some View {
-        VStack(alignment: .leading, spacing: 4) {
-            HStack(alignment: .firstTextBaseline, spacing: 6) {
+        VStack(alignment: .leading, spacing: AppSpacing.xs) {
+            HStack(alignment: .firstTextBaseline, spacing: AppSpacing.sm) {
                 Text(name)
                     .font(.subheadline.weight(.medium))
                 if let validURL = URL(string: url) {
@@ -257,13 +260,13 @@ struct DependencyGroup: View {
                     }
                 }
             }
-            HStack(spacing: 4) {
-                Text(loc.localized("about.license"))
-                    .foregroundColor(.secondary)
-                    .font(.caption)
-                Text(license)
-                    .font(.caption)
-                    .foregroundColor(.purple)
+        HStack(spacing: AppSpacing.xs) {
+            Text(loc.localized("about.license"))
+                .foregroundStyle(AppColors.textSecondary(colorScheme))
+                .font(.caption)
+            Text(license)
+                .font(.caption)
+                .foregroundStyle(AppColors.brandAccent)
                 if let licenseURL = licenseURL, let url = URL(string: licenseURL) {
                     Link(destination: url) {
                         Image(systemName: "doc.text.magnifyingglass")
@@ -272,9 +275,9 @@ struct DependencyGroup: View {
                     .help(loc.localized("about.viewFullLicense"))
                 }
             }
-            Text(description)
-                .foregroundColor(.secondary)
-                .font(.caption)
+        Text(description)
+            .foregroundStyle(AppColors.textSecondary(colorScheme))
+            .font(.caption)
                 .fixedSize(horizontal: false, vertical: true)
         }
     }

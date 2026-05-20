@@ -26,21 +26,21 @@ enum DetailSection: String, CaseIterable {
     var helpText: String {
         switch self {
         case .gameInfo:
-            return "View game details, metadata, and metadata identification tools"
+            return LocalizationManager.shared.localized("gameDetail.gameInfoHelp")
         case .shader:
-            return "Customize visual effects like CRT filters and screen smoothing"
+            return LocalizationManager.shared.localized("gameDetail.shaderHelp")
         case .bezels:
-            return "Browse and apply decorative bezel artwork around the game screen"
+            return LocalizationManager.shared.localized("gameDetail.bezelsHelp")
         case .controls:
-            return "View and customize keyboard and controller button mappings"
+            return LocalizationManager.shared.localized("gameDetail.controlsHelp")
         case .savedStates:
-            return "Manage save states created during gameplay — load or delete saves"
+            return LocalizationManager.shared.localized("gameDetail.savedStatesHelp")
         case .cheats:
-            return "Download, enable, and manage cheat codes for this game"
+            return LocalizationManager.shared.localized("gameDetail.cheatsHelp")
         case .core:
-            return "Choose which emulation engine to use for this game or system"
+            return LocalizationManager.shared.localized("gameDetail.coreHelp")
         case .achievements:
-            return "View RetroAchievements — earn points by completing in-game challenges"
+            return LocalizationManager.shared.localized("gameDetail.achievementsHelp")
         }
     }
     

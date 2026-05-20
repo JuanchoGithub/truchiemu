@@ -276,10 +276,11 @@ class MetalCoordinator: NSObject, MTKViewDelegate {
                             maskPixelSpacingH: getUniform("maskPixelSpacingH", fallback: 3.0),
                             maskPixelSpacingV: getUniform("maskPixelSpacingV", fallback: 3.0),
                             maskSubpixelGap: getUniform("maskSubpixelGap", fallback: 0.3),
-                            useMask: getUniform("useMask", fallback: 0.0),
+useMask: getUniform("useMask", fallback: 0.0),
 
-                            padding: 0.0
-                        )
+outputWidth: Float(drawWidth),
+outputHeight: Float(drawHeight)
+)
                         enc.setFragmentBytes(&u, length: MemoryLayout<CRTUniforms>.stride, index: 0)
                     case "fragmentDotMatrixLCD":
                         // Use preset defaults for all uniforms
@@ -502,10 +503,11 @@ class MetalCoordinator: NSObject, MTKViewDelegate {
                             maskPixelSpacingH: getUniform("maskPixelSpacingH", fallback: 3.0),
                             maskPixelSpacingV: getUniform("maskPixelSpacingV", fallback: 3.0),
                             maskSubpixelGap: getUniform("maskSubpixelGap", fallback: 0.3),
-                            useMask: getUniform("useMask", fallback: 1.0),
+useMask: getUniform("useMask", fallback: 1.0),
 
-                            padding: 0.0
-                        )
+outputWidth: Float(drawWidth),
+outputHeight: Float(drawHeight)
+)
                         enc.setFragmentBytes(&u, length: MemoryLayout<CRTMultipassUniforms>.stride, index: 0)
                         enc.setFragmentTexture(frameTex, index: 0)
                         for i in 1...4 {
@@ -550,10 +552,11 @@ class MetalCoordinator: NSObject, MTKViewDelegate {
                             maskPixelSpacingH: 3.0,
                             maskPixelSpacingV: 3.0,
                             maskSubpixelGap: 0.3,
-                            useMask: 0.0,
+useMask: 0.0,
 
-                            padding: 0.0
-                        )
+outputWidth: Float(drawWidth),
+outputHeight: Float(drawHeight)
+)
                         enc.setFragmentBytes(&u, length: MemoryLayout<CRTUniforms>.stride, index: 0)
                     }
 

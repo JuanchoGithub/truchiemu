@@ -28,17 +28,17 @@ struct CheatListRowView: View {
 
             Spacer()
 
-            Text(cheat.format.displayName)
-                .font(.caption2)
-                .padding(.horizontal, 6)
-                .padding(.vertical, 2)
-                .background(AppColors.cardBackground(colorScheme))
-                .foregroundColor(AppColors.textSecondary(colorScheme))
-                .cornerRadius(4)
+Text(cheat.format.displayName)
+      .font(.caption2)
+      .padding(.horizontal, 6)
+      .padding(.vertical, 2)
+      .background(AppColors.accentTertiary.opacity(0.3))
+      .foregroundColor(AppColors.accentTertiary)
+      .cornerRadius(4)
         }
         .padding(.vertical, 6)
         .padding(.horizontal, 8)
-        .background(AppColors.cardBackgroundSubtle(colorScheme))
+        .background(AppColors.brandAccent.opacity(0.12))
         .cornerRadius(6)
     }
 }

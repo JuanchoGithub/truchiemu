@@ -38,25 +38,21 @@ extension Color {
 struct AppColors {
     // MARK: - Brand Colors
     
-    // Warm amber — the TruchiEmu brand accent
-    static let brandAccent: Color = .oklch(0.72, 0.14, 50)
-    static let brandAccentDimmed: Color = .oklch(0.58, 0.10, 50)
-    static let brandAccentDark: Color = .oklch(0.40, 0.08, 50)
+    // Cyan — the TruchiEmu brand accent (#0891b2 Tailwind cyan-600)
+    static let brandAccent: Color = Color(.sRGB, red: 0.031, green: 0.569, blue: 0.698, opacity: 1.0)
+    static let brandAccentDimmed: Color = Color(.sRGB, red: 0.024, green: 0.478, blue: 0.588, opacity: 1.0)
+    static let brandAccentDark: Color = Color(.sRGB, red: 0.016, green: 0.333, blue: 0.408, opacity: 1.0)
     
     // MARK: - Semantic Colors
     
     // Primary background color for cards and panels
     static func cardBackground(_ colorScheme: ColorScheme) -> Color {
-        colorScheme == .dark
-            ? .oklch(0.15, 0.02, 50)
-            : .oklch(0.93, 0.02, 55)
+        Color(nsColor: .controlBackgroundColor)
     }
-    
+
     // Subtle background for sections within cards
     static func cardBackgroundSubtle(_ colorScheme: ColorScheme) -> Color {
-        colorScheme == .dark
-            ? .oklch(0.17, 0.02, 50)
-            : .oklch(0.95, 0.02, 55)
+        Color(nsColor: .controlBackgroundColor).opacity(0.6)
     }
     
     // Card border with subtle visibility
@@ -97,8 +93,8 @@ struct AppColors {
     // Muted text for disabled/inactive states
     static func textMuted(_ colorScheme: ColorScheme) -> Color {
         colorScheme == .dark
-            ? .oklch(0.38, 0.01, 55)
-            : .oklch(0.68, 0.01, 55)
+            ? .oklch(0.42, 0.01, 55)
+            : .oklch(0.55, 0.01, 55)
     }
     
     // MARK: - Accent Colors
@@ -122,7 +118,7 @@ struct AppColors {
     static var accentSecondary: Color { .oklch(0.65, 0.15, 30) }
     
     // Tertiary accent — warm teal for complementary accents
-    static var accentTertiary: Color { .oklch(0.65, 0.10, 170) }
+    static var accentTertiary: Color { .oklch(0.70, 0.10, 170) }
     
     // Warm golden yellow for highlights and decorative elements
     static var accentWarm: Color { .oklch(0.78, 0.13, 75) }
@@ -150,9 +146,7 @@ struct AppColors {
     
     // Main window background
     static func windowBackground(_ colorScheme: ColorScheme) -> Color {
-        colorScheme == .dark
-            ? .oklch(0.12, 0.02, 50)
-            : .oklch(0.94, 0.02, 55)
+        Color(nsColor: .windowBackgroundColor)
     }
     
     // Sidebar background (with material effect)
@@ -162,16 +156,12 @@ struct AppColors {
     
     // Toolbar/chrome background
     static func toolbarBackground(_ colorScheme: ColorScheme) -> Color {
-        colorScheme == .dark
-            ? .oklch(0.14, 0.015, 50)
-            : .oklch(0.95, 0.015, 55)
+        Color(nsColor: .underPageBackgroundColor)
     }
     
     // Elevated surface (popovers, sheets)
     static func surface(_ colorScheme: ColorScheme) -> Color {
-        colorScheme == .dark
-            ? .oklch(0.20, 0.015, 50)
-            : .oklch(0.96, 0.01, 55)
+        Color(nsColor: .windowBackgroundColor)
     }
     
     // MARK: - Overlay Colors
@@ -438,7 +428,7 @@ enum AppPillStyle {
     func foregroundColor(_ colorScheme: ColorScheme) -> Color {
         switch self {
         case .primary:
-            return colorScheme == .dark ? Color.white : AppColors.brandAccent
+            return .white
         case .secondary:
             return AppColors.textSecondary(colorScheme)
         case .success:
@@ -453,7 +443,7 @@ enum AppPillStyle {
     func background(_ colorScheme: ColorScheme) -> Color {
         switch self {
         case .primary:
-            return colorScheme == .dark ? AppColors.brandAccent.opacity(0.3) : AppColors.brandAccent.opacity(0.12)
+            return AppColors.brandAccent
         case .secondary:
             return AppColors.cardBackgroundSubtle(colorScheme)
         case .success:
@@ -993,6 +983,7 @@ struct SettingsRow<Content: View>: View {
     let label: String
     let description: String?
     @ViewBuilder var control: Content
+    @Environment(\.colorScheme) private var colorScheme
     
     init(_ label: String, description: String? = nil, @ViewBuilder control: () -> Content) {
         self.label = label
@@ -1008,7 +999,7 @@ struct SettingsRow<Content: View>: View {
                 if let description = description {
                     Text(description)
                         .font(.caption)
-                        .foregroundStyle(.secondary)
+                        .foregroundStyle(AppColors.textSecondary(colorScheme))
                 }
             }
             Spacer()
