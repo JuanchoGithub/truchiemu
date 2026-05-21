@@ -260,7 +260,7 @@ struct CoreOptionsView: View {
     var body: some View {
         NavigationStack {
             ZStack {
-                Color(AppColors.windowBackground(colorScheme)).ignoresSafeArea()
+                Color(AppColors.windowBackground(colorScheme, tinted: ThemeManager.shared.tintedSurfacesEnabled)).ignoresSafeArea()
 
                 if viewModel.isLoading {
                     VStack(spacing: 16) {

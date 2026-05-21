@@ -131,13 +131,20 @@ var body: some View {
                         .padding(.top, AppSpacing.sm)
                         .padding(.bottom, AppSpacing.xs)
 
-                        List(selection: $selectedSystemID) {
-                            ForEach(sortedSystems) { sys in
-                                SystemRowView(system: sys, coreManager: coreManager)
-                                .tag(sys.id)
+                        ScrollView {
+                            VStack(spacing: 0) {
+                                ForEach(sortedSystems) { sys in
+                                    Button {
+                                        selectedSystemID = sys.id
+                                    } label: {
+                                        SystemRowView(system: sys, isSelected: selectedSystemID == sys.id, coreManager: coreManager)
+                                    }
+                                    .buttonStyle(.plain)
+                                }
                             }
+                            .padding(.horizontal, AppSpacing.xs)
                         }
-                        .listStyle(.plain)
+                        .scrollContentBackground(.hidden)
                     }
                     .frame(width: systemsPanelWidth)
 
@@ -180,6 +187,7 @@ var body: some View {
 
 struct SystemRowView: View {
     let system: SystemInfo
+    let isSelected: Bool
     @ObservedObject var coreManager: CoreManager
     @Environment(\.colorScheme) private var colorScheme
 
@@ -231,9 +239,19 @@ struct SystemRowView: View {
             Spacer()
         }
         .padding(.vertical, AppSpacing.xs)
-        .padding(.horizontal, AppSpacing.xs)
-        .listRowInsets(EdgeInsets(top: 0, leading: AppSpacing.xs, bottom: 0, trailing: AppSpacing.xs))
-        .listRowSeparator(.hidden)
+        .padding(.horizontal, AppSpacing.sm)
+        .background(
+            RoundedRectangle(cornerRadius: 6)
+                .fill(isSelected ? AppColors.accentBackground(colorScheme) : .clear)
+        )
+        .overlay(alignment: .leading) {
+            if isSelected {
+                RoundedRectangle(cornerRadius: 2)
+                    .fill(AppColors.brandAccentSecondary)
+                    .frame(width: 3, height: 20)
+                    .padding(.leading, 2)
+            }
+        }
     }
 }
 

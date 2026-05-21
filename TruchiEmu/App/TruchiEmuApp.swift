@@ -91,7 +91,7 @@ LoggerService.debug(category: category, message)
     var body: some Scene {
         WindowGroup {
         ContentWithPrepopulationView()
-            .tint(AppColors.brandAccent)
+            .tint(AppColors.brandAccentSecondary)
             .environmentObject(library)
             .environmentObject(categoryManager)
             .environmentObject(coreManager)
@@ -302,7 +302,7 @@ LoggerService.debug(category: category, message)
         
     WindowGroup(id: "game-info", for: UUID.self) { $romID in
         GameInfoWindow(romID: romID ?? UUID())
-            .tint(AppColors.brandAccent)
+            .tint(AppColors.brandAccentSecondary)
             .environmentObject(library)
             .environmentObject(categoryManager)
             .environmentObject(coreManager)
@@ -313,7 +313,7 @@ LoggerService.debug(category: category, message)
     WindowGroup(id: "core-options", for: String.self) { $coreID in
         if let coreID = coreID {
             CoreOptionsView(coreID: coreID)
-                .tint(AppColors.brandAccent)
+                .tint(AppColors.brandAccentSecondary)
                 .environmentObject(library)
                 .environmentObject(categoryManager)
                 .environmentObject(coreManager)
@@ -334,7 +334,7 @@ LoggerService.debug(category: category, message)
                 }
             }()
             SettingsView(system: request.system, initialPage: initialPage)
-                .tint(AppColors.brandAccent)
+                .tint(AppColors.brandAccentSecondary)
                 .environmentObject(library)
                 .environmentObject(categoryManager)
                 .environmentObject(coreManager)
@@ -345,7 +345,7 @@ LoggerService.debug(category: category, message)
 
     WindowGroup(id: "settings") {
         SettingsView()
-            .tint(AppColors.brandAccent)
+            .tint(AppColors.brandAccentSecondary)
             .environmentObject(library)
             .environmentObject(categoryManager)
             .environmentObject(coreManager)
@@ -355,7 +355,7 @@ LoggerService.debug(category: category, message)
 
     Settings {
         SettingsView()
-            .tint(AppColors.brandAccent)
+            .tint(AppColors.brandAccentSecondary)
             .environmentObject(library)
             .environmentObject(categoryManager)
             .environmentObject(coreManager)
@@ -481,6 +481,9 @@ class AppDelegate: NSObject, NSApplicationDelegate, UNUserNotificationCenterDele
     }
     
     func applicationWillFinishLaunching(_ notification: Notification) {
+        // Apply saved appearance mode before SwiftUI renders any views
+        ThemeManager.shared.applySavedAppearance()
+
         // Set activation policy BEFORE any windows are created
         if ProcessInfo.processInfo.arguments.contains("--launch") {
             NSApp.setActivationPolicy(.accessory)

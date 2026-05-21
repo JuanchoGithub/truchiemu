@@ -83,13 +83,14 @@ private struct DragPreviewStack_Internal: View {
 
 // A simplified, performance-friendly card strictly for the dragging stack
 struct DragPreviewCard: View {
-  let rom: ROM
-  let preloadedImage: NSImage?
-  
-  var body: some View {
-    ZStack {
-      RoundedRectangle(cornerRadius: 12)
-        .fill(Color(nsColor: .windowBackgroundColor).opacity(0.9))
+    let rom: ROM
+    let preloadedImage: NSImage?
+    @Environment(\.colorScheme) private var colorScheme
+
+    var body: some View {
+        ZStack {
+            RoundedRectangle(cornerRadius: 12)
+                .fill(AppColors.windowBackground(colorScheme, tinted: ThemeManager.shared.tintedSurfacesEnabled).opacity(0.9))
         .shadow(color: .black.opacity(0.4), radius: 8, y: 4)
       
       // Fast, synchronous path so macOS accepts the drag view immediately

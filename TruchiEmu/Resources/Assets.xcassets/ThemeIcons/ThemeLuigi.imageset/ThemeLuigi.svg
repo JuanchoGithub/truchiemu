@@ -1,0 +1,26 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 500 500" width="100%" height="100%">
+  <g id="Luigi_Theme_Icon">
+    
+    <circle cx="250" cy="250" r="180" fill="#1E56A0" stroke="#113F7A" stroke-width="6" />
+    
+    <circle cx="250" cy="250" r="155" fill="#2A9D8F" />
+    
+    <circle cx="195" cy="210" r="22" fill="#FFB703" filter="drop-shadow(0px 4px 4px rgba(0,0,0,0.25))" />
+    <circle cx="305" cy="210" r="22" fill="#FFB703" filter="drop-shadow(0px 4px 4px rgba(0,0,0,0.25))" />
+    
+    <path d="M 60 270 
+             C 90 240, 150 240, 200 265 
+             C 220 275, 240 278, 250 278 
+             C 260 278, 280 275, 300 265 
+             C 350 240, 410 240, 440 270 
+             C 450 310, 380 340, 320 315
+             C 290 300, 270 292, 250 292
+             C 230 292, 210 300, 180 315
+             C 120 340, 50 310, 60 270 Z" 
+          fill="#1A1A1A" 
+          stroke="#111111" 
+          stroke-width="4"
+          filter="drop-shadow(0px 6px 5px rgba(0,0,0,0.3))" />
+          
+  </g>
+</svg>

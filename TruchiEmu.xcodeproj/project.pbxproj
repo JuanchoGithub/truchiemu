@@ -166,7 +166,6 @@
 		292B832ED0F962C83CACC872 /* amstrad-cheats.zip in Resources */ = {isa = PBXBuildFile; fileRef = FC4A009791FC6C0F1975F092 /* amstrad-cheats.zip */; };
 		2965348A08F9398C535D9D9F /* VIDEOS.png in Resources */ = {isa = PBXBuildFile; fileRef = 44DA75A39BC660DA2C3C1257 /* VIDEOS.png */; };
 		29CE32FC2F6F901B6183456D /* SATURN.png in Resources */ = {isa = PBXBuildFile; fileRef = F6BC2D971B660ACD5CC70339 /* SATURN.png */; };
-		2A1BA04A963F634CA857256A /* SystemControlsMappingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D32A0CBEAB6D23E203608BCB /* SystemControlsMappingView.swift */; };
 		2A3CDD5C8D5B360CB8C9AD88 /* download_and_parse.py in Resources */ = {isa = PBXBuildFile; fileRef = EB889F956194C62B15EB2B74 /* download_and_parse.py */; };
 		2A4C1FDA0C8991B98B6E9CBA /* NDS.png in Resources */ = {isa = PBXBuildFile; fileRef = 1F755B4BB35962969772AE5B /* NDS.png */; };
 		2AF1B55372468A96B71ED2E9 /* input_coreLabels_citra.json in Resources */ = {isa = PBXBuildFile; fileRef = 3D753FA56AF8BCFA8A0D6EF5 /* input_coreLabels_citra.json */; };
@@ -813,6 +812,7 @@
 		F2058F5CDAFDED1DB7FAFD71 /* genesis-cheats.zip in Resources */ = {isa = PBXBuildFile; fileRef = CB6C88486821941C90609217 /* genesis-cheats.zip */; };
 		F2903EDB7DD894827E44208C /* ResourceCacheModels.swift in Sources */ = {isa = PBXBuildFile; fileRef = 86D467EC70EF33E265BAF765 /* ResourceCacheModels.swift */; };
 		F29548F076DB243FEE2FB4FD /* pt.json in Resources */ = {isa = PBXBuildFile; fileRef = 9A53F0EBF42B897DC4DA810A /* pt.json */; };
+		F2977433FDB56451CDF737CE /* AppearanceMode.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6FA6F0077547C094AAD1CCAE /* AppearanceMode.swift */; };
 		F2A824200A171AC12B510B0D /* input_coreLabels_numero.json in Resources */ = {isa = PBXBuildFile; fileRef = CDA3A06E44107FBD301C4BD6 /* input_coreLabels_numero.json */; };
 		F2AD1474EB55151D97AD9666 /* input_coreLabels_crocods.json in Resources */ = {isa = PBXBuildFile; fileRef = DBBF6B79C3537834CD3E8F90 /* input_coreLabels_crocods.json */; };
 		F2DC863D903DDD53F642078B /* Bandai - WonderSwan.dat in Resources */ = {isa = PBXBuildFile; fileRef = E8D51D07865600865794A8DB /* Bandai - WonderSwan.dat */; };
@@ -1254,6 +1254,7 @@
 		6E36E1CEE7FB7B06AF851909 /* nds-cheats.zip */ = {isa = PBXFileReference; lastKnownFileType = archive.zip; path = "nds-cheats.zip"; sourceTree = "<group>"; };
 		6EC5C401683A3FA0F73FBBC0 /* input_coreOverrides_uzem.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = input_coreOverrides_uzem.json; sourceTree = "<group>"; };
 		6F17A28BBD59336B59568A37 /* CANNONBALL.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = CANNONBALL.png; sourceTree = "<group>"; };
+		6FA6F0077547C094AAD1CCAE /* AppearanceMode.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppearanceMode.swift; sourceTree = "<group>"; };
 		6FB61F03F6E10672E9A1D219 /* FBNEO.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = FBNEO.png; sourceTree = "<group>"; };
 		6FE5AC794E01A00A6401CA78 /* ConfettiView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConfettiView.swift; sourceTree = "<group>"; };
 		7071672F4855616C9D2564D6 /* ModernSectionCard.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ModernSectionCard.swift; sourceTree = "<group>"; };
@@ -1567,7 +1568,6 @@
 		D256D164C12D4E02C237597C /* input_coreLabels_race.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = input_coreLabels_race.json; sourceTree = "<group>"; };
 		D2DFAEA2F7A4795FA6CE34C5 /* COLECO.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = COLECO.png; sourceTree = "<group>"; };
 		D2FD611BC113FD1070D1927C /* input_coreLabels_tgb_dual.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = input_coreLabels_tgb_dual.json; sourceTree = "<group>"; };
-		D32A0CBEAB6D23E203608BCB /* SystemControlsMappingView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SystemControlsMappingView.swift; sourceTree = "<group>"; };
 		D364FBBF3C523EEE767B3D65 /* md@132w.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "md@132w.png"; sourceTree = "<group>"; };
 		D371E4C1F06305FA88AD9ADC /* input_coreLabels_beetle_vb.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = input_coreLabels_beetle_vb.json; sourceTree = "<group>"; };
 		D380F0ACA26A2082BD1DAA08 /* RunningGamesTracker.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RunningGamesTracker.swift; sourceTree = "<group>"; };
@@ -2486,7 +2486,6 @@
 				6788E1B34FDC8AE5B0094B07 /* OnboardingView.swift */,
 				CBFE3A9E877C2D62FEDDB15E /* SetupWizardView.swift */,
 				AECA6A821D5AD2F2FBD719B3 /* SidebarRowButton.swift */,
-				D32A0CBEAB6D23E203608BCB /* SystemControlsMappingView.swift */,
 				74C4ECFC23ADA7A8A05EE298 /* SystemSidebarView.swift */,
 			);
 			path = Library;
@@ -3081,6 +3080,7 @@
 			children = (
 				E681371EC4DAB0353DC26FFF /* AccentColorTheme.swift */,
 				7A0A290509C1D20EA2265610 /* AccentSegmentedControl.swift */,
+				6FA6F0077547C094AAD1CCAE /* AppearanceMode.swift */,
 				ABE60205F14183C120DDC8AA /* DesignSystem.swift */,
 				A8935D40F11BF986BE60A840 /* ThemeManager.swift */,
 			);
@@ -3926,6 +3926,7 @@
 				DAA7D00D03C90DDF0DD7D031 /* AchievementToastView.swift in Sources */,
 				151D372D28A505324152DBB2 /* AnalogDeadZone.swift in Sources */,
 				8486017DB7D747C9E058F05D /* AppSettings.swift in Sources */,
+				F2977433FDB56451CDF737CE /* AppearanceMode.swift in Sources */,
 				ED962975C5DEFB723D7702E0 /* BaseRunner.swift in Sources */,
 				A811823110A251E5BBB9698E /* BezelAPIService.swift in Sources */,
 				B2EDF888CDF5CE14D1D573DE /* BezelBackgroundView.swift in Sources */,
@@ -4131,7 +4132,6 @@
 				0EC966AB34C9316BEB777009 /* StandaloneGameWindowController.swift in Sources */,
 				A28B877A77EF71164928C438 /* SwiftDataContainer.swift in Sources */,
 				9D2B2A115387F92D5EBA0310 /* SwiftDataModels.swift in Sources */,
-				2A1BA04A963F634CA857256A /* SystemControlsMappingView.swift in Sources */,
 				D0439304429F0CDCB80B2E16 /* SystemDatabaseWrapper.swift in Sources */,
 				42756557E183E1F20047A790 /* SystemInfo.swift in Sources */,
 				1226E683B4C6974386DAAC65 /* SystemSidebarView.swift in Sources */,

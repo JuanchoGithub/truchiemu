@@ -2,6 +2,7 @@ import SwiftUI
 
 struct ShaderGameOverrideView: View {
 @Environment(\.dismiss) private var dismiss
+@Environment(\.colorScheme) private var colorScheme
 @ObservedObject private var loc = LocalizationManager.shared
 
 let systemID: String
@@ -78,6 +79,7 @@ Text(game.displayName)
                     }
                 }
                 .listStyle(.plain)
+                .scrollContentBackground(.hidden)
             }
 
             Divider()
@@ -100,6 +102,7 @@ Text(game.displayName)
             }
         }
         .padding(20)
+        .background(AppColors.windowBackground(colorScheme, tinted: ThemeManager.shared.tintedSurfacesEnabled))
         .frame(width: 500, height: 400)
     }
 

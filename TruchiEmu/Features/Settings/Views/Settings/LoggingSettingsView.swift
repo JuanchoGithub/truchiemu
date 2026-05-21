@@ -97,6 +97,7 @@ struct LoggingSettingsView: View {
                 }
             }
         }
+        .scrollContentBackground(.hidden)
         .formStyle(.grouped)
         .navigationTitle(loc.localized("logging.title"))
         .onAppear {

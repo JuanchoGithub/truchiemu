@@ -1,0 +1,60 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 500 500" width="100%" height="100%">
+  <g id="Doom_Slayer_Helmet_Shape">
+    
+    <path d="M 120 180 
+             C 110 110, 160 70, 250 70 
+             C 340 70, 390 110, 380 180
+             C 375 220, 385 270, 350 340
+             L 320 390
+             L 285 415
+             L 215 415
+             L 180 390
+             L 150 340
+             C 115 270, 125 220, 120 180 Z" 
+          fill="#25331B" 
+          stroke="#11170C" 
+          stroke-width="8" 
+          stroke-linejoin="round" />
+    
+    <path d="M 140 185 
+             C 135 130, 175 95, 250 95 
+             C 325 95, 365 130, 360 185
+             C 355 220, 365 260, 335 320
+             L 305 365
+             L 275 385
+             L 225 385
+             L 195 365
+             L 165 320
+             C 135 260, 145 220, 140 185 Z" 
+          fill="#3A4F2A" />
+
+    <path d="M 180 125 L 220 150 L 280 150 L 320 125" fill="none" stroke="#1A2413" stroke-width="5" stroke-linecap="round" />
+    <line x1="250" y1="95" x2="250" y2="135" stroke="#1A2413" stroke-width="4" />
+
+    <path d="M 150 190 
+             L 350 190 
+             L 330 265 
+             L 285 285
+             L 215 285
+             L 170 265 
+             Z" 
+          fill="#005B84" 
+          stroke="#002D42" 
+          stroke-width="5" 
+          stroke-linejoin="round"
+          filter="drop-shadow(0px 0px 12px #00B4D8)" />
+          
+    <path d="M 175 200 L 325 200 L 315 220 L 185 220 Z" fill="#E0F7FA" opacity="0.3" />
+    <path d="M 165 230 L 180 250 L 175 255 L 160 235 Z" fill="#E0F7FA" opacity="0.2" />
+
+    <path d="M 205 310 L 295 310 L 275 395 L 225 395 Z" fill="#161D11" stroke="#0B0E08" stroke-width="3" />
+    
+    <line x1="230" y1="325" x2="230" y2="380" stroke="#3A4F2A" stroke-width="5" stroke-linecap="round" />
+    <line x1="250" y1="325" x2="250" y2="385" stroke="#3A4F2A" stroke-width="5" stroke-linecap="round" />
+    <line x1="270" y1="325" x2="270" y2="380" stroke="#3A4F2A" stroke-width="5" stroke-linecap="round" />
+
+    <path d="M 140 315 L 165 320 L 195 365 L 180 390 Z" fill="#1A2413" />
+    <path d="M 360 315 L 335 320 L 305 365 L 320 390 Z" fill="#1A2413" />
+          
+  </g>
+</svg>

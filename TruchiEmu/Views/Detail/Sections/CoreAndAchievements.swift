@@ -59,7 +59,9 @@ extension GameDetailView {
         HStack {
           Spacer()
         Button {
-            showCoreOptionsView = true
+            if let coreID = activeCoreID {
+                openWindow(id: "core-options", value: coreID)
+            }
         } label: {
             HStack(spacing: 6) {
                 Image(systemName: "slider.horizontal.3")

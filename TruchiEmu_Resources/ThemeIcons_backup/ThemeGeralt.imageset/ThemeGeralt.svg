@@ -1,0 +1,79 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 500 500" width="100%" height="100%">
+  <!-- Definiciones para gradientes y sombras (opcional para dar un toque premium) -->
+  <defs>
+    <radialGradient id="bgGrad" cx="50%" cy="50%" r="50%">
+      <stop offset="70%" stop-color="#1a1a1a"/>
+      <stop offset="100%" stop-color="#0d0d0d"/>
+    </radialGradient>
+    <linearGradient id="goldGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#d4af37"/>
+      <stop offset="50%" stop-color="#f3e5ab"/>
+      <stop offset="100%" stop-color="#aa7c11"/>
+    </linearGradient>
+    <linearGradient id="silverGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#ffffff"/>
+      <stop offset="50%" stop-color="#b0b0b0"/>
+      <stop offset="100%" stop-color="#666666"/>
+    </linearGradient>
+    <linearGradient id="darkSilverGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#888888"/>
+      <stop offset="100%" stop-color="#333333"/>
+    </linearGradient>
+  </defs>
+
+  <!-- Contenedor Circular de Fondo -->
+  <circle cx="250" cy="250" r="220" fill="url(#bgGrad)" />
+  
+  <!-- Borde Dorado del Círculo (Color Witcher) -->
+  <circle cx="250" cy="250" r="220" fill="none" stroke="url(#goldGrad)" stroke-width="16" />
+  <circle cx="250" cy="250" r="208" fill="none" stroke="#553c08" stroke-width="2" />
+
+  <!-- LOGO DEL LOBO (Estilo Geométrico/Angular) -->
+  <g id="wolf-head" transform="translate(0, 5)">
+    <!-- OREJAS -->
+    <!-- Oreja Izquierda -->
+    <polygon points="250,220 160,110 190,210" fill="url(#darkSilverGrad)" />
+    <polygon points="190,210 160,110 210,200" fill="url(#silverGrad)" />
+    
+    <!-- Oreja Derecha -->
+    <polygon points="250,220 340,110 310,210" fill="url(#darkSilverGrad)" />
+    <polygon points="310,210 340,110 290,200" fill="url(#silverGrad)" />
+
+    <!-- POMULOS / LADOS DE LA CARA -->
+    <!-- Izquierdo exterior -->
+    <polygon points="140,240 190,210 210,260" fill="url(#darkSilverGrad)" />
+    <polygon points="140,240 210,260 170,300" fill="url(#darkSilverGrad)" />
+    <polygon points="170,300 210,260 220,330" fill="url(#silverGrad)" />
+    
+    <!-- Derecho exterior -->
+    <polygon points="360,240 310,210 290,260" fill="url(#darkSilverGrad)" />
+    <polygon points="360,240 290,260 330,300" fill="url(#darkSilverGrad)" />
+    <polygon points="330,300 290,260 280,330" fill="url(#silverGrad)" />
+
+    <!-- FRENTE Y CEJAS -->
+    <polygon points="250,160 210,200 250,220" fill="url(#silverGrad)" />
+    <polygon points="250,160 290,200 250,220" fill="url(#darkSilverGrad)" />
+    <polygon points="210,200 190,210 250,220" fill="url(#silverGrad)" />
+    <polygon points="290,200 310,210 250,220" fill="url(#darkSilverGrad)" />
+
+    <!-- HOCICO / NARIZ -->
+    <polygon points="250,220 220,330 250,380" fill="url(#silverGrad)" />
+    <polygon points="250,220 280,330 250,380" fill="url(#darkSilverGrad)" />
+    
+    <!-- OJOS AMARILLOS / ASOMBROSO DE BRUJO -->
+    <!-- Ojo Izquierdo -->
+    <polygon points="215,225 240,235 230,245" fill="#ffcc00" stroke="#cc9900" stroke-width="1" />
+    <!-- Ojo Derecho -->
+    <polygon points="285,225 260,235 270,245" fill="#ffcc00" stroke="#cc9900" stroke-width="1" />
+
+    <!-- MANDÍBULA INFERIOR / COLMILLOS -->
+    <polygon points="230,350 210,380 250,420" fill="url(#darkSilverGrad)" />
+    <polygon points="270,350 290,380 250,420" fill="url(#silverGrad)" />
+    <polygon points="250,380 230,350 250,420" fill="#111" />
+    <polygon points="250,380 270,350 250,420" fill="#151515" />
+    
+    <!-- Detalles de Colmillos (Pequeños acentos blancos) -->
+    <polygon points="240,365 243,375 246,367" fill="#ffffff" />
+    <polygon points="260,365 257,375 254,367" fill="#ffffff" />
+  </g>
+</svg>

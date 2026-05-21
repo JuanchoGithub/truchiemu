@@ -76,7 +76,7 @@ struct ShaderParameterSliders: View {
              }
          }
          .padding(10)
-         .background(Color(NSColor.controlBackgroundColor))
+         .background(Color.secondary.opacity(0.1))
          .cornerRadius(8)
      }
 
@@ -229,8 +229,10 @@ init(settings: ShaderWindowSettings, onPresetChanged: ((String, [String: Float],
         window.isReleasedWhenClosed = false
         window.level = .floating
         window.collectionBehavior = [.canJoinAllSpaces, .fullScreenAuxiliary]
-        window.backgroundColor = NSColor.controlBackgroundColor
-        window.isOpaque = true
+        window.titlebarAppearsTransparent = true
+        window.styleMask.insert(.fullSizeContentView)
+        window.isOpaque = false
+        window.backgroundColor = .clear
 
         super.init(window: window)
 
@@ -440,6 +442,7 @@ struct SavedPresetRowView: View {
 struct ShaderPresetPickerView: View {
 @ObservedObject var settings: ShaderWindowSettings
 @ObservedObject private var loc = LocalizationManager.shared
+@Environment(\.colorScheme) private var colorScheme
 
 @State private var selectedCategory: CategoryFilter = .all
 @State private var searchText: String = ""
@@ -506,7 +509,7 @@ controller.close()
                             .transition(.opacity)
                     }
                 }
-                .background(Color(NSColor.controlBackgroundColor))
+                .background(AppColors.windowBackground(colorScheme, tinted: ThemeManager.shared.tintedSurfacesEnabled))
             }
             .frame(minWidth: 300, maxWidth: .infinity)
 
@@ -523,7 +526,7 @@ controller.close()
                         Spacer()
                     }
                     .frame(maxWidth: .infinity, maxHeight: .infinity)
-                    .background(Color(NSColor.windowBackgroundColor))
+                    .background(AppColors.windowBackground(colorScheme, tinted: ThemeManager.shared.tintedSurfacesEnabled))
 } else if let selectedPreset = ShaderPreset.preset(id: settings.shaderPresetID),
                    !selectedPreset.globalUniforms.isEmpty {
                     // Built-in preset with uniforms
@@ -531,6 +534,7 @@ controller.close()
                         parameterSliders
                         savePresetBar
                     }
+                    .background(AppColors.windowBackground(colorScheme, tinted: ThemeManager.shared.tintedSurfacesEnabled))
                 } else if let savedPreset = savedPresets.first(where: { $0.id.uuidString == settings.shaderPresetID }),
                          !savedPreset.uniformValues.isEmpty {
                      // Saved custom preset with uniforms
@@ -538,12 +542,14 @@ controller.close()
                         parameterSliders
                         savePresetBar
                     }
+                    .background(AppColors.windowBackground(colorScheme, tinted: ThemeManager.shared.tintedSurfacesEnabled))
                 } else if !settings.uniformValues.isEmpty {
                     // Has custom uniform values (even if not from a known preset)
                     VStack(spacing: 0) {
                         parameterSliders
                         savePresetBar
                     }
+                    .background(AppColors.windowBackground(colorScheme, tinted: ThemeManager.shared.tintedSurfacesEnabled))
                 } else {
                     VStack {
                         Spacer()
@@ -553,11 +559,16 @@ controller.close()
                         Spacer()
                     }
                     .frame(maxWidth: .infinity, maxHeight: .infinity)
-                    .background(Color(NSColor.windowBackgroundColor))
+                    .background(AppColors.windowBackground(colorScheme, tinted: ThemeManager.shared.tintedSurfacesEnabled))
                 }
             }
             .frame(minWidth: 250, maxWidth: .infinity)
         }
+        .background {
+            AppColors.windowBackground(colorScheme, tinted: ThemeManager.shared.tintedSurfacesEnabled)
+                .ignoresSafeArea()
+        }
+        .tint(AppColors.brandAccentSecondary)
         .frame(minWidth: 700, minHeight: 500)
         .onAppear {
             savedPresets = ShaderPresetStorageService.shared.savedPresets
@@ -598,7 +609,10 @@ controller.close()
                 Text(loc.localized("shader.saveShaderPreset"))
                     .font(.headline)
                 TextField(loc.localized("shader.presetName"), text: $savePresetName)
-                    .textFieldStyle(.roundedBorder)
+                    .textFieldStyle(.plain)
+                    .padding(8)
+                    .background(Color.secondary.opacity(0.1))
+                    .cornerRadius(6)
                     .frame(width: 250)
                 HStack(spacing: 12) {
                     Button(loc.localized("shader.cancel")) { showSaveDialog = false }
@@ -614,11 +628,16 @@ controller.close()
                         showSaveDialog = false
                     }
                     .buttonStyle(.borderedProminent)
+                    .tint(AppColors.brandAccentSecondary)
                     .disabled(savePresetName.trimmingCharacters(in: .whitespaces).isEmpty)
                 }
             }
             .padding(24)
             .frame(width: 320)
+            .background {
+                AppColors.windowBackground(colorScheme, tinted: ThemeManager.shared.tintedSurfacesEnabled)
+                    .ignoresSafeArea()
+            }
         }
         .sheet(isPresented: .init(
             get: { renamePreset != nil },
@@ -628,7 +647,10 @@ controller.close()
                 Text(loc.localized("shader.renamePreset"))
                     .font(.headline)
                 TextField(loc.localized("shader.newName"), text: $renameText)
-                    .textFieldStyle(.roundedBorder)
+                    .textFieldStyle(.plain)
+                    .padding(8)
+                    .background(Color.secondary.opacity(0.1))
+                    .cornerRadius(6)
                     .frame(width: 250)
                 HStack(spacing: 12) {
                     Button(loc.localized("shader.cancel")) { renamePreset = nil }
@@ -640,11 +662,16 @@ controller.close()
                         renamePreset = nil
                     }
                     .buttonStyle(.borderedProminent)
+                    .tint(AppColors.brandAccentSecondary)
                     .disabled(renameText.trimmingCharacters(in: .whitespaces).isEmpty)
                 }
             }
             .padding(24)
             .frame(width: 320)
+            .background {
+                AppColors.windowBackground(colorScheme, tinted: ThemeManager.shared.tintedSurfacesEnabled)
+                    .ignoresSafeArea()
+            }
         }
     }
 
@@ -671,7 +698,7 @@ controller.close()
             .controlSize(.small)
         }
         .padding(8)
-        .background(Color(NSColor.controlBackgroundColor))
+        .background(Color.secondary.opacity(0.1))
     }
 
     // MARK: - Search Bar
@@ -690,7 +717,7 @@ controller.close()
             }
         }
         .padding(6)
-        .background(Color(NSColor.textBackgroundColor))
+        .background(Color.secondary.opacity(0.1))
         .cornerRadius(6)
         .padding(.horizontal, 8)
         .padding(.top, 4)
@@ -732,7 +759,7 @@ controller.close()
             }
             .padding(.horizontal, 10)
             .padding(.vertical, 4)
-            .background(isActive ? AppColors.brandAccent : Color(NSColor.controlBackgroundColor))
+            .background(isActive ? AppColors.brandAccent : Color.secondary.opacity(0.1))
             .foregroundColor(isActive ? .white : .primary)
             .cornerRadius(12)
         }

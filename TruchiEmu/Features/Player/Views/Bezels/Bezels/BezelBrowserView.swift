@@ -8,6 +8,7 @@ struct BezelBrowserView: View {
     @StateObject private var bezelManager = BezelManager.shared
     @StateObject private var storageManager = BezelStorageManager.shared
     @ObservedObject private var loc = LocalizationManager.shared
+    @Environment(\.colorScheme) private var colorScheme
     
     @State private var allBezels: [BezelEntry] = []
     @State private var isLoading = false
@@ -98,7 +99,7 @@ struct BezelBrowserView: View {
                 .disabled(isLoading)
             }
             .padding()
-            .background(Color(nsColor: .windowBackgroundColor))
+            .background(AppColors.windowBackground(colorScheme, tinted: ThemeManager.shared.tintedSurfacesEnabled))
             
             HStack {
                 Image(systemName: "magnifyingglass")
@@ -120,7 +121,7 @@ struct BezelBrowserView: View {
                     .foregroundColor(.secondary)
             }
             .padding(10)
-            .background(Color(nsColor: .textBackgroundColor))
+            .background(Color.secondary.opacity(0.1))
             .cornerRadius(8)
             .padding(.horizontal)
             .padding(.vertical, 4)
@@ -144,6 +145,7 @@ struct BezelBrowserView: View {
                 }
             }
         }
+        .background(AppColors.windowBackground(colorScheme, tinted: ThemeManager.shared.tintedSurfacesEnabled))
         .task {
             await loadBezels()
         }

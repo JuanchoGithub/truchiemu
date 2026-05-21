@@ -10,10 +10,20 @@ extension Color {
         let a = chroma * cos(hRad)
         let b = chroma * sin(hRad)
 
-        // Oklab to linear sRGB conversion matrix
+        // Oklab to linear sRGB conversion
         let l_ = lightness + 0.3963377774 * a + 0.2158037573 * b
         let m_ = lightness - 0.1055613458 * a - 0.0638541728 * b
         let s_ = lightness - 0.0894841775 * a - 1.2914855480 * b
+
+        // Cube to get linear LMS
+        let lLMS = l_ * l_ * l_
+        let mLMS = m_ * m_ * m_
+        let sLMS = s_ * s_ * s_
+
+        // LMS to linear sRGB matrix
+        let rLin =  4.0767416621 * lLMS - 1.2684380046 * mLMS - 0.0041960863 * sLMS
+        let gLin = -1.2684380046 * lLMS + 2.6097574011 * mLMS - 0.0077035863 * sLMS
+        let bLin = -0.0041960863 * lLMS - 0.7038476179 * mLMS + 1.9902300103 * sLMS
 
         func gamma(_ c: Double) -> Double {
             let sign = c < 0 ? -1.0 : 1.0
@@ -24,7 +34,7 @@ extension Color {
             return 12.92 * c
         }
 
-        return Color(.sRGB, red: gamma(l_), green: gamma(m_), blue: gamma(s_), opacity: alpha)
+        return Color(.sRGB, red: gamma(rLin), green: gamma(gLin), blue: gamma(bLin), opacity: alpha)
     }
 }
 
@@ -39,20 +49,66 @@ struct AppColors {
     // MARK: - Brand Colors
     
     // Cyan — the TruchiEmu brand accent (#0891b2 Tailwind cyan-600)
-    static var brandAccent: Color = Color(.sRGB, red: 0.031, green: 0.569, blue: 0.698, opacity: 1.0)
+    // brandAccent is computed from the current NSApp appearance so all usages
+    // automatically resolve to the correct light/dark variant.
+    static var brandAccent: Color {
+        isDarkMode ? brandAccentDarkMode : brandAccentLight
+    }
+
+    /// Stored light-mode accent (set by ThemeManager)
+    static var brandAccentLight: Color = Color(.sRGB, red: 0.031, green: 0.569, blue: 0.698, opacity: 1.0)
     static var brandAccentDimmed: Color = Color(.sRGB, red: 0.024, green: 0.478, blue: 0.588, opacity: 1.0)
     static var brandAccentDark: Color = Color(.sRGB, red: 0.016, green: 0.333, blue: 0.408, opacity: 1.0)
+    static var brandAccentSecondary: Color {
+        isDarkMode ? brandAccentSecondaryDarkMode : brandAccentSecondaryLight
+    }
+
+    static var brandAccentSecondaryLight: Color = Color(.sRGB, red: 0.020, green: 0.588, blue: 0.412, opacity: 1.0)
+
+    // Dark-mode variants (set by ThemeManager for themes that differ between light/dark)
+    static var brandAccentDarkMode: Color = Color(.sRGB, red: 0.031, green: 0.569, blue: 0.698, opacity: 1.0)
+    static var brandAccentDimmedDarkMode: Color = Color(.sRGB, red: 0.024, green: 0.478, blue: 0.588, opacity: 1.0)
+    static var brandAccentDarkDarkMode: Color = Color(.sRGB, red: 0.016, green: 0.333, blue: 0.408, opacity: 1.0)
+    static var brandAccentSecondaryDarkMode: Color = Color(.sRGB, red: 0.020, green: 0.588, blue: 0.412, opacity: 1.0)
+
+    private static var isDarkMode: Bool {
+        NSApp.effectiveAppearance.name == .darkAqua
+    }
     
+    // Resolve the correct accent for the current color scheme
+    static func accentForScheme(_ colorScheme: ColorScheme) -> Color {
+        colorScheme == .dark ? brandAccentDarkMode : brandAccentLight
+    }
+
+    static func accentDimmedForScheme(_ colorScheme: ColorScheme) -> Color {
+        colorScheme == .dark ? brandAccentDimmedDarkMode : brandAccentDimmed
+    }
+
+    static func accentDarkForScheme(_ colorScheme: ColorScheme) -> Color {
+        colorScheme == .dark ? brandAccentDarkDarkMode : brandAccentDark
+    }
+
+    static func accentSecondaryForScheme(_ colorScheme: ColorScheme) -> Color {
+        colorScheme == .dark ? brandAccentSecondaryDarkMode : brandAccentSecondaryLight
+    }
+
     // MARK: - Semantic Colors
     
-    // Primary background color for cards and panels
+    // Primary background color for cards and panels with subtle accent tint
     static func cardBackground(_ colorScheme: ColorScheme) -> Color {
-        Color(nsColor: .controlBackgroundColor)
+        let tintStrength: CGFloat = colorScheme == .dark ? 0.03 : 0.015
+        let accent = accentForScheme(colorScheme)
+        guard let baseNS = NSColor.controlBackgroundColor.usingColorSpace(.sRGB),
+              let accentNS = NSColor(accent).usingColorSpace(.sRGB),
+              let blended = baseNS.blended(withFraction: tintStrength, of: accentNS) else {
+            return Color(nsColor: .controlBackgroundColor)
+        }
+        return Color(nsColor: blended)
     }
 
     // Subtle background for sections within cards
     static func cardBackgroundSubtle(_ colorScheme: ColorScheme) -> Color {
-        Color(nsColor: .controlBackgroundColor).opacity(0.6)
+        cardBackground(colorScheme).opacity(0.6)
     }
     
     // Card border with subtle visibility
@@ -79,22 +135,22 @@ struct AppColors {
     // Secondary text (labels, descriptions)
     static func textSecondary(_ colorScheme: ColorScheme) -> Color {
         colorScheme == .dark
-            ? .oklch(0.65, 0.02, 55)
-            : .oklch(0.45, 0.02, 55)
+            ? .oklch(0.68, 0.02, 55)
+            : .oklch(0.42, 0.02, 55)
     }
     
     // Tertiary text (meta, timestamps)
     static func textTertiary(_ colorScheme: ColorScheme) -> Color {
         colorScheme == .dark
-            ? .oklch(0.50, 0.02, 55)
-            : .oklch(0.58, 0.02, 55)
+            ? .oklch(0.60, 0.02, 55)
+            : .oklch(0.50, 0.02, 55)
     }
     
     // Muted text for disabled/inactive states
     static func textMuted(_ colorScheme: ColorScheme) -> Color {
         colorScheme == .dark
-            ? .oklch(0.42, 0.01, 55)
-            : .oklch(0.55, 0.01, 55)
+            ? .oklch(0.50, 0.01, 55)
+            : .oklch(0.48, 0.01, 55)
     }
     
     // MARK: - Accent Colors
@@ -104,14 +160,14 @@ struct AppColors {
     
     // Accent tint for selected states
     static func accentTint(_ colorScheme: ColorScheme) -> Color {
-        brandAccent
+        accentForScheme(colorScheme)
     }
     
     // Accent background (subtle) — higher opacity for more confident color use
     static func accentBackground(_ colorScheme: ColorScheme) -> Color {
         colorScheme == .dark
-            ? brandAccent.opacity(0.25)
-            : brandAccent.opacity(0.15)
+            ? accentSecondaryForScheme(colorScheme).opacity(0.25)
+            : accentSecondaryForScheme(colorScheme).opacity(0.15)
     }
     
     // Secondary accent — warm coral/terracotta for complementary actions
@@ -127,41 +183,92 @@ struct AppColors {
     static func success(_ colorScheme: ColorScheme) -> Color {
         colorScheme == .dark
             ? .oklch(0.62, 0.12, 150)
-            : .oklch(0.55, 0.14, 150)
+            : .oklch(0.45, 0.14, 150)
     }
-    
+
     // Warning amber (warm-tinted)
     static func warning(_ colorScheme: ColorScheme) -> Color {
-        .oklch(0.75, 0.14, 75)
+        colorScheme == .dark
+            ? .oklch(0.72, 0.14, 75)
+            : .oklch(0.48, 0.14, 75)
     }
-    
+
     // Error red (warm-tinted)
     static func error(_ colorScheme: ColorScheme) -> Color {
         colorScheme == .dark
             ? .oklch(0.65, 0.16, 25)
-            : .oklch(0.55, 0.18, 25)
+            : .oklch(0.48, 0.18, 25)
     }
     
     // MARK: - Surface Colors
     
-    // Main window background
-    static func windowBackground(_ colorScheme: ColorScheme) -> Color {
-        Color(nsColor: .windowBackgroundColor)
+    // Main window background with subtle accent tint
+    static func windowBackground(_ colorScheme: ColorScheme, tinted: Bool = true) -> Color {
+        guard tinted else {
+            return Color(nsColor: .windowBackgroundColor)
+        }
+        let tintStrength: CGFloat = colorScheme == .dark ? 0.04 : 0.08
+        let accent = accentForScheme(colorScheme)
+        guard let baseNS = NSColor.windowBackgroundColor.usingColorSpace(.sRGB),
+              let accentNS = NSColor(accent).usingColorSpace(.sRGB),
+              let blended = baseNS.blended(withFraction: tintStrength, of: accentNS) else {
+            return Color(nsColor: .windowBackgroundColor)
+        }
+        return Color(nsColor: blended)
     }
-    
-    // Sidebar background (with material effect)
-    static var sidebarBackground: Color {
-        Color(nsColor: .underPageBackgroundColor)
+
+    // Sidebar background (with material effect + accent tint)
+    static func sidebarBackground(_ colorScheme: ColorScheme, tinted: Bool = true) -> Color {
+        guard tinted else {
+            return Color(nsColor: .underPageBackgroundColor)
+        }
+        if colorScheme == .dark {
+            return tintedSidebarDark(colorScheme)
+        }
+        let tintStrength: CGFloat = 0.08
+        let accent = accentForScheme(colorScheme)
+        guard let baseNS = NSColor.underPageBackgroundColor.usingColorSpace(.sRGB),
+              let lightened = baseNS.blended(withFraction: 0.8, of: NSColor.white),
+              let accentNS = NSColor(accent).usingColorSpace(.sRGB),
+              let blended = lightened.blended(withFraction: tintStrength, of: accentNS) else {
+            return Color(nsColor: .underPageBackgroundColor)
+        }
+        return Color(nsColor: blended)
     }
-    
+
     // Toolbar/chrome background
-    static func toolbarBackground(_ colorScheme: ColorScheme) -> Color {
-        Color(nsColor: .underPageBackgroundColor)
+    static func toolbarBackground(_ colorScheme: ColorScheme, tinted: Bool = true) -> Color {
+        guard tinted else {
+            return Color(nsColor: .underPageBackgroundColor)
+        }
+        if colorScheme == .dark {
+            return tintedSidebarDark(colorScheme)
+        }
+        let tintStrength: CGFloat = 0.08
+        let accent = accentForScheme(colorScheme)
+        guard let baseNS = NSColor.underPageBackgroundColor.usingColorSpace(.sRGB),
+              let lightened = baseNS.blended(withFraction: 0.8, of: NSColor.white),
+              let accentNS = NSColor(accent).usingColorSpace(.sRGB),
+              let blended = lightened.blended(withFraction: tintStrength, of: accentNS) else {
+            return Color(nsColor: .underPageBackgroundColor)
+        }
+        return Color(nsColor: blended)
+    }
+
+    private static func tintedSidebarDark(_ colorScheme: ColorScheme) -> Color {
+        let tintStrength: CGFloat = 0.04
+        let accent = accentForScheme(colorScheme)
+        guard let baseNS = NSColor.underPageBackgroundColor.usingColorSpace(.sRGB),
+              let accentNS = NSColor(accent).usingColorSpace(.sRGB),
+              let blended = baseNS.blended(withFraction: tintStrength, of: accentNS) else {
+            return Color(nsColor: .underPageBackgroundColor)
+        }
+        return Color(nsColor: blended)
     }
     
     // Elevated surface (popovers, sheets)
-    static func surface(_ colorScheme: ColorScheme) -> Color {
-        Color(nsColor: .windowBackgroundColor)
+    static func surface(_ colorScheme: ColorScheme, tinted: Bool = true) -> Color {
+        windowBackground(colorScheme, tinted: tinted)
     }
     
     // MARK: - Overlay Colors
@@ -694,19 +801,22 @@ extension Text {
 // Primary action button with consistent styling
 struct AppPrimaryButtonStyle: ButtonStyle {
     @Environment(\.colorScheme) private var colorScheme
-    var accent: Color = AppColors.brandAccent
+    var accent: Color?
+    var foreground: Color?
     var fullWidth: Bool = false
     
     func makeBody(configuration: Configuration) -> some View {
-        configuration.label
+        let resolvedAccent = accent ?? AppColors.accentSecondaryForScheme(colorScheme)
+        let resolvedForeground = foreground ?? .white
+        return configuration.label
             .fontWeight(.semibold)
-            .foregroundColor(.white)
+            .foregroundColor(resolvedForeground)
             .padding(.vertical, AppSpacing.sm)
             .padding(.horizontal, AppSpacing.xl)
             .frame(maxWidth: fullWidth ? .infinity : nil)
             .background(
                 Capsule()
-                    .fill(accent.opacity(configuration.isPressed ? 0.7 : 1.0))
+                    .fill(resolvedAccent.opacity(configuration.isPressed ? 0.7 : 1.0))
             )
             .scaleEffect(configuration.isPressed ? 0.97 : 1.0)
             .animation(.easeOut(duration: 0.1), value: configuration.isPressed)
@@ -741,7 +851,8 @@ struct AppToggleStyle: ToggleStyle {
     @Environment(\.colorScheme) private var colorScheme
     
     func makeBody(configuration: Configuration) -> some View {
-        Button(action: {
+        let accent = AppColors.accentSecondaryForScheme(colorScheme)
+        return Button(action: {
             withAnimation(.interpolatingSpring(stiffness: 200, damping: 25)) {
                 configuration.isOn.toggle()
             }
@@ -754,12 +865,12 @@ struct AppToggleStyle: ToggleStyle {
                 ZStack {
                     Capsule()
                         .fill(configuration.isOn ?
-                            AppColors.brandAccent.opacity(0.3) :
+                            accent.opacity(0.3) :
                             AppColors.cardBackgroundSubtle(colorScheme))
                         .frame(width: 40, height: 24)
                     
                     Circle()
-                        .fill(configuration.isOn ? AppColors.brandAccent : AppColors.textMuted(colorScheme))
+                        .fill(configuration.isOn ? accent : AppColors.textMuted(colorScheme))
                         .frame(width: 20, height: 20)
                         .offset(x: configuration.isOn ? 8 : -8)
                 }
@@ -781,9 +892,10 @@ struct AppSearchField: View {
     @Environment(\.colorScheme) private var colorScheme
     
     var body: some View {
-        HStack(spacing: AppSpacing.sm) {
+        let accent = AppColors.accentSecondaryForScheme(colorScheme)
+        return HStack(spacing: AppSpacing.sm) {
             Image(systemName: "magnifyingglass")
-                .foregroundColor(isFocused ? AppColors.brandAccent : AppColors.textTertiary(colorScheme))
+                .foregroundColor(isFocused ? accent : AppColors.textTertiary(colorScheme))
                 .font(.footnote)
             
             TextField(placeholder, text: $text)
@@ -811,7 +923,7 @@ struct AppSearchField: View {
                     AppColors.cardBackgroundSubtle(colorScheme))
                 .overlay(
                     RoundedRectangle(cornerRadius: AppRadius.lg)
-                        .stroke(isFocused ? AppColors.brandAccent.opacity(0.3) : AppColors.cardBorder(colorScheme), lineWidth: 1)
+                        .stroke(isFocused ? accent.opacity(0.3) : AppColors.cardBorder(colorScheme), lineWidth: 1)
                 )
         )
         .animation(.easeOut(duration: 0.15), value: isFocused)
@@ -895,7 +1007,7 @@ struct AppChip: View, Identifiable {
     let label: String
     var icon: String? 
     var isSelected: Bool
-    var accent: Color = AppColors.brandAccent
+    var accent: Color?
     let action: () -> Void
     @Environment(\.colorScheme) private var colorScheme
     
@@ -903,7 +1015,7 @@ struct AppChip: View, Identifiable {
         label: String,
         icon: String? = nil,
         isSelected: Bool = false,
-        accent: Color = AppColors.brandAccent,
+        accent: Color? = nil,
         action: @escaping () -> Void
     ) {
         self.id = label
@@ -915,7 +1027,8 @@ struct AppChip: View, Identifiable {
     }
     
     var body: some View {
-        Button(action: action) {
+        let resolvedAccent = accent ?? AppColors.accentSecondaryForScheme(colorScheme)
+        return Button(action: action) {
             HStack(spacing: AppSpacing.xs) {
                 if let icon = icon {
                     Image(systemName: icon)
@@ -929,7 +1042,7 @@ struct AppChip: View, Identifiable {
             .foregroundColor(isSelected ? .white : AppColors.textSecondary(colorScheme))
             .background(
                 Capsule()
-                    .fill(isSelected ? accent.opacity(0.85) : AppColors.cardBackgroundSubtle(colorScheme))
+                    .fill(isSelected ? resolvedAccent.opacity(0.85) : AppColors.cardBackgroundSubtle(colorScheme))
             )
             .scaleEffect(isSelected ? 1.05 : 1.0)
         }
@@ -1015,14 +1128,15 @@ struct AppStatCard: View {
     let icon: String
     let value: String
     let label: String
-    var accent: Color = AppColors.brandAccent
+    var accent: Color?
     @Environment(\.colorScheme) private var colorScheme
     
     var body: some View {
-        VStack(spacing: AppSpacing.sm) {
+        let resolvedAccent = accent ?? AppColors.accentForScheme(colorScheme)
+        return VStack(spacing: AppSpacing.sm) {
             Image(systemName: icon)
                 .font(.system(size: 20))
-                .foregroundColor(accent)
+                .foregroundColor(resolvedAccent)
             
             Text(value)
                 .font(.headline)

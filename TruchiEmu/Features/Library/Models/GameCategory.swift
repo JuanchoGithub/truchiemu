@@ -21,13 +21,16 @@ struct GameCategory: Identifiable, Codable, Hashable, Equatable {
     
     // Common icon presets
     static let commonIcons = [
-        "folder.fill", "star.fill", "heart.fill", "gamecontroller.fill",
-        "trophy.fill", "flag.fill", "bookmark.fill", "tag.fill",
-        "cart.fill", "bag.fill", "gift.fill", "crown.fill",
-        "bolt.fill", "flame.fill", "moon.fill", "sun.max.fill",
-        "cloud.fill", "drop.fill", "leaf.fill", "bubble.left.fill",
-        "music.note.list", "film.fill", "tv.fill", "book.fill",
-        "puzzlepiece.fill", "brain.fill", "wand.and.stars", "rosette"
+        "gamecontroller.fill", "arcade.stick", "dpad.fill",
+        "trophy.fill", "medal.fill", "star.fill",
+        "heart.fill", "flame.fill", "bolt.fill",
+        "figure.run", "figure.martial.arts", "figure.boxing",
+        "figure.fencing", "figure.archery", "sportscourt.fill",
+        "football.fill", "basketball.fill", "soccerball",
+        "car.fill", "flag.checkered", "shield.lefthalf.filled",
+        "scroll.fill", "building.columns.fill", "brain.fill",
+        "puzzlepiece.fill", "dice.fill", "wand.and.stars",
+        "moon.fill", "mountain.2.fill", "person.2.fill"
     ]
     
     // Predefined color palette
@@ -41,9 +44,7 @@ struct GameCategory: Identifiable, Codable, Hashable, Equatable {
     
     // Default categories
     static func defaults() -> [GameCategory] {
-        [
-            GameCategory(name: "Favorites", iconName: "heart.fill", colorHex: "FF2D55", sortOrder: 0),
-        ]
+        []
     }
     
     static func == (lhs: GameCategory, rhs: GameCategory) -> Bool {

@@ -48,7 +48,7 @@ struct OnboardingView: View {
 
                 ZStack {
                     RoundedRectangle(cornerRadius: 24)
-                        .fill(AppColors.surface(colorScheme))
+                        .fill(AppColors.surface(colorScheme, tinted: ThemeManager.shared.tintedSurfacesEnabled))
                         .overlay(
                             RoundedRectangle(cornerRadius: 24)
                                 .stroke(AppColors.cardBorder(colorScheme), lineWidth: 1)

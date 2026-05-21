@@ -21,7 +21,7 @@ class CategoryManager: ObservableObject {
     
     // MARK: - Category CRUD
     
-    func addCategory(name: String, iconName: String = "folder.fill", colorHex: String = "007AFF") {
+    func addCategory(name: String, iconName: String = "gamecontroller.fill", colorHex: String = "007AFF") {
         let category = GameCategory(
             name: name,
             iconName: iconName,

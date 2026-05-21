@@ -231,17 +231,26 @@ struct RetroAchievementsSettingsView: View {
                 // Login form
                 VStack(spacing: AppSpacing.lg) {
                     TextField(loc.localized("retroAchievements.username"), text: $username)
-                        .textFieldStyle(.roundedBorder)
+                        .textFieldStyle(.plain)
+                        .padding(6)
+                        .background(Color.secondary.opacity(0.1))
+                        .cornerRadius(6)
                         .autocorrectionDisabled()
 
                     HStack {
                         if showApiKey {
                             TextField(loc.localized("retroAchievements.webApiKey"), text: $webApiKey)
-                                .textFieldStyle(.roundedBorder)
+                                .textFieldStyle(.plain)
+                                .padding(6)
+                                .background(Color.secondary.opacity(0.1))
+                                .cornerRadius(6)
                                 .autocorrectionDisabled()
                         } else {
                             SecureField(loc.localized("retroAchievements.webApiKey"), text: $webApiKey)
-                                .textFieldStyle(.roundedBorder)
+                                .textFieldStyle(.plain)
+                                .padding(6)
+                                .background(Color.secondary.opacity(0.1))
+                                .cornerRadius(6)
                         }
                         Button(action: { showApiKey.toggle() }) {
                             Image(systemName: showApiKey ? "eye.slash" : "eye")

@@ -136,6 +136,16 @@ struct SettingsView: View {
     @State private var selectedPage: Page = .general
     @State private var searchText: String = ""
     @State private var columnVisibility: NavigationSplitViewVisibility = .all
+    @State private var hasPendingThemeChanges: Bool = false
+    @State private var revertRequest: Int = 0
+    @State private var applyRequest: Int = 0
+    @State private var showThemeChangeConfirmation: Bool = false
+    @State private var pendingPageChange: Page?
+    @State private var activePendingTheme: AccentColorTheme = .samus
+    @State private var activePendingCustomColor: Color = Color(.sRGB, red: 0.031, green: 0.569, blue: 0.698)
+    @State private var activePendingToolbarAccent: Bool = true
+    @State private var activePendingTintedSurfaces: Bool = true
+    @State private var activePendingAppearanceMode: AppearanceMode = .automatic
     
     let system: SystemInfo?
     
@@ -161,38 +171,47 @@ struct SettingsView: View {
     
     var body: some View {
         NavigationSplitView(columnVisibility: $columnVisibility) {
-            List(selection: $selectedPage) {
-                if searchText.isEmpty {
-                    ForEach(Self.pageGroups) { group in
-                        Section(header: Text(group.label.uppercased())
-                            .font(.system(size: 11, weight: .semibold, design: .rounded))
-                            .foregroundColor(AppColors.textSecondary(colorScheme))
-                            .padding(.top, 8)
-                        ) {
+            ScrollView {
+                VStack(alignment: .leading, spacing: 2) {
+                    if searchText.isEmpty {
+                        ForEach(Self.pageGroups) { group in
+                            Text(group.label.uppercased())
+                                .font(AppTypography.sectionHeader)
+                                .foregroundStyle(AppColors.textSecondary(colorScheme))
+                                .padding(.top, 8)
+                                .padding(.bottom, 4)
+
                             ForEach(group.pages) { page in
                                 sidebarItem(for: page)
-                                    .tag(page)
                             }
                         }
+                    } else {
+                        ForEach(filteredPages) { page in
+                            sidebarItem(for: page)
+                        }
                     }
-                } else {
-                    ForEach(filteredPages) { page in
-                        sidebarItem(for: page)
-                            .tag(page)
-                    }
+
+                    Spacer()
                 }
+                .padding(.horizontal, 8)
+                .padding(.vertical, 12)
             }
-            .listStyle(.sidebar)
+            .scrollContentBackground(.hidden)
+            .background(AppColors.sidebarBackground(colorScheme, tinted: ThemeManager.shared.tintedSurfacesEnabled))
             .searchable(text: $searchText, placement: .sidebar, prompt: loc.localized("settings.search"))
             .navigationTitle(loc.localized("settings.title"))
             .toolbar(removing: .sidebarToggle)
             .frame(minWidth: 200)
         } detail: {
-            // Content area
             detailContent
+                .background(AppColors.windowBackground(colorScheme, tinted: ThemeManager.shared.tintedSurfacesEnabled))
         }
-        .navigationSplitViewStyle(.balanced)
-        .environment(SystemDatabaseWrapper.shared)
+.navigationSplitViewStyle(.balanced)
+.toolbarBackground(
+    AppColors.windowBackground(colorScheme, tinted: ThemeManager.shared.tintedSurfacesEnabled),
+    for: .windowToolbar
+)
+.environment(SystemDatabaseWrapper.shared)
         .frame(minWidth: 750, minHeight: 500)
         .onAppear {
             if system != nil {
@@ -205,15 +224,42 @@ struct SettingsView: View {
             }
         }
         .onChange(of: selectedPage) { _, newValue in
-            if coreManager.isDownloadingCore && newValue != .cores {
-                selectedPage = .cores
-                return
-            }
             updateStorage()
+        }
+        .confirmationDialog(
+            loc.localized("settings.theme.applyChangesTitle"),
+            isPresented: $showThemeChangeConfirmation,
+            titleVisibility: .visible
+        ) {
+            Button(loc.localized("settings.theme.applyAndRestart")) {
+                applyRequest += 1
+            }
+            Button(loc.localized("settings.theme.discardChanges"), role: .destructive) {
+                revertRequest += 1
+                if let target = pendingPageChange {
+                    selectedPage = target
+                    updateStorage()
+                }
+                pendingPageChange = nil
+            }
+            Button(loc.localized("settings.theme.cancelNavigation"), role: .cancel) {
+                pendingPageChange = nil
+            }
+        } message: {
+            Text(loc.localized("settings.theme.applyChangesMessage"))
         }
         .sheet(item: $coreManager.pendingDownload) { pending in
             CoreDownloadSheet(pending: pending)
         }
+        .background(WindowCloseInterceptor(
+            hasPendingChanges: hasPendingThemeChanges,
+            onRevert: { revertRequest += 1 },
+        pendingTheme: activePendingTheme,
+        pendingCustomColor: activePendingCustomColor,
+        pendingToolbarAccent: activePendingToolbarAccent,
+        pendingTintedSurfaces: activePendingTintedSurfaces,
+        pendingAppearanceMode: activePendingAppearanceMode
+        ))
     }
     
     private var filteredPages: [Page] {
@@ -227,24 +273,59 @@ struct SettingsView: View {
     }
     
     private func sidebarItem(for page: Page) -> some View {
-        HStack(spacing: 8) {
-            Image(systemName: page.icon)
-            .font(.system(size: 14, weight: .medium))
-            .symbolVariant(selectedPage == page ? .fill : .none)
-            .frame(width: 20)
-            .fixedSize()
-            .foregroundColor(selectedPage == page ? AppColors.brandAccent : AppColors.textSecondary(colorScheme))
-            Text(page.label)
-            .font(AppTypography.callout)
+        let isSelected = selectedPage == page
 
-            if coreManager.isDownloadingCore && page == .cores {
-                Spacer()
-                ProgressView()
-                .controlSize(.small)
+        return Button {
+            if coreManager.isDownloadingCore && page != .cores {
+                selectedPage = .cores
+                return
             }
+            if page != .general && hasPendingThemeChanges {
+                pendingPageChange = page
+                showThemeChangeConfirmation = true
+                return
+            }
+            withAnimation(.easeInOut(duration: 0.15)) {
+                selectedPage = page
+            }
+            updateStorage()
+        } label: {
+            HStack(spacing: 8) {
+                Image(systemName: page.icon)
+                    .font(.system(size: 14, weight: .medium))
+                    .symbolVariant(isSelected ? .fill : .none)
+                    .frame(width: 20)
+                    .fixedSize()
+                    .foregroundColor(isSelected ? AppColors.brandAccent : AppColors.textSecondary(colorScheme))
+                Text(page.label)
+                    .font(AppTypography.callout)
+                    .foregroundColor(isSelected ? AppColors.textPrimary(colorScheme) : AppColors.textSecondary(colorScheme))
+                    .fontWeight(isSelected ? .medium : .regular)
+
+                if coreManager.isDownloadingCore && page == .cores {
+                    Spacer()
+                    ProgressView()
+                        .controlSize(.small)
+                }
+            }
+            .frame(maxWidth: .infinity, alignment: .leading)
+            .padding(.vertical, 7)
+            .padding(.horizontal, 10)
+            .background(
+                RoundedRectangle(cornerRadius: 6)
+                    .fill(isSelected ? AppColors.accentBackground(colorScheme) : .clear)
+            )
+            .overlay(alignment: .leading) {
+                if isSelected {
+                    RoundedRectangle(cornerRadius: 2)
+                        .fill(AppColors.brandAccentSecondary)
+                        .frame(width: 3, height: 20)
+                        .padding(.leading, 2)
+                }
+            }
+            .contentShape(Rectangle())
         }
-        .frame(maxWidth: .infinity, alignment: .leading)
-        .padding(.vertical, 4)
+        .buttonStyle(.plain)
     }
     
     // MARK: - Detail Content
@@ -256,7 +337,17 @@ struct SettingsView: View {
                 .frame(height: 1)
             Group {
             switch selectedPage {
-            case .general:     GeneralSettingsView(searchText: $searchText)
+            case .general: GeneralSettingsView(
+                searchText: $searchText,
+                hasPendingChanges: $hasPendingThemeChanges,
+                revertRequest: $revertRequest,
+                applyRequest: $applyRequest,
+                activePendingTheme: $activePendingTheme,
+                activePendingCustomColor: $activePendingCustomColor,
+                activePendingToolbarAccent: $activePendingToolbarAccent,
+                activePendingTintedSurfaces: $activePendingTintedSurfaces,
+                activePendingAppearanceMode: $activePendingAppearanceMode
+            )
             case .library:     LibrarySettingsView(searchText: $searchText)
             case .cores:       CoreSettingsView(searchText: $searchText)
             case .controllers: ControllerSettingsView(systemID: system?.id, searchText: $searchText)
@@ -300,3 +391,95 @@ extension String {
         return queryIndex == lowerQuery.endIndex
     }
 }
+
+// MARK: - Window Close Interceptor
+private struct WindowCloseInterceptor: NSViewRepresentable {
+    let hasPendingChanges: Bool
+    let onRevert: () -> Void
+    let pendingTheme: AccentColorTheme
+    let pendingCustomColor: Color
+    let pendingToolbarAccent: Bool
+    let pendingTintedSurfaces: Bool
+    let pendingAppearanceMode: AppearanceMode
+
+    func makeNSView(context: Context) -> NSView {
+        let view = CloseInterceptorView()
+        DispatchQueue.main.async {
+            if let window = view.window {
+                window.delegate = context.coordinator
+            }
+        }
+        return view
+    }
+
+    func updateNSView(_ nsView: NSView, context: Context) {
+        context.coordinator.hasPendingChanges = hasPendingChanges
+        context.coordinator.onRevert = onRevert
+        context.coordinator.pendingTheme = pendingTheme
+        context.coordinator.pendingCustomColor = pendingCustomColor
+        context.coordinator.pendingToolbarAccent = pendingToolbarAccent
+        context.coordinator.pendingTintedSurfaces = pendingTintedSurfaces
+        context.coordinator.pendingAppearanceMode = pendingAppearanceMode
+    }
+
+    func makeCoordinator() -> Coordinator {
+        Coordinator(
+            hasPendingChanges: hasPendingChanges,
+            onRevert: onRevert,
+            pendingTheme: pendingTheme,
+            pendingCustomColor: pendingCustomColor,
+            pendingToolbarAccent: pendingToolbarAccent,
+            pendingTintedSurfaces: pendingTintedSurfaces,
+            pendingAppearanceMode: pendingAppearanceMode
+        )
+    }
+
+    class Coordinator: NSObject, NSWindowDelegate {
+        var hasPendingChanges: Bool
+        var onRevert: () -> Void
+        var pendingTheme: AccentColorTheme
+        var pendingCustomColor: Color
+        var pendingToolbarAccent: Bool
+        var pendingTintedSurfaces: Bool
+        var pendingAppearanceMode: AppearanceMode
+
+        init(hasPendingChanges: Bool, onRevert: @escaping () -> Void, pendingTheme: AccentColorTheme, pendingCustomColor: Color, pendingToolbarAccent: Bool, pendingTintedSurfaces: Bool, pendingAppearanceMode: AppearanceMode) {
+            self.hasPendingChanges = hasPendingChanges
+            self.onRevert = onRevert
+            self.pendingTheme = pendingTheme
+            self.pendingCustomColor = pendingCustomColor
+            self.pendingToolbarAccent = pendingToolbarAccent
+            self.pendingTintedSurfaces = pendingTintedSurfaces
+            self.pendingAppearanceMode = pendingAppearanceMode
+        }
+
+        func windowShouldClose(_ sender: NSWindow) -> Bool {
+            guard hasPendingChanges else { return true }
+            let alert = NSAlert()
+            alert.messageText = LocalizationManager.shared.localized("settings.theme.applyChangesTitle")
+            alert.informativeText = LocalizationManager.shared.localized("settings.theme.applyChangesMessage")
+            alert.addButton(withTitle: LocalizationManager.shared.localized("settings.theme.applyAndRestart"))
+            alert.addButton(withTitle: LocalizationManager.shared.localized("settings.theme.discardChanges"))
+            alert.addButton(withTitle: LocalizationManager.shared.localized("settings.theme.cancelNavigation"))
+            alert.alertStyle = .warning
+            let response = alert.runModal()
+            switch response {
+            case .alertFirstButtonReturn:
+                let tm = ThemeManager.shared
+                tm.applyTheme(pendingTheme, customColor: pendingTheme == .custom ? pendingCustomColor : nil)
+                tm.setToolbarAccent(pendingToolbarAccent)
+                tm.setTintedSurfaces(pendingTintedSurfaces)
+                tm.applyAppearanceMode(pendingAppearanceMode)
+                ThemeManager.relaunchApp()
+                return false
+            case .alertSecondButtonReturn:
+                onRevert()
+                return true
+            default:
+                return false
+            }
+        }
+    }
+}
+
+private class CloseInterceptorView: NSView {}

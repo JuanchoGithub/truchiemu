@@ -391,6 +391,12 @@
     "database": [
       "Sega - Master System - Mark III"
     ],
+    "pathKeywords": [
+      "sms",
+      "mastersystem", 
+      "master system",
+      "sega master system"
+    ],
     "defaultShaderPresetID": "builtin-crt-classic"
   },
   {
@@ -979,7 +985,7 @@
       "pce"
     ],
     "emuIconName": "PCE",
-    "defaultBoxType": "Landscape",
+    "defaultBoxType": "Vertical",
     "iconName": "gamecontroller",
     "defaultCoreID": "mednafen_pce_libretro",
     "manufacturer": "NEC",
@@ -2490,7 +2496,7 @@
       "cue",
       "iso"
     ],
-    "defaultBoxType": "Landscape",
+    "defaultBoxType": "Box",
     "iconName": "gamecontroller",
     "sortOrder": 80,
     "manufacturer": "Philips",
@@ -3642,7 +3648,7 @@
       "pce",
       "rom"
     ],
-    "defaultBoxType": "Landscape",
+    "defaultBoxType": "Vertical",
     "iconName": "gamecontroller",
     "defaultCoreID": "mednafen_pce_libretro",
     "manufacturer": "NEC",
@@ -3669,7 +3675,7 @@
       "cue",
       "iso"
     ],
-    "defaultBoxType": "Landscape",
+    "defaultBoxType": "Vertical",
     "iconName": "gamecontroller",
     "defaultCoreID": "mednafen_pce_libretro",
     "manufacturer": "NEC",

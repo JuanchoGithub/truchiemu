@@ -95,6 +95,7 @@ struct DisplaySettingsView: View {
                 }
             }
         }
+        .scrollContentBackground(.hidden)
         .formStyle(.grouped)
         .navigationTitle(loc.localized("display.title"))
         .onAppear {

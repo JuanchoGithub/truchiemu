@@ -71,6 +71,7 @@ struct BezelSettingsView: View {
                 }
             }
         }
+        .scrollContentBackground(.hidden)
         .formStyle(.grouped)
         .frame(minWidth: 500)
         .navigationTitle(loc.localized("bezel.settings"))

@@ -1,0 +1,33 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 500 500" width="100%" height="100%">
+  <g id="Pikachu_Theme_Icon">
+    
+    <circle cx="250" cy="250" r="180" fill="#F4D03F" stroke="#F1C40F" stroke-width="6" />
+    
+    <circle cx="250" cy="250" r="155" fill="#FFE082" />
+    
+    <circle cx="195" cy="210" r="24" fill="#1A1A1A" />
+    <circle cx="190" cy="200" r="8" fill="#FFFFFF" />
+    
+    <circle cx="305" cy="210" r="24" fill="#1A1A1A" />
+    <circle cx="310" cy="200" r="8" fill="#FFFFFF" />
+    
+    <circle cx="160" cy="285" r="32" fill="#E74C3C" filter="drop-shadow(0px 4px 4px rgba(0,0,0,0.15))" />
+    <circle cx="340" cy="285" r="32" fill="#E74C3C" filter="drop-shadow(0px 4px 4px rgba(0,0,0,0.15))" />
+    
+    <path d="M 246 235 L 250 240 L 254 235 Z" fill="#1A1A1A" />
+    
+    <path d="M 235 255 C 240 265, 250 265, 250 265 C 250 265, 260 265, 265 255" 
+          stroke="#1A1A1A" stroke-width="4" fill="none" stroke-linecap="round" />
+          
+    <path d="M 120 120 L 160 160 C 140 180, 140 180, 160 200 L 120 240 C 100 220, 100 220, 120 200 Z" 
+          fill="#F4D03F" stroke="#F1C40F" stroke-width="4" />
+    <path d="M 120 120 L 140 140 C 130 150, 130 150, 140 160 L 120 180" 
+          fill="#1A1A1A" />
+          
+    <path d="M 380 120 L 340 160 C 360 180, 360 180, 340 200 L 380 240 C 400 220, 400 220, 380 200 Z" 
+          fill="#F4D03F" stroke="#F1C40F" stroke-width="4" />
+    <path d="M 380 120 L 360 140 C 370 150, 370 150, 360 160 L 380 180" 
+          fill="#1A1A1A" />
+          
+  </g>
+</svg>

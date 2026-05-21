@@ -41,7 +41,10 @@ struct BoxArtSettingsView: View {
                 Section {
                     Toggle(loc.localized("boxArt.useLibretroCDN"), isOn: $useLibretroThumbnails)
                     TextField(loc.localized("boxArt.cdnBaseURL"), text: $thumbnailBaseURLString)
-                        .textFieldStyle(.roundedBorder)
+                        .textFieldStyle(.plain)
+                        .padding(6)
+                        .background(Color.secondary.opacity(0.1))
+                        .cornerRadius(6)
                         .font(.system(.body, design: .monospaced))
                     Picker(loc.localized("boxArt.tryFirst"), selection: $thumbnailPriorityRaw) {
                         ForEach(LibretroThumbnailPriority.allCases) { p in
@@ -154,6 +157,7 @@ struct BoxArtSettingsView: View {
                 }
             }
         }
+        .scrollContentBackground(.hidden)
         .formStyle(.grouped)
         .onAppear {
             username = BoxArtService.shared.credentials?.username ?? ""

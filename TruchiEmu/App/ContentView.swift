@@ -12,6 +12,7 @@ let games: [ROM]
 
 struct ContentView: View {
     @Environment(\.modelContext) var modelContext
+    @Environment(\.colorScheme) private var colorScheme
     @ObservedObject private var loc = LocalizationManager.shared
     @Environment(\.openSettings) private var openSettings
     @Environment(\.openWindow) var openWindow
@@ -296,6 +297,7 @@ applyShaderOverrides(systemID: data.systemID, shaderID: data.newShaderPresetID, 
             openSettings()
         }
 // Set ideal window size so the window doesn't start stretched larger than needed
+.background(AppColors.windowBackground(colorScheme, tinted: ThemeManager.shared.tintedSurfacesEnabled))
 .frame(minWidth: 1000, idealWidth: 1200, minHeight: 650, idealHeight: 750)
 }
 

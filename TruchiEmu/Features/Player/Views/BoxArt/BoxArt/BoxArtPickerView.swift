@@ -8,6 +8,7 @@ struct BoxArtPickerView: View {
 
     @State private var searchText: String = ""
     @State private var searchEngine: SearchEngine = .duckduckgo
+    @Environment(\.colorScheme) private var colorScheme
     @ObservedObject private var loc = LocalizationManager.shared
 
     @State private var appliedSearchText: String = ""
@@ -26,7 +27,10 @@ struct BoxArtPickerView: View {
             VStack(spacing: 12) {
                 HStack(spacing: 10) {
                     TextField(loc.localized("boxArt.searchQuery"), text: $searchText)
-                        .textFieldStyle(.roundedBorder)
+                        .textFieldStyle(.plain)
+                        .padding(8)
+                        .background(Color.secondary.opacity(0.1))
+                        .cornerRadius(6)
                         .onSubmit { updateSearch() }
 
                     Button(action: updateSearch) {
@@ -56,6 +60,7 @@ struct BoxArtPickerView: View {
 
             WebSearchView(query: appliedSearchText, engine: searchEngine, onImagePicked: applyURL)
         }
+        .background(AppColors.windowBackground(colorScheme, tinted: ThemeManager.shared.tintedSurfacesEnabled))
         .frame(width: 800, height: 600)
         .onAppear {
             let cleanName = rom.name.replacingOccurrences(of: "_", with: " ")

@@ -168,15 +168,15 @@ struct GameListRowView: View {
         .background(
             RoundedRectangle(cornerRadius: 8)
                 .fill(isSelected ? AppColors.accentBackground(colorScheme) :
-                      isHovered ? AppColors.brandAccent.opacity(0.04) : .clear)
+                      isHovered ? AppColors.brandAccentSecondary.opacity(0.04) : .clear)
         )
         .overlay(
             RoundedRectangle(cornerRadius: 8)
-                .stroke(isSelected ? AppColors.brandAccent.opacity(0.4) : Color.clear, lineWidth: 1.5)
+                .stroke(isSelected ? AppColors.brandAccentSecondary.opacity(0.4) : Color.clear, lineWidth: 1.5)
         )
         .overlay(alignment: .leading) {
             Rectangle()
-                .fill(AppColors.brandAccent.opacity(0.2))
+                .fill(AppColors.brandAccentSecondary.opacity(0.2))
                 .frame(width: 2, height: 20)
                 .padding(.leading, 4)
         }

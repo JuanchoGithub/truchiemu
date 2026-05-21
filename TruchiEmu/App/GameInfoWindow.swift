@@ -46,7 +46,7 @@ struct GameInfoWindow: View {
             }
         }
         .frame(minWidth: 900, minHeight: 700)
-        .background(AppColors.windowBackground(colorScheme))
+        .background(AppColors.windowBackground(colorScheme, tinted: ThemeManager.shared.tintedSurfacesEnabled))
     }
     
     // MARK: - RetroAchievements Warning

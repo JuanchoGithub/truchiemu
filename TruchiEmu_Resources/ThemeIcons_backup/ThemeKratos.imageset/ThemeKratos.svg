@@ -1,0 +1,59 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 500 500" width="100%" height="100%">
+  <!-- Fondo transparente para tu app -->
+  <g id="Kratos_Circle_Theme_Icon">
+    
+    <!-- Contorno Oscuro (Estilo de la saga) -->
+    <circle cx="250" cy="250" r="180" fill="#E5E5E5" stroke="#1A1A1A" stroke-width="6" />
+    
+    <!-- Círculo Central (Piel de ceniza espartana) -->
+    <circle cx="250" cy="250" r="155" fill="#F0F0F0" />
+    
+    <!-- Sombra interna del círculo para dar volumen -->
+    <path d="M 250 95 C 335 95, 405 165, 405 250 C 405 335, 335 405, 250 405 Z" fill="#D9D9D9" opacity="0.4" />
+
+    <!-- El Tatuaje Rojo de Kratos (Sobresale un poco del círculo superior izquierdo) -->
+    <path d="M 140 130 
+             C 180 100, 230 110, 250 140 
+             C 260 160, 245 200, 240 230
+             L 210 270 
+             L 175 255 
+             L 205 210
+             C 205 170, 190 150, 140 165 Z" 
+          fill="#990000" 
+          stroke="#660000" 
+          stroke-width="2" 
+          filter="drop-shadow(0px 4px 4px rgba(0,0,0,0.15))" />
+
+    <!-- Cejas de Furia (Entrecejo ultra marcado) -->
+    <path d="M 160 215 L 235 235 L 230 247 L 165 227 Z" fill="#1A1A1A" />
+    <path d="M 340 215 L 265 235 L 270 247 L 335 227 Z" fill="#1A1A1A" />
+    
+    <!-- Ojos Amenazantes -->
+    <ellipse cx="195" cy="242" rx="14" ry="7" fill="#FFFFFF" stroke="#1A1A1A" stroke-width="2" />
+    <circle cx="198" cy="242" r="4" fill="#4A2810" /> 
+    
+    <ellipse cx="305" cy="242" rx="14" ry="7" fill="#FFFFFF" stroke="#1A1A1A" stroke-width="2" />
+    <circle cx="302" cy="242" r="4" fill="#4A2810" />
+
+    <!-- Cicatriz en el ojo derecho -->
+    <path d="M 295 210 L 310 260" stroke="#B37D7D" stroke-width="4" stroke-linecap="round" opacity="0.8" />
+
+    <!-- Barba Nórdica (Se adapta a la curvatura inferior del círculo) -->
+    <path d="M 155 300 
+             C 170 360, 200 410, 250 425 
+             C 300 410, 330 360, 345 300
+             C 310 340, 290 355, 250 355
+             C 210 355, 190 340, 155 300 Z" 
+          fill="#21160F" 
+          stroke="#120D0A" 
+          stroke-width="3" />
+          
+    <!-- Bigote espartano -->
+    <path d="M 205 285 C 225 290, 240 300, 250 312 C 260 300, 275 290, 295 285 C 275 305, 265 315, 250 315 C 235 315, 225 305, 205 285 Z" 
+          fill="#140E0A" />
+
+    <!-- Detalles de expresión (Arrugas de enojo en la frente) -->
+    <path d="M 235 200 C 250 195, 250 195, 265 200" fill="none" stroke="#1A1A1A" stroke-width="3" stroke-linecap="round" />
+          
+  </g>
+</svg>

@@ -10,6 +10,7 @@ struct BezelSelectorSheet: View {
     @StateObject private var bezelManager = BezelManager.shared
     @StateObject private var apiService = BezelAPIService.shared
     @StateObject private var storageManager = BezelStorageManager.shared
+    @Environment(\.colorScheme) private var colorScheme
     @ObservedObject private var loc = LocalizationManager.shared
     
     @State private var searchQuery = ""
@@ -90,7 +91,7 @@ struct BezelSelectorSheet: View {
                         }
                     }
                     .padding(8)
-                    .background(Color(nsColor: .controlBackgroundColor))
+                    .background(Color.secondary.opacity(0.1))
                     .cornerRadius(8)
                     .padding(.horizontal)
                     .padding(.vertical, 4)
@@ -184,6 +185,7 @@ struct BezelSelectorSheet: View {
                 }
             }
         }
+        .background(AppColors.windowBackground(colorScheme, tinted: ThemeManager.shared.tintedSurfacesEnabled))
         .frame(width: 800, height: 550)
     }
     
@@ -364,7 +366,7 @@ struct BezelSelectorSheet: View {
                         VStack(spacing: 12) {
                             ProgressView(value: downloadProgress)
                                 .progressViewStyle(.linear)
-                                .tint(AppColors.brandAccent)
+                                .tint(AppColors.brandAccentSecondary)
                                 .frame(width: 200)
                             Text("\(loc.localized("bezel.downloadingProgress")) \(Int(downloadProgress * 100))%")
                                 .font(.caption)

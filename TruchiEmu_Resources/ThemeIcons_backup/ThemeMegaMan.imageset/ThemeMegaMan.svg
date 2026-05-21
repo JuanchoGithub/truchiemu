@@ -1,0 +1,65 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 500 500" width="100%" height="100%">
+  <!-- Fondo transparente para tu app -->
+  <g id="MegaMan_Fixed_Anime_Icon">
+    
+    <!-- Contorno Azul Oscuro Base -->
+    <circle cx="250" cy="250" r="180" fill="#001C55" stroke="#000B29" stroke-width="6" />
+    
+    <!-- Círculo Central (Azul de la armadura) -->
+    <circle cx="250" cy="250" r="155" fill="#0077B6" />
+    
+    <!-- Cresta del Casco (Líneas rectas y angulares que rompen la redondez arriba) -->
+    <path d="M 225 75 
+             L 275 75 
+             L 270 170 
+             L 230 170 Z" 
+          fill="#00B4D8" 
+          stroke="#001C55" 
+          stroke-width="4" 
+          stroke-linejoin="round" />
+    
+    <!-- Detalle/Luz Celeste Cuadrada en la frente (Fiel al sprite clásico) -->
+    <polygon points="235,120 265,120 260,155 240,155" 
+             fill="#90E0EF" 
+             stroke="#001C55" 
+             stroke-width="3" />
+
+    <!-- Orejeras del Casco (Piezas cilíndricas angulares a los costados) -->
+    <!-- Izquierda -->
+    <path d="M 120 215 L 90 225 L 90 285 L 120 295 Z" fill="#00B4D8" stroke="#001C55" stroke-width="4" stroke-linejoin="round" />
+    <ellipse cx="105" cy="255" rx="6" ry="20" fill="#001C55" />
+    
+    <!-- Derecha -->
+    <path d="M 380 215 L 410 225 L 410 285 L 380 295 Z" fill="#00B4D8" stroke="#001C55" stroke-width="4" stroke-linejoin="round" />
+    <ellipse cx="395" cy="255" rx="6" ry="20" fill="#001C55" />
+
+    <!-- Apertura Facial (Geometría Anime: Recta en la frente y pómulos angulares) -->
+    <!-- Esto elimina por completo el efecto "círculo dentro de círculo" -->
+    <path d="M 160 185 
+             L 340 185 
+             L 345 235 
+             L 325 305
+             C 295 355, 205 355, 175 305
+             L 155 235 Z" 
+          fill="#FFD1B3" 
+          stroke="#001C55" 
+          stroke-width="5" 
+          stroke-linejoin="round" />
+
+    <!-- Ojos Anime Rectangulares (Estilo clásico de los bocetos de Akira Kitamura) -->
+    <!-- Ojo Izquierdo -->
+    <path d="M 190 215 L 230 220 L 225 265 L 195 260 Z" fill="#001C55" />
+    <path d="M 198 223 L 226 226 L 222 261 L 202 257 Z" fill="#0077B6" />
+    <polygon points="198,225 212,226 210,245 198,242" fill="#FFFFFF" /> <!-- Brillo rasgado -->
+
+    <!-- Ojo Derecho -->
+    <path d="M 310 215 L 270 220 L 275 265 L 305 260 Z" fill="#001C55" />
+    <path d="M 302 223 L 274 226 L 278 261 L 298 257 Z" fill="#0077B6" />
+    <polygon points="302,225 288,226 290,245 302,242" fill="#FFFFFF" />
+
+    <!-- Boca (Línea de expresión seria/decidida, típica de la pantalla de inicio) -->
+    <path d="M 230 310 Q 250 315 270 310" 
+          stroke="#001C55" stroke-width="4" fill="none" stroke-linecap="round" />
+          
+  </g>
+</svg>

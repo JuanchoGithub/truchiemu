@@ -42,13 +42,21 @@ struct CategoryRowButton: View {
       .padding(.vertical, 2)
       .contentShape(Rectangle())
     }
-    .buttonStyle(.plain)
-    .background(
-      RoundedRectangle(cornerRadius: 6)
-      .fill(isDropTarget ? (Color(hex: category.colorHex) ?? .blue).opacity(0.2) : 
-            (isSelected ? (Color(hex: category.colorHex) ?? .blue).opacity(0.15) : 
-             (isHovered ? Color.secondary.opacity(0.08) : .clear)))
-    )
+        .buttonStyle(.plain)
+        .background(
+            RoundedRectangle(cornerRadius: 6)
+                .fill(isDropTarget ? (Color(hex: category.colorHex) ?? .blue).opacity(0.2) :
+                (isSelected ? (Color(hex: category.colorHex) ?? .blue).opacity(0.15) :
+                (isHovered ? Color.secondary.opacity(0.08) : .clear)))
+        )
+        .overlay(alignment: .leading) {
+            if isSelected {
+                RoundedRectangle(cornerRadius: 2)
+                    .fill(Color(hex: category.colorHex) ?? .blue)
+                    .frame(width: 3, height: 20)
+                    .padding(.leading, 2)
+            }
+        }
     .onHover { isHovered = $0 }
     .onDrop(of: [.plainText], isTargeted: $isDropTarget) { items in
       handleDropOnCategory(items, category.id)

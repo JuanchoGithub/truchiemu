@@ -7,12 +7,12 @@ struct GameDetailView: View {
     @ObservedObject var sysPrefs = SystemPreferences.shared
     @Environment(\.dismiss) var dismiss
     @Environment(\.colorScheme) var colorScheme
+    @Environment(\.openWindow) var openWindow
     var rom: ROM
 
     @StateObject var saveStateManager = SaveStateManager()
     @StateObject var achievementsService = RetroAchievementsService.shared
     @State var showBoxArtPicker = false
-    @State var showControlsPicker = false
     @StateObject var gameLauncher = GameLauncher.shared
     @State var boxArtImage: NSImage? = nil
     @State var screenshotImages: [NSImage] = []
@@ -22,7 +22,6 @@ struct GameDetailView: View {
     @State var gameAchievements:[Achievement] = []
     @State var isAchievementsLoading = false
     @State var showImportCheatFile = false
-@State var showCoreOptionsView = false
     @State var gbColorizationEnabled: Bool = true
     @State var gbColorizationMode: String = "auto"
     @State var gbInternalPalette: String = "GB - DMG"
@@ -142,12 +141,6 @@ struct GameDetailView: View {
     }
 
     @ViewBuilder
-    var controlsPickerSheet: some View {
-        SystemControlsMappingView(systemID: currentROM.systemID ?? "", systemName: system?.name ?? "Unknown")
-            .environmentObject(controllerService)
-    }
-
-    @ViewBuilder
     var raHashComparisonSheet: some View {
         RAHashComparisonContent(
             gameTitle: raComparisonTitle,
@@ -183,7 +176,7 @@ struct GameDetailView: View {
                     .transition(.move(edge: .bottom).combined(with: .opacity))
             }
         }
-        .background(AppColors.windowBackground(colorScheme))
+        .background(AppColors.windowBackground(colorScheme, tinted: ThemeManager.shared.tintedSurfacesEnabled))
         .animation(.easeInOut(duration: 0.2), value: manualActionStatus.isVisible)
         .onAppear {
             loadBoxArt()
@@ -255,13 +248,7 @@ struct GameDetailView: View {
             }
         }
         .sheet(isPresented: $showBoxArtPicker) { BoxArtPickerView(rom: currentROM) }
-        .sheet(isPresented: $showControlsPicker) { controlsPickerSheet }
         .sheet(isPresented: $showRAHashComparison) { raHashComparisonSheet
-        }
-        .sheet(isPresented: $showCoreOptionsView) {
-            if let coreID = activeCoreID, let systemID = currentROM.systemID {
-                CoreOptionsView(coreID: coreID, systemID: systemID, gameFilename: currentROM.filenameWithoutExtension)
-            }
         }
     }
 
@@ -295,7 +282,7 @@ struct GameDetailView: View {
         .frame(width: 160)
         .padding(.vertical, 12)
         .padding(.horizontal, 8)
-        .background(AppColors.sidebarBackground)
+        .background(AppColors.sidebarBackground(colorScheme, tinted: ThemeManager.shared.tintedSurfacesEnabled))
     }
 
     func sidebarItem(for section: DetailSection) -> some View {
@@ -511,7 +498,7 @@ struct GameDetailView: View {
         .padding(.horizontal, 16)
         .padding(.vertical, 11)
         .frame(maxWidth: .infinity, alignment: .leading)
-        .background(AppColors.surface(colorScheme))
+        .background(AppColors.surface(colorScheme, tinted: ThemeManager.shared.tintedSurfacesEnabled))
         .overlay(alignment: .top) {
             Divider().overlay(AppColors.divider(colorScheme))
         }

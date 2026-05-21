@@ -152,6 +152,7 @@ struct CheatSettingsView: View {
                 }
             }
         }
+        .scrollContentBackground(.hidden)
         .formStyle(.grouped)
         .navigationTitle(loc.localized("cheats.title"))
         .confirmationDialog(

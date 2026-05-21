@@ -252,6 +252,14 @@ struct SidebarRowButton: View {
             RoundedRectangle(cornerRadius: 6)
                 .fill(isSelected ? AppColors.accentBackground(colorScheme) : (isHovered ? Color.secondary.opacity(0.08) : .clear))
         )
+        .overlay(alignment: .leading) {
+            if isSelected {
+                RoundedRectangle(cornerRadius: 2)
+                    .fill(AppColors.brandAccentSecondary)
+                    .frame(width: 3, height: 20)
+                    .padding(.leading, 2)
+            }
+        }
         .onHover { isHovered = $0 }
         .animation(AppMotion.micro, value: isHovered)
     }

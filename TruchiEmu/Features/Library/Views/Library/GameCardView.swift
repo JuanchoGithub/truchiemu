@@ -52,15 +52,15 @@ struct GameCardView: View {
     }
 
     private var cardBackground: Color {
-        if isSelected { return AppColors.brandAccent.opacity(0.15) }
+        if isSelected { return AppColors.brandAccentSecondary.opacity(0.15) }
         if isHiddenItem { return Color.gray.opacity(0.08) }
-        return (isHovered || isPressed) ? AppColors.brandAccent.opacity(0.06) : .clear
+        return (isHovered || isPressed) ? AppColors.brandAccentSecondary.opacity(0.06) : .clear
     }
 
     private var cardStrokeColor: Color {
-        if isSelected { return AppColors.brandAccent }
+        if isSelected { return AppColors.brandAccentSecondary }
         if isHiddenItem { return Color.gray.opacity(0.3) }
-        return isHovered ? AppColors.brandAccent.opacity(0.25) : .clear
+        return isHovered ? AppColors.brandAccentSecondary.opacity(0.25) : .clear
     }
 
     private var cardStrokeWidth: CGFloat {
@@ -193,8 +193,8 @@ struct GameCardView: View {
             Group {
                 if isSelected {
                     RoundedRectangle(cornerRadius: 12)
-                        .stroke(AppColors.brandAccent.opacity(0.4), lineWidth: 1.5)
-                        .shadow(color: AppColors.brandAccent.opacity(0.35), radius: 4)
+                        .stroke(AppColors.brandAccentSecondary.opacity(0.4), lineWidth: 1.5)
+                        .shadow(color: AppColors.brandAccentSecondary.opacity(0.35), radius: 4)
                 } else {
                     RoundedRectangle(cornerRadius: 12)
                         .stroke(cardStrokeColor, lineWidth: cardStrokeWidth)
@@ -213,7 +213,7 @@ struct GameCardView: View {
                 .allowsHitTesting(false)
         )
         .shadow(
-            color: isSelected ? AppColors.brandAccent.opacity(0.25) : (isHovered ? AppColors.brandAccent.opacity(0.2) : .clear),
+            color: isSelected ? AppColors.brandAccentSecondary.opacity(0.25) : (isHovered ? AppColors.brandAccentSecondary.opacity(0.2) : .clear),
             radius: isSelected ? 8 : (isHovered ? 14 : 0),
             y: isSelected ? 0 : (isHovered ? 8 : 0)
         )

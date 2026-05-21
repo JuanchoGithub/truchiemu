@@ -261,6 +261,7 @@ struct SlotPickerView: View {
     let onSlotSelect: ((Int) -> Void)?
     @ObservedObject var runner: EmulatorRunner
     @Environment(\.dismiss) var dismiss
+    @Environment(\.colorScheme) private var colorScheme
     @ObservedObject private var loc = LocalizationManager.shared
     @State private var slotThumbnails: [Int: NSImage] = [:]
     
@@ -339,7 +340,7 @@ struct SlotPickerView: View {
                 }
             }
         }
-        .background(Color(NSColor.windowBackgroundColor))
+        .background(AppColors.windowBackground(colorScheme, tinted: ThemeManager.shared.tintedSurfacesEnabled))
         .clipShape(RoundedRectangle(cornerRadius: 12))
         .onAppear {
             loadThumbnails()

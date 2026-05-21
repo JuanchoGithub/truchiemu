@@ -3,16 +3,18 @@ import SwiftUI
 struct AccentSegmentedControl<T: Hashable>: View {
     @Binding var selection: T
     let options: [(tag: T, icon: String)]
-    let accentColor: Color
+    var accentColor: Color?
+    @Environment(\.colorScheme) private var colorScheme
 
-    init(selection: Binding<T>, options: [(T, String)], accentColor: Color = AppColors.brandAccent) {
+    init(selection: Binding<T>, options: [(T, String)], accentColor: Color? = nil) {
         self._selection = selection
         self.options = options
         self.accentColor = accentColor
     }
 
     var body: some View {
-        HStack(spacing: 0) {
+        let resolvedAccent = accentColor ?? AppColors.accentSecondaryForScheme(colorScheme)
+        return HStack(spacing: 0) {
             ForEach(Array(options.enumerated()), id: \.offset) { _, option in
                 Button {
                     selection = option.tag
@@ -24,7 +26,7 @@ struct AccentSegmentedControl<T: Hashable>: View {
                         .contentShape(Rectangle())
                         .background(
                             selection == option.tag
-                            ? RoundedRectangle(cornerRadius: 4).fill(accentColor)
+                            ? RoundedRectangle(cornerRadius: 4).fill(resolvedAccent)
                             : RoundedRectangle(cornerRadius: 4).fill(Color.clear)
                         )
                 }

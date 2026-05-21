@@ -5,6 +5,7 @@ struct SystemSidebarView: View {
     @EnvironmentObject var categoryManager: CategoryManager
     @EnvironmentObject var coreManager: CoreManager
     @Environment(SystemDatabaseWrapper.self) private var systemDatabase
+    @Environment(\.colorScheme) private var colorScheme
     @ObservedObject private var loc = LocalizationManager.shared
     @Binding var selectedFilter: LibraryFilter
     @Binding var showCreateCategorySheet: Bool
@@ -37,89 +38,51 @@ struct SystemSidebarView: View {
     }
 
     var body: some View {
-        List(selection: $selectedFilter) {
-            Section {
-                EmptyView()
-            } header: {
+        ScrollView {
+            VStack(alignment: .leading, spacing: 0) {
                 HStack {
                     RoundedRectangle(cornerRadius: 1)
                         .fill(AppGradients.accent)
                         .frame(width: 48, height: 2)
                     Spacer()
                 }
-                .padding(.bottom, 4)
-            }
+                .padding(.bottom, 8)
 
-            // All games
-            sidebarRow(icon: "square.grid.2x2", label: loc.localized("app.allGames"), count: library.romCounts["all"] ?? 0, filter: .all)
-                .tag(LibraryFilter.all)
+                sidebarRow(icon: "square.grid.2x2", label: loc.localized("app.allGames"), count: library.romCounts["all"] ?? 0, filter: .all)
 
-            // Favorites
-            let favCount = library.romCounts["favorites"] ?? 0
-            if favCount > 0 {
-                sidebarRow(icon: "heart.fill", label: loc.localized("app.favorites"), count: favCount, tint: .pink, filter: .favorites)
-                    .tag(LibraryFilter.favorites)
-            }
+                let favCount = library.romCounts["favorites"] ?? 0
+                if favCount > 0 {
+                    sidebarRow(icon: "heart.fill", label: loc.localized("app.favorites"), count: favCount, tint: .pink, filter: .favorites)
+                }
 
-            // Recently played
-            let recentCount = library.romCounts["recent"] ?? 0
-            sidebarRow(icon: "clock.fill", label: loc.localized("app.recent"), count: recentCount, tint: .orange, filter: .recent)
-                 .tag(LibraryFilter.recent)
-            
-            // Categories section — tap title row to expand/collapse; "New Category" on header hover
-            Section {
+                let recentCount = library.romCounts["recent"] ?? 0
+                sidebarRow(icon: "clock.fill", label: loc.localized("app.recent"), count: recentCount, tint: .orange, filter: .recent)
+
+                sectionHeader(
+                    title: loc.localized("app.categories"),
+                    isExpanded: $categoriesSectionExpanded,
+                    isHeaderHovered: $categoriesHeaderHovered,
+                    onAction: { showCreateCategorySheet = true },
+                    actionLabel: loc.localized("app.newCategory"),
+                    showAction: categoriesHeaderHovered
+                )
+
                 if categoriesSectionExpanded {
                     ForEach(categoryManager.categories) { category in
                         categoryRow(category: category)
-                            .tag(LibraryFilter.category(category.id))
-                    }
-                    .onMove(perform: categoryManager.reorderCategories)
-                }
-            } header: {
-                HStack(spacing: 8) {
-                    Button {
-                        categoriesSectionExpanded.toggle()
-                    } label: {
-                        HStack(spacing: 4) {
-                            Image(systemName: categoriesSectionExpanded ? "chevron.down" : "chevron.right")
-                                .font(.caption.weight(.semibold))
-                                .foregroundStyle(.secondary)
-                                .frame(width: 12, alignment: .center)
-                            Text(loc.localized("app.categories"))
-                            Spacer(minLength: 0)
-                        }
-                        .frame(maxWidth: .infinity, alignment: .leading)
-                        .contentShape(Rectangle())
-                    }
-                    .buttonStyle(.plain)
-                    .help(categoriesSectionExpanded ? "Collapse Categories" : "Expand Categories")
-
-                    if categoriesHeaderHovered {
-                        Button {
-                            showCreateCategorySheet = true
-                        } label: {
-                            HStack(spacing: 4) {
-                                Image(systemName: "plus.circle")
-                                    .foregroundStyle(.secondary)
-                                Text(loc.localized("app.newCategory"))
-                                    .lineLimit(1)
-                            }
-                            .font(.caption)
-                        }
-                        .buttonStyle(.plain)
-                        .help("Create a new category")
-                        .transition(.opacity.combined(with: .move(edge: .trailing)))
                     }
                 }
-                .frame(maxWidth: .infinity, alignment: .leading)
-                .contentShape(Rectangle())
-                .onHover { categoriesHeaderHovered = $0 }
-                .animation(.easeInOut(duration: 0.15), value: categoriesHeaderHovered)
-            }
-            
 
-            if !combinedSystemsWithROMs.isEmpty {
-                Section {
+                if !combinedSystemsWithROMs.isEmpty {
+                    sectionHeader(
+                        title: loc.localized("app.systems"),
+                        isExpanded: $systemsSectionExpanded,
+                        isHeaderHovered: .constant(false),
+                        onAction: nil,
+                        actionLabel: nil,
+                        showAction: false
+                    )
+
                     if systemsSectionExpanded {
                         ForEach(combinedSystemsWithROMs, id: \.system.id) { entry in
                             sidebarRow(
@@ -130,63 +93,90 @@ struct SystemSidebarView: View {
                                 filter: .system(entry.system),
                                 onRename: onRenameSystem != nil ? { system in onRenameSystem?(system) } : nil
                             )
-                            .tag(LibraryFilter.system(entry.system))
                         }
                     }
-                } header: {
-                    Button {
-                        systemsSectionExpanded.toggle()
-                    } label: {
-                        HStack(spacing: 4) {
-                            Image(systemName: systemsSectionExpanded ? "chevron.down" : "chevron.right")
-                                .font(.caption.weight(.semibold))
-                                .foregroundStyle(.secondary)
-                                .frame(width: 12, alignment: .center)
-                            Text(loc.localized("app.systems"))
-                            Spacer(minLength: 0)
-                        }
-                        .frame(maxWidth: .infinity, alignment: .leading)
-                        .contentShape(Rectangle())
-                    }
-                    .buttonStyle(.plain)
-                    .help(systemsSectionExpanded ? "Collapse Systems" : "Expand Systems")
                 }
-            }
 
-            // Hidden Games section — shown only when there are hidden games
-            // and the user hasn't disabled it in settings
-            let hiddenCount = library.romCounts["hidden"] ?? 0
-            let showHiddenCategory = AppSettings.getBool("showHiddenGamesCategory", defaultValue: true)
-            if hiddenCount > 0 && showHiddenCategory {
-                Section {
+                let hiddenCount = library.romCounts["hidden"] ?? 0
+                let showHiddenCategory = AppSettings.getBool("showHiddenGamesCategory", defaultValue: true)
+                if hiddenCount > 0 && showHiddenCategory {
+                    sectionHeader(
+                        title: loc.localized("app.hiddenGames"),
+                        isExpanded: .constant(true),
+                        isHeaderHovered: .constant(false),
+                        onAction: nil,
+                        actionLabel: nil,
+                        showAction: false
+                    )
                     sidebarRow(icon: "eye.slash", label: loc.localized("app.hidden"), count: hiddenCount, tint: .gray, filter: .hidden)
-                        .tag(LibraryFilter.hidden)
-                } header: {
-                    Text(loc.localized("app.hiddenGames"))
-                        .sectionHeaderStyle()
                 }
-            }
 
-            // Hidden MAME Files section — separate from general hidden games
-            // Only shown when enabled in settings
-            let mameNonGamesCount = library.romCounts["mameNonGames"] ?? 0
-            let showHiddenMAME = SystemPreferences.shared.showHiddenMAMEFiles
-            if mameNonGamesCount > 0 && showHiddenMAME {
-                Section {
+                let mameNonGamesCount = library.romCounts["mameNonGames"] ?? 0
+                let showHiddenMAME = SystemPreferences.shared.showHiddenMAMEFiles
+                if mameNonGamesCount > 0 && showHiddenMAME {
+                    sectionHeader(
+                        title: loc.localized("app.mameFiles"),
+                        isExpanded: .constant(true),
+                        isHeaderHovered: .constant(false),
+                        onAction: nil,
+                        actionLabel: nil,
+                        showAction: false
+                    )
                     sidebarRow(icon: "doc.badge.gearshape", label: loc.localized("app.hiddenMAMEFiles"), count: mameNonGamesCount, tint: .gray, filter: .mameNonGames)
-                        .tag(LibraryFilter.mameNonGames)
-                } header: {
-                    Text(loc.localized("app.mameFiles"))
-                        .sectionHeaderStyle()
                 }
+
+                Spacer()
             }
+            .padding(.horizontal, 8)
+            .padding(.vertical, 12)
         }
-        .listStyle(.sidebar)
-        .accentColor(AppColors.brandAccent)
         .scrollContentBackground(.hidden)
-        .background(.ultraThinMaterial)
+        .background(AppColors.sidebarBackground(colorScheme, tinted: ThemeManager.shared.tintedSurfacesEnabled))
         .frame(minWidth: 220, idealWidth: 240)
         .navigationTitle(loc.localized("app.library"))
+    }
+
+    @ViewBuilder
+    private func sectionHeader(title: String, isExpanded: Binding<Bool>, isHeaderHovered: Binding<Bool>, onAction: (() -> Void)?, actionLabel: String?, showAction: Bool) -> some View {
+        HStack(spacing: 8) {
+            Button {
+                isExpanded.wrappedValue.toggle()
+            } label: {
+                HStack(spacing: 4) {
+                    Image(systemName: isExpanded.wrappedValue ? "chevron.down" : "chevron.right")
+                        .font(.caption.weight(.semibold))
+                        .foregroundStyle(.secondary)
+                        .frame(width: 12, alignment: .center)
+                    Text(title)
+                        .font(AppTypography.sectionHeader)
+                        .foregroundStyle(AppColors.textSecondary(colorScheme))
+                    Spacer(minLength: 0)
+                }
+                .frame(maxWidth: .infinity, alignment: .leading)
+                .contentShape(Rectangle())
+            }
+            .buttonStyle(.plain)
+
+            if showAction, let action = onAction, let label = actionLabel {
+                Button(action: action) {
+                    HStack(spacing: 4) {
+                        Image(systemName: "plus.circle")
+                            .foregroundStyle(.secondary)
+                        Text(label)
+                            .lineLimit(1)
+                    }
+                    .font(.caption)
+                }
+                .buttonStyle(.plain)
+                .transition(.opacity.combined(with: .move(edge: .trailing)))
+            }
+        }
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .contentShape(Rectangle())
+        .onHover { isHeaderHovered.wrappedValue = $0 }
+        .animation(.easeInOut(duration: 0.15), value: showAction)
+        .padding(.top, 8)
+        .padding(.bottom, 4)
     }
 
     @ViewBuilder
@@ -213,7 +203,6 @@ onSystemAction: system != nil ? { sys, action, targetID in
                 core.systemIDs.contains(system!.id)
             } : nil
         )
-        .listRowBackground(Color.clear)
     }
 
     @StateObject private var dragState = GameDragState.shared
@@ -236,7 +225,6 @@ onSystemAction: system != nil ? { sys, action, targetID in
             handleDropOnCategory: handleDropOnCategory,
             showEditCategorySheet: showEditCategorySheet
         )
-        .listRowBackground(Color.clear)
     }
     
     private func handleDropOnCategory(items: [NSItemProvider], categoryID: String) -> Bool {
@@ -261,7 +249,7 @@ struct CreateCategorySheet: View {
     @ObservedObject private var loc = LocalizationManager.shared
     
     @State private var name: String = ""
-    @State private var selectedIcon: String = "folder.fill"
+    @State private var selectedIcon: String = "gamecontroller.fill"
     @State private var selectedColor: String = "007AFF"
     
     var body: some View {
@@ -336,6 +324,7 @@ struct CreateCategorySheet: View {
 
 struct EditCategorySheet: View {
     @Environment(\.dismiss) private var dismiss
+    @Environment(\.colorScheme) private var colorScheme
     @EnvironmentObject var categoryManager: CategoryManager
     @ObservedObject private var loc = LocalizationManager.shared
     @State var category: GameCategory
@@ -346,67 +335,73 @@ struct EditCategorySheet: View {
     
     var body: some View {
         NavigationStack {
-            Form {
-                Section(loc.localized("app.categoryName")) {
-                    TextField(loc.localized("app.name"), text: $category.name)
-                }
-                
-                Section(loc.localized("app.icon")) {
-                    LazyVGrid(columns: Array(repeating: GridItem(.flexible()), count: 6), spacing: 12) {
-                        ForEach(GameCategory.commonIcons, id: \.self) { icon in
-                            Button {
-                                selectedIcon = icon
-                                category.iconName = icon
-                            } label: {
-                                Image(systemName: icon)
-                                    .font(.title2)
-                                    .foregroundColor(selectedIcon == icon ? Color(hex: selectedColor) ?? .blue : .secondary)
-                                    .frame(width: 32, height: 32)
+            ZStack {
+                AppColors.windowBackground(colorScheme, tinted: ThemeManager.shared.tintedSurfacesEnabled)
+                    .ignoresSafeArea()
+
+                Form {
+                    Section(loc.localized("app.categoryName")) {
+                        TextField(loc.localized("app.name"), text: $category.name)
+                    }
+
+                    Section(loc.localized("app.icon")) {
+                        LazyVGrid(columns: Array(repeating: GridItem(.flexible()), count: 6), spacing: 12) {
+                            ForEach(GameCategory.commonIcons, id: \.self) { icon in
+                                Button {
+                                    selectedIcon = icon
+                                    category.iconName = icon
+                                } label: {
+                                    Image(systemName: icon)
+                                        .font(.title2)
+                                        .foregroundColor(selectedIcon == icon ? Color(hex: selectedColor) ?? .blue : .secondary)
+                                        .frame(width: 32, height: 32)
+                                }
+                                .buttonStyle(.plain)
                             }
-                            .buttonStyle(.plain)
+                        }
+                    }
+
+                    Section(loc.localized("app.color")) {
+                        LazyVGrid(columns: Array(repeating: GridItem(.flexible()), count: 7), spacing: 12) {
+                            ForEach(GameCategory.colorPalette, id: \.hex) { color in
+                                Button {
+                                    selectedColor = color.hex
+                                    category.colorHex = color.hex
+                                } label: {
+                                    Circle()
+                                        .fill(Color(hex: color.hex) ?? .blue)
+                                        .frame(width: 28, height: 28)
+                                        .overlay(
+                                            Circle()
+                                                .stroke(selectedColor == color.hex ? Color.primary : Color.clear, lineWidth: 2)
+                                        )
+                                }
+                                .buttonStyle(.plain)
+                            }
+                        }
+                    }
+
+                    Section(loc.localized("app.preview")) {
+                        HStack {
+                            Image(systemName: selectedIcon)
+                                .font(.title2)
+                                .foregroundColor(Color(hex: selectedColor) ?? .blue)
+                            Text(category.name.isEmpty ? "Category Name" : category.name)
                         }
                     }
                 }
-                
-                Section(loc.localized("app.color")) {
-                    LazyVGrid(columns: Array(repeating: GridItem(.flexible()), count: 7), spacing: 12) {
-                        ForEach(GameCategory.colorPalette, id: \.hex) { color in
-                            Button {
-                                selectedColor = color.hex
-                                category.colorHex = color.hex
-                            } label: {
-                                Circle()
-                                    .fill(Color(hex: color.hex) ?? .blue)
-                                    .frame(width: 28, height: 28)
-                                    .overlay(
-                                        Circle()
-                                            .stroke(selectedColor == color.hex ? Color.primary : Color.clear, lineWidth: 2)
-                                    )
-                            }
-                            .buttonStyle(.plain)
+                .formStyle(.grouped)
+                .scrollContentBackground(.hidden)
+                .navigationTitle(loc.localized("app.editCategory"))
+                .toolbar {
+                    ToolbarItem(placement: .cancellationAction) {
+                        Button(loc.localized("app.cancel")) { dismiss() }
+                    }
+                    ToolbarItem(placement: .confirmationAction) {
+                        Button(loc.localized("app.save")) {
+                            categoryManager.updateCategory(category)
+                            dismiss()
                         }
-                    }
-                }
-                
-                Section(loc.localized("app.preview")) {
-                    HStack {
-                        Image(systemName: selectedIcon)
-                            .font(.title2)
-                            .foregroundColor(Color(hex: selectedColor) ?? .blue)
-                        Text(category.name.isEmpty ? "Category Name" : category.name)
-                    }
-                }
-            }
-            .formStyle(.grouped)
-            .navigationTitle(loc.localized("app.editCategory"))
-            .toolbar {
-                ToolbarItem(placement: .cancellationAction) {
-                    Button(loc.localized("app.cancel")) { dismiss() }
-                }
-                ToolbarItem(placement: .confirmationAction) {
-                    Button(loc.localized("app.save")) {
-                        categoryManager.updateCategory(category)
-                        dismiss()
                     }
                 }
             }
@@ -424,6 +419,7 @@ struct EditCategorySheet: View {
 
 struct RenameSystemSheet: View {
     @Environment(\.dismiss) private var dismiss
+    @Environment(\.colorScheme) private var colorScheme
     @ObservedObject private var loc = LocalizationManager.shared
     var system: SystemInfo
     var onRename: (String) -> Void
@@ -432,39 +428,45 @@ struct RenameSystemSheet: View {
     
     var body: some View {
         NavigationStack {
-            Form {
-                Section(loc.localized("app.displayName")) {
-                    TextField(loc.localized("app.name"), text: $displayName)
-                }
-                
-                Section {
-                    HStack {
-                        Text(loc.localized("app.original"))
-                            .foregroundStyle(.secondary)
-                        Text(system.name)
+            ZStack {
+                AppColors.windowBackground(colorScheme, tinted: ThemeManager.shared.tintedSurfacesEnabled)
+                    .ignoresSafeArea()
+
+                Form {
+                    Section(loc.localized("app.displayName")) {
+                        TextField(loc.localized("app.name"), text: $displayName)
+                    }
+
+                    Section {
+                        HStack {
+                            Text(loc.localized("app.original"))
+                                .foregroundStyle(.secondary)
+                            Text(system.name)
+                        }
+                    }
+
+                    Section(loc.localized("app.preview")) {
+                        HStack {
+                            Image(systemName: system.iconName)
+                                .foregroundStyle(AppColors.brandAccent)
+                            Text(displayName.isEmpty ? system.name : displayName)
+                        }
                     }
                 }
-                
-                Section(loc.localized("app.preview")) {
-                    HStack {
-                        Image(systemName: system.iconName)
-                            .foregroundStyle(AppColors.brandAccent)
-                        Text(displayName.isEmpty ? system.name : displayName)
+                .formStyle(.grouped)
+                .scrollContentBackground(.hidden)
+                .navigationTitle(loc.localized("app.renameSystem"))
+                .toolbar {
+                    ToolbarItem(placement: .cancellationAction) {
+                        Button(loc.localized("app.cancel")) { dismiss() }
                     }
-                }
-            }
-            .formStyle(.grouped)
-            .navigationTitle(loc.localized("app.renameSystem"))
-            .toolbar {
-                ToolbarItem(placement: .cancellationAction) {
-                    Button(loc.localized("app.cancel")) { dismiss() }
-                }
-                ToolbarItem(placement: .confirmationAction) {
-                    Button(loc.localized("app.save")) {
-                        saveRename()
-                        dismiss()
+                    ToolbarItem(placement: .confirmationAction) {
+                        Button(loc.localized("app.save")) {
+                            saveRename()
+                            dismiss()
+                        }
+                        .disabled(displayName.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty)
                     }
-                    .disabled(displayName.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty)
                 }
             }
         }

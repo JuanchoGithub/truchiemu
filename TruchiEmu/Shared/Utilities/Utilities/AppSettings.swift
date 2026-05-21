@@ -144,6 +144,13 @@ final class AppSettingsCache {
             saveToSwiftData(key: key, value: value)
         }
     }
+
+    func flush() {
+        guard isLoaded else { return }
+        for (key, value) in cache {
+            saveToSwiftData(key: key, value: value)
+        }
+    }
     
     private func saveToSwiftData(key: String, value: Data) {
         let context = SwiftDataContainer.shared.mainContext
@@ -305,6 +312,12 @@ enum AppSettings {
     static func setCustomSystemDirectory(_ url: URL?) {
         setString(SaveDirectoryKey.userSystemDirectory, value: url?.path)
         NotificationCenter.default.post(name: .saveDirectorySettingChanged, object: nil)
+    }
+
+    static func flush() {
+        MainActor.assumeIsolated {
+            AppSettingsCache.shared.flush()
+        }
     }
 }
 

@@ -10,12 +10,13 @@ struct SetupWizardView: View {
     @EnvironmentObject var categoryManager: CategoryManager
     @EnvironmentObject var loc: LocalizationManager
 
+    @Environment(\.colorScheme) private var colorScheme
     @State private var raLoginError: String?
     @State private var isRALoggingIn: Bool = false
 
     var body: some View {
         ZStack {
-            Color(nsColor: .windowBackgroundColor)
+            AppColors.windowBackground(colorScheme, tinted: ThemeManager.shared.tintedSurfacesEnabled)
                 .ignoresSafeArea()
 
             VStack(spacing: 0) {
@@ -269,7 +270,7 @@ extension SetupWizardView {
 
                     Toggle(loc.localized("wizard.downloadBezelsToggle"), isOn: $wizard.downloadBezels)
                         .toggleStyle(.switch)
-                        .tint(AppColors.brandAccent)
+                        .tint(AppColors.brandAccentSecondary)
                 }
                 .padding(.leading, 4)
             }
@@ -353,7 +354,7 @@ extension SetupWizardView {
                     }
                 }
                 .toggleStyle(.switch)
-                .tint(AppColors.brandAccent)
+                .tint(AppColors.brandAccentSecondary)
 
                 VStack(alignment: .leading, spacing: 8) {
                     Text("wizard.retroAchievementsDescription")
@@ -427,7 +428,7 @@ extension SetupWizardView {
                 }
             }
             .toggleStyle(.switch)
-            .tint(AppColors.brandAccent)
+            .tint(AppColors.brandAccentSecondary)
 
             VStack(alignment: .leading, spacing: 6) {
                 Text(description)

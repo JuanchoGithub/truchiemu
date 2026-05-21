@@ -14,7 +14,11 @@ Text(loc.localized("controls.controllerMapping")).font(.subheadline).fontWeight(
 Text(loc.localized("controls.usesStandardLayout").replacingOccurrences(of: "{0}", with: system?.name ?? "this system")).font(.caption).foregroundColor(AppColors.textTertiary(colorScheme))
 }
 Spacer()
-        Button { showControlsPicker = true } label: {
+        Button {
+            if let sys = system {
+                openWindow(id: "system-settings", value: SystemSettingsRequest(system: sys, page: .controllers))
+            }
+        } label: {
             Text(loc.localized("controls.edit"))
                 .font(.subheadline)
                 .foregroundColor(.white)

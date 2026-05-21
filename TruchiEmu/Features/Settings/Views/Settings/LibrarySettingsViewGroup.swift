@@ -139,6 +139,7 @@ var body: some View {
             }
         }
     }
+    .scrollContentBackground(.hidden)
     .formStyle(.grouped)
     .navigationTitle(loc.localized("library.title"))
     .sheet(item: $rebuildTargetFolder) { folder in

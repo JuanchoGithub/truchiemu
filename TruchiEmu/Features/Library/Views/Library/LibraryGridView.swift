@@ -864,7 +864,7 @@ viewModel.updateFilters(
 
             ProgressView(value: library.scanProgress)
                 .frame(width: 320)
-                .tint(AppColors.brandAccent)
+                .tint(AppColors.brandAccentSecondary)
 
             Group {
                 Text(scanningMessages[scanningMessageIndex])
@@ -1007,7 +1007,7 @@ viewModel.updateFilters(
                         Label("Add ROM Folder", systemImage: "folder.badge.plus")
                     }
                     .buttonStyle(.borderedProminent)
-                    .tint(AppColors.brandAccent)
+                    .tint(AppColors.brandAccentSecondary)
                     .opacity(emptyStateAppeared ? 1 : 0)
                     .offset(y: emptyStateAppeared ? 0 : 8)
                 }

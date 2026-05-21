@@ -71,7 +71,7 @@ struct CoreDownloadStatusBar: View {
                 ProgressView(value: progress)
                     .progressViewStyle(.linear)
                     .controlSize(.small)
-                    .tint(AppColors.brandAccent)
+                    .tint(AppColors.brandAccentSecondary)
             }
         }
         .padding(.horizontal, 12)
