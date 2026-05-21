@@ -33,6 +33,10 @@ https://github.com/user-attachments/assets/46a734d8-9c25-4d94-bb81-80cb53506531
 
 Relive the golden age of gaming with advanced Metal-powered shaders. Whether you want the warm glow of a classic CRT, the sharp look of an LCD, or custom scanline effects, TruchiEmu makes every pixel feel authentic.
 
+### 🖌️ Gaming-Inspired Themes
+
+17 accent color themes named after gaming legends — from Samus' teal to Doom's crimson — plus custom colors, light/dark appearance modes, and tinted surfaces. Make TruchiEmu yours.
+
 <img width="965" height="704" alt="image" src="https://github.com/user-attachments/assets/676e6773-7f5b-4f17-91a1-59e3bc49580d" />
 
 ### 🚀 Effortless Setup

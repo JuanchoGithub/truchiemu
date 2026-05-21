@@ -125,6 +125,79 @@ Strong success criteria let you loop independently. Weak criteria ("make it work
 - **Metal shaders**: `TruchiEmu/Core/Shaders/` — runtime shaders, excludes `slang/**`, `internal/**`, `all_shaders.metal` from build
 - **Save/state management**: `SaveDirectoryManager` and `SaveMigrationService` in `TruchiEmu/Services/`
 
+## Themes & Appearance
+
+- **ThemeManager** (`TruchiEmu/Shared/UI/ThemeManager.swift`): Singleton `@MainActor ObservableObject` that owns current theme, appearance mode, custom accent color, toolbar accent, and tinted surfaces. Persists all state via `AppSettings` (SwiftData).
+- **AccentColorTheme** (`TruchiEmu/Shared/UI/AccentColorTheme.swift`): Enum with 17 cases. Each defines accent/dimmed/dark/secondary colors for light and dark modes. Includes migration logic for renamed themes (e.g., `cyan` → `samus`, `amber` → `chocobo`, `pokemon` → `pikachu`).
+- **AppearanceMode** (`TruchiEmu/Shared/UI/AppearanceMode.swift`): Enum with 3 cases: `automatic`, `light`, `dark`. Controls `NSApp.appearance`.
+- **DesignSystem** (`TruchiEmu/Shared/UI/DesignSystem.swift`): `AppColors` struct with static color tokens that views consume. ThemeManager sets these at init and on theme change.
+
+### Persistence keys (via `AppSettings`)
+
+| Key | Type | Default | Purpose |
+|---|---|---|---|
+| `accentTheme` | `AccentColorTheme` raw value | `.samus` | Current theme |
+| `customAccentColor` | `Data` (NSKeyedArchiver) | Samus teal | Custom accent when theme is `.custom` |
+| `appearanceMode` | `AppearanceMode` raw value | `.automatic` | Light/Dark/Auto |
+| `toolbarAccent` | `Bool` | `true` | Accent-colored toolbar icons |
+| `tintedSurfaces` | `Bool` | `true` | Accent tint on window/sidebar/toolbar backgrounds |
+
+### App restart required
+
+Theme and appearance changes require `ThemeManager.relaunchApp()` (spawns new process, terminates current). The settings UI enforces this with confirmation dialogs and unsaved-change interception.
+
+### How to add a new theme
+
+1. Add a case to the `AccentColorTheme` enum with a raw value matching the case name
+2. Define `accent`, `accentDimmed`, `accentDark`, `secondaryAccent` (and optional `*ForLightMode`/`*ForDarkMode` variants)
+3. Add icon asset to `Assets.xcassets/ThemeIcons/Theme<Name>.imageset/` (PNG + SVG)
+4. Add localization keys to ALL language JSON files: `settings.theme.<name>` (display name)
+5. If renaming an existing theme, add a migration mapping in `migratedRawValue()`
+6. Set `isGaming = true` if the theme belongs in the Gaming category
+
+### Theme categories
+
+- **Standard** (`isGaming == false`): Samus, Chocobo, Protoss, Joker, Geralt, Mega Man, Custom
+- **Gaming** (`isGaming == true`): Mario, Luigi, Sonic, Half-Life, Kratos, Kirby, Zelda, Pikachu, Doom, Master Chief
+
+### Theming considerations for new UI code
+
+**Always use `AppColors` semantic tokens — never hardcode colors.** `AppColors` (in `DesignSystem.swift`) provides light/dark-adaptive tokens that automatically blend the current theme's accent into surfaces, text, and borders.
+
+| Token | Purpose | Example |
+|---|---|---|
+| `AppColors.brandAccent` | Current accent (auto-resolves light/dark) | Tinted icons, highlights |
+| `AppColors.accentForScheme(_:)` | Accent for a specific `ColorScheme` | SwiftUI previews/canvas |
+| `AppColors.cardBackground(_:)` | Card/panel bg with subtle accent tint | Game cards, settings sections |
+| `AppColors.windowBackground(_:tinted:)` | Main window bg | Top-level backgrounds |
+| `AppColors.sidebarBackground(_:tinted:)` | Sidebar bg | Navigation sidebars |
+| `AppColors.toolbarBackground(_:tinted:)` | Toolbar/chrome bg | Window toolbars |
+| `AppColors.textPrimary/Secondary/Tertiary(_:)` | Warm-tinted text | Labels, descriptions, meta |
+| `AppColors.cardBorder(_:)` / `.divider(_:)` | Subtle borders/dividers | Card outlines, separators |
+
+**Respect user preferences for toolbar accent and tinted surfaces:**
+
+- **Toolbar icons**: Check `ThemeManager.shared.toolbarAccentEnabled`. When `true`, use `AppColors.brandAccent`; when `false`, use `.primary`:
+  ```swift
+  .foregroundStyle(ThemeManager.shared.toolbarAccentEnabled ? AppColors.brandAccent : .primary)
+  ```
+- **Tinted backgrounds**: Pass the `tinted` parameter to surface functions based on `ThemeManager.shared.tintedSurfacesEnabled`. When `false`, pass `tinted: false` to fall back to system defaults:
+  ```swift
+  .background(AppColors.windowBackground(colorScheme, tinted: themeManager.tintedSurfacesEnabled))
+  ```
+
+**For SwiftUI previews that need correct colors:** Views that use `AppColors.brandAccent` rely on `NSApp.effectiveAppearance` at runtime, which isn't available in previews. Use the `*ForScheme` variants instead:
+```swift
+AppColors.accentForScheme(colorScheme)      // instead of AppColors.brandAccent
+AppColors.accentDimmedForScheme(colorScheme)
+AppColors.accentDarkForScheme(colorScheme)
+AppColors.accentSecondaryForScheme(colorScheme)
+```
+
+**Light/dark mode resolution:** `AppColors.brandAccent` auto-resolves via `NSApp.effectiveAppearance` (not `@Environment \.colorScheme`). This works at runtime but NOT in previews — use `*ForScheme` variants for previews.
+
+**Custom theme handling:** When `currentTheme == .custom`, `ThemeManager` derives all variants algorithmically from `customAccentColor` (dimmed at 84%, dark at 70%). Code using `AppColors` tokens automatically gets the correct derived colors — no special-casing needed.
+
 ## Project Structure
 
 | Directory | Purpose |

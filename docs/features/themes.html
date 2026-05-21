@@ -1,0 +1,406 @@
+---
+layout: default
+title: Themes & Appearance - TruchiEmu Documentation
+description: Customize TruchiEmu with 17 gaming-inspired accent color themes, light and dark appearance modes, custom colors, and tinted surfaces.
+---
+
+<div class="feature-docs">
+<h1>Themes & Appearance</h1>
+
+<div class="feature-overview">
+<img src="{{ '/media/features/themes-showcase.png' | relative_url }}" alt="All 17 TruchiEmu Themes" class="hero-image">
+<p class="lead">Make TruchiEmu yours with 17 accent color themes inspired by gaming legends&mdash;from Samus to Doom&mdash;plus custom colors, light/dark appearance modes, tinted surfaces, and accent-colored toolbar icons.</p>
+</div>
+
+<nav class="toc">
+<h3>On This Page</h3>
+<ul>
+<li><a href="#all-themes">All Themes</a></li>
+<li><a href="#appearance-mode">Appearance Mode</a></li>
+<li><a href="#custom-colors">Custom Colors</a></li>
+<li><a href="#configuration">Configuration Guide</a></li>
+<li><a href="#gallery">Theme Gallery</a></li>
+<li><a href="#troubleshooting">Troubleshooting</a></li>
+</ul>
+</nav>
+
+<section id="service-explanation">
+<h2>Service Overview</h2>
+<p>TruchiEmu's theme system is an accent color theming engine that transforms the entire app interface. Each theme defines a primary accent, a dimmed variant, a dark variant, and a complementary secondary accent&mdash;with many themes also offering distinct light and dark mode adaptations for optimal contrast in both appearances.</p>
+
+<div class="theme-architecture">
+<p style="text-align:center; font-size:0.8125rem; color:var(--text-muted); text-transform:uppercase; letter-spacing:0.06em; margin-bottom:12px;">Theme Pipeline</p>
+<div class="pipeline">
+<span class="step">AccentColorTheme</span>
+<span class="arrow">&rarr;</span>
+<span class="step">ThemeManager</span>
+<span class="arrow">&rarr;</span>
+<span class="step">AppColors</span>
+<span class="arrow">&rarr;</span>
+<span class="step">SwiftUI Views</span>
+</div>
+</div>
+
+<h3>Core Features</h3>
+<ul class="feature-list">
+<li><strong>17 Named Themes:</strong> Curated accent palettes named after iconic gaming characters and franchises, organized into Standard and Gaming categories</li>
+<li><strong>Appearance Mode:</strong> Light, Dark, or Automatic&mdash;follows your system preference or overrides it per-app</li>
+<li><strong>Custom Colors:</strong> Pick any color as your accent with the built-in Color Picker</li>
+<li><strong>Toolbar Accent:</strong> Optionally color toolbar icons with the accent color instead of system defaults</li>
+<li><strong>Tinted Surfaces:</strong> Apply a subtle accent color tint to window, sidebar, and toolbar backgrounds</li>
+<li><strong>Per-Mode Adaptations:</strong> Many themes automatically adjust their accent for better contrast in light vs. dark mode</li>
+</ul>
+
+<h3>Technical Architecture</h3>
+<ul>
+<li><strong>ThemeManager:</strong> Singleton <code>@MainActor ObservableObject</code> that owns the current theme, appearance mode, and user preferences. Persists all state via <code>AppSettings</code> (SwiftData).</li>
+<li><strong>AccentColorTheme:</strong> Enum with 17 cases, each defining accent/dimmed/dark/secondary colors for light and dark modes. Includes a migration system for renamed themes.</li>
+<li><strong>AppColors:</strong> Static color tokens in the Design System that views consume. ThemeManager sets these at init and on theme application.</li>
+<li><strong>App Restart:</strong> Theme changes require an app restart for full effect. The UI enforces this with confirmation dialogs and unsaved-change interception.</li>
+</ul>
+</section>
+
+<section id="all-themes">
+<h2>All Themes</h2>
+<p>Every theme is named after a gaming legend and carefully color-matched to their iconic palette. Browse the full collection below.</p>
+
+<h3 class="theme-category">Standard</h3>
+<div class="theme-grid">
+<div class="theme-card">
+<img src="{{ '/media/features/theme-icons/theme-samus.png' | relative_url }}" alt="Samus" class="theme-icon">
+<div class="theme-name">Samus</div>
+<span class="theme-swatch" style="background: rgb(8, 145, 178);"></span>
+</div>
+<div class="theme-card">
+<img src="{{ '/media/features/theme-icons/theme-chocobo.png' | relative_url }}" alt="Chocobo" class="theme-icon">
+<div class="theme-name">Chocobo</div>
+<span class="theme-swatch" style="background: rgb(217, 119, 6);"></span>
+</div>
+<div class="theme-card">
+<img src="{{ '/media/features/theme-icons/theme-protoss.png' | relative_url }}" alt="Protoss" class="theme-icon">
+<div class="theme-name">Protoss</div>
+<span class="theme-swatch" style="background: rgb(225, 29, 72);"></span>
+</div>
+<div class="theme-card">
+<img src="{{ '/media/features/theme-icons/theme-joker.png' | relative_url }}" alt="Joker" class="theme-icon">
+<div class="theme-name">Joker</div>
+<span class="theme-swatch" style="background: rgb(124, 58, 237);"></span>
+</div>
+<div class="theme-card">
+<img src="{{ '/media/features/theme-icons/theme-geralt.png' | relative_url }}" alt="Geralt" class="theme-icon">
+<div class="theme-name">Geralt</div>
+<span class="theme-swatch" style="background: rgb(5, 150, 105);"></span>
+</div>
+<div class="theme-card">
+<img src="{{ '/media/features/theme-icons/theme-megaMan.png' | relative_url }}" alt="Mega Man" class="theme-icon">
+<div class="theme-name">Mega Man</div>
+<span class="theme-swatch" style="background: rgb(3, 105, 161);"></span>
+</div>
+<div class="theme-card">
+<img src="{{ '/media/features/theme-icons/theme-custom.png' | relative_url }}" alt="Custom" class="theme-icon">
+<div class="theme-name">Custom</div>
+<span class="theme-swatch" style="background: linear-gradient(135deg, #f87171, #818cf8, #34d399); border: 2px dashed var(--border);"></span>
+</div>
+</div>
+
+<h3 class="theme-category">Gaming</h3>
+<div class="theme-grid">
+<div class="theme-card">
+<img src="{{ '/media/features/theme-icons/theme-mario.png' | relative_url }}" alt="Mario" class="theme-icon">
+<div class="theme-name">Mario</div>
+<span class="theme-swatch" style="background: rgb(229, 37, 33);"></span>
+</div>
+<div class="theme-card">
+<img src="{{ '/media/features/theme-icons/theme-luigi.png' | relative_url }}" alt="Luigi" class="theme-icon">
+<div class="theme-name">Luigi</div>
+<span class="theme-swatch" style="background: rgb(0, 168, 77);"></span>
+</div>
+<div class="theme-card">
+<img src="{{ '/media/features/theme-icons/theme-sonic.png' | relative_url }}" alt="Sonic" class="theme-icon">
+<div class="theme-name">Sonic</div>
+<span class="theme-swatch" style="background: rgb(0, 96, 240);"></span>
+</div>
+<div class="theme-card">
+<img src="{{ '/media/features/theme-icons/theme-halfLife.png' | relative_url }}" alt="Half-Life" class="theme-icon">
+<div class="theme-name">Half-Life</div>
+<span class="theme-swatch" style="background: rgb(255, 102, 0);"></span>
+</div>
+<div class="theme-card">
+<img src="{{ '/media/features/theme-icons/theme-kratos.png' | relative_url }}" alt="Kratos" class="theme-icon">
+<div class="theme-name">Kratos</div>
+<span class="theme-swatch" style="background: rgb(204, 0, 0);"></span>
+</div>
+<div class="theme-card">
+<img src="{{ '/media/features/theme-icons/theme-kirby.png' | relative_url }}" alt="Kirby" class="theme-icon">
+<div class="theme-name">Kirby</div>
+<span class="theme-swatch" style="background: rgb(255, 140, 183);"></span>
+</div>
+<div class="theme-card">
+<img src="{{ '/media/features/theme-icons/theme-zelda.png' | relative_url }}" alt="Zelda" class="theme-icon">
+<div class="theme-name">Zelda</div>
+<span class="theme-swatch" style="background: rgb(45, 140, 60);"></span>
+</div>
+<div class="theme-card">
+<img src="{{ '/media/features/theme-icons/theme-pikachu.png' | relative_url }}" alt="Pikachu" class="theme-icon">
+<div class="theme-name">Pikachu</div>
+<span class="theme-swatch" style="background: rgb(255, 204, 0);"></span>
+</div>
+<div class="theme-card">
+<img src="{{ '/media/features/theme-icons/theme-doom.png' | relative_url }}" alt="Doom" class="theme-icon">
+<div class="theme-name">Doom</div>
+<span class="theme-swatch" style="background: rgb(139, 0, 0);"></span>
+</div>
+<div class="theme-card">
+<img src="{{ '/media/features/theme-icons/theme-masterChief.png' | relative_url }}" alt="Master Chief" class="theme-icon">
+<div class="theme-name">Master Chief</div>
+<span class="theme-swatch" style="background: rgb(64, 148, 71);"></span>
+</div>
+</div>
+</section>
+
+<section id="appearance-mode">
+<h2>Appearance Mode</h2>
+<p>Choose how TruchiEmu looks alongside your system. Three appearance modes are available:</p>
+
+<ul class="feature-list">
+<li><strong>Automatic:</strong> Follows your macOS system preference. Switches seamlessly between light and dark as your system changes.</li>
+<li><strong>Light:</strong> Forces the light aqua appearance regardless of system setting.</li>
+<li><strong>Dark:</strong> Forces the dark aqua appearance regardless of system setting.</li>
+</ul>
+
+<div class="screenshot-frame">
+<img src="{{ '/media/features/themes-light-dark.png' | relative_url }}" alt="TruchiEmu in Light and Dark Appearance" class="screenshot">
+<p class="screenshot-caption">The same theme adapts its accent color for optimal contrast in both light and dark modes</p>
+</div>
+
+<h3>Per-Mode Color Adaptations</h3>
+<p>Many themes define distinct accent colors for light and dark mode to maintain readability. For example:</p>
+<table class="feature-table">
+<thead>
+<tr>
+<th>Theme</th>
+<th>Light Mode Accent</th>
+<th>Dark Mode Accent</th>
+<th>Why</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Joker</td>
+<td><span style="display:inline-block;width:12px;height:12px;border-radius:50%;background:rgb(124,58,237);vertical-align:middle;"></span> Violet</td>
+<td><span style="display:inline-block;width:12px;height:12px;border-radius:50%;background:rgb(166,130,255);vertical-align:middle;"></span> Brighter violet</td>
+<td>Boosted brightness for dark backgrounds</td>
+</tr>
+<tr>
+<td>Protoss</td>
+<td><span style="display:inline-block;width:12px;height:12px;border-radius:50%;background:rgb(185,28,28);vertical-align:middle;"></span> Darker rose</td>
+<td><span style="display:inline-block;width:12px;height:12px;border-radius:50%;background:rgb(225,29,72);vertical-align:middle;"></span> Full rose</td>
+<td>Reduced intensity for light backgrounds</td>
+</tr>
+<tr>
+<td>Samus</td>
+<td><span style="display:inline-block;width:12px;height:12px;border-radius:50%;background:rgb(5,94,116);vertical-align:middle;"></span> Darker teal</td>
+<td><span style="display:inline-block;width:12px;height:12px;border-radius:50%;background:rgb(8,145,178);vertical-align:middle;"></span> Full teal</td>
+<td>Darkened for contrast on white</td>
+</tr>
+</tbody>
+</table>
+</section>
+
+<section id="custom-colors">
+<h2>Custom Colors</h2>
+<p>Can't find the perfect accent? The <strong>Custom</strong> theme lets you pick any color as your accent using the system Color Picker. All dimmed and dark variants are algorithmically derived from your chosen color.</p>
+
+<div class="info-box">
+<p><strong>How it works:</strong> Select the Custom theme in the theme grid, then use the Color Picker that appears below it. Your custom color is saved automatically when you apply the theme.</p>
+</div>
+
+<h3>Custom Theme Details</h3>
+<ul class="feature-list">
+<li><strong>Unlimited Colors:</strong> Choose any color from the full spectrum via the macOS Color Picker</li>
+<li><strong>Auto-Derived Variants:</strong> Dimmed (84% brightness) and dark (70% brightness) versions are computed automatically</li>
+<li><strong>Persisted:</strong> Your custom color is saved and restored on every launch</li>
+<li><strong>No Per-Mode Customization:</strong> The same accent is used in both light and dark mode&mdash;if you need mode-specific colors, choose a built-in theme with per-mode adaptations</li>
+</ul>
+</section>
+
+<section id="configuration">
+<h2>Configuration Guide</h2>
+
+<h3>Step-by-Step Setup</h3>
+<ol class="setup-steps">
+<li>
+<strong>Open Theme Settings</strong>
+<p>Navigate to <code>Settings &rarr; General</code> and find the Theme section at the top of the page.</p>
+</li>
+<li>
+<strong>Choose Your Appearance</strong>
+<p>Use the segmented control at the top to select <strong>Automatic</strong>, <strong>Light</strong>, or <strong>Dark</strong> mode. This controls the overall app appearance independently of your accent theme.</p>
+</li>
+<li>
+<strong>Select a Theme</strong>
+<p>Click on any theme icon in the grid. A checkmark overlay indicates your current selection. The theme grid shows all 17 options organized by category.</p>
+</li>
+<li>
+<strong>Pick a Custom Color (Optional)</strong>
+<p>If you selected the Custom theme, a Color Picker appears below the grid. Use it to choose any accent color you like.</p>
+</li>
+<li>
+<strong>Toggle Surface Options</strong>
+<p>Two additional toggles let you fine-tune how the accent color is applied:</p>
+<ul>
+<li><strong>Accent-Colored Toolbar Icons:</strong> Colors toolbar buttons and segmented controls with the accent instead of system default blue</li>
+<li><strong>Tinted Surfaces:</strong> Applies a subtle (4&ndash;8%) accent color blend to window, sidebar, and toolbar backgrounds</li>
+</ul>
+</li>
+<li>
+<strong>Apply &amp; Restart</strong>
+<p>Click <strong>Apply Theme</strong> to save your changes. A confirmation dialog explains that the app will restart. Confirm to see your new theme take effect across every window and view.</p>
+</li>
+</ol>
+
+<div class="warning-box">
+<p><strong>Restart Required:</strong> Theme and appearance changes require an app restart to take full effect. This is because the <code>AppColors</code> statics are resolved at render time&mdash;a full process restart ensures every view picks up the new values.</p>
+</div>
+
+<h3>Unsaved Changes Protection</h3>
+<p>TruchiEmu protects you from losing theme changes:</p>
+<ul class="feature-list">
+<li><strong>Navigate Away:</strong> If you switch settings tabs with pending theme changes, a dialog offers "Apply &amp; Restart", "Discard Changes", or "Cancel"</li>
+<li><strong>Close Window:</strong> The window close button is intercepted when changes are pending, showing the same three options</li>
+</ul>
+</section>
+
+<section id="gallery">
+<h2>Theme Gallery</h2>
+<p>A closer look at how different themes transform the TruchiEmu interface across both light and dark modes.</p>
+
+<div class="theme-gallery">
+<div class="theme-gallery-item">
+<h3>Samus <span class="gallery-swatch" style="background: rgb(8, 145, 178);"></span></h3>
+<p>The default theme&mdash;a cool cyan-teal inspired by Samus Aran's iconic Varia Suit. Darkens in light mode for crisp contrast on white backgrounds.</p>
+<div class="appearance-comparison">
+<div>
+<img src="{{ '/media/screenshots/themes/theme-samus-light.png' | relative_url }}" alt="Samus Theme - Light Mode">
+<div class="label">Light Mode</div>
+</div>
+<div>
+<img src="{{ '/media/screenshots/themes/theme-samus-dark.png' | relative_url }}" alt="Samus Theme - Dark Mode">
+<div class="label">Dark Mode</div>
+</div>
+</div>
+</div>
+
+<div class="theme-gallery-item">
+<h3>Joker <span class="gallery-swatch" style="background: rgb(124, 58, 237);"></span></h3>
+<p>A vivid violet that brightens to a luminous lavender in dark mode&mdash;as unpredictable and striking as the Joker himself.</p>
+<div class="appearance-comparison">
+<div>
+<img src="{{ '/media/screenshots/themes/theme-joker-light.png' | relative_url }}" alt="Joker Theme - Light Mode">
+<div class="label">Light Mode</div>
+</div>
+<div>
+<img src="{{ '/media/screenshots/themes/theme-joker-dark.png' | relative_url }}" alt="Joker Theme - Dark Mode">
+<div class="label">Dark Mode</div>
+</div>
+</div>
+</div>
+
+<div class="theme-gallery-item">
+<h3>Protoss <span class="gallery-swatch" style="background: rgb(225, 29, 72);"></span></h3>
+<p>A commanding rose-crimson that evokes the power of the Protoss. Tones down in light mode for comfortable readability.</p>
+<div class="appearance-comparison">
+<div>
+<img src="{{ '/media/screenshots/themes/theme-protoss-light.png' | relative_url }}" alt="Protoss Theme - Light Mode">
+<div class="label">Light Mode</div>
+</div>
+<div>
+<img src="{{ '/media/screenshots/themes/theme-protoss-dark.png' | relative_url }}" alt="Protoss Theme - Dark Mode">
+<div class="label">Dark Mode</div>
+</div>
+</div>
+</div>
+
+<div class="theme-gallery-item">
+<h3>Geralt <span class="gallery-swatch" style="background: rgb(5, 150, 105);"></span></h3>
+<p>A deep emerald-teal, as stoic and grounded as the White Wolf himself. Looks equally stunning in both light and dark modes.</p>
+<div class="appearance-comparison">
+<div>
+<img src="{{ '/media/screenshots/themes/theme-geralt-light.png' | relative_url }}" alt="Geralt Theme - Light Mode">
+<div class="label">Light Mode</div>
+</div>
+<div>
+<img src="{{ '/media/screenshots/themes/theme-geralt-dark.png' | relative_url }}" alt="Geralt Theme - Dark Mode">
+<div class="label">Dark Mode</div>
+</div>
+</div>
+</div>
+
+<div class="theme-gallery-item">
+<h3>Kirby <span class="gallery-swatch" style="background: rgb(255, 140, 183);"></span></h3>
+<p>A playful pink as cheerful and unmistakable as Kirby. Brings warmth and personality to every surface.</p>
+<div class="appearance-comparison">
+<div>
+<img src="{{ '/media/screenshots/themes/theme-kirby-light.png' | relative_url }}" alt="Kirby Theme - Light Mode">
+<div class="label">Light Mode</div>
+</div>
+<div>
+<img src="{{ '/media/screenshots/themes/theme-kirby-dark.png' | relative_url }}" alt="Kirby Theme - Dark Mode">
+<div class="label">Dark Mode</div>
+</div>
+</div>
+</div>
+</div>
+</section>
+
+<section id="troubleshooting">
+<h2>Troubleshooting</h2>
+
+<div class="troubleshooting-grid">
+<div class="troubleshooting-item">
+<h3>Theme changes not visible</h3>
+<p><strong>Symptom:</strong> After selecting a new theme, the interface still shows the old colors.</p>
+<p><strong>Solution:</strong> Theme changes require an app restart. Click <strong>Apply Theme</strong> and confirm the restart dialog. If you dismissed the dialog, close and reopen TruchiEmu manually.</p>
+</div>
+
+<div class="troubleshooting-item">
+<h3>Custom color resets on launch</h3>
+<p><strong>Symptom:</strong> The custom accent color reverts to the default teal after restarting.</p>
+<p><strong>Solution:</strong> Make sure you clicked <strong>Apply Theme</strong> after choosing your custom color. Simply picking a color in the Color Picker is not enough&mdash;you must apply and restart for the change to persist.</p>
+</div>
+
+<div class="troubleshooting-item">
+<h3>Unsaved changes warning</h3>
+<p><strong>Symptom:</strong> A dialog appears when navigating away from the General settings page or closing the window.</p>
+<p><strong>Solution:</strong> This is intentional protection for unsaved theme changes. Choose "Apply &amp; Restart" to keep your changes, "Discard Changes" to revert, or "Cancel" to go back and keep editing.</p>
+</div>
+
+<div class="troubleshooting-item">
+<h3>Theme looks different in light vs. dark</h3>
+<p><strong>Symptom:</strong> The accent color shifts slightly between light and dark appearance modes.</p>
+<p><strong>Solution:</strong> This is by design. Several themes define per-mode accent variants for better contrast. If you prefer a consistent accent regardless of mode, the Custom theme uses the same color in both.</p>
+</div>
+</div>
+</section>
+
+<section id="references">
+<h2>Related Services</h2>
+
+<div class="related-services">
+<div class="service-card">
+<h3><a href="{{ '/features/library.html' | relative_url }}">Library Management</a></h3>
+<p>Theme accent colors appear throughout the library&mdash;game card borders, hover highlights, selection strokes, and sidebar tinting all respond to your chosen theme.</p>
+</div>
+
+<div class="service-card">
+<h3><a href="{{ '/features/shaders.html' | relative_url }}">Shader System</a></h3>
+<p>While shaders transform in-game visuals, themes transform the app interface itself. Together, they give you full control over how TruchiEmu looks and feels.</p>
+</div>
+
+<div class="service-card">
+<h3><a href="{{ '/development.html' | relative_url }}">Developer Guide</a></h3>
+<p>Learn how the theme system works under the hood&mdash;the ThemeManager pipeline, AppColors statics, and how to add new themes to the codebase.</p>
+</div>
+</div>
+</section>
+</div>
