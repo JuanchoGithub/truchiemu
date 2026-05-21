@@ -18,8 +18,11 @@ struct LibretroCore: Identifiable, Codable, Hashable {
     var downloadProgress: Double = 0
 
     var activeVersion: CoreVersion? {
-        guard let tag = activeVersionTag else { return installedVersions.last }
-        return installedVersions.first { $0.tag == tag }
+        if let tag = activeVersionTag, let match = installedVersions.first(where: { $0.tag == tag }) {
+            return match
+        }
+        let valid = installedVersions.filter { FileManager.default.fileExists(atPath: $0.dylibPath.path) }
+        return valid.last ?? installedVersions.last
     }
 
     var isInstalled: Bool { !installedVersions.isEmpty }

@@ -8,8 +8,7 @@ repository: "JuanchoGithub/truchiemu"
 
 # Theme settings
 markdown: kramdown
-highlighter: rouge
-permalink: /:name.html
+permalink: /:name/
 
 # Plugins
 plugins:
@@ -34,11 +33,6 @@ defaults:
       layout: "default"
       sidebar: true
 
-# Sass config
-sass:
-  sass_dir: _sass
-  style: compressed
-
 # Kramdown config
 kramdown:
   input: GFM
@@ -50,16 +44,33 @@ vars:
   version: "1.0.0"
   icon: "/media/logo-icon.png"
 
-# Navigation
+# Navigation — user-facing pages
 nav:
   - title: "Getting Started"
-    url: "/getting-started.html"
+    url: "/getting-started/"
   - title: "Features"
-    url: "/features.html"
+    url: "/features/"
+  - title: "Systems"
+    url: "/systems/"
   - title: "Troubleshooting"
-    url: "/troubleshooting.html"
-  - title: "Development"
-    url: "/development.html"
+    url: "/troubleshooting/"
+  - title: "Bezel Guide"
+    url: "/bezel-guide/"
+  - title: "License"
+    url: "/license/"
+
+# Development navigation (secondary)
+dev_nav:
+  - title: "Developer Guide"
+    url: "/development/"
+  - title: "Building from Source"
+    url: "/dev/building/"
+  - title: "Contributing"
+    url: "/dev/contributing/"
+  - title: "Architecture Flows"
+    url: "/app-flows/"
+  - title: "Dreamcast VMU Deep Dive"
+    url: "/dreamcast-vmu-fix/"
 
 # Social
 social:

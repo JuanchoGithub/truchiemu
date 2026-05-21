@@ -132,7 +132,7 @@ class CoreOptionsViewModel: ObservableObject {
 
         var dylibPath: String? = nil
         if let core = CoreManager.shared.installedCores.first(where: { $0.id == id }) {
-            LoggerService.debug(category: "CoreOptionsViewModel", "Found installed core: \(core.id). Versions: \(core.installedVersions.count). ActiveTag: \(core.activeVersionTag ?? "nil")")
+            LoggerService.debug(category: "CoreOptionsViewModel", "Found installed core: \(core.id). Versions: \(core.installedVersions.count). ActiveTag: \(core.activeVersionTag ?? "nil"). ValidDylibs: \(core.installedVersions.filter { FileManager.default.fileExists(atPath: $0.dylibPath.path) }.map { $0.dylibPath.lastPathComponent })")
             if let activeVersion = core.activeVersion {
                 dylibPath = activeVersion.dylibPath.path
                 LoggerService.debug(category: "CoreOptionsViewModel", "Resolved dylibPath: \(dylibPath!)")
@@ -237,8 +237,14 @@ class CoreOptionsViewModel: ObservableObject {
             await manager.discoverOptions(for: coreID, dylibPath: dylib, romPath: romPath)
             hasLoadedOnce = true
             updateFilteredData()
+        } else if let core = CoreManager.shared.installedCores.first(where: { $0.id == coreID }),
+                  let fallback = core.installedVersions.first(where: { FileManager.default.fileExists(atPath: $0.dylibPath.path) }) {
+            LoggerService.warning(category: "CoreOptionsViewModel", "Active version missing for \(coreID), falling back to \(fallback.dylibPath.lastPathComponent)")
+            await manager.discoverOptions(for: coreID, dylibPath: fallback.dylibPath.path, romPath: romPath)
+            hasLoadedOnce = true
+            updateFilteredData()
         } else {
-            LoggerService.error(category: "CoreOptionsViewModel", "Discovery failed: dylibPath not found for \(coreID)")
+            LoggerService.error(category: "CoreOptionsViewModel", "Discovery failed: no valid dylibPath found for \(coreID)")
         }
     }
 }

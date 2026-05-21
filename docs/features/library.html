@@ -9,12 +9,12 @@ title: Library Management - TruchiEmu Documentation
     
     <div class="feature-overview">
         <img src="{{ '/media/features/library-hero.png' | relative_url }}" alt="Library Management Overview" class="hero-image lightbox-trigger">
-        <p class="lead">TruchiEmu's intelligent library management system automatically organizes your game collection with metadata scraping, artwork downloading, and advanced filtering capabilities. Transform your ROM collection into a beautiful, searchable library with rich game information and box art.</p>
+        <p class="lead">TruchiEmu's library management system organizes your game collection with metadata enrichment, artwork downloads, and system-based categorization.</p>
     </div>
 
     <section id="service-explanation">
         <h2>Service Overview</h2>
-        <p>The Library Management service provides comprehensive organization and discovery tools for your game collection. Using machine learning-based metadata matching and integration with multiple game databases, TruchiEmu automatically identifies games, downloads high-quality artwork, and creates an immersive browsing experience that rivals modern game launchers.</p>
+        <p>The Library Management service helps organize and discover your game collection. It identifies games, fetches metadata from LaunchBox, downloads artwork, and groups titles by system.</p>
         
         <div class="architecture-diagram">
             <img src="{{ '/media/features/library-architecture.png' | relative_url }}" alt="Library Architecture">
@@ -23,22 +23,14 @@ title: Library Management - TruchiEmu Documentation
 
         <h3>Core Features</h3>
         <ul class="feature-list">
-            <li><strong>Automatic Game Detection:</strong> AI-powered ROM identification using multiple database sources</li>
+            <li><strong>Automatic Game Detection:</strong> ROM identification using CRC32 hash matching and header analysis</li>
             <li><strong>Metadata Scraping:</strong> Pulls game info, descriptions, release dates, and developer information</li>
             <li><strong>Artwork Management:</strong> Automatic download of box art, screenshots, and fan art</li>
             <li><strong>System Categorization:</strong> Groups games by original console/system</li>
             <li><strong>Achievement Detection:</strong> Identifies games with RetroAchievements support</li>
         </ul>
 
-        <h3>Technical Architecture</h3>
-        <p>The library system comprises several integrated components:</p>
-        <ul>
-            <li><strong>ROM Scanner:</strong> Recursive directory scanning with file hash calculation and header extraction</li>
-            <li><strong>Metadata Engine:</strong> Multi-source data aggregation from LaunchBox, IGDB, and custom databases</li>
-            <li><strong>Artwork Pipeline:</strong> Parallel downloading with format optimization and caching</li>
-            <li><strong>SwiftData Backend:</strong> Persistent storage with fast search and filtering capabilities</li>
-            <li><strong>Index Service:</strong> Full-text search across titles, descriptions, and metadata tags</li>
-        </ul>
+        <p>For implementation details, see the <a href="/development/">Developer Guide</a>.</p>
     </section>
 
     <section id="step-by-step-guide">
@@ -57,7 +49,7 @@ title: Library Management - TruchiEmu Documentation
                 </li>
                 <li>
                     <strong>Start Library Scan</strong>
-                    <p>Click "Scan for New ROMs" in the main Library view. The scanner will calculate hashes, identify games, and fetch metadata. Progress is shown in real-time with estimated completion time.</p>
+                    <p>Click "Scan for New ROMs" in the main Library view. The scanner will calculate hashes, identify games, and fetch metadata.</p>
                 </li>
             </ol>
     </section>
@@ -67,28 +59,13 @@ title: Library Management - TruchiEmu Documentation
         
         <div class="related-services">
             <div class="service-card">
-                <h3><a href="/features/save-states.html">Save State System</a></h3>
-                <p>Learn how save states integrate with library metadata to track game progress automatically.</p>
+                <h3><a href="/features/save-states/">Save State System</a></h3>
+                <p>Save states are organized and accessible from within the game library view.</p>
             </div>
             
             <div class="service-card">
-                <h3><a href="/features/achievements.html">RetroAchievements</a></h3>
-                <p>Achievement progress is automatically tracked and displayed in your game library views.</p>
-            </div>
-            
-            <div class="service-card">
-                <h3><a href="#">Library API Reference</a></h3>
-                <p>Complete API documentation for programmatically accessing and managing your game library.</p>
-            </div>
-            
-            <div class="service-card">
-                <h3><a href="#">Custom Database Guide</a></h3>
-                <p>Create custom metadata databases for rare or homebrew games not in commercial databases.</p>
-            </div>
-            
-            <div class="service-card">
-                <h3><a href="#">ROM Import Utilities</a></h3>
-                <p>Use command-line tools for bulk ROM importing and library management automation.</p>
+                <h3><a href="/features/achievements/">RetroAchievements</a></h3>
+                <p>Achievement progress is displayed in your game library views.</p>
             </div>
         </div>
     </section>

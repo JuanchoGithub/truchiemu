@@ -1,5 +1,8 @@
 ---
+layout: default
 title: Debugging the Invisible: Why Dreamcast Games Couldn't Save
+description: A technical deep dive into fixing Dreamcast VMU saves in Flycast - core option lifecycles, libretro API semantics, and binary analysis.
+last_updated: May 2026
 ---
 
 # Debugging the Invisible: Why Dreamcast Games Couldn't Save in Our Emulator

@@ -9,12 +9,12 @@ title: RetroAchievements Integration - TruchiEmu Documentation
     
     <div class="feature-overview">
         <img src="{{ '/media/features/achievements-hero.png' | relative_url }}" alt="RetroAchievements Overview" class="hero-image lightbox-trigger">
-        <p class="lead">TruchiEmu's deep RetroAchievements integration brings modern achievement hunting to classic retro games. Track your progress, earn badges, and compete with players worldwide while enjoying your favorite emulated titles with full synchronization to the RetroAchievements.org platform.</p>
+        <p class="lead">TruchiEmu integrates with RetroAchievements.org to track and unlock achievements in classic games.</p>
     </div>
 
     <section id="service-explanation">
         <h2>Service Overview</h2>
-        <p>The RetroAchievements service in TruchiEmu provides seamless integration with the RetroAchievements.org platform, allowing you to earn achievements in thousands of supported classic games. Our implementation includes real-time achievement tracking, rich presence integration, and automatic save state management when achievements are earned.</p>
+        <p>The RetroAchievements service connects to RetroAchievements.org to track and unlock achievements during gameplay. It integrates with the Libretro core to detect achievement conditions in real-time.</p>
         
         <div class="architecture-diagram">
             <img src="{{ '/media/features/achievements-architecture.png' | relative_url }}" alt="Achievements Architecture">
@@ -23,25 +23,12 @@ title: RetroAchievements Integration - TruchiEmu Documentation
 
         <h3>Core Features</h3>
         <ul class="feature-list">
-            <li><strong>Real-time Memory Monitoring:</strong> Continuous scanning of game memory for achievement conditions</li>
+            <li><strong>Real-time Unlocking:</strong> Achievements are detected and unlocked during gameplay</li>
             <li><strong>Rich Presence:</strong> Share your current game and activity with the RetroAchievements community</li>
             <li><strong>Hardcore Mode:</strong> Earn achievements without save states, rewinds, or cheats for maximum prestige</li>
-            <li><strong>Leaderboard Integration:</strong> Compete in time trials, high scores, and challenge leaderboards</li>
-            <li><strong>Automatic Backups:</strong> Save state created automatically when earning achievements for proof</li>
         </ul>
 
-        <h3>Technical Architecture</h3>
-        <p>The achievement system consists of several integrated components:</p>
-        <ul>
-            <li><strong>Memory Scanner:</strong> Efficient pattern matching engine that monitors game RAM for achievement triggers</li>
-            <li><strong>Achievement Engine:</strong> Core logic that evaluates achievement conditions and manages state</li>
-            <li><strong>API Client:</strong> Secure HTTPS client for communicating with RetroAchievements.org API</li>
-            <li><strong>Rich Presence Manager:</strong> Updates your Discord and RA profile with current game status</li>
-            <li><strong>Authentication Service:</strong> Secure token-based authentication with encrypted credential storage</li>
-        </ul>
-
-        <h3>Supported Systems</h3>
-        <p>TruchiEmu supports achievements on the following platforms: NES, SNES, Game Boy, Game Boy Color, Game Boy Advance, Sega Genesis, Sega CD, Sega 32X, TurboGrafx-16, and Neo Geo Pocket. Achievement support is automatically detected when loading compatible ROMs.</p>
+        <p>For implementation details, see the <a href="/development/">Developer Guide</a>.</p>
     </section>
 
     <section id="step-by-step-guide">
@@ -65,7 +52,7 @@ title: RetroAchievements Integration - TruchiEmu Documentation
             </li>
             <li>
                 <strong>Enable Achievement Detection</strong>
-                <p>Toggle "Enable Achievement Detection" in the main Achievements settings panel. This activates the memory scanner for supported games.</p>
+                <p>Toggle "Enable Achievement Detection" in the main Achievements settings panel.</p>
             </li>
             <li>
                 <strong>Configure Rich Presence</strong>
@@ -73,129 +60,22 @@ title: RetroAchievements Integration - TruchiEmu Documentation
             </li>
         </ol>
 
-        <h3>Advanced Configuration</h3>
-        <ol class="setup-steps">
-            <li>
-                <strong>Hardcore Mode Setup</strong>
-                <p>Enable "Hardcore Mode" for competitive achievement hunting. This disables save states, rewind, slow motion, and cheat codes. A confirmation dialog will appear warning about these restrictions.</p>
-            </li>
-            <li>
-                <strong>Leaderboard Notifications</strong>
-                <p>Configure leaderboard notification settings under <code>Settings → Achievements → Leaderboards</code>. Set audio alerts, popup duration, and notification position on screen.</p>
-            </li>
-            <li>
-                <strong>Notification Positioning</strong>
-                <p>Adjust where achievement notifications appear on screen. Choose from corner positions or set custom coordinates. Test positioning with the preview button.</p>
-            </li>
-        </ol>
-
         <h3>Game-Specific Setup</h3>
         <ol class="setup-steps">
             <li>
                 <strong>Load Supported Game</strong>
-                <p>Open a ROM for a supported system (NES, SNES, Genesis, etc.). TruchiEmu automatically detects if the game has achievements available.</p>
+                <p>Open a ROM for a supported system. TruchiEmu automatically detects if the game has achievements available.</p>
             </li>
             <li>
                 <strong>View Achievement List</strong>
-                <p>Press <code>Cmd+A</code> or select <code>View → Achievement List</code> to see all available achievements for the current game. The list shows progress, difficulty, and completion status.</p>
+                <p>Open the achievement list from the game menu to see all available achievements for the current game.</p>
                 <img src="{{ '/media/screenshots/achievement-list.png' | relative_url }}" alt="Achievement List View">
             </li>
             <li>
                 <strong>Track Achievement Progress</strong>
-                <p>Enable "Show Progress in OSD" to display achievement progress directly in the game view. Progress bars appear for achievements with measurable progress.</p>
-            </li>
-            <li>
-                <strong>Challenge Filtering</strong>
-                <p>Filter achievements by difficulty, type (progression, missable, etc.), or completion status to focus on specific goals during gameplay.</p>
+                <p>Achievement progress is displayed during gameplay with on-screen notifications when conditions are met.</p>
             </li>
         </ol>
-    </section>
-
-    <section id="configuration-examples">
-        <h2>Configuration Examples</h2>
-        
-        <h3>Example 1: Competitive Hardcore Setup</h3>
-        <div class="config-example">
-            <pre><code>// Achievements Configuration
-domain = "retroachievements.org"
-username = "YourUsername"
-api_key = "YourAPIKey"
-
-// Gameplay Restrictions
-hardcore_mode = true
-disable_save_states = true
-disable_rewind = true
-disable_cheats = true
-
-// Notifications
-notification_duration = 5.0
-sound_enabled = true
-sound_volume = 0.7
-screenshot_enabled = true
-
-// Rich Presence
-rich_presence_enabled = true
-rich_presence_format = "Playing %g - %m achievements earned"
-
-// Performance
-memory_scan_interval = 1          // In frames
-scan_efficiency_mode = "balanced"</code></pre>
-        </div>
-
-        <h3>Example 2: Casual Achievement Hunting</h3>
-        <div class="config-example">
-            <pre><code>// Achievements Configuration
-domain = "retroachievements.org"
-username = "YourUsername"
-api_key = "YourAPIKey"
-
-// Gameplay Restrictions
-hardcore_mode = false
-allow_save_states = true
-allow_rewind = true
-cheats_block_achievements = true    // Cheats disable achievements
-
-// Notifications
-notification_duration = 3.0
-sound_enabled = true
-sound_file = "custom_unlock.wav"
-notification_position = "top_right"
-progress_in_osd = true
-
-// Quality of Life
-auto_screenshot = true
-screenshot_delay = 100              // Milliseconds after unlock
-achievement_list_hotkey = "Cmd+A"
-
-// Social Features
-rich_presence_enabled = true
-discord_integration = true
-leaderboard_notifications = true</code></pre>
-        </div>
-
-        <h3>Example 3: Offline Achievement Queue</h3>
-        <div class="config-example">
-            <pre><code>// Achievements Configuration
-offline_mode = false              // Set to true for pure offline play
-queue_achievements = true         // Queue when offline
-auto_sync = true                  // Sync when connection restored
-sync_interval = 300               // Sync every 5 minutes
-
-// Network Settings
-api_timeout = 30
-retry_attempts = 3
-offline_cache_size = 50           // Max achievements in queue
-
-// Achievement Detection
-enable_detection = true
-validate_hashes = true            // Verify ROM is correct version
-detect_unofficial = false         // Ignore unofficial achievements
-
-// Notification Settings
-queue_notification = true         // Notify when achievements queued
-sync_notification = true            // Notify when sync completes
-show_offline_indicator = true     // Show offline status in UI</code></pre>
-        </div>
     </section>
 
     <section id="troubleshooting">
@@ -222,64 +102,6 @@ show_offline_indicator = true     // Show offline status in UI</code></pre>
                 <p><strong>Symptom:</strong> Can't use save states or rewind after enabling Hardcore mode.</p>
                 <p><strong>Solution:</strong> This is intended behavior. Hardcore mode disables these features for competitive fairness. Disable Hardcore mode to restore functionality.</p>
             </div>
-            <div class="troubleshooting-item">
-                <h3>Memory Scanner Performance</h3>
-                <p><strong>Symptom:</strong> Game stuttering or frame drops with achievement detection enabled.</p>
-                <p><strong>Solution:</strong> Reduce memory scan frequency in settings. Enable scan efficiency mode. Close unnecessary background applications to free up CPU resources.</p>
-            </div>
-            <div class="troubleshooting-item">
-                <h3>Wrong Game Detected</h3>
-                <p><strong>Symptom:</strong> Achievements for a different game are showing up.</p>
-                <p><strong>Solution:</strong> This usually indicates a bad ROM dump or misidentified game. Verify your ROM hash matches RetroAchievements database. Try a different ROM dump from a verified source.</p>
-            </div>
-            <div class="troubleshooting-item">
-                <h3>Duplicate Achievement Unlocks</h3>
-                <p><strong>Symptom:</strong> Same achievement unlocking multiple times.</p>
-                <p><strong>Solution:</strong> Clear local achievement cache in <code>Settings → Achievements → Advanced → Clear Cache</code>. This prevents duplicate unlocks from cached data.</p>
-            </div>
-        </div>
-            
-            <div class="troubleshooting-item">
-                <h3>Connection Errors</h3>
-                <p><strong>Symptom:</strong> "Failed to connect to RetroAchievements.org" error message.</p>
-                <p><strong>Solution:</strong> Check your internet connection and firewall settings. Verify API key is correct and hasn't expired. Try generating a new API key from the RA website.</p>
-            </div>
-            
-            <div class="troubleshooting-item">
-                <h3>Rich Presence Not Working</h3>
-                <p><strong>Symptom:</strong> Discord or RA profile not showing current game status.</p>
-                <p><strong>Solution:</strong> Enable rich presence in settings. Check that you're not in Hardcore mode (some platforms disable rich presence for competitive integrity). Verify Discord connection in macOS Privacy settings.</p>
-            </div>
-            
-            <div class="troubleshooting-item">
-                <h3>Hardcore Mode Restrictions</h3>
-                <p><strong>Symptom:</strong> Can't use save states or rewind after enabling Hardcore mode.</p>
-                <p><strong>Solution:</strong> This is intended behavior. Hardcore mode disables these features for competitive fairness. Disable Hardcore mode to restore functionality.</p>
-            </div>
-            
-            <div class="troubleshooting-item">
-                <h3>Achievement Queue Sync Issues</h3>
-                <p><strong>Symptom:</strong> Offline achievements not syncing when connection restored.</p>
-                <p><strong>Solution:</strong> Check sync manager status in <code>Tools → Achievement Queue</code>. Force manual sync with <code>Cmd+Shift+S</code>. Verify API credentials are still valid.</p>
-            </div>
-            
-            <div class="troubleshooting-item">
-                <h3>Memory Scanner Performance</h3>
-                <p><strong>Symptom:</strong> Game stuttering or frame drops with achievement detection enabled.</p>
-                <p><strong>Solution:</strong> Reduce memory scan frequency in settings. Enable scan efficiency mode. Close unnecessary background applications to free up CPU resources.</p>
-            </div>
-            
-            <div class="troubleshooting-item">
-                <h3>Wrong Game Detected</h3>
-                <p><strong>Symptom:</strong> Achievements for a different game are showing up.</p>
-                <p><strong>Solution:</strong> This usually indicates a bad ROM dump or misidentified game. Verify your ROM hash matches RetroAchievements database. Try a different ROM dump from a verified source.</p>
-            </div>
-            
-            <div class="troubleshooting-item">
-                <h3>Duplicate Achievement Unlocks</h3>
-                <p><strong>Symptom:</strong> Same achievement unlocking multiple times.</p>
-                <p><strong>Solution:</strong> Clear local achievement cache in <code>Settings → Achievements → Advanced → Clear Cache</code>. This prevents duplicate unlocks from cached data.</p>
-            </div>
         </div>
     </section>
 
@@ -288,30 +110,15 @@ show_offline_indicator = true     // Show offline status in UI</code></pre>
         
         <div class="related-services">
             <div class="service-card">
-                <h3><a href="/features/save-states.html">Save State System</a></h3>
+                <h3><a href="/features/save-states/">Save State System</a></h3>
                 <p>Learn how save states interact with achievement detection and Hardcore mode restrictions.</p>
             </div>
             
             <div class="service-card">
-                <h3><a href="/features/cheats.html">Cheat System</a></h3>
+                <h3><a href="/features/cheats/">Cheat System</a></h3>
                 <p>Understand how cheat codes are disabled in Hardcore mode to maintain achievement integrity.</p>
             </div>
-            
-            <div class="service-card">
-                <h3><a href="/features/controllers.html">Controller Support</a></h3>
-                <p>Map achievement list and notification controls to controller buttons for console-like experience.</p>
-            </div>
-            
-            <div class="service-card">
-                <h3><a href="#">Achievements API Reference</a></h3>
-                <p>Complete API documentation for RetroAchievements integration and custom achievement development.</p>
-            </div>
-            
-            <div class="service-card">
-                <h3><a href="#">Community Achievement Guides</a></h3>
-                <p>Join the community to share achievement hunting strategies and discover tips for difficult achievements.</p>
-            </div>
-            
+
             <div class="service-card">
                 <h3><a href="https://retroachievements.org/">RetroAchievements.org</a></h3>
                 <p>Visit the official RetroAchievements website to browse games, track your progress, and connect with other achievement hunters.</p>

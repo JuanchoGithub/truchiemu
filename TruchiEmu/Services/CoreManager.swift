@@ -837,6 +837,21 @@ class CoreManager: ObservableObject {
         LoggerService.debug(category: "CoreManager", "Loaded \(installedCores.count) installed cores with versioned folders")
 
         repairPreferredCores()
+        validateCoreVersions()
+    }
+
+    private func validateCoreVersions() {
+        var needsSave = false
+        for i in installedCores.indices {
+            let core = installedCores[i]
+            guard let tag = core.activeVersionTag else { continue }
+            if !core.installedVersions.contains(where: { $0.tag == tag }) {
+                LoggerService.warning(category: "CoreManager", "Repairing core state: \(core.id) activeTag '\(tag)' not found in versions, resetting")
+                installedCores[i].activeVersionTag = nil
+                needsSave = true
+            }
+        }
+        if needsSave { saveInstalledCores() }
     }
 
     private func migrateTimestampToVersionFolders(for core: LibretroCore) {

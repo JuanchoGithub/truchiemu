@@ -51,13 +51,8 @@ description: Customize TruchiEmu with 17 gaming-inspired accent color themes, li
 <li><strong>Per-Mode Adaptations:</strong> Many themes automatically adjust their accent for better contrast in light vs. dark mode</li>
 </ul>
 
-<h3>Technical Architecture</h3>
-<ul>
-<li><strong>ThemeManager:</strong> Singleton <code>@MainActor ObservableObject</code> that owns the current theme, appearance mode, and user preferences. Persists all state via <code>AppSettings</code> (SwiftData).</li>
-<li><strong>AccentColorTheme:</strong> Enum with 17 cases, each defining accent/dimmed/dark/secondary colors for light and dark modes. Includes a migration system for renamed themes.</li>
-<li><strong>AppColors:</strong> Static color tokens in the Design System that views consume. ThemeManager sets these at init and on theme application.</li>
-<li><strong>App Restart:</strong> Theme changes require an app restart for full effect. The UI enforces this with confirmation dialogs and unsaved-change interception.</li>
-</ul>
+                    <h3>How Theme Changes Take Effect</h3>
+                    <p>When you apply a new theme, TruchiEmu saves your preference and restarts the app to ensure every window reflects the change. The UI protects you from losing unsaved changes with confirmation dialogs.</p>
 </section>
 
 <section id="all-themes">
@@ -388,17 +383,17 @@ description: Customize TruchiEmu with 17 gaming-inspired accent color themes, li
 
 <div class="related-services">
 <div class="service-card">
-<h3><a href="{{ '/features/library.html' | relative_url }}">Library Management</a></h3>
+<h3><a href="{{ '/features/library/' | relative_url }}">Library Management</a></h3>
 <p>Theme accent colors appear throughout the library&mdash;game card borders, hover highlights, selection strokes, and sidebar tinting all respond to your chosen theme.</p>
 </div>
 
 <div class="service-card">
-<h3><a href="{{ '/features/shaders.html' | relative_url }}">Shader System</a></h3>
+<h3><a href="{{ '/features/shaders/' | relative_url }}">Shader System</a></h3>
 <p>While shaders transform in-game visuals, themes transform the app interface itself. Together, they give you full control over how TruchiEmu looks and feels.</p>
 </div>
 
 <div class="service-card">
-<h3><a href="{{ '/development.html' | relative_url }}">Developer Guide</a></h3>
+<h3><a href="{{ '/development/' | relative_url }}">Developer Guide</a></h3>
 <p>Learn how the theme system works under the hood&mdash;the ThemeManager pipeline, AppColors statics, and how to add new themes to the codebase.</p>
 </div>
 </div>

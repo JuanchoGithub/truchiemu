@@ -9,12 +9,12 @@ title: Save State System - TruchiEmu Documentation
     
     <div class="feature-overview">
         <img src="{{ '/media/features/save-states-hero.png' | relative_url }}" alt="Save State System Overview" class="hero-image lightbox-trigger">
-        <p class="lead">TruchiEmu's advanced save state system provides instant game saves and loads with visual thumbnails, metadata tracking, and cloud synchronization. Create checkpoints at any moment, organize saves into slot banks, and never lose progress with our automatic backup system.</p>
+        <p class="lead">TruchiEmu's save state system captures and restores emulator state at any point, with an organized slot-based interface and visual management.</p>
     </div>
 
     <section id="service-explanation">
         <h2>Service Overview</h2>
-        <p>The Save State system captures complete emulator state including RAM, CPU registers, GPU state, and audio buffers. Unlike traditional save states, TruchiEmu's implementation includes rich metadata, screenshot thumbnails, and integration with your game library for seamless organization and retrieval.</p>
+        <p>The Save State system captures the complete emulator state (RAM, CPU registers, GPU state) so you can save and restore gameplay at any moment. Save states are managed through the game window interface.</p>
         
         <div class="architecture-diagram">
             <img src="{{ '/media/features/save-state-architecture.png' | relative_url }}" alt="Save State Architecture">
@@ -23,21 +23,12 @@ title: Save State System - TruchiEmu Documentation
 
         <h3>Core Features</h3>
         <ul class="feature-list">
-            <li><strong>Instant Captures:</strong> Save and load in less than 100ms with zero gameplay interruption</li>
-            <li><strong>Visual Thumbnails:</strong> Automatic screenshot capture with customizable compression</li>
-            <li><strong>Metadata Tracking:</strong> Track creation time, game position, and playtime between saves</li>
-            <li><strong>Slot Banking:</strong> Organize saves into customizable banks for different playthroughs</li>
+            <li><strong>Instant Captures:</strong> Save and load at any point during gameplay</li>
+            <li><strong>Slot Banking:</strong> Organize saves into multiple slots for different playthroughs</li>
+            <li><strong>Automatic Naming:</strong> Save states are organized by game and timestamp</li>
         </ul>
 
-        <h3>Technical Architecture</h3>
-        <p>The save state system is built on several core components:</p>
-        <ul>
-            <li><strong>Core Serializer:</strong> Captures complete emulator state from libretro cores</li>
-            <li><strong>Compression Engine:</strong> LZ4-based compression for fast save/load operations</li>
-            <li><strong>Thumbnail Generator:</strong> GPU-accelerated screenshot capture in real-time</li>
-            <li><strong>Metadata Manager:</strong> Maintains save state database with rich indexing</li>
-            <li><strong>Backup Scheduler:</strong> Automatic backup rotation with configurable retention policies</li>
-        </ul>
+        <p>For implementation details, see the <a href="/development/">Developer Guide</a>.</p>
     </section>
 
     <section id="step-by-step-guide">
@@ -46,17 +37,17 @@ title: Save State System - TruchiEmu Documentation
         <h3>Basic Save State Usage</h3>
         <ol class="setup-steps">
             <li>
-                <strong>Save State Usage</strong>
-                <p>Use <code>Cmd+F1</code> to save to slot 1 and <code>F1</code> to load. Loading is instant - the game resumes exactly where saved. Use <code>F2-F12</code> for slots 2-12, or use the save state browser for higher slot numbers.</p>
+                <strong>Save During Gameplay</strong>
+                <p>While playing a game, access the save state menu from the game window toolbar or use the configured keyboard shortcut to save to the current slot.</p>
             </li>
             <li>
-                <strong>View Save State Browser</strong>
-                <p>Open the save state browser with <code>Cmd+Shift+S</code> to see all save states with thumbnails. Hover over states for metadata preview showing creation time, game location, and playtime.</p>
+                <strong>Load a Save State</strong>
+                <p>Open the save state browser to see all saved states for the current game. Click any entry to restore gameplay from that point.</p>
                 <img src="{{ '/media/screenshots/save-state-browser.png' | relative_url }}" alt="Save State Browser">
             </li>
             <li>
-                <strong>Organize with Slot Banks</strong>
-                <p>Create slot banks by pressing <code>Cmd+B</code> for Bank View. Organize saves by playthrough (e.g., Bank 1 for Speedrun, Bank 2 for 100% completion).</p>
+                <strong>Manage Save Slots</strong>
+                <p>Use different save slots to maintain multiple save points for different playthroughs or challenges. Each slot stores a separate emulator state.</p>
             </li>
         </ol>
 
@@ -67,33 +58,18 @@ title: Save State System - TruchiEmu Documentation
         
         <div class="related-services">
             <div class="service-card">
-                <h3><a href="/features/achievements.html">RetroAchievements</a></h3>
+                <h3><a href="/features/achievements/">RetroAchievements</a></h3>
                 <p>Understand how save state usage affects achievement eligibility in Hardcore mode.</p>
             </div>
             
             <div class="service-card">
-                <h3><a href="/features/cheats.html">Cheat System</a></h3>
+                <h3><a href="/features/cheats/">Cheat System</a></h3>
                 <p>Save states work seamlessly with cheat codes to create specific practice scenarios.</p>
             </div>
             
             <div class="service-card">
-                <h3><a href="/features/library.html">Game Library</a></h3>
-                <p>Save states are automatically organized in your game library with thumbnails and metadata.</p>
-            </div>
-            
-            <div class="service-card">
-                <h3><a href="#">Save State API</a></h3>
-                <p>Programmatic access to save state creation, loading, and management in custom scripts.</p>
-            </div>
-            
-            <div class="service-card">
-                <h3><a href="#">Save State Converter</a></h3>
-                <p>Command-line utility for converting save states between different emulator formats.</p>
-            </div>
-            
-            <div class="service-card">
-                <h3><a href="#">Community Save State Repository</a></h3>
-                <p>Download curated save states for practice segments, boss fights, and challenge runs created by the community.</p>
+                <h3><a href="/features/library/">Game Library</a></h3>
+                <p>Save states are accessible from within the game library view.</p>
             </div>
         </div>
     </section>

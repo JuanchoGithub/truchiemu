@@ -18,9 +18,10 @@ description: Comprehensive overview of TruchiEmu's features including shaders, a
                 <li><a href="#shaders">Shader Collection</a></li>
                 <li><a href="#library">Library Management</a></li>
                 <li><a href="#achievements">Achievements</a></li>
-  <li><a href="#cores">Core System</a></li>
-  <li><a href="#savestates">Save Features</a></li>
-  <li><a href="#themes">Themes & Appearance</a></li>
+				<li><a href="#savestates">Save Features</a></li>
+				<li><a href="#themes">Themes & Appearance</a></li>
+				<li><a href="#bezels">Bezels & Screen Framing</a></li>
+				<li><a href="#mame">Arcade Management (MAME)</a></li>
             </ul>
         </div>
     </nav>
@@ -189,8 +190,6 @@ description: Comprehensive overview of TruchiEmu's features including shaders, a
                 </div>
                 <p><strong>Use Case:</strong> General retro gaming, consistent look across multiple systems</p>
             </div>
-
-            </div>
         </div>
 
         <h3>Shader Customization</h3>
@@ -329,7 +328,7 @@ description: Comprehensive overview of TruchiEmu's features including shaders, a
                 <tr>
                     <td>Region Detection</td>
                     <td>Identifies game region (USA, Europe, Japan) during identification</td>
-                    <li>Sort and filter by region</li>
+                    <td>Sort and filter by region</td>
                 </tr>
                 <tr>
                     <td>ROM Verification</td>
@@ -475,160 +474,9 @@ description: Comprehensive overview of TruchiEmu's features including shaders, a
 
 <section id="cores" class="content-section">
     <div class="container">
-        <h2>Core System Architecture</h2>
-        <p>TruchiEmu uses a powerful core-based architecture powered by libretro, allowing support for multiple emulation backends optimized for different systems.</p>
-
-        <div class="screenshot-frame">
-            <img src="{{ '/media/screenshots/core-settings.png' | relative_url }}" alt="Core Settings Interface" class="screenshot lightbox-trigger">
-            <p class="screenshot-caption">Each core has extensive customization options for accuracy vs performance</p>
-        </div>
-
-        <h3>What Are Cores?</h3>
-        <p>Cores are individual emulator engines that power each system. Think of them as plug-ins that provide emulation for specific consoles:</p>
-        <ul class="feature-list">
-            <li><strong>Specialized:</strong> Each core is optimized for one system or family of systems</li>
-            <li><strong>Independently Developed:</strong> Cores come from the libretro community</li>
-            <li><strong>Regular Updates:</strong> Cores receive updates independently of TruchiEmu</li>
-            <li><strong>Configurable:</strong> Each core has unique options and settings</li>
-            <li><strong>Swappable:</strong> Try different cores for the same system</li>
-        </ul>
-
-        <h3>Default Cores</h3>
-        <p>TruchiEmu comes pre-configured with recommended cores for each system:</p>
-        <table class="cores-table">
-            <thead>
-                <tr>
-                    <th>System</th>
-                    <th>Core Name</th>
-                    <th>Accuracy</th>
-                    <th>Performance</th>
-                </tr>
-            </thead>
-            <tbody>
-                <tr>
-                    <td>NES/Famicom</td>
-                    <td>Mesen</td>
-                    <td>⭐⭐⭐⭐⭐ Cycle-accurate</td>
-                    <td>⭐⭐⭐⭐⭐ Excellent</td>
-                </tr>
-                <tr>
-                    <td>SNES</td>
-                    <td>Snes9x</td>
-                    <td>⭐⭐⭐⭐ Very High</td>
-                    <td>⭐⭐⭐⭐⭐ Excellent</td>
-                </tr>
-                <tr>
-                    <td>Game Boy/Color</td>
-                    <td>Gambatte</td>
-                    <td>⭐⭐⭐⭐⭐ Cycle-accurate</td>
-                    <td>⭐⭐⭐⭐⭐ Excellent</td>
-                </tr>
-                <tr>
-                    <td>Game Boy Advance</td>
-                    <td>mGBA</td>
-                    <td>⭐⭐⭐⭐ High</td>
-                    <td>⭐⭐⭐⭐ Very Good</td>
-                </tr>
-                <tr>
-                    <td>Genesis/Mega Drive</td>
-                    <td>Genesis Plus GX</td>
-                    <td>⭐⭐⭐⭐⭐ Cycle-accurate</td>
-                    <td>⭐⭐⭐⭐⭐ Excellent</td>
-                </tr>
-                <tr>
-                    <td>Nintendo 64</td>
-                    <td>ParaLLEl</td>
-                    <td>⭐⭐⭐⭐ High</td>
-                    <td>⭐⭐⭐ Good (requires decent GPU)</td>
-                </tr>
-                <tr>
-                    <td>PlayStation 1</td>
-                    <td>DuckStation</td>
-                    <td>⭐⭐⭐⭐ High</td>
-                    <td>⭐⭐⭐⭐ Very Good</td>
-                </tr>
-                <tr>
-                    <td>Arcade</td>
-                    <td>MAME 2003+</td>
-                    <td>⭐⭐⭐ Good</td>
-                    <td>⭐⭐⭐⭐ Very Good</td>
-                </tr>
-            </tbody>
-        </table>
-
-        <h3>Core Management</h3>
-        <p>Manage your cores through the Core Downloader:</p>
-        <div class="core-management">
-            <div class="core-feature">
-                <h4>Download Cores</h4>
-                <ul>
-                    <li>Browse available cores by system</li>
-                    <li>One-click download and installation</li>
-                    <li>Automatic updates</li>
-                    <li>Core information and descriptions</li>
-                </ul>
-            </div>
-            
-            <div class="core-feature">
-                <h4>Update Cores</h4>
-                <ul>
-                    <li>Check for core updates</li>
-                    <li>Batch update all cores</li>
-                    <li>View changelogs</li>
-                    <li>Rollback to previous versions</li>
-                </ul>
-            </div>
-            
-            <div class="core-feature">
-                <h4>Configure Cores</h4>
-                <ul>
-                    <li>Per-core settings and options</li>
-                    <li>Bias configuration (accuracy vs speed)</li>
-                    <li>Video and audio settings</li>
-                    <li>Save configuration profiles</li>
-                </ul>
-            </div>
-        </div>
-
-        <h3>Core Configuration Examples</h3>
-        <div class="config-examples">
-            <div class="config-example">
-                <h4>⚡ Performance Mode</h4>
-                <p>Lower accuracy, higher speed</p>
-                <ul>
-                    <li>Reduced audio latency</li>
-                    <li>Frame skipping if needed</li>
-                    <li>Lower internal resolution</li>
-                </ul>
-                <p><strong>Best For:</strong> Lower-end hardware, fast-paced action games</p>
-            </div>
-            
-            <div class="config-example">
-                <h4>🎯 Balanced Mode</h4>
-                <p>Good balance of accuracy and performance</p>
-                <ul>
-                    <li>Standard settings</li>
-                    <li>Most accurate default settings</li>
-                    <li>Automatic frame delay</li>
-                </ul>
-                <p><strong>Best For:</strong> Most users, general gaming</p>
-            </div>
-            
-            <div class="config-example">
-                <h4>🎨 Accuracy Mode</h4>
-                <p>Highest accuracy, lower performance</p>
-                <ul>
-                    <li>Cycle-accurate emulation</li>
-                    <li>High-resolution rendering</li>
-                    <li>Perfect synchronization</li>
-                </ul>
-                <p><strong>Best For:</strong> Preservation, development, high-end hardware</p>
-            </div>
-        </div>
-
-        <div class="info-box">
-            <p><strong>💡 Core Selection Tip:</strong> Start with the default core for each system. If you experience issues or want different behavior (better performance, higher accuracy, or specific features), try alternative cores. The Quick Menu → Options menu provides easy access to core-specific tweaks. Having the right BIOS files often resolves compatibility issues.</p>
-        </div>
+        <h2>Emulation Cores</h2>
+        <p>TruchiEmu is powered by <strong>libretro</strong>, a universal emulation API. Each system runs on a dedicated core — think of them as plug-in engines. Cores are automatically downloaded, updated, and configured through the integrated Core Downloader.</p>
+        <p>For a complete reference on which cores power each system, performance tuning, and the technical architecture, see the <a href="{{ '/development/' | relative_url }}">Developer Guide</a>.</p>
     </div>
 </section>
 
@@ -700,11 +548,13 @@ description: Comprehensive overview of TruchiEmu's features including shaders, a
 <li><strong>Per-Mode Adaptations:</strong> Many themes automatically adjust their accent for better contrast in light vs. dark mode</li>
 </ul>
 
-<p><a href="{{ '/features/themes.html' | relative_url }}">Learn more about Themes & Appearance &rarr;</a></p>
+<p><a href="{{ '/features/themes/' | relative_url }}">Learn more about Themes & Appearance &rarr;</a></p>
 </div>
 </section>
 
-<h3>Bezels & Screen Framing</h3>
+<section id="bezels" class="content-section">
+    <div class="container">
+        <h2>Bezels & Screen Framing</h2>
         <p>Enhance your immersion with custom bezels that frame your game screen, perfect for filling the void on modern wide-aspect displays.</p>
         <div class="screenshot-frame">
             <img src="{{ '/media/screenshots/bezel-browser.png' | relative_url }}" alt="Bezel Browser Interface" class="screenshot lightbox-trigger">
@@ -715,8 +565,13 @@ description: Comprehensive overview of TruchiEmu's features including shaders, a
             <li><strong>Bezel Browser:</strong> Integrated downloader to find and apply community-created borders.</li>
             <li><strong>Customizable Fit:</strong> Fine-tune the screen positioning and scaling to perfectly align with your chosen bezel.</li>
         </ul>
+        <p><a href="{{ '/bezel-guide/' | relative_url }}">Learn more about bezels &rarr;</a></p>
+    </div>
+</section>
 
-        <h3>Professional Arcade Management (MAME)</h3>
+<section id="mame" class="content-section">
+    <div class="container">
+        <h2>Professional Arcade Management (MAME)</h2>
         <p>Arcade emulation can be complex. TruchiEmu simplifies the process with specialized tools for MAME ROM management.</p>
         <div class="feature-grid">
             <div class="feature-card">
@@ -732,3 +587,5 @@ description: Comprehensive overview of TruchiEmu's features including shaders, a
                 <p>Integrates with the LaunchBox Games DB and DAT files to automatically populate game descriptions, release dates, and genres.</p>
             </div>
         </div>
+    </div>
+</section>

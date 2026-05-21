@@ -3,126 +3,13 @@ layout: default
 title: Cheat System - TruchiEmu Documentation
 ---
 
+
 <div class="feature-docs">
     <h1>Cheat System</h1>
-    
-    <div class="feature-overview">
-        <img src="{{ '/media/features/cheats-hero.png' | relative_url }}" alt="Cheat System Overview" class="hero-image lightbox-trigger">
-        <p class="lead">TruchiEmu provides a streamlined system for managing and applying cheat codes, supporting standard Libretro formats and automated database downloads to enhance your gaming experience.</p>
-    </div>
-    
-    <section id="service-explanation">
-        <h2>Service Overview</h2>
-        <p>The cheat system allows users to import, manage, and activate cheat codes for their games. By leveraging the Libretro core architecture and the community-driven RetroArch cheat format, TruchiEmu makes it easy to apply modifications like infinite lives or unlocked content without needing to manually edit memory.</p>
-        
-        <h3>Core Features</h3>
-        <ul class="feature-list">
-            <li><strong>Multi-Format Support:</strong> Support for Game Genie, Pro Action Replay, and standard .cht files</li>
-            <li><strong>Automated Database:</strong> Download pre-made cheat collections from the Libretro community database</li>
-            <li><strong>Auto-Activation:</strong> Cheats are automatically discovered and applied based on the loaded ROM</li>
-            <li><strong>Custom Cheat Entry:</strong> Manually add your own codes and descriptions to your library</li>
-            <li><strong>Direct Memory Access:</strong> Ability to apply cheats via direct memory writes to the emulation core</li>
-        </ul>
-        
-        <h3>Supported Cheat Formats</h3>
-        <p>TruchiEmu primarily uses the <code>.cht</code> format (developed by RetroArch). It can parse these files to identify cheat names, descriptions, and the specific memory addresses they modify. It also includes specific parsers for classic formats like Game Genie for NES and SNES.</p>
-        
-        <h3>Technical Architecture</h3>
-        <p>The cheat system is built around several key components:</p>
-        <ul>
-            <li><strong>Cheat Parser:</strong> Translates .cht files and classic codes into actionable memory operations</li>
-            <li><strong>Download Service:</strong> Integrates with GitHub to fetch the latest community cheat databases</li>
-            <li><strong>Auto-Loader:</strong> Scans the local cheats directory for files matching the currently loaded ROM</li>
-            <li><strong>Libretro Bridge:</strong> Communicates with the emulation core using <code>retro_cheat_set</code> to enable or disable modifications in real-time</li>
-        </ul>
-    </section>
-    
-    <section id="step-by-step-guide">
-        <h2>Configuration Guide</h2>
-        
-        <h3>Basic Cheat Usage</h3>
-        <ol class="setup-steps">
-            <li>
-                <strong>Access Cheat Menu</strong>
-                <p>Open the cheat management window from the game options. Here you can see all available cheats for the current game.</p>
-                <img src="{{ '/media/screenshots/cheat-menu.png' | relative_url }}" alt="Cheat Menu Interface">
-            </li>
-            <li>
-                <strong>Browse and Search</strong>
-                <p>Use the search bar to find specific cheats. If no cheats are found, you can use the "Download Cheats" option to fetch them from the community database.</p>
-            </li>
-            <li>
-                <strong>Enable Cheats</strong>
-                <p>Toggle the switch next to any cheat to activate it. The change is applied immediately to the game memory.</p>
-            </li>
-            <li>
-                <strong>Save Configuration</strong>
-                <p>Your enabled cheats are saved automatically and will be reapplied the next time you launch the game.</p>
-            </li>
-        </ol>
-        
-        <h3>Manual Cheat Entry</h3>
-        <ol class="setup-steps">
-            <li>
-                <strong>Add New Cheat</strong>
-                <p>Click "Add Cheat" and provide a descriptive name. Select the format (e.g., Game Genie) from the dropdown menu.</p>
-            </li>
-            <li>
-                <strong>Enter the Code</strong>
-                <p>Enter the alphanumeric or hexadecimal code. The app validates the format before saving.</p>
-            </li>
-            <li>
-                <strong>Assign Description</strong>
-                <p>Add a note about what the cheat does to help you remember its effect during gameplay.</p>
-            </li>
-        </ol>
-    </section>
-    
-    <section id="troubleshooting">
-        <h2>Troubleshooting</h2>
-        
-        <div class="troubleshooting-grid">
-            <div class="troubleshooting-item">
-                <h3>Cheat Not Working</h3>
-                <p><strong>Symptom:</strong> Cheat enabled but has no effect in game.</p>
-                <p><strong>Solution:</strong> Verify that the cheat matches your game's region (USA, Europe, Japan) and version. Some cheats require a game reset after activation to take effect.</p>
-            </div>
-            
-            <div class="troubleshooting-item">
-                <h3>Game Instability</h3>
-                <p><strong>Symptom:</strong> Game crashes or behaves erratically with cheats enabled.</p>
-                <p><strong>Solution:</strong> Disable all cheats and enable them one by one to identify the conflicting code. Some cheats modify critical system memory and can cause crashes.</p>
-            </div>
-            
-            <div class="troubleshooting-item">
-                <h3>Database Not Loading</h3>
-                <p><strong>Symptom:</strong> "Download Cheats" fails or returns no results.</p>
-                <p><strong>Solution:</strong> Ensure you have an active internet connection. Verify that your ROM hash matches the database's known dumps.</p>
-            </div>
-        </div>
-    </section>
-    
-    <section id="references">
-        <h2>Related Services</h2>
-        
-        <div class="related-services">
-            <div class="service-card">
-                <h3><a href="/features/achievements.html">RetroAchievements</a></h3>
-                <p>Note: Using cheats typically disables achievement earning in Hardcore mode.</p>
-            </div>
-            
-            <div class="service-card">
-                <h3><a href="/features/save-states.html">Save State System</a></h3>
-                <p>Use save states to test different cheat combinations without losing progress.</p>
-            </div>
-        </div>
-    </section>
-</div>
-
 
     <section id="service-explanation">
         <h2>Service Overview</h2>
-        <p>The cheat system in TruchiEmu supports multiple cheat code formats and includes advanced features like memory scanning, cheat creation, and real-time editing. Our implementation provides accurate emulation of classic cheat devices with modern conveniences like cheat databases, automatic code activation, and conflict detection.</p>
+        <p>The cheat system allows you to manage and activate cheat codes for your games. It supports standard cheat code formats and integrates with Libretro cores to apply modifications in real-time.</p>
         
         <div class="architecture-diagram">
             <img src="{{ '/media/features/cheat-architecture.png' | relative_url }}" alt="Cheat System Architecture">
@@ -131,23 +18,16 @@ title: Cheat System - TruchiEmu Documentation
 
         <h3>Core Features</h3>
         <ul class="feature-list">
-            <li><strong>Multi-Format Support:</strong> Game Genie, Pro Action Replay, GameShark, and raw memory codes</li>
-            <li><strong>Cheat Database:</strong> Built-in database with thousands of pre-made cheats</li>
-            <li><strong>Code Creation:</strong> Create custom cheats with visual memory editor</li>
-            <li><strong>Auto-Activation:</strong> Cheats automatically activate when game loads</li>
-            <li><strong>Save State Integration:</strong> Save states preserve cheat state</li>
+            <li><strong>Multi-Format Support:</strong> Game Genie, Pro Action Replay, GameShark, and standard .cht files</li>
+            <li><strong>Cheat Database:</strong> Download pre-made cheat collections from the Libretro community database</li>
+            <li><strong>Auto-Activation:</strong> Cheats are automatically discovered and applied based on the loaded ROM</li>
+            <li><strong>Custom Cheat Entry:</strong> Manually add your own codes and descriptions</li>
         </ul>
 
         <h3>Supported Cheat Formats</h3>
         <p>TruchiEmu supports multiple cheat code formats: Game Genie (6-8 character alphanumeric codes), Pro Action Replay (hexadecimal codes with addresses), GameShark (various formats by system), and raw memory codes for advanced users. Each format is automatically detected and parsed correctly.</p>
 
-        <h3>Technical Architecture</h3>
-        <p>The cheat system consists of several integrated components:</p>
-        <ul>
-            <li><strong>Code Parser:</strong> Parses various cheat code formats into memory operations</li>
-            <li><strong>Patch Engine:</strong> Applies memory patches in real-time without game crashes</li>
-            <li><strong>Database Manager:</strong> Manages cheat databases with search and filtering</li>
-        </ul>
+        <p>For implementation details, see the <a href="/development/">Developer Guide</a>.</p>
     </section>
 
     <section id="step-by-step-guide">
@@ -201,142 +81,7 @@ title: Cheat System - TruchiEmu Documentation
         </ol>
     </section>
 
-    <section id="configuration-examples">
-        <h2>Configuration Examples</h2>
-        
-        <h3>Example 1: Game Genie Code Entry</h3>
-        <div class="config-example">
-            <pre><code>// Game Genie Code Example for Super Mario Bros (NES)
-cheat {
-    name = "Infinite Lives"
-    code = "SXOUGXAG"          // Game Genie format
-    format = "game_genie"
-    system = "NES"
-    
-    description = "Mario never runs out of lives"
-    enabled = true
-    auto_enable = true         // Enable on game load
-}
 
-cheat {
-    name = "Invincibility"
-    code = "SLXPLOVS"
-    format = "game_genie"
-    system = "NES"
-    
-    description = "Mario is invincible to enemies"
-    file_trigger = "SMB1"      // Only for Super Mario Bros 1
-}</code></pre>
-        </div>
-
-        <h3>Example 2: Action Replay Codes</h3>
-        <div class="config-example">
-            <pre><code>// Action Replay code with conditional logic
-cheat {
-    name = "Infinite Health"
-    code = "7E0F4A-FF"         // Write 255 to address F4A
-    format = "par"             // Pro Action Replay
-    
-    conditions = [
-        "game_state == in_play"
-    ]
-    
-    description = "Always have max health during gameplay"
-    enabled = true
-}
-
-cheat {
-    name = "All Weapons"
-    code = "7E1234-FF,7E1235-FF,7E1236-FF"
-    format = "par"
-    
-    multiple_addresses = true
-    description = "Unlock all weapons (3 bytes)"
-}</code></pre>
-        </div>
-
-        <h3>Example 3: Memory Freeze Cheat</h3>
-        <div class="config-example">
-            <pre><code>// Custom memory-based cheat from search
-cheat {
-    name = "Freeze Timer"
-    
-    // Memory address
-    address = "0x7E1234"
-    size = "16-bit"            // 2 bytes
-    value = "0x09C4"           // Freeze at 2500
-    
-    operation = "freeze"       // Keep at this value
-    description = "Timer stays at constant value"
-}</code></pre>
-        </div>
-        
-        <h3>Example 4: Conditional Cheat</h3>
-        <div class="config-example">
-            <pre><code>// Complex cheat with multiple conditions
-cheat_set {
-    name = "Smart Invincibility"
-    
-    // Lives adjustment
-    cheat_1 {
-        address = "0x7E0155"
-        condition = "lives < 3"
-        action = "add 5 lives"
-        value = "+5"
-    }
-    
-    // Health regeneration
-    cheat_2 {
-        address = "0x7E0156"
-        condition = "health < 50"
-        action = "regenerate"
-        rate = "+2/sec"
-    }
-    
-    // Disable during cutscenes
-    global_conditions = [
-        "game_mode == gameplay",
-        "paused == false"
-    ]
-    
-    description = "Automatically helps when needed"
-    enabled = true
-}</code></pre>
-        </div>
-
-        <h3>Example 4: Conditional Cheat</h3>
-        <div class="config-example">
-            <pre><code>// Complex cheat with multiple conditions
-cheat_set {
-    name = "Smart Invincibility"
-    
-    // Lives adjustment
-    cheat_1 {
-        address = "0x7E0155"
-        condition = "lives < 3"
-        action = "add 5 lives"
-        value = "+5"
-    }
-    
-    // Health regeneration
-    cheat_2 {
-        address = "0x7E0156"
-        condition = "health < 50"
-        action = "regenerate"
-        rate = "+2/sec"
-    }
-    
-    // Disable during cutscenes
-    global_conditions = [
-        "game_mode == gameplay",
-        "paused == false"
-    ]
-    
-    description = "Automatically helps when needed"
-    enabled = true
-}</code></pre>
-        </div>
-    </section>
 
     <section id="troubleshooting">
         <h2>Troubleshooting</h2>
@@ -357,69 +102,6 @@ cheat_set {
                 <p><strong>Symptom:</strong> Cheat database shows no cheats for supported games.</p>
                 <p><strong>Solution:</strong> Update cheat database from <code>Tools → Update Cheat Database</code>. Check internet connection for database download. Verify ROM hash matches known good dumps in database.</p>
             </div>
-            <div class="troubleshooting-item">
-                <h3>Cheat Codes Lost After Update</h3>
-                <p><strong>Symptom:</strong> Custom cheat codes disappeared after TruchiEmu update.</p>
-                <p><strong>Solution:</strong> Export custom cheats before updating. Check <code>~/Documents/TruchiEmu/Cheats/</code> for backup files. Re-import cheat collection from exported files.</p>
-            </div>
-            <div class="troubleshooting-item">
-                <h3>Memory Address Changes</h3>
-                <p><strong>Symptom:</strong> Custom memory cheats stop working randomly.</p>
-                <p><strong>Solution:</strong> Some games use dynamic memory allocation. Use pointer-based cheats if available. Search for new addresses or use relative addressing methods.</p>
-            </div>
-            <div class="troubleshooting-item">
-                <h3>Cheat Name Duplicates</h3>
-                <p><strong>Symptom:</strong> Multiple cheats with same name causing confusion.</p>
-                <p><strong>Solution:</strong> Rename custom cheats with descriptive names including version info. Organize cheats into categories or use the description field for details.</p>
-            </div>
-            <div class="troubleshooting-item">
-                <h3>Performance Issues</h3>
-                <p><strong>Symptom:</strong> Game runs slower with many cheats enabled.</p>
-                <p><strong>Solution:</strong> Disable unused cheats. Each active cheat requires CPU cycles. Consider consolidating multiple cheats into single combined cheat when possible.</p>
-            </div>
-        </div>
-            
-            <div class="troubleshooting-item">
-                <h3>Game Crashes with Cheats</h3>
-                <p><strong>Symptom:</strong> Game crashes when specific cheats are enabled.</p>
-                <p><strong>Solution:</strong> Disable conflicting cheats. Some cheats modify critical memory addresses that cause instability. Try enabling cheats one at a time to identify the problematic code.</p>
-            </div>
-            
-            <div class="troubleshooting-item">
-                <h3>Memory Search Too Slow</h3>
-                <p><strong>Symptom:</strong> Memory search takes very long for large games.</p>
-                <p><strong>Solution:</strong> Narrow search range by selecting specific memory banks. Use exact value searches instead of unknown. Disable unnecessary background processes to free CPU resources.</p>
-            </div>
-            
-            <div class="troubleshooting-item">
-                <h3>Cheat Database Not Loading</h3>
-                <p><strong>Symptom:</strong> Cheat database shows no cheats for supported games.</p>
-                <p><strong>Solution:</strong> Update cheat database from <code>Tools → Update Cheat Database</code>. Check internet connection for database download. Verify ROM hash matches known good dumps in database.</p>
-            </div>
-            
-            <div class="troubleshooting-item">
-                <h3>Cheat Codes Lost After Update</h3>
-                <p><strong>Symptom:</strong> Custom cheat codes disappeared after TruchiEmu update.</p>
-                <p><strong>Solution:</strong> Export custom cheats before updating. Check <code>~/Documents/TruchiEmu/Cheats/</code> for backup files. Re-import cheat collection from exported files.</p>
-            </div>
-            
-            <div class="troubleshooting-item">
-                <h3>Memory Address Changes</h3>
-                <p><strong>Symptom:</strong> Custom memory cheats stop working randomly.</p>
-                <p><strong>Solution:</strong> Some games use dynamic memory allocation. Use pointer-based cheats if available. Search for new addresses or use relative addressing methods.</p>
-            </div>
-            
-            <div class="troubleshooting-item">
-                <h3>Cheat Name Duplicates</h3>
-                <p><strong>Symptom:</strong> Multiple cheats with same name causing confusion.</p>
-                <p><strong>Solution:</strong> Rename custom cheats with descriptive names including version info. Organize cheats into categories or use the description field for details.</p>
-            </div>
-            
-            <div class="troubleshooting-item">
-                <h3>Performance Issues</h3>
-                <p><strong>Symptom:</strong> Game runs slower with many cheats enabled.</p>
-                <p><strong>Solution:</strong> Disable unused cheats. Each active cheat requires CPU cycles. Consider consolidating multiple cheats into single combined cheat when possible.</p>
-            </div>
         </div>
     </section>
 
@@ -428,33 +110,13 @@ cheat_set {
         
         <div class="related-services">
             <div class="service-card">
-                <h3><a href="/features/achievements.html">RetroAchievements</a></h3>
+                <h3><a href="/features/achievements/">RetroAchievements</a></h3>
                 <p>Cheats are automatically disabled in Hardcore mode to maintain achievement integrity.</p>
             </div>
             
             <div class="service-card">
-                <h3><a href="/features/save-states.html">Save State System</a></h3>
+                <h3><a href="/features/save-states/">Save State System</a></h3>
                 <p>Combine cheat codes with save states to test specific game scenarios.</p>
-            </div>
-            
-            <div class="service-card">
-                <h3><a href="#">Shader System</a></h3>
-                <p>Cheat notifications are displayed using the shader overlay system.</p>
-            </div>
-            
-            <div class="service-card">
-                <h3><a href="#">Cheat API Reference</a></h3>
-                <p>Programmatic access to cheat system for custom tools and automation.</p>
-            </div>
-            
-            <div class="service-card">
-                <h3><a href="#">Community Cheat Database</a></h3>
-                <p>Contribute and download user-created cheat codes for various games and systems.</p>
-            </div>
-            
-            <div class="service-card">
-                <h3><a href="#">Memory Editor</a></h3>
-                <p>Advanced memory editing tools for creating complex cheat codes and game modifications.</p>
             </div>
         </div>
     </section>

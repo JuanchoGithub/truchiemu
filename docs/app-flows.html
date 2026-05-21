@@ -1,9 +1,15 @@
+---
+layout: null
+title: TruchiEmu — App Architecture: Package & Component Flows
+description: Interactive visualization of application packages, components, and workflow communication flows. Select a flow to see how modules communicate.
+---
+
 <!DOCTYPE html>
-<html lang="es">
+<html lang="en">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>TruchiEmu — Flujos de Trabajo entre Paquetes y Componentes</title>
+  <title>TruchiEmu — App Architecture Flows</title>
   <link href="https://fonts.googleapis.com/css2?family=SF+Pro+Display:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
   <link href="https://unpkg.com/lucide-static@latest/font/lucide.css" rel="stylesheet" />
   <style>
@@ -356,40 +362,40 @@
 </head>
 <body>
 <div class="header">
-  <h1>TruchiEmu — Flujos de Trabajo</h1>
-  <p>Visualización interactiva de la arquitectura entre paquetes y componentes. Selecciona un flujo para ver cómo se comunican los módulos.</p>
+  <h1>TruchiEmu — Architecture Flows</h1>
+  <p>Interactive visualization of package and component architecture. Select a workflow to see how modules communicate.</p>
 </div>
 
 <div class="container">
   <aside class="sidebar">
     <div class="search-box">
       <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-search"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
-      <input id="searchInput" type="text" placeholder="Buscar flujo..." />
+      <input id="searchInput" type="text" placeholder="Search flows..." />
     </div>
 
     <div class="controls">
       <button class="btn" onclick="prevFlow()">
         <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-arrow-left"><path d="m15 18-6-6 6-6"/></svg>
-        Anterior
+        Previous
       </button>
       <button class="btn primary" onclick="nextFlow()">
         <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-arrow-right"><path d="m9 18 6-6-6-6"/></svg>
-        Siguiente
+        Next
       </button>
       <button class="btn full" onclick="toggleAutoPlay()" id="autoBtn">
         <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-play"><polygon points="5 3 19 12 5 21 5 3"/></svg>
-        <span id="autoText">Reproducir flujo</span>
+        <span id="autoText">Auto-play</span>
       </button>
     </div>
 
     <div class="sidebar-group">
-      <div class="sidebar-group-header">Flujos de trabajo</div>
+      <div class="sidebar-group-header">Workflows</div>
       <div class="sidebar-list" id="workflowsList"></div>
-      <div class="controls-hint">Haz clic en un flujo para visualizarlo</div>
+      <div class="controls-hint">Click a flow to visualize it</div>
     </div>
 
     <div class="sidebar-group">
-      <div class="sidebar-group-header">Paquetes (Nodos)</div>
+      <div class="sidebar-group-header">Packages (Nodes)</div>
       <div class="legend" id="legend"></div>
     </div>
   </aside>
@@ -398,7 +404,7 @@
     <div class="canvas-container">
       <canvas id="flowCanvas"></canvas>
       <div class="flow-overlay">
-        <div class="flow-title" id="flowTitle">Selecciona un flujo</div>
+        <div class="flow-title" id="flowTitle">Select a workflow</div>
         <div class="flow-progress" id="flowProgress">Paso 0 de 0</div>
       </div>
       <div class="canvas-tooltip" id="tooltip"></div>
@@ -406,7 +412,7 @@
 
     <div class="info-panel">
       <div class="info-content" id="infoContent">
-        <p>Haz clic en un flujo en la barra lateral izquierda para ver la descripción y los pasos de comunicación entre paquetes.</p>
+        <p>Click a workflow in the left sidebar to view the description and communication steps between packages.</p>
       </div>
     </div>
   </main>
@@ -446,115 +452,115 @@
     ],
     workflows: [
       {
-        id: "launch_rom", name: "Lanzar un juego desde la libreria",
-        description: "Usuario selecciona un ROM. Se identifica la plataforma, se carga el core libretro y se presenta el motor de juego.",
+        id: "launch_rom", name: "Launch a Game from Library",
+        description: "User selects a ROM. The platform is identified, the libretro core is loaded, and the game engine is presented.",
         steps: [
-          { from: "features:library", to: "features:library", action: "Usuario selecciona un ROM de la lista." },
-          { from: "features:library", to: "services:ROMIdentifierService", action: "Se identifica la plataforma por hash del ROM." },
-          { from: "services:ROMIdentifierService", to: "features:player", action: "Se lanza la vista del jugador." },
-          { from: "features:player", to: "core", action: "Se inicializa el core libretro y carga el ROM." },
-          { from: "core", to: "services:SaveStateManager", action: "Se inicializan los save states." },
-          { from: "core", to: "services:ShaderPresetStorageService", action: "Se aplica el preset de shader." },
-          { from: "features:player", to: "services:RetroAchievementsService", action: "Se inicializa RetroAchievements." },
-          { from: "services:SaveDirectoryManager", to: "core", action: "Mapeo de rutas de guardado." }
+          { from: "features:library", to: "features:library", action: "User selects a ROM from the list." },
+          { from: "features:library", to: "services:ROMIdentifierService", action: "Platform identified by ROM hash." },
+          { from: "services:ROMIdentifierService", to: "features:player", action: "Player view launched." },
+          { from: "features:player", to: "core", action: "Libretro core initialized and ROM loaded." },
+          { from: "core", to: "services:SaveStateManager", action: "Save states initialized." },
+          { from: "core", to: "services:ShaderPresetStorageService", action: "Shader preset applied." },
+          { from: "features:player", to: "services:RetroAchievementsService", action: "RetroAchievements initialized." },
+          { from: "services:SaveDirectoryManager", to: "core", action: "Save path mapping configured." }
         ]
       },
       {
-        id: "save_load_state", name: "Guardar/Cargar estado (Save State)",
-        description: "El usuario guarda o carga un estado del juego.",
+        id: "save_load_state", name: "Save/Load State",
+        description: "The user saves or loads a game state.",
         steps: [
-          { from: "features:player", to: "core", action: "Usuario pulsa atajo de guardado/carga." },
-          { from: "core", to: "services:SaveStateManager", action: "Serializa/deserializa estado del core." },
-          { from: "services:SaveStateManager", to: "services:SaveDirectoryManager", action: "Se determina la ruta de destino." },
-          { from: "services:SaveDirectoryManager", to: "features:player", action: "Se notifica resultado en la UI." }
+          { from: "features:player", to: "core", action: "User triggers save/load shortcut." },
+          { from: "core", to: "services:SaveStateManager", action: "Serializes/deserializes core state." },
+          { from: "services:SaveStateManager", to: "services:SaveDirectoryManager", action: "Target path determined." },
+          { from: "services:SaveDirectoryManager", to: "features:player", action: "Result notified to UI." }
         ]
       },
       {
-        id: "cheats", name: "Aplicar trucos (Cheats)",
-        description: "El usuario activa un truco. Se descargan y aplican en el core.",
+        id: "cheats", name: "Apply Cheats",
+        description: "The user activates a cheat. It is downloaded and applied to the core.",
         steps: [
-          { from: "features:player", to: "services:CheatAutoLoader", action: "Solicita lista de trucos." },
-          { from: "services:CheatAutoLoader", to: "services:CheatDownloadService", action: "Descarga base de datos de cheats." },
-          { from: "services:CheatAutoLoader", to: "services:CheatParser", action: "Parsea archivos de trucos." },
-          { from: "services:CheatAutoLoader", to: "features:player", action: "Muestra trucos en la UI." },
-          { from: "features:player", to: "core", action: "Usuario activa un truco; se aplica en core." }
+          { from: "features:player", to: "services:CheatAutoLoader", action: "Requests cheat list." },
+          { from: "services:CheatAutoLoader", to: "services:CheatDownloadService", action: "Downloads cheat database." },
+          { from: "services:CheatAutoLoader", to: "services:CheatParser", action: "Parses cheat files." },
+          { from: "services:CheatAutoLoader", to: "features:player", action: "Displays cheats in UI." },
+          { from: "features:player", to: "core", action: "User activates a cheat; applied to core." }
         ]
       },
       {
-        id: "retroachievements", name: "Desbloquear logro de RetroAchievements",
-        description: "El usuario obtiene un logro. Se verifica y se muestra notificacion.",
+        id: "retroachievements", name: "Unlock RetroAchievement",
+        description: "The user earns an achievement. It is verified and a notification is shown.",
         steps: [
-          { from: "core", to: "services:RetroAchievementsService", action: "Core reporta progreso de logro." },
-          { from: "services:RetroAchievementsService", to: "services:RAGameCacheCoordinator", action: "Verifica si esta cacheado." },
-          { from: "services:RetroAchievementsService", to: "services:NotificationService", action: "Notifica desbloqueo a la UI." },
-          { from: "services:RetroAchievementsService", to: "services:RABadgeCacheService", action: "Cachea icono del logro." },
-          { from: "services:NotificationService", to: "features:player", action: "Muestra notificacion en pantalla." }
+          { from: "core", to: "services:RetroAchievementsService", action: "Core reports achievement progress." },
+          { from: "services:RetroAchievementsService", to: "services:RAGameCacheCoordinator", action: "Checks if cached." },
+          { from: "services:RetroAchievementsService", to: "services:NotificationService", action: "Notifies unlock to UI." },
+          { from: "services:RetroAchievementsService", to: "services:RABadgeCacheService", action: "Caches achievement icon." },
+          { from: "services:NotificationService", to: "features:player", action: "Displays notification on screen." }
         ]
       },
       {
-        id: "configure_shaders", name: "Configurar shaders y filtros de pantalla",
-        description: "Usuario ajusta shaders CRT/LCD durante el juego.",
+        id: "configure_shaders", name: "Configure Shaders & Screen Filters",
+        description: "User adjusts CRT/LCD shaders during gameplay.",
         steps: [
-          { from: "features:player", to: "core", action: "Renderizado inicializa Metal." },
-          { from: "core", to: "services:ShaderPresetStorageService", action: "Carga preset de shader." },
-          { from: "services:ShaderPresetStorageService", to: "features:player", action: "Aplica shader en tiempo real." },
-          { from: "features:player", to: "core", action: "Ajusta parametros desde UI." }
+          { from: "features:player", to: "core", action: "Renderer initializes Metal." },
+          { from: "core", to: "services:ShaderPresetStorageService", action: "Loads shader preset." },
+          { from: "services:ShaderPresetStorageService", to: "features:player", action: "Applies shader in real-time." },
+          { from: "features:player", to: "core", action: "Adjusts parameters from UI." }
         ]
       },
       {
-        id: "download_core", name: "Descargar e instalar un core libretro",
-        description: "Usuario descarga un core para una plataforma.",
+        id: "download_core", name: "Download & Install a Libretro Core",
+        description: "User downloads a core for a platform.",
         steps: [
-          { from: "features:settings", to: "views:core_download", action: "Abre pantalla de descarga." },
-          { from: "views:core_download", to: "services:CoreManager", action: "Solicita descarga del core." },
-          { from: "services:CoreManager", to: "services:CLIManager", action: "Proceso de descarga." },
-          { from: "services:CLIManager", to: "views:core_download", action: "Reporta progreso en UI." },
-          { from: "services:CoreManager", to: "features:settings", action: "Registra core en la app." }
+          { from: "features:settings", to: "views:core_download", action: "Opens download screen." },
+          { from: "views:core_download", to: "services:CoreManager", action: "Requests core download." },
+          { from: "services:CoreManager", to: "services:CLIManager", action: "Download process." },
+          { from: "services:CLIManager", to: "views:core_download", action: "Reports progress in UI." },
+          { from: "services:CoreManager", to: "features:settings", action: "Registers core in app." }
         ]
       },
       {
-        id: "mame_import", name: "Importar ROMs de MAME",
-        description: "Usuario importa ROMs de MAME. Se verifican dependencias y se valida.",
+        id: "mame_import", name: "Import MAME ROMs",
+        description: "User imports MAME ROMs. Dependencies are verified and validated.",
         steps: [
-          { from: "features:library", to: "features:mame", action: "Importa ROM de MAME." },
-          { from: "features:mame", to: "services:MAMEDependencyService", action: "Verifica dependencias." },
-          { from: "features:mame", to: "services:MAMEVerificationService", action: "Valida contra mame_unified.json." },
-          { from: "features:mame", to: "services:MAMEImportService", action: "Agrega ROM a libreria." },
-          { from: "services:MAMEImportService", to: "features:library", action: "Actualiza lista de juegos." }
+          { from: "features:library", to: "features:mame", action: "Imports MAME ROM." },
+          { from: "features:mame", to: "services:MAMEDependencyService", action: "Verifies dependencies." },
+          { from: "features:mame", to: "services:MAMEVerificationService", action: "Validates against mame_unified.json." },
+          { from: "features:mame", to: "services:MAMEImportService", action: "Adds ROM to library." },
+          { from: "services:MAMEImportService", to: "features:library", action: "Updates game list." }
         ]
       },
       {
-        id: "boxart_sync", name: "Sincronizar caratulas (BoxArt)",
-        description: "Sincronizacion automatica de imagenes de caratulas.",
+        id: "boxart_sync", name: "Sync Box Art",
+        description: "Automatic synchronization of cover art images.",
         steps: [
-          { from: "features:settings", to: "services:BoxArtService", action: "Activa sincronizacion." },
-          { from: "services:BoxArtService", to: "services:LaunchBoxGamesDBService", action: "Consulta LaunchBox." },
-          { from: "services:BoxArtService", to: "services:LibretroThumbnailManifestService", action: "Obtiene manifiesto Libretro." },
-          { from: "services:LibretroThumbnailManifestService", to: "services:LibretroThumbnailResolver", action: "Resuelve URL exacta." },
-          { from: "services:BoxArtService", to: "services:ProgettoSnapsService", action: "Fallback ProgettoSnaps." },
-          { from: "services:BoxArtService", to: "shared:ImageCache", action: "Almacena en cache local." },
-          { from: "shared:ImageCache", to: "features:library", action: "Muestra caratulas en UI." }
+          { from: "features:settings", to: "services:BoxArtService", action: "Activates sync." },
+          { from: "services:BoxArtService", to: "services:LaunchBoxGamesDBService", action: "Queries LaunchBox." },
+          { from: "services:BoxArtService", to: "services:LibretroThumbnailManifestService", action: "Gets Libretro manifest." },
+          { from: "services:LibretroThumbnailManifestService", to: "services:LibretroThumbnailResolver", action: "Resolves exact URL." },
+          { from: "services:BoxArtService", to: "services:ProgettoSnapsService", action: "Fallback to ProgettoSnaps." },
+          { from: "services:BoxArtService", to: "shared:ImageCache", action: "Stores in local cache." },
+          { from: "shared:ImageCache", to: "features:library", action: "Displays covers in UI." }
         ]
       },
       {
-        id: "setup_wizard", name: "Configuracion inicial (Setup Wizard)",
-        description: "Asistente de primera ejecucion.",
+        id: "setup_wizard", name: "Initial Setup Wizard",
+        description: "First-run setup assistant.",
         steps: [
-          { from: "app", to: "services:SetupWizardState", action: "Detecta primera ejecucion." },
-          { from: "services:SetupWizardState", to: "features:library", action: "Muestra SetupWizard." },
-          { from: "features:library", to: "services:DATPrepopulationService", action: "Pre-pobla base de datos." },
-          { from: "features:library", to: "services:CoreManager", action: "Descarga cores recomendados." },
-          { from: "services:CoreManager", to: "features:settings", action: "Configura directorios del core." }
+          { from: "app", to: "services:SetupWizardState", action: "Detects first launch." },
+          { from: "services:SetupWizardState", to: "features:library", action: "Shows Setup Wizard." },
+          { from: "features:library", to: "services:DATPrepopulationService", action: "Pre-populates database." },
+          { from: "features:library", to: "services:CoreManager", action: "Downloads recommended cores." },
+          { from: "services:CoreManager", to: "features:settings", action: "Configures core directories." }
         ]
       },
       {
-        id: "controls_mapping", name: "Configurar mapeo de controles",
-        description: "Usuario configura mapeo de botones.",
+        id: "controls_mapping", name: "Configure Controller Mapping",
+        description: "User configures button mapping.",
         steps: [
-          { from: "features:settings", to: "services:ControllerService", action: "Abre seccion de controles." },
-          { from: "services:ControllerService", to: "services:CoreOverrideService", action: "Carga configuracion de core." },
-          { from: "services:ControllerService", to: "shared:SettingsRepository", action: "Guarda preferencias." },
-          { from: "features:settings", to: "core", action: "Envia mapeos al core en tiempo real." }
+          { from: "features:settings", to: "services:ControllerService", action: "Opens controller section." },
+          { from: "services:ControllerService", to: "services:CoreOverrideService", action: "Loads core config." },
+          { from: "services:ControllerService", to: "shared:SettingsRepository", action: "Saves preferences." },
+          { from: "features:settings", to: "core", action: "Sends mappings to core in real-time." }
         ]
       }
     ]
@@ -644,13 +650,13 @@
     // Update sidebar active
     document.querySelectorAll('.sidebar-item').forEach(el => el.classList.toggle('active', el.dataset.flowId === id));
     document.getElementById('flowTitle').textContent = currentFlow.name;
-    document.getElementById('flowProgress').textContent = `Preparando visualización...`;
+    document.getElementById('flowProgress').textContent = `Preparing visualization...`;
 
     // Build nodes for current flow
     buildFlowNodes(currentFlow.steps);
     draw();
     infoPanelForFlow(currentFlow);
-    showToast(`Flujo cargado: ${currentFlow.name}`, 'success');
+    showToast(`Flow loaded: ${currentFlow.name}`, 'success');
   }
 
   function prevFlow() {
@@ -823,15 +829,15 @@
 
   function onPointerClick(e) {
     if (hoverNode) {
-      showToast(`Paquete: ${nameFor(hoverNode)}`, 'info');
+      showToast(`Package: ${nameFor(hoverNode)}`, 'info');
     }
   }
 
   /* --- info panel --- */
   function infoPanelForFlow(flow) {
     const el = document.getElementById('infoContent');
-    let html = `<h2>Descripción</h2><p>${flow.description}</p>`;
-    html += `<h2>Pasos del flujo</h2>`;
+    let html = `<h2>Description</h2><p>${flow.description}</p>`;
+    html += `<h2>Steps</h2>`;
     html += `<ol style="margin: 0 0 0 20px; padding: 0;">`;
     flow.steps.forEach((s, i) => {
       const fromName = nameFor(resolvePackageId(s.from));
@@ -845,7 +851,7 @@
   /* --- autoplay --- */
   function toggleAutoPlay() {
     isAutoPlaying = !isAutoPlaying;
-    document.getElementById('autoText').textContent = isAutoPlaying ? 'Pausar' : 'Reproducir flujo';
+    document.getElementById('autoText').textContent = isAutoPlaying ? 'Pause' : 'Auto-play';
     if (isAutoPlaying) {
       advanceStep();
       autoInterval = setInterval(advanceStep, 2500);
@@ -858,7 +864,7 @@
     if (!currentFlow) return;
     const total = currentFlow.steps.length || 1;
     currentStep = (currentStep + 1) % total;
-    document.getElementById('flowProgress').textContent = `Paso ${currentStep + 1} de ${total}`;
+    document.getElementById('flowProgress').textContent = `Step ${currentStep + 1} of ${total}`;
     infoPanelForFlow(currentFlow);
     draw();
   }

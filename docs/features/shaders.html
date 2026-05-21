@@ -29,14 +29,8 @@ title: Shader System - TruchiEmu Documentation
             <li><strong>Performance Optimization:</strong> Automatic fallback to simpler shaders on lower-end hardware</li>
         </ul>
 
-        <h3>Technical Architecture</h3>
-        <p>The shader system consists of several key components:</p>
-        <ul>
-            <li><strong>Shader Compiler:</strong> Runtime compilation of .metal shader files with error handling</li>
-            <li><strong>Effect Chain Manager:</strong> Stack multiple shaders with configurable ordering</li>
-            <li><strong>Parameter System:</strong> Real-time adjustment of shader uniforms via UI controls</li>
-            <li><strong>Fallback System:</strong> Automatic degradation to simpler shaders if compilation fails</li>
-        </ul>
+        <h3>Performance Note</h3>
+        <p>All shaders run directly on the GPU using Apple's Metal framework, ensuring smooth 60fps performance even with complex effects. Passthrough and basic scaling shaders have minimal impact; CRT and LCD simulations use more GPU resources. Most modern Macs can run any shader at full speed.</p>
     </section>
 
     <section id="step-by-step-guide">
