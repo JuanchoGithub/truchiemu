@@ -1,29 +1,34 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  {% include head.html %}
+{% include head.html %}
 </head>
 <body>
-  {% include header.html %}
-  
-  <div class="site-container">
-    {% if page.sidebar != false %}
-      {% include sidebar.html %}
-    {% endif %}
-    
-    <main class="main-content" id="content">
-      <div class="content-wrapper">
-        {{ content }}
-      </div>
-      
-      {% if page.last_updated %}
-        <div class="page-meta">
-          <small>Last updated: {{ page.last_updated }}</small>
-        </div>
-      {% endif %}
-    </main>
-  </div>
-  
-  {% include footer.html %}
+{% include header.html %}
+
+<div class="site-container">
+{% if page.sidebar != false %}
+{% include sidebar.html %}
+{% endif %}
+
+<main class="main-content" id="content">
+<div class="content-wrapper">
+{{ content }}
+</div>
+
+{% if page.last_updated %}
+<div class="page-meta">
+<small>Last updated: {{ page.last_updated }}</small>
+</div>
+{% endif %}
+</main>
+</div>
+
+{% include footer.html %}
+
+<div class="lightbox-overlay" id="lightbox">
+  <button class="lightbox-close" id="lightbox-close" aria-label="Close">&times;</button>
+  <img class="lightbox-image" id="lightbox-image" alt="">
+</div>
 </body>
 </html>

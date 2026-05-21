@@ -1,6 +1,11 @@
 # TruchiEmu 🕹️
 
-<img width="1112" height="850" alt="image" src="https://github.com/user-attachments/assets/ebc735f3-c6ec-4edd-b677-fa2e159d1ead" />
+<table>
+<tr>
+<td><img width="540" alt="TruchiEmu Light Mode" src="https://github.com/user-attachments/assets/8cddaf00-24ab-40df-b651-1c648fe07cae" /></td>
+<td><img width="540" alt="TruchiEmu Dark Mode" src="https://github.com/user-attachments/assets/ebc735f3-c6ec-4edd-b677-fa2e159d1ead" /></td>
+</tr>
+</table>
 
 
 # HomePage
@@ -25,8 +30,6 @@ https://github.com/user-attachments/assets/c59b9283-b5bd-49d0-9631-f0d6bc247d60
 ### 🎨 Beautifully Designed
 Forget clunky, outdated menus. TruchiEmu features a polished, native macOS interface. Browse your collection with high-quality box art, detailed game information, and a seamless, modern navigation experience.
 
-<img width="1112" height="850" alt="image" src="https://github.com/user-attachments/assets/8cddaf00-24ab-40df-b651-1c648fe07cae" />
-
 ### 📺 Immersive Visuals
 
 https://github.com/user-attachments/assets/46a734d8-9c25-4d94-bb81-80cb53506531
@@ -35,9 +38,18 @@ Relive the golden age of gaming with advanced Metal-powered shaders. Whether you
 
 ### 🖌️ Gaming-Inspired Themes
 
-17 accent color themes named after gaming legends — from Samus' teal to Doom's crimson — plus custom colors, light/dark appearance modes, and tinted surfaces. Make TruchiEmu yours.
+17 accent color themes named after gaming legends — Samus, Joker, Protoss, Kirby, and more. Each theme adapts its accent for both light and dark mode. Pick a built-in palette or choose any color with the Custom theme.
 
-<img width="965" height="704" alt="image" src="https://github.com/user-attachments/assets/676e6773-7f5b-4f17-91a1-59e3bc49580d" />
+<table>
+<tr>
+<td><img width="540" alt="Samus theme - Light Mode" src="https://github.com/user-attachments/assets/8cddaf00-24ab-40df-b651-1c648fe07cae" /></td>
+<td><img width="540" alt="Samus theme - Dark Mode" src="https://github.com/user-attachments/assets/ebc735f3-c6ec-4edd-b677-fa2e159d1ead" /></td>
+</tr>
+<tr><td align="center">Light Mode</td><td align="center">Dark Mode</td></tr>
+</table>
+
+- **Gaming themes**: Mario, Sonic, Kratos, Kirby, Zelda, Pikachu, Master Chief, lots of others
+- **Tinted surfaces & accent toolbars**: Subtle theme blending across every window
 
 ### 🚀 Effortless Setup
 Getting started is a breeze. Our guided setup wizard walks you through your first launch, and our automated library services handle the heavy lifting—syncing metadata and downloading beautiful box art for your entire collection.
