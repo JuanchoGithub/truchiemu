@@ -39,13 +39,7 @@ Relive the golden age of gaming with advanced Metal-powered shaders. Whether you
 
 17 accent color themes named after gaming legends — Samus, Joker, Protoss, Kirby, and more. Each theme adapts its accent for both light and dark mode. Pick a built-in palette or choose any color with the Custom theme.
 
-<table>
-<tr>
-<td><img width="540" alt="Samus theme - Light Mode" src="https://github.com/user-attachments/assets/8cddaf00-24ab-40df-b651-1c648fe07cae" /></td>
-<td><img width="540" alt="Samus theme - Dark Mode" src="https://github.com/user-attachments/assets/ebc735f3-c6ec-4edd-b677-fa2e159d1ead" /></td>
-</tr>
-<tr><td align="center">Light Mode</td><td align="center">Dark Mode</td></tr>
-</table>
+<img width="1317" height="983" alt="image" src="https://github.com/user-attachments/assets/24000983-5181-41b1-9a29-fcdb3b314eea" />
 
 - **Gaming themes**: Mario, Sonic, Kratos, Kirby, Zelda, Pikachu, Master Chief, lots of others
 - **Tinted surfaces & accent toolbars**: Subtle theme blending across every window
