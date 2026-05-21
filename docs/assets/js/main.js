@@ -1,4 +1,30 @@
 document.addEventListener('DOMContentLoaded', function() {
+  // ===== THEME TOGGLE =====
+  var themeToggle = document.getElementById('theme-toggle');
+  var stored = localStorage.getItem('theme');
+  var prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+
+  function getEffectiveTheme() {
+    return stored || (prefersDark ? 'dark' : 'light');
+  }
+
+  function applyTheme(theme) {
+    document.documentElement.setAttribute('data-theme', theme);
+  }
+
+  applyTheme(getEffectiveTheme());
+
+  if (themeToggle) {
+    themeToggle.addEventListener('click', function() {
+      var current = document.documentElement.getAttribute('data-theme');
+      var next = current === 'dark' ? 'light' : 'dark';
+      applyTheme(next);
+      stored = next;
+      localStorage.setItem('theme', next);
+    });
+  }
+
+  // ===== SEARCH =====
   var searchToggle = document.getElementById('search-toggle');
   var searchOverlay = document.getElementById('search-overlay');
   var searchClose = document.getElementById('search-close');
