@@ -2,8 +2,7 @@
 
 <table>
 <tr>
-<td><img width="540" alt="TruchiEmu Light Mode" src="https://github.com/user-attachments/assets/8cddaf00-24ab-40df-b651-1c648fe07cae" /></td>
-<td><img width="540" alt="TruchiEmu Dark Mode" src="https://github.com/user-attachments/assets/ebc735f3-c6ec-4edd-b677-fa2e159d1ead" /></td>
+<img width="1117" height="783" alt="image" src="https://github.com/user-attachments/assets/4b6fa510-a07d-4a0a-815d-aee8da4562db" />
 </tr>
 </table>
 
