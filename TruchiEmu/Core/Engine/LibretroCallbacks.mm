@@ -305,6 +305,13 @@ case RETRO_ENVIRONMENT_SET_CORE_OPTIONS: {
 		return true;
 	}
   case RETRO_ENVIRONMENT_SET_HW_RENDER: {
+    // PPSSPP's GL rendering goes through its own context + FBOs that don't
+    // share with ours — the result is always a black frame.  Force it to use
+    // the software fallback which sends pixel data directly to video_cb.
+    if (g_coreID && [[g_coreID lowercaseString] containsString:@"ppsspp"]) {
+      bridge_log_printf(RETRO_LOG_INFO, "[PPSSPP] Rejecting HW render — forcing software renderer");
+      return false;
+    }
     struct retro_hw_render_callback *cb = (struct retro_hw_render_callback *)data;
     if (g_instance && cb) {
       [g_instance setupHWRender:cb];
