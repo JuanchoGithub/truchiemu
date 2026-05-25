@@ -2,8 +2,9 @@ import Foundation
 import IOSurface
 
 final class CoreHostService: NSObject, NSXPCListenerDelegate {
-    private var activeConnection: NSXPCConnection?
-    private var activeImpl: CoreHostImplementation?
+	private var activeConnection: NSXPCConnection?
+	private var activeImpl: CoreHostImplementation?
+	private var isTerminating = false
 
     override init() {
         super.init()
@@ -25,26 +26,29 @@ final class CoreHostService: NSObject, NSXPCListenerDelegate {
         activeConnection = newConnection
         activeImpl = impl
 
-        newConnection.interruptionHandler = {
-            LoggerService.warning(category: "XPC-Service", "Connection interrupted — cleaning up and exiting")
-            self.terminate()
-        }
+	newConnection.interruptionHandler = { [weak self] in
+			LoggerService.warning(category: "XPC-Service", "Connection interrupted — cleaning up and exiting")
+			self?.terminate()
+		}
 
-        newConnection.invalidationHandler = {
-            LoggerService.info(category: "XPC-Service", "Connection invalidated — cleaning up and exiting")
-            self.terminate()
-        }
+		newConnection.invalidationHandler = { [weak self] in
+			LoggerService.info(category: "XPC-Service", "Connection invalidated — cleaning up and exiting")
+			self?.terminate()
+		}
 
         newConnection.resume()
         return true
     }
 
-    private func terminate() {
-        activeImpl?.cleanupForExit()
-        activeImpl = nil
-        activeConnection = nil
-        exit(0)
-    }
+	private func terminate() {
+		guard !isTerminating else { return }
+		isTerminating = true
+		activeImpl?.cleanupForExit()
+		activeImpl = nil
+		activeConnection?.invalidate()
+		activeConnection = nil
+		CFRunLoopStop(CFRunLoopGetMain())
+	}
 }
 
 class CoreHostImplementation: NSObject, CoreHostProtocol {

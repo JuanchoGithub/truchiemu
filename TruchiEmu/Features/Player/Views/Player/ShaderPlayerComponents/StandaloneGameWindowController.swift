@@ -716,15 +716,11 @@ private func _doLaunch(rom: ROM, coreID: String, slotToLoad: Int? = nil) {
             RunningGamesTracker.shared.unregisterRunning(romPath: romPath)
         }
 
-        if let rom = trackedROM {
-            GameLauncher.shared.removeController(for: rom.id)
-        }
+	if let rom = trackedROM {
+		GameLauncher.shared.removeController(for: rom.id)
+	}
 
-        if !RunningGamesTracker.shared.isGameRunning {
-            XPCBridgeAdapter.shared.stop()
-        }
-
-        onWindowWillClose?()
+	onWindowWillClose?()
 
         detachSwiftUI()
 
