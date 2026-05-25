@@ -73,8 +73,17 @@ class GameLauncher: ObservableObject {
             self.cheatsEnabled = cheatsEnabled ?? rom.settings.cheatsEnabled ?? AppSettings.getBool("cheats_enabled", defaultValue: false)
             LoggerService.extreme(category: "GameLauncher", "Resolved cheats enabled: \(self.cheatsEnabled)")
             
-            // Resolve core options
-            self.coreOptions = coreOptions ?? CoreOptionsManager.shared.loadUserOverrides(for: coreID)
+        // Resolve core options (system-level + game-level overrides)
+        let resolvedSystemID = rom.systemID ?? "default"
+        self.coreOptions = coreOptions ?? {
+            var result = CoreOptionsManager.shared.loadSystemOverrides(for: coreID, systemID: resolvedSystemID)
+            let gameFilename = rom.filenameWithoutExtension
+            if !gameFilename.isEmpty {
+                let gameOverrides = CoreOptionsManager.shared.loadGameOverrides(for: coreID, systemID: resolvedSystemID, gameFilename: gameFilename)
+                result.merge(gameOverrides) { _, new in new }
+            }
+            return result
+        }()
             LoggerService.extreme(category: "GameLauncher", "Resolved core options: \(self.coreOptions)")
             
             // Resolve auto save/load
@@ -294,7 +303,7 @@ class GameLauncher: ObservableObject {
         guard systemID == "mame" || systemID == "fba" else { return }
         
         let coreBaseID = coreID.replacingOccurrences(of: "_libretro", with: "")
-        var overrides = CoreOptionsManager.shared.loadUserOverrides(for: coreID)
+        var overrides = CoreOptionsManager.shared.loadSystemOverrides(for: coreID, systemID: systemID)
         
         if coreBaseID.hasPrefix("mame") {
             // ── MAME2003-Plus specific options ──

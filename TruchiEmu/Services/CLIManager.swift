@@ -294,9 +294,11 @@ class CLIManager: ObservableObject {
             LoggerService.debug(category: "CLI", "Applied bezel: \(bezelFileName)")
         }
         
-        // Apply core options if specified
-        if !options.coreOptions.isEmpty {
-            CoreOptionsManager.shared.saveOverride(for: coreID, values: options.coreOptions)
+            // Apply core options if specified
+            if !options.coreOptions.isEmpty {
+                var existing = CoreOptionsManager.shared.loadSystemOverrides(for: coreID, systemID: systemID)
+                existing.merge(options.coreOptions) { _, new in new }
+                CoreOptionsManager.shared.saveSystemOverride(for: coreID, systemID: systemID, values: existing)
             LoggerService.debug(category: "CLI", "Applied \(options.coreOptions.count) core option(s)")
         }
         

@@ -21,12 +21,6 @@ class CoreOptionsManager: ObservableObject {
     private var currentSystemID: String?
     private var currentGameFilename: String?
 
-    // Directory for per-core options config files (.cfg)
-    private let optionsDirectory: URL = {
-        let base = FileManager.default.urls(for: .applicationSupportDirectory, in: .userDomainMask).first!
-        return base.appendingPathComponent("TruchiEmu/CoreOptions", isDirectory: true)
-    }()
-
     // Directory for per-core option definitions (.json)
     private let definitionsDirectory: URL = {
         let base = FileManager.default.urls(for: .applicationSupportDirectory, in: .userDomainMask).first!
@@ -43,8 +37,8 @@ class CoreOptionsManager: ObservableObject {
     private let decoder = JSONDecoder()
 
     private init() {
-        try? FileManager.default.createDirectory(at: optionsDirectory, withIntermediateDirectories: true)
         try? FileManager.default.createDirectory(at: definitionsDirectory, withIntermediateDirectories: true)
+        try? FileManager.default.createDirectory(at: overridesDirectory, withIntermediateDirectories: true)
         encoder.outputFormatting = [.prettyPrinted, .sortedKeys]
     }
 
@@ -69,20 +63,6 @@ class CoreOptionsManager: ObservableObject {
             }
         }
         return result
-    }
-
-    nonisolated func loadUserOverrides(for coreID: String) -> [String: String] {
-        let configURL = optionsDirectory.appendingPathComponent("\(coreID).cfg")
-        let result = parseCfgFile(at: configURL)
-        LoggerService.debug(category: "CoreOptionsManager", "User Overrides: \(result)")
-        return result
-    }
-
-    nonisolated func saveOverride(for coreID: String, values: [String: String]) {
-        let configURL = optionsDirectory.appendingPathComponent("\(coreID).cfg")
-        LoggerService.debug(category: "CoreOptionsManager", "For \(coreID): Saving Override \(values) in file: \(configURL)")
-        let content = values.map { "\($0.key) = \"\($0.value)\"" }.joined(separator: "\n")
-        try? content.write(to: configURL, atomically: true, encoding: .utf8)
     }
 
     // MARK: - System-Level and Game-Level Overrides
@@ -531,83 +511,51 @@ class CoreOptionsManager: ObservableObject {
 
     // MARK: - Persistence
 
-    private func optionsFileURL(_ coreID: String) -> URL {
-        optionsDirectory.appendingPathComponent("\(coreID).cfg")
-    }
-
     private func persistOverride(key: String, value: String) {
-        guard let coreID = currentCoreID else { return }
+        guard let coreID = currentCoreID, let systemID = currentSystemID else { return }
 
-        if let systemID = currentSystemID {
-            if let gameFilename = currentGameFilename {
-                var allOverrides = loadGameOverrides(for: coreID, systemID: systemID, gameFilename: gameFilename)
-                allOverrides[key] = value
-                saveGameOverride(for: coreID, systemID: systemID, gameFilename: gameFilename, values: allOverrides)
-            } else {
-                var allOverrides = loadSystemOverrides(for: coreID, systemID: systemID)
-                allOverrides[key] = value
-                saveSystemOverride(for: coreID, systemID: systemID, values: allOverrides)
-            }
-        } else {
-            var allOverrides = loadUserOverrides(for: coreID)
+        if let gameFilename = currentGameFilename {
+            var allOverrides = loadGameOverrides(for: coreID, systemID: systemID, gameFilename: gameFilename)
             allOverrides[key] = value
-            let configURL = optionsFileURL(coreID)
-            let content = allOverrides.map { "\($0.key) = \"\($0.value)\"" }.joined(separator: "\n")
-            try? content.write(to: configURL, atomically: true, encoding: .utf8)
-            LoggerService.debug(category: "CoreOptionsManager", "For \(coreID): Saving content \(content) into file \(configURL)")
+            saveGameOverride(for: coreID, systemID: systemID, gameFilename: gameFilename, values: allOverrides)
+        } else {
+            var allOverrides = loadSystemOverrides(for: coreID, systemID: systemID)
+            allOverrides[key] = value
+            saveSystemOverride(for: coreID, systemID: systemID, values: allOverrides)
         }
     }
 
     private func removeOverrideAtCurrentScope(key: String) {
-        guard let coreID = currentCoreID else { return }
+        guard let coreID = currentCoreID, let systemID = currentSystemID else { return }
 
-        if let systemID = currentSystemID {
-            if let gameFilename = currentGameFilename {
-                var allOverrides = loadGameOverrides(for: coreID, systemID: systemID, gameFilename: gameFilename)
-                allOverrides.removeValue(forKey: key)
-                if allOverrides.isEmpty {
-                    deleteGameOverride(for: coreID, systemID: systemID, gameFilename: gameFilename)
-                } else {
-                    saveGameOverride(for: coreID, systemID: systemID, gameFilename: gameFilename, values: allOverrides)
-                }
+        if let gameFilename = currentGameFilename {
+            var allOverrides = loadGameOverrides(for: coreID, systemID: systemID, gameFilename: gameFilename)
+            allOverrides.removeValue(forKey: key)
+            if allOverrides.isEmpty {
+                deleteGameOverride(for: coreID, systemID: systemID, gameFilename: gameFilename)
             } else {
-                var allOverrides = loadSystemOverrides(for: coreID, systemID: systemID)
-                allOverrides.removeValue(forKey: key)
-                if allOverrides.isEmpty {
-                    deleteSystemOverride(for: coreID, systemID: systemID)
-                } else {
-                    saveSystemOverride(for: coreID, systemID: systemID, values: allOverrides)
-                }
+                saveGameOverride(for: coreID, systemID: systemID, gameFilename: gameFilename, values: allOverrides)
             }
         } else {
-            var allOverrides = loadUserOverrides(for: coreID)
+            var allOverrides = loadSystemOverrides(for: coreID, systemID: systemID)
             allOverrides.removeValue(forKey: key)
-            let configURL = optionsFileURL(coreID)
             if allOverrides.isEmpty {
-                try? FileManager.default.removeItem(at: configURL)
+                deleteSystemOverride(for: coreID, systemID: systemID)
             } else {
-                let content = allOverrides.map { "\($0.key) = \"\($0.value)\"" }.joined(separator: "\n")
-                try? content.write(to: configURL, atomically: true, encoding: .utf8)
+                saveSystemOverride(for: coreID, systemID: systemID, values: allOverrides)
             }
         }
     }
 
     public func loadUserOverrides() -> [String: String] {
-        guard let coreID = currentCoreID else { return [:] }
+        guard let coreID = currentCoreID, let systemID = currentSystemID else { return [:] }
 
-        if let systemID = currentSystemID {
-            var result = loadSystemOverrides(for: coreID, systemID: systemID)
-            if let gameFilename = currentGameFilename {
-                let gameOverrides = loadGameOverrides(for: coreID, systemID: systemID, gameFilename: gameFilename)
-                result.merge(gameOverrides) { _, new in new }
-            }
-            LoggerService.debug(category: "CoreOptionsManager", "For \(coreID)/\(systemID): Loaded overrides: \(result)")
-            return result
+        var result = loadSystemOverrides(for: coreID, systemID: systemID)
+        if let gameFilename = currentGameFilename {
+            let gameOverrides = loadGameOverrides(for: coreID, systemID: systemID, gameFilename: gameFilename)
+            result.merge(gameOverrides) { _, new in new }
         }
-
-        let configURL = optionsFileURL(coreID)
-        let result = parseCfgFile(at: configURL)
-        LoggerService.debug(category: "CoreOptionsManager", "For \(currentCoreID ?? "unknown"): Loaded user overrides: \(result)")
+        LoggerService.debug(category: "CoreOptionsManager", "For \(coreID)/\(systemID): Loaded overrides: \(result)")
         return result
     }
 
@@ -620,9 +568,6 @@ class CoreOptionsManager: ObservableObject {
             } else {
                 deleteSystemOverride(for: coreID, systemID: systemID)
             }
-        } else {
-            let configURL = optionsFileURL(coreID)
-            try? FileManager.default.removeItem(at: configURL)
         }
 
         let defURL = definitionsDirectory.appendingPathComponent("\(coreID).json")
