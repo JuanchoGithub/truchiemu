@@ -1,6 +1,28 @@
 import SwiftUI
 import Combine
 
+enum CoreOptionsLoadingPhase: Equatable {
+    case idle
+    case resolvingCore
+    case readingDefinitions
+    case applyingOverrides
+    case preparingView
+    case loadingCore
+    case discoveringOptions
+
+    var localizationKey: String {
+        switch self {
+        case .idle: return "coreOptions.loading"
+        case .resolvingCore: return "coreOptions.loading.resolvingCore"
+        case .readingDefinitions: return "coreOptions.loading.readingDefinitions"
+        case .applyingOverrides: return "coreOptions.loading.applyingOverrides"
+        case .preparingView: return "coreOptions.loading.preparingView"
+        case .loadingCore: return "coreOptions.loading.loadingCore"
+        case .discoveringOptions: return "coreOptions.loading.discoveringOptions"
+        }
+    }
+}
+
 // MARK: - View Model
 @MainActor
 class CoreOptionsViewModel: ObservableObject {
@@ -14,6 +36,7 @@ class CoreOptionsViewModel: ObservableObject {
     let gameFilename: String?
 
     @Published var isLoading = false
+    @Published var loadingPhase: CoreOptionsLoadingPhase = .idle
     @Published var hasLoadedOnce = false
     @Published var searchText: String = ""
 
@@ -128,40 +151,55 @@ class CoreOptionsViewModel: ObservableObject {
 
 
     func loadOptions(for id: String, library: ROMLibrary? = nil) {
-        isLoading = true
+        Task {
+            isLoading = true
+            loadingPhase = .resolvingCore
+            try? await Task.sleep(for: .milliseconds(150))
 
-        var dylibPath: String? = nil
-        if let core = CoreManager.shared.installedCores.first(where: { $0.id == id }) {
-            LoggerService.debug(category: "CoreOptionsViewModel", "Found installed core: \(core.id). Versions: \(core.installedVersions.count). ActiveTag: \(core.activeVersionTag ?? "nil"). ValidDylibs: \(core.installedVersions.filter { FileManager.default.fileExists(atPath: $0.dylibPath.path) }.map { $0.dylibPath.lastPathComponent })")
-            if let activeVersion = core.activeVersion {
-                dylibPath = activeVersion.dylibPath.path
-                LoggerService.debug(category: "CoreOptionsViewModel", "Resolved dylibPath: \(dylibPath!)")
+            var dylibPath: String? = nil
+            if let core = CoreManager.shared.installedCores.first(where: { $0.id == id }) {
+                LoggerService.debug(category: "CoreOptionsViewModel", "Found installed core: \(core.id). Versions: \(core.installedVersions.count). ActiveTag: \(core.activeVersionTag ?? "nil"). ValidDylibs: \(core.installedVersions.filter { FileManager.default.fileExists(atPath: $0.dylibPath.path) }.map { $0.dylibPath.lastPathComponent })")
+                if let activeVersion = core.activeVersion {
+                    dylibPath = activeVersion.dylibPath.path
+                    LoggerService.debug(category: "CoreOptionsViewModel", "Resolved dylibPath: \(dylibPath!)")
+                } else {
+                    LoggerService.debug(category: "CoreOptionsViewModel", "No active version found for core: \(id)")
+                }
             } else {
-                LoggerService.debug(category: "CoreOptionsViewModel", "No active version found for core: \(id)")
+                LoggerService.debug(category: "CoreOptionsViewModel", "Core \(id) not found in installedCores")
             }
-        } else {
-            LoggerService.debug(category: "CoreOptionsViewModel", "Core \(id) not found in installedCores")
-        }
 
-        var romPath: String? = nil
-        if let lib = library {
-            let systemIDs = CoreManager.supportedSystems(for: id)
-            if let sysID = systemIDs.first, let rom = lib.roms.first(where: { $0.systemID == sysID }) {
-                romPath = rom.path.path
-                LoggerService.debug(category: "CoreOptionsViewModel", "Resolved romPath: \(romPath!) for system: \(sysID)")
+            var romPath: String? = nil
+            if let lib = library {
+                let systemIDs = CoreManager.supportedSystems(for: id)
+                if let sysID = systemIDs.first, let rom = lib.roms.first(where: { $0.systemID == sysID }) {
+                    romPath = rom.path.path
+                    LoggerService.debug(category: "CoreOptionsViewModel", "Resolved romPath: \(romPath!) for system: \(sysID)")
+                } else {
+                    LoggerService.debug(category: "CoreOptionsViewModel", "No ROM found in library for system(s): \(systemIDs)")
+                }
+            }
+
+            loadingPhase = .readingDefinitions
+            try? await Task.sleep(for: .milliseconds(200))
+
+            self.manager.setScope(systemID: self.systemID, gameFilename: self.gameFilename)
+            if self.isSystemMode, let sysID = self.systemID {
+                self.discoverCoresForSystem(sysID, forceCoreID: id)
             } else {
-                LoggerService.debug(category: "CoreOptionsViewModel", "No ROM found in library for system(s): \(systemIDs)")
+                self.manager.loadForCore(coreID: id, dylibPath: dylibPath, romPath: romPath)
             }
-        }
 
-        self.manager.setScope(systemID: self.systemID, gameFilename: self.gameFilename)
-        if self.isSystemMode, let sysID = self.systemID {
-            self.discoverCoresForSystem(sysID, forceCoreID: id)
-        } else {
-            self.manager.loadForCore(coreID: id, dylibPath: dylibPath, romPath: romPath)
+            loadingPhase = .applyingOverrides
+            try? await Task.sleep(for: .milliseconds(200))
+
+            loadingPhase = .preparingView
+            try? await Task.sleep(for: .milliseconds(150))
+
+            self.isLoading = false
+            self.loadingPhase = .idle
+            self.hasLoadedOnce = true
         }
-        self.isLoading = false
-        self.hasLoadedOnce = true
     }
 
     private func discoverCoresForSystem(_ sysID: String, forceCoreID: String? = nil) {
@@ -220,7 +258,8 @@ class CoreOptionsViewModel: ObservableObject {
 
     func discoverOptions(for coreID: String, library: ROMLibrary) async {
         isLoading = true
-        defer { isLoading = false }
+        loadingPhase = .resolvingCore
+        try? await Task.sleep(for: .milliseconds(150))
 
         var dylibPath: String? = nil
         if let core = CoreManager.shared.installedCores.first(where: { $0.id == coreID }) {
@@ -235,19 +274,29 @@ class CoreOptionsViewModel: ObservableObject {
             romPath = rom.path.path
         }
 
+        loadingPhase = .loadingCore
+        try? await Task.sleep(for: .milliseconds(200))
+
         if let dylib = dylibPath {
+            loadingPhase = .discoveringOptions
             await manager.discoverOptions(for: coreID, dylibPath: dylib, romPath: romPath)
             hasLoadedOnce = true
             updateFilteredData()
         } else if let core = CoreManager.shared.installedCores.first(where: { $0.id == coreID }),
-                  let fallback = core.installedVersions.first(where: { FileManager.default.fileExists(atPath: $0.dylibPath.path) }) {
+        let fallback = core.installedVersions.first(where: { FileManager.default.fileExists(atPath: $0.dylibPath.path) }) {
             LoggerService.warning(category: "CoreOptionsViewModel", "Active version missing for \(coreID), falling back to \(fallback.dylibPath.lastPathComponent)")
+            loadingPhase = .discoveringOptions
             await manager.discoverOptions(for: coreID, dylibPath: fallback.dylibPath.path, romPath: romPath)
             hasLoadedOnce = true
             updateFilteredData()
         } else {
             LoggerService.error(category: "CoreOptionsViewModel", "Discovery failed: no valid dylibPath found for \(coreID)")
         }
+
+        loadingPhase = .preparingView
+        try? await Task.sleep(for: .milliseconds(150))
+        isLoading = false
+        loadingPhase = .idle
     }
 }
 
@@ -270,13 +319,28 @@ struct CoreOptionsView: View {
             ZStack {
                 Color(AppColors.windowBackground(colorScheme, tinted: ThemeManager.shared.tintedSurfacesEnabled)).ignoresSafeArea()
 
-                if viewModel.isLoading {
-                    VStack(spacing: 16) {
-                        ProgressView().controlSize(.large)
-                        Text(loc.localized("coreOptions.loading")).foregroundColor(AppColors.textSecondary(colorScheme))
+            if viewModel.isLoading {
+                VStack(spacing: 16) {
+                    Spacer()
+
+                    VStack(alignment: .leading, spacing: 8) {
+                        Text(loc.localized(viewModel.loadingPhase.localizationKey))
+                            .font(.caption)
+                            .foregroundStyle(.secondary)
+                            .lineLimit(1)
+                            .transition(.opacity)
+                            .animation(.easeInOut(duration: 0.2), value: viewModel.loadingPhase.localizationKey)
+
+                        ProgressView()
+                            .progressViewStyle(.linear)
+                            .tint(AppColors.brandAccentSecondary)
                     }
-                    .transition(.opacity)
-                } else if viewModel.options.isEmpty {
+                    .frame(maxWidth: 280)
+
+                    Spacer()
+                }
+                .transition(.opacity)
+            } else if viewModel.options.isEmpty {
                     EmptyStateView(coreID: viewModel.currentCoreID, viewModel: viewModel)
                 } else {
             ScrollView {
@@ -327,6 +391,7 @@ struct CoreOptionsView: View {
             }
         }
         .animation(.easeInOut, value: viewModel.isLoading)
+        .animation(.easeInOut(duration: 0.2), value: viewModel.loadingPhase)
         .navigationTitle(viewModel.isSystemMode ? "\(loc.localized("coreOptions.options")) \(SystemDatabase.systemName(forInternalID: viewModel.systemID ?? ""))" : "\(loc.localized("coreOptions.options")) \(viewModel.currentCoreID)")
         .onChange(of: viewModel.currentCoreID) { _, newID in
             viewModel.loadOptions(for: newID, library: library)
@@ -400,6 +465,7 @@ struct CoreOptionRow: View {
     @Environment(\.colorScheme) private var colorScheme
     let versionedKey: String
     @State private var selectedValue: String
+    @State private var isExpanded = false
 
     init(versionedKey: String, viewModel: CoreOptionsViewModel) {
         self.versionedKey = versionedKey
@@ -418,10 +484,20 @@ struct CoreOptionRow: View {
                             .font(.system(size: 13, weight: .medium))
 
                         if !option.info.isEmpty {
-                            Text(option.info)
-                                .font(.system(size: 11))
-                                .foregroundColor(AppColors.textSecondary(colorScheme))
-                                .lineLimit(2)
+                            HStack(alignment: .top, spacing: 4) {
+                                Text(option.info)
+                                    .font(.system(size: 11))
+                                    .foregroundColor(AppColors.textSecondary(colorScheme))
+                                    .lineLimit(isExpanded ? nil : 2)
+                                    .animation(.easeInOut(duration: 0.2), value: isExpanded)
+
+                                Image(systemName: isExpanded ? "chevron.down" : "chevron.right")
+                                    .font(.system(size: 8, weight: .semibold))
+                                    .foregroundColor(AppColors.textTertiary(colorScheme))
+                                    .padding(.top, 2)
+                            }
+                            .contentShape(Rectangle())
+                            .onTapGesture { isExpanded.toggle() }
                         }
                     }
 
@@ -435,22 +511,22 @@ struct CoreOptionRow: View {
                 .padding(.horizontal, 12)
                 .padding(.vertical, 10)
 
-            if option.overrideSource != .coreDefault {
-                HStack {
-                    overrideSourceLabel(for: option.overrideSource)
-                    Spacer()
-                    if option.overrideSource == .systemOverride || option.overrideSource == .gameOverride {
-                        Button(loc.localized("coreOptions.restoreDefault")) {
-                            viewModel.restoreToPreviousLayer(key: option.key)
-                            if let updated = viewModel.options[versionedKey] {
-                                selectedValue = updated.currentValue
+                if option.overrideSource != .coreDefault {
+                    HStack {
+                        overrideSourceLabel(for: option.overrideSource)
+                        Spacer()
+                        if option.overrideSource == .systemOverride || option.overrideSource == .gameOverride {
+                            Button(loc.localized("coreOptions.restoreDefault")) {
+                                viewModel.restoreToPreviousLayer(key: option.key)
+                                if let updated = viewModel.options[versionedKey] {
+                                    selectedValue = updated.currentValue
+                                }
                             }
+                            .buttonStyle(.link).font(.system(size: 10))
                         }
-                        .buttonStyle(.link).font(.system(size: 10))
                     }
+                    .padding(.horizontal, 12).padding(.bottom, 8)
                 }
-                .padding(.horizontal, 12).padding(.bottom, 8)
-            }
             }
         }
     }
