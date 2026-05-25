@@ -1,84 +1,85 @@
-# Jekyll configuration for TruchiEmu documentation site
-
 title: "TruchiEmu Documentation"
 description: "Complete documentation for the ultimate macOS retro gaming emulator"
 author: "TruchiEmu Team"
 baseurl: "/truchiemu"
 repository: "JuanchoGithub/truchiemu"
 
-# Theme settings
 markdown: kramdown
-permalink: /:name/
+highlighter: rouge
+permalink: /:name.html
 
-# Plugins
 plugins:
-  - jekyll-sitemap
-  - jekyll-seo-tag
-  - jekyll-feed
-  - jekyll-optional-front-matter
+- jekyll-sitemap
+- jekyll-seo-tag
+- jekyll-feed
+- jekyll-optional-front-matter
+- jekyll-polyglot
 
-# Exclude files
 exclude:
-  - Gemfile
-  - Gemfile.lock
-  - vendor
-  - LICENSE.txt
-  - scripts
+- Gemfile
+- Gemfile.lock
+- vendor
+- LICENSE.txt
+- scripts
 
-# Defaults
 defaults:
-  - scope:
-      path: ""
-    values:
-      layout: "default"
-      sidebar: true
+- scope:
+    path: ""
+  values:
+    layout: "default"
+    sidebar: true
 
-# Kramdown config
+sass:
+sass_dir: _sass
+style: compressed
+
 kramdown:
-  input: GFM
-  hard_wrap: false
-  syntax_highlighter: rouge
+input: GFM
+hard_wrap: false
+syntax_highlighter: rouge
 
-# Site variables
 vars:
-  version: "1.0.0"
-  icon: "/media/logo-icon.png"
+version: "1.0.0"
+icon: "/media/logo-icon.png"
 
-# Navigation — user-facing pages
+languages: ["en", "es", "pt"]
+default_lang: "en"
+exclude_from_localization: ["assets", "media", "flows.json", "Gemfile", "Gemfile.lock", "vendor", "scripts"]
+lang_from_path: true
+
 nav:
-  - title: "Getting Started"
-    url: "/getting-started/"
-  - title: "Features"
-    url: "/features/"
-  - title: "Systems"
-    url: "/systems/"
-  - title: "Troubleshooting"
-    url: "/troubleshooting/"
-  - title: "Bezel Guide"
-    url: "/bezel-guide/"
-  - title: "License"
-    url: "/license/"
+en:
+- title: "Getting Started"
+  url: "/getting-started.html"
+- title: "Features"
+  url: "/features.html"
+- title: "Troubleshooting"
+  url: "/troubleshooting.html"
+- title: "Development"
+  url: "/development.html"
+es:
+- title: "Primeros Pasos"
+  url: "/getting-started.html"
+- title: "Características"
+  url: "/features.html"
+- title: "Solución de Problemas"
+  url: "/troubleshooting.html"
+- title: "Desarrollo"
+  url: "/development.html"
+pt:
+- title: "Primeiros Passos"
+  url: "/getting-started.html"
+- title: "Recursos"
+  url: "/features.html"
+- title: "Solução de Problemas"
+  url: "/troubleshooting.html"
+- title: "Desenvolvimento"
+  url: "/development.html"
 
-# Development navigation (secondary)
-dev_nav:
-  - title: "Developer Guide"
-    url: "/development/"
-  - title: "Building from Source"
-    url: "/dev/building/"
-  - title: "Contributing"
-    url: "/dev/contributing/"
-  - title: "Architecture Flows"
-    url: "/app-flows/"
-  - title: "Dreamcast VMU Deep Dive"
-    url: "/dreamcast-vmu-fix/"
-
-# Social
 social:
-  github: JuanchoGithub/truchiemu
-  website: https://github.com/JuanchoGithub/truchiemu
+github: JuanchoGithub/truchiemu
+website: https://github.com/JuanchoGithub/truchiemu
 
-# Analytics disabled by default (enable if needed)
 analytics: false
 
-# Site URL
 url: "https://juanchogithub.github.io"

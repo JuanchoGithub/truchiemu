@@ -153,7 +153,7 @@ struct CheatManagerView: View {
     private func applyCheats() {
         let cheats = cheatManager.cheats(for: rom).filter { $0.enabled }
         let cheatData = cheats.map { cheat in ["index": cheat.index, "code": cheat.code, "enabled": cheat.enabled] as [String: Any] }
-        LibretroBridge.applyCheats(cheatData)
+        XPCBridgeAdapter.shared.applyCheats(cheatData)
     }
     
     private func categoryMatches(_ desc: String, category: CheatCategory) -> Bool {

@@ -15,6 +15,7 @@ struct GameDetailView: View {
     @State var showBoxArtPicker = false
     @StateObject var gameLauncher = GameLauncher.shared
     @State var boxArtImage: NSImage? = nil
+    @State var boxArtImageURL: URL? = nil
     @State var screenshotImages: [NSImage] = []
     @State var crcHash: String? = nil
     @State var fileSize: String? = nil
@@ -453,17 +454,30 @@ struct GameDetailView: View {
     }
 
     func loadBoxArt() {
-        if let resolvedPath = BoxArtService.shared.resolveLocalBoxArtIfNeeded(for: currentROM, library: library) {
-            boxArtImage = NSImage(contentsOf: resolvedPath)
-        } else if currentROM.hasBoxArt {
-            boxArtImage = NSImage(contentsOf: currentROM.boxArtLocalPath)
-        } else {
-            boxArtImage = nil
+        Task {
+            if let resolvedPath = BoxArtService.shared.resolveLocalBoxArtIfNeeded(for: currentROM, library: library) {
+                boxArtImageURL = resolvedPath
+                boxArtImage = await ImageCache.shared.image(for: resolvedPath)
+            } else if currentROM.hasBoxArt {
+                boxArtImageURL = currentROM.boxArtLocalPath
+                boxArtImage = await ImageCache.shared.image(for: currentROM.boxArtLocalPath)
+            } else {
+                boxArtImageURL = nil
+                boxArtImage = nil
+            }
         }
     }
 
     func loadScreenshots() {
-        screenshotImages = currentROM.screenshotPaths.compactMap { NSImage(contentsOf: $0) }
+        Task {
+            var images: [NSImage] = []
+            for path in currentROM.screenshotPaths {
+                if let img = await ImageCache.shared.image(for: path) {
+                    images.append(img)
+                }
+            }
+            screenshotImages = images
+        }
     }
 
     var manualActionStatusBar: some View {

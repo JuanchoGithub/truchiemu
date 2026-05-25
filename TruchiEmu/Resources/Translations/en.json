@@ -1130,5 +1130,13 @@
   "wizard.gamesDetected": "{0} games detected",
   "diagnostics.systemDatabaseCaptured": "SystemDatabase captured at:",
   "diagnostics.availableYes": "Available: YES",
-  "app.openSettings": "Open Settings"
+  "app.openSettings": "Open Settings",
+  "game.alreadyRunning.title": "Game Already Running",
+  "game.alreadyRunning.message": "\"%@\" is currently running. Only one game can run at a time.",
+  "game.alreadyRunning.saveInfo": "Closing \"%@\" will save its current state automatically. If you don't want to save, choose \"Switch Without Saving\".",
+  "game.alreadyRunning.noSaveInfo": "Closing \"%@\" will not save your progress.",
+  "game.alreadyRunning.switchAndSave": "Switch & Save",
+  "game.alreadyRunning.switchWithoutSaving": "Switch Without Saving",
+  "game.alreadyRunning.switch": "Switch",
+  "game.alreadyRunning.cancel": "Cancel"
 }

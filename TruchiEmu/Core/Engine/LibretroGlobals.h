@@ -3,7 +3,10 @@
 #import <Foundation/Foundation.h>
 #include <OpenGL/OpenGL.h>
 #include "libretro.h"
-#import "LibretroBridge.h" // <-- ADD THIS
+#import "LibretroBridge.h"
+#ifdef XPC_SERVICE
+#include "XPCSharedMemory.h"
+#endif
 
 #ifdef __cplusplus
 extern "C" {
@@ -42,6 +45,10 @@ void parseInputDescriptors(const struct retro_input_descriptor *descriptors);
 
 extern BOOL g_variablesUpdated;
 
+#ifndef XPC_SERVICE
+extern BOOL g_xpcModeActive;
+#endif
+
 extern dispatch_semaphore_t g_bridgeCompletionSemaphore;
 
 // Keyboard state (RETRO_DEVICE_KEYBOARD)
@@ -60,6 +67,10 @@ extern MouseState g_mouse_state;
 extern int16_t g_pointer_x;
 extern int16_t g_pointer_y;
 extern BOOL g_pointer_pressed;
+
+#ifdef XPC_SERVICE
+extern XPCSharedMemory *g_xpc_shm;
+#endif
 
 void bridge_log_printf(enum retro_log_level level, const char *fmt, ...);
 void initOptStorage(void);

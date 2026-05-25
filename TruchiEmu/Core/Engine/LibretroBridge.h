@@ -59,6 +59,9 @@ typedef void (^GameLoadedBlock)(const char *romPath);
 /* Rotation — returns 0, 1, 2, or 3 (0/90/180/270 degrees clockwise) */
 + (int)currentRotation;
 
+/* Controller Port Device — set the device type for a controller port */
++ (void)setControllerPortDevice:(unsigned)port device:(unsigned)device;
+
 /* Geometry — returns the core-provided display aspect ratio from
  * retro_system_av_info */
 + (float)aspectRatio;

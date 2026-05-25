@@ -1,36 +1,39 @@
 <aside class="sidebar">
-  <div class="sidebar-section">
-    <h3>User Guide</h3>
-    <ul class="sidebar-nav">
-      <li><a href="{{ '/getting-started/' | relative_url }}">Getting Started</a></li>
-      <li><a href="{{ '/features/shaders/' | relative_url }}">Shaders</a></li>
-      <li><a href="{{ '/features/library/' | relative_url }}">Library Management</a></li>
-      <li><a href="{{ '/features/achievements/' | relative_url }}">Achievements</a></li>
-      <li><a href="{{ '/features/save-states/' | relative_url }}">Save States</a></li>
-      <li><a href="{{ '/features/controllers/' | relative_url }}">Controllers</a></li>
-      <li><a href="{{ '/features/cheats/' | relative_url }}">Cheats</a></li>
-      <li><a href="{{ '/features/themes/' | relative_url }}">Themes &amp; Appearance</a></li>
-      <li><a href="{{ '/systems/' | relative_url }}">Systems &amp; Cores</a></li>
-      <li><a href="{{ '/bezel-guide/' | relative_url }}">Bezel Guide</a></li>
-      <li><a href="{{ '/troubleshooting/' | relative_url }}">Troubleshooting</a></li>
-      <li><a href="{{ '/license/' | relative_url }}">License</a></li>
-    </ul>
-  </div>
+<div class="sidebar-section">
+<h3>{{ site.data[site.active_lang].sidebar_getting_started }}</h3>
+<ul class="sidebar-nav">
+<li><a href="{{ '/getting-started.html' | relative_url }}">{{ site.data[site.active_lang].sidebar_installation }}</a></li>
+<li><a href="{{ '/getting-started.html' | relative_url }}#quick-start">{{ site.data[site.active_lang].sidebar_quick_start }}</a></li>
+<li><a href="{{ '/getting-started.html' | relative_url }}#next-steps">{{ site.data[site.active_lang].sidebar_next_steps }}</a></li>
+</ul>
+</div>
 
-  <div class="sidebar-section">
-    <h3>Developer Guide</h3>
-    <ul class="sidebar-nav">
-      <li><a href="{{ '/development/' | relative_url }}">Architecture &amp; Technical Docs</a></li>
-      <li><a href="{{ '/dev/building/' | relative_url }}">Building from Source</a></li>
-      <li><a href="{{ '/dev/contributing/' | relative_url }}">Contributing</a></li>
-      <li><a href="{{ '/app-flows/' | relative_url }}">App Architecture Flows</a></li>
-      <li><a href="{{ '/dreamcast-vmu-fix/' | relative_url }}">Dreamcast VMU Deep Dive</a></li>
-    </ul>
-  </div>
+<div class="sidebar-section">
+<h3>{{ site.data[site.active_lang].sidebar_core_features }}</h3>
+<ul class="sidebar-nav">
+<li><a href="{{ '/features/shaders.html' | relative_url }}">{{ site.data[site.active_lang].sidebar_shaders }}</a></li>
+<li><a href="{{ '/features/library.html' | relative_url }}">{{ site.data[site.active_lang].sidebar_library }}</a></li>
+<li><a href="{{ '/features/achievements.html' | relative_url }}">{{ site.data[site.active_lang].sidebar_achievements }}</a></li>
+<li><a href="{{ '/features/save-states.html' | relative_url }}">{{ site.data[site.active_lang].sidebar_save_states }}</a></li>
+<li><a href="{{ '/features/controllers.html' | relative_url }}">{{ site.data[site.active_lang].sidebar_controllers }}</a></li>
+<li><a href="{{ '/features/cheats.html' | relative_url }}">{{ site.data[site.active_lang].sidebar_cheats }}</a></li>
+<li><a href="{{ '/features/themes.html' | relative_url }}">{{ site.data[site.active_lang].sidebar_themes }}</a></li>
+</ul>
+</div>
 
-  <div class="sidebar-sticky-footer">
-    <button id="search-toggle" class="btn btn-block">
-      🔎 Search Docs
-    </button>
-  </div>
+<div class="sidebar-section">
+<h3>{{ site.data[site.active_lang].sidebar_development }}</h3>
+<ul class="sidebar-nav">
+<li><a href="{{ '/development.html' | relative_url }}">{{ site.data[site.active_lang].sidebar_architecture }}</a></li>
+<li><a href="{{ '/dev/building.html' | relative_url }}">{{ site.data[site.active_lang].sidebar_building }}</a></li>
+<li><a href="{{ '/dev/contributing.html' | relative_url }}">{{ site.data[site.active_lang].sidebar_contributing }}</a></li>
+<li><a href="{{ '/dreamcast-vmu-fix.html' | relative_url }}">{{ site.data[site.active_lang].sidebar_dreamcast_debug }}</a></li>
+</ul>
+</div>
+
+<div class="sidebar-sticky-footer">
+<button id="search-toggle" class="btn btn-block">
+🔎 {{ site.data[site.active_lang].search_docs }}
+</button>
+</div>
 </aside>

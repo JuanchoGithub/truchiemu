@@ -397,113 +397,168 @@ void bridge_video_refresh(const void *data, unsigned width, unsigned height, siz
 }
 
 void bridge_audio_sample(int16_t left, int16_t right) {
-  int16_t samples[2] = {left, right};
-  if (g_instance) [g_instance handleAudioSamples:samples count:2];
+    int16_t samples[2] = {left, right};
+    if (g_instance) [g_instance handleAudioSamples:samples count:2];
 }
 
 size_t bridge_audio_sample_batch(const int16_t *data, size_t frames) {
-  if (g_instance) [g_instance handleAudioSamples:data count:frames * 2];
-  return frames;
+    if (g_instance) [g_instance handleAudioSamples:data count:frames * 2];
+    return frames;
 }
 
 static void bridge_handle_turbo(void) {
-  for (int i = 0; i < 32; i++) {
-    if (g_turbo_active[i]) {
-      if (g_turbo_counter[i] <= 0) {
-        g_turbo_counter[i] = g_turbo_rate;
-        g_turbo_state[i] = !g_turbo_state[i];
-        int targetIdx = g_turbo_fireButton[i];
-        if (targetIdx >= 0 && targetIdx < 32) {
-          g_input_state[targetIdx] = g_turbo_state[i] ? 1 : 0;
+#ifdef XPC_SERVICE
+    if (g_xpc_shm) {
+        for (int i = 0; i < 32; i++) {
+            if (g_xpc_shm->turbo_active[i]) {
+                if (g_xpc_shm->turbo_counter[i] <= 0) {
+                    g_xpc_shm->turbo_counter[i] = g_turbo_rate;
+                    g_xpc_shm->turbo_state[i] = !g_xpc_shm->turbo_state[i];
+                    int targetIdx = g_xpc_shm->turbo_fireButton[i];
+                    if (targetIdx >= 0 && targetIdx < 32) {
+                        g_xpc_shm->input_state[targetIdx] = g_xpc_shm->turbo_state[i] ? 1 : 0;
+                    }
+                } else {
+                    g_xpc_shm->turbo_counter[i]--;
+                }
+            }
         }
-      } else {
-        g_turbo_counter[i]--;
-      }
+        return;
     }
-  }
+#endif
+    for (int i = 0; i < 32; i++) {
+        if (g_turbo_active[i]) {
+            if (g_turbo_counter[i] <= 0) {
+                g_turbo_counter[i] = g_turbo_rate;
+                g_turbo_state[i] = !g_turbo_state[i];
+                int targetIdx = g_turbo_fireButton[i];
+                if (targetIdx >= 0 && targetIdx < 32) {
+                    g_input_state[targetIdx] = g_turbo_state[i] ? 1 : 0;
+                }
+            } else {
+                g_turbo_counter[i]--;
+            }
+        }
+    }
 }
 
 void bridge_input_poll(void) {
-  bridge_handle_turbo();
+    bridge_handle_turbo();
 }
 
 int16_t bridge_input_state(unsigned port, unsigned device, unsigned index, unsigned id) {
-    if (port == 0) {
+    if (port != 0) return 0;
+#ifdef XPC_SERVICE
+    if (g_xpc_shm) {
         if (device == RETRO_DEVICE_JOYPAD)
-            return g_input_state[id & 0x1F] ? 1 : 0;
+            return xpc_shm_get_input_state(g_xpc_shm, id & 0x1F) ? 1 : 0;
         if (device == RETRO_DEVICE_ANALOG) {
             if (index < 2 && id < 2) {
-                int16_t val = g_analog_state[index][id];
-                if (val != 0)
-                    return val;
-                if (g_input_state[id] != 0)
-                    return 1;
+                int16_t val = xpc_shm_get_analog_state(g_xpc_shm, index, id);
+                if (val != 0) return val;
+                if (xpc_shm_get_input_state(g_xpc_shm, id)) return 1;
                 return 0;
             }
-            // Handle analog button values (L2/R2 triggers) for cores like Flycast
-            // that query analog trigger pressure via RETRO_DEVICE_ANALOG with index=2
-            int16_t analogVal = g_analog_button_state[id & 0x1F];
-            if (analogVal != 0)
-                return analogVal;
-            return g_input_state[id & 0x1F] ? 1 : 0;
+            int16_t analogVal = xpc_shm_get_analog_button(g_xpc_shm, id & 0x1F);
+            if (analogVal != 0) return analogVal;
+            return xpc_shm_get_input_state(g_xpc_shm, id & 0x1F) ? 1 : 0;
         }
-
-        // RETRO_DEVICE_KEYBOARD - raw keycode polling
         if (device == RETRO_DEVICE_KEYBOARD || device == 0) {
-            if (id < 512) {
-                return g_keyboard_state[id] ? 1 : 0;
-            }
+            if (id < 512) return xpc_shm_get_keyboard_state(g_xpc_shm, id) ? 1 : 0;
             return 0;
         }
-
-        // RETRO_DEVICE_MOUSE - relative mouse movement + buttons
         if (device == RETRO_DEVICE_MOUSE) {
             switch (id) {
-                case RETRO_DEVICE_ID_MOUSE_X:
-                    return g_mouse_state.delta_x;
-                case RETRO_DEVICE_ID_MOUSE_Y:
-                    return g_mouse_state.delta_y;
-                case RETRO_DEVICE_ID_MOUSE_LEFT:
-                    return (g_mouse_state.buttons & 1) ? 1 : 0;
-                case RETRO_DEVICE_ID_MOUSE_RIGHT:
-                    return (g_mouse_state.buttons & 2) ? 1 : 0;
-                case RETRO_DEVICE_ID_MOUSE_MIDDLE:
-                    return (g_mouse_state.buttons & 4) ? 1 : 0;
-                case RETRO_DEVICE_ID_MOUSE_WHEELUP: {
-                    int16_t w = g_mouse_state.wheel_delta;
-                    g_mouse_state.wheel_delta = 0;
-                    return (w > 0) ? 1 : 0;
-                }
-                case RETRO_DEVICE_ID_MOUSE_WHEELDOWN: {
-                    int16_t w = g_mouse_state.wheel_delta;
-                    g_mouse_state.wheel_delta = 0;
-                    return (w < 0) ? 1 : 0;
-                }
-                default:
-                    return 0;
+            case RETRO_DEVICE_ID_MOUSE_X: return g_xpc_shm->mouse.delta_x;
+            case RETRO_DEVICE_ID_MOUSE_Y: return g_xpc_shm->mouse.delta_y;
+            case RETRO_DEVICE_ID_MOUSE_LEFT: return (g_xpc_shm->mouse.buttons & 1) ? 1 : 0;
+            case RETRO_DEVICE_ID_MOUSE_RIGHT: return (g_xpc_shm->mouse.buttons & 2) ? 1 : 0;
+            case RETRO_DEVICE_ID_MOUSE_MIDDLE: return (g_xpc_shm->mouse.buttons & 4) ? 1 : 0;
+            case RETRO_DEVICE_ID_MOUSE_WHEELUP: {
+                int16_t w = g_xpc_shm->mouse.wheel_delta;
+                g_xpc_shm->mouse.wheel_delta = 0;
+                return (w > 0) ? 1 : 0;
+            }
+            case RETRO_DEVICE_ID_MOUSE_WHEELDOWN: {
+                int16_t w = g_xpc_shm->mouse.wheel_delta;
+                g_xpc_shm->mouse.wheel_delta = 0;
+                return (w < 0) ? 1 : 0;
+            }
+            default: return 0;
             }
         }
-
-        // RETRO_DEVICE_POINTER - absolute pointer position
         if (device == RETRO_DEVICE_POINTER) {
             switch (id) {
-                case RETRO_DEVICE_ID_POINTER_X:
-                    return g_pointer_x;
-                case RETRO_DEVICE_ID_POINTER_Y:
-                    return g_pointer_y;
-                case RETRO_DEVICE_ID_POINTER_PRESSED:
-                    return g_pointer_pressed ? 1 : 0;
-                default:
-                    return 0;
+            case RETRO_DEVICE_ID_POINTER_X: return g_xpc_shm->pointer.pointer_x;
+            case RETRO_DEVICE_ID_POINTER_Y: return g_xpc_shm->pointer.pointer_y;
+            case RETRO_DEVICE_ID_POINTER_PRESSED: return g_xpc_shm->pointer.pointer_pressed ? 1 : 0;
+            default: return 0;
             }
+        }
+        return 0;
+    }
+#endif
+    if (device == RETRO_DEVICE_JOYPAD)
+        return g_input_state[id & 0x1F] ? 1 : 0;
+    if (device == RETRO_DEVICE_ANALOG) {
+        if (index < 2 && id < 2) {
+            int16_t val = g_analog_state[index][id];
+            if (val != 0)
+                return val;
+            if (g_input_state[id] != 0)
+                return 1;
+            return 0;
+        }
+        // Handle analog button values (L2/R2 triggers) for cores like Flycast
+        // that query analog trigger pressure via RETRO_DEVICE_ANALOG with index=2
+        int16_t analogVal = g_analog_button_state[id & 0x1F];
+        if (analogVal != 0)
+            return analogVal;
+        return g_input_state[id & 0x1F] ? 1 : 0;
+    }
+
+    // RETRO_DEVICE_KEYBOARD - raw keycode polling
+    if (device == RETRO_DEVICE_KEYBOARD || device == 0) {
+        if (id < 512) {
+            return g_keyboard_state[id] ? 1 : 0;
+        }
+        return 0;
+    }
+
+    // RETRO_DEVICE_MOUSE - relative mouse movement + buttons
+    if (device == RETRO_DEVICE_MOUSE) {
+        switch (id) {
+        case RETRO_DEVICE_ID_MOUSE_X: return g_mouse_state.delta_x;
+        case RETRO_DEVICE_ID_MOUSE_Y: return g_mouse_state.delta_y;
+        case RETRO_DEVICE_ID_MOUSE_LEFT: return (g_mouse_state.buttons & 1) ? 1 : 0;
+        case RETRO_DEVICE_ID_MOUSE_RIGHT: return (g_mouse_state.buttons & 2) ? 1 : 0;
+        case RETRO_DEVICE_ID_MOUSE_MIDDLE: return (g_mouse_state.buttons & 4) ? 1 : 0;
+        case RETRO_DEVICE_ID_MOUSE_WHEELUP: {
+            int16_t w = g_mouse_state.wheel_delta;
+            g_mouse_state.wheel_delta = 0;
+            return (w > 0) ? 1 : 0;
+        }
+        case RETRO_DEVICE_ID_MOUSE_WHEELDOWN: {
+            int16_t w = g_mouse_state.wheel_delta;
+            g_mouse_state.wheel_delta = 0;
+            return (w < 0) ? 1 : 0;
+        }
+        default: return 0;
+        }
+    }
+
+    // RETRO_DEVICE_POINTER - absolute pointer position
+    if (device == RETRO_DEVICE_POINTER) {
+        switch (id) {
+        case RETRO_DEVICE_ID_POINTER_X: return g_pointer_x;
+        case RETRO_DEVICE_ID_POINTER_Y: return g_pointer_y;
+        case RETRO_DEVICE_ID_POINTER_PRESSED: return g_pointer_pressed ? 1 : 0;
+        default: return 0;
         }
     }
     return 0;
 }
 
-// Called from Swift to dispatch keyboard events to the core
-// This invokes the callback-based keyboard input if registered
-// and also updates the polling state for cores that use bridge_input_state
 void bridge_keyboard_event(bool down, unsigned keycode, uint32_t character, uint32_t mod, unsigned device) {
     if (g_keyboard_callback_registered && g_keyboard_callback.callback) {
         g_keyboard_callback.callback(down, keycode, character, mod, device);

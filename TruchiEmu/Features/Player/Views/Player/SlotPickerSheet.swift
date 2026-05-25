@@ -2,7 +2,7 @@ import SwiftUI
 
 // MARK: - Slot Picker Sheet
 
-// Sheet that shows all save slots (0-9) with thumbnails and info
+// Sheet that shows all save slots (-1 auto + 0-9) with thumbnails and info
 struct SlotPickerSheet: View {
     @ObservedObject var runner: EmulatorRunner
     @Binding var showSlotPicker: Bool
@@ -122,9 +122,17 @@ Divider()
     @ViewBuilder
     var slotsGrid: some View {
         ScrollView {
-            LazyVGrid(columns: Array(repeating: GridItem(.flexible(), spacing: 12), count: 5), spacing: 12) {
-                ForEach(0..<10) { slot in
-                    SlotCardView(slot: slot, slotInfo: slotInfo(for: slot), thumbnail: slotThumbnails[slot], isCurrentSlot: slot == runner.currentSlot, onSave: { saveToSlot(slot) }, onLoad: { loadFromSlot(slot) }, onDelete: { deleteFromSlot(slot) })
+            VStack(spacing: 12) {
+                HStack {
+                    Spacer()
+                    SlotCardView(slot: -1, slotInfo: slotInfo(for: -1), thumbnail: slotThumbnails[-1], isCurrentSlot: -1 == runner.currentSlot, onSave: { saveToSlot(-1) }, onLoad: { loadFromSlot(-1) }, onDelete: { deleteFromSlot(-1) })
+                    Spacer()
+                }
+
+                LazyVGrid(columns: Array(repeating: GridItem(.flexible(), spacing: 12), count: 5), spacing: 12) {
+                    ForEach(0...9, id: \.self) { slot in
+                        SlotCardView(slot: slot, slotInfo: slotInfo(for: slot), thumbnail: slotThumbnails[slot], isCurrentSlot: slot == runner.currentSlot, onSave: { saveToSlot(slot) }, onLoad: { loadFromSlot(slot) }, onDelete: { deleteFromSlot(slot) })
+                    }
                 }
             }
             .padding()
@@ -136,7 +144,7 @@ Divider()
     private func loadThumbnails() {
         guard let rom = runner.rom else { return }
         let systemID = rom.systemID ?? "default"
-        for slot in 0..<10 {
+        for slot in -1...9 {
             if let thumbnail = runner.saveManager.loadThumbnail(gameName: rom.displayName, systemID: systemID, slot: slot) {
                 slotThumbnails[slot] = thumbnail
             }
@@ -170,12 +178,12 @@ struct SlotCardView: View {
                     Image(nsImage: thumbnail).resizable().aspectRatio(contentMode: .fill).frame(height: 80).clipped()
                 } else {
                     Rectangle().fill(Color.gray.opacity(0.15)).frame(height: 80)
-                        .overlay(VStack {
-                            Image(systemName: slotInfo?.exists == true ? "square.and.arrow.down" : "plus.circle")
-                                .font(.system(size: 24)).foregroundColor(.secondary)
-                            Text(slotInfo?.exists == true ? loc.localized("slot.previewUnavailable") : loc.localized("slot.noSaveInSlot"))
-                                .font(.caption2).foregroundColor(.secondary)
-                        })
+                .overlay(VStack {
+                    Image(systemName: slotInfo?.exists == true ? "square.and.arrow.down" : "plus.circle")
+                    .font(.system(size: 24)).foregroundColor(.secondary)
+                    Text(slot == -1 ? loc.localized("toolbar.systemAutoSave") : (slotInfo?.exists == true ? loc.localized("slot.previewUnavailable") : loc.localized("slot.noSaveInSlot")))
+                    .font(.caption2).foregroundColor(.secondary)
+                })
                 }
                 if isCurrentSlot {
                     VStack { HStack { Image(systemName: "chevron.right.circle.fill").foregroundColor(AppColors.brandAccent).font(.caption); Spacer() }; Spacer() }
@@ -186,7 +194,7 @@ struct SlotCardView: View {
             .overlay(RoundedRectangle(cornerRadius: 6).stroke(isCurrentSlot ? AppColors.brandAccent : Color.gray.opacity(0.25), lineWidth: 1.5))
             
 HStack {
-      Text(slotInfo?.displayName ?? "Slot \(slot)").font(.caption).fontWeight(isCurrentSlot ? .bold : .medium).foregroundColor(isCurrentSlot ? AppColors.brandAccent : .primary)
+            Text(slot == -1 ? loc.localized("toolbar.slotAuto") : slotInfo?.displayName ?? "Slot \(slot)").font(.caption).fontWeight(isCurrentSlot ? .bold : .medium).foregroundColor(isCurrentSlot ? AppColors.brandAccent : .primary)
       Spacer()
       if slotInfo?.exists == true { Image(systemName: "checkmark.circle.fill").font(.caption).foregroundColor(.green) }
     }
@@ -208,14 +216,18 @@ HStack {
       Text(" ").font(.caption2).foregroundColor(.clear)
     }
     
-    HStack(spacing: 4) {
+        HStack(spacing: 4) {
+            if slot != -1 {
                 Button(action: onSave) { Image(systemName: "square.and.arrow.down").font(.caption) }
-                    .buttonStyle(.borderless).help(loc.localized("slot.saveToSlot"))
-                Button(action: onLoad) { Image(systemName: "square.and.arrow.up").font(.caption) }
-                    .buttonStyle(.borderless).disabled(slotInfo?.exists != true).help(loc.localized("slot.loadFromSlot"))
-                Button(action: onDelete) { Image(systemName: "trash").font(.caption) }
-                    .buttonStyle(.borderless).disabled(slotInfo?.exists != true).help(loc.localized("slot.deleteSlot"))
+                .buttonStyle(.borderless).help(loc.localized("slot.saveToSlot"))
             }
+            Button(action: onLoad) { Image(systemName: "square.and.arrow.up").font(.caption) }
+            .buttonStyle(.borderless).disabled(slotInfo?.exists != true).help(loc.localized("slot.loadFromSlot"))
+            if slot != -1 {
+                Button(action: onDelete) { Image(systemName: "trash").font(.caption) }
+                .buttonStyle(.borderless).disabled(slotInfo?.exists != true).help(loc.localized("slot.deleteSlot"))
+            }
+        }
             .foregroundColor(.secondary)
         }
         .padding(6)

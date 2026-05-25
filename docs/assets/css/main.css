@@ -160,6 +160,41 @@ pre code {
   gap: 8px;
 }
 
+.lang-switcher {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  margin-right: 4px;
+}
+
+.lang-link {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 4px 8px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--text-secondary);
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  text-decoration: none;
+  transition: all 0.2s ease;
+}
+
+.lang-link:hover {
+  color: var(--accent);
+  border-color: var(--accent);
+  background: var(--accent-light);
+}
+
+.lang-active {
+  color: var(--accent);
+  border-color: var(--accent);
+  background: var(--accent-light);
+  cursor: default;
+}
+
 .btn {
   display: inline-flex;
   align-items: center;

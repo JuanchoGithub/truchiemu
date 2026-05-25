@@ -5,7 +5,8 @@ class CursorAutoHideManager {
     
     private var hideTimer: Timer?
     private var isCursorHidden = false
-    private let hideDelay: TimeInterval = 3.0  // 3 seconds
+    private let hideDelay: TimeInterval = 3.0
+    private var mouseActivityMonitor: Any?
     
     private let hideDelayFullscreen: TimeInterval = 2.0  // Shorter delay in fullscreen
     private let hideDelayWindowed: TimeInterval = 3.0    // Longer delay when windowed
@@ -30,34 +31,24 @@ class CursorAutoHideManager {
         setupAppLifecycleTracking()
     }
     
-  private func setupMouseActivityMonitoring() {
-    let eventMask: NSEvent.EventTypeMask = [
-      .mouseMoved,
-      .leftMouseDragged,
-      .rightMouseDragged,
-      .otherMouseDragged,
-      .scrollWheel,
-      .leftMouseDown,
-      .rightMouseDown,
-      .otherMouseDown,
-      .leftMouseUp,
-      .rightMouseUp,
-      .otherMouseUp
-    ]
-    
-    // Use local event monitor (no permissions needed) instead of global
-    NSEvent.addLocalMonitorForEvents(matching: eventMask) { [weak self] event in
-      self?.handleMouseActivity()
-      return event // Return unmodified event
+    private func setupMouseActivityMonitoring() {
+        let eventMask: NSEvent.EventTypeMask = [
+            .mouseMoved, .leftMouseDragged, .rightMouseDragged, .otherMouseDragged,
+            .scrollWheel, .leftMouseDown, .rightMouseDown, .otherMouseDown,
+            .leftMouseUp, .rightMouseUp, .otherMouseUp
+        ]
+
+        mouseActivityMonitor = NSEvent.addLocalMonitorForEvents(matching: eventMask) { [weak self] event in
+            self?.handleMouseActivity()
+            return event
+        }
+
+        DispatchQueue.main.asyncAfter(deadline: .now() + 3.0) { [weak self] in
+            self?.hideCursor()
+        }
     }
-    
-    // Start hidden initially after game starts
-    DispatchQueue.main.asyncAfter(deadline: .now() + 3.0) { [weak self] in
-      self?.hideCursor()
-    }
-  }
-    
-  private func setupAppLifecycleTracking() {
+
+    private func setupAppLifecycleTracking() {
     // Use target/selector pattern instead of closure to avoid weak reference crashes
     NotificationCenter.default.addObserver(
       self,
@@ -118,6 +109,11 @@ class CursorAutoHideManager {
     func stopMonitoring() {
         hideTimer?.invalidate()
         hideTimer = nil
+        if let monitor = mouseActivityMonitor {
+            NSEvent.removeMonitor(monitor)
+            mouseActivityMonitor = nil
+        }
+        NotificationCenter.default.removeObserver(self)
     }
     
     func showCursor() {

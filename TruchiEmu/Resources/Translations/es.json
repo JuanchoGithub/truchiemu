@@ -355,6 +355,8 @@
   "library.rebuilding": "Reconstruyendo...",
   "library.rebuildingDescription": "Puede tardar dependiendo de tus ROMs",
   "library.close": "Cerrar",
+  "library.nothingMatching": "Nada coincide con \"{0}\"",
+  "library.tryDifferentSearch": "Ese título podría estar oculto bajo un nombre diferente. Prueba con una búsqueda diferente.",
   "library.nothingHere": "No hay nada aquí",
   "library.tryDifferentCategory": "Prueba con una categoría o sistema diferente.",
   "library.noResults": "Sin resultados",
@@ -1099,5 +1101,13 @@
   "wizard.gamesDetected": "{0} juegos detectados",
   "diagnostics.systemDatabaseCaptured": "SystemDatabase capturado en:",
   "diagnostics.availableYes": "Disponible: SÍ",
-  "app.openSettings": "Abrir Ajustes"
+  "app.openSettings": "Abrir Ajustes",
+  "game.alreadyRunning.title": "Juego en ejecución",
+  "game.alreadyRunning.message": "\"%@\" se está ejecutando. Solo un juego puede ejecutarse a la vez.",
+  "game.alreadyRunning.saveInfo": "Al cerrar \"%@\" se guardará su estado automáticamente. Si no deseas guardar, elige \"Cambiar sin guardar\".",
+  "game.alreadyRunning.noSaveInfo": "Al cerrar \"%@\" no se guardará tu progreso.",
+  "game.alreadyRunning.switchAndSave": "Cambiar y guardar",
+  "game.alreadyRunning.switchWithoutSaving": "Cambiar sin guardar",
+  "game.alreadyRunning.switch": "Cambiar",
+  "game.alreadyRunning.cancel": "Cancelar"
 }

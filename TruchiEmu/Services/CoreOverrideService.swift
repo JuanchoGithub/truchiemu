@@ -9,6 +9,11 @@ final class CoreOverrideService {
     private var overrides: [String: [String: [String: String]]] = [:]
     private let logger = Logger(subsystem: "com.truchiemu", category: "CoreOverrideService")
 
+    static let coreOverridesDirectory: URL = {
+        let base = FileManager.default.urls(for: .applicationSupportDirectory, in: .userDomainMask).first!
+        return base.appendingPathComponent("TruchiEmu/CoreOverrides", isDirectory: true)
+    }()
+
     private init() {
         loadOverrides()
     }
@@ -51,6 +56,58 @@ final class CoreOverrideService {
         }
 
         logger.info("Loaded bundled overrides for \(self.overrides.count) cores")
+    }
+
+    func syncBundledOverridesToAppSupport() {
+        let baseDir = Self.coreOverridesDirectory
+        let fm = FileManager.default
+
+        guard let bundleVersion = Bundle.main.infoDictionary?["CFBundleVersion"] as? String else { return }
+
+        let versionFile = baseDir.appendingPathComponent(".bundle_version")
+        let currentVersion = try? String(contentsOf: versionFile, encoding: .utf8).trimmingCharacters(in: .whitespacesAndNewlines)
+
+        if currentVersion == bundleVersion {
+            return
+        }
+
+        do {
+            try fm.createDirectory(at: baseDir, withIntermediateDirectories: true)
+        } catch {
+            logger.error("Failed to create CoreOverrides directory: \(error)")
+            return
+        }
+
+        guard let urls = Bundle.main.urls(forResourcesWithExtension: "json", subdirectory: nil) else {
+            return
+        }
+
+        var syncedCount = 0
+        for url in urls {
+            let filename = url.deletingPathExtension().lastPathComponent
+            guard filename.contains("_libretro_") else { continue }
+            guard let libretroRange = filename.range(of: "_libretro") else { continue }
+            let coreID = String(filename[..<libretroRange.upperBound])
+            let remainder = String(filename[libretroRange.upperBound...])
+            guard remainder.hasPrefix("_") else { continue }
+            let scope = String(remainder.dropFirst())
+
+            let coreDir = baseDir.appendingPathComponent(coreID, isDirectory: true)
+            try? fm.createDirectory(at: coreDir, withIntermediateDirectories: true)
+
+            let dest = coreDir.appendingPathComponent("\(scope).json")
+            do {
+                try fm.copyItem(at: url, to: dest)
+                syncedCount += 1
+            } catch {
+                try? fm.removeItem(at: dest)
+                try? fm.copyItem(at: url, to: dest)
+                syncedCount += 1
+            }
+        }
+
+        try? bundleVersion.write(to: versionFile, atomically: true, encoding: .utf8)
+        logger.info("Synced \(syncedCount) bundled override files to CoreOverrides (bundle \(bundleVersion))")
     }
 
     func reloadOverrides() {

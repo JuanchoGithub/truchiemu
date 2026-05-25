@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="{{ site.active_lang }}">
 <head>
 {% include head.html %}
 </head>
@@ -18,7 +18,7 @@
 
 {% if page.last_updated %}
 <div class="page-meta">
-<small>Last updated: {{ page.last_updated }}</small>
+<small>{{ site.data[site.active_lang].last_updated }}: {{ page.last_updated }}</small>
 </div>
 {% endif %}
 </main>
@@ -27,8 +27,8 @@
 {% include footer.html %}
 
 <div class="lightbox-overlay" id="lightbox">
-  <button class="lightbox-close" id="lightbox-close" aria-label="Close">&times;</button>
-  <img class="lightbox-image" id="lightbox-image" alt="">
+<button class="lightbox-close" id="lightbox-close" aria-label="Close">&times;</button>
+<img class="lightbox-image" id="lightbox-image" alt="">
 </div>
 </body>
 </html>

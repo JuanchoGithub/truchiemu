@@ -77,7 +77,7 @@ extension GameDetailView {
 
   var gameSystemPicker: some View {
     HStack {
-      Image(systemName: "gameboy").foregroundColor(AppColors.brandAccent).frame(width: 20)
+      Image(systemName: "gamecontroller").foregroundColor(AppColors.brandAccent).frame(width: 20)
       Text(loc.localized("gameInfo.system"))
         .font(.subheadline)
         .fontWeight(.medium)
@@ -359,34 +359,34 @@ extension GameDetailView {
 
     func loadGBColorizationSettings() {
         guard let sysID = currentROM.systemID,
-              (sysID == "gb" || sysID == "gbc"),
-              let coreID = activeCoreID else { return }
+        (sysID == "gb" || sysID == "gbc"),
+        let coreID = activeCoreID else { return }
         let gameFilename = currentROM.filenameWithoutExtension
-        let overrides = CoreOptionsManager.shared.loadGameOverrides(for: coreID, systemID: sysID, gameFilename: gameFilename)
-        if overrides.isEmpty { return }
         let coreBaseID = coreID.replacingOccurrences(of: "_libretro", with: "")
         if coreBaseID.contains("gambatte") {
-            if let val = overrides["gambatte_gb_colorization"] {
-                if val == "disabled" {
-                    gbColorizationEnabled = false
-                } else {
-                    gbColorizationEnabled = true
-                    gbColorizationMode = val
-                }
+            let colorization = CoreOptionsManager.shared.resolveEffectiveValue(for: "gambatte_gb_colorization", coreID: coreID, systemID: sysID, gameFilename: gameFilename)
+            if colorization.value == "disabled" {
+                gbColorizationEnabled = false
+            } else if !colorization.value.isEmpty {
+                gbColorizationEnabled = true
+                gbColorizationMode = colorization.value
             }
-            if let val = overrides["gambatte_gb_internal_palette"] {
-                gbInternalPalette = val
+            let palette = CoreOptionsManager.shared.resolveEffectiveValue(for: "gambatte_gb_internal_palette", coreID: coreID, systemID: sysID, gameFilename: gameFilename)
+            if !palette.value.isEmpty {
+                gbInternalPalette = palette.value
             }
-            if let val = overrides["gambatte_gbc_color_correction"] {
-                switch val {
+            let correction = CoreOptionsManager.shared.resolveEffectiveValue(for: "gambatte_gbc_color_correction", coreID: coreID, systemID: sysID, gameFilename: gameFilename)
+            if !correction.value.isEmpty {
+                switch correction.value {
                 case "GBC only": gbColorCorrectionMode = "gbc_only"
                 case "always": gbColorCorrectionMode = "always"
                 default: gbColorCorrectionMode = "disabled"
                 }
             }
         } else if coreBaseID.contains("mgba") {
-            if let val = overrides["mgba_gb_model"] {
-                switch val {
+            let model = CoreOptionsManager.shared.resolveEffectiveValue(for: "mgba_gb_model", coreID: coreID, systemID: sysID, gameFilename: gameFilename)
+            if !model.value.isEmpty {
+                switch model.value {
                 case "Game Boy": gbColorizationEnabled = false
                 case "Autodetect": gbColorizationEnabled = true; gbColorizationMode = "auto"
                 case "Game Boy Color": gbColorizationEnabled = true; gbColorizationMode = "gbc"
@@ -394,29 +394,33 @@ extension GameDetailView {
                 default: break
                 }
             }
-            if let val = overrides["mgba_sgb_borders"] {
-                gbSGBBordersEnabled = (val == "ON")
+            let borders = CoreOptionsManager.shared.resolveEffectiveValue(for: "mgba_sgb_borders", coreID: coreID, systemID: sysID, gameFilename: gameFilename)
+            if !borders.value.isEmpty {
+                gbSGBBordersEnabled = (borders.value == "ON")
             }
         } else if coreBaseID.contains("sameboy") {
-            if let val = overrides["sameboy_model"] {
-                switch val {
+            let model = CoreOptionsManager.shared.resolveEffectiveValue(for: "sameboy_model", coreID: coreID, systemID: sysID, gameFilename: gameFilename)
+            if !model.value.isEmpty {
+                switch model.value {
                 case "Game Boy": gbColorizationEnabled = false
                 case "Auto": gbColorizationEnabled = true; gbColorizationMode = "auto"
                 case "Game Boy Color": gbColorizationEnabled = true; gbColorizationMode = "gbc"
                 default: break
                 }
             }
-            if let val = overrides["sameboy_color_correction_mode"] {
-                switch val {
+            let correction = CoreOptionsManager.shared.resolveEffectiveValue(for: "sameboy_color_correction_mode", coreID: coreID, systemID: sysID, gameFilename: gameFilename)
+            if !correction.value.isEmpty {
+                switch correction.value {
                 case "off": gbColorCorrectionMode = "disabled"
                 default: gbColorCorrectionMode = "gbc_only"
                 }
             }
         } else if coreBaseID.contains("gearboy") {
-            if let val = overrides["gearboy_colorization"] {
-                gbColorizationEnabled = (val == "enabled")
-            }
+            let colorization = CoreOptionsManager.shared.resolveEffectiveValue(for: "gearboy_colorization", coreID: coreID, systemID: sysID, gameFilename: gameFilename)
+        if !colorization.value.isEmpty {
+            gbColorizationEnabled = (colorization.value == "enabled")
         }
+    }
     }
 
     func applyGBColorizationSettings() {

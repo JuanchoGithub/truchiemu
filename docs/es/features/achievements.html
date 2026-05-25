@@ -1,0 +1,128 @@
+---
+layout: default
+title: Integracion con RetroAchievements - Documentacion de TruchiEmu
+
+---
+
+<div class="feature-docs">
+<h1>Integracion con RetroAchievements</h1>
+
+<div class="feature-overview">
+<img src="{{ '/media/features/achievements-hero.png' | relative_url }}" alt="Vista general de RetroAchievements" class="hero-image lightbox-trigger">
+<p class="lead">TruchiEmu se integra con RetroAchievements.org para rastrear y desbloquear logros en juegos clasicos.</p>
+</div>
+
+<section id="service-explanation">
+<h2>Vista General del Servicio</h2>
+<p>El servicio de RetroAchievements se conecta a RetroAchievements.org para rastrear y desbloquear logros durante el juego. Se integra con el core de Libretro para detectar condiciones de logros en tiempo real.</p>
+
+<div class="architecture-diagram">
+<img src="{{ '/media/features/achievements-architecture.png' | relative_url }}" alt="Arquitectura de Logros">
+<p class="caption">Pipeline de deteccion de logros desde la memoria del juego hasta la sincronizacion con RetroAchievements.org</p>
+</div>
+
+<h3>Caracteristicas Principales</h3>
+<ul class="feature-list">
+<li><strong>Desbloqueo en Tiempo Real:</strong> Los logros se detectan y desbloquean durante el juego</li>
+<li><strong>Rich Presence:</strong> Comparte tu juego y actividad actual con la comunidad de RetroAchievements</li>
+<li><strong>Modo Hardcore:</strong> Gana logros sin save states, rebobinado ni cheats para maximo prestigio</li>
+</ul>
+
+<p>Para detalles de implementacion, consulta la <a href="/development/">Guia del Desarrollador</a>.</p>
+</section>
+
+<section id="step-by-step-guide">
+<h2>Guia de Configuracion Paso a Paso</h2>
+
+<h3>Configuracion Inicial</h3>
+<ol class="setup-steps">
+<li>
+<strong>Crea una Cuenta de RetroAchievements</strong>
+<p>Visita <a href="https://retroachievements.org/">RetroAchievements.org</a> y crea una cuenta gratuita. Verifica tu direccion de correo electronico para desbloquear la funcionalidad completa.</p>
+<img src="{{ '/media/screenshots/ra-account-setup.png' | relative_url }}" alt="Creacion de Cuenta RA">
+</li>
+<li>
+<strong>Configura las Credenciales en TruchiEmu</strong>
+<p>En TruchiEmu, ve a <code>Settings → Achievements → Account</code> e ingresa tu nombre de usuario y API key de RetroAchievements. Genera tu API key desde el sitio web de RetroAchievements en Account Settings.</p>
+<img src="{{ '/media/screenshots/ra-credentials.png' | relative_url }}" alt="Configuracion de Credenciales RA">
+</li>
+<li>
+<strong>Prueba la Conexion</strong>
+<p>Haz clic en "Test Connection" para verificar que tus credenciales funcionen correctamente. Deberias ver un mensaje de exito con tus estadisticas actuales.</p>
+</li>
+<li>
+<strong>Habilita la Deteccion de Logros</strong>
+<p>Activa "Enable Achievement Detection" en el panel principal de configuracion de Achievements.</p>
+</li>
+<li>
+<strong>Configura Rich Presence</strong>
+<p>Habilita "Show Rich Presence" para compartir tu actividad de juego con Discord y la comunidad de RA. Personaliza el formato del mensaje en el campo de texto proporcionado.</p>
+</li>
+</ol>
+
+<h3>Configuracion Especifica por Juego</h3>
+<ol class="setup-steps">
+<li>
+<strong>Carga un Juego Compatible</strong>
+<p>Abre una ROM de un sistema compatible. TruchiEmu detecta automaticamente si el juego tiene logros disponibles.</p>
+</li>
+<li>
+<strong>Ve la Lista de Logros</strong>
+<p>Abre la lista de logros desde el menu del juego para ver todos los logros disponibles para el juego actual.</p>
+<img src="{{ '/media/screenshots/achievement-list.png' | relative_url }}" alt="Vista de Lista de Logros">
+</li>
+<li>
+<strong>Rastrea el Progreso de Logros</strong>
+<p>El progreso de los logros se muestra durante el juego con notificaciones en pantalla cuando se cumplen las condiciones.</p>
+</li>
+</ol>
+</section>
+
+<section id="troubleshooting">
+<h2>Solucion de Problemas</h2>
+
+<div class="troubleshooting-grid">
+<div class="troubleshooting-item">
+<h3>Logros No Se Desbloquean</h3>
+<p><strong>Sintoma:</strong> Estás jugando un juego compatible pero los logros no se detectan.</p>
+<p><strong>Solucion:</strong> Verifica que tu ROM sea la version correcta (usualmente USA/World). Compara el hash de la ROM contra la base de datos de RetroAchievements. Asegurate de que la deteccion de logros este habilitada en la configuracion.</p>
+</div>
+<div class="troubleshooting-item">
+<h3>Errores de Conexion</h3>
+<p><strong>Sintoma:</strong> Aparece el mensaje de error "Failed to connect to RetroAchievements.org".</p>
+<p><strong>Solucion:</strong> Verifica tu conexion a internet y la configuracion del firewall. Comprueba que la API key sea correcta y no haya expirado. Intenta generar una nueva API key desde el sitio web de RA.</p>
+</div>
+<div class="troubleshooting-item">
+<h3>Rich Presence No Funciona</h3>
+<p><strong>Sintoma:</strong> Discord o el perfil de RA no muestra el estado actual del juego.</p>
+<p><strong>Solucion:</strong> Habilita rich presence en la configuracion. Verifica que no estes en Modo Hardcore (algunas plataformas desactivan rich presence por integridad competitiva). Comprueba la conexion de Discord en la configuracion de Privacidad de macOS.</p>
+</div>
+<div class="troubleshooting-item">
+<h3>Restricciones del Modo Hardcore</h3>
+<p><strong>Sintoma:</strong> No puedes usar save states ni rebobinado despues de habilitar el Modo Hardcore.</p>
+<p><strong>Solucion:</strong> Este es el comportamiento esperado. El Modo Hardcore desactiva estas funciones por equidad competitiva. Desactiva el Modo Hardcore para restaurar la funcionalidad.</p>
+</div>
+</div>
+</section>
+
+<section id="references">
+<h2>Servicios Relacionados</h2>
+
+<div class="related-services">
+<div class="service-card">
+<h3><a href="/features/save-states/">Sistema de Save States</a></h3>
+<p>Aprende como los save states interactuan con la deteccion de logros y las restricciones del Modo Hardcore.</p>
+</div>
+
+<div class="service-card">
+<h3><a href="/features/cheats/">Sistema de Cheats</a></h3>
+<p>Entiende como los cheats se desactivan en el Modo Hardcore para mantener la integridad de los logros.</p>
+</div>
+
+<div class="service-card">
+<h3><a href="https://retroachievements.org/">RetroAchievements.org</a></h3>
+<p>Visita el sitio web oficial de RetroAchievements para explorar juegos, rastrear tu progreso y conectar con otros cazadores de logros.</p>
+</div>
+</div>
+</section>
+</div>

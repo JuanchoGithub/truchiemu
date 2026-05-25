@@ -17,12 +17,9 @@ class InputCaptureManager: NSObject, ObservableObject {
 
     // Local monitor for detecting clicks outside the window
     private var clickMonitor: Any?
-    
-    // Local monitor for forwarding mouse events
     private var mouseMonitor: Any?
-
-    // Local monitor for Escape key (when capturing)
     private var escapeMonitor: Any?
+    private var localEventMonitors: [Any] = []
 
     // Fullscreen state for menu bar hiding
     private var wasInFullscreen: Bool = false
@@ -163,54 +160,17 @@ class InputCaptureManager: NSObject, ObservableObject {
     // MARK: - Event Monitors
 
     private func setupEventMonitors() {
-        // Monitor all mouse events and forward them to the captured window
-        // Use global monitors to ensure we capture all input
-        clickMonitor = NSEvent.addLocalMonitorForEvents(matching: .mouseMoved) { [weak self] event in
-            LoggerService.debug(category: "InputCapture", "Mouse moved event: location=\(event.locationInWindow)")
-            self?.handleMouseEvent(event)
-            return event // Continue normal event processing
-        }
-        
-        clickMonitor = NSEvent.addLocalMonitorForEvents(matching: .leftMouseDown) { [weak self] event in
-            LoggerService.debug(category: "InputCapture", "Left mouse down event: location=\(event.locationInWindow)")
-            self?.handleMouseEvent(event)
-            return event // Continue normal event processing
-        }
-        
-        clickMonitor = NSEvent.addLocalMonitorForEvents(matching: .leftMouseUp) { [weak self] event in
-            LoggerService.debug(category: "InputCapture", "Left mouse up event: location=\(event.locationInWindow)")
-            self?.handleMouseEvent(event)
-            return event // Continue normal event processing
-        }
-        
-        clickMonitor = NSEvent.addLocalMonitorForEvents(matching: .rightMouseDown) { [weak self] event in
-            LoggerService.debug(category: "InputCapture", "Right mouse down event: location=\(event.locationInWindow)")
-            self?.handleMouseEvent(event)
-            return event // Continue normal event processing
-        }
-        
-        clickMonitor = NSEvent.addLocalMonitorForEvents(matching: .rightMouseUp) { [weak self] event in
-            LoggerService.debug(category: "InputCapture", "Right mouse up event: location=\(event.locationInWindow)")
-            self?.handleMouseEvent(event)
-            return event // Continue normal event processing
-        }
-        
-        clickMonitor = NSEvent.addLocalMonitorForEvents(matching: .otherMouseDown) { [weak self] event in
-            LoggerService.debug(category: "InputCapture", "Other mouse down event: location=\(event.locationInWindow)")
-            self?.handleMouseEvent(event)
-            return event // Continue normal event processing
-        }
-        
-        clickMonitor = NSEvent.addLocalMonitorForEvents(matching: .otherMouseUp) { [weak self] event in
-            LoggerService.debug(category: "InputCapture", "Other mouse up event: location=\(event.locationInWindow)")
-            self?.handleMouseEvent(event)
-            return event // Continue normal event processing
-        }
-        
-        clickMonitor = NSEvent.addLocalMonitorForEvents(matching: .scrollWheel) { [weak self] event in
-            LoggerService.debug(category: "InputCapture", "Scroll wheel event: deltaY=\(event.deltaY)")
-            self?.handleMouseEvent(event)
-            return event // Continue normal event processing
+        let masks: [NSEvent.EventTypeMask] = [
+            .mouseMoved, .leftMouseDown, .leftMouseUp,
+            .rightMouseDown, .rightMouseUp,
+            .otherMouseDown, .otherMouseUp, .scrollWheel
+        ]
+        for mask in masks {
+            let handle = NSEvent.addLocalMonitorForEvents(matching: mask) { [weak self] event in
+                self?.handleMouseEvent(event)
+                return event
+            }
+            localEventMonitors.append(handle)
         }
     }
     
@@ -263,6 +223,10 @@ class InputCaptureManager: NSObject, ObservableObject {
     }
 
     private func removeEventMonitors() {
+        for monitor in localEventMonitors {
+            NSEvent.removeMonitor(monitor)
+        }
+        localEventMonitors.removeAll()
         if let monitor = mouseMonitor {
             NSEvent.removeMonitor(monitor)
             mouseMonitor = nil

@@ -1,0 +1,302 @@
+---
+layout: default
+title: Guia do Desenvolvedor
+description: Guia técnico para contribuir com o TruchiEmu, compilando a partir do código-fonte e arquitetura do projeto.
+last_updated: Maio 2026
+---
+
+<section class="page-header">
+<div class="container">
+<h1>Guia do Desenvolvedor</h1>
+<p class="lead">Uma referência técnica para contribuidores — arquitetura, cores de emulação, pipeline de compilação e análises aprofundadas</p>
+</div>
+</section>
+
+<nav class="toc">
+<div class="container">
+<h3>Nesta Página</h3>
+<ul>
+<li><a href="#getting-started">Primeiros Passos</a></li>
+<li><a href="#build-pipeline">Pipeline de Compilação</a></li>
+<li><a href="#architecture">Arquitetura do Projeto</a></li>
+<li><a href="#cores">Sistema de Cores de Emulação</a></li>
+<li><a href="#shaders">Pipeline de Shaders</a></li>
+<li><a href="#themes">Sistema de Temas</a></li>
+<li><a href="#cli">Referência CLI</a></li>
+<li><a href="#testing">Testes e QA</a></li>
+<li><a href="#further-reading">Leitura Complementar</a></li>
+</ul>
+</div>
+</nav>
+
+<section id="getting-started" class="content-section">
+<div class="container">
+<h2>Primeiros Passos</h2>
+<p>Para contribuir com o TruchiEmu, você precisará de:</p>
+<ul class="feature-list">
+<li><strong>macOS:</strong> 14.0 (Sonoma) ou posterior com Swift 5.9+</li>
+<li><strong>Xcode:</strong> Versão estável mais recente</li>
+<li><strong>XcodeGen:</strong> <code>brew install xcodegen</code></li>
+<li><strong>Padrão C++:</strong> gnu++17 / gnu17</li>
+</ul>
+<p>Consulte o guia de <a href="{{ '/dev/building/' | relative_url }}">Compilação a Partir do Código-Fonte</a> para um passo a passo completo de configuração e o guia de <a href="{{ '/dev/contributing/' | relative_url }}">Contribuição</a> para convenções e fluxo de trabalho.</p>
+</div>
+</section>
+
+<section id="build-pipeline" class="content-section">
+<div class="container">
+<h2>Pipeline de Compilação</h2>
+<p>O TruchiEmu usa <strong>XcodeGen</strong> para gerenciar a estrutura do projeto dinamicamente a partir do <code>project.yml</code>. Isso evita conflitos de merge no arquivo <code>.xcodeproj</code>.</p>
+
+<div class="code-box">
+<h4>Fluxo de Trabalho Padrão de Compilação</h4>
+<pre><code># 1. Clonar o repositório
+git clone https://github.com/JuanchoGithub/truchiemu.git
+cd truchiemu
+
+# 2. Gerar o projeto Xcode
+xcodegen generate
+
+# 3. Compilar
+xcodebuild -project TruchiEmu.xcodeproj -scheme TruchiEmu -configuration Debug build</code></pre>
+</div>
+<p>Ou abra no Xcode: <code>open TruchiEmu.xcodeproj</code> e pressione <strong>⌘+B</strong>.</p>
+
+<h3>Adicionando Arquivos de Código-Fonte</h3>
+<p>Novos arquivos de código-fonte em <code>TruchiEmu/</code> e recursos em <code>TruchiEmu/Resources/</code> são incluídos automaticamente via caminhos recursivos no <code>project.yml</code>. Basta adicionar seu arquivo e executar <code>xcodegen generate</code> para regenerar o projeto Xcode.</p>
+<p>Se você precisar <strong>excluir</strong> um diretório da compilação, edite o <code>project.yml</code> e regenere.</p>
+
+<div class="warning-box">
+<p><strong>⚠️ Importante:</strong> Edite o <code>project.yml</code> apenas ao adicionar ou remover diretórios da compilação. Novos arquivos de código-fonte em diretórios existentes são detectados automaticamente.</p>
+</div>
+</div>
+</section>
+
+<section id="architecture" class="content-section">
+<div class="container">
+<h2>Arquitetura do Projeto</h2>
+<p>O TruchiEmu segue uma arquitetura modular que separa o motor de emulação da interface nativa do macOS.</p>
+
+<div class="feature-grid">
+<div class="feature-card">
+<h3>Camada do Aplicativo</h3>
+<p><code>TruchiEmu/App/</code> — Ponto de entrada do aplicativo, gerenciamento de janelas e ContentView.</p>
+</div>
+<div class="feature-card">
+<h3>Motor Principal</h3>
+<p><code>TruchiEmu/Core/Engine/</code> — Objective-C++ e C mistos. Interfaceia com o libretro via bridging header.</p>
+</div>
+<div class="feature-card">
+<h3>Camada SwiftUI</h3>
+<p><code>TruchiEmu/Views/</code> e <code>TruchiEmu/Features/</code> — Toda interação do usuário e apresentação visual.</p>
+</div>
+<div class="feature-card">
+<h3>Camada de Serviços</h3>
+<p><code>TruchiEmu/Services/</code> — Lógica de negócios: diretórios de salvamento, identificação de ROMs, integrações de API.</p>
+</div>
+<div class="feature-card">
+<h3>Camada de Dados</h3>
+<p><code>TruchiEmu/Core/Models/</code> — Modelos SwiftData para biblioteca de jogos, configurações e persistência.</p>
+</div>
+<div class="feature-card">
+<h3>Utilitários Compartilhados</h3>
+<p><code>TruchiEmu/Shared/</code> — Código transversal: gerenciador de temas, tokens de design, cache de imagens.</p>
+</div>
+</div>
+
+<p>Para uma visualização interativa de como essas camadas se comunicam durante fluxos de trabalho comuns, consulte a página de <a href="{{ '/app-flows/' | relative_url }}">Fluxos de Arquitetura do Aplicativo</a>.</p>
+</div>
+</section>
+
+<section id="cores" class="content-section">
+<div class="container">
+<h2>Sistema de Cores de Emulação</h2>
+<p>O TruchiEmu usa uma arquitetura baseada em cores alimentada pelo <strong>libretro</strong>, permitindo suporte para múltiplos backends de emulação. Cada core é um motor de emulação independente que funciona como um plugin.</p>
+
+<h3>Como os Cores Funcionam</h3>
+<ul class="feature-list">
+<li><strong>Especializados:</strong> Cada core é direcionado a um sistema ou família de sistemas</li>
+<li><strong>Desenvolvidos Independentemente:</strong> Os cores vêm da comunidade libretro</li>
+<li><strong>Atualizações Regulares:</strong> Os cores são atualizados independentemente do TruchiEmu</li>
+<li><strong>Substituíveis:</strong> Múltiplos cores para o mesmo sistema são suportados</li>
+</ul>
+
+<h3>Atribuições Padrão de Cores</h3>
+<table class="cores-table">
+<thead>
+<tr>
+<th>Sistema</th>
+<th>Core</th>
+<th>Precisão</th>
+<th>Desempenho</th>
+</tr>
+</thead>
+<tbody>
+<tr><td>NES/Famicom</td><td>Mesen</td><td>⭐⭐⭐⭐⭐</td><td>⭐⭐⭐⭐⭐</td></tr>
+<tr><td>SNES</td><td>Snes9x</td><td>⭐⭐⭐⭐</td><td>⭐⭐⭐⭐⭐</td></tr>
+<tr><td>Game Boy/Color</td><td>Gambatte</td><td>⭐⭐⭐⭐⭐</td><td>⭐⭐⭐⭐⭐</td></tr>
+<tr><td>Game Boy Advance</td><td>mGBA</td><td>⭐⭐⭐⭐</td><td>⭐⭐⭐⭐</td></tr>
+<tr><td>Genesis/Mega Drive</td><td>Genesis Plus GX</td><td>⭐⭐⭐⭐⭐</td><td>⭐⭐⭐⭐⭐</td></tr>
+<tr><td>Nintendo 64</td><td>ParaLLEl</td><td>⭐⭐⭐⭐</td><td>⭐⭐⭐</td></tr>
+<tr><td>PlayStation 1</td><td>DuckStation</td><td>⭐⭐⭐⭐</td><td>⭐⭐⭐⭐</td></tr>
+<tr><td>Fliperama</td><td>MAME 2003+</td><td>⭐⭐⭐</td><td>⭐⭐⭐⭐</td></tr>
+</tbody>
+</table>
+
+<h3>Perfis de Configuração de Cores</h3>
+<div class="config-examples">
+<div class="config-example">
+<h4>Modo de Desempenho</h4>
+<p>Menor precisão, maior velocidade — ideal para hardware menos potente ou jogos de ação rápidos.</p>
+<ul>
+<li>Latência de áudio reduzida</li>
+<li>Salto de quadros se necessário</li>
+<li>Resolução interna mais baixa</li>
+</ul>
+</div>
+<div class="config-example">
+<h4>Modo Equilibrado</h4>
+<p>Bom equilíbrio entre precisão e desempenho — adequado para a maioria dos usuários.</p>
+<ul>
+<li>Configurações padrão</li>
+<li>Padrões mais precisos</li>
+<li>Atraso de quadro automático</li>
+</ul>
+</div>
+<div class="config-example">
+<h4>Modo de Precisão</h4>
+<p>Emulação precisa por ciclo — melhor para preservação, desenvolvimento e hardware de alto desempenho.</p>
+<ul>
+<li>Emulação precisa por ciclo</li>
+<li>Renderização em alta resolução</li>
+<li>Sincronização perfeita</li>
+</ul>
+</div>
+</div>
+
+<h3>Gerenciamento de Cores</h3>
+<p>O Core Downloader integrado oferece instalação, atualização e reversão com um clique para todos os cores. As opções por core incluem configuração de viés (precisão vs. velocidade), configurações de vídeo e áudio, e perfis de configuração salváveis. A bridge Swift ↔ ObjC para comunicação de cores reside em <code>LibretroBridge.mm</code> / <code>LibretroBridgeSwift.swift</code>.</p>
+
+<h3>Bridge Swift ↔ ObjC</h3>
+<p>O motor de emulação é escrito em Objective-C++/C para acesso direto à API libretro. O código Swift se comunica com ele através de <code>LibretroBridge.mm</code> / <code>LibretroBridgeSwift.swift</code>, com símbolos expostos através do <code>TruchiEmu-Bridging-Header.h</code>.</p>
+
+<h3>Integração de Save States</h3>
+<p>O sistema de cores integra-se com o <code>SaveStateManager</code> para snapshots comprimidos com LZ4 com cabeçalhos TCS2, e <code>SaveDirectoryManager</code> para resolução de caminhos. Os salvamentos por bateria são tratados automaticamente pelo core de emulação.</p>
+
+<div class="info-box">
+<p><strong>Análise Aprofundada:</strong> Para um passo a passo detalhado de uma correção de bug real envolvendo ciclos de vida de opções de core, consulte <a href="{{ '/dreamcast-vmu-fix/' | relative_url }}">Depurando Salvamentos VMU do Dreamcast</a>.</p>
+</div>
+</div>
+</section>
+
+<section id="shaders" class="content-section">
+<div class="container">
+<h2>Pipeline de Shaders</h2>
+<p>O sistema de shaders usa shaders Metal personalizados compilados em tempo de execução, rodando diretamente na GPU através do framework Metal da Apple.</p>
+
+<h3>Componentes Principais</h3>
+<ul class="feature-list">
+<li><strong>Compilador de Shaders:</strong> Compilação em tempo de execução de arquivos shader <code>.metal</code> com tratamento de erros e fallback</li>
+<li><strong>Sistema de Parâmetros:</strong> Ajuste em tempo real de uniforms de shaders via controles SwiftUI</li>
+<li><strong>Sistema de Fallback:</strong> Degradação automática para shaders mais simples se a compilação falhar na GPU alvo</li>
+</ul>
+
+<h3>Arquivos de Shaders</h3>
+<p>Os shaders Metal ficam em <code>TruchiEmu/Core/Shaders/</code>. Os diretórios <code>slang/</code>, <code>internal/</code> e <code>all_shaders.metal</code> são excluídos da compilação do Xcode — estes são recursos carregados em tempo de execução de <code>TruchiEmu_Resources/core_shaders/</code>.</p>
+
+<h3>Características de Desempenho</h3>
+<p>Passthrough, Scale Smooth e Vignette têm impacto mínimo na GPU. Shaders CRT (Multipass, Lottes) e simulações LCD usam mais recursos de GPU. O sistema seleciona automaticamente fallbacks em hardware menos potente.</p>
+</div>
+</section>
+
+<section id="themes" class="content-section">
+<div class="container">
+<h2>Sistema de Temas</h2>
+<p>O motor de temas fornece coloração de destaque em toda a interface do aplicativo, alimentado por um pipeline de três tipos principais.</p>
+
+<h3>Arquitetura</h3>
+<div class="pipeline" style="display:flex; justify-content:center; gap:0.5rem; margin:1rem 0; flex-wrap:wrap;">
+<span class="step" style="background:var(--bg-card); padding:0.4rem 0.8rem; border-radius:6px; border:1px solid var(--border); font-size:0.85rem;">AccentColorTheme</span>
+<span style="align-self:center;">→</span>
+<span class="step" style="background:var(--bg-card); padding:0.4rem 0.8rem; border-radius:6px; border:1px solid var(--border); font-size:0.85rem;">ThemeManager</span>
+<span style="align-self:center;">→</span>
+<span class="step" style="background:var(--bg-card); padding:0.4rem 0.8rem; border-radius:6px; border:1px solid var(--border); font-size:0.85rem;">AppColors</span>
+<span style="align-self:center;">→</span>
+<span class="step" style="background:var(--bg-card); padding:0.4rem 0.8rem; border-radius:6px; border:1px solid var(--border); font-size:0.85rem;">SwiftUI Views</span>
+</div>
+
+<ul class="feature-list">
+<li><strong>AccentColorTheme</strong> — Enum com 17 casos (mais <code>.custom</code>). Cada um define cores de destaque, dimmed (84%), dark (70%) e secundárias para os modos claro e escuro. Inclui um sistema <code>migratedRawValue()</code> para temas renomeados.</li>
+<li><strong>ThemeManager</strong> — Singleton <code>@MainActor ObservableObject</code> que possui o tema atual, modo de aparência, cor de destaque personalizada, alternância de destaque na barra de ferramentas e alternância de superfícies coloridas. Persiste todo o estado via <code>AppSettings</code> (SwiftData).</li>
+<li><strong>AppColors</strong> — Tokens de cores semânticas estáticas em <code>DesignSystem.swift</code> que as views consomem. Auto-resolve via <code>NSApp.effectiveAppearance</code>. Variantes <code>*ForScheme</code> seguras para preview disponíveis.</li>
+<li><strong>Reinicialização do Aplicativo</strong> — Mudanças de tema chamam <code>ThemeManager.relaunchApp()</code>, gerando um novo processo e terminando o atual. A interface de configurações impõe isso com diálogos de confirmação e interceptação de mudanças não salvas.</li>
+</ul>
+
+<h3>Adicionando um Novo Tema</h3>
+<ol>
+<li>Adicione um caso ao enum <code>AccentColorTheme</code></li>
+<li>Defina accent, accentDimmed, accentDark, secondaryAccent (e variantes claro/escuro opcionais)</li>
+<li>Adicione o ícone do recurso em <code>Assets.xcassets/ThemeIcons/</code></li>
+<li>Adicione chaves de localização: <code>settings.theme.&lt;name&gt;</code> em todos os arquivos JSON de idiomas</li>
+<li>Se renomeando, adicione o mapeamento de migração em <code>migratedRawValue()</code></li>
+<li>Defina <code>isGaming = true/false</code> para posicionamento de categoria</li>
+</ol>
+
+<h3>Convenções de Temas</h3>
+<p>Todas as views devem usar tokens semânticos <code>AppColors</code> — nunca use valores de cor fixos no código. Os tokens misturam automaticamente o destaque do tema atual em superfícies, textos e bordas. Verifique <code>ThemeManager.shared.toolbarAccentEnabled</code> e <code>tintedSurfacesEnabled</code> ao aplicar cores de destaque em ícones e superfícies de fundo.</p>
+</div>
+</section>
+
+<section id="cli" class="content-section">
+<div class="container">
+<h2>Referência CLI</h2>
+<p>O TruchiEmu fornece uma interface de linha de comando para usuários avançados iniciarem jogos e gerenciarem o aplicativo externamente. Tratada por <code>CLIManager</code> e <code>CLILauncher</code> na camada de Serviços.</p>
+
+<div class="code-box">
+<h4>Iniciar uma ROM</h4>
+<pre><code>./TruchiEmu --launch "/path/to/game.nes"</code></pre>
+</div>
+<p>A CLI suporta integração com Atalhos do macOS, launchers de terceiros e fluxos de trabalho de automação.</p>
+</div>
+</section>
+
+<section id="testing" class="content-section">
+<div class="container">
+<h2>Testes e QA</h2>
+<p>Os testes ficam em <code>TruchiEmuTests/</code> e cobrem serviços críticos: identificação de ROMs, pré-população de DATs, integração com banco de dados LaunchBox e mais.</p>
+
+<div class="code-box">
+<h4>Executar Testes via CLI</h4>
+<pre><code>xcodebuild test -scheme TruchiEmuTests -destination 'platform=macOS'</code></pre>
+</div>
+<p>O alvo de testes vincula o framework SwiftData. Alguns testes requerem acesso à rede para chamadas de API remotas.</p>
+</div>
+</section>
+
+<section id="further-reading" class="content-section">
+<div class="container">
+<h2>Leitura Complementar</h2>
+<div class="next-steps-grid">
+<div class="next-step-card">
+<h4>📖 Compilação a Partir do Código-Fonte</h4>
+<p>Instruções detalhadas de configuração e solução de problemas.</p>
+<a href="{{ '/dev/building/' | relative_url }}" class="btn btn-primary">Guia de Compilação</a>
+</div>
+<div class="next-step-card">
+<h4>🤝 Contribuindo</h4>
+<p>Convenções, revisão de código e fluxo de trabalho de pull requests.</p>
+<a href="{{ '/dev/contributing/' | relative_url }}" class="btn btn-primary">Contribuição</a>
+</div>
+<div class="next-step-card">
+<h4>🔀 Fluxos de Arquitetura do Aplicativo</h4>
+<p>Visualização interativa da comunicação entre pacotes.</p>
+<a href="{{ '/app-flows/' | relative_url }}" class="btn btn-primary">Fluxos de Arquitetura</a>
+</div>
+<div class="next-step-card">
+<h4>🐛 Análise Aprofundada do VMU do Dreamcast</h4>
+<p>Postmortem de um bug complexo de integração de core.</p>
+<a href="{{ '/dreamcast-vmu-fix/' | relative_url }}" class="btn btn-primary">Análise Aprofundada</a>
+</div>
+</div>
+</div>
+</section>

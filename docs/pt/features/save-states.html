@@ -1,0 +1,76 @@
+---
+layout: default
+title: Sistema de Save States - Documentação do TruchiEmu
+
+---
+
+<div class="feature-docs">
+<h1>Sistema de Save States</h1>
+
+<div class="feature-overview">
+<img src="{{ '/media/features/save-states-hero.png' | relative_url }}" alt="Visão Geral do Sistema de Save States" class="hero-image lightbox-trigger">
+<p class="lead">O sistema de save states do TruchiEmu captura e restaura o estado do emulador a qualquer momento, com uma interface organizada baseada em slots e gerenciamento visual.</p>
+</div>
+
+<section id="service-explanation">
+<h2>Visão Geral do Serviço</h2>
+<p>O sistema de Save States captura o estado completo do emulador (RAM, registradores da CPU, estado da GPU) para que você possa salvar e restaurar o gameplay a qualquer momento. Os save states são gerenciados através da interface da janela do jogo.</p>
+
+<div class="architecture-diagram">
+<img src="{{ '/media/features/save-state-architecture.png' | relative_url }}" alt="Arquitetura de Save States">
+<p class="caption">Pipeline de captura e restauração de save states com geração de miniaturas e backup</p>
+</div>
+
+<h3>Recursos Principais</h3>
+<ul class="feature-list">
+<li><strong>Capturas Instantâneas:</strong> Salve e carregue a qualquer momento durante o gameplay</li>
+<li><strong>Banca de Slots:</strong> Organize salvamentos em múltiplos slots para diferentes jogatinhas</li>
+<li><strong>Nomenclatura Automática:</strong> Save states são organizados por jogo e marca de data/hora</li>
+</ul>
+
+<p>Para detalhes de implementação, consulte o <a href="/development/">Guia do Desenvolvedor</a>.</p>
+</section>
+
+<section id="step-by-step-guide">
+<h2>Guia de Configuração Passo a Passo</h2>
+
+<h3>Uso Básico de Save States</h3>
+<ol class="setup-steps">
+<li>
+<strong>Salvar Durante o Gameplay</strong>
+<p>Enquanto joga, acesse o menu de save states pela barra de ferramentas da janela do jogo ou use o atalho de teclado configurado para salvar no slot atual.</p>
+</li>
+<li>
+<strong>Carregar um Save State</strong>
+<p>Abra o navegador de save states para ver todos os estados salvos do jogo atual. Clique em qualquer entrada para restaurar o gameplay daquele ponto.</p>
+<img src="{{ '/media/screenshots/save-state-browser.png' | relative_url }}" alt="Navegador de Save States">
+</li>
+<li>
+<strong>Gerenciar Slots de Salvamento</strong>
+<p>Use slots de salvamento diferentes para manter múltiplos pontos de salvamento para diferentes jogatinhas ou desafios. Cada slot armazena um estado do emulador separado.</p>
+</li>
+</ol>
+
+</section>
+
+<section id="references">
+<h2>Serviços Relacionados</h2>
+
+<div class="related-services">
+<div class="service-card">
+<h3><a href="/features/achievements/">RetroAchievements</a></h3>
+<p>Entenda como o uso de save states afeta a elegibilidade de conquistas no modo Hardcore.</p>
+</div>
+
+<div class="service-card">
+<h3><a href="/features/cheats/">Sistema de Cheats</a></h3>
+<p>Save states funcionam perfeitamente com códigos de cheat para criar cenários específicos de prática.</p>
+</div>
+
+<div class="service-card">
+<h3><a href="/features/library/">Biblioteca de Jogos</a></h3>
+<p>Save states são acessíveis a partir da visualização da biblioteca de jogos.</p>
+</div>
+</div>
+</section>
+</div>

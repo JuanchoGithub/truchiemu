@@ -61,37 +61,68 @@ class BoxArtPreloaderService: ObservableObject {
         let cacheDir = Self.thumbnailCacheURL
         try? FileManager.default.createDirectory(at: cacheDir, withIntermediateDirectories: true)
         let safeKey = key.replacingOccurrences(of: "/", with: "_").replacingOccurrences(of: ":", with: "_")
-        let fileURL = cacheDir.appendingPathComponent("\(safeKey).tiff")
-        guard let tiff = image.tiffRepresentation else { return }
-        try? tiff.write(to: fileURL, options: .atomic)
+        let fileURL = cacheDir.appendingPathComponent("\(safeKey).jpg")
+
+        guard let tiffRep = image.tiffRepresentation,
+              let bitmapRep = NSBitmapImageRep(data: tiffRep),
+              let jpegData = bitmapRep.representation(using: .jpeg, properties: [.compressionFactor: 0.85]) else { return }
+        try? jpegData.write(to: fileURL, options: .atomic)
+
+        // Migrate: remove old .tiff if it exists
+        let tiffURL = cacheDir.appendingPathComponent("\(safeKey).tiff")
+        if FileManager.default.fileExists(atPath: tiffURL.path) {
+            try? FileManager.default.removeItem(at: tiffURL)
+        }
     }
-    
-    // Load a thumbnail from the persistent disk cache. Returns nil if not cached.
+
     nonisolated
     static func loadThumbnail(at url: URL) -> NSImage? {
         let key = url.path
         let safeKey = key.replacingOccurrences(of: "/", with: "_").replacingOccurrences(of: ":", with: "_")
-        let fileURL = Self.thumbnailCacheURL.appendingPathComponent("\(safeKey).tiff")
-        guard let data = try? Data(contentsOf: fileURL),
-              let rep = NSBitmapImageRep(data: data) else { return nil }
-        
-        // Ensure pixels are pre-decoded from TIFF to avoid lazy draw jank
-        guard let cgImage = rep.cgImage else {
-            let image = NSImage(size: rep.size)
-            image.addRepresentation(rep)
+
+        // Try JPEG first
+        let jpegURL = Self.thumbnailCacheURL.appendingPathComponent("\(safeKey).jpg")
+        if let data = try? Data(contentsOf: jpegURL),
+           let image = NSImage(data: data) {
+            // Migrate old TIFF if it still exists
+            let tiffURL = Self.thumbnailCacheURL.appendingPathComponent("\(safeKey).tiff")
+            if FileManager.default.fileExists(atPath: tiffURL.path) {
+                try? FileManager.default.removeItem(at: tiffURL)
+            }
             return image
         }
-        
-        return NSImage(cgImage: cgImage, size: rep.size)
+
+        // Fallback: load legacy TIFF and migrate to JPEG
+        let tiffURL = Self.thumbnailCacheURL.appendingPathComponent("\(safeKey).tiff")
+        if let data = try? Data(contentsOf: tiffURL),
+           let rep = NSBitmapImageRep(data: data) {
+            let image: NSImage
+            if let cgImage = rep.cgImage {
+                image = NSImage(cgImage: cgImage, size: rep.size)
+            } else {
+                image = NSImage(size: rep.size)
+                image.addRepresentation(rep)
+            }
+            // Migrate to JPEG
+            if let tiffRep = image.tiffRepresentation,
+               let bitmapRep = NSBitmapImageRep(data: tiffRep),
+               let jpegData = bitmapRep.representation(using: .jpeg, properties: [.compressionFactor: 0.85]) {
+                try? jpegData.write(to: jpegURL, options: .atomic)
+            }
+            try? FileManager.default.removeItem(at: tiffURL)
+            return image
+        }
+
+        return nil
     }
-    
-    // Check if a thumbnail exists for the given URL.
+
     nonisolated
     static func hasThumbnail(at url: URL) -> Bool {
         let key = url.path
         let safeKey = key.replacingOccurrences(of: "/", with: "_").replacingOccurrences(of: ":", with: "_")
-        let fileURL = Self.thumbnailCacheURL.appendingPathComponent("\(safeKey).tiff")
-        return FileManager.default.fileExists(atPath: fileURL.path)
+        let jpegURL = Self.thumbnailCacheURL.appendingPathComponent("\(safeKey).jpg")
+        let tiffURL = Self.thumbnailCacheURL.appendingPathComponent("\(safeKey).tiff")
+        return FileManager.default.fileExists(atPath: jpegURL.path) || FileManager.default.fileExists(atPath: tiffURL.path)
     }
     
     // MARK: - Preload ROMs into Image Cache

@@ -1,0 +1,267 @@
+---
+layout: default
+title: Primeros Pasos
+description: Guía completa para compilar y configurar TruchiEmu para macOS
+---
+
+<section class="page-header">
+<div class="container">
+<h1>Primeros Pasos con TruchiEmu</h1>
+<p class="lead">Una guía técnica para compilar, configurar y ejecutar TruchiEmu en macOS</p>
+</div>
+</section>
+
+<div class="download-cta">
+<h2>Descargar TruchiEmu</h2>
+<p>Obtén la última versión para macOS &mdash; sin necesidad de compilar.</p>
+<a id="download-latest-btn" href="https://github.com/JuanchoGithub/truchiemu/releases" class="btn btn-primary btn-lg" target="_blank">Descargar Última Versión</a>
+<p class="version-hint" id="download-version-hint">Buscando la última versión...</p>
+</div>
+
+<nav class="toc">
+<div class="container">
+<h3>En Esta Página</h3>
+<ul>
+<li><a href="#requirements">Requisitos del Sistema</a></li>
+<li><a href="#build-from-source">Compilar desde el Código Fuente</a></li>
+<li><a href="#first-launch">Primer Inicio y Configuración</a></li>
+<li><a href="#adding-games">Agregar Tu Primer Juego</a></li>
+<li><a href="#basic-controls">Controles Básicos</a></li>
+<li><a href="#save-states">Estados de Guardado</a></li>
+<li><a href="#next-steps">Siguientes Pasos</a></li>
+</ul>
+</div>
+</nav>
+
+<section id="requirements" class="content-section">
+<div class="container">
+<h2>Requisitos del Sistema</h2>
+
+<div class="info-box">
+<h3>🖥️ Compatibilidad con macOS</h3>
+<p><strong>Mínimo:</strong> macOS 14.0 (Sonoma) o posterior con Swift 5.9+</p>
+<p><strong>Recomendado:</strong> macOS 15.0 (Sequoia) o posterior para un rendimiento óptimo</p>
+</div>
+
+<h3>Dependencias de Compilación</h3>
+<ul class="feature-list">
+<li><strong>Xcode:</strong> Última versión estable (Requerido para compilar)</li>
+<li><strong>Herramientas de Línea de Comandos de Xcode:</strong> <code>xcode-select --install</code></li>
+<li><strong>xcodegen:</strong> Usado para generar el proyecto Xcode desde <code>project.yml</code></li>
+<li><strong>GPU compatible con Metal:</strong> Para renderizado de shaders y aceleración por hardware</li>
+</ul>
+
+<div class="warning-box">
+<p><strong>⚠️ Importante:</strong> TruchiEmu usa funciones modernas de SwiftUI y shaders Metal que no son compatibles con versiones de macOS anteriores a 14.0.</p>
+</div>
+</div>
+</section>
+
+<section id="build-from-source" class="content-section">
+<div class="container">
+<h2>Compilar desde el Código Fuente</h2>
+<p>TruchiEmu se compila usando XcodeGen para mantener una estructura de proyecto limpia. Sigue estos pasos para compilar la aplicación localmente.</p>
+
+<div class="code-box">
+<h4>1. Instalar Herramientas de Compilación</h4>
+<pre><code>brew install xcodegen</code></pre>
+</div>
+
+
+<div class="code-box">
+<h4>2. Clonar y Generar el Proyecto</h4>
+<pre><code>git clone https://github.com/JuanchoGithub/truchiemu.git
+cd truchiemu
+xcodegen generate # Esto crea el archivo TruchiEmu.xcodeproj</code></pre>
+</div>
+
+<div class="code-box">
+<h4>3. Compilar la Aplicación</h4>
+<p>Puedes compilar desde la línea de comandos o abriendo el proyecto en Xcode.</p>
+<pre><code># Método CLI:
+xcodebuild -project TruchiEmu.xcodeproj -scheme TruchiEmu -configuration Debug build</code></pre>
+<p>Alternativamente: Ejecuta <code>open TruchiEmu.xcodeproj</code> y presiona <strong>⌘+B</strong>.</p>
+</div>
+
+<div class="info-box">
+<p><strong>💡 Nota:</strong> Si modificas <code>project.yml</code>, debes ejecutar <code>xcodegen generate</code> nuevamente para actualizar el proyecto Xcode.</p>
+</div>
+</div>
+</section>
+
+<section id="first-launch" class="content-section">
+<div class="container">
+<h2>Primer Inicio y Configuración</h2>
+<p>Cuando inicies TruchiEmu por primera vez, se te guiará a través de un proceso de configuración inicial para preparar tu entorno.</p>
+
+<h3>Configuración del Entorno</h3>
+<div class="step-box">
+<div class="step">
+<h4>Ubicación de Biblioteca y Datos</h4>
+<p>TruchiEmu separa tu biblioteca de juegos de sus datos internos de la aplicación. Aunque puedes elegir cualquier carpeta para tus ROMs, la aplicación almacena su configuración, estados de guardado y archivos de sistema en el directorio estándar de Application Support de macOS: <code>~/Library/Application Support/TruchiEmu/</code>.</p>
+<p>Dentro de la carpeta de Application Support, TruchiEmu organiza automáticamente los datos técnicos en:</p>
+<ul>
+<li><code>Saves/</code> - Tus estados de guardado y archivos de guardado de batería</li>
+<li><code>Cores/</code> - Los cores de libretro usados para la emulación</li>
+<li><code>Thumbnails/</code> - Arte de juegos y capturas de pantalla en caché</li>
+<li><code>System/</code> - Archivos BIOS y de sistema requeridos</li>
+</ul>
+</div>
+
+<div class="step">
+<h4>Configuración de Controladores</h4>
+<p>Mapea tus entradas al emulador. TruchiEmu soporta de forma nativa controladores de teclado, Xbox, PlayStation y Nintendo Switch en macOS.</p>
+</div>
+</div>
+</div>
+</section>
+
+<section id="adding-games" class="content-section">
+<div class="container">
+<h2>Agregar Tu Primer Juego</h2>
+<p>TruchiEmu soporta métodos simples de importación para tener tu biblioteca lista.</p>
+
+<h3>Importar Juegos</h3>
+<ol>
+<li><strong>Arrastrar y Soltar:</strong> Arrastra archivos o carpetas de ROMs desde Finder directamente a la ventana de la biblioteca de TruchiEmu.</li>
+<li><strong>Importación Manual:</strong> Usa el botón de importación en la barra de herramientas de la biblioteca para buscar archivos.</li>
+</ol>
+
+
+<h3>Gestión de Archivos y Compatibilidad</h3>
+<p>TruchiEmu aprovecha la API de libretro, lo que significa que soporta prácticamente cualquier formato de archivo aceptado por el core de emulación activo. En lugar de depender de simples extensiones de archivo, la app usa hashes CRC32 y bases de datos DAT para identificar juegos con precisión.</p>
+
+<div class="format-grid">
+<div class="format-category">
+<h4>📦 ROMs Comprimidos</h4>
+<p>Para sistemas arcade como MAME, <code>.zip</code> es el formato principal esperado y se gestiona nativamente por la biblioteca.</p>
+</div>
+<div class="format-category">
+<h4>💿 Imágenes de Disco</h4>
+<p>Gestión inteligente de imágenes de disco. Cuando se detecta un archivo <code>.cue</code>, TruchiEmu lo prioriza y oculta automáticamente los archivos <code>.bin</code> asociados de la biblioteca para evitar entradas duplicadas.</p>
+</div>
+<div class="format-category">
+<h4>🛠️ Filtrado de Biblioteca</h4>
+<p>Para mantener tu colección limpia, la aplicación filtra automáticamente los archivos BIOS del sistema y recursos de metadatos, mostrando solo entradas de juegos jugables en la vista de biblioteca.</p>
+</div>
+</div>
+
+<div class="warning-box">
+<p><strong>⚠️ Aviso Legal:</strong> TruchiEmu no proporciona ROMs. Por favor usa copias de seguridad obtenidas legalmente de juegos que poseas.</p>
+</div>
+</div>
+</section>
+
+<section id="basic-controls" class="content-section">
+<div class="container">
+<h2>Controles Básicos</h2>
+<h3>Valores Predeterminados del Teclado</h3>
+<table class="controls-table">
+<thead>
+<tr>
+<th>Tecla</th>
+<th>Acción</th>
+<th>Notas</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Flechas del Teclado</td>
+<td>D-Pad / Entrada Direccional</td>
+<td>Estándar para todos los sistemas</td>
+</tr>
+<tr>
+<td>Z, X, C, V</td>
+<td>Botones de Acción (A, B, X, Y)</td>
+<td>Configuración predeterminada para la mayoría de sistemas</td>
+</tr>
+<tr>
+<td>Enter</td>
+<td>Start / Pausa</td>
+<td>Navegación de menú</td>
+</tr>
+<tr>
+<td>Tab</td>
+<td>Select / Atrás</td>
+<td>Botón secundario de menú</td>
+</tr>
+<tr>
+<td>Escape</td>
+<td>Menú del Sistema</td>
+<td>Acceso a configuración a nivel de aplicación</td>
+</tr>
+</tbody>
+</table>
+
+<h3>Soporte de Controladores</h3>
+<p>TruchiEmu detecta automáticamente la mayoría de los controladores populares cuando se conectan vía USB o Bluetooth a través del framework nativo GameController de macOS:</p>
+<ul>
+<li><strong>Controladores Xbox:</strong> Soporte nativo para Xbox One y Series X|S</li>
+<li><strong>Controladores PlayStation:</strong> DualShock 4 y DualSense (PS5) soportados</li>
+<li><strong>Nintendo Switch:</strong> Joy-Cons y Pro Controller soportados</li>
+<li><strong>USB Genérico:</strong> La mayoría de los controladores MFi y XInput funcionan directamente</li>
+</ul>
+
+<div class="tip-box">
+<p><strong>💡 Consejo sobre Controladores:</strong> TruchiEmu usa una plantilla de mapeo global basada en la configuración moderna de Xbox/PlayStation. Esto garantiza una sensación consistente entre diferentes sistemas, pero se puede personalizar por sistema en la configuración.</p>
+</div>
+
+<h3>Personalización por Sistema</h3>
+<p>Cada core de emulación puede tener su propio mapeo de controles para adaptarse mejor al hardware original:</p>
+<ol>
+<li>Abre un juego del sistema que deseas configurar</li>
+<li>Navega a la configuración de Controladores en el menú principal</li>
+<li>Ajusta los mapeos de botones según tu preferencia</li>
+<li>Los mapeos se guardan por sistema y se aplican automáticamente la próxima vez que inicies un juego de ese sistema</li>
+</ol>
+</div>
+</section>
+
+<section id="save-states" class="content-section">
+<div class="container">
+<h2>Estados de Guardado</h2>
+<p>TruchiEmu proporciona una gestión robusta de estados de guardado junto con los guardados de batería tradicionales.</p>
+
+<div class="comparison-table">
+<div class="comparison-column">
+<h4>Estados de Guardado</h4>
+<ul>
+<li>Instantánea de la memoria del emulador</li>
+<li>Gestión visual basada en slots (Slots 0-9 + Auto)</li>
+<li>Gestionados desde la vista de Detalle del Juego con vistas previas en miniatura</li>
+</ul>
+</div>
+<div class="comparison-column">
+<h4>Guardados de Batería</h4>
+<ul>
+<li>Funciona como el hardware original</li>
+<li>Compatible con cartuchos reales</li>
+<li>Gestionado automáticamente por el core del juego</li>
+</ul>
+</div>
+</div>
+</div>
+</section>
+
+<section id="next-steps" class="content-section">
+<div class="container">
+<h2>Siguientes Pasos</h2>
+<div class="next-steps-grid">
+<div class="next-step-card">
+<h4>🎨 Explora los Shaders</h4>
+<p>Prueba los filtros CRT y de suavizado en el menú de Shaders.</p>
+<a href="{{ '/features/#shaders' | relative_url }}" class="btn btn-primary">Guía de Shaders</a>
+</div>
+<div class="next-step-card">
+<h4>🏆 Logros</h4>
+<p>Vincula tu cuenta de RetroAchievements en Configuración.</p>
+<a href="{{ '/features/#achievements' | relative_url }}" class="btn btn-primary">Logros</a>
+</div>
+<div class="next-step-card">
+<h4>🔧 Contribuye</h4>
+<p>Ayuda a mejorar el emulador contribuyendo al código fuente.</p>
+<a href="{{ '/development/' | relative_url }}" class="btn btn-primary">Guía del Desarrollador</a>
+</div>
+</div>
+</div>
+</section>

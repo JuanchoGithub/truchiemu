@@ -1,0 +1,76 @@
+---
+layout: default
+title: Compilar TruchiEmu desde el Codigo Fuente
+description: Como compilar TruchiEmu desde el codigo fuente - prerequisitos, pasos de compilacion y problemas comunes
+---
+
+<div class="feature-docs">
+<h1>Compilar TruchiEmu desde el Codigo Fuente</h1>
+
+<div class="feature-overview">
+<p class="lead">Compilar TruchiEmu desde el codigo fuente te permite acceder a las ultimas funcionalidades, contribuir al desarrollo o personalizar el emulador segun tus necesidades.</p>
+</div>
+
+<section id="prerequisites">
+<h2>Prerequisitos</h2>
+<ul>
+<li><strong>macOS 14.0 (Sonoma)</strong> o posterior</li>
+<li><strong>Xcode 15+</strong> con soporte para Swift 5.9+</li>
+<li><strong>XcodeGen</strong> — instala via Homebrew: <code>brew install xcodegen</code></li>
+<li><strong>Xcode Command Line Tools</strong> — instala via: <code>xcode-select --install</code></li>
+<li><strong>CMake</strong> — instala via: <code>brew install cmake</code></li>
+</ul>
+</section>
+
+<section id="steps">
+<h2>Pasos de Compilacion</h2>
+<ol>
+<li>
+<strong>Clona el repositorio</strong>
+<pre><code>git clone https://github.com/JuanchoGithub/truchiemu.git
+cd truchiemu</code></pre>
+</li>
+<li>
+<strong>Genera el proyecto de Xcode</strong>
+<p>Edita <code>project.yml</code> si es necesario, luego ejecuta:</p>
+<pre><code>xcodegen generate</code></pre>
+<p>Esto crea <code>TruchiEmu.xcodeproj</code> a partir de la especificacion del proyecto.</p>
+</li>
+<li>
+<strong>Abre en Xcode</strong>
+<pre><code>open TruchiEmu.xcodeproj</code></pre>
+</li>
+<li>
+<strong>Compila el proyecto</strong>
+<p>En Xcode: Product > Build (Cmd+B), o desde la terminal:</p>
+<pre><code>xcodebuild -project TruchiEmu.xcodeproj -scheme TruchiEmu -configuration Debug build</code></pre>
+</li>
+</ol>
+</section>
+
+<section id="dependencies">
+<h2>Dependencias</h2>
+<p>TruchiEmu depende de las siguientes dependencias:</p>
+<ul>
+<li><strong>Cores de Libretro:</strong> Backends de emulacion descargados y gestionados en tiempo de ejecucion</li>
+<li><strong>SwiftData:</strong> Framework de datos persistentes de Apple (incluido con Swift)</li>
+<li><strong>Metal:</strong> Framework de GPU de Apple para renderizado de shaders (incluido con macOS)</li>
+</ul>
+</section>
+
+<section id="troubleshooting">
+<h2>Problemas Comunes de Compilacion</h2>
+
+<h3>XcodeGen No Encontrado</h3>
+<p>Instala via Homebrew: <code>brew install xcodegen</code>. Si ya esta instalado, asegurate de que este en tu PATH.</p>
+
+<h3>Errores del Compilador de Swift</h3>
+<p>Asegurate de tener Xcode 15+ instalado y seleccionado: <code>sudo xcode-select -s /Applications/Xcode.app</code>. Verifica la version de Swift con <code>swift --version</code>.</p>
+
+<h3>Errores del Estandar de C++</h3>
+<p>Este proyecto requiere gnu++17 (no el predeterminado de LLVM). Verifica que <code>project.yml</code> especifique el estandar de C++ correcto en los ajustes del target.</p>
+
+<h3>Bridging Header Faltante</h3>
+<p>Si ves errores de importacion de ObjC en archivos Swift, asegurate de que <code>TruchiEmu-Bridging-Header.h</code> este correctamente configurado en los ajustes de compilacion.</p>
+</section>
+</div>

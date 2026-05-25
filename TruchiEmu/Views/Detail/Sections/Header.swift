@@ -5,6 +5,7 @@ extension GameDetailView {
         HStack(alignment: .center, spacing: 20) {
             DetailBoxArtButton(
                 image: boxArtImage,
+                imageURL: boxArtImageURL,
                 rom: currentROM,
                 placeholder: { AnyView(placeholderArt) }
             )

@@ -20,10 +20,10 @@ extension Color {
         let mLMS = m_ * m_ * m_
         let sLMS = s_ * s_ * s_
 
-        // LMS to linear sRGB matrix
-        let rLin =  4.0767416621 * lLMS - 1.2684380046 * mLMS - 0.0041960863 * sLMS
-        let gLin = -1.2684380046 * lLMS + 2.6097574011 * mLMS - 0.0077035863 * sLMS
-        let bLin = -0.0041960863 * lLMS - 0.7038476179 * mLMS + 1.9902300103 * sLMS
+        // LMS to linear sRGB matrix (inverse of sRGB→LMS from CSS Color Level 4)
+        let rLin = 4.0767416614 * lLMS - 3.3077115905 * mLMS + 0.2309699287 * sLMS
+        let gLin = -1.2684380042 * lLMS + 2.6097574008 * mLMS - 0.3413193963 * sLMS
+        let bLin = -0.0041960858 * lLMS - 0.7034186150 * mLMS + 1.7076147010 * sLMS
 
         func gamma(_ c: Double) -> Double {
             let sign = c < 0 ? -1.0 : 1.0
@@ -125,32 +125,30 @@ struct AppColors {
             : Color.black.opacity(0.08)
     }
     
-    // Primary text color (warm-tinted)
     static func textPrimary(_ colorScheme: ColorScheme) -> Color {
         colorScheme == .dark
-            ? .oklch(0.92, 0.03, 55)
-            : .oklch(0.20, 0.03, 55)
+        ? .oklch(0.92, 0.03, 55)
+        : .oklch(0.20, 0.03, 55)
     }
-    
-    // Secondary text (labels, descriptions)
+
     static func textSecondary(_ colorScheme: ColorScheme) -> Color {
-        colorScheme == .dark
-            ? .oklch(0.68, 0.02, 55)
-            : .oklch(0.42, 0.02, 55)
+        tintedText(base: colorScheme == .dark ? .oklch(0.68, 0.02, 55) : .oklch(0.42, 0.02, 55), colorScheme: colorScheme)
     }
-    
-    // Tertiary text (meta, timestamps)
+
     static func textTertiary(_ colorScheme: ColorScheme) -> Color {
-        colorScheme == .dark
-            ? .oklch(0.60, 0.02, 55)
-            : .oklch(0.50, 0.02, 55)
+        tintedText(base: colorScheme == .dark ? .oklch(0.60, 0.02, 55) : .oklch(0.50, 0.02, 55), colorScheme: colorScheme)
     }
-    
-    // Muted text for disabled/inactive states
+
     static func textMuted(_ colorScheme: ColorScheme) -> Color {
-        colorScheme == .dark
-            ? .oklch(0.50, 0.01, 55)
-            : .oklch(0.48, 0.01, 55)
+        tintedText(base: colorScheme == .dark ? .oklch(0.50, 0.01, 55) : .oklch(0.48, 0.01, 55), colorScheme: colorScheme)
+    }
+
+    private static func tintedText(base: Color, colorScheme: ColorScheme) -> Color {
+        let accent = accentForScheme(colorScheme)
+        guard let baseNS = NSColor(base).usingColorSpace(.sRGB),
+              let accentNS = NSColor(accent).usingColorSpace(.sRGB),
+              let blended = baseNS.blended(withFraction: 0.10, of: accentNS) else { return base }
+        return Color(nsColor: blended)
     }
     
     // MARK: - Accent Colors

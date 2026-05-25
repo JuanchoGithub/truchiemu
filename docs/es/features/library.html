@@ -1,0 +1,72 @@
+---
+layout: default
+title: Gestión de Biblioteca - Documentación de TruchiEmu
+
+---
+
+<div class="feature-docs">
+<h1>Gestión de Biblioteca</h1>
+
+<div class="feature-overview">
+<img src="{{ '/media/features/library-hero.png' | relative_url }}" alt="Panorama de Gestión de Biblioteca" class="hero-image lightbox-trigger">
+<p class="lead">El sistema de gestión de biblioteca de TruchiEmu organiza tu colección de juegos con enriquecimiento de metadatos, descargas de ilustraciones y categorización basada en sistemas.</p>
+</div>
+
+<section id="service-explanation">
+<h2>Panorama del Servicio</h2>
+<p>El servicio de Gestión de Biblioteca ayuda a organizar y descubrir tu colección de juegos. Identifica juegos, obtiene metadatos de LaunchBox, descarga ilustraciones y agrupa títulos por sistema.</p>
+
+<div class="architecture-diagram">
+<img src="{{ '/media/features/library-architecture.png' | relative_url }}" alt="Arquitectura de Biblioteca">
+<p class="caption">Flujo de datos de la biblioteca desde escaneo de ROMs hasta enriquecimiento de metadatos y visualización en la UI</p>
+</div>
+
+<h3>Funciones Clave</h3>
+<ul class="feature-list">
+<li><strong>Detección Automática de Juegos:</strong> Identificación de ROMs usando coincidencia de hash CRC32 y análisis de cabeceras</li>
+<li><strong>Extracción de Metadatos:</strong> Obtiene información del juego, descripciones, fechas de lanzamiento e información del desarrollador</li>
+<li><strong>Gestión de Ilustraciones:</strong> Descarga automática de carátulas, capturas de pantalla y fan art</li>
+<li><strong>Categorización por Sistema:</strong> Agrupa juegos por consola/sistema original</li>
+<li><strong>Detección de Logros:</strong> Identifica juegos con soporte de RetroAchievements</li>
+</ul>
+
+<p>Para detalles de implementación, consulta la <a href="/development/">Guía del Desarrollador</a>.</p>
+</section>
+
+<section id="step-by-step-guide">
+<h2>Guía de Configuración Paso a Paso</h2>
+
+<h3>Configuración Inicial de la Biblioteca</h3>
+<ol class="setup-steps">
+<li>
+<strong>Agregar Directorios de ROMs</strong>
+<p>Navega a <code>Configuración → Biblioteca → Directorios de ROMs</code> y haz clic en "Agregar Directorio". Selecciona carpetas que contengan tus ROMs de juegos. TruchiEmu soporta escaneo recursivo de subdirectorios.</p>
+<img src="{{ '/media/screenshots/library-directories.png' | relative_url }}" alt="Configuración de Directorios de ROMs">
+</li>
+<li>
+<strong>Configuración del Escaneo Inicial</strong>
+<p>Configura las opciones de escaneo: extensiones de archivo a incluir (nes, smc, gb, gba, etc.), patrones de exclusión para versiones beta/prototipo y límites de tamaño máximo de archivo para volcados malos conocidos.</p>
+</li>
+<li>
+<strong>Iniciar Escaneo de Biblioteca</strong>
+<p>Haz clic en "Escanear Nuevas ROMs" en la vista principal de Biblioteca. El escáner calculará hashes, identificará juegos y obtendrá metadatos.</p>
+</li>
+</ol>
+</section>
+
+<section id="references">
+<h2>Servicios Relacionados</h2>
+
+<div class="related-services">
+<div class="service-card">
+<h3><a href="/features/save-states/">Sistema de Estados de Guardado</a></h3>
+<p>Los estados de guardado están organizados y accesibles desde la vista de la biblioteca de juegos.</p>
+</div>
+
+<div class="service-card">
+<h3><a href="/features/achievements/">RetroAchievements</a></h3>
+<p>El progreso de logros se muestra en las vistas de tu biblioteca de juegos.</p>
+</div>
+</div>
+</section>
+</div>

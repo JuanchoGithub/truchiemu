@@ -1,0 +1,58 @@
+---
+layout: default
+title: Sistema de Shaders - Documentación de TruchiEmu
+---
+
+<div class="feature-docs">
+<h1>Sistema de Shaders</h1>
+
+<div class="feature-overview">
+<img src="{{ '/media/features/shaders-hero.png' | relative_url }}" alt="Panorama del Sistema de Shaders" class="hero-image lightbox-trigger">
+<p class="lead">El sistema avanzado de shaders de TruchiEmu transforma tu experiencia de gaming retro con mejoras visuales en tiempo real, simulación CRT y efectos de post-procesamiento modernos. Construido sobre el framework Metal de Apple, nuestro pipeline de shaders ofrece renderizado pixel-perfect con cero sobrecarga de rendimiento.</p>
+</div>
+
+<section id="service-explanation">
+<h2>Panorama del Servicio</h2>
+<p>El sistema de shaders en TruchiEmu aprovecha shaders Metal personalizados para proporcionar mejoras visuales en tiempo real para juegos emulados. A diferencia de los filtros tradicionales de emulador, nuestros shaders se ejecutan directamente en la GPU, asegurando un rendimiento fluido a 60fps incluso en efectos complejos como simulación CRT y algoritmos de escalado.</p>
+
+<div class="architecture-diagram">
+<img src="{{ '/media/features/shader-architecture.png' | relative_url }}" alt="Arquitectura de Shaders">
+<p class="caption">Pipeline de procesamiento de shaders desde el core de emulación a través de Metal hasta la pantalla</p>
+</div>
+
+<h3>Funciones Clave</h3>
+<ul class="feature-list">
+<li><strong>Procesamiento en Tiempo Real:</strong> Todos los shaders se ejecutan en la GPU con latencia sub-milisegundo</li>
+<li><strong>Simulación CRT:</strong> Brillo de fósforo auténtico, líneas de escaneo y efectos de curvatura</li>
+<li><strong>Algoritmos de Escalado:</strong> xBRZ, HQx y escalado entero personalizado con preservación de relación de aspecto</li>
+<li><strong>Mejora de Color:</strong> Soporte LUT, corrección de color y mapeo de tonos HDR</li>
+<li><strong>Optimización de Rendimiento:</strong> Fallback automático a shaders más simples en hardware de menor potencia</li>
+</ul>
+
+<h3>Nota de Rendimiento</h3>
+<p>Todos los shaders se ejecutan directamente en la GPU usando el framework Metal de Apple, asegurando un rendimiento fluido a 60fps incluso con efectos complejos. Passthrough y los shaders de escalado básico tienen un impacto mínimo; las simulaciones CRT y LCD usan más recursos de GPU. La mayoría de los Mac modernos pueden ejecutar cualquier shader a velocidad completa.</p>
+</section>
+
+<section id="step-by-step-guide">
+<h2>Guía de Configuración Paso a Paso</h2>
+
+<h3>Configuración Básica de Shaders</h3>
+<ol class="setup-steps">
+<li>
+<strong>Acceder a la Configuración de Shaders</strong>
+<p>Navega a <code>Configuración → Video → Shaders</code> en la barra de menú de TruchiEmu. El panel de shaders mostrará los presets disponibles y shaders personalizados.</p>
+<img src="{{ '/media/screenshots/shader-settings.png' | relative_url }}" alt="Panel de Configuración de Shaders">
+</li>
+<li>
+<strong>Seleccionar un Preset</strong>
+<p>Elige entre presets integrados como "CRT-Consumer", "LCD-Sharp" u "Original Pixel". Cada preset incluye combinaciones de shaders pre-configuradas optimizadas para diferentes tipos de pantalla.</p>
+</li>
+<li>
+<strong>Ajustar Parámetros del Shader</strong>
+<p>Usa los controles deslizantes de parámetros para ajustar los efectos en tiempo real. Los cambios se aplican inmediatamente sin necesidad de reiniciar.</p>
+<img src="{{ '/media/screenshots/shader-picker.png' | relative_url }}" alt="Controles de Parámetros de Shaders">
+</li>
+</ol>
+</section>
+
+</div>

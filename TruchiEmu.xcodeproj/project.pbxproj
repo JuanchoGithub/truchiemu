@@ -39,6 +39,7 @@
 		07162B9B8CCB6C91E4FE8697 /* intellivision-cheats.zip in Resources */ = {isa = PBXBuildFile; fileRef = 7DBEB5C0B592088AD4E07DEF /* intellivision-cheats.zip */; };
 		0731BAFCEC49AC5E62BA3474 /* Passthrough.metal in Sources */ = {isa = PBXBuildFile; fileRef = 2181ADA6355FD20750F4E018 /* Passthrough.metal */; };
 		07A6D0CCDB18449662D35B4B /* mame_libretro.json in Resources */ = {isa = PBXBuildFile; fileRef = 9E53D67A79EFFF76BBC2A45B /* mame_libretro.json */; };
+		08724A1C5294340425F2DA9A /* LoggerService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 30CC526A551953B4E9BB08C9 /* LoggerService.swift */; };
 		092218AA2BA476F8746B2B1A /* input_coreLabels_beetle_psx_hw.json in Resources */ = {isa = PBXBuildFile; fileRef = B666AFBA89C9094D3D77ADBE /* input_coreLabels_beetle_psx_hw.json */; };
 		093A0D5881AA5FCDDD7AEDFF /* DesignSystem.swift in Sources */ = {isa = PBXBuildFile; fileRef = ABE60205F14183C120DDC8AA /* DesignSystem.swift */; };
 		096CA59BF84AD898558DC0BA /* sgb@132w.png in Resources */ = {isa = PBXBuildFile; fileRef = 2231DAB08AA4E579AE706E39 /* sgb@132w.png */; };
@@ -98,6 +99,7 @@
 		16CEE1FC91FE8FBE871AF673 /* input_coreLabels_desmume.json in Resources */ = {isa = PBXBuildFile; fileRef = 3366F2EFEA27DA071F3FD1E3 /* input_coreLabels_desmume.json */; };
 		1722F9AFF0C43394DFA02AC1 /* snes-cheats.zip in Resources */ = {isa = PBXBuildFile; fileRef = 64F80BDBD0858B8801487FE5 /* snes-cheats.zip */; };
 		1741C362D3DEC0F8D856EEE2 /* n64@132w.png in Resources */ = {isa = PBXBuildFile; fileRef = B7AEE24751C8A0337877A2E0 /* n64@132w.png */; };
+		175914AA2909F5BE44E29AF4 /* main.swift in Sources */ = {isa = PBXBuildFile; fileRef = BDFDD053E0B69ACF2A0BBE22 /* main.swift */; };
 		180EFFC22EA4AFA6DFF975E2 /* input_coreLabels_snes9x_2010.json in Resources */ = {isa = PBXBuildFile; fileRef = 2DE7D61AD683C83AD4BE33A7 /* input_coreLabels_snes9x_2010.json */; };
 		18BCC96548E74818C58EC2EB /* LibraryViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3BB12F3155291F4EC9C6EF84 /* LibraryViewModel.swift */; };
 		18C7CE49EC674187D760805F /* THOMSON.png in Resources */ = {isa = PBXBuildFile; fileRef = F165BE0632AAC9584CEB6749 /* THOMSON.png */; };
@@ -136,6 +138,7 @@
 		212F5EF173A82C954392C288 /* gb-cheats.zip in Resources */ = {isa = PBXBuildFile; fileRef = 3F0F0E8A94E91412BCEE886A /* gb-cheats.zip */; };
 		21A571C012E0EEAB3DB1B142 /* InputDescriptorsManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 81561F32B974014E52E04793 /* InputDescriptorsManager.swift */; };
 		21FF3B94F1D1778135BC654B /* input_coreLabels_snes9x.json in Resources */ = {isa = PBXBuildFile; fileRef = 25D2DC6703AB9C4FBA5996E3 /* input_coreLabels_snes9x.json */; };
+		2250631CD16D43AF3F093857 /* CoreHostProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = FF549897537D3CC05BD11231 /* CoreHostProtocol.swift */; };
 		2258AA6844B74EE1BB9B5289 /* ffplay@132w.png in Resources */ = {isa = PBXBuildFile; fileRef = 1004B788B680D89D08A2C4B6 /* ffplay@132w.png */; };
 		22FBDC836930C16AC02CBA03 /* BoxArtPreloaderService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7BC9EB4BBB881879FB8BA782 /* BoxArtPreloaderService.swift */; };
 		235451B34A912C340CB018EE /* XRICK.png in Resources */ = {isa = PBXBuildFile; fileRef = 1C15A2A6F35E894F51393AE9 /* XRICK.png */; };
@@ -266,6 +269,7 @@
 		4ABA13771D06AE503D7724CE /* LOWRESNX.png in Resources */ = {isa = PBXBuildFile; fileRef = 78131EAC3F8B4141AAFC799F /* LOWRESNX.png */; };
 		4B0455148E7C00D2645FE37F /* ppsspp_libretro_default.json in Resources */ = {isa = PBXBuildFile; fileRef = 53A454FEA006A9BC23D6D0B6 /* ppsspp_libretro_default.json */; };
 		4B94C244C68FFB5B7611ED77 /* VECTREX.png in Resources */ = {isa = PBXBuildFile; fileRef = CE108305F82ABE87D2BE7D7D /* VECTREX.png */; };
+		4C5E02094A7A7692B2C1EC6A /* IOSurfaceVideoManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 631ADA78528F78E63F5A2A5E /* IOSurfaceVideoManager.swift */; };
 		4C84BDF7E8CB95BF9C8AB8F7 /* LoggingSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = FE784389751B61D2018470B8 /* LoggingSettingsView.swift */; };
 		4CA1ADD6AF2BB22A2B63C595 /* COLECO.png in Resources */ = {isa = PBXBuildFile; fileRef = D2DFAEA2F7A4795FA6CE34C5 /* COLECO.png */; };
 		4CDD4E99D212FF2248CB6039 /* SNK - Neo Geo.dat in Resources */ = {isa = PBXBuildFile; fileRef = 0F2813F4D594E132765FEE5C /* SNK - Neo Geo.dat */; };
@@ -273,6 +277,8 @@
 		4D4664A1623B36B70808D323 /* input_coreOverrides_dinothawr.json in Resources */ = {isa = PBXBuildFile; fileRef = E93B62D39151BD618BC1A455 /* input_coreOverrides_dinothawr.json */; };
 		4DE4616CC04E04F0BF73AC72 /* TYRQUAKE.png in Resources */ = {isa = PBXBuildFile; fileRef = EA7858DE5D0204111DF21E0B /* TYRQUAKE.png */; };
 		4E93A064340B0F4FC5C03E9D /* input_coreOverrides_beetle_saturn.json in Resources */ = {isa = PBXBuildFile; fileRef = 64A6F0BB825AED8CC80514FE /* input_coreOverrides_beetle_saturn.json */; };
+		4F3969EB015D6B1606BBEE59 /* LibretroGlobals.mm in Sources */ = {isa = PBXBuildFile; fileRef = AE2C09D3C56810B2B9CCD08F /* LibretroGlobals.mm */; };
+		4F5D20FFA67634F67EDC299E /* SaveDirectoryBridge.swift in Sources */ = {isa = PBXBuildFile; fileRef = 512CBDD71A4FCF28803691E0 /* SaveDirectoryBridge.swift */; };
 		513051DD84CC9121C20BB277 /* input_systemLabels_dos.json in Resources */ = {isa = PBXBuildFile; fileRef = 66874C37C2C8AC2873730684 /* input_systemLabels_dos.json */; };
 		51315A3F08E40B90B5F97DD6 /* MEGADUCK.png in Resources */ = {isa = PBXBuildFile; fileRef = B5B1D330F958A092AFBD96F0 /* MEGADUCK.png */; };
 		515D1B24DC823EA60E658044 /* LUTRO.png in Resources */ = {isa = PBXBuildFile; fileRef = DF7DEE8C655EE9C9F76AEDD8 /* LUTRO.png */; };
@@ -368,6 +374,7 @@
 		6BD6BF15F314107230D2070E /* TI83.png in Resources */ = {isa = PBXBuildFile; fileRef = 8DEABF20B657D31D6DF07400 /* TI83.png */; };
 		6BDB6525F52667BF93E61A2D /* CoreDownloadSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 112A893BD9353D23D809A9EF /* CoreDownloadSheet.swift */; };
 		6CB61455CE970F1F522FECE9 /* BezelView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 49752400CFFA2B7BC928B21C /* BezelView.swift */; };
+		6CBEC44953FF94D0C5198E14 /* XPCConnectionManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = A7CFC7C37DDAD22C0B5BF067 /* XPCConnectionManager.swift */; };
 		6D478C3EDD22F19947D904F5 /* poke@132w.png in Resources */ = {isa = PBXBuildFile; fileRef = 70B077E4EEFEFF94C0EF6F75 /* poke@132w.png */; };
 		6D92CA8DC0096725EC9520AF /* atari800@132w.png in Resources */ = {isa = PBXBuildFile; fileRef = 5049F3EC03369C598CE5BBB2 /* atari800@132w.png */; };
 		6E10F7AD982F0C4DF5A5104C /* input_coreLabels_m2000.json in Resources */ = {isa = PBXBuildFile; fileRef = 07068C673E61C6896809ABA9 /* input_coreLabels_m2000.json */; };
@@ -436,6 +443,7 @@
 		7B468E44B724D76E165C68C6 /* input_coreOverrides_pcsx_rearmed.json in Resources */ = {isa = PBXBuildFile; fileRef = E9EC5548D68C46FE40304A41 /* input_coreOverrides_pcsx_rearmed.json */; };
 		7B583AF5BACF0E19D9574F51 /* MAMERomEntry.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4379C651DF62956D8B2BA04A /* MAMERomEntry.swift */; };
 		7BC9F2B7264429F92FD2D48F /* GameLauncher.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9ED1634F62412DF880052D27 /* GameLauncher.swift */; };
+		7BEC71E9DE2C0DC36C53A654 /* CoreClientProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2A5F6194C027F95EB23ED33A /* CoreClientProtocol.swift */; };
 		7D029F63CAFD018D93F3FD8E /* input_systemLabels_gamegear.json in Resources */ = {isa = PBXBuildFile; fileRef = C8068AB52E3C18DAAE29F47B /* input_systemLabels_gamegear.json */; };
 		7E1281194B7150DB55497A7A /* CheatManagerService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7442198CF891F84CE81220FA /* CheatManagerService.swift */; };
 		7E1C3785C6F25E705635A60B /* gearboy_libretro_default.json in Resources */ = {isa = PBXBuildFile; fileRef = D503F9A21A5B9E67E09C0961 /* gearboy_libretro_default.json */; };
@@ -480,6 +488,7 @@
 		879B86AF45BD146808929EF0 /* LibretroCallbacks.mm in Sources */ = {isa = PBXBuildFile; fileRef = C0F5DA53816F3DA50BB5CBF4 /* LibretroCallbacks.mm */; };
 		87B10EFAD98B1F06174C53D9 /* NotificationService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B6CDE91A09406AE67921521 /* NotificationService.swift */; };
 		87BC9F9B6B6E4BE3DD955941 /* Bandai - WonderSwan Color.dat in Resources */ = {isa = PBXBuildFile; fileRef = 99CCB48D405EE2849879BE24 /* Bandai - WonderSwan Color.dat */; };
+		87E784CA3A8C16662716565A /* LibretroCallbacks.mm in Sources */ = {isa = PBXBuildFile; fileRef = C0F5DA53816F3DA50BB5CBF4 /* LibretroCallbacks.mm */; };
 		886D1903700E00DE7F11523C /* GameNameFormatter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 69E90E0201D4D8BBC6E511A2 /* GameNameFormatter.swift */; };
 		88C6209E377761122EFF7420 /* input_systemLabels_ti_83.json in Resources */ = {isa = PBXBuildFile; fileRef = 2E0EE3D213A80F69382477E8 /* input_systemLabels_ti_83.json */; };
 		89787561CC0407307E78EA54 /* input_coreLabels_beetle_vb.json in Resources */ = {isa = PBXBuildFile; fileRef = D371E4C1F06305FA88AD9ADC /* input_coreLabels_beetle_vb.json */; };
@@ -490,6 +499,7 @@
 		8B30C6965C0378F683FB437C /* input_coreOverrides_mame2010.json in Resources */ = {isa = PBXBuildFile; fileRef = 27B228925202DC495CE8144E /* input_coreOverrides_mame2010.json */; };
 		8B55DD9BEF0575C60B3C0D4C /* ports@132w.png in Resources */ = {isa = PBXBuildFile; fileRef = 2999559B85D1BC7A2C264304 /* ports@132w.png */; };
 		8C23ACCDC85F2907BC1D6137 /* mame_rom_data.json in Resources */ = {isa = PBXBuildFile; fileRef = 283FFD6FCF919837FDB9BB39 /* mame_rom_data.json */; };
+		8C3DB989C12A59BAD8C9B0BB /* XPCBridgeAdapter.swift in Sources */ = {isa = PBXBuildFile; fileRef = B173126E8CA26EE063086241 /* XPCBridgeAdapter.swift */; };
 		8C46EC2A332833B7153FBD58 /* input_coreOverrides_fuse.json in Resources */ = {isa = PBXBuildFile; fileRef = D1C3F2EAA5F94802838933CC /* input_coreOverrides_fuse.json */; };
 		8C8A32CFEF6A3E43EBF8AB4A /* input_systemLabels_wii.json in Resources */ = {isa = PBXBuildFile; fileRef = 948CE21AAEB52DD0237AA592 /* input_systemLabels_wii.json */; };
 		8D4E3566D305DE95CB7DEF13 /* sgfx@132w.png in Resources */ = {isa = PBXBuildFile; fileRef = 1ACE75A9B6A3EAF2C173E097 /* sgfx@132w.png */; };
@@ -505,6 +515,7 @@
 		92800B5A7288EC0F30C67F0B /* FocusableMTKView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D72F01C1BA52B012F84B9E9F /* FocusableMTKView.swift */; };
 		928ED62CBCC9330636589280 /* input_coreOverrides_citra_canary.json in Resources */ = {isa = PBXBuildFile; fileRef = 5FAB7FCC34BD915DBC0C4AB6 /* input_coreOverrides_citra_canary.json */; };
 		92931B26614CCBD73F498965 /* DetailSection.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5C0861586830102C1E785A85 /* DetailSection.swift */; };
+		9299402B15F58D978EC2ABE6 /* CoreHostProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = FF549897537D3CC05BD11231 /* CoreHostProtocol.swift */; };
 		929ADF909A2FA78A3D8A03EA /* LibretroCore.swift in Sources */ = {isa = PBXBuildFile; fileRef = AE565CF1103447CBA9B353C0 /* LibretroCore.swift */; };
 		92E5394FDCB902FB16200540 /* atari5200-cheats.zip in Resources */ = {isa = PBXBuildFile; fileRef = 0BD096E25D6631637825D5C1 /* atari5200-cheats.zip */; };
 		933A1418632CD645E305DC6C /* input_coreLabels_desmume_2015.json in Resources */ = {isa = PBXBuildFile; fileRef = EC7C036A06086D5A58906522 /* input_coreLabels_desmume_2015.json */; };
@@ -528,6 +539,7 @@
 		97C7E67F5D0B442F48CC53AA /* atari7800-cheats.zip in Resources */ = {isa = PBXBuildFile; fileRef = B90D6D8D0EDAADDD3673F76E /* atari7800-cheats.zip */; };
 		97CCC29A6F7E7CD81BB53C1A /* VB.png in Resources */ = {isa = PBXBuildFile; fileRef = 8A73903CC89F4E5F785FF99D /* VB.png */; };
 		97CD3DAF2E7F896B764B1E5B /* input_systemLabels_jumpnbump.json in Resources */ = {isa = PBXBuildFile; fileRef = ED79AAA3967EF2BDE34E6240 /* input_systemLabels_jumpnbump.json */; };
+		983F2D89FAADABA8BE2117DF /* CoreClientDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = B492CEDD65E3E05C1185E321 /* CoreClientDelegate.swift */; };
 		989A19E7C73505C5E79BBB6D /* Nintendo - Super Nintendo Entertainment System.dat in Resources */ = {isa = PBXBuildFile; fileRef = DBFA21A59E5959BCB5A24AE7 /* Nintendo - Super Nintendo Entertainment System.dat */; };
 		989CF6FDFAD02F5AE425ABA4 /* NSImage+Resize.swift in Sources */ = {isa = PBXBuildFile; fileRef = BBBE129C442492A957F9A0AC /* NSImage+Resize.swift */; };
 		9A050AB1F0F270546BC90A1E /* input_systemLabels_sms.json in Resources */ = {isa = PBXBuildFile; fileRef = 329419E38C68F3AC2AE5C3D6 /* input_systemLabels_sms.json */; };
@@ -639,6 +651,7 @@
 		B4AE5A61C004F934F96B9772 /* ATARI2600.png in Resources */ = {isa = PBXBuildFile; fileRef = 07F3BD5EC27C712BCA6DCAC6 /* ATARI2600.png */; };
 		B5114BFAC82594E35D5E82D8 /* input_coreOverrides_desmume.json in Resources */ = {isa = PBXBuildFile; fileRef = 46CACBAAC4508366396F066B /* input_coreOverrides_desmume.json */; };
 		B5E67F4035A7DE332909F4DE /* Cheats.swift in Sources */ = {isa = PBXBuildFile; fileRef = C9EA57166E8095A1A45761BB /* Cheats.swift */; };
+		B621FB26FD899CB24EF75EB3 /* LibretroBridge.mm in Sources */ = {isa = PBXBuildFile; fileRef = 4D90AF78F9CB2BB5DFA4EA42 /* LibretroBridge.mm */; };
 		B667FA6C6ABF04EF4023FA2F /* dosbox_pure_libretro_default.json in Resources */ = {isa = PBXBuildFile; fileRef = 204B48E4B91C7B1E31CF2EEF /* dosbox_pure_libretro_default.json */; };
 		B689C9C1AC33E7756271A5D5 /* input_coreLabels_vecx.json in Resources */ = {isa = PBXBuildFile; fileRef = 8809A1EF4FB044C098318CC6 /* input_coreLabels_vecx.json */; };
 		B7050B3786A9E28FE1DC1E38 /* input_systemLabels_vaporspec.json in Resources */ = {isa = PBXBuildFile; fileRef = D4C7D63785273E2BA0B32028 /* input_systemLabels_vaporspec.json */; };
@@ -666,9 +679,11 @@
 		BE582972E824FFB012393F7C /* Atari - Jaguar.dat in Resources */ = {isa = PBXBuildFile; fileRef = D65DE717669D9B6378E63B06 /* Atari - Jaguar.dat */; };
 		BE69107D74B61BC83EFF333D /* CoreButtonOverride.swift in Sources */ = {isa = PBXBuildFile; fileRef = 72FFFDC3B0AE8A595EB1A77B /* CoreButtonOverride.swift */; };
 		BE6E4F98183D5D5842384B12 /* input_coreLabels_mesen-s.json in Resources */ = {isa = PBXBuildFile; fileRef = 9B06488DE005018FB65D9950 /* input_coreLabels_mesen-s.json */; };
+		BEA1566C8EDAE5D4353360E7 /* TruchiEmuCoreHost.xpc in CopyFiles */ = {isa = PBXBuildFile; fileRef = 11417D9821AF8E7D835C9025 /* TruchiEmuCoreHost.xpc */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		BF11E73AD6C9380347938947 /* input_coreLabels_tempgba.json in Resources */ = {isa = PBXBuildFile; fileRef = A527CCEDB398D0EED340B00E /* input_coreLabels_tempgba.json */; };
 		BF3899C41521C9D716EBDC5D /* ControllerGamepadMapping.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2EB63FBDD677CD02C8E222A8 /* ControllerGamepadMapping.swift */; };
 		C0266AE90962A24605C83813 /* input_coreLabels_wasm-4.json in Resources */ = {isa = PBXBuildFile; fileRef = 0869679B382A9418B9809DC0 /* input_coreLabels_wasm-4.json */; };
+		C0B31C7FFBB276342157AAC1 /* CoreHostService.swift in Sources */ = {isa = PBXBuildFile; fileRef = A9A707545B834EB4A974DB42 /* CoreHostService.swift */; };
 		C0BF7D965A680A168FACC3BB /* CoreOptionsManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 007D62D59B68855828E28A77 /* CoreOptionsManager.swift */; };
 		C18E5BE81E68BF2BD3405575 /* LaunchBoxGamesDBService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 51CC71BA94F2F723F61276A2 /* LaunchBoxGamesDBService.swift */; };
 		C19923C3D7A3AEEAA0BFC603 /* n64_aleck-cheats.zip in Resources */ = {isa = PBXBuildFile; fileRef = C82BB66735423EFE27B88240 /* n64_aleck-cheats.zip */; };
@@ -721,6 +736,7 @@
 		D1987AB001C52B7301D88FF8 /* LaunchBoxGameMetadata.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6217E554433F50B53DE94A02 /* LaunchBoxGameMetadata.swift */; };
 		D1D7745A8D84B114515B08C3 /* input_systemLabels_atari2600.json in Resources */ = {isa = PBXBuildFile; fileRef = A25D1DDA83C0F604F5565945 /* input_systemLabels_atari2600.json */; };
 		D1EA655C59595E4CF606EA8C /* Nintendo - Family Computer Disk System.dat in Resources */ = {isa = PBXBuildFile; fileRef = 5D2ACABD070C032CF81B99A6 /* Nintendo - Family Computer Disk System.dat */; };
+		D314E09ECA35515983A3F87C /* CoreOverrideStubs.c in Sources */ = {isa = PBXBuildFile; fileRef = EC0DB7A48AEEB420BC9C13C7 /* CoreOverrideStubs.c */; };
 		D3BDBD850AC3E23AE43A266B /* ROMIdentifier.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9367BEFF9A7137645C911103 /* ROMIdentifier.swift */; };
 		D3BF624E6D643A9C9E0976FF /* ImageCache.swift in Sources */ = {isa = PBXBuildFile; fileRef = C8861B6D319A016F2FDA15DD /* ImageCache.swift */; };
 		D3CF18A05B713DC547E5DFC4 /* input_coreLabels_genesis_plus_gx.json in Resources */ = {isa = PBXBuildFile; fileRef = B19911BF350A7E2B7C33DAE4 /* input_coreLabels_genesis_plus_gx.json */; };
@@ -744,6 +760,7 @@
 		DA94BAE9800BC86097DC6138 /* sfc@132w.png in Resources */ = {isa = PBXBuildFile; fileRef = 3D9174F064E6B3F316C9AFDB /* sfc@132w.png */; };
 		DAA7D00D03C90DDF0DD7D031 /* AchievementToastView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A7B45C4797CC22995053ADA4 /* AchievementToastView.swift */; };
 		DB0A6A98E6E40A9838E49ECD /* input_systemLabels_colecovision.json in Resources */ = {isa = PBXBuildFile; fileRef = 0131AF2732320A89574B49A3 /* input_systemLabels_colecovision.json */; };
+		DB9C6B84818F0494C9D193F9 /* LibretroBridgeImpl.mm in Sources */ = {isa = PBXBuildFile; fileRef = 5C71FA314D9C45318540B2DB /* LibretroBridgeImpl.mm */; };
 		DC04E65A0A0068C4291426D5 /* TruchiEmuApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 460DFA8410763ED490E94E83 /* TruchiEmuApp.swift */; };
 		DC6B2F5F12C81B3FD59F2FA1 /* DATPrepopulationService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3923EC666D7D2EBA025850F5 /* DATPrepopulationService.swift */; };
 		DCA7B36E5FDFA488044B50B0 /* fds@132w.png in Resources */ = {isa = PBXBuildFile; fileRef = 8905CF92C1478804E38BCB68 /* fds@132w.png */; };
@@ -778,6 +795,7 @@
 		E5DF81ECE7A293F0F403D992 /* mame2010_libretro.json in Resources */ = {isa = PBXBuildFile; fileRef = 4AD390216F957165FC9494EE /* mame2010_libretro.json */; };
 		E602AB588AE44CE5C78E87FD /* input_systemLabels_vircon32.json in Resources */ = {isa = PBXBuildFile; fileRef = 0852DBE1836B35F40C72AC9B /* input_systemLabels_vircon32.json */; };
 		E6DE454D5632941AE8FFC35A /* analyze_unknown_zips.py in Resources */ = {isa = PBXBuildFile; fileRef = 4FD93F149B78AD0F29104AD2 /* analyze_unknown_zips.py */; };
+		E77642038E0B1B138CE591BB /* LogManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = DDA440915145AB1C4D850872 /* LogManager.swift */; };
 		E7CA2ACAAC320C870E65EF61 /* BezelSelectorWindow.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6253DADF3E4A0EAA610ADE01 /* BezelSelectorWindow.swift */; };
 		E7DE528E6B1FE12752FF94F3 /* ShaderManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = A46DC124EACC3CBF27EEA315 /* ShaderManager.swift */; };
 		E9E775DA61FD7613A74094C8 /* input_coreLabels_vircon32.json in Resources */ = {isa = PBXBuildFile; fileRef = E0DC3B1DB907C41823FBE25C /* input_coreLabels_vircon32.json */; };
@@ -809,6 +827,7 @@
 		F0AD72CCE4B5E63664FADEB3 /* CorePickerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A47516431097E29AD293A7B5 /* CorePickerView.swift */; };
 		F0C3A285F7DDEEE9DD1E9D78 /* build_mame_unified.py in Resources */ = {isa = PBXBuildFile; fileRef = C31F0AA882132918E8CE3FA6 /* build_mame_unified.py */; };
 		F1AA44B0A96EE6EA380D60E7 /* EASYRPG.png in Resources */ = {isa = PBXBuildFile; fileRef = 2D4A52AFA9B952287155E6A6 /* EASYRPG.png */; };
+		F1B11978BEC8CE8C0D198CBF /* SharedMemoryManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = DC670A67B8CEDEF192F88015 /* SharedMemoryManager.swift */; };
 		F2058F5CDAFDED1DB7FAFD71 /* genesis-cheats.zip in Resources */ = {isa = PBXBuildFile; fileRef = CB6C88486821941C90609217 /* genesis-cheats.zip */; };
 		F2903EDB7DD894827E44208C /* ResourceCacheModels.swift in Sources */ = {isa = PBXBuildFile; fileRef = 86D467EC70EF33E265BAF765 /* ResourceCacheModels.swift */; };
 		F29548F076DB243FEE2FB4FD /* pt.json in Resources */ = {isa = PBXBuildFile; fileRef = 9A53F0EBF42B897DC4DA810A /* pt.json */; };
@@ -818,6 +837,7 @@
 		F2DC863D903DDD53F642078B /* Bandai - WonderSwan.dat in Resources */ = {isa = PBXBuildFile; fileRef = E8D51D07865600865794A8DB /* Bandai - WonderSwan.dat */; };
 		F32A51A29C1D4EA5D9C3AABC /* ENTERPRISE.png in Resources */ = {isa = PBXBuildFile; fileRef = CFABAFD18C6D9980AA553B3B /* ENTERPRISE.png */; };
 		F33C60D08AB5B8F8FCD8A40F /* CategoryViews.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3F198CC9640367156C593D71 /* CategoryViews.swift */; };
+		F42BF1E16E0001C2DE15F637 /* CoreClientProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2A5F6194C027F95EB23ED33A /* CoreClientProtocol.swift */; };
 		F46326ACDB37BBBF77D46FC8 /* Sega - 32X.dat in Resources */ = {isa = PBXBuildFile; fileRef = 5173355E48F173C9B876F13B /* Sega - 32X.dat */; };
 		F478F42099085BD179E833A5 /* CategoryRowButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = E45F87F47B1F2A9E01DD9315 /* CategoryRowButton.swift */; };
 		F48355FB81AA8B6DFAB815CB /* FDS.png in Resources */ = {isa = PBXBuildFile; fileRef = 87A49F4EFE90566F0E74223B /* FDS.png */; };
@@ -829,6 +849,7 @@
 		F6B24761F120277A21DFDA8B /* Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = C360149B8F0532EB65B66AFD /* Info.plist */; };
 		F6B9BD179D9E56D72F6EEC41 /* spectrum-cheats.zip in Resources */ = {isa = PBXBuildFile; fileRef = 6507532DEC958CE142EDD972 /* spectrum-cheats.zip */; };
 		F6BCD9E30F0D6EC1CA4B9F0C /* LibretroRDBParser.swift in Sources */ = {isa = PBXBuildFile; fileRef = 553202E8BACC113D608625E6 /* LibretroRDBParser.swift */; };
+		F6C6FBCE05B3CD0E06B557BD /* CoreOverrideService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0FF63BFF980BE337C49CF0B7 /* CoreOverrideService.swift */; };
 		F6DF42F2CF9B2A425B878D8C /* input_coreLabels_vba_next.json in Resources */ = {isa = PBXBuildFile; fileRef = 6AD752227BC38A71AA63B2DF /* input_coreLabels_vba_next.json */; };
 		F7DBD8DCC04098B24D01934F /* input_coreLabels_beetle_pce_fast.json in Resources */ = {isa = PBXBuildFile; fileRef = B04C638107D90D3005000D2E /* input_coreLabels_beetle_pce_fast.json */; };
 		F86252ABEF42A7AFF9D1B5C0 /* input_coreLabels_sameduck.json in Resources */ = {isa = PBXBuildFile; fileRef = 96EB760EBFD3458D61CE11D8 /* input_coreLabels_sameduck.json */; };
@@ -857,6 +878,29 @@
 		FF4E588A3F4D531D818A8298 /* CheatParser.swift in Sources */ = {isa = PBXBuildFile; fileRef = E51DBD3DD1DC68C0749E4F9F /* CheatParser.swift */; };
 		FFF47BFB43D9F61765110D05 /* c64@132w.png in Resources */ = {isa = PBXBuildFile; fileRef = A65D48FF2331F48A66F22918 /* c64@132w.png */; };
 /* End PBXBuildFile section */
+
+/* Begin PBXContainerItemProxy section */
+		F0C3EB99813D76CA2A0D4EA1 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 69FEF6B26942F132790063CD /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 0AB0DC95D0C31F5C3530F08A;
+			remoteInfo = TruchiEmuCoreHost;
+		};
+/* End PBXContainerItemProxy section */
+
+/* Begin PBXCopyFilesBuildPhase section */
+		D0FF5B24CA26FDA7D958B35D /* CopyFiles */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "$(CONTENTS_FOLDER_PATH)/XPCServices";
+			dstSubfolderSpec = 16;
+			files = (
+				BEA1566C8EDAE5D4353360E7 /* TruchiEmuCoreHost.xpc in CopyFiles */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
 		0068551BDB43512C3EE9D7EC /* input_coreLabels_ardens.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = input_coreLabels_ardens.json; sourceTree = "<group>"; };
@@ -910,6 +954,7 @@
 		111A07FE1A09FD6D2E7357C7 /* input_coreLabels_easyrpg.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = input_coreLabels_easyrpg.json; sourceTree = "<group>"; };
 		112A0F3619B6C52925987F75 /* ProgettoSnapsService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProgettoSnapsService.swift; sourceTree = "<group>"; };
 		112A893BD9353D23D809A9EF /* CoreDownloadSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CoreDownloadSheet.swift; sourceTree = "<group>"; };
+		11417D9821AF8E7D835C9025 /* TruchiEmuCoreHost.xpc */ = {isa = PBXFileReference; explicitFileType = "wrapper.xpc-service"; includeInIndex = 0; path = TruchiEmuCoreHost.xpc; sourceTree = BUILT_PRODUCTS_DIR; };
 		1153DDB5F84388EB68FCC5AF /* analyze_coverage.py */ = {isa = PBXFileReference; lastKnownFileType = text.script.python; path = analyze_coverage.py; sourceTree = "<group>"; };
 		118C3C476FA18F110E167B39 /* input_coreOverrides_nxengine.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = input_coreOverrides_nxengine.json; sourceTree = "<group>"; };
 		11DA3CCFB66270F6DF1983FB /* appIcon32.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = appIcon32.jpg; sourceTree = "<group>"; };
@@ -1004,6 +1049,7 @@
 		2999559B85D1BC7A2C264304 /* ports@132w.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "ports@132w.png"; sourceTree = "<group>"; };
 		29FD758F07BFDE6E0573B746 /* add_missing_entries.py */ = {isa = PBXFileReference; lastKnownFileType = text.script.python; path = add_missing_entries.py; sourceTree = "<group>"; };
 		2A22D3CFE0F38F217152AD90 /* ATARI7800.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = ATARI7800.png; sourceTree = "<group>"; };
+		2A5F6194C027F95EB23ED33A /* CoreClientProtocol.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CoreClientProtocol.swift; sourceTree = "<group>"; };
 		2A96AAF72C7F18D45D235347 /* BoxArtService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BoxArtService.swift; sourceTree = "<group>"; };
 		2AE07BDCFBC75CECDD7E67D7 /* input_coreLabels_dice.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = input_coreLabels_dice.json; sourceTree = "<group>"; };
 		2AEE13522E270C97DAE418DC /* appIcon512.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = appIcon512.jpg; sourceTree = "<group>"; };
@@ -1177,6 +1223,7 @@
 		59CBFB7172EA714171C66600 /* input_coreLabels_ecwolf.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = input_coreLabels_ecwolf.json; sourceTree = "<group>"; };
 		5A32D090BDCC70201F06FE5A /* vectrex@132w.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "vectrex@132w.png"; sourceTree = "<group>"; };
 		5A6FF56C23A80B7D68EA5193 /* input_coreLabels_beetle_bsnes.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = input_coreLabels_beetle_bsnes.json; sourceTree = "<group>"; };
+		5A70807FC6C49F96FD77612C /* CoreHost.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = CoreHost.entitlements; sourceTree = "<group>"; };
 		5AE1CBC695D134E3FF153854 /* ms@132w.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "ms@132w.png"; sourceTree = "<group>"; };
 		5AE2907879D793D5504FE9FC /* pcsx_rearmed_libretro_default.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = pcsx_rearmed_libretro_default.json; sourceTree = "<group>"; };
 		5B369817A06C01C6361538D0 /* N64.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = N64.png; sourceTree = "<group>"; };
@@ -1187,6 +1234,7 @@
 		5C15A861E2696512846B9609 /* LibraryGridView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LibraryGridView.swift; sourceTree = "<group>"; };
 		5C6C5AB9AFFF3B6E22A0E2DA /* input_systemLabels_p2000t.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = input_systemLabels_p2000t.json; sourceTree = "<group>"; };
 		5C71FA314D9C45318540B2DB /* LibretroBridgeImpl.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; path = LibretroBridgeImpl.mm; sourceTree = "<group>"; };
+		5C78737C16238997BD9148EF /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
 		5CDC3C79BAFC397D5CB8E5ED /* doom@132w.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "doom@132w.png"; sourceTree = "<group>"; };
 		5D2ACABD070C032CF81B99A6 /* Nintendo - Family Computer Disk System.dat */ = {isa = PBXFileReference; path = "Nintendo - Family Computer Disk System.dat"; sourceTree = "<group>"; };
 		5DD14108CB59DFA0DA852B43 /* PORTS.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = PORTS.png; sourceTree = "<group>"; };
@@ -1209,6 +1257,7 @@
 		622F8211E719F06C7DBF42EE /* input_coreLabels_higan_accuracy.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = input_coreLabels_higan_accuracy.json; sourceTree = "<group>"; };
 		6253DADF3E4A0EAA610ADE01 /* BezelSelectorWindow.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BezelSelectorWindow.swift; sourceTree = "<group>"; };
 		62B4EE0802A69845537290E2 /* CRTFilter_multipass.metal */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.metal; path = CRTFilter_multipass.metal; sourceTree = "<group>"; };
+		631ADA78528F78E63F5A2A5E /* IOSurfaceVideoManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IOSurfaceVideoManager.swift; sourceTree = "<group>"; };
 		632520A7FB69D6AA71C8C09A /* input_coreOverrides_desmume_2015.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = input_coreOverrides_desmume_2015.json; sourceTree = "<group>"; };
 		6411DA402E81AB00AD6D3E4D /* input_coreLabels_virtual_jaguar.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = input_coreLabels_virtual_jaguar.json; sourceTree = "<group>"; };
 		641895B5DD73F3D186CB7A63 /* INTELLIVISION.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = INTELLIVISION.png; sourceTree = "<group>"; };
@@ -1330,6 +1379,7 @@
 		835D932CF0B22A2AACA96CC6 /* input_systemLabels_zx_spectrum.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = input_systemLabels_zx_spectrum.json; sourceTree = "<group>"; };
 		83F1EFBDD0AE4C0DBA2E5821 /* input_systemLabels_wonderswan.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = input_systemLabels_wonderswan.json; sourceTree = "<group>"; };
 		8422707E4EFAF2631E115415 /* BezelSystemMapping.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BezelSystemMapping.swift; sourceTree = "<group>"; };
+		84D2D65163527E606B9A8023 /* XPCSharedMemory.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = XPCSharedMemory.h; sourceTree = "<group>"; };
 		857D78DF34C31AA99698DF6A /* FLASHBACK.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = FLASHBACK.png; sourceTree = "<group>"; };
 		866F7E9495192E7531109947 /* NEC - PC Engine - TurboGrafx 16.dat */ = {isa = PBXFileReference; path = "NEC - PC Engine - TurboGrafx 16.dat"; sourceTree = "<group>"; };
 		86D467EC70EF33E265BAF765 /* ResourceCacheModels.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ResourceCacheModels.swift; sourceTree = "<group>"; };
@@ -1437,6 +1487,7 @@
 		A75E77D5F1B017AAA29B9E83 /* input_coreLabels_boom3.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = input_coreLabels_boom3.json; sourceTree = "<group>"; };
 		A7600CDEC80018D914D43596 /* input_systemLabels_genesis.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = input_systemLabels_genesis.json; sourceTree = "<group>"; };
 		A7B45C4797CC22995053ADA4 /* AchievementToastView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AchievementToastView.swift; sourceTree = "<group>"; };
+		A7CFC7C37DDAD22C0B5BF067 /* XPCConnectionManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = XPCConnectionManager.swift; sourceTree = "<group>"; };
 		A7FD7122DD17D9B818C4F6C9 /* dos-cheats.zip */ = {isa = PBXFileReference; lastKnownFileType = archive.zip; path = "dos-cheats.zip"; sourceTree = "<group>"; };
 		A8935D40F11BF986BE60A840 /* ThemeManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ThemeManager.swift; sourceTree = "<group>"; };
 		A9258394F027EC5364CFCE39 /* GameOverlayToolbar.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GameOverlayToolbar.swift; sourceTree = "<group>"; };
@@ -1444,6 +1495,7 @@
 		A97A91DA0B2DA73F7E788D2F /* Sega - Master System - Mark III.dat */ = {isa = PBXFileReference; path = "Sega - Master System - Mark III.dat"; sourceTree = "<group>"; };
 		A986C8B3056E7E0649886870 /* input_systemLabels_lynx.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = input_systemLabels_lynx.json; sourceTree = "<group>"; };
 		A99C803343A6D4E28B5A6BBA /* input_coreOverrides_tyrquake.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = input_coreOverrides_tyrquake.json; sourceTree = "<group>"; };
+		A9A707545B834EB4A974DB42 /* CoreHostService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CoreHostService.swift; sourceTree = "<group>"; };
 		AA2C23F00FCED9410E65FB86 /* MAME.dat */ = {isa = PBXFileReference; path = MAME.dat; sourceTree = "<group>"; };
 		AA63D6D1D8AD345E7E735488 /* input_coreOverrides_opera.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = input_coreOverrides_opera.json; sourceTree = "<group>"; };
 		AAAFBB29963B639FAAAFDFDF /* input_coreLabels_dinothawr.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = input_coreLabels_dinothawr.json; sourceTree = "<group>"; };
@@ -1475,6 +1527,7 @@
 		B09D20EAAADCE4BB4E132CF1 /* atari2600@132w.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "atari2600@132w.png"; sourceTree = "<group>"; };
 		B10ACE737699B0B6D68E5066 /* input_coreLabels_citra_canary.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = input_coreLabels_citra_canary.json; sourceTree = "<group>"; };
 		B1635E744F6AAC5F638DF434 /* CoreOverrideBridge-Swift.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "CoreOverrideBridge-Swift.h"; sourceTree = "<group>"; };
+		B173126E8CA26EE063086241 /* XPCBridgeAdapter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = XPCBridgeAdapter.swift; sourceTree = "<group>"; };
 		B19911BF350A7E2B7C33DAE4 /* input_coreLabels_genesis_plus_gx.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = input_coreLabels_genesis_plus_gx.json; sourceTree = "<group>"; };
 		B1B0C5B0C75C0BC4460C2913 /* input_systemLabels_snes.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = input_systemLabels_snes.json; sourceTree = "<group>"; };
 		B2667AB0DCBF48CAC505C84C /* TruchiEmu.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = TruchiEmu.entitlements; sourceTree = "<group>"; };
@@ -1486,6 +1539,7 @@
 		B3862286807DE3CF283A3152 /* appIcon64.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = appIcon64.jpg; sourceTree = "<group>"; };
 		B3DD3B4C59CFC316674ECA82 /* NEOGEO.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = NEOGEO.png; sourceTree = "<group>"; };
 		B44078E0AECA665DAEA958FE /* ATARI5200.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = ATARI5200.png; sourceTree = "<group>"; };
+		B492CEDD65E3E05C1185E321 /* CoreClientDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CoreClientDelegate.swift; sourceTree = "<group>"; };
 		B49388838708E4000C50EE94 /* input_coreLabels_beetle_neopop.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = input_coreLabels_beetle_neopop.json; sourceTree = "<group>"; };
 		B4AFFA9A137423C67E175C03 /* input_coreLabels_same_cdi.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = input_coreLabels_same_cdi.json; sourceTree = "<group>"; };
 		B4BB50EA857D35B0D3B0FFA2 /* puzzlescript-cheats.zip */ = {isa = PBXFileReference; lastKnownFileType = archive.zip; path = "puzzlescript-cheats.zip"; sourceTree = "<group>"; };
@@ -1513,6 +1567,7 @@
 		BCF5F2A331B01D152BE6194C /* PPSSPAssetService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PPSSPAssetService.swift; sourceTree = "<group>"; };
 		BD1730AB73DF60803E567643 /* input_systemLabels_ngp.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = input_systemLabels_ngp.json; sourceTree = "<group>"; };
 		BD44A60F263E9CFBD97BB16B /* input_coreOverrides_same_cdi.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = input_coreOverrides_same_cdi.json; sourceTree = "<group>"; };
+		BDFDD053E0B69ACF2A0BBE22 /* main.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = main.swift; sourceTree = "<group>"; };
 		BE01BAE4649B80275FA1BBAB /* MAMEUnifiedService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MAMEUnifiedService.swift; sourceTree = "<group>"; };
 		BE8AAC49E7AC25911394118F /* N64DD.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = N64DD.png; sourceTree = "<group>"; };
 		BF4D3CED7C7C18FB8375C015 /* AppSettings.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppSettings.swift; sourceTree = "<group>"; };
@@ -1601,6 +1656,7 @@
 		DC0C982FEF93C98EB85EF8EE /* input_coreOverrides_easyrpg.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = input_coreOverrides_easyrpg.json; sourceTree = "<group>"; };
 		DC11E976179410D451158A7A /* AMIGA.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = AMIGA.png; sourceTree = "<group>"; };
 		DC3027810104754F860087A9 /* input_coreLabels_jumpnbump.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = input_coreLabels_jumpnbump.json; sourceTree = "<group>"; };
+		DC670A67B8CEDEF192F88015 /* SharedMemoryManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SharedMemoryManager.swift; sourceTree = "<group>"; };
 		DCDBB4B2BAE4809CC656CB3B /* input_systemLabels_amiga.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = input_systemLabels_amiga.json; sourceTree = "<group>"; };
 		DD039E7B14D811FA333EA87E /* flycast_libretro_default.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = flycast_libretro_default.json; sourceTree = "<group>"; };
 		DD476D63A6BB92961004D98F /* GitHubAPIModels.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GitHubAPIModels.swift; sourceTree = "<group>"; };
@@ -1650,6 +1706,7 @@
 		EB889F956194C62B15EB2B74 /* download_and_parse.py */ = {isa = PBXFileReference; lastKnownFileType = text.script.python; path = download_and_parse.py; sourceTree = "<group>"; };
 		EBA408AB90EB95504B2DA54F /* ARCADE.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = ARCADE.png; sourceTree = "<group>"; };
 		EBA905B7DDD743F2F782FA28 /* C64.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = C64.png; sourceTree = "<group>"; };
+		EC0DB7A48AEEB420BC9C13C7 /* CoreOverrideStubs.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = CoreOverrideStubs.c; sourceTree = "<group>"; };
 		EC40A476ED3D1F7A62D45D03 /* SATELLAVIEW.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = SATELLAVIEW.png; sourceTree = "<group>"; };
 		EC7C036A06086D5A58906522 /* input_coreLabels_desmume_2015.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = input_coreLabels_desmume_2015.json; sourceTree = "<group>"; };
 		ECE7CD383238227C5CD11394 /* input_coreLabels_geargrafx.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = input_coreLabels_geargrafx.json; sourceTree = "<group>"; };
@@ -1717,6 +1774,7 @@
 		FEB592DF53C6205FF44A6CC7 /* input_coreOverrides_dosbox_pure.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = input_coreOverrides_dosbox_pure.json; sourceTree = "<group>"; };
 		FEC33B6F7D0DC49EC29F2BF8 /* psp-cheats.zip */ = {isa = PBXFileReference; lastKnownFileType = archive.zip; path = "psp-cheats.zip"; sourceTree = "<group>"; };
 		FF3DF73DD9AF0B99F13416F8 /* input_systemLabels_atari7800.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = input_systemLabels_atari7800.json; sourceTree = "<group>"; };
+		FF549897537D3CC05BD11231 /* CoreHostProtocol.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CoreHostProtocol.swift; sourceTree = "<group>"; };
 		FF8544B99E1A29C52878E218 /* PGM.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = PGM.png; sourceTree = "<group>"; };
 		FFD0AF7532FC4393B76C50D2 /* PSP.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = PSP.png; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -1910,6 +1968,18 @@
 				305854E346C89DB7F671CA96 /* SEtBX.jpg */,
 			);
 			path = AppIcons;
+			sourceTree = "<group>";
+		};
+		1D78AF547BD600AE723A6F06 /* Service */ = {
+			isa = PBXGroup;
+			children = (
+				5A70807FC6C49F96FD77612C /* CoreHost.entitlements */,
+				A9A707545B834EB4A974DB42 /* CoreHostService.swift */,
+				EC0DB7A48AEEB420BC9C13C7 /* CoreOverrideStubs.c */,
+				5C78737C16238997BD9148EF /* Info.plist */,
+				BDFDD053E0B69ACF2A0BBE22 /* main.swift */,
+			);
+			path = Service;
 			sourceTree = "<group>";
 		};
 		1DAAD38FF182383AA6293234 /* MAME_Dats_287 */ = {
@@ -2340,6 +2410,16 @@
 			path = ThumbnailManifests;
 			sourceTree = "<group>";
 		};
+		5723894E1406F3C682E73C2D /* XPC */ = {
+			isa = PBXGroup;
+			children = (
+				BD12330E0D7DA42127AA0323 /* Client */,
+				1D78AF547BD600AE723A6F06 /* Service */,
+				E544A225D341611772B459E2 /* Shared */,
+			);
+			path = XPC;
+			sourceTree = "<group>";
+		};
 		5BE55A1DE39FF8B3E1936E9F /* Library */ = {
 			isa = PBXGroup;
 			children = (
@@ -2613,6 +2693,7 @@
 				B027B71E3F4DEA5643F3D368 /* InputCapture */,
 				A91B50FB81A02744966462D0 /* Models */,
 				46BDCE9B569EB867076866AC /* Shaders */,
+				5723894E1406F3C682E73C2D /* XPC */,
 			);
 			path = Core;
 			sourceTree = "<group>";
@@ -2864,6 +2945,18 @@
 			path = Player;
 			sourceTree = "<group>";
 		};
+		BD12330E0D7DA42127AA0323 /* Client */ = {
+			isa = PBXGroup;
+			children = (
+				B492CEDD65E3E05C1185E321 /* CoreClientDelegate.swift */,
+				631ADA78528F78E63F5A2A5E /* IOSurfaceVideoManager.swift */,
+				DC670A67B8CEDEF192F88015 /* SharedMemoryManager.swift */,
+				B173126E8CA26EE063086241 /* XPCBridgeAdapter.swift */,
+				A7CFC7C37DDAD22C0B5BF067 /* XPCConnectionManager.swift */,
+			);
+			path = Client;
+			sourceTree = "<group>";
+		};
 		BD2E11FA448433E1592B74AE /* Models */ = {
 			isa = PBXGroup;
 			children = (
@@ -3091,6 +3184,7 @@
 			isa = PBXGroup;
 			children = (
 				823B1FD3E319074A9926700C /* TruchiEmu.app */,
+				11417D9821AF8E7D835C9025 /* TruchiEmuCoreHost.xpc */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -3103,6 +3197,16 @@
 				653DE9525EF1FB1F93751490 /* Player */,
 			);
 			path = Views;
+			sourceTree = "<group>";
+		};
+		E544A225D341611772B459E2 /* Shared */ = {
+			isa = PBXGroup;
+			children = (
+				2A5F6194C027F95EB23ED33A /* CoreClientProtocol.swift */,
+				FF549897537D3CC05BD11231 /* CoreHostProtocol.swift */,
+				84D2D65163527E606B9A8023 /* XPCSharedMemory.h */,
+			);
+			path = Shared;
 			sourceTree = "<group>";
 		};
 		E80FE09498B0D21C035E85F5 /* Models */ = {
@@ -3223,16 +3327,35 @@
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
+		0AB0DC95D0C31F5C3530F08A /* TruchiEmuCoreHost */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 1A8EC0FC258605661DB51BF3 /* Build configuration list for PBXNativeTarget "TruchiEmuCoreHost" */;
+			buildPhases = (
+				08589319EDD37C1CC2BCADE8 /* Sources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = TruchiEmuCoreHost;
+			packageProductDependencies = (
+			);
+			productName = TruchiEmuCoreHost;
+			productReference = 11417D9821AF8E7D835C9025 /* TruchiEmuCoreHost.xpc */;
+			productType = "com.apple.product-type.xpc-service";
+		};
 		C342292B3D93C9DCE165854D /* TruchiEmu */ = {
 			isa = PBXNativeTarget;
 			buildConfigurationList = 888A13B53EC1AEBD8012E2A3 /* Build configuration list for PBXNativeTarget "TruchiEmu" */;
 			buildPhases = (
 				4DC137320AE94339DFED2ECF /* Sources */,
 				388B8243FC2B8F04600164B9 /* Resources */,
+				D0FF5B24CA26FDA7D958B35D /* CopyFiles */,
 			);
 			buildRules = (
 			);
 			dependencies = (
+				60C5F3C981D5EF4AC41D1D46 /* PBXTargetDependency */,
 			);
 			name = TruchiEmu;
 			packageProductDependencies = (
@@ -3250,6 +3373,9 @@
 				BuildIndependentTargetsInParallel = YES;
 				LastUpgradeCheck = 1500;
 				TargetAttributes = {
+					0AB0DC95D0C31F5C3530F08A = {
+						ProvisioningStyle = Manual;
+					};
 					C342292B3D93C9DCE165854D = {
 						ProvisioningStyle = Automatic;
 					};
@@ -3270,6 +3396,7 @@
 			projectRoot = "";
 			targets = (
 				C342292B3D93C9DCE165854D /* TruchiEmu */,
+				0AB0DC95D0C31F5C3530F08A /* TruchiEmuCoreHost */,
 			);
 		};
 /* End PBXProject section */
@@ -3911,6 +4038,26 @@
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
+		08589319EDD37C1CC2BCADE8 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				7BEC71E9DE2C0DC36C53A654 /* CoreClientProtocol.swift in Sources */,
+				2250631CD16D43AF3F093857 /* CoreHostProtocol.swift in Sources */,
+				C0B31C7FFBB276342157AAC1 /* CoreHostService.swift in Sources */,
+				F6C6FBCE05B3CD0E06B557BD /* CoreOverrideService.swift in Sources */,
+				D314E09ECA35515983A3F87C /* CoreOverrideStubs.c in Sources */,
+				B621FB26FD899CB24EF75EB3 /* LibretroBridge.mm in Sources */,
+				DB9C6B84818F0494C9D193F9 /* LibretroBridgeImpl.mm in Sources */,
+				87E784CA3A8C16662716565A /* LibretroCallbacks.mm in Sources */,
+				4F3969EB015D6B1606BBEE59 /* LibretroGlobals.mm in Sources */,
+				E77642038E0B1B138CE591BB /* LogManager.swift in Sources */,
+				08724A1C5294340425F2DA9A /* LoggerService.swift in Sources */,
+				4F5D20FFA67634F67EDC299E /* SaveDirectoryBridge.swift in Sources */,
+				175914AA2909F5BE44E29AF4 /* main.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		4DC137320AE94339DFED2ECF /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
@@ -3971,8 +4118,11 @@
 				DCB45CB4AFC527F727105206 /* Controls.swift in Sources */,
 				84D8EF6AD4A33478C294BF06 /* CoreAndAchievements.swift in Sources */,
 				BE69107D74B61BC83EFF333D /* CoreButtonOverride.swift in Sources */,
+				983F2D89FAADABA8BE2117DF /* CoreClientDelegate.swift in Sources */,
+				F42BF1E16E0001C2DE15F637 /* CoreClientProtocol.swift in Sources */,
 				6BDB6525F52667BF93E61A2D /* CoreDownloadSheet.swift in Sources */,
 				9175C767F01BBA408C2256AA /* CoreDownloadStatusBar.swift in Sources */,
+				9299402B15F58D978EC2ABE6 /* CoreHostProtocol.swift in Sources */,
 				20BA97ABF5B6C7FBD1ECF76E /* CoreManager.swift in Sources */,
 				18F648B9ABBD542F67F8578A /* CoreOption.swift in Sources */,
 				C0BF7D965A680A168FACC3BB /* CoreOptionsManager.swift in Sources */,
@@ -4021,6 +4171,7 @@
 				02DF787B73D553215029DA5B /* GridCardZoomableFullScreenView.swift in Sources */,
 				BCF6E7FD69063759D0607C29 /* HardcoreModeManager.swift in Sources */,
 				4596D0538A126CE340A86004 /* Header.swift in Sources */,
+				4C5E02094A7A7692B2C1EC6A /* IOSurfaceVideoManager.swift in Sources */,
 				D3BF624E6D643A9C9E0976FF /* ImageCache.swift in Sources */,
 				2B2B0A84C8FA0EC3F94F0ADB /* InputCaptureManager.swift in Sources */,
 				21A571C012E0EEAB3DB1B142 /* InputDescriptorsManager.swift in Sources */,
@@ -4123,6 +4274,7 @@
 				CA01FA6DBAD5615E6EE293E8 /* ShaderPresetPickerView.swift in Sources */,
 				AFAF9527589AE5C42D9D806D /* ShaderPresetStorageService.swift in Sources */,
 				FBC5E104F9BE6D1BD63714B3 /* ShaderUniforms.swift in Sources */,
+				F1B11978BEC8CE8C0D198CBF /* SharedMemoryManager.swift in Sources */,
 				6FAFF68BB9E015BF89DE4977 /* SharpBilinear.metal in Sources */,
 				FDB561BB4DD761EA753FFA63 /* SidebarRowButton.swift in Sources */,
 				1C53253267EF0CA0E9731752 /* SlotPickerSheet.swift in Sources */,
@@ -4137,11 +4289,21 @@
 				1226E683B4C6974386DAAC65 /* SystemSidebarView.swift in Sources */,
 				A65710823C4D0A6B42F7EA87 /* ThemeManager.swift in Sources */,
 				DC04E65A0A0068C4291426D5 /* TruchiEmuApp.swift in Sources */,
+				8C3DB989C12A59BAD8C9B0BB /* XPCBridgeAdapter.swift in Sources */,
+				6CBEC44953FF94D0C5198E14 /* XPCConnectionManager.swift in Sources */,
 				816256314AD8524B0A22E6B8 /* ZoomableBoxArtView.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXSourcesBuildPhase section */
+
+/* Begin PBXTargetDependency section */
+		60C5F3C981D5EF4AC41D1D46 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 0AB0DC95D0C31F5C3530F08A /* TruchiEmuCoreHost */;
+			targetProxy = F0C3EB99813D76CA2A0D4EA1 /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
 
 /* Begin XCBuildConfiguration section */
 		3CF1F27BA11432A023389CEE /* Release */ = {
@@ -4235,6 +4397,37 @@
 			};
 			name = Debug;
 		};
+		96A938E58A597757BABE078D /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ARCHS = "$(ARCHS_STANDARD)";
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++17";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CODE_SIGN_ENTITLEMENTS = TruchiEmu/Core/XPC/Service/CoreHost.entitlements;
+				CODE_SIGN_IDENTITY = "-";
+				CODE_SIGN_STYLE = Manual;
+				COMBINE_HIDPI_IMAGES = YES;
+				ENABLE_HARDENED_RUNTIME = NO;
+				GCC_C_LANGUAGE_STANDARD = gnu17;
+				GCC_PREPROCESSOR_DEFINITIONS = "XPC_SERVICE=1";
+				GENERATE_INFOPLIST_FILE = NO;
+				INFOPLIST_FILE = TruchiEmu/Core/XPC/Service/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+				);
+				MACOSX_DEPLOYMENT_TARGET = 14.0;
+				OTHER_LDFLAGS = "-framework AVFoundation -framework OpenGL -framework IOSurface";
+				PRODUCT_BUNDLE_IDENTIFIER = com.TruchiEmu.CoreHost;
+				PRODUCT_NAME = TruchiEmuCoreHost;
+				SDKROOT = macosx;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = XPC_SERVICE;
+				SWIFT_OBJC_BRIDGING_HEADER = "TruchiEmu/Core/Engine/TruchiEmu-Bridging-Header.h";
+				SWIFT_VERSION = 5.9;
+			};
+			name = Debug;
+		};
 		C0F80DC7A9722E1E8FE6E628 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
@@ -4262,6 +4455,37 @@
 				SWIFT_VERSION = 5.9;
 			};
 			name = Debug;
+		};
+		E82D55228807753A2FDB2656 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ARCHS = "$(ARCHS_STANDARD)";
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++17";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CODE_SIGN_ENTITLEMENTS = TruchiEmu/Core/XPC/Service/CoreHost.entitlements;
+				CODE_SIGN_IDENTITY = "-";
+				CODE_SIGN_STYLE = Manual;
+				COMBINE_HIDPI_IMAGES = YES;
+				ENABLE_HARDENED_RUNTIME = NO;
+				GCC_C_LANGUAGE_STANDARD = gnu17;
+				GCC_PREPROCESSOR_DEFINITIONS = "XPC_SERVICE=1";
+				GENERATE_INFOPLIST_FILE = NO;
+				INFOPLIST_FILE = TruchiEmu/Core/XPC/Service/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+				);
+				MACOSX_DEPLOYMENT_TARGET = 14.0;
+				OTHER_LDFLAGS = "-framework AVFoundation -framework OpenGL -framework IOSurface";
+				PRODUCT_BUNDLE_IDENTIFIER = com.TruchiEmu.CoreHost;
+				PRODUCT_NAME = TruchiEmuCoreHost;
+				SDKROOT = macosx;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = XPC_SERVICE;
+				SWIFT_OBJC_BRIDGING_HEADER = "TruchiEmu/Core/Engine/TruchiEmu-Bridging-Header.h";
+				SWIFT_VERSION = 5.9;
+			};
+			name = Release;
 		};
 		F7D59E7ABE8572DBA601FBB8 /* Release */ = {
 			isa = XCBuildConfiguration;
@@ -4322,6 +4546,15 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
+		1A8EC0FC258605661DB51BF3 /* Build configuration list for PBXNativeTarget "TruchiEmuCoreHost" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				96A938E58A597757BABE078D /* Debug */,
+				E82D55228807753A2FDB2656 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
 		6E82A081688B36841B054CBC /* Build configuration list for PBXProject "TruchiEmu" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (

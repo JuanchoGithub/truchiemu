@@ -1,0 +1,122 @@
+---
+layout: default
+title: Sistema de Trucos - Documentación de TruchiEmu
+---
+
+
+<div class="feature-docs">
+<h1>Sistema de Trucos</h1>
+
+<section id="service-explanation">
+<h2>Panorama del Servicio</h2>
+<p>El sistema de trucos te permite gestionar y activar códigos de trucos para tus juegos. Soporta formatos estándar de códigos de trucos y se integra con los cores de Libretro para aplicar modificaciones en tiempo real.</p>
+
+<div class="architecture-diagram">
+<img src="{{ '/media/features/cheat-architecture.png' | relative_url }}" alt="Arquitectura del Sistema de Trucos">
+<p class="caption">Pipeline del sistema de trucos desde el análisis de códigos hasta la inyección en memoria</p>
+</div>
+
+<h3>Funciones Clave</h3>
+<ul class="feature-list">
+<li><strong>Soporte Multi-Formato:</strong> Game Genie, Pro Action Replay, GameShark y archivos .cht estándar</li>
+<li><strong>Base de Datos de Trucos:</strong> Descarga colecciones de trucos pre-hechas desde la base de datos de la comunidad Libretro</li>
+<li><strong>Auto-Activación:</strong> Los trucos se descubren y aplican automáticamente basados en la ROM cargada</li>
+<li><strong>Entrada de Trucos Personalizados:</strong> Agrega manualmente tus propios códigos y descripciones</li>
+</ul>
+
+<h3>Formatos de Trucos Soportados</h3>
+<p>TruchiEmu soporta múltiples formatos de códigos de trucos: Game Genie (códigos alfanuméricos de 6-8 caracteres), Pro Action Replay (códigos hexadecimales con direcciones), GameShark (varios formatos según el sistema) y códigos de memoria crudos para usuarios avanzados. Cada formato se detecta y analiza automáticamente de forma correcta.</p>
+
+<p>Para detalles de implementación, consulta la <a href="/development/">Guía del Desarrollador</a>.</p>
+</section>
+
+<section id="step-by-step-guide">
+<h2>Guía de Configuración Paso a Paso</h2>
+
+<h3>Uso Básico de Trucos</h3>
+<ol class="setup-steps">
+<li>
+<strong>Acceder al Menú de Trucos</strong>
+<p>Abre el menú de trucos seleccionando <code>Herramientas → Trucos</code> o presionando <code>Cmd+Shift+C</code>. La ventana de gestión de trucos muestra los trucos disponibles para el juego actual.</p>
+<img src="{{ '/media/screenshots/cheat-menu.png' | relative_url }}" alt="Interfaz del Menú de Trucos">
+</li>
+<li>
+<strong>Explorar la Base de Datos de Trucos</strong>
+<p>Usa la barra de búsqueda para encontrar trucos específicos o explora por categoría. Categorías populares incluyen Vidas Infinitas, Salud Infinita, Selección de Nivel, Power-Ups y Desbloqueables.</p>
+</li>
+<li>
+<strong>Habilitar Trucos</strong>
+<p>Marca la casilla junto a cualquier truco para activarlo inmediatamente. Los trucos habilitados muestran un indicador verde. Múltiples trucos pueden estar activos simultáneamente.</p>
+</li>
+<li>
+<strong>Probar en el Juego</strong>
+<p>Vuelve a tu juego y verifica que el truco funcione como se espera. Algunos trucos requieren condiciones específicas (por ejemplo, debes estar en la pantalla de título, requiere reinicio).</p>
+<img src="{{ '/media/screenshots/cheat-enabled.png' | relative_url }}" alt="Advertencia de Truco Habilitado">
+</li>
+<li>
+<strong>Guardar Configuración de Trucos</strong>
+<p>Tus selecciones de trucos se guardan automáticamente cuando cierras el menú. La próxima vez que cargues el juego, los trucos previamente habilitados se reactivarán automáticamente.</p>
+</li>
+</ol>
+
+<h3>Entrada Manual de Trucos</h3>
+<ol class="setup-steps">
+<li>
+<strong>Agregar Nuevo Truco</strong>
+<p>En el menú de trucos, haz clic en "Agregar Truco" e ingresa un nombre descriptivo. Selecciona el formato del truco (Game Genie, Action Replay, etc.) desde el menú desplegable.</p>
+</li>
+<li>
+<strong>Ingresar Código de Truco</strong>
+<p>Escribe o pega el código del truco en el campo de código. TruchiEmu valida los códigos en tiempo real y muestra una marca de verificación verde para formatos válidos.</p>
+<img src="{{ '/media/screenshots/cheat-entry.png' | relative_url }}" alt="Entrada de Código de Truco">
+</li>
+<li>
+<strong>Descripción y Notas</strong>
+<p>Agrega una descripción explicando qué hace el truco y cualquier condición especial. Esto ayuda a organizar colecciones grandes de trucos.</p>
+</li>
+<li>
+<strong>Probar y Refinar</strong>
+<p>Habilita el truco y pruébalo en el juego. Si no funciona, verifica el formato del código y asegúrate de que coincida con tu versión y región del juego.</p>
+</li>
+</ol>
+</section>
+
+
+<section id="troubleshooting">
+<h2>Solución de Problemas</h2>
+
+<div class="troubleshooting-grid">
+<div class="troubleshooting-item">
+<h3>Truco No Funciona</h3>
+<p><strong>Síntoma:</strong> Truco habilitado pero no tiene efecto en el juego.</p>
+<p><strong>Solución:</strong> Verifica que el truco coincida con tu versión y región del juego. Algunos trucos solo funcionan en la pantalla de título o requieren reinicio del juego. Verifica si los trucos están deshabilitados en el modo Hardcore de RetroAchievements.</p>
+</div>
+<div class="troubleshooting-item">
+<h3>El Juego Se Cuelga con Trucos</h3>
+<p><strong>Síntoma:</strong> El juego se cuelga cuando se habilitan trucos específicos.</p>
+<p><strong>Solución:</strong> Desactiva trucos en conflicto. Algunos trucos modifican direcciones de memoria críticas que causan inestabilidad. Intenta habilitar los trucos uno a la vez para identificar el código problemático.</p>
+</div>
+<div class="troubleshooting-item">
+<h3>Base de Datos de Trucos No Carga</h3>
+<p><strong>Síntoma:</strong> La base de datos de trucos no muestra trucos para juegos soportados.</p>
+<p><strong>Solución:</strong> Actualiza la base de datos de trucos desde <code>Herramientas → Actualizar Base de Datos de Trucos</code>. Verifica la conexión a internet para la descarga de la base de datos. Verifica que el hash de la ROM coincida con volcados buenos conocidos en la base de datos.</p>
+</div>
+</div>
+</section>
+
+<section id="references">
+<h2>Servicios Relacionados</h2>
+
+<div class="related-services">
+<div class="service-card">
+<h3><a href="/features/achievements/">RetroAchievements</a></h3>
+<p>Los trucos se desactivan automáticamente en el modo Hardcore para mantener la integridad de los logros.</p>
+</div>
+
+<div class="service-card">
+<h3><a href="/features/save-states/">Sistema de Estados de Guardado</a></h3>
+<p>Combina códigos de trucos con estados de guardado para probar escenarios específicos del juego.</p>
+</div>
+</div>
+</section>
+</div>

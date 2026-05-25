@@ -29,6 +29,7 @@ struct TruchiEmuApp: App {
         _ = SwiftDataContainer.shared
         _ = LoggerService.shared
         _ = ThemeManager.shared
+        CoreOverrideService.shared.syncBundledOverridesToAppSupport()
         
         // MAME dictionary loading is deferred to background tasks in ContentWithPrepopulationView
         // 1. Connect the Bridge to your existing LoggerService
@@ -475,9 +476,11 @@ class AppDelegate: NSObject, NSApplicationDelegate, UNUserNotificationCenterDele
     }
 
     func applicationShouldTerminateAfterLastWindowClosed(_ sender: NSApplication) -> Bool {
-        // For CLI launches, terminate the app when the game window closes
-        // This prevents the dock icon from staying visible after closing the game
         return isCLILaunch
+    }
+
+    func applicationWillTerminate(_ notification: Notification) {
+        XPCConnectionManager.shared.forceKillServiceForAppExit()
     }
     
     func applicationWillFinishLaunching(_ notification: Notification) {

@@ -1,0 +1,90 @@
+---
+layout: default
+title: Sistemas Soportados y Cores
+description: Entendiendo cómo TruchiEmu gestiona la compatibilidad de sistemas y los cores de libretro.
+---
+
+<section class="page-header">
+<div class="container">
+<h1>Sistemas y Compatibilidad</h1>
+<p class="lead">Soporte universal a través del poder de libretro</p>
+</div>
+</section>
+
+<nav class="toc">
+<div class="container">
+<h3>En Esta Página</h3>
+<ul>
+<li><a href="#universal-support">Soporte Universal</a></li>
+<li><a href="#core-management">Gestión de Cores</a></li>
+<li><a href="#bios-files">BIOS y Archivos de Sistema</a></li>
+<li><a href="#optimization">Consejos de Optimización</a></li>
+</ul>
+</div>
+</nav>
+
+<section id="universal-support" class="content-section">
+<div class="container">
+<h2>Soporte Universal</h2>
+<p>TruchiEmu está construido sobre la API de <strong>libretro</strong>, lo que significa que no solo soporta un puñado de consolas—soporta todo sistema que tenga un core de libretro disponible.</p>
+
+<div class="info-box">
+<p><strong>La Regla General:</strong> Si existe un core de libretro para un sistema de gaming, TruchiEmu puede ejecutarlo. Esto incluye todo desde las primeras consolas de 8 bits hasta sistemas 3D más complejos y máquinas arcade.</p>
+</div>
+</div>
+</section>
+
+<section id="core-management" class="content-section">
+<div class="container">
+<h2>Gestión de Cores</h2>
+<p>Los cores son los motores de emulación que hacen el trabajo pesado. TruchiEmu facilita la gestión de estos motores sin salir de la aplicación.</p>
+
+<h3>El Descargador de Cores</h3>
+<p>No necesitas buscar archivos de core en internet. Usa el Descargador de Cores integrado para:</p>
+<ul class="feature-list">
+<li><strong>Descubrir:</strong> Explora una lista completa de cores disponibles categorizados por sistema.</li>
+<li><strong>Instalar:</strong> Instalación con un clic que gestiona la ubicación y configuración automáticamente.</li>
+<li><strong>Actualizar:</strong> Mantén tus motores de emulación al día con las últimas mejoras de la comunidad.</li>
+</ul>
+
+<h3>Elegir el Core Correcto</h3>
+<p>Algunos sistemas tienen múltiples cores disponibles. Puedes cambiar entre ellos en los detalles del juego o configuración del sistema para encontrar el mejor ajuste para tus necesidades:</p>
+<div class="comparison-table">
+<div class="comparison-column">
+<h4>Cores de Precisión</h4>
+<p>Priorizan emulación precisa por ciclos. Mejores para preservación y Macs de gama alta.</p>
+</div>
+<div class="comparison-column">
+<h4>Cores de Rendimiento</h4>
+<p>Priorizan velocidad y eficiencia. Mejores para hardware antiguo o títulos extremadamente exigentes.</p>
+</div>
+</div>
+</div>
+</section>
+
+<section id="bios-files" class="content-section">
+<div class="container">
+<h2>BIOS y Archivos de Sistema</h2>
+<p>Muchas consolas requieren un archivo BIOS (Basic Input/Output System) para arrancar. TruchiEmu elimina el dolor de cabeza de buscar BIOS manualmente.</p>
+
+<div class="success-box">
+<h3>✅ BIOS Pre-Incluidas</h3>
+<p>TruchiEmu viene pre-empaquetado con archivos BIOS de sistema esenciales para las consolas más populares, asegurando una experiencia "conectar y jugar" justo después de la instalación.</p>
+</div>
+
+<h3>BIOS Personalizada</h3>
+<p>Si tienes archivos BIOS de regiones específicas o necesitas actualizar un archivo de sistema, puedes colocarlos en la carpeta <code>System/</code> dentro de tu directorio de guardado activo. TruchiEmu priorizará tus archivos personalizados sobre las versiones incluidas.</p>
+</div>
+</section>
+
+<section id="optimization" class="content-section">
+<div class="container">
+<h2>Consejos de Optimización</h2>
+<p>Para sacar el máximo provecho de tu experiencia de emulación, considera estos ajustes:</p>
+<ul class="feature-list">
+<li><strong>Sobreescrituras de Core:</strong> Establece un core específico para un juego específico si el predeterminado no rinde bien.</li>
+<li><strong>Verificación de BIOS:</strong> Si un juego no arranca, asegúrate de que tu directorio de sistema esté correctamente mapeado en Configuración.</li>
+<li><strong>Aceleración por Hardware:</strong> Asegúrate de que Metal esté habilitado en tu configuración de pantalla para el mejor rendimiento en Apple Silicon.</li>
+</ul>
+</div>
+</section>

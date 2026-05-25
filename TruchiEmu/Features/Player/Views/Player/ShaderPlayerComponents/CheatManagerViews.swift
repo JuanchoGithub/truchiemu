@@ -262,7 +262,7 @@ struct CheatManagerViewWrapper: View {
                 "enabled": cheat.enabled
             ] as [String: Any]
         }
-        LibretroBridge.applyCheats(cheatData)
+        XPCBridgeAdapter.shared.applyCheats(cheatData)
     }
     
     // Search and download cheats from the libretro-database for this ROM.

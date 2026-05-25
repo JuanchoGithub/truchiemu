@@ -1,0 +1,41 @@
+TruchiEmuCoreHost:
+  type: xpc-service
+  platform: macOS
+  deploymentTarget: "14.0"
+
+  info:
+    path: TruchiEmu/Core/XPC/Service/Info.plist
+
+  entitlements:
+    path: TruchiEmu/Core/XPC/Service/CoreHost.entitlements
+
+  settings:
+    base:
+      PRODUCT_NAME: TruchiEmuCoreHost
+      PRODUCT_BUNDLE_IDENTIFIER: com.TruchiEmu.CoreHost
+      CLANG_ENABLE_OBJC_ARC: YES
+      GCC_C_LANGUAGE_STANDARD: gnu17
+      CLANG_CXX_LANGUAGE_STANDARD: gnu++17
+      CLANG_CXX_LIBRARY: libc++
+      MACOSX_DEPLOYMENT_TARGET: "14.0"
+      ARCHS: "$(ARCHS_STANDARD)"
+      CODE_SIGN_STYLE: Automatic
+      ENABLE_HARDENED_RUNTIME: NO
+      SWIFT_VERSION: "5.9"
+      SWIFT_OBJC_BRIDGING_HEADER: TruchiEmu/Core/Engine/TruchiEmu-Bridging-Header.h
+      OTHER_LDFLAGS: "-framework AVFoundation -framework OpenGL -framework IOSurface"
+      SWIFT_ACTIVE_COMPILATION_CONDITIONS: "XPC_SERVICE"
+
+  sources:
+    - path: TruchiEmu/Core/XPC/Service
+    - path: TruchiEmu/Core/XPC/Shared
+    - path: TruchiEmu/Core/Engine
+      excludes:
+        - "slang/**"
+        - "internal/**"
+        - "Runners/**"
+        - "LibretroBridgeSwift.swift"
+        - "Hashing/**"
+    - path: TruchiEmu/Services/CoreOverrideService.swift
+    - path: TruchiEmu/Shared/Services/LoggerService.swift
+    - path: TruchiEmu/Shared/Services/LogManager.swift

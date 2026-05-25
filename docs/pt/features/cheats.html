@@ -1,0 +1,123 @@
+---
+layout: default
+title: Sistema de Cheats - Documentação do TruchiEmu
+---
+
+
+<div class="feature-docs">
+<h1>Sistema de Cheats</h1>
+
+<section id="service-explanation">
+<h2>Visão Geral do Serviço</h2>
+<p>O sistema de cheats permite gerenciar e ativar códigos de cheat para seus jogos. Ele suporta formatos padrão de códigos de cheat e integra-se com cores Libretro para aplicar modificações em tempo real.</p>
+
+<div class="architecture-diagram">
+<img src="{{ '/media/features/cheat-architecture.png' | relative_url }}" alt="Arquitetura do Sistema de Cheats">
+<p class="caption">Pipeline do sistema de cheats desde a análise de códigos até a injeção de memória</p>
+</div>
+
+<h3>Recursos Principais</h3>
+<ul class="feature-list">
+<li><strong>Suporte Multi-Formato:</strong> Game Genie, Pro Action Replay, GameShark e arquivos .cht padrão</li>
+<li><strong>Banco de Dados de Cheats:</strong> Baixe coleções de cheats pré-feitas do banco de dados da comunidade Libretro</li>
+<li><strong>Auto-Ativação:</strong> Cheats são descobertos e aplicados automaticamente com base na ROM carregada</li>
+<li><strong>Entrada Manual de Cheats:</strong> Adicione manualmente seus próprios códigos e descrições</li>
+</ul>
+
+<h3>Formatos de Cheat Suportados</h3>
+<p>O TruchiEmu suporta múltiplos formatos de códigos de cheat: Game Genie (códigos alfanuméricos de 6-8 caracteres), Pro Action Replay (códigos hexadecimais com endereços), GameShark (vários formatos por sistema) e códigos de memória brutos para usuários avançados. Cada formato é detectado e analisado automaticamente de forma correta.</p>
+
+<p>Para detalhes de implementação, consulte o <a href="/development/">Guia do Desenvolvedor</a>.</p>
+</section>
+
+<section id="step-by-step-guide">
+<h2>Guia de Configuração Passo a Passo</h2>
+
+<h3>Uso Básico de Cheats</h3>
+<ol class="setup-steps">
+<li>
+<strong>Acesse o Menu de Cheats</strong>
+<p>Abra o menu de cheats selecionando <code>Ferramentas → Cheats</code> ou pressionando <code>Cmd+Shift+C</code>. A janela de gerenciamento de cheats exibe os cheats disponíveis para o jogo atual.</p>
+<img src="{{ '/media/screenshots/cheat-menu.png' | relative_url }}" alt="Interface do Menu de Cheats">
+</li>
+<li>
+<strong>Navegue pelo Banco de Dados de Cheats</strong>
+<p>Use a barra de pesquisa para encontrar cheats específicos ou navegue por categoria. Categorias populares incluem Vidas Infinitas, Saúde Infinita, Seleção de Fase, Power-Ups e Desbloqueáveis.</p>
+</li>
+<li>
+<strong>Ative Cheats</strong>
+<p>Marque a caixa ao lado de qualquer cheat para ativá-lo imediatamente. Cheats ativados mostram um indicador verde. Múltiplos cheats podem estar ativos simultaneamente.</p>
+</li>
+<li>
+<strong>Teste no Jogo</strong>
+<p>Retorne ao seu jogo e verifique se o cheat funciona como esperado. Alguns cheats requerem condições específicas (por exemplo, deve estar na tela de título, requer reset).</p>
+<img src="{{ '/media/screenshots/cheat-enabled.png' | relative_url }}" alt="Aviso de Cheat Ativado">
+</li>
+<li>
+<strong>Salve a Configuração de Cheats</strong>
+<p>Suas seleções de cheats são salvas automaticamente ao fechar o menu. Na próxima vez que carregar o jogo, cheats ativados anteriormente serão reativados automaticamente.</p>
+</li>
+</ol>
+
+<h3>Entrada Manual de Cheats</h3>
+<ol class="setup-steps">
+<li>
+<strong>Adicionar Novo Cheat</strong>
+<p>No menu de cheats, clique em "Adicionar Cheat" e insira um nome descritivo. Selecione o formato do cheat (Game Genie, Action Replay, etc.) no menu suspenso.</p>
+</li>
+<li>
+<strong>Digite o Código de Cheat</strong>
+<p>Digite ou cole o código de cheat no campo de código. O TruchiEmu valida os códigos em tempo real e mostra um sinal de verificação verde para formatos válidos.</p>
+<img src="{{ '/media/screenshots/cheat-entry.png' | relative_url }}" alt="Entrada de Código de Cheat">
+</li>
+<li>
+<strong>Descrição e Notas</strong>
+<p>Adicione uma descrição explicando o que o cheat faz e quaisquer condições especiais. Isso ajuda a organizar grandes coleções de cheats.</p>
+</li>
+<li>
+<strong>Teste e Refine</strong>
+<p>Ative o cheat e teste no jogo. Se não funcionar, verifique o formato do código e certifique-se de que corresponde à versão e região do seu jogo.</p>
+</li>
+</ol>
+</section>
+
+
+
+<section id="troubleshooting">
+<h2>Solução de Problemas</h2>
+
+<div class="troubleshooting-grid">
+<div class="troubleshooting-item">
+<h3>Cheat Não Funciona</h3>
+<p><strong>Sintoma:</strong> Cheat ativado mas não tem efeito no jogo.</p>
+<p><strong>Solução:</strong> Verifique se o cheat corresponde à versão e região do seu jogo. Alguns cheats só funcionam na tela de título ou requerem reset do jogo. Verifique se os cheats estão desativados no modo Hardcore do RetroAchievements.</p>
+</div>
+<div class="troubleshooting-item">
+<h3>Jogo Fecha com Cheats</h3>
+<p><strong>Sintoma:</strong> O jogo fecha quando cheats específicos estão ativados.</p>
+<p><strong>Solução:</strong> Desative cheats conflitantes. Alguns cheats modificam endereços de memória críticos que causam instabilidade. Tente ativar cheats um de cada vez para identificar o código problemático.</p>
+</div>
+<div class="troubleshooting-item">
+<h3>Banco de Dados de Cheats Não Carrega</h3>
+<p><strong>Sintoma:</strong> O banco de dados de cheats não mostra cheats para jogos suportados.</p>
+<p><strong>Solução:</strong> Atualize o banco de dados de cheats em <code>Ferramentas → Atualizar Banco de Dados de Cheats</code>. Verifique a conexão com a internet para o download do banco de dados. Verifique se o hash da ROM corresponde a dumps bons conhecidos no banco de dados.</p>
+</div>
+</div>
+</section>
+
+<section id="references">
+<h2>Serviços Relacionados</h2>
+
+<div class="related-services">
+<div class="service-card">
+<h3><a href="/features/achievements/">RetroAchievements</a></h3>
+<p>Cheats são automaticamente desativados no modo Hardcore para manter a integridade das conquistas.</p>
+</div>
+
+<div class="service-card">
+<h3><a href="/features/save-states/">Sistema de Save States</a></h3>
+<p>Combine códigos de cheat com save states para testar cenários específicos do jogo.</p>
+</div>
+</div>
+</section>
+</div>

@@ -151,23 +151,25 @@ struct AchievementRowView: View {
     let isExpanded: Bool
     @ObservedObject private var cache = RABadgeCacheService.shared
     @ObservedObject private var loc = LocalizationManager.shared
+    @State private var badgeImage: NSImage? = nil
+
     var body: some View {
         HStack(spacing: 12) {
             // Badge
             ZStack {
                 RoundedRectangle(cornerRadius: 8)
-                    .fill(achievement.isUnlocked ? AppColors.brandAccent.opacity(0.1) : Color.secondary.opacity(0.1))
-                    .frame(width: 44, height: 44)
-                
+                .fill(achievement.isUnlocked ? AppColors.brandAccent.opacity(0.1) : Color.secondary.opacity(0.1))
+                .frame(width: 44, height: 44)
+
                 Group {
-                    if let localURL = achievement.localBadgeURL, let nsImage = NSImage(contentsOf: localURL) {
-                        Image(nsImage: nsImage)
-                            .resizable()
-                            .aspectRatio(contentMode: .fit)
+                    if let badge = badgeImage {
+                        Image(nsImage: badge)
+                        .resizable()
+                        .aspectRatio(contentMode: .fit)
                     } else {
                         Image(systemName: "trophy.fill")
-                            .font(.system(size: 20))
-                            .foregroundColor(.secondary)
+                        .font(.system(size: 20))
+                        .foregroundColor(.secondary)
                     }
                 }
                 .frame(width: 32, height: 32)
@@ -214,6 +216,18 @@ struct AchievementRowView: View {
         .padding(12)
         .background(achievement.isUnlocked ? AppColors.brandAccent.opacity(0.05) : Color.secondary.opacity(0.05))
         .cornerRadius(8)
+        .onAppear { loadBadge() }
+        .onChange(of: achievement.localBadgeURL) { _, _ in loadBadge() }
+    }
+
+    private func loadBadge() {
+        guard let url = achievement.localBadgeURL else {
+            badgeImage = nil
+            return
+        }
+        Task {
+            badgeImage = await ImageCache.shared.thumbnail(for: url, maxWidth: 64, maxHeight: 64)
+        }
     }
 }
 

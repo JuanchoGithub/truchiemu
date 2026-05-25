@@ -1,5 +1,6 @@
 #import "LibretroGlobals.h"
 #import "CoreOverrideBridge.h"
+#import "XPCSharedMemory.h"
 
 CoreLoggerBlock g_swiftLoggerBlock = nil;
 GameLoadedBlock g_gameLoadedCallback = nil;
@@ -36,6 +37,16 @@ int16_t g_pointer_x = 0;
 int16_t g_pointer_y = 0;
 BOOL g_pointer_pressed = NO;
 
+#ifdef XPC_SERVICE
+XPCSharedMemory *g_xpc_shm = NULL;
+#endif
+
+extern "C" void xpc_shm_set_global(XPCSharedMemory *shm) {
+#ifdef XPC_SERVICE
+    g_xpc_shm = shm;
+#endif
+}
+
 static void no_op_log(const char *msg, int level) {}
 
 LogFunc g_active_log_func = no_op_log;
@@ -66,9 +77,9 @@ void RegisterCoreLogCallback(CoreLogCallback callback) {
 }
 
 void initOptStorage(void) {
-  if (!g_optValues) {
-    g_optValues = [NSMutableDictionary dictionary];
-  }
+    if (!g_optValues) {
+        g_optValues = [NSMutableDictionary dictionary];
+    }
 }
 
 void parseCoreOptionsV2(struct retro_core_options_v2 *opts) {
@@ -262,13 +273,25 @@ static void loadBundledOverrideJSON(const char* coreID, const char* scopeName) {
     NSString *scopeStr = [NSString stringWithUTF8String:scopeName];
 
     NSString *fileName = [NSString stringWithFormat:@"%@_%@", coreStr, scopeStr];
-    NSURL *url = [[NSBundle mainBundle] URLForResource:fileName withExtension:@"json" subdirectory:@"CoreOverrides"];
-    if (!url) {
-        url = [[NSBundle mainBundle] URLForResource:fileName withExtension:@"json"];
-    }
-    if (!url) return;
 
-    NSData *data = [NSData dataWithContentsOfURL:url];
+    // Look in Application Support CoreOverrides directory (works for both in-process and XPC),
+    // then fall back to main bundle (in-process only).
+    NSString *appSupport = [NSSearchPathForDirectoriesInDomains(NSApplicationSupportDirectory, NSUserDomainMask, YES) firstObject];
+    NSString *coreOverrideDir = [appSupport stringByAppendingPathComponent:@"TruchiEmu/CoreOverrides"];
+    NSString *coreDir = [coreOverrideDir stringByAppendingPathComponent:coreStr];
+    NSString *filePath = [coreDir stringByAppendingPathComponent:[scopeStr stringByAppendingPathExtension:@"json"]];
+
+    NSData *data = nil;
+    if ([[NSFileManager defaultManager] fileExistsAtPath:filePath]) {
+        data = [NSData dataWithContentsOfFile:filePath];
+    }
+    if (!data) {
+        NSURL *url = [[NSBundle mainBundle] URLForResource:fileName withExtension:@"json" subdirectory:@"CoreOverrides"];
+        if (!url) {
+            url = [[NSBundle mainBundle] URLForResource:fileName withExtension:@"json"];
+        }
+        if (url) data = [NSData dataWithContentsOfURL:url];
+    }
     if (!data) return;
 
     NSError *error = nil;

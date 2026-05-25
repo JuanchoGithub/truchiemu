@@ -21,7 +21,6 @@ extension StandaloneGameWindowController {
                 toolbarView?.animator().alphaValue = 1
             }
         }
-        // Restart timer on real mouse activity (filtered by GameContainerView)
         scheduleHideToolbar()
     }
 

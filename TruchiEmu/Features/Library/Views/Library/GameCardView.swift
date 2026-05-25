@@ -115,7 +115,7 @@ struct GameCardView: View {
                 }
             }
 
-            if let img = await ImageCache.shared.image(for: artPath) {
+            if let img = await ImageCache.shared.thumbnail(for: artPath) {
                 self.image = img
                 await MainActor.run {
                     if !rom.hasBoxArt {

@@ -1128,5 +1128,13 @@
   "wizard.gamesDetected": "{0} jogos detectados",
   "diagnostics.systemDatabaseCaptured": "SystemDatabase capturado em:",
   "diagnostics.availableYes": "Disponível: SIM",
-  "app.openSettings": "Abrir Configurações"
+  "app.openSettings": "Abrir Configurações",
+  "game.alreadyRunning.title": "Jogo em execução",
+  "game.alreadyRunning.message": "\"%@\" está em execução. Apenas um jogo pode ser executado por vez.",
+  "game.alreadyRunning.saveInfo": "Ao fechar \"%@\", seu estado será salvo automaticamente. Se não quiser salvar, escolha \"Trocar sem Salvar\".",
+  "game.alreadyRunning.noSaveInfo": "Ao fechar \"%@\", seu progresso não será salvo.",
+  "game.alreadyRunning.switchAndSave": "Trocar e Salvar",
+  "game.alreadyRunning.switchWithoutSaving": "Trocar sem Salvar",
+  "game.alreadyRunning.switch": "Trocar",
+  "game.alreadyRunning.cancel": "Cancelar"
 }

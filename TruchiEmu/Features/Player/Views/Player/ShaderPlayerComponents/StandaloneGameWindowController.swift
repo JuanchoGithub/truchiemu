@@ -4,6 +4,19 @@ import MetalKit
 import Combine
 
 
+// MARK: - Safe NSHostingView
+
+// Custom hosting view that short-circuits layout when the XPC service has crashed.
+// Prevents use-after-free in SwiftUI's ItemSheetPresentationModifier.destroy during
+// the vulnerable window between crash detection and window cleanup.
+class SafeHostingView<Content: View>: NSHostingView<Content> {
+    override func layout() {
+        guard !XPCConnectionManager.isShuttingDown else { return }
+        super.layout()
+    }
+}
+
+
 // MARK: - Standalone Game Window Controller
 class StandaloneGameWindowController: NSWindowController, NSWindowDelegate, ObservableObject {
     var runner: EmulatorRunner?
@@ -51,6 +64,20 @@ class StandaloneGameWindowController: NSWindowController, NSWindowDelegate, Obse
     var onWindowWillClose: (() -> Void)?
     var toolbarView: NSHostingView<AnyView>?
     var hideToolbarTimer: Timer?
+    var skipAutoSaveOnClose: Bool = false
+
+    // Dismiss any active sheets and remove the SwiftUI toolbar from the view hierarchy.
+    // Must be called before releasing the controller to prevent SwiftUI view graph teardown
+    // from accessing deallocated @ObservedObject references.
+    @MainActor
+    func detachSwiftUI() {
+        if let sheetWindow = cheatManagerSheetWindow, let window = window {
+            window.endSheet(sheetWindow)
+            cheatManagerSheetWindow = nil
+        }
+        toolbarView?.removeFromSuperview()
+        toolbarView = nil
+    }
     
     init(runner: EmulatorRunner) {
         self.runner = runner
@@ -121,7 +148,7 @@ super.init(window: window)
         containerView.updateTrackingAreas()
         
         // Add SwiftUI overlay toolbar
-        let hostingView = NSHostingView(rootView: AnyView(GameOverlayToolbar(
+        let hostingView = SafeHostingView(rootView: AnyView(GameOverlayToolbar(
             runner: runner,
             windowController: self
         ).environment(SystemDatabaseWrapper.shared)))
@@ -259,7 +286,7 @@ super.init(window: window)
         }
         
         // Register this ROM as running
-        RunningGamesTracker.shared.registerRunning(romPath: rom.path.path)
+        RunningGamesTracker.shared.registerRunning(romPath: rom.path.path, displayName: rom.displayName)
         trackedROMPath = rom.path.path
         trackedROM = rom
         accumulatedPlaytime = 0
@@ -337,7 +364,7 @@ super.init(window: window)
     private func waitForFirstFrameAndShowWindow(slotToLoad: Int?, rom: ROM) {
         // Poll for isReadyForDisplay with a timeout (5 seconds max)
         var attempts = 0
-        let maxAttempts = 50 // 5 seconds at 100ms intervals
+        let maxAttempts = 100 // 10 seconds at 100ms intervals
         
         Timer.scheduledTimer(withTimeInterval: 0.1, repeats: true) { [weak self] timer in
             guard let self else {
@@ -520,7 +547,7 @@ super.init(window: window)
                 "enabled": cheat.enabled
             ] as[String: Any]
         }
-        LibretroBridge.applyCheats(cheatData)
+        XPCBridgeAdapter.shared.applyCheats(cheatData)
         CheatManagerService.shared.areCheatsApplied = true
         
         if SystemPreferences.shared.showCheatNotifications {
@@ -548,7 +575,7 @@ super.init(window: window)
         )
         sheetWindow.title = "Cheats - \(rom.displayName)"
         sheetWindow.isReleasedWhenClosed = true
-        sheetWindow.contentView = NSHostingView(rootView:
+        sheetWindow.contentView = SafeHostingView(rootView:
             CheatManagerViewWrapper(rom: rom, windowController: self)
                 .environment(SystemDatabaseWrapper.shared)
         )
@@ -559,8 +586,8 @@ super.init(window: window)
             Task { @MainActor in
                 self?.cheatManagerSheetWindow = nil
                 // Resume the game if it was paused for the sheet
-                self?.runner?.isPaused = false
-                LibretroBridge.setPaused(false)
+            self?.runner?.isPaused = false
+            XPCBridgeAdapter.shared.setPaused(false)
             }
         }
     }
@@ -572,57 +599,74 @@ super.init(window: window)
         window.endSheet(sheetWindow)
         cheatManagerSheetWindow = nil
         runner?.isPaused = false
-        LibretroBridge.setPaused(false)
+        XPCBridgeAdapter.shared.setPaused(false)
     }
     
-  func windowWillClose(_ notification: Notification) {
-    // Clean up fullscreen overlay if window closes during transition
-    isWaitingForFullscreenAnimation = false
-    fullscreenOverlayView?.removeFromSuperview()
-    fullscreenOverlayView = nil
+    func windowWillClose(_ notification: Notification) {
+        isWaitingForFullscreenAnimation = false
+        fullscreenOverlayView?.removeFromSuperview()
+        fullscreenOverlayView = nil
 
-    // Clean up input capture if active
-    InputCaptureManager.shared.cleanup()
+        InputCaptureManager.shared.cleanup()
 
-    // Stop playtime tracking immediately so no more time accumulates
-    stopPlaytimeTracking()
-    
-    // Stop cursor auto-hide and restore cursor visibility
-    CursorAutoHideManager.shared.stopMonitoring()
-    CursorAutoHideManager.shared.showCursor()
+        stopPlaytimeTracking()
 
-    // 1. Check the setting (Default to false for safety)
-    let shouldAutoSave = AppSettings.getBool("saveState_autoSaveOnExit", defaultValue: false)
+        CursorAutoHideManager.shared.stopMonitoring()
+        CursorAutoHideManager.shared.showCursor()
 
-    if shouldAutoSave {
-        // Skip auto-save for Dolphin cores due to known serialization crash
-        if isDolphinCore() {
-            LoggerService.info(category: "SaveState", "Auto-save disabled for Dolphin core (known crash issue)")
-        } else if let runner = runner {
-            LoggerService.info(category: "SaveState", "Auto-saving on window close...")
-            // We call this BEFORE runner.stop() to ensure the core is still active
-            _ = runner.saveState(slot: -1)
+        let shouldAutoSave = AppSettings.getBool("saveState_autoSaveOnExit", defaultValue: false) && !skipAutoSaveOnClose
+
+        if shouldAutoSave {
+            if isDolphinCore() {
+                LoggerService.info(category: "SaveState", "Auto-save disabled for Dolphin core (known crash issue)")
+            } else if let runner = runner {
+                LoggerService.info(category: "SaveState", "Auto-saving on window close...")
+                _ = runner.saveState(slot: -1)
+            }
         }
-    }
         runner?.stop()
-        
-        // Record play session with the accumulated playtime
+
         if let rom = trackedROM, accumulatedPlaytime > 0 {
             library?.recordPlaySession(rom, duration: accumulatedPlaytime)
         }
-        
-        // Unregister this ROM from the running games tracker
+
         if let romPath = trackedROMPath {
             RunningGamesTracker.shared.unregisterRunning(romPath: romPath)
         }
-        
-        // Clean up from GameLauncher's active controllers
+
         if let rom = trackedROM {
             GameLauncher.shared.removeController(for: rom.id)
         }
 
-        // Call external callback (e.g., for live shader edit cleanup)
+        if !RunningGamesTracker.shared.isGameRunning {
+            XPCBridgeAdapter.shared.stop()
+        }
+
         onWindowWillClose?()
+
+        detachSwiftUI()
+
+        hideToolbarTimer?.invalidate()
+        hideToolbarTimer = nil
+
+        coordinator?.cleanup()
+        coordinator = nil
+        metalView?.delegate = nil
+        metalView = nil
+        runner = nil
+        bezelImage = nil
+        bezelBackgroundLayer = nil
+        bezelViewModel = nil
+        trackedROM = nil
+        trackedROMPath = nil
+        currentGameROM = nil
+
+        NotificationCenter.default.removeObserver(self)
+
+        if let monitor = inputCaptureHotkeyMonitor {
+            NSEvent.removeMonitor(monitor)
+            inputCaptureHotkeyMonitor = nil
+        }
     }
 
     // MARK: - Helper Functions
@@ -640,15 +684,15 @@ super.init(window: window)
         // Input capture is now managed by App resignation and click-outside detection.
     }
 
-    // Setup hotkey monitor for Cmd+F10
+    private var inputCaptureHotkeyMonitor: Any?
+
     private func setupInputCaptureHotkey() {
-        NSEvent.addLocalMonitorForEvents(matching: .keyDown) { [weak self] event in
-            // Check for Cmd+F10 (keyCode 109 = F10)
+        inputCaptureHotkeyMonitor = NSEvent.addLocalMonitorForEvents(matching: .keyDown) { [weak self] event in
             if event.modifierFlags.contains(.command) && event.keyCode == 109 {
                 if let window = self?.window {
                     InputCaptureManager.shared.handleToggleHotkey(window: window)
                 }
-                return nil // Consume the event
+                return nil
             }
             return event
         }

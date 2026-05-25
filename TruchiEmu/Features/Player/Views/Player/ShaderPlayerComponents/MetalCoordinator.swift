@@ -24,6 +24,18 @@ class MetalCoordinator: NSObject, MTKViewDelegate {
         self.runner = runner
     }
 
+    func cleanup() {
+        temporalTextures = [nil, nil, nil, nil, nil]
+        pipelineCache.removeAll()
+        commandQueue = nil
+        resizeTimer?.invalidate()
+        resizeTimer = nil
+        aspectStableTimer?.invalidate()
+        aspectStableTimer = nil
+        frameCounter = 0
+        innerDrawCount = 0
+    }
+
     // MARK: - Viewport Debouncing
     private var lastStableAspect: CGFloat = 0.0
     private var aspectStableTimer: Timer?
@@ -137,7 +149,7 @@ class MetalCoordinator: NSObject, MTKViewDelegate {
 
     func draw(in view: MTKView) {
         // Reset mouse deltas at start of each frame
-        LibretroBridgeSwift.resetMouseDeltas()
+        XPCBridgeAdapter.shared.resetMouseDeltas()
 
         guard let device = view.device,
               let drawable = view.currentDrawable,
@@ -181,7 +193,7 @@ class MetalCoordinator: NSObject, MTKViewDelegate {
                     _ = shouldUpdateAspect(for: view)
 
                     // Try core-provided aspect ratio first (preferred for N64, PS1, etc.)
-                    let coreAspect = LibretroBridgeSwift.aspectRatio()
+                    let coreAspect = XPCBridgeAdapter.shared.aspectRatio()
                     if coreAspect > 0.0 {
                         // Core provided a valid aspect ratio — use it directly
                         targetAspect = isRotated ? (1.0 / CGFloat(coreAspect)) : CGFloat(coreAspect)

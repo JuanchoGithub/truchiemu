@@ -289,7 +289,7 @@ class EmulatorRunner: ObservableObject, @unchecked Sendable {
 
     // Whether the current core supports save states
     var supportsSaveStates: Bool {
-        LibretroBridgeSwift.serializeSize() > 0
+        XPCBridgeAdapter.shared.serializeSize() > 0
     }
     
     internal var device: MTLDevice? = MTLCreateSystemDefaultDevice()
@@ -364,32 +364,29 @@ case "scummvm": runner = ScummVMRunner()
         let shaderDir = Bundle.main.resourceURL?.appendingPathComponent("slang").path
 
         // Register callback to load SRAM when game is loaded
-        LibretroBridgeSwift.registerGameLoadedCallback { [weak self] romPath in
+        XPCBridgeAdapter.shared.registerGameLoadedCallback { [weak self] romPath in
             self?.loadSRAMOnGameLoad(romPath: romPath)
         }
 
-        let savedDir = LibretroBridgeSwift.saveDirectoryPath()
+        let savedDir = XPCBridgeAdapter.shared.saveDirectoryPath()
         LoggerService.info(category: "Runner", "Using save directory: \(savedDir)")
-        
-    let rom = self.rom
-    let dylibPath = self.findCoreLib(coreID: coreID) ?? coreID
-        
-  emulationQueue.async {
-    LibretroBridgeSwift.setLanguage(selectedLang)
-    LibretroBridgeSwift.setLogLevel(Int(selectedLogLevel))
-    
-    // Ensure save directories are created and configured
-    SaveDirectoryBridge.ensureDirectoriesExist()
 
-    guard let rom = rom else { return }
+        let rom = self.rom
+        let dylibPath = self.findCoreLib(coreID: coreID) ?? coreID
 
-    let romPath = rom.path.path
-    let systemID = rom.systemID
+        emulationQueue.async {
+            XPCBridgeAdapter.shared.setLanguage(selectedLang)
+            XPCBridgeAdapter.shared.setLogLevel(Int(selectedLogLevel))
 
-    // We don't have a direct way to catch a SIGSEGV here,
-    // but we can catch potential Swift errors if the bridge was designed to throw.
-    // For now, we ensure we handle the launch result.
-    LibretroBridgeSwift.launch(
+            // Ensure save directories are created and configured
+            SaveDirectoryBridge.ensureDirectoriesExist()
+
+            guard let rom = rom else { return }
+
+            let romPath = rom.path.path
+            let systemID = rom.systemID
+
+            XPCBridgeAdapter.shared.launch(
                 dylibPath: dylibPath,
                 romPath: romPath,
                 coreID: coreID,
@@ -407,11 +404,6 @@ case "scummvm": runner = ScummVMRunner()
                     }
                 }
             )
-            
-            // If we reach here, the launch call has returned. 
-            // We should verify if it actually succeeded.
-            // This is a bit speculative without more info from the bridge, 
-            // but it's a good place to check.
         }
     }
 
@@ -423,24 +415,22 @@ case "scummvm": runner = ScummVMRunner()
         LoggerService.info(category: "Runner", "Stopping emulation thread")
         isRunning = false
 
-        // Save SRAM before stopping the core
         saveSRAMIfAvailable()
 
-        LibretroBridgeSwift.stop()
-
-        // Wait for the core to fully terminate (retro_unload_game + retro_deinit)
-        // This ensures the core is completely killed before proceeding
-        LibretroBridgeSwift.waitForCompletion()
+        XPCBridgeAdapter.shared.stop()
+        XPCBridgeAdapter.shared.waitForCompletion()
 
         hookedController?.extendedGamepad?.valueChangedHandler = nil
         hookedController = nil
+        textureCache = nil
+        undoBuffer = nil
     }
 
 // MARK: - SRAM Save/Load
 
     private func loadSRAMOnGameLoad(romPath: String) {
         let romURL = URL(fileURLWithPath: romPath)
-        let saveDir = LibretroBridgeSwift.saveDirectoryPath()
+        let saveDir = XPCBridgeAdapter.shared.saveDirectoryPath()
         let baseName = romURL.deletingPathExtension().lastPathComponent
 
         let extensions = ["srm", "sav", "save"]
@@ -449,7 +439,7 @@ case "scummvm": runner = ScummVMRunner()
             if FileManager.default.fileExists(atPath: sramURL.path) {
                 do {
                     let sramData = try Data(contentsOf: sramURL)
-                    if LibretroBridgeSwift.loadSaveRAMData(sramData) {
+                    if XPCBridgeAdapter.shared.loadSaveRAMData(sramData) {
                         LoggerService.info(category: "Runner", "Loaded SRAM (\(sramData.count) bytes) from: \(sramURL.path)")
                     }
                 } catch {
@@ -464,7 +454,7 @@ case "scummvm": runner = ScummVMRunner()
 
     @MainActor
     private func sramFilePath(for rom: ROM) -> URL {
-        let saveDir = URL(fileURLWithPath: LibretroBridgeSwift.saveDirectoryPath())
+        let saveDir = URL(fileURLWithPath: XPCBridgeAdapter.shared.saveDirectoryPath())
         let baseName = rom.path.deletingPathExtension().lastPathComponent
         return saveDir.appendingPathComponent("\(baseName).srm")
     }
@@ -476,7 +466,7 @@ case "scummvm": runner = ScummVMRunner()
             return
         }
 
-        guard let sramData = LibretroBridgeSwift.getSaveRAMData(), !sramData.isEmpty else {
+        guard let sramData = XPCBridgeAdapter.shared.getSaveRAMData(), !sramData.isEmpty else {
             LoggerService.debug(category: "Runner", "No SAVE_RAM to save for \(gameRom.displayName)")
             return
         }
@@ -506,7 +496,7 @@ case "scummvm": runner = ScummVMRunner()
 
         do {
             let sramData = try Data(contentsOf: sramPath)
-            guard LibretroBridgeSwift.loadSaveRAMData(sramData) else {
+            guard XPCBridgeAdapter.shared.loadSaveRAMData(sramData) else {
                 LoggerService.error(category: "Runner", "Failed to load SRAM into core")
                 return
             }
@@ -520,7 +510,7 @@ case "scummvm": runner = ScummVMRunner()
     @MainActor
     func togglePause() {
         isPaused.toggle()
-        LibretroBridgeSwift.setPaused(isPaused)
+        XPCBridgeAdapter.shared.setPaused(isPaused)
         osdMessage = isPaused ? "Paused" : "Resumed"
         
         Task {
@@ -540,7 +530,7 @@ case "scummvm": runner = ScummVMRunner()
         
         // Reset pause state
         isPaused = false
-        LibretroBridgeSwift.setPaused(false)
+        XPCBridgeAdapter.shared.setPaused(false)
         
         // Stop current game
         stop()
@@ -555,11 +545,12 @@ case "scummvm": runner = ScummVMRunner()
         isRunning = true
         let shaderDir = Bundle.main.resourceURL?.appendingPathComponent("slang").path
         emulationQueue.async {
-            LibretroBridgeSwift.launch(
-                dylibPath: self.findCoreLib(coreID: coreID) ?? coreID, 
+            XPCBridgeAdapter.shared.launch(
+                dylibPath: self.findCoreLib(coreID: coreID) ?? coreID,
                 romPath: gameRom.path.path,
                 coreID: coreID,
                 systemID: gameRom.systemID,
+                romFilename: gameRom.path.lastPathComponent,
                 shaderDir: shaderDir,
                 videoCallback: { [weak self] data, width, height, pitch, format in
                     self?.updateFrame(data: data, width: width, height: height, pitch: pitch, format: format)
@@ -585,7 +576,7 @@ case "scummvm": runner = ScummVMRunner()
             return false
         }
         
-        guard let stateData = LibretroBridgeSwift.serializeState() else {
+        guard let stateData = XPCBridgeAdapter.shared.serializeState() else {
             let error = GameError.saveStateError(reason: "Serialization failed")
             osdMessage = error.localizedDescription
             self.lastError = error
@@ -668,7 +659,7 @@ case "scummvm": runner = ScummVMRunner()
         let stateURL = saveManager.statePath(gameName: gameRom.displayName, systemID: systemID, slot: slot)
         
         // Save current state as undo buffer before loading
-        undoBuffer = LibretroBridgeSwift.serializeState()
+        undoBuffer = XPCBridgeAdapter.shared.serializeState()
         
         guard let fileData = try? Data(contentsOf: stateURL) else {
             let error = GameError.loadStateError(reason: "State file not found")
@@ -688,7 +679,7 @@ case "scummvm": runner = ScummVMRunner()
             return false
         }
         
-        let success = LibretroBridgeSwift.unserializeState(actualData)
+        let success = XPCBridgeAdapter.shared.unserializeState(actualData)
         if success {
             osdMessage = "Loaded \(slot == -1 ? "Auto" : "Slot \(slot)")"
             
@@ -723,7 +714,7 @@ case "scummvm": runner = ScummVMRunner()
             return false
         }
         
-        let success = LibretroBridgeSwift.unserializeState(actualData)
+        let success = XPCBridgeAdapter.shared.unserializeState(actualData)
         if success {
             undoBuffer = nil
             osdMessage = "Undo successful"
@@ -780,7 +771,7 @@ case "scummvm": runner = ScummVMRunner()
     }
 
     func setKeyState(retroID: Int, pressed: Bool) {
-        LibretroBridgeSwift.setKeyState(retroID: retroID, pressed: pressed)
+        XPCBridgeAdapter.shared.setKeyState(retroID: retroID, pressed: pressed)
     }
 
   func findCoreLib(coreID: String) -> String? {
@@ -802,6 +793,10 @@ case "scummvm": runner = ScummVMRunner()
 
         guard let device = self.device else { return }
 
+        if !hasLoggedFrame {
+            LoggerService.info(category: "Runner", "updateFrame: \(width)x\(height) pitch=\(pitch) format=\(format)")
+        }
+
         let mtlFormat = mapPixelFormat(format)
         let declaredBPP = pixelBytesForFormat(mtlFormat)
         let declaredMinPitch = width * declaredBPP
@@ -812,6 +807,7 @@ case "scummvm": runner = ScummVMRunner()
         if pitch < declaredMinPitch && actualBPP > 0 {
             useBPP = actualBPP
             useFormat = useBPP >= 4 ? .bgra8Unorm : (useBPP == 2 ? .b5g6r5Unorm : .r8Unorm)
+            LoggerService.info(category: "Runner", "FALLBACK: actualBPP=\(actualBPP) useFormat=\(useFormat.rawValue)")
         } else {
             useBPP = declaredBPP
             useFormat = mtlFormat
@@ -857,7 +853,7 @@ case "scummvm": runner = ScummVMRunner()
                             withBytes: data,
                             bytesPerRow: pitch)
             } else {
-                LoggerService.warning(category: "Runner", "First frame pitch=\(pitch) != expected=\(expectedRowBytes), using copy path")
+                LoggerService.warning(category: "Runner", "First frame pitch=\(pitch) != expected=\(expectedRowBytes) useBPP=\(useBPP) useFormat=\(useFormat.rawValue), using copy path")
                 var rowBuffer = [UInt8](repeating: 0, count: width * useBPP)
                 for row in 0..<height {
                     let src = data.advanced(by: row * pitch)
@@ -887,7 +883,7 @@ case "scummvm": runner = ScummVMRunner()
                 self.hasLoggedFrame = true
                 self.isReadyForDisplay = true
                 // Read rotation from core on first frame
-                let rotation = LibretroBridgeSwift.currentRotation()
+                let rotation = XPCBridgeAdapter.shared.currentRotation()
                 if self.currentFrameRotation != Int(rotation) {
                     self.currentFrameRotation = Int(rotation)
                     LoggerService.info(category: "Runner", "Frame rotation: \(rotation) (\(rotation * 90) deg CW)")
@@ -1016,7 +1012,7 @@ extendedGamepad.valueChangedHandler = { [weak self] _, element in
                 aggregatedAxisValue = AnalogDeadZone.default.apply(aggregatedAxisValue)
                 aggregatedAxisValue = max(-1.0, min(1.0, aggregatedAxisValue))
                 let retroValue = Int32(aggregatedAxisValue * 32767.0)
-                LibretroBridgeSwift.setAnalogState(Int(info.index), id: Int(info.id), value: retroValue)
+                XPCBridgeAdapter.shared.setAnalogState(Int(info.index), id: Int(info.id), value: retroValue)
             } 
             
             // 2. Handle Digital Joypad Buttons (ID 0 to 15)
@@ -1026,8 +1022,8 @@ extendedGamepad.valueChangedHandler = { [weak self] _, element in
                 if let btnElement = element as? GCControllerButtonInput {
                     // Send analog value for L2/R2 triggers (used by Flycast for Dreamcast analog triggers)
                     if retroID == 12 || retroID == 13 {
-                        let analogValue = Int32(btnElement.value * 32767.0)
-                        LibretroBridgeSwift.setAnalogButtonState(retroID: retroID, value: analogValue)
+                let analogValue = Int32(btnElement.value * 32767.0)
+                XPCBridgeAdapter.shared.setAnalogButtonState(retroID: retroID, value: analogValue)
                     }
                     // This covers face buttons, triggers (Z-button), and D-pad directions
                     self.setKeyState(retroID: retroID, pressed: btnElement.isPressed)
@@ -1035,8 +1031,8 @@ extendedGamepad.valueChangedHandler = { [weak self] _, element in
                 else if let axisElement = element as? GCControllerAxisInput {
                     // Send analog value for L2/R2 triggers mapped to axes
                     if retroID == 12 || retroID == 13 {
-                        let analogValue = Int32(abs(axisElement.value) * 32767.0)
-                        LibretroBridgeSwift.setAnalogButtonState(retroID: retroID, value: analogValue)
+                let analogValue = Int32(abs(axisElement.value) * 32767.0)
+                XPCBridgeAdapter.shared.setAnalogButtonState(retroID: retroID, value: analogValue)
                     }
                     // If a digital button is mapped to an axis (like a trigger mapped to 'A')
                     self.setKeyState(retroID: retroID, pressed: abs(axisElement.value) > 0.5)

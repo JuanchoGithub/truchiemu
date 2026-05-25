@@ -1,0 +1,76 @@
+---
+layout: default
+title: Sistema de Estados de Guardado - Documentación de TruchiEmu
+
+---
+
+<div class="feature-docs">
+<h1>Sistema de Estados de Guardado</h1>
+
+<div class="feature-overview">
+<img src="{{ '/media/features/save-states-hero.png' | relative_url }}" alt="Panorama del Sistema de Estados de Guardado" class="hero-image lightbox-trigger">
+<p class="lead">El sistema de estados de guardado de TruchiEmu captura y restaura el estado del emulador en cualquier punto, con una interfaz basada en slots organizada y gestión visual.</p>
+</div>
+
+<section id="service-explanation">
+<h2>Panorama del Servicio</h2>
+<p>El sistema de Estados de Guardado captura el estado completo del emulador (RAM, registros de CPU, estado de GPU) para que puedas guardar y restaurar el juego en cualquier momento. Los estados de guardado se gestionan a través de la interfaz de la ventana del juego.</p>
+
+<div class="architecture-diagram">
+<img src="{{ '/media/features/save-state-architecture.png' | relative_url }}" alt="Arquitectura de Estados de Guardado">
+<p class="caption">Pipeline de captura y restauración de estados de guardado con generación de miniaturas y copia de seguridad</p>
+</div>
+
+<h3>Funciones Clave</h3>
+<ul class="feature-list">
+<li><strong>Capturas Instantáneas:</strong> Guarda y carga en cualquier punto durante el juego</li>
+<li><strong>Banca de Slots:</strong> Organiza guardados en múltiples slots para diferentes partidas</li>
+<li><strong>Nombrado Automático:</strong> Los estados de guardado se organizan por juego y marca de tiempo</li>
+</ul>
+
+<p>Para detalles de implementación, consulta la <a href="/development/">Guía del Desarrollador</a>.</p>
+</section>
+
+<section id="step-by-step-guide">
+<h2>Guía de Configuración Paso a Paso</h2>
+
+<h3>Uso Básico de Estados de Guardado</h3>
+<ol class="setup-steps">
+<li>
+<strong>Guardar Durante el Juego</strong>
+<p>Mientras juegas, accede al menú de estados de guardado desde la barra de herramientas de la ventana del juego o usa el atajo de teclado configurado para guardar en el slot actual.</p>
+</li>
+<li>
+<strong>Cargar un Estado de Guardado</strong>
+<p>Abre el navegador de estados de guardado para ver todos los estados guardados del juego actual. Haz clic en cualquier entrada para restaurar el juego desde ese punto.</p>
+<img src="{{ '/media/screenshots/save-state-browser.png' | relative_url }}" alt="Navegador de Estados de Guardado">
+</li>
+<li>
+<strong>Gestionar Slots de Guardado</strong>
+<p>Usa diferentes slots de guardado para mantener múltiples puntos de guardado para diferentes partidas o desafíos. Cada slot almacena un estado de emulación separado.</p>
+</li>
+</ol>
+
+</section>
+
+<section id="references">
+<h2>Servicios Relacionados</h2>
+
+<div class="related-services">
+<div class="service-card">
+<h3><a href="/features/achievements/">RetroAchievements</a></h3>
+<p>Entiende cómo el uso de estados de guardado afecta la elegibilidad de logros en el modo Hardcore.</p>
+</div>
+
+<div class="service-card">
+<h3><a href="/features/cheats/">Sistema de Trucos</a></h3>
+<p>Los estados de guardado funcionan perfectamente con los códigos de trucos para crear escenarios de práctica específicos.</p>
+</div>
+
+<div class="service-card">
+<h3><a href="/features/library/">Biblioteca de Juegos</a></h3>
+<p>Los estados de guardado son accesibles desde la vista de la biblioteca de juegos.</p>
+</div>
+</div>
+</section>
+</div>

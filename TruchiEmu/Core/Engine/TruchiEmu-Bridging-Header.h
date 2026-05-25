@@ -1,8 +1,11 @@
 #import <Cocoa/Cocoa.h>
 #import "LibretroBridge.h"
+#import "XPCSharedMemory.h"
 
-// Callback type for routing libretro core logs from C into Swift
+@class LibretroBridgeImpl;
+
 typedef void (*CoreLogCallback)(const char *message, int level);
 
-// Called by Swift at startup to register the core log callback
 void RegisterCoreLogCallback(CoreLogCallback callback);
+
+extern BOOL g_xpcModeActive;

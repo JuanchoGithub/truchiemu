@@ -27,10 +27,17 @@ import Foundation
 
     // MARK: - Launch & Lifecycle
 
-static func launch(dylibPath: String, romPath: String, coreID: String, systemID: String? = nil, romFilename: String? = nil,
-                        shaderDir: String? = nil,
-                        videoCallback: @escaping (UnsafeRawPointer?, Int, Int, Int, Int) -> Void,
-                        onFailure: ((String) -> Void)? = nil) {
+    static func launch(dylibPath: String, romPath: String, coreID: String, systemID: String? = nil, romFilename: String? = nil,
+                       shaderDir: String? = nil,
+                       videoCallback: @escaping (UnsafeRawPointer?, Int, Int, Int, Int) -> Void,
+                       onFailure: ((String) -> Void)? = nil) {
+        #if !XPC_SERVICE
+        if XPCBridgeAdapter.shared.isActive {
+            LoggerService.error(category: "LibretroBridge", "BUG: launch() called in-process while XPC mode is active — blocking to prevent core dylib load in main process")
+            onFailure?("XPC mode active — core must run in service process")
+            return
+        }
+        #endif
         LibretroBridge.launch(withDylibPath: dylibPath, romPath: romPath, shaderDir: shaderDir, videoCallback: { data, w, h, pitch, format in
             videoCallback(data, Int(w), Int(h), Int(pitch), Int(format))
         }, coreID: coreID, systemID: systemID, romFilename: romFilename, failureCallback: { message in
@@ -61,10 +68,16 @@ static func launch(dylibPath: String, romPath: String, coreID: String, systemID:
     return result
   }
 
-  static func loadCoreForOptions(_ dylibPath: String, coreID: String, romPath: String?) {
-    LoggerService.debug(category: "LibretroBridge", "Loading core for options: \(coreID) from \(dylibPath)")
-      LibretroBridge.loadCore(forOptions: dylibPath, coreID: coreID, romPath: romPath)
-  }
+    static func loadCoreForOptions(_ dylibPath: String, coreID: String, romPath: String?) {
+        #if !XPC_SERVICE
+        if XPCBridgeAdapter.shared.isActive {
+            LoggerService.error(category: "LibretroBridge", "BUG: loadCoreForOptions() called in-process while XPC mode is active — blocking")
+            return
+        }
+        #endif
+        LoggerService.debug(category: "LibretroBridge", "Loading core for options: \(coreID) from \(dylibPath)")
+        LibretroBridge.loadCore(forOptions: dylibPath, coreID: coreID, romPath: romPath)
+    }
 
   static func isCoreLoadedForOptions() -> Bool {
     let loaded = LibretroBridge.isCoreLoadedForOptions()

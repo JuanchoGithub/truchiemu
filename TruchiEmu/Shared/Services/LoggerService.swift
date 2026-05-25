@@ -66,15 +66,17 @@ final class LoggerService: @unchecked Sendable {
     
     // MARK: - Configuration
     
-    @Published private(set) var currentLevel: LogLevel {
+    #if XPC_SERVICE
+    private(set) var currentLevel: LogLevel = .info
+    #else
+    @Published private(set) var currentLevel: LogLevel = .info {
         didSet {
-            // Don't save to AppSettings during initialization - it could cause circular dep
             guard isInitialized else { return }
             AppSettings.set("log_level", value: currentLevel.rawValue)
         }
     }
-    
-    // Flag to prevent AppSettings writes during init
+    #endif
+
     private var isInitialized = false
     
   // MARK: - File Logging State
@@ -114,7 +116,8 @@ final class LoggerService: @unchecked Sendable {
         
         // Mark as initialized - now we can safely write to AppSettings
         self.isInitialized = true
-        
+
+        #if !XPC_SERVICE
         // Try to load saved log level after init completes (won't cause circular dep)
         Task { @MainActor in
             let rawLevel = AppSettings.get("log_level", type: String.self) ?? "info"
@@ -122,6 +125,7 @@ final class LoggerService: @unchecked Sendable {
                 self.currentLevel = LogLevel(rawValue: rawLevel) ?? .info
             }
         }
+        #endif
     }
     
     // MARK: - Setup File Logging

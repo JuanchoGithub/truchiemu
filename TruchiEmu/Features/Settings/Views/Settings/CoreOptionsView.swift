@@ -156,7 +156,7 @@ class CoreOptionsViewModel: ObservableObject {
 
         self.manager.setScope(systemID: self.systemID, gameFilename: self.gameFilename)
         if self.isSystemMode, let sysID = self.systemID {
-            self.discoverCoresForSystem(sysID)
+            self.discoverCoresForSystem(sysID, forceCoreID: id)
         } else {
             self.manager.loadForCore(coreID: id, dylibPath: dylibPath, romPath: romPath)
         }
@@ -164,7 +164,7 @@ class CoreOptionsViewModel: ObservableObject {
         self.hasLoadedOnce = true
     }
 
-    private func discoverCoresForSystem(_ sysID: String) {
+    private func discoverCoresForSystem(_ sysID: String, forceCoreID: String? = nil) {
         let compatibleIDs = SystemDatabase.compatibleIDs(for: sysID)
         let installed = CoreManager.shared.installedCores.filter { core in
             !Set(core.systemIDs).isDisjoint(with: compatibleIDs) || SystemDatabase.system(forID: sysID)?.defaultCoreID == core.id
@@ -176,7 +176,9 @@ class CoreOptionsViewModel: ObservableObject {
             return (id: core.id, name: name)
         }
 
-        if let system = SystemDatabase.system(forID: sysID), let defaultID = system.defaultCoreID, availableCores.contains(where: { $0.id == defaultID }) {
+        if let forceID = forceCoreID, availableCores.contains(where: { $0.id == forceID }) {
+            self.currentCoreID = forceID
+        } else if let system = SystemDatabase.system(forID: sysID), let defaultID = system.defaultCoreID, availableCores.contains(where: { $0.id == defaultID }) {
             self.currentCoreID = defaultID
         } else if let firstCore = availableCores.first?.id {
             self.currentCoreID = firstCore
@@ -275,25 +277,31 @@ struct CoreOptionsView: View {
                     }
                     .transition(.opacity)
                 } else if viewModel.options.isEmpty {
-                    EmptyStateView(coreID: viewModel.isSystemMode ? (viewModel.systemID ?? "") : viewModel.currentCoreID, viewModel: viewModel)
+                    EmptyStateView(coreID: viewModel.currentCoreID, viewModel: viewModel)
                 } else {
-                    ScrollView {
-                        VStack(spacing: 24) {
-                            if viewModel.isSystemMode {
-                                Picker(loc.localized("coreOptions.core"), selection: $viewModel.currentCoreID) {
-                                    ForEach(viewModel.availableCores, id: \.id) { core in
-                                        Text(core.name).tag(core.id)
-                                    }
-                                }
-                                .pickerStyle(.menu)
-                                .padding(.horizontal)
-                                .onChange(of: viewModel.currentCoreID) { _, newID in
-                                    viewModel.loadOptions(for: newID, library: library)
-                                }
-                                Divider()
-                            }
+            ScrollView {
+                VStack(spacing: 24) {
+                    HStack {
+                        Image(systemName: "magnifyingglass")
+                            .foregroundColor(AppColors.textSecondary(colorScheme))
 
-                            ForEach(viewModel.filteredSortedKeys, id: \.self) { category in
+                        TextField(loc.localized("coreOptions.searchOptions"), text: $viewModel.searchText)
+                            .textFieldStyle(.plain)
+                            .autocorrectionDisabled()
+
+                        if !viewModel.searchText.isEmpty {
+                            Button(action: { viewModel.searchText = "" }) {
+                                Image(systemName: "xmark.circle.fill")
+                                    .foregroundColor(AppColors.textSecondary(colorScheme))
+                            }
+                            .buttonStyle(.plain)
+                        }
+                    }
+                    .padding(AppSpacing.sm)
+                    .background(Color.secondary.opacity(0.1))
+                    .cornerRadius(AppRadius.md)
+
+                    ForEach(viewModel.filteredSortedKeys, id: \.self) { category in
                                 CategorySection(
                                     title: viewModel.categoryDisplayName(for: category),
                                     optionKeys: viewModel.optionKeysInCategory(category),
@@ -320,8 +328,20 @@ struct CoreOptionsView: View {
         }
         .animation(.easeInOut, value: viewModel.isLoading)
         .navigationTitle(viewModel.isSystemMode ? "\(loc.localized("coreOptions.options")) \(SystemDatabase.systemName(forInternalID: viewModel.systemID ?? ""))" : "\(loc.localized("coreOptions.options")) \(viewModel.currentCoreID)")
-        .searchable(text: $viewModel.searchText, placement: .toolbar, prompt: loc.localized("coreOptions.searchOptions"))
+        .onChange(of: viewModel.currentCoreID) { _, newID in
+            viewModel.loadOptions(for: newID, library: library)
+        }
         .toolbar {
+            if viewModel.isSystemMode, viewModel.availableCores.count > 1 {
+                ToolbarItem(placement: .navigation) {
+                    Picker(loc.localized("coreOptions.core"), selection: $viewModel.currentCoreID) {
+                        ForEach(viewModel.availableCores, id: \.id) { core in
+                            Text(core.name).tag(core.id)
+                        }
+                    }
+                    .pickerStyle(.menu)
+                }
+            }
             ToolbarItem(placement: .primaryAction) {
                 Button {
                     let currentSearch = viewModel.searchText

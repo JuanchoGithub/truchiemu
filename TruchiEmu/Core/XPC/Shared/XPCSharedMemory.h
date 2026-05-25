@@ -1,0 +1,219 @@
+#pragma once
+
+#include <stdint.h>
+#include <stdbool.h>
+
+#ifdef __cplusplus
+#include <atomic>
+extern "C" {
+typedef std::atomic<int> atomic_int_shm;
+typedef std::atomic<long> atomic_long_shm;
+#else
+#include <stdatomic.h>
+typedef atomic_int atomic_int_shm;
+typedef atomic_long atomic_long_shm;
+#endif
+
+#define XPC_SHM_NAME_PREFIX "/te_shm_"
+
+#define XPC_INPUT_STATE_COUNT 32
+#define XPC_ANALOG_STICKS 2
+#define XPC_ANALOG_AXES 2
+#define XPC_ANALOG_BUTTON_COUNT 32
+#define XPC_TURBO_COUNT 32
+#define XPC_KEYBOARD_STATE_COUNT 512
+
+#define XPC_AUDIO_RING_CAPACITY 32768
+
+typedef struct {
+    int16_t delta_x;
+    int16_t delta_y;
+    int16_t wheel_delta;
+    uint32_t buttons;
+    uint8_t _pad[4];
+} XPCMouseState;
+
+typedef struct {
+    int16_t pointer_x;
+    int16_t pointer_y;
+    bool pointer_pressed;
+    uint8_t _pad[5];
+} XPCPointerState;
+
+typedef struct {
+    atomic_int_shm frameReady;
+    int _pad0;
+
+    int16_t input_state[XPC_INPUT_STATE_COUNT];
+    int16_t analog_state[XPC_ANALOG_STICKS][XPC_ANALOG_AXES];
+    int16_t analog_button_state[XPC_ANALOG_BUTTON_COUNT];
+    bool turbo_active[XPC_TURBO_COUNT];
+    int turbo_counter[XPC_TURBO_COUNT];
+    bool turbo_state[XPC_TURBO_COUNT];
+    int turbo_fireButton[XPC_TURBO_COUNT];
+    bool keyboard_state[XPC_KEYBOARD_STATE_COUNT];
+
+    XPCMouseState mouse;
+    XPCPointerState pointer;
+
+    bool isPaused;
+    bool variablesUpdated;
+    int currentRotation;
+
+    int videoWidth;
+    int videoHeight;
+    int videoPitch;
+    int videoFormat;
+
+    atomic_long_shm audioWritePos;
+    atomic_long_shm audioReadPos;
+    int16_t audioBuffer[XPC_AUDIO_RING_CAPACITY];
+} XPCSharedMemory;
+
+#ifdef __cplusplus
+}
+#endif
+
+#ifdef __cplusplus
+static inline int xpc_shm_load_frameReady(XPCSharedMemory *shm) {
+    return shm->frameReady.load();
+}
+static inline void xpc_shm_store_frameReady(XPCSharedMemory *shm, int value) {
+    shm->frameReady.store(value);
+}
+static inline long xpc_shm_load_audioWritePos(XPCSharedMemory *shm) {
+    return shm->audioWritePos.load();
+}
+static inline void xpc_shm_store_audioWritePos(XPCSharedMemory *shm, long value) {
+    shm->audioWritePos.store(value);
+}
+static inline long xpc_shm_load_audioReadPos(XPCSharedMemory *shm) {
+    return shm->audioReadPos.load();
+}
+static inline void xpc_shm_store_audioReadPos(XPCSharedMemory *shm, long value) {
+    shm->audioReadPos.store(value);
+}
+static inline long xpc_shm_load_audioWritePos_relaxed(XPCSharedMemory *shm) {
+    return shm->audioWritePos.load(std::memory_order_relaxed);
+}
+static inline void xpc_shm_store_audioWritePos_relaxed(XPCSharedMemory *shm, long value) {
+    shm->audioWritePos.store(value, std::memory_order_relaxed);
+}
+static inline long xpc_shm_load_audioReadPos_relaxed(XPCSharedMemory *shm) {
+    return shm->audioReadPos.load(std::memory_order_relaxed);
+}
+#else
+static inline int xpc_shm_load_frameReady(XPCSharedMemory *shm) {
+    return atomic_load(&shm->frameReady);
+}
+static inline void xpc_shm_store_frameReady(XPCSharedMemory *shm, int value) {
+    atomic_store(&shm->frameReady, value);
+}
+static inline long xpc_shm_load_audioWritePos(XPCSharedMemory *shm) {
+    return atomic_load(&shm->audioWritePos);
+}
+static inline void xpc_shm_store_audioWritePos(XPCSharedMemory *shm, long value) {
+    atomic_store(&shm->audioWritePos, value);
+}
+static inline long xpc_shm_load_audioReadPos(XPCSharedMemory *shm) {
+    return atomic_load(&shm->audioReadPos);
+}
+static inline void xpc_shm_store_audioReadPos(XPCSharedMemory *shm, long value) {
+    atomic_store(&shm->audioReadPos, value);
+}
+static inline long xpc_shm_load_audioWritePos_relaxed(XPCSharedMemory *shm) {
+    return atomic_load_explicit(&shm->audioWritePos, memory_order_relaxed);
+}
+static inline void xpc_shm_store_audioWritePos_relaxed(XPCSharedMemory *shm, long value) {
+    atomic_store_explicit(&shm->audioWritePos, value, memory_order_relaxed);
+}
+static inline long xpc_shm_load_audioReadPos_relaxed(XPCSharedMemory *shm) {
+    return atomic_load_explicit(&shm->audioReadPos, memory_order_relaxed);
+}
+#endif
+
+static inline void xpc_shm_set_input_state(XPCSharedMemory *shm, int idx, int16_t val) {
+    if (idx >= 0 && idx < XPC_INPUT_STATE_COUNT) shm->input_state[idx] = val;
+}
+static inline int16_t xpc_shm_get_input_state(XPCSharedMemory *shm, int idx) {
+    return (idx >= 0 && idx < XPC_INPUT_STATE_COUNT) ? shm->input_state[idx] : 0;
+}
+
+static inline void xpc_shm_set_analog_state(XPCSharedMemory *shm, int stick, int axis, int16_t val) {
+    if (stick >= 0 && stick < XPC_ANALOG_STICKS && axis >= 0 && axis < XPC_ANALOG_AXES)
+        shm->analog_state[stick][axis] = val;
+}
+
+static inline void xpc_shm_set_analog_button(XPCSharedMemory *shm, int idx, int16_t val) {
+    if (idx >= 0 && idx < XPC_ANALOG_BUTTON_COUNT) shm->analog_button_state[idx] = val;
+}
+
+static inline void xpc_shm_set_turbo_active(XPCSharedMemory *shm, int idx, bool val) {
+    if (idx >= 0 && idx < XPC_TURBO_COUNT) shm->turbo_active[idx] = val;
+}
+static inline void xpc_shm_set_turbo_fireButton(XPCSharedMemory *shm, int idx, int val) {
+    if (idx >= 0 && idx < XPC_TURBO_COUNT) shm->turbo_fireButton[idx] = val;
+}
+
+static inline void xpc_shm_set_keyboard_state(XPCSharedMemory *shm, int idx, bool val) {
+    if (idx >= 0 && idx < XPC_KEYBOARD_STATE_COUNT) shm->keyboard_state[idx] = val;
+}
+
+static inline void xpc_shm_write_audio(XPCSharedMemory *shm, const int16_t *samples, size_t count) {
+    long writePos = xpc_shm_load_audioWritePos_relaxed(shm);
+    long readPos = xpc_shm_load_audioReadPos_relaxed(shm);
+    for (size_t i = 0; i < count; i++) {
+        long nextWrite = (writePos + 1) % XPC_AUDIO_RING_CAPACITY;
+        if (nextWrite != readPos) {
+            shm->audioBuffer[writePos] = samples[i];
+            writePos = nextWrite;
+        }
+    }
+    xpc_shm_store_audioWritePos_relaxed(shm, writePos);
+}
+
+static inline int xpc_shm_open(const char *name, int oflag, mode_t mode) {
+    return shm_open(name, oflag, mode);
+}
+
+static inline int16_t xpc_shm_get_analog_state(XPCSharedMemory *shm, int stick, int axis) {
+    if (stick >= 0 && stick < XPC_ANALOG_STICKS && axis >= 0 && axis < XPC_ANALOG_AXES)
+        return shm->analog_state[stick][axis];
+    return 0;
+}
+
+static inline int16_t xpc_shm_get_analog_button(XPCSharedMemory *shm, int idx) {
+    return (idx >= 0 && idx < XPC_ANALOG_BUTTON_COUNT) ? shm->analog_button_state[idx] : 0;
+}
+
+static inline bool xpc_shm_get_turbo_active(XPCSharedMemory *shm, int idx) {
+    return (idx >= 0 && idx < XPC_TURBO_COUNT) ? shm->turbo_active[idx] : false;
+}
+
+static inline int xpc_shm_get_turbo_counter(XPCSharedMemory *shm, int idx) {
+    return (idx >= 0 && idx < XPC_TURBO_COUNT) ? shm->turbo_counter[idx] : 0;
+}
+
+static inline bool xpc_shm_get_turbo_state(XPCSharedMemory *shm, int idx) {
+    return (idx >= 0 && idx < XPC_TURBO_COUNT) ? shm->turbo_state[idx] : false;
+}
+
+static inline int xpc_shm_get_turbo_fireButton(XPCSharedMemory *shm, int idx) {
+    return (idx >= 0 && idx < XPC_TURBO_COUNT) ? shm->turbo_fireButton[idx] : 0;
+}
+
+static inline bool xpc_shm_get_keyboard_state(XPCSharedMemory *shm, int idx) {
+    return (idx >= 0 && idx < XPC_KEYBOARD_STATE_COUNT) ? shm->keyboard_state[idx] : false;
+}
+
+static inline void xpc_shm_read_audio(XPCSharedMemory *shm, long idx, int16_t *out) {
+    if (idx >= 0 && idx < XPC_AUDIO_RING_CAPACITY) *out = shm->audioBuffer[idx];
+}
+
+#ifdef __cplusplus
+extern "C" {
+#endif
+void xpc_shm_set_global(XPCSharedMemory *shm);
+#ifdef __cplusplus
+}
+#endif

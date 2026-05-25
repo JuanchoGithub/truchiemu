@@ -115,6 +115,25 @@ class GameLauncher: ObservableObject {
             return
         }
 
+        // Check if another game is already running (only one CoreHost exists)
+        if RunningGamesTracker.shared.isGameRunning,
+           let runningName = RunningGamesTracker.shared.currentRunningGameName {
+            LoggerService.info(category: "GameLauncher", "Game already running: \(runningName), requesting switch to \(rom.displayName)")
+            let action = await showSwitchGameAlert(runningGameName: runningName)
+            switch action {
+            case .switchAndSave:
+                closeAllGameWindows()
+            case .switchWithoutSaving:
+                for (_, controller) in activeControllers {
+                    controller.skipAutoSaveOnClose = true
+                }
+                closeAllGameWindows()
+            case .cancel:
+                completion?(nil)
+                return
+            }
+        }
+
         // Check if this ROM is already running
         LoggerService.extreme(category: "GameLauncher", "Checking if ROM is already running")
         if RunningGamesTracker.shared.isRunning(romPath: rom.path.path) {
@@ -171,7 +190,9 @@ class GameLauncher: ObservableObject {
         )
         
         let systemID = rom.systemID ?? "default"
-        
+
+        CoreOptionsManager.shared.discoverOptionsIfNeeded(for: coreID, romPath: rom.path.path)
+
         LoggerService.info(category: "GameLauncher", "Launching game: \(rom.displayName)")
         LoggerService.debug(category: "GameLauncher", "ROM path: \(rom.path.path)")
         LoggerService.debug(category: "GameLauncher", "Core: \(coreID), System: \(systemID), Slot: \(slotToLoad.map { "\($0)" } ?? "none")")
@@ -377,12 +398,82 @@ class GameLauncher: ObservableObject {
             return false
         }
     }
-    
+
+    // MARK: - Switch Game Alert
+
+    enum SwitchGameAction {
+        case switchAndSave
+        case switchWithoutSaving
+        case cancel
+    }
+
+    private func showSwitchGameAlert(runningGameName: String) async -> SwitchGameAction {
+        let loc = LocalizationManager.shared
+        let autoSaveEnabled = AppSettings.getBool("saveState_autoSaveOnExit", defaultValue: false)
+        let alert = NSAlert()
+        alert.alertStyle = .warning
+        alert.messageText = loc.localized("game.alreadyRunning.title")
+        alert.informativeText = String(
+            format: loc.localized("game.alreadyRunning.message"),
+            runningGameName
+        )
+
+        if autoSaveEnabled {
+            alert.informativeText += "\n\n" + String(
+                format: loc.localized("game.alreadyRunning.saveInfo"),
+                runningGameName
+            )
+            alert.addButton(withTitle: loc.localized("game.alreadyRunning.switchAndSave"))
+            alert.addButton(withTitle: loc.localized("game.alreadyRunning.switchWithoutSaving"))
+            alert.addButton(withTitle: loc.localized("game.alreadyRunning.cancel"))
+
+            let response = alert.runModal()
+            if response == .alertFirstButtonReturn {
+                return .switchAndSave
+            } else if response == .alertSecondButtonReturn {
+                return .switchWithoutSaving
+            } else {
+                return .cancel
+            }
+        } else {
+            alert.informativeText += "\n\n" + String(
+                format: loc.localized("game.alreadyRunning.noSaveInfo"),
+                runningGameName
+            )
+            alert.addButton(withTitle: loc.localized("game.alreadyRunning.switch"))
+            alert.addButton(withTitle: loc.localized("game.alreadyRunning.cancel"))
+
+            let response = alert.runModal()
+            if response == .alertFirstButtonReturn {
+                return .switchAndSave
+            } else {
+                return .cancel
+            }
+        }
+    }
+
     // MARK: - Cleanup
     
     // Remove a controller from tracking when its window closes
     func removeController(for romID: UUID) {
         activeControllers.removeValue(forKey: romID)
+    }
+
+    // Expose active controllers for crash recovery (XPC connection loss)
+    func allActiveControllers() -> [StandaloneGameWindowController] {
+        Array(activeControllers.values)
+    }
+
+    func closeAllGameWindows() {
+        // Detach SwiftUI views first while all objects are still alive,
+        // preventing use-after-free during view graph teardown
+        for (_, controller) in activeControllers {
+            controller.detachSwiftUI()
+        }
+        for (_, controller) in activeControllers {
+            controller.close()
+        }
+        activeControllers.removeAll()
     }
     
     // Check if a game is currently being launched

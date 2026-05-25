@@ -259,26 +259,26 @@ class CoreOptionsManager: ObservableObject {
             }
         }
 
-        LibretroBridge.loadCore(forOptions: dylibPath, coreID: coreID, romPath: dummyRomPath)
+        XPCBridgeAdapter.shared.loadCoreForOptions(dylibPath: dylibPath, coreID: coreID, romPath: dummyRomPath)
         LoggerService.debug(category: "CoreOptionsManager", "For: \(coreID), Core loaded")
 
-        let optionsDict = LibretroBridge.getOptionsDictionary() ?? [:]
-        let categoriesDict = LibretroBridge.getCategoriesDictionary() ?? [:]
-        let rawDescriptors = LibretroBridge.getInputDescriptorsDictionary() ?? [:]
+        let optionsDict = (XPCBridgeAdapter.shared.getOptionsDictionary() as? [String: [String: Any]]) ?? [:]
+        let categoriesDict = (XPCBridgeAdapter.shared.getCategoriesDictionary() as? [String: [String: Any]]) ?? [:]
+        let rawDescriptors = XPCBridgeAdapter.shared.getInputDescriptorsDictionary() ?? [:]
         LoggerService.debug(category: "CoreOptionsManager", "For: \(coreID), options: \(optionsDict), categories: \(categoriesDict), inputDescriptors: \(rawDescriptors)")
 
         var newOptions: [CoreOption] = []
         var newCategories: [CoreOptionCategory] = []
 
         for (catKey, catData) in categoriesDict {
-            let desc = catData["description"] as? String ?? catKey
+            let desc = catData["desc"] as? String ?? catKey
             let info = catData["info"] as? String ?? ""
             newCategories.append(CoreOptionCategory(key: catKey, description: desc, info: info))
         }
         LoggerService.debug(category: "CoreOptionsManager", "For: \(coreID), new Categories: \(newCategories)")
 
         for (key, optData) in optionsDict {
-            let desc = optData["description"] as? String ?? key
+            let desc = optData["desc"] as? String ?? key
             let info = optData["info"] as? String ?? ""
             let catKey = optData["category"] as? String
             let defaultVal = optData["defaultValue"] as? String ?? ""
@@ -309,12 +309,19 @@ class CoreOptionsManager: ObservableObject {
         LoggerService.debug(category: "CoreOptionsManager", "For: \(coreID), Parsed options")
 
         var buttonDescriptors: [InputButtonDescriptor] = []
-        for (_, buttons) in rawDescriptors {
-            for buttonDict in buttons {
-                if let dict = buttonDict as? [String: Any],
-                let id = dict["id"] as? Int,
-                let desc = dict["description"] as? String {
-                    buttonDescriptors.append(InputButtonDescriptor(id: id, description: desc))
+        for (_, value) in rawDescriptors {
+            if let buttons = value as? [[String: Any]] {
+                for buttonDict in buttons {
+                    if let id = buttonDict["id"] as? Int, let desc = buttonDict["description"] as? String {
+                        buttonDescriptors.append(InputButtonDescriptor(id: id, description: desc))
+                    }
+                }
+            } else if let buttons = value as? [Any] {
+                for button in buttons {
+                    if let dict = button as? [String: Any],
+                       let id = dict["id"] as? Int, let desc = dict["description"] as? String {
+                        buttonDescriptors.append(InputButtonDescriptor(id: id, description: desc))
+                    }
                 }
             }
         }
@@ -422,6 +429,10 @@ class CoreOptionsManager: ObservableObject {
             }
             persistOverride(key: key, value: value)
         }
+
+        // Push the change to the running core immediately so it takes effect
+        // at runtime — not just on the next launch.
+        XPCBridgeAdapter.shared.setOptionValue(value, forKey: key)
     }
 
     private struct BaseValueResult {
@@ -462,13 +473,11 @@ class CoreOptionsManager: ObservableObject {
                 source = .appSystemDefault
             }
 
-            if currentGameFilename != nil {
-                let userSystem = loadSystemOverrides(for: coreID, systemID: sysID)
-                if let userSysValue = userSystem[key] {
-                    prevLayer = value
-                    value = userSysValue
-                    source = .systemOverride
-                }
+            let userSystem = loadSystemOverrides(for: coreID, systemID: sysID)
+            if let userSysValue = userSystem[key] {
+                prevLayer = value
+                value = userSysValue
+                source = .systemOverride
             }
         }
 
@@ -490,6 +499,9 @@ class CoreOptionsManager: ObservableObject {
         }
 
         removeOverrideAtCurrentScope(key: key)
+
+        // Push the restored value to the running core immediately
+        XPCBridgeAdapter.shared.setOptionValue(baseResult.value, forKey: key)
     }
 
     func resetToDefault(key: String) {
@@ -506,6 +518,9 @@ class CoreOptionsManager: ObservableObject {
                 options[vKey]?.currentValue = baseResult.value
                 options[vKey]?.overrideSource = baseResult.source
                 options[vKey]?.previousLayerValue = baseResult.previousLayerValue
+
+                // Push each restored value to the running core
+                XPCBridgeAdapter.shared.setOptionValue(baseResult.value, forKey: optKey)
             }
         }
 
@@ -635,6 +650,68 @@ class CoreOptionsManager: ObservableObject {
         if let data = try? JSONSerialization.data(withJSONObject: payload, options: [.prettyPrinted, .sortedKeys]) {
             let url = definitionsDirectory.appendingPathComponent("\(coreID).json")
             try? data.write(to: url)
+        }
+    }
+
+    nonisolated func resolveEffectiveValue(for key: String, coreID: String, systemID: String?, gameFilename: String?) -> (value: String, source: OverrideSource) {
+        let persistedDefs = definitionsDirectory.appendingPathComponent("\(coreID).json")
+        guard let data = try? Data(contentsOf: persistedDefs),
+              let json = try? JSONSerialization.jsonObject(with: data) as? [String: Any],
+              let opts = json["options"] as? [String: [String: Any]],
+              let optData = opts[key],
+              let defVal = optData["defaultValue"] as? String else {
+            return (value: "", source: .coreDefault)
+        }
+
+        var value = defVal
+        var source: OverrideSource = .coreDefault
+
+        let appDefaults = CoreOverrideService.shared.getOverrides(for: coreID, scope: "default")
+        if let appValue = appDefaults[key] {
+            value = appValue
+            source = .appDefault
+        }
+
+        if let sysID = systemID {
+            let systemOverrides = CoreOverrideService.shared.getOverrides(for: coreID, scope: sysID)
+            if let sysValue = systemOverrides[key] {
+                value = sysValue
+                source = .appSystemDefault
+            }
+
+            let userSystem = loadSystemOverrides(for: coreID, systemID: sysID)
+            if let userSysValue = userSystem[key] {
+                value = userSysValue
+                source = .systemOverride
+            }
+
+            if let game = gameFilename {
+                let userGame = loadGameOverrides(for: coreID, systemID: sysID, gameFilename: game)
+                if let gameValue = userGame[key] {
+                    value = gameValue
+                    source = .gameOverride
+                }
+            }
+        }
+
+        return (value: value, source: source)
+    }
+
+    // MARK: - Auto-Discovery Helpers
+
+    nonisolated func definitionsFileExists(for coreID: String) -> Bool {
+        let url = definitionsDirectory.appendingPathComponent("\(coreID).json")
+        return FileManager.default.fileExists(atPath: url.path)
+    }
+
+    @MainActor func discoverOptionsIfNeeded(for coreID: String, romPath: String? = nil) {
+        guard !definitionsFileExists(for: coreID) else { return }
+        guard let core = CoreManager.shared.installedCores.first(where: { $0.id == coreID }) else { return }
+        let dylibPath = core.activeVersion?.dylibPath.path
+            ?? core.installedVersions.first(where: { FileManager.default.fileExists(atPath: $0.dylibPath.path) })?.dylibPath.path
+        guard let dylib = dylibPath else { return }
+        Task {
+            await discoverOptions(for: coreID, dylibPath: dylib, romPath: romPath)
         }
     }
 

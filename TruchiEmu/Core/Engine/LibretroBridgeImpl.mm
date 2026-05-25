@@ -144,6 +144,13 @@ return self;
     _retainedRomData = [[NSData alloc] initWithContentsOfFile:_retainedRomPath];
   }
 
+    // Default to XRGB8888 (32-bit BGRA). Must be set BEFORE retro_init so that
+    // cores which call SET_PIXEL_FORMAT during init can override it. If set only
+    // before retro_load_game (as was previously the case), any SET_PIXEL_FORMAT
+    // call made during retro_init gets clobbered — leaving XRGB8888 even for
+    // cores that explicitly requested RGB565.
+    _pixelFormat = RETRO_PIXEL_FORMAT_XRGB8888;
+
   @try {
       if (_retro_init) {
           _retro_init();
@@ -189,12 +196,6 @@ return self;
     if (!_retro_load_game) {
     return NO;
   }
-
-    // Default to XRGB8888 (32-bit BGRA) for all cores. This ensures the bridge uses
-    // .bgra8Unorm Metal textures, preventing 16-bit/32-bit pitch mismatches for cores
-    // that don't call SET_PIXEL_FORMAT themselves (like Opera for 3DO).
-    // The core's actual format will override this if it calls SET_PIXEL_FORMAT.
-    _pixelFormat = RETRO_PIXEL_FORMAT_XRGB8888;
 
   @try {
     if (!g_instance->_retro_load_game(&gi)) {

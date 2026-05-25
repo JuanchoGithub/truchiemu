@@ -1,10 +1,11 @@
 import Foundation
+import AppKit
 import SwiftUI // Required for @Published in SystemPreferences and LibretroInfoManager
 
 // MARK: - System Action
 enum SystemAction {
     case refresh
-    case settings(String) // coreID
+    case settings(String?) // coreID — nil means use system mode
     case selectCore(SystemInfo)
     case cheats
     case bezels
@@ -183,9 +184,15 @@ struct SystemInfo: Identifiable, Codable, Hashable {
     func emuImage(size: Int) -> NSImage? {
         LoggerService.extreme(category: "SystemInfo", "Loading emu image for system: \(id)")
         guard let iconName = emuIconName else { return nil }
+
+        let cacheKey = "\(iconName)-\(size)" as NSString
+        if let cached = Self.iconCache.object(forKey: cacheKey) {
+            return cached
+        }
+
         let bundle = Bundle.main
         let is132 = size == 132
-        
+
         var namesToTry = [String]()
         if is132 {
             namesToTry.append("\(iconName.lowercased())@132w")
@@ -196,31 +203,58 @@ struct SystemInfo: Identifiable, Codable, Hashable {
             namesToTry.append(iconName.lowercased())
             namesToTry.append(iconName.uppercased())
         }
-        
+
         let subdirs = [ "EmulatorIcons/\(size)", "\(size)", "EmulatorIcons", "" ]
-        
+
         for name in namesToTry {
-            if let img = NSImage(named: name) { return img }
-            if let img = NSImage(named: "\(name).png") { return img }
-            if let img = NSImage(named: NSImage.Name(name)) { return img }
-            
+            if let img = NSImage(named: name) {
+                let cost = Int(img.size.width * img.size.height * 4)
+                Self.iconCache.setObject(img, forKey: cacheKey, cost: cost)
+                return img
+            }
+            if let img = NSImage(named: "\(name).png") {
+                let cost = Int(img.size.width * img.size.height * 4)
+                Self.iconCache.setObject(img, forKey: cacheKey, cost: cost)
+                return img
+            }
+            if let img = NSImage(named: NSImage.Name(name)) {
+                let cost = Int(img.size.width * img.size.height * 4)
+                Self.iconCache.setObject(img, forKey: cacheKey, cost: cost)
+                return img
+            }
+
             for subdir in subdirs {
                 for ext in["png", "PNG"] {
                     if let url = bundle.url(forResource: name, withExtension: ext, subdirectory: subdir) {
-                        if let img = NSImage(contentsOf: url) { return img }
+                        if let img = NSImage(contentsOf: url) {
+                            let cost = Int(img.size.width * img.size.height * 4)
+                            Self.iconCache.setObject(img, forKey: cacheKey, cost: cost)
+                            return img
+                        }
                     }
                 }
             }
         }
-        
+
         for name in namesToTry {
             LoggerService.extreme(category: "SystemInfo", "Loading emu image for system: \(id) with name: \(name)")
             if let path = bundle.path(forResource: name, ofType: "png") {
-                if let img = NSImage(contentsOf: URL(fileURLWithPath: path)) { return img }
+                if let img = NSImage(contentsOf: URL(fileURLWithPath: path)) {
+                    let cost = Int(img.size.width * img.size.height * 4)
+                    Self.iconCache.setObject(img, forKey: cacheKey, cost: cost)
+                    return img
+                }
             }
         }
         return nil
     }
+
+    private static let iconCache: NSCache<NSString, NSImage> = {
+        let cache = NSCache<NSString, NSImage>()
+        cache.countLimit = 60
+        cache.totalCostLimit = 10 * 1024 * 1024
+        return cache
+    }()
     
     var sidebarDisplayName: String {
         if let custom = customDisplayName, !custom.isEmpty {

@@ -627,6 +627,7 @@ class CoreManager: ObservableObject {
             installedCores[idx].activeVersionTag = tag
             saveInstalledCores()
             LoggerService.debug(category: "CoreManager", "Installed cores: \(installedCores)")
+            CoreOptionsManager.shared.discoverOptionsIfNeeded(for: coreID)
         }
     }
 

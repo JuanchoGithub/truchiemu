@@ -25,19 +25,19 @@ class FocusableMTKView: MTKView {
         }
 
         LoggerService.debug(category: "InputCapture", "Mouse down: button=0, inCapture=\(InputCaptureManager.shared.isCapturing)")
-        LibretroBridgeSwift.setMouseButton(0, pressed: true)
+        XPCBridgeAdapter.shared.setMouseButton(0, pressed: true)
     }
 
     override func mouseUp(with event: NSEvent) {
-        LibretroBridgeSwift.setMouseButton(0, pressed: false)
+        XPCBridgeAdapter.shared.setMouseButton(0, pressed: false)
     }
 
     override func rightMouseDown(with event: NSEvent) {
-        LibretroBridgeSwift.setMouseButton(1, pressed: true)
+        XPCBridgeAdapter.shared.setMouseButton(1, pressed: true)
     }
 
     override func rightMouseUp(with event: NSEvent) {
-        LibretroBridgeSwift.setMouseButton(1, pressed: false)
+        XPCBridgeAdapter.shared.setMouseButton(1, pressed: false)
     }
 
     override func mouseMoved(with event: NSEvent) {
@@ -62,7 +62,7 @@ class FocusableMTKView: MTKView {
         let dy = Int16(clamping: Int(event.deltaY))  // macOS Y is already inverted for libretro
 
         if dx != 0 || dy != 0 {
-            LibretroBridgeSwift.addMouseDelta(dx, y: dy)
+            XPCBridgeAdapter.shared.addMouseDelta(dx, y: dy)
         }
 
         // Update pointer position for RETRO_DEVICE_POINTER
@@ -73,7 +73,7 @@ class FocusableMTKView: MTKView {
         // macOS scroll wheel sends discrete steps, normalize to match libretro expectations
         let delta = Int16(event.scrollingDeltaY * 120) // 120 per "notch"
         if delta != 0 {
-            LibretroBridgeSwift.addMouseWheelDelta(delta)
+            XPCBridgeAdapter.shared.addMouseWheelDelta(delta)
         }
     }
 
@@ -93,7 +93,7 @@ class FocusableMTKView: MTKView {
         let normalizedY = Int16(ratioY * 2.0 * 0x7FFF - 0x7FFF)
 
         let isPressed = (NSEvent.pressedMouseButtons & 0x1) != 0
-        LibretroBridgeSwift.setPointerPosition(normalizedX, y: normalizedY, pressed: isPressed)
+        XPCBridgeAdapter.shared.setPointerPosition(normalizedX, y: normalizedY, pressed: isPressed)
     }
 
     // MARK: - Keyboard Events
@@ -166,7 +166,7 @@ class FocusableMTKView: MTKView {
             LoggerService.debug(category: "InputCapture", "DOS/ScummVM sending keyDown: retroKey=\(retroKey), modifiers=\(modifiers), character=\(characterValue)")
             
             // Send properly mapped key event directly to core
-            LibretroBridgeSwift.dispatchKeyboardEvent(
+            XPCBridgeAdapter.shared.dispatchKeyboardEvent(
                 keycode: retroKey,
                 character: characterValue,
                 modifiers: modifiers,
@@ -213,7 +213,7 @@ class FocusableMTKView: MTKView {
             
             // Send properly mapped key event directly to core
             LoggerService.debug(category: "InputCapture", "DOS/ScummVM sending keyUp: retroKey=\(retroKey), modifiers=\(modifiers), character=\(characterValue)")
-            LibretroBridgeSwift.dispatchKeyboardEvent(
+            XPCBridgeAdapter.shared.dispatchKeyboardEvent(
                 keycode: retroKey,
                 character: characterValue,
                 modifiers: modifiers,
@@ -241,7 +241,7 @@ class FocusableMTKView: MTKView {
         let character = UInt32(event.charactersIgnoringModifiers?.unicodeScalars.first?.value ?? 0)
         let modifiers = RetroKeycodeMapper.retroMod(from: event.modifierFlags)
 
-        LibretroBridgeSwift.dispatchKeyboardEvent(
+        XPCBridgeAdapter.shared.dispatchKeyboardEvent(
             keycode: retroKey,
             character: character,
             modifiers: modifiers,

@@ -5,6 +5,8 @@ struct GameOverlayToolbar: View {
     @ObservedObject var windowController: StandaloneGameWindowController
     @ObservedObject var captureManager = InputCaptureManager.shared
     @ObservedObject private var loc = LocalizationManager.shared
+    @ObservedObject private var themeManager = ThemeManager.shared
+    @Environment(\.colorScheme) private var colorScheme
 
     var body: some View {
         ZStack {
@@ -107,7 +109,7 @@ struct GameOverlayToolbar: View {
         .padding(.vertical, 10)
         .background(
             RoundedRectangle(cornerRadius: 12)
-                .fill(Color.black.opacity(0.75))
+                .fill(AppColors.windowBackground(colorScheme, tinted: themeManager.tintedSurfacesEnabled).opacity(0.85))
                 .shadow(color: .black.opacity(0.5), radius: 10, x: 0, y: 4)
         )
     }

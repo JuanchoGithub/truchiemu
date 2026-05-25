@@ -5,26 +5,43 @@ extension GameDetailView {
         ModernSectionCard(
             title: loc.localized("savedStates.title"),
             icon: "externaldrive",
-            badge: slotInfoList.filter { $0.exists && $0.id >= 0 }.isEmpty ? nil : "\(slotInfoList.filter { $0.exists && $0.id >= 0 }.count)"
+            badge: slotInfoList.filter { $0.exists }.isEmpty ? nil : "\(slotInfoList.filter { $0.exists }.count)"
         ) {
             VStack(alignment: .leading, spacing: 0) {
-                let existingSlots = slotInfoList.filter { $0.exists }
-                let emptySlots = slotInfoList.filter { !$0.exists && $0.id >= 0 }.prefix(10)
-                let showSlots = existingSlots.isEmpty ? Array(emptySlots) : slotInfoList.filter { $0.id >= 0 }
+            let autoSlot = slotInfoList.first { $0.id == -1 }
+            let userSlots = slotInfoList.filter { $0.id >= 0 }
+            let existingSlots = slotInfoList.filter { $0.exists }
+            let emptyUserSlots = slotInfoList.filter { !$0.exists && $0.id >= 0 }.prefix(10)
+            let showUserSlots = userSlots.isEmpty ? Array(emptyUserSlots) : userSlots
 
-                if showSlots.isEmpty {
-                    VStack(spacing: 8) {
-                        Image(systemName: "externaldrive.slash").font(.system(size: 30)).foregroundColor(AppColors.textTertiary(colorScheme))
-                        Text(loc.localized("savedStates.noSavedStates")).font(.subheadline).foregroundColor(AppColors.textSecondary(colorScheme))
-                        Text(loc.localized("savedStates.savedStatesCreatedDuringGameplay")).font(.caption).foregroundColor(AppColors.textTertiary(colorScheme))
-}
-.padding(.vertical, AppSpacing.xs)
-} else {
-LazyVGrid(
+            if slotInfoList.isEmpty {
+                VStack(spacing: 8) {
+                    Image(systemName: "externaldrive.slash").font(.system(size: 30)).foregroundColor(AppColors.textTertiary(colorScheme))
+                    Text(loc.localized("savedStates.noSavedStates")).font(.subheadline).foregroundColor(AppColors.textSecondary(colorScheme))
+                    Text(loc.localized("savedStates.savedStatesCreatedDuringGameplay")).font(.caption).foregroundColor(AppColors.textTertiary(colorScheme))
+                }
+                .padding(.vertical, AppSpacing.xs)
+            } else {
+                VStack(spacing: 12) {
+                    if let autoSlot = autoSlot {
+                        HStack {
+                            Spacer()
+                            ModernSaveStateSlotView(
+                                slot: autoSlot,
+                                rom: currentROM,
+                                saveStateManager: saveStateManager,
+                                onDelete: { loadSlotInfo() },
+                                onLaunchSlot: { slotId in launchGame(slotToLoad: slotId) }
+                            )
+                            Spacer()
+                        }
+                    }
+
+                    LazyVGrid(
                         columns: Array(repeating: GridItem(.flexible(), spacing: 12), count: 5),
                         spacing: 12
                     ) {
-                        ForEach(showSlots.filter { $0.id >= 0 }, id: \.id) { slot in
+                        ForEach(showUserSlots, id: \.id) { slot in
                             ModernSaveStateSlotView(
                                 slot: slot,
                                 rom: currentROM,
@@ -35,6 +52,7 @@ LazyVGrid(
                         }
                     }
                 }
+            }
 
 if !existingSlots.isEmpty {
 Divider().overlay(AppColors.divider(colorScheme))

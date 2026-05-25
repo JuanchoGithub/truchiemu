@@ -69,7 +69,8 @@ struct MouseDownButtonActionStyled<Label: View>: View {
     let action: () -> Void
     let label: () -> Label
     @State private var isPressed = false
-    
+    @State private var isHovered = false
+
     var body: some View {
         MouseDownButtonAction(action: {
             withAnimation(.easeInOut(duration: 0.1)) {
@@ -83,24 +84,63 @@ struct MouseDownButtonActionStyled<Label: View>: View {
             }
         }) {
             label()
-                .opacity(isPressed ? 0.7 : 1.0)
-                .background(
-                    RoundedRectangle(cornerRadius: 8)
-                        .fill(isPressed ? Color.white.opacity(0.25) : Color.white.opacity(0.15))
-                )
-                .contentShape(Rectangle())
+            .opacity(isPressed ? 0.7 : 1.0)
+            .background(
+                RoundedRectangle(cornerRadius: 8)
+                    .fill(Color.white.opacity(isPressed ? 0.15 : (isHovered ? 0.08 : 0)))
+            )
+            .contentShape(Rectangle())
         }
-        .frame(minWidth: 50)
+        .onHover { hovering in
+            withAnimation(.easeOut(duration: 0.1)) {
+                isHovered = hovering
+            }
+        }
     }
 }
 
 struct ToolbarButtonStyle: ButtonStyle {
     func makeBody(configuration: Configuration) -> some View {
         configuration.label
-            .opacity(configuration.isPressed ? 0.6 : 1.0)
-            .scaleEffect(configuration.isPressed ? 0.95 : 1.0)
-            .contentShape(Rectangle())
-            .animation(.easeOut(duration: 0.1), value: configuration.isPressed)
+        .opacity(configuration.isPressed ? 0.6 : 1.0)
+        .scaleEffect(configuration.isPressed ? 0.95 : 1.0)
+        .contentShape(Rectangle())
+        .animation(.easeOut(duration: 0.1), value: configuration.isPressed)
+    }
+}
+
+struct ToolbarHoverButtonStyle: ButtonStyle {
+    @Environment(\.colorScheme) private var colorScheme
+    var isHovered: Bool
+
+    func makeBody(configuration: Configuration) -> some View {
+        configuration.label
+        .opacity(configuration.isPressed ? 0.6 : 1.0)
+        .scaleEffect(configuration.isPressed ? 0.95 : 1.0)
+        .background(
+            RoundedRectangle(cornerRadius: 8)
+                .fill(Color.white.opacity(configuration.isPressed ? 0.15 : (isHovered ? 0.08 : 0)))
+        )
+        .contentShape(Rectangle())
+        .animation(.easeOut(duration: 0.1), value: configuration.isPressed)
+    }
+}
+
+struct HoverButton<Label: View>: View {
+    let action: () -> Void
+    @ViewBuilder let label: () -> Label
+    @State private var isHovered = false
+
+    var body: some View {
+        Button(action: action) {
+            label()
+        }
+        .buttonStyle(ToolbarHoverButtonStyle(isHovered: isHovered))
+        .onHover { hovering in
+            withAnimation(.easeOut(duration: 0.1)) {
+                isHovered = hovering
+            }
+        }
     }
 }
 
@@ -112,25 +152,23 @@ struct ToolbarButton: View {
     let action: () -> Void
 
     var body: some View {
-        Button(action: action) {
+        HoverButton(action: action) {
             VStack(spacing: 4) {
                 Image(systemName: icon)
-                    .font(.system(size: 16, weight: .semibold))
+                .font(.system(size: 16, weight: .semibold))
                 Text(label)
-                    .font(.system(size: 10, weight: .medium))
-                    .lineLimit(1)
+                .font(.system(size: 10, weight: .medium))
+                .lineLimit(1)
             }
             .padding(.horizontal, 10)
             .padding(.vertical, 6)
             .foregroundColor(disabled ? .white.opacity(0.3) : (danger ? .red.opacity(0.9) : .white.opacity(0.9)))
             .background(
                 RoundedRectangle(cornerRadius: 8)
-                    .fill(disabled ? Color.white.opacity(0.05) : (danger ? Color.red.opacity(0.15) : Color.white.opacity(0.1)))
+                    .fill(danger ? Color.red.opacity(0.15) : Color.clear)
             )
             .contentShape(Rectangle())
         }
-        .buttonStyle(ToolbarButtonStyle())
-        .buttonStyle(.plain)
         .disabled(disabled)
     }
 }
@@ -138,20 +176,20 @@ struct ToolbarButton: View {
 struct PauseResumeButton: View {
     @ObservedObject var runner: EmulatorRunner
     @ObservedObject private var loc = LocalizationManager.shared
-    
+
     var body: some View {
-        Button(action: {
+        HoverButton(action: {
             runner.togglePause()
         }) {
             VStack(spacing: 4) {
                 Image(systemName: runner.isPaused ? "play.fill" : "pause.fill")
-                    .font(.system(size: 16, weight: .semibold))
+                .font(.system(size: 16, weight: .semibold))
                 Text(runner.isPaused ? loc.localized("toolbar.resume") : loc.localized("toolbar.pause"))
-                    .font(.system(size: 10, weight: .medium))
+                .font(.system(size: 10, weight: .medium))
             }
-            .frame(minWidth: 50)
+            .padding(.horizontal, 10)
+            .padding(.vertical, 6)
         }
-        .buttonStyle(ToolbarButtonStyle())
         .foregroundColor(runner.isPaused ? .green : .white)
     }
 }
@@ -159,21 +197,21 @@ struct PauseResumeButton: View {
 struct FullscreenButton: View {
     @ObservedObject var windowController: StandaloneGameWindowController
     @ObservedObject private var loc = LocalizationManager.shared
-    
+
     var body: some View {
-        Button(action: {
+        HoverButton(action: {
             windowController.toggleFullscreen()
         }) {
             VStack(spacing: 4) {
                 Image(systemName: windowController.isFullscreen ? "arrow.down.right.and.arrow.up.left" : "arrow.up.left.and.arrow.down.right")
-                    .font(.system(size: 16, weight: .semibold))
+                .font(.system(size: 16, weight: .semibold))
                 Text(windowController.isFullscreen ? loc.localized("toolbar.exitFullscreen") : loc.localized("toolbar.fullscreen"))
-                    .font(.system(size: 10, weight: .medium))
-                    .lineLimit(1)
+                .font(.system(size: 10, weight: .medium))
+                .lineLimit(1)
             }
-            .frame(minWidth: 50)
+            .padding(.horizontal, 10)
+            .padding(.vertical, 6)
         }
-        .buttonStyle(ToolbarButtonStyle())
     }
 }
 
@@ -191,7 +229,8 @@ struct ReloadButton: View {
                 Text(loc.localized("toolbar.reload"))
                     .font(.system(size: 10, weight: .medium))
             }
-            .frame(minWidth: 50)
+            .padding(.horizontal, 10)
+            .padding(.vertical, 6)
         }
     }
 }
@@ -199,21 +238,21 @@ struct ReloadButton: View {
 struct AutoFullscreenButton: View {
     @ObservedObject var windowController: StandaloneGameWindowController
     @ObservedObject private var loc = LocalizationManager.shared
-    
+
     var body: some View {
-        Button(action: {
+        HoverButton(action: {
             windowController.toggleAutoFullscreen()
         }) {
             VStack(spacing: 4) {
                 Image(systemName: windowController.autoFullscreenEnabled ? "rectangle.expand.vertical" : "rectangle")
-                    .font(.system(size: 16, weight: .semibold))
+                .font(.system(size: 16, weight: .semibold))
                 Text(loc.localized("toolbar.autoFullscreen"))
-                    .font(.system(size: 10, weight: .medium))
-                    .lineLimit(1)
+                .font(.system(size: 10, weight: .medium))
+                .lineLimit(1)
             }
-            .frame(minWidth: 50)
+            .padding(.horizontal, 10)
+            .padding(.vertical, 6)
         }
-        .buttonStyle(ToolbarButtonStyle())
         .foregroundColor(windowController.autoFullscreenEnabled ? .green : .white)
     }
 }
@@ -225,23 +264,31 @@ struct SlotSelectorButton: View {
     @ObservedObject private var loc = LocalizationManager.shared
     @State private var isDropdownShown = false
     @State private var selectedSlot: Int = 0
+    @State private var isHovered = false
     var disabled: Bool = false
 
     var body: some View {
         VStack(spacing: 4) {
             Image(systemName: "number.circle")
-                .font(.system(size: 16, weight: .semibold))
+            .font(.system(size: 16, weight: .semibold))
             Text("Slot \(currentSlot == -1 ? loc.localized("toolbar.slotAuto") : "\(abs(currentSlot))")")
-                .font(.system(size: 10, weight: .medium))
+            .font(.system(size: 10, weight: .medium))
         }
-        .frame(minWidth: 50)
+        .padding(.horizontal, 10)
+        .padding(.vertical, 6)
         .foregroundColor(disabled ? .white.opacity(0.3) : .white)
-        .padding(6)
         .background(
             RoundedRectangle(cornerRadius: 8)
-                .fill(isDropdownShown ? Color.white.opacity(0.15) : Color.clear)
+                .fill(Color.white.opacity(isHovered && !disabled ? 0.08 : 0))
         )
         .contentShape(Rectangle())
+        .onHover { hovering in
+            if !disabled {
+                withAnimation(.easeOut(duration: 0.1)) {
+                    isHovered = hovering
+                }
+            }
+        }
         .onTapGesture {
             if !disabled {
                 selectedSlot = currentSlot

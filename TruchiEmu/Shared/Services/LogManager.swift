@@ -1,5 +1,7 @@
 import Foundation
+#if !XPC_SERVICE
 import AppKit
+#endif
 
 // MARK: - LogManager
 
@@ -52,34 +54,42 @@ final class LogManager: @unchecked Sendable {
     
     // Get custom log folder URL if set by user.
     var customLogFolderURL: URL? {
+        #if XPC_SERVICE
+        return nil
+        #else
         guard let data = AppSettings.getData(Self.customLogFolderKey) else { return nil }
         var isStale = false
         return try? URL(resolvingBookmarkData: data, options: [], relativeTo: nil, bookmarkDataIsStale: &isStale)
+        #endif
     }
     
     // Save a custom log folder bookmark.
     func setLogFolder(_ url: URL) {
+        #if !XPC_SERVICE
         do {
             _ = url.startAccessingSecurityScopedResource()
             let bookmarkData = try url.bookmarkData(options: .withSecurityScope)
             AppSettings.setData(Self.customLogFolderKey, value: bookmarkData)
-            LoggerService.shared.setLevel(LoggerService.shared.currentLevel) // Re-setup file logging
+            LoggerService.shared.setLevel(LoggerService.shared.currentLevel)
             LoggerService.info(category: "LogManager", "Log folder changed to \(url.path)")
         } catch {
             LoggerService.debug(category: "LogManager", "Failed to save log folder bookmark: \(error)")
         }
+        #endif
     }
     
     // Reset to default log folder.
     func resetToDefaultLogFolder() {
+        #if !XPC_SERVICE
         AppSettings.removeObject(Self.customLogFolderKey)
-        LoggerService.shared.setLevel(LoggerService.shared.currentLevel) // Re-setup file logging
+        LoggerService.shared.setLevel(LoggerService.shared.currentLevel)
         LoggerService.info(category: "LogManager", "Log folder reset to default")
+        #endif
     }
     
     // MARK: - Finder Integration
-    
-    // Open the log file in Finder (reveals the file).
+    #if !XPC_SERVICE
+
     func showLogInFinder() {
         let logURL = currentLogURL
         
@@ -112,7 +122,8 @@ final class LogManager: @unchecked Sendable {
             NSAlert.showAlert(title: "Log Folder Not Found", message: "The log folder does not exist at \(folderURL.path)")
         }
     }
-    
+    #endif
+
     // MARK: - Cleanup
     
     // Clean up old log files (rotated files older than 7 days).
@@ -196,6 +207,7 @@ final class LogManager: @unchecked Sendable {
     }
 }
 
+#if !XPC_SERVICE
 // MARK: - NSAlert Helper
 
 extension NSAlert {
@@ -208,3 +220,4 @@ extension NSAlert {
         alert.runModal()
     }
 }
+#endif

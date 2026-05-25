@@ -10,6 +10,10 @@ static dispatch_queue_t g_optAccessQueue = nil;
 static dispatch_once_t g_optAccessQueueOnce;
 static NSString *_Nullable g_optionsDylibPath = nil;
 
+#ifndef XPC_SERVICE
+BOOL g_xpcModeActive = NO;
+#endif
+
 // --- Callback Stubs for Headless Mode ---
 // These are critical. They provide valid memory addresses for the core to call
 // during option discovery, preventing the 0x0 null pointer crash.
@@ -31,13 +35,22 @@ static int16_t input_state_stub(unsigned port, unsigned device, unsigned index, 
 }
 
 + (void)launchWithDylibPath:(NSString *)dylibPath
-                    romPath:(NSString *)romPath
-                  shaderDir:(nullable NSString *)shaderDir
-              videoCallback:(void (^)(const void *, int, int, int, int))cb
-                     coreID:(NSString *)coreID
-                   systemID:(nullable NSString *)systemID
-                romFilename:(nullable NSString *)romFilename
-            failureCallback:(nullable void (^)(NSString *))failureCb {
+ romPath:(NSString *)romPath
+ shaderDir:(nullable NSString *)shaderDir
+ videoCallback:(void (^)(const void *, int, int, int, int))cb
+ coreID:(NSString *)coreID
+ systemID:(nullable NSString *)systemID
+ romFilename:(nullable NSString *)romFilename
+ failureCallback:(nullable void (^)(NSString *))failureCb {
+
+#ifndef XPC_SERVICE
+    extern BOOL g_xpcModeActive;
+    if (g_xpcModeActive) {
+        NSLog(@"[Bridge] BLOCKED: launch() called in main process while XPC mode is active — refusing to load core dylib");
+        if (failureCb) failureCb(@"XPC mode active — core must run in service process");
+        return;
+    }
+#endif
     
     static dispatch_once_t onceToken;
     dispatch_once(&onceToken, ^{
@@ -132,6 +145,7 @@ static int16_t input_state_stub(unsigned port, unsigned device, unsigned index, 
     return 0;
 }
 + (void)setKeyState:(int)rid pressed:(BOOL)p { if (g_instance) [g_instance setKeyState:rid pressed:p]; }
++ (void)setControllerPortDevice:(unsigned)port device:(unsigned)device { if (g_instance) [g_instance setControllerPortDevice:port device:device]; }
 + (void)setTurboState:(int)idx active:(BOOL)active targetButton:(int)targetIdx {
     if (g_instance) [g_instance setTurboState:idx active:active targetButton:targetIdx];
 }
@@ -148,7 +162,13 @@ static int16_t input_state_stub(unsigned port, unsigned device, unsigned index, 
 
 // --- Load a core to initialize its options (Headless Mode) ---
 + (void)loadCoreForOptions:(NSString *)dylibPath coreID:(NSString *)coreID romPath:(nullable NSString *)romPath {
-    // Guard against concurrent calls - only one discovery session at a time
+#ifndef XPC_SERVICE
+    if (g_xpcModeActive) {
+        NSLog(@"[Bridge] BLOCKED: loadCoreForOptions() called in main process while XPC mode is active");
+        return;
+    }
+#endif
+// Guard against concurrent calls - only one discovery session at a time
     static BOOL discoveryInProgress = NO;
     if (discoveryInProgress) {
         bridge_log_printf(RETRO_LOG_WARN, "Discovery: Skipping - another discovery is already in progress");
