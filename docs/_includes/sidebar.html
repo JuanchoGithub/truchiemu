@@ -1,35 +1,37 @@
 {% assign lang_code = page.url | remove_first: '/' | split: '/' | first %}
 {% if lang_code != 'es' and lang_code != 'pt' %}{% assign lang_code = 'en' %}{% endif %}
+{% assign lang_path = '' %}
+{% if lang_code != 'en' %}{% assign lang_path = '/' | append: lang_code %}{% endif %}
 <aside class="sidebar">
 <div class="sidebar-section">
 <h3>{{ site.data[lang_code].sidebar_getting_started | default: "Getting Started" }}</h3>
 <ul class="sidebar-nav">
-<li><a href="{{ '/getting-started.html' | relative_url }}">{{ site.data[lang_code].sidebar_installation | default: "Installation" }}</a></li>
-<li><a href="{{ '/getting-started.html' | relative_url }}#quick-start">{{ site.data[lang_code].sidebar_quick_start | default: "Quick Start" }}</a></li>
-<li><a href="{{ '/getting-started.html' | relative_url }}#next-steps">{{ site.data[lang_code].sidebar_next_steps | default: "Next Steps" }}</a></li>
+<li><a href="{{ lang_path | append: '/getting-started.html' | relative_url }}">{{ site.data[lang_code].sidebar_installation | default: "Installation" }}</a></li>
+<li><a href="{{ lang_path | append: '/getting-started.html' | relative_url }}#quick-start">{{ site.data[lang_code].sidebar_quick_start | default: "Quick Start" }}</a></li>
+<li><a href="{{ lang_path | append: '/getting-started.html' | relative_url }}#next-steps">{{ site.data[lang_code].sidebar_next_steps | default: "Next Steps" }}</a></li>
 </ul>
 </div>
 
 <div class="sidebar-section">
 <h3>{{ site.data[lang_code].sidebar_core_features | default: "Core Features" }}</h3>
 <ul class="sidebar-nav">
-<li><a href="{{ '/features/shaders.html' | relative_url }}">{{ site.data[lang_code].sidebar_shaders | default: "Shaders" }}</a></li>
-<li><a href="{{ '/features/library.html' | relative_url }}">{{ site.data[lang_code].sidebar_library | default: "Library Management" }}</a></li>
-<li><a href="{{ '/features/achievements.html' | relative_url }}">{{ site.data[lang_code].sidebar_achievements | default: "Achievements" }}</a></li>
-<li><a href="{{ '/features/save-states.html' | relative_url }}">{{ site.data[lang_code].sidebar_save_states | default: "Save States" }}</a></li>
-<li><a href="{{ '/features/controllers.html' | relative_url }}">{{ site.data[lang_code].sidebar_controllers | default: "Controllers" }}</a></li>
-<li><a href="{{ '/features/cheats.html' | relative_url }}">{{ site.data[lang_code].sidebar_cheats | default: "Cheats" }}</a></li>
-<li><a href="{{ '/features/themes.html' | relative_url }}">{{ site.data[lang_code].sidebar_themes | default: "Themes & Appearance" }}</a></li>
+<li><a href="{{ lang_path | append: '/features/shaders.html' | relative_url }}">{{ site.data[lang_code].sidebar_shaders | default: "Shaders" }}</a></li>
+<li><a href="{{ lang_path | append: '/features/library.html' | relative_url }}">{{ site.data[lang_code].sidebar_library | default: "Library Management" }}</a></li>
+<li><a href="{{ lang_path | append: '/features/achievements.html' | relative_url }}">{{ site.data[lang_code].sidebar_achievements | default: "Achievements" }}</a></li>
+<li><a href="{{ lang_path | append: '/features/save-states.html' | relative_url }}">{{ site.data[lang_code].sidebar_save_states | default: "Save States" }}</a></li>
+<li><a href="{{ lang_path | append: '/features/controllers.html' | relative_url }}">{{ site.data[lang_code].sidebar_controllers | default: "Controllers" }}</a></li>
+<li><a href="{{ lang_path | append: '/features/cheats.html' | relative_url }}">{{ site.data[lang_code].sidebar_cheats | default: "Cheats" }}</a></li>
+<li><a href="{{ lang_path | append: '/features/themes.html' | relative_url }}">{{ site.data[lang_code].sidebar_themes | default: "Themes & Appearance" }}</a></li>
 </ul>
 </div>
 
 <div class="sidebar-section">
 <h3>{{ site.data[lang_code].sidebar_development | default: "Development" }}</h3>
 <ul class="sidebar-nav">
-<li><a href="{{ '/development.html' | relative_url }}">{{ site.data[lang_code].sidebar_architecture | default: "Architecture" }}</a></li>
-<li><a href="{{ '/dev/building.html' | relative_url }}">{{ site.data[lang_code].sidebar_building | default: "Building" }}</a></li>
-<li><a href="{{ '/dev/contributing.html' | relative_url }}">{{ site.data[lang_code].sidebar_contributing | default: "Contributing" }}</a></li>
-<li><a href="{{ '/dreamcast-vmu-fix.html' | relative_url }}">{{ site.data[lang_code].sidebar_dreamcast_debug | default: "Debugging Dreamcast VMU Saves" }}</a></li>
+<li><a href="{{ lang_path | append: '/development.html' | relative_url }}">{{ site.data[lang_code].sidebar_architecture | default: "Architecture" }}</a></li>
+<li><a href="{{ lang_path | append: '/dev/building.html' | relative_url }}">{{ site.data[lang_code].sidebar_building | default: "Building" }}</a></li>
+<li><a href="{{ lang_path | append: '/dev/contributing.html' | relative_url }}">{{ site.data[lang_code].sidebar_contributing | default: "Contributing" }}</a></li>
+<li><a href="{{ lang_path | append: '/dreamcast-vmu-fix.html' | relative_url }}">{{ site.data[lang_code].sidebar_dreamcast_debug | default: "Debugging Dreamcast VMU Saves" }}</a></li>
 </ul>
 </div>
 

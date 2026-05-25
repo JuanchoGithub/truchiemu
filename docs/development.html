@@ -39,7 +39,7 @@ last_updated: May 2026
             <li><strong>XcodeGen:</strong> <code>brew install xcodegen</code></li>
             <li><strong>C++ Standard:</strong> gnu++17 / gnu17</li>
         </ul>
-        <p>See the <a href="{{ '/dev/building/' | relative_url }}">Building from Source</a> guide for a full step-by-step setup and the <a href="{{ '/dev/contributing/' | relative_url }}">Contributing</a> guide for conventions and workflow.</p>
+        <p>See the <a href="{{ '/dev/building.html' | relative_url }}">Building from Source</a> guide for a full step-by-step setup and the <a href="{{ '/dev/contributing.html' | relative_url }}">Contributing</a> guide for conventions and workflow.</p>
     </div>
 </section>
 
@@ -104,7 +104,7 @@ xcodebuild -project TruchiEmu.xcodeproj -scheme TruchiEmu -configuration Debug b
             </div>
         </div>
 
-        <p>For an interactive visualization of how these layers communicate during common workflows, see the <a href="{{ '/app-flows/' | relative_url }}">App Architecture Flows</a> page.</p>
+        <p>For an interactive visualization of how these layers communicate during common workflows, see the <a href="{{ '/app-flows.html' | relative_url }}">App Architecture Flows</a> page.</p>
     </div>
 </section>
 
@@ -184,7 +184,7 @@ xcodebuild -project TruchiEmu.xcodeproj -scheme TruchiEmu -configuration Debug b
         <p>The core system integrates with <code>SaveStateManager</code> for LZ4-compressed snapshots with TCS2 headers, and <code>SaveDirectoryManager</code> for path resolution. Battery saves are handled automatically by the emulation core.</p>
 
         <div class="info-box">
-            <p><strong>Deep Dive:</strong> For a detailed walkthrough of a real bug fix involving core option lifecycles, see <a href="{{ '/dreamcast-vmu-fix/' | relative_url }}">Debugging Dreamcast VMU Saves</a>.</p>
+            <p><strong>Deep Dive:</strong> For a detailed walkthrough of a real bug fix involving core option lifecycles, see <a href="{{ '/dreamcast-vmu-fix.html' | relative_url }}">Debugging Dreamcast VMU Saves</a>.</p>
         </div>
     </div>
 </section>
@@ -280,22 +280,22 @@ xcodebuild -project TruchiEmu.xcodeproj -scheme TruchiEmu -configuration Debug b
             <div class="next-step-card">
                 <h4>📖 Building from Source</h4>
                 <p>Detailed setup instructions and troubleshooting.</p>
-                <a href="{{ '/dev/building/' | relative_url }}" class="btn btn-primary">Building Guide</a>
+                <a href="{{ '/dev/building.html' | relative_url }}" class="btn btn-primary">Building Guide</a>
             </div>
             <div class="next-step-card">
                 <h4>🤝 Contributing</h4>
                 <p>Conventions, code review, and pull request workflow.</p>
-                <a href="{{ '/dev/contributing/' | relative_url }}" class="btn btn-primary">Contributing</a>
+                <a href="{{ '/dev/contributing.html' | relative_url }}" class="btn btn-primary">Contributing</a>
             </div>
             <div class="next-step-card">
                 <h4>🔀 App Architecture Flows</h4>
                 <p>Interactive visualization of package communication.</p>
-                <a href="{{ '/app-flows/' | relative_url }}" class="btn btn-primary">Architecture Flows</a>
+                <a href="{{ '/app-flows.html' | relative_url }}" class="btn btn-primary">Architecture Flows</a>
             </div>
             <div class="next-step-card">
                 <h4>🐛 Dreamcast VMU Deep Dive</h4>
                 <p>Postmortem of a complex core integration bug.</p>
-                <a href="{{ '/dreamcast-vmu-fix/' | relative_url }}" class="btn btn-primary">Deep Dive</a>
+                <a href="{{ '/dreamcast-vmu-fix.html' | relative_url }}" class="btn btn-primary">Deep Dive</a>
             </div>
         </div>
     </div>

@@ -1,5 +1,7 @@
 <!DOCTYPE html>
-<html lang="{{ site.active_lang }}">
+{% assign hlang = page.url | remove_first: '/' | split: '/' | first %}
+{% if hlang != 'es' and hlang != 'pt' %}{% assign hlang = 'en' %}{% endif %}
+<html lang="{{ hlang }}">
 <head>
 {% include head.html %}
 </head>

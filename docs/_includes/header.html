@@ -1,18 +1,20 @@
 {% assign lang_code = page.url | remove_first: '/' | split: '/' | first %}
 {% if lang_code != 'es' and lang_code != 'pt' %}{% assign lang_code = 'en' %}{% endif %}
+{% assign lang_path = '' %}
+{% if lang_code != 'en' %}{% assign lang_path = '/' | append: lang_code %}{% endif %}
 <header class="site-header">
 <div class="container">
 <div class="header-content">
-<a href="{% if lang_code == 'en' %}{{ '/' | relative_url }}{% else %}{{ '/' | relative_url }}{% endif %}" class="logo">
+<a href="{{ lang_path | append: '/' | relative_url }}" class="logo">
 <img src="{{ '/media/logo-icon.png' | relative_url }}" alt="TruchiEmu" width="32" height="32">
 <span>TruchiEmu</span>
 </a>
 
 <nav class="main-nav">
-<a href="{{ '/getting-started.html' | relative_url }}" class="nav-link">Getting Started</a>
-<a href="{{ '/features.html' | relative_url }}" class="nav-link">Features</a>
-<a href="{{ '/troubleshooting.html' | relative_url }}" class="nav-link">Troubleshooting</a>
-<a href="{{ '/development.html' | relative_url }}" class="nav-link">Development</a>
+<a href="{{ lang_path | append: '/getting-started.html' | relative_url }}" class="nav-link">Getting Started</a>
+<a href="{{ lang_path | append: '/features.html' | relative_url }}" class="nav-link">Features</a>
+<a href="{{ lang_path | append: '/troubleshooting.html' | relative_url }}" class="nav-link">Troubleshooting</a>
+<a href="{{ lang_path | append: '/development.html' | relative_url }}" class="nav-link">Development</a>
 </nav>
 
 <div class="header-actions">
