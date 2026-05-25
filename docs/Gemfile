@@ -7,7 +7,6 @@ gem "jekyll-sitemap"
 gem "jekyll-seo-tag"
 gem "jekyll-feed"
 gem "jekyll-optional-front-matter"
-gem "jekyll-polyglot", "~> 1.8"
 end
 
 platforms :mingw, :x64_mingw, :mswin, :jruby do
