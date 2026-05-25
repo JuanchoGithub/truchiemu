@@ -42,10 +42,10 @@ vars:
 version: "1.0.0"
 icon: "/media/logo-icon.png"
 
-languages: ["en", "es", "pt"]
+languages: ["en"]
 default_lang: "en"
-exclude_from_localization: ["assets", "media", "flows.json", "Gemfile", "Gemfile.lock", "vendor", "scripts", "es", "pt"]
-lang_from_path: true
+exclude_from_localization: ["assets", "media", "flows.json", "Gemfile", "Gemfile.lock", "vendor", "scripts"]
+lang_from_path: false
 
 nav:
 en:

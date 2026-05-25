@@ -7,7 +7,7 @@
 </a>
 
 <nav class="main-nav">
-{% for item in site.nav[site.active_lang] %}
+{% for item in site.nav.en %}
 <a href="{{ item.url | relative_url }}" class="nav-link {% if page.url == item.url %}active{% endif %}">
 {{ item.title }}
 </a>
@@ -24,13 +24,20 @@
         </svg>
       </button>
       <div class="lang-switcher">
-        {% for lang in site.languages %}
-        {% if lang == site.active_lang %}
-        <span class="lang-link lang-active">{{ lang | upcase }}</span>
+        {% assign first_seg = page.url | remove_first: '/' | split: '/' | first %}
+        {% if first_seg == 'es' %}
+          <a href="{{ '/' | relative_url }}" class="lang-link">EN</a>
+          <span class="lang-link lang-active">ES</span>
+          <a href="{{ '/pt/' | relative_url }}" class="lang-link">PT</a>
+        {% elsif first_seg == 'pt' %}
+          <a href="{{ '/' | relative_url }}" class="lang-link">EN</a>
+          <a href="{{ '/es/' | relative_url }}" class="lang-link">ES</a>
+          <span class="lang-link lang-active">PT</span>
         {% else %}
-        <a href="{% if lang == site.default_lang %}{{ page.url | remove_first: '/' | remove_first: site.active_lang | remove_first: '/' | prepend: '/' | relative_url }}{% else %}{{ page.url | remove_first: '/' | remove_first: site.active_lang | remove_first: '/' | prepend: '/' | prepend: lang | prepend: '/' | relative_url }}{% endif %}" class="lang-link">{{ lang | upcase }}</a>
+          <span class="lang-link lang-active">EN</span>
+          <a href="{{ '/es/' | relative_url }}" class="lang-link">ES</a>
+          <a href="{{ '/pt/' | relative_url }}" class="lang-link">PT</a>
         {% endif %}
-        {% endfor %}
       </div>
 <a href="https://github.com/JuanchoGithub/truchiemu" class="btn btn-outline" target="_blank">
 {{ site.data[site.active_lang].github }}
