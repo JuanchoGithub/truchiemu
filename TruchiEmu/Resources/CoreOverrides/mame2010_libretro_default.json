@@ -1,4 +1,5 @@
 {
+  "mame_current_frame_skip": "0",
   "mame_current_skip_nagscreen": "enabled",
   "mame_current_skip_warnings": "enabled"
 }

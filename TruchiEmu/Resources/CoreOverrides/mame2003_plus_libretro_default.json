@@ -1,4 +1,5 @@
 {
+  "mame2003-plus_frameskip": "disabled",
   "mame2003-plus_skip_disclaimer": "enabled",
   "mame2003-plus_skip_warnings": "enabled"
 }
