@@ -17,8 +17,10 @@
 </div>
 
 {% if page.last_updated %}
+{% assign lang_code = page.url | remove_first: '/' | split: '/' | first %}
+{% if lang_code != 'es' and lang_code != 'pt' %}{% assign lang_code = 'en' %}{% endif %}
 <div class="page-meta">
-<small>{{ site.data[site.active_lang].last_updated }}: {{ page.last_updated }}</small>
+<small>{{ site.data[lang_code].last_updated | default: "Last updated" }}: {{ page.last_updated }}</small>
 </div>
 {% endif %}
 </main>

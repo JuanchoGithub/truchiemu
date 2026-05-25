@@ -1,17 +1,18 @@
+{% assign lang_code = page.url | remove_first: '/' | split: '/' | first %}
+{% if lang_code != 'es' and lang_code != 'pt' %}{% assign lang_code = 'en' %}{% endif %}
 <header class="site-header">
 <div class="container">
 <div class="header-content">
-<a href="{{ '/' | relative_url }}" class="logo">
+<a href="{% if lang_code == 'en' %}{{ '/' | relative_url }}{% else %}{{ '/' | relative_url }}{% endif %}" class="logo">
 <img src="{{ '/media/logo-icon.png' | relative_url }}" alt="TruchiEmu" width="32" height="32">
 <span>TruchiEmu</span>
 </a>
 
 <nav class="main-nav">
-{% for item in site.nav.en %}
-<a href="{{ item.url | relative_url }}" class="nav-link {% if page.url == item.url %}active{% endif %}">
-{{ item.title }}
-</a>
-{% endfor %}
+<a href="{{ '/getting-started.html' | relative_url }}" class="nav-link">Getting Started</a>
+<a href="{{ '/features.html' | relative_url }}" class="nav-link">Features</a>
+<a href="{{ '/troubleshooting.html' | relative_url }}" class="nav-link">Troubleshooting</a>
+<a href="{{ '/development.html' | relative_url }}" class="nav-link">Development</a>
 </nav>
 
 <div class="header-actions">
@@ -24,23 +25,22 @@
         </svg>
       </button>
       <div class="lang-switcher">
-        {% assign first_seg = page.url | remove_first: '/' | split: '/' | first %}
-        {% if first_seg == 'es' %}
-          <a href="{{ '/' | relative_url }}" class="lang-link">EN</a>
-          <span class="lang-link lang-active">ES</span>
-          <a href="{{ '/pt/' | relative_url }}" class="lang-link">PT</a>
-        {% elsif first_seg == 'pt' %}
-          <a href="{{ '/' | relative_url }}" class="lang-link">EN</a>
-          <a href="{{ '/es/' | relative_url }}" class="lang-link">ES</a>
-          <span class="lang-link lang-active">PT</span>
-        {% else %}
+        {% if lang_code == 'en' %}
           <span class="lang-link lang-active">EN</span>
           <a href="{{ '/es/' | relative_url }}" class="lang-link">ES</a>
           <a href="{{ '/pt/' | relative_url }}" class="lang-link">PT</a>
+        {% elsif lang_code == 'es' %}
+          <a href="{{ '/' | relative_url }}" class="lang-link">EN</a>
+          <span class="lang-link lang-active">ES</span>
+          <a href="{{ '/pt/' | relative_url }}" class="lang-link">PT</a>
+        {% else %}
+          <a href="{{ '/' | relative_url }}" class="lang-link">EN</a>
+          <a href="{{ '/es/' | relative_url }}" class="lang-link">ES</a>
+          <span class="lang-link lang-active">PT</span>
         {% endif %}
       </div>
 <a href="https://github.com/JuanchoGithub/truchiemu" class="btn btn-outline" target="_blank">
-{{ site.data[site.active_lang].github }}
+{{ site.data[lang_code].github | default: "GitHub" }}
 </a>
 </div>
 </div>
@@ -48,7 +48,7 @@
 </header>
 <div class="search-overlay" id="search-overlay">
 <div class="search-container">
-<input type="text" id="search-input" placeholder="{{ site.data[site.active_lang].search_placeholder }}" autofocus>
+<input type="text" id="search-input" placeholder="{{ site.data[lang_code].search_placeholder | default: 'Search documentation...' }}" autofocus>
 <button id="search-close" class="search-close">&times;</button>
 <div id="search-results"></div>
 </div>

@@ -1,44 +1,46 @@
+{% assign lang_code = page.url | remove_first: '/' | split: '/' | first %}
+{% if lang_code != 'es' and lang_code != 'pt' %}{% assign lang_code = 'en' %}{% endif %}
 <footer class="site-footer">
 <div class="container">
 <div class="footer-content">
 <div class="footer-section">
 <h4>TruchiEmu</h4>
-<p>{{ site.data[site.active_lang].site_description }}</p>
+<p>{{ site.data[lang_code].site_description | default: "Complete documentation for the ultimate macOS retro gaming emulator" }}</p>
 <div class="social-links">
 <a href="https://github.com/JuanchoGithub/truchiemu" target="_blank" aria-label="GitHub">
-{{ site.data[site.active_lang].github }}
+GitHub
 </a>
 </div>
 </div>
 
 <div class="footer-section">
-<h4>{{ site.data[site.active_lang].resources }}</h4>
+<h4>{{ site.data[lang_code].resources | default: "Resources" }}</h4>
 <ul>
-<li><a href="{{ '/getting-started.html' | relative_url }}">{{ site.data[site.active_lang].getting_started }}</a></li>
-<li><a href="{{ '/features.html' | relative_url }}">{{ site.data[site.active_lang].features }}</a></li>
-<li><a href="{{ '/troubleshooting.html' | relative_url }}">{{ site.data[site.active_lang].troubleshooting }}</a></li>
-<li><a href="{{ '/development.html' | relative_url }}">{{ site.data[site.active_lang].development }}</a></li>
+<li><a href="{{ '/getting-started.html' | relative_url }}">{{ site.data[lang_code].getting_started | default: "Getting Started" }}</a></li>
+<li><a href="{{ '/features.html' | relative_url }}">{{ site.data[lang_code].features | default: "Features" }}</a></li>
+<li><a href="{{ '/troubleshooting.html' | relative_url }}">{{ site.data[lang_code].troubleshooting | default: "Troubleshooting" }}</a></li>
+<li><a href="{{ '/development.html' | relative_url }}">{{ site.data[lang_code].development | default: "Development" }}</a></li>
 </ul>
 </div>
 
 <div class="footer-section">
-<h4>{{ site.data[site.active_lang].supported_systems }}</h4>
+<h4>{{ site.data[lang_code].supported_systems | default: "Supported Systems" }}</h4>
 <ul>
 <li><a href="{{ '/systems/nes.html' | relative_url }}">NES</a></li>
 <li><a href="{{ '/systems/snes.html' | relative_url }}">SNES</a></li>
 <li><a href="{{ '/systems/n64.html' | relative_url }}">N64</a></li>
 <li><a href="{{ '/systems/gba.html' | relative_url }}">GBA</a></li>
-<li><a href="{{ '/systems.html' | relative_url }}">{{ site.data[site.active_lang].all_systems }} &rarr;</a></li>
+<li><a href="{{ '/systems.html' | relative_url }}">{{ site.data[lang_code].all_systems | default: "All Systems" }} &rarr;</a></li>
 </ul>
 </div>
 
 <div class="footer-section">
-<h4>{{ site.data[site.active_lang].project }}</h4>
+<h4>{{ site.data[lang_code].project | default: "Project" }}</h4>
 <ul>
-<li><a href="https://github.com/JuanchoGithub/truchiemu/releases" target="_blank">{{ site.data[site.active_lang].downloads }}</a></li>
-<li><a href="https://github.com/JuanchoGithub/truchiemu/issues" target="_blank">{{ site.data[site.active_lang].issues }}</a></li>
-<li><a href="{{ '/development.html' | relative_url }}">{{ site.data[site.active_lang].contribute }}</a></li>
-<li><a href="{{ '/license.html' | relative_url }}">{{ site.data[site.active_lang].license }}</a></li>
+<li><a href="https://github.com/JuanchoGithub/truchiemu/releases" target="_blank">{{ site.data[lang_code].downloads | default: "Downloads" }}</a></li>
+<li><a href="https://github.com/JuanchoGithub/truchiemu/issues" target="_blank">{{ site.data[lang_code].issues | default: "Issues" }}</a></li>
+<li><a href="{{ '/development.html' | relative_url }}">{{ site.data[lang_code].contribute | default: "Contribute" }}</a></li>
+<li><a href="{{ '/license.html' | relative_url }}">{{ site.data[lang_code].license | default: "License" }}</a></li>
 </ul>
 </div>
 </div>
