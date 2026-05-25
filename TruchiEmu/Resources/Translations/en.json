@@ -1144,5 +1144,6 @@
   "game.alreadyRunning.switchAndSave": "Switch & Save",
   "game.alreadyRunning.switchWithoutSaving": "Switch Without Saving",
   "game.alreadyRunning.switch": "Switch",
-  "game.alreadyRunning.cancel": "Cancel"
+  "game.alreadyRunning.cancel": "Cancel",
+  "game.loading": "Loading game..."
 }

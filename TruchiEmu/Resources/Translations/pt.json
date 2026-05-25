@@ -1142,5 +1142,6 @@
   "game.alreadyRunning.switchAndSave": "Trocar e Salvar",
   "game.alreadyRunning.switchWithoutSaving": "Trocar sem Salvar",
   "game.alreadyRunning.switch": "Trocar",
-  "game.alreadyRunning.cancel": "Cancelar"
+  "game.alreadyRunning.cancel": "Cancelar",
+  "game.loading": "Carregando jogo..."
 }

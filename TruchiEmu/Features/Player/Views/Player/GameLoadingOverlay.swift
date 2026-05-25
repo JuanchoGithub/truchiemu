@@ -1,0 +1,75 @@
+import SwiftUI
+
+struct GameLoadingOverlay: View {
+    @ObservedObject var windowController: StandaloneGameWindowController
+    @ObservedObject private var loc = LocalizationManager.shared
+    @ObservedObject private var themeManager = ThemeManager.shared
+    @Environment(\.colorScheme) private var colorScheme
+
+    var body: some View {
+        ZStack {
+            Color.black
+                .ignoresSafeArea()
+
+            if windowController.isLoading {
+                VStack(spacing: 20) {
+                    Spacer()
+
+                    Text(verbatim: windowController.currentGameROM?.displayName ?? "")
+                        .font(AppTypography.title2)
+                        .foregroundStyle(AppColors.textPrimary(colorScheme))
+                        .lineLimit(2)
+                        .multilineTextAlignment(.center)
+                        .padding(.horizontal, 40)
+
+                    if let systemID = windowController.currentGameROM?.systemID {
+                        Text(verbatim: SystemDatabase.systemName(forInternalID: systemID))
+                            .font(AppTypography.subheadline)
+                            .foregroundStyle(AppColors.textSecondary(colorScheme))
+                    }
+
+                    Spacer()
+                        .frame(height: 8)
+
+                    BouncingProgressBar()
+
+                    Text("game.loading")
+                        .font(AppTypography.callout)
+                        .foregroundStyle(AppColors.textTertiary(colorScheme))
+
+                    Spacer()
+                }
+                .frame(maxWidth: .infinity, maxHeight: .infinity)
+                .transition(.opacity)
+            }
+        }
+        .animation(AppAnimations.smooth, value: windowController.isLoading)
+    }
+}
+
+private struct BouncingProgressBar: View {
+    @State private var isExpanded = false
+
+    var body: some View {
+        GeometryReader { geo in
+            let barWidth = geo.size.width * 0.35
+            let travelDistance = geo.size.width - barWidth
+
+            RoundedRectangle(cornerRadius: AppRadius.full)
+                .fill(AppGradients.accent)
+                .frame(width: barWidth, height: 4)
+                .offset(x: isExpanded ? travelDistance : 0)
+                .shadow(color: AppColors.brandAccent.opacity(0.4), radius: 6)
+                .onAppear {
+                    withAnimation(
+                        Animation.easeInOut(duration: 1.5)
+                            .repeatForever(autoreverses: true)
+                    ) {
+                        isExpanded = true
+                    }
+                }
+        }
+        .frame(height: 4)
+        .padding(.horizontal, 60)
+    }
+}

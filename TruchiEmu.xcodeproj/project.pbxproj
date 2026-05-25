@@ -339,6 +339,7 @@
 		623DD723820F683E9373BB2C /* SFCMSU.png in Resources */ = {isa = PBXBuildFile; fileRef = 3BE49C585633F028422B60E3 /* SFCMSU.png */; };
 		6286C8D0A9AEC23C1804B60F /* msx_fmsx-cheats.zip in Resources */ = {isa = PBXBuildFile; fileRef = 2E2B367F8D645EC91E7700D7 /* msx_fmsx-cheats.zip */; };
 		62F0EFA300C2D18450DAA638 /* fds-cheats.zip in Resources */ = {isa = PBXBuildFile; fileRef = 3E98450A3942B71D79BB3CB5 /* fds-cheats.zip */; };
+		630942A29155AFB23DE78323 /* GameLoadingOverlay.swift in Sources */ = {isa = PBXBuildFile; fileRef = C61A9A36D430D34E4C3ABDE0 /* GameLoadingOverlay.swift */; };
 		639086FF57BC60B33435D78A /* gearboy_libretro_gb.json in Resources */ = {isa = PBXBuildFile; fileRef = 3D5122C0BA2C8EE43B5E3F24 /* gearboy_libretro_gb.json */; };
 		639602C9D008AD72B0CFD79A /* input_coreLabels_reminiscence.json in Resources */ = {isa = PBXBuildFile; fileRef = 7BB4D897239AF20C30DBDE57 /* input_coreLabels_reminiscence.json */; };
 		63F7860126D2C8CDEB017BF0 /* input_systemLabels_dreamcast.json in Resources */ = {isa = PBXBuildFile; fileRef = 8D658DC4222E8866C4C9BB0C /* input_systemLabels_dreamcast.json */; };
@@ -1588,6 +1589,7 @@
 		C517164F656D95C28F9ECC05 /* PALMOS.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = PALMOS.png; sourceTree = "<group>"; };
 		C527AE4EF195F38238D1FA80 /* megadrive-cheats.zip */ = {isa = PBXFileReference; lastKnownFileType = archive.zip; path = "megadrive-cheats.zip"; sourceTree = "<group>"; };
 		C604EF864E31A2BD810A2345 /* jaguar-cheats.zip */ = {isa = PBXFileReference; lastKnownFileType = archive.zip; path = "jaguar-cheats.zip"; sourceTree = "<group>"; };
+		C61A9A36D430D34E4C3ABDE0 /* GameLoadingOverlay.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GameLoadingOverlay.swift; sourceTree = "<group>"; };
 		C6390D2AB62AB2F0DFD55B70 /* PSPMINIS.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = PSPMINIS.png; sourceTree = "<group>"; };
 		C6B902C8D11765B90604510E /* input_coreLabels_beetle_saturn.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = input_coreLabels_beetle_saturn.json; sourceTree = "<group>"; };
 		C72372490BF3D6F53F7ADEEC /* ShaderPresetPickerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShaderPresetPickerView.swift; sourceTree = "<group>"; };
@@ -2466,6 +2468,7 @@
 				6B1CC886E59DC123C478AE62 /* BezelBackgroundView.swift */,
 				3487BCC158871E9D5EAF669A /* CheatManagerView.swift */,
 				A47516431097E29AD293A7B5 /* CorePickerView.swift */,
+				C61A9A36D430D34E4C3ABDE0 /* GameLoadingOverlay.swift */,
 				C50E20B4080419F263BC42F7 /* SlotPickerSheet.swift */,
 				B44F4A2C55AD5E363EC7E077 /* ShaderPlayerComponents */,
 			);
@@ -4160,6 +4163,7 @@
 				D804D2B87362CD5BD3DDCD85 /* GameInfoWindow.swift in Sources */,
 				7BC9F2B7264429F92FD2D48F /* GameLauncher.swift in Sources */,
 				667975EF2750F253A19162FB /* GameListRowView.swift in Sources */,
+				630942A29155AFB23DE78323 /* GameLoadingOverlay.swift in Sources */,
 				803DED50F68081A6048C1DC5 /* GameMappingProfile.swift in Sources */,
 				886D1903700E00DE7F11523C /* GameNameFormatter.swift in Sources */,
 				27F9277272450FDAE20B690D /* GameOverlayToolbar.swift in Sources */,

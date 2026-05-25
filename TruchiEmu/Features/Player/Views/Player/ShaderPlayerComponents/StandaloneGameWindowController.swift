@@ -61,6 +61,10 @@ class StandaloneGameWindowController: NSWindowController, NSWindowDelegate, Obse
     private var pendingSlotToLoad: Int?
     private var pendingROMForState: ROM?
     @MainActor @Published var saveStatesDisabled: Bool = false
+    @MainActor @Published var isLoading: Bool = false
+    var loadingOverlayView: NSHostingView<AnyView>?
+    var pendingSystemID: String?
+    var pendingROMForBezel: ROM?
     var onWindowWillClose: (() -> Void)?
     var toolbarView: NSHostingView<AnyView>?
     var hideToolbarTimer: Timer?
@@ -77,6 +81,8 @@ class StandaloneGameWindowController: NSWindowController, NSWindowDelegate, Obse
         }
         toolbarView?.removeFromSuperview()
         toolbarView = nil
+        loadingOverlayView?.removeFromSuperview()
+        loadingOverlayView = nil
     }
     
     init(runner: EmulatorRunner) {
@@ -157,13 +163,29 @@ super.init(window: window)
         containerView.addSubview(hostingView)
         self.toolbarView = hostingView
         
-        // Position toolbar at bottom center
-        NSLayoutConstraint.activate([
-            hostingView.centerXAnchor.constraint(equalTo: containerView.centerXAnchor),
-            hostingView.bottomAnchor.constraint(equalTo: containerView.bottomAnchor, constant: -8)
-        ])
-        
-        window?.contentView = containerView
+    // Position toolbar at bottom center
+    NSLayoutConstraint.activate([
+        hostingView.centerXAnchor.constraint(equalTo: containerView.centerXAnchor),
+        hostingView.bottomAnchor.constraint(equalTo: containerView.bottomAnchor, constant: -8)
+    ])
+
+    // Add SwiftUI loading overlay (covers entire window during game launch)
+    let loadingView = SafeHostingView(rootView: AnyView(GameLoadingOverlay(
+        windowController: self
+    ).environment(SystemDatabaseWrapper.shared)))
+    loadingView.translatesAutoresizingMaskIntoConstraints = false
+    loadingView.wantsLayer = true
+    containerView.addSubview(loadingView, positioned: .above, relativeTo: nil)
+    self.loadingOverlayView = loadingView
+
+    NSLayoutConstraint.activate([
+        loadingView.leadingAnchor.constraint(equalTo: containerView.leadingAnchor),
+        loadingView.trailingAnchor.constraint(equalTo: containerView.trailingAnchor),
+        loadingView.topAnchor.constraint(equalTo: containerView.topAnchor),
+        loadingView.bottomAnchor.constraint(equalTo: containerView.bottomAnchor)
+    ])
+
+    window?.contentView = containerView
         window?.acceptsMouseMovedEvents = true
         
         // Update fullscreen state on window changes
@@ -206,16 +228,23 @@ super.init(window: window)
   LoggerService.info(category: "Metal", "MetalView setup complete, isPaused=true")
 }
     
-  func windowDidEnterFullScreen(_ notification: Notification) {
-    guard isWaitingForFullscreenAnimation else { return }
-    isWaitingForFullscreenAnimation = false
-    fullscreenOverlayView?.removeFromSuperview()
-    fullscreenOverlayView = nil
-    // Fullscreen animation complete — proceed with save state loading
-    if let slotToLoad = pendingSlotToLoad, let rom = pendingROMForState {
-      loadSaveStatesAfterLaunch(slotToLoad: slotToLoad, rom: rom)
+    func windowDidEnterFullScreen(_ notification: Notification) {
+        guard isWaitingForFullscreenAnimation else { return }
+        isWaitingForFullscreenAnimation = false
+        fullscreenOverlayView?.removeFromSuperview()
+        fullscreenOverlayView = nil
+
+        // Load bezel after fullscreen animation completes (prevents warped bezel during transition)
+        Task { @MainActor in
+            if let systemID = self.pendingSystemID, let romForBezel = self.pendingROMForBezel {
+                await self.loadBezelForGame(systemID: systemID, rom: romForBezel)
+            }
+            // Fullscreen animation complete — proceed with save state loading
+            if let slotToLoad = self.pendingSlotToLoad, let rom = self.pendingROMForState {
+                self.loadSaveStatesAfterLaunch(slotToLoad: slotToLoad, rom: rom)
+            }
+        }
     }
-  }
 
   @objc private func windowDidChangeScreen() {
     DispatchQueue.main.async { [weak self] in
@@ -285,33 +314,34 @@ super.init(window: window)
             return
         }
         
-        // Register this ROM as running
-        RunningGamesTracker.shared.registerRunning(romPath: rom.path.path, displayName: rom.displayName)
-        trackedROMPath = rom.path.path
-        trackedROM = rom
-        accumulatedPlaytime = 0
-        startPlaytimeTracking()
-        
-        // Load bezel before launching (synchronously wait for bezel to be ready)
-        let systemID = rom.systemID ?? "default"
-        Task { @MainActor in
-            await loadBezelForGame(systemID: systemID, rom: rom)
-            // Bezel is now loaded, proceed with launch
-            _doLaunch(rom: rom, coreID: coreID, slotToLoad: slotToLoad)
-        }
+    // Register this ROM as running
+    RunningGamesTracker.shared.registerRunning(romPath: rom.path.path, displayName: rom.displayName)
+    trackedROMPath = rom.path.path
+    trackedROM = rom
+    accumulatedPlaytime = 0
+    startPlaytimeTracking()
+
+    // Show loading state and display window immediately
+    isLoading = true
+    currentGameROM = rom
+    pendingSystemID = rom.systemID ?? "default"
+    pendingROMForBezel = rom
+    window?.title = "TruchiEmu - " + rom.displayName
+    window?.orderFrontRegardless()
+    window?.makeKeyAndOrderFront(nil)
+    NSApp.activate(ignoringOtherApps: true)
+
+    // Proceed with launch (bezel is loaded after first frame is ready)
+    _doLaunch(rom: rom, coreID: coreID, slotToLoad: slotToLoad)
     }
     
     // Store pending shader uniforms
     private var pendingShaderUniforms: [String: Float] = [:]
     
-    private func _doLaunch(rom: ROM, coreID: String, slotToLoad: Int? = nil) {
-        // Store ROM reference before launching (used by toolbar + cheat manager)
-        runner?.rom = rom
-        runner?.romPath = rom.path.path
-        currentGameROM = rom
-        
-        // Update window title
-        window?.title = "TruchiEmu - " + rom.displayName
+private func _doLaunch(rom: ROM, coreID: String, slotToLoad: Int? = nil) {
+    // Store ROM reference before launching (used by toolbar + cheat manager)
+    runner?.rom = rom
+    runner?.romPath = rom.path.path
         
         // Unpause the metal view and start emulation
         metalView?.isPaused = false
@@ -359,8 +389,7 @@ super.init(window: window)
         waitForFirstFrameAndShowWindow(slotToLoad: slotToLoad, rom: rom)
     }
     
-    // Wait for the first frame to be rendered before showing the window.
-    // This prevents the user from seeing a flash of the bezel without game content.
+    // Wait for the first frame to be rendered before dismissing the loading overlay.
     private func waitForFirstFrameAndShowWindow(slotToLoad: Int?, rom: ROM) {
         // Poll for isReadyForDisplay with a timeout (5 seconds max)
         var attempts = 0
@@ -432,19 +461,28 @@ super.init(window: window)
                         
                         alert.runModal()
                     }
-                } else {
-                    self.showWindowAndLoadSlot(slotToLoad: slotToLoad, rom: rom)
-                }
+        } else {
+            self.onFirstFrameReady(slotToLoad: slotToLoad, rom: rom)
+        }
             }
         }
     }
     
+    // First frame is ready — dismiss loading overlay and prepare the window.
+    private func onFirstFrameReady(slotToLoad: Int?, rom: ROM) {
+        isLoading = false
+
+        // Remove loading overlay after fade-out animation completes
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.4) { [weak self] in
+            self?.loadingOverlayView?.removeFromSuperview()
+            self?.loadingOverlayView = nil
+        }
+
+        showWindowAndLoadSlot(slotToLoad: slotToLoad, rom: rom)
+    }
+
     // Show the window and handle save state loading.
     private func showWindowAndLoadSlot(slotToLoad: Int?, rom: ROM) {
-        window?.orderFrontRegardless()
-        window?.makeKeyAndOrderFront(nil)
-        NSApp.activate(ignoringOtherApps: true)
-
         if autoFullscreenEnabled {
             // Cover game content with a black overlay during the fullscreen animation
             // to prevent visual artifacts from frames rendering mid-transition.
@@ -463,7 +501,13 @@ super.init(window: window)
             return
         }
 
-        loadSaveStatesAfterLaunch(slotToLoad: slotToLoad, rom: rom)
+        // Load bezel now (non-fullscreen path — bezel loads after first frame)
+        Task { @MainActor in
+            if let systemID = self.pendingSystemID, let romForBezel = self.pendingROMForBezel {
+                await self.loadBezelForGame(systemID: systemID, rom: romForBezel)
+            }
+            self.loadSaveStatesAfterLaunch(slotToLoad: slotToLoad, rom: rom)
+        }
     }
 
     // Load save states after the window is ready (either immediately or after fullscreen animation).
@@ -606,6 +650,9 @@ super.init(window: window)
         isWaitingForFullscreenAnimation = false
         fullscreenOverlayView?.removeFromSuperview()
         fullscreenOverlayView = nil
+        loadingOverlayView?.removeFromSuperview()
+        loadingOverlayView = nil
+        isLoading = false
 
         InputCaptureManager.shared.cleanup()
 
@@ -660,6 +707,8 @@ super.init(window: window)
         trackedROM = nil
         trackedROMPath = nil
         currentGameROM = nil
+        pendingSystemID = nil
+        pendingROMForBezel = nil
 
         NotificationCenter.default.removeObserver(self)
 
