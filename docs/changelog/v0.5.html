@@ -1,0 +1,79 @@
+---
+layout: default
+title: v0.5 - TruchiEmu Documentation
+
+---
+
+<div class="feature-docs">
+    <nav class="breadcrumbs">
+        <a href="{{ '/changelog.html' | relative_url }}">Changelog</a>
+        <span class="separator">/</span>
+        <span class="current">v0.5</span>
+    </nav>
+
+    <div class="release-header">
+        <h1>v0.5 <span class="release-name-badge">First public version!</span></h1>
+        <div class="release-meta">
+            <span class="release-date">April 13, 2026</span>
+            <span class="release-commits">251 commits (since initial)</span>
+        </div>
+    </div>
+
+    <div class="release-description">
+        <p>Initial public release of TruchiEmu — a native macOS retro gaming emulator built with SwiftUI and Metal, featuring a comprehensive library management system, advanced shader engine, and wide system support.</p>
+    </div>
+
+    <section id="highlights">
+        <h2>Highlights</h2>
+
+        <h3>Core Architecture</h3>
+        <ul class="feature-list">
+            <li>Native macOS application with SwiftUI interface</li>
+            <li>Advanced Metal-based shader engine with real-time parameter adjustment</li>
+            <li>Multi-system core management with automatic core detection and downloading</li>
+            <li>Comprehensive Libretro bridge with system-specific runners</li>
+        </ul>
+
+        <h3>Supported Systems</h3>
+        <ul class="feature-list">
+            <li>NES, SNES, Nintendo 64, Game Boy/Color, Game Boy Advance, Nintendo DS</li>
+            <li>PlayStation, PlayStation Portable, PlayStation 2</li>
+            <li>Sega Genesis, Sega Saturn, Sega Dreamcast, Sega 32X, Sega CD, Game Gear, Master System</li>
+            <li>Atari Jaguar, Atari 2600/5200/7800, Lynx</li>
+            <li>DOS (via DOSBox), ScummVM</li>
+            <li>And many more through dynamic core-to-system mapping</li>
+        </ul>
+
+        <h3>Feature Highlights</h3>
+        <ul class="feature-list">
+            <li>Automated library management with metadata syncing and box art downloads</li>
+            <li>Guided onboarding setup wizard</li>
+            <li>RetroAchievements integration with real-time tracking</li>
+            <li>Advanced input configuration with controller support (up to 4 players)</li>
+            <li>Slot-based save state management with compression</li>
+            <li>Cheat system with download and management services</li>
+            <li>Bezel support for enhanced visual presentation</li>
+            <li>CLI support for headless operation and direct ROM launching</li>
+            <li>Playtime tracking per game</li>
+            <li>Comprehensive logging system with file output</li>
+            <li>Game categories management</li>
+            <li>LCD Grid and CRT shader presets</li>
+            <li>First-run setup wizard for onboarding flow</li>
+        </ul>
+
+        <h3>Technical Highlights</h3>
+        <ul class="feature-list">
+            <li>Hardware rendering with real FBO support</li>
+            <li>ROM identification via CRC32 checksums and weighted scoring</li>
+            <li>SwiftData persistence with AppSettings migration</li>
+            <li>LaunchBox GamesDB integration for metadata</li>
+            <li>SQLite-backed storage for data persistence</li>
+            <li>Concurrent image caching with cost-based eviction</li>
+        </ul>
+    </section>
+
+    <nav class="release-nav">
+        <a href="{{ '/changelog/v0.5.5.html' | relative_url }}" class="release-next">v0.5.5 (Improved ROM detection) &rarr;</a>
+        <a href="{{ '/changelog.html' | relative_url }}" class="release-all">All Releases</a>
+    </nav>
+</div>

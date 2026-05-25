@@ -1,0 +1,60 @@
+---
+layout: default
+title: v0.7 - TruchiEmu Documentation
+
+---
+
+<div class="feature-docs">
+    <nav class="breadcrumbs">
+        <a href="{{ '/changelog.html' | relative_url }}">Changelog</a>
+        <span class="separator">/</span>
+        <span class="current">v0.7</span>
+    </nav>
+
+    <div class="release-header">
+        <h1>v0.7 <span class="release-name-badge">Getting closer to full vision</span></h1>
+        <div class="release-meta">
+            <span class="release-date">May 3, 2026</span>
+            <span class="release-commits">92 commits</span>
+        </div>
+    </div>
+
+    <div class="release-description">
+        <p>Large release focused on performance optimizations, MAME gaming improvements, genre categorization, and core options management. Some changes may be breaking, but most add speed, options, and quality-of-life improvements.</p>
+    </div>
+
+    <section id="highlights">
+        <h2>Highlights</h2>
+        <ul class="feature-list">
+            <li><strong>MAME Improvements:</strong> Better MAME gaming with genre identification, improved ROM handling, and identification upgrades</li>
+            <li><strong>Genre Categorization:</strong> Full genre support with metadata extraction from .rdb files</li>
+            <li><strong>Save System:</strong> Implemented save location management, improved SRAM and save state handling</li>
+            <li><strong>Shader Pipeline:</strong> Fixed how shaders get parameterized, added GBA and CRT Multipass shaders with temporal feedback</li>
+            <li><strong>Game Boy Color:</strong> New 8-bit GB Color shader with initial version</li>
+            <li><strong>Input Capture:</strong> Keyboard and mouse capture for game windows with Accessibility permissions</li>
+            <li><strong>Core Options:</strong> Fixed core overrides bugs, improved headless core detection for downloads</li>
+            <li><strong>Toolbar:</strong> Enhanced main toolbar with hints and improved menus</li>
+            <li><strong>ScummVM:</strong> Improved game detection and mouse support</li>
+            <li><strong>Cheat Management:</strong> Improved cheat management interface</li>
+            <li><strong>Testing:</strong> Added initial test suite</li>
+        </ul>
+    </section>
+
+    <section id="fixes">
+        <h2>Bug Fixes</h2>
+        <ul>
+            <li>Over 100 bug fixes across the release</li>
+            <li>Fixed DOSBox crashes</li>
+            <li>Fixed race condition on new core install</li>
+            <li>Fixed PPSSPP stability (still WIP)</li>
+            <li>Fixed Wii game identification</li>
+            <li>Fixed Enter key launching games</li>
+        </ul>
+    </section>
+
+    <nav class="release-nav">
+        <a href="{{ '/changelog/v0.7.1.html' | relative_url }}" class="release-next">v0.7.1 (More improvements) &rarr;</a>
+        <a href="{{ '/changelog/v0.6.1.html' | relative_url }}" class="release-prev">&larr; v0.6.1 (Stability and UI/UX)</a>
+        <a href="{{ '/changelog.html' | relative_url }}" class="release-all">All Releases</a>
+    </nav>
+</div>

@@ -1,0 +1,60 @@
+---
+layout: default
+title: v0.6 - TruchiEmu Documentation
+
+---
+
+<div class="feature-docs">
+    <nav class="breadcrumbs">
+        <a href="{{ '/changelog.html' | relative_url }}">Changelog</a>
+        <span class="separator">/</span>
+        <span class="current">v0.6</span>
+    </nav>
+
+    <div class="release-header">
+        <h1>v0.6 <span class="release-name-badge">The slim Shady</span></h1>
+        <div class="release-meta">
+            <span class="release-date">April 18, 2026</span>
+            <span class="release-commits">53 commits</span>
+        </div>
+    </div>
+
+    <div class="release-description">
+        <p>Shader-focused release introducing two incredible built-in shaders, along with UI improvements and core stability enhancements.</p>
+    </div>
+
+    <section id="highlights">
+        <h2>Highlights</h2>
+        <ul class="feature-list">
+            <li><strong>CRT Shader:</strong> New built-in CRT shader with many features (not yet configurable)</li>
+            <li><strong>Game Boy Shader:</strong> Incredible Game Boy front-end shader (the "extremely good game boy shader")</li>
+            <li><strong>LCD Grid:</strong> Updates to LCD Grid shader</li>
+            <li><strong>Right-Click Menus:</strong> Added right-click context menus for libraries and systems (WIP)</li>
+            <li><strong>Core Stability:</strong> Improved PS1 optimizations and PS2/MAME core stability</li>
+            <li><strong>UI Speed:</strong> Faster game loading on the grid, overall performance improvements</li>
+            <li><strong>Drag and Drop:</strong> Improved drag-and-drop functionality for category management</li>
+            <li><strong>Category Badges:</strong> Improved category UI display on main page</li>
+            <li><strong>Sidebar:</strong> Replaced with custom component with collapsible sections and system icons</li>
+            <li><strong>Core Options:</strong> Initial steps toward core option management</li>
+            <li><strong>ROM Identification:</strong> Improved title identification logic with fuzzy matching</li>
+            <li><strong>Project Rename:</strong> Renamed project from TruchieEmu to TruchiEmu</li>
+            <li><strong>Logging:</strong> More comprehensive logging across the app</li>
+            <li><strong>Save Fix:</strong> Fixed save functionality</li>
+        </ul>
+    </section>
+
+    <section id="fixes">
+        <h2>Bug Fixes</h2>
+        <ul>
+            <li>Improved core crash handling with better exception handling and failure callbacks</li>
+            <li>Fixed runner errors and unexpected termination during game launch</li>
+            <li>Optimized ImageCache with concurrency limiting</li>
+        </ul>
+    </section>
+
+    <nav class="release-nav">
+        <a href="{{ '/changelog/v0.6.1.html' | relative_url }}" class="release-next">v0.6.1 (Stability and UI/UX) &rarr;</a>
+        <a href="{{ '/changelog/v0.5.5.html' | relative_url }}" class="release-prev">&larr; v0.5.5 (Improved ROM detection)</a>
+        <a href="{{ '/changelog.html' | relative_url }}" class="release-all">All Releases</a>
+    </nav>
+</div>

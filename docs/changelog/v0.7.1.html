@@ -1,0 +1,81 @@
+---
+layout: default
+title: v0.7.1 - TruchiEmu Documentation
+
+---
+
+<div class="feature-docs">
+    <nav class="breadcrumbs">
+        <a href="{{ '/changelog.html' | relative_url }}">Changelog</a>
+        <span class="separator">/</span>
+        <span class="current">v0.7.1</span>
+    </nav>
+
+    <div class="release-header">
+        <h1>v0.7.1 <span class="release-name-badge">More improvements</span></h1>
+        <div class="release-meta">
+            <span class="release-date">May 8, 2026</span>
+            <span class="release-commits">60 commits</span>
+        </div>
+    </div>
+
+    <div class="release-description">
+        <p>Feature-rich release introducing RetroAchievements integration, Saturn emulation, a massive cheat database, and the launch of the documentation site.</p>
+    </div>
+
+    <section id="highlights">
+        <h2>Highlights</h2>
+
+        <h3>RetroAchievements Integration</h3>
+        <ul class="feature-list">
+            <li>Full RetroAchievements support with ROM hashing, game caching, and hash comparison UI</li>
+            <li>Flexible integer decoding for achievement conditions</li>
+            <li>Expanded SwiftData models for RetroAchievements support</li>
+        </ul>
+
+        <h3>Emulation Improvements</h3>
+        <ul class="feature-list">
+            <li>Improved Saturn emulation with BIOS support</li>
+            <li>Enhanced ROM identification with smarter filename parsing</li>
+            <li>Improved CRT shader barrel distortion</li>
+        </ul>
+
+        <h3>Cheat System</h3>
+        <ul class="feature-list">
+            <li>Massive cheat database covering 40+ platforms</li>
+            <li>New cheat management UI with easy-to-use interface</li>
+            <li>Cheat files added to Xcode project resources</li>
+        </ul>
+
+        <h3>Shader Management</h3>
+        <ul class="feature-list">
+            <li>Shader saving and live editing now available</li>
+            <li>Improved N64 shader quality</li>
+            <li>CRT filter refinements</li>
+        </ul>
+
+        <h3>Documentation Site Launch</h3>
+        <ul class="feature-list">
+            <li>Comprehensive GitHub Pages documentation site with 21+ HTML pages</li>
+            <li>GitHub Actions workflow for automated Jekyll deployment</li>
+            <li>Multi-language documentation structure</li>
+        </ul>
+    </section>
+
+    <section id="fixes">
+        <h2>Bug Fixes and Improvements</h2>
+        <ul>
+            <li>Fixed controller disappearing on restart</li>
+            <li>DOSBox keypad improvements</li>
+            <li>Reduced logging verbosity</li>
+            <li>Small settings UI improvements</li>
+            <li>Wii core now has a working core (sensors disabled to prevent crashing)</li>
+        </ul>
+    </section>
+
+    <nav class="release-nav">
+        <a href="{{ '/changelog/v0.7.2.html' | relative_url }}" class="release-next">v0.7.2 &rarr;</a>
+        <a href="{{ '/changelog/v0.7.html' | relative_url }}" class="release-prev">&larr; v0.7 (Getting closer to full vision)</a>
+        <a href="{{ '/changelog.html' | relative_url }}" class="release-all">All Releases</a>
+    </nav>
+</div>

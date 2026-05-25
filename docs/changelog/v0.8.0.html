@@ -1,0 +1,66 @@
+---
+layout: default
+title: v0.8.0 - TruchiEmu Documentation
+
+---
+
+<div class="feature-docs">
+    <nav class="breadcrumbs">
+        <a href="{{ '/changelog.html' | relative_url }}">Changelog</a>
+        <span class="separator">/</span>
+        <span class="current">v0.8.0</span>
+    </nav>
+
+    <div class="release-header">
+        <h1>v0.8.0</h1>
+        <div class="release-meta">
+            <span class="release-date">May 25, 2026</span>
+            <span class="release-commits">12 commits</span>
+        </div>
+    </div>
+
+    <div class="release-description">
+        <p>Major release introducing XPC service architecture for process isolation, detailed game loading overlay, and a new core options override hierarchy.</p>
+    </div>
+
+    <section id="highlights">
+        <h2>Highlights</h2>
+        <ul class="feature-list">
+            <li><strong>XPC Service Architecture:</strong> Emulator cores now run in a separate XPC service process, isolating the main app from core crashes</li>
+            <li><strong>Pixel Format Fix:</strong> <code>SET_PIXEL_FORMAT</code> now configured before <code>retro_init</code></li>
+            <li><strong>Game Loading Overlay:</strong> Detailed loading phase tracking with error overlay support, fully localized in EN/ES/PT</li>
+            <li><strong>Core Options Overrides:</strong> New hierarchy with system-level and game-level override layers</li>
+            <li><strong>Switch Game Alert:</strong> Prompts to save and switch, switch without saving, or cancel</li>
+            <li><strong>Portuguese Localization:</strong> Full PT translation for app and documentation</li>
+            <li><strong>Theme Toggle:</strong> Light/dark mode toggle across the app</li>
+            <li><strong>Image Cache Rewrite:</strong> Separate thumbnail and full-image caches with cost-based eviction</li>
+            <li><strong>Design System:</strong> Tinted text blending with accent color, OKLCH color matrix fix</li>
+            <li><strong>PPSSPP:</strong> Hardware rendering auto-rejected with software fallback to prevent black frames</li>
+            <li><strong>Documentation:</strong> Major overhaul of cheat system, library, save states, shaders, themes, and troubleshooting pages</li>
+            <li><strong>GitHub Actions:</strong> Automated Jekyll site deployment workflow</li>
+        </ul>
+    </section>
+
+    <section id="details">
+        <h2>Detailed Changes</h2>
+        <ul>
+            <li>Improved connection handling and termination logic in CoreHostService</li>
+            <li>Enhanced game launch process with detailed loading phases and error handling</li>
+            <li>Added default configuration files for fbneo, mame2000, mame2003, mame2003_plus, and mame2010</li>
+            <li>Refactored JSON configuration files to standardize key naming conventions</li>
+            <li>Added GameLoadingOverlay integration in StandaloneGameWindowController</li>
+            <li>Refactored syncBundledOverridesToAppSupport for improved version change handling</li>
+            <li>Added missing mame_rotation_mode to mame_libretro_default.json</li>
+            <li>Refactored core options handling to support system-level and game-level overrides</li>
+            <li>Enhanced loading phase handling in CoreOptionsView with detailed localization keys</li>
+            <li>Added theme toggle functionality and dark mode styles</li>
+            <li>Enhanced README and documentation with new visuals and lightbox feature</li>
+            <li>Improved documentation and README overall</li>
+        </ul>
+    </section>
+
+    <nav class="release-nav">
+        <a href="{{ '/changelog/v0.7.4.html' | relative_url }}" class="release-prev">&larr; v0.7.4 (Themes &amp; Modes)</a>
+        <a href="{{ '/changelog.html' | relative_url }}" class="release-all">All Releases</a>
+    </nav>
+</div>
