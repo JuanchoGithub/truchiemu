@@ -66,10 +66,7 @@ final class CoreOverrideService {
 
         let versionFile = baseDir.appendingPathComponent(".bundle_version")
         let currentVersion = try? String(contentsOf: versionFile, encoding: .utf8).trimmingCharacters(in: .whitespacesAndNewlines)
-
-        if currentVersion == bundleVersion {
-            return
-        }
+        let isVersionChange = currentVersion != bundleVersion
 
         do {
             try fm.createDirectory(at: baseDir, withIntermediateDirectories: true)
@@ -96,18 +93,27 @@ final class CoreOverrideService {
             try? fm.createDirectory(at: coreDir, withIntermediateDirectories: true)
 
             let dest = coreDir.appendingPathComponent("\(scope).json")
+            let destExists = fm.fileExists(atPath: dest.path)
+
+            if destExists && !isVersionChange {
+                continue
+            }
+
+            if destExists {
+                try? fm.removeItem(at: dest)
+            }
             do {
                 try fm.copyItem(at: url, to: dest)
                 syncedCount += 1
             } catch {
-                try? fm.removeItem(at: dest)
-                try? fm.copyItem(at: url, to: dest)
-                syncedCount += 1
+                logger.error("Failed to sync override \(coreID)/\(scope): \(error)")
             }
         }
 
         try? bundleVersion.write(to: versionFile, atomically: true, encoding: .utf8)
-        logger.info("Synced \(syncedCount) bundled override files to CoreOverrides (bundle \(bundleVersion))")
+        if syncedCount > 0 {
+            logger.info("Synced \(syncedCount) bundled override files to CoreOverrides (bundle \(bundleVersion))")
+        }
     }
 
     func reloadOverrides() {
