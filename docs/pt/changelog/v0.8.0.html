@@ -1,0 +1,48 @@
+---
+layout: default
+title: v0.8.0 - Documentação do TruchiEmu
+
+---
+
+<div class="feature-docs">
+    <nav class="breadcrumbs">
+        <a href="{{ '/pt/changelog.html' | relative_url }}">Registro de alterações</a>
+        <span class="separator">/</span>
+        <span class="current">v0.8.0</span>
+    </nav>
+
+    <div class="release-header">
+        <h1>v0.8.0</h1>
+        <div class="release-meta">
+            <span class="release-date">25 de maio de 2026</span>
+            <span class="release-commits">12 commits</span>
+        </div>
+    </div>
+
+    <div class="release-description">
+        <p>Versão importante introduzindo arquitetura de serviço XPC para isolamento de processos, sobreposição detalhada de carregamento de jogos e nova hierarquia de substituição de opções de núcleo.</p>
+    </div>
+
+    <section id="highlights">
+        <h2>Destaques</h2>
+        <ul class="feature-list">
+            <li><strong>Arquitetura XPC:</strong> Os núcleos de emulação agora executam em um processo XPC separado, isolando o aplicativo principal de falhas do núcleo</li>
+            <li><strong>Correção de formato de pixel:</strong> <code>SET_PIXEL_FORMAT</code> agora configurado antes de <code>retro_init</code></li>
+            <li><strong>Sobreposição de carregamento:</strong> Acompanhamento detalhado de fases de carregamento com suporte a sobreposição de erros, totalmente localizado em EN/ES/PT</li>
+            <li><strong>Substituições de opções de núcleo:</strong> Nova hierarquia com níveis de substituição por sistema e por jogo</li>
+            <li><strong>Alerta de troca de jogo:</strong> Pergunta se deseja salvar e trocar, trocar sem salvar, ou cancelar</li>
+            <li><strong>Localização em português:</strong> Tradução PT completa para o aplicativo e documentação</li>
+            <li><strong>Alternar tema:</strong> Botão de modo claro/escuro em todo o aplicativo</li>
+            <li><strong>Reescrita de cache de imagens:</strong> Caches separadas para miniaturas e imagens completas com despejo baseado em custo</li>
+            <li><strong>Sistema de design:</strong> Texto tingido com cor de acento, correção de matriz de cor OKLCH</li>
+            <li><strong>PPSSPP:</strong> Renderização por hardware rejeitada automaticamente com fallback por software para evitar quadros pretos</li>
+            <li><strong>Documentação:</strong> Revisão importante das páginas de cheats, biblioteca, estados salvos, shaders, temas e solução de problemas</li>
+            <li><strong>GitHub Actions:</strong> Fluxo de trabalho automatizado de implantação Jekyll</li>
+        </ul>
+    </section>
+
+    <nav class="release-nav">
+        <a href="{{ '/pt/changelog/v0.7.4.html' | relative_url }}" class="release-prev">&larr; v0.7.4 (Themes &amp; Modes)</a>
+        <a href="{{ '/pt/changelog.html' | relative_url }}" class="release-all">Todas as versões</a>
+    </nav>
+</div>

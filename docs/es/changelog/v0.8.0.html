@@ -1,0 +1,63 @@
+---
+layout: default
+title: v0.8.0 - Documentación de TruchiEmu
+
+---
+
+<div class="feature-docs">
+    <nav class="breadcrumbs">
+        <a href="{{ '/es/changelog.html' | relative_url }}">Registro de cambios</a>
+        <span class="separator">/</span>
+        <span class="current">v0.8.0</span>
+    </nav>
+
+    <div class="release-header">
+        <h1>v0.8.0</h1>
+        <div class="release-meta">
+            <span class="release-date">25 de mayo de 2026</span>
+            <span class="release-commits">12 commits</span>
+        </div>
+    </div>
+
+    <div class="release-description">
+        <p>Versión importante que introduce la arquitectura de servicio XPC para aislamiento de procesos, una superposición detallada de carga de juegos y una nueva jerarquía de anulación de opciones de núcleo.</p>
+    </div>
+
+    <section id="highlights">
+        <h2>Destacados</h2>
+        <ul class="feature-list">
+            <li><strong>Arquitectura XPC:</strong> Los núcleos de emulación ahora se ejecutan en un proceso XPC separado, aislando la app principal de fallos del núcleo</li>
+            <li><strong>Corrección de formato de píxel:</strong> <code>SET_PIXEL_FORMAT</code> ahora configurado antes de <code>retro_init</code></li>
+            <li><strong>Superposición de carga:</strong> Seguimiento detallado de fases de carga con soporte de superposición de errores, completamente localizado en EN/ES/PT</li>
+            <li><strong>Anulaciones de opciones de núcleo:</strong> Nueva jerarquía con niveles de anulación por sistema y por juego</li>
+            <li><strong>Alerta de cambio de juego:</strong> Pregunta si guardar y cambiar, cambiar sin guardar, o cancelar</li>
+            <li><strong>Localización al portugués:</strong> Traducción PT completa para la app y documentación</li>
+            <li><strong>Alternar tema:</strong> Botón de modo claro/oscuro en toda la app</li>
+            <li><strong>Reescritura de caché de imágenes:</strong> Cachés separadas para miniaturas e imágenes completas con desalojo basado en costo</li>
+            <li><strong>Sistema de diseño:</strong> Texto teñido con color de acento, corrección de matriz de color OKLCH</li>
+            <li><strong>PPSSPP:</strong> Renderizado por hardware rechazado automáticamente con respaldo por software para evitar fotogramas negros</li>
+            <li><strong>Documentación:</strong> Revisión importante de las páginas de trucos, biblioteca, estados guardados, shaders, temas y solución de problemas</li>
+            <li><strong>GitHub Actions:</strong> Flujo de trabajo automatizado de despliegue Jekyll</li>
+        </ul>
+    </section>
+
+    <section id="details">
+        <h2>Cambios detallados</h2>
+        <ul>
+            <li>Manejo mejorado de conexión y terminación en CoreHostService</li>
+            <li>Proceso de lanzamiento de juegos mejorado con fases de carga detalladas y manejo de errores</li>
+            <li>Archivos de configuración predeterminados añadidos para fbneo, mame2000, mame2003, mame2003_plus y mame2010</li>
+            <li>Archivos de configuración JSON refactorizados para estandarizar convenciones de nombres</li>
+            <li>Integración de GameLoadingOverlay en StandaloneGameWindowController</li>
+            <li>Refactorización de syncBundledOverridesToAppSupport para mejorar la detección de cambios de versión</li>
+            <li>Manejo de opciones de núcleo refactorizado para soportar anulaciones a nivel de sistema y juego</li>
+            <li>Funcionalidad de alternar tema y estilos de modo oscuro añadidos</li>
+            <li>README y documentación mejorados con nuevos visuales y función de lightbox</li>
+        </ul>
+    </section>
+
+    <nav class="release-nav">
+        <a href="{{ '/es/changelog/v0.7.4.html' | relative_url }}" class="release-prev">&larr; v0.7.4 (Themes &amp; Modes)</a>
+        <a href="{{ '/es/changelog.html' | relative_url }}" class="release-all">Todas las versiones</a>
+    </nav>
+</div>

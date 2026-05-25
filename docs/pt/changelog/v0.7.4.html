@@ -1,0 +1,62 @@
+---
+layout: default
+title: v0.7.4 - Documentação do TruchiEmu
+
+---
+
+<div class="feature-docs">
+    <nav class="breadcrumbs">
+        <a href="{{ '/pt/changelog.html' | relative_url }}">Registro de alterações</a>
+        <span class="separator">/</span>
+        <span class="current">v0.7.4</span>
+    </nav>
+
+    <div class="release-header">
+        <h1>v0.7.4 <span class="release-name-badge">Themes &amp; Modes</span></h1>
+        <div class="release-meta">
+            <span class="release-date">21 de maio de 2026</span>
+            <span class="release-commits">24 commits &middot; 880 arquivos alterados</span>
+        </div>
+    </div>
+
+    <div class="release-description">
+        <p>Versão importante introduzindo um sistema completo de personalização de temas, 8 novos sistemas emulados, mapeamento de entrada MAME e suporte ao idioma português.</p>
+    </div>
+
+    <section id="highlights">
+        <h2>Destaques</h2>
+
+        <h3>Sistema de personalização de temas</h3>
+        <ul class="feature-list">
+            <li>16 temas de cor de acento: Mario, Luigi, Sonic, Half-Life, Kratos, Kirby, Zelda, Pikachu, Doom, Master Chief, Samus, Chocobo, Protoss, Joker, Geralt, Mega Man</li>
+            <li>Tema de cor personalizado com derivação algorítmica de variantes</li>
+            <li>Modos claro/escuro/automático via <code>NSApp.appearance</code></li>
+            <li>Alternância de acento na barra de ferramentas e superfícies tingidas</li>
+            <li>Toda a UI migrada para tokens semânticos AppColors para adaptação automática de temas</li>
+        </ul>
+
+        <h3>Sistema de controle e entrada</h3>
+        <ul class="feature-list">
+            <li>Nova camada de modelo de mapeamento de teclado com vinculações por jogo</li>
+            <li>Mapeamento de entrada MAME: 770 linhas de descritores de entrada para mame_libretro</li>
+            <li>Captura de entrada melhorada para jogos DOS e ScummVM</li>
+            <li>Escopo de substituição de núcleo por sistema</li>
+        </ul>
+
+        <h3>Emulação e escaneamento de ROMs</h3>
+        <ul class="feature-list">
+            <li>Correção de salvamento VMU do Dreamcast com rastreamento de estado de botões analógicos</li>
+            <li>Melhorias de renderização GBC com melhor manipulação de cor</li>
+            <li>Expandido de 2 para 6 formatos de contêiner: GDI, CCD, TOC, MDS adicionados</li>
+            <li>Análise de arquivos complementares para formatos de imagem de disco</li>
+            <li>Rejeição de arquivos .dat pequenos para melhorar listagens de sistemas</li>
+            <li>8 novos sistemas: PS Vita, Neo Geo Pocket Color, WonderSwan Color, SG-1000, SC-3000, PC-FX, SuperGrafx, PC Engine CD</li>
+        </ul>
+    </section>
+
+    <nav class="release-nav">
+        <a href="{{ '/pt/changelog/v0.8.0.html' | relative_url }}" class="release-next">v0.8.0 &rarr;</a>
+        <a href="{{ '/pt/changelog/v0.7.3.1.html' | relative_url }}" class="release-prev">&larr; v0.7.3.1 (Quick-fix para Dreamcast)</a>
+        <a href="{{ '/pt/changelog.html' | relative_url }}" class="release-all">Todas as versões</a>
+    </nav>
+</div>
