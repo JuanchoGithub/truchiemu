@@ -366,6 +366,9 @@ case "scummvm": runner = ScummVMRunner()
         // Register callback to load SRAM when game is loaded
         XPCBridgeAdapter.shared.registerGameLoadedCallback { [weak self] romPath in
             self?.loadSRAMOnGameLoad(romPath: romPath)
+            DispatchQueue.main.async {
+                NotificationCenter.default.post(name: .gameLoaded, object: nil)
+            }
         }
 
         let savedDir = XPCBridgeAdapter.shared.saveDirectoryPath()

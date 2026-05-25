@@ -2,6 +2,32 @@ import Foundation
 import AppKit
 import SwiftUI
 
+// MARK: - LaunchPhase
+
+enum LaunchPhase: Equatable {
+    case idle
+    case checkingDependencies
+    case preparingConfig
+    case discoveringCoreOptions
+    case applyingSettings
+    case loadingCore
+    case startingGame
+    case waitingForFrame
+
+    var localizationKey: String {
+        switch self {
+        case .idle: return "game.loading"
+        case .checkingDependencies: return "game.launch.checkingDependencies"
+        case .preparingConfig: return "game.launch.preparingConfig"
+        case .discoveringCoreOptions: return "game.launch.discoveringCoreOptions"
+        case .applyingSettings: return "game.launch.applyingSettings"
+        case .loadingCore: return "game.launch.loadingCore"
+        case .startingGame: return "game.launch.startingGame"
+        case .waitingForFrame: return "game.launch.waitingForFrame"
+        }
+    }
+}
+
 // MARK: - GameLauncher
 
 // Unified game launcher that ensures ALL launch paths (double-click, launch button, save state click, CLI)
@@ -9,9 +35,10 @@ import SwiftUI
 @MainActor
 class GameLauncher: ObservableObject {
     static let shared = GameLauncher()
-    
+
     @Published var isLaunching = false
     @Published var currentLaunchROM: ROM?
+    @Published var launchPhase: LaunchPhase = .idle
     
     // Track active game window controllers
     private var activeControllers: [UUID: StandaloneGameWindowController] = [:]
@@ -154,6 +181,9 @@ class GameLauncher: ObservableObject {
 
         // MAME dependency check
         LoggerService.extreme(category: "GameLauncher", "Checking MAME dependencies")
+        if (checkMAMEDeps && MAMEDependencyService.isMAMECore(coreID)) || coreID.lowercased().contains("ppsspp") || coreID.lowercased().contains("flycast") {
+            launchPhase = .checkingDependencies
+        }
         if checkMAMEDeps && MAMEDependencyService.isMAMECore(coreID) {
             LoggerService.info(category: "GameLauncher", "Running MAME dependency check for \(rom.displayName) (\(coreID))")
             let checkResult = checkMAMEDependencies(rom: rom, coreID: coreID)
@@ -189,7 +219,8 @@ class GameLauncher: ObservableObject {
 
         isLaunching = true
         currentLaunchROM = rom
-        
+        launchPhase = .preparingConfig
+
         // Create launch configuration with all settings
         let config = LaunchConfig(
             rom: rom,
@@ -200,6 +231,7 @@ class GameLauncher: ObservableObject {
         
         let systemID = rom.systemID ?? "default"
 
+        launchPhase = .discoveringCoreOptions
         CoreOptionsManager.shared.discoverOptionsIfNeeded(for: coreID, romPath: rom.path.path)
 
         LoggerService.info(category: "GameLauncher", "Launching game: \(rom.displayName)")
@@ -212,6 +244,7 @@ class GameLauncher: ObservableObject {
         LoggerService.debug(category: "GameLauncher", "Auto-load: \(config.autoLoad), Auto-save: \(config.autoSave)")
         
         // Apply all settings
+        launchPhase = .applyingSettings
         applyLaunchConfiguration(config)
         
         // Mark as played
@@ -225,11 +258,11 @@ class GameLauncher: ObservableObject {
         
         // Track the controller
         activeControllers[rom.id] = controller
-        
+
         // Launch the game (window will be shown by controller when ready)
         controller.launch(rom: rom, coreID: coreID, slotToLoad: slotToLoad, shaderUniformOverrides: config.shaderUniformOverrides)
-        
-// Cleanup
+
+        // Cleanup
         isLaunching = false
         currentLaunchROM = nil
 
@@ -276,11 +309,7 @@ class GameLauncher: ObservableObject {
                 ShaderManager.shared.updateUniform(name, value: value)
             }
         }
-        
-        // 2.3. Apply MAME-specific core options for frame limiting (always, regardless of existing overrides)
-        let launchSystemID = config.rom.systemID ?? "default"
-        applyMAMEFrameLimitOptions(for: launchSystemID, coreID: config.coreID)
-        
+
         // 3. Apply auto-load/save preferences
         AppSettings.setBool("saveState_autoLoadOnStart", value: config.autoLoad)
         AppSettings.setBool("saveState_autoSaveOnExit", value: config.autoSave)
@@ -291,64 +320,6 @@ class GameLauncher: ObservableObject {
         // 5. Apply hardcore mode
         if config.hardcoreMode != HardcoreModeManager.shared.isHardcoreActive {
             HardcoreModeManager.shared.isHardcoreActive = config.hardcoreMode
-        }
-    }
-    
-    // MARK: - MAME Frame Limiting
-    
-    // Apply MAME-specific core options that ensure games run at their native speed.
-    // MAME cores run unlocked by default and can far exceed real hardware speed.
-    // This sets critical options like auto-frame-delay, vsync hints, and frameskip controls.
-    private func applyMAMEFrameLimitOptions(for systemID: String, coreID: String) {
-        guard systemID == "mame" || systemID == "fba" else { return }
-        
-        let coreBaseID = coreID.replacingOccurrences(of: "_libretro", with: "")
-        var overrides = CoreOptionsManager.shared.loadSystemOverrides(for: coreID, systemID: systemID)
-        
-        if coreBaseID.hasPrefix("mame") {
-            // ── MAME2003-Plus specific options ──
-            if coreBaseID.contains("mame2003_plus") || coreBaseID == "mame2003" {
-                // Auto frameskip: dynamically adjusts frameskip to maintain speed
-                overrides["mame2003-plus-auto-max-frameskip"] = "1"
-                overrides["mame2003-plus-frameskip"] = "0"
-                // Throttle: must be ON to lock to real hardware speed
-                overrides["mame2003-plus-throttle"] = "enabled"
-                // Skip disclaimer/skip warnings to avoid timing issues during boot
-                overrides["mame2003-plus-skip_disclaimer"] = "enabled"
-                overrides["mame2003-plus-skip_warnings"] = "enabled"
-            }
-            // ── MAME2010 specific options ──
-            else if coreBaseID == "mame2010" {
-                overrides["mame2010-auto_frameskip"] = "1"
-                overrides["mame2010-frames_to_run"] = "0"
-                overrides["mame2010-throttle"] = "enabled"
-                overrides["mame2010-skip_disclaimer"] = "enabled"
-                overrides["mame2010-skip_warnings"] = "enabled"
-            }
-            // ── MAME (current) specific options ──
-            else if coreBaseID == "mame" {
-                // Current MAME may have different option names
-                overrides["mame-auto_frameskip"] = "enabled"
-                overrides["mame-throttle"] = "enabled"
-                overrides["mame-skip_gameinfo"] = "enabled"
-            }
-            // ── Generic MAME fallback ──
-            else {
-                // Apply common MAME frame rate options conservatively
-                overrides["mame2000-auto_frameskip"] = "enabled"
-                overrides["mame2000-throttle"] = "enabled"
-            }
-            
-            LoggerService.debug(category: "GameLauncher", "Applied MAME frame limit options for core: \(coreBaseID)")
-        } else if coreBaseID == "fbneo" {
-            // FinalBurn Neo: ensure it's throttled to real hardware speed
-            overrides["fbneo-frameskip"] = "0"
-            overrides["fbneo-neogeo-controls"] = "classic"
-            LoggerService.debug(category: "GameLauncher", "Applied FBNeo frame limit options")
-        }
-        
-    if !overrides.isEmpty {
-            CoreOptionsManager.shared.saveSystemOverride(for: coreID, systemID: systemID, values: overrides)
         }
     }
 

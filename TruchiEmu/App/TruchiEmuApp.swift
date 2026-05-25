@@ -16,6 +16,7 @@ extension Notification.Name {
     static let zoomChanged = Notification.Name("zoomChanged")
     static let openAppSettings = Notification.Name("openAppSettings")
     static let openSettingsWindow = Notification.Name("openSettingsWindow")
+    static let gameLoaded = Notification.Name("gameLoaded")
 }
 
 @main

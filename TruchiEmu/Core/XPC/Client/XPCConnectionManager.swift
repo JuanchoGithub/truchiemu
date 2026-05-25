@@ -158,31 +158,26 @@ final class XPCConnectionManager: ObservableObject {
 
     private func closeGameWindowsAfterCrash() {
         Task { @MainActor in
-            // Step 1: Immediately replace ALL game window content views with plain NSViews.
-            // This synchronously removes every NSHostingView from the hierarchy, forcing
-            // SwiftUI view graph teardown while all @ObservedObject refs are still alive.
-            // Must happen FIRST — before any window close or controller release — to
-            // prevent use-after-free in ItemSheetPresentationModifier.destroy during layout.
-            for controller in GameLauncher.shared.allActiveControllers() {
-                guard let window = controller.window else { continue }
-                let placeholder = NSView(frame: window.frame)
-                placeholder.wantsLayer = true
-                placeholder.layer?.backgroundColor = NSColor.black.cgColor
-                window.contentView = placeholder
+            let controllers = GameLauncher.shared.allActiveControllers()
+            let hadGameWindows = !controllers.isEmpty
+
+            // Show in-window error overlay on each active controller.
+            // The overlay replaces game content and lets the user dismiss it,
+            // which closes the window and cleans up the controller.
+            for controller in controllers {
+                controller.showErrorOverlay(.coreServiceCrashed)
             }
 
-            // Step 2: Close windows and release controllers now that SwiftUI is gone
-            GameLauncher.shared.closeAllGameWindows()
+            // If no controllers have windows (edge case), clean up directly.
+            if !hadGameWindows {
+                GameLauncher.shared.closeAllGameWindows()
+            }
+
             RunningGamesTracker.shared.resetAll()
 
-            XPCBridgeAdapter.shared.stop()
-
-            let alert = NSAlert()
-            alert.messageText = "Core Service Crashed"
-            alert.informativeText = "The emulator core service crashed. Game windows have been closed to protect the app."
-            alert.addButton(withTitle: "OK")
-            alert.alertStyle = .warning
-            alert.runModal()
+            if !hadGameWindows {
+                XPCBridgeAdapter.shared.stop()
+            }
         }
     }
 

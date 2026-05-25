@@ -1145,5 +1145,21 @@
   "game.alreadyRunning.switchWithoutSaving": "Switch Without Saving",
   "game.alreadyRunning.switch": "Switch",
   "game.alreadyRunning.cancel": "Cancel",
-  "game.loading": "Loading game..."
+  "game.loading": "Loading game...",
+  "game.launch.checkingDependencies": "Checking dependencies...",
+  "game.launch.preparingConfig": "Preparing launch...",
+  "game.launch.discoveringCoreOptions": "Loading core options...",
+  "game.launch.applyingSettings": "Applying settings...",
+  "game.launch.loadingCore": "Loading core...",
+  "game.launch.startingGame": "Starting game...",
+  "game.launch.waitingForFrame": "Waiting for first frame...",
+  "game.error.launchFailed": "Launch Error",
+  "game.error.launchFailed.description": "The game failed to start. Check the logs for details.",
+  "game.error.timeout": "Launch Timeout",
+  "game.error.timeout.description": "The game took too long to start. The emulator may have crashed or failed to respond.",
+  "game.error.coreCrashed": "Core Service Crashed",
+  "game.error.coreCrashed.description": "The emulator core service crashed unexpectedly. Game windows have been closed to protect the app.",
+  "game.error.runnerStopped": "Launch Failed",
+  "game.error.runnerStopped.description": "The game session ended unexpectedly during launch.",
+  "game.error.ok": "OK"
 }

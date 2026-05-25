@@ -1143,5 +1143,21 @@
   "game.alreadyRunning.switchWithoutSaving": "Trocar sem Salvar",
   "game.alreadyRunning.switch": "Trocar",
   "game.alreadyRunning.cancel": "Cancelar",
-  "game.loading": "Carregando jogo..."
+  "game.loading": "Carregando jogo...",
+  "game.launch.checkingDependencies": "Verificando dependências...",
+  "game.launch.preparingConfig": "Preparando inicialização...",
+  "game.launch.discoveringCoreOptions": "Carregando opções do core...",
+  "game.launch.applyingSettings": "Aplicando configurações...",
+  "game.launch.loadingCore": "Carregando core...",
+  "game.launch.startingGame": "Iniciando jogo...",
+  "game.launch.waitingForFrame": "Aguardando primeiro frame...",
+  "game.error.launchFailed": "Erro ao iniciar",
+  "game.error.launchFailed.description": "O jogo não pôde ser iniciado. Verifique os registros para mais detalhes.",
+  "game.error.timeout": "Tempo esgotado",
+  "game.error.timeout.description": "O jogo demorou muito para iniciar. O emulador pode ter falhado ou não respondeu.",
+  "game.error.coreCrashed": "Serviço do core falhou",
+  "game.error.coreCrashed.description": "O serviço do core do emulador falhou inesperadamente. As janelas do jogo foram fechadas para proteger o aplicativo.",
+  "game.error.runnerStopped": "Falha ao iniciar",
+  "game.error.runnerStopped.description": "A sessão do jogo terminou inesperadamente durante o lançamento.",
+  "game.error.ok": "OK"
 }

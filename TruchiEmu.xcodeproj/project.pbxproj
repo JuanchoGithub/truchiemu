@@ -445,6 +445,7 @@
 		7B583AF5BACF0E19D9574F51 /* MAMERomEntry.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4379C651DF62956D8B2BA04A /* MAMERomEntry.swift */; };
 		7BC9F2B7264429F92FD2D48F /* GameLauncher.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9ED1634F62412DF880052D27 /* GameLauncher.swift */; };
 		7BEC71E9DE2C0DC36C53A654 /* CoreClientProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2A5F6194C027F95EB23ED33A /* CoreClientProtocol.swift */; };
+		7CBE0543D38F1C08D7B6CABF /* mame2003_libretro_default.json in Resources */ = {isa = PBXBuildFile; fileRef = 69528A74D5634D3F9B6396F4 /* mame2003_libretro_default.json */; };
 		7D029F63CAFD018D93F3FD8E /* input_systemLabels_gamegear.json in Resources */ = {isa = PBXBuildFile; fileRef = C8068AB52E3C18DAAE29F47B /* input_systemLabels_gamegear.json */; };
 		7E1281194B7150DB55497A7A /* CheatManagerService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7442198CF891F84CE81220FA /* CheatManagerService.swift */; };
 		7E1C3785C6F25E705635A60B /* gearboy_libretro_default.json in Resources */ = {isa = PBXBuildFile; fileRef = D503F9A21A5B9E67E09C0961 /* gearboy_libretro_default.json */; };
@@ -703,6 +704,7 @@
 		C5D1641BD6B3B412414CFB7F /* ManualActionStatus.swift in Sources */ = {isa = PBXBuildFile; fileRef = EE3376B3A01ADAEEAA96F108 /* ManualActionStatus.swift */; };
 		C65A378F28F49FAFF2A631B1 /* CheatManagerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3487BCC158871E9D5EAF669A /* CheatManagerView.swift */; };
 		C6A0CB4679D181B87812E172 /* input_systemLabels_2048.json in Resources */ = {isa = PBXBuildFile; fileRef = 302B0A1EBB01D110481DB6DC /* input_systemLabels_2048.json */; };
+		C71348506B68F2C80CB3FF03 /* fbneo_libretro_default.json in Resources */ = {isa = PBXBuildFile; fileRef = 4555BA966B2B05587DE32CA1 /* fbneo_libretro_default.json */; };
 		C7EB911EA85AD7A8D9DA113F /* DOS.png in Resources */ = {isa = PBXBuildFile; fileRef = 3E7338C371E12B371E8C32EE /* DOS.png */; };
 		C818A9A30E1776E89896B515 /* cps1@132w.png in Resources */ = {isa = PBXBuildFile; fileRef = 5B75DCBF03080C5A3D54BFAB /* cps1@132w.png */; };
 		C8B5E05093AB0774369076C0 /* input_coreOverrides_play.json in Resources */ = {isa = PBXBuildFile; fileRef = 5F0061F058B92B2B52DAD714 /* input_coreOverrides_play.json */; };
@@ -862,6 +864,7 @@
 		FAAF815731678A7ACE43A652 /* input_systemLabels_nds.json in Resources */ = {isa = PBXBuildFile; fileRef = 4B69FDCD052D4CB0C3006C85 /* input_systemLabels_nds.json */; };
 		FAE5B8459AF7CB4F97F0E61C /* arcade-cheats.zip in Resources */ = {isa = PBXBuildFile; fileRef = 81684B98E1D4EB60CB83B3D3 /* arcade-cheats.zip */; };
 		FB03114D60FF157996381E79 /* mpr-17933.bin in Resources */ = {isa = PBXBuildFile; fileRef = 72F92F049160D19A6E41CB5B /* mpr-17933.bin */; };
+		FB4F4B4DF943F74EB8B5F743 /* GameLaunchErrorOverlay.swift in Sources */ = {isa = PBXBuildFile; fileRef = 36A9574C25916D8504475C4C /* GameLaunchErrorOverlay.swift */; };
 		FBB786EBA6C2DBB7D2C46999 /* input_systemLabels_lynx.json in Resources */ = {isa = PBXBuildFile; fileRef = A986C8B3056E7E0649886870 /* input_systemLabels_lynx.json */; };
 		FBC5E104F9BE6D1BD63714B3 /* ShaderUniforms.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5BB097566F19707A4AEDE0BF /* ShaderUniforms.swift */; };
 		FC372B713FBF4FAF94510511 /* DotMatrixLCD.metal in Sources */ = {isa = PBXBuildFile; fileRef = BF7A3D8D17275C396BE21173 /* DotMatrixLCD.metal */; };
@@ -1104,6 +1107,7 @@
 		356DA337A39EEB272E9E98D7 /* input_systemLabels_mame.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = input_systemLabels_mame.json; sourceTree = "<group>"; };
 		357A347AE1F2ED3C616BC49B /* Nintendo - Game Boy Advance.dat */ = {isa = PBXFileReference; path = "Nintendo - Game Boy Advance.dat"; sourceTree = "<group>"; };
 		36595021E981B9F32234B307 /* sms-cheats.zip */ = {isa = PBXFileReference; lastKnownFileType = archive.zip; path = "sms-cheats.zip"; sourceTree = "<group>"; };
+		36A9574C25916D8504475C4C /* GameLaunchErrorOverlay.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GameLaunchErrorOverlay.swift; sourceTree = "<group>"; };
 		36F405FCC5148CACA78ACD58 /* input_coreOverrides_cannonball.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = input_coreOverrides_cannonball.json; sourceTree = "<group>"; };
 		37C4859B682A869506B406B2 /* SavedStates.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SavedStates.swift; sourceTree = "<group>"; };
 		3808F4606AB93A4AE90A030F /* LibretroBridgeImpl.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = LibretroBridgeImpl.h; sourceTree = "<group>"; };
@@ -1149,6 +1153,7 @@
 		44960EF263C76FF32F8CF7FF /* input_coreOverrides_gearlynx.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = input_coreOverrides_gearlynx.json; sourceTree = "<group>"; };
 		44D6E43A22D859720886ECD6 /* LibraryFilterOption.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LibraryFilterOption.swift; sourceTree = "<group>"; };
 		44DA75A39BC660DA2C3C1257 /* VIDEOS.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = VIDEOS.png; sourceTree = "<group>"; };
+		4555BA966B2B05587DE32CA1 /* fbneo_libretro_default.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = fbneo_libretro_default.json; sourceTree = "<group>"; };
 		4569CBF7010AAF233DA3CFC4 /* input_coreLabels_mr_boom.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = input_coreLabels_mr_boom.json; sourceTree = "<group>"; };
 		460DFA8410763ED490E94E83 /* TruchiEmuApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TruchiEmuApp.swift; sourceTree = "<group>"; };
 		466CFD903A62D1110AFF0C9B /* quake@132w.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "quake@132w.png"; sourceTree = "<group>"; };
@@ -1284,6 +1289,7 @@
 		69314CA8FAAD4A31985E6FA0 /* input_coreOverrides_beetle_psx.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = input_coreOverrides_beetle_psx.json; sourceTree = "<group>"; };
 		6937A26557EA12463539AC7C /* input_coreLabels_theodore.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = input_coreLabels_theodore.json; sourceTree = "<group>"; };
 		6949FBAAC002CC18A64D2E35 /* input_systemLabels_openlara.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = input_systemLabels_openlara.json; sourceTree = "<group>"; };
+		69528A74D5634D3F9B6396F4 /* mame2003_libretro_default.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = mame2003_libretro_default.json; sourceTree = "<group>"; };
 		69615F64B0FE0054BD7BAAA4 /* input_coreLabels_mkxp-z.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = "input_coreLabels_mkxp-z.json"; sourceTree = "<group>"; };
 		6983EA32B13EE9D1F93A6893 /* GameDetailView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GameDetailView.swift; sourceTree = "<group>"; };
 		69D7196681D9227CC0BA3B45 /* ngpc@132w.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "ngpc@132w.png"; sourceTree = "<group>"; };
@@ -2468,6 +2474,7 @@
 				6B1CC886E59DC123C478AE62 /* BezelBackgroundView.swift */,
 				3487BCC158871E9D5EAF669A /* CheatManagerView.swift */,
 				A47516431097E29AD293A7B5 /* CorePickerView.swift */,
+				36A9574C25916D8504475C4C /* GameLaunchErrorOverlay.swift */,
 				C61A9A36D430D34E4C3ABDE0 /* GameLoadingOverlay.swift */,
 				C50E20B4080419F263BC42F7 /* SlotPickerSheet.swift */,
 				B44F4A2C55AD5E363EC7E077 /* ShaderPlayerComponents */,
@@ -3137,6 +3144,7 @@
 				A227DD8C889C0589D944D5B2 /* dolphin_libretro_default.json */,
 				204B48E4B91C7B1E31CF2EEF /* dosbox_pure_libretro_default.json */,
 				782632B65454EB0AC251613D /* duckstation_libretro_default.json */,
+				4555BA966B2B05587DE32CA1 /* fbneo_libretro_default.json */,
 				DD039E7B14D811FA333EA87E /* flycast_libretro_default.json */,
 				8B01022A1A95EC0DBDED4308 /* gambatte_libretro_default.json */,
 				15134742139975273F1F990C /* gambatte_libretro_gb.json */,
@@ -3144,6 +3152,7 @@
 				3D5122C0BA2C8EE43B5E3F24 /* gearboy_libretro_gb.json */,
 				F655939548263F218C5B75DC /* mame_libretro_default.json */,
 				FAE59479082A912BBCECFEAA /* mame2000_libretro_default.json */,
+				69528A74D5634D3F9B6396F4 /* mame2003_libretro_default.json */,
 				91AFAA29AB15660C5C099AEB /* mame2003_plus_libretro_default.json */,
 				215B2086947343EABD16D9A4 /* mame2010_libretro_default.json */,
 				76AA9026EF2024FE01AA7B4E /* mednafen_psx_hw_libretro_default.json */,
@@ -3623,6 +3632,7 @@
 				E5519A0880D1360BA2982973 /* es.json in Resources */,
 				EE6B1AEC9FC014B3A62CBA37 /* fairchild@132w.png in Resources */,
 				6852E77C060E146CF3A2BCBF /* fbneo-cheats.zip in Resources */,
+				C71348506B68F2C80CB3FF03 /* fbneo_libretro_default.json in Resources */,
 				00A51224DE7C9042372878B3 /* fc@132w.png in Resources */,
 				62F0EFA300C2D18450DAA638 /* fds-cheats.zip in Resources */,
 				DCA7B36E5FDFA488044B50B0 /* fds@132w.png in Resources */,
@@ -3945,6 +3955,7 @@
 				5660C42EA9A8DCEC31B09197 /* jaguar.zip in Resources */,
 				024AA9F0C40AE97D1A17D252 /* lynx@132w.png in Resources */,
 				039731494625D25654020EB9 /* mame2000_libretro_default.json in Resources */,
+				7CBE0543D38F1C08D7B6CABF /* mame2003_libretro_default.json in Resources */,
 				065DD05DB8027DE68DCAEA5B /* mame2003_plus_libretro_default.json in Resources */,
 				E5DF81ECE7A293F0F403D992 /* mame2010_libretro.json in Resources */,
 				C5A563A55C72C2F4403224D4 /* mame2010_libretro_default.json in Resources */,
@@ -4161,6 +4172,7 @@
 				0B7CD1BF207E0E2F0E0D3755 /* GameError.swift in Sources */,
 				3C60A3DC1D896B26841ADD14 /* GameInfo.swift in Sources */,
 				D804D2B87362CD5BD3DDCD85 /* GameInfoWindow.swift in Sources */,
+				FB4F4B4DF943F74EB8B5F743 /* GameLaunchErrorOverlay.swift in Sources */,
 				7BC9F2B7264429F92FD2D48F /* GameLauncher.swift in Sources */,
 				667975EF2750F253A19162FB /* GameListRowView.swift in Sources */,
 				630942A29155AFB23DE78323 /* GameLoadingOverlay.swift in Sources */,

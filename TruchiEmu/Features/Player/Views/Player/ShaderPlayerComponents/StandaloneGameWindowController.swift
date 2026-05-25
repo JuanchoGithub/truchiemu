@@ -61,14 +61,18 @@ class StandaloneGameWindowController: NSWindowController, NSWindowDelegate, Obse
     private var pendingSlotToLoad: Int?
     private var pendingROMForState: ROM?
     @MainActor @Published var saveStatesDisabled: Bool = false
-    @MainActor @Published var isLoading: Bool = false
-    var loadingOverlayView: NSHostingView<AnyView>?
+@MainActor @Published var isLoading: Bool = false
+@MainActor @Published var launchError: GameLaunchError?
+var loadingOverlayView: NSHostingView<AnyView>?
+var errorOverlayView: NSHostingView<AnyView>?
+private var firstFrameTimer: Timer?
     var pendingSystemID: String?
     var pendingROMForBezel: ROM?
     var onWindowWillClose: (() -> Void)?
     var toolbarView: NSHostingView<AnyView>?
     var hideToolbarTimer: Timer?
     var skipAutoSaveOnClose: Bool = false
+    private var gameLoadedObserver: NSObjectProtocol?
 
     // Dismiss any active sheets and remove the SwiftUI toolbar from the view hierarchy.
     // Must be called before releasing the controller to prevent SwiftUI view graph teardown
@@ -83,6 +87,44 @@ class StandaloneGameWindowController: NSWindowController, NSWindowDelegate, Obse
         toolbarView = nil
         loadingOverlayView?.removeFromSuperview()
         loadingOverlayView = nil
+        errorOverlayView?.removeFromSuperview()
+        errorOverlayView = nil
+    }
+
+    @MainActor
+    func showErrorOverlay(_ error: GameLaunchError) {
+        guard launchError == nil else { return }
+        launchError = error
+        isLoading = false
+        firstFrameTimer?.invalidate()
+        firstFrameTimer = nil
+
+        if errorOverlayView == nil, let containerView = window?.contentView {
+            let hostingView = NSHostingView(rootView: AnyView(GameLaunchErrorOverlay(
+                windowController: self
+            ).environment(SystemDatabaseWrapper.shared)))
+            hostingView.translatesAutoresizingMaskIntoConstraints = false
+            hostingView.wantsLayer = true
+            containerView.addSubview(hostingView, positioned: .above, relativeTo: nil)
+
+            NSLayoutConstraint.activate([
+                hostingView.leadingAnchor.constraint(equalTo: containerView.leadingAnchor),
+                hostingView.trailingAnchor.constraint(equalTo: containerView.trailingAnchor),
+                hostingView.topAnchor.constraint(equalTo: containerView.topAnchor),
+                hostingView.bottomAnchor.constraint(equalTo: containerView.bottomAnchor)
+            ])
+
+            errorOverlayView = hostingView
+        }
+    }
+
+    @MainActor
+    func dismissErrorAndClose() {
+        if launchError == .coreServiceCrashed {
+            XPCConnectionManager.isShuttingDown = true
+        }
+        skipAutoSaveOnClose = true
+        window?.close()
     }
     
     init(runner: EmulatorRunner) {
@@ -331,8 +373,9 @@ super.init(window: window)
     window?.makeKeyAndOrderFront(nil)
     NSApp.activate(ignoringOtherApps: true)
 
-    // Proceed with launch (bezel is loaded after first frame is ready)
-    _doLaunch(rom: rom, coreID: coreID, slotToLoad: slotToLoad)
+        // Proceed with launch (bezel is loaded after first frame is ready)
+        GameLauncher.shared.launchPhase = .loadingCore
+        _doLaunch(rom: rom, coreID: coreID, slotToLoad: slotToLoad)
     }
     
     // Store pending shader uniforms
@@ -352,6 +395,23 @@ private func _doLaunch(rom: ROM, coreID: String, slotToLoad: Int? = nil) {
         // Launch the game with current shader uniforms
         runner?.launch(rom: rom, coreID: coreID, shaderUniformOverrides: shaderUniforms)
 
+        // Observe game-loaded notification to update launch phase
+        gameLoadedObserver = NotificationCenter.default.addObserver(forName: .gameLoaded, object: nil, queue: .main) { [weak self] _ in
+            guard let self else { return }
+            if self.isLoading {
+                GameLauncher.shared.launchPhase = .startingGame
+            }
+        }
+
+        // Core is initializing async — we're now waiting for the first frame
+        // Dispatch async so SwiftUI gets a render opportunity to show "Loading core..." first
+        if isLoading {
+            DispatchQueue.main.async { [weak self] in
+                guard let self, self.isLoading else { return }
+                GameLauncher.shared.launchPhase = .waitingForFrame
+            }
+        }
+
         // Disable save states for Dolphin cores due to known serialization crash
         saveStatesDisabled = isDolphinCore()
         if saveStatesDisabled {
@@ -366,13 +426,8 @@ private func _doLaunch(rom: ROM, coreID: String, slotToLoad: Int? = nil) {
         // Check if runner is running
         if !(runner?.isRunning ?? false) {
             LoggerService.error(category: "Runner", "Runner is not running after launch")
-            // Show error message and close window
-            DispatchQueue.main.async {
-                let alert = NSAlert()
-                alert.messageText = "Error"
-                alert.informativeText = "Game could not be loaded, check the logs."
-                alert.runModal()
-                self.window?.close()
+            DispatchQueue.main.async { [weak self] in
+                self?.showErrorOverlay(.runnerStopped)
             }
             return
         }
@@ -391,86 +446,60 @@ private func _doLaunch(rom: ROM, coreID: String, slotToLoad: Int? = nil) {
     
     // Wait for the first frame to be rendered before dismissing the loading overlay.
     private func waitForFirstFrameAndShowWindow(slotToLoad: Int?, rom: ROM) {
-        // Poll for isReadyForDisplay with a timeout (5 seconds max)
         var attempts = 0
         let maxAttempts = 100 // 10 seconds at 100ms intervals
-        
-        Timer.scheduledTimer(withTimeInterval: 0.1, repeats: true) { [weak self] timer in
+
+        firstFrameTimer = Timer.scheduledTimer(withTimeInterval: 0.1, repeats: true) { [weak self] timer in
             guard let self else {
                 timer.invalidate()
                 return
             }
-            
+
             attempts += 1
-            // Already on main thread (Timer.scheduledTimer runs on main runloop)
             let state = MainActor.assumeIsolated { (self.runner?.isReadyForDisplay ?? false, self.runner?.lastError != nil, self.runner?.isRunning ?? false) }
             let isReady = state.0
             let hasError = state.1
             let isRunning = state.2
             let timedOut = attempts >= maxAttempts
-            
-            // Check for MAME missing dependencies (set during load via log callback)
-            // NOTE: Removed - conflicts with pre-launch check. We handle this in GameLauncher now.
-            // let mameMissingDeps = LibretroBridgeSwift.getMameMissingDependencies()
-            
+
             if isReady || hasError || !isRunning || timedOut {
                 timer.invalidate()
-                
-                // Removed: Runtime MAME dependency check conflicts with pre-launch check
-                // if mameMissingDeps {
-                //     LoggerService.warning(category: "Runner", "MAME reported missing dependencies, showing alert and closing")
-                //     self.showMAMEDependenciesAlert()
-                //     self.window?.close()
-                //     return
-                // }
-                
-                if !isReady {
-                    
-                    let errorToDisplay: GameError? = MainActor.assumeIsolated { self.runner?.lastError }
+                self.firstFrameTimer = nil
 
-                    if hasError {
-                        LoggerService.error(category: "Runner", "Core failed during launch, closing window immediately")
-                    } else if !isRunning {
-                        LoggerService.error(category: "Runner", "Runner stopped unexpectedly, closing window")
+            if !isReady {
+                let errorToDisplay: GameError? = MainActor.assumeIsolated { self.runner?.lastError }
+
+                if hasError {
+                    LoggerService.error(category: "Runner", "Core failed during launch, closing window immediately")
+                } else if !isRunning {
+                    LoggerService.error(category: "Runner", "Runner stopped unexpectedly, closing window")
+                } else {
+                    LoggerService.info(category: "Runner", "Timeout waiting for first frame, closing window")
+                }
+
+                DispatchQueue.main.async { [weak self] in
+                    guard let self else { return }
+                    if XPCConnectionManager.isShuttingDown {
+                        self.showErrorOverlay(.coreServiceCrashed)
+                    } else if let error = errorToDisplay {
+                        self.showErrorOverlay(.launchFailed(reason: error.localizedDescription))
+                    } else if timedOut {
+                        self.showErrorOverlay(.timeout)
                     } else {
-                        LoggerService.info(category: "Runner", "Timeout waiting for first frame, closing window")
+                        self.showErrorOverlay(.launchFailed(reason: ""))
                     }
-                    
-                    // Dont show window, terminate the emulation instead
-                    self.window?.close()
-                    MainActor.assumeIsolated {
-                        self.runner?.stop()
-                        self.runner = nil
-                    }
-                    
-                    // Show error alert to the user
-                    DispatchQueue.main.async {
-                        let alert = NSAlert()
-                        alert.alertStyle = .critical
-                        
-                        if let error = errorToDisplay {
-                            alert.messageText = "Launch Error"
-                            alert.informativeText = error.localizedDescription
-                        } else if timedOut {
-                            alert.messageText = "Launch Timeout"
-                            alert.informativeText = "The game took too long to start. The emulator may have crashed or failed to respond."
-                        } else {
-                            alert.messageText = "Launch Failed"
-                            alert.informativeText = "The game session ended unexpectedly during launch."
-                        }
-                        
-                        alert.runModal()
-                    }
-        } else {
-            self.onFirstFrameReady(slotToLoad: slotToLoad, rom: rom)
-        }
+                }
+                } else {
+                    self.onFirstFrameReady(slotToLoad: slotToLoad, rom: rom)
+                }
             }
         }
     }
-    
+
     // First frame is ready — dismiss loading overlay and prepare the window.
     private func onFirstFrameReady(slotToLoad: Int?, rom: ROM) {
         isLoading = false
+        GameLauncher.shared.launchPhase = .idle
 
         // Remove loading overlay after fade-out animation completes
         DispatchQueue.main.asyncAfter(deadline: .now() + 0.4) { [weak self] in
@@ -652,7 +681,13 @@ private func _doLaunch(rom: ROM, coreID: String, slotToLoad: Int? = nil) {
         fullscreenOverlayView = nil
         loadingOverlayView?.removeFromSuperview()
         loadingOverlayView = nil
+        errorOverlayView?.removeFromSuperview()
+        errorOverlayView = nil
         isLoading = false
+        launchError = nil
+
+        firstFrameTimer?.invalidate()
+        firstFrameTimer = nil
 
         InputCaptureManager.shared.cleanup()
 
@@ -716,6 +751,11 @@ private func _doLaunch(rom: ROM, coreID: String, slotToLoad: Int? = nil) {
             NSEvent.removeMonitor(monitor)
             inputCaptureHotkeyMonitor = nil
         }
+
+        if let observer = gameLoadedObserver {
+            NotificationCenter.default.removeObserver(observer)
+            gameLoadedObserver = nil
+        }
     }
 
     // MARK: - Helper Functions
@@ -737,6 +777,13 @@ private func _doLaunch(rom: ROM, coreID: String, slotToLoad: Int? = nil) {
 
     private func setupInputCaptureHotkey() {
         inputCaptureHotkeyMonitor = NSEvent.addLocalMonitorForEvents(matching: .keyDown) { [weak self] event in
+            if let self, self.launchError != nil {
+                let keyCode = event.keyCode
+                if keyCode == 36 || keyCode == 49 || keyCode == 53 {
+                    self.dismissErrorAndClose()
+                    return nil
+                }
+            }
             if event.modifierFlags.contains(.command) && event.keyCode == 109 {
                 if let window = self?.window {
                     InputCaptureManager.shared.handleToggleHotkey(window: window)
