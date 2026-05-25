@@ -1,4 +1,4 @@
 {
-  "mame-throttle": "enabled",
+  "mame_throttle": "enabled",
   "mame_rotation_mode": "internal"
 }

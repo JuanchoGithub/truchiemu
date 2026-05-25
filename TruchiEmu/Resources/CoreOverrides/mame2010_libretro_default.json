@@ -1,5 +1,4 @@
 {
-  "mame2010-throttle": "enabled",
-  "mame2010-skip_disclaimer": "enabled",
-  "mame2010-skip_warnings": "enabled"
+  "mame_current_skip_nagscreen": "enabled",
+  "mame_current_skip_warnings": "enabled"
 }
