@@ -44,7 +44,7 @@ icon: "/media/logo-icon.png"
 
 languages: ["en", "es", "pt"]
 default_lang: "en"
-exclude_from_localization: ["assets", "media", "flows.json", "Gemfile", "Gemfile.lock", "vendor", "scripts"]
+exclude_from_localization: ["assets", "media", "flows.json", "Gemfile", "Gemfile.lock", "vendor", "scripts", "es", "pt"]
 lang_from_path: true
 
 nav:

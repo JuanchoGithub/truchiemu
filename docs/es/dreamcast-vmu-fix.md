@@ -1,6 +1,6 @@
 ---
 layout: default
-title: Depurando lo Invisible: Por qué los Juegos de Dreamcast No Podían Guardar
+title: "Depurando lo Invisible: Por qué los Juegos de Dreamcast No Podían Guardar"
 description: Un análisis técnico profundo sobre cómo corregir los guardados VMU de Dreamcast en Flycast - ciclos de vida de opciones de core, semántica de la API libretro y análisis binario.
 last_updated: May 2026
 ---

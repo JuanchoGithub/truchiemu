@@ -1,6 +1,6 @@
 ---
 layout: default
-title: Depurando o Invisível: Por que Jogos de Dreamcast Não Conseguiram Salvar
+title: "Depurando o Invisível: Por que Jogos de Dreamcast Não Conseguiram Salvar"
 description: Uma análise técnica aprofundada sobre como corrigir salvamentos VMU do Dreamcast no Flycast - ciclos de vida de opções de core, semântica da API libretro e análise binária.
 last_updated: Maio 2026
 ---
