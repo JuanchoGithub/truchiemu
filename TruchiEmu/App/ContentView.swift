@@ -22,9 +22,10 @@ struct ContentView: View {
     @EnvironmentObject var libraryAutomation: LibraryAutomationCoordinator
     @EnvironmentObject var controllerService: ControllerService
     @Environment(SystemDatabaseWrapper.self) private var systemDatabase
-    @StateObject private var metadataSync = MetadataSyncCoordinator.shared
-    @StateObject private var raCacheCoordinator = RAGameCacheCoordinator.shared
-    @ObservedObject var wizard = SetupWizardState.shared
+@StateObject private var metadataSync = MetadataSyncCoordinator.shared
+@StateObject private var raCacheCoordinator = RAGameCacheCoordinator.shared
+@ObservedObject var notificationPillManager = NotificationPillManager.shared
+@ObservedObject var wizard = SetupWizardState.shared
     
 @State private var selectedFilter: LibraryFilter = .recent
 @State private var selectedROM: ROM? = nil
@@ -240,23 +241,33 @@ case .library:
             }
 
             // Status bar for library automation or metadata sync
-                if let activeStatus = activeBackgroundTask {
-                    VStack(alignment: .leading, spacing: 6) {
-                        ProgressView(value: activeStatus.progress)
-                            .progressViewStyle(.linear)
-                Text(activeStatus.statusLine)
-                    .font(.caption)
-                    .foregroundStyle(AppColors.textSecondaryNeutral(colorScheme))
-                            .lineLimit(2)
-                    }
-                    .padding(.horizontal, 12)
-                    .padding(.vertical, 8)
-                    .frame(maxWidth: .infinity, alignment: .leading)
-                    .background(.bar)
+            if let statusLine = activeBackgroundTask {
+                VStack(alignment: .leading, spacing: 6) {
+                    BouncingProgressBar()
+                    Text(statusLine)
+                        .font(.caption)
+                        .foregroundStyle(AppColors.textSecondaryNeutral(colorScheme))
+                        .lineLimit(2)
                 }
+                .padding(.horizontal, 12)
+                .padding(.vertical, 8)
+                .frame(maxWidth: .infinity, alignment: .leading)
+                .background(.bar)
             }
-            
-            // Confetti overlay for celebration moments
+        }
+
+        // Notification pill overlay
+        if let notification = notificationPillManager.currentNotification {
+            VStack {
+                Spacer()
+                NotificationPill(notification: notification)
+                    .padding(.bottom, 20)
+                    .transition(.move(edge: .bottom).combined(with: .opacity))
+            }
+            .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .bottom)
+        }
+
+        // Confetti overlay for celebration moments
             ConfettiOverlay()
         }
 .sheet(item: $coreManager.pendingDownload) { pending in
@@ -338,21 +349,15 @@ LoggerService.info(category: "Shaders", "Updated shader for \(updatedROMIDs.coun
 }
 
 // Shows whichever background task is currently active (library automation takes precedence).
-    private var activeBackgroundTask: (progress: Double, statusLine: String)? {
+    private var activeBackgroundTask: String? {
         if libraryAutomation.isActive {
-            let prog: Double = libraryAutomation.progress
-            let status: String = libraryAutomation.statusLine
-            return (prog, status)
+            return libraryAutomation.statusLine
         }
         if metadataSync.isActive {
-            let prog: Double = metadataSync.progress
-            let status: String = metadataSync.statusLine
-            return (prog, status)
+            return metadataSync.statusLine
         }
         if raCacheCoordinator.isActive {
-            let prog: Double = raCacheCoordinator.progress
-            let status: String = raCacheCoordinator.statusLine
-            return (prog, status)
+            return raCacheCoordinator.statusLine
         }
         return nil
     }

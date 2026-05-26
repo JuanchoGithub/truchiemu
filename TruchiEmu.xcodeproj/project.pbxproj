@@ -648,6 +648,7 @@
 		B3058D8576CF48BBA603DC8E /* input_coreOverrides_vice.json in Resources */ = {isa = PBXBuildFile; fileRef = 91BF04CD67085663A8FADC58 /* input_coreOverrides_vice.json */; };
 		B37B19CF2CF7EF8D710E80FC /* input_coreLabels_meteor.json in Resources */ = {isa = PBXBuildFile; fileRef = AAD3170EF1AA36169C0A41CD /* input_coreLabels_meteor.json */; };
 		B390497DB3F035E9C1CB93A2 /* MS.png in Resources */ = {isa = PBXBuildFile; fileRef = 1B2DF02F2DB479FC229B1AA0 /* MS.png */; };
+		B3DEBE42958D5AEF6A263EB4 /* NotificationPill.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4AF5738E0CA85CD54BC36AC0 /* NotificationPill.swift */; };
 		B435353F1A42AE1C19D9A72F /* megadrive-cheats.zip in Resources */ = {isa = PBXBuildFile; fileRef = C527AE4EF195F38238D1FA80 /* megadrive-cheats.zip */; };
 		B49D6239BC6058F7C555070F /* 7vYdW.jpg in Resources */ = {isa = PBXBuildFile; fileRef = 068B7C5B921F37A7073E9DBF /* 7vYdW.jpg */; };
 		B4AE5A61C004F934F96B9772 /* ATARI2600.png in Resources */ = {isa = PBXBuildFile; fileRef = 07F3BD5EC27C712BCA6DCAC6 /* ATARI2600.png */; };
@@ -1174,6 +1175,7 @@
 		4ACE4CD2180AC8EE83ACEC67 /* PANASONIC.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = PANASONIC.png; sourceTree = "<group>"; };
 		4AD390216F957165FC9494EE /* mame2010_libretro.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = mame2010_libretro.json; sourceTree = "<group>"; };
 		4AE14606B8972C36976457FB /* StandaloneGameWindowController+Bezel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "StandaloneGameWindowController+Bezel.swift"; sourceTree = "<group>"; };
+		4AF5738E0CA85CD54BC36AC0 /* NotificationPill.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotificationPill.swift; sourceTree = "<group>"; };
 		4AFCF098D3AA63DCE667B14D /* fairchild@132w.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "fairchild@132w.png"; sourceTree = "<group>"; };
 		4B69FDCD052D4CB0C3006C85 /* input_systemLabels_nds.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = input_systemLabels_nds.json; sourceTree = "<group>"; };
 		4C0D8487DF2A9BB2EAB70BAB /* GameCardView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GameCardView.swift; sourceTree = "<group>"; };
@@ -3187,6 +3189,7 @@
 				7A0A290509C1D20EA2265610 /* AccentSegmentedControl.swift */,
 				6FA6F0077547C094AAD1CCAE /* AppearanceMode.swift */,
 				ABE60205F14183C120DDC8AA /* DesignSystem.swift */,
+				4AF5738E0CA85CD54BC36AC0 /* NotificationPill.swift */,
 				A8935D40F11BF986BE60A840 /* ThemeManager.swift */,
 			);
 			path = UI;
@@ -4237,6 +4240,7 @@
 				0264BA41980DD15079BBA731 /* N64Runner.swift in Sources */,
 				E317973A7B9CCD95761A632D /* NESRunner.swift in Sources */,
 				989CF6FDFAD02F5AE425ABA4 /* NSImage+Resize.swift in Sources */,
+				B3DEBE42958D5AEF6A263EB4 /* NotificationPill.swift in Sources */,
 				87B10EFAD98B1F06174C53D9 /* NotificationService.swift in Sources */,
 				7326A987ECCC8D533CBE6E7F /* OnboardingView.swift in Sources */,
 				802243197EC4A31177770310 /* PPSSPAssetService.swift in Sources */,

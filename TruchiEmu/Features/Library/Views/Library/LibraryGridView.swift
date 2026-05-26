@@ -90,9 +90,8 @@ struct LibraryGridView: View {
 
     @State private var viewMode: ViewMode = .grid
     @State private var columnCount: Int = 4
-    @ObservedObject var prefs = SystemPreferences.shared
-    @ObservedObject var boxArtService = BoxArtService.shared
-    @State private var manualBoxArtSearchROM: ROM?
+@ObservedObject var prefs = SystemPreferences.shared
+@State private var manualBoxArtSearchROM: ROM?
     
     
     // Delete/hide game states
@@ -178,17 +177,9 @@ struct LibraryGridView: View {
                         listView
                     }
                 }
-                .transition(.opacity.combined(with: .scale(scale: 0.97)))
-                
-                if boxArtService.isDownloadingBatch {
-                    VStack {
-                        Spacer()
-                        downloadingArtOverlay
-                            .padding(.bottom, 20)
-                    }
-                }
-            }
-        }
+.transition(.opacity.combined(with: .scale(scale: 0.97)))
+}
+}
         .frame(maxWidth: .infinity, maxHeight: .infinity)
         .alert(loc.localized("library.renameGame"), isPresented: Binding(
             get: { renamingROM != nil },
@@ -238,8 +229,8 @@ struct LibraryGridView: View {
 
                 You can restore the ROM file from Trash if you change your mind.
                 """)
-            }
-}
+        }
+        }
         .toolbar {
             ToolbarItem(placement: .primaryAction) {
                 Spacer()
@@ -895,81 +886,10 @@ viewModel.updateFilters(
             .buttonStyle(.borderedProminent)
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity)
-        .clipped()
-    }
-
-    @State private var boxArtMessageIndex = 0
-    
-    private var boxArtMessages: [String] {[
-            loc.localized("library.fetchingBoxArtProgress"),
-            loc.localized("library.dressingUpGames"),
-            loc.localized("library.makingLibraryPretty"),
-            loc.localized("library.findingCoverArt"),
-            loc.localized("library.wrappingRoms")
-        ]
-    }
-    
-    private var downloadingArtOverlay: some View {
-        HStack(spacing: 12) {
-            // Animated book icon that opens/closes
-            ZStack {
-                Circle()
-                    .stroke(AppColors.brandAccent.opacity(0.3), lineWidth: 1.5)
-                    .frame(width: 20, height: 20)
-                    .scaleEffect(1.0 + boxArtService.downloadProgress * 0.2)
-                    .opacity(1.0 - boxArtService.downloadProgress * 0.5)
-                
-                Image(systemName: showingOpenBook ? "book.fill" : "book.closed")
-                    .font(.system(size: 10))
-                    .foregroundStyle(AppGradients.accent)
-                    .contentTransition(.symbolEffect(.automatic))
-            }
-            .modifier(BoxArtPulseAnimation())
-            .onAppear {
-                withAnimation(.easeInOut(duration: 0.8).repeatForever(autoreverses: true)) {
-                    showingOpenBook.toggle()
-                }
-            }
-            
-            VStack(alignment: .leading, spacing: 2) {
-                Text(boxArtMessages[boxArtMessageIndex])
-                    .font(.caption)
-                    .fontWeight(.medium)
-                    .foregroundColor(.primary)
-                    .contentTransition(.numericText())
-                
-		Text("\(boxArtService.downloadedCount) / \(boxArtService.downloadQueueCount) \(loc.localized("library.coversDownloaded"))")
-		.font(.caption2)
-		.foregroundColor(AppColors.textSecondaryNeutral(colorScheme))
-            }
-        }
-        .padding(.horizontal, 16)
-        .padding(.vertical, 10)
-        .background(
-            Capsule()
-                .fill(.regularMaterial)
-                .overlay(
-                    Capsule()
-                        .fill(AppColors.brandAccent.opacity(0.08))
-                )
-                .shadow(color: .black.opacity(0.15), radius: 8, y: 4)
-        )
-        .onReceive(Timer.publish(every: 4, on: .main, in: .common).autoconnect()) { _ in
-            if boxArtService.isDownloadingBatch {
-                withAnimation(.easeInOut(duration: 0.3)) {
-                    boxArtMessageIndex = (boxArtMessageIndex + 1) % boxArtMessages.count
-                }
-            }
-        }
-        .onChange(of: boxArtService.isDownloadingBatch) { _, isDownloading in
-            if isDownloading {
-                boxArtMessageIndex = 0
-            }
-        }
+.clipped()
     }
 
     @State private var emptyStateAppeared = false
-    @State private var showingOpenBook = false
     
     private var emptyState: some View {
         ScrollView {
@@ -1241,6 +1161,20 @@ viewModel.updateFilters(
         var updated = rom
         updated.isHidden = true
         library.updateROM(updated)
+
+        let capturedLibrary = library
+        NotificationPillManager.shared.post(PillNotification(
+            icon: "eye.slash",
+            title: loc.localized("pill.gameHidden"),
+            subtitle: rom.displayName,
+            autoDismissDelay: 5,
+            action: PillAction(label: loc.localized("pill.undo")) {
+                var restored = rom
+                restored.isHidden = false
+                capturedLibrary.updateROM(restored)
+                NotificationPillManager.shared.dismiss()
+            }
+        ))
     }
 
     private func unhideGame(_ rom: ROM) {
@@ -1250,17 +1184,55 @@ viewModel.updateFilters(
     }
 
     private func deleteGameAndROM(_ rom: ROM) {
-        // Move the ROM file to trash using FileManager
+        var trashURL: URL?
+
         do {
-            var trashURL: NSURL?
-            try FileManager.default.trashItem(at: rom.path, resultingItemURL: &trashURL)
+            var resultingURL: NSURL?
+            try FileManager.default.trashItem(at: rom.path, resultingItemURL: &resultingURL)
+            trashURL = resultingURL as? URL
             LoggerService.info(category: "LibraryGridView", "ROM file moved to trash: \(rom.path.lastPathComponent)")
         } catch {
             LoggerService.warning(category: "LibraryGridView", "Failed to move ROM to trash: \(error.localizedDescription). Removing from library anyway.")
         }
-        
-        // Remove the ROM from the library
+
         removeROMFromLibrary(rom)
+
+        let capturedLibrary = library
+        NotificationPillManager.shared.post(PillNotification(
+            icon: "trash",
+            title: loc.localized("pill.gameTrashed"),
+            subtitle: rom.displayName,
+            autoDismissDelay: 5,
+            action: PillAction(label: loc.localized("pill.undo")) {
+                var restored = false
+
+                if let trashURL = trashURL {
+                    do {
+                        let destination = rom.path
+                        if !FileManager.default.fileExists(atPath: destination.deletingLastPathComponent().path) {
+                            try FileManager.default.createDirectory(at: destination.deletingLastPathComponent(), withIntermediateDirectories: true)
+                        }
+                        try FileManager.default.moveItem(at: trashURL, to: destination)
+                        restored = true
+                        LoggerService.info(category: "LibraryGridView", "ROM restored from trash: \(rom.path.lastPathComponent)")
+                    } catch {
+                        LoggerService.warning(category: "LibraryGridView", "Failed to restore ROM from trash: \(error.localizedDescription)")
+                    }
+                }
+
+                if restored {
+                    capturedLibrary.roms.append(rom)
+                    LibraryMetadataStore.shared.persist(rom: rom)
+                    LibraryMetadataStore.shared.flushDirtyToSwiftData()
+                    let repo = ROMRepository(context: SwiftDataContainer.shared.mainContext)
+                    repo.saveROM(rom)
+                    capturedLibrary.updateCounts()
+                    NotificationPillManager.shared.dismiss()
+                } else {
+                    NotificationPillManager.shared.updateSubtitle(loc.localized("pill.restoreFailed"))
+                }
+            }
+        ))
     }
 
 private func removeROMFromLibrary(_ rom: ROM) {
@@ -1572,7 +1544,7 @@ private func removeROMFromLibrary(_ rom: ROM) {
             let missingArt = viewModel.displayedROMs.filter { !$0.hasBoxArt }
             guard !missingArt.isEmpty else { return }
             
-            let service = self.boxArtService
+            let service = BoxArtService.shared
             Task {
                 let resolved = await Task.detached(priority: .background) {
                     return service.resolveLocalBoxArtBatch(for: missingArt)
@@ -1587,12 +1559,11 @@ private func removeROMFromLibrary(_ rom: ROM) {
                         library.saveROMsToDatabase(only: modifiedIDs)
                     }
                 }
-            }
+        }
         }
     }
-}
 
-// MARK: - Empty State Illustration
+    // MARK: - Empty State Illustration
 
 private struct EmptyStateIllustration: View {
     @Environment(\.colorScheme) private var colorScheme
@@ -1645,35 +1616,6 @@ private struct EmptyStateIllustration: View {
     }
 }
 
-// MARK: - Bouncing Progress Bar
-
-private struct BouncingProgressBar: View {
-    @State private var isExpanded = false
-
-    var body: some View {
-        GeometryReader { geo in
-            let barWidth = geo.size.width * 0.35
-            let travelDistance = geo.size.width - barWidth
-
-            RoundedRectangle(cornerRadius: AppRadius.full)
-                .fill(AppGradients.accent)
-                .frame(width: barWidth, height: 4)
-                .offset(x: isExpanded ? travelDistance : 0)
-                .shadow(color: AppColors.brandAccent.opacity(0.4), radius: 6)
-                .onAppear {
-                    withAnimation(
-                        Animation.easeInOut(duration: 1.5)
-                            .repeatForever(autoreverses: true)
-                    ) {
-                        isExpanded = true
-                    }
-                }
-        }
-        .frame(height: 4)
-        .padding(.horizontal, 60)
-    }
-}
-
 // MARK: - Scanning Scan Line
 
 private struct ScanningScanLine: View {
@@ -1690,9 +1632,11 @@ private struct ScanningScanLine: View {
                     withAnimation(
                         Animation.easeInOut(duration: 2).repeatForever(autoreverses: true)
                     ) {
-                        scanOffset = 0.3
-                    }
+    scanOffset = 0.3
                 }
+            }
         }
     }
 }
+}
+

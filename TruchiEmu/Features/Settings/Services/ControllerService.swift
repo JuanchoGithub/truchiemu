@@ -58,10 +58,16 @@ class ControllerService: ObservableObject {
             .store(in: &cancellables)
     }
 
+    private var previousControllerIDs: Set<String> = []
+
     private func refreshConnectedControllers() {
+        let previousIDs = previousControllerIDs
         var players: [PlayerController] = []
+        var currentIDs: Set<String> = []
+
         for (index, gc) in GCController.controllers().prefix(4).enumerated() {
             let vendorName = gc.vendorName ?? "Unknown Controller"
+            currentIDs.insert(vendorName)
             let mapping = savedMappings[vendorName]?["default"]
                 ?? ControllerGamepadMapping.defaults(for: vendorName, systemID: "default", handedness: handedness)
             players.append(PlayerController(
@@ -70,8 +76,24 @@ class ControllerService: ObservableObject {
                 mapping: mapping
             ))
         }
+
+        let newIDs = currentIDs.subtracting(previousIDs)
+        for player in players {
+            if let vendorName = player.gcController?.vendorName, newIDs.contains(vendorName) {
+                let loc = LocalizationManager.shared
+                NotificationPillManager.shared.post(PillNotification(
+                    icon: "gamecontroller",
+                    title: loc.localized("pill.controllerConnected"),
+                    subtitle: player.name,
+                    autoDismissDelay: 4
+                ))
+                break
+            }
+        }
+
+        previousControllerIDs = currentIDs
         connectedControllers = players
-        
+
         if activePlayerIndex == 0 && !players.isEmpty {
             activePlayerIndex = 1
         }

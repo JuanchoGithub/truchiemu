@@ -1,25 +1,5 @@
 import SwiftUI
 
-// MARK: - Box Art Pulse Animation
-
-// A subtle pulse animation for the box art download icon
-struct BoxArtPulseAnimation: ViewModifier {
-    @State private var isAnimating = false
-    
-    func body(content: Content) -> some View {
-        content
-            .scaleEffect(isAnimating ? 1.15 : 1)
-            .animation(
-                Animation.easeInOut(duration: 1.2)
-                    .repeatForever(autoreverses: true),
-                value: isAnimating
-            )
-            .onAppear {
-                isAnimating = true
-            }
-    }
-}
-
 // MARK: - Scanning Pulse Animation
 
 // A subtle pulse animation for the scanning overlay icon

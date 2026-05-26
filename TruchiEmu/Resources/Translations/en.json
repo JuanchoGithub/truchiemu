@@ -1188,5 +1188,10 @@
   "game.error.coreCrashed.description": "The emulator core service crashed unexpectedly. Game windows have been closed to protect the app.",
   "game.error.runnerStopped": "Launch Failed",
   "game.error.runnerStopped.description": "The game session ended unexpectedly during launch.",
-  "game.error.ok": "OK"
+  "game.error.ok": "OK",
+  "pill.gameTrashed": "Game Moved to Trash",
+  "pill.gameHidden": "Game Hidden",
+  "pill.undo": "Undo",
+  "pill.controllerConnected": "Controller Connected",
+  "pill.restoreFailed": "Restore failed — file no longer in Trash"
 }

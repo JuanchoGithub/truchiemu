@@ -1186,5 +1186,10 @@
   "game.error.coreCrashed.description": "O serviço do core do emulador falhou inesperadamente. As janelas do jogo foram fechadas para proteger o aplicativo.",
   "game.error.runnerStopped": "Falha ao iniciar",
   "game.error.runnerStopped.description": "A sessão do jogo terminou inesperadamente durante o lançamento.",
-  "game.error.ok": "OK"
+  "game.error.ok": "OK",
+  "pill.gameTrashed": "Jogo movido para a lixeira",
+  "pill.gameHidden": "Jogo ocultado",
+  "pill.undo": "Desfazer",
+  "pill.controllerConnected": "Controle conectado",
+  "pill.restoreFailed": "Falha ao restaurar — arquivo não está mais na lixeira"
 }

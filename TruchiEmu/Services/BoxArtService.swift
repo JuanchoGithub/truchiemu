@@ -398,72 +398,6 @@ class BoxArtService: ObservableObject {
         let needsArt = romsNeedingBoxArt(in: roms)
         guard !needsArt.isEmpty else { return }
 
-        let total = needsArt.count
-        await MainActor.run { self.downloadQueueCount = total; self.downloadedCount = 0; self.isDownloadingBatch = true }
-
-        let maxConcurrent = 1
-        var completed = 0
-        var modifiedIDs: [UUID] = []
-        
-        await withTaskGroup(of: (ROM, URL?).self) { group in
-            var active = 0
-            var iter = needsArt.makeIterator()
-
-            while active < maxConcurrent, let rom = iter.next() {
-                group.addTask {
-                    // Fast local check inside batch queue too!
-                    if let local = self.resolveLocalBoxArt(for: rom) { return (rom, local) }
-                    return (rom, await self.fetchBoxArtLibretro(for: rom))
-                }
-                active += 1
-            }
-
-            for await result in group {
-                active -= 1
-                var (completedRom, url) = result
-                if url != nil {
-                    completedRom.hasBoxArt = true
-                    modifiedIDs.append(completedRom.id)
-                    await MainActor.run { library.updateROM(completedRom, persist: false) }
-                }
-                completed += 1
-                let label = "\(completedRom.displayName).png"
-                await MainActor.run { self.downloadedCount = completed; onItemProgress?(completed, total, label) }
-                
-                if let next = iter.next() {
-                    group.addTask {
-                        if let local = self.resolveLocalBoxArt(for: next) { return (next, local) }
-                        return (next, await self.fetchBoxArtLibretro(for: next))
-                    }
-                    active += 1
-                }
-                try? await Task.sleep(nanoseconds: 10_000_000) // Small yield
-            }
-        }
-
-        await MainActor.run { library.saveROMsToDatabase(only: modifiedIDs); self.isDownloadingBatch = false }
-        signalBoxArtUpdated(for: UUID())
-    }
-
-    // MARK: - Google Image Search Fallback
-    
-    @Published var isDownloadingBatch = false
-    @Published var downloadedCount = 0
-    @Published var downloadQueueCount = 0
-    var downloadProgress: Double {
-        guard downloadQueueCount > 0 else { return 0 }
-        return Double(downloadedCount) / Double(downloadQueueCount)
-    }
-    
-    func batchDownloadBoxArtGoogle(for roms: [ROM], library: ROMLibrary) async {
-        let broken = findBrokenBoxArts(in: roms)
-        if !broken.isEmpty { _ = await cleanBrokenBoxArts(for: broken) }
-
-        let needsArt = romsNeedingBoxArt(in: roms)
-        guard !needsArt.isEmpty else { return }
-
-        await MainActor.run { self.downloadQueueCount = needsArt.count; self.downloadedCount = 0; self.isDownloadingBatch = true }
-
         let maxConcurrent = 2
         var modifiedIDs: [UUID] = []
         
@@ -487,12 +421,9 @@ class BoxArtService: ObservableObject {
                     modifiedIDs.append(completedRom.id)
                     await MainActor.run { library.updateROM(completedRom, persist: false) }
                 }
-                await MainActor.run { self.downloadedCount += 1 }
-                
-                try? await Task.sleep(nanoseconds: 1_000_000_000) // Throttle Google
-                
-                if let nextRom = iterator.next() {
-                    group.addTask {
+            if let nextRom = iterator.next() {
+                try? await Task.sleep(nanoseconds: 1_000_000_000)
+                group.addTask {
                         if let local = self.resolveLocalBoxArt(for: nextRom) { return (nextRom, local) }
                         return (nextRom, await self.fetchBoxArtGoogle(for: nextRom))
                     }
@@ -501,7 +432,7 @@ class BoxArtService: ObservableObject {
             }
         }
         
-        await MainActor.run { library.saveROMsToDatabase(only: modifiedIDs); self.isDownloadingBatch = false }
+        await MainActor.run { library.saveROMsToDatabase(only: modifiedIDs) }
     }
     
     func fetchBoxArtGoogle(for rom: ROM) async -> URL? {

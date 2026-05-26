@@ -575,6 +575,35 @@ enum AppPillStyle {
     }
 }
 
+// MARK: - Bouncing Progress Bar
+
+struct BouncingProgressBar: View {
+    @State private var isExpanded = false
+
+    var body: some View {
+        GeometryReader { geo in
+            let barWidth = geo.size.width * 0.35
+            let travelDistance = geo.size.width - barWidth
+
+            RoundedRectangle(cornerRadius: AppRadius.full)
+                .fill(AppGradients.accent)
+                .frame(width: barWidth, height: 4)
+                .offset(x: isExpanded ? travelDistance : 0)
+                .shadow(color: AppColors.brandAccent.opacity(0.4), radius: 6)
+                .onAppear {
+                    withAnimation(
+                        Animation.easeInOut(duration: 1.5)
+                            .repeatForever(autoreverses: true)
+                    ) {
+                        isExpanded = true
+                    }
+                }
+        }
+        .frame(height: 4)
+        .padding(.horizontal, 60)
+    }
+}
+
 // MARK: - Continuous Pulse Modifier
 
 // Infinite pulsing animation for icons and decorative elements

@@ -1,0 +1,147 @@
+import SwiftUI
+import Combine
+
+struct PillAction {
+    let label: String
+    let handler: () -> Void
+}
+
+struct PillNotification: Identifiable {
+    let id = UUID()
+    let icon: String
+    let title: String
+    var subtitle: String?
+    var rotatingMessages: [String]?
+    var messageInterval: Double = 4
+    var autoDismissDelay: TimeInterval?
+    var action: PillAction?
+}
+
+@MainActor
+class NotificationPillManager: ObservableObject {
+    static let shared = NotificationPillManager()
+
+    @Published private(set) var currentNotification: PillNotification?
+
+    func post(_ notification: PillNotification) {
+        currentNotification = notification
+        if let delay = notification.autoDismissDelay {
+            let id = notification.id
+            Task {
+                try? await Task.sleep(nanoseconds: UInt64(delay * 1_000_000_000))
+                if currentNotification?.id == id {
+                    withAnimation(AppAnimations.smooth) {
+                        currentNotification = nil
+                    }
+                }
+            }
+        }
+    }
+
+    func updateSubtitle(_ subtitle: String) {
+        guard currentNotification != nil else { return }
+        currentNotification?.subtitle = subtitle
+    }
+
+    func dismiss() {
+        withAnimation(AppAnimations.smooth) {
+            currentNotification = nil
+        }
+    }
+}
+
+struct NotificationPill: View {
+    let notification: PillNotification
+    @Environment(\.colorScheme) private var colorScheme
+    @State private var messageIndex = 0
+    @State private var isHovering = false
+    @State private var cancellable: AnyCancellable?
+
+    private var displayTitle: String {
+        if let messages = notification.rotatingMessages, !messages.isEmpty {
+            return messages[messageIndex % messages.count]
+        }
+        return notification.title
+    }
+
+    var body: some View {
+        HStack(spacing: 12) {
+            Image(systemName: notification.icon)
+                .font(.system(size: 12, weight: .medium))
+                .foregroundStyle(AppGradients.accent)
+                .frame(width: 20, height: 20)
+
+            VStack(alignment: .leading, spacing: 2) {
+                Text(displayTitle)
+                    .font(.caption)
+                    .fontWeight(.medium)
+                    .foregroundColor(.primary)
+                    .contentTransition(.numericText())
+                    .lineLimit(1)
+
+                if let subtitle = notification.subtitle {
+                    Text(subtitle)
+                        .font(.caption2)
+                        .foregroundColor(AppColors.textSecondaryNeutral(colorScheme))
+                        .lineLimit(1)
+                }
+            }
+
+            if let action = notification.action {
+                Button {
+                    action.handler()
+                } label: {
+                    Text(action.label)
+                        .font(.caption)
+                        .fontWeight(.semibold)
+                        .foregroundColor(AppColors.brandAccent)
+                        .padding(.horizontal, 10)
+                        .padding(.vertical, 4)
+                        .background(
+                            Capsule()
+                                .fill(AppColors.brandAccent.opacity(isHovering ? 0.15 : 0.08))
+                        )
+                }
+                .buttonStyle(.plain)
+                .onHover { hovering in
+                    withAnimation(AppAnimations.quick) {
+                        isHovering = hovering
+                    }
+                }
+            }
+        }
+        .padding(.horizontal, 16)
+        .padding(.vertical, 10)
+        .background(
+            Capsule()
+                .fill(.regularMaterial)
+                .overlay(
+                    Capsule()
+                        .fill(AppColors.brandAccent.opacity(0.08))
+                )
+                .shadow(color: .black.opacity(0.15), radius: 8, y: 4)
+        )
+        .onAppear {
+            startMessageRotation()
+        }
+        .onDisappear {
+            cancellable?.cancel()
+        }
+        .onChange(of: notification.id) { _, _ in
+            messageIndex = 0
+            startMessageRotation()
+        }
+    }
+
+    private func startMessageRotation() {
+        cancellable?.cancel()
+        guard let messages = notification.rotatingMessages, messages.count > 1 else { return }
+        cancellable = Timer.publish(every: notification.messageInterval, on: .main, in: .common)
+            .autoconnect()
+            .sink { _ in
+                withAnimation(.easeInOut(duration: 0.3)) {
+                    messageIndex = (messageIndex + 1) % messages.count
+                }
+            }
+    }
+}

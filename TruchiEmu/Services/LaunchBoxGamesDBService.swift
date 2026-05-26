@@ -479,13 +479,6 @@ class LaunchBoxGamesDBService: ObservableObject {
         }
 
         LoggerService.info(category: "LaunchBoxDB", "Starting LaunchBox batch for \(needsArt.count) ROMs...")
-        let total = needsArt.count
-
-        await MainActor.run {
-            BoxArtService.shared.downloadQueueCount = total
-            BoxArtService.shared.downloadedCount = 0
-            BoxArtService.shared.isDownloadingBatch = true
-        }
 
         let maxConcurrent = 1 // Ultra-conservative for UI responsiveness
         var completed = 0
@@ -519,17 +512,15 @@ class LaunchBoxGamesDBService: ObservableObject {
                     await MainActor.run { library.updateROM(completedRom, persist: false) }
                 }
 
-                completed += 1
-                let label = "\(completedRom.displayName).png"
+            completed += 1
+            let label = "\(completedRom.displayName).png"
 
-                // Throttle: 750ms + yield between requests to keep app responsive
-                try? await Task.sleep(nanoseconds: 750_000_000)
-                await Task.yield()
+            try? await Task.sleep(nanoseconds: 750_000_000)
+            await Task.yield()
 
-                await MainActor.run {
-                    BoxArtService.shared.downloadedCount = completed
-                    onItemProgress?(completed, total, label)
-                }
+            await MainActor.run {
+                onItemProgress?(completed, needsArt.count, label)
+            }
 
                 if let next = iter.next() {
                     group.addTask { [weak self] in
@@ -549,10 +540,9 @@ class LaunchBoxGamesDBService: ObservableObject {
 
         await MainActor.run {
             library.saveROMsToDatabase(only: modifiedIDs)
-            BoxArtService.shared.isDownloadingBatch = false
         }
 
-        LoggerService.info(category: "LaunchBoxDB", "LaunchBox batch complete. \(completed)/\(total) processed.")
+        LoggerService.info(category: "LaunchBoxDB", "LaunchBox batch complete. \(completed)/\(needsArt.count) processed.")
     }
 
     // Internal fetch helper for batch downloads - called via MainActor.

@@ -1180,5 +1180,10 @@
   "game.error.coreCrashed.description": "El servicio del core del emulador se cerró inesperadamente. Las ventanas de juego se cerraron para proteger la aplicación.",
   "game.error.runnerStopped": "Error de lanzamiento",
   "game.error.runnerStopped.description": "La sesión del juego terminó inesperadamente durante el lanzamiento.",
-  "game.error.ok": "OK"
+  "game.error.ok": "OK",
+  "pill.gameTrashed": "Juego movido a la papelera",
+  "pill.gameHidden": "Juego oculto",
+  "pill.undo": "Deshacer",
+  "pill.controllerConnected": "Controlador conectado",
+  "pill.restoreFailed": "No se pudo restaurar — el archivo ya no está en la papelera"
 }
