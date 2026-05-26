@@ -2642,7 +2642,10 @@
     "sortOrder": 80,
     "manufacturer": "Nintendo",
     "database": [
-      "Nintendo - 3DS"
+      "Nintendo - Nintendo 3DS",
+      "Nintendo - New Nintendo 3DS",
+      "Nintendo - Nintendo 3DS (Digital)",
+      "Nintendo - New Nintendo 3DS (Digital)"
     ],
     "defaultShaderPresetID": "builtin-3ds"
   },
