@@ -50,16 +50,18 @@ enum RebuildOption: String, CaseIterable, Identifiable {
     var id: String { rawValue }
     var title: String {
         switch self {
-        case .refresh: "Refresh ROMs"; case .idRebuild: "Rebuild Identification"
-        case .boxartRebuild: "Rebuild Boxart"; case .everything: "Rebuild Everything"
+        case .refresh: LocalizationManager.shared.localized("library.rebuild.refresh.title")
+        case .idRebuild: LocalizationManager.shared.localized("library.rebuild.idRebuild.title")
+        case .boxartRebuild: LocalizationManager.shared.localized("library.rebuild.boxartRebuild.title")
+        case .everything: LocalizationManager.shared.localized("library.rebuild.everything.title")
         }
     }
     var description: String {
         switch self {
-        case .refresh: "Scan for new or deleted ROMs"
-        case .idRebuild: "Clear all ROM identification and re-identify"
-        case .boxartRebuild: "Clear all boxart and re-download"
-        case .everything: "Refresh ROMs, rebuild identification, and re-download boxart"
+        case .refresh: LocalizationManager.shared.localized("library.rebuild.refresh.description")
+        case .idRebuild: LocalizationManager.shared.localized("library.rebuild.idRebuild.description")
+        case .boxartRebuild: LocalizationManager.shared.localized("library.rebuild.boxartRebuild.description")
+        case .everything: LocalizationManager.shared.localized("library.rebuild.everything.description")
         }
     }
     var icon: String {

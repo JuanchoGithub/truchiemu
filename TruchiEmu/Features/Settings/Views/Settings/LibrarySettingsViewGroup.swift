@@ -749,7 +749,9 @@ struct RebuildOptionsSheet: View {
                 }
                 Button(loc.localized("library.cancel"), role: .cancel) {}
             } message: {
-                Text("This will \(selectedOption?.description.lowercased() ?? "") for '\(folder.url.lastPathComponent)'.\n\nContinue?")
+                Text(loc.localized("library.rebuild.confirmMessage")
+                .replacingOccurrences(of: "{0}", with: selectedOption?.description.lowercased() ?? "")
+                .replacingOccurrences(of: "{1}", with: folder.url.lastPathComponent))
             }
     }
     

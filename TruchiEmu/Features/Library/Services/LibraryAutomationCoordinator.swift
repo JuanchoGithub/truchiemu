@@ -20,6 +20,16 @@ final class LibraryAutomationCoordinator: ObservableObject {
 
     private init() {}
 
+    private var loc: LocalizationManager { LocalizationManager.shared }
+
+    private func localizedStatus(_ key: String, _ args: String...) -> String {
+        var result = loc.localized(key)
+        for (index, arg) in args.enumerated() {
+            result = result.replacingOccurrences(of: "{\(index)}", with: arg)
+        }
+        return result
+    }
+
     func runAfterLibraryUpdate(library: ROMLibrary, targetROMs: [ROM]? = nil) async {
         // Skip if any game is running — identification and box-art downloads
         // are network- and I/O-heavy and degrade gameplay performance.
@@ -115,14 +125,14 @@ final class LibraryAutomationCoordinator: ObservableObject {
                     
                     let done = Double(completedCount) / total
                     progress = done
-                    statusLine = "Identifying \(systemName): \(Int(done * 100))%"
+                    statusLine = localizedStatus("library.automation.identifyingSystem", systemName, "\(Int(done * 100))")
                     
                     await Task.yield()
                 }
             }
             
             progress = 1
-            statusLine = "Identifying games: 100% — done"
+            statusLine = loc.localized("library.automation.identifyingDone")
 
             // Save identification results before enrichment phase
             library.saveROMsToDatabase(only: modifiedIDs)
@@ -140,14 +150,14 @@ final class LibraryAutomationCoordinator: ObservableObject {
             if !mamEROMs.isEmpty {
                 phase = .identifying
                 progress = 0
-                statusLine = "Downloading MAME metadata..."
+                statusLine = loc.localized("library.automation.downloadingMameMetadata")
 
                 // Ensure metadata is downloaded
                 if !ProgettoSnapsService.shared.isMetadataAvailable {
                     await ProgettoSnapsService.shared.downloadMetadata()
                 }
 
-                statusLine = "Applying MAME genres: 0% — …"
+                statusLine = loc.localized("library.automation.applyingMameGenresStart")
                 let total = Double(mamEROMs.count)
                 for (index, rom) in mamEROMs.enumerated() {
                     let shortName = rom.shortNameForMAME.lowercased()
@@ -161,13 +171,13 @@ final class LibraryAutomationCoordinator: ObservableObject {
 
                     let frac = Double(index + 1) / total
                     progress = frac
-                    statusLine = "Applying MAME genres: \(Int(frac * 100))% — \(shortName)"
+                    statusLine = localizedStatus("library.automation.applyingMameGenres", "\(Int(frac * 100))", shortName)
 
                     if index % 50 == 0 { await Task.yield() }
                 }
 
                 progress = 1
-                statusLine = "Applying MAME genres: 100% — done"
+                statusLine = loc.localized("library.automation.applyingMameGenresDone")
                 library.saveROMsToDatabase(only: mamEROMs.map { $0.id })
             }
         }
@@ -183,7 +193,7 @@ final class LibraryAutomationCoordinator: ObservableObject {
         if !romsMissingLibretroMetadata.isEmpty {
             phase = .identifying
             progress = 0
-            statusLine = "Identifying ROMs with missing metadata: 0% — …"
+            statusLine = loc.localized("library.automation.identifyingMissingMetadataStart")
             
             let total = Double(romsMissingLibretroMetadata.count)
             var reidentifiedCount = 0
@@ -206,7 +216,7 @@ final class LibraryAutomationCoordinator: ObservableObject {
                     reidentifiedCount += 1
                     let frac = Double(reidentifiedCount) / total
                     progress = frac
-                    statusLine = "Identifying ROMs with missing metadata: \(Int(frac * 100))% — \(systemName)"
+                    statusLine = localizedStatus("library.automation.identifyingMissingMetadata", "\(Int(frac * 100))", systemName)
                     
                     if reidentifiedCount % 50 == 0 { await Task.yield() }
                 }
@@ -224,7 +234,7 @@ final class LibraryAutomationCoordinator: ObservableObject {
             }
             
             progress = 1
-            statusLine = "Identifying ROMs with missing metadata: 100% — done"
+            statusLine = loc.localized("library.automation.identifyingMissingMetadataDone")
         }
 
         // Phase 2: Enrichment — batch metadata (players, genre) from cached LibretroMetadataLibrary
@@ -239,11 +249,11 @@ final class LibraryAutomationCoordinator: ObservableObject {
         if !romsNeedingEnrichment.isEmpty {
             let identifiedROMs = romsNeedingEnrichment
             if identifiedROMs.isEmpty {
-                statusLine = "Enrichment skipped: no CRC data"
+                statusLine = loc.localized("library.automation.enrichmentSkipped")
             } else {
                 phase = .enriching
                 progress = 0
-                statusLine = "Enriching metadata: 0% — …"
+                statusLine = loc.localized("library.automation.enrichingMetadataStart")
                 
                 let total = Double(identifiedROMs.count)
                 var enrichedCount = 0
@@ -279,7 +289,7 @@ final class LibraryAutomationCoordinator: ObservableObject {
                         enrichedCount += 1
                         progress = Double(enrichedCount) / total
                         if enrichedCount % 100 == 0 {
-                            statusLine = "Enriching metadata: \(Int(progress * 100))% — \(systemID)"
+                            statusLine = localizedStatus("library.automation.enrichingMetadata", "\(Int(progress * 100))", systemID)
                         }
                     }
                     
@@ -297,7 +307,7 @@ final class LibraryAutomationCoordinator: ObservableObject {
                 }
                 
                 progress = 1
-                statusLine = "Enriching metadata: 100% — done"
+                statusLine = loc.localized("library.automation.enrichingMetadataDone")
                 
                 try? await Task.sleep(nanoseconds: 500_000_000)
                 await Task.yield()
@@ -310,7 +320,7 @@ final class LibraryAutomationCoordinator: ObservableObject {
 
         phase = .downloadingArt
         progress = 0
-        statusLine = "Downloading box art: 0% — …"
+        statusLine = loc.localized("library.automation.downloadingBoxArtStart")
         await BoxArtService.shared.batchDownloadBoxArtLibretro(
             for: artTargets,
             library: library
@@ -318,7 +328,7 @@ final class LibraryAutomationCoordinator: ObservableObject {
             guard let self = self else { return }
             let frac = Double(completed) / max(Double(totalCount), 1)
             self.progress = frac
-            self.statusLine = "Downloading box art: \(Int(frac * 100))% — \(fileLabel)"
+            self.statusLine = self.localizedStatus("library.automation.downloadingBoxArt", "\(Int(frac * 100))", fileLabel)
         }
 
         // Brief pause before LaunchBox phase
@@ -331,7 +341,7 @@ final class LibraryAutomationCoordinator: ObservableObject {
                 !rom.hasBoxArt
             }
             if !stillMissing.isEmpty {
-                statusLine = "Trying LaunchBox GamesDB for \(stillMissing.count) games…"
+                statusLine = localizedStatus("library.automation.tryingLaunchbox", "\(stillMissing.count)")
                 await LaunchBoxGamesDBService.shared.batchDownloadBoxArt(
                     for: stillMissing,
                     library: library
@@ -339,12 +349,12 @@ final class LibraryAutomationCoordinator: ObservableObject {
                     guard let self = self else { return }
                     let frac = Double(completed) / max(Double(totalCount), 1)
                     self.progress = frac
-                    self.statusLine = "LaunchBox box art: \(Int(frac * 100))% — \(fileLabel)"
+                    self.statusLine = self.localizedStatus("library.automation.launchboxBoxArt", "\(Int(frac * 100))", fileLabel)
                 }
             }
         }
 
         progress = 1
-        statusLine = "Downloading box art: 100% — done"
+        statusLine = loc.localized("library.automation.downloadingBoxArtDone")
     }
 }

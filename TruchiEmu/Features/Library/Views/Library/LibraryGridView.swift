@@ -862,9 +862,8 @@ viewModel.updateFilters(
             }
             .modifier(ScanningPulseAnimation())
 
-            ProgressView(value: library.scanProgress)
+            BouncingProgressBar()
                 .frame(width: 320)
-                .tint(AppColors.brandAccentSecondary)
 
             Group {
 		Text(scanningMessages[scanningMessageIndex])
@@ -1004,7 +1003,7 @@ viewModel.updateFilters(
                     Button {
                         pickFolder()
                     } label: {
-                        Label("Add ROM Folder", systemImage: "folder.badge.plus")
+                        Label(loc.localized("library.addRomFolder"), systemImage: "folder.badge.plus")
                     }
                     .buttonStyle(.borderedProminent)
                     .tint(AppColors.brandAccentSecondary)
@@ -1643,6 +1642,35 @@ private struct EmptyStateIllustration: View {
                 .frame(width: 60, height: 44)
         }
         .frame(width: 80, height: 64)
+    }
+}
+
+// MARK: - Bouncing Progress Bar
+
+private struct BouncingProgressBar: View {
+    @State private var isExpanded = false
+
+    var body: some View {
+        GeometryReader { geo in
+            let barWidth = geo.size.width * 0.35
+            let travelDistance = geo.size.width - barWidth
+
+            RoundedRectangle(cornerRadius: AppRadius.full)
+                .fill(AppGradients.accent)
+                .frame(width: barWidth, height: 4)
+                .offset(x: isExpanded ? travelDistance : 0)
+                .shadow(color: AppColors.brandAccent.opacity(0.4), radius: 6)
+                .onAppear {
+                    withAnimation(
+                        Animation.easeInOut(duration: 1.5)
+                            .repeatForever(autoreverses: true)
+                    ) {
+                        isExpanded = true
+                    }
+                }
+        }
+        .frame(height: 4)
+        .padding(.horizontal, 60)
     }
 }
 
