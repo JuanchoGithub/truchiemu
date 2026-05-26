@@ -313,16 +313,7 @@ class ScummVMRunner: EmulatorRunner, @unchecked Sendable {
     
     @MainActor
     override func launch(rom: ROM, coreID: String, shaderUniformOverrides: [String: Float] = [:]) {
-        // Force "No Shader" (passthrough) for ScummVM.
-        // ScummVM renders point-and-click adventure games at higher resolutions (320x200, 640x480+)
-        // that look best with raw pixels — CRT scanlines, barrel distortion, and phosphor masks
-        // are designed for low-res console output and are destructive on ScummVM's output.
-        if let preset = ShaderPreset.preset(id: "builtin-none") {
-            ShaderManager.shared.activatePreset(preset)
-            LoggerService.info(category: "ScummVM", "Forced Passthrough shader (raw pixels) for ScummVM")
-        }
-        
-        let romPath = rom.path
+    let romPath = rom.path
         let fileExt = romPath.pathExtension.lowercased()
         
         // Only handle ZIP files - pass through other formats directly
