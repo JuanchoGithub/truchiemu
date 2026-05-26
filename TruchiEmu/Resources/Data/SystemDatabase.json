@@ -717,7 +717,8 @@
     "defaultCoreID": "ppsspp_libretro",
     "manufacturer": "Sony",
     "database": [
-      "Sony - PSP"
+      "Sony - PSP",
+      "Sony - PlayStation Portable"
     ],
     "defaultShaderPresetID": "builtin-psp"
   },
@@ -1145,7 +1146,8 @@
     "sortOrder": 80,
     "manufacturer": "Nintendo",
     "database": [
-      "Pokemon - Mini"
+      "Pokemon - Mini",
+      "Nintendo - Pokemon Mini"
     ],
     "defaultShaderPresetID": "builtin-dot-matrix"
   },
@@ -1259,7 +1261,8 @@
     "sortOrder": 80,
     "manufacturer": "Id Software",
     "database": [
-      "DOOM Engine"
+      "DOOM Engine",
+      "DOOM"
     ],
     "defaultShaderPresetID": "builtin-none"
   },
@@ -1335,7 +1338,8 @@
     "sortOrder": 80,
     "manufacturer": "Commodore",
     "database": [
-      "Amiga"
+      "Amiga",
+      "Commodore - Amiga"
     ],
     "defaultShaderPresetID": "builtin-none"
   },
@@ -1427,7 +1431,8 @@
     "sortOrder": 80,
     "manufacturer": "Atari",
     "database": [
-      "Jaguar"
+      "Jaguar",
+      "Atari - Jaguar"
     ],
     "defaultShaderPresetID": "builtin-crt-classic"
   },
@@ -1452,7 +1457,8 @@
     "sortOrder": 80,
     "manufacturer": "Atari",
     "database": [
-      "Atari - ST/STE/TT/Falcon"
+      "Atari - ST/STE/TT/Falcon",
+      "Atari - ST"
     ],
     "defaultShaderPresetID": "builtin-none"
   },
@@ -1468,7 +1474,8 @@
     "sortOrder": 80,
     "manufacturer": "Id Software",
     "database": [
-      "Quake III Engine"
+      "Quake III Engine",
+      "Quake III"
     ],
     "defaultShaderPresetID": "builtin-none"
   },
@@ -1514,7 +1521,8 @@
     "sortOrder": 80,
     "manufacturer": "Commodore",
     "database": [
-      "Commodore - C64"
+      "Commodore - C64",
+      "Commodore - 64"
     ],
     "defaultShaderPresetID": "builtin-none"
   },
@@ -1547,7 +1555,8 @@
     "sortOrder": 80,
     "manufacturer": "NEC",
     "database": [
-      "NEC - PC-9800"
+      "NEC - PC-9800",
+      "NEC - PC-98"
     ],
     "defaultShaderPresetID": "builtin-none"
   },
@@ -1737,7 +1746,8 @@
     "sortOrder": 80,
     "manufacturer": "Commodore",
     "database": [
-      "PET"
+      "PET",
+      "Commodore - PET"
     ],
     "defaultShaderPresetID": "builtin-none"
   },
@@ -2074,7 +2084,9 @@
     "sortOrder": 80,
     "manufacturer": "Amstrad",
     "database": [
-      "Amstrad - CPC/GX4000"
+      "Amstrad - CPC/GX4000",
+      "Amstrad - CPC",
+      "Amstrad - GX4000"
     ],
     "defaultShaderPresetID": "builtin-none"
   },
@@ -2247,7 +2259,8 @@
     "sortOrder": 80,
     "manufacturer": "Coleco|VTech|Nichibutsu",
     "database": [
-      "ColecoVision"
+      "ColecoVision",
+      "Coleco - ColecoVision"
     ],
     "defaultShaderPresetID": "builtin-crt-classic"
   },
@@ -2265,7 +2278,8 @@
     "sortOrder": 80,
     "manufacturer": "Various",
     "database": [
-      "Cave Story Engine"
+      "Cave Story Engine",
+      "Cave Story"
     ],
     "defaultShaderPresetID": "builtin-none"
   },
@@ -2416,7 +2430,8 @@
     "sortOrder": 80,
     "manufacturer": "Commodore",
     "database": [
-      "C64"
+      "C64",
+      "Commodore - 64"
     ],
     "defaultShaderPresetID": "builtin-none"
   },
@@ -2517,7 +2532,8 @@
     "sortOrder": 80,
     "manufacturer": "Id Software",
     "database": [
-      "Quake Engine"
+      "Quake Engine",
+      "Quake"
     ],
     "defaultShaderPresetID": "builtin-none"
   },
@@ -2585,7 +2601,8 @@
     "sortOrder": 80,
     "manufacturer": "Emerson|Interton|Elektor|Zaccaria",
     "database": [
-      "Fairchild - Arcadia 2001"
+      "Fairchild - Arcadia 2001",
+      "Emerson - Arcadia 2001"
     ],
     "defaultShaderPresetID": "builtin-crt-classic"
   },
@@ -2680,7 +2697,8 @@
     "sortOrder": 80,
     "manufacturer": "NEC",
     "database": [
-      "NEC - PC-8800"
+      "NEC - PC-8800",
+      "NEC - PC-8001 - PC-8801"
     ],
     "defaultShaderPresetID": "builtin-none"
   },
@@ -2925,7 +2943,8 @@
     "sortOrder": 80,
     "manufacturer": "Id Software",
     "database": [
-      "Quake II Engine"
+      "Quake II Engine",
+      "Quake II"
     ],
     "defaultShaderPresetID": "builtin-none"
   },
@@ -3131,7 +3150,8 @@
     "sortOrder": 80,
     "manufacturer": "Magnavox|Philips",
     "database": [
-      "Magnavox - Odyssey 2"
+      "Magnavox - Odyssey 2",
+      "Magnavox - Odyssey2"
     ],
     "defaultShaderPresetID": "builtin-crt-classic"
   },
@@ -3207,7 +3227,8 @@
     "sortOrder": 80,
     "manufacturer": "Various",
     "database": [
-      "Cave Story Engine"
+      "Cave Story Engine",
+      "Cave Story"
     ],
     "defaultShaderPresetID": "builtin-none"
   },
@@ -3480,7 +3501,8 @@
     "sortOrder": 80,
     "manufacturer": "NEC",
     "database": [
-      "PC-FX"
+      "PC-FX",
+      "NEC - PC-FX"
     ],
     "defaultShaderPresetID": "builtin-crt-classic"
   },
