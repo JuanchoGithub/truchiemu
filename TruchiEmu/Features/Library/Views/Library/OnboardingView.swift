@@ -32,9 +32,9 @@ struct OnboardingView: View {
                         .scaleEffect(logoAppeared ? 1 : 0.85)
                         .opacity(logoAppeared ? 1 : 0)
 
-                    Text("TruchiEmu")
-                        .font(.system(size: 48, weight: .bold, design: .rounded))
-                        .foregroundColor(.white)
+        Text("TruchiEmu")
+            .font(.system(size: 48, weight: .bold, design: .rounded))
+            .foregroundColor(AppColors.textOnAccent(colorScheme))
                         .opacity(logoAppeared ? 1 : 0)
                         .offset(y: logoAppeared ? 0 : 10)
 
@@ -100,9 +100,9 @@ struct OnboardingView: View {
 
     private var stepChooseFolder: some View {
         VStack(alignment: .leading, spacing: 24) {
-            Label(loc.localized("onboarding.chooseRomFolder"), systemImage: "folder.badge.plus")
-                .font(.title2.weight(.semibold))
-                .foregroundColor(.white)
+        Label(loc.localized("onboarding.chooseRomFolder"), systemImage: "folder.badge.plus")
+            .font(.title2.weight(.semibold))
+            .foregroundColor(AppColors.textOnAccent(colorScheme))
 
             Text(loc.localized("onboarding.scanDescription"))
                 .font(.body)
@@ -113,8 +113,8 @@ struct OnboardingView: View {
                 HStack {
                     Image(systemName: "checkmark.circle.fill")
                         .foregroundColor(AppColors.brandAccent)
-                    Text(folder.lastPathComponent)
-                        .foregroundColor(.white)
+                Text(folder.lastPathComponent)
+                    .foregroundColor(AppColors.textOnAccent(colorScheme))
                         .lineLimit(1)
                 }
                 .padding(12)
@@ -152,9 +152,9 @@ struct OnboardingView: View {
                 .font(.system(size: 56))
                 .foregroundColor(AppColors.brandAccent)
 
-            Text(loc.localized("onboarding.allSet"))
-                .font(.title.weight(.bold))
-                .foregroundColor(.white)
+        Text(loc.localized("onboarding.allSet"))
+            .font(.title.weight(.bold))
+            .foregroundColor(AppColors.textOnAccent(colorScheme))
 
             Text(loc.localized("onboarding.scanningLibrary"))
                 .multilineTextAlignment(.center)
@@ -183,11 +183,12 @@ struct OnboardingView: View {
 
 struct PrimaryButtonStyle: ButtonStyle {
     var color: Color = AppColors.brandAccent
+    @Environment(\.colorScheme) private var colorScheme
 
     func makeBody(configuration: Configuration) -> some View {
         configuration.label
             .font(.body.weight(.semibold))
-            .foregroundColor(.white)
+            .foregroundColor(AppColors.textOnAccent(colorScheme))
             .padding(.vertical, 12)
             .padding(.horizontal, 20)
             .frame(maxWidth: .infinity)

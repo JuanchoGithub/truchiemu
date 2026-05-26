@@ -233,23 +233,23 @@ struct RetroAchievementsSettingsView: View {
                     TextField(loc.localized("retroAchievements.username"), text: $username)
                         .textFieldStyle(.plain)
                         .padding(6)
-                        .background(Color.secondary.opacity(0.1))
-                        .cornerRadius(6)
-                        .autocorrectionDisabled()
+.background(AppColors.cardBackgroundSubtle(colorScheme))
+                            .cornerRadius(6)
+                            .autocorrectionDisabled()
 
-                    HStack {
-                        if showApiKey {
-                            TextField(loc.localized("retroAchievements.webApiKey"), text: $webApiKey)
-                                .textFieldStyle(.plain)
-                                .padding(6)
-                                .background(Color.secondary.opacity(0.1))
-                                .cornerRadius(6)
-                                .autocorrectionDisabled()
-                        } else {
-                            SecureField(loc.localized("retroAchievements.webApiKey"), text: $webApiKey)
-                                .textFieldStyle(.plain)
-                                .padding(6)
-                                .background(Color.secondary.opacity(0.1))
+                            HStack {
+                                if showApiKey {
+                                    TextField(loc.localized("retroAchievements.webApiKey"), text: $webApiKey)
+                                        .textFieldStyle(.plain)
+                                        .padding(6)
+                                        .background(AppColors.cardBackgroundSubtle(colorScheme))
+                                        .cornerRadius(6)
+                                        .autocorrectionDisabled()
+                                } else {
+                                    SecureField(loc.localized("retroAchievements.webApiKey"), text: $webApiKey)
+                                        .textFieldStyle(.plain)
+                                        .padding(6)
+                                        .background(AppColors.cardBackgroundSubtle(colorScheme))
                                 .cornerRadius(6)
                         }
                         Button(action: { showApiKey.toggle() }) {
@@ -339,7 +339,7 @@ struct RetroAchievementsSettingsView: View {
 
                 Text(loc.localized("retroAchievements.softcoreModeWarning"))
                     .font(.caption)
-                    .foregroundColor(.orange)
+                    .foregroundColor(AppColors.warning(colorScheme))
             }
             .padding(.top, 4)
         }
@@ -367,7 +367,7 @@ struct RetroAchievementsSettingsView: View {
                     .foregroundColor(AppColors.textSecondary(colorScheme))
                     .padding(AppSpacing.xl)
                     .frame(maxWidth: .infinity, alignment: .leading)
-                    .background(.secondary.opacity(0.1))
+                    .background(AppColors.cardBackgroundSubtle(colorScheme))
                     .cornerRadius(AppRadius.md)
             } else {
                 Text(loc.localized("retroAchievements.noGameActive"))

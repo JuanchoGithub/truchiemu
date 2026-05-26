@@ -103,9 +103,9 @@ struct DragPreviewCard: View {
       } else {
         // Instant fallback UI for background stack items
         VStack {
-          Image(systemName: "gamecontroller.fill")
-            .font(.largeTitle)
-            .foregroundColor(.gray)
+                Image(systemName: "gamecontroller.fill")
+                    .font(.largeTitle)
+                    .foregroundColor(AppColors.textMuted(colorScheme))
             .padding(.bottom, 4)
           Text(rom.displayName)
             .font(.system(size: 10, weight: .medium))

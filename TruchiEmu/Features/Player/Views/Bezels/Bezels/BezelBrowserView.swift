@@ -102,26 +102,26 @@ struct BezelBrowserView: View {
             .background(AppColors.windowBackground(colorScheme, tinted: ThemeManager.shared.tintedSurfacesEnabled))
             
             HStack {
-                Image(systemName: "magnifyingglass")
-                    .foregroundColor(.secondary)
+            Image(systemName: "magnifyingglass")
+                .foregroundColor(AppColors.textSecondaryNeutral(colorScheme))
                 TextField(loc.localized("bezel.searchBezels"), text: $searchQuery)
                     .textFieldStyle(.plain)
                 if !searchQuery.isEmpty {
                     Button(action: { searchQuery = "" }) {
-                        Image(systemName: "xmark.circle.fill")
-                            .foregroundColor(.secondary)
+                Image(systemName: "xmark.circle.fill")
+                    .foregroundColor(AppColors.textSecondaryNeutral(colorScheme))
                     }
                     .buttonStyle(.plain)
                 }
                 
                 Spacer()
                 
-                Text("\(localBezels.count) \(loc.localized("bezel.downloadedCount").replacingOccurrences(of: ",", with: "")) \(remoteBezels.count) \(loc.localized("bezel.availableCount"))")
-                    .font(.caption)
-                    .foregroundColor(.secondary)
+        Text("\(localBezels.count) \(loc.localized("bezel.downloadedCount").replacingOccurrences(of: ",", with: "")) \(remoteBezels.count) \(loc.localized("bezel.availableCount"))")
+            .font(.caption)
+            .foregroundColor(AppColors.textSecondaryNeutral(colorScheme))
             }
             .padding(10)
-            .background(Color.secondary.opacity(0.1))
+            .background(AppColors.cardBackgroundSubtle(colorScheme))
             .cornerRadius(8)
             .padding(.horizontal)
             .padding(.vertical, 4)
@@ -193,8 +193,8 @@ struct BezelBrowserView: View {
                             try? bezelManager.removeBezel(systemID: systemID, gameName: entry.id)
                             Task { await loadBezels() }
                         } label: {
-                            Label(loc.localized("bezel.delete"), systemImage: "trash")
-                        }.foregroundColor(.red)
+        Label(loc.localized("bezel.delete"), systemImage: "trash")
+                    }.foregroundColor(AppColors.error(colorScheme))
                         Button {
                             openBezelInFinder(entry)
                         } label: {
@@ -264,24 +264,24 @@ struct BezelBrowserView: View {
                         .lineLimit(2)
                         .multilineTextAlignment(.center)
                     
-                    Text(entry.filename)
-                        .font(.caption)
-                        .foregroundColor(.secondary)
-                        .lineLimit(1)
+            Text(entry.filename)
+                .font(.caption)
+                .foregroundColor(AppColors.textSecondaryNeutral(colorScheme))
+                .lineLimit(1)
                     
                     // Status badge
                     HStack {
                         if entry.isDownloaded {
-                            Label(loc.localized("bezel.downloadedCount").replacingOccurrences(of: ",", with: "").trimmingCharacters(in: .whitespaces), systemImage: "checkmark.circle.fill")
-                                .foregroundColor(.green)
+            Label(loc.localized("bezel.downloadedCount").replacingOccurrences(of: ",", with: "").trimmingCharacters(in: .whitespaces), systemImage: "checkmark.circle.fill")
+                .foregroundColor(AppColors.success(colorScheme))
                                 .font(.caption)
                         } else if isCached(entry.id) {
                             Label(loc.localized("bezel.cachedPreview"), systemImage: "eye.circle.fill")
                     .foregroundColor(AppColors.brandAccent)
                                 .font(.caption)
                         } else {
-                            Label(loc.localized("bezel.notDownloaded"), systemImage: "arrow.down.circle")
-                                .foregroundColor(.secondary)
+            Label(loc.localized("bezel.notDownloaded"), systemImage: "arrow.down.circle")
+                .foregroundColor(AppColors.textSecondaryNeutral(colorScheme))
                                 .font(.caption)
                         }
                     }
@@ -328,8 +328,8 @@ struct BezelBrowserView: View {
                     }
                 }
             } else {
-                Text(loc.localized("bezel.selectBezelToPreview"))
-                    .foregroundColor(.secondary)
+            Text(loc.localized("bezel.selectBezelToPreview"))
+                .foregroundColor(AppColors.textSecondary(colorScheme))
                     .frame(maxWidth: .infinity, maxHeight: .infinity)
             }
         }
@@ -340,12 +340,12 @@ struct BezelBrowserView: View {
     @ViewBuilder
     private var placeholderPreview: some View {
         VStack(spacing: 8) {
-            Image(systemName: "photo.on.rectangle.angled")
-                .font(.system(size: 48))
-                .foregroundColor(.secondary)
-            Text(loc.localized("bezel.clickBezelToPreview"))
-                .font(.caption)
-                .foregroundColor(.secondary)
+        Image(systemName: "photo.on.rectangle.angled")
+            .font(.system(size: 48))
+            .foregroundColor(AppColors.textSecondaryNeutral(colorScheme))
+        Text(loc.localized("bezel.clickBezelToPreview"))
+            .font(.caption)
+            .foregroundColor(AppColors.textSecondaryNeutral(colorScheme))
         }
     }
     
@@ -353,16 +353,16 @@ struct BezelBrowserView: View {
     
     private var emptyView: some View {
         VStack(spacing: 12) {
-            Image(systemName: activeTab == .local ? "folder" : "cloud")
-                .font(.system(size: 48))
-                .foregroundColor(.secondary)
+        Image(systemName: activeTab == .local ? "folder" : "cloud")
+            .font(.system(size: 48))
+            .foregroundColor(AppColors.textSecondaryNeutral(colorScheme))
             Text(activeTab == .local ? loc.localized("bezel.noBezelsDownloaded") : "\(loc.localized("bezel.noBezelsFound")) \(systemName)")
                 .font(.headline)
-            Text(activeTab == .local
-                  ? "\(loc.localized("bezel.noBezelsFound")) \(systemName). \(loc.localized("bezel.browseOnlineTab"))"
-                  : "\(loc.localized("bezel.noBezelsAvailable")) \(systemName)")
-                .font(.caption)
-                .foregroundColor(.secondary)
+        Text(activeTab == .local
+            ? "\(loc.localized("bezel.noBezelsFound")) \(systemName). \(loc.localized("bezel.browseOnlineTab"))"
+            : "\(loc.localized("bezel.noBezelsAvailable")) \(systemName)")
+            .font(.caption)
+            .foregroundColor(AppColors.textSecondary(colorScheme))
                 .multilineTextAlignment(.center)
                 .fixedSize(horizontal: false, vertical: true)
         }
@@ -371,14 +371,14 @@ struct BezelBrowserView: View {
     
     private func errorView(message: String) -> some View {
         VStack(spacing: 12) {
-            Image(systemName: "exclamationmark.triangle")
-                .font(.system(size: 48))
-                .foregroundColor(.orange)
+        Image(systemName: "exclamationmark.triangle")
+            .font(.system(size: 48))
+            .foregroundColor(AppColors.warning(colorScheme))
             Text(loc.localized("bezel.couldntLoadBezels"))
                 .font(.headline)
-            Text(message)
-                .font(.caption)
-                .foregroundColor(.secondary)
+        Text(message)
+            .font(.caption)
+            .foregroundColor(AppColors.textSecondary(colorScheme))
                 .multilineTextAlignment(.center)
                 .fixedSize(horizontal: false, vertical: true)
             Button(loc.localized("bezel.tryAgain")) {
@@ -522,6 +522,7 @@ struct BezelBrowserView: View {
 struct BezelThumbnailView: View {
     let entry: BezelEntry
     let isSelected: Bool
+    @Environment(\.colorScheme) private var colorScheme
     
     @State private var image: NSImage?
     
@@ -540,8 +541,8 @@ struct BezelThumbnailView: View {
                         .frame(width: 80, height: 80)
                         .clipShape(RoundedRectangle(cornerRadius: 6))
                 } else {
-                    Image(systemName: "photo")
-                        .foregroundColor(.secondary)
+            Image(systemName: "photo")
+                .foregroundColor(AppColors.textSecondaryNeutral(colorScheme))
                         .font(.system(size: 24))
                 }
             }
@@ -569,12 +570,14 @@ struct BezelThumbnailView: View {
 struct RemoteBezelListRow: View {
     let entry: BezelEntry
     let isSelected: Bool
-    
+
+    @Environment(\.colorScheme) private var colorScheme
+
     var body: some View {
         HStack(spacing: 8) {
             // Download status icon
             Image(systemName: entry.isDownloaded ? "checkmark.circle.fill" : "arrow.down.circle")
-                .foregroundColor(entry.isDownloaded ? .green : .secondary)
+                .foregroundColor(entry.isDownloaded ? AppColors.success(colorScheme) : AppColors.textSecondaryNeutral(colorScheme))
                 .frame(width: 16)
             
             // Name
@@ -582,10 +585,10 @@ struct RemoteBezelListRow: View {
                 Text(entry.displayName)
                     .font(.body)
                     .lineLimit(1)
-                Text(entry.filename)
-                    .font(.caption)
-                    .foregroundColor(.secondary)
-                    .lineLimit(1)
+            Text(entry.filename)
+                .font(.caption)
+                .foregroundColor(AppColors.textSecondaryNeutral(colorScheme))
+                .lineLimit(1)
             }
             
             Spacer()

@@ -43,7 +43,7 @@ struct BoxArtSettingsView: View {
                     TextField(loc.localized("boxArt.cdnBaseURL"), text: $thumbnailBaseURLString)
                         .textFieldStyle(.plain)
                         .padding(6)
-                        .background(Color.secondary.opacity(0.1))
+                        .background(AppColors.cardBackgroundSubtle(colorScheme))
                         .cornerRadius(6)
                         .font(.system(.body, design: .monospaced))
                     Picker(loc.localized("boxArt.tryFirst"), selection: $thumbnailPriorityRaw) {

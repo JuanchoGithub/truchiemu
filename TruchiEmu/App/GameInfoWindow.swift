@@ -24,15 +24,15 @@ struct GameInfoWindow: View {
                         .scaleEffect(appeared ? 1 : 0.8)
                         .opacity(appeared ? 1 : 0)
                     
-                    Text(loc.localized("gameInfo.gameNotFound"))
-                        .font(.title2)
-                        .fontWeight(.semibold)
-                        .foregroundColor(.secondary)
+        Text(loc.localized("gameInfo.gameNotFound"))
+            .font(.title2)
+            .fontWeight(.semibold)
+            .foregroundColor(AppColors.textSecondary(colorScheme))
                         .opacity(appeared ? 1 : 0)
 
-                    Text(loc.localized("gameInfo.gameNotFoundDescription"))
-                        .font(.body)
-                        .foregroundColor(.secondary)
+        Text(loc.localized("gameInfo.gameNotFoundDescription"))
+            .font(.body)
+            .foregroundColor(AppColors.textSecondary(colorScheme))
                         .multilineTextAlignment(.center)
                         .frame(maxWidth: 360)
                         .opacity(appeared ? 1 : 0)
@@ -54,15 +54,15 @@ struct GameInfoWindow: View {
         Group {
             if let raMatchStatus = rom.raMatchStatus, raMatchStatus.contains("mismatch") {
                 HStack {
-                    Image(systemName: "exclamationmark.triangle.fill")
-                        .foregroundColor(.orange)
-                    Text(loc.localized("gameInfo.raVersionMismatch"))
-                        .font(.caption)
-                        .foregroundColor(.orange)
+            Image(systemName: "exclamationmark.triangle.fill")
+                .foregroundColor(AppColors.warning(colorScheme))
+            Text(loc.localized("gameInfo.raVersionMismatch"))
+                .font(.caption)
+                .foregroundColor(AppColors.warning(colorScheme))
                 }
                 .padding(.vertical, 4)
                 .frame(maxWidth: .infinity)
-                .background(Color.orange.opacity(0.1))
+                .background(AppColors.warning(colorScheme).opacity(0.1))
             } else {
                 EmptyView()
             }

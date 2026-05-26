@@ -525,10 +525,10 @@ extension GameDetailView {
         } label: {
             HStack(spacing: 6) {
                 if case .working = manualActionStatus { ProgressView().controlSize(.small) } else { Image(systemName: "qrcode.viewfinder") }
-                Text(loc.localized("gameInfo.identifyGame"))
-            }
-            .font(.subheadline)
-            .foregroundColor(.white)
+Text(loc.localized("gameInfo.identifyGame"))
+        }
+        .font(.subheadline)
+        .foregroundColor(AppColors.textOnAccent(colorScheme))
             .padding(.horizontal, AppSpacing.lg)
             .padding(.vertical, AppSpacing.sm)
             .background(AppColors.brandAccent)

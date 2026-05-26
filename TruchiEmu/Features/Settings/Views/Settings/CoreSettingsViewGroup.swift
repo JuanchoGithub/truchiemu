@@ -82,7 +82,7 @@ var body: some View {
                     }
                 }
                 .padding(AppSpacing.sm)
-                .background(Color.secondary.opacity(0.1))
+                .background(AppColors.cardBackgroundSubtle(colorScheme))
                 .cornerRadius(AppRadius.md)
                 .frame(width: 250)
 
@@ -215,7 +215,7 @@ struct SystemRowView: View {
 
             ZStack {
                 RoundedRectangle(cornerRadius: AppRadius.sm)
-                    .fill(Color.secondary.opacity(0.1))
+                    .fill(AppColors.cardBackgroundSubtle(colorScheme))
 
                 if let img = system.emuImage(size: 132) {
                     Image(nsImage: img)
@@ -523,7 +523,7 @@ struct InstalledCoreRowView: View {
                                         .font(.caption2)
                                         .padding(.horizontal, AppSpacing.sm)
                                         .padding(.vertical, AppSpacing.xs)
-                                        .background(.secondary.opacity(0.2))
+                                        .background(AppColors.cardBackground(colorScheme))
                                         .cornerRadius(AppRadius.xs)
                                 }
                             }

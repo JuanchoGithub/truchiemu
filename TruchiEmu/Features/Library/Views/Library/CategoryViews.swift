@@ -3,18 +3,19 @@ import SwiftUI
 // MARK: - Category Badge
 
 struct CategoryBadgeView: View {
-    let category: GameCategory
-    var isCompact: Bool = false
+	let category: GameCategory
+	var isCompact: Bool = false
+	@Environment(\.colorScheme) private var colorScheme
 
-    var body: some View {
+	var body: some View {
         if isCompact {
             // Compact mode: Icon only in a circle
             Image(systemName: category.iconName.isEmpty ? "tag" : category.iconName)
                 .font(.system(size: 10, weight: .medium))
                 .padding(4)
-                .background(Color(hex: category.colorHex) ?? .blue)
-                .foregroundColor(.white)
-                .clipShape(Circle())
+        .background(Color(hex: category.colorHex) ?? .blue)
+        .foregroundColor(AppColors.textOnAccent(colorScheme))
+        .clipShape(Circle())
         } else {
             // Standard mode: Icon + Text in a capsule/rounded rect
             HStack(spacing: 3) {
@@ -23,8 +24,8 @@ struct CategoryBadgeView: View {
                 Text(category.name)
                     .font(.system(size: 10, weight: .medium))
             }
-            .foregroundColor(.white)
-            .padding(.horizontal, 8)
+        .foregroundColor(AppColors.textOnAccent(colorScheme))
+        .padding(.horizontal, 8)
             .padding(.vertical, 4)
             .background(Color(hex: category.colorHex) ?? .blue)
             .cornerRadius(AppRadius.xs)
@@ -35,11 +36,12 @@ struct CategoryBadgeView: View {
 // MARK: - Add to Category Sheet
 
 struct AddToCategorySheet: View {
-    @Environment(\.dismiss) private var dismiss
-    @EnvironmentObject var categoryManager: CategoryManager
-    let gameIDs: [UUID]
-    
-    var body: some View {
+	@Environment(\.dismiss) private var dismiss
+	@EnvironmentObject var categoryManager: CategoryManager
+	let gameIDs: [UUID]
+	@Environment(\.colorScheme) private var colorScheme
+
+	var body: some View {
         NavigationStack {
             List {
                 ForEach(categoryManager.categories) { category in
@@ -54,8 +56,8 @@ struct AddToCategorySheet: View {
                             Text(category.name)
                             Spacer()
                             if alreadyContains {
-                                Image(systemName: "checkmark")
-                                    .foregroundColor(.secondary)
+                Image(systemName: "checkmark")
+                        .foregroundColor(AppColors.textSecondaryNeutral(colorScheme))
                             }
                         }
                     }

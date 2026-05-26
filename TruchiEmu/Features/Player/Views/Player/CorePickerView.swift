@@ -5,12 +5,13 @@ import SwiftUI
 // Extracted to avoid duplicating the same gradient across 4+ locations.
 struct CoreRecommendationBadge: View {
     let text: String
+    @Environment(\.colorScheme) private var colorScheme
 
     var body: some View {
         Text(text)
             .font(.caption)
             .fontWeight(.semibold)
-            .foregroundColor(.white)
+            .foregroundColor(AppColors.textOnAccent(colorScheme))
             .padding(.horizontal, 6)
             .padding(.vertical, 2)
             .background(CoreStyle.recommendationGradient)
@@ -35,6 +36,7 @@ struct CorePickerView: View {
     @State private var selectedCoreID: String = ""
     @StateObject private var metadataStore = LibraryMetadataStore.shared
     @State private var downloadTask: Task<Void, Never>? = nil
+	@Environment(\.colorScheme) private var colorScheme
     
     // All cores that match this game's system — including uninstalled ones from the buildbot.
     private struct CoreEntry: Identifiable {
@@ -106,14 +108,14 @@ struct CorePickerView: View {
             VStack(spacing: 0) {
                 if availableCores.isEmpty {
                     VStack(spacing: 12) {
-                        Image(systemName: "cpu")
-                            .font(.system(size: 40))
-                            .foregroundColor(.secondary)
-                        Text(loc.localized("core.noCoresAvailable"))
-                            .foregroundColor(.secondary)
-                        Text(loc.localized("core.downloadFromMenu"))
-                            .font(.caption)
-                            .foregroundColor(.secondary)
+Image(systemName: "cpu")
+            .font(.system(size: 40))
+            .foregroundColor(AppColors.textSecondaryNeutral(colorScheme))
+Text(loc.localized("core.noCoresAvailable"))
+                    .foregroundColor(AppColors.textSecondary(colorScheme))
+Text(loc.localized("core.downloadFromMenu"))
+                    .font(.caption)
+                    .foregroundColor(AppColors.textSecondary(colorScheme))
                     }
                     .frame(maxWidth: .infinity, maxHeight: .infinity)
                 } else {
@@ -149,11 +151,11 @@ struct CorePickerView: View {
                 // Status indicator
                 if isSelected {
                     Image(systemName: "checkmark.circle.fill")
-                        .foregroundColor(.green)
+                        .foregroundColor(AppColors.success(colorScheme))
                         .imageScale(.medium)
                 } else if entry.isInstalled {
                     Image(systemName: "checkmark.seal")
-                        .foregroundColor(.secondary)
+                        .foregroundColor(AppColors.textSecondaryNeutral(colorScheme))
                         .imageScale(.medium)
                 } else {
                     Image(systemName: "arrow.down.circle")
@@ -169,13 +171,13 @@ struct CorePickerView: View {
                     .font(.caption2)
                     .padding(.horizontal, 6)
                     .padding(.vertical, 2)
-                    .background(Color.secondary.opacity(0.15))
-                    .cornerRadius(4)
-                
-                Spacer()
-                
-                // Recommendation badge
-                if let rec = meta.recommendation {
+.background(AppColors.cardBackground(colorScheme))
+        .cornerRadius(4)
+   
+        Spacer()
+   
+        // Recommendation badge
+        if let rec = meta.recommendation {
                     CoreRecommendationBadge(text: rec)
                 }
             }
@@ -183,7 +185,7 @@ struct CorePickerView: View {
             // Description
             Text(meta.description)
                 .font(.subheadline)
-                .foregroundColor(.secondary)
+                .foregroundColor(AppColors.textSecondary(colorScheme))
                 .lineLimit(3)
             
             // Action row
@@ -197,8 +199,8 @@ struct CorePickerView: View {
                     }) {
                         HStack(spacing: 4) {
                             if isSelected {
-                                Text(loc.localized("core.active"))
-                                    .foregroundColor(.green)
+Text(loc.localized("core.active"))
+                            .foregroundColor(AppColors.success(colorScheme))
                             } else {
                                 Text(loc.localized("core.useThisCore"))
                                     .foregroundColor(AppColors.brandAccent)
@@ -226,7 +228,7 @@ struct CorePickerView: View {
         .background(
             isSelected
                 ? AppColors.brandAccent.opacity(0.08)
-                : Color.secondary.opacity(0.05)
+                : AppColors.cardBackgroundSubtle(colorScheme)
         )
         .cornerRadius(12)
         .overlay(
@@ -260,7 +262,8 @@ struct CoreRowView: View {
     let core: LibretroCore
     let isSelected: Bool
     let action: () -> Void
-    
+    @Environment(\.colorScheme) private var colorScheme
+
     var isDownloaded: Bool {
         core.isInstalled
     }
@@ -272,7 +275,7 @@ struct CoreRowView: View {
                 HStack(spacing: 8) {
                     VStack {
                         Circle()
-                            .fill(isSelected ? AppColors.brandAccent : (isDownloaded ? Color.green : Color.secondary))
+                            .fill(isSelected ? AppColors.brandAccent : (isDownloaded ? AppColors.success(colorScheme) : AppColors.textTertiary(colorScheme)))
                             .frame(width: 10, height: 10)
                     }
                     
@@ -286,39 +289,39 @@ struct CoreRowView: View {
                             .font(.caption2)
                             .padding(.horizontal, 5)
                             .padding(.vertical, 1)
-                            .background(Color.secondary.opacity(0.15))
-                            .cornerRadius(3)
-                    }
-                    
-                    Spacer()
-                    
-                    // Recommendation badge
-                    if let rec = core.metadata.recommendation {
+.background(AppColors.cardBackground(colorScheme))
+        .cornerRadius(3)
+        }
+   
+        Spacer()
+   
+        // Recommendation badge
+        if let rec = core.metadata.recommendation {
                         CoreRecommendationBadge(text: rec)
                     }
                     
                     if isDownloaded {
-                        Image(systemName: "checkmark.circle.fill")
-                            .foregroundColor(.green)
+Image(systemName: "checkmark.circle.fill")
+                    .foregroundColor(AppColors.success(colorScheme))
                     } else {
-                        Image(systemName: "icloud.and.arrow.down")
-                            .foregroundColor(.secondary)
+Image(systemName: "icloud.and.arrow.down")
+                    .foregroundColor(AppColors.textSecondaryNeutral(colorScheme))
                     }
                 }
                 
                 // Description
-                Text(core.metadata.description)
-                    .font(.caption)
-                    .foregroundColor(.secondary)
-                    .lineLimit(2)
+Text(core.metadata.description)
+                .font(.caption)
+                .foregroundColor(AppColors.textSecondary(colorScheme))
+                .lineLimit(2)
                 
                 // Internal ID
                 Text(core.id)
                     .font(.caption2)
-                    .foregroundColor(.secondary.opacity(0.7))
+                    .foregroundColor(AppColors.textSecondaryNeutral(colorScheme).opacity(0.7))
             }
             .padding(12)
-            .background(isSelected ? AppColors.brandAccent.opacity(0.1) : Color.secondary.opacity(0.05))
+            .background(isSelected ? AppColors.brandAccent.opacity(0.1) : AppColors.cardBackgroundSubtle(colorScheme))
             .cornerRadius(8)
         }
         .buttonStyle(.plain)
@@ -337,7 +340,8 @@ struct CoreSelectionSheet: View {
     @StateObject private var loc = LocalizationManager.shared
     @State private var selectedCoreID: String = ""
     @State private var rememberChoice: Bool = false
-    
+    @Environment(\.colorScheme) private var colorScheme
+
     private struct CoreEntry: Identifiable {
         enum Kind {
             case installed(LibretroCore)
@@ -417,9 +421,9 @@ struct CoreSelectionSheet: View {
                 .foregroundColor(AppColors.brandAccent)
             Text(loc.localized("core.multipleCoresAvailable"))
                 .font(.headline)
-            Text(loc.localized("core.multipleCoresDescription"))
-                .font(.subheadline)
-                .foregroundColor(.secondary)
+Text(loc.localized("core.multipleCoresDescription"))
+            .font(.subheadline)
+            .foregroundColor(AppColors.textSecondary(colorScheme))
                 .multilineTextAlignment(.center)
         }
     }
@@ -441,20 +445,20 @@ struct CoreSelectionSheet: View {
                                             .font(.caption2)
                                             .padding(.horizontal, 4)
                                             .padding(.vertical, 1)
-                                            .background(Color.secondary.opacity(0.12))
-                                            .cornerRadius(3)
-                                    }
-                                    
-                                    Spacer()
-                                    
-                                    Image(systemName: selectedCoreID == entry.id ? "checkmark.circle.fill" : "circle")
-                                        .foregroundColor(selectedCoreID == entry.id ? AppColors.brandAccent : .secondary)
+.background(AppColors.cardBackgroundSubtle(colorScheme))
+        .cornerRadius(3)
+        }
+   
+        Spacer()
+   
+        Image(systemName: selectedCoreID == entry.id ? "checkmark.circle.fill" : "circle")
+                                        .foregroundColor(selectedCoreID == entry.id ? AppColors.brandAccent : AppColors.textSecondaryNeutral(colorScheme))
                                 }
                                 
-                                Text(entry.metadata.description)
-                                    .font(.caption)
-                                    .foregroundColor(.secondary)
-                                    .lineLimit(2)
+Text(entry.metadata.description)
+                        .font(.caption)
+                        .foregroundColor(AppColors.textSecondary(colorScheme))
+                        .lineLimit(2)
                             }
                             
                             if let rec = entry.metadata.recommendation {
@@ -462,7 +466,7 @@ struct CoreSelectionSheet: View {
                             }
                         }
                         .padding()
-                        .background(selectedCoreID == entry.id ? AppColors.brandAccent.opacity(0.1) : Color.secondary.opacity(0.05))
+                        .background(selectedCoreID == entry.id ? AppColors.brandAccent.opacity(0.1) : AppColors.cardBackgroundSubtle(colorScheme))
                         .cornerRadius(8)
                     }
                     .buttonStyle(.plain)
@@ -500,7 +504,8 @@ struct CoreSelectionSheet: View {
 struct SimpleCoreRow: View {
     let core: LibretroCore
     @Binding var selectedCoreID: String
-    
+    @Environment(\.colorScheme) private var colorScheme
+
     var body: some View {
         Button(action: { selectedCoreID = core.id }) {
             HStack {
@@ -515,15 +520,15 @@ struct SimpleCoreRow: View {
                                 .font(.caption2)
                                 .padding(.horizontal, 4)
                                 .padding(.vertical, 1)
-                                .background(Color.secondary.opacity(0.12))
-                                .cornerRadius(3)
-                        }
-                    }
-                    
-                    Text(core.metadata.description)
-                        .font(.caption)
-                        .foregroundColor(.secondary)
-                        .lineLimit(1)
+.background(AppColors.cardBackgroundSubtle(colorScheme))
+        .cornerRadius(3)
+        }
+        }
+   
+        Text(core.metadata.description)
+            .font(.caption)
+            .foregroundColor(AppColors.textSecondary(colorScheme))
+            .lineLimit(1)
                 }
                 
                 if let rec = core.metadata.recommendation {
@@ -532,10 +537,10 @@ struct SimpleCoreRow: View {
                 
                 Spacer()
                 Image(systemName: selectedCoreID == core.id ? "checkmark.circle.fill" : "circle")
-                    .foregroundColor(selectedCoreID == core.id ? AppColors.brandAccent : .secondary)
+                    .foregroundColor(selectedCoreID == core.id ? AppColors.brandAccent : AppColors.textSecondaryNeutral(colorScheme))
             }
             .padding()
-            .background(selectedCoreID == core.id ? AppColors.brandAccent.opacity(0.1) : Color.secondary.opacity(0.05))
+            .background(selectedCoreID == core.id ? AppColors.brandAccent.opacity(0.1) : AppColors.cardBackgroundSubtle(colorScheme))
             .cornerRadius(8)
         }
         .buttonStyle(.plain)

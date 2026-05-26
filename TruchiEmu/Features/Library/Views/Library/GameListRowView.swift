@@ -94,9 +94,9 @@ struct GameListRowView: View {
                                 .aspectRatio(contentMode: .fit)
                                 .frame(width: 12, height: 12)
                         }
-                        Text(sys.name)
-                            .font(.system(size: subtitleFontSize))
-                            .foregroundColor(.secondary)
+Text(sys.name)
+                        .font(.system(size: subtitleFontSize))
+                        .foregroundColor(AppColors.textSecondary(colorScheme))
                     }
                 }
                 
@@ -115,14 +115,14 @@ struct GameListRowView: View {
                 if let line1 = metadataLine1 {
                     Text(line1)
                         .font(.system(size: subtitleFontSize - 1))
-                        .foregroundColor(.secondary.opacity(0.8))
+                        .foregroundColor(AppColors.textSecondaryNeutral(colorScheme).opacity(0.8))
                 }
                 
                 // Metadata: Genre/Players
                 if let line2 = metadataLine2 {
                     Text(line2)
                         .font(.system(size: subtitleFontSize - 1))
-                        .foregroundColor(.secondary.opacity(0.8))
+                        .foregroundColor(AppColors.textSecondaryNeutral(colorScheme).opacity(0.8))
                 }
             }
             
@@ -138,22 +138,22 @@ struct GameListRowView: View {
                         Text(playtime)
                             .font(.system(size: subtitleFontSize))
                             .fontWeight(.medium)
-                    }
-                    .foregroundColor(.secondary)
-                }
-                
-                // Times played
-                if let timesPlayed = timesPlayedLabel {
-                    Text(timesPlayed)
-                        .font(.system(size: subtitleFontSize))
-                        .foregroundColor(.secondary)
-                }
-                
-                // Last played
-                if let played = rom.lastPlayed {
-                    Text(played, style: .relative)
-                        .font(.system(size: subtitleFontSize - 0.5))
-                        .foregroundColor(.secondary.opacity(0.7))
+}
+                .foregroundColor(AppColors.textSecondaryNeutral(colorScheme))
+            }
+
+            // Times played
+            if let timesPlayed = timesPlayedLabel {
+                Text(timesPlayed)
+                    .font(.system(size: subtitleFontSize))
+                    .foregroundColor(AppColors.textSecondaryNeutral(colorScheme))
+            }
+
+            // Last played
+            if let played = rom.lastPlayed {
+                Text(played, style: .relative)
+                    .font(.system(size: subtitleFontSize - 0.5))
+                    .foregroundColor(AppColors.textSecondaryNeutral(colorScheme).opacity(0.7))
                 }
                 
                 // Favorite indicator
@@ -210,9 +210,9 @@ struct GameListRowView: View {
                         .padding(4)
                 } else {
                     Image(systemName: sys?.iconName ?? "gamecontroller")
-                        .foregroundColor(.secondary)
+                        .foregroundColor(AppColors.textSecondaryNeutral(colorScheme))
                         .frame(maxWidth: .infinity, maxHeight: .infinity)
-                        .background(Color.secondary.opacity(0.1))
+                        .background(AppColors.cardBackgroundSubtle(colorScheme))
                 }
             }
         }

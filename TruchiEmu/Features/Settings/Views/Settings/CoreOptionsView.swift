@@ -324,9 +324,9 @@ struct CoreOptionsView: View {
                     Spacer()
 
                     VStack(alignment: .leading, spacing: 8) {
-                        Text(loc.localized(viewModel.loadingPhase.localizationKey))
-                            .font(.caption)
-                            .foregroundStyle(.secondary)
+                Text(loc.localized(viewModel.loadingPhase.localizationKey))
+                    .font(.caption)
+                    .foregroundStyle(AppColors.textSecondaryNeutral(colorScheme))
                             .lineLimit(1)
                             .transition(.opacity)
                             .animation(.easeInOut(duration: 0.2), value: viewModel.loadingPhase.localizationKey)
@@ -362,7 +362,7 @@ struct CoreOptionsView: View {
                         }
                     }
                     .padding(AppSpacing.sm)
-                    .background(Color.secondary.opacity(0.1))
+                    .background(AppColors.cardBackgroundSubtle(colorScheme))
                     .cornerRadius(AppRadius.md)
 
                     ForEach(viewModel.filteredSortedKeys, id: \.self) { category in

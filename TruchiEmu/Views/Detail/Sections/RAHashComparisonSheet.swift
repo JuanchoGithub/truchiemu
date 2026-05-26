@@ -53,8 +53,8 @@ struct RAHashComparisonContent: View {
     private var loadingView: some View {
         VStack(spacing: 16) {
             ProgressView()
-            Text(loc.localized("raHash.searching"))
-                .foregroundColor(.secondary)
+        Text(loc.localized("raHash.searching"))
+            .foregroundColor(AppColors.textSecondary(colorScheme))
         }
     }
 
@@ -62,10 +62,10 @@ struct RAHashComparisonContent: View {
         VStack(spacing: 16) {
             Image(systemName: "exclamationmark.triangle.fill")
                 .font(.system(size: 40))
-                .foregroundColor(.orange)
+            .foregroundColor(AppColors.warning(colorScheme))
             Text(error)
-                .multilineTextAlignment(.center)
-                .foregroundColor(.secondary)
+            .multilineTextAlignment(.center)
+            .foregroundColor(AppColors.textSecondary(colorScheme))
         }
         .padding()
     }
@@ -74,11 +74,11 @@ struct RAHashComparisonContent: View {
         VStack(spacing: 16) {
             Image(systemName: "trophy.circle")
                 .font(.system(size: 40))
-                .foregroundColor(.secondary)
+                .foregroundColor(AppColors.textSecondary(colorScheme))
             Text(loc.localized("raHash.noGameFound"))
                 .font(.headline)
-            Text(loc.localized("raHash.gameNotSupported"))
-                .foregroundColor(.secondary)
+        Text(loc.localized("raHash.gameNotSupported"))
+            .foregroundColor(AppColors.textSecondary(colorScheme))
         }
         .padding()
     }
@@ -106,18 +106,18 @@ struct RAHashComparisonContent: View {
 
                 VStack(alignment: .leading, spacing: 8) {
                     HStack {
-                        Image(systemName: "checkmark.circle.fill")
-                            .foregroundColor(.green)
-                        Text(loc.localized("raHash.hashMatchFound"))
+                Image(systemName: "checkmark.circle.fill")
+                    .foregroundColor(AppColors.success(colorScheme))
+                Text(loc.localized("raHash.hashMatchFound"))
                             .font(.subheadline)
                             .fontWeight(.semibold)
                     }
-                    Text(loc.localized("raHash.romMatchesRA"))
-                        .font(.caption)
-                        .foregroundColor(.secondary)
+            Text(loc.localized("raHash.romMatchesRA"))
+                .font(.caption)
+                .foregroundColor(AppColors.textSecondary(colorScheme))
                 }
                 .padding()
-                .background(Color.green.opacity(0.1))
+                .background(AppColors.success(colorScheme).opacity(0.1))
                 .cornerRadius(8)
 
                 Divider()
@@ -127,9 +127,9 @@ struct RAHashComparisonContent: View {
                         .font(.subheadline)
                         .fontWeight(.medium)
 
-                    Text(currentHash)
-                        .font(.system(.caption, design: .monospaced))
-                        .foregroundColor(.green)
+            Text(currentHash)
+                .font(.system(.caption, design: .monospaced))
+                .foregroundColor(AppColors.success(colorScheme))
                         .textSelection(.enabled)
                 }
             }
@@ -143,16 +143,16 @@ struct RAHashComparisonContent: View {
                 VStack(alignment: .leading, spacing: 8) {
                     HStack {
                         Image(systemName: "exclamationmark.triangle.fill")
-                            .foregroundColor(.orange)
+                    .foregroundColor(AppColors.warning(colorScheme))
                         Text(loc.localized("raHash.noMatchingRomFound"))
                             .font(.headline)
                     }
-                    Text(loc.localized("raHash.romHashMismatch"))
-                        .font(.caption)
-                        .foregroundColor(.secondary)
+            Text(loc.localized("raHash.romHashMismatch"))
+                .font(.caption)
+                .foregroundColor(AppColors.textSecondary(colorScheme))
                 }
                 .padding()
-                .background(Color.orange.opacity(0.1))
+                .background(AppColors.warning(colorScheme).opacity(0.1))
                 .cornerRadius(8)
 
                 Divider()
@@ -164,7 +164,7 @@ struct RAHashComparisonContent: View {
 
                     Text(currentHash)
                         .font(.system(.caption, design: .monospaced))
-                        .foregroundColor(.orange)
+                        .foregroundColor(AppColors.warning(colorScheme))
                         .textSelection(.enabled)
                 }
 
@@ -176,9 +176,9 @@ struct RAHashComparisonContent: View {
                             .font(.subheadline)
                             .fontWeight(.medium)
 
-                        Text(loc.localized("raHash.romFilenameMatched"))
-                            .font(.caption)
-                            .foregroundColor(.secondary)
+                Text(loc.localized("raHash.romFilenameMatched"))
+                    .font(.caption)
+                    .foregroundColor(AppColors.textSecondary(colorScheme))
 
                         ScrollView {
                             LazyVStack(alignment: .leading, spacing: 16) {
@@ -204,7 +204,7 @@ struct RAHashComparisonContent: View {
                                             .textSelection(.enabled)
                                         if hash.lowercased() == currentHash.lowercased() {
                                             Image(systemName: "checkmark")
-                                                .foregroundColor(.green)
+                .foregroundColor(AppColors.success(colorScheme))
                                                 .font(.caption)
                                         }
                                     }
@@ -257,7 +257,7 @@ struct RAHashComparisonContent: View {
 
             Text(loc.localized("raHash.supportedHashes"))
                 .font(.caption)
-                .foregroundColor(.secondary)
+                .foregroundColor(AppColors.textSecondaryNeutral(colorScheme))
 
             ForEach(match.hashes, id: \.self) { hash in
                 HStack {
@@ -266,14 +266,14 @@ struct RAHashComparisonContent: View {
                         .textSelection(.enabled)
                     if hash.lowercased() == currentHash.lowercased() {
                         Image(systemName: "checkmark.circle.fill")
-                            .foregroundColor(.green)
+                            .foregroundColor(AppColors.success(colorScheme))
                             .font(.caption2)
                     }
                 }
             }
         }
         .padding(12)
-        .background(Color.secondary.opacity(0.1))
+            .background(AppColors.cardBackgroundSubtle(colorScheme))
         .cornerRadius(8)
     }
 

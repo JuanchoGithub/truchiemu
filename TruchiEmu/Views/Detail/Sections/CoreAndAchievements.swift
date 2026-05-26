@@ -81,16 +81,16 @@ extension GameDetailView {
             HStack(spacing: 6) {
                 Image(systemName: applyCoreToSystem ? "globe" : "gamecontroller")
                 Text(applyCoreToSystem ? loc.localized("core.setSystemDefault") : loc.localized("core.setForThisGame"))
-            }
-            .font(.subheadline)
-            .foregroundColor(.white)
-            .padding(.horizontal, AppSpacing.lg)
-            .padding(.vertical, AppSpacing.sm)
-            .background(AppColors.brandAccent)
-            .cornerRadius(AppRadius.md)
-        }
-        .buttonStyle(.plain)
-        .disabled(selectedCoreID == nil || installedCores.isEmpty)
+}
+        .font(.subheadline)
+        .foregroundColor(AppColors.textOnAccent(colorScheme))
+        .padding(.horizontal, AppSpacing.lg)
+        .padding(.vertical, AppSpacing.sm)
+        .background(AppColors.brandAccent)
+        .cornerRadius(AppRadius.md)
+    }
+    .buttonStyle(.plain)
+    .disabled(selectedCoreID == nil || installedCores.isEmpty)
         }
         .padding(.vertical, AppSpacing.xs)
       }
@@ -130,7 +130,7 @@ extension GameDetailView {
             HStack(spacing: AppSpacing.sm) {
               Image(systemName: "exclamationmark.triangle.fill")
                 .font(.system(size: 24))
-                .foregroundColor(.orange)
+                .foregroundColor(AppColors.warning(colorScheme))
               VStack(alignment: .leading, spacing: AppSpacing.xxs) {
                 Text(loc.localized("achievement.versionMismatch"))
                   .font(.headline)

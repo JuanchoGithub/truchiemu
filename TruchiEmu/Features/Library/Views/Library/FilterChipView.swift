@@ -8,7 +8,8 @@ struct FilterChipView: View {
     let action: () -> Void
     
     @Namespace private var chipAnimation
-    
+    @Environment(\.colorScheme) private var colorScheme
+
     var body: some View {
         Button(action: action) {
             HStack(spacing: 4) {
@@ -24,7 +25,7 @@ struct FilterChipView: View {
             .frame(minHeight: 30)
             .background(
                 Capsule()
-                    .fill(isActive ? option.activeColor : (isHovered ? AppColors.brandAccent.opacity(0.12) : Color.secondary.opacity(0.12)))
+                    .fill(isActive ? option.activeColor : (isHovered ? AppColors.brandAccent.opacity(0.12) : AppColors.cardBackgroundSubtle(colorScheme)))
                     .scaleEffect(isHovered ? 1.05 : 1)
                     .shadow(color: isActive ? option.activeColor.opacity(0.3) : (isHovered ? AppColors.brandAccent.opacity(0.2) : .clear), radius: isHovered ? 4 : 0, y: 2)
             )

@@ -172,10 +172,10 @@ struct GameCardView: View {
                     HStack(spacing: 4) {
                         Image(systemName: "eye.slash")
                             .font(.system(size: 9))
-                            .foregroundColor(.gray)
+                            .foregroundColor(AppColors.textMuted(colorScheme))
                         Text(mameType.capitalized)
                             .font(.system(size: 9))
-                            .foregroundColor(.gray)
+                            .foregroundColor(AppColors.textMuted(colorScheme))
                     }
                 }
             }

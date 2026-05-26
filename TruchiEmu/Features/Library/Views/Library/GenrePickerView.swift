@@ -31,14 +31,14 @@ struct GenrePickerView: View {
         HStack {
             Image(systemName: "magnifyingglass")
                 .font(.caption)
-                .foregroundColor(.secondary)
+                .foregroundColor(AppColors.textSecondary(colorScheme))
             TextField(loc.localized("genre.searchPlaceholder"), text: $searchText)
                 .textFieldStyle(.plain)
                 .font(.caption)
         }
         .padding(.horizontal, 10)
         .padding(.vertical, 8)
-        .background(Color.secondary.opacity(0.1))
+        .background(AppColors.cardBackgroundSubtle(colorScheme))
     }
 
     private var genreList: some View {
@@ -76,7 +76,7 @@ struct GenrePickerView: View {
                 onApply()
             }
             .font(.caption)
-            .foregroundColor(.secondary)
+            .foregroundColor(AppColors.textSecondaryNeutral(colorScheme))
 
             Spacer()
 
@@ -85,7 +85,7 @@ struct GenrePickerView: View {
             }
             .font(.caption)
             .fontWeight(.medium)
-            .foregroundColor(.white)
+            .foregroundColor(AppColors.textOnAccent(colorScheme))
             .padding(.horizontal, 12)
             .padding(.vertical, 6)
             .background(AppColors.brandAccent)

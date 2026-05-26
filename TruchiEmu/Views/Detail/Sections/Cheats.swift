@@ -95,13 +95,13 @@ extension GameDetailView {
             HStack(spacing: AppSpacing.xxs) {
                 if cheatDownloadService.isDownloading { ProgressView().controlSize(.small) } else { Image(systemName: "arrow.down.circle") }
                 Text(cheatDownloadService.isDownloading ? loc.localized("cheats.downloading") : loc.localized("cheats.download"))
-            }
-            .font(.subheadline)
-            .foregroundColor(.white)
-            .padding(.horizontal, AppSpacing.lg)
-            .padding(.vertical, AppSpacing.xs)
-            .background(AppColors.brandAccent)
-            .cornerRadius(AppRadius.sm)
+}
+        .font(.subheadline)
+        .foregroundColor(AppColors.textOnAccent(colorScheme))
+        .padding(.horizontal, AppSpacing.lg)
+        .padding(.vertical, AppSpacing.xs)
+        .background(AppColors.brandAccent)
+        .cornerRadius(AppRadius.sm)
         }
         .buttonStyle(.plain)
         .disabled(cheatDownloadService.isDownloading)

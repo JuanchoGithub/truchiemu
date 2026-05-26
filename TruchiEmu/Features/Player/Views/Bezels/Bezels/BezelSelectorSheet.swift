@@ -78,20 +78,20 @@ struct BezelSelectorSheet: View {
                     .padding(.top, 8)
                     
                     HStack {
-                        Image(systemName: "magnifyingglass")
-                            .foregroundColor(.secondary)
+            Image(systemName: "magnifyingglass")
+                .foregroundColor(AppColors.textSecondaryNeutral(colorScheme))
                         TextField(loc.localized("bezel.searchBezels"), text: $searchQuery)
                             .textFieldStyle(.plain)
                         if !searchQuery.isEmpty {
                             Button(action: { searchQuery = "" }) {
-                                Image(systemName: "xmark.circle.fill")
-                                    .foregroundColor(.secondary)
+                Image(systemName: "xmark.circle.fill")
+                    .foregroundColor(AppColors.textSecondaryNeutral(colorScheme))
                             }
                             .buttonStyle(.plain)
                         }
                     }
                     .padding(8)
-                    .background(Color.secondary.opacity(0.1))
+                    .background(AppColors.cardBackgroundSubtle(colorScheme))
                     .cornerRadius(8)
                     .padding(.horizontal)
                     .padding(.vertical, 4)
@@ -124,8 +124,8 @@ struct BezelSelectorSheet: View {
                 if let selected = selectedEntry {
                     bezelPreviewPanel(selected)
                 } else {
-                    Text(loc.localized("bezel.selectBezelToPreview"))
-                        .foregroundColor(.secondary)
+        Text(loc.localized("bezel.selectBezelToPreview"))
+            .foregroundColor(AppColors.textSecondary(colorScheme))
                         .frame(maxWidth: .infinity, maxHeight: .infinity)
                 }
             }
@@ -227,9 +227,9 @@ struct BezelSelectorSheet: View {
     private var localLoadingView: some View {
         VStack(spacing: 16) {
             ProgressView(loc.localized("bezel.scanningLocalBezels"))
-            Text(loc.localized("bezel.lookingForBezels"))
-                .font(.caption)
-                .foregroundColor(.secondary)
+        Text(loc.localized("bezel.lookingForBezels"))
+            .font(.caption)
+            .foregroundColor(AppColors.textSecondary(colorScheme))
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity)
     }
@@ -237,23 +237,23 @@ struct BezelSelectorSheet: View {
     private var remoteLoadingView: some View {
         VStack(spacing: 16) {
             ProgressView(loc.localized("bezel.loadingBezels"))
-            Text(loc.localized("bezel.fetchingFromBezelProject"))
-                .font(.caption)
-                .foregroundColor(.secondary)
+        Text(loc.localized("bezel.fetchingFromBezelProject"))
+            .font(.caption)
+            .foregroundColor(AppColors.textSecondary(colorScheme))
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity)
     }
     
     private var localEmptyView: some View {
         VStack(spacing: 12) {
-            Image(systemName: "tray")
-                .font(.system(size: 36))
-                .foregroundColor(.secondary)
+        Image(systemName: "tray")
+            .font(.system(size: 36))
+            .foregroundColor(AppColors.textSecondaryNeutral(colorScheme))
             Text(loc.localized("bezel.noLocalBezelsFound"))
                 .font(.headline)
-            Text(loc.localized("bezel.browseOnlineTab"))
-                .font(.caption)
-                .foregroundColor(.secondary)
+        Text(loc.localized("bezel.browseOnlineTab"))
+            .font(.caption)
+            .foregroundColor(AppColors.textSecondary(colorScheme))
                 .multilineTextAlignment(.center)
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity)
@@ -261,14 +261,14 @@ struct BezelSelectorSheet: View {
     
     private var remoteEmptyView: some View {
         VStack(spacing: 12) {
-            Image(systemName: "photo")
-                .font(.system(size: 36))
-                .foregroundColor(.secondary)
+        Image(systemName: "photo")
+            .font(.system(size: 36))
+            .foregroundColor(AppColors.textSecondaryNeutral(colorScheme))
             Text(loc.localized("bezel.noBezelsAvailable"))
                 .font(.headline)
-            Text(loc.localized("bezel.tryDownloadingFromSettings"))
-                .font(.caption)
-                .foregroundColor(.secondary)
+        Text(loc.localized("bezel.tryDownloadingFromSettings"))
+            .font(.caption)
+            .foregroundColor(AppColors.textSecondary(colorScheme))
                 .multilineTextAlignment(.center)
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity)
@@ -276,14 +276,14 @@ struct BezelSelectorSheet: View {
     
     private func errorView(message: String) -> some View {
         VStack(spacing: 12) {
-            Image(systemName: "exclamationmark.triangle")
-                .font(.system(size: 36))
-                .foregroundColor(.orange)
+        Image(systemName: "exclamationmark.triangle")
+            .font(.system(size: 36))
+            .foregroundColor(AppColors.warning(colorScheme))
             Text(loc.localized("bezel.unableToLoadBezels"))
                 .font(.headline)
-            Text(message)
-                .font(.caption)
-                .foregroundColor(.secondary)
+        Text(message)
+            .font(.caption)
+            .foregroundColor(AppColors.textSecondary(colorScheme))
                 .multilineTextAlignment(.center)
             Button(loc.localized("bezel.retry")) {
                 Task { await loadRemoteBezels() }
@@ -368,9 +368,9 @@ struct BezelSelectorSheet: View {
                                 .progressViewStyle(.linear)
                                 .tint(AppColors.brandAccentSecondary)
                                 .frame(width: 200)
-                            Text("\(loc.localized("bezel.downloadingProgress")) \(Int(downloadProgress * 100))%")
-                                .font(.caption)
-                                .foregroundColor(.secondary)
+                    Text("\(loc.localized("bezel.downloadingProgress")) \(Int(downloadProgress * 100))%")
+                        .font(.caption)
+                        .foregroundColor(AppColors.textSecondaryNeutral(colorScheme))
                         }
                         .frame(maxWidth: 350, maxHeight: 250)
                     } else {
@@ -379,12 +379,12 @@ struct BezelSelectorSheet: View {
                             .frame(maxWidth: 350, maxHeight: 250)
                             .overlay {
                                 VStack(spacing: 8) {
-                                    Image(systemName: "photo.on.rectangle.angled")
-                                        .font(.system(size: 48))
-                                        .foregroundColor(.secondary)
-                                    Text(loc.localized("bezel.previewNotDownloaded"))
-                                        .font(.caption)
-                                        .foregroundColor(.secondary)
+                    Image(systemName: "photo.on.rectangle.angled")
+                        .font(.system(size: 48))
+                        .foregroundColor(AppColors.textSecondaryNeutral(colorScheme))
+                    Text(loc.localized("bezel.previewNotDownloaded"))
+                        .font(.caption)
+                        .foregroundColor(AppColors.textSecondaryNeutral(colorScheme))
                                 }
                             }
                     }
@@ -400,17 +400,17 @@ struct BezelSelectorSheet: View {
                 
                 switch entry {
                 case .local:
-                    Label(loc.localized("bezel.localFile"), systemImage: "checkmark.circle.fill")
-                        .foregroundColor(.green)
+            Label(loc.localized("bezel.localFile"), systemImage: "checkmark.circle.fill")
+                .foregroundColor(AppColors.success(colorScheme))
                         .font(.caption)
                 case .remote(let remote):
                     if remote.isDownloaded {
-                        Label(loc.localized("bezel.downloadedCount").replacingOccurrences(of: ",", with: "").trimmingCharacters(in: .whitespaces), systemImage: "checkmark.circle.fill")
-                            .foregroundColor(.green)
+                Label(loc.localized("bezel.downloadedCount").replacingOccurrences(of: ",", with: "").trimmingCharacters(in: .whitespaces), systemImage: "checkmark.circle.fill")
+                    .foregroundColor(AppColors.success(colorScheme))
                             .font(.caption)
                     } else {
-                        Label(loc.localized("bezel.notDownloaded"), systemImage: "arrow.down.circle")
-                            .foregroundColor(.secondary)
+                Label(loc.localized("bezel.notDownloaded"), systemImage: "arrow.down.circle")
+                    .foregroundColor(AppColors.textSecondaryNeutral(colorScheme))
                             .font(.caption)
                     }
                 }
@@ -640,6 +640,7 @@ struct BezelSelectorSheet: View {
 struct LocalBezelListRow: View {
     let entry: BezelStorageManager.LocalBezelInfo
     let isSelected: Bool
+    @Environment(\.colorScheme) private var colorScheme
     
     private var displayName: String {
         entry.id.replacingOccurrences(of: "_", with: " ")
@@ -647,16 +648,16 @@ struct LocalBezelListRow: View {
     
     var body: some View {
         HStack(spacing: 8) {
-            Image(systemName: "checkmark.circle.fill")
-                .foregroundColor(.green)
+        Image(systemName: "checkmark.circle.fill")
+            .foregroundColor(AppColors.success(colorScheme))
             
             VStack(alignment: .leading, spacing: 2) {
                 Text(displayName)
                     .font(.body)
                     .lineLimit(1)
-                Text(entry.fileURL.lastPathComponent)
-                    .font(.caption)
-                    .foregroundColor(.secondary)
+            Text(entry.fileURL.lastPathComponent)
+                .font(.caption)
+                .foregroundColor(AppColors.textSecondaryNeutral(colorScheme))
                     .lineLimit(1)
             }
             

@@ -19,9 +19,9 @@ Spacer()
                 openWindow(id: "system-settings", value: SystemSettingsRequest(system: sys, page: .controllers))
             }
         } label: {
-            Text(loc.localized("controls.edit"))
-                .font(.subheadline)
-                .foregroundColor(.white)
+Text(loc.localized("controls.edit"))
+        .font(.subheadline)
+        .foregroundColor(AppColors.textOnAccent(colorScheme))
                 .padding(.horizontal, AppSpacing.lg)
                 .padding(.vertical, AppSpacing.sm)
                 .background(AppColors.brandAccent)

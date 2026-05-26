@@ -16,6 +16,7 @@ struct CheatManagerViewWrapper: View {
     @State private var selectedCategory: CheatCategory? = nil
     @State private var isDownloadingCheat = false
     @State private var downloadMessage: String? = nil
+	@Environment(\.colorScheme) private var colorScheme
     
     private var filteredCheats: [Cheat] {
         var cheats = cheatManager.cheats(for: rom)
@@ -49,15 +50,15 @@ struct CheatManagerViewWrapper: View {
                         .font(.headline)
                     Text(loc.localized("cheat.enabledCount", enabledCount, cheatManager.cheats(for: rom).count))
                         .font(.caption)
-                        .foregroundColor(.secondary)
-                }
-                Spacer()
-                Button {
-                    windowController?.dismissCheatManager()
-                } label: {
-                    Image(systemName: "xmark.circle.fill")
-                        .font(.title3)
-                        .foregroundColor(.secondary)
+		.foregroundColor(AppColors.textSecondaryNeutral(colorScheme))
+	}
+	Spacer()
+	Button {
+		windowController?.dismissCheatManager()
+	} label: {
+		Image(systemName: "xmark.circle.fill")
+			.font(.title3)
+			.foregroundColor(AppColors.textSecondaryNeutral(colorScheme))
                 }
                 .help(loc.localized("cheat.close"))
             }
@@ -76,7 +77,7 @@ struct CheatManagerViewWrapper: View {
                              .font(.caption)
                              .padding(.horizontal, 12)
                              .padding(.vertical, 6)
-                              .background(selectedCategory == nil ? AppColors.brandAccent : Color.secondary.opacity(0.2))
+                              .background(selectedCategory == nil ? AppColors.brandAccent : AppColors.cardBackground(colorScheme))
                               .foregroundColor(selectedCategory == nil ? .white : .primary)
                               .cornerRadius(8)
                       }
@@ -87,7 +88,7 @@ struct CheatManagerViewWrapper: View {
                                  .font(.caption)
                                  .padding(.horizontal, 12)
                                  .padding(.vertical, 6)
-                                 .background(selectedCategory == category ? AppColors.brandAccent : Color.secondary.opacity(0.2))
+                                 .background(selectedCategory == category ? AppColors.brandAccent : AppColors.cardBackground(colorScheme))
                                 .foregroundColor(selectedCategory == category ? .white : .primary)
                                 .cornerRadius(8)
                         }
@@ -101,43 +102,43 @@ struct CheatManagerViewWrapper: View {
             
              // Search
              HStack {
-                 Image(systemName: "magnifyingglass")
-                     .foregroundColor(.secondary)
+Image(systemName: "magnifyingglass")
+				.foregroundColor(AppColors.textSecondaryNeutral(colorScheme))
                  TextField(loc.localized("cheat.searchPlaceholder"), text: $searchText)
                      .textFieldStyle(.plain)
                  if !searchText.isEmpty {
-                     Button(action: { searchText = "" }) {
-                         Image(systemName: "xmark.circle.fill")
-                             .foregroundColor(.secondary)
+Button(action: { searchText = "" }) {
+				Image(systemName: "xmark.circle.fill")
+					.foregroundColor(AppColors.textSecondaryNeutral(colorScheme))
                      }
                      .buttonStyle(.plain)
                  }
              }
              .padding(8)
-             .background(Color.secondary.opacity(0.1))
-             .cornerRadius(8)
-             .padding(.horizontal)
-             .padding(.vertical, 8)
+.background(AppColors.cardBackgroundSubtle(colorScheme))
+        .cornerRadius(8)
+        .padding(.horizontal)
+        .padding(.vertical, 8)
             
             // Download status message
             if let downloadMessage = downloadMessage {
                 HStack(spacing: 8) {
                     Image(systemName: downloadMessage.contains("success") || downloadMessage.contains("found") ? "checkmark.circle.fill" : "exclamationmark.circle.fill")
-                        .foregroundColor(downloadMessage.contains("success") || downloadMessage.contains("found") ? .green : .orange)
+                        .foregroundColor(downloadMessage.contains("success") || downloadMessage.contains("found") ? AppColors.success(colorScheme) : AppColors.warning(colorScheme))
                     Text(downloadMessage)
                         .font(.caption)
                         .foregroundColor(.primary)
                     Spacer()
-                    Button(action: { self.downloadMessage = nil }) {
-                        Image(systemName: "xmark.circle.fill")
-                            .foregroundColor(.secondary)
+Button(action: { self.downloadMessage = nil }) {
+				Image(systemName: "xmark.circle.fill")
+					.foregroundColor(AppColors.textSecondaryNeutral(colorScheme))
                     }
                     .buttonStyle(.plain)
                 }
                 .padding(8)
-                .background(Color.secondary.opacity(0.1))
-                .cornerRadius(8)
-                .padding(.horizontal)
+.background(AppColors.cardBackgroundSubtle(colorScheme))
+        .cornerRadius(8)
+        .padding(.horizontal)
             }
             
             Divider()
@@ -192,15 +193,15 @@ struct CheatManagerViewWrapper: View {
              // Cheat list
              if filteredCheats.isEmpty {
                  VStack(spacing: 12) {
-                     Image(systemName: "wand.and.stars")
-                         .font(.system(size: 40))
-                         .foregroundColor(.secondary)
-                     Text(searchText.isEmpty ? loc.localized("cheat.noCheatsAvailable") : loc.localized("cheat.noMatchingCheats"))
-                         .foregroundColor(.secondary)
+Image(systemName: "wand.and.stars")
+				.font(.system(size: 40))
+				.foregroundColor(AppColors.textSecondaryNeutral(colorScheme))
+Text(searchText.isEmpty ? loc.localized("cheat.noCheatsAvailable") : loc.localized("cheat.noMatchingCheats"))
+				.foregroundColor(AppColors.textSecondary(colorScheme))
                      if searchText.isEmpty {
-                         Text(loc.localized("cheat.importInstructions"))
-                             .font(.caption)
-                             .foregroundColor(.secondary)
+Text(loc.localized("cheat.importInstructions"))
+				.font(.caption)
+				.foregroundColor(AppColors.textSecondary(colorScheme))
                      }
                  }
                  .frame(maxWidth: .infinity, maxHeight: .infinity)
@@ -327,8 +328,9 @@ struct CheatManagerViewWrapper: View {
 struct InlineCheatRowView: View {
     let cheat: Cheat
     let onToggle: (Bool) -> Void
-    
+
     @State private var isOn: Bool
+    @Environment(\.colorScheme) private var colorScheme
     
     init(cheat: Cheat, onToggle: @escaping (Bool) -> Void) {
         self.cheat = cheat
@@ -342,9 +344,9 @@ struct InlineCheatRowView: View {
                 VStack(alignment: .leading, spacing: 4) {
                     Text(cheat.displayName)
                         .font(.body)
-                    Text(cheat.codePreview)
-                        .font(.system(.caption, design: .monospaced))
-                        .foregroundColor(.secondary)
+Text(cheat.codePreview)
+				.font(.system(.caption, design: .monospaced))
+				.foregroundColor(AppColors.textSecondaryNeutral(colorScheme))
                 }
             }
             .onChange(of: isOn) { _, newValue in
@@ -358,12 +360,12 @@ struct InlineCheatRowView: View {
                 .font(.caption2)
                 .padding(.horizontal, 6)
                 .padding(.vertical, 2)
-                .background(Color.secondary.opacity(0.2))
-                .cornerRadius(4)
+.background(AppColors.cardBackground(colorScheme))
+        .cornerRadius(4)
         }
         .padding(.horizontal, 12)
         .padding(.vertical, 8)
-        .background(Color.secondary.opacity(0.05))
+        .background(AppColors.cardBackgroundSubtle(colorScheme))
         .cornerRadius(8)
     }
 }
@@ -375,6 +377,7 @@ struct AddCheatViewWrapper: View {
     @ObservedObject var cheatManager: CheatManagerService
     @ObservedObject private var loc = LocalizationManager.shared
     @Environment(\.dismiss) private var dismiss
+    @Environment(\.colorScheme) private var colorScheme
     @State private var description = ""
     @State private var code = ""
     @State private var format: CheatFormat = .raw
@@ -389,9 +392,9 @@ struct AddCheatViewWrapper: View {
                 Button {
                     dismiss()
                 } label: {
-                    Image(systemName: "xmark.circle.fill")
-                        .font(.title3)
-                        .foregroundColor(.secondary)
+Image(systemName: "xmark.circle.fill")
+				.font(.title3)
+				.foregroundColor(AppColors.textSecondaryNeutral(colorScheme))
                 }
             }
             .padding()
@@ -411,16 +414,16 @@ struct AddCheatViewWrapper: View {
                 }
                 
                 Section(loc.localized("cheat.example")) {
-                    Text(format.example)
-                        .font(.system(.body, design: .monospaced))
-                        .foregroundColor(.secondary)
+Text(format.example)
+				.font(.system(.body, design: .monospaced))
+				.foregroundColor(AppColors.textSecondaryNeutral(colorScheme))
                         .textSelection(.enabled)
                 }
                 
                 if let error = errorMessage {
                     Section(loc.localized("cheat.error")) {
                         Text(error)
-                            .foregroundColor(.red)
+                            .foregroundColor(AppColors.error(colorScheme))
                     }
                 }
             }

@@ -101,22 +101,23 @@ class HardcoreModeManager: ObservableObject {
 
 // An on-screen display overlay shown when hardcore mode blocks a feature.
 struct HardcoreBlockView: View {
-    let featureName: String
-    @State private var opacity: Double = 1
-    
-    var body: some View {
+	let featureName: String
+	@State private var opacity: Double = 1
+	@Environment(\.colorScheme) private var colorScheme
+
+	var body: some View {
         VStack(spacing: 8) {
-            Image(systemName: "shield.lefthalf.filled.fill")
-                .font(.system(size: 24))
-                .foregroundColor(.orange)
+        Image(systemName: "shield.lefthalf.filled.fill")
+            .font(.system(size: 24))
+            .foregroundColor(AppColors.warning(colorScheme))
             
             Text("Hardcore Mode Active")
                 .font(.headline)
                 .foregroundColor(.white)
             
-            Text("\(featureName) is disabled")
-                .font(.subheadline)
-                .foregroundColor(.secondary)
+        Text("\(featureName) is disabled")
+            .font(.subheadline)
+            .foregroundColor(AppColors.textSecondary(colorScheme))
         }
         .padding()
         .background(Color.black.opacity(0.8))
@@ -137,23 +138,24 @@ struct HardcoreBlockView: View {
 
 // A banner shown at the top of the game view when hardcore mode is active.
 struct HardcoreModeBanner: View {
-    @ObservedObject var raService = RetroAchievementsService.shared
-    
-    var body: some View {
+	@ObservedObject var raService = RetroAchievementsService.shared
+	@Environment(\.colorScheme) private var colorScheme
+
+	var body: some View {
         Group {
             if raService.hardcoreMode && raService.isEnabled {
                 HStack(spacing: 8) {
-                    Image(systemName: "shield.lefthalf.filled.fill")
-                        .font(.caption)
-                        .foregroundColor(.orange)
-                    Text("Hardcore Mode")
-                        .font(.caption)
-                        .fontWeight(.semibold)
-                        .foregroundColor(.orange)
+            Image(systemName: "shield.lefthalf.filled.fill")
+                .font(.caption)
+                .foregroundColor(AppColors.warning(colorScheme))
+            Text("Hardcore Mode")
+                .font(.caption)
+                .fontWeight(.semibold)
+                .foregroundColor(AppColors.warning(colorScheme))
                 }
                 .padding(.horizontal, 12)
                 .padding(.vertical, 6)
-                .background(Color.orange.opacity(0.1))
+                .background(AppColors.warning(colorScheme).opacity(0.1))
                 .cornerRadius(8)
             }
         }

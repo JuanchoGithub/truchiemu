@@ -14,6 +14,7 @@ public struct SaveDirectorySettingsView: View {
   @State private var showingDirectoryPicker = false
   @State private var directoryPickerType: DirectoryType = .save
   @State private var showingMigrationAlert = false
+	@Environment(\.colorScheme) private var colorScheme
   
   enum DirectoryType: Hashable {
     case save
@@ -26,28 +27,28 @@ public struct SaveDirectorySettingsView: View {
         HStack {
           Text("saveDirs.saveFilesSRAM")
           Spacer()
-          Text(directoryManager.savefilesDirectory.path)
-            .lineLimit(1)
-            .truncationMode(.middle)
-            .foregroundColor(.secondary)
+                Text(directoryManager.savefilesDirectory.path)
+                    .lineLimit(1)
+                    .truncationMode(.middle)
+                    .foregroundColor(AppColors.textSecondaryNeutral(colorScheme))
         }
 
         HStack {
           Text("saveDirs.saveStates")
           Spacer()
-          Text(directoryManager.statesDirectory.path)
-            .lineLimit(1)
-            .truncationMode(.middle)
-            .foregroundColor(.secondary)
+                Text(directoryManager.statesDirectory.path)
+                    .lineLimit(1)
+                    .truncationMode(.middle)
+                    .foregroundColor(AppColors.textSecondaryNeutral(colorScheme))
         }
 
         HStack {
           Text("saveDirs.systemBIOS")
           Spacer()
-          Text(directoryManager.activeSystemDirectory.path)
-            .lineLimit(1)
-            .truncationMode(.middle)
-            .foregroundColor(.secondary)
+                Text(directoryManager.activeSystemDirectory.path)
+                    .lineLimit(1)
+                    .truncationMode(.middle)
+                    .foregroundColor(AppColors.textSecondaryNeutral(colorScheme))
         }
       }
       
@@ -65,13 +66,13 @@ public struct SaveDirectorySettingsView: View {
         Button(loc.localized("saveDirs.resetToDefaults")) {
           directoryManager.setSaveDirectory(nil)
           directoryManager.setSystemDirectory(nil)
-        }.foregroundColor(.red)
+        }.foregroundColor(AppColors.error(colorScheme))
       }
       
       if directoryManager.needsMigration {
         Section(loc.localized("saveDirs.migration")) {
-          Label(loc.localized("saveDirs.existingSavesFound"), systemImage: "exclamationmark.triangle")
-            .foregroundColor(.orange)
+            Label(loc.localized("saveDirs.existingSavesFound"), systemImage: "exclamationmark.triangle")
+                .foregroundColor(AppColors.warning(colorScheme))
           
           Button(loc.localized("saveDirs.migrateSaveFiles")) {
             showingMigrationAlert = true
@@ -80,8 +81,8 @@ public struct SaveDirectorySettingsView: View {
       }
       
       Section(loc.localized("saveDirs.diskUsage")) {
-        Text("saveDirs.diskUsageInfo")
-          .foregroundColor(.secondary)
+            Text("saveDirs.diskUsageInfo")
+                .foregroundColor(AppColors.textSecondary(colorScheme))
       }
     }
     .formStyle(.grouped)
@@ -167,9 +168,10 @@ struct DirectoryPicker: NSViewControllerRepresentable {
 // MARK: - Disk Usage View
 
 struct DiskUsageView: View {
-  var body: some View {
-    Text("Disk usage information will be shown here")
-      .foregroundColor(.secondary)
+    @Environment(\.colorScheme) private var colorScheme
+    var body: some View {
+        Text("Disk usage information will be shown here")
+            .foregroundColor(AppColors.textSecondaryNeutral(colorScheme))
   }
 }
 

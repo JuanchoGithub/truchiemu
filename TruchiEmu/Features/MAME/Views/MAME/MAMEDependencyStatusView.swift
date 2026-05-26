@@ -159,12 +159,12 @@ struct MAMEDependencyStatusView: View {
         .fontWeight(.semibold)
         .padding(.horizontal, AppSpacing.sm)
         .padding(.vertical, AppSpacing.xxs)
-        .background(dep.isAvailable ? Color.green.opacity(0.15) : Color.red.opacity(0.15))
+        .background(dep.isAvailable ? AppColors.success(colorScheme).opacity(0.15) : AppColors.error(colorScheme).opacity(0.15))
         .foregroundColor(dep.isAvailable ? .green : .red)
         .cornerRadius(AppRadius.sm)
     }
     .padding(AppSpacing.sm)
-    .background(dep.isAvailable ? AppColors.cardBackgroundSubtle(colorScheme) : Color.red.opacity(0.05))
+    .background(dep.isAvailable ? AppColors.cardBackgroundSubtle(colorScheme) : AppColors.error(colorScheme).opacity(0.05))
     .cornerRadius(AppRadius.md)
     .padding(.vertical, AppSpacing.xxs)
   }

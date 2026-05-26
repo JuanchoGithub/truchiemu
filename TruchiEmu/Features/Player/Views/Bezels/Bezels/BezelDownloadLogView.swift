@@ -5,14 +5,15 @@ struct BezelDownloadLogView: View {
     @State private var lastCount: Int = 0
     @State private var showDetails = false
     @ObservedObject private var loc = LocalizationManager.shared
-    
+    @Environment(\.colorScheme) private var colorScheme
+
     var body: some View {
         VStack(alignment: .leading, spacing: 4) {
             HStack {
-                Label(loc.localized("bezel.downloadHistory"), systemImage: "list.bullet")
-                    .font(.caption)
-                    .fontWeight(.medium)
-                    .foregroundColor(.secondary)
+Label(loc.localized("bezel.downloadHistory"), systemImage: "list.bullet")
+            .font(.caption)
+            .fontWeight(.medium)
+            .foregroundColor(AppColors.textSecondary(colorScheme))
                 
                 Spacer()
                 
@@ -20,14 +21,14 @@ struct BezelDownloadLogView: View {
                 let failCount = logEntries.filter { $0.status.errorMessage != nil }.count
                 
                 if successCount > 0 {
-                    Label("\(successCount)", systemImage: "checkmark.circle.fill")
-                        .font(.caption2)
-                        .foregroundColor(.green)
+Label("\(successCount)", systemImage: "checkmark.circle.fill")
+                .font(.caption2)
+                .foregroundColor(AppColors.success(colorScheme))
                 }
                 if failCount > 0 {
-                    Label("\(failCount)", systemImage: "xmark.circle.fill")
-                        .font(.caption2)
-                        .foregroundColor(.red)
+Label("\(failCount)", systemImage: "xmark.circle.fill")
+                .font(.caption2)
+                .foregroundColor(AppColors.error(colorScheme))
                 }
             }
             .padding(.horizontal, 6)
@@ -80,6 +81,7 @@ struct BezelDownloadLogView: View {
 struct BezelLogEntryRow: View {
     let entry: BezelDownloadLogEntry
     var showDetails: Bool = false
+    @Environment(\.colorScheme) private var colorScheme
     
     var statusIcon: String {
         switch entry.status {
@@ -113,9 +115,9 @@ struct BezelLogEntryRow: View {
                 
                 // System ID (if available)
                 if !entry.systemID.isEmpty && showDetails {
-                    Text("[\(entry.systemID)]")
-                        .font(.system(.caption, design: .monospaced))
-                        .foregroundColor(.secondary)
+Text("[\(entry.systemID)]")
+                    .font(.system(.caption, design: .monospaced))
+                    .foregroundColor(AppColors.textSecondaryNeutral(colorScheme))
                 }
                 
                 // File name (truncated if needed)
@@ -127,27 +129,27 @@ struct BezelLogEntryRow: View {
                 Spacer()
                 
                 // Duration (if available)
-                if showDetails, let duration = entry.duration {
-                    Text(formatDuration(duration))
-                        .font(.system(.caption2, design: .monospaced))
-                        .foregroundColor(.secondary)
-                }
+if showDetails, let duration = entry.duration {
+                Text(formatDuration(duration))
+                    .font(.system(.caption2, design: .monospaced))
+                    .foregroundColor(AppColors.textSecondaryNeutral(colorScheme))
+            }
                 
                 // Timestamp
-                Text(entry.timestamp, style: .time)
-                    .font(.caption2)
-                    .foregroundColor(.secondary)
+Text(entry.timestamp, style: .time)
+                .font(.caption2)
+                .foregroundColor(AppColors.textSecondaryNeutral(colorScheme))
             }
             
             // Error message (if failed)
             if case .failed(let error) = entry.status {
                 HStack(spacing: 4) {
-                    Image(systemName: "exclamationmark.triangle.fill")
-                        .font(.system(size: 8))
-                        .foregroundColor(.red)
-                    Text(error)
-                        .font(.system(.caption, design: .monospaced))
-                        .foregroundColor(.red)
+Image(systemName: "exclamationmark.triangle.fill")
+                    .font(.system(size: 8))
+                    .foregroundColor(AppColors.error(colorScheme))
+                Text(error)
+                    .font(.system(.caption, design: .monospaced))
+                    .foregroundColor(AppColors.error(colorScheme))
                         .lineLimit(2)
                         .truncationMode(.tail)
                 }

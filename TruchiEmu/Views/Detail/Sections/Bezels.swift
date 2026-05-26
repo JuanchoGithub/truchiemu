@@ -39,9 +39,9 @@ Text(currentBezelDisplayName).font(.caption).foregroundColor(AppColors.textSecon
 }
 Spacer()
         Button { presentBezelSelectorWindow() } label: {
-            Text(loc.localized("bezel.browseBezels"))
-                .font(.subheadline)
-                .foregroundColor(.white)
+Text(loc.localized("bezel.browseBezels"))
+        .font(.subheadline)
+        .foregroundColor(AppColors.textOnAccent(colorScheme))
                 .padding(.horizontal, AppSpacing.lg)
                 .padding(.vertical, AppSpacing.sm)
                 .background(AppColors.brandAccent)
@@ -58,14 +58,14 @@ VStack(spacing: 8) {
                 HStack {
                     Image(systemName: "magnifyingglass").frame(width: 20)
                     Text(loc.localized("bezel.autoMatchBezel"))
-                    Spacer()
-                }
-                .font(.subheadline)
-                .foregroundColor(.white)
-                .padding(.vertical, AppSpacing.xs)
-                .padding(.horizontal, AppSpacing.lg)
-                .background(AppColors.brandAccent)
-                .cornerRadius(AppRadius.sm)
+Spacer()
+    }
+    .font(.subheadline)
+    .foregroundColor(AppColors.textOnAccent(colorScheme))
+    .padding(.vertical, AppSpacing.xs)
+    .padding(.horizontal, AppSpacing.lg)
+    .background(AppColors.brandAccent)
+    .cornerRadius(AppRadius.sm)
             }
             .buttonStyle(.plain)
 

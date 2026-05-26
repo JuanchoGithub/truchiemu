@@ -38,17 +38,17 @@ self._selectedGameIDs = State(initialValue: Set(games.map { $0.id }))
 
                 Spacer()
 
-                Text(loc.localized("gameOverride.gamesWithCustomShaders"))
-                    .font(.caption)
-                    .foregroundColor(.secondary)
+Text(loc.localized("gameOverride.gamesWithCustomShaders"))
+                .font(.caption)
+                .foregroundColor(AppColors.textSecondary(colorScheme))
             }
 
             Divider()
 
             if games.isEmpty {
                 Spacer()
-                Text(loc.localized("gameOverride.noGamesHaveCustomShaders"))
-                    .foregroundColor(.secondary)
+Text(loc.localized("gameOverride.noGamesHaveCustomShaders"))
+                .foregroundColor(AppColors.textSecondary(colorScheme))
                 Spacer()
 } else {
 List(games) { game in
@@ -58,9 +58,9 @@ Text(game.displayName)
 
                         Spacer()
 
-                        Text(currentShaderName(for: game))
-                            .font(.caption)
-                            .foregroundColor(.secondary)
+Text(currentShaderName(for: game))
+                        .font(.caption)
+                        .foregroundColor(AppColors.textSecondaryNeutral(colorScheme))
                             .lineLimit(1)
 
                         Toggle("", isOn: Binding(

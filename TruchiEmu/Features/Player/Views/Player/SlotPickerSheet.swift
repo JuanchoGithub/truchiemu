@@ -19,8 +19,8 @@ struct SlotPickerSheet: View {
                     .fontWeight(.semibold)
                 Spacer()
                 Button(action: { showSlotPicker = false }) {
-                    Image(systemName: "xmark.circle.fill")
-                        .foregroundColor(.secondary)
+            Image(systemName: "xmark.circle.fill")
+                .foregroundColor(AppColors.textSecondaryNeutral(colorScheme))
                 }
                 .buttonStyle(.plain)
             }
@@ -46,11 +46,11 @@ struct SlotPickerSheet: View {
                 if runner.supportsSaveStates {
                     Label(loc.localized("slot.available"), systemImage: "checkmark.circle.fill")
                         .font(.caption)
-                        .foregroundColor(.green)
-                } else {
-                    Label(loc.localized("slot.unavailable"), systemImage: "exclamationmark.circle.fill")
-                        .font(.caption)
-                        .foregroundColor(.orange)
+            .foregroundColor(AppColors.success(colorScheme))
+        } else {
+            Label(loc.localized("slot.unavailable"), systemImage: "exclamationmark.circle.fill")
+                .font(.caption)
+                .foregroundColor(AppColors.warning(colorScheme))
                 }
             }
             .padding(.horizontal, 16)
@@ -61,12 +61,12 @@ struct SlotPickerSheet: View {
                 set: { AppSettings.setBool("saveState_compress", value: $0) }
             )) {
                 HStack(spacing: 6) {
-                    Image(systemName: "archivebox").foregroundColor(.secondary)
+                    Image(systemName: "archivebox").foregroundColor(AppColors.textSecondaryNeutral(colorScheme))
                     VStack(alignment: .leading, spacing: 2) {
                         Text(loc.localized("slot.compressSaveStates")).font(.subheadline)
-                        Text(loc.localized("slot.compressSaveStatesInfo"))
-                            .font(.caption)
-                            .foregroundColor(.secondary)
+            Text(loc.localized("slot.compressSaveStatesInfo"))
+                .font(.caption)
+                .foregroundColor(AppColors.textSecondary(colorScheme))
                     }
                 }
             }
@@ -83,14 +83,14 @@ Divider()
       } else {
                 VStack(spacing: 16) {
                     Spacer()
-                    Image(systemName: "exclamationmark.triangle")
-                        .font(.system(size: 48))
-                        .foregroundColor(.secondary)
+            Image(systemName: "exclamationmark.triangle")
+                .font(.system(size: 48))
+                .foregroundColor(AppColors.textSecondaryNeutral(colorScheme))
                     Text(loc.localized("slot.saveStatesUnavailable"))
                         .font(.headline)
                     Text(loc.localized("slot.saveStatesUnavailableDetail"))
-                        .font(.caption).foregroundColor(.secondary)
-                        .multilineTextAlignment(.center)
+.font(.caption).foregroundColor(AppColors.textSecondary(colorScheme))
+                .multilineTextAlignment(.center)
                         .padding(.horizontal)
                     Spacer()
                 }
@@ -170,7 +170,8 @@ struct SlotCardView: View {
     let onLoad: () -> Void
     let onDelete: () -> Void
     @ObservedObject private var loc = LocalizationManager.shared
-    
+    @Environment(\.colorScheme) private var colorScheme
+
     var body: some View {
         VStack(spacing: 4) {
             ZStack {
@@ -179,10 +180,10 @@ struct SlotCardView: View {
                 } else {
                     Rectangle().fill(Color.gray.opacity(0.15)).frame(height: 80)
                 .overlay(VStack {
-                    Image(systemName: slotInfo?.exists == true ? "square.and.arrow.down" : "plus.circle")
-                    .font(.system(size: 24)).foregroundColor(.secondary)
+Image(systemName: slotInfo?.exists == true ? "square.and.arrow.down" : "plus.circle")
+                .font(.system(size: 24)).foregroundColor(AppColors.textSecondaryNeutral(colorScheme))
                     Text(slot == -1 ? loc.localized("toolbar.systemAutoSave") : (slotInfo?.exists == true ? loc.localized("slot.previewUnavailable") : loc.localized("slot.noSaveInSlot")))
-                    .font(.caption2).foregroundColor(.secondary)
+.font(.caption2).foregroundColor(AppColors.textSecondaryNeutral(colorScheme))
                 })
                 }
                 if isCurrentSlot {
@@ -196,14 +197,14 @@ struct SlotCardView: View {
 HStack {
             Text(slot == -1 ? loc.localized("toolbar.slotAuto") : slotInfo?.displayName ?? "Slot \(slot)").font(.caption).fontWeight(isCurrentSlot ? .bold : .medium).foregroundColor(isCurrentSlot ? AppColors.brandAccent : .primary)
       Spacer()
-      if slotInfo?.exists == true { Image(systemName: "checkmark.circle.fill").font(.caption).foregroundColor(.green) }
+      if slotInfo?.exists == true { Image(systemName: "checkmark.circle.fill").font(.caption).foregroundColor(AppColors.success(colorScheme)) }
     }
     
     if let info = slotInfo, info.exists, let timestamp = info.formattedDate {
       Text(timestamp)
         .font(.system(size: 9))
-        .foregroundColor(.secondary)
-        .lineLimit(1)
+                .foregroundColor(AppColors.textSecondaryNeutral(colorScheme))
+                .lineLimit(1)
     } else {
       Text(" ")
         .font(.system(size: 9))
@@ -211,7 +212,7 @@ HStack {
     }
     
     if let info = slotInfo, info.exists, let size = info.fileSize {
-      Text(size.formattedByteSize).font(.caption2).foregroundColor(.secondary)
+      Text(size.formattedByteSize).font(.caption2).foregroundColor(AppColors.textSecondaryNeutral(colorScheme))
     } else {
       Text(" ").font(.caption2).foregroundColor(.clear)
     }
@@ -228,7 +229,7 @@ HStack {
                 .buttonStyle(.borderless).disabled(slotInfo?.exists != true).help(loc.localized("slot.deleteSlot"))
             }
         }
-            .foregroundColor(.secondary)
+            .foregroundColor(AppColors.textSecondaryNeutral(colorScheme))
         }
         .padding(6)
         .background(Color(.controlBackgroundColor).opacity(0.5))

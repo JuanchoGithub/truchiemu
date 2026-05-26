@@ -51,10 +51,11 @@ class KeyWindowPanel: NSPanel {
 struct ShaderParameterSliders: View {
     let preset: ShaderPreset
     @Binding var uniformValues: [String: Float]
-    var onValueCommitted: (([String: Float]) -> Void)?
-    @ObservedObject private var loc = LocalizationManager.shared
+	var onValueCommitted: (([String: Float]) -> Void)?
+	@ObservedObject private var loc = LocalizationManager.shared
+	@Environment(\.colorScheme) private var colorScheme
 
-    var body: some View {
+	var body: some View {
         VStack(alignment: .leading, spacing: 8) {
               HStack {
                   Image(systemName: "slider.horizontal.3")
@@ -76,7 +77,7 @@ struct ShaderParameterSliders: View {
              }
          }
          .padding(10)
-         .background(Color.secondary.opacity(0.1))
+         .background(AppColors.cardBackgroundSubtle(colorScheme))
          .cornerRadius(8)
      }
 
@@ -88,16 +89,16 @@ private func parameterSliderRow(for uniform: ShaderUniform) -> some View {
                           Text(uniform.displayLabel)
                               .font(.subheadline)
                           if let desc = uniform.description {
-                              Text(desc)
-                                  .font(.caption2)
-                                  .foregroundColor(.secondary)
-                                  .lineLimit(2)
-                          }
-                      }
+                        Text(desc)
+                            .font(.caption2)
+                            .foregroundColor(AppColors.textSecondaryNeutral(colorScheme))
+                            .lineLimit(2)
+                        }
+                    }
 
-                      Spacer()
+                    Spacer()
 
-Toggle("", isOn: Binding(
+                    Toggle("", isOn: Binding(
                            get: { currentUniformValue(for: uniform) > 0.5 },
                            set: { newValue in
                                uniformValues[uniform.name] = newValue ? 1.0 : 0.0
@@ -114,18 +115,18 @@ Toggle("", isOn: Binding(
                           VStack(alignment: .leading, spacing: 2) {
                               Text(uniform.displayLabel)
                                   .font(.subheadline)
-                              if let desc = uniform.description {
-                                  Text(desc)
-                                      .font(.caption2)
-                                      .foregroundColor(.secondary)
-                                      .lineLimit(2)
-                              }
-                          }
+            if let desc = uniform.description {
+                    Text(desc)
+                        .font(.caption2)
+                        .foregroundColor(AppColors.textSecondaryNeutral(colorScheme))
+                        .lineLimit(2)
+                    }
+                }
 
-                          Spacer()
-                      }
+                Spacer()
+            }
 
-let selectedValue = currentUniformValue(for: uniform)
+            let selectedValue = currentUniformValue(for: uniform)
                        Picker("", selection: Binding(
                            get: { selectedValue },
                            set: { newValue in
@@ -146,20 +147,20 @@ let selectedValue = currentUniformValue(for: uniform)
                           VStack(alignment: .leading, spacing: 2) {
                               Text(uniform.displayLabel)
                                   .font(.subheadline)
-                              if let desc = uniform.description {
-                                  Text(desc)
-                                      .font(.caption2)
-                                      .foregroundColor(.secondary)
-                                      .lineLimit(2)
-                              }
-                          }
+                if let desc = uniform.description {
+                        Text(desc)
+                            .font(.caption2)
+                            .foregroundColor(AppColors.textSecondaryNeutral(colorScheme))
+                            .lineLimit(2)
+                        }
+                    }
 
-Spacer()
+                    Spacer()
 
-                           Text(formatUniformValue(currentUniformValue(for: uniform)))
-                               .font(.caption)
-                              .foregroundColor(.secondary)
-                              .monospacedDigit()
+                    Text(formatUniformValue(currentUniformValue(for: uniform)))
+                        .font(.caption)
+                        .foregroundColor(AppColors.textSecondaryNeutral(colorScheme))
+                        .monospacedDigit()
                       }
 
 Slider(
@@ -291,15 +292,16 @@ struct ShaderPresetRowView: View {
     let isSelected: Bool
     let onSelect: () -> Void
 
-    @State private var isHovered = false
-    private var loc: LocalizationManager { LocalizationManager.shared }
+	@State private var isHovered = false
+	private var loc: LocalizationManager { LocalizationManager.shared }
+	@Environment(\.colorScheme) private var colorScheme
 
-    var body: some View {
-        HStack(spacing: 10) {
-            Image(systemName: shaderIcon(for: preset.shaderType))
-                .font(.body)
-                .frame(width: 24)
-                .foregroundColor(isSelected ? AppColors.brandAccent : .secondary)
+	var body: some View {
+		HStack(spacing: 10) {
+			Image(systemName: shaderIcon(for: preset.shaderType))
+			.font(.body)
+			.frame(width: 24)
+			.foregroundColor(isSelected ? AppColors.brandAccent : .secondary)
 
             VStack(alignment: .leading, spacing: 4) {
                 Text(preset.name)
@@ -308,10 +310,10 @@ struct ShaderPresetRowView: View {
                     .foregroundColor(isSelected ? AppColors.brandAccent : .primary)
 
                 if !preset.recommendedSystems.isEmpty {
-                    Text(preset.recommendedSystems.joined(separator: ", ").uppercased())
-                        .font(.caption2)
-                        .foregroundColor(.secondary)
-                        .lineLimit(1)
+            Text(preset.recommendedSystems.joined(separator: ", ").uppercased())
+                    .font(.caption2)
+                    .foregroundColor(AppColors.textSecondaryNeutral(colorScheme))
+                    .lineLimit(1)
                 }
             }
 
@@ -320,11 +322,11 @@ struct ShaderPresetRowView: View {
             if !preset.globalUniforms.isEmpty {
                 Text("⚙️ \(preset.globalUniforms.count)")
                     .font(.caption)
-                    .foregroundColor(.secondary)
+                    .foregroundColor(AppColors.textSecondaryNeutral(colorScheme))
                     .padding(.horizontal, 6)
-                    .padding(.vertical, 2)
-                    .background(Color.secondary.opacity(0.15))
-                    .cornerRadius(4)
+.padding(.vertical, 2)
+    .background(AppColors.cardBackground(colorScheme))
+    .cornerRadius(4)
             }
 
             if isSelected {
@@ -341,7 +343,7 @@ struct ShaderPresetRowView: View {
                 AppColors.brandAccent.opacity(0.2)
                     .cornerRadius(6)
             } else if isHovered {
-                Color.secondary.opacity(0.1)
+                AppColors.cardBackgroundSubtle(colorScheme)
                     .cornerRadius(6)
             }
         }
@@ -378,15 +380,16 @@ struct SavedPresetRowView: View {
     let onExport: () -> Void
     let onDelete: () -> Void
 
-    @State private var isHovered = false
-    private var loc: LocalizationManager { LocalizationManager.shared }
+	@State private var isHovered = false
+	private var loc: LocalizationManager { LocalizationManager.shared }
+	@Environment(\.colorScheme) private var colorScheme
 
-    var body: some View {
-        HStack(spacing: 10) {
-            Image(systemName: "bookmark.fill")
-                .font(.body)
-                .frame(width: 24)
-                .foregroundColor(isSelected ? AppColors.brandAccent : .orange)
+	var body: some View {
+		HStack(spacing: 10) {
+			Image(systemName: "bookmark.fill")
+			.font(.body)
+			.frame(width: 24)
+			.foregroundColor(isSelected ? AppColors.brandAccent : .orange)
 
             VStack(alignment: .leading, spacing: 4) {
                 Text(preset.name)
@@ -395,10 +398,10 @@ struct SavedPresetRowView: View {
                     .foregroundColor(isSelected ? AppColors.brandAccent : .primary)
 
                 if let base = preset.basePreset {
-                    Text(loc.localized("shader.basedOn") + " \(base.name)")
-                        .font(.caption2)
-                        .foregroundColor(.secondary)
-                        .lineLimit(1)
+            Text(loc.localized("shader.basedOn") + " \(base.name)")
+                    .font(.caption2)
+                    .foregroundColor(AppColors.textSecondary(colorScheme))
+                    .lineLimit(1)
                 }
             }
 
@@ -418,7 +421,7 @@ struct SavedPresetRowView: View {
                 AppColors.brandAccent.opacity(0.2)
                     .cornerRadius(6)
             } else if isHovered {
-                Color.secondary.opacity(0.1)
+                AppColors.cardBackgroundSubtle(colorScheme)
                     .cornerRadius(6)
             }
         }
@@ -501,10 +504,10 @@ controller.close()
                     }
 
                     if let message = settings.notificationMessage {
-                        Text(message)
-                            .font(.caption)
-                            .foregroundColor(.secondary)
-                            .multilineTextAlignment(.center)
+                Text(message)
+                    .font(.caption)
+                    .foregroundColor(AppColors.textSecondary(colorScheme))
+                    .multilineTextAlignment(.center)
                             .padding(.horizontal, 10)
                             .transition(.opacity)
                     }
@@ -520,10 +523,10 @@ controller.close()
                 if settings.shaderPresetID.isEmpty {
                     VStack {
                         Spacer()
-                        Text(loc.localized("shader.selectShader"))
-                            .font(.subheadline)
-                            .foregroundColor(.secondary)
-                        Spacer()
+                Text(loc.localized("shader.selectShader"))
+                    .font(.subheadline)
+                    .foregroundColor(AppColors.textSecondary(colorScheme))
+                    Spacer()
                     }
                     .frame(maxWidth: .infinity, maxHeight: .infinity)
                     .background(AppColors.windowBackground(colorScheme, tinted: ThemeManager.shared.tintedSurfacesEnabled))
@@ -553,10 +556,10 @@ controller.close()
                 } else {
                     VStack {
                         Spacer()
-                        Text(loc.localized("shader.noParameters"))
-                            .font(.subheadline)
-                            .foregroundColor(.secondary)
-                        Spacer()
+                Text(loc.localized("shader.noParameters"))
+                    .font(.subheadline)
+                    .foregroundColor(AppColors.textSecondary(colorScheme))
+                    Spacer()
                     }
                     .frame(maxWidth: .infinity, maxHeight: .infinity)
                     .background(AppColors.windowBackground(colorScheme, tinted: ThemeManager.shared.tintedSurfacesEnabled))
@@ -610,12 +613,12 @@ controller.close()
                     .font(.headline)
                 TextField(loc.localized("shader.presetName"), text: $savePresetName)
                     .textFieldStyle(.plain)
-                    .padding(8)
-                    .background(Color.secondary.opacity(0.1))
-                    .cornerRadius(6)
-                    .frame(width: 250)
-                HStack(spacing: 12) {
-                    Button(loc.localized("shader.cancel")) { showSaveDialog = false }
+.padding(8)
+    .background(AppColors.cardBackgroundSubtle(colorScheme))
+    .cornerRadius(6)
+    .frame(width: 250)
+    HStack(spacing: 12) {
+    Button(loc.localized("shader.cancel")) { showSaveDialog = false }
                     Button(loc.localized("shader.save")) {
                         let saved = SavedShaderPreset(
                             name: savePresetName,
@@ -648,12 +651,12 @@ controller.close()
                     .font(.headline)
                 TextField(loc.localized("shader.newName"), text: $renameText)
                     .textFieldStyle(.plain)
-                    .padding(8)
-                    .background(Color.secondary.opacity(0.1))
-                    .cornerRadius(6)
-                    .frame(width: 250)
-                HStack(spacing: 12) {
-                    Button(loc.localized("shader.cancel")) { renamePreset = nil }
+.padding(8)
+    .background(AppColors.cardBackgroundSubtle(colorScheme))
+    .cornerRadius(6)
+    .frame(width: 250)
+    HStack(spacing: 12) {
+    Button(loc.localized("shader.cancel")) { renamePreset = nil }
                     Button(loc.localized("shader.rename")) {
                         if let p = renamePreset {
                             ShaderPresetStorageService.shared.rename(preset: p, to: renameText)
@@ -680,10 +683,10 @@ controller.close()
     private var currentSelectionHeader: some View {
         HStack {
             VStack(alignment: .leading, spacing: 2) {
-                Text(loc.localized("shader.active"))
+            Text(loc.localized("shader.active"))
                     .font(.caption2)
-                    .foregroundColor(.secondary)
-                Text(ShaderManager.displayName(for: settings.shaderPresetID))
+                    .foregroundColor(AppColors.textSecondary(colorScheme))
+                    Text(ShaderManager.displayName(for: settings.shaderPresetID))
                     .font(.subheadline.bold())
             }
 
@@ -697,17 +700,17 @@ controller.close()
             .font(.caption)
             .controlSize(.small)
         }
-        .padding(8)
-        .background(Color.secondary.opacity(0.1))
+.padding(8)
+    .background(AppColors.cardBackgroundSubtle(colorScheme))
     }
 
     // MARK: - Search Bar
 
     private var searchBar: some View {
         HStack {
-            Image(systemName: "magnifyingglass")
-                .foregroundColor(.secondary)
-            TextField(loc.localized("shader.searchShaders"), text: $searchText)
+        Image(systemName: "magnifyingglass")
+                .foregroundColor(AppColors.textSecondaryNeutral(colorScheme))
+                TextField(loc.localized("shader.searchShaders"), text: $searchText)
                 .textFieldStyle(.plain)
             if !searchText.isEmpty {
                 Button(loc.localized("shader.clear"), systemImage: "xmark.circle.fill") {
@@ -716,9 +719,9 @@ controller.close()
                 .buttonStyle(.plain)
             }
         }
-        .padding(6)
-        .background(Color.secondary.opacity(0.1))
-        .cornerRadius(6)
+.padding(6)
+    .background(AppColors.cardBackgroundSubtle(colorScheme))
+    .cornerRadius(6)
         .padding(.horizontal, 8)
         .padding(.top, 4)
     }
@@ -755,11 +758,11 @@ controller.close()
                     .font(.caption)
                 Text("(\(count))")
                     .font(.caption2)
-                    .foregroundColor(isActive ? .white.opacity(0.7) : .secondary)
+                    .foregroundColor(isActive ? .white.opacity(0.7) : AppColors.textSecondaryNeutral(colorScheme))
             }
             .padding(.horizontal, 10)
             .padding(.vertical, 4)
-            .background(isActive ? AppColors.brandAccent : Color.secondary.opacity(0.1))
+            .background(isActive ? AppColors.brandAccent : AppColors.cardBackgroundSubtle(colorScheme))
             .foregroundColor(isActive ? .white : .primary)
             .cornerRadius(12)
         }
@@ -803,17 +806,17 @@ controller.close()
                 }
             }
             if visibleSavedPresets.isEmpty && visibleBuiltinPresets.isEmpty {
-                Text(loc.localized("shader.noShadersFound"))
-                    .foregroundColor(.secondary)
+            Text(loc.localized("shader.noShadersFound"))
+                    .foregroundColor(AppColors.textSecondary(colorScheme))
                     .padding()
+                }
             }
         }
-    }
 
-    private func sectionHeader(_ title: String) -> some View {
-        Text(title)
-            .font(.caption)
-            .foregroundColor(.secondary)
+        private func sectionHeader(_ title: String) -> some View {
+            Text(title)
+                .font(.caption)
+                .foregroundColor(AppColors.textSecondary(colorScheme))
             .frame(maxWidth: .infinity, alignment: .leading)
             .padding(.horizontal, 12)
             .padding(.top, 8)
@@ -824,9 +827,9 @@ controller.close()
 
         return VStack(spacing: 0) {
             if presets.isEmpty {
-                Text(loc.localized("shader.noShadersFound"))
-                    .foregroundColor(.secondary)
-                    .padding()
+            Text(loc.localized("shader.noShadersFound"))
+                .foregroundColor(AppColors.textSecondary(colorScheme))
+                .padding()
             } else {
                 ForEach(presets, id: \.id) { preset in
                     presetRow(preset: preset)
@@ -840,16 +843,16 @@ controller.close()
             if visibleSavedPresets.isEmpty {
                 VStack(spacing: 12) {
                     if savedPresets.isEmpty {
-                        Text(loc.localized("shader.noSavedPresets"))
-                            .foregroundColor(.secondary)
+                Text(loc.localized("shader.noSavedPresets"))
+                    .foregroundColor(AppColors.textSecondary(colorScheme))
                         Button(loc.localized("shader.import"), systemImage: "square.and.arrow.down") {
                             showImportPicker = true
                         }
                         .buttonStyle(.bordered)
                         .controlSize(.small)
                     } else {
-                        Text(loc.localized("shader.noMatchesFound"))
-                            .foregroundColor(.secondary)
+                Text(loc.localized("shader.noMatchesFound"))
+                    .foregroundColor(AppColors.textSecondary(colorScheme))
                     }
                 }
                 .padding()

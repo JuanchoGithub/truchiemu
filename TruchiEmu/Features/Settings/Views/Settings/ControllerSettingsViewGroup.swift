@@ -167,7 +167,7 @@ struct ControllerSettingsView: View {
                         TextField(loc.localized("controllers.name"), text: $configName)
                             .textFieldStyle(.plain)
                             .padding(6)
-                            .background(Color.secondary.opacity(0.1))
+                            .background(AppColors.cardBackgroundSubtle(colorScheme))
                             .cornerRadius(6)
                             .frame(width: 150)
                         Button(loc.localized("controllers.save")) {

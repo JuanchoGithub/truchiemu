@@ -10,6 +10,7 @@ struct AchievementListView: View {
     @Environment(\.dismiss) private var dismiss
     @State private var selectedTab: AchievementTab = .core
     @State private var expandedAchievement: Int?
+	@Environment(\.colorScheme) private var colorScheme
     
     private var displayedAchievements: [Achievement] {
         guard let game = raService.currentGame else { return [] }
@@ -47,26 +48,26 @@ struct AchievementListView: View {
                             Text(game.title)
                                 .font(.headline)
                             Text("\(game.consoleName)")
-                                .font(.subheadline)
-                                .foregroundColor(.secondary)
+                            .font(.subheadline)
+                            .foregroundColor(AppColors.textSecondary(colorScheme))
                         }
                         Spacer()
                         VStack(alignment: .trailing) {
                             Text("\(totalPoints) / \(maxPoints)")
                                 .font(.title3)
                                 .fontWeight(.bold)
-                            Text(loc.localized("achievement.points"))
-                                .font(.caption)
-                                .foregroundColor(.secondary)
+                        Text(loc.localized("achievement.points"))
+                            .font(.caption)
+                            .foregroundColor(AppColors.textSecondary(colorScheme))
                         }
                     }
                     
                     ProgressView(value: maxPoints > 0 ? Double(totalPoints) / Double(maxPoints) : 0)
                         .progressViewStyle(.linear)
                     
-                    Text("\(raService.currentGame?.achievements.filter { $0.isUnlocked }.count ?? 0) \(loc.localized("achievement.unlockedOf")) \(raService.currentGame?.achievements.count ?? 0) \(loc.localized("achievement.unlockedSuffix"))")
-                        .font(.caption)
-                        .foregroundColor(.secondary)
+            Text("\(raService.currentGame?.achievements.filter { $0.isUnlocked }.count ?? 0) \(loc.localized("achievement.unlockedOf")) \(raService.currentGame?.achievements.count ?? 0) \(loc.localized("achievement.unlockedSuffix"))")
+                .font(.caption)
+                .foregroundColor(AppColors.textSecondaryNeutral(colorScheme))
                 }
                 .padding()
                 
@@ -82,7 +83,7 @@ struct AchievementListView: View {
                                 .font(.caption)
                                 .padding(.horizontal, 12)
                                 .padding(.vertical, 6)
-                                .background(selectedTab == tab ? AppColors.brandAccent : Color.secondary.opacity(0.2))
+                                .background(selectedTab == tab ? AppColors.brandAccent : AppColors.cardBackground(colorScheme))
                                 .foregroundColor(selectedTab == tab ? .white : .primary)
                                 .cornerRadius(8)
                         }
@@ -97,11 +98,11 @@ struct AchievementListView: View {
             // Achievement list
             if displayedAchievements.isEmpty {
                 VStack(spacing: 12) {
-                    Image(systemName: selectedTab == .unlocked ? "lock.fill" : "trophy.fill")
-                        .font(.system(size: 40))
-                        .foregroundColor(.secondary)
-                    Text(loc.localized("achievement.noAchievements"))
-                        .foregroundColor(.secondary)
+            Image(systemName: selectedTab == .unlocked ? "lock.fill" : "trophy.fill")
+                .font(.system(size: 40))
+                .foregroundColor(AppColors.textSecondaryNeutral(colorScheme))
+            Text(loc.localized("achievement.noAchievements"))
+                .foregroundColor(AppColors.textSecondary(colorScheme))
                 }
                 .frame(maxWidth: .infinity, maxHeight: .infinity)
             } else {
@@ -131,11 +132,11 @@ struct AchievementListView: View {
             if raService.hardcoreMode {
                 Divider()
                 HStack {
-                    Image(systemName: "shield.lefthalf.filled.fill")
-                        .foregroundColor(.orange)
-                    Text(loc.localized("achievement.hardcoreModeActive"))
-                        .font(.caption)
-                        .foregroundColor(.orange)
+            Image(systemName: "shield.lefthalf.filled.fill")
+                .foregroundColor(AppColors.warning(colorScheme))
+            Text(loc.localized("achievement.hardcoreModeActive"))
+                .font(.caption)
+                .foregroundColor(AppColors.warning(colorScheme))
                 }
                 .padding()
             }
@@ -152,13 +153,14 @@ struct AchievementRowView: View {
     @ObservedObject private var cache = RABadgeCacheService.shared
     @ObservedObject private var loc = LocalizationManager.shared
     @State private var badgeImage: NSImage? = nil
+    @Environment(\.colorScheme) private var colorScheme
 
     var body: some View {
         HStack(spacing: 12) {
             // Badge
             ZStack {
                 RoundedRectangle(cornerRadius: 8)
-                .fill(achievement.isUnlocked ? AppColors.brandAccent.opacity(0.1) : Color.secondary.opacity(0.1))
+                .fill(achievement.isUnlocked ? AppColors.brandAccent.opacity(0.1) : AppColors.cardBackgroundSubtle(colorScheme))
                 .frame(width: 44, height: 44)
 
                 Group {
@@ -169,7 +171,7 @@ struct AchievementRowView: View {
                     } else {
                         Image(systemName: "trophy.fill")
                         .font(.system(size: 20))
-                        .foregroundColor(.secondary)
+                        .foregroundColor(AppColors.textSecondaryNeutral(colorScheme))
                     }
                 }
                 .frame(width: 32, height: 32)
@@ -182,22 +184,22 @@ struct AchievementRowView: View {
                 Text(achievement.displayTitle)
                     .font(.body)
                     .fontWeight(achievement.isUnlocked ? .medium : .regular)
-                    .foregroundColor(achievement.isUnlocked ? .primary : .secondary)
+                    .foregroundColor(achievement.isUnlocked ? .primary : AppColors.textSecondary(colorScheme))
                 
                 if isExpanded && achievement.isUnlocked {
                     Text(achievement.description)
                         .font(.caption)
-                        .foregroundColor(.secondary)
+                        .foregroundColor(AppColors.textSecondary(colorScheme))
                     
                     if let unlockDate = achievement.unlockDate {
-                        Text("\(loc.localized("achievement.unlockedDate")) \(unlockDate.formatted(date: .abbreviated, time: .shortened))")
-                            .font(.caption2)
-                            .foregroundColor(.secondary)
+                    Text("\(loc.localized("achievement.unlockedDate")) \(unlockDate.formatted(date: .abbreviated, time: .shortened))")
+                        .font(.caption2)
+                        .foregroundColor(AppColors.textSecondaryNeutral(colorScheme))
                     }
                 } else if !achievement.isUnlocked {
                     Text(loc.localized("achievement.hiddenUntilUnlocked"))
                         .font(.caption)
-                        .foregroundColor(.secondary)
+                        .foregroundColor(AppColors.textSecondary(colorScheme))
                 }
             }
             
@@ -207,14 +209,14 @@ struct AchievementRowView: View {
             VStack(alignment: .trailing, spacing: 2) {
                 Text("\(achievement.points)")
                     .font(.headline)
-                    .foregroundColor(achievement.isUnlocked ? AppColors.brandAccent : .secondary)
+                    .foregroundColor(achievement.isUnlocked ? AppColors.brandAccent : AppColors.textSecondaryNeutral(colorScheme))
                 Text(loc.localized("achievement.pts"))
-                    .font(.caption2)
-                    .foregroundColor(.secondary)
+                        .font(.caption2)
+                        .foregroundColor(AppColors.textSecondaryNeutral(colorScheme))
             }
         }
         .padding(12)
-        .background(achievement.isUnlocked ? AppColors.brandAccent.opacity(0.05) : Color.secondary.opacity(0.05))
+        .background(achievement.isUnlocked ? AppColors.brandAccent.opacity(0.05) : AppColors.cardBackgroundSubtle(colorScheme))
         .cornerRadius(8)
         .onAppear { loadBadge() }
         .onChange(of: achievement.localBadgeURL) { _, _ in loadBadge() }

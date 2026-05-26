@@ -46,14 +46,14 @@ struct CheatManagerView: View {
                     Text("\(enabledCount) of \(cheatManager.cheats(for: rom).count)")
                         .font(.caption)
                         .fontWeight(.medium)
-                        .foregroundColor(.green)
-                    Text(loc.localized("cheat.enabled"))
-                        .font(.caption2)
-                        .foregroundColor(.secondary)
+                        .foregroundColor(AppColors.success(colorScheme))
+Text(loc.localized("cheat.enabled"))
+                .font(.caption2)
+                .foregroundColor(AppColors.textSecondaryNeutral(colorScheme))
                 }
                 Button { dismiss() } label: {
-                    Image(systemName: "xmark.circle.fill")
-                        .foregroundColor(.secondary)
+Image(systemName: "xmark.circle.fill")
+                .foregroundColor(AppColors.textSecondaryNeutral(colorScheme))
                 }
                 .buttonStyle(.plain)
              }
@@ -74,7 +74,7 @@ struct CheatManagerView: View {
                         }
                         .padding(.horizontal, 10)
                         .padding(.vertical, 6)
-                        .background(selectedCategory == nil ? AppColors.brandAccent : Color.secondary.opacity(0.1))
+                        .background(selectedCategory == nil ? AppColors.brandAccent : AppColors.cardBackgroundSubtle(colorScheme))
                         .foregroundColor(selectedCategory == nil ? .white : .primary)
                         .cornerRadius(12)
                     }
@@ -88,7 +88,7 @@ struct CheatManagerView: View {
                             }
                             .padding(.horizontal, 10)
                             .padding(.vertical, 6)
-                            .background(selectedCategory == category ? AppColors.brandAccent : Color.secondary.opacity(0.1))
+                            .background(selectedCategory == category ? AppColors.brandAccent : AppColors.cardBackgroundSubtle(colorScheme))
                             .foregroundColor(selectedCategory == category ? .white : .primary)
                             .cornerRadius(12)
                         }
@@ -102,16 +102,16 @@ struct CheatManagerView: View {
             Divider()
             
             HStack(spacing: 6) {
-                Image(systemName: "magnifyingglass").foregroundColor(.secondary).font(.footnote)
+                Image(systemName: "magnifyingglass").foregroundColor(AppColors.textSecondaryNeutral(colorScheme)).font(.footnote)
                 TextField(loc.localized("cheat.searchPlaceholder"), text: $searchText).textFieldStyle(.plain).font(.body)
                 if !searchText.isEmpty {
-                    Button(action: { searchText = "" }) { Image(systemName: "xmark.circle.fill").foregroundColor(.secondary).font(.footnote) }
+                    Button(action: { searchText = "" }) { Image(systemName: "xmark.circle.fill").foregroundColor(AppColors.textSecondaryNeutral(colorScheme)).font(.footnote) }
                         .buttonStyle(.plain)
                 }
             }
             .padding(.horizontal, 10)
             .padding(.vertical, 7)
-            .background(RoundedRectangle(cornerRadius: 8).fill(Color.secondary.opacity(0.05)))
+            .background(RoundedRectangle(cornerRadius: 8).fill(AppColors.cardBackgroundSubtle(colorScheme)))
             .padding(.horizontal, 16)
             .padding(.vertical, 6)
             
@@ -119,9 +119,9 @@ struct CheatManagerView: View {
             
             if filteredCheats.isEmpty {
                 VStack(spacing: 10) {
-                    Image(systemName: "wand.and.stars").font(.system(size: 36)).foregroundColor(.secondary)
-                    Text(searchText.isEmpty ? loc.localized("cheat.noCheatsAvailable") : loc.localized("cheat.noMatchingCheats")).foregroundColor(.secondary)
-                    if searchText.isEmpty { Text(loc.localized("cheat.importInstructions")).font(.caption).foregroundColor(.secondary) }
+                    Image(systemName: "wand.and.stars").font(.system(size: 36)).foregroundColor(AppColors.textSecondaryNeutral(colorScheme))
+                    Text(searchText.isEmpty ? loc.localized("cheat.noCheatsAvailable") : loc.localized("cheat.noMatchingCheats")).foregroundColor(AppColors.textSecondary(colorScheme))
+                    if searchText.isEmpty { Text(loc.localized("cheat.importInstructions")).font(.caption).foregroundColor(AppColors.textSecondary(colorScheme)) }
                 }
                 .frame(maxWidth: .infinity, maxHeight: .infinity)
             } else {
@@ -168,11 +168,12 @@ struct CheatManagerView: View {
 }
 
 struct CheatRowView: View {
-    let cheat: Cheat
-    let rom: ROM
-    @ObservedObject private var cheatManager = CheatManagerService.shared
-    
-    var body: some View {
+  let cheat: Cheat
+  let rom: ROM
+  @Environment(\.colorScheme) private var colorScheme
+  @ObservedObject private var cheatManager = CheatManagerService.shared
+
+  var body: some View {
         HStack(spacing: 12) {
             Toggle(isOn: Binding(get: { cheat.enabled }, set: { newValue in
                 var updated = cheat; updated.enabled = newValue
@@ -180,17 +181,17 @@ struct CheatRowView: View {
             })) {
                 VStack(alignment: .leading, spacing: 3) {
                     Text(cheat.displayName).font(.subheadline).fontWeight(.medium)
-                    Text(cheat.codePreview).font(.system(.caption, design: .monospaced)).foregroundColor(.secondary)
+                    Text(cheat.codePreview).font(.system(.caption, design: .monospaced)).foregroundColor(AppColors.textSecondaryNeutral(colorScheme))
                 }
             }
             .toggleStyle(.switch)
             Spacer()
             Text(cheat.format.displayName)
                 .font(.caption2).fontWeight(.medium).padding(.horizontal, 6).padding(.vertical, 2)
-                .background(Color.secondary.opacity(0.1)).cornerRadius(8)
+                .background(AppColors.cardBackgroundSubtle(colorScheme)).cornerRadius(8)
         }
         .padding(.horizontal, 12).padding(.vertical, 6)
-        .background(Color.secondary.opacity(0.03)).cornerRadius(8)
+        .background(AppColors.cardBackgroundSubtle(colorScheme)).cornerRadius(8)
     }
 }
 
@@ -214,10 +215,10 @@ struct AddCheatWindow: View {
                     Picker(loc.localized("cheat.format"), selection: $format) { ForEach(CheatFormat.allCases, id: \.self) { f in Text(f.displayName).tag(f) } }
                 }
                 Section(loc.localized("cheat.example")) {
-                    Text(format.example).font(.system(.body, design: .monospaced)).foregroundColor(.secondary).textSelection(.enabled)
+                    Text(format.example).font(.system(.body, design: .monospaced)).foregroundColor(AppColors.textSecondaryNeutral(colorScheme)).textSelection(.enabled)
                 }
                 if let error = errorMessage {
-                    Section(loc.localized("cheat.error")) { Label(error, systemImage: "exclamationmark.triangle.fill").foregroundColor(.red) }
+                    Section(loc.localized("cheat.error")) { Label(error, systemImage: "exclamationmark.triangle.fill").foregroundColor(AppColors.error(colorScheme)) }
                 }
             }
             .formStyle(.grouped)

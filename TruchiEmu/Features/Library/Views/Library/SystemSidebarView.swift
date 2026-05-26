@@ -143,9 +143,9 @@ struct SystemSidebarView: View {
                 isExpanded.wrappedValue.toggle()
             } label: {
                 HStack(spacing: 4) {
-                    Image(systemName: isExpanded.wrappedValue ? "chevron.down" : "chevron.right")
-                        .font(.caption.weight(.semibold))
-                        .foregroundStyle(.secondary)
+            Image(systemName: isExpanded.wrappedValue ? "chevron.down" : "chevron.right")
+                    .font(.caption.weight(.semibold))
+                    .foregroundStyle(AppColors.textSecondaryNeutral(colorScheme))
                         .frame(width: 12, alignment: .center)
                     Text(title)
                         .font(AppTypography.sectionHeader)
@@ -160,8 +160,8 @@ struct SystemSidebarView: View {
             if showAction, let action = onAction, let label = actionLabel {
                 Button(action: action) {
                     HStack(spacing: 4) {
-                        Image(systemName: "plus.circle")
-                            .foregroundStyle(.secondary)
+                Image(systemName: "plus.circle")
+                    .foregroundStyle(AppColors.textSecondaryNeutral(colorScheme))
                         Text(label)
                             .lineLimit(1)
                     }
@@ -439,8 +439,8 @@ struct RenameSystemSheet: View {
 
                     Section {
                         HStack {
-                            Text(loc.localized("app.original"))
-                                .foregroundStyle(.secondary)
+                Text(loc.localized("app.original"))
+                    .foregroundStyle(AppColors.textSecondaryNeutral(colorScheme))
                             Text(system.name)
                         }
                     }

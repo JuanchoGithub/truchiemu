@@ -11,10 +11,11 @@ struct CoreDownloadSheet: View {
     @State private var downloadError: String? = nil
     @State private var isFetchingMAMEDeps = false
     @State private var mameDepsError: String? = nil
-    @State private var isRefreshingCores = false
-    @State private var refreshError: String? = nil
+@State private var isRefreshingCores = false
+@State private var refreshError: String? = nil
+@Environment(\.colorScheme) private var colorScheme
 
-    init(pending: CoreManager.PendingCoreDownload) {
+init(pending: CoreManager.PendingCoreDownload) {
         self.pending = pending
         _selectedCoreID = State(initialValue: pending.coreInfo.coreID)
     }
@@ -149,12 +150,12 @@ struct CoreDownloadSheet: View {
     coreDetailsCard
     if let err = downloadError {
       Label(err, systemImage: "exclamationmark.triangle")
-        .foregroundColor(.red)
-        .font(.callout)
+		.foregroundColor(AppColors.error(colorScheme))
+			.font(.callout)
     }
     if let err = refreshError {
       Label(err, systemImage: "exclamationmark.triangle")
-        .foregroundColor(.orange)
+		.foregroundColor(AppColors.warning(colorScheme))
         .font(.callout)
     }
     Divider()
@@ -183,8 +184,8 @@ struct CoreDownloadSheet: View {
             VStack(alignment: .leading, spacing: 2) {
                 Text("coreDownload.title")
                     .font(.title2.weight(.bold))
-                Text("coreDownload.description")
-                    .foregroundColor(.secondary)
+		Text("coreDownload.description")
+				.foregroundColor(AppColors.textSecondary(colorScheme))
                     .font(.subheadline)
             }
         }
@@ -192,25 +193,25 @@ struct CoreDownloadSheet: View {
 
     private var romContextBox: some View {
         HStack(spacing: 10) {
-            Image(systemName: "gamecontroller")
-                .foregroundColor(.secondary)
+		Image(systemName: "gamecontroller")
+				.foregroundColor(AppColors.textSecondaryNeutral(colorScheme))
             VStack(alignment: .leading, spacing: 2) {
-                Text("coreDownload.readyToLaunch")
-                    .font(.caption)
-                    .foregroundColor(.secondary)
+		Text("coreDownload.readyToLaunch")
+				.font(.caption)
+				.foregroundColor(AppColors.textSecondary(colorScheme))
                 if let rom = pendingROM {
                     Text(rom.displayName)
                         .font(.body.weight(.medium))
                 } else {
-                    Text("coreDownload.unknownGame")
-                        .font(.body.weight(.medium))
-                        .foregroundColor(.secondary)
+		Text("coreDownload.unknownGame")
+				.font(.body.weight(.medium))
+				.foregroundColor(AppColors.textSecondaryNeutral(colorScheme))
                 }
             }
         }
         .padding(12)
         .frame(maxWidth: .infinity, alignment: .leading)
-        .background(Color.secondary.opacity(0.06))
+        .background(AppColors.cardBackgroundSubtle(colorScheme))
         .cornerRadius(10)
     }
 
@@ -224,8 +225,8 @@ struct CoreDownloadSheet: View {
                     Image(systemName: "checkmark.circle.fill")
                         .foregroundColor(.purple)
                 } else {
-                    Image(systemName: "circle")
-                        .foregroundColor(.secondary)
+		Image(systemName: "circle")
+						.foregroundColor(AppColors.textSecondaryNeutral(colorScheme))
                 }
                 VStack(alignment: .leading, spacing: 2) {
                     HStack {
@@ -236,17 +237,17 @@ struct CoreDownloadSheet: View {
                                 .font(.caption)
                                 .padding(.horizontal, 6)
                                 .padding(.vertical, 1)
-                                .background(Color.secondary.opacity(0.12))
+                                .background(AppColors.cardBackgroundSubtle(colorScheme))
                                 .cornerRadius(4)
                         }
                         Spacer()
                         if entry.isInstalled {
                             Text("cores.installedLabel")
                                 .font(.caption2)
-                                .foregroundColor(.green)
+			.foregroundColor(AppColors.success(colorScheme))
                                 .padding(.horizontal, 6)
                                 .padding(.vertical, 1)
-                                .background(Color.green.opacity(0.12))
+                                .background(AppColors.success(colorScheme).opacity(0.12))
                                 .cornerRadius(4)
                         } else {
                             if coreManager.availableCores.contains(where: { $0.coreID == entry.id }) {
@@ -260,17 +261,17 @@ struct CoreDownloadSheet: View {
                             } else {
                                 Text("coreDownload.unavailableForMac")
                                     .font(.caption2)
-                                    .foregroundColor(.red)
-                                    .padding(.horizontal, 6)
-                                    .padding(.vertical, 1)
-                                    .background(Color.red.opacity(0.12))
+			.foregroundColor(AppColors.error(colorScheme))
+						.padding(.horizontal, 6)
+						.padding(.vertical, 1)
+						.background(AppColors.error(colorScheme).opacity(0.12))
                                     .cornerRadius(4)
                             }
                         }
                     }
-                    Text(entry.metadata.description)
-                        .font(.caption)
-                        .foregroundColor(.secondary)
+		Text(entry.metadata.description)
+						.font(.caption)
+						.foregroundColor(AppColors.textSecondary(colorScheme))
                         .lineLimit(1)
                 }
             }
@@ -278,7 +279,7 @@ struct CoreDownloadSheet: View {
             .frame(maxWidth: .infinity, alignment: .leading)
             .background(entry.id == selectedCoreID
                 ? AppColors.brandAccent.opacity(0.08)
-                : Color.secondary.opacity(0.04))
+                : AppColors.cardBackgroundSubtle(colorScheme))
             .cornerRadius(10)
             .overlay(
                 RoundedRectangle(cornerRadius: 10)
@@ -301,9 +302,9 @@ struct CoreDownloadSheet: View {
     private var coreSelectionSection: some View {
         VStack(alignment: .leading, spacing: 8) {
             HStack {
-                Text("coreDownload.emulatorCore")
-                    .font(.body.weight(.medium))
-                    .foregroundColor(.secondary)
+			Text("coreDownload.emulatorCore")
+				.font(.body.weight(.medium))
+				.foregroundColor(AppColors.textSecondary(colorScheme))
                 Spacer()
                 if let rec = selectedCoreEntry.metadata.recommendation {
                     HStack(spacing: 4) {
@@ -312,7 +313,7 @@ struct CoreDownloadSheet: View {
                         Text(rec)
                             .font(.caption2.weight(.semibold))
                     }
-                    .foregroundColor(.white)
+			.foregroundColor(AppColors.textOnAccent(colorScheme))
                     .padding(.horizontal, 8)
                     .padding(.vertical, 3)
                     .background(
@@ -331,20 +332,20 @@ struct CoreDownloadSheet: View {
             }
             .frame(maxWidth: .infinity)
             .frame(height: allCoresForSystem.count <= 4 ? nil : maxCoreListHeight)
-            .background(Color.secondary.opacity(0.02))
+            .background(AppColors.cardBackgroundSubtle(colorScheme))
             .cornerRadius(8)
 
             if allCoresForSystem.isEmpty {
                 VStack(spacing: 12) {
-                    Image(systemName: "cpu")
-                        .font(.system(size: 32))
-                        .foregroundColor(.secondary)
-                    Text("coreDownload.noCoresAvailable")
-                        .font(.body.weight(.medium))
-                        .foregroundColor(.secondary)
-                    Text("coreDownload.clickRefresh")
-                        .font(.caption)
-                        .foregroundColor(.secondary.opacity(0.8))
+			Image(systemName: "cpu")
+				.font(.system(size: 32))
+				.foregroundColor(AppColors.textSecondaryNeutral(colorScheme))
+			Text("coreDownload.noCoresAvailable")
+				.font(.body.weight(.medium))
+				.foregroundColor(AppColors.textSecondary(colorScheme))
+			Text("coreDownload.clickRefresh")
+				.font(.caption)
+				.foregroundColor(AppColors.textSecondaryNeutral(colorScheme).opacity(0.8))
                 }
                 .frame(maxWidth: .infinity)
                 .padding(.vertical, 24)
@@ -352,7 +353,7 @@ struct CoreDownloadSheet: View {
                 Text(allCoresForSystem.count == 1
                     ? "coreDownload.coreAvailable"
                     : "coreDownload.coresAvailable")
-                    .font(.caption).foregroundColor(.secondary)
+                    .font(.caption).foregroundColor(AppColors.textSecondaryNeutral(colorScheme))
             }
         }
     }
@@ -360,23 +361,23 @@ struct CoreDownloadSheet: View {
     private var coreDetailsCard: some View {
         VStack(alignment: .leading, spacing: 8) {
             if !selectedCoreEntry.metadata.description.isEmpty {
-                Text(selectedCoreEntry.metadata.description)
-                    .font(.callout).foregroundColor(.secondary)
+		Text(selectedCoreEntry.metadata.description)
+				.font(.callout).foregroundColor(AppColors.textSecondary(colorScheme))
                     .lineLimit(3)
             }
             HStack(spacing: 16) {
-                Label(selectedCoreEntry.id, systemImage: "tag")
-                    .font(.caption).foregroundColor(.secondary)
+		Label(selectedCoreEntry.id, systemImage: "tag")
+				.font(.caption).foregroundColor(AppColors.textSecondaryNeutral(colorScheme))
                 Spacer()
                 if !selectedCoreEntry.systemIDs.isEmpty {
                     let names = selectedCoreEntry.systemIDs.compactMap { SystemDatabase.system(forID: $0)?.name }.joined(separator: ", ")
-                    Label(names, systemImage: "desktopcomputer")
-                        .font(.caption).foregroundColor(.secondary)
+		Label(names, systemImage: "desktopcomputer")
+				.font(.caption).foregroundColor(AppColors.textSecondaryNeutral(colorScheme))
                 }
             }
         }
         .padding(14)
-        .background(Color.secondary.opacity(0.05))
+        .background(AppColors.cardBackgroundSubtle(colorScheme))
         .cornerRadius(12)
     }
 
@@ -387,7 +388,7 @@ struct CoreDownloadSheet: View {
             Spacer()
             if isDownloading {
                 ProgressView().scaleEffect(0.9).padding(.trailing, 6)
-                Text("coreDownload.downloading").foregroundColor(.secondary)
+		Text("coreDownload.downloading").foregroundColor(AppColors.textSecondary(colorScheme))
             } else if LibretroThumbnailManifestService.shared.isRefreshing {
                 HStack {
                     ProgressView()
@@ -402,9 +403,9 @@ struct CoreDownloadSheet: View {
                 if isRefreshingCores || coreManager.isFetchingCoreList {
                     HStack(spacing: 8) {
                         ProgressView().controlSize(.small)
-                        Text("coreDownload.refreshingListOnline")
-                            .font(.caption)
-                            .foregroundColor(.secondary)
+				Text("coreDownload.refreshingListOnline")
+						.font(.caption)
+						.foregroundColor(AppColors.textSecondary(colorScheme))
                     }
                 } else {
                     Button {

@@ -15,9 +15,10 @@ struct AchievementToastView: View {
     @State private var showConfetti = false
     @State private var glowIntensity: Double = 0
     @State private var trophyScale: CGFloat = 1
-    @ObservedObject private var loc = LocalizationManager.shared
-    
-    var isRareAchievement: Bool {
+	@ObservedObject private var loc = LocalizationManager.shared
+	@Environment(\.colorScheme) private var colorScheme
+
+	var isRareAchievement: Bool {
         achievement.points >= 10
     }
     
@@ -46,27 +47,27 @@ struct AchievementToastView: View {
             }
 
             VStack(alignment: .leading, spacing: 4) {
-                Text(loc.localized("achievement.unlockedLabel"))
-                    .font(.caption)
-                    .foregroundColor(.secondary)
+            Text(loc.localized("achievement.unlockedLabel"))
+                .font(.caption)
+                .foregroundColor(AppColors.textSecondary(colorScheme))
 
                 Text(achievement.title)
                     .font(.headline)
                     .foregroundColor(.white)
                     .lineLimit(2)
 
-                Text("\(achievement.points) \(loc.localized("achievement.pointsLabel"))")
-                    .font(.subheadline)
-                    .foregroundColor(.secondary)
+            Text("\(achievement.points) \(loc.localized("achievement.pointsLabel"))")
+                .font(.subheadline)
+                .foregroundColor(AppColors.textSecondary(colorScheme))
             }
 
             Spacer()
 
             // Dismiss button
             Button(action: { dismiss() }) {
-                Image(systemName: "xmark.circle.fill")
-                    .font(.title2)
-                    .foregroundColor(.secondary)
+            Image(systemName: "xmark.circle.fill")
+                .font(.title2)
+                .foregroundColor(AppColors.textSecondaryNeutral(colorScheme))
             }
             .buttonStyle(.plain)
         }
@@ -75,7 +76,7 @@ struct AchievementToastView: View {
         .background(AppDecorativeGradients.buttonPrimary)
         .overlay(
             RoundedRectangle(cornerRadius: 12)
-                .stroke(Color.orange.opacity(0.3), lineWidth: 1)
+                .stroke(AppColors.accentWarm.opacity(0.3), lineWidth: 1)
         )
         .cornerRadius(12)
         .shadow(color: .black.opacity(0.3), radius: 10, x: 0, y: 5)

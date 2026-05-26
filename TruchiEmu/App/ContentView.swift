@@ -244,9 +244,9 @@ case .library:
                     VStack(alignment: .leading, spacing: 6) {
                         ProgressView(value: activeStatus.progress)
                             .progressViewStyle(.linear)
-                        Text(activeStatus.statusLine)
-                            .font(.caption)
-                            .foregroundStyle(.secondary)
+                Text(activeStatus.statusLine)
+                    .font(.caption)
+                    .foregroundStyle(AppColors.textSecondaryNeutral(colorScheme))
                             .lineLimit(2)
                     }
                     .padding(.horizontal, 12)

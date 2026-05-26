@@ -66,12 +66,13 @@ struct MouseDownButtonAction<Label: View>: NSViewRepresentable {
 }
 
 struct MouseDownButtonActionStyled<Label: View>: View {
-    let action: () -> Void
-    let label: () -> Label
-    @State private var isPressed = false
-    @State private var isHovered = false
+  let action: () -> Void
+  let label: () -> Label
+  @Environment(\.colorScheme) private var colorScheme
+  @State private var isPressed = false
+  @State private var isHovered = false
 
-    var body: some View {
+  var body: some View {
         MouseDownButtonAction(action: {
             withAnimation(.easeInOut(duration: 0.1)) {
                 isPressed = true
@@ -145,13 +146,14 @@ struct HoverButton<Label: View>: View {
 }
 
 struct ToolbarButton: View {
-    let icon: String
-    let label: String
-    var danger: Bool = false
-    var disabled: Bool = false
-    let action: () -> Void
+  let icon: String
+  let label: String
+  var danger: Bool = false
+  var disabled: Bool = false
+  let action: () -> Void
+  @Environment(\.colorScheme) private var colorScheme
 
-    var body: some View {
+  var body: some View {
         HoverButton(action: action) {
             VStack(spacing: 4) {
                 Image(systemName: icon)
@@ -162,10 +164,10 @@ struct ToolbarButton: View {
             }
             .padding(.horizontal, 10)
             .padding(.vertical, 6)
-            .foregroundColor(disabled ? .white.opacity(0.3) : (danger ? .red.opacity(0.9) : .white.opacity(0.9)))
+            .foregroundColor(disabled ? .white.opacity(0.3) : (danger ? AppColors.error(colorScheme).opacity(0.9) : .white.opacity(0.9)))
             .background(
                 RoundedRectangle(cornerRadius: 8)
-                    .fill(danger ? Color.red.opacity(0.15) : Color.clear)
+                    .fill(danger ? AppColors.error(colorScheme).opacity(0.15) : Color.clear)
             )
             .contentShape(Rectangle())
         }
@@ -174,10 +176,11 @@ struct ToolbarButton: View {
 }
 
 struct PauseResumeButton: View {
-    @ObservedObject var runner: EmulatorRunner
-    @ObservedObject private var loc = LocalizationManager.shared
+  @ObservedObject var runner: EmulatorRunner
+  @ObservedObject private var loc = LocalizationManager.shared
+  @Environment(\.colorScheme) private var colorScheme
 
-    var body: some View {
+  var body: some View {
         HoverButton(action: {
             runner.togglePause()
         }) {
@@ -236,10 +239,11 @@ struct ReloadButton: View {
 }
 
 struct AutoFullscreenButton: View {
-    @ObservedObject var windowController: StandaloneGameWindowController
-    @ObservedObject private var loc = LocalizationManager.shared
+  @ObservedObject var windowController: StandaloneGameWindowController
+  @ObservedObject private var loc = LocalizationManager.shared
+  @Environment(\.colorScheme) private var colorScheme
 
-    var body: some View {
+  var body: some View {
         HoverButton(action: {
             windowController.toggleAutoFullscreen()
         }) {
@@ -258,11 +262,12 @@ struct AutoFullscreenButton: View {
 }
 
 struct SlotSelectorButton: View {
-    let currentSlot: Int
-    let onSlotChange: (Int) -> Void
-    @ObservedObject var runner: EmulatorRunner
-    @ObservedObject private var loc = LocalizationManager.shared
-    @State private var isDropdownShown = false
+  let currentSlot: Int
+  let onSlotChange: (Int) -> Void
+  @ObservedObject var runner: EmulatorRunner
+  @ObservedObject private var loc = LocalizationManager.shared
+  @Environment(\.colorScheme) private var colorScheme
+  @State private var isDropdownShown = false
     @State private var selectedSlot: Int = 0
     @State private var isHovered = false
     var disabled: Bool = false
@@ -342,9 +347,9 @@ struct SlotPickerView: View {
                                             .fill(Color.gray.opacity(0.3))
                                             .frame(width: 40, height: 30)
                                             .overlay(
-                                                Image(systemName: "photo")
-                                                    .font(.system(size: 14))
-                                                    .foregroundColor(.secondary)
+Image(systemName: "photo")
+                            .font(.system(size: 14))
+                            .foregroundColor(AppColors.textSecondaryNeutral(colorScheme))
                                             )
                                     }
                                 }
@@ -355,14 +360,14 @@ struct SlotPickerView: View {
                                         .font(.system(size: 13, weight: .medium))
                                         .foregroundColor(.white)
                                     
-                                    if let info = slotInfo(for: slot), info.exists, let timestamp = info.formattedDate {
-                                        Text(timestamp)
-                                            .font(.system(size: 10))
-                                            .foregroundColor(.secondary)
-                                    } else {
-                                        Text(slot == -1 ? loc.localized("toolbar.systemAutoSave") : loc.localized("toolbar.emptySlot"))
-                                            .font(.system(size: 10))
-                                            .foregroundColor(.secondary)
+if let info = slotInfo(for: slot), info.exists, let timestamp = info.formattedDate {
+                        Text(timestamp)
+                            .font(.system(size: 10))
+                            .foregroundColor(AppColors.textSecondaryNeutral(colorScheme))
+                    } else {
+                        Text(slot == -1 ? loc.localized("toolbar.systemAutoSave") : loc.localized("toolbar.emptySlot"))
+                            .font(.system(size: 10))
+                            .foregroundColor(AppColors.textSecondaryNeutral(colorScheme))
                                     }
                                 }
                                 

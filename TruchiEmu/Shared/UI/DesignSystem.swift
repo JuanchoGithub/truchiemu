@@ -143,6 +143,20 @@ struct AppColors {
         tintedText(base: colorScheme == .dark ? .oklch(0.50, 0.01, 55) : .oklch(0.48, 0.01, 55), colorScheme: colorScheme)
     }
 
+    static func textOnAccent(_ colorScheme: ColorScheme) -> Color {
+        colorScheme == .dark
+        ? .oklch(0.97, 0.005, 55)
+        : .oklch(0.98, 0.005, 55)
+    }
+
+    static func textSecondaryNeutral(_ colorScheme: ColorScheme) -> Color {
+        colorScheme == .dark ? .oklch(0.68, 0.00, 55) : .oklch(0.42, 0.00, 55)
+    }
+
+    static func textPrimaryNeutral(_ colorScheme: ColorScheme) -> Color {
+        colorScheme == .dark ? .oklch(0.92, 0.00, 55) : .oklch(0.20, 0.00, 55)
+    }
+
     private static func tintedText(base: Color, colorScheme: ColorScheme) -> Color {
         let accent = accentForScheme(colorScheme)
         guard let baseNS = NSColor(base).usingColorSpace(.sRGB),
@@ -552,11 +566,11 @@ enum AppPillStyle {
         case .secondary:
             return AppColors.cardBackgroundSubtle(colorScheme)
         case .success:
-            return colorScheme == .dark ? Color.green.opacity(0.2) : .green.opacity(0.1)
+            return AppColors.success(colorScheme).opacity(colorScheme == .dark ? 0.2 : 0.1)
         case .warning:
-            return colorScheme == .dark ? Color.orange.opacity(0.2) : .orange.opacity(0.1)
+            return AppColors.warning(colorScheme).opacity(colorScheme == .dark ? 0.2 : 0.1)
         case .danger:
-            return colorScheme == .dark ? Color.red.opacity(0.2) : .red.opacity(0.1)
+            return AppColors.error(colorScheme).opacity(colorScheme == .dark ? 0.2 : 0.1)
         }
     }
 }
@@ -1070,9 +1084,9 @@ struct SettingsSectionCard<Content: View>: View {
             // Header
             HStack(spacing: AppSpacing.sm) {
                 if let icon = icon {
-                    Image(systemName: icon)
-                        .font(.body)
-                        .foregroundStyle(.secondary)
+                Image(systemName: icon)
+                    .font(.body)
+                    .foregroundStyle(AppColors.textTertiary(colorScheme))
                 }
                 Text(title)
                     .font(.headline)

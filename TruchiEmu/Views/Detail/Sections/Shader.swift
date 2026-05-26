@@ -21,9 +21,9 @@ Text(ShaderManager.displayName(for: currentROM.settings.shaderPresetID))
 }
 Spacer()
         Button { presentShaderWindow() } label: {
-            Text(loc.localized("shader.customize"))
-                .font(.subheadline)
-                .foregroundColor(.white)
+Text(loc.localized("shader.customize"))
+        .font(.subheadline)
+        .foregroundColor(AppColors.textOnAccent(colorScheme))
                 .padding(.horizontal, AppSpacing.lg)
                 .padding(.vertical, AppSpacing.sm)
                 .background(AppColors.brandAccent)

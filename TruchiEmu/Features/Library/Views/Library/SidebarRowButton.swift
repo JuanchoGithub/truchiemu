@@ -44,7 +44,7 @@ struct SidebarRowButton: View {
                     .foregroundColor(isSelected ? .primary : .secondary)
                     .padding(.horizontal, 6)
                     .padding(.vertical, 2)
-                    .background(isSelected ? AppColors.accentBackground(colorScheme) : Color.secondary.opacity(0.12))
+                    .background(isSelected ? AppColors.accentBackground(colorScheme) : AppColors.cardBackgroundSubtle(colorScheme))
                     .cornerRadius(6)
             }
             .padding(.horizontal, 6)
@@ -200,7 +200,7 @@ struct SidebarRowButton: View {
         .offset(y: isHovered ? -1 : 0)
         .background(
             RoundedRectangle(cornerRadius: 6)
-                .fill(isSelected ? AppColors.accentBackground(colorScheme) : (isHovered ? Color.secondary.opacity(0.08) : .clear))
+                .fill(isSelected ? AppColors.accentBackground(colorScheme) : (isHovered ? AppColors.cardBackgroundSubtle(colorScheme) : .clear))
         )
         .overlay(alignment: .leading) {
             if isSelected {

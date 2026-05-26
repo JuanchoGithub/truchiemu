@@ -29,7 +29,7 @@ struct BoxArtPickerView: View {
                     TextField(loc.localized("boxArt.searchQuery"), text: $searchText)
                         .textFieldStyle(.plain)
                         .padding(8)
-                        .background(Color.secondary.opacity(0.1))
+                        .background(AppColors.cardBackgroundSubtle(colorScheme))
                         .cornerRadius(6)
                         .onSubmit { updateSearch() }
 
@@ -52,9 +52,9 @@ struct BoxArtPickerView: View {
                     }
                 }
 
-                Text(loc.localized("boxart.rightClickInfo"))
-                    .font(.caption)
-                    .foregroundColor(.secondary)
+            Text(loc.localized("boxart.rightClickInfo"))
+                .font(.caption)
+                .foregroundColor(AppColors.textSecondaryNeutral(colorScheme))
             }
             .padding()
 
@@ -82,9 +82,9 @@ struct BoxArtPickerView: View {
             VStack(alignment: .leading, spacing: 2) {
                 Text(loc.localized("boxart.pickerTitle"))
                     .font(.headline)
-                Text(rom.displayName)
-                    .font(.subheadline)
-                    .foregroundColor(.secondary)
+        Text(rom.displayName)
+                .font(.subheadline)
+                .foregroundColor(AppColors.textSecondaryNeutral(colorScheme))
             }
             Spacer()
             Button(loc.localized("core.cancel")) { dismiss() }

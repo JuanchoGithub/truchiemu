@@ -1,10 +1,11 @@
 import SwiftUI
 
 struct CoreDownloadStatusBar: View {
-    @ObservedObject var coreManager: CoreManager
-    @ObservedObject private var loc = LocalizationManager.shared
+	@ObservedObject var coreManager: CoreManager
+	@ObservedObject private var loc = LocalizationManager.shared
+	@Environment(\.colorScheme) private var colorScheme
 
-    private var statusMessage: String {
+	private var statusMessage: String {
         switch coreManager.downloadPhase {
         case .idle:
             return ""
@@ -48,19 +49,19 @@ struct CoreDownloadStatusBar: View {
                     ProgressView()
                         .controlSize(.small)
                 } else {
-                    Text("\(Int(progress * 100))%")
-                        .font(.caption.weight(.medium).monospacedDigit())
-                        .foregroundStyle(.secondary)
+            Text("\(Int(progress * 100))%")
+                .font(.caption.weight(.medium).monospacedDigit())
+                .foregroundStyle(AppColors.textSecondaryNeutral(colorScheme))
                         .frame(width: 36, alignment: .trailing)
                 }
-                Text(statusMessage)
-                    .font(.caption)
-                    .foregroundStyle(.secondary)
+            Text(statusMessage)
+                .font(.caption)
+                .foregroundStyle(AppColors.textSecondaryNeutral(colorScheme))
                     .lineLimit(1)
                 Spacer()
-                Text(coreManager.downloadCoreName)
-                    .font(.caption.weight(.medium))
-                    .foregroundStyle(.secondary)
+            Text(coreManager.downloadCoreName)
+                .font(.caption.weight(.medium))
+                .foregroundStyle(AppColors.textSecondaryNeutral(colorScheme))
                     .lineLimit(1)
             }
             if isIndeterminate {

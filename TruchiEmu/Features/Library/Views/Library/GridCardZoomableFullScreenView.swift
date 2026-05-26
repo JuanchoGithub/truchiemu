@@ -12,6 +12,7 @@ struct GridCardZoomableFullScreenView: View {
     @State private var offset: CGSize = .zero
     @State private var lastOffset: CGSize = .zero
     @ObservedObject private var loc = LocalizationManager.shared
+    @Environment(\.colorScheme) private var colorScheme
     
     var body: some View {
         ZStack {

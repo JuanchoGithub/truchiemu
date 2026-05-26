@@ -8,22 +8,23 @@ struct MAMEMissingROMsAlert: View {
     let missingItems: [MissingROMItem]
     let gameName: String
     let romsDirectory: URL
-    @Binding var isPresented: Bool
-    @ObservedObject private var loc = LocalizationManager.shared
-    
-    var body: some View {
+	@Binding var isPresented: Bool
+	@ObservedObject private var loc = LocalizationManager.shared
+	@Environment(\.colorScheme) private var colorScheme
+
+	var body: some View {
         VStack(spacing: 20) {
             // Header
             HStack(spacing: 16) {
-                Image(systemName: "exclamationmark.triangle.fill")
-                    .font(.system(size: 32))
-                    .foregroundColor(.orange)
+            Image(systemName: "exclamationmark.triangle.fill")
+                .font(.system(size: 32))
+                .foregroundColor(AppColors.warning(colorScheme))
                 
                 VStack(alignment: .leading, spacing: 4) {
                     Text(loc.localized("mame.missingROMs.title"))
                         .font(.title2.weight(.bold))
-                    Text("\"\(gameName)\" requires additional files to run.")
-                        .foregroundColor(.secondary)
+        Text("\"\(gameName)\" requires additional files to run.")
+                    .foregroundColor(AppColors.textSecondary(colorScheme))
                         .font(.subheadline)
                 }
             }
@@ -38,20 +39,20 @@ struct MAMEMissingROMsAlert: View {
                 VStack(alignment: .leading, spacing: 6) {
                     ForEach(missingItems) { item in
                         HStack(spacing: 8) {
-                            Image(systemName: "doc.badge.plusmark")
-                                .foregroundColor(.red)
+                Image(systemName: "doc.badge.plusmark")
+                        .foregroundColor(AppColors.error(colorScheme))
                                 .font(.system(size: 12))
                             
                             VStack(alignment: .leading, spacing: 2) {
                                 Text(item.sourceZIP)
                                     .font(.body.weight(.medium))
-                                Text("\(loc.localized("mame.missingROMs.romLabel")) \(item.romName)")
-                                    .font(.caption)
-                                    .foregroundColor(.secondary)
+                    Text("\(loc.localized("mame.missingROMs.romLabel")) \(item.romName)")
+                        .font(.caption)
+                        .foregroundColor(AppColors.textSecondaryNeutral(colorScheme))
                             }
                         }
                         .padding(8)
-                        .background(Color.red.opacity(0.05))
+                        .background(AppColors.error(colorScheme).opacity(0.05))
                         .cornerRadius(8)
                     }
                 }
@@ -69,7 +70,7 @@ struct MAMEMissingROMsAlert: View {
                 }
             }
             .padding(12)
-            .background(Color.secondary.opacity(0.05))
+            .background(AppColors.cardBackgroundSubtle(colorScheme))
             .cornerRadius(10)
             
             Divider()
@@ -102,14 +103,14 @@ struct MAMEMissingROMsAlert: View {
         HStack(spacing: 8) {
             Text(number)
                 .font(.system(size: 12, weight: .bold))
-                .foregroundColor(.white)
+                .foregroundColor(AppColors.textOnAccent(colorScheme))
                 .frame(width: 20, height: 20)
                 .background(AppColors.brandAccent)
                 .clipShape(Circle())
             
             Text(text)
                 .font(.callout)
-                .foregroundColor(.secondary)
+                .foregroundColor(AppColors.textSecondaryNeutral(colorScheme))
         }
     }
 }

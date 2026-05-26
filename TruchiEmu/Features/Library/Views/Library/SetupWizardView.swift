@@ -58,11 +58,11 @@ struct SetupWizardView: View {
             HStack(spacing: 0) {
                 ForEach(Array(SetupWizardState.WizardStep.allCases.enumerated()), id: \.element.id) { idx, step in
                     Circle()
-                        .fill(idx <= wizard.currentStepIndex ? AppColors.brandAccent : Color.secondary.opacity(0.2))
+                        .fill(idx <= wizard.currentStepIndex ? AppColors.brandAccent : AppColors.cardBackground(colorScheme))
                         .frame(width: 8, height: 8)
                     if idx < SetupWizardState.WizardStep.allCases.count - 1 {
                         Rectangle()
-                            .fill(idx < wizard.currentStepIndex ? AppColors.brandAccent : Color.secondary.opacity(0.15))
+                            .fill(idx < wizard.currentStepIndex ? AppColors.brandAccent : AppColors.cardBackground(colorScheme))
                             .frame(height: 1)
                             .frame(maxWidth: .infinity)
                     }
@@ -95,11 +95,11 @@ struct SetupWizardView: View {
             Spacer()
 
             if wizard.currentStep.canSkip {
-                Button(loc.localized("wizard.skip")) {
-                    wizard.nextStep()
-                }
-                .buttonStyle(.plain)
-                .foregroundColor(.secondary)
+Button(loc.localized("wizard.skip")) {
+                wizard.nextStep()
+            }
+            .buttonStyle(.plain)
+            .foregroundColor(AppColors.textSecondary(colorScheme))
             }
 
             if wizard.currentStep == .completion {
@@ -182,7 +182,7 @@ extension SetupWizardView {
                     .font(.title)
                     .fontWeight(.bold)
                 Text("wizard.welcomeDescription")
-                    .foregroundColor(.secondary)
+                    .foregroundColor(AppColors.textSecondary(colorScheme))
                     .multilineTextAlignment(.center)
             }
 
@@ -195,18 +195,18 @@ extension SetupWizardView {
                             VStack(alignment: .leading) {
                                 Text(wizard.libraryFolders[idx].lastPathComponent)
                                     .lineLimit(1)
-                                Text(wizard.libraryFolders[idx].path)
-                                    .font(.caption)
-                                    .monospaced()
-                                    .foregroundColor(.secondary)
+Text(wizard.libraryFolders[idx].path)
+                        .font(.caption)
+                        .monospaced()
+                        .foregroundColor(AppColors.textSecondaryNeutral(colorScheme))
                                     .lineLimit(1)
                             }
                             Spacer()
                             Button {
                                 wizard.removeLibraryFolder(at: idx)
                             } label: {
-                                Image(systemName: "trash")
-                                    .foregroundColor(.secondary)
+Image(systemName: "trash")
+                            .foregroundColor(AppColors.textSecondaryNeutral(colorScheme))
                             }
                             .buttonStyle(.plain)
                         }
@@ -226,10 +226,10 @@ extension SetupWizardView {
             if wizard.libraryFolders.isEmpty {
                 HStack(spacing: 8) {
                     Image(systemName: "info.circle")
-                        .foregroundColor(.secondary)
+                        .foregroundColor(AppColors.textSecondaryNeutral(colorScheme))
                     Text("wizard.addFolderLater")
                         .font(.callout)
-                        .foregroundColor(.secondary)
+                        .foregroundColor(AppColors.textSecondary(colorScheme))
                 }
             }
         }
@@ -265,7 +265,7 @@ extension SetupWizardView {
 
                 VStack(alignment: .leading, spacing: 8) {
                     Text("wizard.bezelsDescription")
-                        .foregroundColor(.secondary)
+                        .foregroundColor(AppColors.textSecondary(colorScheme))
                         .font(.callout)
 
                     Toggle(loc.localized("wizard.downloadBezelsToggle"), isOn: $wizard.downloadBezels)
@@ -284,7 +284,7 @@ extension SetupWizardView {
 
                 VStack(alignment: .leading, spacing: 8) {
                     Text("wizard.shaderDescription")
-                        .foregroundColor(.secondary)
+                        .foregroundColor(AppColors.textSecondary(colorScheme))
                         .font(.callout)
 
                     ScrollView(.horizontal, showsIndicators: false) {
@@ -308,7 +308,7 @@ extension SetupWizardView {
             Label(preset.name, systemImage: shaderIcon(for: preset.shaderType))
                 .padding(.horizontal, 12)
                 .padding(.vertical, 6)
-                .background(isSelected ? AppColors.brandAccent.opacity(0.15) : Color.secondary.opacity(0.05))
+                .background(isSelected ? AppColors.brandAccent.opacity(0.15) : AppColors.cardBackgroundSubtle(colorScheme))
                 .cornerRadius(8)
                 .overlay(
                     RoundedRectangle(cornerRadius: 8)
@@ -358,7 +358,7 @@ extension SetupWizardView {
 
                 VStack(alignment: .leading, spacing: 8) {
                     Text("wizard.retroAchievementsDescription")
-                        .foregroundColor(.secondary)
+                        .foregroundColor(AppColors.textSecondary(colorScheme))
                         .font(.callout)
 
                     if wizard.achievementsEnabled {
@@ -369,9 +369,9 @@ extension SetupWizardView {
                                 .textFieldStyle(.roundedBorder)
 
                             if let error = raLoginError {
-                                Label(error, systemImage: "xmark.circle.fill")
-                                    .font(.caption)
-                                    .foregroundColor(.red)
+Label(error, systemImage: "xmark.circle.fill")
+                            .font(.caption)
+                            .foregroundColor(AppColors.error(colorScheme))
                             }
 
                             /*HStack(spacing: 8) {
@@ -399,7 +399,7 @@ extension SetupWizardView {
                             }*/
                         }
                         .padding(12)
-                        .background(Color.secondary.opacity(0.05))
+                        .background(AppColors.cardBackgroundSubtle(colorScheme))
                         .cornerRadius(8)
                     }
                 }
@@ -431,17 +431,18 @@ extension SetupWizardView {
             .tint(AppColors.brandAccentSecondary)
 
             VStack(alignment: .leading, spacing: 6) {
-                Text(description)
-                    .foregroundColor(.secondary)
-                    .font(.callout)
+Text(description)
+            .foregroundColor(AppColors.textSecondary(colorScheme))
+            .font(.callout)
 
-                if isOn.wrappedValue {
-                    HStack(spacing: 6) {
-                        Image(systemName: "info.circle")
-                            .font(.caption)
-                        Text(detail)
-                            .font(.caption)
-                            .foregroundColor(.secondary)
+            if isOn.wrappedValue {
+                HStack(spacing: 6) {
+                    Image(systemName: "info.circle")
+                        .font(.caption)
+                        .foregroundColor(AppColors.textSecondaryNeutral(colorScheme))
+                    Text(detail)
+                        .font(.caption)
+                        .foregroundColor(AppColors.textSecondary(colorScheme))
                     }
                 }
             }
@@ -455,42 +456,42 @@ extension SetupWizardView {
 extension SetupWizardView {
     private var stepCompletion: some View {
         VStack(spacing: 24) {
-            Image(systemName: "checkmark.circle.fill")
-                .font(.system(size: 56))
-                .foregroundColor(.green)
+Image(systemName: "checkmark.circle.fill")
+            .font(.system(size: 56))
+            .foregroundColor(AppColors.success(colorScheme))
 
             Text("wizard.allSet")
                 .font(.title)
                 .fontWeight(.bold)
 
-            Text("wizard.completionDescription")
-                .multilineTextAlignment(.center)
-                .foregroundColor(.secondary)
+Text("wizard.completionDescription")
+            .multilineTextAlignment(.center)
+            .foregroundColor(AppColors.textSecondary(colorScheme))
 
             if !wizard.allDetectedGames.isEmpty && library.roms.isEmpty {
                 HStack(spacing: 6) {
                     ProgressView()
                         .controlSize(.small)
-                    Text(String(format: loc.localized("wizard.scanningFolders"), wizard.libraryFolders.count))
-                        .font(.callout)
-                        .foregroundColor(.secondary)
+Text(String(format: loc.localized("wizard.scanningFolders"), wizard.libraryFolders.count))
+                    .font(.callout)
+                    .foregroundColor(AppColors.textSecondaryNeutral(colorScheme))
                 }
             } else if library.roms.isEmpty && !wizard.libraryFolders.isEmpty {
                 ProgressView()
                     .controlSize(.small)
                 Text("wizard.scanningForGames")
-                    .foregroundColor(.secondary)
+                    .foregroundColor(AppColors.textSecondaryNeutral(colorScheme))
             } else if library.roms.isEmpty {
                 VStack(spacing: 8) {
-                    Image(systemName: "tray")
-                        .font(.system(size: 32))
-                        .foregroundColor(.secondary)
-                    Text("wizard.noGamesDetected")
-                        .font(.callout)
-                        .foregroundColor(.secondary)
-                    Text("wizard.addFolderLater")
-                        .font(.caption)
-                        .foregroundColor(.secondary)
+Image(systemName: "tray")
+                    .font(.system(size: 32))
+                    .foregroundColor(AppColors.textSecondaryNeutral(colorScheme))
+                Text("wizard.noGamesDetected")
+                    .font(.callout)
+                    .foregroundColor(AppColors.textSecondary(colorScheme))
+                Text("wizard.addFolderLater")
+                    .font(.caption)
+                    .foregroundColor(AppColors.textSecondary(colorScheme))
                 }
             } else {
                 VStack(spacing: 8) {

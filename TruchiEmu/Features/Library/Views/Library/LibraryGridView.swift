@@ -867,8 +867,8 @@ viewModel.updateFilters(
                 .tint(AppColors.brandAccentSecondary)
 
             Group {
-                Text(scanningMessages[scanningMessageIndex])
-                    .foregroundColor(.secondary)
+		Text(scanningMessages[scanningMessageIndex])
+		.foregroundColor(AppColors.textSecondary(colorScheme))
                     .contentTransition(.numericText())
             }
             .font(.body)
@@ -882,9 +882,9 @@ viewModel.updateFilters(
 
             // Fun stats during scan
             if library.roms.count > 0 {
-                Text("\(library.roms.count) \(loc.localized("library.gamesFound"))")
-                    .font(.caption)
-                    .foregroundColor(.secondary)
+		Text("\(library.roms.count) \(loc.localized("library.gamesFound"))")
+		.font(.caption)
+		.foregroundColor(AppColors.textSecondaryNeutral(colorScheme))
                     .contentTransition(.numericText())
             }
 
@@ -939,9 +939,9 @@ viewModel.updateFilters(
                     .foregroundColor(.primary)
                     .contentTransition(.numericText())
                 
-                Text("\(boxArtService.downloadedCount) / \(boxArtService.downloadQueueCount) \(loc.localized("library.coversDownloaded"))")
-                    .font(.caption2)
-                    .foregroundColor(.secondary)
+		Text("\(boxArtService.downloadedCount) / \(boxArtService.downloadQueueCount) \(loc.localized("library.coversDownloaded"))")
+		.font(.caption2)
+		.foregroundColor(AppColors.textSecondaryNeutral(colorScheme))
             }
         }
         .padding(.horizontal, 16)
@@ -1136,8 +1136,8 @@ viewModel.updateFilters(
                                     Image(systemName: "checkmark.circle.fill")
                                         .foregroundColor(AppColors.brandAccent)
                                 } else {
-                                    Image(systemName: "plus.circle")
-                                        .foregroundColor(.secondary)
+			Image(systemName: "plus.circle")
+				.foregroundColor(AppColors.textSecondaryNeutral(colorScheme))
                                     }
                             }
                         }
@@ -1281,14 +1281,14 @@ private func removeROMFromLibrary(_ rom: ROM) {
 
     private var searchField: some View {
         HStack {
-            Image(systemName: "magnifyingglass")
-                .foregroundColor(.secondary)
+		Image(systemName: "magnifyingglass")
+		.foregroundColor(AppColors.textSecondary(colorScheme))
             TextField(loc.localized("library.searchGames"), text: $searchText)
                 .textFieldStyle(.plain)
             if !searchText.isEmpty {
                 Button { searchText = "" } label: {
-                    Image(systemName: "xmark.circle.fill")
-                        .foregroundColor(.secondary)
+			Image(systemName: "xmark.circle.fill")
+				.foregroundColor(AppColors.textSecondaryNeutral(colorScheme))
                 }
                 .buttonStyle(.plain)
             }
@@ -1305,30 +1305,30 @@ private func removeROMFromLibrary(_ rom: ROM) {
     // during scroll (which causes scroll lock/jank).
     private var zoomSlider: some View {
         HStack(spacing: 8) {
-            Image(systemName: "minus.magnifyingglass")
-                .font(.system(size: 12))
-                .foregroundColor(.secondary.opacity(0.6))
-                .frame(width: 16)
-            
-            Slider(value: $continuousZoom, in: 0...1, step: 1.0/7.0,
-                   onEditingChanged: { isEditing in
-                       if !isEditing {
-                           // On release, snap to nearest step
-                           withAnimation(.interpolatingSpring(stiffness: 150, damping: 20)) {
-                               applyZoomToColumnCount(animate: true)
-                           }
-                       }
-                   })
-            
-            Image(systemName: "plus.magnifyingglass")
-                .font(.system(size: 12))
-                .foregroundColor(.secondary.opacity(0.6))
-                .frame(width: 16)
-            
-            Text("\(Int(continuousZoom * 100))%")
-                .font(.system(size: 11, weight: .medium, design: .monospaced))
-                .foregroundColor(.secondary)
-                .frame(width: 32, alignment: .trailing)
+		Image(systemName: "minus.magnifyingglass")
+		.font(.system(size: 12))
+		.foregroundColor(AppColors.textSecondaryNeutral(colorScheme).opacity(0.6))
+		.frame(width: 16)
+
+		Slider(value: $continuousZoom, in: 0...1, step: 1.0/7.0,
+			onEditingChanged: { isEditing in
+			if !isEditing {
+				// On release, snap to nearest step
+				withAnimation(.interpolatingSpring(stiffness: 150, damping: 20)) {
+				applyZoomToColumnCount(animate: true)
+				}
+			}
+			})
+
+		Image(systemName: "plus.magnifyingglass")
+		.font(.system(size: 12))
+		.foregroundColor(AppColors.textSecondaryNeutral(colorScheme).opacity(0.6))
+		.frame(width: 16)
+
+		Text("\(Int(continuousZoom * 100))%")
+		.font(.system(size: 11, weight: .medium, design: .monospaced))
+		.foregroundColor(AppColors.textSecondaryNeutral(colorScheme))
+		.frame(width: 32, alignment: .trailing)
         }
         .padding(.horizontal, 16)
         .padding(.vertical, 6)
@@ -1358,16 +1358,16 @@ private func removeROMFromLibrary(_ rom: ROM) {
                         Text(loc.localized("library.lastPlayed"))
                             .font(.system(size: 11, weight: .medium))
                     }
-                    .foregroundColor(sortByLastPlayed ? .white : .secondary)
-                    .padding(.horizontal, 10)
-                    .padding(.vertical, 6)
-                    .frame(minHeight: 30)
-                    .background(
-                        Capsule()
-                            .fill(sortByLastPlayed ? Color.orange : Color.secondary.opacity(0.12))
-                            .scaleEffect(isSortHovered ? 1.05 : 1)
-                            .shadow(color: sortByLastPlayed ? Color.orange.opacity(0.3) : .clear, radius: isSortHovered ? 4 : 0, y: 2)
-                    )
+.foregroundColor(sortByLastPlayed ? AppColors.textOnAccent(colorScheme) : AppColors.textSecondaryNeutral(colorScheme))
+	.padding(.horizontal, 10)
+	.padding(.vertical, 6)
+	.frame(minHeight: 30)
+	.background(
+		Capsule()
+		.fill(sortByLastPlayed ? AppColors.brandAccent : AppColors.cardBackgroundSubtle(colorScheme))
+		.scaleEffect(isSortHovered ? 1.05 : 1)
+		.shadow(color: sortByLastPlayed ? AppColors.brandAccent.opacity(0.3) : .clear, radius: isSortHovered ? 4 : 0, y: 2)
+	)
                 }
                 .buttonStyle(.plain)
                 .help(sortByLastPlayed ? "Sorting by Last Played — click to sort by Name" : "Sorting by Name — click to sort by Last Played")
@@ -1402,16 +1402,16 @@ private func removeROMFromLibrary(_ rom: ROM) {
                         Text(loc.localized("library.lastAdded"))
                             .font(.system(size: 11, weight: .medium))
                     }
-                    .foregroundColor(sortByLastAdded ? .white : .secondary)
-                    .padding(.horizontal, 10)
-                    .padding(.vertical, 6)
-                    .frame(minHeight: 30)
-                    .background(
-                        Capsule()
-                            .fill(sortByLastAdded ? Color.orange : Color.secondary.opacity(0.12))
-                            .scaleEffect(isSortHovered ? 1.05 : 1)
-                            .shadow(color: sortByLastAdded ? Color.orange.opacity(0.3) : .clear, radius: isSortHovered ? 4 : 0, y: 2)
-                    )
+.foregroundColor(sortByLastAdded ? AppColors.textOnAccent(colorScheme) : AppColors.textSecondaryNeutral(colorScheme))
+	.padding(.horizontal, 10)
+	.padding(.vertical, 6)
+	.frame(minHeight: 30)
+	.background(
+		Capsule()
+		.fill(sortByLastAdded ? AppColors.brandAccent : AppColors.cardBackgroundSubtle(colorScheme))
+		.scaleEffect(isSortHovered ? 1.05 : 1)
+		.shadow(color: sortByLastAdded ? AppColors.brandAccent.opacity(0.3) : .clear, radius: isSortHovered ? 4 : 0, y: 2)
+	)
                 }
                 .buttonStyle(.plain)
                 .help(sortByLastAdded ? "Sorting by Last Added — click to sort by Name" : "Sorting by Name — click to sort by Last Added")
@@ -1453,7 +1453,7 @@ private func removeROMFromLibrary(_ rom: ROM) {
                     .padding(.horizontal, 10)
                     .padding(.vertical, 6)
                     .frame(minHeight: 30)
-                    .background(Capsule().fill(selectedGenres.isEmpty ? Color.secondary.opacity(0.12) : AppColors.brandAccent))
+                    .background(Capsule().fill(selectedGenres.isEmpty ? AppColors.cardBackgroundSubtle(colorScheme) : AppColors.brandAccent))
                 }
                 .buttonStyle(.plain)
                 .popover(isPresented: $showGenrePicker) {
@@ -1492,12 +1492,12 @@ private func removeROMFromLibrary(_ rom: ROM) {
                             Text("Clear")
                                 .font(.system(size: 10, weight: .medium))
                         }
-                        .foregroundColor(.white)
-                        .padding(.horizontal, 10)
-                        .padding(.vertical, 6)
-                        .frame(minHeight: 30)
-                        .background(AppColors.brandAccent)
-                        .clipShape(Capsule())
+		.foregroundColor(AppColors.textOnAccent(colorScheme))
+		.padding(.horizontal, 10)
+		.padding(.vertical, 6)
+		.frame(minHeight: 30)
+		.background(AppColors.brandAccent)
+		.clipShape(Capsule())
                     }
                     .buttonStyle(.plain)
                     .padding(.leading, 2)
@@ -1516,18 +1516,18 @@ private func removeROMFromLibrary(_ rom: ROM) {
             
             Text("Filtering: " + activeFilterDisplayText)
                 .font(.caption)
-                .foregroundColor(.secondary)
-                .lineLimit(1)
-            
-            Spacer()
-            
-            Text("\(viewModel.displayedROMs.count) game\(viewModel.displayedROMs.count == 1 ? "" : "s")")
-                .font(.caption)
-                .foregroundColor(.secondary)
+	.foregroundColor(AppColors.textSecondaryNeutral(colorScheme))
+	.lineLimit(1)
+
+	Spacer()
+
+	Text("\(viewModel.displayedROMs.count) game\(viewModel.displayedROMs.count == 1 ? "" : "s")")
+	.font(.caption)
+	.foregroundColor(AppColors.textSecondaryNeutral(colorScheme))
         }
         .padding(.horizontal, 16)
         .padding(.vertical, 6)
-        .background(Color.secondary.opacity(0.06))
+        .background(AppColors.cardBackgroundSubtle(colorScheme))
     }
     
     private func toggleFilter(_ option: GameFilterOption) {
