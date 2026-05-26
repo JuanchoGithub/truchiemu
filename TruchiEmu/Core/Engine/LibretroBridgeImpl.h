@@ -80,9 +80,13 @@ typedef void (^VideoFrameCallback)(const void *data, int width, int height, int 
 - (void)handleVideoData:(const void *)data width:(int)w height:(int)h pitch:(int)pitch format:(int)format;
 - (void)handleAudioSamples:(const int16_t *)data count:(size_t)count;
 - (void)setKeyState:(int)retroID pressed:(BOOL)pressed;
+- (void)setKeyStateForPlayer:(int)port button:(int)retroID pressed:(BOOL)pressed;
 - (void)setTurboState:(int)idx active:(BOOL)active targetButton:(int)targetIdx;
+- (void)setTurboStateForPlayer:(int)port index:(int)idx active:(BOOL)active targetButton:(int)targetIdx;
 - (void)setAnalogState:(int)idx id:(int)id value:(int)v;
+- (void)setAnalogStateForPlayer:(int)port stick:(int)idx axis:(int)id value:(int)v;
 - (void)setAnalogButtonState:(int)retroID value:(int)v;
+- (void)setAnalogButtonStateForPlayer:(int)port button:(int)retroID value:(int)v;
 - (void)setPixelFormat:(int)format;
 - (int)pixelFormat;
 - (void)setupHWRender:(struct retro_hw_render_callback *)cb;

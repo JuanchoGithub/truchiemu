@@ -26,11 +26,14 @@ typedef void (^GameLoadedBlock)(const char *romPath);
 + (void)waitForCompletion;
 + (void)saveState;
 + (void)setKeyState:(int)retroID pressed:(BOOL)pressed;
++ (void)setKeyState:(int)retroID player:(int)port pressed:(BOOL)pressed;
 + (void)setTurboState:(int)turboIdx
                active:(BOOL)active
          targetButton:(int)targetButton;
 + (void)setAnalogState:(int)index id:(int)id value:(int)value;
++ (void)setAnalogStateForPlayer:(int)port stick:(int)index axis:(int)id value:(int)value;
 + (void)setAnalogButtonState:(int)retroID value:(int)value;
++ (void)setAnalogButtonState:(int)retroID player:(int)port value:(int)value;
 + (void)setLanguage:(int)language;
 + (void)setLogLevel:(int)level;
 + (void)setPaused:(BOOL)paused;

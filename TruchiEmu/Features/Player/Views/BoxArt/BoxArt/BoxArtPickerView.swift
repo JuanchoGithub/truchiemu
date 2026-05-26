@@ -39,7 +39,7 @@ struct BoxArtPickerView: View {
                     .buttonStyle(.borderedProminent)
 
                     HStack(spacing: 8) {
-                        Text(loc.localized("boxart.engine"))
+                        Text(loc.localized("boxArt.engine"))
                             .fixedSize()
                         
                         Picker("", selection: $searchEngine) {
@@ -52,7 +52,7 @@ struct BoxArtPickerView: View {
                     }
                 }
 
-            Text(loc.localized("boxart.rightClickInfo"))
+            Text(loc.localized("boxArt.rightClickInfo"))
                 .font(.caption)
                 .foregroundColor(AppColors.textSecondaryNeutral(colorScheme))
             }
@@ -80,7 +80,7 @@ struct BoxArtPickerView: View {
     private var header: some View {
         HStack {
             VStack(alignment: .leading, spacing: 2) {
-                Text(loc.localized("boxart.pickerTitle"))
+                Text(loc.localized("boxArt.pickerTitle"))
                     .font(.headline)
         Text(rom.displayName)
                 .font(.subheadline)

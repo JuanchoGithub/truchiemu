@@ -310,6 +310,7 @@ class EmulatorRunner: ObservableObject, @unchecked Sendable {
     // Keyboard mapping snapshot captured at launch — safe to read from any thread.
     var cachedKeyboardMapping: KeyboardMapping = KeyboardMapping(buttons: [:])
     private var hookedController: GCController? = nil
+    private var hookedControllers: [Int: GCController] = [:]
     
     // Turbo button state tracking
     private var activeTurboButtons: Set<RetroButton> = []
@@ -425,6 +426,10 @@ case "scummvm": runner = ScummVMRunner()
 
         hookedController?.extendedGamepad?.valueChangedHandler = nil
         hookedController = nil
+        for (_, controller) in hookedControllers {
+            controller.extendedGamepad?.valueChangedHandler = nil
+        }
+        hookedControllers.removeAll()
         textureCache = nil
         undoBuffer = nil
     }
@@ -777,6 +782,10 @@ case "scummvm": runner = ScummVMRunner()
         XPCBridgeAdapter.shared.setKeyState(retroID: retroID, pressed: pressed)
     }
 
+    func setKeyState(retroID: Int, player: Int, pressed: Bool) {
+        XPCBridgeAdapter.shared.setKeyState(retroID: retroID, player: player, pressed: pressed)
+    }
+
   func findCoreLib(coreID: String) -> String? {
     let base = FileManager.default.urls(for: .applicationSupportDirectory, in: .userDomainMask)
       .first!.appendingPathComponent("TruchiEmu/Cores/\(coreID)")
@@ -930,50 +939,41 @@ case "scummvm": runner = ScummVMRunner()
 
     @MainActor
     open func setupGamepadInput() {
-        // Ensure ControllerService is initialized
         let cs = ControllerService.shared
-        
-        // Debug: Log controller state
-        LoggerService.info(category: "Runner", "setupGamepadInput: activePlayerIndex=\(cs.activePlayerIndex), connectedControllers=\(cs.connectedControllers.map { $0.name })")
-        
+
+        LoggerService.info(category: "Runner", "setupGamepadInput: connectedControllers=\(cs.connectedControllers.map { $0.name })")
+
         // Auto-select first controller if none selected
         if cs.activePlayerIndex == 0 && !cs.connectedControllers.isEmpty {
             cs.activePlayerIndex = 1
         }
-        
-        let activeIdx = cs.activePlayerIndex
-        LoggerService.info(category: "Runner", "setupGamepadInput: after auto-select, activeIdx=\(activeIdx)")
-        
-        if activeIdx == 0 { return } // Keyboard
-        
-        guard let player = cs.connectedControllers.first(where: { $0.playerIndex == activeIdx }),
-              let controller = player.gcController else { return }
-        
+
         let sysID = rom?.systemID ?? "default"
-        let mapping = cs.mapping(for: controller.vendorName ?? "Unknown", systemID: sysID) as ControllerGamepadMapping
-        
-        guard let extendedGamepad = controller.extendedGamepad else {
-            LoggerService.info(category: "Runner", "ERROR: No extendedGamepad on controller!")
-            return
-        }
-        
-        LoggerService.info(category: "Runner", "Hooking gamepad: \(controller.vendorName ?? "Unknown") for system: \(sysID)")
-        self.hookedController = controller
-        
-extendedGamepad.valueChangedHandler = { [weak self] _, element in
+
+        for player in cs.connectedControllers {
+            guard let controller = player.gcController,
+                  let extendedGamepad = controller.extendedGamepad else { continue }
+
+            let port = player.playerIndex - 1
+            let mapping = cs.mapping(for: controller.vendorName ?? "Unknown", systemID: sysID)
+
+            LoggerService.info(category: "Runner", "Hooking gamepad: \(controller.vendorName ?? "Unknown") for port \(port) system: \(sysID)")
+            self.hookedControllers[port] = controller
+            if port == 0 { self.hookedController = controller }
+
+extendedGamepad.valueChangedHandler = { [weak self, port] _, element in
             guard let self = self else { return }
             
-            // If it's a DPad or Stick, we want to handle its 4 directions
             if let dpad = element as? GCControllerDirectionPad {
-                self.updateGamepadButton(dpad.up, in: mapping)
-                self.updateGamepadButton(dpad.down, in: mapping)
-                self.updateGamepadButton(dpad.left, in: mapping)
-                self.updateGamepadButton(dpad.right, in: mapping)
-                // Also update the pad itself for analog stick support
-                self.updateGamepadButton(dpad, in: mapping)
+                self.updateGamepadButton(dpad.up, in: mapping, player: port)
+                self.updateGamepadButton(dpad.down, in: mapping, player: port)
+                self.updateGamepadButton(dpad.left, in: mapping, player: port)
+                self.updateGamepadButton(dpad.right, in: mapping, player: port)
+                self.updateGamepadButton(dpad, in: mapping, player: port)
             } else {
-                self.updateGamepadButton(element, in: mapping)
+                self.updateGamepadButton(element, in: mapping, player: port)
             }
+        }
         }
     }
 
@@ -984,7 +984,7 @@ extendedGamepad.valueChangedHandler = { [weak self] _, element in
         return false
     }
 
-    private func updateGamepadButton(_ element: GCControllerElement, in mapping: ControllerGamepadMapping) {
+    private func updateGamepadButton(_ element: GCControllerElement, in mapping: ControllerGamepadMapping, player: Int = 0) {
         for (btn, btnMapping) in mapping.buttons {
             guard elementMatches(element, name: btnMapping.gcElementName) else { continue }
             
@@ -1015,7 +1015,7 @@ extendedGamepad.valueChangedHandler = { [weak self] _, element in
                 aggregatedAxisValue = AnalogDeadZone.default.apply(aggregatedAxisValue)
                 aggregatedAxisValue = max(-1.0, min(1.0, aggregatedAxisValue))
                 let retroValue = Int32(aggregatedAxisValue * 32767.0)
-                XPCBridgeAdapter.shared.setAnalogState(Int(info.index), id: Int(info.id), value: retroValue)
+                XPCBridgeAdapter.shared.setAnalogState(Int(info.index), id: Int(info.id), value: retroValue, player: player)
             } 
             
             // 2. Handle Digital Joypad Buttons (ID 0 to 15)
@@ -1026,19 +1026,19 @@ extendedGamepad.valueChangedHandler = { [weak self] _, element in
                     // Send analog value for L2/R2 triggers (used by Flycast for Dreamcast analog triggers)
                     if retroID == 12 || retroID == 13 {
                 let analogValue = Int32(btnElement.value * 32767.0)
-                XPCBridgeAdapter.shared.setAnalogButtonState(retroID: retroID, value: analogValue)
+                XPCBridgeAdapter.shared.setAnalogButtonState(retroID: retroID, value: analogValue, player: player)
                     }
                     // This covers face buttons, triggers (Z-button), and D-pad directions
-                    self.setKeyState(retroID: retroID, pressed: btnElement.isPressed)
+                    self.setKeyState(retroID: retroID, player: player, pressed: btnElement.isPressed)
                 } 
                 else if let axisElement = element as? GCControllerAxisInput {
                     // Send analog value for L2/R2 triggers mapped to axes
                     if retroID == 12 || retroID == 13 {
                 let analogValue = Int32(abs(axisElement.value) * 32767.0)
-                XPCBridgeAdapter.shared.setAnalogButtonState(retroID: retroID, value: analogValue)
+                XPCBridgeAdapter.shared.setAnalogButtonState(retroID: retroID, value: analogValue, player: player)
                     }
                     // If a digital button is mapped to an axis (like a trigger mapped to 'A')
-                    self.setKeyState(retroID: retroID, pressed: abs(axisElement.value) > 0.5)
+                    self.setKeyState(retroID: retroID, player: player, pressed: abs(axisElement.value) > 0.5)
                 }
                 // NOTE: Removed the 'GCControllerDirectionPad' check here.
                 // Mapping names like "D-pad Up" refer to button sub-elements in GameController.

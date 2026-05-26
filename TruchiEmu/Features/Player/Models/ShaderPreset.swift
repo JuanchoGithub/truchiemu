@@ -11,11 +11,11 @@ enum ShaderType: String, Codable, CaseIterable {
     
     var displayName: String {
         switch self {
-        case .crt:      return "CRT"
-        case .lcd:      return "LCD / Handheld"
-        case .smoothing: return "Smoothing"
-        case .composite: return "Composite / VHS"
-        case .custom:   return "Custom"
+        case .crt:      return LocalizationManager.shared.localized("shader.type.crt")
+        case .lcd:      return LocalizationManager.shared.localized("shader.type.lcd")
+        case .smoothing: return LocalizationManager.shared.localized("shader.type.smoothing")
+        case .composite: return LocalizationManager.shared.localized("shader.type.composite")
+        case .custom:   return LocalizationManager.shared.localized("shader.type.custom")
         }
     }
 }
@@ -140,6 +140,13 @@ struct ShaderPreset: Codable, Hashable, Identifiable {
     var recommendedSystems: [String]            // e.g., ["nes", "snes", "genesis"]
     var thumbnailSystemName: String?            // Preview image hint
     
+    var localizedDescription: String {
+        guard description != nil else { return "" }
+        let key = "shader.desc.\(id)"
+        let localized = LocalizationManager.shared.localized(key)
+        return localized == key ? (description ?? "") : localized
+    }
+    
     init(id: String,
          name: String,
          shaderType: ShaderType,
@@ -182,11 +189,11 @@ extension ShaderPreset {
                 )
             ],
             globalUniforms: [
-                ShaderUniform(name: "scanlineStrength", defaultValue: 0.5, minValue: 0.0, maxValue: 1.0),
-                ShaderUniform(name: "maskStrength", defaultValue: 0.3, minValue: 0.0, maxValue: 1.0),
-                ShaderUniform(name: "bloomAmount", defaultValue: 0.15, minValue: 0.0, maxValue: 1.0),
-                ShaderUniform(name: "curvatureAmount", defaultValue: 0.02, minValue: 0.0, maxValue: 0.1),
-                ShaderUniform(name: "colorBoost", defaultValue: 1.1, minValue: 0.5, maxValue: 2.0),
+                ShaderUniform(name: "scanlineStrength", defaultValue: 0.5, minValue: 0.0, maxValue: 1.0, displayName: "Scanline Strength"),
+                ShaderUniform(name: "maskStrength", defaultValue: 0.3, minValue: 0.0, maxValue: 1.0, displayName: "Mask Strength"),
+                ShaderUniform(name: "bloomAmount", defaultValue: 0.15, minValue: 0.0, maxValue: 1.0, displayName: "Bloom Amount"),
+                ShaderUniform(name: "curvatureAmount", defaultValue: 0.02, minValue: 0.0, maxValue: 0.1, displayName: "Curvature Amount"),
+                ShaderUniform(name: "colorBoost", defaultValue: 1.1, minValue: 0.5, maxValue: 2.0, displayName: "Color Boost"),
             ],
             description: "Advanced CRT simulation by Timothy Lottes. Featuring high-quality scanlines and mask.",
             recommendedSystems: ["nes", "snes", "genesis", "psx", "arcade"]
@@ -252,9 +259,9 @@ globalUniforms: [
                 )
             ],
             globalUniforms: [
-                ShaderUniform(name: "sharpness", defaultValue: 0.8, minValue: 0.1, maxValue: 1.0),
-                ShaderUniform(name: "scanlineOpacity", defaultValue: 0.0, minValue: 0.0, maxValue: 1.0),
-                ShaderUniform(name: "colorBoost", defaultValue: 1.0, minValue: 0.5, maxValue: 2.0),
+                ShaderUniform(name: "sharpness", defaultValue: 0.8, minValue: 0.1, maxValue: 1.0, displayName: "Sharpness"),
+                ShaderUniform(name: "scanlineOpacity", defaultValue: 0.0, minValue: 0.0, maxValue: 1.0, displayName: "Scanline Opacity"),
+                ShaderUniform(name: "colorBoost", defaultValue: 1.0, minValue: 0.5, maxValue: 2.0, displayName: "Color Boost"),
             ],
             description: "Crisp scaling that avoids shimmering. Ideal for modern displays.",
             recommendedSystems: ["nes", "snes", "genesis", "gb", "gba"]
@@ -526,10 +533,10 @@ description: "Game Boy Color with temporal feedback, ghosting, and iridescent LC
                 )
             ],
             globalUniforms: [
-                ShaderUniform(name: "dotOpacity", defaultValue: 0.85, minValue: 0.0, maxValue: 1.0),
-                ShaderUniform(name: "metallicIntensity", defaultValue: 0.5, minValue: 0.0, maxValue: 1.0),
-                ShaderUniform(name: "specularShininess", defaultValue: 8.0, minValue: 1.0, maxValue: 32.0),
-                ShaderUniform(name: "colorBoost", defaultValue: 1.1, minValue: 0.5, maxValue: 2.0),
+                ShaderUniform(name: "dotOpacity", defaultValue: 0.85, minValue: 0.0, maxValue: 1.0, displayName: "Dot Opacity"),
+                ShaderUniform(name: "metallicIntensity", defaultValue: 0.5, minValue: 0.0, maxValue: 1.0, displayName: "Metallic Intensity"),
+                ShaderUniform(name: "specularShininess", defaultValue: 8.0, minValue: 1.0, maxValue: 32.0, displayName: "Specular Shininess"),
+                ShaderUniform(name: "colorBoost", defaultValue: 1.1, minValue: 0.5, maxValue: 2.0, displayName: "Color Boost"),
             ],
             description: "High-quality metallic dot-matrix LCD for Game Boy systems.",
             recommendedSystems: ["gb", "gbc", "gg", "sms"]
@@ -549,10 +556,10 @@ description: "Game Boy Color with temporal feedback, ghosting, and iridescent LC
                 )
             ],
             globalUniforms: [
-                ShaderUniform(name: "scanlineIntensity", defaultValue: 0.3, minValue: 0.0, maxValue: 1.0),
-                ShaderUniform(name: "phosphorStrength", defaultValue: 0.2, minValue: 0.0, maxValue: 1.0),
-                ShaderUniform(name: "brightness", defaultValue: 1.1, minValue: 0.5, maxValue: 2.0),
-                ShaderUniform(name: "colorBoost", defaultValue: 1.0, minValue: 0.5, maxValue: 2.0),
+                ShaderUniform(name: "scanlineIntensity", defaultValue: 0.3, minValue: 0.0, maxValue: 1.0, displayName: "Scanline Intensity"),
+                ShaderUniform(name: "phosphorStrength", defaultValue: 0.2, minValue: 0.0, maxValue: 1.0, displayName: "Phosphor Strength"),
+                ShaderUniform(name: "brightness", defaultValue: 1.1, minValue: 0.5, maxValue: 2.0, displayName: "Brightness"),
+                ShaderUniform(name: "colorBoost", defaultValue: 1.0, minValue: 0.5, maxValue: 2.0, displayName: "Color Boost"),
             ],
             description: "Lightweight CRT effect with simple scanlines and phosphors.",
             recommendedSystems: ["nes", "snes", "genesis"]
@@ -616,8 +623,8 @@ description: "Game Boy Color with temporal feedback, ghosting, and iridescent LC
                 )
             ],
             globalUniforms: [
-                ShaderUniform(name: "smoothness", defaultValue: 1.0, minValue: 0.0, maxValue: 1.0),
-                ShaderUniform(name: "colorBoost", defaultValue: 1.0, minValue: 0.5, maxValue: 2.0),
+                ShaderUniform(name: "smoothness", defaultValue: 1.0, minValue: 0.0, maxValue: 1.0, displayName: "Smoothness"),
+                ShaderUniform(name: "colorBoost", defaultValue: 1.0, minValue: 0.5, maxValue: 2.0, displayName: "Color Boost"),
             ],
             description: "High-quality pixel art upscaler that smooths edges while maintaining detail.",
             recommendedSystems: ["nes", "snes", "gba", "arcade"]

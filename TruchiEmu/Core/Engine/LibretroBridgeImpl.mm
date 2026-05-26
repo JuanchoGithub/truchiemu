@@ -206,15 +206,15 @@ return self;
   } @catch (...) {
     goto shutdown;
 }[self setControllerPortDevice:0 device:device_type];
+    [self setControllerPortDevice:1 device:device_type];
+    [self setControllerPortDevice:2 device:device_type];
+    [self setControllerPortDevice:3 device:device_type];
 
     // Signal variables updated for Flycast cores so retro_run() triggers
     // update_variables() with first_startup=false, which processes device
     // port options (reicast_device_port*_slot*) that are skipped on first init
     if (g_coreID && [[g_coreID lowercaseString] containsString:@"flycast"]) {
         g_variablesUpdated = YES;
-        [self setControllerPortDevice:1 device:device_type];
-        [self setControllerPortDevice:2 device:device_type];
-        [self setControllerPortDevice:3 device:device_type];
         bridge_log_printf(RETRO_LOG_INFO, "[LibretroCore] Set g_variablesUpdated=YES for Flycast device port override");
     }
 
@@ -446,31 +446,47 @@ shutdown:
 }
 
 - (void)setKeyState:(int)idx pressed:(BOOL)p {
-  if (idx >= 0 && idx < 32) {
-    g_input_state[idx] = p ? 1 : 0;
+  [self setKeyStateForPlayer:0 button:idx pressed:p];
+}
+
+- (void)setKeyStateForPlayer:(int)port button:(int)idx pressed:(BOOL)p {
+  if (port >= 0 && port < MAX_PLAYERS && idx >= 0 && idx < 32) {
+    g_input_state[port][idx] = p ? 1 : 0;
   }
 }
 
 - (void)setTurboState:(int)idx active:(BOOL)active targetButton:(int)targetIdx {
-  if (idx >= 0 && idx < 32) {
-    g_turbo_active[idx] = active;
-    g_turbo_fireButton[idx] = targetIdx;
+  [self setTurboStateForPlayer:0 index:idx active:active targetButton:targetIdx];
+}
+
+- (void)setTurboStateForPlayer:(int)port index:(int)idx active:(BOOL)active targetButton:(int)targetIdx {
+  if (port >= 0 && port < MAX_PLAYERS && idx >= 0 && idx < 32) {
+    g_turbo_active[port][idx] = active;
+    g_turbo_fireButton[port][idx] = targetIdx;
     if (!active) {
-      g_turbo_state[idx] = NO;
-      g_turbo_counter[idx] = 0;
+      g_turbo_state[port][idx] = NO;
+      g_turbo_counter[port][idx] = 0;
       if (targetIdx >= 0 && targetIdx < 32) {
-        g_input_state[targetIdx] = 0;
+        g_input_state[port][targetIdx] = 0;
       }
     }
   }
 }
 
 - (void)setAnalogState:(int)idx id:(int)id value:(int)v {
-  if (idx >= 0 && idx < 2 && id >= 0 && id < 2) g_analog_state[idx][id] = (int16_t)v;
+  [self setAnalogStateForPlayer:0 stick:idx axis:id value:v];
+}
+
+- (void)setAnalogStateForPlayer:(int)port stick:(int)idx axis:(int)id value:(int)v {
+  if (port >= 0 && port < MAX_PLAYERS && idx >= 0 && idx < 2 && id >= 0 && id < 2) g_analog_state[port][idx][id] = (int16_t)v;
 }
 
 - (void)setAnalogButtonState:(int)retroID value:(int)v {
-  if (retroID >= 0 && retroID < 32) g_analog_button_state[retroID] = (int16_t)v;
+  [self setAnalogButtonStateForPlayer:0 button:retroID value:v];
+}
+
+- (void)setAnalogButtonStateForPlayer:(int)port button:(int)retroID value:(int)v {
+  if (port >= 0 && port < MAX_PLAYERS && retroID >= 0 && retroID < 32) g_analog_button_state[port][retroID] = (int16_t)v;
 }
 
 - (void)setPixelFormat:(int)format { _pixelFormat = format; }

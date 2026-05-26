@@ -73,36 +73,23 @@ class DOSRunner: EmulatorRunner, @unchecked Sendable {
     override func setupGamepadInput() {
         let cs = ControllerService.shared
         
-        // Auto-select first controller if none selected
-        if cs.activePlayerIndex == 0 && !cs.connectedControllers.isEmpty {
-            cs.activePlayerIndex = 1
-        }
-        
-        let activeIdx = cs.activePlayerIndex
-        if activeIdx == 0 {
-            // Keyboard mode - DOSBox-Pure handles keyboard natively
-            LoggerService.debug(category: "DOSRunner", "Using keyboard input for DOS")
-            return
-        }
-        
-        guard let player = ControllerService.shared.connectedControllers.first(where: { $0.playerIndex == activeIdx }),
-              let controller = player.gcController else {
-            super.setupGamepadInput()
-            return
-        }
-        
-        LoggerService.debug(category: "DOSRunner", "Hooking gamepad for DOS: \(controller.vendorName ?? "Unknown")")
-        
-        controller.extendedGamepad?.valueChangedHandler = { [weak self] _, element in
-            guard let self = self else { return }
-            // DOSBox-Pure handles input mapping internally, just forward to core
-            self.handleGamepadInput(element)
+        for player in cs.connectedControllers {
+            guard let controller = player.gcController,
+                  let extendedGamepad = controller.extendedGamepad else { continue }
+            
+            let port = player.playerIndex - 1
+            LoggerService.debug(category: "DOSRunner", "Hooking gamepad for DOS: \(controller.vendorName ?? "Unknown") port \(port)")
+            
+            extendedGamepad.valueChangedHandler = { [weak self, port] _, element in
+                guard let self = self else { return }
+                self.handleGamepadInput(element, player: port)
+            }
         }
     }
     
     // Handle gamepad input in standard DOS game mode
     // Maps: D-Pad → JOYPAD buttons 4-7 (up/down/left/right), Buttons → JOYPAD 8-9 (A/B)
-    private func handleGamepadInput(_ element: GCControllerElement) {
+    private func handleGamepadInput(_ element: GCControllerElement, player: Int = 0) {
         if let dpad = element as? GCControllerDirectionPad {
             // DOSBox-Pure handles keyboard mapping internally
             // Forward D-Pad as JOYPAD button IDs
@@ -113,17 +100,17 @@ class DOSRunner: EmulatorRunner, @unchecked Sendable {
             
             LoggerService.debug(category: "DOSRunner", "DPad: up=\(upPressed), down=\(downPressed), left=\(leftPressed), right=\(rightPressed)")
             
-            setKeyState(retroID: 4, pressed: upPressed) // JOYPAD_UP
-            setKeyState(retroID: 5, pressed: downPressed) // JOYPAD_DOWN
-            setKeyState(retroID: 6, pressed: leftPressed) // JOYPAD_LEFT
-            setKeyState(retroID: 7, pressed: rightPressed) // JOYPAD_RIGHT
+            setKeyState(retroID: 4, player: player, pressed: upPressed) // JOYPAD_UP
+            setKeyState(retroID: 5, player: player, pressed: downPressed) // JOYPAD_DOWN
+            setKeyState(retroID: 6, player: player, pressed: leftPressed) // JOYPAD_LEFT
+            setKeyState(retroID: 7, player: player, pressed: rightPressed) // JOYPAD_RIGHT
         } else if let btn = element as? GCControllerButtonInput {
             // Map common buttons to JOYPAD A/B (buttons 8 and 9)
             let name = btn.localizedName ?? ""
             if name.contains("A") || name.contains("X") {
-                setKeyState(retroID: 13, pressed: btn.isPressed) // RETROK_RETURN
+                setKeyState(retroID: 13, player: player, pressed: btn.isPressed) // RETROK_RETURN
             } else if name.contains("B") || name.contains("Circle") {
-                setKeyState(retroID: 44, pressed: btn.isPressed) // RETROK_SPACE
+                setKeyState(retroID: 44, player: player, pressed: btn.isPressed) // RETROK_SPACE
             }
         }
     }

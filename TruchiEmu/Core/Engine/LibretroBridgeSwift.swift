@@ -141,6 +141,11 @@ import Foundation
         LibretroBridge.setKeyState(Int32(retroID), pressed: pressed)
     }
 
+    static func setKeyState(retroID: Int, player: Int, pressed: Bool) {
+        LoggerService.extreme(category: "LibretroBridge", "Setting key state: player=\(player) retroID=\(retroID) = \(pressed)")
+        LibretroBridge.setKeyState(Int32(retroID), player: Int32(player), pressed: pressed)
+    }
+
     static func setTurboState(turboIdx: Int, active: Bool, targetButton: Int) {
         LibretroBridge.setTurboState(Int32(turboIdx), active: active, targetButton: Int32(targetButton))
     }
@@ -149,8 +154,16 @@ import Foundation
         LibretroBridge.setAnalogState(Int32(index), id: Int32(id), value: value)
     }
 
+    static func setAnalogState(player: Int, stick: Int, axis: Int, value: Int32) {
+        LibretroBridge.setAnalogStateForPlayer(Int32(player), stick: Int32(stick), axis: Int32(axis), value: value)
+    }
+
     static func setAnalogButtonState(retroID: Int, value: Int32) {
         LibretroBridge.setAnalogButtonState(Int32(retroID), value: value)
+    }
+
+    static func setAnalogButtonState(retroID: Int, player: Int, value: Int32) {
+        LibretroBridge.setAnalogButtonState(Int32(retroID), player: Int32(player), value: value)
     }
 
     // MARK: - Keyboard / Mouse / Pointer Input

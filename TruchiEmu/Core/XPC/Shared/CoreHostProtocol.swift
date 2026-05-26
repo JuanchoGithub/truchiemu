@@ -47,10 +47,13 @@ import Foundation
 
     func setKeyStates(_ states: [Int: Bool], reply: @escaping () -> Void)
     func setKeyState(_ id: Int32, pressed: Bool, reply: @escaping () -> Void)
+    func setKeyState(_ id: Int32, player: Int32, pressed: Bool, reply: @escaping () -> Void)
     func setAnalogStates(_ states: [[Int]], reply: @escaping () -> Void)
     func setAnalogState(_ state: [Int32], reply: @escaping () -> Void)
+    func setAnalogState(player: Int32, stick: Int32, axis: Int32, value: Int32, reply: @escaping () -> Void)
     func setAnalogButtonStates(_ states: [Int: Int32], reply: @escaping () -> Void)
     func setAnalogButtonState(_ id: Int32, value: Int32, reply: @escaping () -> Void)
+    func setAnalogButtonState(_ id: Int32, player: Int32, value: Int32, reply: @escaping () -> Void)
     func setTurboStates(_ states: [[Int]], reply: @escaping () -> Void)
     func setTurboState(_ state: [Int32], reply: @escaping () -> Void)
     func setKeyboardStates(_ states: [Int: Bool], reply: @escaping () -> Void)

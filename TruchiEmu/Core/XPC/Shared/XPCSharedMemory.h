@@ -16,6 +16,7 @@ typedef atomic_long atomic_long_shm;
 
 #define XPC_SHM_NAME_PREFIX "/te_shm_"
 
+#define MAX_PLAYERS 4
 #define XPC_INPUT_STATE_COUNT 32
 #define XPC_ANALOG_STICKS 2
 #define XPC_ANALOG_AXES 2
@@ -44,13 +45,13 @@ typedef struct {
     atomic_int_shm frameReady;
     int _pad0;
 
-    int16_t input_state[XPC_INPUT_STATE_COUNT];
-    int16_t analog_state[XPC_ANALOG_STICKS][XPC_ANALOG_AXES];
-    int16_t analog_button_state[XPC_ANALOG_BUTTON_COUNT];
-    bool turbo_active[XPC_TURBO_COUNT];
-    int turbo_counter[XPC_TURBO_COUNT];
-    bool turbo_state[XPC_TURBO_COUNT];
-    int turbo_fireButton[XPC_TURBO_COUNT];
+    int16_t input_state[MAX_PLAYERS][XPC_INPUT_STATE_COUNT];
+    int16_t analog_state[MAX_PLAYERS][XPC_ANALOG_STICKS][XPC_ANALOG_AXES];
+    int16_t analog_button_state[MAX_PLAYERS][XPC_ANALOG_BUTTON_COUNT];
+    bool turbo_active[MAX_PLAYERS][XPC_TURBO_COUNT];
+    int turbo_counter[MAX_PLAYERS][XPC_TURBO_COUNT];
+    bool turbo_state[MAX_PLAYERS][XPC_TURBO_COUNT];
+    int turbo_fireButton[MAX_PLAYERS][XPC_TURBO_COUNT];
     bool keyboard_state[XPC_KEYBOARD_STATE_COUNT];
 
     XPCMouseState mouse;
@@ -132,27 +133,27 @@ static inline long xpc_shm_load_audioReadPos_relaxed(XPCSharedMemory *shm) {
 }
 #endif
 
-static inline void xpc_shm_set_input_state(XPCSharedMemory *shm, int idx, int16_t val) {
-    if (idx >= 0 && idx < XPC_INPUT_STATE_COUNT) shm->input_state[idx] = val;
+static inline void xpc_shm_set_input_state(XPCSharedMemory *shm, int player, int idx, int16_t val) {
+    if (player >= 0 && player < MAX_PLAYERS && idx >= 0 && idx < XPC_INPUT_STATE_COUNT) shm->input_state[player][idx] = val;
 }
-static inline int16_t xpc_shm_get_input_state(XPCSharedMemory *shm, int idx) {
-    return (idx >= 0 && idx < XPC_INPUT_STATE_COUNT) ? shm->input_state[idx] : 0;
-}
-
-static inline void xpc_shm_set_analog_state(XPCSharedMemory *shm, int stick, int axis, int16_t val) {
-    if (stick >= 0 && stick < XPC_ANALOG_STICKS && axis >= 0 && axis < XPC_ANALOG_AXES)
-        shm->analog_state[stick][axis] = val;
+static inline int16_t xpc_shm_get_input_state(XPCSharedMemory *shm, int player, int idx) {
+    return (player >= 0 && player < MAX_PLAYERS && idx >= 0 && idx < XPC_INPUT_STATE_COUNT) ? shm->input_state[player][idx] : 0;
 }
 
-static inline void xpc_shm_set_analog_button(XPCSharedMemory *shm, int idx, int16_t val) {
-    if (idx >= 0 && idx < XPC_ANALOG_BUTTON_COUNT) shm->analog_button_state[idx] = val;
+static inline void xpc_shm_set_analog_state(XPCSharedMemory *shm, int player, int stick, int axis, int16_t val) {
+    if (player >= 0 && player < MAX_PLAYERS && stick >= 0 && stick < XPC_ANALOG_STICKS && axis >= 0 && axis < XPC_ANALOG_AXES)
+        shm->analog_state[player][stick][axis] = val;
 }
 
-static inline void xpc_shm_set_turbo_active(XPCSharedMemory *shm, int idx, bool val) {
-    if (idx >= 0 && idx < XPC_TURBO_COUNT) shm->turbo_active[idx] = val;
+static inline void xpc_shm_set_analog_button(XPCSharedMemory *shm, int player, int idx, int16_t val) {
+    if (player >= 0 && player < MAX_PLAYERS && idx >= 0 && idx < XPC_ANALOG_BUTTON_COUNT) shm->analog_button_state[player][idx] = val;
 }
-static inline void xpc_shm_set_turbo_fireButton(XPCSharedMemory *shm, int idx, int val) {
-    if (idx >= 0 && idx < XPC_TURBO_COUNT) shm->turbo_fireButton[idx] = val;
+
+static inline void xpc_shm_set_turbo_active(XPCSharedMemory *shm, int player, int idx, bool val) {
+    if (player >= 0 && player < MAX_PLAYERS && idx >= 0 && idx < XPC_TURBO_COUNT) shm->turbo_active[player][idx] = val;
+}
+static inline void xpc_shm_set_turbo_fireButton(XPCSharedMemory *shm, int player, int idx, int val) {
+    if (player >= 0 && player < MAX_PLAYERS && idx >= 0 && idx < XPC_TURBO_COUNT) shm->turbo_fireButton[player][idx] = val;
 }
 
 static inline void xpc_shm_set_keyboard_state(XPCSharedMemory *shm, int idx, bool val) {
@@ -176,30 +177,30 @@ static inline int xpc_shm_open(const char *name, int oflag, mode_t mode) {
     return shm_open(name, oflag, mode);
 }
 
-static inline int16_t xpc_shm_get_analog_state(XPCSharedMemory *shm, int stick, int axis) {
-    if (stick >= 0 && stick < XPC_ANALOG_STICKS && axis >= 0 && axis < XPC_ANALOG_AXES)
-        return shm->analog_state[stick][axis];
+static inline int16_t xpc_shm_get_analog_state(XPCSharedMemory *shm, int player, int stick, int axis) {
+    if (player >= 0 && player < MAX_PLAYERS && stick >= 0 && stick < XPC_ANALOG_STICKS && axis >= 0 && axis < XPC_ANALOG_AXES)
+        return shm->analog_state[player][stick][axis];
     return 0;
 }
 
-static inline int16_t xpc_shm_get_analog_button(XPCSharedMemory *shm, int idx) {
-    return (idx >= 0 && idx < XPC_ANALOG_BUTTON_COUNT) ? shm->analog_button_state[idx] : 0;
+static inline int16_t xpc_shm_get_analog_button(XPCSharedMemory *shm, int player, int idx) {
+    return (player >= 0 && player < MAX_PLAYERS && idx >= 0 && idx < XPC_ANALOG_BUTTON_COUNT) ? shm->analog_button_state[player][idx] : 0;
 }
 
-static inline bool xpc_shm_get_turbo_active(XPCSharedMemory *shm, int idx) {
-    return (idx >= 0 && idx < XPC_TURBO_COUNT) ? shm->turbo_active[idx] : false;
+static inline bool xpc_shm_get_turbo_active(XPCSharedMemory *shm, int player, int idx) {
+    return (player >= 0 && player < MAX_PLAYERS && idx >= 0 && idx < XPC_TURBO_COUNT) ? shm->turbo_active[player][idx] : false;
 }
 
-static inline int xpc_shm_get_turbo_counter(XPCSharedMemory *shm, int idx) {
-    return (idx >= 0 && idx < XPC_TURBO_COUNT) ? shm->turbo_counter[idx] : 0;
+static inline int xpc_shm_get_turbo_counter(XPCSharedMemory *shm, int player, int idx) {
+    return (player >= 0 && player < MAX_PLAYERS && idx >= 0 && idx < XPC_TURBO_COUNT) ? shm->turbo_counter[player][idx] : 0;
 }
 
-static inline bool xpc_shm_get_turbo_state(XPCSharedMemory *shm, int idx) {
-    return (idx >= 0 && idx < XPC_TURBO_COUNT) ? shm->turbo_state[idx] : false;
+static inline bool xpc_shm_get_turbo_state(XPCSharedMemory *shm, int player, int idx) {
+    return (player >= 0 && player < MAX_PLAYERS && idx >= 0 && idx < XPC_TURBO_COUNT) ? shm->turbo_state[player][idx] : false;
 }
 
-static inline int xpc_shm_get_turbo_fireButton(XPCSharedMemory *shm, int idx) {
-    return (idx >= 0 && idx < XPC_TURBO_COUNT) ? shm->turbo_fireButton[idx] : 0;
+static inline int xpc_shm_get_turbo_fireButton(XPCSharedMemory *shm, int player, int idx) {
+    return (player >= 0 && player < MAX_PLAYERS && idx >= 0 && idx < XPC_TURBO_COUNT) ? shm->turbo_fireButton[player][idx] : 0;
 }
 
 static inline bool xpc_shm_get_keyboard_state(XPCSharedMemory *shm, int idx) {

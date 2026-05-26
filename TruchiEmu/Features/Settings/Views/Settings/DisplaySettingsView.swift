@@ -55,7 +55,7 @@ struct DisplaySettingsView: View {
                                 VStack(alignment: .leading) {
                                     Text(preset.name)
                                         .font(.subheadline)
-                                    Text(preset.description ?? "")
+                                    Text(preset.localizedDescription)
                                         .font(.caption)
                                         .foregroundStyle(AppColors.textSecondary(colorScheme))
                                 }

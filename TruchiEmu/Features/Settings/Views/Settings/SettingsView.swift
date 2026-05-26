@@ -151,9 +151,22 @@ struct SettingsView: View {
     
     // Sync state with AppSettings when view appears
     private func syncWithStorage() {
-        if let page = Page(rawValue: AppSettings.getString("settings_selectedTab", defaultValue: "general") ?? "general") {
+        if let pendingPage = AppSettings.getString("pending_settings_page"),
+           let page = Page(rawValue: pendingPage) {
+            selectedPage = page
+            AppSettings.remove("pending_settings_page")
+        } else if let page = Page(rawValue: AppSettings.getString("settings_selectedTab", defaultValue: "general") ?? "general") {
             selectedPage = page
         }
+    }
+    
+    private var effectiveSystemID: String? {
+        if let sid = system?.id { return sid }
+        if let pending = AppSettings.getString("pending_settings_system_id") {
+            AppSettings.remove("pending_settings_system_id")
+            return pending
+        }
+        return nil
     }
 
     // Update storage when selection changes
@@ -350,7 +363,7 @@ struct SettingsView: View {
             )
             case .library:     LibrarySettingsView(searchText: $searchText)
             case .cores:       CoreSettingsView(searchText: $searchText)
-            case .controllers: ControllerSettingsView(systemID: system?.id, searchText: $searchText)
+            case .controllers: ControllerSettingsView(systemID: effectiveSystemID, searchText: $searchText)
             case .boxArt:      BoxArtSettingsView(searchText: $searchText)
             case .display:     DisplaySettingsView(searchText: $searchText)
             case .cheats:      CheatSettingsView(system: system, searchText: $searchText)

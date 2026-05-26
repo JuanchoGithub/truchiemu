@@ -16,7 +16,9 @@ Text(loc.localized("controls.usesStandardLayout").replacingOccurrences(of: "{0}"
 Spacer()
         Button {
             if let sys = system {
-                openWindow(id: "system-settings", value: SystemSettingsRequest(system: sys, page: .controllers))
+                AppSettings.set("pending_settings_system_id", value: sys.id)
+                AppSettings.set("pending_settings_page", value: SettingsView.Page.controllers.rawValue)
+                NotificationCenter.default.post(name: .openAppSettings, object: nil)
             }
         } label: {
 Text(loc.localized("controls.edit"))

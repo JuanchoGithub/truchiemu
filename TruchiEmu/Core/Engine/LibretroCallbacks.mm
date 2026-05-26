@@ -6,14 +6,14 @@
 #include <unordered_map>
 #include <string>
 
-int16_t g_input_state[32] = {0};
-int16_t g_analog_state[2][2] = {0};
-int16_t g_analog_button_state[32] = {0};
-BOOL g_turbo_state[32] = {NO};
-int g_turbo_counter[32] = {0};
-BOOL g_turbo_active[32] = {NO};
+int16_t g_input_state[MAX_PLAYERS][32] = {0};
+int16_t g_analog_state[MAX_PLAYERS][2][2] = {0};
+int16_t g_analog_button_state[MAX_PLAYERS][32] = {0};
+BOOL g_turbo_state[MAX_PLAYERS][32] = {NO};
+int g_turbo_counter[MAX_PLAYERS][32] = {0};
+BOOL g_turbo_active[MAX_PLAYERS][32] = {NO};
 const int g_turbo_rate = 6;
-int g_turbo_fireButton[32] = {0};
+int g_turbo_fireButton[MAX_PLAYERS][32] = {0};
 
 // Keyboard callback storage (set by RETRO_ENVIRONMENT_SET_KEYBOARD_CALLBACK)
 struct retro_keyboard_callback g_keyboard_callback = {NULL};
@@ -409,34 +409,38 @@ size_t bridge_audio_sample_batch(const int16_t *data, size_t frames) {
 static void bridge_handle_turbo(void) {
 #ifdef XPC_SERVICE
     if (g_xpc_shm) {
-        for (int i = 0; i < 32; i++) {
-            if (g_xpc_shm->turbo_active[i]) {
-                if (g_xpc_shm->turbo_counter[i] <= 0) {
-                    g_xpc_shm->turbo_counter[i] = g_turbo_rate;
-                    g_xpc_shm->turbo_state[i] = !g_xpc_shm->turbo_state[i];
-                    int targetIdx = g_xpc_shm->turbo_fireButton[i];
-                    if (targetIdx >= 0 && targetIdx < 32) {
-                        g_xpc_shm->input_state[targetIdx] = g_xpc_shm->turbo_state[i] ? 1 : 0;
+        for (int p = 0; p < MAX_PLAYERS; p++) {
+            for (int i = 0; i < 32; i++) {
+                if (g_xpc_shm->turbo_active[p][i]) {
+                    if (g_xpc_shm->turbo_counter[p][i] <= 0) {
+                        g_xpc_shm->turbo_counter[p][i] = g_turbo_rate;
+                        g_xpc_shm->turbo_state[p][i] = !g_xpc_shm->turbo_state[p][i];
+                        int targetIdx = g_xpc_shm->turbo_fireButton[p][i];
+                        if (targetIdx >= 0 && targetIdx < 32) {
+                            g_xpc_shm->input_state[p][targetIdx] = g_xpc_shm->turbo_state[p][i] ? 1 : 0;
+                        }
+                    } else {
+                        g_xpc_shm->turbo_counter[p][i]--;
                     }
-                } else {
-                    g_xpc_shm->turbo_counter[i]--;
                 }
             }
         }
         return;
     }
 #endif
-    for (int i = 0; i < 32; i++) {
-        if (g_turbo_active[i]) {
-            if (g_turbo_counter[i] <= 0) {
-                g_turbo_counter[i] = g_turbo_rate;
-                g_turbo_state[i] = !g_turbo_state[i];
-                int targetIdx = g_turbo_fireButton[i];
-                if (targetIdx >= 0 && targetIdx < 32) {
-                    g_input_state[targetIdx] = g_turbo_state[i] ? 1 : 0;
+    for (int p = 0; p < MAX_PLAYERS; p++) {
+        for (int i = 0; i < 32; i++) {
+            if (g_turbo_active[p][i]) {
+                if (g_turbo_counter[p][i] <= 0) {
+                    g_turbo_counter[p][i] = g_turbo_rate;
+                    g_turbo_state[p][i] = !g_turbo_state[p][i];
+                    int targetIdx = g_turbo_fireButton[p][i];
+                    if (targetIdx >= 0 && targetIdx < 32) {
+                        g_input_state[p][targetIdx] = g_turbo_state[p][i] ? 1 : 0;
+                    }
+                } else {
+                    g_turbo_counter[p][i]--;
                 }
-            } else {
-                g_turbo_counter[i]--;
             }
         }
     }
@@ -447,21 +451,21 @@ void bridge_input_poll(void) {
 }
 
 int16_t bridge_input_state(unsigned port, unsigned device, unsigned index, unsigned id) {
-    if (port != 0) return 0;
+    if (port >= MAX_PLAYERS) return 0;
 #ifdef XPC_SERVICE
     if (g_xpc_shm) {
         if (device == RETRO_DEVICE_JOYPAD)
-            return xpc_shm_get_input_state(g_xpc_shm, id & 0x1F) ? 1 : 0;
+            return xpc_shm_get_input_state(g_xpc_shm, (int)port, id & 0x1F) ? 1 : 0;
         if (device == RETRO_DEVICE_ANALOG) {
             if (index < 2 && id < 2) {
-                int16_t val = xpc_shm_get_analog_state(g_xpc_shm, index, id);
+                int16_t val = xpc_shm_get_analog_state(g_xpc_shm, (int)port, (int)index, (int)id);
                 if (val != 0) return val;
-                if (xpc_shm_get_input_state(g_xpc_shm, id)) return 1;
+                if (xpc_shm_get_input_state(g_xpc_shm, (int)port, (int)id)) return 1;
                 return 0;
             }
-            int16_t analogVal = xpc_shm_get_analog_button(g_xpc_shm, id & 0x1F);
+            int16_t analogVal = xpc_shm_get_analog_button(g_xpc_shm, (int)port, id & 0x1F);
             if (analogVal != 0) return analogVal;
-            return xpc_shm_get_input_state(g_xpc_shm, id & 0x1F) ? 1 : 0;
+            return xpc_shm_get_input_state(g_xpc_shm, (int)port, id & 0x1F) ? 1 : 0;
         }
         if (device == RETRO_DEVICE_KEYBOARD || device == 0) {
             if (id < 512) return xpc_shm_get_keyboard_state(g_xpc_shm, id) ? 1 : 0;
@@ -499,22 +503,22 @@ int16_t bridge_input_state(unsigned port, unsigned device, unsigned index, unsig
     }
 #endif
     if (device == RETRO_DEVICE_JOYPAD)
-        return g_input_state[id & 0x1F] ? 1 : 0;
+        return g_input_state[port][id & 0x1F] ? 1 : 0;
     if (device == RETRO_DEVICE_ANALOG) {
         if (index < 2 && id < 2) {
-            int16_t val = g_analog_state[index][id];
+            int16_t val = g_analog_state[port][index][id];
             if (val != 0)
                 return val;
-            if (g_input_state[id] != 0)
+            if (g_input_state[port][id] != 0)
                 return 1;
             return 0;
         }
         // Handle analog button values (L2/R2 triggers) for cores like Flycast
         // that query analog trigger pressure via RETRO_DEVICE_ANALOG with index=2
-        int16_t analogVal = g_analog_button_state[id & 0x1F];
+        int16_t analogVal = g_analog_button_state[port][id & 0x1F];
         if (analogVal != 0)
             return analogVal;
-        return g_input_state[id & 0x1F] ? 1 : 0;
+        return g_input_state[port][id & 0x1F] ? 1 : 0;
     }
 
     // RETRO_DEVICE_KEYBOARD - raw keycode polling

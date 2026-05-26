@@ -88,24 +88,24 @@ struct ContentView: View {
                 openWindow(id: "core-options", value: resolvedSystemID)
             case .selectCore(let system):
                 openWindow(id: "core-options", value: resolvedSystemID)
-                              case .cheats:
-                                  var targetSystem = system
-                                  if let target = SystemDatabase.system(forID: resolvedSystemID) {
-                                      targetSystem = target
-                                  }
-                                  openWindow(id: "system-settings", value: SystemSettingsRequest(system: targetSystem, page: .cheats))
-                              case .bezels:
-                                  var targetSystem = system
-                                  if let target = SystemDatabase.system(forID: resolvedSystemID) {
-                                      targetSystem = target
-                                  }
-                                  openWindow(id: "system-settings", value: SystemSettingsRequest(system: targetSystem, page: .bezels))
-                              case .controllers:
-                                  var targetSystem = system
-                                  if let target = SystemDatabase.system(forID: resolvedSystemID) {
-                                      targetSystem = target
-                                  }
-                                  openWindow(id: "system-settings", value: SystemSettingsRequest(system: targetSystem, page: .controllers))
+                               case .cheats:
+                                    if let target = SystemDatabase.system(forID: resolvedSystemID) {
+                                        AppSettings.set("pending_settings_system_id", value: target.id)
+                                    }
+                                    AppSettings.set("pending_settings_page", value: SettingsView.Page.cheats.rawValue)
+                                    NotificationCenter.default.post(name: .openAppSettings, object: nil)
+                                case .bezels:
+                                    if let target = SystemDatabase.system(forID: resolvedSystemID) {
+                                        AppSettings.set("pending_settings_system_id", value: target.id)
+                                    }
+                                    AppSettings.set("pending_settings_page", value: SettingsView.Page.bezels.rawValue)
+                                    NotificationCenter.default.post(name: .openAppSettings, object: nil)
+                                case .controllers:
+                                    if let target = SystemDatabase.system(forID: resolvedSystemID) {
+                                        AppSettings.set("pending_settings_system_id", value: target.id)
+                                    }
+                                    AppSettings.set("pending_settings_page", value: SettingsView.Page.controllers.rawValue)
+                                    NotificationCenter.default.post(name: .openAppSettings, object: nil)
 case .shaders:
 var targetSystem = system
 if let target = SystemDatabase.system(forID: resolvedSystemID) {

@@ -10,6 +10,8 @@
 extern "C" {
 #endif
 
+#define MAX_PLAYERS 4
+
 bool bridge_environment(unsigned cmd, void *data);
 void bridge_video_refresh(const void *data, unsigned width, unsigned height, size_t pitch);
 void bridge_audio_sample(int16_t left, int16_t right);
@@ -21,14 +23,14 @@ void bridge_reset_keyboard_callback(void);
 uintptr_t bridge_get_proc_address(const char *sym);
 uintptr_t bridge_get_current_framebuffer(void);
 
-extern int16_t g_input_state[32];
-extern int16_t g_analog_state[2][2];
-extern int16_t g_analog_button_state[32];
-extern BOOL g_turbo_state[32];
-extern int g_turbo_counter[32];
-extern BOOL g_turbo_active[32];
+extern int16_t g_input_state[MAX_PLAYERS][32];
+extern int16_t g_analog_state[MAX_PLAYERS][2][2];
+extern int16_t g_analog_button_state[MAX_PLAYERS][32];
+extern BOOL g_turbo_state[MAX_PLAYERS][32];
+extern int g_turbo_counter[MAX_PLAYERS][32];
+extern BOOL g_turbo_active[MAX_PLAYERS][32];
 extern const int g_turbo_rate;
-extern int g_turbo_fireButton[32];
+extern int g_turbo_fireButton[MAX_PLAYERS][32];
 extern struct retro_keyboard_callback g_keyboard_callback;
 extern BOOL g_keyboard_callback_registered;
 

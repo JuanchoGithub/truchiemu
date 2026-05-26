@@ -185,37 +185,37 @@ final class XPCBridgeAdapter {
 
     // MARK: - Input (hot path — uses shared memory when available)
 
-    func setKeyState(retroID: Int, pressed: Bool) {
+    func setKeyState(retroID: Int, player: Int = 0, pressed: Bool) {
         if useSharedMemory, let shm = shmManager.sharedMemory {
-            xpc_shm_set_input_state(shm, Int32(retroID), pressed ? 1 : 0)
+            xpc_shm_set_input_state(shm, Int32(player), Int32(retroID), pressed ? 1 : 0)
             return
         }
-        guard useXPC else { LibretroBridgeSwift.setKeyState(retroID: retroID, pressed: pressed); return }
-        XPCConnectionManager.shared.remoteProxy?.setKeyState(Int32(retroID), pressed: pressed) {}
+        guard useXPC else { LibretroBridgeSwift.setKeyState(retroID: retroID, player: player, pressed: pressed); return }
+        XPCConnectionManager.shared.remoteProxy?.setKeyState(Int32(retroID), player: Int32(player), pressed: pressed) {}
     }
 
-    func setAnalogState(_ index: Int, id: Int, value: Int32) {
+    func setAnalogState(_ index: Int, id: Int, value: Int32, player: Int = 0) {
         if useSharedMemory, let shm = shmManager.sharedMemory {
-            xpc_shm_set_analog_state(shm, Int32(index), Int32(id), Int16(value))
+            xpc_shm_set_analog_state(shm, Int32(player), Int32(index), Int32(id), Int16(value))
             return
         }
         guard useXPC else { LibretroBridgeSwift.setAnalogState(index, id: id, value: value); return }
-        XPCConnectionManager.shared.remoteProxy?.setAnalogState([Int32(index), Int32(id), Int32(value)]) {}
+        XPCConnectionManager.shared.remoteProxy?.setAnalogState(player: Int32(player), stick: Int32(index), axis: Int32(id), value: value) {}
     }
 
-    func setAnalogButtonState(retroID: Int, value: Int32) {
+    func setAnalogButtonState(retroID: Int, value: Int32, player: Int = 0) {
         if useSharedMemory, let shm = shmManager.sharedMemory {
-            xpc_shm_set_analog_button(shm, Int32(retroID), Int16(clamping: value))
+            xpc_shm_set_analog_button(shm, Int32(player), Int32(retroID), Int16(clamping: value))
             return
         }
-        guard useXPC else { LibretroBridgeSwift.setAnalogButtonState(retroID: retroID, value: value); return }
-        XPCConnectionManager.shared.remoteProxy?.setAnalogButtonState(Int32(retroID), value: Int32(value)) {}
+        guard useXPC else { LibretroBridgeSwift.setAnalogButtonState(retroID: retroID, player: player, value: value); return }
+        XPCConnectionManager.shared.remoteProxy?.setAnalogButtonState(Int32(retroID), player: Int32(player), value: value) {}
     }
 
-    func setTurboState(turboIdx: Int, active: Bool, targetButton: Int) {
+    func setTurboState(turboIdx: Int, active: Bool, targetButton: Int, player: Int = 0) {
         if useSharedMemory, let shm = shmManager.sharedMemory {
-            xpc_shm_set_turbo_active(shm, Int32(turboIdx), active)
-            xpc_shm_set_turbo_fireButton(shm, Int32(turboIdx), Int32(targetButton))
+            xpc_shm_set_turbo_active(shm, Int32(player), Int32(turboIdx), active)
+            xpc_shm_set_turbo_fireButton(shm, Int32(player), Int32(turboIdx), Int32(targetButton))
             return
         }
         guard useXPC else { LibretroBridgeSwift.setTurboState(turboIdx: turboIdx, active: active, targetButton: targetButton); return }

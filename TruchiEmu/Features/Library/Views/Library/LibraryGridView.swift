@@ -56,7 +56,9 @@ struct LibraryGridView: View {
         Divider()
         Button {
             if case .system(let system) = filter {
-                openWindow(id: "system-settings", value: SystemSettingsRequest(system: system, page: .controllers))
+                AppSettings.set("pending_settings_system_id", value: system.id)
+                AppSettings.set("pending_settings_page", value: SettingsView.Page.controllers.rawValue)
+                NotificationCenter.default.post(name: .openAppSettings, object: nil)
             } else {
                 AppSettings.set("settings_selectedTab", value: "controllers")
                 NotificationCenter.default.post(name: .openAppSettings, object: nil)

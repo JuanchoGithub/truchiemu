@@ -145,15 +145,27 @@ static int16_t input_state_stub(unsigned port, unsigned device, unsigned index, 
     return 0;
 }
 + (void)setKeyState:(int)rid pressed:(BOOL)p { if (g_instance) [g_instance setKeyState:rid pressed:p]; }
-+ (void)setControllerPortDevice:(unsigned)port device:(unsigned)device { if (g_instance) [g_instance setControllerPortDevice:port device:device]; }
-+ (void)setTurboState:(int)idx active:(BOOL)active targetButton:(int)targetIdx {
-    if (g_instance) [g_instance setTurboState:idx active:active targetButton:targetIdx];
+
++ (void)setKeyState:(int)rid player:(int)port pressed:(BOOL)p { if (g_instance) [g_instance setKeyStateForPlayer:port button:rid pressed:p]; }
+
++ (void)setTurboState:(int)turboIdx active:(BOOL)active targetButton:(int)targetButton {
+    if (g_instance) [g_instance setTurboState:turboIdx active:active targetButton:targetButton];
 }
+
 + (void)setAnalogState:(int)idx id:(int)id value:(int)v {
     if (g_instance) [g_instance setAnalogState:idx id:id value:v];
 }
-+ (void)setAnalogButtonState:(int)retroID value:(int)v {
-    if (g_instance) [g_instance setAnalogButtonState:retroID value:v];
+
++ (void)setAnalogStateForPlayer:(int)port stick:(int)idx axis:(int)id value:(int)v {
+    if (g_instance) [g_instance setAnalogStateForPlayer:port stick:idx axis:id value:v];
+}
+
++ (void)setAnalogButtonState:(int)rid value:(int)v {
+    if (g_instance) [g_instance setAnalogButtonState:rid value:v];
+}
+
++ (void)setAnalogButtonState:(int)rid player:(int)port value:(int)v {
+    if (g_instance) [g_instance setAnalogButtonStateForPlayer:port button:rid value:v];
 }
 + (void)setLanguage:(int)language { g_selectedLanguage = language; }
 + (void)setLogLevel:(int)level { g_logLevel = level; }

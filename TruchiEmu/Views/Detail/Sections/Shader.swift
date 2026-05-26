@@ -59,8 +59,8 @@ Text(loc.localized("shader.customize"))
                                 if currentROM.settings.shaderPresetID == preset.id {
                                     Image(systemName: "checkmark.circle.fill").foregroundColor(AppColors.brandAccent)
                                 }
-                                if let desc = preset.description {
-                                    Text(desc).font(.caption).foregroundColor(AppColors.textTertiary(colorScheme)).lineLimit(1)
+                                if !preset.localizedDescription.isEmpty {
+                                    Text(preset.localizedDescription).font(.caption).foregroundColor(AppColors.textTertiary(colorScheme)).lineLimit(1)
                                 }
                             }
 .padding(.vertical, AppSpacing.xs)

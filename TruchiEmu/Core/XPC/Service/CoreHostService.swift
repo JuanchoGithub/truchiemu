@@ -277,7 +277,7 @@ class CoreHostImplementation: NSObject, CoreHostProtocol {
     func setKeyStates(_ states: [Int: Bool], reply: @escaping () -> Void) {
         if let shm = sharedMemory {
             for (id, pressed) in states {
-                xpc_shm_set_input_state(shm, Int32(id), pressed ? 1 : 0)
+                xpc_shm_set_input_state(shm, 0, Int32(id), pressed ? 1 : 0)
             }
         } else {
             for (id, pressed) in states {
@@ -289,9 +289,18 @@ class CoreHostImplementation: NSObject, CoreHostProtocol {
 
     func setKeyState(_ id: Int32, pressed: Bool, reply: @escaping () -> Void) {
         if let shm = sharedMemory {
-            xpc_shm_set_input_state(shm, id, pressed ? 1 : 0)
+            xpc_shm_set_input_state(shm, 0, id, pressed ? 1 : 0)
         } else {
             LibretroBridge.setKeyState(id, pressed: pressed)
+        }
+        reply()
+    }
+
+    func setKeyState(_ id: Int32, player: Int32, pressed: Bool, reply: @escaping () -> Void) {
+        if let shm = sharedMemory {
+            xpc_shm_set_input_state(shm, player, id, pressed ? 1 : 0)
+        } else {
+            LibretroBridge.setKeyState(id, player: player, pressed: pressed)
         }
         reply()
     }
@@ -300,7 +309,7 @@ class CoreHostImplementation: NSObject, CoreHostProtocol {
         if let shm = sharedMemory {
             for state in states {
                 guard state.count == 3 else { continue }
-                xpc_shm_set_analog_state(shm, Int32(state[0]), Int32(state[1]), Int16(state[2]))
+                xpc_shm_set_analog_state(shm, 0, Int32(state[0]), Int32(state[1]), Int16(state[2]))
             }
         } else {
             for state in states {
@@ -313,9 +322,18 @@ class CoreHostImplementation: NSObject, CoreHostProtocol {
 
     func setAnalogState(_ state: [Int32], reply: @escaping () -> Void) {
         if let shm = sharedMemory, state.count == 3 {
-            xpc_shm_set_analog_state(shm, state[0], state[1], Int16(state[2]))
+            xpc_shm_set_analog_state(shm, 0, state[0], state[1], Int16(state[2]))
         } else if state.count == 3 {
             LibretroBridge.setAnalogState(state[0], id: state[1], value: state[2])
+        }
+        reply()
+    }
+
+    func setAnalogState(player: Int32, stick: Int32, axis: Int32, value: Int32, reply: @escaping () -> Void) {
+        if let shm = sharedMemory {
+            xpc_shm_set_analog_state(shm, player, stick, axis, Int16(value))
+        } else {
+            LibretroBridge.setAnalogStateForPlayer(player, stick: stick, axis: axis, value: value)
         }
         reply()
     }
@@ -323,7 +341,7 @@ class CoreHostImplementation: NSObject, CoreHostProtocol {
     func setAnalogButtonStates(_ states: [Int: Int32], reply: @escaping () -> Void) {
         if let shm = sharedMemory {
             for (id, val) in states {
-                xpc_shm_set_analog_button(shm, Int32(id), Int16(clamping: val))
+                xpc_shm_set_analog_button(shm, 0, Int32(id), Int16(clamping: val))
             }
         } else {
             for (id, val) in states {
@@ -335,9 +353,18 @@ class CoreHostImplementation: NSObject, CoreHostProtocol {
 
     func setAnalogButtonState(_ id: Int32, value: Int32, reply: @escaping () -> Void) {
         if let shm = sharedMemory {
-            xpc_shm_set_analog_button(shm, id, Int16(clamping: value))
+            xpc_shm_set_analog_button(shm, 0, id, Int16(clamping: value))
         } else {
             LibretroBridge.setAnalogButtonState(id, value: value)
+        }
+        reply()
+    }
+
+    func setAnalogButtonState(_ id: Int32, player: Int32, value: Int32, reply: @escaping () -> Void) {
+        if let shm = sharedMemory {
+            xpc_shm_set_analog_button(shm, player, id, Int16(clamping: value))
+        } else {
+            LibretroBridge.setAnalogButtonState(id, player: player, value: value)
         }
         reply()
     }
@@ -346,8 +373,8 @@ class CoreHostImplementation: NSObject, CoreHostProtocol {
         if let shm = sharedMemory {
             for state in states {
                 guard state.count == 3 else { continue }
-                xpc_shm_set_turbo_active(shm, Int32(state[0]), state[1] != 0)
-                xpc_shm_set_turbo_fireButton(shm, Int32(state[0]), Int32(state[2]))
+                xpc_shm_set_turbo_active(shm, 0, Int32(state[0]), state[1] != 0)
+                xpc_shm_set_turbo_fireButton(shm, 0, Int32(state[0]), Int32(state[2]))
             }
         } else {
             for state in states {
@@ -360,8 +387,8 @@ class CoreHostImplementation: NSObject, CoreHostProtocol {
 
     func setTurboState(_ state: [Int32], reply: @escaping () -> Void) {
         if let shm = sharedMemory, state.count == 3 {
-            xpc_shm_set_turbo_active(shm, state[0], state[1] != 0)
-            xpc_shm_set_turbo_fireButton(shm, state[0], state[2])
+            xpc_shm_set_turbo_active(shm, 0, state[0], state[1] != 0)
+            xpc_shm_set_turbo_fireButton(shm, 0, state[0], state[2])
         } else if state.count == 3 {
             LibretroBridge.setTurboState(state[0], active: state[1] != 0, targetButton: state[2])
         }

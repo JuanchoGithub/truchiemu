@@ -91,19 +91,20 @@ final class SharedMemoryManager {
                           analogButtons: [Int: Int32],
                           keyboard: [Int: Bool],
                           mouse: XPCMouseState,
-                          pointer: XPCPointerState) {
+                          pointer: XPCPointerState,
+                          player: Int = 0) {
         guard let shm = sharedMemory else { return }
 
         for (id, pressed) in joypad {
-            xpc_shm_set_input_state(shm, Int32(id), pressed ? 1 : 0)
+            xpc_shm_set_input_state(shm, Int32(player), Int32(id), pressed ? 1 : 0)
         }
         for state in analog {
             guard state.count == 3 else { continue }
             let idx = state[0], id = state[1], val = state[2]
-            xpc_shm_set_analog_state(shm, Int32(idx), Int32(id), Int16(val))
+            xpc_shm_set_analog_state(shm, Int32(player), Int32(idx), Int32(id), Int16(val))
         }
         for (id, val) in analogButtons {
-            xpc_shm_set_analog_button(shm, Int32(id), Int16(clamping: val))
+            xpc_shm_set_analog_button(shm, Int32(player), Int32(id), Int16(clamping: val))
         }
         for (id, pressed) in keyboard {
             xpc_shm_set_keyboard_state(shm, Int32(id), pressed)
