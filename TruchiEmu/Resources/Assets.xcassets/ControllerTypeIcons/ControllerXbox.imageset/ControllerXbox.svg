@@ -1,0 +1,39 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+  <!-- LT / RT Triggers -->
+  <path d="M 6.5 3 V 1.5 C 6.5 1 7 0.5 8 0.5 H 9 C 9.5 0.5 9.5 1 9.5 1.5 L 9 3 M 17.5 3 V 1.5 C 17.5 1 17 0.5 16 0.5 H 15 C 14.5 0.5 14.5 1 14.5 1.5 L 15 3" opacity="0.5"/>
+
+  <!-- Main Xbox Silhouette (Features the distinct central V-cutout at the bottom) -->
+  <path d="M 8.5 3 H 15.5 C 18 3 20.5 5 21 7.5 L 22 13 C 22.5 15.5 20.5 17.5 18.5 17.5 C 16.5 17.5 15.5 16.5 14.5 14.5 L 13.5 12.5 C 13 11.5 12.5 11.5 12 11.5 C 11.5 11.5 11 11.5 10.5 12.5 L 9.5 14.5 C 8.5 16.5 7.5 17.5 5.5 17.5 C 3.5 17.5 1.5 15.5 2 13 L 3 7.5 C 3.5 5 6 3 8.5 3 Z" />
+
+  <!-- Top Panel Seam (Separates the LB/RB bumpers from the faceplate) -->
+  <path d="M 2.8 7 C 5 4.5 8 3.5 12 3.5 C 16 3.5 19 4.5 21.2 7" opacity="0.5"/>
+
+  <!-- Guide Button & Inner X -->
+  <circle cx="12" cy="5.5" r="1.4" stroke-width="1.2"/>
+  <path d="M 11.2 4.7 L 12.8 6.3 M 12.8 4.7 L 11.2 6.3" stroke-width="1"/>
+
+  <!-- Left Stick (High) -->
+  <circle cx="7" cy="8" r="2"/>
+  <circle cx="7" cy="8" r="0.6" fill="currentColor" stroke="none"/>
+
+  <!-- Right Stick (Low) -->
+  <circle cx="15.5" cy="13.5" r="2"/>
+  <circle cx="15.5" cy="13.5" r="0.6" fill="currentColor" stroke="none"/>
+
+  <!-- Modern Series X Faceted D-Pad -->
+  <circle cx="8.5" cy="13.5" r="1.8" opacity="0.5"/>
+  <path d="M 8.5 12 V 15 M 7 13.5 H 10" stroke-width="1.2"/>
+
+  <!-- ABXY Action Buttons -->
+  <g fill="currentColor" stroke="none">
+    <circle cx="17" cy="6" r="0.6"/>   <!-- Y -->
+    <circle cx="17" cy="10" r="0.6"/>  <!-- A -->
+    <circle cx="15" cy="8" r="0.6"/>   <!-- X -->
+    <circle cx="19" cy="8" r="0.6"/>   <!-- B -->
+  </g>
+
+  <!-- System Buttons (View, Menu, Share) -->
+  <rect x="9.5" y="8" width="1.4" height="1" rx="0.3" fill="currentColor" stroke="none"/>
+  <circle cx="13.8" cy="8.5" r="0.6" fill="currentColor" stroke="none"/>
+  <rect x="11.5" y="10.2" width="1" height="1" rx="0.2" fill="currentColor" stroke="none"/>
+</svg>

@@ -943,7 +943,6 @@ case "scummvm": runner = ScummVMRunner()
 
         LoggerService.info(category: "Runner", "setupGamepadInput: connectedControllers=\(cs.connectedControllers.map { $0.name })")
 
-        // Auto-select first controller if none selected
         if cs.activePlayerIndex == 0 && !cs.connectedControllers.isEmpty {
             cs.activePlayerIndex = 1
         }
@@ -954,26 +953,29 @@ case "scummvm": runner = ScummVMRunner()
             guard let controller = player.gcController,
                   let extendedGamepad = controller.extendedGamepad else { continue }
 
-            let port = player.playerIndex - 1
             let mapping = cs.mapping(for: controller.vendorName ?? "Unknown", systemID: sysID)
+            let ports = player.assignedPlayers.map { $0 - 1 }
 
-            LoggerService.info(category: "Runner", "Hooking gamepad: \(controller.vendorName ?? "Unknown") for port \(port) system: \(sysID)")
-            self.hookedControllers[port] = controller
-            if port == 0 { self.hookedController = controller }
-
-extendedGamepad.valueChangedHandler = { [weak self, port] _, element in
-            guard let self = self else { return }
-            
-            if let dpad = element as? GCControllerDirectionPad {
-                self.updateGamepadButton(dpad.up, in: mapping, player: port)
-                self.updateGamepadButton(dpad.down, in: mapping, player: port)
-                self.updateGamepadButton(dpad.left, in: mapping, player: port)
-                self.updateGamepadButton(dpad.right, in: mapping, player: port)
-                self.updateGamepadButton(dpad, in: mapping, player: port)
-            } else {
-                self.updateGamepadButton(element, in: mapping, player: port)
+            for port in ports {
+                LoggerService.info(category: "Runner", "Hooking gamepad: \(controller.vendorName ?? "Unknown") for port \(port) system: \(sysID)")
+                self.hookedControllers[port] = controller
+                if port == 0 { self.hookedController = controller }
             }
-        }
+
+            extendedGamepad.valueChangedHandler = { [weak self] _, element in
+                guard let self = self else { return }
+                for port in ports {
+                    if let dpad = element as? GCControllerDirectionPad {
+                        self.updateGamepadButton(dpad.up, in: mapping, player: port)
+                        self.updateGamepadButton(dpad.down, in: mapping, player: port)
+                        self.updateGamepadButton(dpad.left, in: mapping, player: port)
+                        self.updateGamepadButton(dpad.right, in: mapping, player: port)
+                        self.updateGamepadButton(dpad, in: mapping, player: port)
+                    } else {
+                        self.updateGamepadButton(element, in: mapping, player: port)
+                    }
+                }
+            }
         }
     }
 

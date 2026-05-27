@@ -48,8 +48,8 @@ struct LibraryGridView: View {
         Button(action: { controllerService.activePlayerIndex = 0 }) {
             Label(loc.localized("toolbar.keyboard"), systemImage: "keyboard")
         }
-        ForEach(Array(controllerService.connectedControllers.enumerated()), id: \.element.playerIndex) { index, player in
-            Button(action: { controllerService.activePlayerIndex = player.playerIndex }) {
+    ForEach(controllerService.connectedControllers, id: \.id) { player in
+        Button(action: { controllerService.activePlayerIndex = player.primaryPlayer }) {
                 Label(player.name, systemImage: "gamecontroller")
             }
         }

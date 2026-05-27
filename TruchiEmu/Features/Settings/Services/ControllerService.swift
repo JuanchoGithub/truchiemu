@@ -3,16 +3,16 @@ import GameController
 import Combine
 
 private let mappingVersionKey = "controller_mapping_version"
-private let currentMappingVersion = 3
+private let currentMappingVersion = 4
 
 @MainActor
 class ControllerService: ObservableObject {
     static let shared = ControllerService()
-    @Published var currentSystemID: String = "default" 
+    @Published var currentSystemID: String = "default"
 
     @Published var connectedControllers: [PlayerController] = []
 
-    @Published var sessionSlotOrder: [ObjectIdentifier: Int] = [:]
+    @Published var sessionSlotAssignments: [ObjectIdentifier: Set<Int>] = [:]
 
     @Published var activePlayerIndex: Int = 0 {
         didSet {
@@ -31,6 +31,21 @@ class ControllerService: ObservableObject {
 
     private var cancellables = Set<AnyCancellable>()
 
+    var parentModePlayers: Set<Int> {
+        var result = Set<Int>()
+        for slot in 1...4 {
+            let count = connectedControllers.filter { $0.assignedPlayers.contains(slot) }.count
+            if count > 1 { result.insert(slot) }
+        }
+        return result
+    }
+
+    var isParentModeActive: Bool { !parentModePlayers.isEmpty }
+
+    func controllerIsInParentMode(_ player: PlayerController) -> Bool {
+        !player.assignedPlayers.intersection(parentModePlayers).isEmpty
+    }
+
     init() {
         self.handedness = AppSettings.get("controller_handedness", type: String.self) ?? "right"
         self.activePlayerIndex = AppSettings.getInt("active_player_index", defaultValue: 0)
@@ -43,11 +58,15 @@ class ControllerService: ObservableObject {
     private func migrateIfNeeded() {
         let storedVersion = AppSettings.getInt(mappingVersionKey, defaultValue: 0)
         guard storedVersion < currentMappingVersion else { return }
-        migrateFromV2toV3()
+        if storedVersion < 3 { migrateFromV2toV3() }
+        if storedVersion < 4 { migrateFromV3toV4() }
         AppSettings.setInt(mappingVersionKey, value: currentMappingVersion)
     }
 
     private func migrateFromV2toV3() {
+    }
+
+    private func migrateFromV3toV4() {
     }
 
     private func setupControllerNotifications() {
@@ -60,6 +79,20 @@ class ControllerService: ObservableObject {
             .store(in: &cancellables)
     }
 
+    static let keyboardId = UUID()
+
+    private static func stableId(for gc: GCController) -> UUID {
+        let hash = ObjectIdentifier(gc).hashValue
+        return UUID(uuid: (
+            UInt8(truncatingIfNeeded: hash >> 24), UInt8(truncatingIfNeeded: hash >> 16),
+            UInt8(truncatingIfNeeded: hash >> 8), UInt8(truncatingIfNeeded: hash),
+            0x01, 0x23, 0x45, 0x67,
+            0x89, 0xAB, 0xCD, 0xEF,
+            UInt8(truncatingIfNeeded: hash), UInt8(truncatingIfNeeded: hash >> 8),
+            UInt8(truncatingIfNeeded: hash >> 16), UInt8(truncatingIfNeeded: hash >> 24)
+        ))
+    }
+
     private var previousControllerIDs: Set<String> = []
 
     private func refreshConnectedControllers() {
@@ -67,49 +100,76 @@ class ControllerService: ObservableObject {
         var players: [PlayerController] = []
         var currentIDs: Set<String> = []
 
+        let keyboardPlayer = PlayerController(
+            id: Self.keyboardId,
+            assignedPlayers: [1],
+            mapping: ControllerGamepadMapping.defaults(for: "Keyboard", systemID: "default", handedness: handedness),
+            sortOrder: 0,
+            isKeyboard: true
+        )
+        players.append(keyboardPlayer)
+
         let allGCs = Array(GCController.controllers().prefix(4))
-        var usedSlots = Set<Int>()
         var connectedIDs = Set<ObjectIdentifier>()
         for gc in allGCs {
             connectedIDs.insert(ObjectIdentifier(gc))
         }
-        // Remove stale sessionSlotOrder entries
-        sessionSlotOrder = sessionSlotOrder.filter { connectedIDs.contains($0.key) }
+        sessionSlotAssignments = sessionSlotAssignments.filter { connectedIDs.contains($0.key) }
 
-        let unassignedOrder = allGCs.filter { sessionSlotOrder[ObjectIdentifier($0)] == nil }
-
-        var orderIndex = 0
+        var nameCounts: [String: Int] = [:]
         for gc in allGCs {
-            let vendorName = gc.vendorName ?? "Unknown Controller"
-            currentIDs.insert(vendorName)
+            let baseName = gc.vendorName ?? "Unknown Controller"
+            nameCounts[baseName, default: 0] += 1
+        }
 
-            let preferred = sessionSlotOrder[ObjectIdentifier(gc)]
-            var slot = preferred ?? 0
-            if slot > 0 && !usedSlots.contains(slot) {
-                usedSlots.insert(slot)
+        let unassigned = allGCs.filter { sessionSlotAssignments[ObjectIdentifier($0)] == nil }
+        var nextSlot = 1
+        for gc in unassigned {
+            while nextSlot <= 4 && hasControllerAssigned(to: nextSlot) {
+                nextSlot += 1
+            }
+            if nextSlot <= 4 {
+                sessionSlotAssignments[ObjectIdentifier(gc)] = [nextSlot]
+                nextSlot += 1
             } else {
-                // Slot taken or unassigned — find the next free slot
-                repeat {
-                    orderIndex += 1
-                    slot = orderIndex
-                } while usedSlots.contains(slot) && orderIndex <= 4
-                if slot > 4 { slot = max(1, (allGCs.firstIndex(of: gc) ?? 0) + 1) }
-                usedSlots.insert(slot)
-                if preferred != nil { sessionSlotOrder[ObjectIdentifier(gc)] = slot }
+                sessionSlotAssignments[ObjectIdentifier(gc)] = [1]
+            }
+        }
+
+        var nameIndices: [String: Int] = [:]
+        for gc in allGCs {
+            let baseName = gc.vendorName ?? "Unknown Controller"
+            currentIDs.insert(baseName)
+
+            let assigned = sessionSlotAssignments[ObjectIdentifier(gc)] ?? [1]
+            let category = gc.productCategory
+
+            LoggerService.info(category: "ControllerService", "Detected controller: vendorName=\(baseName), productCategory=\(category)")
+
+            let mapping = savedMappings[baseName]?["default"]
+            ?? ControllerGamepadMapping.defaults(for: baseName, systemID: "default", handedness: handedness)
+
+            let displayName: String
+            if nameCounts[baseName, default: 0] > 1 {
+                nameIndices[baseName, default: 0] += 1
+                displayName = "\(baseName) #\(nameIndices[baseName]!)"
+            } else {
+                displayName = baseName
             }
 
-            let mapping = savedMappings[vendorName]?["default"]
-                ?? ControllerGamepadMapping.defaults(for: vendorName, systemID: "default", handedness: handedness)
-            players.append(PlayerController(
-                playerIndex: slot,
+            var player = PlayerController(
+                id: Self.stableId(for: gc),
+                assignedPlayers: assigned,
                 gcController: gc,
                 mapping: mapping,
-                sortOrder: players.count
-            ))
+                sortOrder: players.count,
+                productCategory: category
+            )
+            players.append(player)
         }
 
         let newIDs = currentIDs.subtracting(previousIDs)
-        for player in players {
+        for player in players where !player.isKeyboard {
             if let vendorName = player.gcController?.vendorName, newIDs.contains(vendorName) {
                 let loc = LocalizationManager.shared
                 NotificationPillManager.shared.post(PillNotification(
@@ -125,35 +185,102 @@ class ControllerService: ObservableObject {
         previousControllerIDs = currentIDs
         connectedControllers = players
 
+        ensureP1Exists()
+
         if activePlayerIndex == 0 && !players.isEmpty {
             activePlayerIndex = 1
         }
     }
 
+    private func hasControllerAssigned(to slot: Int) -> Bool {
+        sessionSlotAssignments.values.contains { $0.contains(slot) }
+    }
+
+    private func ensureP1Exists() {
+        let hasP1 = sessionSlotAssignments.values.contains { $0.contains(1) }
+        guard !hasP1 else { return }
+        for key in sessionSlotAssignments.keys {
+            var slots = sessionSlotAssignments[key] ?? []
+            if let min = slots.min(), min > 1 {
+                slots.insert(1)
+                sessionSlotAssignments[key] = slots
+                return
+            }
+        }
+        if let firstKey = sessionSlotAssignments.keys.first {
+            sessionSlotAssignments[firstKey] = [1]
+        }
+    }
+
     func assignController(_ controller: GCController, to slot: Int) {
         guard slot >= 1 && slot <= 4 else { return }
-        // If slot is taken by another controller, swap them
-        if let existing = controllerAtSlot(slot), existing != controller {
-            let existingId = ObjectIdentifier(existing)
-            sessionSlotOrder.removeValue(forKey: existingId)
+        let key = ObjectIdentifier(controller)
+
+        var newSlots = sessionSlotAssignments[key] ?? []
+        let oldPrimary = newSlots.min() ?? 1
+
+        newSlots.remove(oldPrimary)
+        newSlots.insert(slot)
+
+        let controllersInSlot = controllersAtSlot(slot)
+        for other in controllersInSlot where ObjectIdentifier(other) != key {
+            let otherKey = ObjectIdentifier(other)
+            var otherSlots = sessionSlotAssignments[otherKey] ?? []
+            otherSlots.remove(slot)
+            if otherSlots.isEmpty {
+                otherSlots.insert(oldPrimary)
+            }
+            sessionSlotAssignments[otherKey] = otherSlots
         }
-        sessionSlotOrder[ObjectIdentifier(controller)] = slot
+
+        if !newSlots.contains(1) {
+            ensureP1Exists()
+        }
+
+        sessionSlotAssignments[key] = newSlots
         refreshConnectedControllers()
     }
 
-    func assignedSlot(for controller: GCController) -> Int? {
-        sessionSlotOrder[ObjectIdentifier(controller)]
+    func toggleController(_ controller: GCController, player slot: Int) {
+        guard slot >= 1 && slot <= 4 else { return }
+        let key = ObjectIdentifier(controller)
+        var slots = sessionSlotAssignments[key] ?? []
+
+        if slots.contains(slot) {
+            if slots.count == 1 && slot == 1 { return }
+            slots.remove(slot)
+            if slots.isEmpty {
+                slots.insert(1)
+            }
+        } else {
+            slots.insert(slot)
+        }
+
+        if !slots.contains(1) {
+            ensureP1Exists()
+        }
+
+        sessionSlotAssignments[key] = slots
+        refreshConnectedControllers()
     }
 
-    func controllerAtSlot(_ slot: Int) -> GCController? {
-        guard slot >= 1 && slot <= 4 else { return nil }
-        for (id, s) in sessionSlotOrder where s == slot {
-            // Find the matching GCController instance
-            for gc in GCController.controllers() where ObjectIdentifier(gc) == id {
-                return gc
+    func controllersForPlayer(_ slot: Int) -> [PlayerController] {
+        connectedControllers.filter { $0.assignedPlayers.contains(slot) }
+    }
+
+    func controllersAtSlot(_ slot: Int) -> [GCController] {
+        guard slot >= 1 && slot <= 4 else { return [] }
+        var result: [GCController] = []
+        for gc in GCController.controllers() {
+            if let slots = sessionSlotAssignments[ObjectIdentifier(gc)], slots.contains(slot) {
+                result.append(gc)
             }
         }
-        return nil
+        return result
+    }
+
+    func assignedSlot(for controller: GCController) -> Int? {
+        sessionSlotAssignments[ObjectIdentifier(controller)]?.min()
     }
 
     func updateMapping(for vendorName: String, systemID: String, mapping: ControllerGamepadMapping) {
@@ -170,11 +297,11 @@ class ControllerService: ObservableObject {
         cleaned.buttons = cleanedButtons
         if savedMappings[vendorName] == nil { savedMappings[vendorName] = [:] }
         savedMappings[vendorName]?[systemID] = cleaned
-        
+
         refreshConnectedControllers()
         saveMappings()
     }
-    
+
     func mapping(for vendorName: String, systemID: String, gameID: String? = nil) -> ControllerGamepadMapping {
         if let gid = gameID, let profile = GameMappingStorage.shared.load(for: gid),
            let overrides = profile.gamepadOverrides {
@@ -228,19 +355,19 @@ class ControllerService: ObservableObject {
            let saved = try? JSONDecoder().decode([String: [String: ControllerGamepadMapping]].self, from: data) {
             savedMappings = saved
         }
-        
+
         if let data = AppSettings.getData(kbMappingKey),
            let saved = try? JSONDecoder().decode([String: KeyboardMapping].self, from: data) {
             keyboardMappings = saved
         }
     }
-    
+
     @Published var keyboardMappings: [String: KeyboardMapping] = [:]
-    
+
     private func kbKey(_ systemID: String, player: Int) -> String {
         player <= 1 ? systemID : "\(systemID)_p\(player)"
     }
-    
+
     func keyboardMapping(for systemID: String, player: Int = 1, gameID: String? = nil) -> KeyboardMapping {
         let key = kbKey(systemID, player: player)
         if let gid = gameID, let profile = GameMappingStorage.shared.load(for: gid),
@@ -252,7 +379,6 @@ class ControllerService: ObservableObject {
             return base
         }
 
-        // Players 2-4 only get saved mappings — no fallback to P1 or defaults
         if player > 1 {
             return keyboardMappings[key] ?? KeyboardMapping(buttons: [:])
         }

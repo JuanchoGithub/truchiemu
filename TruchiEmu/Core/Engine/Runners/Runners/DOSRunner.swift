@@ -72,17 +72,21 @@ class DOSRunner: EmulatorRunner, @unchecked Sendable {
     @MainActor
     override func setupGamepadInput() {
         let cs = ControllerService.shared
-        
+
         for player in cs.connectedControllers {
             guard let controller = player.gcController,
                   let extendedGamepad = controller.extendedGamepad else { continue }
-            
-            let port = player.playerIndex - 1
-            LoggerService.debug(category: "DOSRunner", "Hooking gamepad for DOS: \(controller.vendorName ?? "Unknown") port \(port)")
-            
-            extendedGamepad.valueChangedHandler = { [weak self, port] _, element in
+
+            let ports = player.assignedPlayers.map { $0 - 1 }
+            for port in ports {
+                LoggerService.debug(category: "DOSRunner", "Hooking gamepad for DOS: \(controller.vendorName ?? "Unknown") port \(port)")
+            }
+
+            extendedGamepad.valueChangedHandler = { [weak self] _, element in
                 guard let self = self else { return }
-                self.handleGamepadInput(element, player: port)
+                for port in ports {
+                    self.handleGamepadInput(element, player: port)
+                }
             }
         }
     }

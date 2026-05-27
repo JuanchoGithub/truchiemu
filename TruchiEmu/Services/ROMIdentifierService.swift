@@ -554,12 +554,12 @@ static func titleFromDatGame(name: String, description: String) -> String {
             let queryNumericTokens = queryTokensList.flatMap { tokens -> [String] in
                 tokens.filter { token in
                     if let n = Int(token) { return n > 0 }
-                    let romanPattern = "^[IVXLCDM]+$"
-                    if let regex = try? NSRegularExpression(pattern: "^" + romanPattern + "$", options: []), regex.numberOfMatches(in: token, options: [], range: NSRange(token.startIndex..., in: token)) > 0 { return true }
-                    return false
-                }
-            }
-            let queryNumericSet = Set(queryNumericTokens)
+		let romanPattern = "^[IVXLCDM]+$"
+		if let regex = try? NSRegularExpression(pattern: "^" + romanPattern + "$", options: .caseInsensitive), regex.numberOfMatches(in: token, options: [], range: NSRange(token.startIndex..., in: token)) > 0 { return true }
+		return false
+		}
+	}
+	let queryNumericSet = Set(queryNumericTokens)
             
             for info in index.allEntries {
                 let datBase = Self.normalizedComparableTitle(info.name).lowercased()
@@ -582,11 +582,11 @@ static func titleFromDatGame(name: String, description: String) -> String {
                         
                         let cNumericTokens = cTokens.filter { token in
                             if let n = Int(token) { return n > 0 }
-                            let romanPattern = "^[IVXLCDM]+$"
-                            if let regex = try? NSRegularExpression(pattern: "^" + romanPattern + "$", options: []), regex.numberOfMatches(in: token, options: [], range: NSRange(token.startIndex..., in: token)) > 0 { return true }
-                            return false
-                        }
-                        let cNumericSet = Set(cNumericTokens)
+		let romanPattern = "^[IVXLCDM]+$"
+		if let regex = try? NSRegularExpression(pattern: "^" + romanPattern + "$", options: .caseInsensitive), regex.numberOfMatches(in: token, options: [], range: NSRange(token.startIndex..., in: token)) > 0 { return true }
+		return false
+		}
+		let cNumericSet = Set(cNumericTokens)
                         if !queryNumericSet.isEmpty && !cNumericSet.isEmpty && queryNumericSet != cNumericSet {
                             continue
                         }
