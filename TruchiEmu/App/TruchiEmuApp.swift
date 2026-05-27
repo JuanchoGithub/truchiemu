@@ -87,7 +87,62 @@ LoggerService.debug(category: category, message)
                 let modelContext = SwiftDataContainer.shared.container.mainContext
                 MAMEVerificationService.shared.startVerification(modelContext: modelContext)
             }
-}
+        }
+    }
+
+    private func registerNotificationActionHandlers() {
+        let historyManager = NotificationHistoryManager.shared
+        historyManager.library = library
+
+        historyManager.registerActionHandler(type: "undoHide") { entry in
+            guard let payload = entry.decodePayload(ROMActionPayload.self),
+                  let lib = historyManager.library else { return false }
+            if let index = lib.roms.firstIndex(where: { $0.id == payload.romID }) {
+                lib.roms[index].isHidden = false
+                lib.updateROM(lib.roms[index])
+                return true
+            }
+            return false
+        }
+
+        historyManager.registerActionHandler(type: "undoTrash") { entry in
+            guard let payload = entry.decodePayload(TrashActionPayload.self),
+                  let lib = historyManager.library else { return false }
+            let originalURL = URL(fileURLWithPath: payload.originalPath)
+            var restored = false
+
+            if let trashPath = AppSettings.getString("pendingTrashRestore_\(payload.romID.uuidString)") {
+                let trashURL = URL(fileURLWithPath: trashPath)
+                do {
+                    let destination = originalURL
+                    if !FileManager.default.fileExists(atPath: destination.deletingLastPathComponent().path) {
+                        try FileManager.default.createDirectory(at: destination.deletingLastPathComponent(), withIntermediateDirectories: true)
+                    }
+                    if FileManager.default.fileExists(atPath: trashURL.path) {
+                        try FileManager.default.moveItem(at: trashURL, to: destination)
+                        restored = true
+                        LoggerService.info(category: "NotificationHistory", "ROM restored from trash: \(originalURL.lastPathComponent)")
+                    }
+                } catch {
+                    LoggerService.warning(category: "NotificationHistory", "Failed to restore ROM from trash: \(error.localizedDescription)")
+                }
+                AppSettings.remove("pendingTrashRestore_\(payload.romID.uuidString)")
+            }
+
+            if restored {
+                if let romData = payload.romJSON.data(using: .utf8),
+                   let rom = try? JSONDecoder().decode(ROM.self, from: romData) {
+                    lib.roms.append(rom)
+                    LibraryMetadataStore.shared.persist(rom: rom)
+                    LibraryMetadataStore.shared.flushDirtyToSwiftData()
+                    let repo = ROMRepository(context: SwiftDataContainer.shared.mainContext)
+                    repo.saveROM(rom)
+                    lib.updateCounts()
+                    return true
+                }
+            }
+            return false
+        }
     }
     
     var body: some Scene {
@@ -101,10 +156,10 @@ LoggerService.debug(category: category, message)
             .environmentObject(LibraryAutomationCoordinator.shared)
             .environmentObject(mameVerification)
             .environment(systemDatabase)
-                .onAppear {
-                    // Start MAME verification when app becomes idle
-                    startMAMEVerificationIfNeeded()
-                }
+        .onAppear {
+            startMAMEVerificationIfNeeded()
+            registerNotificationActionHandlers()
+        }
                 .onDisappear {
                     // Pause verification when leaving the app
                     MAMEVerificationService.shared.pause()

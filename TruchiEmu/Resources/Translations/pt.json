@@ -1238,5 +1238,14 @@
   "pill.gameHidden": "Jogo ocultado",
   "pill.undo": "Desfazer",
   "pill.controllerConnected": "Controle conectado",
-  "pill.restoreFailed": "Falha ao restaurar — arquivo não está mais na lixeira"
+    "pill.restoreFailed": "Falha ao restaurar — arquivo não está mais na lixeira",
+    "toolbar.notifications": "Notificações",
+    "notifications.title": "Centro de notificações",
+    "notifications.markAllRead": "Marcar tudo como lido",
+    "notifications.empty": "Sem notificações",
+    "notifications.openAll": "Abrir centro de notificações",
+    "notifications.timeJustNow": "Agora mesmo",
+    "notifications.timeMinutesAgo": "%d min atrás",
+    "notifications.timeHoursAgo": "%d h atrás",
+    "notifications.timeDaysAgo": "%d dias atrás"
 }

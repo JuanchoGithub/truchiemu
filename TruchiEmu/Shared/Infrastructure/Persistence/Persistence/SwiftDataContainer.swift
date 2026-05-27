@@ -87,9 +87,11 @@ final class SwiftDataContainer: ObservableObject {
             MAMERomEntry.self,
             MAMEDatabaseInfo.self,
             MAMEVerificationRecord.self,
-            // Generic settings storage
-            SettingsEntry.self,
-            RAGameCacheEntry.self
+        // Generic settings storage
+        SettingsEntry.self,
+        RAGameCacheEntry.self,
+        // Notification history
+        NotificationEntry.self
         ])
 
         // --- NEW LOGIC START ---

@@ -121,6 +121,9 @@ struct LibraryGridView: View {
     @State private var sortByLastAdded: Bool = false
     @State private var selectedGenres: Set<String> = []
     @State private var showGenrePicker: Bool = false
+    @ObservedObject private var notificationHistory = NotificationHistoryManager.shared
+    @State private var showNotificationPopover: Bool = false
+    @State private var showNotificationCenterSheet: Bool = false
 
     private enum ViewMode: String { case grid, list }
 
@@ -347,12 +350,36 @@ struct LibraryGridView: View {
                     Text(prefs.systemLanguage.flagEmoji)
                 }
             }
-            .help(loc.localized("toolbar.inputDeviceAndLanguage"))
-            .tint(ThemeManager.shared.toolbarAccentEnabled ? AppColors.brandAccent : .primary)
+        .help(loc.localized("toolbar.inputDeviceAndLanguage"))
+        .tint(ThemeManager.shared.toolbarAccentEnabled ? AppColors.brandAccent : .primary)
+        }
+        ToolbarItem(placement: .primaryAction) {
+            Button {
+                showNotificationPopover.toggle()
+            } label: {
+                ZStack(alignment: .topTrailing) {
+                    Image(systemName: "bell")
+                    if notificationHistory.unreadCount > 0 {
+                        Text("\(notificationHistory.unreadCount)")
+                            .font(.system(size: 9, weight: .bold))
+                            .foregroundColor(.white)
+                            .padding(.horizontal, 4)
+                            .padding(.vertical, 1)
+                            .background(AppColors.brandAccent)
+                            .clipShape(Capsule())
+                            .offset(x: 8, y: -8)
+                    }
+                }
             }
-            ToolbarItem(placement: .primaryAction) {
-                Button {
-                    if let mainMenu = NSApp.mainMenu {
+            .foregroundStyle(ThemeManager.shared.toolbarAccentEnabled ? AppColors.brandAccent : .primary)
+            .help(loc.localized("toolbar.notifications"))
+            .popover(isPresented: $showNotificationPopover, arrowEdge: .bottom) {
+                NotificationPopoverView(showAll: $showNotificationCenterSheet)
+            }
+        }
+        ToolbarItem(placement: .primaryAction) {
+            Button {
+                if let mainMenu = NSApp.mainMenu {
                         for item in mainMenu.items {
                             if let submenu = item.submenu {
                                 for subItem in submenu.items {
@@ -376,12 +403,15 @@ struct LibraryGridView: View {
             .padding(.horizontal, 4)
             .help(loc.localized("app.settings"))
             .foregroundStyle(ThemeManager.shared.toolbarAccentEnabled ? AppColors.brandAccent : .primary)
-            }
         }
-        .sheet(item: $manualBoxArtSearchROM) { rom in
-            BoxArtPickerView(rom: rom)
-        }
-        .onAppear { 
+    }
+    .sheet(item: $manualBoxArtSearchROM) { rom in
+        BoxArtPickerView(rom: rom)
+    }
+    .sheet(isPresented: $showNotificationCenterSheet) {
+        NotificationCenterSheetView()
+    }
+    .onAppear {
             // Recompute columns from saved zoom level
             applyZoomToColumnCount(animate: false)
             sortByLastPlayed = AppSettings.getBool("sortByLastPlayed", defaultValue: false)
@@ -1164,19 +1194,15 @@ viewModel.updateFilters(
         updated.isHidden = true
         library.updateROM(updated)
 
-        let capturedLibrary = library
-        NotificationPillManager.shared.post(PillNotification(
+        NotificationHistoryManager.shared.post(
             icon: "eye.slash",
             title: loc.localized("pill.gameHidden"),
             subtitle: rom.displayName,
             autoDismissDelay: 5,
-            action: PillAction(label: loc.localized("pill.undo")) {
-                var restored = rom
-                restored.isHidden = false
-                capturedLibrary.updateROM(restored)
-                NotificationPillManager.shared.dismiss()
-            }
-        ))
+            actionLabel: loc.localized("pill.undo"),
+            actionType: "undoHide",
+            actionPayload: ROMActionPayload(romID: rom.id)
+        )
     }
 
     private func unhideGame(_ rom: ROM) {
@@ -1199,42 +1225,21 @@ viewModel.updateFilters(
 
         removeROMFromLibrary(rom)
 
-        let capturedLibrary = library
-        NotificationPillManager.shared.post(PillNotification(
+        let romJSON = (try? JSONEncoder().encode(rom)).flatMap { String(data: $0, encoding: .utf8) } ?? ""
+
+        NotificationHistoryManager.shared.post(
             icon: "trash",
             title: loc.localized("pill.gameTrashed"),
             subtitle: rom.displayName,
             autoDismissDelay: 5,
-            action: PillAction(label: loc.localized("pill.undo")) {
-                var restored = false
+            actionLabel: loc.localized("pill.undo"),
+            actionType: "undoTrash",
+            actionPayload: TrashActionPayload(romID: rom.id, originalPath: rom.path.path, romJSON: romJSON)
+        )
 
-                if let trashURL = trashURL {
-                    do {
-                        let destination = rom.path
-                        if !FileManager.default.fileExists(atPath: destination.deletingLastPathComponent().path) {
-                            try FileManager.default.createDirectory(at: destination.deletingLastPathComponent(), withIntermediateDirectories: true)
-                        }
-                        try FileManager.default.moveItem(at: trashURL, to: destination)
-                        restored = true
-                        LoggerService.info(category: "LibraryGridView", "ROM restored from trash: \(rom.path.lastPathComponent)")
-                    } catch {
-                        LoggerService.warning(category: "LibraryGridView", "Failed to restore ROM from trash: \(error.localizedDescription)")
-                    }
-                }
-
-                if restored {
-                    capturedLibrary.roms.append(rom)
-                    LibraryMetadataStore.shared.persist(rom: rom)
-                    LibraryMetadataStore.shared.flushDirtyToSwiftData()
-                    let repo = ROMRepository(context: SwiftDataContainer.shared.mainContext)
-                    repo.saveROM(rom)
-                    capturedLibrary.updateCounts()
-                    NotificationPillManager.shared.dismiss()
-                } else {
-                    NotificationPillManager.shared.updateSubtitle(loc.localized("pill.restoreFailed"))
-                }
-            }
-        ))
+        if let trashURL = trashURL {
+            AppSettings.set("pendingTrashRestore_\(rom.id.uuidString)", value: trashURL.path)
+        }
     }
 
 private func removeROMFromLibrary(_ rom: ROM) {

@@ -1232,5 +1232,14 @@
   "pill.gameHidden": "Juego oculto",
   "pill.undo": "Deshacer",
   "pill.controllerConnected": "Controlador conectado",
-  "pill.restoreFailed": "No se pudo restaurar — el archivo ya no está en la papelera"
+    "pill.restoreFailed": "No se pudo restaurar — el archivo ya no está en la papelera",
+    "toolbar.notifications": "Notificaciones",
+    "notifications.title": "Centro de notificaciones",
+    "notifications.markAllRead": "Marcar todo como leído",
+    "notifications.empty": "Sin notificaciones",
+    "notifications.openAll": "Abrir centro de notificaciones",
+    "notifications.timeJustNow": "Justo ahora",
+    "notifications.timeMinutesAgo": "Hace %d min",
+    "notifications.timeHoursAgo": "Hace %d h",
+    "notifications.timeDaysAgo": "Hace %d días"
 }

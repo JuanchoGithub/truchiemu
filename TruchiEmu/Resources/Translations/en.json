@@ -1240,5 +1240,14 @@
   "pill.gameHidden": "Game Hidden",
   "pill.undo": "Undo",
   "pill.controllerConnected": "Controller Connected",
-  "pill.restoreFailed": "Restore failed — file no longer in Trash"
+    "pill.restoreFailed": "Restore failed — file no longer in Trash",
+    "toolbar.notifications": "Notifications",
+    "notifications.title": "Notification Center",
+    "notifications.markAllRead": "Mark All Read",
+    "notifications.empty": "No notifications",
+    "notifications.openAll": "Open Notification Center",
+    "notifications.timeJustNow": "Just now",
+    "notifications.timeMinutesAgo": "%d min ago",
+    "notifications.timeHoursAgo": "%d hr ago",
+    "notifications.timeDaysAgo": "%d days ago"
 }

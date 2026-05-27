@@ -140,6 +140,7 @@
 		21FF3B94F1D1778135BC654B /* input_coreLabels_snes9x.json in Resources */ = {isa = PBXBuildFile; fileRef = 25D2DC6703AB9C4FBA5996E3 /* input_coreLabels_snes9x.json */; };
 		2250631CD16D43AF3F093857 /* CoreHostProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = FF549897537D3CC05BD11231 /* CoreHostProtocol.swift */; };
 		2258AA6844B74EE1BB9B5289 /* ffplay@132w.png in Resources */ = {isa = PBXBuildFile; fileRef = 1004B788B680D89D08A2C4B6 /* ffplay@132w.png */; };
+		22AEB5EE632F87903BB866E6 /* NotificationHistoryManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5148AE5A90969F2EF92C6546 /* NotificationHistoryManager.swift */; };
 		22FBDC836930C16AC02CBA03 /* BoxArtPreloaderService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7BC9EB4BBB881879FB8BA782 /* BoxArtPreloaderService.swift */; };
 		235451B34A912C340CB018EE /* XRICK.png in Resources */ = {isa = PBXBuildFile; fileRef = 1C15A2A6F35E894F51393AE9 /* XRICK.png */; };
 		235A39D4CEA4B20012CF9E5C /* LibretroBridgeSwift.swift in Sources */ = {isa = PBXBuildFile; fileRef = 67D8E99941A946620FF8D608 /* LibretroBridgeSwift.swift */; };
@@ -179,6 +180,7 @@
 		2B95E49D725335181C02F77A /* input_coreOverrides_dosbox_pure.json in Resources */ = {isa = PBXBuildFile; fileRef = FEB592DF53C6205FF44A6CC7 /* input_coreOverrides_dosbox_pure.json */; };
 		2C0B2084279F991E2305FE51 /* CursorAutoHideManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7DAF1E2107BE928D81F50371 /* CursorAutoHideManager.swift */; };
 		2C6E4ADDC404B2350DF1A01C /* input_coreLabels_ep128emu.json in Resources */ = {isa = PBXBuildFile; fileRef = 278B2E466CEE5561AE793161 /* input_coreLabels_ep128emu.json */; };
+		2D61E69C106B977772B1D173 /* NotificationPopoverView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E11C74001CE85E9C96E0269D /* NotificationPopoverView.swift */; };
 		2E8FB37D7C4E33AA2B2626C0 /* StandaloneGameWindowController+Toolbar.swift in Sources */ = {isa = PBXBuildFile; fileRef = D4AFED71ACBECD25C5CC55AF /* StandaloneGameWindowController+Toolbar.swift */; };
 		2F987CBE55DA51075E7B325D /* N64RumbleCRCs.txt in Resources */ = {isa = PBXBuildFile; fileRef = B35D214EFF390ECC091F6642 /* N64RumbleCRCs.txt */; };
 		2FAD03B80B490A8622C78327 /* input_coreOverrides_wasm-4.json in Resources */ = {isa = PBXBuildFile; fileRef = 2C710EE7CDE878AFE61B7D38 /* input_coreOverrides_wasm-4.json */; };
@@ -646,6 +648,7 @@
 		B28BAC855B3AE12F271C2CE4 /* TIC.png in Resources */ = {isa = PBXBuildFile; fileRef = 24020D18A3CFC76C3A13F218 /* TIC.png */; };
 		B2EDF888CDF5CE14D1D573DE /* BezelBackgroundView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B1CC886E59DC123C478AE62 /* BezelBackgroundView.swift */; };
 		B3058D8576CF48BBA603DC8E /* input_coreOverrides_vice.json in Resources */ = {isa = PBXBuildFile; fileRef = 91BF04CD67085663A8FADC58 /* input_coreOverrides_vice.json */; };
+		B35057FB102BBD009CCAD8FB /* NotificationCenterSheetView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A8C6248356BAE1B1F7CC6401 /* NotificationCenterSheetView.swift */; };
 		B37B19CF2CF7EF8D710E80FC /* input_coreLabels_meteor.json in Resources */ = {isa = PBXBuildFile; fileRef = AAD3170EF1AA36169C0A41CD /* input_coreLabels_meteor.json */; };
 		B390497DB3F035E9C1CB93A2 /* MS.png in Resources */ = {isa = PBXBuildFile; fileRef = 1B2DF02F2DB479FC229B1AA0 /* MS.png */; };
 		B3DEBE42958D5AEF6A263EB4 /* NotificationPill.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4AF5738E0CA85CD54BC36AC0 /* NotificationPill.swift */; };
@@ -708,6 +711,7 @@
 		C71348506B68F2C80CB3FF03 /* fbneo_libretro_default.json in Resources */ = {isa = PBXBuildFile; fileRef = 4555BA966B2B05587DE32CA1 /* fbneo_libretro_default.json */; };
 		C7EB911EA85AD7A8D9DA113F /* DOS.png in Resources */ = {isa = PBXBuildFile; fileRef = 3E7338C371E12B371E8C32EE /* DOS.png */; };
 		C818A9A30E1776E89896B515 /* cps1@132w.png in Resources */ = {isa = PBXBuildFile; fileRef = 5B75DCBF03080C5A3D54BFAB /* cps1@132w.png */; };
+		C859879DFE4BE2B0AC1E85D9 /* NotificationRowView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9D7C4618D4B79CF36C814C4D /* NotificationRowView.swift */; };
 		C8B5E05093AB0774369076C0 /* input_coreOverrides_play.json in Resources */ = {isa = PBXBuildFile; fileRef = 5F0061F058B92B2B52DAD714 /* input_coreOverrides_play.json */; };
 		C8B7E5E0C4BAC2F30CAF5DC5 /* MAMEDependencyStatusView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2143434D42CF26887557A191 /* MAMEDependencyStatusView.swift */; };
 		C90BC914A918541B2F260F12 /* input_coreLabels_beetle_neopop.json in Resources */ = {isa = PBXBuildFile; fileRef = B49388838708E4000C50EE94 /* input_coreLabels_beetle_neopop.json */; };
@@ -1196,6 +1200,7 @@
 		50F0C395AC7AC42E3144C256 /* CoreSettingsViewGroup.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CoreSettingsViewGroup.swift; sourceTree = "<group>"; };
 		51263C6312EA58D2A15F8917 /* RAConsole.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RAConsole.swift; sourceTree = "<group>"; };
 		512CBDD71A4FCF28803691E0 /* SaveDirectoryBridge.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SaveDirectoryBridge.swift; sourceTree = "<group>"; };
+		5148AE5A90969F2EF92C6546 /* NotificationHistoryManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotificationHistoryManager.swift; sourceTree = "<group>"; };
 		5173355E48F173C9B876F13B /* Sega - 32X.dat */ = {isa = PBXFileReference; path = "Sega - 32X.dat"; sourceTree = "<group>"; };
 		51CC71BA94F2F723F61276A2 /* LaunchBoxGamesDBService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LaunchBoxGamesDBService.swift; sourceTree = "<group>"; };
 		51E0AB11BDD9C3E5EDF00912 /* input_systemLabels_dice.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = input_systemLabels_dice.json; sourceTree = "<group>"; };
@@ -1460,6 +1465,7 @@
 		9B9365CD6FC031FDA5FC4E59 /* CPS1.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = CPS1.png; sourceTree = "<group>"; };
 		9C5D64D2262E657B3F007C98 /* PSP.metal */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.metal; path = PSP.metal; sourceTree = "<group>"; };
 		9D0409EE4A71A70746BE08BB /* scummvm@132w.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "scummvm@132w.png"; sourceTree = "<group>"; };
+		9D7C4618D4B79CF36C814C4D /* NotificationRowView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotificationRowView.swift; sourceTree = "<group>"; };
 		9DA4F37BD28429972F9DC82D /* CheatAutoLoader.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CheatAutoLoader.swift; sourceTree = "<group>"; };
 		9DB287DD57B0134E27B1041F /* GameInfoWindow.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GameInfoWindow.swift; sourceTree = "<group>"; };
 		9E0F93F29D86E231FAD33074 /* input_systemLabels_cdi.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = input_systemLabels_cdi.json; sourceTree = "<group>"; };
@@ -1499,6 +1505,7 @@
 		A7CFC7C37DDAD22C0B5BF067 /* XPCConnectionManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = XPCConnectionManager.swift; sourceTree = "<group>"; };
 		A7FD7122DD17D9B818C4F6C9 /* dos-cheats.zip */ = {isa = PBXFileReference; lastKnownFileType = archive.zip; path = "dos-cheats.zip"; sourceTree = "<group>"; };
 		A8935D40F11BF986BE60A840 /* ThemeManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ThemeManager.swift; sourceTree = "<group>"; };
+		A8C6248356BAE1B1F7CC6401 /* NotificationCenterSheetView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotificationCenterSheetView.swift; sourceTree = "<group>"; };
 		A9258394F027EC5364CFCE39 /* GameOverlayToolbar.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GameOverlayToolbar.swift; sourceTree = "<group>"; };
 		A9747E1374E8440042D0FF33 /* input_systemLabels_3do.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = input_systemLabels_3do.json; sourceTree = "<group>"; };
 		A97A91DA0B2DA73F7E788D2F /* Sega - Master System - Mark III.dat */ = {isa = PBXFileReference; path = "Sega - Master System - Mark III.dat"; sourceTree = "<group>"; };
@@ -1680,6 +1687,7 @@
 		DF7DEE8C655EE9C9F76AEDD8 /* LUTRO.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = LUTRO.png; sourceTree = "<group>"; };
 		E059451BADA7D67E5C1FB483 /* VMAC.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = VMAC.png; sourceTree = "<group>"; };
 		E0DC3B1DB907C41823FBE25C /* input_coreLabels_vircon32.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = input_coreLabels_vircon32.json; sourceTree = "<group>"; };
+		E11C74001CE85E9C96E0269D /* NotificationPopoverView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotificationPopoverView.swift; sourceTree = "<group>"; };
 		E11F3EBDCE3712D48D95C503 /* input_systemLabels_wasm4.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = input_systemLabels_wasm4.json; sourceTree = "<group>"; };
 		E17D761AD77BAABC32070FEA /* input_coreLabels_bsnes_accuracy.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = input_coreLabels_bsnes_accuracy.json; sourceTree = "<group>"; };
 		E28C9FC682FA4AC974FC7375 /* satella@132w.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "satella@132w.png"; sourceTree = "<group>"; };
@@ -2036,6 +2044,16 @@
 				23FACEB11F2F1EA9332AFFF8 /* Bezels */,
 			);
 			path = Bezels;
+			sourceTree = "<group>";
+		};
+		295D40A0EA98790DAA5EE5C0 /* NotificationCenter */ = {
+			isa = PBXGroup;
+			children = (
+				A8C6248356BAE1B1F7CC6401 /* NotificationCenterSheetView.swift */,
+				E11C74001CE85E9C96E0269D /* NotificationPopoverView.swift */,
+				9D7C4618D4B79CF36C814C4D /* NotificationRowView.swift */,
+			);
+			path = NotificationCenter;
 			sourceTree = "<group>";
 		};
 		2AA123C393DAE4A531CE5576 /* CoreButtonSplit */ = {
@@ -2404,6 +2422,7 @@
 				C8861B6D319A016F2FDA15DD /* ImageCache.swift */,
 				30CC526A551953B4E9BB08C9 /* LoggerService.swift */,
 				DDA440915145AB1C4D850872 /* LogManager.swift */,
+				5148AE5A90969F2EF92C6546 /* NotificationHistoryManager.swift */,
 				9769C4055F2EEF4740C52157 /* ResourceCacheInterceptor.swift */,
 			);
 			path = Services;
@@ -2489,6 +2508,7 @@
 			children = (
 				1F92234FC7D9A5FE968934E4 /* CoreDownload */,
 				399D59B6C48CDCB07A57E82C /* Detail */,
+				295D40A0EA98790DAA5EE5C0 /* NotificationCenter */,
 				63DCB48775BC38916D20F01C /* Settings */,
 				519D0BE8F4ABBB766F7539C8 /* Shaders */,
 			);
@@ -4240,7 +4260,11 @@
 				0264BA41980DD15079BBA731 /* N64Runner.swift in Sources */,
 				E317973A7B9CCD95761A632D /* NESRunner.swift in Sources */,
 				989CF6FDFAD02F5AE425ABA4 /* NSImage+Resize.swift in Sources */,
+				B35057FB102BBD009CCAD8FB /* NotificationCenterSheetView.swift in Sources */,
+				22AEB5EE632F87903BB866E6 /* NotificationHistoryManager.swift in Sources */,
 				B3DEBE42958D5AEF6A263EB4 /* NotificationPill.swift in Sources */,
+				2D61E69C106B977772B1D173 /* NotificationPopoverView.swift in Sources */,
+				C859879DFE4BE2B0AC1E85D9 /* NotificationRowView.swift in Sources */,
 				87B10EFAD98B1F06174C53D9 /* NotificationService.swift in Sources */,
 				7326A987ECCC8D533CBE6E7F /* OnboardingView.swift in Sources */,
 				802243197EC4A31177770310 /* PPSSPAssetService.swift in Sources */,

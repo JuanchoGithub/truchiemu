@@ -633,10 +633,47 @@ final class SettingsEntry {
         self.value = value.base64EncodedString()
     }
     
-    // Convenience property to get/set Data directly
     var dataValue: Data {
         get { Data(base64Encoded: value) ?? Data() }
         set { value = newValue.base64EncodedString() }
+    }
+}
+
+// MARK: - Notification Entry
+
+@Model
+final class NotificationEntry {
+    @Attribute(.unique) var id: UUID
+    var icon: String
+    var title: String
+    var subtitle: String?
+    var actionLabel: String?
+    var actionType: String?
+    var actionPayloadJSON: String?
+    var createdAt: Date
+    var isRead: Bool
+
+    init(id: UUID = UUID(), icon: String, title: String, subtitle: String? = nil, actionLabel: String? = nil, actionType: String? = nil, actionPayloadJSON: String? = nil, createdAt: Date = Date(), isRead: Bool = false) {
+        self.id = id
+        self.icon = icon
+        self.title = title
+        self.subtitle = subtitle
+        self.actionLabel = actionLabel
+        self.actionType = actionType
+        self.actionPayloadJSON = actionPayloadJSON
+        self.createdAt = createdAt
+        self.isRead = isRead
+    }
+
+    func decodePayload<T: Decodable>(_ type: T.Type) -> T? {
+        guard let json = actionPayloadJSON,
+              let data = json.data(using: .utf8) else { return nil }
+        return try? JSONDecoder().decode(type, from: data)
+    }
+
+    var isExpired: Bool {
+        guard let expiry = Calendar.current.date(byAdding: .day, value: 15, to: createdAt) else { return false }
+        return Date() > expiry
     }
 }
 
