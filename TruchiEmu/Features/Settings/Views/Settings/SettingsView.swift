@@ -141,7 +141,6 @@ struct SettingsView: View {
     
     @State private var selectedPage: Page = .general
     @State private var searchText: String = ""
-    @State private var columnVisibility: NavigationSplitViewVisibility = .all
     @State private var hasPendingThemeChanges: Bool = false
     @State private var revertRequest: Int = 0
     @State private var applyRequest: Int = 0
@@ -189,9 +188,33 @@ struct SettingsView: View {
     }
     
     var body: some View {
-        NavigationSplitView(columnVisibility: $columnVisibility) {
+        HStack(spacing: 0) {
+            // Sidebar
             ScrollView {
                 VStack(alignment: .leading, spacing: 2) {
+                    // Search field (replaces .searchable)
+                    HStack(spacing: 6) {
+                        Image(systemName: "magnifyingglass")
+                            .font(.system(size: 12, weight: .medium))
+                            .foregroundStyle(AppColors.textSecondary(colorScheme))
+                        TextField(loc.localized("settings.search"), text: $searchText)
+                            .textFieldStyle(.plain)
+                            .font(.system(size: 13))
+                        if !searchText.isEmpty {
+                            Button(action: { searchText = "" }) {
+                                Image(systemName: "xmark.circle.fill")
+                                    .font(.system(size: 14))
+                                    .foregroundStyle(AppColors.textTertiary(colorScheme))
+                            }
+                            .buttonStyle(.plain)
+                        }
+                    }
+                    .padding(.horizontal, 10)
+                    .padding(.vertical, 8)
+
+                    Divider()
+                        .padding(.horizontal, 8)
+
                     if searchText.isEmpty {
                         ForEach(Self.pageGroups) { group in
                             Text(group.label.uppercased())
@@ -217,20 +240,19 @@ struct SettingsView: View {
             }
             .scrollContentBackground(.hidden)
             .background(AppColors.sidebarBackground(colorScheme, tinted: ThemeManager.shared.tintedSurfacesEnabled))
-            .searchable(text: $searchText, placement: .sidebar, prompt: loc.localized("settings.search"))
-            .navigationTitle(loc.localized("settings.title"))
-            .toolbar(removing: .sidebarToggle)
-            .frame(minWidth: 200)
-        } detail: {
+            .frame(width: 220)
+
+            // Divider between sidebar and detail
+            Rectangle()
+                .fill(AppColors.divider(colorScheme))
+                .frame(width: 1)
+
+            // Detail
             detailContent
                 .background(AppColors.windowBackground(colorScheme, tinted: ThemeManager.shared.tintedSurfacesEnabled))
+                .frame(maxWidth: .infinity, maxHeight: .infinity)
         }
-.navigationSplitViewStyle(.balanced)
-.toolbarBackground(
-    AppColors.windowBackground(colorScheme, tinted: ThemeManager.shared.tintedSurfacesEnabled),
-    for: .windowToolbar
-)
-.environment(SystemDatabaseWrapper.shared)
+        .environment(SystemDatabaseWrapper.shared)
         .frame(minWidth: 750, minHeight: 500)
         .onAppear {
             if system != nil {

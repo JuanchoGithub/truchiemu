@@ -27,6 +27,8 @@ struct GeneralSettingsView: View {
     @Binding var activePendingTintedSurfaces: Bool
     @Binding var activePendingAppearanceMode: AppearanceMode
 
+    @State private var contentLoaded = false
+
     @Binding var searchText: String
 
     @ObservedObject private var loc = LocalizationManager.shared
@@ -63,8 +65,10 @@ struct GeneralSettingsView: View {
     }
 
     var body: some View {
-        Form {
-            // ★ Language picker
+        Group {
+            if contentLoaded {
+                Form {
+                    // ★ Language picker
             if !isSearching || matchesSearch("Application Language localization") {
                 Section(header: Label(loc.localized("settings.language"), systemImage: "globe")) {
                     Picker(loc.localized("settings.selectLanguage"), selection: Binding<String>(
@@ -304,6 +308,11 @@ LazyVGrid(columns: [GridItem(.adaptive(minimum: 60))], spacing: 2) {
                         .padding(.vertical, AppSpacing.xl2)
                 }
             }
+            }
+        } else {
+            Color.clear
+                .frame(maxWidth: .infinity, minHeight: 400)
+        }
         }
         .scrollContentBackground(.hidden)
         .formStyle(.grouped)
@@ -326,6 +335,9 @@ LazyVGrid(columns: [GridItem(.adaptive(minimum: 60))], spacing: 2) {
         activePendingTintedSurfaces = pendingTintedSurfaces
         hasPendingChanges = false
         updateLastSyncText()
+        DispatchQueue.main.async {
+            contentLoaded = true
+        }
         }
         .onChange(of: showHiddenGamesCategory) { _, newValue in
             AppSettings.setBool("showHiddenGamesCategory", value: newValue)

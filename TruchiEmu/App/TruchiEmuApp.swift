@@ -30,6 +30,7 @@ struct TruchiEmuApp: App {
         _ = SwiftDataContainer.shared
         _ = LoggerService.shared
         _ = ThemeManager.shared
+        _ = SaveDirectoryManager.shared
         CoreOverrideService.shared.syncBundledOverridesToAppSupport()
         
         // MAME dictionary loading is deferred to background tasks in ContentWithPrepopulationView

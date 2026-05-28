@@ -259,9 +259,11 @@ struct MoveEditorView: View {
                     }
                     .buttonStyle(.plain)
                     .contextMenu {
-                        Button(loc.localized("settings.moveList.editor.removeFromPalette"), role: .destructive) {
+                        Button(role: .destructive) {
                             availableButtons.removeAll { $0.id == btn.id }
                             saveButtonPalette()
+                        } label: {
+                            Label(loc.localized("settings.moveList.editor.removeFromPalette"), systemImage: "xmark.circle")
                         }
                     }
                 }
@@ -424,20 +426,28 @@ struct MoveEditorView: View {
         }
         .buttonStyle(.plain)
         .contextMenu {
-            Button(loc.localized("settings.moveList.editor.toggleCharge")) {
+            Button {
                 if index < steps.count { steps[index].isCharge.toggle() }
+            } label: {
+                Label(loc.localized("settings.moveList.editor.toggleCharge"), systemImage: "hourglass")
             }
-            Button(loc.localized("settings.moveList.editor.toggleNeutral")) {
+            Button {
                 if index < steps.count { steps[index].isNeutral.toggle() }
+            } label: {
+                Label(loc.localized("settings.moveList.editor.toggleNeutral"), systemImage: "scope")
             }
-            Button(loc.localized("settings.moveList.editor.toggleRapid")) {
+            Button {
                 if index < steps.count { steps[index].isRapid.toggle() }
+            } label: {
+                Label(loc.localized("settings.moveList.editor.toggleRapid"), systemImage: "bolt")
             }
             Divider()
-            Button(loc.localized("settings.moveList.editor.deleteStep"), role: .destructive) {
+            Button(role: .destructive) {
                 steps.remove(at: index)
                 if selectedStepIndex == index { selectedStepIndex = nil }
                 else if let si = selectedStepIndex, si > index { selectedStepIndex = si - 1 }
+            } label: {
+                Label(loc.localized("settings.moveList.editor.deleteStep"), systemImage: "trash")
             }
         }
     }

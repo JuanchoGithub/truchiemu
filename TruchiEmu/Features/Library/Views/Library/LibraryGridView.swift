@@ -1116,7 +1116,7 @@ viewModel.updateFilters(
                     
                     if showGBMenu || showGCMenu {
                         Divider()
-                        Menu(loc.localized("contextMenu.system")) {
+                        Menu {
                             if showGBMenu {
                                 Button {
                                     var updated = rom
@@ -1149,32 +1149,46 @@ viewModel.updateFilters(
                                     Label(loc.localized("contextMenu.wii"), systemImage: "gamecontroller")
                                 }
                             }
+                        } label: {
+                            Label(loc.localized("contextMenu.system"), systemImage: "hifispeaker")
                         }
                     }
                     
                     Divider()
-                    Button(rom.isFavorite ? loc.localized("contextMenu.removeFromFavorites") : loc.localized("contextMenu.addToFavorites")) {
-
+                    Button {
                     var updated = rom
                     updated.isFavorite.toggle()
                     library.updateROM(updated)
+                } label: {
+                    Label(
+                        rom.isFavorite ? loc.localized("contextMenu.removeFromFavorites") : loc.localized("contextMenu.addToFavorites"),
+                        systemImage: rom.isFavorite ? "star.slash" : "star"
+                    )
                 }
                 Divider()
-                Button(loc.localized("contextMenu.getBoxArt")) {
+                Button {
                     manualBoxArtSearchROM = rom
+                } label: {
+                    Label(loc.localized("contextMenu.getBoxArt"), systemImage: "photo")
                 }
-                Button(loc.localized("contextMenu.revealInFinder")) {
+                Button {
                     NSWorkspace.shared.selectFile(rom.path.path, inFileViewerRootedAtPath: "")
+                } label: {
+                    Label(loc.localized("contextMenu.revealInFinder"), systemImage: "folder")
                 }
 
                 Divider()
                 if rom.isHidden {
-                    Button(loc.localized("contextMenu.unhideGame")) {
+                    Button {
                         unhideGame(rom)
+                    } label: {
+                        Label(loc.localized("contextMenu.unhideGame"), systemImage: "eye")
                     }
                 } else {
-                    Button(loc.localized("contextMenu.hideGame")) {
+                    Button {
                         hideGame(rom)
+                    } label: {
+                        Label(loc.localized("contextMenu.hideGame"), systemImage: "eye.slash")
                     }
                     Button(role: .destructive) {
                         gameToDelete = rom
